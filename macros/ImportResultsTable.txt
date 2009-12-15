@@ -1,0 +1,36 @@
+// Import Results Table
+//
+// This macro populates a fresh "Results" table
+// from a saved ImageJ results table, or from
+// any tab or comma-separated data file.
+
+     lineseparator = "\n";
+     cellseparator = ",\t";
+
+     // copies the whole table to an array of lines
+     lines=split(File.openAsString(""), lineseparator);
+     if (lines.length==0) return;
+     path = File.directory + File.name;
+
+     // recreates the columns headers
+     labels=split(lines[0], cellseparator);
+     if (labels.length==1)
+         exit("This is not a tab or comma delimited text file.");
+     if (labels[0]==" ")
+        k=1; // it is an ImageJ Results table, skip first column
+     else
+        k=0; // it is not a Results table, load all columns
+     for (j=k; j<labels.length; j++)
+        setResult(labels[j],0,0);
+
+     // dispatches the data into the new RT
+     run("Clear Results");
+     if (k==1)
+         call("ij.plugin.filter.Analyzer.setDefaultHeadings");
+     for (i=1; i<lines.length; i++) {
+        items=split(lines[i], cellseparator);
+        for (j=k; j<items.length; j++)
+           setResult(labels[j],i-1,items[j]);
+     }
+     updateResults();
+ 

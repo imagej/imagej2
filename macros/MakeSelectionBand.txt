@@ -1,0 +1,48 @@
+// This macro creates a band (donut shaped) 
+// selection of the specified size. 
+
+  if (selectionType==9) 
+      exit("Area selection required");
+  pixels = parseFloat(getArgument());
+  if (isNaN(pixels)) exit("Distance is invalid: "+getArgument());
+  getPixelSize(unit, pixelWidth, pixelHeight);
+  size = pixels*pixelWidth;
+  decimalPlaces = 0;
+  if (floor(size)!=size) decimalPlaces = 2;
+  Dialog.create("Make Band");
+  Dialog.addNumber("Band Size:", size, decimalPlaces, 4, unit);
+  //Dialog.addMessage("Enter negative number to shrink");
+  Dialog.show();
+  size = Dialog.getNumber();
+  pixels = size/pixelWidth; 
+  makeBand(pixels);
+  return toString(pixels); 
+
+  function makeBand(n) {
+        if (n >255) 
+           exit("Cannot make bands wider that 255 pixels"); 
+       id = getImageID(); 
+       setBatchMode(true); 
+       getBoundingRect(xbase, ybase, width, height); 
+       getSelectionCoordinates(xc, yc);
+       run("Create Mask"); 
+       run("Invert"); 
+       run("Options...", "iterations=1 count=1"); 
+       run("Distance Map"); 
+       setThreshold(0, n); 
+       x = xbase + width/2; 
+       y = ybase + height/2; 
+       count = 0; 
+       while(getPixel(x,y)>n) { 
+           if (count++==10000) 
+               exit("Unable to scale selection"); 
+           x = xbase + width*random(); 
+           y = ybase + height*random(); 
+       } 
+       doWand(x, y); 
+       setKeyDown('alt'); 
+       makeSelection("polygon", xc, yc); 
+       close(); 
+       selectImage(id); 
+       run("Restore Selection"); 
+  }

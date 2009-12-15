@@ -1,0 +1,75 @@
+// This macro implements the Image>HyperStacks>New HyperStack command.
+
+  title = "HyperStack";
+  Dialog.create("HyperStack");
+  Dialog.addString("Title:", title);
+  Dialog.addChoice("Type:", newArray("8-bit", "16-bit", "32-bit", "RGB"));
+  Dialog.addNumber("Width:", 300);
+  Dialog.addNumber("Height:", 200);
+  Dialog.addNumber("Channels (c):", 3);
+  Dialog.addNumber("Slices (z):",10);
+  Dialog.addNumber("Frames (t):", 5);
+  Dialog.addCheckbox("Label Images", true);
+  Dialog.show;
+  title = Dialog.getString();
+  type = Dialog.getChoice();
+  width = Dialog.getNumber;
+  height = Dialog.getNumber;
+  c = Dialog.getNumber;
+  z = Dialog.getNumber;
+  t = Dialog.getNumber;
+  label = Dialog.getCheckbox;
+  setBatchMode(true);
+  if (label)
+     type = type + " ramp";
+  else
+     type = type + " black";
+  newImage(title, type, width, height, c*z*t);
+  run("Properties...", "channels="+c+" slices="+z+" frames="+t);
+  showStatus("");
+  channel=1; slice=1; frame=1;
+  setFont("SansSerif", 24);
+  if (label) {
+     yloc = 30;
+     for (i=1; i<=nSlices; i++) {
+         showProgress(i, nSlices);
+         setSlice(i);
+         setColor(0, 0, 0);
+         fillRect(0, 0, width, yloc);
+         fillRect(0, yloc+15, width, height-(yloc+15));
+         setColor(255, 255, 255);
+         drawString("ch="+pad(channel)+", z="+pad(slice)+", t="+pad(frame), 5, yloc);
+         if (i<=c) {
+             setFont("SansSerif", 12, "antialiased");
+             msg = "Press shift-z (Image>HyperStacks>Channels)\n"+
+                         "to open the \"Channels\" window, which will\n"+
+                         "allow you switch to composite color mode\n"+
+                         "and to enable/disable channels.\n";
+            drawString(msg, 25, 80);
+             setFont("SansSerif", 24);
+         }
+         channel++;
+         if (channel>c) {
+             channel = 1;
+             slice++;
+             if (slice>z) {
+                 slice = 1;
+                 frame++;
+                 if (frame>t) frame = 1;
+             }
+         }
+     }
+  }
+  setSlice(1);
+  if (c>1 && c<8 && bitDepth!=24)
+     run("Make Composite");
+  setOption("OpenAsHyperStack", true);
+  setBatchMode(false);
+
+  function pad(n) {
+      str = toString(n);
+      while (lengthOf(str)<3)
+          str = "0" + str;
+      return str;
+  }
+

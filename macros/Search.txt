@@ -1,0 +1,103 @@
+//  "Search"
+// This macro searches for text in files contained in a directory.
+
+  str = "";
+  contents = true;
+  ignore = false;
+  macros = false;
+  source = false;
+  arg = getArgument;
+  if (arg!="") {
+      args = split(arg, "|");
+      if (args.length==5) {
+          str = args[0];
+          contents = parseInt(args[1]);
+          ignore = parseInt(args[2]);
+          macros = parseInt(args[3]);
+          source = parseInt(args[4]);
+       }
+  }
+  extensions = newArray(".java", ".txt", ".ijm", ".html");
+  IJdir = getDirectory("startup");
+  sourceExists = File.exists(IJdir+"source");
+  Dialog.create("Search");
+  Dialog.addString("", str, 20);
+  Dialog.addCheckbox("Search Contents", contents);
+  Dialog.addCheckbox("Ignore Case", ignore);
+  Dialog.addCheckbox("Search Macros Folder", macros);
+  if (sourceExists)
+     Dialog.addCheckbox("Search Source Folder", source);
+  Dialog.show();
+  str = Dialog.getString();
+  contents = Dialog.getCheckbox();
+  ignore = Dialog.getCheckbox();
+  macros = Dialog.getCheckbox();
+  dir1=""; dir2="";
+  if (sourceExists)
+     source = Dialog.getCheckbox();
+  if (macros)
+      dir1 = getDirectory("macros");
+  else if (!source)
+      dir1 = getDirectory("Choose a Directory ");
+  if (source)
+      dir2 = IJdir+"source"+"/";
+  if (ignore)
+      str = toLowerCase(str);
+  count = 0;
+  if (dir1!="") find(dir1);
+  if (dir2!="") find(dir2);
+  if (indexOf(str, "|")==-1)
+      return ""+str+"|"+contents+"|"+ignore+"|"+macros+"|"+source;
+  exit; 
+
+  function find(dir) {
+      list = getFileList(dir);
+      for (i=0; i<list.length; i++) {
+          showProgress(i, list.length);
+          if (endsWith(list[i], "/"))
+              find(""+dir+list[i]);
+          else if (contents && valid(list[i])) {
+              s = File.openAsString(dir+list[i]);
+              s2 = s;
+              if (ignore)
+                  s2 = toLowerCase(s);
+              if (indexOf(s2,str)!=-1) {
+                  count++;
+                  print("");
+                  print(dir+list[i]);
+                  lines = split(s, "\n");
+                  n = 0;
+                  for (j=0; j<lines.length; j++) {
+                      line = lines[j];
+                      line2 = line;
+                      if (ignore) line2 = toLowerCase(line);
+                      if (indexOf(line2,str)!=-1 && n<8) {
+                          print((j+1)+": "+line);
+                          n++;
+                      }
+                 } // for
+              } // if match
+          } else {
+              name = list[i];
+              if (ignore)
+                  name = toLowerCase(name);
+              if (indexOf(name,str)!=-1) { // string in name?
+                  print("");
+                  print(dir+list[i]);
+              }
+          }
+      }
+      if (count==1)
+          showStatus("1 match");
+      else
+          showStatus(count+" matches");
+  }
+
+  function valid(name) {
+      for (i=0; i<extensions.length; i++) {
+         if (endsWith(name, extensions[i]))
+             return true;
+      }
+      return false;
+  }
+
