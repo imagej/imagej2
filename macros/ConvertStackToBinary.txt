@@ -1,0 +1,19 @@
+// Converts a stack to binary using locally calculated thresholds
+
+  setBatchMode(true);
+  run("Select None");
+  run("8-bit");
+  id = getImageID;
+  for (i=1; i<=nSlices; i++) {
+     setSlice(i);
+     run("Duplicate...", "title=temp");
+     run("Convert to Mask");
+     invertingLUT = is("Inverting LUT");
+     run("Copy");
+     close;
+     selectImage(id);
+     run("Paste");
+     if (i==1 && invertingLUT != is("Inverting LUT"))
+         run("Invert LUT");
+  }
+  run("Select None");

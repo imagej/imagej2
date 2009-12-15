@@ -1,0 +1,32 @@
+//  sample actionbar
+
+<button>
+label=Open...
+icon=null
+action=run_macro_string
+arg=exit("first button pressed");
+
+<button>
+label=Save As...
+icon=null
+action=run_macro_string
+arg=exit("second button pressed");
+
+<button>
+label=New...
+icon=null
+action=run_macro_string
+arg=exit("third button pressed");
+
+<button>
+label=Convert to Icon
+icon=null
+action=run_macro_string
+arg=exit("fourth button pressed");
+
+<button>
+label=New Macro
+icon=null
+action=run_macro_string
+arg=exit("fifth button pressed");
+
