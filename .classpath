@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry combineaccessrules="false" kind="src" path="/imagej"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/substance.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/Rick/Documents/workspace/loci_tools.jar" sourcepath="/Users/Rick/Documents/workspace/trunk"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
