@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class FloatProcessorTest {
+    
 
 	private static float[][] imageFloatData;
 
