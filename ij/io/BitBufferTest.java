@@ -81,8 +81,6 @@ public class BitBufferTest {
 		assertEquals(-1,bits.getBits(1));
 
 		// see if pulling out multiple bytes in a row works
-	//	bytes = new byte[] {1,2,3};
-	//	bits = new BitBuffer(bytes);
 		bits = bitsFromBytes(new byte[] {1,2,3});
 
 		assertEquals(1,bits.getBits(8));
@@ -91,8 +89,6 @@ public class BitBufferTest {
 		assertEquals(-1,bits.getBits(8));
 
 		// see if pulling out more than 8 bits at a time work
-	//	bytes = new byte[] {1,3};
-	//	bits = new BitBuffer(bytes);
 		bits = bitsFromBytes(new byte[] {1,3});
 
 		assertEquals(259,bits.getBits(16));
