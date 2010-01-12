@@ -16,7 +16,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class FloatProcessorTest {//
+public class FloatProcessorTest {
 
 	private static float[][] imageFloatData;
 
