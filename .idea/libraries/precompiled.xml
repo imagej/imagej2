@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="precompiled">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/precompiled" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/precompiled" recursive="false" />
+  </library>
+</component>
