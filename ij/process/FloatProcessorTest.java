@@ -1,6 +1,7 @@
 package ij.process;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 import java.io.ByteArrayOutputStream;
@@ -593,48 +594,263 @@ public class FloatProcessorTest {
 	}
 
 	@Test
-	public void testGetPixelIntIntIntArray() {
-		fail("Not yet implemented");
+	public void testGetPixelIntIntIntArray()
+    {
+
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        for(int i = 0; i<floatProcessorTest.height; i++)
+            for(int j = 0; j<floatProcessorTest.width; j++)
+            {
+                //get the reference int
+                int[] referenceInt  = { (int) imageFloatData[j][i] } ;
+
+                //get the test results
+                int[] testInt =  floatProcessorTest.getPixel(j, i, null) ;
+
+                //check the result
+                assertEquals( referenceInt[0] , testInt[0], 0.0f );
+            }
+
 	}
 
 	@Test
-	public void testPutPixelIntIntIntArray() {
-		fail("Not yet implemented");
+	public void testPutPixelIntIntIntArray()
+    {
+        //create an input array
+        int[] inputArray = {1, 2};
+
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        for(int i = 0; i<floatProcessorTest.height; i++)
+            for(int j = 0; j<floatProcessorTest.width; j++)
+            {
+                //set the value under test
+                floatProcessorTest.putPixel(j, i, inputArray) ;
+
+                //get the pixel value that was set
+                int[] result = floatProcessorTest.getPixel(j, i, null);
+
+                //check the result
+                assertEquals( inputArray[0] ,result[0]);
+
+                //set the value under test
+                floatProcessorTest.putPixel(j, i, inputArray) ;
+
+                //get the pixel value that was set
+                result = floatProcessorTest.getPixel(j, i, null);
+
+                //check the result
+                assertEquals( inputArray[0] , result[0], 0.0f );
+            }
 	}
 
 	@Test
-	public void testGetInterpolatedPixel() {
-		fail("Not yet implemented");
+	public void testGetInterpolatedPixel()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+        
+        //get the underlying 1D array
+        float[] pixels = (float[]) floatProcessorTest.getPixels();
+
+        floatProcessorTest.setInterpolationMethod(ImageProcessor.BILINEAR);
+        for(int i = 0; i< floatProcessorTest.height-1; i++)
+            for(int j = 0; j< floatProcessorTest.width-1; j++)
+            {
+                //Bilinear interpolation
+		        int xbase = j;
+		        int ybase = i;
+
+		        double xFraction = j - xbase;
+		        double yFraction = i - ybase;
+
+		        int offset = ybase * floatProcessorTest.width + xbase;
+
+		        double lowerLeft = pixels[offset];
+		        double lowerRight = pixels[offset + 1];
+		        double upperRight = pixels[offset + floatProcessorTest.width + 1];
+		        double upperLeft = pixels[offset + floatProcessorTest.width];
+                double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
+		        double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
+
+		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
+
+                //get the pixel value that was set
+                double result = floatProcessorTest.getInterpolatedPixel((double) j, (double) i);
+
+                //check the result
+                assertEquals( referenceResult, result, Float.MAX_VALUE );
+            }
 	}
 
 	@Test
-	public void testGetPixelInterpolated() {
-		fail("Not yet implemented");
+	public void testGetPixelInterpolated()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get the underlying 1D array
+        float[] pixels = (float[]) floatProcessorTest.getPixels();
+
+        // interpolationMethod==BILINEAR
+        floatProcessorTest.setInterpolationMethod(ImageProcessor.BILINEAR);
+        for(int i = 0; i<floatProcessorTest.height-1; i++)
+            for(int j = 0; j<floatProcessorTest.width-1; j++)
+            {
+		        int xbase = (int) j;
+		        int ybase = (int) i;
+
+		        double xFraction = j - xbase;
+		        double yFraction = i - ybase;
+
+		        int offset = ybase * floatProcessorTest.width + xbase;
+
+		        double lowerLeft = pixels[offset];
+		        double lowerRight = pixels[offset + 1];
+		        double upperRight = pixels[offset + floatProcessorTest.width + 1];
+		        double upperLeft = pixels[offset + floatProcessorTest.width];
+                double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
+		        double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
+
+		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
+
+                //get the pixel value that was set
+                double result = floatProcessorTest.getPixelInterpolated((double) j, (double) i);
+
+                //check the result
+                assertEquals( result, referenceResult, Float.MAX_VALUE );
+            }
 	}
 
 	@Test
-	public void testPutPixelIntIntInt() {
-		fail("Not yet implemented");
+	public void testPutPixelIntIntInt()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get the underlying 1D array
+        float[] pixels = (float[]) floatProcessorTest.getPixels();
+
+        // interpolationMethod==BILINEAR
+        floatProcessorTest.setInterpolationMethod(ImageProcessor.BILINEAR);
+        for(int i = 0; i<floatProcessorTest.height-1; i++)
+            for(int j = 0; j<floatProcessorTest.width-1; j++)
+            {
+		        int xbase = (int) j;
+		        int ybase = (int) i;
+
+		        double xFraction = j - xbase;
+		        double yFraction = i - ybase;
+
+		        int offset = ybase * floatProcessorTest.width + xbase;
+
+		        double lowerLeft = pixels[offset];
+		        double lowerRight = pixels[offset + 1];
+		        double upperRight = pixels[offset + floatProcessorTest.width + 1];
+		        double upperLeft = pixels[offset + floatProcessorTest.width];
+                double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
+		        double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
+
+		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
+
+                //get the pixel value that was set
+                double result = floatProcessorTest.getPixelInterpolated((double) j, (double) i);
+
+                //check the result
+                assertEquals( result, referenceResult, Float.MAX_VALUE );
+            }
 	}
 
 	@Test
-	public void testGetPixelValue() {
-		fail("Not yet implemented");
+	public void testGetPixelValue()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get a reference value
+        float refValue = imageFloatData[floatProcessorTest.width-1][floatProcessorTest.height-1];
+
+        //get the test value
+        float result = floatProcessorTest.getPixelValue(floatProcessorTest.width-1,floatProcessorTest.height-1);
+
+        //check the result
+        assertEquals( refValue, result, 0.0);
 	}
 
 	@Test
-	public void testPutPixelValue() {
-		fail("Not yet implemented");
+	public void testPutPixelValue()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get a reference value
+        float refValue = (float) 19.99;
+
+        //put the test reference
+        floatProcessorTest.putPixelValue(floatProcessorTest.width-1,floatProcessorTest.height-1, refValue);
+
+        //get the reference value
+        float result = floatProcessorTest.getPixelValue( floatProcessorTest.width-1, floatProcessorTest.height-1 );
+
+        //check the result
+        assertEquals( refValue, result, 0.0);
 	}
 
 	@Test
-	public void testDrawPixel() {
-		fail("Not yet implemented");
+	public void testDrawPixel()
+    {
+		//create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get a reference value
+        float refValue = (float) 19.99;
+
+
+        //set the fill value
+        floatProcessorTest.setValue(refValue);
+
+        //put the test reference
+        floatProcessorTest.drawPixel(floatProcessorTest.width-1,floatProcessorTest.height-1);
+
+        //get the reference value
+        float result = floatProcessorTest.getPixelValue( floatProcessorTest.width-1, floatProcessorTest.height-1 );
+
+        //check the result
+        assertEquals( refValue, result, 0.0);
 	}
 
 	@Test
-	public void testSetPixelsObject() {
-		fail("Not yet implemented");
+	public void testSetPixelsObject()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor refFloatProcessorTest  = new FloatProcessor(imageFloatData);
+
+        //get the underlying 1D array
+        float[] refPixels = (float[]) refFloatProcessorTest.getPixels();
+
+        //create a test int[][]
+        int[][]  testPixels = {{1,1},{2,2}};
+
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+         FloatProcessor testFloatProcessorTest  = new FloatProcessor(testPixels);
+
+        //set the fill value
+        testFloatProcessorTest.setPixels(refPixels);
+
+        //set the height and width
+        testFloatProcessorTest.
+
+        //get the test value
+        float testResult = testFloatProcessorTest.getPixelValue( testFloatProcessorTest.width-1, testFloatProcessorTest.height-1 );
+
+        //get the reference value
+        float referenceResult = refFloatProcessorTest.getPixelValue( refFloatProcessorTest.width-1, refFloatProcessorTest.height-1 );
+
+        //check the result
+        assertEquals( referenceResult, testResult, 0.0);
 	}
 
 	@Test
