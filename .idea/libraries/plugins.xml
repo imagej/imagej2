@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="plugins">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/plugins/Image_5D.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/jar_demo.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/Sync_Win.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
