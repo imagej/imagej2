@@ -1,5 +1,5 @@
 #ImageJ 1.42a Preferences
-#Tue Dec 15 16:26:29 EST 2009
+#Tue Dec 15 16:26:30 EST 2009
 new.fill=0
 gel.options=10
 pp.options=1
