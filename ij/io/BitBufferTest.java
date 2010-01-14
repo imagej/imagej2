@@ -1,4 +1,8 @@
-package io;
+package ij.io;
+
+// ERROR conditions found in original code that are uncaught
+// 1) getBits(99) on a 48 bit buffer just gives the 48 bits - no exception thrown
+// 2) BitBuffer(null) and then getBits(any nonzero number) will generate an uncaught runtime exception
 
 import static org.junit.Assert.*;
 
@@ -12,7 +16,7 @@ import org.junit.Test;
 public class BitBufferTest {
 	private BitBuffer bits = null;
 
-	public BitBuffer bitsFromBytes(byte[] bytes){
+	private BitBuffer bitsFromBytes(byte[] bytes){
 		return new BitBuffer(bytes);
 	}
 
@@ -34,16 +38,20 @@ public class BitBufferTest {
 
 	@Test
 	public void testBitBuffer() {
+
+        // bits = bitsFromBytes(null);
+
 		// original IJ code for BitBuffer does not check for null array
 		//   - later runtime errors possible
-		// byte[] bytes = null;
-		// BitBuffer bits = new BitBuffer(bytes);
+
 		assertEquals(true,true);
 	}
 
 	@Test
 	public void testGetBits() {
-
+		
+		// can't test bitsFromBytes(null) followed by getBits() as original code would bomb
+		
 		// test if end of file works with empty buffer
 		bits = bitsFromBytes(new byte[] {});
 
@@ -93,6 +101,11 @@ public class BitBufferTest {
 
 		assertEquals(259,bits.getBits(16));
 		assertEquals(-1,bits.getBits(1));
+		
+		// test if seeking past end of file works
+		bits = bitsFromBytes(new byte[] {1,1,1,1});
+
+		assertEquals(16843009,bits.getBits(55));  // this behavior is questionable: 55 bits asked for and 32 returned
 	}
 
 }

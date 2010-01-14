@@ -16,6 +16,51 @@ public class FileInfoTest {
 
 	FileInfo fInfo = null;
 	
+	private void setFileInfoJunkData()
+	{
+		// make sure we can assign to all the fields : random data - really just a compile time check
+		fInfo.fileFormat = 9392;
+		fInfo.fileType = 1673;
+		fInfo.fileName = "photo.tif";
+		fInfo.directory = "/data/WUIproject";
+		fInfo.url = "http:/loci.wisc.edu";
+		fInfo.width = 400;
+		fInfo.height = 600;
+		fInfo.offset = 77;
+		fInfo.nImages = 43;
+		fInfo.gapBetweenImages = 200;
+		fInfo.whiteIsZero = true;
+		fInfo.intelByteOrder = true;
+		fInfo.compression = FileInfo.LZW;
+		fInfo.stripOffsets = new int[] {10, 50, 100};
+		fInfo.stripLengths = new int[] {48, 48, 48};
+		fInfo.rowsPerStrip = 3;
+		fInfo.lutSize = 768;
+		fInfo.reds = new byte[] {1,7,4,8,99,23,15};
+		fInfo.greens = new byte[] {1,7,4,8,99,23,15};;
+		fInfo.blues = new byte[] {1,7,4,8,99,23,15};;
+		fInfo.pixels = new byte[] {1,2,3,4,5,6,7,8,9,10};	
+		fInfo.debugInfo = "fake data";
+		fInfo.sliceLabels = new String[] {"Jane", "Doe"};
+		fInfo.info = "Fake Info";
+		fInfo.inputStream = new ByteArrayInputStream(new byte[] {88,44,22,11});
+		fInfo.pixelWidth = 47.0;
+		fInfo.pixelHeight = 23.5;
+		fInfo.pixelDepth = 4.0;
+		fInfo.unit = "nanometer";
+		fInfo.calibrationFunction = 88;
+		fInfo.coefficients = new double[] {100.0, 6.3, 94.2};
+		fInfo.valueUnit = "valueUnit";
+		fInfo.frameInterval = 14.0;
+		fInfo.description = "descrip";
+		fInfo.longOffset = 1024L;
+		fInfo.metaDataTypes = new int[] {-3, 66, 82, 101, 2048};
+		fInfo.metaData = new byte[][] {{1,1,1},{2,2,2},{3,3,3}};
+		fInfo.displayRanges = new double[] {7,6,5,4};
+		fInfo.channelLuts = new byte[][] {{1},{2},{3}};
+		fInfo.samplesPerPixel = 42;		
+	}
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -133,48 +178,8 @@ public class FileInfoTest {
 		//   this will make sure that later ports define all the same fields
 		//   is this a useless test?
 
-		// make sure we can assign to all the fields : random data - really just a compile time check
-		fInfo.fileFormat = 9392;
-		fInfo.fileType = 1673;
-		fInfo.fileName = "photo.tif";
-		fInfo.directory = "/data/WUIproject";
-		fInfo.url = "http:/loci.wisc.edu";
-		fInfo.width = 400;
-		fInfo.height = 600;
-		fInfo.offset = 77;
-		fInfo.nImages = 43;
-		fInfo.gapBetweenImages = 200;
-		fInfo.whiteIsZero = true;
-		fInfo.intelByteOrder = true;
-		fInfo.compression = FileInfo.LZW;
-		fInfo.stripOffsets = new int[] {10, 50, 100};
-		fInfo.stripLengths = new int[] {48, 48, 48};
-		fInfo.rowsPerStrip = 3;
-		fInfo.lutSize = 768;
-		fInfo.reds = new byte[] {1,7,4,8,99,23,15};
-		fInfo.greens = new byte[] {1,7,4,8,99,23,15};;
-		fInfo.blues = new byte[] {1,7,4,8,99,23,15};;
-		fInfo.pixels = new byte[] {1,2,3,4,5,6,7,8,9,10};	
-		fInfo.debugInfo = "fake data";
-		fInfo.sliceLabels = new String[] {"Jane", "Doe"};
-		fInfo.info = "Fake Info";
-		fInfo.inputStream = new ByteArrayInputStream(new byte[] {88,44,22,11});
-		fInfo.pixelWidth = 47.0;
-		fInfo.pixelHeight = 23.5;
-		fInfo.pixelDepth = 4.0;
-		fInfo.unit = "nanometer";
-		fInfo.calibrationFunction = 88;
-		fInfo.coefficients = new double[] {100.0, 6.3, 94.2};
-		fInfo.valueUnit = "valueUnit";
-		fInfo.frameInterval = 14.0;
-		fInfo.description = "descrip";
-		fInfo.longOffset = 1024L;
-		fInfo.metaDataTypes = new int[] {-3, 66, 82, 101, 2048};
-		fInfo.metaData = new byte[][] {{1,1,1},{2,2,2},{3,3,3}};
-		fInfo.displayRanges = new double[] {7,6,5,4};
-		fInfo.channelLuts = new byte[][] {{1},{2},{3}};
-		fInfo.samplesPerPixel = 42;
-
+        setFileInfoJunkData();
+        
 		assertEquals(true,true);
 	}
 	
@@ -271,8 +276,14 @@ public class FileInfoTest {
 		Object obj = fInfo.clone();
 		
 		assertNotNull(obj);
-
 		assertTrue(obj instanceof FileInfo);
+		
+		setFileInfoJunkData();
+		
+		obj = fInfo.clone();
+		
+		assertNotNull(obj);
+		assertTrue(obj instanceof FileInfo);		
 	}
 
 }
