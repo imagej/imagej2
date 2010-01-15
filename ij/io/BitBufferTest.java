@@ -1,7 +1,7 @@
 package ij.io;
 
 // ERROR conditions found in original code that are uncaught
-// 1) getBits(99) on a 48 bit buffer just gives the 48 bits - no exception thrown
+// 1) getBits(99) on a 48 bit buffer just gives the 32 bits - no exception thrown, no overflow testing
 // 2) BitBuffer(null) and then getBits(any nonzero number) will generate an uncaught runtime exception
 
 import static org.junit.Assert.*;
@@ -39,19 +39,34 @@ public class BitBufferTest {
 	@Test
 	public void testBitBuffer() {
 
-        // bits = bitsFromBytes(null);
-
 		// original IJ code for BitBuffer does not check for null array
 		//   - later runtime errors possible
+		try{
+			bits = bitsFromBytes(null);
+			fail();
+		} catch (NullPointerException e) {
+			assertEquals(true,true);
+		}
 
+		bits = bitsFromBytes(new byte[]{1});
+        
 		assertEquals(true,true);
 	}
 
 	@Test
 	public void testGetBits() {
-		
+	
 		// can't test bitsFromBytes(null) followed by getBits() as original code would bomb
-		
+		// test against for now and support existing behavior but need to fix in code
+		try{
+			bits = bitsFromBytes(null);
+			int dummy = bits.getBits(1);
+			fail();
+		}
+		catch (NullPointerException e){
+			assertEquals(true,true);
+		}
+
 		// test if end of file works with empty buffer
 		bits = bitsFromBytes(new byte[] {});
 
@@ -106,6 +121,12 @@ public class BitBufferTest {
 		bits = bitsFromBytes(new byte[] {1,1,1,1});
 
 		assertEquals(16843009,bits.getBits(55));  // this behavior is questionable: 55 bits asked for and 32 returned
+
+		// test what happens when we overflow an int and enough data is present
+		bits = bitsFromBytes(new byte[] {(byte)(0xff & 255),(byte)(0xff & 255),(byte)(0xff & 255),(byte)(0xff & 255),(byte)(0xff & 255)});
+		
+		// have to supply IJ's current return value for now as code will only return 32 bits correctly and then -1 beyond that
+		assertEquals(-1,bits.getBits(33));
 	}
 
 }

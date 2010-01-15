@@ -16,7 +16,7 @@ public class FileInfoTest {
 
 	FileInfo fInfo = null;
 	
-	private void setFileInfoJunkData()
+	private void setFileInfoJunkData(FileInfo fInfo)
 	{
 		// make sure we can assign to all the fields : random data - really just a compile time check
 		fInfo.fileFormat = 9392;
@@ -61,6 +61,52 @@ public class FileInfoTest {
 		fInfo.samplesPerPixel = 42;		
 	}
 	
+	private boolean matches(FileInfo fInfo, FileInfo other){
+		if ((fInfo.fileFormat == other.fileFormat) &&
+				(fInfo.fileType == other.fileType) &&
+				(fInfo.fileName == other.fileName) &&
+				(fInfo.directory == other.directory) &&
+				(fInfo.url == other.url) &&
+				(fInfo.width == other.width) &&
+				(fInfo.height == other.height) &&
+				(fInfo.offset == other.offset) &&
+				(fInfo.nImages == other.nImages) &&
+				(fInfo.gapBetweenImages == other.gapBetweenImages) &&
+				(fInfo.whiteIsZero == other.whiteIsZero) &&
+				(fInfo.intelByteOrder == other.intelByteOrder) &&
+				(fInfo.compression == other.compression) &&
+				(fInfo.stripOffsets == other.stripOffsets) &&
+				(fInfo.stripLengths == other.stripLengths) &&
+				(fInfo.rowsPerStrip == other.rowsPerStrip) &&
+				(fInfo.lutSize == other.lutSize) &&
+				(fInfo.reds == other.reds) &&
+				(fInfo.greens == other.greens) &&
+				(fInfo.blues == other.blues) &&
+				(fInfo.pixels == other.pixels) &&
+				(fInfo.debugInfo == other.debugInfo) &&
+				(fInfo.sliceLabels == other.sliceLabels) &&
+				(fInfo.info == other.info) &&
+				(fInfo.inputStream == other.inputStream) &&
+				(fInfo.pixelWidth == other.pixelWidth) &&
+				(fInfo.pixelHeight == other.pixelHeight) &&
+				(fInfo.pixelDepth == other.pixelDepth) &&
+				(fInfo.unit == other.unit) &&
+				(fInfo.calibrationFunction == other.calibrationFunction) &&
+				(fInfo.coefficients == other.coefficients) &&
+				(fInfo.valueUnit == other.valueUnit) &&
+				(fInfo.frameInterval == other.frameInterval) &&
+				(fInfo.description == other.description) &&
+				(fInfo.longOffset == other.longOffset) &&
+				(fInfo.metaDataTypes == other.metaDataTypes) &&
+				(fInfo.metaData == other.metaData) &&
+				(fInfo.displayRanges == other.displayRanges) &&
+				(fInfo.channelLuts == other.channelLuts) &&
+				(fInfo.samplesPerPixel == other.samplesPerPixel))		
+		  return true;
+		
+		return false;
+	}
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -81,24 +127,24 @@ public class FileInfoTest {
 	@Test
 	public void testFileInfoDefaults() {
 	   	// check default values
-    	assertEquals(fInfo.fileFormat,FileInfo.UNKNOWN);
-    	assertEquals(fInfo.fileType,FileInfo.GRAY8);
-    	assertEquals(fInfo.fileName,"Untitled");
-    	assertEquals(fInfo.directory,"");
-    	assertEquals(fInfo.url,"");
-    	assertEquals(fInfo.nImages,1);
-    	assertEquals(fInfo.compression,FileInfo.COMPRESSION_NONE);
-    	assertEquals(fInfo.samplesPerPixel,1);    	
-    	assertEquals(fInfo.width,0);
-    	assertEquals(fInfo.height,0);
-    	assertEquals(fInfo.offset,0);
-    	assertEquals(fInfo.gapBetweenImages,0);
-    	assertEquals(fInfo.whiteIsZero,false);
-    	assertEquals(fInfo.intelByteOrder,false);
+    	assertEquals(FileInfo.UNKNOWN,fInfo.fileFormat);
+    	assertEquals(FileInfo.GRAY8,fInfo.fileType);
+    	assertEquals("Untitled",fInfo.fileName);
+    	assertEquals("",fInfo.directory);
+    	assertEquals("",fInfo.url);
+    	assertEquals(1,fInfo.nImages);
+    	assertEquals(FileInfo.COMPRESSION_NONE,fInfo.compression);
+    	assertEquals(1,fInfo.samplesPerPixel);    	
+    	assertEquals(0,fInfo.width);
+    	assertEquals(0,fInfo.height);
+    	assertEquals(0,fInfo.offset);
+    	assertEquals(0,fInfo.gapBetweenImages);
+    	assertEquals(false,fInfo.whiteIsZero);
+    	assertEquals(false,fInfo.intelByteOrder);
     	assertNull(fInfo.stripOffsets); 
     	assertNull(fInfo.stripLengths);
-    	assertEquals(fInfo.rowsPerStrip,0);
-    	assertEquals(fInfo.lutSize,0);
+    	assertEquals(0,fInfo.rowsPerStrip);
+    	assertEquals(0,fInfo.lutSize);
     	assertNull(fInfo.reds);
     	assertNull(fInfo.greens);
     	assertNull(fInfo.blues);
@@ -107,16 +153,16 @@ public class FileInfoTest {
     	assertNull(fInfo.sliceLabels);
     	assertNull(fInfo.info);
     	assertNull(fInfo.inputStream);
-    	assertEquals(fInfo.pixelWidth,1.0,0.0);
-    	assertEquals(fInfo.pixelHeight,1.0,0.0);
-    	assertEquals(fInfo.pixelDepth,1.0,0.0);
+    	assertEquals(1.0,fInfo.pixelWidth,0.0);
+    	assertEquals(1.0,fInfo.pixelHeight,0.0);
+    	assertEquals(1.0,fInfo.pixelDepth,0.0);
     	assertNull(fInfo.unit);
-    	assertEquals(fInfo.calibrationFunction,0);
+    	assertEquals(0,fInfo.calibrationFunction);
     	assertNull(fInfo.coefficients);
     	assertNull(fInfo.valueUnit);
-    	assertEquals(fInfo.frameInterval,0.0,0.0);
+    	assertEquals(0.0,fInfo.frameInterval,0.0);
     	assertNull(fInfo.description);
-    	assertEquals(fInfo.longOffset,0);
+    	assertEquals(0L,fInfo.longOffset);
     	assertNull(fInfo.metaDataTypes);
     	assertNull(fInfo.metaData);
     	assertNull(fInfo.displayRanges);
@@ -131,44 +177,44 @@ public class FileInfoTest {
 		//   is this a useless test?
 		
 		// Sample layouts
-		assertEquals(FileInfo.GRAY8 ,0);
-		assertEquals(FileInfo.GRAY16_SIGNED,1);
-		assertEquals(FileInfo.GRAY16_UNSIGNED,2);
-		assertEquals(FileInfo.GRAY32_INT,3);
-		assertEquals(FileInfo.GRAY32_FLOAT,4);
-		assertEquals(FileInfo.COLOR8,5);
-		assertEquals(FileInfo.RGB,6);	
-		assertEquals(FileInfo.RGB_PLANAR,7);
-		assertEquals(FileInfo.BITMAP,8);
-		assertEquals(FileInfo.ARGB,9);
-		assertEquals(FileInfo.BGR,10);
-		assertEquals(FileInfo.GRAY32_UNSIGNED,11);
-		assertEquals(FileInfo.RGB48,12);	
-		assertEquals(FileInfo.GRAY12_UNSIGNED,13);	
-		assertEquals(FileInfo.GRAY24_UNSIGNED,14);	
-		assertEquals(FileInfo.BARG,15);	
-		assertEquals(FileInfo.GRAY64_FLOAT,16);	
-		assertEquals(FileInfo.RGB48_PLANAR,17);	
+		assertEquals(0,FileInfo.GRAY8);
+		assertEquals(1,FileInfo.GRAY16_SIGNED);
+		assertEquals(2,FileInfo.GRAY16_UNSIGNED);
+		assertEquals(3,FileInfo.GRAY32_INT);
+		assertEquals(4,FileInfo.GRAY32_FLOAT);
+		assertEquals(5,FileInfo.COLOR8);
+		assertEquals(6,FileInfo.RGB);	
+		assertEquals(7,FileInfo.RGB_PLANAR);
+		assertEquals(8,FileInfo.BITMAP);
+		assertEquals(9,FileInfo.ARGB);
+		assertEquals(10,FileInfo.BGR);
+		assertEquals(11,FileInfo.GRAY32_UNSIGNED);
+		assertEquals(12,FileInfo.RGB48);	
+		assertEquals(13,FileInfo.GRAY12_UNSIGNED);	
+		assertEquals(14,FileInfo.GRAY24_UNSIGNED);	
+		assertEquals(15,FileInfo.BARG);	
+		assertEquals(16,FileInfo.GRAY64_FLOAT);	
+		assertEquals(17,FileInfo.RGB48_PLANAR);	
 
 		// File formats
-		assertEquals(FileInfo.UNKNOWN,0);
-		assertEquals(FileInfo.RAW,1);
-		assertEquals(FileInfo.TIFF,2);
-		assertEquals(FileInfo.GIF_OR_JPG,3);
-		assertEquals(FileInfo.FITS,4);
-		assertEquals(FileInfo.BMP,5);
-		assertEquals(FileInfo.DICOM,6);
-		assertEquals(FileInfo.ZIP_ARCHIVE,7);
-		assertEquals(FileInfo.PGM,8);
-		assertEquals(FileInfo.IMAGEIO,9);
+		assertEquals(0,FileInfo.UNKNOWN);
+		assertEquals(1,FileInfo.RAW);
+		assertEquals(2,FileInfo.TIFF);
+		assertEquals(3,FileInfo.GIF_OR_JPG);
+		assertEquals(4,FileInfo.FITS);
+		assertEquals(5,FileInfo.BMP);
+		assertEquals(6,FileInfo.DICOM);
+		assertEquals(7,FileInfo.ZIP_ARCHIVE);
+		assertEquals(8,FileInfo.PGM);
+		assertEquals(9,FileInfo.IMAGEIO);
 
 		// Compression modes
-		assertEquals(FileInfo.COMPRESSION_UNKNOWN,0);
-		assertEquals(FileInfo.COMPRESSION_NONE,1);
-		assertEquals(FileInfo.LZW,2);
-		assertEquals(FileInfo.LZW_WITH_DIFFERENCING,3);
-		assertEquals(FileInfo.JPEG,4);
-		assertEquals(FileInfo.PACK_BITS,5);
+		assertEquals(0,FileInfo.COMPRESSION_UNKNOWN);
+		assertEquals(1,FileInfo.COMPRESSION_NONE);
+		assertEquals(2,FileInfo.LZW);
+		assertEquals(3,FileInfo.LZW_WITH_DIFFERENCING);
+		assertEquals(4,FileInfo.JPEG);
+		assertEquals(5,FileInfo.PACK_BITS);
 		
 	}
 	
@@ -178,7 +224,7 @@ public class FileInfoTest {
 		//   this will make sure that later ports define all the same fields
 		//   is this a useless test?
 
-        setFileInfoJunkData();
+        setFileInfoJunkData(fInfo);
         
 		assertEquals(true,true);
 	}
@@ -186,61 +232,61 @@ public class FileInfoTest {
 	@Test
 	public void testGetBytesPerPixel() {
 		fInfo.fileType = FileInfo.GRAY8;
-		assertEquals(fInfo.getBytesPerPixel(),1);
+		assertEquals(1,fInfo.getBytesPerPixel());
 	
 		fInfo.fileType = FileInfo.COLOR8;
-		assertEquals(fInfo.getBytesPerPixel(),1);
+		assertEquals(1,fInfo.getBytesPerPixel());
 
 		fInfo.fileType = FileInfo.BITMAP;
-		assertEquals(fInfo.getBytesPerPixel(),1);
+		assertEquals(1,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY16_SIGNED;
-		assertEquals(fInfo.getBytesPerPixel(),2);
+		assertEquals(2,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY16_UNSIGNED;
-		assertEquals(fInfo.getBytesPerPixel(),2);
+		assertEquals(2,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY32_UNSIGNED;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY32_INT;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY32_FLOAT;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.ARGB;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.BARG;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.RGB;
-		assertEquals(fInfo.getBytesPerPixel(),3);
+		assertEquals(3,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.BGR;
-		assertEquals(fInfo.getBytesPerPixel(),3);
+		assertEquals(3,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.RGB_PLANAR;
-		assertEquals(fInfo.getBytesPerPixel(),3);
+		assertEquals(3,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.RGB48;
-		assertEquals(fInfo.getBytesPerPixel(),6);
+		assertEquals(6,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.RGB48_PLANAR;
-		assertEquals(fInfo.getBytesPerPixel(),6);
+		assertEquals(6,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY64_FLOAT;
-		assertEquals(fInfo.getBytesPerPixel(),8);
+		assertEquals(8,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = FileInfo.GRAY24_UNSIGNED;
-		assertEquals(fInfo.getBytesPerPixel(),4);
+		assertEquals(4,fInfo.getBytesPerPixel());
 		
 		fInfo.fileType = 99999;
-		assertEquals(fInfo.getBytesPerPixel(),0);
+		assertEquals(0,fInfo.getBytesPerPixel());
 
 		fInfo.fileType = -1;
-		assertEquals(fInfo.getBytesPerPixel(),0);
+		assertEquals(0,fInfo.getBytesPerPixel());
 	}
 
 	@Test
@@ -249,7 +295,7 @@ public class FileInfoTest {
 		// this test is more for the future than the current implementation
 		String expVal = "name=Untitled, dir=, url=, width=0, height=0, nImages=1, type=byte, offset=0, whiteZero=f, Intel=f, lutSize=0, comp=1, ranges=null, samples=1";
 		
-		assertEquals(fInfo.toString(),expVal);
+		assertEquals(expVal,fInfo.toString());
 		
 		fInfo.fileName = "Joe's file";
 		fInfo.directory = "/data/joe";
@@ -267,7 +313,7 @@ public class FileInfoTest {
 		fInfo.samplesPerPixel = 405;
 		
 		expVal = "name=Joe's file, dir=/data/joe, url=http://loci.wisc.edu, width=75, height=133, nImages=17, type=float, offset=48, whiteZero=t, Intel=t, lutSize=106, comp=0, ranges=2, samples=405";
-		assertEquals(fInfo.toString(),expVal);		
+		assertEquals(expVal,fInfo.toString());		
 	}
 
 	@Test
@@ -277,13 +323,14 @@ public class FileInfoTest {
 		
 		assertNotNull(obj);
 		assertTrue(obj instanceof FileInfo);
+		assertTrue(matches(fInfo,(FileInfo)obj));
 		
-		setFileInfoJunkData();
-		
+		setFileInfoJunkData(fInfo);		
 		obj = fInfo.clone();
 		
 		assertNotNull(obj);
-		assertTrue(obj instanceof FileInfo);		
+		assertTrue(obj instanceof FileInfo);
+		assertTrue(matches(fInfo,(FileInfo)obj));
 	}
 
 }
