@@ -2,7 +2,7 @@ package ij.io;
 
 // ERROR conditions found in original code that are uncaught
 // 1) getBits(99) on a 48 bit buffer just gives the 32 bits - no exception thrown, no overflow testing
-// 2) BitBuffer(null) and then getBits(any nonzero number) will generate an uncaught runtime exception
+// 2) BitBuffer(null) will generate an uncaught runtime exception
 
 import static org.junit.Assert.*;
 
