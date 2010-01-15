@@ -60,7 +60,7 @@ public class BitBufferTest {
 		// test against for now and support existing behavior but need to fix in code
 		try{
 			bits = bitsFromBytes(null);
-			int dummy = bits.getBits(1);
+			bits.getBits(1);
 			fail();
 		}
 		catch (NullPointerException e){
@@ -75,7 +75,7 @@ public class BitBufferTest {
 		// see if EOF works for smallest case
 		bits = bitsFromBytes(new byte[] {1});
 
-		int dummy = bits.getBits(8);
+		bits.getBits(8);
 		assertEquals(-1,bits.getBits(1));
 
 		// see if bits pulled out in order correctly
