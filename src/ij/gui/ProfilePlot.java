@@ -1,7 +1,5 @@
 package ij.gui;
 
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import ij.*;
 import ij.process.*;
@@ -19,7 +17,7 @@ public class ProfilePlot {
     private static double fixedMin = Prefs.getDouble("pp.min",0.0);
     private static double fixedMax = Prefs.getDouble("pp.max",0.0);
     
-	protected IjxImagePlus imp;
+	protected ImagePlus imp;
 	protected double[] profile;
 	protected double magnification;
 	protected double xInc;
@@ -31,11 +29,11 @@ public class ProfilePlot {
 	public ProfilePlot() {
 	}
 
-	public ProfilePlot(IjxImagePlus imp) {
+	public ProfilePlot(ImagePlus imp) {
 		this(imp, false);
 	}
 
-	public ProfilePlot(IjxImagePlus imp, boolean averageHorizontally) {
+	public ProfilePlot(ImagePlus imp, boolean averageHorizontally) {
 		this.imp = imp;
 		Roi roi = imp.getRoi();
 		if (roi==null) {
@@ -56,7 +54,7 @@ public class ProfilePlot {
 		if (roiType==Roi.LINE)
 			profile = getStraightLineProfile(roi, cal, ip);
 		else if (roiType==Roi.POLYLINE || roiType==Roi.FREELINE) {
-			int lineWidth = Line.getWidth();
+			int lineWidth = (int)Math.round(roi.getStrokeWidth());
 			if (lineWidth==1)
 				profile = getIrregularProfile(roi, ip, cal);
 			else
@@ -66,7 +64,7 @@ public class ProfilePlot {
 		else
 			profile = getColumnAverageProfile(roi.getBounds(), ip);
 		ip.setCalibrationTable(null);
-		IjxImageCanvas ic = imp.getCanvas();
+		ImageCanvas ic = imp.getCanvas();
 		if (ic!=null)
 			magnification = ic.getMagnification();
 		else
@@ -123,7 +121,7 @@ public class ProfilePlot {
 		plot.show();
 	}
 	
-	String getShortTitle(IjxImagePlus imp) {
+	String getShortTitle(ImagePlus imp) {
 		String title = imp.getTitle();
 		int index = title.lastIndexOf('.');
 		if (index>0 && (title.length()-index)<=5)
@@ -280,9 +278,9 @@ public class ProfilePlot {
 		return values;
 	}
 
-	double[] getWideLineProfile(IjxImagePlus imp, int lineWidth) {
+	double[] getWideLineProfile(ImagePlus imp, int lineWidth) {
 		Roi roi = (Roi)imp.getRoi().clone();
-		ImageProcessor ip2 = (new Straightener()).straighten(imp, lineWidth);
+		ImageProcessor ip2 = (new Straightener()).straightenLine(imp, lineWidth);
 		int width = ip2.getWidth();
 		int height = ip2.getHeight();
 		profile = new double[width];

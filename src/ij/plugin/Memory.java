@@ -24,9 +24,11 @@ public class Memory implements PlugIn {
 		int max = (int)(getMemorySetting()/1048576L);
 		boolean unableToSet = max==0;
 		if (max==0) max = (int)(maxMemory()/1048576L);
-		GenericDialog gd = new GenericDialog("Memory "+(IJ.is64Bit()?"(64-bit)":"(32-bit)"));
+		String title = "Memory "+(IJ.is64Bit()?"(64-bit)":"(32-bit)");
+		GenericDialog gd = new GenericDialog(title);
 		gd.addNumericField("Maximum Memory:", max, 0, 5, "MB");
         gd.addNumericField("Parallel Threads for Stacks:", Prefs.getThreads(), 0, 5, "");
+        gd.addHelp(IJ.URL+"/docs/menus/edit.html#memory");
 		gd.showDialog();
 		if (gd.wasCanceled()) return;
 		int max2 = (int)gd.getNextNumber();
@@ -41,11 +43,21 @@ public class Memory implements PlugIn {
 		if (max2<8 && IJ.isWindows()) max2 = 8;
 		if (max2==max) return;
 		int limit = IJ.isWindows()?1600:1700;
+		String OSXInfo = "";
+		if (IJ.isMacOSX())
+			OSXInfo = "\n \nOn Max OS X, use\n"
+				+"/Applications/Utilities/Java/Java Preferences\n"
+				+"to switch to a 64-bit version of Java. You may\n"
+				+"also need to run \"ImageJ64\" instead of \"ImageJ\".";
 		if (max2>=limit && !IJ.is64Bit()) {
-			if (!IJ.showMessageWithCancel("Memory", 
+			if (!IJ.showMessageWithCancel(title, 
 			"Note: setting the memory limit to a value\n"
 			+"greater than "+limit+"MB on a 32-bit system\n"
-			+"may cause ImageJ to fail to start."))
+			+"may cause ImageJ to fail to start. The title of\n"
+			+"the Edit>Options>Memory & Threads dialog\n"
+			+"box changes to \"Memory (64-bit)\" when ImageJ\n"
+			+"is running on a 64-bit version of Java."
+			+ OSXInfo));
 				return;
 		}
 		try {
@@ -64,7 +76,9 @@ public class Memory implements PlugIn {
 			String msg = 
 				   "Unable to update the file \"" + name + "\".\n"
 				+ " \n"
-				+ "\"" + error + "\"\n";
+				+ "\"" + error + "\"";
+			if (IJ.isVista())
+				msg += Prefs.vistaHint;
 			IJ.showMessage("Memory", msg);
 			return;
 		}
@@ -73,7 +87,7 @@ public class Memory implements PlugIn {
 			hint = "\nDelete the \"ImageJ.cfg\" file, located in the ImageJ folder,\nif ImageJ fails to start.";
 		IJ.showMessage("Memory", "The new " + max2 +"MB limit will take effect after ImageJ is restarted."+hint);		
 	}
-
+	
 	public long getMemorySetting() {
 		if (IJ.getApplet()!=null) return 0L;
 		long max = 0L;
@@ -104,6 +118,8 @@ public class Memory implements PlugIn {
 		}
 		if (max>0)
 			msg += "Current limit: " + max + "MB";
+		if (IJ.isVista())
+			msg += Prefs.vistaHint;
 		IJ.showMessage("Memory", msg);
 	}
 

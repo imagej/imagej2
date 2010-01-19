@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -9,7 +8,7 @@ import java.awt.*;
 import java.util.*;
 
 /** 
-This class implements the Process/FFT/bandpass Filter command. It started out as 
+This class implements the Process/FFT/Bandpass Filter command. It is based on 
 Joachim Walter's FFT Filter plugin at "http://rsb.info.nih.gov/ij/plugins/fft-filter.html".
 2001/10/29: First Version (JW)
 2003/02/06: 1st bugfix (works in macros/plugins, works on stacks, overwrites image(=>filter)) (JW)
@@ -17,9 +16,9 @@ Joachim Walter's FFT Filter plugin at "http://rsb.info.nih.gov/ij/plugins/fft-fi
 2007/03/26: 2nd bugfix (Fixed incorrect calculation of filter from structure sizes, which caused
             the real structure sizes to be wrong by a factor of 0.75 to 1.5 depending on the image size.)
 */
-public class FFTFilter implements  IjxPlugInFilter, Measurements {
+public class FFTFilter implements  PlugInFilter, Measurements {
 
-	private IjxImagePlus imp;
+	private ImagePlus imp;
 	private String arg;
 	private static int filterIndex = 1;
 	private FHT fht;
@@ -37,7 +36,7 @@ public class FFTFilter implements  IjxPlugInFilter, Measurements {
 	private static boolean displayFilter;
 	private static boolean processStack;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.arg = arg;
  		this.imp = imp;
  		if (imp==null)
@@ -122,7 +121,7 @@ public class FFTFilter implements  IjxPlugInFilter, Measurements {
 		fht.setRoi(fitRect);
 		ip2 = fht.crop();
 		if (doScaling) {
-			IjxImagePlus imp2 = IJ.getFactory().newImagePlus(imp.getTitle()+"-filtered", ip2);
+			ImagePlus imp2 = new ImagePlus(imp.getTitle()+"-filtered", ip2);
 			new ContrastEnhancer().stretchHistogram(imp2, saturate?1.0:0.0);
 			ip2 = imp2.getProcessor();
 		}
@@ -156,9 +155,9 @@ public class FFTFilter implements  IjxPlugInFilter, Measurements {
 			IJ.showStatus(msg);
 	}
 
-	/** Puts imageprocessor (ROI) into a new imageprocessor of size width x height y at position (x,y).
+	/** Puts ImageProcessor (ROI) into a new ImageProcessor of size width x height y at position (x,y).
 	The image is mirrored around its edges to avoid wrap around effects of the FFT. */
-	ImageProcessor tileMirror(ImageProcessor ip, int width, int height, int x, int y) {
+	public ImageProcessor tileMirror(ImageProcessor ip, int width, int height, int x, int y) {
 			
 		if (x < 0 || x > (width -1) || y < 0 || y > (height -1)) {
 			IJ.error("Image to be tiled is out of bounds.");
@@ -401,11 +400,11 @@ public class FFTFilter implements  IjxPlugInFilter, Measurements {
 		if (displayFilter && slice==1) {
 			FHT f = new FHT(new FloatProcessor(maxN, maxN, filter, null));
 			f.swapQuadrants();
-			IJ.getFactory().newImagePlus("Filter", f).show();
+			new ImagePlus("Filter", f).show();
 		}
 	}	
 
-	boolean showBandpassDialog(IjxImagePlus imp) {
+	boolean showBandpassDialog(ImagePlus imp) {
 		GenericDialog gd = new GenericDialog("FFT Bandpass Filter");
 		gd.addNumericField("Filter_Large Structures Down to", filterLargeDia, 0, 4, "pixels");
 		gd.addNumericField("Filter_Small Structures Up to", filterSmallDia, 0, 4, "pixels");

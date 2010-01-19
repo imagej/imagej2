@@ -34,7 +34,7 @@ public class ByteStatistics extends ImageStatistics {
 			else
 				getRawMinAndMax(minThreshold, maxThreshold);
 		}
-		if ((mOptions&ELLIPSE)!=0)
+		if ((mOptions&ELLIPSE)!=0 || (mOptions&SHAPE_DESCRIPTORS)!=0)
 			fitEllipse(ip);
 		else if ((mOptions&CENTROID)!=0)
 			getCentroid(ip, minThreshold, maxThreshold);

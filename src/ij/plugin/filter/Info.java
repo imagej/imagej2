@@ -1,7 +1,6 @@
 package ij.plugin.filter;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import java.awt.*;
+import java.util.*;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -9,13 +8,12 @@ import ij.text.*;
 import ij.measure.*;
 import ij.io.*;
 import ij.util.Tools;
-import ijx.IjxImageStack;
 
 /** This plugin implements the Image/Show Info command. */
-public class Info implements IjxPlugInFilter {
-    private IjxImagePlus imp;
+public class Info implements PlugInFilter {
+    private ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_ALL+NO_CHANGES;
 	}
@@ -28,10 +26,10 @@ public class Info implements IjxPlugInFilter {
 			showInfo(info, 300, 300);
 	}
 
-	public String getImageInfo(IjxImagePlus imp, ImageProcessor ip) {
+	public String getImageInfo(ImagePlus imp, ImageProcessor ip) {
 		String infoProperty = null;
 		if (imp.getStackSize()>1) {
-			IjxImageStack stack = imp.getStack();
+			ImageStack stack = imp.getStack();
 			String label = stack.getSliceLabel(imp.getCurrentSlice());
 			if (label!=null && label.indexOf('\n')>0)
 				infoProperty = label;
@@ -45,7 +43,7 @@ public class Info implements IjxPlugInFilter {
 			return info;		
 	}
 
-	String getInfo(IjxImagePlus imp, ImageProcessor ip) {
+	String getInfo(ImagePlus imp, ImageProcessor ip) {
 		String s = new String("\n");
 		s += "Title: " + imp.getTitle() + "\n";
 		Calibration cal = imp.getCalibration();
@@ -92,6 +90,7 @@ public class Info implements IjxPlugInFilter {
 	    		if (imp.isInvertedLut())
 	    			lut = "inverting " + lut;
 	    		s += "(" + lut + ")\n";
+				s += "Display range: "+(int)ip.getMin()+"-"+(int)ip.getMax()+"\n";
 	    		break;
 	    	case ImagePlus.GRAY16: case ImagePlus.GRAY32:
 	    		if (type==ImagePlus.GRAY16) {
@@ -118,7 +117,7 @@ public class Info implements IjxPlugInFilter {
 		double interval = cal.frameInterval;	
 		double fps = cal.fps;	
     	if (stackSize>1) {
-    		IjxImageStack stack = imp.getStack();
+    		ImageStack stack = imp.getStack();
     		int slice = imp.getCurrentSlice();
     		String number = slice + "/" + stackSize;
     		String label = stack.getShortSliceLabel(slice);
@@ -144,6 +143,12 @@ public class Info implements IjxPlugInFilter {
 				if (frames>1)
 					s += "  Frame: " + imp.getFrame() + "/" + frames + "\n";
 			}
+			if (imp.isComposite()) {
+				if (!imp.isHyperStack() && channels>1)
+					s += "  Channels: " + channels + "\n";
+				String mode = ((CompositeImage)imp).getModeAsString();
+				s += "  Composite mode: \"" + mode + "\"\n";
+			}
 		}
 
 		if (ip.getMinThreshold()==ImageProcessor.NO_THRESHOLD)
@@ -159,7 +164,7 @@ public class Info implements IjxPlugInFilter {
 			}
 			s += "Threshold: "+IJ.d2s(lower,dp)+"-"+IJ.d2s(upper,dp)+"\n";
 		}
-		IjxImageCanvas ic = imp.getCanvas();
+		ImageCanvas ic = imp.getCanvas();
     	double mag = ic!=null?ic.getMagnification():1.0;
     	if (mag!=1.0)
 			s += "Magnification: " + mag + "\n";
@@ -247,12 +252,12 @@ public class Info implements IjxPlugInFilter {
 	}
 
 	// returns a Y coordinate based on the "Invert Y Coodinates" flag
-	int yy(int y, IjxImagePlus imp) {
+	int yy(int y, ImagePlus imp) {
 		return Analyzer.updateY(y, imp.getHeight());
 	}
 
 	// returns a Y coordinate based on the "Invert Y Coodinates" flag
-	double yy(double y, IjxImagePlus imp) {
+	double yy(double y, ImagePlus imp) {
 		return Analyzer.updateY(y, imp.getHeight());
 	}
 

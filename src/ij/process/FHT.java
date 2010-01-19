@@ -1,9 +1,7 @@
 package ij.process;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.plugin.FFT;
 import ij.plugin.ContrastEnhancer;
-import ijx.IjxImageStack;
 import java.awt.image.ColorModel; 
 
 /**
@@ -320,17 +318,17 @@ public class FHT extends FloatProcessor {
 		if (FFT.displayRawPS) {
 			ImageProcessor ip2 = new FloatProcessor(maxN, maxN, fps, null);
 			swapQuadrants(ip2);
-			IJ.getFactory().newImagePlus("PS of "+FFT.fileName, ip2).show();
+			new ImagePlus("PS of "+FFT.fileName, ip2).show();
 		}
 		if (FFT.displayFHT) {
 			ImageProcessor ip3 = new FloatProcessor(maxN, maxN, fht, null);
-			IjxImagePlus imp2 = IJ.getFactory().newImagePlus("FHT of "+FFT.fileName, ip3.duplicate());
+			ImagePlus imp2 = new ImagePlus("FHT of "+FFT.fileName, ip3.duplicate());
 			(new ContrastEnhancer()).stretchHistogram(imp2, 0.1);
 			imp2.show();
 		}
 		if (FFT.displayComplex) {
-			IjxImageStack ct = getComplexTransform();
-			IjxImagePlus imp2 = IJ.getFactory().newImagePlus("Complex of "+FFT.fileName, ct);
+			ImageStack ct = getComplexTransform();
+			ImagePlus imp2 = new ImagePlus("Complex of "+FFT.fileName, ct);
 			(new ContrastEnhancer()).stretchHistogram(imp2, 0.1);
 			imp2.setProperty("FFT width", ""+originalWidth);
 			imp2.setProperty("FFT height", ""+originalHeight);
@@ -352,7 +350,7 @@ public class FHT extends FloatProcessor {
 	/** Converts this FHT to a complex Fourier transform and returns it as a two slice stack.
 	*	@author Joachim Wesner
 	*/
-	public IjxImageStack getComplexTransform() {
+	public ImageStack getComplexTransform() {
 		if (!isFrequencyDomain)
 			throw new  IllegalArgumentException("Frequency domain image required");
 		float[] fht = (float[])getPixels();
@@ -364,7 +362,7 @@ public class FHT extends FloatProcessor {
 		}
 		swapQuadrants(new FloatProcessor(maxN, maxN, re, null));
 		swapQuadrants(new FloatProcessor(maxN, maxN, im, null));
-		IjxImageStack stack = IJ.getFactory().newImageStack(maxN, maxN);
+		ImageStack stack = new ImageStack(maxN, maxN);
 		stack.addSlice("Real", re);
 		stack.addSlice("Imaginary", im);
 		return stack;

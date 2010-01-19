@@ -1,7 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxImageWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -26,17 +23,17 @@ public class GelAnalyzer implements PlugIn {
 	static int[] x = new int[MAX_LANES+1];
 	static PlotsCanvas plotsCanvas;
 	static ImageProcessor ipLanes;
-	static IjxImagePlus  gel;
+	static ImagePlus  gel;
 	static int plotHeight;
 	static int options = Prefs.getInt(GEL, PERCENT+INVERT);
 	static boolean uncalibratedOD = (options&OD)!=0;
 	static boolean labelWithPercentages = (options&PERCENT)!=0;;
 	static boolean outlineLanes;
 	static boolean invertPeaks = (options&INVERT)!=0;
-	static Vector roiList;
+	static Overlay overlay;
 	boolean invertedLut;
 	
-	IjxImagePlus imp;
+	ImagePlus imp;
 	Font f;
 	double odMin=Double.MAX_VALUE, odMax=-Double.MAX_VALUE;
 	static boolean isVertical;
@@ -61,9 +58,9 @@ public class GelAnalyzer implements PlugIn {
 			if (plotsCanvas!=null)
 				plotsCanvas.reset();
 			ipLanes = null;
-			roiList = null;
+			overlay = null;
 			if (gel!=null) {
-				ImageCanvas ic = (ImageCanvas)gel.getCanvas();
+				ImageCanvas ic = gel.getCanvas();
 				if (ic!=null) ic.setDisplayList(null);
 				gel.draw();
 			}
@@ -203,9 +200,9 @@ public class GelAnalyzer implements PlugIn {
 			x[1] = rect.x;
 		else
 			x[1] = rect.y;
-		gel =(IjxImagePlus)imp;
+		gel = imp;
 		saveID = imp.getID();
-		roiList = null;
+		overlay = null;
 		updateRoiList(rect);
 	}
 
@@ -234,16 +231,15 @@ public class GelAnalyzer implements PlugIn {
 	
 	void updateRoiList(Rectangle rect) {
 			if (gel==null) return;
-			if (roiList==null) {
-				roiList = new Vector();
-				ImageCanvas ic = (ImageCanvas) gel.getCanvas();
-				if (ic!=null) ic.setDisplayList(roiList);
+			if (overlay==null) {
+				overlay = new Overlay();
+				overlay.drawLabels(true);
 			}
-			roiList.addElement(new Roi(rect.x, rect.y, rect.width, rect.height, null));
-			gel.draw();
+			overlay.add(new Roi(rect.x, rect.y, rect.width, rect.height, null));
+			gel.setOverlay(overlay);
 	}
 
-	void plotLanes(IjxImagePlus imp, boolean replot) {
+	void plotLanes(ImagePlus imp, boolean replot) {
 		int topMargin = 16;
 		int bottomMargin = 2;
 		double min = Double.MAX_VALUE;
@@ -256,9 +252,9 @@ public class GelAnalyzer implements PlugIn {
 		if(isVertical) {
 			ipRotated = ipRotated.rotateLeft();
 		}
-		IjxImagePlus imp2 = IJ.getFactory().newImagePlus("", ipRotated);
+		ImagePlus imp2 = new ImagePlus("", ipRotated);
 		imp2.setCalibration(imp.getCalibration());
-		if (uncalibratedOD && (imp2.getType()==IjxImagePlus.GRAY16 || imp2.getType()==IjxImagePlus.GRAY32))
+		if (uncalibratedOD && (imp2.getType()==ImagePlus.GRAY16 || imp2.getType()==ImagePlus.GRAY32))
 			new ImageConverter(imp2).convertToGray8();
 		if (invertPeaks) {
 				ImageProcessor ip2 = imp2.getProcessor().duplicate();
@@ -350,9 +346,9 @@ public class GelAnalyzer implements PlugIn {
 				ip.lineTo((int)(j*xScale+0.5), base-(int)((profile[j]-min)*yScale+0.5));
 		}
 		Line.setWidth(1);
-		IjxImagePlus plots = new Plots();
+		ImagePlus plots = new Plots();
 		plots.setProcessor("Plots of "+imp.getShortTitle(), ip);
-		plots.setChanged(true);
+		plots.changes = true;
 		ip.setThreshold(0,0,ImageProcessor.NO_LUT_UPDATE); // Wand tool works better with threshold set
 		if (cal.calibrated()) {
 			double pixelsAveraged = isVertical?firstRect.width:firstRect.height;
@@ -371,8 +367,8 @@ public class GelAnalyzer implements PlugIn {
 		Toolbar toolbar = Toolbar.getInstance();
 		toolbar.setColor(Color.black);
 		toolbar.setTool(Toolbar.LINE);
-		IjxImageWindow win = (IjxImageWindow) WindowManager.getCurrentWindow();
-		IjxImageCanvas canvas = win.getCanvas();
+		ImageWindow win = WindowManager.getCurrentWindow();
+		ImageCanvas canvas = win.getCanvas();
 		if (canvas instanceof PlotsCanvas)
 			plotsCanvas = (PlotsCanvas)canvas;
 		else
@@ -392,7 +388,7 @@ public class GelAnalyzer implements PlugIn {
 	}
 
 	void outlineLanes() {
-		if (gel==null || roiList==null) {
+		if (gel==null || overlay==null) {
 			show("Data needed to outline lanes is no longer available.");
 			return;
 		}
@@ -407,12 +403,12 @@ public class GelAnalyzer implements PlugIn {
 		ipLanes.setFont(f);
 		ipLanes.setLineWidth(lineWidth);
 		setCustomLut(ipLanes);
-		IjxImagePlus lanes = IJ.getFactory().newImagePlus("Lanes of "+gel.getShortTitle(), ipLanes);
-		lanes.setChanged(true);
+		ImagePlus lanes = new ImagePlus("Lanes of "+gel.getShortTitle(), ipLanes);
+		lanes.changes = true;
 		lanes.setRoi(gel.getRoi());
 		gel.killRoi();
-		for (int i=0; i<roiList.size(); i++) {
-			Roi roi = (Roi)roiList.elementAt(i);
+		for (int i=0; i<overlay.size(); i++) {
+			Roi roi = overlay.get(i);
 			Rectangle r = roi.getBounds();
 			ipLanes.drawRect(r.x, r.y, r.width, r.height);
 			String s = ""+(i+1);
@@ -463,11 +459,11 @@ public class GelAnalyzer implements PlugIn {
 
 class Plots extends ImagePlus {
 
-	/** Overrides IjxImagePlus.show(). */
+	/** Overrides ImagePlus.show(). */
 	public void show() {
 		img = ip.createImage();
 		ImageCanvas ic = new PlotsCanvas(this);
-		win = (ImageWindow)IJ.getFactory().newImageWindow(this, ic);
+		win = new ImageWindow(this, ic);
 		IJ.showStatus("");
 		if (ic.getMagnification()==1.0)
 			return;
@@ -481,8 +477,8 @@ class Plots extends ImagePlus {
 			w = screen.width-loc.x-20;
 		if (loc.y+h>screen.height)
 			h = screen.height-loc.y-30;
-		((ImageWindow)win).setSize(w, h);
-		((ImageWindow)win).validate();
+		win.setSize(w, h);
+		win.validate();
 		repaintWindow();
 	}
 
@@ -500,7 +496,7 @@ class PlotsCanvas extends ImageCanvas {
 	int counter;
 	ResultsTable rt;
 
-	public PlotsCanvas(IjxImagePlus imp) {
+	public PlotsCanvas(ImagePlus imp) {
 		super(imp);
 	}
 

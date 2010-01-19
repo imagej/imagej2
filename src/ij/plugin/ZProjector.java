@@ -1,19 +1,15 @@
 package ij.plugin; 
-
-import ijx.IjxImagePlus;
 import ij.*; 
 import ij.gui.GenericDialog; 
 import ij.process.*;
 import ij.plugin.filter.*; 
-import ijx.IjxImageStack;
+import ij.measure.Measurements;
 import java.lang.*; 
 import java.awt.*; 
 import java.awt.event.*; 
 
-
 /** This plugin performs a z-projection of the input stack. Type of
-    output image is same as type of input image. Both maximum and
-    average intensity projections are supported. 
+    output image is same as type of input image.
 
     @author Patrick Kelly <phkelly@ucsd.edu> */
 
@@ -38,10 +34,10 @@ public class ZProjector implements PlugIn {
     	+"and invert the LUT (Image/Lookup Tables/Invert LUT)."; 
 
     /** Image to hold z-projection. */
-    private IjxImagePlus projImage = null; 
+    private ImagePlus projImage = null; 
 
     /** Image stack to project. */
-    private IjxImagePlus imp = null; 
+    private ImagePlus imp = null; 
 
     /** Projection starts from this slice. */
     private int startSlice = 1;
@@ -59,14 +55,14 @@ public class ZProjector implements PlugIn {
     }
 
     /** Construction of ZProjector with image to be projected. */
-    public ZProjector(IjxImagePlus imp) {
+    public ZProjector(ImagePlus imp) {
 		setImage(imp); 
     }
 
     /** Explicitly set image to be projected. This is useful if
 	ZProjection_ object is to be used not as a plugin but as a
 	stand alone processing object.  */
-    public void setImage(IjxImagePlus imp) {
+    public void setImage(ImagePlus imp) {
     	this.imp = imp; 
 		startSlice = 1; 
 		stopSlice = imp.getStackSize(); 
@@ -89,7 +85,7 @@ public class ZProjector implements PlugIn {
 	}
     
     /** Retrieve results of most recent projection operation.*/
-    public IjxImagePlus getProjection() {
+    public ImagePlus getProjection() {
 		return projImage; 
     }
 
@@ -117,7 +113,7 @@ public class ZProjector implements PlugIn {
 		int frames = imp.getNFrames();
 		int slices = imp.getNSlices();
 		isHyperstack = imp.isHyperStack()||( ij.macro.Interpreter.isBatchMode()&&((frames>1&&frames<stackSize)||(slices>1&&slices<stackSize)));
-		if (imp.getType()==IjxImagePlus.COLOR_RGB)
+		if (imp.getType()==ImagePlus.COLOR_RGB)
 			isHyperstack = false;
 		startSlice = 1; 
 		if (isHyperstack) {
@@ -144,12 +140,12 @@ public class ZProjector implements PlugIn {
 		if (isHyperstack) {
 			allTimeFrames = imp.getNFrames()>1&&imp.getNSlices()>1?gd.getNextBoolean():false;
 			doHyperStackProjection(allTimeFrames);
-		} else if (imp.getType()==IjxImagePlus.COLOR_RGB) {
-			if (method==SUM_METHOD || method==SD_METHOD || method==MEDIAN_METHOD) {
-	    		IJ.error("ZProjection", "Sum, StdDev and Median methods \nnot available with RGB stacks.");
-	    		imp.unlock(); 
-	    		return; 
-			}
+		} else if (imp.getType()==ImagePlus.COLOR_RGB) {
+			//if (method==SUM_METHOD || method==SD_METHOD || method==MEDIAN_METHOD) {
+	    	//	IJ.error("ZProjection", "Sum, StdDev and Median methods \nnot available with RGB stacks.");
+	    	//	imp.unlock(); 
+	    	//	return; 
+			//}
 			doRGBProjection();
 		} else 
 			doProjection(); 
@@ -168,32 +164,32 @@ public class ZProjector implements PlugIn {
     public void doRGBProjection() {
         RGBStackSplitter splitter = new RGBStackSplitter();
         splitter.split(imp.getStack(), true);
-        IjxImagePlus red = IJ.getFactory().newImagePlus("Red", splitter.red);
-        IjxImagePlus green = IJ.getFactory().newImagePlus("Green", splitter.green);
-        IjxImagePlus blue = IJ.getFactory().newImagePlus("Blue", splitter.blue);
+        ImagePlus red = new ImagePlus("Red", splitter.red);
+        ImagePlus green = new ImagePlus("Green", splitter.green);
+        ImagePlus blue = new ImagePlus("Blue", splitter.blue);
         imp.unlock();
-        IjxImagePlus saveImp = imp;
+        ImagePlus saveImp = imp;
         imp = red;
 		color = "(red)"; doProjection();
-		IjxImagePlus red2 = projImage;
+		ImagePlus red2 = projImage;
         imp = green;
 		color = "(green)"; doProjection();
-		IjxImagePlus green2 = projImage;
+		ImagePlus green2 = projImage;
         imp = blue;
 		color = "(blue)"; doProjection();
-		IjxImagePlus blue2 = projImage;
+		ImagePlus blue2 = projImage;
         int w = red2.getWidth(), h = red2.getHeight(), d = red2.getStackSize();
         RGBStackMerge merge = new RGBStackMerge();
-        IjxImageStack stack = merge.mergeStacks(w, h, d, red2.getStack(), green2.getStack(), blue2.getStack(), true);
+        ImageStack stack = merge.mergeStacks(w, h, d, red2.getStack(), green2.getStack(), blue2.getStack(), true);
         imp = saveImp;
-        projImage = IJ.getFactory().newImagePlus(makeTitle(), stack);
+        projImage = new ImagePlus(makeTitle(), stack);
     }
 
     /** Builds dialog to query users for projection parameters.
 	@param start starting slice to display
 	@param stop last slice */
     protected GenericDialog buildControlDialog(int start, int stop) {
-		GenericDialog gd = new GenericDialog("ZProjection",IJ.getTopComponentFrame()); 
+		GenericDialog gd = new GenericDialog("ZProjection",IJ.getInstance()); 
 		gd.addNumericField("Start slice:",startSlice,0/*digits*/); 
 		gd.addNumericField("Stop slice:",stopSlice,0/*digits*/);
 		gd.addChoice("Projection Type", METHODS, METHODS[method]); 
@@ -216,7 +212,7 @@ public class ZProjector implements PlugIn {
 		
 		// Create new float processor for projected pixels.
 		FloatProcessor fp = new FloatProcessor(imp.getWidth(),imp.getHeight()); 
-		IjxImageStack stack = imp.getStack();
+		ImageStack stack = imp.getStack();
 		RayFunction rayFunc = getRayFunction(method, fp);
 		if(IJ.debugMode==true) {
 	    	IJ.log("\nProjecting stack from: "+startSlice
@@ -247,11 +243,11 @@ public class ZProjector implements PlugIn {
 		// Finish up projection.
 		if (method==SUM_METHOD) {
 			fp.resetMinAndMax();
-			projImage = IJ.getFactory().newImagePlus(makeTitle(),fp); 
+			projImage = new ImagePlus(makeTitle(),fp); 
 		} else if (method==SD_METHOD) {
 			rayFunc.postProcess();
 			fp.resetMinAndMax();
-			projImage = IJ.getFactory().newImagePlus(makeTitle(), fp); 
+			projImage = new ImagePlus(makeTitle(), fp); 
 		} else {
 			rayFunc.postProcess(); 
 			projImage = makeOutputImage(imp, fp, ptype);
@@ -268,7 +264,7 @@ public class ZProjector implements PlugIn {
 		int lastFrame = imp.getNFrames();
 		if (!allTimeFrames)
 			firstFrame = lastFrame = imp.getFrame();
-		IjxImageStack stack = IJ.getFactory().newImageStack(imp.getWidth(), imp.getHeight());
+		ImageStack stack = new ImageStack(imp.getWidth(), imp.getHeight());
 		int channels = imp.getNChannels();
 		int slices = imp.getNSlices();
 		if (slices==1) {
@@ -286,7 +282,7 @@ public class ZProjector implements PlugIn {
 				stack.addSlice(null, projImage.getProcessor());
 			}
 		}
-        projImage = IJ.getFactory().newImagePlus(makeTitle(), stack);
+        projImage = new ImagePlus(makeTitle(), stack);
         projImage.setDimensions(channels, 1, frames);
         if (channels>1) {
            	projImage = new CompositeImage(projImage, 0);
@@ -315,7 +311,7 @@ public class ZProjector implements PlugIn {
 	}
 
     /** Generate output image whose type is same as input image. */
-    private IjxImagePlus makeOutputImage(IjxImagePlus imp, FloatProcessor fp, int ptype) {
+    private ImagePlus makeOutputImage(ImagePlus imp, FloatProcessor fp, int ptype) {
 		int width = imp.getWidth(); 
 		int height = imp.getHeight(); 
 		float[] pixels = (float[])fp.getPixels(); 
@@ -350,7 +346,7 @@ public class ZProjector implements PlugIn {
 		// ImagePlus.createImagePlus here because there may be
 		// attributes of input image that are not appropriate for
 		// projection.
-		return IJ.getFactory().newImagePlus(makeTitle(), oip); 
+		return new ImagePlus(makeTitle(), oip); 
     }
 
     /** Handles mechanics of projection by selecting appropriate pixel
@@ -371,30 +367,6 @@ public class ZProjector implements PlugIn {
 		}
     }
     
-    IjxImagePlus doMedianProjection() {
-    	IJ.showStatus("Calculating median...");
-    	IjxImageStack stack = imp.getStack();
-    	ImageProcessor[] slices = new ImageProcessor[sliceCount];
-    	int index = 0;
-    	for (int slice=startSlice; slice<=stopSlice; slice+=increment)
-    		slices[index++] = stack.getProcessor(slice);
-    	ImageProcessor ip2 = slices[0].duplicate();
-    	ip2 = ip2.convertToFloat();
-    	float[] values = new float[sliceCount];
-    	int width = ip2.getWidth();
-    	int height = ip2.getHeight();
-    	int inc = Math.min(height/30, 1);
-    	for (int y=0; y<height; y++) {
-    		if (y%inc==0) IJ.showProgress(y, height-1);
-    		for (int x=0; x<width; x++) {
-    			for (int i=0; i<sliceCount; i++)
-    				values[i] = slices[i].getPixelValue(x, y);
-    			ip2.putPixelValue(x, y, median(values));
-    		}
-    	}
-  		return IJ.getFactory().newImagePlus(makeTitle(), ip2);
-    }
-    
     String makeTitle() {
     	String prefix = "AVG_";
  		switch (method) {
@@ -407,6 +379,30 @@ public class ZProjector implements PlugIn {
     	return WindowManager.makeUniqueName(prefix+imp.getTitle());
     }
 
+	ImagePlus doMedianProjection() {
+		IJ.showStatus("Calculating median...");
+		ImageStack stack = imp.getStack();
+		ImageProcessor[] slices = new ImageProcessor[sliceCount];
+		int index = 0;
+		for (int slice=startSlice; slice<=stopSlice; slice+=increment)
+			slices[index++] = stack.getProcessor(slice);
+		ImageProcessor ip2 = slices[0].duplicate();
+		ip2 = ip2.convertToFloat();
+		float[] values = new float[sliceCount];
+		int width = ip2.getWidth();
+		int height = ip2.getHeight();
+		int inc = Math.max(height/30, 1);
+		for (int y=0; y<height; y++) {
+			if (y%inc==0) IJ.showProgress(y, height-1);
+			for (int x=0; x<width; x++) {
+				for (int i=0; i<sliceCount; i++)
+				values[i] = slices[i].getPixelValue(x, y);
+				ip2.putPixelValue(x, y, median(values));
+			}
+		}
+		return new ImagePlus(makeTitle(), ip2);
+	}
+
 	float median(float[] a) {
 		sort(a);
 		int length = a.length;
@@ -415,8 +411,7 @@ public class ZProjector implements PlugIn {
 		else
 			return a[length/2]; // odd
 	}
-
-
+	
 	void sort(float[] a) {
 		if (!alreadySorted(a))
 			sort(a, 0, a.length - 1);
@@ -442,6 +437,51 @@ public class ZProjector implements PlugIn {
 		}
 		return true;
 	}
+
+/*
+    ImagePlus doModeProjection() {
+    	IJ.showStatus("Calculating mode...");
+    	ImageStack stack = imp.getStack();
+    	ImageProcessor[] slices = new ImageProcessor[sliceCount];
+    	int index = 0;
+    	for (int slice=startSlice; slice<=stopSlice; slice+=increment)
+    		slices[index++] = stack.getProcessor(slice);
+    	ImageProcessor ip2 = slices[0].duplicate();
+    	ip2 = ip2.convertToShort(false);
+    	short[] values = new short[sliceCount];
+    	int width = ip2.getWidth();
+    	int height = ip2.getHeight();
+    	int inc = Math.max(height/30, 1);
+    	for (int y=0; y<height; y++) {
+    		if (y%inc==0) IJ.showProgress(y, height-1);
+    		for (int x=0; x<width; x++) {
+    			for (int i=0; i<sliceCount; i++)
+    				values[i] = (short)slices[i].getPixel(x, y);
+    			ip2.putPixel(x, y, mode(values));
+    		}
+    	}
+  		return new ImagePlus(makeTitle(), ip2);
+    }
+    
+    ImageProcessor modeProcessor=null;
+
+	int mode(short[] a) {
+		if (modeProcessor==null)
+			modeProcessor = new ShortProcessor(a.length, 1, a, null);
+		else
+			modeProcessor.setPixels(a);
+		int[] histogram = modeProcessor.getHistogram();
+		int count, mode=0, maxCount=0;
+		for (int i=0; i<histogram.length; i++) {
+			count = histogram[i];
+			if (count>maxCount) {
+				maxCount = count;
+				mode = i;
+			}
+		}
+		return mode;
+	}
+*/
 
      /** Abstract class that specifies structure of ray
 	function. Preprocessing should be done in derived class

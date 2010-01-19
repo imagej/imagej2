@@ -1,6 +1,4 @@
 package ij.gui;
-import ijx.gui.IjxGenericDialog;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -10,6 +8,8 @@ import ij.plugin.ScreenGrabber;
 import ij.plugin.filter.PlugInFilter;
 import ij.plugin.filter.PlugInFilterRunner;
 import ij.util.Tools;
+import ij.macro.*;
+
 
 /**
  * This class is a customizable modal dialog box. Here is an example
@@ -37,12 +37,15 @@ import ij.util.Tools;
 * to spaces when the dialog is displayed. For example, change the checkbox labels
 * "Show Quality" and "Show Residue" to "Show_Quality" and "Show_Residue".
 */
-public class GenericDialog extends Dialog implements IjxGenericDialog {
+public class GenericDialog extends Dialog implements ActionListener, TextListener, 
+FocusListener, ItemListener, KeyListener, AdjustmentListener, WindowListener {
+
+	public static final int MAX_SLIDERS = 25;
 	protected Vector numberField, stringField, checkbox, choice, slider;
 	protected TextArea textArea1, textArea2;
 	protected Vector defaultValues,defaultText;
 	protected Component theLabel;
-	private Button cancel, okay, no;
+	private Button cancel, okay, no, help;
 	private String okLabel = "  OK  ";
     private boolean wasCanceled, wasOKed;
     private int y;
@@ -60,6 +63,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 	private int topInset, leftInset, bottomInset;
     private boolean customInsets;
     private int[] sliderIndexes;
+    private double[] sliderScales;
     private Checkbox previewCheckbox;    // the "Preview" Checkbox, if any
     private Vector dialogListeners;             // the Objects to notify on user input
     private PlugInFilterRunner pfr;      // the PlugInFilterRunner for automatic preview
@@ -68,19 +72,18 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
     private boolean recorderOn;         // whether recording is allowed
     private boolean yesNoCancel;
     private char echoChar;
-    private boolean unitIsPixel;
+    private boolean hideCancelButton;
+    private boolean centerDialog = true;
+    private String helpURL;
+    private String yesLabel, noLabel;
 
     /** Creates a new GenericDialog with the specified title. Uses the current image
     	image window as the parent frame or the ImageJ frame if no image windows
     	are open. Dialog parameters are recorded by ImageJ's command recorder but
     	this requires that the first word of each label be unique. */
 	public GenericDialog(String title) {
-		this(title, 
-            WindowManager.getCurrentImage()!=null?
-			(Frame)WindowManager.getCurrentImage().getWindow():
-                IJ.getTopComponent()!=null?
-                    IJ.getTopComponentFrame():
-                    new Frame());
+		this(title, WindowManager.getCurrentImage()!=null?
+			(Frame)WindowManager.getCurrentImage().getWindow():IJ.getInstance()!=null?IJ.getInstance():new Frame());
 	}
 
     /** Creates a new GenericDialog using the specified title and parent frame. */
@@ -141,7 +144,6 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			c.insets = getInsets(0, 0, 3, 0);
 		grid.setConstraints(theLabel, c);
 		add(theLabel);
-
 		if (numberField==null) {
 			numberField = new Vector(5);
 			defaultValues = new Vector(5);
@@ -161,7 +163,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		c.gridx = 1; c.gridy = y;
 		c.anchor = GridBagConstraints.WEST;
 		tf.setEditable(true);
-		if (firstNumericField) tf.selectAll();
+		//if (firstNumericField) tf.selectAll();
 		firstNumericField = false;
 		if (units==null||units.equals("")) {
 			grid.setConstraints(tf, c);
@@ -216,6 +218,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		c.gridx = 0; c.gridy = y;
 		c.anchor = GridBagConstraints.EAST;
 		c.gridwidth = 1;
+		boolean custom = customInsets;
 		if (stringField==null) {
 			stringField = new Vector(4);
 			c.insets = getInsets(5, 0, 5, 0);
@@ -223,7 +226,12 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			c.insets = getInsets(0, 0, 5, 0);
 		grid.setConstraints(theLabel, c);
 		add(theLabel);
-
+		if (custom) {
+			if (stringField.size()==0)
+				c.insets = getInsets(5, 0, 5, 0);
+			else
+				c.insets = getInsets(0, 0, 5, 0);
+		}
 		TextField tf = new TextField(defaultText, columns);
 		if (IJ.isLinux()) tf.setBackground(Color.white);
 		tf.setEchoChar(echoChar);
@@ -306,7 +314,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
     public void addPreviewCheckbox(PlugInFilterRunner pfr) {
         if (previewCheckbox != null)
         	return;
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
+    	ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null && imp.isComposite() && ((CompositeImage)imp).getMode()==CompositeImage.COMPOSITE)
 			return;
         this.pfr = pfr;
@@ -314,15 +322,17 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
     }
 
     /** Add the preview checkbox with user-defined label; for details see the
-     *  addPreviewCheckbox method with standard "Preview" label
-     * Note that a GenericDialog can have only one PreviewCheckbox
+     *  addPreviewCheckbox method with standard "Preview" label.
+     * Adds the checkbox when the current image is a CompositeImage
+     * in "Composite" mode, unlike the one argument version.
+     * Note that a GenericDialog can have only one PreviewCheckbox.
      */
     public void addPreviewCheckbox(PlugInFilterRunner pfr, String label) {
-        if (previewCheckbox != null)
+        if (previewCheckbox!=null)
         	return;
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
-		if (imp!=null && imp.isComposite() && ((CompositeImage)imp).getMode()==CompositeImage.COMPOSITE)
-			return;
+    	//ImagePlus imp = WindowManager.getCurrentImage();
+		//if (imp!=null && imp.isComposite() && ((CompositeImage)imp).getMode()==CompositeImage.COMPOSITE)
+		//	return;
         previewLabel = label;
         this.pfr = pfr;
         addCheckbox(previewLabel, false, true);
@@ -443,15 +453,23 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		c.gridx = 0; c.gridy = y;
 		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.WEST;
-		c.insets = new Insets(15, 20, 0, 0);
+		c.insets = getInsets(15, 20, 0, 0);
 		grid.setConstraints(panel, c);
 		add(panel);
 		y++;
     }
     
-   public void addSlider(String label, double minValue, double maxValue, double defaultValue) {
+	public void addSlider(String label, double minValue, double maxValue, double defaultValue) {
 		int columns = 4;
 		int digits = 0;
+		double scale = 1.0;
+		if ((maxValue-minValue)<=5.0 && (minValue!=(int)minValue||maxValue!=(int)maxValue)) {
+			scale = 20.0;
+			minValue *= scale;
+			maxValue *= scale;
+			defaultValue *= scale;
+			digits = 2;
+		}
    		String label2 = label;
    		if (label2.indexOf('_')!=-1)
    			label2 = label2.replace('_', ' ');
@@ -466,6 +484,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		if (slider==null) {
 			slider = new Vector(5);
 			sliderIndexes = new int[MAX_SLIDERS];
+			sliderScales = new double[MAX_SLIDERS];
 		}
 		Scrollbar s = new Scrollbar(Scrollbar.HORIZONTAL, (int)defaultValue, 1, (int)minValue, (int)maxValue+1);
 		slider.addElement(s);
@@ -479,7 +498,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		}
 		if (IJ.isWindows()) columns -= 2;
 		if (columns<1) columns = 1;
-		TextField tf = new TextField(IJ.d2s(defaultValue, digits), columns);
+		TextField tf = new TextField(IJ.d2s(defaultValue/scale, digits), columns);
 		if (IJ.isLinux()) tf.setBackground(Color.white);
 		tf.addActionListener(this);
 		tf.addTextListener(this);
@@ -487,10 +506,11 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		tf.addKeyListener(this);
 		numberField.addElement(tf);
 		sliderIndexes[slider.size()-1] = numberField.size()-1;
-		defaultValues.addElement(new Double(defaultValue));
+		sliderScales[slider.size()-1] = scale;
+		defaultValues.addElement(new Double(defaultValue/scale));
 		defaultText.addElement(tf.getText());
 		tf.setEditable(true);
-		if (firstNumericField && firstSlider) tf.selectAll();
+		//if (firstNumericField && firstSlider) tf.selectAll();
 		firstSlider = false;
 		
     	Panel panel = new Panel();
@@ -575,7 +595,32 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 
     /** Make this a "Yes No Cancel" dialog. */
     public void enableYesNoCancel() {
+    	enableYesNoCancel(" Yes ", " No ");
+    }
+    
+    /** Make this a "Yes No Cancel" dialog with custom labels. Here is an example:
+    	<pre>
+        GenericDialog gd = new GenericDialog("YesNoCancel Demo");
+        gd.addMessage("This is a custom YesNoCancel dialog");
+        gd.enableYesNoCancel("Do something", "Do something else");
+        gd.showDialog();
+        if (gd.wasCanceled())
+            IJ.log("User clicked 'Cancel'");
+        else if (gd.wasOKed())
+            IJ. log("User clicked 'Yes'");
+        else
+            IJ. log("User clicked 'No'");
+    	</pre>
+	*/
+    public void enableYesNoCancel(String yesLabel, String noLabel) {
+    	this.yesLabel = yesLabel;
+    	this.noLabel = noLabel;
     	yesNoCancel = true;
+    }
+
+    /** No not display "Cancel" button. */
+    public void hideCancelButton() {
+    	hideCancelButton = true;
     }
 
 	Insets getInsets(int top, int left, int bottom, int right) {
@@ -632,23 +677,24 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		if (theText.equals(originalText))
 			value = defaultValue;
 		else {
-			int index = theText.indexOf("p");
-			if (index!=-1) {
-				unitIsPixel = true;
-				theText = theText.replaceAll("p", "");
-			}
 			Double d = getValue(theText);
 			if (d!=null)
 				value = d.doubleValue();
 			else {
-				invalidNumber = true;
-				errorMessage = "\""+theText+"\" is an invalid number";
-				value = 0.0;
-                if (macro) {
-                    IJ.error("Macro Error", "Numeric value expected in run() function\n \n"
-                        +"   Dialog: \""+getTitle()+"\"\n"
-                        +"   Label: \""+label+"\"\n"
-                        +"   Value: \""+theText+"\"");
+				// Is the value a macro variable?
+				if (theText.startsWith("&")) theText = theText.substring(1);
+				Interpreter interp = Interpreter.getInstance();
+				value = interp!=null?interp.getVariable(theText):Double.NaN;
+				if (Double.isNaN(value)) {
+					invalidNumber = true;
+					errorMessage = "\""+theText+"\" is an invalid number";
+					value = 0.0;
+					if (macro) {
+						IJ.error("Macro Error", "Numeric value expected in run() function\n \n"
+							+"   Dialog box title: \""+getTitle()+"\"\n"
+							+"   Key: \""+label.toLowerCase(Locale.US)+"\"\n"
+							+"   Value or variable name: \""+theText+"\"");
+					}
                 }
 			}
 		}
@@ -682,9 +728,9 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		}
 	}
 
- 	protected Double getValue(String theText) {
+ 	protected Double getValue(String text) {
  		Double d;
- 		try {d = new Double(theText);}
+ 		try {d = new Double(text);}
 		catch (NumberFormatException e){
 			d = null;
 		}
@@ -715,7 +761,13 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		if (macro) {
 			String label = (String)labels.get((Object)tf);
 			theText = Macro.getValue(macroOptions, label, theText);
-			//IJ.write("getNextString: "+label+"  "+theText);
+			if (theText!=null && (theText.startsWith("&")||label.toLowerCase(Locale.US).startsWith(theText))) {
+				// Is the value a macro variable?
+				if (theText.startsWith("&")) theText = theText.substring(1);
+				Interpreter interp = Interpreter.getInstance();
+				String s = interp!=null?interp.getStringVariable(theText):null;
+				if (s!=null) theText = s;
+			}
 		}	
 		if (recorderOn)
 			recordOption(tf, theText);
@@ -795,10 +847,23 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			String oldItem = thisChoice.getSelectedItem();
 			int oldIndex = thisChoice.getSelectedIndex();
 			String item = Macro.getValue(macroOptions, label, oldItem);
+			if (item!=null && item.startsWith("&")) { // value is macro variable
+				item = item.substring(1);
+				Interpreter interp = Interpreter.getInstance();
+				String s = interp!=null?interp.getStringVariable(item):null;
+				if (s!=null) item = s;
+			}
 			thisChoice.select(item);
 			index = thisChoice.getSelectedIndex();
-			if (index==oldIndex && !item.equals(oldItem))
-				IJ.error(getTitle(), "\""+item+"\" is not a valid choice for \""+label+"\"");
+			if (index==oldIndex && !item.equals(oldItem)) {
+				// is value a macro variable?
+				Interpreter interp = Interpreter.getInstance();
+				String s = interp!=null?interp.getStringVariable(item):null;
+				if (s==null)
+					IJ.error(getTitle(), "\""+item+"\" is not a valid choice for \""+label+"\"");
+				else
+					item = s;
+			}
 		}	
 		if (recorderOn)
 			recordOption(thisChoice, thisChoice.getSelectedItem());
@@ -820,7 +885,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 				String cmd = Recorder.getCommand();
 				if (cmd!=null && cmd.equals("Convolve...")) {
 					text2 = text.replaceAll("\n","\\\\n");
-					if (!text.endsWith("\n")) text2 = text2 + "\\\\n";
+					if (!text.endsWith("\n")) text2 = text2 + "\\n";
 				} else
 					text2 = text.replace('\n',' ');
 				Recorder.recordOption("text1", text2);
@@ -846,32 +911,41 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		} else {
 			if (pfr!=null) // prepare preview (not in macro mode): tell the PlugInFilterRunner to listen
 			pfr.setDialog(this);
-			if (stringField!=null&&numberField==null) {
-				TextField tf = (TextField)(stringField.elementAt(0));
-				tf.selectAll();
-			}
+			//if (stringField!=null&&numberField==null) {
+			//	TextField tf = (TextField)(stringField.elementAt(0));
+			//	tf.selectAll();
+			//}
 			Panel buttons = new Panel();
 			buttons.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 			cancel = new Button("Cancel");
 			cancel.addActionListener(this);
 			cancel.addKeyListener(this);
 			if (yesNoCancel) {
-				okLabel = " Yes ";
-				no = new Button(" No ");
+				okLabel = yesLabel;
+				no = new Button(noLabel);
 				no.addActionListener(this);
 				no.addKeyListener(this);
 			}
 			okay = new Button(okLabel);
 			okay.addActionListener(this);
 			okay.addKeyListener(this);
+			boolean addHelp = helpURL!=null;
+			if (addHelp) {
+				help = new Button("Help");
+				help.addActionListener(this);
+				help.addKeyListener(this);
+			}
 			if (IJ.isMacintosh()) {
+				if (addHelp) buttons.add(help);
 				if (yesNoCancel) buttons.add(no);
-				buttons.add(cancel);
+				if (!hideCancelButton) buttons.add(cancel);
 				buttons.add(okay);
 			} else {
 				buttons.add(okay);
 				if (yesNoCancel) buttons.add(no);;
-				buttons.add(cancel);
+				if (!hideCancelButton)
+					buttons.add(cancel);
+				if (addHelp) buttons.add(help);
 			}
 			c.gridx = 0; c.gridy = y;
 			c.anchor = GridBagConstraints.EAST;
@@ -883,7 +957,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			setResizable(false);
 			pack();
 			setup();
-			GUI.center(this);
+			if (centerDialog) GUI.center(this);
 			setVisible(true);
 			recorderOn = Recorder.record;
 			IJ.wait(50); // work around for Sun/WinNT bug
@@ -927,7 +1001,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
   		return choice;
   	}
 
-  	/** Returns the sliders (Scrollbars). */
+  	/** Returns the Vector containing the sliders (Scrollbars). */
   	public Vector getSliders() {
   		return slider;
   	}
@@ -953,19 +1027,29 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
         return previewCheckbox;
     }
     
-    /** Returns 'true' if any numeric field contained a 'p'. */
-    public boolean unitIsPixel() {
-    	return unitIsPixel();
-    }
+	/** Returns references to the "OK" ("Yes"), "Cancel", 
+		and if present, "No" buttons as an array. */
+	public Button[] getButtons() {
+  		Button[] buttons = new Button[3];
+  		buttons[0] = okay;
+  		buttons[1] = cancel;
+  		buttons[2] = no;
+		return buttons;
+  	}
 
-    /** optical feedback whether preview is running by switching from
-     * "Preview" to "wait..."
+    /** Used by PlugInFilterRunner to provide visable feedback whether preview
+    	is running or not by switching from "Preview" to "wait..."
      */
     public void previewRunning(boolean isRunning) {
-        if (previewCheckbox != null) {
+        if (previewCheckbox!=null) {
             previewCheckbox.setLabel(isRunning ? previewRunning : previewLabel);
             if (IJ.isMacOSX()) repaint();   //workaround OSX 10.4 refresh bug
         }
+    }
+    
+    /** Display dialog centered on the primary screen? */
+    public void centerDialog(boolean b) {
+    	centerDialog = b;
     }
 
     protected void setup() {
@@ -977,10 +1061,12 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			wasCanceled = source==cancel;
 			wasOKed = source==okay;
 			dispose();
-		} else
+		} else if (source==help)
+			showHelp();
+		else
             notifyListeners(e);
 	}
-
+	
 	public void textValueChanged(TextEvent e) {
         notifyListeners(e); 
 		if (slider==null) return;
@@ -992,7 +1078,7 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 				double value = Tools.parseDouble(tf.getText());
 				if (!Double.isNaN(value)) {
 					Scrollbar sb = (Scrollbar)slider.elementAt(i);
-					sb.setValue((int)value);
+					sb.setValue((int)(value*sliderScales[i]));
 				}	
 				//IJ.log(i+" "+tf.getText());
 			}
@@ -1027,8 +1113,12 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			wasCanceled = true; 
 			dispose(); 
 			IJ.resetEscape();
+		} else if (keyCode==KeyEvent.VK_W && (e.getModifiers()&Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())!=0) { 
+			wasCanceled = true; 
+			dispose(); 
 		} 
 	} 
+		
 
 	void accessTextFields() {
 		if (stringField!=null) {
@@ -1065,7 +1155,8 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 			if (source==slider.elementAt(i)) {
 				Scrollbar sb = (Scrollbar)source;
 				TextField tf = (TextField)numberField.elementAt(sliderIndexes[i]);
-				tf.setText(""+sb.getValue());
+				int digits = sliderScales[i]==1.0?0:2;
+				tf.setText(""+IJ.d2s(sb.getValue()/sliderScales[i],digits));
 			}
 		}
 	}
@@ -1092,25 +1183,21 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
                 "\nat "+(err.getStackTrace()[0])+"\nfrom "+(err.getStackTrace()[1]));  //requires Java 1.4
             }
         boolean workaroundOSXbug = IJ.isMacOSX() && !okay.isEnabled() && everythingOk;
-        if (previewCheckbox != null)
+        if (previewCheckbox!=null)
             previewCheckbox.setEnabled(everythingOk);
         okay.setEnabled(everythingOk);
-        if(workaroundOSXbug) repaint(); // OSX 10.4 bug delays update of enabled until the next input
+        if (workaroundOSXbug) repaint(); // OSX 10.4 bug delays update of enabled until the next input
     }
 
 	public void paint(Graphics g) {
 		super.paint(g);
 		if (firstPaint) {
-			if (numberField!=null) {
+			if (numberField!=null && IJ.isMacOSX()) {
+				// work around for bug on Intel Macs that caused 1st field to be un-editable
 				TextField tf = (TextField)(numberField.elementAt(0));
-				tf.requestFocus();
-				if (IJ.isMacOSX()) {
-					// work around for bug on Intel Macs that caused 1st field to be un-editable
-					tf.setEditable(false);
-					tf.setEditable(true);
-				}
-			} else if (stringField==null)
-				okay.requestFocus();
+				tf.setEditable(false);
+				tf.setEditable(true);
+			}
 			firstPaint = false;
 		}
 	}
@@ -1119,6 +1206,15 @@ public class GenericDialog extends Dialog implements IjxGenericDialog {
 		wasCanceled = true; 
 		dispose(); 
     }
+    
+    public void addHelp(String url) {
+    	helpURL = url;
+    }
+    
+    void showHelp() {
+		String macro = "run('URL...', 'url="+helpURL+"');";
+		new MacroRunner(macro);
+	}
     
     public void windowActivated(WindowEvent e) {}
     public void windowOpened(WindowEvent e) {}

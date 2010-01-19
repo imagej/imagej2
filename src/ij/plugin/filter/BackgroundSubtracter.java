@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -64,7 +63,7 @@ public class BackgroundSubtracter implements ExtendedPlugInFilter, DialogListene
     private int pass;
     private int flags = DOES_ALL|FINAL_PROCESSING|KEEP_PREVIEW|PARALLELIZE_STACKS;
 
-    public int setup(String arg, IjxImagePlus imp) {
+    public int setup(String arg, ImagePlus imp) {
         if (arg.equals("final")) {
             imp.getProcessor().resetMinAndMax();
             return DONE;
@@ -72,7 +71,7 @@ public class BackgroundSubtracter implements ExtendedPlugInFilter, DialogListene
             return flags;
     }
 
-    public int showDialog(IjxImagePlus imp, String command, PlugInFilterRunner pfr) {
+    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
         isRGB = imp.getProcessor() instanceof ColorProcessor;
         String options = Macro.getOptions();
         if  (options!=null)

@@ -1,11 +1,9 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.io.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.plugin.*;
-import ijx.IjxImageStack;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -49,15 +47,15 @@ public class GifWriter implements PlugIn {
 	static int transparentIndex = Prefs.getTransparentIndex();
    
 	public void run(String path) {
-		IjxImagePlus imp = IJ.getImage();
+		ImagePlus imp = IJ.getImage();
 		if (path.equals("")) {
 			SaveDialog sd = new SaveDialog("Save as Gif", imp.getTitle(), ".gif");
 			if (sd.getFileName()==null) return;
 			path = sd.getDirectory()+sd.getFileName();
 		}
 
-		IjxImageStack stack = imp.getStack();
-		IjxImagePlus tmp = new ImagePlus();
+		ImageStack stack = imp.getStack();
+		ImagePlus tmp = new ImagePlus();
 		int nSlices = stack.getSize();
 	    GifEncoder ge = new GifEncoder();
 		double fps = imp.getCalibration().fps;
@@ -102,7 +100,7 @@ class GifEncoder {
    protected int delay = 50;             // frame delay (hundredths)
    boolean started = false;   // ready to output frames
    OutputStream out;
-   IjxImagePlus image;       // current frame
+   ImagePlus image;       // current frame
    byte[] pixels;             // BGR byte array from frame
    byte[] indexedPixels;      // converted frame indexed to palette
    int colorDepth;            // number of bit planes
@@ -134,7 +132,7 @@ class GifEncoder {
     * @param im  containing frame to write.
     * @return true if successful.
     */
-   public boolean addFrame(IjxImagePlus image) {
+   public boolean addFrame(ImagePlus image) {
       if ((image == null) || !started) return false;
       boolean ok = true;
       try {
@@ -185,7 +183,7 @@ class GifEncoder {
 /********************************************************
 *    Gets Color lookup Table from 8 bit ImagePlus
 */
-void Process8bitCLT(IjxImagePlus image){
+void Process8bitCLT(ImagePlus image){
        colorDepth = 8;
      	//setTransparent(false);
 	    ImageProcessor ip = image.getProcessor();

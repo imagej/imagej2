@@ -1,13 +1,11 @@
 package ij.plugin.frame;
-import ijx.plugin.frame.IjxPluginFrame;
 import java.awt.*;
 import java.awt.event.*;
 import ij.*;
-import ijx.gui.IjxWindow;
-
+import ij.plugin.*;
 
 /**  This is a closeable window that plugins can extend. */
-public class PlugInFrame extends Frame implements IjxWindow, IjxPluginFrame {
+public class PlugInFrame extends Frame implements PlugIn, WindowListener, FocusListener {
 
 	String title;
 	
@@ -15,10 +13,10 @@ public class PlugInFrame extends Frame implements IjxWindow, IjxPluginFrame {
 		super(title);
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		this.title = title;
-		Frame ij = IJ.getTopComponentFrame();
+		ImageJ ij = IJ.getInstance();
 		addWindowListener(this);
  		addFocusListener(this);
-		if (IJ.isLinux()) setBackground(IJ.backgroundColor);
+		if (IJ.isLinux()) setBackground(ImageJ.backgroundColor);
 		if (ij!=null) {
 			Image img = ij.getIconImage();
 			if (img!=null)
@@ -30,8 +28,11 @@ public class PlugInFrame extends Frame implements IjxWindow, IjxPluginFrame {
 	}
 	
     public void windowClosing(WindowEvent e) {
-    	if (e.getSource()==this)
+    	if (e.getSource()==this) {
     		close();
+    		if (Recorder.record)
+    			Recorder.record("run", "Close");
+    	}
     }
     
     /** Closes this window. */
@@ -39,11 +40,6 @@ public class PlugInFrame extends Frame implements IjxWindow, IjxPluginFrame {
 		setVisible(false);
 		dispose();
 		WindowManager.removeWindow(this);
-    }
-    
-    public boolean canClose() {
-		close();
-        return true;
     }
 
     public void windowActivated(WindowEvent e) {
@@ -65,8 +61,4 @@ public class PlugInFrame extends Frame implements IjxWindow, IjxPluginFrame {
     public void windowDeiconified(WindowEvent e) {}
     public void windowDeactivated(WindowEvent e) {}
 	public void focusLost(FocusEvent e) {}
-
-    public boolean isClosed() {
-        return true;
-    }
 }

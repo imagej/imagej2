@@ -1,6 +1,4 @@
 package ij.plugin.filter;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -8,16 +6,16 @@ import ij.measure.*;
 import java.awt.*;
 
 /** This plugin implements ImageJ's Fill, Clear, Clear Outside and Draw commands. */
-public class Filler implements IjxPlugInFilter, Measurements {
+public class Filler implements PlugInFilter, Measurements {
 	
 	String arg;
 	Roi roi;
-	IjxImagePlus imp;
+	ImagePlus imp;
 	int sliceCount;
 	ImageProcessor mask;
 	boolean isTextRoi;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.arg = arg;
 		this.imp = imp;
 		if (imp!=null)
@@ -26,12 +24,16 @@ public class Filler implements IjxPlugInFilter, Measurements {
 		IJ.register(Filler.class);
 		int baseCapabilities = DOES_ALL+ROI_REQUIRED;
 	 	if (arg.equals("clear")) {
+	 		if (roi!=null && roi.getType()==Roi.POINT) {
+	 			IJ.error("Clear", "Area selection required");
+	 			return DONE;
+	 		}
 	 		if (isTextRoi || isLineSelection())
 				return baseCapabilities;
 			else
 				return IJ.setupDialog(imp,baseCapabilities+SUPPORTS_MASKING);
 		} else if (arg.equals("draw"))
-				return baseCapabilities;
+				return IJ.setupDialog(imp,baseCapabilities);
 		else if (arg.equals("label")) {
 				if (Analyzer.firstParticle<Analyzer.lastParticle)
 					return baseCapabilities-ROI_REQUIRED;
@@ -39,7 +41,10 @@ public class Filler implements IjxPlugInFilter, Measurements {
 					return baseCapabilities;
 		} else if (arg.equals("outside"))
 				return IJ.setupDialog(imp,baseCapabilities);
-		else
+		else if (roi!=null && roi.getType()==Roi.POINT && arg.equals("fill")) {
+	 			IJ.error("Fill", "Area selection required");
+	 			return DONE;
+	 	} else
 			return IJ.setupDialog(imp,baseCapabilities+SUPPORTS_MASKING);
 	}
 
@@ -69,7 +74,7 @@ public class Filler implements IjxPlugInFilter, Measurements {
 	public void clear(ImageProcessor ip) {
 	 	ip.setColor(Toolbar.getBackgroundColor());
 		if (isLineSelection()) {
-			if (isStraightLine() && Line.getWidth()>1)
+			if (isStraightLine() && roi.getStrokeWidth()>1)
 				ip.fillPolygon(roi.getPolygon());
 			else
 				roi.drawPixels();
@@ -78,10 +83,11 @@ public class Filler implements IjxPlugInFilter, Measurements {
 		ip.setColor(Toolbar.getForegroundColor());
 	}
 		
+	/** Obsolete; replaced by ImageProcessor.fill(Roi). */
 	public void fill(ImageProcessor ip) {
 		ip.setColor(Toolbar.getForegroundColor());
 		if (isLineSelection()) {
-			if (isStraightLine() && Line.getWidth()>1)
+			if (isStraightLine() && roi.getStrokeWidth()>1 && !(roi instanceof Arrow))
 				ip.fillPolygon(roi.getPolygon());
 			else
 				roi.drawPixels(ip);
@@ -89,9 +95,10 @@ public class Filler implements IjxPlugInFilter, Measurements {
 	 		ip.fill(); // fill with foreground color
 	}
 	 			 		
+	/** Obsolete; replaced by ImageProcessor.draw(Roi). */
 	public void draw(ImageProcessor ip) {
 		ip.setColor(Toolbar.getForegroundColor());
-		roi.drawPixels();
+		roi.drawPixels(ip);
 		if (IJ.altKeyDown())
 			drawLabel(ip);
  	}
@@ -105,7 +112,7 @@ public class Filler implements IjxPlugInFilter, Measurements {
 			drawParticleLabels(ip);
 		else {
 			ip.setColor(Toolbar.getForegroundColor());
-			IjxImageCanvas ic = imp.getCanvas();
+			ImageCanvas ic = imp.getCanvas();
 			if (ic!=null) {
 				double mag = ic.getMagnification();
 				if (mag<1.0) {
@@ -144,7 +151,7 @@ public class Filler implements IjxPlugInFilter, Measurements {
 			drawLabel(imp, ip, count, roi.getBounds());
 	}
 
-	public void drawLabel(IjxImagePlus imp, ImageProcessor ip, int count, Rectangle r) {
+	public void drawLabel(ImagePlus imp, ImageProcessor ip, int count, Rectangle r) {
 		Color foreground = Toolbar.getForegroundColor();
 		Color background = Toolbar.getBackgroundColor();
 		if (foreground.equals(background)) {
@@ -152,7 +159,7 @@ public class Filler implements IjxPlugInFilter, Measurements {
 			background = Color.white;
 		}
 		int size = 9;
-		IjxImageCanvas ic = imp.getCanvas();
+		ImageCanvas ic = imp.getCanvas();
 		if (ic!=null) {
 			double mag = ic.getMagnification();
 			if (mag<1.0)
@@ -175,6 +182,7 @@ public class Filler implements IjxPlugInFilter, Measurements {
 		ip.drawString(label, x, y);
 	} 
 
+	/** Obsolete; replaced by ImageProcessor.fillOutside(Roi). */
 	public synchronized void clearOutside(ImageProcessor ip) {
 		if (isLineSelection()) {
 			IJ.error("\"Clear Outside\" does not work with line selections.");

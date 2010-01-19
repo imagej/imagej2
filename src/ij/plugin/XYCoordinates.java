@@ -1,6 +1,5 @@
 package ij.plugin;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Vector;
@@ -9,7 +8,6 @@ import ij.*;
 import ij.process.*;
 import ij.io.*;
 import ij.gui.*;
-import ijx.IjxImageStack;
 
 
 /** Writes the XY coordinates and pixel values of all non-background pixels
@@ -22,7 +20,7 @@ public class XYCoordinates implements PlugIn {
 	static boolean suppress;
 
 	public void run(String arg) {
-		IjxImagePlus imp = IJ.getImage();
+		ImagePlus imp = IJ.getImage();
 		ImageProcessor ip = imp.getProcessor();
 		int width = imp.getWidth();
 		int height = imp.getHeight();
@@ -52,12 +50,12 @@ public class XYCoordinates implements PlugIn {
 		int digits = (int)background==background?0:4;
 		if (!rgb) {
 			gd.setInsets(5, 35, 3);
-			gd.addNumericField("Background Value:", background, digits);
+			gd.addNumericField("Background value:", background, digits);
 		}
 		gd.setInsets(10, 35, 0);
-		gd.addCheckbox("Invert Y Coordinates", invertY);
+		gd.addCheckbox("Invert y coordinates off (0 at top of image)", invertY);
 		gd.setInsets(0, 35, 0);
-		gd.addCheckbox("Suppress Log Output", suppress);
+		gd.addCheckbox("Suppress Log output", suppress);
 		if (slices>1) {
 			gd.setInsets(0, 35, 0);
 			gd.addCheckbox("Process all "+slices+" images", processStack);
@@ -96,7 +94,7 @@ public class XYCoordinates implements PlugIn {
 		float v;
 		int c,r,g,b;
 		int type = imp.getType();
-		IjxImageStack stack = imp.getStack();
+		ImageStack stack = imp.getStack();
 		for (int z=0; z<slices; z++) {
 			if (slices>1) ip = stack.getProcessor(z+1);
 			String zstr = slices>1?z+"\t":"";
@@ -105,7 +103,7 @@ public class XYCoordinates implements PlugIn {
 				for (int x=0; x<width; x++) {
 					v = ip.getPixelValue(x,y);
 					if (v!=background) {
-						if (type==IjxImagePlus.GRAY32)
+						if (type==ImagePlus.GRAY32)
 							pw.println(x+"\t"+(invertY?y:height-1-y)+"\t"+zstr+v);
 						else if (rgb) {
 							c = ip.getPixel(x,y);

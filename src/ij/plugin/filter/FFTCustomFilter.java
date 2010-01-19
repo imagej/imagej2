@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -10,9 +9,9 @@ import java.util.*;
 
 
 /** This class implements the Process/FFT/Custom Filter command. */
-public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
+public class FFTCustomFilter implements  PlugInFilter, Measurements {
 
-	private IjxImagePlus imp;
+	private ImagePlus imp;
 	private static int filterIndex = 1;
 	private int slice;
 	private int stackSize;	
@@ -22,14 +21,15 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 	private boolean padded;
 	private	int originalWidth;
 	private int originalHeight;
+	private Rectangle rect = new Rectangle();
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
  		this.imp = imp;
  		if (imp==null)
  			{IJ.noImage(); return DONE;}
  		stackSize = imp.getStackSize();
 		if (imp.getProperty("FHT")!=null) {
-			IJ.error("FFT Custom Filter", "Ordinary (non-FFT) image required");
+			IJ.error("FFT Custom Filter", "Spatial domain (non-FFT) image required");
 			return DONE;
 		}
 		else
@@ -53,22 +53,22 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 		doInverseTransform(fht, ip);
 		if (slice==1)
 			ip.resetMinAndMax();
-		if (slice==stackSize)
+		if (slice==stackSize) {
+			new ContrastEnhancer().stretchHistogram(imp, 0.0);
 			imp.updateAndDraw();
+		}
 		IJ.showProgress(1.0);
 	}
 	
 	void doInverseTransform(FHT fht, ImageProcessor ip) {
 		showStatus("Inverse transform");
 		fht.inverseTransform();
-		if (fht.quadrantSwapNeeded)
-			fht.swapQuadrants();
+		//if (fht.quadrantSwapNeeded)
+		//	fht.swapQuadrants();
 		fht.resetMinAndMax();
 		ImageProcessor ip2 = fht;
-		if (fht.originalWidth>0) {
-			fht.setRoi(0, 0, fht.originalWidth, fht.originalHeight);
-			ip2 = fht.crop();
-		}
+		fht.setRoi(rect.x, rect.y, rect.width, rect.height);
+		ip2 = fht.crop();
 		int bitDepth = fht.originalBitDepth>0?fht.originalBitDepth:imp.getBitDepth();
 		switch (bitDepth) {
 			case 8: ip2 = ip2.convertToByte(true); break;
@@ -86,42 +86,27 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 
 	FHT newFHT(ImageProcessor ip) {
 		FHT fht;
+		int width = ip.getWidth();
+		int height = ip.getHeight();
+		int maxN = Math.max(width, height);
+		int size = 2;
+		while (size<1.5*maxN) size *= 2;		
+		rect.x = (int)Math.round((size-width)/2.0);
+		rect.y = (int)Math.round((size-height)/2.0);
+		rect.width = width;
+		rect.height = height;
+		FFTFilter fftFilter = new FFTFilter();
 		if (ip instanceof ColorProcessor) {
 			showStatus("Extracting brightness");
 			ImageProcessor ip2 = ((ColorProcessor)ip).getBrightness();
-			fht = new FHT(pad(ip2));
+			fht = new FHT(fftFilter.tileMirror(ip2, size, size, rect.x, rect.y));
 			fht.rgb = (ColorProcessor)ip.duplicate(); // save so we can later update the brightness
 		} else
-			fht = new FHT(pad(ip));
-		if (padded) {
-			fht.originalWidth = originalWidth;
-			fht.originalHeight = originalHeight;
-		}
+			fht = new FHT(fftFilter.tileMirror(ip, size, size, rect.x, rect.y));
+		fht.originalWidth = originalWidth;
+		fht.originalHeight = originalHeight;
 		fht.originalBitDepth = imp.getBitDepth();
 		return fht;
-	}
-	
-	ImageProcessor pad(ImageProcessor ip) {
-		originalWidth = ip.getWidth();
-		originalHeight = ip.getHeight();
-		int maxN = Math.max(originalWidth, originalHeight);
-		int i = 2;
-		while(i<maxN) i *= 2;
-		if (i==maxN && originalWidth==originalHeight) {
-			padded = false;
-			return ip;
-		}
-		maxN = i;
-		showStatus("Padding to "+ maxN + "x" + maxN);
-		ImageStatistics stats = ImageStatistics.getStatistics(ip, MEAN, null);
-		ImageProcessor ip2 = ip.createProcessor(maxN, maxN);
-		ip2.setValue(stats.mean);
-		ip2.fill();
-		ip2.insert(ip, 0, 0);
-		padded = true;
-		Undo.reset();
-		//new ImagePlus("padded", ip2.duplicate()).show();
-		return ip2;
 	}
 	
 	void showStatus(String msg) {
@@ -150,7 +135,7 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 		}
 		String[] titles = new String[wList.length];
 		for (int i=0; i<wList.length; i++) {
-			IjxImagePlus imp = WindowManager.getImage(wList[i]);
+			ImagePlus imp = WindowManager.getImage(wList[i]);
 			titles[i] = imp!=null?imp.getTitle():"";
 		}
 		if (filterIndex<0 || filterIndex>=titles.length)
@@ -165,7 +150,7 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 		filterIndex = gd.getNextChoiceIndex();
 		if (stackSize>1)
 			processStack = gd.getNextBoolean();
-		IjxImagePlus filterImp = WindowManager.getImage(wList[filterIndex]);
+		ImagePlus filterImp = WindowManager.getImage(wList[filterIndex]);
 		if (filterImp==imp) {
 			IJ.error("FFT", "The filter cannot be the same as the image being filtered.");
 			return null;
@@ -175,31 +160,20 @@ public class FFTCustomFilter implements  IjxPlugInFilter, Measurements {
 			return null;
 		}		
 		ImageProcessor filter = filterImp.getProcessor();		
-		if (filter.getWidth()>size || filter.getHeight()>size) {
-			IJ.error("FFT", "Filter cannot be larger than "+size+"x"+size);
-			done = true;
-			return null;
-		}
 		filter =  filter.convertToByte(true);		
-		filter = padFilter(filter, size);
-		//new ImagePlus("Padded Filter", filter.duplicate()).show();
+		filter = resizeFilter(filter, size);
+		//new ImagePlus("Resized Filter", filter.duplicate()).show();
 		return filter;
 	}
 	
-	ImageProcessor padFilter(ImageProcessor ip, int maxN) {
+	ImageProcessor resizeFilter(ImageProcessor ip, int maxN) {
 		int width = ip.getWidth();
 		int height = ip.getHeight();
 		if (width==maxN && height==maxN)
 			return ip;
-		showStatus("Padding filter to "+ maxN + "x" + maxN);
-		ImageStatistics stats = ImageStatistics.getStatistics(ip, MEAN, null);
-		ImageProcessor ip2 = ip.createProcessor(maxN, maxN);
-		ip2.setValue(stats.mean);
-		ip2.fill();
-		ip2.insert(ip, (maxN-width)/2, (maxN-height)/2);
-		return ip2;
+		showStatus("Scaling filter to "+ maxN + "x" + maxN);
+		return ip.resize(maxN, maxN);
 	}
-
-	
+		
 }
 

@@ -5,17 +5,19 @@
  */
 package ij.plugin.filter;
 import ij.IJ;
-import ijx.IjxImagePlus;
+import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.*;
 
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-public class ThresholdToSelection implements IjxPlugInFilter {
-	IjxImagePlus image;
+public class ThresholdToSelection implements PlugInFilter {
+	ImagePlus image;
 	ImageProcessor ip;
 	float min, max;
 	int w, h;
@@ -285,7 +287,7 @@ public class ThresholdToSelection implements IjxPlugInFilter {
 			return shape;
 	}
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		image = imp;
 		return DOES_8G | DOES_16 | DOES_32 | NO_CHANGES;
 	}

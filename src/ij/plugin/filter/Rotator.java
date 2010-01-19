@@ -1,6 +1,4 @@
 package ij.plugin.filter;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -12,18 +10,19 @@ import java.awt.geom.*;
 public class Rotator implements ExtendedPlugInFilter, DialogListener {
 	private int flags = DOES_ALL|SUPPORTS_MASKING|PARALLELIZE_STACKS;
 	private static double angle = 15.0;
-	private static boolean interpolate = true;
 	private static boolean fillWithBackground;
 	private static boolean enlarge;
 	private static int gridLines = 1;
-	private IjxImagePlus imp;
+	private ImagePlus imp;
 	private int bitDepth;
-	boolean canEnlarge;
-	boolean isEnlarged;
-	GenericDialog gd;
-	PlugInFilterRunner pfr;
+	private boolean canEnlarge;
+	private boolean isEnlarged;
+	private GenericDialog gd;
+	private PlugInFilterRunner pfr;
+	private String[] methods = ImageProcessor.getInterpolationMethods();
+	private static int interpolationMethod = ImageProcessor.BILINEAR;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		if (imp!=null) {
 			bitDepth = imp.getBitDepth();
@@ -48,7 +47,7 @@ public class Rotator implements ExtendedPlugInFilter, DialogListener {
 			else
 				ip = imp.getStack().getProcessor(slice);
 		}
-		ip.setInterpolate(interpolate);
+		ip.setInterpolationMethod(interpolationMethod);
 		if (fillWithBackground) {
 			Color bgc = Toolbar.getBackgroundColor();
 			if (bitDepth==8)
@@ -61,7 +60,7 @@ public class Rotator implements ExtendedPlugInFilter, DialogListener {
 		if (!gd.wasOKed())
 			drawGridLines(gridLines);
 		if (isEnlarged && imp.getStackSize()==1) {
-			imp.setChanged(true);
+			imp.changes = true;
 			imp.updateAndDraw();
 			Undo.setup(Undo.COMPOUND_FILTER_DONE, imp);
 		}
@@ -84,7 +83,7 @@ public class Rotator implements ExtendedPlugInFilter, DialogListener {
 
 
 	void drawGridLines(int lines) {
-		IjxImageCanvas ic = imp.getCanvas();
+		ImageCanvas ic = imp.getCanvas();
 		if (ic==null) return;
 		if (lines==0) {ic.setDisplayList(null); return;}
 		GeneralPath path = new GeneralPath();
@@ -103,12 +102,20 @@ public class Rotator implements ExtendedPlugInFilter, DialogListener {
 		ic.setDisplayList(path, null, null);
 	}
 	
-	public int showDialog(IjxImagePlus imp, String command, PlugInFilterRunner pfr) {
+	public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
 		this.pfr = pfr;
-		gd = new GenericDialog("Rotate", IJ.getTopComponentFrame());
-		gd.addNumericField("Angle (degrees): ", angle, (int)angle==angle?1:2);
-		gd.addNumericField("Grid Lines: ", gridLines, 0);
-		gd.addCheckbox("Interpolate", interpolate);
+		String macroOptions = Macro.getOptions();
+		if (macroOptions!=null) {
+			if (macroOptions.indexOf(" interpolate")!=-1)
+				macroOptions.replaceAll(" interpolate", " interpolation=Bilinear");
+			else if (macroOptions.indexOf(" interpolation=")==-1)
+				macroOptions = macroOptions+" interpolation=None";
+			Macro.setOptions(macroOptions);
+		}
+		gd = new GenericDialog("Rotate", IJ.getInstance());
+		gd.addNumericField("Angle (degrees):", angle, (int)angle==angle?1:2);
+		gd.addNumericField("Grid Lines:", gridLines, 0);
+		gd.addChoice("Interpolation:", methods, methods[interpolationMethod]);
 		if (bitDepth==8 || bitDepth==24)
 			gd.addCheckbox("Fill with Background Color", fillWithBackground);
 		if (canEnlarge)
@@ -137,7 +144,7 @@ public class Rotator implements ExtendedPlugInFilter, DialogListener {
 			return false;
 		}
 		gridLines = (int)gd.getNextNumber();
-		interpolate = gd.getNextBoolean();
+		interpolationMethod = gd.getNextChoiceIndex();
 		if (bitDepth==8 || bitDepth==24)
 			fillWithBackground = gd.getNextBoolean();
 		if (canEnlarge)

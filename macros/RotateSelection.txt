@@ -1,5 +1,4 @@
 // Rotates the selection by a specified angle.
-// Does not work with composite selections.
 
   angle = parseFloat(getArgument());
   if (isNaN(angle)) exit("Angle is invalid: "+getArgument());
@@ -10,6 +9,10 @@
   Dialog.addMessage("Enter negative angle to \nrotate counter-clockwise");
   Dialog.show();
   angle = Dialog.getNumber();
+  if (selectionType==9) {
+     rotateCompositeSelection(angle);
+     return toString(angle);
+  }
   theta = -angle*PI/180;
   getBoundingRect(xbase, ybase, width, height);
   xcenter=xbase+width/2; ycenter=ybase+height/2;
@@ -32,3 +35,20 @@
       makeSelection(selectionType, x, y);
   return toString(angle);
 
+  function rotateCompositeSelection(angle) {
+     setBatchMode(true);
+     id = getImageID;
+     getSelectionBounds(x1, y1, w1, h1);
+     run("Create Mask");
+     makeRectangle(x1, y1, w1, h1);
+     run("Crop");
+     run("Arbitrarily...", "enlarge angle="+angle);
+     setThreshold(255, 255);
+     run("Convert to Mask");
+     setThreshold(255, 255);
+     run("Create Selection");
+     getSelectionBounds(x2, y2, w2, h2);
+     selectImage(id);
+     run("Restore Selection");
+     setSelectionLocation(x1-(w2-w1)/2, y1-(h2-h1)/2);
+  }

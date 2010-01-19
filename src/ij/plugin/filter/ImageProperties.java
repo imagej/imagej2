@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -10,8 +9,8 @@ import java.awt.event.*;
 import java.util.*;
 import ij.measure.Calibration;
 
-public class ImageProperties implements IjxPlugInFilter, TextListener {
-	IjxImagePlus imp;
+public class ImageProperties implements PlugInFilter, TextListener {
+	ImagePlus imp;
 	static final int NANOMETER=0, MICROMETER=1, MILLIMETER=2, CENTIMETER=3,
 		 METER=4, KILOMETER=5, INCH=6, FOOT=7, MILE=8, PIXEL=9, OTHER_UNIT=10;
 	int oldUnitIndex;
@@ -23,7 +22,7 @@ public class ImageProperties implements IjxPlugInFilter, TextListener {
 	TextField pixelWidthField, pixelHeightField, pixelDepthField;
 	int textChangedCount;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_ALL+NO_CHANGES;
 	}
@@ -32,9 +31,9 @@ public class ImageProperties implements IjxPlugInFilter, TextListener {
 		showDialog(imp);
 	}
 	
-	void showDialog(IjxImagePlus imp) {
+	void showDialog(ImagePlus imp) {
 		String options = Macro.getOptions();
-		if (options!=null && IJ.isJava14()) {
+		if (options!=null ) {
 			String options2 = options.replaceAll(" depth=", " slices=");
 			options2 = options2.replaceAll(" interval=", " frame=");
 			Macro.setOptions(options2);
@@ -104,9 +103,7 @@ public class ImageProperties implements IjxPlugInFilter, TextListener {
  				+")\n and frames ("+frames+") must equal the stack size ("+stackSize+").");
 
 		String unit = gd.getNextString();
-        if (unit.equals("um"))
-            unit = IJ.micronSymbol + "m";
-        else if (unit.equals("u"))
+        if (unit.equals("u"))
             unit = "" + IJ.micronSymbol;
         else if (unit.equals("A"))
         	unit = ""+IJ.angstromSymbol;

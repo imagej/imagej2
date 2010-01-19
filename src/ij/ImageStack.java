@@ -1,5 +1,4 @@
 package ij;
-import ijx.IjxImageStack;
 import java.awt.*;
 import java.awt.image.*;
 import ij.process.*;
@@ -9,7 +8,7 @@ This class represents an expandable array of images.
 @see ImagePlus
 */
 
-public class ImageStack implements IjxImageStack {
+public class ImageStack {
 
 	static final int INITIAL_SIZE = 25;
 	static final String outOfRange = "Argument out of range: ";
@@ -137,7 +136,10 @@ public class ImageStack implements IjxImageStack {
 	}
 	
 	public Rectangle getRoi() {
-		return(this.roi);
+		if (roi==null)
+			return new Rectangle(0, 0, width, height);
+		else
+			return(roi);
 	}
 	
 	/** Updates this stack so its attributes, such as min, max,
@@ -233,6 +235,8 @@ public class ImageStack implements IjxImageStack {
 			throw new IllegalArgumentException(outOfRange+n);
 		if (nSlices==0)
 			return null;
+		if (stack[0]==null)
+			throw new IllegalArgumentException("Pixel array is null");
 		if (stack[0] instanceof byte[])
 			ip = new ByteProcessor(width, height, null, cm);
 		else if (stack[0] instanceof short[])
@@ -293,7 +297,8 @@ public class ImageStack implements IjxImageStack {
 	}
 
 	public String toString() {
-		return ("width="+width+", height="+height+", nSlices="+nSlices+", cm="+cm);
+		String v = isVirtual()?"(V)":"";
+		return ("stack["+getWidth()+"x"+getHeight()+"x"+getSize()+v+"]");
 	}
 		
 }

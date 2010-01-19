@@ -1,7 +1,7 @@
 package ij.gui;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.awt.datatransfer.*;
@@ -38,14 +38,14 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 	public static int nBins = 256;
     
 	/** Displays a histogram using the title "Histogram of ImageName". */
-	public HistogramWindow(IjxImagePlus imp) {
-		super(NewImageIjx.createByteImage("Histogram of "+imp.getShortTitle(), WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
+	public HistogramWindow(ImagePlus imp) {
+		super(NewImage.createByteImage("Histogram of "+imp.getShortTitle(), WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
 		showHistogram(imp, 256, 0.0, 0.0);
 	}
 
 	/** Displays a histogram using the specified title and number of bins. 
 		Currently, the number of bins must be 256 expect for 32 bit images. */
-	public HistogramWindow(String title, IjxImagePlus imp, int bins) {
+	public HistogramWindow(String title, ImagePlus imp, int bins) {
 		super(NewImage.createByteImage(title, WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
 		showHistogram(imp, bins, 0.0, 0.0);
 	}
@@ -53,20 +53,20 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 	/** Displays a histogram using the specified title, number of bins and histogram range.
 		Currently, the number of bins must be 256 and the histogram range range must be the 
 		same as the image range expect for 32 bit images. */
-	public HistogramWindow(String title, IjxImagePlus imp, int bins, double histMin, double histMax) {
+	public HistogramWindow(String title, ImagePlus imp, int bins, double histMin, double histMax) {
 		super(NewImage.createByteImage(title, WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
 		showHistogram(imp, bins, histMin, histMax);
 	}
 
 	/** Displays a histogram using the specified title, number of bins, histogram range and yMax. */
-	public HistogramWindow(String title, IjxImagePlus imp, int bins, double histMin, double histMax, int yMax) {
+	public HistogramWindow(String title, ImagePlus imp, int bins, double histMin, double histMax, int yMax) {
 		super(NewImage.createByteImage(title, WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
 		this.yMax = yMax;
 		showHistogram(imp, bins, histMin, histMax);
 	}
 
 	/** Displays a histogram using the specified title and ImageStatistics. */
-	public HistogramWindow(String title, IjxImagePlus imp, ImageStatistics stats) {
+	public HistogramWindow(String title, ImagePlus imp, ImageStatistics stats) {
 		super(NewImage.createByteImage(title, WIN_WIDTH, WIN_HEIGHT, 1, NewImage.FILL_WHITE));
 		//IJ.log("HistogramWindow: "+stats.histMin+"  "+stats.histMax+"  "+stats.nBins);
 		this.yMax = stats.histYMax;
@@ -75,21 +75,21 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 
 	/** Draws the histogram using the specified title and number of bins.
 		Currently, the number of bins must be 256 expect for 32 bit images. */
-	public void showHistogram(IjxImagePlus imp, int bins) {
+	public void showHistogram(ImagePlus imp, int bins) {
 		showHistogram(imp, bins, 0.0, 0.0);
 	}
 
 	/** Draws the histogram using the specified title, number of bins and histogram range.
 		Currently, the number of bins must be 256 and the histogram range range must be 
 		the same as the image range expect for 32 bit images. */
-	public void showHistogram(IjxImagePlus imp, int bins, double histMin, double histMax) {
+	public void showHistogram(ImagePlus imp, int bins, double histMin, double histMax) {
 		boolean limitToThreshold = (Analyzer.getMeasurements()&LIMIT)!=0;
 		stats = imp.getStatistics(AREA+MEAN+MODE+MIN_MAX+(limitToThreshold?LIMIT:0), bins, histMin, histMax);
 		showHistogram(imp, stats);
 	}
 
 	/** Draws the histogram using the specified title and ImageStatistics. */
-	public void showHistogram(IjxImagePlus imp, ImageStatistics stats) {
+	public void showHistogram(ImagePlus imp, ImageStatistics stats) {
 		setup();
 		this.stats = stats;
 		cal = imp.getCalibration();
@@ -109,7 +109,7 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 		}
 		lut = imp.createLut();
 		int type = imp.getType();
-		boolean fixedRange = type==IjxImagePlus.GRAY8 || type==IjxImagePlus.COLOR_256 || type==IjxImagePlus.COLOR_RGB;
+		boolean fixedRange = type==ImagePlus.GRAY8 || type==ImagePlus.COLOR_256 || type==ImagePlus.COLOR_RGB;
 		ImageProcessor ip = this.imp.getProcessor();
 		boolean color = !(imp.getProcessor() instanceof ColorProcessor) && !lut.isGrayscale();
 		if (color)
@@ -153,7 +153,7 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 			x = x - frame.x;
 			if (x>255) x = 255;
 			int index = (int)(x*((double)histogram.length)/HIST_WIDTH);
-			value.setText("  Value: " + IJ.d2s(cal.getCValue(stats.histMin+index*stats.binSize), digits));
+			value.setText("  Value: " + ResultsTable.d2s(cal.getCValue(stats.histMin+index*stats.binSize), digits));
 			count.setText("  Count: " + histogram[index]);
 		} else {
 			value.setText("");
@@ -278,9 +278,9 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 		else if (Double.isInfinite(d))
 			return("Infinity");
 		else if ((int)d==d)
-			return IJ.d2s(d,0);
+			return ResultsTable.d2s(d,0);
 		else
-			return IJ.d2s(d,decimalPlaces);
+			return ResultsTable.d2s(d,decimalPlaces);
 	}
 	
 	int getWidth(double d, ImageProcessor ip) {
@@ -292,11 +292,11 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
         String vheading = stats.binSize==1.0?"value":"bin start";
 		if (cal.calibrated() && !cal.isSigned16Bit()) {
 			for (int i=0; i<stats.nBins; i++)
-				sb.append(i+"\t"+IJ.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
+				sb.append(i+"\t"+ResultsTable.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
 			TextWindow tw = new TextWindow(getTitle(), "level\t"+vheading+"\tcount", sb.toString(), 200, 400);
 		} else {
 			for (int i=0; i<stats.nBins; i++)
-				sb.append(IJ.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
+				sb.append(ResultsTable.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
 			TextWindow tw = new TextWindow(getTitle(), vheading+"\tcount", sb.toString(), 200, 400);
 		}
 	}
@@ -311,7 +311,7 @@ public class HistogramWindow extends ImageWindow implements Measurements, Action
 		CharArrayWriter aw = new CharArrayWriter(stats.nBins*4);
 		PrintWriter pw = new PrintWriter(aw);
 		for (int i=0; i<stats.nBins; i++)
-			pw.print(IJ.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
+			pw.print(ResultsTable.d2s(cal.getCValue(stats.histMin+i*stats.binSize), digits)+"\t"+histogram[i]+"\n");
 		String text = aw.toString();
 		pw.close();
 		StringSelection contents = new StringSelection(text);

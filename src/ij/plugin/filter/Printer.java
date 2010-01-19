@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -8,8 +7,8 @@ import java.util.Properties;
 import java.awt.print.*;
 
 /** This plugin implements the File/Page Setup and File/Print commands. */
-public class Printer implements IjxPlugInFilter, Printable {
-	private IjxImagePlus imp;
+public class Printer implements PlugInFilter, Printable {
+	private ImagePlus imp;
 	private static double scaling = 100.0;
 	private static boolean drawBorder;
 	private static boolean center = true;
@@ -18,7 +17,7 @@ public class Printer implements IjxPlugInFilter, Printable {
 	private static boolean rotate;
 	private static int fontSize = 12;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		if (arg.equals("setup"))
 			{pageSetup(); return DONE;}
 		this.imp = imp;
@@ -51,7 +50,7 @@ public class Printer implements IjxPlugInFilter, Printable {
 		rotate = gd.getNextBoolean();
 	}
 
-	void print(IjxImagePlus imp) {
+	void print(ImagePlus imp) {
 		PrinterJob pj = PrinterJob.getPrinterJob();
 		pj.setPrintable(this);
 		//pj.pageDialog(pj.defaultPage());
@@ -86,7 +85,8 @@ public class Printer implements IjxPlugInFilter, Printable {
 		int dstY = pageY+margin;
 		Image img = ip.createImage();
 		double pageWidth = pf.getImageableWidth()-2*margin;
-		double pageHeight = pf.getImageableHeight()-2*margin;		if (label && pageWidth-dstWidth<fontSize+5) {
+		double pageHeight = pf.getImageableHeight()-2*margin;
+		if (label && pageWidth-dstWidth<fontSize+5) {
 			dstY += fontSize+5;
 			pageHeight -= fontSize+5;
 		}	

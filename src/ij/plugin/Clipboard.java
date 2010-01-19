@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
@@ -11,6 +10,7 @@ import ij.process.*;
 import ij.gui.*;
 import ij.plugin.frame.Editor;
 import ij.text.TextWindow;
+import ij.util.Tools;
 	
 /**	Copies and pastes images to the clipboard. */
 public class Clipboard implements PlugIn, Transferable {
@@ -38,7 +38,7 @@ public class Clipboard implements PlugIn, Transferable {
 	}
 	
 	void copy(boolean cut) {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null)
 	 		imp.copy(cut);
 	 	else
@@ -46,13 +46,10 @@ public class Clipboard implements PlugIn, Transferable {
 	}
 	
 	void paste() {
-		if (IJ.getClipboard()==null) {
-			if (IJ.isJava14())
-				showSystemClipboard();
-			else
-				IJ.noImage();
-		} else {
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+		if (ImagePlus.getClipboard()==null)
+			showSystemClipboard();
+		else {
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null)
 				imp.paste();
 			else
@@ -95,9 +92,11 @@ public class Clipboard implements PlugIn, Transferable {
 				g.drawImage(img, 0, 0, null);
 				g.dispose();
 				WindowManager.checkForDuplicateName = true;
-				IJ.getFactory().newImagePlus("Clipboard", bi).show();
+				new ImagePlus("Clipboard", bi).show();
 			} else if (textSupported) {
 				String text = (String)transferable.getTransferData(DataFlavor.stringFlavor);
+				if (IJ.isMacintosh())
+					text = Tools.fixNewLines(text);
 				Editor ed = new Editor();
 				ed.setSize(600, 300);
 				ed.create("Clipboard", text);
@@ -105,10 +104,7 @@ public class Clipboard implements PlugIn, Transferable {
 			} else
 				IJ.error("Unable to find an image on the system clipboard");
 		} catch (Throwable e) {
-			CharArrayWriter caw = new CharArrayWriter();
-			PrintWriter pw = new PrintWriter(caw);
-			e.printStackTrace(pw);
-			new TextWindow("Exception", caw.toString(), 350, 250);
+			IJ.handleException(e);
 		}
 	}
 	
@@ -123,7 +119,7 @@ public class Clipboard implements PlugIn, Transferable {
 	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
 		if (!isDataFlavorSupported(flavor))
 			throw new UnsupportedFlavorException(flavor);
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null) {
 			ImageProcessor ip;
 			if (imp.isComposite()) {
@@ -135,7 +131,7 @@ public class Clipboard implements PlugIn, Transferable {
 			int w = ip.getWidth();
 			int h = ip.getHeight();
 			IJ.showStatus(w+"x"+h+ " image copied to system clipboard");
-			Image img = IJ.getTopComponentFrame().createImage(w, h);
+			Image img = IJ.getInstance().createImage(w, h);
 			Graphics g = img.getGraphics();
 			g.drawImage(ip.createImage(), 0, 0, null);
 			g.dispose();
@@ -147,10 +143,10 @@ public class Clipboard implements PlugIn, Transferable {
 	}
 	
 	void showInternalClipboard() {
-		IjxImagePlus clipboard = IJ.getClipboard();
+		ImagePlus clipboard = ImagePlus.getClipboard();
 		if (clipboard!=null) {
 			ImageProcessor ip = clipboard.getProcessor();
-			IjxImagePlus imp2 = IJ.getFactory().newImagePlus("Clipboard", ip.duplicate());
+			ImagePlus imp2 = new ImagePlus("Clipboard", ip.duplicate());
 			Roi roi = clipboard.getRoi();
 			imp2.killRoi();
 			if (roi!=null && roi.isArea() && roi.getType()!=Roi.RECTANGLE) {
@@ -170,7 +166,7 @@ public class Clipboard implements PlugIn, Transferable {
     	Image img = getMacImage(t);
     	if (img!=null) {
 			WindowManager.checkForDuplicateName = true;          
-			IJ.getFactory().newImagePlus("Clipboard", img).show();
+			new ImagePlus("Clipboard", img).show();
 		}
 		return img!=null;
     }

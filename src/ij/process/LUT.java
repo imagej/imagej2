@@ -14,6 +14,24 @@ import java.awt.image.*;
     	super(bits, size, r, g, b);
 	}
 	
+	public LUT(IndexColorModel cm, double min, double max) {
+		super(8, cm.getMapSize(), getReds(cm), getGreens(cm), getBlues(cm));
+		this.min = min;
+		this.max = max;
+	}
+	
+	static byte[] getReds(IndexColorModel cm) {
+		byte[] reds=new byte[256]; cm.getReds(reds); return reds;
+	}
+	
+	static byte[] getGreens(IndexColorModel cm) {
+		byte[] greens=new byte[256]; cm.getGreens(greens); return greens;
+	}
+	
+	static byte[] getBlues(IndexColorModel cm) {
+		byte[] blues=new byte[256]; cm.getBlues(blues); return blues;
+	}
+	
 	public byte[] getBytes() {
 		int size = getMapSize();
 		if (size!=256) return null;

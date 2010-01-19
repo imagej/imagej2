@@ -10,7 +10,6 @@ This code was modified from Image_Browser by Albert Cardona
 */
 
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.io.*;
 import ij.gui.*;
@@ -20,7 +19,7 @@ public class NextImageOpener implements PlugIn {
 
 	boolean forward = true; // default browse direction is forward
 	boolean closeCurrent = true; //default behavior is to close current window
-	IjxImagePlus imp0;
+	ImagePlus imp0;
 	
 	public void run(String arg) {
 		/* get changes to defaults */
@@ -56,7 +55,7 @@ public class NextImageOpener implements PlugIn {
 		}
 	}
 	
-	String getName(IjxImagePlus imp) {
+	String getName(ImagePlus imp) {
 		String name = imp.getTitle();
 		FileInfo fi = imp.getOriginalFileInfo();
 		if (fi!=null && fi.fileName!=null)
@@ -65,18 +64,17 @@ public class NextImageOpener implements PlugIn {
 	}
 	
 	String open(String nextPath) {
-		IjxImagePlus imp2 = IJ.openImage(nextPath);
+		ImagePlus imp2 = IJ.openImage(nextPath);
 		if (imp2==null) return null;
 		String newTitle = imp2.getTitle();
-		if (imp0.wasChanged()) {
+		if (imp0.changes) {
 			String msg;
 			String name = imp0.getTitle();
 			if (name.length()>22)
 				msg = "Save changes to\n" + "\"" + name + "\"?";
 			else
 				msg = "Save changes to \"" + name + "\"?";
-			//YesNoCancelDialog d = new YesNoCancelDialog(imp0.getWindow(), "ImageJ", msg);
-			YesNoCancelDialog d = new YesNoCancelDialog(null, "ImageJ", msg);
+			YesNoCancelDialog d = new YesNoCancelDialog(imp0.getWindow(), "ImageJ", msg);
 			if (d.cancelPressed())
 				return "Canceled";
 			else if (d.yesPressed()) {
@@ -84,13 +82,13 @@ public class NextImageOpener implements PlugIn {
 				if (!fs.save())
 					return "Canceled";
 			}
-			imp0.setChanged(false);
+			imp0.changes = false;
 		}
 		imp0.setStack(newTitle, imp2.getStack());
 		imp0.setCalibration(imp2.getCalibration());
 		imp0.setFileInfo(imp2.getOriginalFileInfo());
 		imp0.setProperty ("Info", imp2.getProperty ("Info"));
-		ImageWindow win = (ImageWindow) imp0.getWindow();
+		ImageWindow win = imp0.getWindow();
 		if (win!=null) win.repaint();
 		return "ok";
 	}

@@ -1,23 +1,22 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.io.*;
 import java.util.Properties;
 import ij.*;
 import ij.io.*;
 import ij.process.*;
-import ijx.IjxImageStack;
 
 /**
  * This plugin saves a 16 or 32 bit image in FITS format. It is a stripped-down version of the SaveAs_FITS 
  *	plugin from the collection of astronomical image processing plugins by Jennifer West at
- *	http://www.umanitoba.ca/faculties/science/astronomy/jwest/plugins.html
+ *	http://www.umanitoba.ca/faculties/science/astronomy/jwest/plugins.html.
  *
- * Version 2008-09-07 : preserves non-minimal FITS header if already present (F.V. Hessman, Univ. Goettingen)
+ * <br>Version 2008-09-07 : preserves non-minimal FITS header if already present (F.V. Hessman, Univ. Goettingen).
+ * <br>Version 2008-12-15 : fixed END card recognition bug (F.V. Hessman, Univ. Goettingen).
  */
 public class FITS_Writer implements PlugIn {
 
 	public void run(String path) {
-		IjxImagePlus imp = IJ.getImage();
+		ImagePlus imp = IJ.getImage();
 		ImageProcessor ip = imp.getProcessor();
 		int numImages = imp.getImageStackSize();
 		int bitDepth = imp.getBitDepth();
@@ -70,7 +69,7 @@ public class FITS_Writer implements PlugIn {
 	void createHeader(String path, ImageProcessor ip, int numBytes) {
 		int numCards = 5;
 		String bitperpix = "";
-		if (numBytes==2) {bitperpix = "                  16";}
+		if      (numBytes==2) {bitperpix = "                  16";}
 		else if (numBytes==4) {bitperpix = "                 -32";}
 		else if (numBytes==1) {bitperpix = "                   8";}
  		appendFile(writeCard("SIMPLE", "                   T", "Created by ImageJ FITS_Writer 2008-09-07"), path);
@@ -172,7 +171,7 @@ public class FITS_Writer implements PlugIn {
 	 *
 	 * @param img		The ImagePlus image which has the FITS header in it's "Info" property.
 	 */
-	public static String[] getHeader (IjxImagePlus img) {
+	public static String[] getHeader (ImagePlus img) {
 		String content = null;
 
 		int depth = img.getStackSize();
@@ -184,7 +183,7 @@ public class FITS_Writer implements PlugIn {
 		}
 		else if (depth > 1) {
 			int slice = img.getCurrentSlice();
-			IjxImageStack stack = img.getStack();
+			ImageStack stack = img.getStack();
 			content = stack.getSliceLabel(slice);
 		}
 		if (content == null)
@@ -204,7 +203,8 @@ public class FITS_Writer implements PlugIn {
 
 		int iend = istart+1;
 		for (; iend < lines.length; iend++) {
-			if ( lines[iend].startsWith ("END ") ) break;
+			String s = lines[iend].trim();
+			if ( s.equals ("END") || s.startsWith ("END ") ) break;
 		}
 		if (iend >= lines.length) return null;
 
@@ -237,10 +237,10 @@ public class FITS_Writer implements PlugIn {
 		String bitperpix = "";
 
 		// THIS STUFF NEEDS TO BE MADE CONFORMAL WITH THE PRESENT IMAGE
-		if (numBytes==2) {bitperpix = "                  16";}
+		if      (numBytes==2) {bitperpix = "                  16";}
 		else if (numBytes==4) {bitperpix = "                 -32";}
 		else if (numBytes==1) {bitperpix = "                   8";}
- 		appendFile(writeCard("SIMPLE", "                   T", "Created by ImageJ FITS_Writer 2008-09-07"), path);
+ 		appendFile(writeCard("SIMPLE", "                   T", "Created by ImageJ FITS_Writer 2008-12-15"), path);
  		appendFile(writeCard("BITPIX", bitperpix, ""), path);
  		appendFile(writeCard("NAXIS", "                   2", ""), path);
 		appendFile(writeCard("NAXIS1", "                 "+ip.getWidth(), "image width"), path);
@@ -271,6 +271,6 @@ public class FITS_Writer implements PlugIn {
 		appendFile(end, path);
 		appendFile(filler, path);
 	}
-	
+
 }
 

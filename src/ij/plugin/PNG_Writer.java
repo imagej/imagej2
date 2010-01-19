@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.io.*;
 import ij.process.*;
@@ -13,7 +12,7 @@ import javax.imageio.ImageIO;
 	as RGB PNGs. All other image types are saved as 8-bit PNGs. With 8-bit images,
 	the value of the transparent index can be set in Edit/Options/Input-Output. */
 public class PNG_Writer implements PlugIn {
-    IjxImagePlus imp;
+    ImagePlus imp;
 
     public void run(String path) {
         imp = WindowManager.getCurrentImage();
@@ -40,14 +39,16 @@ public class PNG_Writer implements PlugIn {
         IJ.showStatus("");
     }
 
-	public void writeImage(IjxImagePlus imp, String path, int transparentIndex) throws Exception {
+	public void writeImage(ImagePlus imp, String path, int transparentIndex) throws Exception {
 		if (transparentIndex>=0 && transparentIndex<=255 && imp.getBitDepth()==8)
 			writeImageWithTransparency(imp, path, transparentIndex);
-		else
+		else if (imp.getBitDepth() == 16)
+			write16gs(imp, path);
+        else
 			ImageIO.write(imp.getBufferedImage(), "png", new File(path));
 	}
     
-	void writeImageWithTransparency(IjxImagePlus imp, String path, int transparentIndex) throws Exception {
+	void writeImageWithTransparency(ImagePlus imp, String path, int transparentIndex) throws Exception {
 		int width = imp.getWidth();
 		int  height = imp.getHeight();
 		ImageProcessor ip = imp.getProcessor();
@@ -68,48 +69,15 @@ public class PNG_Writer implements PlugIn {
 		ImageIO.write(bi, "png", new File(path));
 	}
 
-	/*
-	void writeImageWithTransparency(IjxImagePlus imp, String path, int transparentIndex) throws Exception {
+    void write16gs(ImagePlus imp, String path) throws Exception {
+        //IJ.showMessage("PNG Writer", "Writing " + imp.getBitDepth() + "bits\n \n");
 		int width = imp.getWidth();
 		int  height = imp.getHeight();
-		ImageProcessor ip = imp.getProcessor();
-		IndexColorModel cm = (IndexColorModel)ip.getColorModel();
-		int size = cm.getMapSize();
-		byte[] reds = new byte[256];
-		byte[] greens = new byte[256];
-		byte[] blues = new byte[256];	
-		cm.getReds(reds); 
-		cm.getGreens(greens); 
-		cm.getBlues(blues);
-		cm = new IndexColorModel(8, 256, reds, greens, blues, transparentIndex);
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, cm);
-		DataBuffer db = new DataBufferByte((byte[])ip.getPixels(), width*height, 0);
-		WritableRaster wr = cm.createCompatibleWritableRaster(1, 1);
-		SampleModel sm = wr.getSampleModel();
-		sm = sm.createCompatibleSampleModel(width, height);
-		Raster raster = Raster.createRaster(sm, db, null);
-		bi.setData(raster);
-		ImageIO.write(bi, "png", new File(path));
-	}
-	*/
-	
-	/*
-	void writeImageWithTransparency(IjxImagePlus imp, String path, int transparentIndex) throws Exception {
-		int width = imp.getWidth();
-		int  height = imp.getHeight();
-		LookUpTable lut = imp.createLut();
-		int size = lut.getMapSize();
-		byte [] reds = lut.getReds();
-		byte [] greens = lut.getGreens();
-		byte [] blues = lut.getBlues();
-		IndexColorModel cm = new IndexColorModel(8, size, reds, greens, blues, transparentIndex);
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, cm);
+		BufferedImage bi = new BufferedImage(
+                width, height, BufferedImage.TYPE_USHORT_GRAY);
 		Graphics2D g = (Graphics2D)bi.getGraphics();
 		g.drawImage(imp.getImage(), 0, 0, null);
 		File f = new File(path);
 		ImageIO.write(bi, "png", f);
-	}
-	*/
-
+    }
 }
-

@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -7,7 +6,6 @@ import ij.measure.*;
 import ij.plugin.ContrastEnhancer;
 import ij.measure.Calibration;
 import ij.util.Tools;
-import ijx.IjxImageStack;
 import java.awt.*;
 import java.util.*;
 
@@ -29,7 +27,7 @@ public class FFT implements  PlugIn, Measurements {
     public static boolean displayComplex;
     public static String fileName;
     
-    private IjxImagePlus imp;
+    private ImagePlus imp;
     private boolean padded;
     private int originalWidth;
     private int originalHeight;
@@ -115,7 +113,7 @@ public class FFT implements  PlugIn, Measurements {
         String title = imp.getTitle();
         if (title.startsWith("FFT of "))
             title = title.substring(7, title.length());
-        IjxImagePlus imp2 = IJ.getFactory().newImagePlus("Inverse FFT of "+title, ip2);
+        ImagePlus imp2 = new ImagePlus("Inverse FFT of "+title, ip2);
         if (imp2.getWidth()==imp.getWidth())
             imp2.setCalibration(imp.getCalibration());
         imp2.show();
@@ -128,7 +126,7 @@ public class FFT implements  PlugIn, Measurements {
         ImageProcessor ps = fht.getPowerSpectrum();
         if (!(displayFHT||displayComplex)) displayFFT = true;
         if (displayFFT) {
-            IjxImagePlus imp2 = IJ.getFactory().newImagePlus("FFT of "+imp.getTitle(), ps);
+            ImagePlus imp2 = new ImagePlus("FFT of "+imp.getTitle(), ps);
             imp2.show();
             imp2.setProperty("FHT", fht);
             imp2.setCalibration(imp.getCalibration());
@@ -206,7 +204,7 @@ public class FFT implements  PlugIn, Measurements {
             smooth(mask);
         //IJ.log("smoothing time:"+(System.currentTimeMillis()-t0));
         if (IJ.debugMode || IJ.altKeyDown())
-        	IJ.getFactory().newImagePlus("mask", mask.duplicate()).show();
+        	new ImagePlus("mask", mask.duplicate()).show();
         ip.swapQuadrants(mask);
         byte[] maskPixels = (byte[])mask.getPixels();
         for (int i=0; i<fht.length; i++) {
@@ -275,7 +273,7 @@ public class FFT implements  PlugIn, Measurements {
         imp.setProcessor(null, ps);
     }
     
-    void swapQuadrants(IjxImageStack stack) {
+    void swapQuadrants(ImageStack stack) {
         FHT fht = new FHT(new FloatProcessor(1, 1));
         for (int i=1; i<=stack.getSize(); i++)
             fht.swapQuadrants(stack.getProcessor(i));
@@ -310,11 +308,11 @@ public class FFT implements  PlugIn, Measurements {
         fht.inverseTransform();
         fht.resetMinAndMax();
         String name = WindowManager.getUniqueName(imp.getTitle().substring(7));
-        IJ.getFactory().newImagePlus(name, fht).show();
+        new ImagePlus(name, fht).show();
     }
 
     void doComplexInverseTransform() {
-        IjxImageStack stack = imp.getStack();
+        ImageStack stack = imp.getStack();
         if (!stack.getSliceLabel(1).equals("Real"))
             return;
         int maxN = imp.getWidth();
@@ -324,18 +322,18 @@ public class FFT implements  PlugIn, Measurements {
         float[] reout= new float[maxN*maxN];
         float[] imout = new float[maxN*maxN];
         c2c2DFFT(rein, imin, maxN, reout, imout);
-        IjxImageStack stack2 = new ImageStack(maxN, maxN);
+        ImageStack stack2 = new ImageStack(maxN, maxN);
         swapQuadrants(stack);
         stack2.addSlice("Real", reout);
         stack2.addSlice("Imaginary", imout);
         stack2 = unpad(stack2);
         String name = WindowManager.getUniqueName(imp.getTitle().substring(10));
-        IjxImagePlus imp2 = IJ.getFactory().newImagePlus(name, stack2);
+        ImagePlus imp2 = new ImagePlus(name, stack2);
         imp2.getProcessor().resetMinAndMax();
         imp2.show();
     }
     
-    IjxImageStack unpad(IjxImageStack stack) {
+    ImageStack unpad(ImageStack stack) {
         Object w = imp.getProperty("FFT width");
         Object h = imp.getProperty("FFT height");
         if (w==null || h==null) return stack;
@@ -344,7 +342,7 @@ public class FFT implements  PlugIn, Measurements {
         if (width==0 || height==0 || (width==stack.getWidth()&&height==stack.getHeight()))
             return stack;
         StackProcessor sp = new StackProcessor(stack, null);
-        IjxImageStack stack2 = sp.crop(0, 0, width, height);
+        ImageStack stack2 = sp.crop(0, 0, width, height);
         return stack2;
     }
     

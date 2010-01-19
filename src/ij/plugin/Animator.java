@@ -1,20 +1,16 @@
 package ij.plugin;
-import ijx.gui.IjxStackWindow;
-import ijx.gui.IjxImageWindow;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.measure.Calibration;
-import ijx.IjxImageStack;
 
 /** This plugin animates stacks. */
 public class Animator implements PlugIn {
 
 	private static double animationRate = Prefs.getDouble(Prefs.FPS, 7.0);
 	private static int firstFrame=0, lastFrame=0;
-	private IjxImagePlus imp;
-	private IjxStackWindow swin;
+	private ImagePlus imp;
+	private StackWindow swin;
 	private int slice;
 	private int nSlices;	
 	/** Set 'arg' to "set" to display a dialog that allows the user to specify the
@@ -29,11 +25,11 @@ public class Animator implements PlugIn {
     	nSlices = imp.getStackSize();
 		if (nSlices<2)
 			{IJ.error("Stack required."); return;}
-		IjxImageWindow win = imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win==null || !(win instanceof StackWindow))
 			return;
-		swin = (IjxStackWindow)win;
-		IjxImageStack stack = imp.getStack();
+		swin = (StackWindow)win;
+		ImageStack stack = imp.getStack();
 		slice = imp.getCurrentSlice();
 		IJ.register(Animator.class);
 		
@@ -47,7 +43,7 @@ public class Animator implements PlugIn {
 			return;
 		}
 
-		if (swin.isRunning2()) // "stop", "next" and "previous" all stop animation
+		if (swin.running2) // "stop", "next" and "previous" all stop animation
 			stopAnimation();
 
 		if (arg.equals("stop")) {
@@ -71,7 +67,7 @@ public class Animator implements PlugIn {
 	}
 
 	void stopAnimation() {
-		swin.setRunning2(false);
+		swin.running2 = false;
 		IJ.wait(500+(int)(1000.0/animationRate));
 		imp.unlock(); 
 	}
@@ -80,10 +76,10 @@ public class Animator implements PlugIn {
 		int first=firstFrame, last=lastFrame;
 		if (first<1 || first>nSlices || last<1 || last>nSlices)
 			{first=1; last=nSlices;}
-		if (swin.isRunning2())
+		if (swin.running2)
 			{stopAnimation(); return;}
 		imp.unlock(); // so users can adjust brightness/contrast/threshold
-		swin.setRunning2(true);
+		swin.running2 = true;
 		long time, nextTime=System.currentTimeMillis();
 		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 		int sliceIncrement = 1;
@@ -95,11 +91,11 @@ public class Animator implements PlugIn {
 		int frames = imp.getNFrames();
 		int slices = imp.getNSlices();
 		
-		if (imp.isHyperStack() && frames>1) {
+		if (imp.isDisplayedHyperStack() && frames>1) {
 			int frame = imp.getFrame();
 			first = 1;
 			last = frames;
-			while (swin.isRunning2()) {
+			while (swin.running2) {
 				time = System.currentTimeMillis();
 				if (time<nextTime)
 					IJ.wait((int)(nextTime-time));
@@ -125,11 +121,11 @@ public class Animator implements PlugIn {
 			return;
 		}
 
-		if (imp.isHyperStack() && slices>1) {
+		if (imp.isDisplayedHyperStack() && slices>1) {
 			slice = imp.getSlice();
 			first = 1;
 			last = slices;
-			while (swin.isRunning2()) {
+			while (swin.running2) {
 				time = System.currentTimeMillis();
 				if (time<nextTime)
 					IJ.wait((int)(nextTime-time));
@@ -158,7 +154,7 @@ public class Animator implements PlugIn {
 		long startTime=System.currentTimeMillis();
 		int count = 0;
 		double fps = 0.0;
-		while (swin.isRunning2()) {
+		while (swin.running2) {
 			time = System.currentTimeMillis();
 			count++;
 			if (time>startTime+1000L) {
@@ -194,7 +190,7 @@ public class Animator implements PlugIn {
 	void doOptions() {
 		if (firstFrame<1 || firstFrame>nSlices || lastFrame<1 || lastFrame>nSlices)
 			{firstFrame=1; lastFrame=nSlices;}
-		if (imp.isHyperStack()) {
+		if (imp.isDisplayedHyperStack()) {
 			int frames = imp.getNFrames();
 			int slices = imp.getNSlices();
 			firstFrame = 1;
@@ -203,7 +199,7 @@ public class Animator implements PlugIn {
 			else if (slices>1)
 				lastFrame=slices;
 		}
-		boolean start = !swin.isRunning2();
+		boolean start = !swin.running2;
 		Calibration cal = imp.getCalibration();
 		if (cal.fps!=0.0)
 			animationRate = cal.fps;
@@ -212,8 +208,10 @@ public class Animator implements PlugIn {
 		int decimalPlaces = (int)animationRate==animationRate?0:3;
 		GenericDialog gd = new GenericDialog("Animation Options");
 		gd.addNumericField("Speed (0.1-1000 fps):", animationRate, decimalPlaces);
-		gd.addNumericField("First Frame:", firstFrame, 0);
-		gd.addNumericField("Last Frame:", lastFrame, 0);
+		if (!imp.isDisplayedHyperStack()) {
+			gd.addNumericField("First Frame:", firstFrame, 0);
+			gd.addNumericField("Last Frame:", lastFrame, 0);
+		}
 		gd.addCheckbox("Loop Back and Forth", cal.loop);
 		gd.addCheckbox("Start Animation", start);
 		gd.showDialog();
@@ -223,8 +221,10 @@ public class Animator implements PlugIn {
 			return;
 		}
 		double speed = gd.getNextNumber();
-		firstFrame = (int)gd.getNextNumber();
-		lastFrame = (int)gd.getNextNumber();
+		if (!imp.isDisplayedHyperStack()) {
+			firstFrame = (int)gd.getNextNumber();
+			lastFrame = (int)gd.getNextNumber();
+		}
 		if (firstFrame==1 && lastFrame==nSlices)
 			{firstFrame=0; lastFrame=0;}
 		cal.loop = gd.getNextBoolean();
@@ -234,24 +234,29 @@ public class Animator implements PlugIn {
 		animationRate = speed;
 		if (animationRate!=0.0)
 			cal.fps = animationRate;
-		if (start && !swin.isRunning2())
+		if (start && !swin.running2)
 			startAnimation();
 	}
 	
 	void nextSlice() {
 		if (!imp.lock())
 			return;
-		boolean hyperstack = imp.isHyperStack();
-		if (hyperstack && imp.getNChannels()>1) {
+		boolean hyperstack = imp.isDisplayedHyperStack();
+		int channels = imp.getNChannels();
+		int slices = imp.getNSlices();
+		int frames = imp.getNFrames();
+		if (hyperstack && channels>1 && !((slices>1||frames>1)&&(IJ.controlKeyDown()||IJ.spaceBarDown()||IJ.altKeyDown()))) {
 			int c = imp.getChannel() + 1;
-			int channels = imp.getNChannels();
 			if (c>channels) c = channels;
 			swin.setPosition(c, imp.getSlice(), imp.getFrame());
-		} else if (hyperstack && imp.getNSlices()>1) {
+		} else if (hyperstack && slices>1 && !(frames>1&&IJ.altKeyDown())) {
 			int z = imp.getSlice() + 1;
-			int slices = imp.getNSlices();
 			if (z>slices) z = slices;
-			swin.setPosition(imp.getNChannels(), z, imp.getFrame());
+			swin.setPosition(imp.getChannel(), z, imp.getFrame());
+		} else if (hyperstack && frames>1) {
+			int t = imp.getFrame() + 1;
+			if (t>frames) t = frames;
+			swin.setPosition(imp.getChannel(), imp.getSlice(), t);
 		} else {
 			if (IJ.altKeyDown())
 				slice += 10;
@@ -265,18 +270,26 @@ public class Animator implements PlugIn {
 		imp.unlock();
 	}
 	
+	
 	void previousSlice() {
 		if (!imp.lock())
 			return;
-		boolean hyperstack = imp.isHyperStack();
-		if (hyperstack && imp.getNChannels()>1) {
+		boolean hyperstack = imp.isDisplayedHyperStack();
+		int channels = imp.getNChannels();
+		int slices = imp.getNSlices();
+		int frames = imp.getNFrames();
+		if (hyperstack && channels>1 && !((slices>1||frames>1)&&(IJ.controlKeyDown()||IJ.spaceBarDown()||IJ.altKeyDown()))) {
 			int c = imp.getChannel() - 1;
 			if (c<1) c = 1;
 			swin.setPosition(c, imp.getSlice(), imp.getFrame());
-		} else if (hyperstack && imp.getNSlices()>1) {
+		} else if (hyperstack && slices>1 && !(frames>1&&IJ.altKeyDown())) {
 			int z = imp.getSlice() - 1;
 			if (z<1) z = 1;
-			swin.setPosition(imp.getNChannels(), z, imp.getFrame());
+			swin.setPosition(imp.getChannel(), z, imp.getFrame());
+		} else if (hyperstack && frames>1) {
+			int t = imp.getFrame() - 1;
+			if (t<1) t = 1;
+			swin.setPosition(imp.getChannel(), imp.getSlice(), t);
 		} else {
 			if (IJ.altKeyDown())
 				slice -= 10;
@@ -296,7 +309,7 @@ public class Animator implements PlugIn {
         gd.showDialog();
         if (!gd.wasCanceled()) {
         	int n = (int)gd.getNextNumber();
-        	if (imp.isHyperStack())
+        	if (imp.isDisplayedHyperStack())
         		imp.setPosition(n);
         	else
         		imp.setSlice(n);

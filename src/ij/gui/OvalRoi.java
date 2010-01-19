@@ -1,6 +1,5 @@
 package ij.gui;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import ij.*;
@@ -17,25 +16,33 @@ public class OvalRoi extends Roi {
 	}
 
 	/** Starts the process of creating a user-defined OvalRoi. */
-	public OvalRoi(int x, int y, IjxImagePlus imp) {
+	public OvalRoi(int x, int y, ImagePlus imp) {
 		super(x, y, imp);
 		type = OVAL;
 	}
 
 	/** Obsolete */
-	public OvalRoi(int x, int y, int width, int height, IjxImagePlus imp) {
+	public OvalRoi(int x, int y, int width, int height, ImagePlus imp) {
 		this(x, y, width, height);
 		setImage(imp);
 	}
 
 	protected void moveHandle(int sx, int sy) {
+		double asp;
 		if (clipboard!=null) return;
 		int ox = ic.offScreenX(sx);
 		int oy = ic.offScreenY(sy);
 		//IJ.log("moveHandle: "+activeHandle+" "+ox+" "+oy);
-		int x1=x, y1=y, x2=x1+width, y2=y+height;
+		int x1=x, y1=y, x2=x+width, y2=y+height, xc=x+width/2, yc=y+height/2;
 		int w2 = (int)(0.14645*width);
 		int h2 = (int)(0.14645*height);
+		if (width > 7 && height > 7) {
+			asp = (double)width/(double)height;
+			asp_bk = asp;
+		} else {
+
+			asp = asp_bk;
+		}
 		switch (activeHandle) {
 			case 0: x=ox-w2; y=oy-h2; break;
 			case 1: y=oy; break;
@@ -55,8 +62,144 @@ public class OvalRoi extends Roi {
 		   height = y2-y;
 		else
 		   {height=1; y=y2;}
-		if (constrain)
-			height = width;
+		if(center) {
+			switch(activeHandle){
+				case 0:
+					width=(xc-x)*2;
+					height=(yc-y)*2;
+					break;
+				case 1:
+					height=(yc-y)*2;
+					break;
+				case 2:
+					width=(x2-xc)*2;
+					x=x2-width;
+					height=(yc-y)*2;
+					break;
+				case 3:
+					width=(x2-xc)*2;
+					x=x2-width;
+					break;
+				case 4:
+					width=(x2-xc)*2;
+					x=x2-width;
+					height=(y2-yc)*2;
+					y=y2-height;
+					break;
+				case 5:
+					height=(y2-yc)*2;
+					y=y2-height;
+					break;
+				case 6:
+					width=(xc-x)*2;
+					height=(y2-yc)*2;
+					y=y2-height;
+					break;
+				case 7:
+					width=(xc-x)*2;
+					break;
+			}
+			if(x>=x2) {
+				width=1;
+				x=x2=xc;
+			}
+			if(y>=y2) {
+				height=1;
+				y=y2=yc;
+			}
+
+		}
+
+		if(constrain) {
+
+			if(activeHandle==1 || activeHandle==5) width=height;
+			else height=width;
+
+
+			if(center){
+				x=xc-width/2;
+				y=yc-height/2;
+			}
+			if(x>=x2) {
+				width=1;
+				x=x2=xc;
+			}
+			if(y>=y2) {
+				height=1;
+				y=y2=yc;
+			}
+			switch(activeHandle){
+				case 0:
+					x=x2-width;
+					y=y2-height;
+					break;
+				case 1:
+					x=xc-width/2;
+					y=y2-height;
+					break;
+				case 2:
+					y=y2-height;
+					break;
+				case 3:
+					y=yc-height/2;
+					break;
+				case 5:
+					x=xc-width/2;
+					break;
+				case 6:
+					x=x2-width;
+					break;
+				case 7:
+					y=yc-height/2;
+					x=x2-width;
+					break;
+			}
+		}
+
+		if(aspect && !constrain) {
+			if(activeHandle==1 || activeHandle==5) width=(int)Math.rint((double)height*asp);
+			else height=(int)Math.rint((double)width/asp);
+			if(center){
+				x=xc-width/2;
+				y=yc-height/2;
+			}
+			switch(activeHandle){
+				case 0:
+					x=x2-width;
+					y=y2-height;
+					break;
+				case 1:
+					x=xc-width/2;
+					y=y2-height;
+					break;
+				case 2:
+					y=y2-height;
+					break;
+				case 3:
+					y=yc-height/2;
+					break;
+				case 5:
+					x=xc-width/2;
+					break;
+				case 6:
+					x=x2-width;
+					break;
+				case 7:
+					y=yc-height/2;
+					x=x2-width;
+					break;
+			}
+			// Attempt to preserve aspect ratio when roi very small:
+			if (width<8) {
+				if(width<1) width = 1;
+				height=(int)Math.rint((double)width/asp_bk);
+			}
+			if (height<8) {
+				if(height<1) height =1;
+				width=(int)Math.rint((double)height*asp_bk);
+			}
+		}
+
 		updateClipRect();
 		imp.draw(clipX, clipY, clipWidth, clipHeight);
 		oldX=x; oldY=y;
@@ -66,7 +209,9 @@ public class OvalRoi extends Roi {
 
 	public void draw(Graphics g) {
 		if (ic==null) return;
-		g.setColor(instanceColor!=null?instanceColor:ROIColor);
+		Color color =  strokeColor!=null? strokeColor:ROIColor;
+		if (fillColor!=null) color = fillColor;
+		g.setColor(color);
 		mag = ic.getMagnification();
 		int sw = (int)(width*mag);
 		int sh = (int)(height*mag);
@@ -78,8 +223,14 @@ public class OvalRoi extends Roi {
 		int sy2 = sy1+sh/2;
 		int sx3 = sx1+sw;
 		int sy3 = sy1+sh;
-		g.drawOval(sx1, sy1, sw, sh);
-		if (state!=CONSTRUCTING && clipboard==null) {
+		Graphics2D g2d = (Graphics2D)g;
+		if (stroke!=null) 
+			g2d.setStroke(getScaledStroke());
+		if (fillColor!=null)
+			g.fillOval(sx1, sy1, sw, sh);
+		else
+			g.drawOval(sx1, sy1, sw, sh);
+		if (state!=CONSTRUCTING && clipboard==null && !overlay) {
 			int size2 = HANDLE_SIZE/2;
 			drawHandle(g, sx1+sw2-size2, sy1+sh2-size2);
 			drawHandle(g, sx3-sw2-size2, sy1+sh2-size2);
@@ -99,8 +250,14 @@ public class OvalRoi extends Roi {
 	/** Draws an outline of this OvalRoi on the image. */
 	public void drawPixels(ImageProcessor ip) {
 		Polygon p = getPolygon();
-		if (p.npoints>0) ip.drawPolygon(p);
-		if (Line.getWidth()>1)
+		if (p.npoints>0) {
+			int saveWidth = ip.getLineWidth();
+			if (getStrokeWidth()>1f)
+				ip.setLineWidth((int)Math.round(getStrokeWidth()));
+			ip.drawPolygon(p);
+			ip.setLineWidth(saveWidth);
+		}
+		if (Line.getWidth()>1 || getStrokeWidth()>1)
 			updateFullWindow = true;
 	}		
 
@@ -124,12 +281,12 @@ public class OvalRoi extends Roi {
 		if (!super.contains(x, y))
 			return false;
 		else {
-			int twoDx = 2*x - (2*this.x+width-1);
-			int twoDy = 2*y - (2*this.y+height-1);
-			int twoRx = width;
-			int twoRy = height;
-			return (twoDx*twoDx/(double)(twoRx*twoRx)
-				+ twoDy*twoDy/(double)(twoRy*twoRy)) < 1;
+			double twoDx = 2*x - (2*this.x+width-1);
+			double twoDy = 2*y - (2*this.y+height-1);
+			double twoRx = width;
+			double twoRy = height;
+			return (twoDx*twoDx/(twoRx*twoRx)
+				+ twoDy*twoDy/(twoRy*twoRy)) < 1.0;
 		}
 	}
 		
@@ -194,17 +351,5 @@ public class OvalRoi extends Roi {
 		}
 		return Math.PI*(width*pw+height*ph)/2.0;
 	}
-	
-	/** Returns Feret's diameter, the greatest distance between 
-		any two points along the ROI boundary. */
-	public double getFeretsDiameter() {
-		double pw=1.0, ph=1.0;
-		if (imp!=null) {
-			Calibration cal = imp.getCalibration();
-			pw = cal.pixelWidth;
-			ph = cal.pixelHeight;
-		}
-		return width*pw>=height*ph?width*pw:height*ph;
-	}
-	
+		
 }

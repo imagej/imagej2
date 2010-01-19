@@ -2,7 +2,7 @@ package ij.process;
 import ij.measure.*;
 import java.awt.*;
 
-/** Statistics, including the histogram, of an image or image roi. */
+/** Statistics, including the histogram, of an image or selection. */
 public class ImageStatistics implements Measurements {
 
 	public int[] histogram;
@@ -33,6 +33,8 @@ public class ImageStatistics implements Measurements {
 	/** 65536 element histogram (16-bit images only) */
 	public int[] histogram16;
 	public double areaFraction;
+	/** Used internally by AnalyzeParticles */
+	public int xstart, ystart;
 	
 	public double histMin;
 	public double histMax;
@@ -65,7 +67,6 @@ public class ImageStatistics implements Measurements {
 		while ((histogram[min] == 0) && (min < 255))
 			min++;
 		this.min = min;
-			
 		int max = maxThreshold;
 		while ((histogram[max] == 0) && (max > 0))
 			max--;

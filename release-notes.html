@@ -1,0 +1,30 @@
+<html>
+<head>
+<link rel="stylesheet" href="../docs/ij.css" type="text/css"/>
+<title>Release Notes</title>
+</head>
+<body>
+
+<li> <u>1.43o, 17 January 2010</u>
+<ul>
+<li> Added a "Double headed" option to the <i>Edit&gt;Options&gt;Arrow Tool</i> dialog box.
+<li> The <i>Edit&gt;Options&gt;Arrow Tool</i> options are saved in the preferences file.
+<li> Added the IJEventListener interface
+(<a href="http://rsb.info.nih.gov/ij/plugin/event-listener.html">example</a>).
+<li> Added the "-debug" command line option.
+<li> The ThresholdAdjuster records the default method as setAutoThreshold("Default") or
+ÊsetAutoThreshold("Default dark");
+<li> ImageJ now opens TIFF files with invalid compression tag values of 0 
+that are created by the PerkinElmer Acapella system.
+<li> Added the open(path,n) macro function and the IJ.open(path,n) and IJ.openImage(path,n)
+methods, which open the nth image in a tiff stack.
+<li> Fixed a bug that caused some "-batch" mode command line macros to fail.
+<li> Fixed a bug that caused the line width adjuster slider 
+to sometimes not be set correctly.
+<li> Fixed a bug that caused the run() and doCommand() macro functions, and the IJ.run() and IJ.doCommand() 
+methods, to fail to run commands in the <i>File&gt;Open Recent</i> menu.
+</ul>
+
+<a href="http://rsb.info.nih.gov/ij">Home</a>
+</body>
+</html>

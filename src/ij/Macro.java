@@ -1,5 +1,4 @@
 package ij;
-import ijx.IjxImagePlus;
 import ij.process.*;
 import ij.gui.*;
 import ij.io.*;
@@ -28,7 +27,7 @@ public class Macro {
 			return true;
 		}
 		Opener o = new Opener();
-		IjxImagePlus img = o.openImage(path);
+		ImagePlus img = o.openImage(path);
 		if (img==null)
 			return false;
 		img.show();	
@@ -36,7 +35,7 @@ public class Macro {
 	}
 
 	public static boolean saveAs(String path) {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null)
 			return false;
 		FileSaver fs = new FileSaver(imp);
@@ -116,10 +115,10 @@ public class Macro {
 		key = trimKey(key);
         key += '=';
 		int index=-1;
-		do {
+		do { // Require that key not be preceded by a letter
 			index = options.indexOf(key, ++index);
 			if (index<0) return defaultValue;
-		} while (index!=0&&options.charAt(index-1)!=' ');
+		} while (index!=0&&Character.isLetter(options.charAt(index-1)));
 		options = options.substring(index+key.length(), options.length());
 		if (options.charAt(0)=='\'') {
 			index = options.indexOf("'",1);

@@ -1,5 +1,4 @@
 package ij.plugin.frame;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -34,7 +33,7 @@ public class LineWidthAdjuster extends PlugInFrame implements PlugIn,
 		}		
 		WindowManager.addWindow(this);
 		instance = this;
-		slider = new Scrollbar(Scrollbar.HORIZONTAL, 1, 1, 1, sliderRange+1);
+		slider = new Scrollbar(Scrollbar.HORIZONTAL, Line.getWidth(), 1, 1, sliderRange+1);
 		slider.setFocusable(false); // prevents blinking on Windows
 				
 		Panel panel = new Panel();
@@ -98,11 +97,9 @@ public class LineWidthAdjuster extends PlugInFrame implements PlugIn,
         	notify();
         }
     }
-
 	void setup() {
 	}
 	
-
 	// Separate thread that does the potentially time-consuming processing 
 	public void run() {
 		while (!done) {
@@ -113,26 +110,32 @@ public class LineWidthAdjuster extends PlugInFrame implements PlugIn,
 				Line.setWidth(value);
 				if (setText) tf.setText(""+value);
 				setText = false;
-				updateWindows();
+				updateRoi();
 			}
 		}
 	}
 	
-    void updateWindows() {
-		int[] list = WindowManager.getIDList();
-		if (list==null) return;
-		for (int i=0; i<list.length; i++) {
-			IjxImagePlus imp = WindowManager.getImage(list[i]);
-			if (imp!=null) {
-				Roi roi = imp.getRoi();
-				if (roi!=null && roi.isLine())
-					imp.draw();
-			}
+	private static void updateRoi() {
+		ImagePlus imp = WindowManager.getCurrentImage();
+		if (imp!=null) {
+			Roi roi = imp.getRoi();
+			if (roi!=null && roi.isLine())
+				{roi.updateWideLine(Line.getWidth()); imp.draw(); return;}
+		}
+		if (Roi.previousRoi==null) return;
+		int id = Roi.previousRoi.getImageID();
+		if (id>=0) return;
+		imp = WindowManager.getImage(id);
+		if (imp==null) return;
+		Roi roi = imp.getRoi();
+		if (roi!=null && roi.isLine()) {
+			roi.updateWideLine(Line.getWidth());
+			imp.draw();
 		}
 	}
-
+	
 	boolean isSplineFit() {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null) return false;
 		Roi roi = imp.getRoi();
 		if (roi==null) return false;
@@ -160,7 +163,7 @@ public class LineWidthAdjuster extends PlugInFrame implements PlugIn,
 
 	public void itemStateChanged(ItemEvent e) {
 		boolean selected = e.getStateChange()==ItemEvent.SELECTED;
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null)
 			{checkbox.setState(false); return;};
 		Roi roi = imp.getRoi();
@@ -187,6 +190,6 @@ public class LineWidthAdjuster extends PlugInFrame implements PlugIn,
 			instance.tf.setText(""+lineWidth);
 		}
 	}
-
+	
 } 
 

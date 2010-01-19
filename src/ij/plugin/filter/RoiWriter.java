@@ -1,6 +1,5 @@
 package ij.plugin.filter;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
@@ -14,10 +13,10 @@ import ij.gui.*;
 	@see ij.io.RoiDecoder
 	@see ij.plugin.RoiReader
 */
-public class RoiWriter implements IjxPlugInFilter {
-	IjxImagePlus imp;
+public class RoiWriter implements PlugInFilter {
+	ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_ALL+ROI_REQUIRED+NO_CHANGES;
 	}
@@ -33,7 +32,7 @@ public class RoiWriter implements IjxPlugInFilter {
 		}
 	}
 
-	public void saveRoi(IjxImagePlus imp) throws IOException{
+	public void saveRoi(ImagePlus imp) throws IOException{
 		Roi roi = imp.getRoi();
 		if (roi==null)
 			throw new IllegalArgumentException("ROI required");

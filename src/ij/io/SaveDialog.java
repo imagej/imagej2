@@ -6,6 +6,7 @@ import javax.swing.filechooser.*;
 import ij.*;
 import ij.plugin.frame.Recorder;
 import ij.util.Java2;
+import ij.macro.Interpreter;
 
 /** This class displays a dialog window from 
 	which the user can save a file. */ 
@@ -57,9 +58,13 @@ public class SaveDialog {
 			String path = Macro.getValue(macroOptions, title, null);
 			if (path==null)
 				path = Macro.getValue(macroOptions, "path", null);
-			//if (path==null && oneRunArg) {
-			//	path = macroOptions;
-			//}
+			if (path!=null && path.indexOf(".")==-1 && !((new File(path)).exists())) {
+				// Is 'path' a macro variable?
+				if (path.startsWith("&")) path=path.substring(1);
+				Interpreter interp = Interpreter.getInstance();
+				String path2 = interp!=null?interp.getStringVariable(path):null;
+				if (path2!=null) path = path2;
+			}
 			if (path!=null) {
 				Opener o = new Opener();
 				dir = o.getDir(path);
@@ -105,7 +110,7 @@ public class SaveDialog {
 		}
 		if (defaultName!=null)
 			fc.setSelectedFile(new File(defaultName));
-		int returnVal = fc.showSaveDialog(IJ.getTopComponentFrame());
+		int returnVal = fc.showSaveDialog(IJ.getInstance());
 		if (returnVal!=JFileChooser.APPROVE_OPTION)
 			{Macro.abort(); return;}
 		File f = fc.getSelectedFile();
@@ -141,7 +146,7 @@ public class SaveDialog {
 					}
 					if (defaultName!=null)
 						fc.setSelectedFile(new File(defaultName));
-					int returnVal = fc.showSaveDialog(IJ.getTopComponentFrame());
+					int returnVal = fc.showSaveDialog(IJ.getInstance());
 					if (returnVal!=JFileChooser.APPROVE_OPTION)
 						{Macro.abort(); return;}
 					File f = fc.getSelectedFile();
@@ -167,7 +172,7 @@ public class SaveDialog {
 
 	// Save using FileDialog
 	void save(String title, String defaultDir, String defaultName) {
-		Frame ij = IJ.getTopComponentFrame();
+		ImageJ ij = IJ.getInstance();
 		Frame parent = ij!=null?ij:new Frame();
 		FileDialog fd = new FileDialog(parent, title, FileDialog.SAVE);
 		if (defaultName!=null)
@@ -188,7 +193,7 @@ public class SaveDialog {
 	
 	/** Returns the selected directory. */
 	public String getDirectory() {
-		OpenDialog.lastDir = dir;
+		OpenDialog.setLastDirectory(dir);
 		return dir;
 	}
 	
@@ -196,7 +201,7 @@ public class SaveDialog {
 	public String getFileName() {
 		if (Recorder.record)
 			Recorder.recordPath(title, dir+name);
-		OpenDialog.lastName = name;
+		OpenDialog.setLastName(name);
 		return name;
 	}
 		

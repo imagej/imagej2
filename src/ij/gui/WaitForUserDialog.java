@@ -16,7 +16,7 @@ public class WaitForUserDialog extends Dialog implements ActionListener, KeyList
 	static protected int xloc=-1, yloc=-1;
 	
 	public WaitForUserDialog(String title, String text) {
-		super(new Frame(), title, false);
+		super(getFrame(), title, false);
 		label = new MultiLineLabel(text, 175);
 		if (!IJ.isLinux()) label.setFont(new Font("SansSerif", Font.PLAIN, 14));
         GridBagLayout gridbag = new GridBagLayout(); //set up the layout
@@ -59,11 +59,11 @@ public class WaitForUserDialog extends Dialog implements ActionListener, KeyList
 		}
 	}
 	
-//	static IjxWindow getFrame() {
-//		IjxWindow win = WindowManager.getCurrentWindow();
-//		//if (win==null) win = IJ.getInstance();
-//		return win;
-//	}
+	static Frame getFrame() {
+		Frame win = WindowManager.getCurrentWindow();
+		if (win==null) win = IJ.getInstance();
+		return win;
+	}
 
     public void close() {
         synchronized(this) { notify(); }

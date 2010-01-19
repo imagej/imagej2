@@ -1,19 +1,18 @@
 package ij.plugin.filter;
-import ijx.gui.IjxImageWindow;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*; 
 import ij.plugin.filter.PlugInFilter.*;
 import ij.plugin.filter.*;
-import ijx.IjxImageStack;
+import ij.measure.Calibration;
+import ij.macro.Interpreter;
 import java.awt.*;
 import java.util.Hashtable;
 
 public class PlugInFilterRunner implements Runnable, DialogListener {
     private String command;                     // the command, can be but need not be the name of the PlugInFilter
     private Object theFilter;                   // the instance of the PlugInFilter
-    private IjxImagePlus imp;
+    private ImagePlus imp;
     private int flags;                          // the flags returned by the PlugInFilter
     private boolean snapshotDone;       // whether the ImageProcessor has a snapshot already
     private boolean previewCheckboxOn;          // the state of the preview checkbox (true = on)
@@ -44,10 +43,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
         this.theFilter = theFilter;
         this.command = command;
         imp = WindowManager.getCurrentImage();
-        if(theFilter instanceof IjxPlugInFilter)
-            flags = ((IjxPlugInFilter)theFilter).setup(arg, imp);  // S E T U P
-        else 
-            flags = ((PlugInFilter)theFilter).setup(arg,(ImagePlus) imp);  // S E T U P
+        flags = ((PlugInFilter)theFilter).setup(arg, imp);  // S E T U P
         if ((flags&PlugInFilter.DONE)!=0) return;
         if (!checkImagePlus(imp, flags, command)) return;   // check whether the PlugInFilter can handle this image type
         if ((flags&PlugInFilter.NO_IMAGE_REQUIRED)!=0)
@@ -84,7 +80,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
         /* preparing for the run(ip) method of the PlugInFilter... */
         int slices = imp.getStackSize();
         //IJ.log("processedAsPreview="+processedAsPreview+"; slices="+slices+"; doesStacks="+((flags&PlugInFilter.DOES_STACKS)!=0));
-        doStack = slices>1 && (flags & PlugInFilter.DOES_STACKS)!=0;
+        doStack = slices>1 && (flags&PlugInFilter.DOES_STACKS)!=0;
         imp.startTiming();
         if (doStack || processedAsPreview==0) {             // if processing during preview was not enough
             IJ.showStatus(command + (doStack ? " (Stack)..." : "..."));
@@ -110,7 +106,8 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                     else
                         Undo.reset();
                 }
-                if ((flags&PlugInFilter.NO_CHANGES)==0) ip.resetBinaryThreshold();
+                if ((flags&PlugInFilter.NO_CHANGES)==0&&(flags&PlugInFilter.KEEP_THRESHOLD)==0)
+                	ip.resetBinaryThreshold();
             } else {  //  S T A C K
                 Undo.reset();    // no undo for processing a complete stack
                 IJ.resetEscape();
@@ -147,25 +144,22 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                 }
 			}
         } // end processing:
-        if ((flags&PlugInFilter.FINAL_PROCESSING)!=0 && !IJ.escapePressed()) {
-            if(theFilter instanceof IjxPlugInFilter)
-                ((IjxPlugInFilter)theFilter).setup("final", imp);
-            else
-                ((PlugInFilter)theFilter).setup("final",(ImagePlus) imp);
-        }
-        if (IJ.escapePressed())
+        if ((flags&PlugInFilter.FINAL_PROCESSING)!=0 && !IJ.escapePressed())
+            ((PlugInFilter)theFilter).setup("final", imp);
+        if (IJ.escapePressed()) {
             IJ.showStatus(command + " INTERRUPTED");
-        else
+        	IJ.showProgress(1,1);
+        } else
             IJ.showTime(imp, imp.getStartTime()-previewTime, command + ": ", doStack?slices:1);
         IJ.showProgress(1.0);
         if (ipChanged) {
-            imp.setChanged(true);
+            imp.changes = true;
             imp.updateAndDraw();
         }
-        IjxImageWindow win = imp.getWindow();
+        ImageWindow win = imp.getWindow();
         if (win!=null) {
-            win.setRunning(false);
-            win.setRunning2(false);
+            win.running = false;
+            win.running2 = false;
         }
         imp.unlock();
     }
@@ -176,7 +170,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
      * @param endSlice   Slice number of the last slice to be processed
      */
     private void processStack(int firstSlice, int endSlice) {
-        IjxImageStack stack = imp.getStack();
+        ImageStack stack = imp.getStack();
         ImageProcessor ip = stack.getProcessor(firstSlice);
         prepareProcessor(ip, imp);
         ip.setLineWidth(Line.getWidth());       //in contrast to imp.getProcessor, stack.getProcessor does not do this
@@ -194,23 +188,25 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
 
     /** prepare an ImageProcessor by setting roi and CalibrationTable.
      */
-    private void prepareProcessor(ImageProcessor ip, IjxImagePlus imp) {
-        ImageProcessor mask = imp.getMask();
-        Roi roi = imp.getRoi();
-        if (roi!=null && roi.isArea())
-            ip.setRoi(roi);
-        else
-            ip.setRoi((Roi)null);
-        //if (imp.getStackSize()>1) {
-        //    ImageProcessor ip2 = imp.getProcessor();
-        //    double minThreshold = ip2.getMinThreshold();
-		//	double maxThreshold = ip2.getMaxThreshold();
-        //    if (minThreshold!=ImageProcessor.NO_THRESHOLD)
-		//		ip.setThreshold(minThreshold, maxThreshold, ImageProcessor.NO_LUT_UPDATE);
-        //}
-        //float[] cTable = imp.getCalibration().getCTable();
-        //ip.setCalibrationTable(cTable);
-    }
+	private void prepareProcessor(ImageProcessor ip, ImagePlus imp) {
+		ImageProcessor mask = imp.getMask();
+		Roi roi = imp.getRoi();
+		if (roi!=null && roi.isArea())
+			ip.setRoi(roi);
+		else
+			ip.setRoi((Roi)null);
+		if (imp.getStackSize()>1) {
+			ImageProcessor ip2 = imp.getProcessor();
+			double min1 = ip2.getMinThreshold();
+			double max1 = ip2.getMaxThreshold();
+			double min2 = ip.getMinThreshold();
+			double max2 = ip.getMaxThreshold();
+			if (min1!=ImageProcessor.NO_THRESHOLD && (min1!=min2||max1!=max2))
+				ip.setThreshold(min1, max1, ImageProcessor.NO_LUT_UPDATE);
+		}
+		//float[] cTable = imp.getCalibration().getCTable();
+		//ip.setCalibrationTable(cTable);
+	}
 
     /**
      * Process a single image with the PlugInFilter.
@@ -236,10 +232,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                 if (thread.isInterrupted()) return;         // interrupt processing for preview?
                 if ((flags&PlugInFilter.SNAPSHOT)!=0) fp.snapshot();
 				if (doStack) IJ.showProgress(pass/(double)nPasses);
-                if(theFilter instanceof IjxPlugInFilter)
-                    ((IjxPlugInFilter)theFilter).run(fp);
-                else
-                    ((PlugInFilter)theFilter).run(fp);
+                ((PlugInFilter)theFilter).run(fp);
                 if (thread.isInterrupted()) return;
                 //IJ.log("slice="+getSliceNumber()+" pass="+pass+"/"+nPasses);
                 pass++;
@@ -251,10 +244,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
         } else {
             if ((flags&PlugInFilter.NO_CHANGES)==0) ipChanged = true;
 				if (doStack) IJ.showProgress(pass/(double)nPasses); 
-            if(theFilter instanceof IjxPlugInFilter)
-                ((IjxPlugInFilter)theFilter).run(ip);
-            else
-                ((PlugInFilter)theFilter).run(ip);
+            ((PlugInFilter)theFilter).run(ip);
             pass++;
         }
         if (thread.isInterrupted()) return;
@@ -262,10 +252,10 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
             ip.reset(ip.getMask());  //restore image outside irregular roi
    }
 
-    /** test whether an IjxImagePlus can be processed based on the flags specified
+    /** test whether an ImagePlus can be processed based on the flags specified
      *  and display an error message if not.
      */
-    private boolean checkImagePlus(IjxImagePlus imp, int flags, String cmd) {
+    private boolean checkImagePlus(ImagePlus imp, int flags, String cmd) {
         boolean imageRequired = (flags&PlugInFilter.NO_IMAGE_REQUIRED)==0;
         if (imageRequired && imp==null)
             {IJ.noImage(); return false;}
@@ -274,31 +264,31 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
 				{wrongType(flags, cmd); return false;}
             int type = imp.getType();
             switch (type) {
-                case IjxImagePlus.GRAY8:
+                case ImagePlus.GRAY8:
                     if ((flags&PlugInFilter.DOES_8G)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
-                case IjxImagePlus.COLOR_256:
+                case ImagePlus.COLOR_256:
                     if ((flags&PlugInFilter.DOES_8C)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
-                case IjxImagePlus.GRAY16:
+                case ImagePlus.GRAY16:
                     if ((flags&PlugInFilter.DOES_16)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
-                case IjxImagePlus.GRAY32:
+                case ImagePlus.GRAY32:
                     if ((flags&PlugInFilter.DOES_32)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
-                case IjxImagePlus.COLOR_RGB:
+                case ImagePlus.COLOR_RGB:
                     if ((flags&PlugInFilter.DOES_RGB)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
             }
             if ((flags&PlugInFilter.ROI_REQUIRED)!=0 && imp.getRoi()==null)
-            {IJ.error(cmd+": Selection required"); return false;}
+            {IJ.error(cmd, "This command requires a selection"); return false;}
             if ((flags&PlugInFilter.STACK_REQUIRED)!=0 && imp.getStackSize()==1)
-            {IJ.error(cmd+": Stack required"); ; return false;}
+            {IJ.error(cmd, "This command requires a stack"); return false;}
         } // if imageRequired
         return true;
     }
@@ -340,7 +330,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
     public void run() {
         Thread thread = Thread.currentThread();
         try {
-            if (thread == previewThread)
+            if (thread==previewThread)
                 runPreview();
             else if (slicesForThread!=null && slicesForThread.containsKey(thread)) {
                 int[] range = (int[])slicesForThread.get(thread);
@@ -348,14 +338,23 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
             } else
                 IJ.error("PlugInFilterRunner internal error:\nunsolicited background thread");
         } catch (Exception err) {
-            IJ.beep();
-            IJ.log("ERROR: "+err+"\nin "+thread.getName()+
-            "\nat "+(err.getStackTrace()[0])+"\nfrom "+(err.getStackTrace()[1]));  //requires Java 1.4  
+			if (thread==previewThread) {
+				gd.previewRunning(false);
+				IJ.wait(100); // needed on Macs
+				previewCheckbox.setState(false);
+				bgPreviewOn = false;
+				previewThread = null;
+			}
+        	String msg = ""+err;
+        	if (msg.indexOf(Macro.MACRO_CANCELED)==-1) {
+				IJ.beep();
+				IJ.log("ERROR: "+msg+"\nin "+thread.getName()+
+					"\nat "+(err.getStackTrace()[0])+"\nfrom "+(err.getStackTrace()[1]));  //requires Java 1.4 
+			}
         }
     }
             
-    /** The background thread for preview
-     */
+    /** The background thread for preview */
     private void runPreview() {
         if (IJ.debugMode) IJ.log("preview thread started; imp="+imp.getTitle());
         Thread thread = Thread.currentThread();
@@ -370,7 +369,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
         }
         boolean previewDataOk = false;
         while(bgPreviewOn) {
-            if (previewCheckboxOn) gd.previewRunning(true);// optical feedback
+            if (previewCheckboxOn) gd.previewRunning(true); // visual feedback
             interruptable: {
                 if (imp.getRoi() != originalRoi) {
                     imp.setRoi(originalRoi);        // restore roi; the PlugInFilter may have affected it
@@ -441,7 +440,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
             previewThread.setPriority(Thread.currentThread().getPriority());
         } catch (Exception e) {}
         synchronized (this) {
-            bgPreviewOn = false;                //tell a possible background thread to terminate
+            bgPreviewOn = false;     //tell a possible background thread to terminate
             notify();                           //(but finish processing unless interrupted)
         }
         try {previewThread.join();}             //wait until the background thread is done
@@ -493,7 +492,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                 killPreview();
                 return true;
             } else
-            previewThread.interrupt();              //all other changes: restart calculating preview (with new parameters)
+				previewThread.interrupt();  //all other changes: restart calculating preview (with new parameters)
         }
         return true;
     }

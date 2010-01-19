@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -9,11 +8,11 @@ import java.awt.event.*;
 import java.awt.image.*;
 
 /** Displays the active image's look-up table. */
-public class LutViewer implements IjxPlugInFilter {
+public class LutViewer implements PlugInFilter {
 
-	IjxImagePlus imp;
+	ImagePlus imp;
 	
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_ALL-DOES_RGB+NO_UNDO+NO_CHANGES;
 	}
@@ -40,7 +39,7 @@ public class LutViewer implements IjxPlugInFilter {
 
 		imageWidth = width + 2*xMargin;
 		imageHeight = height + 3*yMargin;
-		Image img = IJ.getTopComponentFrame().createImage(imageWidth, imageHeight);
+		Image img = IJ.getInstance().createImage(imageWidth, imageHeight);
 		Graphics g = img.getGraphics();
 		g.setColor(Color.white);
 		g.fillRect(0, 0, imageWidth, imageHeight);
@@ -99,7 +98,7 @@ public class LutViewer implements IjxPlugInFilter {
 		g.drawString("255", 7, yMargin + 4);
 		g.dispose();
 		
-        IjxImagePlus imp = IJ.getFactory().newImagePlus("Look-Up Table", img);
+        ImagePlus imp = new ImagePlus("Look-Up Table", img);
         //imp.show();
         new LutWindow(imp, new ImageCanvas(imp), ip);
     }
@@ -111,7 +110,7 @@ class LutWindow extends ImageWindow implements ActionListener {
 	private Button button;
 	private ImageProcessor ip;
 
-	LutWindow(IjxImagePlus imp, ImageCanvas ic, ImageProcessor ip) {
+	LutWindow(ImagePlus imp, ImageCanvas ic, ImageProcessor ip) {
 		super(imp, ic);
 		this.ip = ip;
 		addPanel();

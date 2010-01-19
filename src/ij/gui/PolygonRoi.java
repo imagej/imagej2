@@ -60,6 +60,16 @@ public class PolygonRoi extends Roi {
 		yp2 = new int[nPoints];
 		if (type==ANGLE && nPoints==3)
 			getAngleAsString();
+		if (type==POINT && Toolbar.getMultiPointMode()) {
+			Prefs.pointAutoMeasure = false;
+			Prefs.pointAutoNextSlice = false;
+			Prefs.pointAddToManager = false;
+			if (Toolbar.getToolId()==Toolbar.POINT)
+				Prefs.noPointLabels = false;
+			userCreated = true;
+		}
+		if (lineWidth>1 && isLine())
+			updateWideLine(lineWidth);
 		finishPolygon();
 	}
 	
@@ -79,12 +89,13 @@ public class PolygonRoi extends Roi {
 	public PolygonRoi(int sx, int sy, ImagePlus imp) {
 		super(sx, sy, imp);
 		int tool = Toolbar.getToolId();
-		if (tool==Toolbar.POLYGON)
-			type = POLYGON;
-		else if (tool==Toolbar.ANGLE)
-			type = ANGLE;
-		else
-			type = POLYLINE;
+		switch (tool) {
+			case Toolbar.POLYGON: type=POLYGON; break;
+			case Toolbar.FREEROI: type=FREEROI; break;
+			case Toolbar.FREELINE: type=FREELINE; break;
+			case Toolbar.ANGLE: type=ANGLE; break;
+			default: type = POLYLINE; break;
+		}
 		xp = new int[maxPoints];
 		yp = new int[maxPoints];
 		xp2 = new int[maxPoints];
@@ -100,6 +111,8 @@ public class PolygonRoi extends Roi {
 		clipHeight = 1;
 		state = CONSTRUCTING;
 		userCreated = true;
+		if (lineWidth>1 && isLine())
+			updateWideLine(lineWidth);
 	}
 
 	private void drawStartBox(Graphics g) {
@@ -109,35 +122,52 @@ public class PolygonRoi extends Roi {
 	
 	public void draw(Graphics g) {
         updatePolygon();
-        g.setColor(instanceColor!=null?instanceColor:ROIColor);
+		Color color =  strokeColor!=null? strokeColor:ROIColor;
+		boolean fill = false;
+		if (fillColor!=null && !isLine() && state!=CONSTRUCTING) {
+			color = fillColor;
+			fill = true;
+		}
+		g.setColor(color);
+		Graphics2D g2d = (Graphics2D)g;
+		if (stroke!=null)
+			g2d.setStroke(getScaledStroke());
         if (xSpline!=null) {
             if (type==POLYLINE || type==FREELINE) {
-                if (lineWidth>1)
-                	drawWideLine(g, xSpline, ySpline, splinePoints);
-                else
-                	drawSpline(g, xSpline, ySpline, splinePoints, false);
+                drawSpline(g, xSpline, ySpline, splinePoints, false, fill);
+                if (wideLine) {
+                	g2d.setStroke(onePixelWide);
+                	g.setColor(getColor());
+                	drawSpline(g, xSpline, ySpline, splinePoints, false, fill);
+                }
             } else
-                	drawSpline(g, xSpline, ySpline, splinePoints, true);
+                drawSpline(g, xSpline, ySpline, splinePoints, true, fill);
         } else {
             if (type==POLYLINE || type==FREELINE || type==ANGLE || state==CONSTRUCTING) {
-                if (lineWidth>1 && isLine())
-                	drawWideLine(g, toFloat(xp), toFloat(yp), nPoints);
                 g.drawPolyline(xp2, yp2, nPoints);
-            } else
-                g.drawPolygon(xp2, yp2, nPoints);
+                if (wideLine) {
+                	g2d.setStroke(onePixelWide);
+                	g.setColor(getColor());
+                	g.drawPolyline(xp2, yp2, nPoints);
+                }
+            } else {
+            	if (fill)
+                	g.fillPolygon(xp2, yp2, nPoints);
+                else
+                	g.drawPolygon(xp2, yp2, nPoints);
+             }
             if (state==CONSTRUCTING && type!=FREEROI && type!=FREELINE)
                 drawStartBox(g);
         }
-        //g.drawRect(clip.x, clip.y, clip.width, clip.height);
         if ((xSpline!=null||type==POLYGON||type==POLYLINE||type==ANGLE)
-        && state!=CONSTRUCTING && clipboard==null) {
+        && state!=CONSTRUCTING && clipboard==null && !overlay) {
             if (ic!=null) mag = ic.getMagnification();
             int size2 = HANDLE_SIZE/2;
             if (activeHandle>0)
                 drawHandle(g, xp2[activeHandle-1]-size2, yp2[activeHandle-1]-size2);
             if (activeHandle<nPoints-1)
                 drawHandle(g, xp2[activeHandle+1]-size2, yp2[activeHandle+1]-size2);
-            handleColor=instanceColor!=null?instanceColor:ROIColor; drawHandle(g, xp2[0]-size2, yp2[0]-size2); handleColor=Color.white;
+            handleColor= strokeColor!=null? strokeColor:ROIColor; drawHandle(g, xp2[0]-size2, yp2[0]-size2); handleColor=Color.white;
             for (int i=1; i<nPoints; i++)
                 drawHandle(g, xp2[i]-size2, yp2[i]-size2);
         }
@@ -148,7 +178,7 @@ public class PolygonRoi extends Roi {
             {updateFullWindow = false; imp.draw();}
 	}
 	
- 	private void drawSpline(Graphics g, float[] xpoints, float[] ypoints, int npoints, boolean closed) {
+ 	private void drawSpline(Graphics g, float[] xpoints, float[] ypoints, int npoints, boolean closed, boolean fill) {
  		if (ic==null) return;
   		Rectangle srcRect = ic.getSrcRect();
  		float srcx=srcRect.x, srcy=srcRect.y;
@@ -167,39 +197,16 @@ public class PolygonRoi extends Roi {
 		}
 		if (closed)
 			path.lineTo((xpoints[0]-srcx+xf)*mag, (ypoints[0]-srcy+yf)*mag);
-		g2d.draw(path);
-	}
-
- 	private void drawWideLine(Graphics g, float[] xpoints, float[] ypoints, int npoints) {
- 		if (ic==null) return;
- 		Rectangle srcRect = ic.getSrcRect();
- 		float srcx=srcRect.x, srcy=srcRect.y;
- 		float mag = (float)ic.getMagnification();
- 		float xf=x, yf=y;
-		Graphics2D g2d = (Graphics2D)g;
-		GeneralPath path = new GeneralPath();
-		if (mag==1f && srcx==0f && srcy==0f) {
-			path.moveTo(xpoints[0]+xf, ypoints[0]+yf);
-			for (int i=0; i<npoints; i++)
-				path.lineTo(xpoints[i]+xf, ypoints[i]+yf);
-		} else {
-			path.moveTo((xpoints[0]-srcx+xf)*mag, (ypoints[0]-srcy+yf)*mag);
-			for (int i=0; i<npoints; i++)
-				path.lineTo((xpoints[i]-srcx+xf)*mag, (ypoints[i]-srcy+yf)*mag);
-		}
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.25f);
-		g2d.setComposite(ac);
-		g2d.setStroke(new BasicStroke((float)(lineWidth*ic.getMagnification()),BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND));
-		g2d.draw(path);
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
-		g2d.setStroke(new BasicStroke(1));
-		g2d.setComposite(ac);
-		g2d.draw(path);
+		if (fill)
+			g2d.fill(path);
+		else
+			g2d.draw(path);
 	}
 
 	public void drawPixels(ImageProcessor ip) {
+		int saveWidth = ip.getLineWidth();
+		if (getStrokeWidth()>1f)
+			ip.setLineWidth((int)Math.round(getStrokeWidth()));
 		if (xSpline!=null) {
 			ip.moveTo(x+(int)(Math.floor(xSpline[0])+0.5), y+(int)Math.floor(ySpline[0]+0.5));
 			for (int i=1; i<splinePoints; i++)
@@ -213,8 +220,8 @@ public class PolygonRoi extends Roi {
 			if (type==POLYGON || type==FREEROI || type==TRACED_ROI)
 				ip.lineTo(x+xp[0], y+yp[0]);
 		}
-		if (xSpline!=null || (lineWidth>1&&isLine()))
-			updateFullWindow = true;
+		ip.setLineWidth(saveWidth);
+		updateFullWindow = true;
 	}
 
 	protected void grow(int sx, int sy) {
@@ -238,7 +245,7 @@ public class PolygonRoi extends Roi {
 		}
 	}
 
-	public void handleMouseMove(int ox, int oy) {
+	void handleMouseMove(int ox, int oy) {
 	// Do rubber banding
 		int tool = Toolbar.getToolId();
 		if (!(tool==Toolbar.POLYGON || tool==Toolbar.POLYLINE || tool==Toolbar.ANGLE)) {
@@ -297,12 +304,11 @@ public class PolygonRoi extends Roi {
 		if (oy>ymax) ymax=oy;
 		//clip = new Rectangle(xmin, ymin, xmax-xmin, ymax-ymin);
 		int margin = 4;
-		if (lineWidth>margin && isLine())
-			margin = lineWidth;
 		if (ic!=null) {
 			double mag = ic.getMagnification();
 			if (mag<1.0) margin = (int)(margin/mag);
 		}
+		margin = (int)(margin+getStrokeWidth());
 		xp[nPoints-1] = ox-x;
 		yp[nPoints-1] = oy-y;
 		imp.draw(xmin-margin, ymin-margin, (xmax-xmin)+margin*2, (ymax-ymin)+margin*2);
@@ -327,10 +333,18 @@ public class PolygonRoi extends Roi {
 		if (imp!=null && !(type==TRACED_ROI))
 			imp.draw(x-5, y-5, width+10, height+10);
 		oldX=x; oldY=y; oldWidth=width; oldHeight=height;
-		if (Recorder.record && userCreated && (type==POLYGON||type==POLYLINE||type==ANGLE))
+		if (Recorder.record && userCreated && (type==POLYGON||type==POLYLINE||type==ANGLE
+		||(type==POINT&&Recorder.scriptMode()&&nPoints==3)))
 			Recorder.recordRoi(getPolygon(), type);
 		if (type!=POINT) modifyRoi();
 		LineWidthAdjuster.update();
+	}
+	
+	public void exitConstructingMode() {
+		if (type==POLYLINE && state==CONSTRUCTING) {
+            addOffset();
+			finishPolygon();
+		}
 	}
 	
     protected void moveHandle(int sx, int sy) {
@@ -342,14 +356,13 @@ public class PolygonRoi extends Roi {
 		if (xSpline!=null) {
 			fitSpline(splinePoints);
 			updateClipRect();
-			if (Line.getWidth()>1 && isLine())
-				imp.draw();
-			else
-				imp.draw(clipX, clipY, clipWidth, clipHeight);
+			imp.draw(clipX, clipY, clipWidth, clipHeight);
 			oldX = x; oldY = y;
 			oldWidth = width; oldHeight = height;
 		} else {
 			resetBoundingRect();
+			if (type==POINT && width==0 && height==0)
+				{width=1; height=1;}
 			updateClipRectAndDraw();
 		}
 		String angle = type==ANGLE?getAngleAsString():"";
@@ -389,8 +402,9 @@ public class PolygonRoi extends Roi {
 		xClipMin=xmin; yClipMin=ymin; xClipMax=xmax; yClipMax=ymax;
 		double mag = ic.getMagnification();
 		int handleSize = type==POINT?HANDLE_SIZE+8:HANDLE_SIZE;
-		if (handleSize<lineWidth && isLine()) handleSize= lineWidth;
+		if (handleSize<getStrokeWidth() && isLine()) handleSize = (int)getStrokeWidth() ;
 		int m = mag<1.0?(int)(handleSize/mag):handleSize;
+		m = (int)(m*getStrokeWidth());
 		imp.draw(xmin2-m, ymin2-m, xmax2-xmin2+m*2, ymax2-ymin2+m*2);
 	}
 
@@ -425,7 +439,7 @@ public class PolygonRoi extends Roi {
 		return ", angle=" + IJ.d2s(degrees);
 	}
    
-   public void mouseDownInHandle(int handle, int sx, int sy) {
+   protected void mouseDownInHandle(int handle, int sx, int sy) {
         if (state==CONSTRUCTING)
             return;
 		int ox=ic.offScreenX(sx), oy=ic.offScreenY(sy);
@@ -594,6 +608,20 @@ public class PolygonRoi extends Roi {
 		return xSpline!=null;
 	}
 
+		/*
+		xSpline = new float[nPoints];
+		ySpline = new float[nPoints];
+		for (int i=1; i<nPoints; i++) {
+			xSpline[i] = xp[i];
+			ySpline[i] = yp[i];
+		}
+		splinePoints = nPoints;
+		float[] xpoints = new float[splinePoints*10];
+		float[] ypoints = new float[splinePoints*10];
+		*/
+
+	/* Creates a spline fitted polygon with one pixel segment lengths 
+		that can be retrieved using the getFloatPolygon() method. */
 	public void fitSplineForStraightening() {
 		fitSpline((int)getUncalibratedLength()*2);
 		float[] xpoints = new float[splinePoints*2];
@@ -614,7 +642,8 @@ public class PolygonRoi extends Roi {
 			xinc = dx*inc/distance;
 			yinc = dy*inc/distance;
 			lastx=xpoints[n-1]; lasty=ypoints[n-1];
-			n2 = (int)(dx/xinc);
+			//n2 = (int)(dx/xinc);
+			n2 = (int)(distance/inc);
 			if (splinePoints==2) n2++;
 			do {
 				dx = x-lastx;
@@ -637,7 +666,7 @@ public class PolygonRoi extends Roi {
 		splinePoints = n;
 	}
 
-	double getUncalibratedLength() {
+	public double getUncalibratedLength() {
 		if (imp==null) return nPoints/2;
 		Calibration cal = imp.getCalibration();
 		double spw=cal.pixelWidth, sph=cal.pixelHeight;
@@ -647,7 +676,7 @@ public class PolygonRoi extends Roi {
 		return length;
 	}
 	
-	public void handleMouseUp(int sx, int sy) {
+	protected void handleMouseUp(int sx, int sy) {
 		if (state==MOVING)
 			{state = NORMAL; return;}				
 		if (state==MOVING_HANDLE) {
@@ -760,56 +789,32 @@ public class PolygonRoi extends Roi {
 			w2 = cal.pixelWidth*cal.pixelWidth;
 			h2 = cal.pixelHeight*cal.pixelHeight;
 		}
-		double x1,x2,x3,x4,y1,y2,y3,y4;
-		x2=xp[0]; x3=xp[0]; x4=xp[1];
-		y2=yp[0]; y3=yp[0]; y4=yp[1];
-		for (int i=0; i<(nPoints-1); i++) {
-			x1=x2; x2=x3; x3=x4;
-			y1=y2; y2=y3; y3=y4;;
-			if ((i+2)<nPoints) {
-				x4=xp[i+2];
-				y4=yp[i+2];
-			}
-			dx = (x4-x1)/3.0; // = (x2+x3+x4)/3-(x1+x2+x3)/3
-			dy = (y4-y1)/3.0; // = (y2+y3+y4)/3-(y1+y2+y3)/3
+		dx = (xp[0]+xp[1]+xp[2])/3.0-xp[0];
+		dy = (yp[0]+yp[1]+yp[2])/3.0-yp[0];
+		length += Math.sqrt(dx*dx*w2+dy*dy*h2);
+		for (int i=1; i<nPoints-2; i++) {
+			dx = (xp[i+2]-xp[i-1])/3.0; // = (x[i]+x[i+1]+x[i+2])/3-(x[i-1]+x[i]+x[i+1])/3
+			dy = (yp[i+2]-yp[i-1])/3.0; // = (y[i]+y[i+1]+y[i+2])/3-(y[i-1]+y[i]+y[i+1])/3
 			length += Math.sqrt(dx*dx*w2+dy*dy*h2);
 		}
+		dx = xp[nPoints-1]-(xp[nPoints-3]+xp[nPoints-2]+xp[nPoints-1])/3.0;
+		dy = yp[nPoints-1]-(yp[nPoints-3]+yp[nPoints-2]+yp[nPoints-1])/3.0;
+		length += Math.sqrt(dx*dx*w2+dy*dy*h2);
 		return length;
 	}
 
-	/** Returns the perimeter of this ROIs after
+	/** Returns the perimeter of this ROI after
 		smoothing using a 3-point running average.*/
 	double getSmoothedPerimeter() {
-		double length = 0.0;
-		double w2 = 1.0;
-		double h2 = 1.0;
-		double dx, dy;
+		double length = getSmoothedLineLength();
+		double w2=1.0, h2=1.0;
 		if (imp!=null) {
 			Calibration cal = imp.getCalibration();
 			w2 = cal.pixelWidth*cal.pixelWidth;
 			h2 = cal.pixelHeight*cal.pixelHeight;
 		}
-		double x1,x2,x3,x4,y1,y2,y3,y4;
-		x2=xp[nPoints-1]; x3=xp[0]; x4=xp[1];
-		y2=yp[nPoints-1]; y3=yp[0]; y4=yp[1];
-		for (int i=0; i<(nPoints-1); i++) {
-			x1=x2; x2=x3; x3=x4;
-			y1=y2; y2=y3; y3=y4;;
-			if ((i+2)<nPoints) {
-				x4=xp[i+2];
-				y4=yp[i+2];
-			} else {
-				x4=xp[0];
-				y4=yp[0];
-			}
-			dx = (x4-x1)/3.0; // = (x2+x3+x4)/3-(x1+x2+x3)/3
-			dy = (y4-y1)/3.0; // = (y2+y3+y4)/3-(y1+y2+y3)/3
-			length += Math.sqrt(dx*dx*w2+dy*dy*h2);
-		}
-		x1=x2; x2=x3; x3=x4; x4=xp[1];
-		y1=y2; y2=y3; y3=y4; y4=yp[1];
-		dx = (x4-x1)/3.0;
-		dy = (y4-y1)/3.0;
+		double dx = xp[nPoints-1]-xp[0];
+		double dy = yp[nPoints-1]-yp[0];
 		length += Math.sqrt(dx*dx*w2+dy*dy*h2);
 		return length;
 	}
@@ -906,28 +911,6 @@ public class PolygonRoi extends Roi {
 		return length;
 	}
 	
-	/** Returns Feret's diameter, the greatest distance between 
-		any two points along the ROI boundary. */
-	public double getFeretsDiameter() {
-		double w2=1.0, h2=1.0;
-		if (imp!=null) {
-			Calibration cal = imp.getCalibration();
-			w2 = cal.pixelWidth*cal.pixelWidth;
-			h2 = cal.pixelHeight*cal.pixelHeight;
-		}
-		double diameter = 0.0, dx, dy, d;
-		for (int i=0; i<nPoints; i++) {
-			for (int j=i; j<nPoints; j++) {
-				dx = xp[i] - xp[j];
-				dy = yp[i] - yp[j];
-				d = Math.sqrt(dx*dx*w2 + dy*dy*h2);
-				if (d>diameter)
-					diameter = d;
-			}
-		}
-		return diameter;
-	}
-
 	/** Returns the angle in degrees between the first two segments of this polyline.*/
 	public double getAngle() {
 		return degrees;
@@ -958,7 +941,11 @@ public class PolygonRoi extends Roi {
 		else
 			return yp;
 	}
-
+	
+	public Polygon getNonSplineCoordinates() {
+		return new Polygon(xp, yp, nPoints);
+	}
+		
 	/** Returns this PolygonRoi as a Polygon. 
 		@see ij.process.ImageProcessor#setRoi
 		@see ij.process.ImageProcessor#drawPolygon
@@ -1002,6 +989,72 @@ public class PolygonRoi extends Roi {
 			}
 		}
 		return new FloatPolygon(xpoints2, ypoints2, n);
+	}
+
+	/** Uses the gift wrap algorithm to find the 
+		convex hull and returns it as a Polygon. */
+	public Polygon getConvexHull() {
+		int n = getNCoordinates();
+		int[] xCoordinates = getXCoordinates();
+		int[] yCoordinates = getYCoordinates();
+		Rectangle r = getBounds();
+		int xbase = r.x;
+		int ybase = r.y;
+		int[] xx = new int[n];
+		int[] yy = new int[n];
+		int n2 = 0;
+		int smallestY = Integer.MAX_VALUE;
+		int x, y;
+		for (int i=0; i<n; i++) {
+			y = yCoordinates[i];
+			if (y<smallestY)
+			smallestY = y;
+		}
+		int smallestX = Integer.MAX_VALUE;
+		int p1 = 0;
+		for (int i=0; i<n; i++) {
+			x = xCoordinates[i];
+			y = yCoordinates[i];
+			if (y==smallestY && x<smallestX) {
+				smallestX = x;
+				p1 = i;
+			}
+		}
+		int pstart = p1;
+		int x1, y1, x2, y2, x3, y3, p2, p3;
+		int determinate;
+		int count = 0;
+		do {
+			x1 = xCoordinates[p1];
+			y1 = yCoordinates[p1];
+			p2 = p1+1; if (p2==n) p2=0;
+			x2 = xCoordinates[p2];
+			y2 = yCoordinates[p2];
+			p3 = p2+1; if (p3==n) p3=0;
+			do {
+				x3 = xCoordinates[p3];
+				y3 = yCoordinates[p3];
+				determinate = x1*(y2-y3)-y1*(x2-x3)+(y3*x2-y2*x3);
+				if (determinate>0)
+					{x2=x3; y2=y3; p2=p3;}
+				p3 += 1;
+				if (p3==n) p3 = 0;
+			} while (p3!=p1);
+			if (n2<n) { 
+				xx[n2] = xbase + x1;
+				yy[n2] = ybase + y1;
+				n2++;
+			} else {
+				count++;
+				if (count>10) return null;
+			}
+			p1 = p2;
+		} while (p1!=pstart);
+		return new Polygon(xx, yy, n2);
+	}
+
+	protected int clipRectMargin() {
+		return type==POINT?4:0;
 	}
 
 	/** Returns a copy of this PolygonRoi. */

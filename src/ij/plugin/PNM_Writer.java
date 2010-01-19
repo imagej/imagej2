@@ -8,7 +8,6 @@
  @author Johannes Schindelin
  */
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -21,7 +20,7 @@ import java.awt.image.*;
 public class PNM_Writer implements PlugIn {
 
 	public void run(String path) {
-		IjxImagePlus img=IJ.getImage();
+		ImagePlus img=IJ.getImage();
 		boolean isGray = false;
 		String extension = null;
 		ImageProcessor ip = img.getProcessor();
@@ -86,8 +85,7 @@ public class PNM_Writer implements PlugIn {
 			}
 			output.flush();
 		} catch(IOException e) {
-			e.printStackTrace();
-			IJ.error("Error writing file");
+			IJ.handleException(e);
 		}
 		IJ.showStatus("");
 	}

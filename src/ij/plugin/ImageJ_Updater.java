@@ -8,22 +8,34 @@ import java.util.*;
 import java.lang.reflect.*;
 
 
-/** This plugin implements the Plugins/Utilities/Update ImageJ command. */
+/** This plugin implements the Help/Update ImageJ command. */
 public class ImageJ_Updater implements PlugIn {
 
 	public void run(String arg) {
 		if (arg.equals("menus"))
 			{updateMenus(); return;}
 		if (IJ.getApplet()!=null) return;
-		File file = new File(Prefs.getHomeDir() + File.separator + "ij.jar");
-		if (isMac() && !file.exists())
-			file = new File(Prefs.getHomeDir() + File.separator + "ImageJ.app/Contents/Resources/Java/ij.jar");
+		//File file = new File(Prefs.getHomeDir() + File.separator + "ij.jar");
+		//if (isMac() && !file.exists())
+		//	file = new File(Prefs.getHomeDir() + File.separator + "ImageJ.app/Contents/Resources/Java/ij.jar");
+		URL url = getClass().getResource("/ij/IJ.class");
+		String ij_jar = url == null ? null : url.toString().replaceAll("%20", " ");
+		if (ij_jar==null || !ij_jar.startsWith("jar:file:")) {
+			error("Could not determine location of ij.jar");
+			return;
+		}
+		int exclamation = ij_jar.indexOf('!');
+		ij_jar = ij_jar.substring(9, exclamation);
+		if (IJ.debugMode) IJ.log("Updater: "+ij_jar);
+		File file = new File(ij_jar);
 		if (!file.exists()) {
 			error("File not found: "+file.getPath());
 			return;
 		}
 		if (!file.canWrite()) {
-			error("No write access: "+file.getPath());
+			String msg = "No write access: "+file.getPath();
+			if (IJ.isVista()) msg += Prefs.vistaHint;
+			error(msg);
 			return;
 		}
 		String[] list = openUrlAsList(IJ.URL+"/download/jars/list.txt");
@@ -32,22 +44,23 @@ public class ImageJ_Updater implements PlugIn {
 		String[] urls = new String[count];
 		String uv = getUpgradeVersion();
 		if (uv==null) return;
-		versions[0] = "v"+uv+" (latest version)";
+		versions[0] = "v"+uv;
 		urls[0] = IJ.URL+"/upgrade/ij.jar";
 		if (versions[0]==null) return;
 		for (int i=1; i<count-1; i++) {
-			versions[i] = list[i-1];
+			String version = list[i-1];
+			versions[i] = version.substring(0,version.length()-1); // remove letter
 			urls[i] = IJ.URL+"/download/jars/ij"
-				+versions[i].substring(1,2)+versions[i].substring(3,6)+".jar";
+				+version.substring(1,2)+version.substring(3,6)+".jar";
 		}
 		versions[count-1] = "daily build";
 		urls[count-1] = IJ.URL+"/ij.jar";
 		int choice = showDialog(versions);
 		if (choice==-1) return;
-		if (!versions[choice].startsWith("daily") && versions[choice].compareTo("v1.39s")<0
+		if (!versions[choice].startsWith("daily") && versions[choice].compareTo("v1.39")<0
 		&& Menus.getCommands().get("ImageJ Updater")==null) {
 			String msg = "This command is not available in versions of ImageJ prior\n"+
-			"to 1.39s so you will need to install the plugin version at\n"+
+			"to 1.39 so you will need to install the plugin version at\n"+
 			"<"+IJ.URL+"/plugins/imagej-updater.html>.";
 			if (!IJ.showMessageWithCancel("Update ImageJ", msg))
 				return;
@@ -207,7 +220,12 @@ public class ImageJ_Updater implements PlugIn {
 	}
 	
 	void updateMenus() {
-		Menus.updateImageJMenus();
+		if (IJ.debugMode) {
+			long start = System.currentTimeMillis();
+			Menus.updateImageJMenus();
+			IJ.log("Update Menus: "+(System.currentTimeMillis()-start)+" ms");
+		} else
+			Menus.updateImageJMenus();
 	}
 
 }

@@ -82,7 +82,7 @@ public class BrowserLauncher implements PlugIn {
 	public static void openURL(String url) throws IOException {
 		String errorMessage = "";
 		if (IJ.isMacOSX()) {
-			if (IJ.is64Bit())
+			if (IJ.isJava16())
 				IJ.runMacro("exec('open', '"+url+"')");
 			else {
 				try {
@@ -109,7 +109,9 @@ public class BrowserLauncher implements PlugIn {
 		} else {
 				// Assume Linux or Unix
 				// Based on BareBonesBrowserLaunch (http://www.centerkey.com/java/browser/)
-				String[] browsers = {"netscape", "firefox", "konqueror", "mozilla", "opera", "epiphany", "lynx" };
+				// The utility 'xdg-open' launches the URL in the user's preferred browser,
+				// therefore we try to use it first, before trying to discover other browsers.
+				String[] browsers = {"xdg-open", "netscape", "firefox", "konqueror", "mozilla", "opera", "epiphany", "lynx" };
 				String browserName = null;
 				try {
 					for (int count=0; count<browsers.length && browserName==null; count++) {
@@ -132,7 +134,7 @@ public class BrowserLauncher implements PlugIn {
 	 * required at runtime to locate the user's web browser.
 	 */
 	private static void loadClasses() {
-		if (IJ.isMacOSX() && !IJ.is64Bit() && IJ.getApplet()==null) {
+		if (IJ.isMacOSX() && !IJ.isJava16() && IJ.getApplet()==null) {
 			try {
 				if (new File("/System/Library/Java/com/apple/cocoa/application/NSWorkspace.class").exists()) {
 					ClassLoader classLoader = new URLClassLoader(new URL[]{new File("/System/Library/Java").toURL()});

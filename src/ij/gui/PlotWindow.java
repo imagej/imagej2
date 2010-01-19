@@ -1,6 +1,5 @@
 package ij.gui;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -12,9 +11,11 @@ import ij.process.*;
 import ij.util.*;
 import ij.text.TextWindow;
 import ij.plugin.filter.Analyzer;
+import ij.macro.Interpreter;
+import ij.measure.Measurements;
 
 
-/** This class is an extended ImageWindow that displays line graphs. */
+/** Obsolete; replaced by the Plot class. */
 public class PlotWindow extends ImageWindow implements ActionListener, ClipboardOwner {
 
 	/** Display points using a circle 5 pixels in diameter. */
@@ -94,35 +95,30 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
      	noGridLines = (options&NO_GRID_LINES)!=0; 
    }
 
-	/** Construct a new PlotWindow.
-	* @param title			the window title
-	* @param xLabel			the x-axis label
-	* @param yLabel			the y-axis label
-	* @param xValues		the x-coodinates
-	* @param yValues		the y-coodinates
-	*/
+	/** Obsolete; replaced by the Plot class. */
 	public PlotWindow(String title, String xLabel, String yLabel, float[] xValues, float[] yValues) {
 		super(createImage(title, xLabel, yLabel, xValues, yValues));
 		plot = staticPlot;
 	}
 
-	/** This version of the constructor excepts double arrays. */
+	/** Obsolete; replaced by the Plot class. */
 	public PlotWindow(String title, String xLabel, String yLabel, double[] xValues, double[] yValues) {
 		this(title, xLabel, yLabel, Tools.toFloat(xValues), Tools.toFloat(yValues));
 	}
-
+	
 	/** Creates a PlotWindow from a Plot object. */
 	PlotWindow(Plot plot) {
 		super(plot.getImagePlus());
 		this.plot = plot;
 		draw();
+		//addComponentListener(this);
 	}
 
 	/** Called by the constructor to generate the image the plot will be drawn on.
 		This is a static method because constructors cannot call instance methods. */
-	static IjxImagePlus createImage(String title, String xLabel, String yLabel, float[] xValues, float[] yValues) {
+	static ImagePlus createImage(String title, String xLabel, String yLabel, float[] xValues, float[] yValues) {
 		staticPlot = new Plot(title, xLabel, yLabel, xValues, yValues);
-		return IJ.getFactory().newImagePlus(title, staticPlot.getBlankProcessor());
+		return new ImagePlus(title, staticPlot.getBlankProcessor());
 	}
 	
 	/** Sets the x-axis and y-axis range. */
@@ -190,7 +186,7 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
 		add(buttons);
 		plot.draw();
 		pack();
-		coordinates.setText(""); 
+		coordinates.setText("                    ");
 		ImageProcessor ip = plot.getProcessor();
 		if ((ip instanceof ColorProcessor) && (imp.getProcessor() instanceof ByteProcessor))
 			imp.setProcessor(null, ip);
@@ -257,7 +253,7 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
 		}
 		TextWindow tw = new TextWindow("Plot Values", headings, sb.toString(), 200, 400);
 		if (autoClose)
-			{imp.setChanged(false); close();}
+			{imp.changes=false; close();}
 	}
 
 	void saveAsText() {
@@ -290,7 +286,7 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
 		}
 		pw.close();
 		if (autoClose)
-			{imp.setChanged(false); close();}
+			{imp.changes=false; close();}
 	}
 		
 	void copyToClipboard() {
@@ -315,12 +311,20 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
 		systemClipboard.setContents(contents, this);
 		IJ.showStatus(text.length() + " characters copied to Clipboard");
 		if (autoClose)
-			{imp.setChanged(false); close();}
+			{imp.changes=false; close();}
 	}
 	
 	void initDigits() {
 		int digits = 2;
 		int setDigits = Analyzer.getPrecision();
+		int measurements = Analyzer.getMeasurements();
+		boolean scientificNotation = (measurements&Measurements.SCIENTIFIC_NOTATION)!=0;
+		if (scientificNotation) {
+			if (setDigits<2) setDigits = 2;
+			xdigits = ydigits = -setDigits;
+			return;
+		}
+
 		if (ydigits!=9 || setDigits>=6) {
 			ydigits = setDigits;
 			if (ydigits==0) ydigits = 2;
@@ -397,6 +401,13 @@ public class PlotWindow extends ImageWindow implements ActionListener, Clipboard
 		prefs.put(OPTIONS, Integer.toString(options));
 	}
 	
+	//public void componentHidden(ComponentEvent e) {}
+	//public void componentMoved(ComponentEvent e) {}
+	//public void componentResized(ComponentEvent e) {
+	//	IJ.log("componentResized");
+	//}
+	//public void componentShown(ComponentEvent e) {}
+ 
 }
 
 

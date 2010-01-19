@@ -1,16 +1,14 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.measure.Calibration;
-import ijx.IjxImageStack;
 import java.awt.*;
 import java.util.Vector;
 
 /** Implements the Image/HyperStacks/Reduce Dimensionality command. */
 public class HyperStackReducer implements PlugIn, DialogListener {
-	IjxImagePlus imp;
+	ImagePlus imp;
 	int channels1, slices1, frames1;
 	int channels2, slices2, frames2;
 	double imageSize;
@@ -21,13 +19,14 @@ public class HyperStackReducer implements PlugIn, DialogListener {
 	}
 
 	/** Constructs a HyperStackReducer using the specified source image. */
-	public HyperStackReducer(IjxImagePlus imp) {
+	public HyperStackReducer(ImagePlus imp) {
 		this.imp = imp;
 	}
 
 	public void run(String arg) {
+		//IJ.log("HyperStackReducer-1");
 		imp = IJ.getImage();
-		if (!(imp.isHyperStack() || imp.isComposite())) {
+		if (!imp.isHyperStack()) {
 			IJ.error("Reducer", "HyperStack required");
 			return;
 		}
@@ -42,34 +41,31 @@ public class HyperStackReducer implements PlugIn, DialogListener {
 		int t2 = imp.getFrame();
 		if (!showDialog())
 			return;
+		//IJ.log("HyperStackReducer-2: "+keep+" "+channels2+" "+slices2+" "+frames2);
 		String title2 = keep?WindowManager.getUniqueName(imp.getTitle()):imp.getTitle();
-     	int bitDepth = imp.getBitDepth();
-		int size = channels2*slices2*frames2;
-		IjxImagePlus imp2 = null;
+		ImagePlus imp2 = null;
 		if (keep) {
-			imp2 = IJ.createImage(title2, bitDepth+"-bit", width, height, size);
+			imp2 = IJ.createImage(title2, imp.getBitDepth()+"-bit", width, height, channels2*slices2*frames2);
 			if (imp2==null) return;
-		} else {
-			IjxImageStack stack2 = IJ.getFactory().newImageStack(width, height, size); // create empty stack
-			stack2.setPixels(imp.getProcessor().getPixels(), 1); // can't create ImagePlus will null 1st image
-			imp2 = IJ.getFactory().newImagePlus(title2, stack2);
-			stack2.setPixels(null, 1);
-		}
-		imp2.setDimensions(channels2, slices2, frames2);
+			imp2.setDimensions(channels2, slices2, frames2);
+			imp2.setCalibration(imp.getCalibration());
+			imp2.setOpenAsHyperStack(true);
+		} else
+			imp2 = imp.createHyperStack(title2, channels2, slices2, frames2, imp.getBitDepth());
 		reduce(imp2);
-		imp2.setOpenAsHyperStack(true);
 		if (channels2>1 && imp.isComposite()) {
 			imp2 = new CompositeImage(imp2, 0);
 			((CompositeImage)imp2).copyLuts(imp);
 		}
 		imp2.show();
+		//IJ.log("HyperStackReducer-4");
 		if (!keep) {
-			imp.setChanged(false);
+			imp.changes = false;
 			imp.close();
 		}
 	}
 
-	public void reduce(IjxImagePlus imp2) {
+	public void reduce(ImagePlus imp2) {
 		int channels = imp2.getNChannels();
 		int slices = imp2.getNSlices();
 		int frames = imp2.getNFrames();
@@ -78,8 +74,8 @@ public class HyperStackReducer implements PlugIn, DialogListener {
 		int t1 = imp.getFrame();
 		int i = 1;
 		int n = channels*slices*frames;
-		IjxImageStack stack = imp.getStack();
-		IjxImageStack stack2 = imp2.getStack();
+		ImageStack stack = imp.getStack();
+		ImageStack stack2 = imp2.getStack();
 		for (int c=1; c<=channels; c++) {
 			if (channels==1) c = c1;
 			LUT lut = imp.isComposite()?((CompositeImage)imp).getChannelLut():null;
@@ -90,14 +86,19 @@ public class HyperStackReducer implements PlugIn, DialogListener {
 			for (int z=1; z<=slices; z++) {
 				if (slices==1) z = z1;
 				for (int t=1; t<=frames; t++) {
-					IJ.showProgress(i++, n);
+					//IJ.showProgress(i++, n);
 					if (frames==1) t = t1;
-					ip = stack.getProcessor(imp.getStackIndex(c, z, t));
+					//ip = stack.getProcessor(n1);
+					imp.setPositionWithoutUpdate(c, z, t);
+					ip = imp.getProcessor();
+					int n1 = imp.getStackIndex(c, z, t);
+					String label = stack.getSliceLabel(n1);
 					int n2 = imp2.getStackIndex(c, z, t);
 					if (stack2.getPixels(n2)!=null)
 						stack2.getProcessor(n2).insert(ip, 0, 0);
 					else
 						stack2.setPixels(ip.getPixels(), n2);
+					stack2.setSliceLabel(label, n2);
 				}
 			}
 			if (lut!=null) {
@@ -111,45 +112,36 @@ public class HyperStackReducer implements PlugIn, DialogListener {
 		imp.setPosition(c1, z1, t1);
 		imp2.resetStack();
 		imp2.setPosition(1, 1, 1);
-		imp2.setCalibration(imp.getCalibration());
 	}
 
 	boolean showDialog() {
 		GenericDialog gd = new GenericDialog("Reduce");
-        	gd.setInsets(10, 20, 5);
+		gd.setInsets(10, 20, 5);
 		gd.addMessage("Create Image With:");
 		gd.setInsets(0, 35, 0);
-		if (channels1!=1) gd.addCheckbox(channels1+" channels", true);
+		if (channels1!=1) gd.addCheckbox("Channels ("+channels1+")", true);
 		gd.setInsets(0, 35, 0);
-		if (slices1!=1) gd.addCheckbox(slices1+" slices", true);
+		if (slices1!=1) gd.addCheckbox("Slices ("+slices1+")", true);
 		gd.setInsets(0, 35, 0);
-		if (frames1!=1) gd.addCheckbox(frames1+" frames", true);
+		if (frames1!=1) gd.addCheckbox("Frames ("+frames1+")", true);
 		gd.setInsets(5, 20, 0);
 		gd.addMessage(getNewDimensions()+"      ");
 		gd.setInsets(15, 20, 0);
 		gd.addCheckbox("Keep Source", keep);
 		gd.addDialogListener(this);
 		gd.showDialog();
-		if (gd.wasCanceled()) return false;
+		if (gd.wasCanceled())
+			return false;
+		else
+			return true;
+	}
+
+	public boolean dialogItemChanged(GenericDialog gd, AWTEvent e) {
+		if (IJ.isMacOSX()) IJ.wait(100);
 		if (channels1!=1) channels2 = gd.getNextBoolean()?channels1:1;
 		if (slices1!=1) slices2 = gd.getNextBoolean()?slices1:1;
 		if (frames1!=1) frames2 = gd.getNextBoolean()?frames1:1;
 		keep = gd.getNextBoolean();
-		return true;
-	}
-
-	public boolean dialogItemChanged(GenericDialog gd, AWTEvent e) {
-		if (e==null) return false;
-		Object source = e.getSource();
-		Checkbox cb = (source instanceof Checkbox)?(Checkbox)source:null;
-		if (cb==null) return true;
-		String label = cb.getLabel();
-		if (label.indexOf("channels")!=-1)
-			channels2 = cb.getState()?channels1:1;
-		if (label.indexOf("slices")!=-1)
-			slices2 = cb.getState()?slices1:1;
-		if (label.indexOf("frames")!=-1)
-			frames2 = cb.getState()?frames1:1;
 		((Label)gd.getMessage()).setText(getNewDimensions());
 		return true;
 	}

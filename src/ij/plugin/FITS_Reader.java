@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -7,7 +6,6 @@ import ij.*;
 import ij.io.*;
 import ij.process.*;
 import ij.measure.*;
-import ijx.IjxImageStack;
 
 /** Opens and displays FITS images. The FITS format is 
     described at "ftp://nssdc.gsfc.nasa.gov/pub/fits".
@@ -27,13 +25,13 @@ public class FITS_Reader extends ImagePlus implements PlugIn {
         catch (IOException e) {}
         if (fi!=null && fi.width>0 && fi.height>0 && fi.offset>0) {
             FileOpener fo = new FileOpener(fi);
-            IjxImagePlus imp = fo.open(false);
+            ImagePlus imp = fo.open(false);
             if(fi.nImages==1) {
               ImageProcessor ip = imp.getProcessor();              
               ip.flipVertical(); // origin is at bottom left corner
               setProcessor(fileName, ip);
             } else {
-              IjxImageStack stack = imp.getStack(); // origin is at bottom left corner
+              ImageStack stack = imp.getStack(); // origin is at bottom left corner              
               for(int i=1; i<=stack.getSize(); i++)
                   stack.getProcessor(i).flipVertical();
               setStack(fileName, stack);

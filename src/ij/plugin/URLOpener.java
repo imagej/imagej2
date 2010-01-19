@@ -1,12 +1,11 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import ij.*;
 import ij.io.*;
 import ij.gui.*;
-import ij.plugin.frame.Editor;
+import ij.plugin.frame.*;
 
 /** Opens TIFFs, ZIP compressed TIFFs, DICOMs, GIFs and JPEGs using a URL. 
 	TIFF file names must end in ".tif", ZIP file names must end 
@@ -27,8 +26,10 @@ public class URLOpener implements PlugIn {
 				openTextFile(urlOrName, true);
 			else {
 				String url = urlOrName.indexOf("://")>0?urlOrName:Prefs.getImagesURL()+urlOrName;
-				IjxImagePlus imp = IJ.getFactory().newImagePlus(url);
-				if (imp.getType()==IjxImagePlus.COLOR_RGB)
+				ImagePlus imp = new ImagePlus(url);
+				if (Recorder.record)
+					Recorder.recordCall("imp = IJ.openImage(\""+url+"\");");
+				if (imp.getType()==ImagePlus.COLOR_RGB)
 					Opener.convertGrayJpegTo8Bits(imp);
 				WindowManager.checkForDuplicateName = true;
 				FileInfo fi = imp.getOriginalFileInfo();
@@ -59,13 +60,15 @@ public class URLOpener implements PlugIn {
 			url = "http://" + url;
 		if (url.endsWith("/"))
 			IJ.runPlugIn("ij.plugin.BrowserLauncher", url.substring(0, url.length()-1));
-		else if (url.endsWith(".html") || url.endsWith(".htm") ||  url.indexOf(".html#")>0)
+		else if (url.endsWith(".html") || url.endsWith(".htm") ||  url.indexOf(".html#")>0 || noExtension(url))
 			IJ.runPlugIn("ij.plugin.BrowserLauncher", url);
 		else if (url.endsWith(".txt")||url.endsWith(".ijm")||url.endsWith(".js")||url.endsWith(".java"))
 			openTextFile(url, false);
+		else if (url.endsWith(".jar")||url.endsWith(".class"))
+			IJ.open(url);
 		else {
 			IJ.showStatus("Opening: " + url);
-			IjxImagePlus imp = IJ.getFactory().newImagePlus(url);
+			ImagePlus imp = new ImagePlus(url);
 			WindowManager.checkForDuplicateName = true;
 			FileInfo fi = imp.getOriginalFileInfo();
 			if (fi!=null && fi.fileType==FileInfo.RGB48)
@@ -74,6 +77,16 @@ public class URLOpener implements PlugIn {
 			IJ.showStatus("");
 		}
 		IJ.register(URLOpener.class);  // keeps this class from being GC'd
+	}
+	
+	boolean noExtension(String url) {
+		int lastSlash = url.lastIndexOf("/");
+		if (lastSlash==-1) lastSlash = 0;
+		int lastDot = url.lastIndexOf(".");
+		if (lastDot==-1 || lastDot<lastSlash || (url.length()-lastDot)>6)
+			return true;  // no extension
+		else
+			return false;
 	}
 	
 	void openTextFile(String urlString, boolean install) {

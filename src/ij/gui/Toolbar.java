@@ -1,8 +1,6 @@
 package ij.gui;
-import ijx.gui.IjxToolbar;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
@@ -11,43 +9,43 @@ import ij.plugin.frame.Recorder;
 import ij.plugin.frame.Editor; 
 import ij.plugin.MacroInstaller;
 import ij.macro.Program;
-import javax.swing.JToolBar;
 
 /** The ImageJ toolbar. */
-public class Toolbar extends Canvas implements ActionListener, ItemListener, MouseListener, MouseMotionListener {
-    //implements IjxToolbar {
-    public  static final int NUM_TOOLS = 23;
-    public  static final int NUM_BUTTONS = 21;
-    public  static final int SIZE = 24;
-    public  static final int OFFSET = 4;
-    public  static final String BRUSH_SIZE = "toolbar.brush.size";
+public class Toolbar extends Canvas implements MouseListener, MouseMotionListener, ItemListener, ActionListener {
 
-    public  static final int ANGLE = 14;
-    public  static final int CROSSHAIR = 7;
-    public  static final int DOUBLE_CLICK_THRESHOLD = 650;
-    public  static final int DROPPER = 13;
-    public  static final int FREELINE = 6;
-    public  static final int FREEROI = 3;
-    public  static final int HAND = 12;
-    public  static final int LINE = 4;
-    public  static final int MAGNIFIER = 11;
-    public  static final int OVAL = 1;
-    public  static final int POINT = 7;
-    public  static final int POLYGON = 2;
-    public  static final int POLYLINE = 5;
-    public  static final int RECTANGLE = 0;
-    public  static final int SPARE1 = 10;
-    public  static final int SPARE2 = 15;
-    public  static final int SPARE3 = 16;
-    public  static final int SPARE4 = 17;
-    public  static final int SPARE5 = 18;
-    public  static final int SPARE6 = 19;
-    public  static final int SPARE7 = 20;
-    public  static final int SPARE8 = 21;
-    public  static final int SPARE9 = 22;
-    public  static final int TEXT = 9;
-    public  static final int WAND = 8;
-    
+	public static final int RECTANGLE = 0;
+	public static final int OVAL = 1;
+	public static final int POLYGON = 2;
+	public static final int FREEROI = 3;
+	public static final int LINE = 4;
+	public static final int POLYLINE = 5;
+	public static final int FREELINE = 6;
+	public static final int POINT = 7, CROSSHAIR = 7;
+	public static final int WAND = 8;
+	public static final int TEXT = 9;
+	public static final int SPARE1 = 10;
+	public static final int MAGNIFIER = 11;
+	public static final int HAND = 12;
+	public static final int DROPPER = 13;
+	public static final int ANGLE = 14;
+	public static final int SPARE2 = 15;
+	public static final int SPARE3 = 16;
+	public static final int SPARE4 = 17;
+	public static final int SPARE5 = 18;
+	public static final int SPARE6 = 19;
+	public static final int SPARE7 = 20;
+	public static final int SPARE8 = 21;
+	public static final int SPARE9 = 22;
+	
+	public static final int DOUBLE_CLICK_THRESHOLD = 650;
+
+	private static final int NUM_TOOLS = 23;
+	private static final int NUM_BUTTONS = 21;
+	private static final int SIZE = 26;
+	private static final int OFFSET = 5;
+	private static final String BRUSH_SIZE = "toolbar.brush.size";
+	private static final String ARC_SIZE = "toolbar.arc.size";
+		
 	private Dimension ps = new Dimension(SIZE*NUM_BUTTONS, SIZE);
 	private boolean[] down;
 	private static int current;
@@ -56,7 +54,7 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	private int xOffset, yOffset;
 	private long mouseDownTime;
 	private Graphics g;
-
+	private static Toolbar instance;
 	private int mpPrevious = RECTANGLE;
 	private String[] names = new String[NUM_TOOLS];
 	private String[] icons = new String[NUM_TOOLS];
@@ -65,14 +63,24 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	private String icon;
 	private MacroInstaller macroInstaller;
 	private int startupTime;
-	private PopupMenu ovalPopup, linePopup, switchPopup;
+	private PopupMenu rectPopup, ovalPopup, pointPopup, linePopup, switchPopup;
+	private CheckboxMenuItem rectItem, roundRectItem;
 	private CheckboxMenuItem ovalItem, brushItem;
-	private CheckboxMenuItem straightLineItem, polyLineItem, freeLineItem;
+	private CheckboxMenuItem pointItem, multiPointItem;
+	private CheckboxMenuItem straightLineItem, polyLineItem, freeLineItem, arrowItem;
 	private String currentSet = "Startup Macros";
-    
+
+	private static Color foregroundColor = Prefs.getColor(Prefs.FCOLOR,Color.black);
+	private static Color backgroundColor = Prefs.getColor(Prefs.BCOLOR,Color.white);
+	private static boolean brushEnabled;
+	private static boolean multiPointMode = Prefs.multiPointMode;
+	private static boolean roundRectMode;
+	private static boolean arrowMode;
+	private static int brushSize = (int)Prefs.get(BRUSH_SIZE, 15);
+	private static int arcSize = (int)Prefs.get(ARC_SIZE, 20);
 	private int lineType = LINE;
 	
-	private Color gray = IJ.backgroundColor;
+	private Color gray = ImageJ.backgroundColor;
 	private Color brighter = gray.brighter();
 	//private Color darker = gray.darker();
 	//private Color evenDarker = darker.darker();
@@ -80,18 +88,9 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	private Color evenDarker = new Color(110, 110, 110);
 	private Color triangleColor = new Color(150, 0, 0);
 	private Color toolColor = new Color(0, 25, 45);
-    private static Toolbar instance;
-    
-    	/** Returns a reference to the ImageJ toolbar. */
-    
-    IjxToolbar theToolbar;
-    
-	public static Toolbar getInstance() {
-		return instance;
-	}
+
 
 	public Toolbar() {
-        theToolbar = new ToolbarAWT();
 		down = new boolean[NUM_TOOLS];
 		resetButtons();
 		down[0] = true;
@@ -107,29 +106,54 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	}
 
 	void addPopupMenus() {
+		rectPopup = new PopupMenu();
+		if (Menus.getFontSize()!=0)
+			rectPopup.setFont(Menus.getFont());
+		rectItem = new CheckboxMenuItem("Rectangle Tool", !roundRectMode);
+		rectItem.addItemListener(this);
+		rectPopup.add(rectItem);
+		roundRectItem = new CheckboxMenuItem("Rounded Rectangle Tool", roundRectMode);
+		roundRectItem.addItemListener(this);
+		rectPopup.add(roundRectItem);
+		add(rectPopup);
+
 		ovalPopup = new PopupMenu();
 		if (Menus.getFontSize()!=0)
 			ovalPopup.setFont(Menus.getFont());
-		ovalItem = new CheckboxMenuItem("Elliptical Selection Tool", !ToolbarHelper.brushEnabled);
+		ovalItem = new CheckboxMenuItem("Elliptical Selection Tool", !brushEnabled);
 		ovalItem.addItemListener(this);
 		ovalPopup.add(ovalItem);
-		brushItem = new CheckboxMenuItem("Selection Brush Tool", ToolbarHelper.brushEnabled);
+		brushItem = new CheckboxMenuItem("Selection Brush Tool", brushEnabled);
 		brushItem.addItemListener(this);
 		ovalPopup.add(brushItem);
 		add(ovalPopup);
 
+		pointPopup = new PopupMenu();
+		if (Menus.getFontSize()!=0)
+			pointPopup.setFont(Menus.getFont());
+		pointItem = new CheckboxMenuItem("Point Tool", !multiPointMode);
+		pointItem.addItemListener(this);
+		pointPopup.add(pointItem);
+		multiPointItem = new CheckboxMenuItem("Multi-point Tool", multiPointMode);
+		multiPointItem.addItemListener(this);
+		pointPopup.add(multiPointItem);
+		add(pointPopup);
+
 		linePopup = new PopupMenu();
 		if (Menus.getFontSize()!=0)
 			linePopup.setFont(Menus.getFont());
-		straightLineItem = new CheckboxMenuItem("Straight Lines", lineType==LINE);
+		straightLineItem = new CheckboxMenuItem("Straight Line", lineType==LINE&&!arrowMode);
 		straightLineItem.addItemListener(this);
 		linePopup.add(straightLineItem);
-		polyLineItem = new CheckboxMenuItem("Segmented Lines", lineType==POLYLINE);
+		polyLineItem = new CheckboxMenuItem("Segmented Line", lineType==POLYLINE);
 		polyLineItem.addItemListener(this);
 		linePopup.add(polyLineItem);
-		freeLineItem = new CheckboxMenuItem("Freehand Lines", lineType==FREELINE);
+		freeLineItem = new CheckboxMenuItem("Freehand Line", lineType==FREELINE);
 		freeLineItem.addItemListener(this);
 		linePopup.add(freeLineItem);
+		arrowItem = new CheckboxMenuItem("Arrow tool", lineType==LINE&&!arrowMode);
+		arrowItem.addItemListener(this);
+		linePopup.add(arrowItem);
 		add(linePopup);
 
 		switchPopup = new PopupMenu();
@@ -157,7 +181,10 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		return tool;
 	}
 
-
+	/** Returns a reference to the ImageJ toolbar. */
+	public static Toolbar getInstance() {
+		return instance;
+	}
 
 	private void drawButtons(Graphics g) {
 		if (Prefs.antialiasedTools) {
@@ -202,19 +229,22 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		}
 		switch (tool) {
 			case RECTANGLE:
-				g.drawRect(x+1, y+2, 14, 11);
+				xOffset = x; yOffset = y;
+				if (roundRectMode)
+					g.drawRoundRect(x+1, y+2, 15, 12, 8, 8);
+				else
+					g.drawRect(x+1, y+2, 15, 12);
+				drawTriangle(15,14);
 				return;
 			case OVAL:
 				xOffset = x; yOffset = y;
-				if (ToolbarHelper.brushEnabled) {
+				if (brushEnabled) {
 					m(9,2); d(13,2); d(13,2); d(15,5); d(15,8);
 					d(13,10); d(10,10); d(8,13); d(4,13); 
 					d(2,11);  d(2,7); d(4,5); d(7,5); d(9,2);
-					drawTriangle(13,14);
-				} else {
-					g.drawOval(x+1, y+2, 14, 11);
-					drawTriangle(13,14);
-				}
+				} else
+					g.drawOval(x+1, y+2, 15, 12);
+				drawTriangle(15,14);
 				return;
 			case POLYGON:
 				xOffset = x+1; yOffset = y+3;
@@ -229,26 +259,36 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				return;
 			case LINE:
 				xOffset = x; yOffset = y;
-				m(0,10); d(16,4);
-				drawTriangle(11,13);
+				if (arrowMode) {
+					m(1,14); d(14,1); m(6,5); d(14,1); m(10,9); d(14,1); m(6,5); d(10,9);
+				} else {
+					m(0,12); d(17,3);
+				}
+				drawTriangle(12,14);
 				return;
 			case POLYLINE:
 				xOffset = x; yOffset = y;
 				m(14,6); d(11,3); d(1,3); d(1,4); d(6,9); d(2,13);
-				drawTriangle(11,13);
+				drawTriangle(12,14);
 				return;
 			case FREELINE:
 				xOffset = x; yOffset = y;
 				m(16,4); d(14,6); d(12,6); d(9,3); d(8,3); d(6,7); d(2,11); d(1,11);
-				drawTriangle(11,13);
+				drawTriangle(12,14);
 				return;
 			case POINT:
 				xOffset = x; yOffset = y;
-				m(1,8); d(6,8); d(6,6); d(10,6); d(10,10); d(6,10); d(6,9);
-				m(8,1); d(8,5); m(11,8); d(15,8); m(8,11); d(8,15);
-				m(8,8); d(8,8);
-				g.setColor(Roi.getColor());
-				g.fillRect(x+7, y+7, 3, 3);
+				if (multiPointMode) {
+					drawPoint(1,3); drawPoint(9,1); drawPoint(15,5);
+					drawPoint(10,11); drawPoint(2,12);
+				} else {
+					m(1,8); d(6,8); d(6,6); d(10,6); d(10,10); d(6,10); d(6,9);
+					m(8,1); d(8,5); m(11,8); d(15,8); m(8,11); d(8,15);
+					m(8,8); d(8,8);
+					g.setColor(Roi.getColor());
+					g.fillRect(x+7, y+7, 3, 3);
+				}
+				drawTriangle(14,14);
 				return;
 			case WAND:
 				xOffset = x+2; yOffset = y+2;
@@ -279,7 +319,7 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				return;
 			case DROPPER:
 				xOffset = x; yOffset = y;
-				g.setColor(ToolbarHelper.foregroundColor);
+				g.setColor(foregroundColor);
 				//m(0,0); d(17,0); d(17,17); d(0,17); d(0,0);
 				m(12,2); d(14,2);
 				m(11,3); d(15,3);
@@ -288,7 +328,7 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				m(9,6); d(14,6);
 				m(10,7); d(12,7); d(12,9);
 				m(8,7); d(2,13); d(2,15); d(4,15); d(11,8);
-				g.setColor(ToolbarHelper.backgroundColor);
+				g.setColor(backgroundColor);
 				m(0,0); d(16,0); d(16,16); d(0,16); d(0,0);
 				return;
 			case ANGLE:
@@ -303,6 +343,14 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		g.setColor(triangleColor);
 		xOffset+=x; yOffset+=y;
 		m(0,0); d(4,0); m(1,1); d(3,1); dot(2,2);
+	}
+	
+	void drawPoint(int x, int y) {
+		g.setColor(toolColor);
+		m(x-2,y); d(x+2,y);
+		m(x,y-2); d(x,y+2);
+		g.setColor(Roi.getColor());
+		dot(x,y);
 	}
 	
 	void drawIcon(Graphics g, int tool, int x, int y) {
@@ -349,7 +397,7 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		}
 		if (menus[tool]!=null && menus[tool].getItemCount()>0) { 
 			xOffset = x; yOffset = y;
-			drawTriangle(13, 14);
+			drawTriangle(14, 14);
 		}
 	}
 	
@@ -392,15 +440,19 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 			IJ.showStatus(name);
 			return;
 		}
+		String hint = " (right click to switch)";
 		switch (tool) {
 			case RECTANGLE:
-				IJ.showStatus("Rectangular selections");
+				if (roundRectMode)
+					IJ.showStatus("Rectangular or *rounded rectangular* selections"+hint);
+				else
+					IJ.showStatus("*Rectangular* or rounded rectangular selections"+hint);
 				return;
 			case OVAL:
-				if (ToolbarHelper.brushEnabled)
-					IJ.showStatus("Elliptical or *brush* selections");
+				if (brushEnabled)
+					IJ.showStatus("Elliptical or *brush* selections"+hint);
 				else
-					IJ.showStatus("*Elliptical* or brush selections");
+					IJ.showStatus("*Elliptical* or brush selections"+hint);
 				return;
 			case POLYGON:
 				IJ.showStatus("Polygon selections");
@@ -409,16 +461,22 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				IJ.showStatus("Freehand selections");
 				return;
 			case LINE:
-				IJ.showStatus("Straight line selections (right click for other types)");
+				if (arrowMode)
+					IJ.showStatus("Arrow tool"+hint);
+				else
+					IJ.showStatus("Straight line selections (right click for other types)");
 				return;
 			case POLYLINE:
-				IJ.showStatus("Segmented line selections");
+				IJ.showStatus("Segmented line selections"+hint);
 				return;
 			case FREELINE:
-				IJ.showStatus("Freehand line selections");
+				IJ.showStatus("Freehand line selections"+hint);
 				return;
 			case POINT:
-				IJ.showStatus("Point selections (shift click for multiple points)");
+				if (multiPointMode)
+					IJ.showStatus("Point or *multi-point* selections"+hint);
+				else
+					IJ.showStatus("*Point* or multi-point selections"+hint);
 				return;
 			case WAND:
 				IJ.showStatus("Wand (tracing) tool");
@@ -434,14 +492,14 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				IJ.showStatus("Scrolling tool (or press space bar and drag)");
 				return;
 			case DROPPER:
-				IJ.showStatus("Color picker (" + ToolbarHelper.foregroundColor.getRed() + ","
-				+ ToolbarHelper.foregroundColor.getGreen() + "," + ToolbarHelper.foregroundColor.getBlue() + ")");
+				IJ.showStatus("Color picker (" + foregroundColor.getRed() + ","
+				+ foregroundColor.getGreen() + "," + foregroundColor.getBlue() + ")");
 				return;
 			case ANGLE:
 				IJ.showStatus("Angle tool");
 				return;
 			default:
-				IJ.showStatus("ImageJ "+IJ.getVersion()+" / Java "+System.getProperty("java.version"));
+				IJ.showStatus("ImageJ "+IJ.getVersion()+" / Java "+System.getProperty("java.version")+(IJ.is64Bit()?" (64-bit)":" (32-bit)"));
 				return;
 		}
 	}
@@ -476,13 +534,17 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	public boolean setTool(String name) { 
 		name = name.toLowerCase(Locale.US);
 		boolean ok = true;
-		if (name.indexOf("rect")!=-1)
+		if (name.indexOf("round")!=-1) {
+			roundRectMode = true;
 			setTool(RECTANGLE);
-		else if (name.indexOf("ellip")!=-1 || name.indexOf("oval")!=-1) {
-			ToolbarHelper.brushEnabled = false;
+		} else if (name.indexOf("rect")!=-1) {
+			roundRectMode = false;
+			setTool(RECTANGLE);
+		} else if (name.indexOf("ellip")!=-1 || name.indexOf("oval")!=-1) {
+			brushEnabled = false;
 			setTool(OVAL);
 		} else if (name.indexOf("brush")!=-1) {
-			ToolbarHelper.brushEnabled = true;
+			brushEnabled = true;
 			setTool(OVAL);
 		} else if (name.indexOf("polygon")!=-1)
 			setTool(POLYGON);
@@ -490,13 +552,23 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 			setTool(POLYLINE);
 		else if (name.indexOf("freeline")!=-1)
 			setTool(FREELINE);
-		else if (name.indexOf("line")!=-1)
+		else if (name.indexOf("line")!=-1) {
+			arrowMode = false;
 			setTool(LINE);
-		else if (name.indexOf("free")!=-1)
+		} else if (name.indexOf("arrow")!=-1) {
+			arrowMode = true;
+			setTool(LINE);
+		} else if (name.indexOf("free")!=-1)
 			setTool(FREEROI);
-		else if (name.indexOf("point")!=-1)
+		else if (name.indexOf("multi")!=-1) {
+			multiPointMode = true;
+			Prefs.multiPointMode = true;
 			setTool(POINT);
-		else if (name.indexOf("wand")!=-1)
+		} else if (name.indexOf("point")!=-1) {
+			multiPointMode = false;
+			Prefs.multiPointMode = false;
+			setTool(POINT);
+		} else if (name.indexOf("wand")!=-1)
 			setTool(WAND);
 		else if (name.indexOf("text")!=-1)
 			setTool(TEXT);
@@ -513,8 +585,38 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		return ok;
 	}
 	
+	/** Returns the name of the current tool. */
+	public static String getToolName() {
+		String name = instance.getName(current);
+		if (current>=SPARE1 && current<=SPARE9 && instance.names[current]!=null)
+			name = instance.names[current];
+		return name!=null?name:"";
+	}
+
+	/** Returns the name of the specified tool. */
+	String getName(int id) {
+		switch (id) {
+			case RECTANGLE: return roundRectMode?"roundrect":"rectangle";
+			case OVAL: return brushEnabled?"brush":"oval";
+			case POLYGON: return "polygon";
+			case FREEROI: return "freehand";
+			case LINE: return arrowMode?"arrow":"line";
+			case POLYLINE: return "polyline";
+			case FREELINE: return "freeline";
+			case ANGLE: return "angle";
+			case POINT: return Prefs.multiPointMode?"multipoint":"point";
+			case WAND: return "wand";
+			case TEXT: return "text";
+			case HAND: return "hand";
+			case MAGNIFIER: return "zoom";
+			case DROPPER: return "dropper";
+			default: return null;
+		}
+		
+	}
+	
 	public void setTool(int tool) {
-		if ((tool==current&&tool!=OVAL) || tool<0 || tool>=NUM_TOOLS-1)
+		if ((tool==current&&!(tool==OVAL||tool==POINT)) || tool<0 || tool>=NUM_TOOLS-1)
 			return;
 		if (tool==SPARE1||(tool>=SPARE2&&tool<=SPARE8)) {
 			if (names[tool]==null)
@@ -527,10 +629,12 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	}
 		
 	private void setTool2(int tool) {
-		if ((tool==current&&tool!=OVAL) || !isValidTool(tool)) return;
+		if (!isValidTool(tool)) return;
+		String previousName = getToolName();
 		current = tool;
 		down[current] = true;
-		down[previous] = false;
+		if (current!=previous)
+			down[previous] = false;
 		Graphics g = this.getGraphics();
 		if (Prefs.antialiasedTools) {
 			Graphics2D g2d = (Graphics2D)g;
@@ -542,10 +646,14 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		g.dispose();
 		showMessage(current);
 		previous = current;
-		if (Recorder.record)
-			Recorder.record("setTool", current);
+		if (Recorder.record) {
+			String name = getName(current);
+			if (name!=null) Recorder.record("setTool", name);
+		}
 		if (IJ.isMacOSX())
 			repaint();
+		if (!previousName.equals(getToolName()))
+			IJ.notifyEventListeners(IJEventListener.TOOL_CHANGED);
 	}
 	
 	boolean isValidTool(int tool) {
@@ -558,52 +666,97 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 
 	/** Obsolete. Use getForegroundColor(). */
 	public Color getColor() {
-		return ToolbarHelper.foregroundColor;
+		return foregroundColor;
 	}
 
 	/** Obsolete. Use setForegroundColor(). */
 	public void setColor(Color c) {
 		if (c!=null) {
-			ToolbarHelper.foregroundColor = c;
+			foregroundColor = c;
 			drawButton(this.getGraphics(), DROPPER);
 		}
 	}
-
+	
 	public static Color getForegroundColor() {
-		return ToolbarHelper.foregroundColor;
+		return foregroundColor;
 	}
 
 	public static void setForegroundColor(Color c) {
 		if (c!=null) {
-			ToolbarHelper.foregroundColor = c;
+			foregroundColor = c;
 			repaintTool(DROPPER);
+			if (!IJ.isMacro()) setRoiColor(c);
+			IJ.notifyEventListeners(IJEventListener.FOREGROUND_COLOR_CHANGED);
 		}
 	}
 
 	public static Color getBackgroundColor() {
-		return ToolbarHelper.backgroundColor;
+		return backgroundColor;
 	}
 
 	public static void setBackgroundColor(Color c) {
 		if (c!=null) {
-			ToolbarHelper.backgroundColor = c;
+			backgroundColor = c;
 			repaintTool(DROPPER);
+			IJ.notifyEventListeners(IJEventListener.BACKGROUND_COLOR_CHANGED);
 		}
 	}
 	
-	/** Returns the size of the brush tool or 0 if the brush tool is not enabled. */
+	private static void setRoiColor(Color c) {
+		ImagePlus imp = WindowManager.getCurrentImage();
+		if (imp==null) return;
+		Roi roi = imp.getRoi();
+		if (roi!=null && (roi.isDrawingTool())) {
+			roi.setStrokeColor(c);
+			imp.draw();
+		}
+	}
+
+	/** Returns the size of the brush tool, or 0 if the brush tool is not enabled. */
 	public static int getBrushSize() {
-		if (ToolbarHelper.brushEnabled)
-			return ToolbarHelper.brushSize;
+		if (brushEnabled)
+			return brushSize;
 		else
 			return 0;
 	}
 
 	/** Set the size of the brush tool, which must be greater than 4. */
 	public static void setBrushSize(int size) {
-		ToolbarHelper.brushSize = size;
-		if (ToolbarHelper.brushSize<5) ToolbarHelper.brushSize = 5;
-		Prefs.set(BRUSH_SIZE, ToolbarHelper.brushSize);
+		brushSize = size;
+		if (brushSize<5) brushSize = 5;
+		Prefs.set(BRUSH_SIZE, brushSize);
+	}
+		
+	/** Returns the rounded rectangle arc size, or 0 if the rounded rectangle tool is not enabled. */
+	public static int getRoundRectArcSize() {
+		if (!roundRectMode)
+			return 0;
+		else
+			return arcSize;
+	}
+
+	/** Sets the rounded rectangle arc size (pixels). */
+	public static void setRoundRectArcSize(int size) {
+		if (size<=0)
+			roundRectMode = false;
+		else {
+			arcSize = size;
+			Prefs.set(ARC_SIZE, arcSize);
+		}
+		repaintTool(RECTANGLE);
+		ImagePlus imp = WindowManager.getCurrentImage();
+		Roi roi = imp!=null?imp.getRoi():null;
+		if (roi!=null && roi.getType()==Roi.RECTANGLE)
+			roi.setRoundRectArcSize(roundRectMode?arcSize:0);
+	}
+
+	/** Returns 'true' if the multi-point tool is enabled. */
+	public static boolean getMultiPointMode() {
+		return multiPointMode;
+	}
+
+	public static int getButtonSize() {
+		return SIZE;
 	}
 	
 	static void repaintTool(int tool) {
@@ -703,17 +856,32 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 			}
 			setTool2(newTool);
 			boolean isRightClick = e.isPopupTrigger()||e.isMetaDown();
+			if (current==RECTANGLE && isRightClick) {
+				rectItem.setState(!roundRectMode);
+				roundRectItem.setState(roundRectMode);
+				if (IJ.isMacOSX()) IJ.wait(10);
+				rectPopup.show(e.getComponent(),x,y);
+				mouseDownTime = 0L;
+			}
 			if (current==OVAL && isRightClick) {
-				ovalItem.setState(!ToolbarHelper.brushEnabled);
-				brushItem.setState(ToolbarHelper.brushEnabled);
+				ovalItem.setState(!brushEnabled);
+				brushItem.setState(brushEnabled);
 				if (IJ.isMacOSX()) IJ.wait(10);
 				ovalPopup.show(e.getComponent(),x,y);
 				mouseDownTime = 0L;
 			}
+			if (current==POINT && isRightClick) {
+				pointItem.setState(!multiPointMode);
+				multiPointItem.setState(multiPointMode);
+				if (IJ.isMacOSX()) IJ.wait(10);
+				pointPopup.show(e.getComponent(),x,y);
+				mouseDownTime = 0L;
+			}
 			if (isLine(current) && isRightClick) {
-				straightLineItem.setState(lineType==LINE);
+				straightLineItem.setState(lineType==LINE&&!arrowMode);
 				polyLineItem.setState(lineType==POLYLINE);
 				freeLineItem.setState(lineType==FREELINE);
+				arrowItem.setState(lineType==LINE&&arrowMode);
 				if (IJ.isMacOSX()) IJ.wait(10);
 				linePopup.show(e.getComponent(),x,y);
 				mouseDownTime = 0L;
@@ -728,22 +896,36 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 				macroInstaller.runMacroTool(name+"Options");
 				return;
 			}
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			switch (current) {
+				case RECTANGLE:
+					if (roundRectMode)
+						showRoundRectDialog();
+					break;
 				case OVAL:
 					showBrushDialog();
 					break;
 				case MAGNIFIER:
 					if (imp!=null) {
-						IjxImageCanvas ic = imp.getCanvas();
+						ImageCanvas ic = imp.getCanvas();
 						if (ic!=null) ic.unzoom();
 					}
 					break;
 				case LINE: case POLYLINE: case FREELINE:
-					IJ.runPlugIn("ij.plugin.frame.LineWidthAdjuster", "");
+					if (current==LINE && arrowMode) {
+						IJ.doCommand("Arrow Tool...");
+					} else
+						IJ.runPlugIn("ij.plugin.frame.LineWidthAdjuster", "");
 					break;
 				case POINT:
-					IJ.doCommand("Point Tool...");
+					if (multiPointMode) {
+						if (imp!=null && imp.getRoi()!=null)
+							IJ.doCommand("Add Selection...");
+					} else
+						IJ.doCommand("Point Tool...");
+					break;
+				case WAND:
+					IJ.doCommand("Wand Tool...");
 					break;
 				case TEXT:
 					IJ.doCommand("Fonts...");
@@ -823,11 +1005,6 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 		return tool==LINE || tool==POLYLINE || tool==FREELINE;
 	}
 	
-	// Returns the line type (LINE, POLYLINE or FREELINE). 
-	//public int getLineType() {
-	//	return lineType;
-	//}
-	
 	public void restorePreviousTool() {
 		setTool2(mpPrevious);
 	}
@@ -844,12 +1021,33 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 	
 	public void itemStateChanged(ItemEvent e) {
 		CheckboxMenuItem item = (CheckboxMenuItem)e.getSource();
-		if (item==ovalItem || item==brushItem) {
-			ToolbarHelper.brushEnabled = item==brushItem;
+		String previousName = getToolName();
+		if (item==rectItem || item==roundRectItem) {
+			roundRectMode = item==roundRectItem;
+			repaintTool(RECTANGLE);
+			showMessage(RECTANGLE);
+			ImagePlus imp = WindowManager.getCurrentImage();
+			Roi roi = imp!=null?imp.getRoi():null;
+			if (roi!=null && roi.getType()==Roi.RECTANGLE)
+				roi.setRoundRectArcSize(roundRectMode?arcSize:0);
+			if (!previousName.equals(getToolName()))
+				IJ.notifyEventListeners(IJEventListener.TOOL_CHANGED);
+		} else if (item==ovalItem || item==brushItem) {
+			brushEnabled = item==brushItem;
 			repaintTool(OVAL);
 			showMessage(OVAL);
+			if (!previousName.equals(getToolName()))
+				IJ.notifyEventListeners(IJEventListener.TOOL_CHANGED);
+		} else if (item==pointItem || item==multiPointItem) {
+			multiPointMode = item==multiPointItem;
+			Prefs.multiPointMode = multiPointMode;
+			repaintTool(POINT);
+			showMessage(POINT);
+			if (!previousName.equals(getToolName()))
+				IJ.notifyEventListeners(IJEventListener.TOOL_CHANGED);
 		} else if (item==straightLineItem) {
 			lineType = LINE;
+			arrowMode = false;
 			setTool2(LINE);
 			showMessage(LINE);
 		} else if (item==polyLineItem) {
@@ -860,6 +1058,11 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
 			lineType = FREELINE;
 			setTool2(FREELINE);
 			showMessage(FREELINE);
+		} else if (item==arrowItem) {
+			lineType = LINE;
+			arrowMode = true;
+			setTool2(LINE);
+			showMessage(LINE);
 		} else {
 			String label = item.getActionCommand();
 			if (!label.equals("Help...")) currentSet = label;
@@ -1019,25 +1222,32 @@ public class Toolbar extends Canvas implements ActionListener, ItemListener, Mou
         addTool(name);
 	}
 			
-	public void runMacroTool(int id) {
+	void runMacroTool(int id) {
 		if (macroInstaller!=null)
 			macroInstaller.runMacroTool(names[id]);
 	}
 	
 	void showBrushDialog() {
 		GenericDialog gd = new GenericDialog("Selection Brush");
-		gd.addCheckbox("Enable Selection Brush", ToolbarHelper.brushEnabled);
-		gd.addNumericField("           Size:", ToolbarHelper.brushSize, 0, 4, "pixels");
+		gd.addCheckbox("Enable Selection Brush", brushEnabled);
+		gd.addNumericField("           Size:", brushSize, 0, 4, "pixels");
 		gd.showDialog();
 		if (gd.wasCanceled()) return;
-		ToolbarHelper.brushEnabled = gd.getNextBoolean();
-		ToolbarHelper.brushSize = (int)gd.getNextNumber();
+		brushEnabled = gd.getNextBoolean();
+		brushSize = (int)gd.getNextNumber();
 		repaintTool(OVAL);
-	    IjxImagePlus img = WindowManager.getCurrentImage();
+		ImagePlus img = WindowManager.getCurrentImage();
 		Roi roi = img!=null?img.getRoi():null;
-		if (roi!=null && roi.getType()==Roi.OVAL && ToolbarHelper.brushEnabled) img.killRoi();
-		Prefs.set(BRUSH_SIZE, ToolbarHelper.brushSize);
+		if (roi!=null && roi.getType()==Roi.OVAL && brushEnabled) img.killRoi();
+		Prefs.set(BRUSH_SIZE, brushSize);
 	}
 
+	void showRoundRectDialog() {
+		GenericDialog gd = new GenericDialog("Rounded Rectangle");
+		gd.addNumericField("Corner arc size:", arcSize, 0, 4, "pixels");
+		gd.showDialog();
+		if (gd.wasCanceled()) return;
+		setRoundRectArcSize((int)gd.getNextNumber());
+	}
 
 }

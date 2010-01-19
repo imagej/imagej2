@@ -103,7 +103,7 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 						toolCount++;
 					} else if (name.startsWith("AutoRun")) {
 						if (autoRunCount==0 && !openingStartupMacrosInEditor) {
-							new MacroRunner(pgm, macroStarts[count], name, null);
+							new MacroRunner(pgm, macroStarts[count], name, (String)null);
 							if (name.equals("AutoRunAndHide"))
 								autoRunAndHideCount++;
 						}
@@ -133,6 +133,8 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 			IJ.showMessage("Install Macros", (inUseCount==1?"This keyboard shortcut is":"These keyboard shortcuts are")
 			+ " already in use:"+shortcutsInUse);
 		if (nMacros==0 && fileName!=null) {
+			if (text==null||text.length()==0)
+				return;
 			int dotIndex = fileName.lastIndexOf('.');
 			if (dotIndex>0)
 				anonymousName = fileName.substring(0, dotIndex);
@@ -317,7 +319,7 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 	public boolean runMacroTool(String name) {
 		for (int i=0; i<nMacros; i++) {
 			if (macroNames[i].startsWith(name)) {
-				new MacroRunner(pgm, macroStarts[i], name, null);
+				new MacroRunner(pgm, macroStarts[i], name, (String)null);
 				return true;
 			}
 		}
@@ -341,7 +343,7 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 			name = name.substring(1);
 		for (int i=0; i<instance.nMacros; i++) {
 			if (name.equals(instance.macroNames[i])) {
-				new MacroRunner(instance.pgm, instance.macroStarts[i], name, null);
+				new MacroRunner(instance.pgm, instance.macroStarts[i], name, (String)null);
 				return true;
 			}
 		}
@@ -361,14 +363,18 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 	}
 
 	public void runMacro(String name) {
+		runMacro(name, null);
+	}
+
+	public void runMacro(String name, Editor editor) {
+		//IJ.log("runMacro: "+name+"  "+editor);
 		if (anonymousName!=null && name.equals(anonymousName)) {
-			//IJ.log("runMacro: "+anonymousName);
-			new MacroRunner(pgm, 0, anonymousName, null);
+			new MacroRunner(pgm, 0, anonymousName, editor);
 			return;
 		}
 		for (int i=0; i<nMacros; i++)
 			if (name.equals(macroNames[i])) {
-				new MacroRunner(pgm, macroStarts[i], name, null);
+				new MacroRunner(pgm, macroStarts[i], name, editor);
 				return;
 			}
 	}
@@ -392,17 +398,23 @@ public class MacroInstaller implements PlugIn, MacroConstants, ActionListener {
 		openingStartupMacrosInEditor = fileName.startsWith("StartupMacros");
 	}
 
+	public static String getFileName() {
+		return fileName;
+	}
+
 	public void actionPerformed(ActionEvent evt) {
 		String cmd = evt.getActionCommand();
 		MenuItem item = (MenuItem)evt.getSource();
 		MenuContainer parent = item.getParent();
 		if (parent instanceof PopupMenu) {
 			for (int i=0; i<nMacros; i++) {
-				if (macroNames[i].equals("Popup Menu"))
-					{new MacroRunner(pgm, macroStarts[i], "Popup Menu", cmd); return; }
+				if (macroNames[i].equals("Popup Menu")) {
+					new MacroRunner(pgm, macroStarts[i], "Popup Menu", cmd);
+					return;
+				}
 			}
-		} else
-			runMacro(cmd);
+		}
+		runMacro(cmd);
 	}
 
 } 

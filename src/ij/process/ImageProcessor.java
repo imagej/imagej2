@@ -1,11 +1,13 @@
 package ij.process;
-
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import ij.gui.*;
 import ij.util.*;
 import ij.plugin.filter.GaussianBlur;
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
+import ij.Prefs;
 
 /**
 This abstract class is the superclass for classes that process
@@ -35,11 +37,14 @@ public abstract class ImageProcessor extends Object {
 
 	/** Modified isodata method used in Image/Adjust/Threshold tool */
 	public static final int ISODATA2 = 1;
+	
+	/** Interpolation methods */
+	public static final int NEAREST_NEIGHBOR=0, NONE=0, BILINEAR=1, BICUBIC=2;
 
+	public static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5;
 	static public final int RED_LUT=0, BLACK_AND_WHITE_LUT=1, NO_LUT_UPDATE=2, OVER_UNDER_LUT=3;
 	static final int INVERT=0, FILL=1, ADD=2, MULT=3, AND=4, OR=5,
 		XOR=6, GAMMA=7, LOG=8, MINIMUM=9, MAXIMUM=10, SQR=11, SQRT=12, EXP=13, ABS=14;
-	static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5;
 	static final String WRONG_LENGTH = "width*height!=pixels.length";
 	
 	int fgColor = 0;
@@ -49,7 +54,11 @@ public abstract class ImageProcessor extends Object {
 	protected FontMetrics fontMetrics;
 	protected boolean antialiasedText;
 	protected boolean boldFont;
-	//static Frame frame;
+	private static String[] interpolationMethods;
+	// Over/Under tresholding colors
+	private static int overRed, overGreen=255, overBlue;
+	private static int underRed, underGreen, underBlue=255;
+	private static boolean useBicubic;
 		
     ProgressBar progressBar;
 	protected int width, snapshotWidth;
@@ -62,7 +71,8 @@ public abstract class ImageProcessor extends Object {
 	protected ColorModel cm;
 	protected byte[] rLUT1, gLUT1, bLUT1; // base LUT
 	protected byte[] rLUT2, gLUT2, bLUT2; // LUT as modified by setMinAndMax and setThreshold
-	protected boolean interpolate;
+	protected boolean interpolate;  // replaced by interpolationMethod
+	protected int interpolationMethod = NONE;
 	protected double minThreshold=NO_THRESHOLD, maxThreshold=NO_THRESHOLD;
 	protected int histogramSize = 256;
 	protected double histogramMin, histogramMax;
@@ -137,15 +147,7 @@ public abstract class ImageProcessor extends Object {
 	}
 
 	protected void makeDefaultColorModel() {
-		byte[] rLUT = new byte[256];
-		byte[] gLUT = new byte[256];
-		byte[] bLUT = new byte[256];
-		for(int i=0; i<256; i++) {
-			rLUT[i]=(byte)i;
-			gLUT[i]=(byte)i;
-			bLUT[i]=(byte)i;
-		}
-		cm = new IndexColorModel(8, 256, rLUT, gLUT, bLUT);
+		cm = getDefaultColorModel();
 	}
 
 	/** Inverts the values in this image's LUT (indexed color model).
@@ -261,7 +263,6 @@ public abstract class ImageProcessor extends Object {
 		return isColor;
 	}
 
-
 	/** Returns true if this image uses a pseudocolor or grayscale LUT, 
 		in other words, is this an image that can be filtered. */
     public boolean isPseudoColorLut() {
@@ -296,17 +297,44 @@ public abstract class ImageProcessor extends Object {
 			stdDev = 0.0;
 		boolean isPseudoColor = stdDev<20.0;
 		if ((int)stdDev==67) isPseudoColor = true; // "3-3-2 RGB" LUT
-		//ij.IJ.log("isPseudoColorLut: "+(isPseudoColor) + " " + stdDev);
+		if (ij.IJ.debugMode)
+			ij.IJ.log("isPseudoColorLut: "+(isPseudoColor) + " " + stdDev);
 		return isPseudoColor;
+	}
+	
+	/** Returns true if the image is using the default grayscale LUT. */
+	public boolean isDefaultLut() {
+		if (cm==null)
+			makeDefaultColorModel();
+		if (!(cm instanceof IndexColorModel))
+			return false;
+    	IndexColorModel icm = (IndexColorModel)cm;
+		int mapSize = icm.getMapSize();
+		if (mapSize!=256)
+			return false;
+		byte[] reds = new byte[mapSize];
+		byte[] greens = new byte[mapSize];
+		byte[] blues = new byte[mapSize];	
+		icm.getReds(reds); 
+		icm.getGreens(greens); 
+		icm.getBlues(blues);
+		boolean isDefault = true;
+		for (int i=0; i<mapSize; i++) {
+			if ((reds[i]&255)!=i || (greens[i]&255)!=i || (blues[i]&255)!=i) {
+				isDefault = false;
+				break;
+			}
+		}
+		return isDefault;
 	}
 
 	/** Sets the default fill/draw value to the pixel
 		value closest to the specified color. */
 	public abstract void setColor(Color color);
 
-	/** Obsolete (use setValue) */
+	/** Sets the default fill/draw value. Use setValue() with float images. */
 	public void setColor(int value) {
-		fgColor = value;
+		setValue(value);
 	}
 
 	/** Sets the default fill/draw value. */
@@ -314,6 +342,9 @@ public abstract class ImageProcessor extends Object {
 
 	/** Sets the background fill value used by the rotate(), scale() and translate() methods. */
 	public abstract void setBackgroundValue(double value);
+
+	/** Returns the background fill value. */
+	public abstract double getBackgroundValue();
 
 	/** Returns the smallest displayed pixel value. */
 	public abstract double getMin();
@@ -337,7 +368,7 @@ public abstract class ImageProcessor extends Object {
 		can be RED_LUT, BLACK_AND_WHITE_LUT, OVER_UNDER_LUT or NO_LUT_UPDATE.
 		Thresholding of RGB images is not supported. */
 	public void setThreshold(double minThreshold, double maxThreshold, int lutUpdate) {
-		//ij.IJ.write("setThreshold: "+" "+minThreshold+" "+maxThreshold+" "+lutUpdate);
+		//ij.IJ.log("setThreshold: "+" "+minThreshold+" "+maxThreshold+" "+lutUpdate);
 		if (this instanceof ColorProcessor)
 			return;
 		this.minThreshold = minThreshold;
@@ -375,19 +406,36 @@ public abstract class ImageProcessor extends Object {
 					bLUT2[i] = bLUT1[i];
 				}
 			}
-		else if (lutUpdate==BLACK_AND_WHITE_LUT)
+
+		else if (lutUpdate==BLACK_AND_WHITE_LUT) {
+			// updated in v1.43i by Gabriel Lindini to use blackBackground setting
+
+			byte  foreground = Prefs.blackBackground?(byte)255:(byte)0;
+
+			byte background = (byte)(255 - foreground);
+
 			for (int i=0; i<256; i++) {
+
 				if (i>=t1 && i<=t2) {
-					rLUT2[i] = (byte)0;
-					gLUT2[i] = (byte)0;
-					bLUT2[i] = (byte)0;
+
+					rLUT2[i] = foreground;
+
+					gLUT2[i] = foreground;
+
+					bLUT2[i] = foreground;
+
 				} else {
-					rLUT2[i] = (byte)255;
-					gLUT2[i] = (byte)255;
-					bLUT2[i] = (byte)255;
+
+					rLUT2[i] = background;
+
+					gLUT2[i] =background;
+
+					bLUT2[i] =background;
+
 				}
+
 			}
-		else
+		} else {
 			for (int i=0; i<256; i++) {
 				if (i>=t1 && i<=t2) {
 					rLUT2[i] = rLUT1[i];
@@ -395,21 +443,80 @@ public abstract class ImageProcessor extends Object {
 					bLUT2[i] = bLUT1[i];
 
 				} else if (i>t2) {
-					rLUT2[i] = (byte)0;
-					gLUT2[i] = (byte)255;
-					bLUT2[i] = (byte)0;
+					rLUT2[i] = (byte)overRed;
+					gLUT2[i] = (byte)overGreen;
+					bLUT2[i] = (byte)overBlue;
 				} else { 
-					rLUT2[i] = (byte)0;
-					gLUT2[i] = (byte)0; 
-					bLUT2[i] = (byte)255;
+					rLUT2[i] = (byte)underRed;
+					gLUT2[i] = (byte)underGreen; 
+					bLUT2[i] = (byte)underBlue;
 				}
 			}
+		}
 
 		cm = new IndexColorModel(8, 256, rLUT2, gLUT2, bLUT2);
 		newPixels = true;
 		source = null;
 	}
 	
+	public void setAutoThreshold(String method) {
+		if (method==null)
+			throw new IllegalArgumentException("Null method");
+		boolean darkBackground = method.indexOf("dark")!=-1;
+		int index = method.indexOf(" ");
+		if (index!=-1)
+			method = method.substring(0, index);
+		setAutoThreshold(method, darkBackground, RED_LUT);
+	}
+	
+	public void setAutoThreshold(String method, boolean darkBackground, int lutUpdate) {
+		if (method==null || (this instanceof ColorProcessor))
+			return;
+		//if (method.equals("Default")) {
+		//	setAutoThreshold(ISODATA2, lutUpdate);
+		//	return;
+		//}
+		double min=0.0, max=0.0;
+		boolean notByteData = !(this instanceof ByteProcessor);
+		ImageProcessor ip2 = this;
+		if (notByteData) {
+			ImageProcessor mask = ip2.getMask();
+			Rectangle rect = ip2.getRoi();
+			resetMinAndMax();
+			min = getMin(); max = getMax();
+			ip2 = convertToByte(true);
+			ip2.setMask(mask);
+			ip2.setRoi(rect);	
+		}
+		int options = ij.measure.Measurements.AREA+ ij.measure.Measurements.MIN_MAX+ ij.measure.Measurements.MODE;
+		ImageStatistics stats = ImageStatistics.getStatistics(ip2, options, null);
+		int[] histogram = stats.histogram;
+		AutoThresholder thresholder = new AutoThresholder();
+		int threshold = thresholder.getThreshold(method, stats.histogram);
+		double lower, upper;
+		if (darkBackground) {
+			if (isInvertedLut())
+				{lower=0.0; upper=threshold;}
+			else
+				{lower=threshold; upper=255.0;}
+		} else {
+			if (isInvertedLut())
+				{lower=threshold; upper=255.0;}
+			else
+				{lower=0.0; upper=threshold;}
+		}
+		if (notByteData) {
+			if (max>min) {
+				lower = min + (lower/255.0)*(max-min);
+				upper = min + (upper/255.0)*(max-min);
+			} else
+				lower = upper = min;
+		}
+		setThreshold(lower, upper, lutUpdate);
+		if (notByteData && lutUpdate!=NO_LUT_UPDATE)
+			setLutAnimation(true);
+	}
+
 	/** Automatically sets the lower and upper threshold levels, where 'method'
 		 must be ISODATA or ISODATA2 and 'lutUpdate' must be RED_LUT,
 		 BLACK_AND_WHITE_LUT, OVER_UNDER_LUT or NO_LUT_UPDATE.
@@ -520,8 +627,27 @@ public abstract class ImageProcessor extends Object {
 		return lutUpdateMode;
 	}
 
+	/* Sets the threshold levels (non-visible) of an 8-bit mask based on
+		the state of Prefs.blackBackground and isInvertedLut().
+		@see ImageProcessor#resetBinaryThreshold	
+	*/
+	public void setBinaryThreshold() {
+		//ij.IJ.log("setMaskThreshold1");
+		if (!(this instanceof ByteProcessor)) return;
+		double t1=255.0, t2=255.0;
+		boolean invertedLut = isInvertedLut();
+		if ((invertedLut&&ij.Prefs.blackBackground) || (!invertedLut&&!ij.Prefs.blackBackground)) {
+			t1 = 0.0;
+			t2 = 0.0;
+		}
+		//ij.IJ.log("setMaskThreshold2 "+t1+" "+t2);
+		setThreshold(t1, t2, ImageProcessor.NO_LUT_UPDATE);
+	}
+
 	/** Resets the threshold if minThreshold=maxThreshold and lutUpdateMode=NO_LUT_UPDATE. 
-		This removes the invisible threshold set by the MakeBinary and Convert to Mask commands.*/
+		This removes the invisible threshold set by the MakeBinary and Convert to Mask commands.
+		@see ImageProcessor#setBinaryThreshold	
+	*/
 	public void resetBinaryThreshold() {
 		if (minThreshold==maxThreshold && lutUpdateMode==NO_LUT_UPDATE)
 			resetThreshold();
@@ -586,7 +712,7 @@ public abstract class ImageProcessor extends Object {
 		<code>PlugInFilter</code> interface.
 		@see ij.ImagePlus#getRoi
 	*/
-	public void setRoi(ij.gui.Roi roi) {
+	public void setRoi(Roi roi) {
 		if (roi==null)
 			resetRoi();
 		else {
@@ -669,10 +795,28 @@ public abstract class ImageProcessor extends Object {
 		progressBar = pb;
 	}
 
-	/** Setting 'interpolate' true causes scale(), resize(),
-		rotate() and getLine() to do bilinear interpolation. */
+	/** This method has been replaced by setInterpolationMethod(). */
 	public void setInterpolate(boolean interpolate) {
 		this.interpolate = interpolate;
+		if (interpolate)
+			interpolationMethod = useBicubic?BICUBIC:BILINEAR;
+		else
+			interpolationMethod = NONE;
+	}
+	
+	/** Use this method to set the interpolation method (NONE, 
+		 BILINEAR or BICUBIC) used by scale(), resize() and rotate(). */
+	public void setInterpolationMethod(int method) {
+		if (method<NONE || method>BICUBIC)
+			throw new IllegalArgumentException("Invalid interpolation method");
+		interpolationMethod = method;
+		interpolate = method!=NONE?true:false;
+	}
+	
+	public static String[] getInterpolationMethods() {
+		if (interpolationMethods==null)
+			interpolationMethods = new String[] {"None", "Bilinear", "Bicubic"};
+		return interpolationMethods;
 	}
 
 	/** Returns the value of the interpolate field. */
@@ -847,16 +991,16 @@ public abstract class ImageProcessor extends Object {
 		int n = absdy>absdx?absdy:absdx;
 		double xinc = (double)dx/n;
 		double yinc = (double)dy/n;
-		double x = cx<0?cx-0.5:cx+0.5;
-		double y = cy<0?cy-0.5:cy+0.5;
+		double x = cx;
+		double y = cy;
 		n++;
 		cx = x2; cy = y2;
 		if (n>1000000) return;
 		do {
 			if (lineWidth==1)
-				drawPixel((int)x, (int)y);
+				drawPixel((int)Math.round(x), (int)Math.round(y));
 			else if (lineWidth==2)
-				drawDot2((int)x, (int)y);
+				drawDot2((int)Math.round(x), (int)Math.round(y));
 			else
 				drawDot((int)x, (int)y);
 			x += xinc;
@@ -1004,6 +1148,8 @@ public abstract class ImageProcessor extends Object {
 			setRoi(cxx, cy-h, w, h);
 			ImageProcessor ip = crop();
 			resetRoi();
+			if (ip.getWidth()==0||ip.getHeight()==0)
+				return;
 			g.drawImage(ip.createImage(), 0, 0, null);
 			g.setColor(drawingColor);
 			g.drawString(s, 0, h-descent);
@@ -1087,6 +1233,12 @@ public abstract class ImageProcessor extends Object {
 		return w;
 	}
 	
+	/** Returns the current font. */
+	public Font getFont() {
+		setupFontMetrics();
+		return font;
+	}
+
 	/** Returns the current FontMetrics. */
 	public FontMetrics getFontMetrics() {
 		setupFontMetrics();
@@ -1172,24 +1324,70 @@ public abstract class ImageProcessor extends Object {
 		return ("ip[width="+width+", height="+height+", min="+getMin()+", max="+getMax()+"]");
 	}
 
-	/**	Fills the image or ROI bounding rectangle with the current fill/draw value. Use
-	*	fill(mask) to fill non-rectangular selections.
-	*	@see ImageProcessor fill(ImageProcessor)
+	/** Fills the image or ROI bounding rectangle with the current fill/draw value. Use
+	*	fill(Roi) or fill(ip.getMask()) to fill non-rectangular selections.
+	*	@see #setColor(Color)
+	*	@see #setValue(double)
+	*	@see #fill(Roi)
 	*/
 	public void fill() {
 		process(FILL, 0.0);
 	}
 
-	/** Fills pixels that are within the ROI and part of the mask
-		(i.e. pixels that have a value=BLACK in the mask array). 
-		Throws and IllegalArgumentException if the mask is null or
-		the size of the mask is not the same as the size of the ROI. */
+	/** Fills pixels that are within the ROI bounding rectangle and part of 
+	*	the mask (i.e. pixels that have a value=BLACK in the mask array).
+	*	Use ip.getMask() to acquire the mask. 
+	*	Throws and IllegalArgumentException if the mask is null or
+	*	the size of the mask is not the same as the size of the ROI.
+	*	@see #setColor(Color)
+	*	@see #setValue(double)
+	*	@see #getMask
+	*	@see #fill(Roi)
+	*/
 	public abstract void fill(ImageProcessor mask);
+
+	/**	 Fills the ROI with the current fill/draw value. 
+	*	@see #setColor(Color)
+	*	@see #setValue(double)
+	*	@see #fill(Roi)
+	*/
+	public void fill(Roi roi) {
+		ImageProcessor m = getMask();
+		Rectangle r = getRoi();
+		setRoi(roi);
+		fill(getMask());
+		setMask(m);
+		setRoi(r);
+	}
+
+	/** Fills outside an Roi. */
+	public void fillOutside(Roi roi) {
+		if (roi==null || !roi.isArea()) return;
+		ImageProcessor m = getMask();
+		Rectangle r = getRoi();
+		ShapeRoi s1, s2;
+		if (roi instanceof ShapeRoi)
+			s1 = (ShapeRoi)roi;
+		else
+			s1 = new ShapeRoi(roi);
+		s2 = new ShapeRoi(new Roi(0,0, width, height));
+		setRoi(s1.xor(s2));
+		fill(getMask());
+		setMask(m);
+		setRoi(r);
+	}
+
+	/** Draws an Roi. */
+	public void draw(Roi roi) {
+		roi.drawPixels(this);
+	}
 
 	/** Set a lookup table used by getPixelValue(), getLine() and
 		convertToFloat() to calibrate pixel values. The length of
 		the table must be 256 for byte images and 65536 for short
-		images. RGB and float processors do not do calibration. */
+		images. RGB and float processors do not do calibration.
+		@see ij.measure.Calibration#setCTable
+	*/
 	public void setCalibrationTable(float[] cTable) {
 		this.cTable = cTable;
 	}
@@ -1273,6 +1471,8 @@ public abstract class ImageProcessor extends Object {
 
 	public abstract void setf(int index, float value);
 
+	/** Returns a copy of the pixel data as a 2D int array
+		with dimensions [x=0..width-1][y=0..height-1]. */
 	public int[][] getIntArray() {
 		int[][] a = new int [width][height];
 		for(int y=0; y<height; y++) {
@@ -1282,6 +1482,7 @@ public abstract class ImageProcessor extends Object {
 		return a; 
 	}
 
+	/** Replaces the pixel data with contents of the specified 2D int array. */
 	public void setIntArray(int[][] a) {
 		for(int y=0; y<height; y++) {
 			for(int x=0; x<width; x++)
@@ -1289,6 +1490,8 @@ public abstract class ImageProcessor extends Object {
 		}
 	}
 
+	/** Returns a copy of the pixel data as a 2D float 
+		array with dimensions [x=0..width-1][y=0..height-1]. */
 	public float[][] getFloatArray() {
 		float[][] a = new float[width][height];
 		for(int y=0; y<height; y++) {
@@ -1298,6 +1501,7 @@ public abstract class ImageProcessor extends Object {
 		return a; 
 	}
 
+	/** Replaces the pixel data with contents of the specified 2D float array. */
 	public void setFloatArray(float[][] a) {
 		for(int y=0; y<height; y++) {
 			for(int x=0; x<width; x++)
@@ -1321,10 +1525,11 @@ public abstract class ImageProcessor extends Object {
 		putPixel(x, y, iArray[0]);
 	}
 
-	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
+	/** Uses the current interpolation method (bilinear or bicubic)
+		to find the pixel value at real coordinates (x,y). */
 	public abstract double getInterpolatedPixel(double x, double y);
 
-	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y).
+	/** Uses the current interpolation method to find the pixel value at real coordinates (x,y).
 		For RGB images, the argb values are packed in an int. For float images,
 		the value must be converted using Float.intBitsToFloat().  Returns zero
 		if the (x, y) is not inside the image. */
@@ -1333,6 +1538,8 @@ public abstract class ImageProcessor extends Object {
 	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). 
 		Returns zero if the (x, y) is not inside the image. */
 	public final double getInterpolatedValue(double x, double y) {
+		if (useBicubic)
+			return getBicubicInterpolatedPixel(x, y, this);
 		if (x<0.0 || x>=width-1.0 || y<0.0 || y>=height-1.0) {
 			if (x<-1.0 || x>=width || y<=1.0 || y>=height)
 				return 0.0;
@@ -1353,6 +1560,62 @@ public abstract class ImageProcessor extends Object {
 		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
+
+	/** This method is from Chapter 16 of "Digital Image Processing:
+		An Algorithmic Introduction Using Java" by Burger and Burge
+		(http://www.imagingbook.com/). */
+	public double getBicubicInterpolatedPixel(double x0, double y0, ImageProcessor ip2) {
+		int u0 = (int) Math.floor(x0);	//use floor to handle negative coordinates too
+		int v0 = (int) Math.floor(y0);
+		if (u0<=0 || u0>=width-2 || v0<=0 || v0>=height-2)
+			return ip2.getBilinearInterpolatedPixel(x0, y0);
+		double q = 0;
+		for (int j = 0; j <= 3; j++) {
+			int v = v0 - 1 + j;
+			double p = 0;
+			for (int i = 0; i <= 3; i++) {
+				int u = u0 - 1 + i;
+				p = p + ip2.get(u,v) * cubic(x0 - u);
+			}
+			q = q + p * cubic(y0 - v);
+		}
+		return q;
+	}
+	
+	final double getBilinearInterpolatedPixel(double x, double y) {
+		if (x>=-1 && x<width && y>=-1 && y<height) {
+			int method = interpolationMethod;
+			interpolationMethod = BILINEAR;
+			double value = getInterpolatedPixel(x, y);
+			interpolationMethod = method;
+			return value;
+		} else
+			return getBackgroundValue();
+	}
+	
+	static final double a = 0.5; // Catmull-Rom interpolation
+	final double cubic(double x) {
+		if (x < 0.0) x = -x;
+		double z = 0.0;
+		if (x < 1.0) 
+			z = x*x*(x*(-a+2.0) + (a-3.0)) + 1.0;
+		else if (x < 2.0) 
+			z = -a*x*x*x + 5.0*a*x*x - 8.0*a*x + 4.0*a;
+		return z;
+	}	
+
+	/*
+		// a = 0.5
+	double cubic2(double x) {
+		if (x < 0) x = -x;
+		double z = 0;
+		if (x < 1)
+			z = 1.5*x*x*x + -2.5*x*x + 1.0;
+		else if (x < 2)
+			z = -0.5*x*x*x + 2.5*x*x - 4.0*x + 2.0;
+		return z;
+	}
+	*/	
 
 	private final double getInterpolatedEdgeValue(double x, double y) {
 		int xbase = (int)x;
@@ -1497,8 +1760,8 @@ public abstract class ImageProcessor extends Object {
 		3x3 integer convolution kernel. */
 	public abstract void convolve3x3(int[] kernel);
 	
-	/** A 3x3 filter operation, where the argument (BLUR_MORE, 
-		FIND_EDGES, etc.) determines the filter type. */
+	/** A 3x3 filter operation, where the argument (BLUR_MORE,  FIND_EDGES, 
+	     MEDIAN_FILTER, MIN or MAX) determines the filter type. */
 	public abstract void filter(int type);
 	
 	/** A 3x3 median filter. Requires 8-bit or RGB image. */
@@ -1548,19 +1811,31 @@ public abstract class ImageProcessor extends Object {
 	      right, negative values move it to the left. Positive y values move the 
 	      image or selection down, negative values move it up.
 	*/
-  	public void translate(int xOffset, int yOffset, boolean eraseBackground) {
+  	public void translate(double xOffset, double yOffset) {
   		ImageProcessor ip2 = this.duplicate();
-  		if (eraseBackground) {
-  			Rectangle roi = getRoi();
-  			resetRoi();
-  			setValue(0);
-  			fill();
-  			setRoi(roi);
-  		}
-		for (int y=roiY; y<(roiY + roiHeight); y++) {
-			for (int x=roiX; x<(roiX + roiWidth); x++)
-				putPixel(x+xOffset, y+yOffset, ip2.getPixel(x, y));
-		}
+		boolean integerOffsets = xOffset==(int)xOffset && yOffset==(int)yOffset;
+  		if (integerOffsets || interpolationMethod==NONE) {
+			for (int y=roiY; y<(roiY + roiHeight); y++) {
+				for (int x=roiX; x<(roiX + roiWidth); x++)
+					putPixel(x, y, ip2.getPixel(x-(int)xOffset, y-(int)yOffset));
+			}
+		} else {
+			if (interpolationMethod==BICUBIC && (this instanceof ColorProcessor))
+				((ColorProcessor)this).filterRGB(ColorProcessor.RGB_TRANSLATE, xOffset, yOffset);
+			else {
+				for (int y=roiY; y<(roiY + roiHeight); y++) {
+					if (y%30==0) showProgress((double)(y-roiY)/roiHeight);
+					for (int x=roiX; x<(roiX + roiWidth); x++)
+						putPixel(x, y, ip2.getPixelInterpolated(x-xOffset, y-yOffset));
+				}
+				showProgress(1.0);
+			}
+		} 
+  	}
+  	
+  	/** Obsolete; replaced by translate(x,y). */
+  	public void translate(int xOffset, int yOffset, boolean eraseBackground) {
+		translate(xOffset, yOffset);
   	}
 
 	/** Returns the histogram of the image or ROI. Returns
@@ -1668,15 +1943,15 @@ public abstract class ImageProcessor extends Object {
 		}
 		
 		int movingIndex = min;
-		int inc = Math.min(max/40, 1);
+		int inc = Math.max(max/40, 1);
 		do {
 			sum1=sum2=sum3=sum4=0.0;
 			for (int i=min; i<=movingIndex; i++) {
-				sum1 += i*histogram[i];
+				sum1 += (double)i*histogram[i];
 				sum2 += histogram[i];
 			}
 			for (int i=(movingIndex+1); i<=max; i++) {
-				sum3 += i*histogram[i];
+				sum3 += (double)i*histogram[i];
 				sum4 += histogram[i];
 			}			
 			result = (sum1/sum2 + sum3/sum4)/2.0;
@@ -1857,5 +2132,26 @@ public abstract class ImageProcessor extends Object {
 		for (int i=0; i<mapSize; i++) blues[i] = tmp[i]&0xff;
 		cm2 = cm;
 	}
+	
+	/** Sets the upper Over/Under threshold color. Can be called from a macro,
+		e.g., call("ij.process.ImageProcessor.setOverColor", 0,255,255). */
+	public static void setOverColor(int red, int green, int blue) {
+		overRed=red; overGreen=green; overBlue=blue;
+	}
 
+	/** Set the lower Over/Under thresholding color. */
+	public static void setUnderColor(int red, int green, int blue) {
+		underRed=red; underGreen=green; underBlue=blue;
+	}
+	
+	/** Returns 'true' if this is a binary image (8-bit-image with only 0 and 255). */
+	public boolean isBinary() {
+		return false;
+	}
+
+	/* This method is experimental and may be removed. */
+	public static void setUseBicubic(boolean b) {
+		useBicubic = b;
+	}
+	
 }

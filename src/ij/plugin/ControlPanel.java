@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxApplication;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -50,7 +49,7 @@ public class ControlPanel implements PlugIn
 	private static final String jvmversionMajor=jvmversion.substring(0,jvmversion.lastIndexOf('.'));
 
 	/** The instance of ImageJ application we're running */
-	//private static ImageJ ij=IJ.getInstance();
+	private static ImageJ ij=IJ.getInstance();
 
 	private Hashtable panels = new Hashtable();
 	private Vector visiblePanels = new Vector();
@@ -1021,9 +1020,8 @@ class TreePanel implements
 		//restoreExpandedNodes();
 		GUI.center(pFrame);
 		setVisible();
-		IjxApplication ij = IJ.getInstance();
-        
-		IJ.getTopComponentFrame().addWindowListener(this);
+		ImageJ ij = IJ.getInstance();
+		ij.addWindowListener(this);
 		pFrame.addKeyListener(ij);
 		pTree.addKeyListener(ij);
 	}

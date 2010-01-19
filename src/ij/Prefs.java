@@ -15,6 +15,7 @@ import ij.plugin.Animator;
 import ij.process.FloatBlitter;
 import ij.plugin.GelAnalyzer;
 import ij.process.ColorProcessor;
+import ij.text.TextWindow;
 
 /**
 This class contains the ImageJ preferences, which are 
@@ -38,13 +39,16 @@ public class Prefs {
     public static final String THREADS = "threads";
 	public static final String KEY_PREFIX = ".";
  
-	private static final int USE_POINTER=1, ANTIALIASING=2, INTERPOLATE=4, ONE_HUNDRED_PERCENT=8,
-		BLACK_BACKGROUND=16, JFILE_CHOOSER=32, UNUSED=64, BLACK_CANVAS=128, WEIGHTED=256, 
-		AUTO_MEASURE=512, REQUIRE_CONTROL=1024, USE_INVERTING_LUT=2048, ANTIALIASED_TOOLS=4096,
-		INTEL_BYTE_ORDER=8192, DOUBLE_BUFFER=16384, NO_POINT_LABELS=32768, NO_BORDER=65536,
-		SHOW_ALL_SLICE_ONLY=131072, COPY_HEADERS=262144, NO_ROW_NUMBERS=524288,
-		MOVE_TO_MISC=1048576; 
+	private static final int USE_POINTER=1<<0, ANTIALIASING=1<<1, INTERPOLATE=1<<2, ONE_HUNDRED_PERCENT=1<<3,
+		BLACK_BACKGROUND=1<<4, JFILE_CHOOSER=1<<5, UNUSED=1<<6, BLACK_CANVAS=1<<7, WEIGHTED=1<<8, 
+		AUTO_MEASURE=1<<9, REQUIRE_CONTROL=1<<10, USE_INVERTING_LUT=1<<11, ANTIALIASED_TOOLS=1<<12,
+		INTEL_BYTE_ORDER=1<<13, DOUBLE_BUFFER=1<<14, NO_POINT_LABELS=1<<15, NO_BORDER=1<<16,
+		SHOW_ALL_SLICE_ONLY=1<<17, COPY_HEADERS=1<<18, NO_ROW_NUMBERS=1<<19,
+		MOVE_TO_MISC=1<<20, ADD_TO_MANAGER=1<<21, RUN_SOCKET_LISTENER=1<<22,
+		MULTI_POINT_MODE=1<<23; 
     public static final String OPTIONS = "prefs.options";
+    
+	public static final String vistaHint = "\n \nOn Windows Vista, ImageJ must be installed in a directory that\nthe user can write to, such as \"Desktop\" or \"Documents\"";
 
 	/** file.separator system property */
 	public static String separator = System.getProperty("file.separator");
@@ -73,11 +77,11 @@ public class Prefs {
 	/** Open 8-bit images with inverting LUT so 0 is white and 255 is black. */
 	public static boolean useInvertingLut;
 	/** Draw tool icons using antialiasing. */
-	public static boolean antialiasedTools;
+	public static boolean antialiasedTools = true;
 	/** Export Raw using little-endian byte order. */
 	public static boolean intelByteOrder;
-	/** Double buffer display of selections. */
-	public static boolean doubleBuffer;
+	/** Double buffer display of selections and overlays. */
+	public static boolean doubleBuffer = true;
 	/** Do not label multiple points created using point tool. */
 	public static boolean noPointLabels = true;
 	/** Disable Edit/Undo command. */
@@ -92,6 +96,14 @@ public class Prefs {
 	public static boolean noRowNumbers;
 	/** Move isolated plugins to Miscellaneous submenu. */
 	public static boolean moveToMisc;
+	/** Add points to ROI Manager. */
+	public static boolean pointAddToManager;
+	/** Extend the borders to foreground for binary erosions and closings. */
+	public static boolean padEdges;
+	/** Run the SocketListener. */
+	public static boolean runSocketListener;
+	/** Use MultiPoint tool. */
+	public static boolean multiPointMode;
 
 	static Properties ijPrefs = new Properties();
 	static Properties props = new Properties(ijPrefs);
@@ -100,6 +112,7 @@ public class Prefs {
 	static String homeDir; // ImageJ folder
 	static int threads;
 	static int transparentIndex = -1;
+	static boolean commandLineMacro;
 
 	/** Finds and loads the ImageJ configuration file, "IJ_Props.txt".
 		@return	an error message if "IJ_Props.txt" not found.
@@ -191,6 +204,14 @@ public class Prefs {
 		if (path.endsWith(File.separator))
 			path = path.substring(0, path.length()-1);
 		homeDir = path;
+	}
+
+	/** Returns the default directory, if any, or null. */
+	public static String getDefaultDirectory() {
+		if (commandLineMacro)
+			return null;
+		else
+			return getString(DIR_IMAGE);
 	}
 
 	/** Finds an string in IJ_Props or IJ_Prefs.txt. */
@@ -291,7 +312,7 @@ public class Prefs {
 			if (dir!=null)
 				prefs.put(DIR_IMAGE, dir);
 			prefs.put(ROICOLOR, Tools.c2hex(Roi.getColor()));
-			prefs.put(SHOW_ALL_COLOR, Tools.c2hex(ImageCanvasHelper.getShowAllColor()));
+			prefs.put(SHOW_ALL_COLOR, Tools.c2hex(ImageCanvas.getShowAllColor()));
 			prefs.put(FCOLOR, Tools.c2hex(Toolbar.getForegroundColor()));
 			prefs.put(BCOLOR, Tools.c2hex(Toolbar.getBackgroundColor()));
 			prefs.put(JPEG, Integer.toString(FileSaver.getJpegQuality()));
@@ -317,12 +338,17 @@ public class Prefs {
 			}
 			savePrefs(prefs, path);
 		} catch (Throwable t) {
-			CharArrayWriter caw = new CharArrayWriter();
-			PrintWriter pw = new PrintWriter(caw);
-			t.printStackTrace(pw);
-			IJ.log(caw.toString());
-			IJ.log("<Unable to save preferences>");
-			IJ.wait(3000);
+			String msg = t.getMessage();
+			if (msg==null) msg = ""+t;
+			int delay = 4000;
+			if (IJ.isVista()) {
+				msg += vistaHint;
+				delay = 8000;
+			}
+			try {
+				new TextWindow("Error Saving Preferences", msg, 500, 200);
+				IJ.wait(delay);
+			} catch (Throwable t2) {}
 		}
 	}
 
@@ -345,13 +371,16 @@ public class Prefs {
 		useInvertingLut = (options&USE_INVERTING_LUT)!=0;
 		antialiasedTools = (options&ANTIALIASED_TOOLS)!=0;
 		intelByteOrder = (options&INTEL_BYTE_ORDER)!=0;
-		doubleBuffer = (options&DOUBLE_BUFFER)!=0;
+		// doubleBuffer = (options&DOUBLE_BUFFER)!=0; // always double buffer
 		noPointLabels = (options&NO_POINT_LABELS)!=0;
 		noBorder = (options&NO_BORDER)!=0;
 		showAllSliceOnly = (options&SHOW_ALL_SLICE_ONLY)!=0;
 		copyColumnHeaders = (options&COPY_HEADERS)!=0;
 		noRowNumbers = (options&NO_ROW_NUMBERS)!=0;
 		moveToMisc = (options&MOVE_TO_MISC)!=0;
+		pointAddToManager = (options&ADD_TO_MANAGER)!=0;
+		runSocketListener = (options&RUN_SOCKET_LISTENER)!=0;
+		multiPointMode = (options&MULTI_POINT_MODE)!=0;
 	}
 
 	static void saveOptions(Properties prefs) {
@@ -364,7 +393,9 @@ public class Prefs {
 			+ (intelByteOrder?INTEL_BYTE_ORDER:0) + (doubleBuffer?DOUBLE_BUFFER:0)
 			+ (noPointLabels?NO_POINT_LABELS:0) + (noBorder?NO_BORDER:0)
 			+ (showAllSliceOnly?SHOW_ALL_SLICE_ONLY:0) + (copyColumnHeaders?COPY_HEADERS:0)
-			+ (noRowNumbers?NO_ROW_NUMBERS:0) + (moveToMisc?MOVE_TO_MISC:0);
+			+ (noRowNumbers?NO_ROW_NUMBERS:0) + (moveToMisc?MOVE_TO_MISC:0)
+			+ (pointAddToManager?ADD_TO_MANAGER:0) + (runSocketListener?RUN_SOCKET_LISTENER:0)
+			+ (multiPointMode?MULTI_POINT_MODE:0);
 		prefs.put(OPTIONS, Integer.toString(options));
 	}
 

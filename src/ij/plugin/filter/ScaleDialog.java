@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -10,11 +9,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 /** Implements the Analyze/Set Scale command. */
-public class ScaleDialog implements IjxPlugInFilter {
+public class ScaleDialog implements PlugInFilter {
 
-    private IjxImagePlus imp;
+    private ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		IJ.register(ScaleDialog.class);
 		return DOES_ALL+NO_CHANGES;
@@ -22,39 +21,50 @@ public class ScaleDialog implements IjxPlugInFilter {
 
 	public void run(ImageProcessor ip) {
 		double measured = 0.0;
-		double known = 1.0;
+		double known = 0.0;
 		double aspectRatio = 1.0;
-		String unit = "cm";
+		String unit = "pixel";
 		boolean global1 = imp.getGlobalCalibration()!=null;
 		boolean global2;
 		Calibration cal = imp.getCalibration();
 		Calibration calOrig = cal.copy();
 		boolean isCalibrated = cal.scaled();
+		String length = "0.00";
 		
 		String scale = "<no scale>";
 		int digits = 2;
-		if (isCalibrated) {
-			measured = 1.0/cal.pixelWidth;
-			digits = Tools.getDecimalPlaces(measured, measured);
-			known = 1.0;
-			aspectRatio = cal.pixelHeight/cal.pixelWidth;
-			unit = cal.getUnit();
-			scale = IJ.d2s(measured,digits)+" pixels/"+unit;
-		}
+		//IJ.log("ScaleDialog: "+isCalibrated);
 		Roi roi = imp.getRoi();
 		if (roi!=null && (roi instanceof Line)) {
 			measured = ((Line)roi).getRawLength();
-			known = 0.0;
+			length = IJ.d2s(measured, 2);
+		}
+		if (isCalibrated) {
+			if (measured!=0.0)
+				known = measured*cal.pixelWidth;
+			else {
+				measured = 1.0/cal.pixelWidth;
+				known = 1.0;
+			}
+			double dscale = measured/known;
+			digits = Tools.getDecimalPlaces(dscale, dscale);
+			unit = cal.getUnit();
+			scale = IJ.d2s(dscale, digits)+" pixels/"+unit;
+			aspectRatio = cal.pixelHeight/cal.pixelWidth;
 		}
 		
-		SetScaleDialog gd = new SetScaleDialog("Set Scale", scale);
+		digits = Tools.getDecimalPlaces(measured, measured);
+		int asDigits = aspectRatio==1.0?1:3;
+		SetScaleDialog gd = new SetScaleDialog("Set Scale", scale, length);
 		gd.addNumericField("Distance in Pixels:", measured, digits, 8, null);
 		gd.addNumericField("Known Distance:", known, 2, 8, null);
-		gd.addNumericField("Pixel Aspect Ratio:", aspectRatio, 1, 8, null);
+		gd.addNumericField("Pixel Aspect Ratio:", aspectRatio, asDigits, 8, null);
 		gd.addStringField("Unit of Length:", unit);
-		gd.addMessage("Scale: "+"12345.789 pixels per centimeter");
+		gd.addPanel(makeButtonPanel(gd), GridBagConstraints.EAST, new Insets(5, 0, 0, 0));
+		gd.setInsets(0, 30, 0);
 		gd.addCheckbox("Global", global1);
-		gd.addPanel(makeButtonPanel(gd), GridBagConstraints.EAST, new Insets(5, 0, 0, 25));
+		gd.setInsets(10, 0, 0);
+		gd.addMessage("Scale: "+"12345.789 pixels per centimeter");
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;
@@ -62,27 +72,29 @@ public class ScaleDialog implements IjxPlugInFilter {
 		known = gd.getNextNumber();
 		aspectRatio = gd.getNextNumber();
 		unit = gd.getNextString();
-        if (unit.equals("um"))
-            unit = IJ.micronSymbol+"m";
-        else if (unit.equals("A"))
+        if (unit.equals("A"))
         	unit = ""+IJ.angstromSymbol;
  		global2 = gd.getNextBoolean();
-		if (measured!=0.0 && known==0.0) {
-			imp.setGlobalCalibration(global2?cal:null);
-			return;
-		}
-		if (measured<=0.0 || unit.startsWith("pixel") || unit.startsWith("Pixel") || unit.equals("")) {
+		//if (measured!=0.0 && known==0.0) {
+		//	imp.setGlobalCalibration(global2?cal:null);
+		//	return;
+		//}
+		if (measured==known && unit.equals("unit"))
+			unit = "pixel";
+		if (measured<=0.0 || known<=0.0 || unit.startsWith("pixel") || unit.startsWith("Pixel") || unit.equals("")) {
 			cal.pixelWidth = 1.0;
 			cal.pixelHeight = 1.0;
 			cal.pixelDepth = 1.0;
 			cal.setUnit("pixel");
 		} else {
-			cal.pixelWidth = known/measured;
+			if (gd.scaleChanged || IJ.macroRunning()) {
+				cal.pixelWidth = known/measured;
+				cal.pixelDepth = cal.pixelWidth;
+			}
 			if (aspectRatio!=0.0)
 				cal.pixelHeight = cal.pixelWidth*aspectRatio;
 			else
 				cal.pixelHeight = cal.pixelWidth;
-			cal.pixelDepth = cal.pixelWidth;
 			cal.setUnit(unit);
 		}
 		if (!cal.equals(calOrig))
@@ -100,7 +112,7 @@ public class ScaleDialog implements IjxPlugInFilter {
 	Panel makeButtonPanel(SetScaleDialog gd) {
 		Panel panel = new Panel();
     	panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		gd.unscaleButton = new Button("Reset");
+		gd.unscaleButton = new Button("Click to Remove Scale");
 		gd.unscaleButton.addActionListener(gd);
 		panel.add(gd.unscaleButton);
 		return panel;
@@ -112,18 +124,24 @@ class SetScaleDialog extends GenericDialog {
 	static final String NO_SCALE = "<no scale>";
 	String initialScale;
 	Button unscaleButton;
+	String length;
+	boolean scaleChanged;
 
-	public SetScaleDialog(String title, String scale) {
+	public SetScaleDialog(String title, String scale, String length) {
 		super(title);
 		initialScale = scale;
+		this.length = length;
 	}
 
     protected void setup() {
-    	initialScale += "          ";
+    	initialScale += "                   ";
    		setScale(initialScale);
     }
  	
  	public void textValueChanged(TextEvent e) {
+		Object source = e.getSource();
+		if (source==numberField.elementAt(0) || source==numberField.elementAt(1))
+			scaleChanged = true;
  		Double d = getValue(((TextField)numberField.elementAt(0)).getText());
  		if (d==null)
  			{setScale(NO_SCALE); return;}
@@ -134,13 +152,18 @@ class SetScaleDialog extends GenericDialog {
  		double known = d.doubleValue();
  		String theScale;
  		String unit = ((TextField)stringField.elementAt(0)).getText();
- 		boolean noScale = measured<=0||known<=0||unit.startsWith("pixel")||unit.startsWith("Pixel")||unit.equals("");
+ 		boolean noUnit = unit.startsWith("pixel")||unit.startsWith("Pixel")||unit.equals("");
+ 		if (known>0.0 && noUnit && e.getSource()==numberField.elementAt(1)) {
+ 			unit = "unit";
+			((TextField)stringField.elementAt(0)).setText(unit);
+ 		}
+ 		boolean noScale = measured<=0||known<=0||noUnit;
  		if (noScale)
  			theScale = NO_SCALE;
  		else {
  			double scale = measured/known;
 			int digits = Tools.getDecimalPlaces(scale, scale);
- 			theScale = IJ.d2s(scale,digits)+" pixels/"+unit;
+ 			theScale = IJ.d2s(scale,digits)+(scale==1.0?" pixel/":" pixels/")+unit;
  		}
  		setScale(theScale);
 	}
@@ -148,11 +171,14 @@ class SetScaleDialog extends GenericDialog {
 	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
 		if (e.getSource()==unscaleButton) {
-			((TextField)numberField.elementAt(0)).setText("0.00");
-			((TextField)numberField.elementAt(1)).setText("1.00");
+			((TextField)numberField.elementAt(0)).setText(length);
+			((TextField)numberField.elementAt(1)).setText("0.00");
 			((TextField)numberField.elementAt(2)).setText("1.0");
 			((TextField)stringField.elementAt(0)).setText("pixel");
 			setScale(NO_SCALE);
+			scaleChanged = true;
+			if (IJ.isMacOSX())
+				{setVisible(false); setVisible(true);}
 		}
 	}
 

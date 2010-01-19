@@ -1,11 +1,11 @@
 package ij.gui;
 
-import ijx.gui.IjxImageWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxApplication;
-import ijx.IjxImagePlus;
 import java.awt.*;
+import java.util.Properties;
 import java.awt.image.*;
+import ij.process.*;
+import ij.measure.*;
+import ij.plugin.WandToolOptions;
 import ij.plugin.frame.Recorder;
 import ij.plugin.frame.RoiManager;
 import ij.macro.*;
@@ -13,9 +13,11 @@ import ij.*;
 import ij.util.*;
 import java.awt.event.*;
 import java.util.*;
+import java.awt.geom.*;
+
 
 /** This is a Canvas used to display images in a Window. */
-public class ImageCanvas extends Canvas implements IjxImageCanvas {
+public class ImageCanvas extends Canvas implements MouseListener, MouseMotionListener, Cloneable {
 
 	protected static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	protected static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
@@ -24,7 +26,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 
 	public static boolean usePointer = Prefs.usePointerCursor;
 	
-	protected IjxImagePlus imp;
+	protected ImagePlus imp;
 	protected boolean imageUpdated;
 	protected Rectangle srcRect;
 	protected int imageWidth, imageHeight;
@@ -39,16 +41,14 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	private static Font smallFont, largeFont;
 	private Rectangle[] labelRects;
     private boolean maxBoundsReset;
-    private Vector displayList;
-    private boolean labelListItems;
-    private Color listColor;
-    private BasicStroke listStroke;
+    private Overlay overlay, showAllList;
     private static final int LIST_OFFSET = 100000;
-
-
+    private static Color showAllColor = Prefs.getColor(Prefs.SHOW_ALL_COLOR, new Color(0, 255, 255));
+    private static Color labelColor;
     private int resetMaxBoundsCount;
+    private Roi currentRoi;
 		
-	protected IjxApplication ij;
+	protected ImageJ ij;
 	protected double magnification;
 	protected int dstWidth, dstHeight;
 
@@ -62,9 +62,10 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	private int offScreenWidth = 0;
 	private int offScreenHeight = 0;
 	private boolean mouseExited = true;
+	private boolean customRoi;
 	
 	
-	public ImageCanvas(IjxImagePlus imp) {
+	public ImageCanvas(ImagePlus imp) {
 		this.imp = imp;
 		ij = IJ.getInstance();
 		int width = imp.getWidth();
@@ -80,7 +81,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		setFocusTraversalKeysEnabled(false);
 	}
 		
-	public void updateImage(IjxImagePlus imp) {
+	void updateImage(ImagePlus imp) {
 		this.imp = imp;
 		int width = imp.getWidth();
 		int height = imp.getHeight();
@@ -92,8 +93,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	}
 
 	/** Update this ImageCanvas to have the same zoom and scale settings as the one specified. */
-	public void update(IjxImageCanvas icX) {
-        ImageCanvas ic = (ImageCanvas) icX;
+	void update(ImageCanvas ic) {
 		if (ic==null || ic==this || ic.imp==null)
 			return;
 		if (ic.imp.getWidth()!=imageWidth || ic.imp.getHeight()!=imageHeight)
@@ -101,6 +101,10 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		srcRect = new Rectangle(ic.srcRect.x, ic.srcRect.y, ic.srcRect.width, ic.srcRect.height);
 		setMagnification(ic.magnification);
 		setDrawingSize(ic.dstWidth, ic.dstHeight);
+	}
+
+	public void setSourceRect(Rectangle r) {
+		srcRect = r;
 	}
 
 	public void setDrawingSize(int width, int height) {
@@ -121,10 +125,12 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 
     public void paint(Graphics g) {
 		Roi roi = imp.getRoi();
-		if (roi != null) {
-			roi.updatePaste();
-			if (Prefs.doubleBuffer && !IJ.isMacOSX())
-				{paintDoubleBuffered(g); return;}
+		if (roi!=null || showAllROIs || overlay!=null) {
+			if (roi!=null) roi.updatePaste();
+			if (!IJ.isMacOSX() && imageWidth!=0) {
+				paintDoubleBuffered(g);
+				return;
+			}
 		}
 		try {
 			if (imageUpdated) {
@@ -136,9 +142,9 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			if (img!=null)
  				g.drawImage(img, 0, 0, (int)(srcRect.width*magnification), (int)(srcRect.height*magnification),
 				srcRect.x, srcRect.y, srcRect.x+srcRect.width, srcRect.y+srcRect.height, null);
-			if (showAllROIs) showAllROIs(g);
-			if (displayList!=null) drawDisplayList(g);
-			if (roi != null) roi.draw(g);
+			if (overlay!=null) drawOverlay(g);
+			if (showAllROIs) drawAllROIs(g);
+			if (roi!=null) drawRoi(roi, g);
 			if (srcRect.width<imageWidth || srcRect.height<imageHeight)
 				drawZoomIndicator(g);
 			if (IJ.debugMode) showFrameRate(g);
@@ -146,26 +152,66 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		catch(OutOfMemoryError e) {IJ.outOfMemory("Paint");}
     }
     
-    void showAllROIs(Graphics g) {
+    private void drawRoi(Roi roi, Graphics g) {
+			if (roi==currentRoi) {
+				Color lineColor = roi.getStrokeColor();
+				Color fillColor = roi.getFillColor();
+				float lineWidth = roi.getStrokeWidth();
+				roi.setStrokeColor(null);
+				roi.setFillColor(null);
+				roi.setStrokeWidth(1);
+				roi.draw(g);
+				roi.setStrokeColor(lineColor);
+				roi.setStrokeWidth(lineWidth);
+				roi.setFillColor(fillColor);
+				currentRoi = null;
+			} else
+				roi.draw(g);
+    }
+    
+    void drawAllROIs(Graphics g) {
 		RoiManager rm=RoiManager.getInstance();
-		if (rm==null) return;
-		initGraphics(g, null);
+		if (rm==null) {
+			rm = Interpreter.getBatchModeRoiManager();
+			if (rm!=null && rm.getList().getItemCount()==0)
+				rm = null;
+		}
+		if (rm==null) {
+			if (showAllList!=null)
+				overlay= showAllList;
+			showAllROIs = false;
+			repaint();
+			return;
+		}
+		initGraphics(g);
 		Hashtable rois = rm.getROIs();
 		java.awt.List list = rm.getList();
+		boolean drawLabels = rm.getDrawLabels();
+		currentRoi = null;
 		int n = list.getItemCount();
+    	if (IJ.debugMode) IJ.log("paint: drawing "+n+" \"Show All\" ROIs");
 		if (labelRects==null || labelRects.length!=n)
 			labelRects = new Rectangle[n];
+		if (!drawLabels)
+			showAllList = new Overlay();
+		else
+			showAllList = null;
 		for (int i=0; i<n; i++) {
 			String label = list.getItem(i);
 			Roi roi = (Roi)rois.get(label);
 			if (roi==null) continue;
+			if (showAllList!=null)
+				showAllList.add(roi);
+			if (i<200 && drawLabels && imp!=null && roi==imp.getRoi())
+				currentRoi = roi;
 			if (Prefs.showAllSliceOnly && imp.getStackSize()>1) {
 				int slice = getSliceNumber(roi.getName());
 				if (slice==-1 || slice==imp.getCurrentSlice())
-					drawRoi(g, roi, i);
+					drawRoi(g, roi, drawLabels?i:-1);
 			} else
-				drawRoi(g, roi, i);
+				drawRoi(g, roi, drawLabels?i:-1);
 		}
+		((Graphics2D)g).setStroke(Roi.onePixelWide);
     }
     
 	public int getSliceNumber(String label) {
@@ -179,69 +225,59 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		return slice;
 	}
 
-    void drawDisplayList(Graphics g) {
-		initGraphics(g, listColor);
-    	int n = displayList.size();
-    	for (int i=0; i<n; i++)
-    		drawRoi(g, (Roi)displayList.elementAt(i), labelListItems?i+LIST_OFFSET:-1);
-    	if (listStroke!=null) ((Graphics2D)g).setStroke(new BasicStroke());
+    void drawOverlay(Graphics g) {
+		initGraphics(g);
+		Vector list = overlay.getVector();
+    	int n = list.size();
+    	if (IJ.debugMode) IJ.log("paint: drawing "+n+" ROI display list");
+    	boolean drawLabels = overlay.getDrawLabels();
+    	for (int i=0; i<n; i++) {
+    		if (overlay==null) break;
+    		drawRoi(g, (Roi)list.get(i), drawLabels?i+LIST_OFFSET:-1);
+    	}
+		((Graphics2D)g).setStroke(Roi.onePixelWide);
     }
     
-    void initGraphics(Graphics g, Color c) {
+    void initGraphics(Graphics g) {
 		if (smallFont==null) {
 			smallFont = new Font("SansSerif", Font.PLAIN, 9);
 			largeFont = new Font("SansSerif", Font.PLAIN, 12);
 		}
-		if (ImageCanvasHelper.labelColor==null) {
-			int red = ImageCanvasHelper.showAllColor.getRed();
-			int green = ImageCanvasHelper.showAllColor.getGreen();
-			int blue = ImageCanvasHelper.showAllColor.getBlue();
+		if (labelColor==null) {
+			int red = showAllColor.getRed();
+			int green = showAllColor.getGreen();
+			int blue = showAllColor.getBlue();
 			if ((red+green+blue)/3<128)
-				ImageCanvasHelper.labelColor = Color.white;
+				labelColor = Color.white;
 			else
-				ImageCanvasHelper.labelColor = Color.black;
+				labelColor = Color.black;
 		}
-		if (c!=null) {
-			g.setColor(c);
-			if (listStroke!=null) ((Graphics2D)g).setStroke(listStroke);
-		} else
-			g.setColor(ImageCanvasHelper.showAllColor);
+		g.setColor(showAllColor);
     }
     
     void drawRoi(Graphics g, Roi roi, int index) {
-		if (roi.getType()==Roi.COMPOSITE) {
-			roi.setImage(imp);
-			Color c = roi.getColor();
-			if (index==-1 && listColor!=null)
-				roi.setColor(listColor);
+    	int type = roi.getType();
+		ImagePlus imp2 = roi.getImage();
+		roi.setImage(imp);
+		Color saveColor = roi.getStrokeColor();
+		if (saveColor==null)
+			roi.setStrokeColor(showAllColor);
+		if (roi instanceof TextRoi)
+			((TextRoi)roi).drawText(g);
+		else
+			roi.drawOverlay(g);
+		roi.setStrokeColor(saveColor);
+		if (index>=0) {
+			if (roi==currentRoi)
+				g.setColor(Roi.getColor());
 			else
-				roi.setColor(ImageCanvasHelper.showAllColor);
-			roi.draw(g);
-			roi.setColor(c);
-			if (index>=0) drawRoiLabel(g, index, roi.getBounds());
-		} else {
-			Color c = index==-1?roi.getInstanceColor():null;
-			Color saveg = null;
-			if (c!=null) {
-				saveg = g.getColor();
-				g.setColor(c);
-			}
-			Polygon p = roi.getPolygon();
-			int x1=0, y1=0, x2=0, y2=0;
-			for (int j=0; j<p.npoints; j++) {
-				x2 = screenX(p.xpoints[j]);
-				y2 = screenY(p.ypoints[j]);
-				if (j>0) g.drawLine(x1, y1, x2, y2);
-				x1=x2; y1=y2;
-			}
-			if (roi.isArea()&&p.npoints>0) {
-				int x0 = screenX(p.xpoints[0]);
-				int y0 = screenY(p.ypoints[0]);
-				g.drawLine(x1, y1, x0, y0);
-			}
-			if (index>=0) drawRoiLabel(g, index, roi.getBounds());
-			if (saveg!=null) g.setColor(saveg);
+				g.setColor(showAllColor);
+			drawRoiLabel(g, index, roi.getBounds());
 		}
+		if (imp2!=null)
+			roi.setImage(imp2);
+		else
+			roi.setImage(null);
     }
     
 	void drawRoiLabel(Graphics g, int index, Rectangle r) {
@@ -266,9 +302,9 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		g.fillRoundRect(x-1, y-h+2, w+1, h-3, 5, 5);
 		if (!drawingList)
 			labelRects[index] = new Rectangle(x-1, y-h+2, w+1, h-3);
-		g.setColor(ImageCanvasHelper.labelColor);
+		g.setColor(labelColor);
 		g.drawString(label, x, y-2);
-		g.setColor(ImageCanvasHelper.showAllColor);
+		g.setColor(showAllColor);
 	} 
 
 	void drawZoomIndicator(Graphics g) {
@@ -290,6 +326,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		if (zoomIndicatorColor==null)
 			zoomIndicatorColor = new Color(128, 128, 255);
 		g.setColor(zoomIndicatorColor);
+		((Graphics2D)g).setStroke(Roi.onePixelWide);
 		g.drawRect(x1, y1, w1, h1);
 		if (w2*h2<=200 || w2<10 || h2<10)
 			g.fillRect(x1+x2, y1+y2, w2, h2);
@@ -319,9 +356,9 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			if (img!=null)
 				offScreenGraphics.drawImage(img, 0, 0, srcRectWidthMag, srcRectHeightMag,
 					srcRect.x, srcRect.y, srcRect.x+srcRect.width, srcRect.y+srcRect.height, null);
-			if (showAllROIs) showAllROIs(offScreenGraphics);
-			if (displayList!=null) drawDisplayList(offScreenGraphics);
-			if (roi!=null) roi.draw(offScreenGraphics);
+			if (overlay!=null) drawOverlay(offScreenGraphics);
+			if (showAllROIs) drawAllROIs(offScreenGraphics);
+			if (roi!=null) drawRoi(roi, offScreenGraphics);
 			if (srcRect.width<imageWidth ||srcRect.height<imageHeight)
 				drawZoomIndicator(offScreenGraphics);
 			if (IJ.debugMode) showFrameRate(offScreenGraphics);
@@ -371,6 +408,11 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	public int getModifiers() {
 		return flags;
 	}
+	
+	/** Returns the ImagePlus object that is associated with this ImageCanvas. */
+	public ImagePlus getImage() {
+		return imp;
+	}
 
 	/** Sets the cursor based on the current tool and cursor location. */
 	public void setCursor(int sx, int sy, int ox, int oy) {
@@ -378,7 +420,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		yMouse = oy;
 		mouseExited = false;
 		Roi roi = imp.getRoi();
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win==null)
 			return;
 		if (IJ.spaceBarDown()) {
@@ -454,7 +496,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		setMagnification2(magnification);
 	}
 		
-	public void setMagnification2(double magnification) {
+	void setMagnification2(double magnification) {
 		if (magnification>32.0) magnification = 32.0;
 		if (magnification<0.03125) magnification = 0.03125;
 		this.magnification = magnification;
@@ -465,13 +507,13 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		return srcRect;
 	}
 	
-	public void setSrcRect(Rectangle srcRect) {
+	void setSrcRect(Rectangle srcRect) {
 		this.srcRect = srcRect;
 	}
 		
 	/** Enlarge the canvas if the user enlarges the window. */
-	public void resizeCanvas(int width, int height) {
-		ImageWindow win = (ImageWindow) imp.getWindow();
+	void resizeCanvas(int width, int height) {
+		ImageWindow win = imp.getWindow();
 		//IJ.log("resizeCanvas: "+srcRect+" "+imageWidth+"  "+imageHeight+" "+width+"  "+height+" "+dstWidth+"  "+dstHeight+" "+win.maxBounds);
 		if (!maxBoundsReset&& (width>dstWidth||height>dstHeight)&&win!=null&&win.maxBounds!=null&&width!=win.maxBounds.width-10) {
 			if (resetMaxBoundsCount!=0)
@@ -498,7 +540,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	}
 	
 	public void fitToWindow() {
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win==null) return;
 		Rectangle bounds = win.getBounds();
 		Insets insets = win.getInsets();
@@ -514,10 +556,10 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		getParent().doLayout();
 	}
     
-	public void setMaxBounds() {
+	void setMaxBounds() {
 		if (maxBoundsReset) {
 			maxBoundsReset = false;
-			ImageWindow win = (ImageWindow) imp.getWindow();
+			ImageWindow win = imp.getWindow();
 			if (win!=null && !IJ.isLinux() && win.maxBounds!=null) {
 				win.setMaximizedBounds(win.maxBounds);
 				win.setMaxBoundsTime = System.currentTimeMillis();
@@ -526,20 +568,46 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	}
 
 	void resetMaxBounds() {
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win!=null && (System.currentTimeMillis()-win.setMaxBoundsTime)>500L) {
 			win.setMaximizedBounds(win.maxWindowBounds);
 			maxBoundsReset = true;
 		}
 	}
 	
+	private static final double[] zoomLevels = {
+		1/72.0, 1/48.0, 1/32.0, 1/24.0, 1/16.0, 1/12.0, 
+		1/8.0, 1/6.0, 1/4.0, 1/3.0, 1/2.0, 0.75, 1.0, 1.5,
+		2.0, 3.0, 4.0, 6.0, 8.0, 12.0, 16.0, 24.0, 32.0 };
+	
+	public static double getLowerZoomLevel(double currentMag) {
+		double newMag = zoomLevels[0];
+		for (int i=0; i<zoomLevels.length; i++) {
+		if (zoomLevels[i] < currentMag)
+			newMag = zoomLevels[i];
+		else
+			break;
+		}
+		return newMag;
+	}
+
+	public static double getHigherZoomLevel(double currentMag) {
+		double newMag = 32.0;
+		for (int i=zoomLevels.length-1; i>=0; i--) {
+			if (zoomLevels[i]>currentMag)
+				newMag = zoomLevels[i];
+			else
+				break;
+		}
+		return newMag;
+	}
 
 	/** Zooms in by making the window bigger. If it can't
 		be made bigger, then make the source rectangle 
 		(srcRect) smaller and center it at (x,y). */
 	public void zoomIn(int x, int y) {
 		if (magnification>=32) return;
-		double newMag = ImageCanvasHelper.getHigherZoomLevel(magnification);
+		double newMag = getHigherZoomLevel(magnification);
 		int newWidth = (int)(imageWidth*newMag);
 		int newHeight = (int)(imageHeight*newMag);
 		Dimension newSize = canEnlarge(newWidth, newHeight);
@@ -549,7 +617,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 				adjustSourceRect(newMag, x, y);
 			else
 				setMagnification(newMag);
-			((ImageWindow)imp.getWindow()).pack();
+			imp.getWindow().pack();
 		} else
 			adjustSourceRect(newMag, x, y);
 		repaint();
@@ -576,12 +644,10 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	}
 	
 	protected Dimension canEnlarge(int newWidth, int newHeight) {
-		if ((flags&Event.SHIFT_MASK)!=0 || IJ.shiftKeyDown())
-			return null;
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		//if ((flags&Event.CTRL_MASK)!=0 || IJ.controlKeyDown()) return null;
+		ImageWindow win = imp.getWindow();
 		if (win==null) return null;
 		Rectangle r1 = win.getBounds();
-
 		Insets insets = win.getInsets();
 		Point loc = getLocation();
 		if (loc.x>insets.left+5 || loc.y>insets.top+5) {
@@ -592,7 +658,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			r1.width = r1.width - dstWidth + newWidth+10;
 			r1.height = r1.height - dstHeight + newHeight+10;
 		}
-		Rectangle max = win.getMaxWindow();
+		Rectangle max = win.getMaxWindow(r1.x, r1.y);
 		boolean fitsHorizontally = r1.x+r1.width<max.x+max.width;
 		boolean fitsVertically = r1.y+r1.height<max.y+max.height;
 		if (fitsHorizontally && fitsVertically)
@@ -612,10 +678,10 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		if (magnification<=0.03125)
 			return;
 		double oldMag = magnification;
-		double newMag = ImageCanvasHelper.getLowerZoomLevel(magnification);
+		double newMag = getLowerZoomLevel(magnification);
 		double srcRatio = (double)srcRect.width/srcRect.height;
 		double imageRatio = (double)imageWidth/imageHeight;
-		double initialMag = ((ImageWindow)imp.getWindow()).getInitialMagnification();
+		double initialMag = imp.getWindow().getInitialMagnification();
 		if (Math.abs(srcRatio-imageRatio)>0.05) {
 			double scale = oldMag/newMag;
 			int newSrcWidth = (int)Math.round(srcRect.width*scale);
@@ -673,7 +739,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		if (magnification==imag)
 			return;
 		srcRect = new Rectangle(0, 0, imageWidth, imageHeight);
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		setDrawingSize((int)(imageWidth*imag), (int)(imageHeight*imag));
 		setMagnification(imag);
         setMaxBounds();
@@ -793,9 +859,9 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		if (ij==null) return;
 		showCursorStatus = true;
 		int toolID = Toolbar.getToolId();
-		IjxImageWindow win = imp.getWindow();
-		if (win!=null && win.isRunning2() && toolID!=Toolbar.MAGNIFIER) {
-			win.setRunning2(false);
+		ImageWindow win = imp.getWindow();
+		if (win!=null && win.running2 && toolID!=Toolbar.MAGNIFIER) {
+			win.running2 = false;
 			return;
 		}
 		
@@ -804,7 +870,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		flags = e.getModifiers();
 		//IJ.log("Mouse pressed: " + e.isPopupTrigger() + "  " + ij.modifiers(flags));		
 		//if (toolID!=Toolbar.MAGNIFIER && e.isPopupTrigger()) {
-		if (toolID!=Toolbar.MAGNIFIER && (e.isPopupTrigger() || (flags & Event.META_MASK)!=0)) {
+		if (toolID!=Toolbar.MAGNIFIER && (e.isPopupTrigger()||(!IJ.isMacintosh()&&(flags&Event.META_MASK)!=0))) {
 			handlePopupMenu(e);
 			return;
 		}
@@ -822,15 +888,17 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			if (!(roi!=null && (roi.contains(ox, oy)||roi.isHandle(x, y)>=0)) && roiManagerSelect(x, y))
  				return;
 		}
+		if (customRoi && overlay!=null)
+			return;
 
 		switch (toolID) {
 			case Toolbar.MAGNIFIER:
 				if (IJ.shiftKeyDown())
 					zoomToSelection(ox, oy);
 				else if ((flags & (Event.ALT_MASK|Event.META_MASK|Event.CTRL_MASK))!=0)
-					zoomOut(x, y);
+					IJ.run("Out");
 				else
-					zoomIn(x, y);
+					IJ.run("In");
 				break;
 			case Toolbar.HAND:
 				setupScroll(ox, oy);
@@ -857,9 +925,15 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 					}
 				}
 				setRoiModState(e, roi, -1);
-				int npoints = IJ.doWand(ox, oy);
-				if (Recorder.record && npoints>0)
-					Recorder.record("doWand", ox, oy);
+				String mode = WandToolOptions.getMode();
+				double tolerance = WandToolOptions.getTolerance();
+				int npoints = IJ.doWand(ox, oy, tolerance, mode);
+				if (Recorder.record && npoints>0) {
+					if (tolerance==0.0 && mode.equals("Legacy"))
+						Recorder.record("doWand", ox, oy);
+					else
+						Recorder.recordString("doWand("+ox+", "+oy+", "+tolerance+", \""+mode+"\");\n");
+				}
 				break;
 			case Toolbar.OVAL:
 				if (Toolbar.getBrushSize()>0)
@@ -877,6 +951,26 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		}
 	}
 	
+    boolean roiManagerSelect(int x, int y) {
+		RoiManager rm=RoiManager.getInstance();
+		if (rm==null) return false;
+		Hashtable rois = rm.getROIs();
+		java.awt.List list = rm.getList();
+		int n = list.getItemCount();
+		if (labelRects==null || labelRects.length!=n) return false;
+		for (int i=0; i<n; i++) {
+			if (labelRects[i]!=null && labelRects[i].contains(x,y)) {
+				//rm.select(i);
+				// this needs to run on a separate thread, at least on OS X
+				// "update2" does not clone the ROI so the "Show All"
+				// outline moves as the user moves the RO.
+				new ij.macro.MacroRunner("roiManager('select', "+i+"); roiManager('update2');");
+				return true;
+			}
+		}
+		return false;
+    }
+
 	void zoomToSelection(int x, int y) {
 		IJ.setKeyUp(IJ.ALL_KEYS);
 		String macro =
@@ -892,24 +986,6 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			"run('To Selection');\n";
 		new MacroRunner(macro, x+" "+y);
 	}
-
-    boolean roiManagerSelect(int x, int y) {
-		RoiManager rm=RoiManager.getInstance();
-		if (rm==null) return false;
-		Hashtable rois = rm.getROIs();
-		java.awt.List list = rm.getList();
-		int n = list.getItemCount();
-		if (labelRects==null || labelRects.length!=n) return false;
-		for (int i=0; i<n; i++) {
-			if (labelRects[i]!=null && labelRects[i].contains(x,y)) {
-				//rm.select(i);
-				// this needs to run on a separate thread, at least on OS X
-				new ij.macro.MacroRunner("roiManager('select', "+i+"); roiManager('update');");
-				return true;
-			}
-		}
-		return false;
-    }
 
 	protected void setupScroll(int ox, int oy) {
 		xMouseStart = ox;
@@ -940,7 +1016,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 	
 	public void mouseExited(MouseEvent e) {
 		//autoScroll(e);
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win!=null)
 			setCursor(defaultCursor);
 		IJ.showStatus("");
@@ -992,24 +1068,30 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		}
 	}
 
-	void handleRoiMouseDown(MouseEvent e) {
+	protected void handleRoiMouseDown(MouseEvent e) {
 		int sx = e.getX();
 		int sy = e.getY();
 		int ox = offScreenX(sx);
 		int oy = offScreenY(sy);
 		Roi roi = imp.getRoi();
-		int handle = roi!=null?roi.isHandle(sx, sy):-1;		
+		int handle = roi!=null?roi.isHandle(sx, sy):-1;
+		boolean multiPointMode = roi!=null && (roi instanceof PointRoi) && handle==-1
+			&& Toolbar.getToolId()==Toolbar.POINT && Toolbar.getMultiPointMode();
+		if (multiPointMode) {
+			imp.setRoi(((PointRoi)roi).addPoint(ox, oy));
+			return;
+		}
 		setRoiModState(e, roi, handle);
 		if (roi!=null) {
+			if (handle>=0) {
+				roi.mouseDownInHandle(handle, sx, sy);
+				return;
+			}
 			Rectangle r = roi.getBounds();
 			int type = roi.getType();
 			if (type==Roi.RECTANGLE && r.width==imp.getWidth() && r.height==imp.getHeight()
-			&& roi.getPasteMode()==Roi.NOT_PASTING) {
+			&& roi.getPasteMode()==Roi.NOT_PASTING && !(roi instanceof ImageRoi)) {
 				imp.killRoi();
-				return;
-			}
-			if (handle>=0) {
-				roi.mouseDownInHandle(handle, sx, sy);
 				return;
 			}
 			if (roi.contains(ox, oy)) {
@@ -1055,40 +1137,93 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 		disablePopupMenu = status;
 	}
 
+	/** Enables/disables the ROI Manager "Show All" mode. */
 	public void setShowAllROIs(boolean showAllROIs) {
 		this.showAllROIs = showAllROIs;
 	}
 
+	/** Returns the state of the ROI Manager "Show All" flag. */
 	public boolean getShowAllROIs() {
 		return showAllROIs;
 	}
 
-	public void setDisplayList(Vector list) {
-		displayList = list;
-		listColor = null;
-		if (list!=null&&list.size()>0&&((Roi)list.elementAt(0)).getInstanceColor()!=null)
-			labelListItems = false;
-		else
-			labelListItems = true;
-		repaint();
+	/** Returns the color used for "Show All" mode. */
+	public static Color getShowAllColor() {
+		if (showAllColor!=null && showAllColor.getRGB()==0xff80ffff)
+			showAllColor = Color.cyan;
+		return showAllColor;
 	}
 
-	public void setDisplayList(Shape shape, Color color, BasicStroke stroke) {
-		if (shape==null)
-			{setDisplayList(null); return;}
-		Roi roi = new ShapeRoi(shape);
-		roi.setInstanceColor(color);
-		Vector list = new Vector();
-		list.addElement(roi);
-		displayList = list;
-		labelListItems = false;
-		listColor = color;
-		listStroke = stroke;
+	/** Sets the color used used for "Show All" mode. */
+	public static void setShowAllColor(Color c) {
+		if (c==null) return;
+		showAllColor = c;
+		labelColor = null;
+		ImagePlus img = WindowManager.getCurrentImage();
+		if (img!=null) {
+			ImageCanvas ic = img.getCanvas();
+			if (ic!=null && ic.getShowAllROIs()) img.draw();
+		}
+	}
+	
+	/** Use ImagePlus.setOverlay(ij.gui.Overlay). */
+	public void setOverlay(Overlay overlay) {
+		this.overlay = overlay;
 		repaint();
 	}
 	
+	/** Use ImagePlus.getOverlay(). */
+	public Overlay getOverlay() {
+		return overlay;
+	}
+
+	/** Obsolete; replaced by ImagePlus.setOverlay(ij.gui.Overlay). */
+	public void setDisplayList(Vector list) {
+		if (list!=null) {
+			Overlay list2 = new Overlay();
+			list2.setVector(list);
+			setOverlay(list2);
+		} else
+			setOverlay(null);
+		if (overlay!=null)
+			overlay.drawLabels(overlay.size()>0&&overlay.get(0).getStrokeColor()==null);
+		else
+			customRoi = false;
+		repaint();
+	}
+
+	/** Obsolete; replaced by ImagePlus.setOverlay(Shape, Color, BasicStroke). */
+	public void setDisplayList(Shape shape, Color color, BasicStroke stroke) {
+		if (shape==null)
+			{setOverlay(null); return;}
+		Roi roi = new ShapeRoi(shape);
+		roi.setStrokeColor(color);
+		roi.setStroke(stroke);
+		Overlay list = new Overlay();
+		list.add(roi);
+		setOverlay(list);
+	}
+	
+	/** Obsolete; replaced by ImagePlus.setOverlay(Roi, Color, int, Color). */
+	public void setDisplayList(Roi roi, Color color) {
+		roi.setStrokeColor(color);
+		Overlay list = new Overlay();
+		list.add(roi);
+		setOverlay(list);
+	}
+	
+	/** Obsolete; replaced by ImagePlus.getOverlay(). */
 	public Vector getDisplayList() {
+		if (overlay==null) return null;
+		Vector displayList = new Vector();
+		for (int i=0; i<overlay.size(); i++)
+			displayList.add(overlay.get(i));
 		return displayList;
+	}
+	
+	/** Allows plugins (e.g., Orthogonal_Views) to create a custom ROI using a display list. */
+	public void setCustomRoi(boolean customRoi) {
+		this.customRoi = customRoi;
 	}
 
 	/** Called by IJ.showStatus() to prevent status bar text from
@@ -1118,11 +1253,14 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			&& roi.getState()==roi.CONSTRUCTING
 			&& type!=roi.POINT)
 				imp.killRoi();
-			else
+			else {
 				roi.handleMouseUp(e.getX(), e.getY());
+				if (roi.getType()==Roi.LINE && roi.getLength()==0.0)
+					imp.killRoi();
+			}
 		}
 	}
-
+	
 	public void mouseMoved(MouseEvent e) {
 		if (ij==null) return;
 		int sx = e.getX();
@@ -1139,7 +1277,7 @@ public class ImageCanvas extends Canvas implements IjxImageCanvas {
 			pRoi.handleMouseMove(ox, oy);
 		} else {
 			if (ox<imageWidth && oy<imageHeight) {
-				ImageWindow win = (ImageWindow) imp.getWindow();
+				ImageWindow win = imp.getWindow();
 				// Cursor must move at least 12 pixels before text
 				// displayed using IJ.showStatus() is overwritten.
 				if ((sx-sx2)*(sx-sx2)+(sy-sy2)*(sy-sy2)>144)

@@ -8,16 +8,23 @@ import ij.measure.*;
 import ij.plugin.filter.Analyzer;
 import java.awt.event.KeyEvent;
 import ij.plugin.frame.Recorder;
+import ij.util.Java2; 
 
 /** This class represents a collection of points. */
 public class PointRoi extends PolygonRoi {
-
-	static Font font;
+	private static Font font;
+	private static int fontSize = 9;
+	private double saveMag;
 	
 	/** Creates a new PointRoi using the specified arrays of offscreen coordinates. */
 	public PointRoi(int[] ox, int[] oy, int points) {
 		super(ox, oy, points, POINT);
 		width+=1; height+=1;
+	}
+
+	/** Creates a new PointRoi from a Polygon. */
+	public PointRoi(Polygon poly) {
+		this(poly.xpoints, poly.ypoints, poly.npoints);
 	}
 
 	/** Creates a new PointRoi using the specified offscreen coordinates. */
@@ -32,7 +39,7 @@ public class PointRoi extends PolygonRoi {
 		setImage(imp);
 		width=1; height=1;
 		if (imp!=null) imp.draw(x-5, y-5, width+10, height+10);
-		if (Recorder.record) 
+		if (Recorder.record && !Recorder.scriptMode()) 
 			Recorder.record("makePoint", x, y);
 
 	}
@@ -49,11 +56,11 @@ public class PointRoi extends PolygonRoi {
 		return array;
 	}
 				
-	public void handleMouseMove(int ox, int oy) {
+	void handleMouseMove(int ox, int oy) {
 		//IJ.log("handleMouseMove");
 	}
 	
-	public  void handleMouseUp(int sx, int sy) {
+	protected void handleMouseUp(int sx, int sy) {
 		super.handleMouseUp(sx, sy);
 		modifyRoi(); //adds this point to previous points if shift key down
 	}
@@ -64,9 +71,17 @@ public class PointRoi extends PolygonRoi {
 		updatePolygon();
 		if (ic!=null) mag = ic.getMagnification();
 		int size2 = HANDLE_SIZE/2;
-		if (!Prefs.noPointLabels) {
-			if (font==null) font = new Font("SansSerif", Font.PLAIN, 9);
+		if (!Prefs.noPointLabels && (nPoints>1||Toolbar.getMultiPointMode())) {
+			fontSize = 9;
+			if (mag>1.0)
+				fontSize = (int)(((mag-1.0)/3.0+1.0)*9.0);
+			if (fontSize>18) fontSize = 18;
+			if (font==null || mag!=saveMag)
+				font = new Font("SansSerif", Font.PLAIN, fontSize);
 			g.setFont(font);
+			if (fontSize>9)
+				Java2.setAntialiasedText(g, true);
+			saveMag = mag;
 		}
 		for (int i=0; i<nPoints; i++)
 			drawPoint(g, xp2[i]-size2, yp2[i]-size2, i+1);
@@ -76,13 +91,13 @@ public class PointRoi extends PolygonRoi {
 	}
 
 	void drawPoint(Graphics g, int x, int y, int n) {
-		g.setColor(Color.white);
+		g.setColor(fillColor!=null?fillColor:Color.white);
 		g.drawLine(x-4, y+2, x+8, y+2);
 		g.drawLine(x+2, y-4, x+2, y+8);
-		g.setColor(instanceColor!=null?instanceColor:ROIColor);
+		g.setColor(strokeColor!=null?strokeColor:ROIColor);
 		g.fillRect(x+1,y+1,3,3);
-		if (!Prefs.noPointLabels && nPoints>1)
-			g.drawString(""+n, x+6, y+13); 
+		if (!Prefs.noPointLabels && (nPoints>1||Toolbar.getMultiPointMode()))
+			g.drawString(""+n, x+6, y+fontSize+4);
 		g.setColor(Color.black);
 		g.drawRect(x, y, 4, 4);
 	}
@@ -95,15 +110,15 @@ public class PointRoi extends PolygonRoi {
 		}
 	}
 	
-	/** Adds a point to this selection and return the result. */
+	/** Returns a copy of this PointRoi with a point at (x,y) added. */
 	public PointRoi addPoint(int x, int y) {
 		Polygon poly = getPolygon();
 		poly.addPoint(x, y);
 		PointRoi p = new PointRoi(poly.xpoints, poly.ypoints, poly.npoints);
-		//IJ.log("addPoint: "+((PointRoi)p).getNCoordinates());
+		IJ.showStatus("count="+poly.npoints);
 		return p;
 	}
-
+	
 	/** Subtract the points that intersect the specified ROI and return 
 		the result. Returns null if there are no resulting points. */
 	public PointRoi subtractPoints(Roi roi) {

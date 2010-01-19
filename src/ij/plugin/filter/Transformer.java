@@ -1,17 +1,18 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
+import ij.gui.*;
 import ij.measure.Calibration;
-import ijx.IjxImageStack;
+import java.awt.*;
+import java.awt.image.*;
 
-/** Implements the flip and rotate commands in the Image/Transformations submenu. */
-public class Transformer implements IjxPlugInFilter {
+/** Implements the Flip and Rotate commands in the Image/Transform submenu. */
+public class Transformer implements PlugInFilter {
 	
-	IjxImagePlus imp;
+	ImagePlus imp;
 	String arg;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.arg = arg;
 		this.imp = imp;
 		if (arg.equals("fliph") || arg.equals("flipv"))
@@ -31,7 +32,7 @@ public class Transformer implements IjxPlugInFilter {
 		}
 		if (arg.equals("right") || arg.equals("left")) {
 	    	StackProcessor sp = new StackProcessor(imp.getStack(), ip);
-	    	IjxImageStack s2 = null;
+	    	ImageStack s2 = null;
 			if (arg.equals("right"))
 	    		s2 = sp.rotateRight();
 	    	else
@@ -44,5 +45,5 @@ public class Transformer implements IjxPlugInFilter {
 			return;
 		}
 	}
-
+	
 }

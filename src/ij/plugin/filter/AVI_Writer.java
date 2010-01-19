@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -9,7 +8,6 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-import com.sun.image.codec.jpeg.*;
 import javax.imageio.ImageIO;
 
 /**
@@ -23,7 +21,7 @@ The FileAvi class is part of Matthew J. McAuliffe's MIPAV program,
 available from http://mipav.cit.nih.gov/.
 2008-06-05 Support for jpeg and png-compressed output and composite images by Michael Schmid.
 */
-public class AVI_Writer implements IjxPlugInFilter {
+public class AVI_Writer implements PlugInFilter {
     //four-character codes for compression
     // Note: byte sequence in four-cc is reversed - ints in Intel (little endian) byte order.
     // Note that compression codes BI_JPEG=4 and BI_PNG=5 are not understood by avi players
@@ -37,11 +35,11 @@ public class AVI_Writer implements IjxPlugInFilter {
 
     //compression options: dialog parameters
     private static int      compressionIndex = 0; //0=none, 1=PNG, 2=JPEG
-    private static int      jpegQuality = 90;    //0 is worst, 100 best
+    private static int      jpegQuality = 90;    //0 is worst, 100 best (not currently used)
     private final static String[] COMPRESSION_STRINGS = new String[] {"Uncompressed", "PNG", "JPEG"};
     private final static int[] COMPRESSION_TYPES = new int[] {NO_COMPRESSION, PNG_COMPRESSION, JPEG_COMPRESSION};
 
-    private IjxImagePlus imp;
+    private ImagePlus imp;
     private RandomAccessFile raFile;
     private int             xDim,yDim;      //image size
     private int             zDim;           //number of movie frames (stack size)
@@ -52,12 +50,11 @@ public class AVI_Writer implements IjxPlugInFilter {
     private byte[]          bufferWrite;    //output buffer for image data
     private BufferedImage   bufferedImage;  //data source for writing compressed images
     private RaOutputStream  raOutputStream; //output stream for writing compressed images
-    private JPEGImageEncoder jpegEncoder;
     private long[]          sizePointers =  //a stack of the pointers to the chunk sizes (pointers are
                                 new long[5];//  remembered to write the sizes later, when they are known)
     private int             stackPointer;   //points to first free position in sizePointers stack
 
-    public int setup(String arg, IjxImagePlus imp) {
+    public int setup(String arg, ImagePlus imp) {
         this.imp = imp;
         return DOES_ALL+NO_CHANGES;
     }
@@ -70,7 +67,11 @@ public class AVI_Writer implements IjxPlugInFilter {
         if (fileName == null)
             return;
         String fileDir = sd.getDirectory();
-        
+        FileInfo fi = imp.getOriginalFileInfo();
+        if (imp.getStack().isVirtual() && fileDir.equals(fi.directory)&& fileName.equals(fi.fileName)) {
+            IJ.error("AVI Writer", "Virtual stacks cannot be saved in place.");
+            return;
+        }
         try {
             writeImage(imp, fileDir + fileName, COMPRESSION_TYPES[compressionIndex], jpegQuality);
             IJ.showStatus("");
@@ -80,7 +81,7 @@ public class AVI_Writer implements IjxPlugInFilter {
         IJ.showStatus("");
     }
 
-    private boolean showDialog(IjxImagePlus imp) {
+    private boolean showDialog(ImagePlus imp) {
     	String options = Macro.getOptions();
     	if (options!=null && options.indexOf("compression=")==-1)
     		Macro.setOptions("compression=Uncompressed "+options);
@@ -88,13 +89,13 @@ public class AVI_Writer implements IjxPlugInFilter {
  		int decimalPlaces = (int) fps == fps?0:1;
         GenericDialog gd = new GenericDialog("Save as AVI...");
         gd.addChoice("Compression:", COMPRESSION_STRINGS, COMPRESSION_STRINGS[compressionIndex]);
-        gd.addNumericField("JPEG Quality (0-100):", jpegQuality, 0, 3, "");
+        //gd.addNumericField("JPEG Quality (0-100):", jpegQuality, 0, 3, "");
 		gd.addNumericField("Frame Rate:", fps, decimalPlaces, 3, "fps");
         gd.showDialog();                            // user input (or reading from macro) happens here
         if (gd.wasCanceled())                       // dialog cancelled?
             return false;
         compressionIndex = gd.getNextChoiceIndex();
-        jpegQuality = (int)gd.getNextNumber();
+        //jpegQuality = (int)gd.getNextNumber();
         fps = gd.getNextNumber();
         if (fps<=0.5) fps = 0.5;
         if (fps>60.0) fps = 60.0;
@@ -102,8 +103,8 @@ public class AVI_Writer implements IjxPlugInFilter {
 		return true;
     }
 
-    /** Writes an IjxImagePlus (stack) as AVI file. */
-    public void writeImage (IjxImagePlus imp, String path, int compression, int jpegQuality)
+    /** Writes an ImagePlus (stack) as AVI file. */
+    public void writeImage (ImagePlus imp, String path, int compression, int jpegQuality)
             throws IOException {
         if (compression!=NO_COMPRESSION && compression!=JPEG_COMPRESSION && compression!=PNG_COMPRESSION)
             throw new IllegalArgumentException("Unsupported Compression 0x"+Integer.toHexString(compression));
@@ -117,17 +118,37 @@ public class AVI_Writer implements IjxPlugInFilter {
         imp.startTiming();
 
         //  G e t   s t a c k   p r o p e r t i e s
-        int[] dimensions = imp.getDimensions();
         boolean isComposite = imp.isComposite();
-        xDim = dimensions[0];   //image width
-        yDim = dimensions[1];   //image height
-        if (isComposite) dimensions[2] = 1; //don't step through the channels of a composite image
-        zDim = dimensions[2]*dimensions[3]*dimensions[4]; //number of frames in video
-        if (imp.getType()==IjxImagePlus.COLOR_RGB || isComposite || biCompression==JPEG_COMPRESSION)
+        boolean isHyperstack = imp.isHyperStack();
+        xDim = imp.getWidth();   //image width
+        yDim = imp.getHeight();   //image height
+        zDim = imp.getStackSize(); //number of frames in video
+		boolean saveFrames=false, saveSlices=false, saveChannels=false;
+        int channels = imp.getNChannels();
+		int slices = imp.getNSlices();
+		int frames = imp.getNFrames();
+		int channel = imp.getChannel();
+		int slice = imp.getSlice();
+		int frame = imp.getFrame();
+		if (isHyperstack || isComposite) {
+			if (frames>1) {
+				saveFrames = true;
+				zDim = frames;
+			} else if (slices>1) {
+				saveSlices = true;
+				zDim = slices;
+			} else if (channels>1) {
+				saveChannels = true;
+				zDim = channels;
+			} else
+				isHyperstack = false;
+		}
+
+        if (imp.getType()==ImagePlus.COLOR_RGB || isComposite || biCompression==JPEG_COMPRESSION)
             bytesPerPixel = 3;  //color and JPEG-compressed files
         else
             bytesPerPixel = 1;  //gray 8, 16, 32 bit and indexed color: all written as 8 bit
-        //boolean isColor = imp.getType()==IjxImagePlus.COLOR_RGB || isComposite || imp.getProcessor().isColorLut();
+        //boolean isColor = imp.getType()==ImagePlus.COLOR_RGB || isComposite || imp.getProcessor().isColorLut();
         boolean writeLUT = bytesPerPixel==1; // QuickTime reads the avi palette also for PNG
         linePad = 0;
         int minLineLength = bytesPerPixel*xDim;
@@ -247,13 +268,16 @@ public class AVI_Writer implements IjxPlugInFilter {
         //  W r i t e   f r a m e   d a t a
         for (int z=0; z<zDim; z++) {
             IJ.showProgress(z, zDim);
+            IJ.showStatus(z+"/"+zDim);
             ImageProcessor ip = null;      // get the image to write ...
-            if (isComposite) {
-                int frame = z/dimensions[3] + 1;
-                int slice = z%dimensions[3] + 1;
-                //IJ.log("z="+z+"/"+zDim+"; frame="+frame+", slice="+slice);
-                imp.setPosition(imp.getChannel(), slice, frame);
-                ip = new ColorProcessor(imp.getImage());
+            if (isComposite || isHyperstack) {
+				if (saveFrames)
+					imp.setPositionWithoutUpdate(channel, slice, z+1);
+				else if (saveSlices)
+					imp.setPositionWithoutUpdate(channel, z+1, frame);
+				else if (saveChannels)
+					imp.setPositionWithoutUpdate(z+1, slice, frame);
+				ip = new ColorProcessor(imp.getImage());
             } else
                 ip = zDim==1 ? imp.getProcessor() : imp.getStack().getProcessor(z+1);
             int chunkPointer = (int)raFile.getFilePointer();
@@ -276,6 +300,8 @@ public class AVI_Writer implements IjxPlugInFilter {
             //}
         }
         chunkEndWriteSize();                // LIST 'movi' finished (nesting level 1)
+		if (isComposite || isHyperstack)
+			imp.setPosition(channel, slice, frame);
 
         //  W r i t e   I n d e x
         writeString("idx1");    // Write the idx1 chunk
@@ -365,15 +391,14 @@ public class AVI_Writer implements IjxPlugInFilter {
     }
 
     /** Write a frame as jpeg- or png-compressed image */
-    private void writeCompressedFrame(ImageProcessor ip) throws IOException {
-        BufferedImage bufferedImage = ip.getBufferedImage();
-        //IJ.log("BufferdImage Type="+bufferedImage.getType()); // 1=RGB, 13=indexed
-        if (biCompression == JPEG_COMPRESSION) {
-            jpegEncoder = JPEGCodec.createJPEGEncoder(raOutputStream);
-            jpegEncoder.encode(bufferedImage);  
-        } else //if (biCompression == PNG_COMPRESSION)
-            ImageIO.write(bufferedImage, "png", raOutputStream);
-    }
+	private void writeCompressedFrame(ImageProcessor ip) throws IOException {
+		BufferedImage bufferedImage = ip.getBufferedImage();
+		//IJ.log("BufferdImage Type="+bufferedImage.getType()); // 1=RGB, 13=indexed
+		if (biCompression == JPEG_COMPRESSION)
+			ImageIO.write(bufferedImage, "jpeg", raOutputStream);
+		else //if (biCompression == PNG_COMPRESSION)
+			ImageIO.write(bufferedImage, "png", raOutputStream);
+	}
 
     /** Write the color table entries (for 8 bit grayscale or indexed color).
      *  Byte order or LUT entries: blue byte, green byte, red byte, 0 byte */
@@ -392,7 +417,7 @@ public class AVI_Writer implements IjxPlugInFilter {
         raFile.write(lutWrite);
     }
 
-    private double getFrameRate(IjxImagePlus imp) {
+    private double getFrameRate(ImagePlus imp) {
         double rate = imp.getCalibration().fps;
         if (rate==0.0)
             rate = Animator.getFrameRate();

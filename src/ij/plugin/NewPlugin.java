@@ -98,6 +98,7 @@ public class NewPlugin implements PlugIn {
 		switch (type) {
 			case PLUGIN:
 				text += "import ij.plugin.*;\n";
+				text += "import ij.plugin.frame.*;\n";
 				text += "\n";
 				text += "public class "+className+" implements PlugIn {\n";
 				text += "\n";

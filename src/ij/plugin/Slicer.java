@@ -1,13 +1,10 @@
 package ij.plugin;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
 import ij.measure.*;
 import ij.plugin.filter.RGBStackSplitter;
 import ij.util.Tools;
-import ijx.IjxImageStack;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -29,10 +26,10 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 	private double outputZSpacing = 1.0;
 	private int outputSlices = 1;
 	private boolean noRoi;
-	private boolean rgb;
+	private boolean rgb, notFloat;
 	private Vector fields, checkboxes;
 	private Label message;
-	private IjxImagePlus imp;
+	private ImagePlus imp;
 	private double gx1, gy1, gx2, gy2, gLength;
 
 	// Variables used by getIrregularProfile and doIrregularSetup
@@ -47,46 +44,50 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 	private double[] dy;
 
 	public void run(String arg) {
-		 imp = WindowManager.getCurrentImage();
-		 if (imp==null) {
-				IJ.noImage();
-				return;
-		 }
-		 int stackSize = imp.getStackSize();
-		 Roi roi = imp.getRoi();
-		 int roiType = roi!=null?roi.getType():0;
-		 // stack required except for ROI = none or RECT
-		 if (stackSize<2 && roi!=null && roiType!=Roi.RECTANGLE) {
-				IJ.error("Reslice...", "Stack required");
-				return;
-		 }
-		 // permissible ROI types: none,RECT,*LINE
-		 if (roi!=null && roiType!=Roi.RECTANGLE && roiType!=Roi.LINE && roiType!=Roi.POLYLINE && roiType!=Roi.FREELINE) {
-				IJ.error("Reslice...", "Line or rectangular selection required");
-				return;
-		 }
-		 if (!showDialog(imp))
-				return;
-		 long startTime = System.currentTimeMillis();
-		 IjxImagePlus imp2 = null;
-		 rgb = imp.getType()==IjxImagePlus.COLOR_RGB;
-		 imp2 = reslice(imp);
-		 if (imp2==null)
-				return;
-		 ImageProcessor ip = imp.getProcessor();
-		 double min = ip.getMin();
-		 double max = ip.getMax();
-		 if (!rgb) imp2.getProcessor().setMinAndMax(min, max);
-		 imp2.show();
-		 if (noRoi)
-				imp.killRoi();
+		imp = WindowManager.getCurrentImage();
+		if (imp==null) {
+			IJ.noImage();
+			return;
+		}
+		int stackSize = imp.getStackSize();
+		Roi roi = imp.getRoi();
+		int roiType = roi!=null?roi.getType():0;
+		// stack required except for ROI = none or RECT
+		if (stackSize<2 && roi!=null && roiType!=Roi.RECTANGLE) {
+			IJ.error("Reslice...", "Stack required");
+			return;
+		}
+		// permissible ROI types: none,RECT,*LINE
+		if (roi!=null && roiType!=Roi.RECTANGLE && roiType!=Roi.LINE && roiType!=Roi.POLYLINE && roiType!=Roi.FREELINE) {
+			IJ.error("Reslice...", "Line or rectangular selection required");
+			return;
+		}
+		if (!showDialog(imp))
+			return;
+		long startTime = System.currentTimeMillis();
+		ImagePlus imp2 = null;
+		rgb = imp.getType()==ImagePlus.COLOR_RGB;
+		notFloat = !rgb && imp.getType()!=ImagePlus.GRAY32;
+		if (imp.isHyperStack())
+			imp2 = resliceHyperstack(imp);
 		else
-				imp.draw();
+			imp2 = reslice(imp);
+		if (imp2==null)
+			return;
+		ImageProcessor ip = imp.getProcessor();
+		double min = ip.getMin();
+		double max = ip.getMax();
+		if (!rgb) imp2.getProcessor().setMinAndMax(min, max);
+		imp2.show();
+		if (noRoi)
+			imp.killRoi();
+		else
+			imp.draw();
 		IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
 	}
 
-	public IjxImagePlus reslice(IjxImagePlus imp) {
-		 IjxImagePlus imp2;
+	public ImagePlus reslice(ImagePlus imp) {
+		 ImagePlus imp2;
 		 Roi roi = imp.getRoi();
 		 int roiType = roi!=null?roi.getType():0;
 		 Calibration origCal = imp.getCalibration();
@@ -105,7 +106,7 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 				String status = imp.getStack().isVirtual()?"":null;
 				IJ.showStatus("Reslice...");
 				ImageProcessor ip2 = getSlice(imp, 0.0, 0.0, 0.0, 0.0, status);
-				imp2 = IJ.getFactory().newImagePlus("Reslice of "+imp.getShortTitle(), ip2);
+				imp2 = new ImagePlus("Reslice of "+imp.getShortTitle(), ip2);
 		 }
 		 if (nointerpolate) // restore calibration
 				imp.setCalibration(origCal);
@@ -124,6 +125,7 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 			horizontal  = (l.y2-l.y1)==0;
 			vertical = (l.x2-l.x1)==0;
 		}
+		if (imp2==null) return null;
 		imp2.setCalibration(imp.getCalibration());
 		Calibration cal = imp2.getCalibration();
 		if (horizontal) {
@@ -138,10 +140,10 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 			cal.pixelDepth = origCal.pixelWidth*outputZSpacing;;
 		} else { // oblique line, polyLine or freeline
 				if (origCal.pixelHeight==origCal.pixelWidth) {
-					cal.pixelWidth=cal.pixelHeight=origCal.pixelDepth/zSpacing;
+					cal.pixelWidth = cal.pixelHeight=origCal.pixelDepth/zSpacing;
 					cal.pixelDepth = origCal.pixelWidth*outputZSpacing;
 				} else {
-					cal.pixelWidth=cal.pixelHeight=cal.pixelDepth=1.0;
+					cal.pixelWidth = cal.pixelHeight=cal.pixelDepth=1.0;
 					cal.setUnit("pixel");
 				}
 		 }
@@ -154,50 +156,120 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 		 return imp2;
 	}
 
-	boolean showDialog(IjxImagePlus imp) {
-		 Calibration cal = imp.getCalibration();
-		 String units = cal.getUnits();
-		 if (cal.pixelWidth==0.0)
-				cal.pixelWidth = 1.0;
-		 double outputSpacing = cal.pixelDepth;
-		 Roi roi = imp.getRoi();
-		 boolean line = roi!=null && roi.getType()==Roi.LINE;
-		 if (line)
-				saveLineInfo(roi);
-		 GenericDialog gd = new GenericDialog("Reslice");
-		 gd.addNumericField("Input Z Spacing ("+units+"):", cal.pixelDepth, 3);
-		 gd.addNumericField("Output Z Spacing ("+units+"):", outputSpacing, 3);
-		 if (line)
-				gd.addNumericField("Slice Count:", outputSlices, 0);
-		 else
-				gd.addChoice("Start At:", starts, startAt);
-		 gd.addCheckbox("Flip Vertically", flip);
-		 gd.addCheckbox("Rotate 90 Degrees", rotate);
-		 gd.addCheckbox("Avoid Interpolation", nointerpolate);
-		 gd.setInsets(0, 32, 10);
-		 gd.addMessage("(use 1.0 for spacings)");
-		 gd.addMessage(getSize(cal.pixelDepth,outputSpacing,outputSlices)+"				");
-		 fields = gd.getNumericFields();
-		 for (int i=0; i<fields.size(); i++)
-				((TextField)fields.elementAt(i)).addTextListener(this);
+	ImagePlus resliceHyperstack(ImagePlus imp) {
+		int channels = imp.getNChannels();
+		int slices = imp.getNSlices();
+		int frames = imp.getNFrames();
+		if (slices==1) {
+			IJ.error("Reslice...", "Cannot reslice z=1 hyperstacks");
+			return null;
+		}
+		int c1 = imp.getChannel();
+		int z1 = imp.getSlice();
+		int t1 = imp.getFrame();
+		int width = imp.getWidth();
+		int height = imp.getHeight();
+		ImagePlus imp2 = null;
+		ImageStack stack2 = null;
+		Roi roi = imp.getRoi();
+		for (int t=1; t<=frames; t++) {
+			for (int c=1; c<=channels; c++) {
+				ImageStack tmp1Stack = new ImageStack(width, height);
+				for (int z=1; z<=slices; z++) {
+					imp.setPositionWithoutUpdate(c, z, t);
+					tmp1Stack.addSlice(null, imp.getProcessor());
+				}
+				ImagePlus tmp1 = new ImagePlus("tmp", tmp1Stack);
+				tmp1.setCalibration(imp.getCalibration());
+				tmp1.setRoi(roi);
+				ImagePlus tmp2 = reslice(tmp1);
+				int slices2 = tmp2.getStackSize();
+				if (imp2==null) {
+					imp2 = tmp2.createHyperStack("Reslice of "+imp.getTitle(), channels, slices2, frames, tmp2.getBitDepth());
+					stack2 = imp2.getStack();
+				}
+				ImageStack tmp2Stack = tmp2.getStack();
+				for (int z=1; z<=slices2; z++) {
+					imp.setPositionWithoutUpdate(c, z, t);
+					int n2 = imp2.getStackIndex(c, z, t);
+					stack2.setPixels(tmp2Stack.getPixels(z), n2);
+				}
+			}
+		}
+		imp.setPosition(c1, z1, t1);
+		if (channels>1 && imp.isComposite()) {
+			imp2 = new CompositeImage(imp2, ((CompositeImage)imp).getMode());
+			((CompositeImage)imp2).copyLuts(imp);
+		}
+		return imp2;
+	}
+
+	boolean showDialog(ImagePlus imp) {
+		Calibration cal = imp.getCalibration();
+		if (cal.pixelDepth<0.0)
+			cal.pixelDepth = -cal.pixelDepth;
+		String units = cal.getUnits();
+		if (cal.pixelWidth==0.0)
+			cal.pixelWidth = 1.0;
+		inputZSpacing = cal.pixelDepth;
+		double outputSpacing = cal.pixelDepth;
+		Roi roi = imp.getRoi();
+		boolean line = roi!=null && roi.getType()==Roi.LINE;
+		if (line) saveLineInfo(roi);
+		String macroOptions = Macro.getOptions();
+		if (macroOptions!=null && macroOptions.indexOf("output=")!=-1) {
+			Macro.setOptions(macroOptions.replaceAll("output=", "slice="));
+			Macro.setOptions(macroOptions.replaceAll("slice=", "slice_count="));
+		}
+		GenericDialog gd = new GenericDialog("Reslice");
+		//gd.addNumericField("Input Z Spacing ("+units+"):", cal.pixelDepth, 3);
+		gd.addNumericField("Slice Spacing ("+units+"):", outputSpacing, 3);
+		if (line)
+			gd.addNumericField("Slice_Count:", outputSlices, 0);
+		else
+			gd.addChoice("Start At:", starts, startAt);
+		gd.addCheckbox("Flip Vertically", flip);
+		gd.addCheckbox("Rotate 90 Degrees", rotate);
+		gd.addCheckbox("Avoid Interpolation", nointerpolate);
+		gd.setInsets(0, 32, 0);
+		gd.addMessage("(use 1.0 for spacings)");
+		gd.setInsets(15, 0, 0);
+		gd.addMessage("Voxel Size: "+d2s(cal.pixelWidth)+"x"+d2s(cal.pixelHeight)
+			+"x"+d2s(cal.pixelDepth)+" "+cal.getUnit());
+		gd.setInsets(5, 0, 0);
+		gd.addMessage("Output Size: "+getSize(cal.pixelDepth,outputSpacing,outputSlices)+"				");
+		fields = gd.getNumericFields();
+		for (int i=0; i<fields.size(); i++)
+			((TextField)fields.elementAt(i)).addTextListener(this);
 		checkboxes = gd.getCheckboxes();
-			((Checkbox)checkboxes.elementAt(2)).addItemListener(this);
-		 message = (Label)gd.getMessage();
-		 gd.showDialog();
-		 if (gd.wasCanceled())
-				return false;
-		 inputZSpacing = gd.getNextNumber();
-		 if (cal.pixelDepth==0.0) cal.pixelDepth = 1.0;
-		 outputZSpacing = gd.getNextNumber()/cal.pixelWidth;
-		 if (line) {
-				outputSlices = (int)gd.getNextNumber();
-				imp.setRoi(roi);
-		 } else
-				startAt = gd.getNextChoice();
-		 flip = gd.getNextBoolean();
-		 rotate = gd.getNextBoolean();
-		 nointerpolate = gd.getNextBoolean();
+		((Checkbox)checkboxes.elementAt(2)).addItemListener(this);
+		message = (Label)gd.getMessage();
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return false;
+		//inputZSpacing = gd.getNextNumber();
+		//if (cal.pixelDepth==0.0) cal.pixelDepth = 1.0;
+		outputZSpacing = gd.getNextNumber()/cal.pixelWidth;
+		if (line) {
+			outputSlices = (int)gd.getNextNumber();
+			imp.setRoi(roi);
+		} else
+			startAt = gd.getNextChoice();
+		flip = gd.getNextBoolean();
+		rotate = gd.getNextBoolean();
+		nointerpolate = gd.getNextBoolean();
 		return true;
+	}
+	
+	String d2s(double n) {
+		String s;
+		if (n==(int)n)
+			s = ResultsTable.d2s(n, 0);
+		else
+			s = ResultsTable.d2s(n, 2);
+		if (s.indexOf(".")!=-1 && s.endsWith("0"))
+			s = s.substring(0, s.length()-1);
+		return s;
 	}
 
 	void saveLineInfo(Roi roi) {
@@ -209,7 +281,7 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 		 gLength = line.getRawLength();
 	}
 
-	IjxImagePlus resliceRectOrLine(IjxImagePlus imp) {
+	ImagePlus resliceRectOrLine(ImagePlus imp) {
 		 double x1 = 0.0;
 		 double y1 = 0.0;
 		 double x2 = 0.0;
@@ -274,13 +346,14 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 				return null;
 
 		 if (outputSlices==0) {
-				IJ.error("Reslicer", "Output Z spacing ("+IJ.d2s(outputZSpacing,0)+" pixels) is too large.");
+				IJ.error("Reslicer", "Output Z spacing ("+IJ.d2s(outputZSpacing,0)+" pixels) is too large.\n"
+					+"Is the voxel size in Image>Properties correct?.");
 				return null;
 		 }
 		 boolean virtualStack = imp.getStack().isVirtual();
 		 String status = null;
-		 IjxImagePlus imp2 = null;
-		 IjxImageStack stack2 = null;
+		 ImagePlus imp2 = null;
+		 ImageStack stack2 = null;
 		 boolean isStack = imp.getStackSize()>1;
 		 IJ.resetEscape();
 		 for (int i=0; i<outputSlices; i++)	{
@@ -298,29 +371,29 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 				if (IJ.escapePressed())
 					{IJ.beep(); imp.draw(); return null;}
 		 }
-		 return IJ.getFactory().newImagePlus("Reslice of "+imp.getShortTitle(), stack2);
+		 return new ImagePlus("Reslice of "+imp.getShortTitle(), stack2);
 	}
 
-	IjxImageStack createOutputStack(IjxImagePlus imp, ImageProcessor ip) {
+	ImageStack createOutputStack(ImagePlus imp, ImageProcessor ip) {
 		 int bitDepth = imp.getBitDepth();
 		 int w2=ip.getWidth(), h2=ip.getHeight(), d2=outputSlices;
 		 int flags = NewImage.FILL_BLACK + NewImage.CHECK_AVAILABLE_MEMORY;
-		 IjxImagePlus imp2 = NewImage.createImage("temp", w2, h2, d2, bitDepth, flags);
+		 ImagePlus imp2 = NewImage.createImage("temp", w2, h2, d2, bitDepth, flags);
 		 if (imp2!=null && imp2.getStackSize()==d2)
 				IJ.showStatus("Reslice... (press 'Esc' to abort)");
 		 if (imp2==null)
 				return null;
 		 else {
-				IjxImageStack stack2 = imp2.getStack();
+				ImageStack stack2 = imp2.getStack();
 				stack2.setColorModel(ip.getColorModel());
 				return stack2;
 		 }
 	}
 
-	ImageProcessor getSlice(IjxImagePlus imp, double x1, double y1, double x2, double y2, String status) {
+	ImageProcessor getSlice(ImagePlus imp, double x1, double y1, double x2, double y2, String status) {
 		 Roi roi = imp.getRoi();
 		 int roiType = roi!=null?roi.getType():0;
-		 IjxImageStack stack = imp.getStack();
+		 ImageStack stack = imp.getStack();
 		 int stackSize = stack.getSize();
 		 ImageProcessor ip,ip2=null;
 		 float[] line = null;
@@ -400,7 +473,9 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 				for (int j=0; j<=n2; j++) {
 					index = (int)distance+j;
 					if (index<values.length) {
-						 if (rgb) {
+						 if (notFloat)
+								values[index] = (float)ip.getInterpolatedPixel(rx, ry);
+						 else if (rgb) {
 								int rgbPixel = ((ColorProcessor)ip).getInterpolatedRGBPixel(rx, ry);
 								values[index] = Float.intBitsToFloat(rgbPixel&0xffffff);
 						 } else
@@ -468,7 +543,9 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 		 double rx = x1;
 		 double ry = y1;
 		 for (int i=0; i<n; i++) {
-				if (rgb) {
+		 		if (notFloat)
+					data[i] = (float)ip.getInterpolatedPixel(rx, ry);
+				else if (rgb) {
 					int rgbPixel = ((ColorProcessor)ip).getInterpolatedRGBPixel(rx, ry);
 					data[i] = Float.intBitsToFloat(rgbPixel&0xffffff);
 				} else
@@ -489,7 +566,9 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 		 int rx = x1;
 		 int ry = y1;
 		 for (int i=0; i<n; i++) {
-				if (rgb) {
+		 		if (notFloat)
+					data[i] = (float)ip.getPixel(rx, ry);
+				else if (rgb) {
 					int rgbPixel = ((ColorProcessor)ip).getPixel(rx, ry);
 					data[i] = Float.intBitsToFloat(rgbPixel&0xffffff);
 				} else
@@ -500,8 +579,8 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 		 return data;
 	}
 
-	void drawLine(double x1, double y1, double x2, double y2, IjxImagePlus imp) {
-		 IjxImageCanvas ic = imp.getCanvas();
+	void drawLine(double x1, double y1, double x2, double y2, ImagePlus imp) {
+		 ImageCanvas ic = imp.getCanvas();
 		 if (ic==null) return;
 		 Graphics g = ic.getGraphics();
 		 g.setColor(Roi.getColor());
@@ -514,22 +593,23 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 	}
 
 	public void itemStateChanged(ItemEvent e) {
+		if (IJ.isMacOSX()) IJ.wait(100);
 		Checkbox cb = (Checkbox)checkboxes.elementAt(2);
         nointerpolate = cb.getState();
         updateSize();
 	}
 
 	void updateSize() {
-		 double inSpacing = Tools.parseDouble(((TextField)fields.elementAt(0)).getText(),0.0);
-		 double outSpacing = Tools.parseDouble(((TextField)fields.elementAt(1)).getText(),0.0);
+		 //double inSpacing = Tools.parseDouble(((TextField)fields.elementAt(0)).getText(),0.0);
+		 double outSpacing = Tools.parseDouble(((TextField)fields.elementAt(0)).getText(),0.0);
 		 int count = 0;
-		 boolean lineSelection = fields.size()==3;
+		 boolean lineSelection = fields.size()==2;
 		 if (lineSelection) {
-				count = (int)Tools.parseDouble(((TextField)fields.elementAt(2)).getText(), 0.0);
+				count = (int)Tools.parseDouble(((TextField)fields.elementAt(1)).getText(), 0.0);
 				if (count>0) makePolygon(count, outSpacing);
 		 }
-		 String size = getSize(inSpacing, outSpacing, count);
-		 message.setText(size);
+		 String size = getSize(inputZSpacing, outSpacing, count);
+		 message.setText("Output Size: "+size);
 	}
 
 	String getSize(double inSpacing, double outSpacing, int count) {
@@ -545,22 +625,25 @@ public class Slicer implements PlugIn, TextListener, ItemListener {
 	}
 
 	void makePolygon(int count, double outSpacing) {
-		 int[] x = new int[4];
-		 int[] y = new int[4];
-		 x[0] = (int)gx1;
-		 y[0] = (int)gy1;
-		 x[1] = (int)gx2;
-		 y[1] = (int)gy2;
-		 double dx = gx2 - gx1;
-		 double dy = gy2 - gy1;
-		 double nrm = Math.sqrt(dx*dx + dy*dy)/outSpacing;
-		 double xInc = -(dy/nrm);
-		 double yInc = (dx/nrm);
-		 x[2] = x[1] + (int)(xInc*count);
-		 y[2] = y[1] + (int)(yInc*count);
-		 x[3] = x[0] + (int)(xInc*count);
-		 y[3] = y[0] + (int)(yInc*count);
-		 imp.setRoi(new PolygonRoi(x, y, 4, PolygonRoi.FREEROI));
+		int[] x = new int[4];
+		int[] y = new int[4];
+		Calibration cal = imp.getCalibration();
+		double cx = cal.pixelWidth;	//corrects preview for x calibration
+		double cy = cal.pixelHeight;	//corrects preview for y calibration
+		x[0] = (int)gx1;
+		y[0] = (int)gy1;
+		x[1] = (int)gx2;
+		y[1] = (int)gy2;
+		double dx = gx2 - gx1;
+		double dy = gy2 - gy1;
+		double nrm = Math.sqrt(dx*dx + dy*dy)/outSpacing;
+		double xInc = -(dy/(cx*nrm));	//cx scales the x increment
+		double yInc = (dx/(cy*nrm));	//cy scales the y increment
+		x[2] = x[1] + (int)(xInc*count);
+		y[2] = y[1] + (int)(yInc*count);
+		x[3] = x[0] + (int)(xInc*count);
+		y[3] = y[0] + (int)(yInc*count);
+		imp.setRoi(new PolygonRoi(x, y, 4, PolygonRoi.FREEROI));
 	}
 
 	int getOutputStackSize(double inSpacing, double outSpacing, int count) {

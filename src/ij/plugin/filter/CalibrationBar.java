@@ -1,7 +1,5 @@
 package ij.plugin.filter;
-//import ij.plugin.filter.IjxPlugInFilter;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
+//import ij.plugin.filter.PlugInFilter;
 import ij.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -26,7 +24,7 @@ import ij.measure.*;
     July 2002: Modified by Daniel Marsh and renamed CalibrationBar.
 */
 
-public class CalibrationBar implements IjxPlugInFilter {
+public class CalibrationBar implements PlugInFilter {
     final static int BAR_LENGTH = 128;
     final static int BAR_THICKNESS = 12;
     final static int XMARGIN = 10;
@@ -47,8 +45,8 @@ public class CalibrationBar implements IjxPlugInFilter {
     static int fontSize = 12;
     static int decimalPlaces = 0;
 
-    IjxImagePlus imp;
-    IjxImagePlus impOriginal;
+    ImagePlus imp;
+    ImagePlus impOriginal;
 
     LiveDialog gd;
 
@@ -75,13 +73,13 @@ public class CalibrationBar implements IjxPlugInFilter {
     String boxOutlineColor = colors[8];
     String barOutlineColor = colors[3];
     
-    IjxImagePlus impData;
+    ImagePlus impData;
     ImageProcessor ip;
     String[] fieldNames = null;
     int insetPad;
     boolean decimalPlacesChanged;
 
-    public int setup(String arg, IjxImagePlus imp) {
+    public int setup(String arg, ImagePlus imp) {
         if(imp!=null) {
             this.imp = imp;
             impData = imp;
@@ -92,13 +90,13 @@ public class CalibrationBar implements IjxPlugInFilter {
     }
 
     public void run(ImageProcessor ipPassed) {
-        IjxImageCanvas ic = imp.getCanvas();
+        ImageCanvas ic = imp.getCanvas();
         double mag = (ic!=null)?ic.getMagnification():1.0;
         if (zoom<=1 && mag<1)
         	zoom = (double) 1.0/mag;
         ip = ipPassed.duplicate().convertToRGB();
         impOriginal = imp;
-        imp = IJ.getFactory().newImagePlus(imp.getTitle()+" with bar", ip);
+        imp = new ImagePlus(imp.getTitle()+" with bar", ip);
         imp.setCalibration(impData.getCalibration());
         if(impOriginal.getRoi()!=null)
             imp.setRoi(impOriginal.getRoi());
@@ -347,7 +345,7 @@ public class CalibrationBar implements IjxPlugInFilter {
     	drawColorBar(imp, -1, -1);
     }
         
-    public void drawColorBar(IjxImagePlus imp, int x, int y) {
+    public void drawColorBar(ImagePlus imp, int x, int y) {
     	Roi roi = impOriginal.getRoi();
     	if (roi!=null)
     		impOriginal.killRoi();

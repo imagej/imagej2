@@ -1,6 +1,5 @@
 package ij.gui;
 import ij.macro.Interpreter;
-
 import java.awt.*;
 import java.awt.image.*;
 
@@ -14,10 +13,11 @@ public class ProgressBar extends Canvas {
 	private double percent;
     private long lastTime = 0;
 	private boolean showBar;
+	private boolean batchMode;
 	
 	private Color barColor = Color.gray;
 	private Color fillColor = new Color(204,204,255);
-	private Color backgroundColor = ij.IJ.backgroundColor;
+	private Color backgroundColor = ij.ImageJ.backgroundColor;
 	private Color frameBrighter = backgroundColor.brighter();
 	private Color frameDarker = backgroundColor.darker();
 
@@ -56,7 +56,7 @@ public class ProgressBar extends Canvas {
      * batch mode.
      */
     public void show(double percent, boolean showInBatchMode) {
-        if (!showInBatchMode && Interpreter.isBatchMode()) return;
+        if (!showInBatchMode && (batchMode||Interpreter.isBatchMode())) return;
         if (percent>=1.0) {     //clear the progress bar
 			percent = 0.0;
 			showBar = false;
@@ -73,7 +73,7 @@ public class ProgressBar extends Canvas {
 
  	/**	Updates the progress bar, where the length of the bar is set to
     *  (<code>currentValue+1)/finalValue</code> of the maximum bar length.
-    *  The bar is erased if <code>currentValue&gt;=finalValue</code>.
+    *  The bar is erased if <code>currentValue&gt;=finalValue-1</code>.
     */
     public void show(int currentIndex, int finalIndex) {
         show((currentIndex+1.0)/(double)finalIndex, true);
@@ -108,6 +108,10 @@ public class ProgressBar extends Canvas {
     
     public Dimension getPreferredSize() {
         return new Dimension(canvasWidth, canvasHeight);
+    }
+
+    public void setBatchMode(boolean batchMode) {
+        this.batchMode = batchMode;
     }
 
 }

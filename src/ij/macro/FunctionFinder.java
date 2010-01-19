@@ -1,6 +1,5 @@
 package ij.macro;
 import ij.*;
-import ijx.gui.IjxWindow;
 import ij.plugin.*;
 import ij.plugin.frame.*;
 import java.awt.*;
@@ -43,12 +42,12 @@ public class FunctionFinder implements TextListener,  WindowListener, KeyListene
             }
         }
         if (c==0) {
-        	IJ.error("Image/macros/functions.html is corrupted");
+        	IJ.error("ImageJ/macros/functions.html is corrupted");
         	return;
         }
         
-        //ImageJ imageJ = IJ.getInstance();
-        d = new Dialog(IJ.getTopComponentFrame(), "Built-in Functions");
+        ImageJ imageJ = IJ.getInstance();
+        d = new Dialog(imageJ, "Built-in Functions");
         d.setLayout(new BorderLayout());
         d.addWindowListener(this);
         Panel northPanel = new Panel();
@@ -63,7 +62,7 @@ public class FunctionFinder implements TextListener,  WindowListener, KeyListene
         d.add(completions, BorderLayout.CENTER);
         d.pack();
         
-        IjxWindow frame= WindowManager.getFrontWindow();
+        Frame frame = WindowManager.getFrontWindow();
         if (frame==null) return;
         java.awt.Point posi=frame.getLocationOnScreen();
         int initialX = (int)posi.getX() + 38;
@@ -90,7 +89,7 @@ public class FunctionFinder implements TextListener,  WindowListener, KeyListene
     }
     
     public void edPaste(String arg) {
-        IjxWindow frame = WindowManager.getFrontWindow();
+        Frame frame = WindowManager.getFrontWindow();
         try {
             TextArea ta = ((Editor)frame).getTextArea();
             int start = ta.getSelectionStart( );

@@ -1,5 +1,4 @@
 package ij.gui;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.geom.*;
@@ -76,6 +75,7 @@ public class ShapeRoi extends Roi {
 	private boolean forceAngle = false;
 	
 	private Vector savedRois;
+	private static Stroke defaultStroke = new BasicStroke();
 
 
 	/** Constructs a ShapeRoi from an Roi. */
@@ -121,15 +121,7 @@ public class ShapeRoi extends Roi {
 		this.forceTrace = forceTrace;
 		this.maxPoly= maxPoly;
 		this.flatten = flatten;
-		state = r.getState();
-		setImage(r.imp);
 		shape = roiToShape((Roi)r.clone());
-        //IJ.log("ShapeRoi:"+x+"  "+y);
-		if(ic!=null) {
-			Graphics g = ic.getGraphics();
-			draw(g);
-			g.dispose();
-		}
 	}
 
 	/** Constructs a ShapeRoi from an array of variable length path segments. Each
@@ -592,73 +584,57 @@ public class ShapeRoi extends Roi {
 		return shape.contains(x-this.x, y-this.y);
 	}
 
-	/**Returns the maximum Feret diameter (i.e., the largest distance between the shape's boundaries).
-	 *<br> This method returns the maximum between the width or height of the bounding rectangles
-	 * of the rotating shape with one degree up to 270 degres, which effectively means the maximum
-	 * of its projections in R2.
-	 */
-	public double getFeretsDiameter() {
-		if(shape == null) return 0.0;
-		double result = 0.0;
-		double pw = 1.0, ph = 1.0;
-		if(imp!=null) {
+	/** Caculates "Feret" (maximum caliper width) and "MinFeret" (minimum caliper width). */	
+	public double[] getFeretValues() {
+		double min=Double.MAX_VALUE, diameter=0.0, angle=0.0;
+		int p1=0, p2=0;
+		double pw=1.0, ph=1.0;
+		if (imp!=null) {
 			Calibration cal = imp.getCalibration();
 			pw = cal.pixelWidth;
 			ph = cal.pixelHeight;
 		}
-		Rectangle2D sr = shape.getBounds2D();
-		double cx = sr.getX() + sr.getWidth()/2;
-		double cy = sr.getY() + sr.getHeight()/2;
-		double alpha = 1.0;
-		Rectangle2D r;
+		Shape shape = getShape();
 		Shape s = null;
+		Rectangle2D r = shape.getBounds2D();
+		double cx = r.getX() + r.getWidth()/2;
+		double cy = r.getY() + r.getHeight()/2;
 		AffineTransform at = new AffineTransform();
-		for (int i=0; i<271; i++) {
-			at.rotate(1.0);
+		at.translate(cx, cy);
+		for (int i=0; i<181; i++) {
+			at.rotate(Math.PI/180.0);
 			s = at.createTransformedShape(shape);
 			r = s.getBounds2D();
-			result = Math.max(result, Math.max(pw*r.getWidth(), ph*r.getHeight()));
+			double max2 = Math.max(r.getWidth(), r.getHeight());
+			if (max2>diameter) {
+				diameter = max2*pw;
+				//angle = i;
+			}
+			double min2 = Math.min(r.getWidth(), r.getHeight());
+			min = Math.min(min, min2);
 		}
-		return result;
+		if (pw!=ph) {
+			diameter = 0.0;
+			angle = 0.0;
+		}
+		if (pw==ph)
+			min *= pw;
+		else {
+			min = 0.0;
+			angle = 0.0;
+		}
+		double[] a = new double[5];
+		a[0] = diameter;
+		a[1] = angle;
+		a[2] = min;
+		a[3] = 0.0; // FeretX
+		a[4] = 0.0; // FeretY
+		return a;
 	}
-
-	/**Returns the minimum Feret diameter (i.e., the smallest distance between the shape's boundaries).
-	 *<br> This method returns the minimum between the width or height of the bounding rectangles
-	 * of the rotating shape with one degree up to 270 degres, which effectively means the minimum
-	 * of its projections in R2.
-	 */
-	/*
-	public double getMinFeret() {
-		if(shape == null) return 0.0;
-		double result = 0.0;
-		double pw = 1.0, ph = 1.0;
-		if(imp!=null) {
-			Calibration cal = imp.getCalibration();
-			pw = cal.pixelWidth;
-			ph = cal.pixelHeight;
-		}
-		Rectangle2D sr = shape.getBounds2D();
-		double cx = sr.getX() + sr.getWidth()/2;
-		double cy = sr.getY() + sr.getHeight()/2;
-		double alpha = 1.0;
-		double diam = 0.0;
-		Rectangle2D r;
-		Shape s = null;
-		AffineTransform at = new AffineTransform();
-		for (int i=0; i<271; i++) {
-			at.rotate(1.0);
-			s = at.createTransformedShape(shape);
-			r = s.getBounds2D();
-			diam = Math.min(pw*r.getWidth(), ph*r.getHeight());
-			if(i==0) result = diam;
-			else result = Math.min(result,diam);
-		}
-		return result;
-	}
-	*/
 
 	/**Returns the length of this shape (perimeter, if shape is closed). */
 	public double getLength() {
+		/*
 		if(shape==null) return 0.0;
 		Rectangle2D r2d = shape.getBounds2D();
 		double w = r2d.getWidth();
@@ -672,6 +648,8 @@ public class ShapeRoi extends Roi {
 		parsePath(pIter, par, null, null, null);
 		flatten = false;
 		return par[0];
+		*/
+		return 0.0;
 	}
 
 	/**Returns a flattened version of the path iterator for this ROi's shape*/
@@ -1058,22 +1036,31 @@ public class ShapeRoi extends Roi {
 
 	/** Non-destructively draws the shape of this object on the associated ImagePlus. */
 	public void draw(Graphics g) {
-		if(ic==null) return;
+		if (ic==null) return;
+		Color color =  strokeColor!=null? strokeColor:ROIColor;
+		if (fillColor!=null) color = fillColor;
+		g.setColor(color);
 		AffineTransform aTx = (((Graphics2D)g).getDeviceConfiguration()).getDefaultTransform();
-		g.setColor(instanceColor!=null?instanceColor:ROIColor);
 		if (stroke!=null) ((Graphics2D)g).setStroke(stroke);
 		mag = ic.getMagnification();
 		Rectangle r = ic.getSrcRect();
 		aTx.setTransform(mag, 0.0, 0.0, mag, -r.x*mag, -r.y*mag);
         aTx.translate(x, y);
-		((Graphics2D)g).draw(aTx.createTransformedShape(shape));
-		if (Toolbar.getToolId()==Toolbar.OVAL) drawRoiBrush(g);
-		showStatus();
+		Graphics2D g2d = (Graphics2D)g;
+		if (fillColor!=null)
+			g2d.fill(aTx.createTransformedShape(shape));
+		else
+			g2d.draw(aTx.createTransformedShape(shape));
+		if (stroke!=null) g2d.setStroke(defaultStroke);
+		if (Toolbar.getToolId()==Toolbar.OVAL)
+			drawRoiBrush(g);
+		if (imp!=null&&imp.getRoi()!=null) showStatus();
 		if (updateFullWindow) 
 			{updateFullWindow = false; imp.draw();}
 	}
 
 	public void drawRoiBrush(Graphics g) {
+		g.setColor(ROIColor);
 		int size = Toolbar.getBrushSize();
 		if (size==0) return;
 		int flags = ic.getModifiers();
@@ -1119,12 +1106,16 @@ public class ShapeRoi extends Roi {
 		if(shape==null) return null;
 		if (cachedMask!=null && cachedMask.getPixels()!=null)
 			return cachedMask;
+		//Rectangle r = getBounds();
+		//if (r.x<0 || r.y<0) {
+		//	if (r.x<0) r.x = 0;
+		//	if (r.y<0) r.y = 0;
+		//	ShapeRoi clipRect = new ShapeRoi(new Roi(r.x,r.y,r.width,r.height));
+		//	setShape(getShape(this.or(clipRect)));
+		//}
 		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 		Graphics2D g2d = bi.createGraphics();
 		g2d.setColor(Color.white);
-		//AffineTransform at = new AffineTransform();
-		//at.translate(-x, -y);
-		//g2d.fill(at.createTransformedShape(shape));
 		g2d.fill(shape);
 		Raster raster = bi.getRaster();
 		DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();		
@@ -1133,33 +1124,10 @@ public class ShapeRoi extends Roi {
         return cachedMask;
 	}
 
-	/**********************************************************************************/
-	/***                               Field accessors                             ****/
-	/**********************************************************************************/
-
-	/**Retrieves the value of {@link #forceTrace} flag.*/
-	//public boolean getForceTrace() { return forceTrace; }
-
-	/**Retrieves the value of {@link #forceAngle} flag.*/
-	//public boolean getForceAngle() { return forceAngle; }
-
-	/**Retrieves the value of {@link #flatten} flag.*/
-	//public boolean getFlatten() { return flatten; }
-
-	/**Retrieves the value of {@link #flatness}*/
-	//public double getFlatness() { return flatness; }
-
-	/**Retrieves the value of {@link #maxerror}*/
-	//public double getMaxError() { return maxerror;}
-
-	/**Retrieves the value of {@link #maxPoly}*/
-	//public int getMaxPoly() { return maxPoly; }
-
-	/**@return <strong><code>false</code></strong> if type equals {@link #NO_TYPE}. */
-	//public boolean isValid() { return type!=NO_TYPE; }
-
-	/**Retrieves a reference to the shape of <strong><code>this</code></strong>. */
-	Shape getShape(){ return shape; }
+	/**Returns a reference to the Shape object encapsulated by this ShapeRoi. */
+	public Shape getShape() {
+		return shape;
+	}
 
 	/**Sets the <code>java.awt.Shape</code> object encapsulated by <strong><code>this</code></strong>
 	 * to the argument.
@@ -1202,7 +1170,7 @@ public class ShapeRoi extends Roi {
 		int x = Integer.parseInt(sx);
 		int y = Integer.parseInt(sy);
 		int width = Integer.parseInt(swidth);
-		IjxImagePlus img = IJ.getImage();
+		ImagePlus img = IJ.getImage();
 		if (img==null) return;
 		Roi roi = img.getRoi();
 		if (roi!=null) {
@@ -1218,7 +1186,7 @@ public class ShapeRoi extends Roi {
 		int x = Integer.parseInt(sx);
 		int y = Integer.parseInt(sy);
 		int width = Integer.parseInt(swidth);
-		IjxImagePlus img = IJ.getImage();
+		ImagePlus img = IJ.getImage();
 		if (img==null) return;
 		Roi roi = img.getRoi();
 		if (roi!=null) {
@@ -1231,6 +1199,16 @@ public class ShapeRoi extends Roi {
 
 	static ShapeRoi getCircularRoi(int x, int y, int width) {
 		return new ShapeRoi(new OvalRoi(x - width / 2, y - width / 2, width, width));
+	}
+
+	/** Always returns -1 since ShapeRois do not have handles. */
+	public int isHandle(int sx, int sy) {
+		   return -1;
+	}
+	
+	/** Always returns null. */
+	public Polygon getConvexHull() {
+		return null;
 	}
 
     /*

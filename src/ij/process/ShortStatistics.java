@@ -34,7 +34,7 @@ public class ShortStatistics extends ImageStatistics {
 		getStatistics(ip, hist, (int)min, (int)max, cTable);
 		if ((mOptions&MODE)!=0)
 			getMode();
-		if ((mOptions&ELLIPSE)!=0)
+		if ((mOptions&ELLIPSE)!=0 || (mOptions&SHAPE_DESCRIPTORS)!=0)
 			fitEllipse(ip);
 		else if ((mOptions&CENTROID)!=0)
 			getCentroid(ip, minThreshold, maxThreshold);
@@ -53,7 +53,6 @@ public class ShortStatistics extends ImageStatistics {
 		while ((hist[min]==0) && (min<65535))
 			min++;
 		this.min = min;
-			
 		int max = maxThreshold;
 		while ((hist[max]==0) && (max>0))
 			max--;
