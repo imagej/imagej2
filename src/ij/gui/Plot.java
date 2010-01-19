@@ -1,9 +1,12 @@
 package ij.gui;
-import ijx.IjxImagePlus;
 import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+import java.util.*;
 import ij.*;
 import ij.process.*;
 import ij.util.*;
+import ij.plugin.filter.Analyzer;
 import ij.macro.Interpreter;
 import ij.measure.Calibration;
 
@@ -303,6 +306,16 @@ public class Plot {
         markSize = lineWidth==1?5:7;
     }
     
+	/* Draws a line using the coordinate system defined by setLimits(). */
+	public void drawLine(double x1, double y1, double x2, double y2) {
+		setup();
+		int ix1 = LEFT_MARGIN + (int)Math.round((x1-xMin)*xScale);
+		int iy1 = TOP_MARGIN + frameHeight - (int)Math.round((y1-yMin)*yScale);
+		int ix2 = LEFT_MARGIN + (int)Math.round((x2-xMin)*xScale);
+		int iy2 = TOP_MARGIN + frameHeight - (int)Math.round((y2-yMin)*yScale);
+		ip.drawLine(ix1, iy1, ix2, iy2);
+	}
+
     /** Changes the font. */
     public void changeFont(Font font) {
         setup();
@@ -388,6 +401,7 @@ public class Plot {
             }
             int digits = -(int)Math.floor(Math.log(step)/Math.log(10)+1e-6);
             if (digits < 0) digits = 0;
+            if (digits>5) digits = -3; // use scientific notation
             int y1 = TOP_MARGIN;
             int y2 = TOP_MARGIN+frame.height;
             int yNumbers = y2 + fontAscent + 7;
@@ -426,6 +440,7 @@ public class Plot {
             }
             int digits = -(int)Math.floor(Math.log(step)/Math.log(10)+1e-6);
             if (digits < 0) digits = 0;
+            if (digits>5) digits = -3; // use scientific notation
             int x1 = LEFT_MARGIN;
             int x2 = LEFT_MARGIN+frame.width;
             for (int i=0; i<=(i2-i1); i++) {
@@ -507,7 +522,7 @@ public class Plot {
             if (n<10.0) digits = 2;
             if (n<0.01) digits = 3;
             if (n<0.001) digits = 4;
-            if (n<0.0001) digits = 5;
+            if (n<0.0001) digits = -3; // use scientific notation
             return digits;
         }
     }
@@ -609,10 +624,9 @@ public class Plot {
     }
     
     /** Returns the plot as an ImagePlus. */
-    public IjxImagePlus getImagePlus() {
+    public ImagePlus getImagePlus() {
         draw();
-        
-        IjxImagePlus img = IJ.getFactory().newImagePlus(title, ip);
+        ImagePlus img = new ImagePlus(title, ip);
         Calibration cal = img.getCalibration();
         cal.xOrigin = LEFT_MARGIN;
         cal.yOrigin = TOP_MARGIN+frameHeight+yMin*yScale;
@@ -630,12 +644,14 @@ public class Plot {
             ip.invert();
         }
         if ((IJ.macroRunning() && IJ.getInstance()==null) || Interpreter.isBatchMode()) {
-            IjxImagePlus imp = IJ.getFactory().newImagePlus(title, ip);
+            ImagePlus imp = new ImagePlus(title, ip);
             WindowManager.setTempCurrentImage(imp);
+            imp.setProperty("XValues", xValues); //Allows values to be retrieved by 
+            imp.setProperty("YValues", yValues); // by Plot.getValues() macro function
             Interpreter.addBatchModeImage(imp);
             return null;
         }
-        IJ.setCenterOnScreen(true);
+        ImageWindow.centerNextImage();
         return new PlotWindow(this);
     }
 

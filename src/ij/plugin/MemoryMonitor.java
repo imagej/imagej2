@@ -1,7 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxImageWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -24,7 +21,7 @@ public class MemoryMonitor implements PlugIn {
 	long fps, startTime, elapsedTime;
 	ImageProcessor ip;
 	int frames;
-	IjxImageCanvas ic;
+	ImageCanvas ic;
 	double[] mem;
 	int index;
 	long value;
@@ -45,17 +42,17 @@ public class MemoryMonitor implements PlugIn {
 		ip.setFont(new Font("SansSerif",Font.PLAIN,12));
 		ip.setAntialiasedText(true);
 		ip.snapshot();
-		IjxImagePlus imp = IJ.getFactory().newImagePlus("Memory", ip);
-		IJ.setCenterOnScreen(true);
+		ImagePlus imp = new ImagePlus("Memory", ip);
+		ImageWindow.centerNextImage();
 		imp.show();
 		imp.lock();
-		IjxImageWindow win = imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		ic = win.getCanvas();
 		mem = new double[width+1];
 		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 		startTime = System.currentTimeMillis();
-		win.setRunning(true);
-       	while (win.isRunning()) {
+		win.running = true;
+       	while (win.running) {
 			updatePixels();
          	showValue();
 			imp.updateAndDraw();
@@ -93,6 +90,7 @@ public class MemoryMonitor implements PlugIn {
 		if (used>0.9*max) max *= 2.0;
 		mem[index++] = used;
 		if (index==mem.length) index = 0;
+		ip.setLineWidth(1);
 		ip.reset();
 		int index2 = index+1;
 		if (index2==mem.length) index2 = 0;

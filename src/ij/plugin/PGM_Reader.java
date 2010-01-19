@@ -254,12 +254,12 @@ public class PGM_Reader extends ImagePlus implements PlugIn {
 
     public void openAsciiImage(StreamTokenizer tok, int size, byte[] pixels) throws IOException {
         int i = 0;
-        int inc = size / 20;
+        int inc = size/20;
         if (inc==0) inc = 1;
         while (tok.nextToken() != tok.TT_EOF) {
             if (tok.ttype == tok.TT_NUMBER) {
                 pixels[i++] = (byte) (((int) tok.nval) & 255);
-                if (i % inc == 0)
+                if (i%inc==0)
                     IJ.showProgress(0.5 + ((double) i / size) / 2.0);
             }
         }
@@ -287,13 +287,13 @@ public class PGM_Reader extends ImagePlus implements PlugIn {
     public ImageProcessor open16bitAsciiImage(StreamTokenizer tok, int width, int height) throws IOException {
         int i = 0;
         int size = width * height;
-        int inc = size / 20; // Progress update interval
+        int inc = size/20; // Progress update interval
         if (inc==0) inc = 1;
         short[] pixels = new short[size];
         while (tok.nextToken() != tok.TT_EOF) {
             if (tok.ttype == tok.TT_NUMBER) {
                 pixels[i++] = (short) (((int) tok.nval) & 65535);
-                if (i % inc == 0)
+                if (i%inc==0)
                     IJ.showProgress(0.5 + ((double) i / size) / 2.0);
             }
         }

@@ -1,6 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxWindow;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -10,17 +8,22 @@ import ij.macro.Interpreter;
 import ij.plugin.filter.GaussianBlur;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
 
 
 /** This plugin implements the commands in the Edit/Section submenu. */
 public class Selection implements PlugIn, Measurements {
-	IjxImagePlus imp;
-	float[] kernel = {1f, 1f, 1f, 1f, 1f};
-	float[] kernel3 = {1f, 1f, 1f};
-	static String angle = "15"; // degrees
-	static String enlarge = "15"; // pixels
-	static String bandSize = "15"; // pixels
+	private ImagePlus imp;
+	private float[] kernel = {1f, 1f, 1f, 1f, 1f};
+	private float[] kernel3 = {1f, 1f, 1f};
+	private static String angle = "15"; // degrees
+	private static String enlarge = "15"; // pixels
+	private static String bandSize = "15"; // pixels
+	private static boolean nonScalable;
+	private static Color linec, fillc;
+	private static int lineWidth = 1;
+	
 
 	public void run(String arg) {
 		imp = WindowManager.getCurrentImage();
@@ -46,14 +49,25 @@ public class Selection implements PlugIn, Measurements {
     		createSelectionFromMask(imp);    	
     	else if (arg.equals("inverse"))
     		invert(imp); 
+    	else if (arg.equals("properties"))
+    		{setProperties("Properties", imp.getRoi()); imp.draw();}
+    	else if (arg.equals("overlay"))
+    		createOverlay(imp); 
     	else
     		runMacro(arg);
 	}
 	
 	void runMacro(String arg) {
 		Roi roi = imp.getRoi();
+		if (IJ.macroRunning()) {
+			String options = Macro.getOptions();
+			if (options!=null && (options.indexOf("grid=")!=-1||options.indexOf("interpolat")!=-1)) {
+				IJ.run("Rotate... ", options); // run Image>Transform>Rotate
+				return;
+			}
+		}
 		if (roi==null) {
-			IJ.error("Selection required");
+			IJ.error("Rotate>Selection", "This command requires a selection");
 			return;
 		}
 		roi = (Roi)roi.clone();
@@ -179,14 +193,10 @@ public class Selection implements PlugIn, Measurements {
 			indexes[i] = i;
 			curvature[i] = (float)Math.sqrt((x2[i]-x[i])*(x2[i]-x[i])+(y2[i]-y[i])*(y2[i]-y[i]));
 		}
-		//ImageProcessor ipc = new FloatProcessor(n, 1, curvature, null);
-		//ipc.convolve(kernel3, kernel3.length, 1);
-		//PlotWindow pw = new PlotWindow("Curvature", "X", "Y", indexes, curvature);
-		//pw.draw();											
 		return curvature;
 	}
 	
-	void drawEllipse(IjxImagePlus imp) {
+	void drawEllipse(ImagePlus imp) {
 		IJ.showStatus("Fitting ellipse");
 		Roi roi = imp.getRoi();
 		if (roi==null)
@@ -208,57 +218,18 @@ public class Selection implements PlugIn, Measurements {
 		IJ.showStatus("");
 	}
 
-	void convexHull(IjxImagePlus imp) {
+	void convexHull(ImagePlus imp) {
 		Roi roi = imp.getRoi();
 		int type = roi!=null?roi.getType():-1;
 		if (!(type==Roi.FREEROI||type==Roi.TRACED_ROI||type==Roi.POLYGON||type==Roi.POINT))
 			{IJ.error("Convex Hull", "Polygonal or point selection required"); return;}
-		imp.setRoi(makeConvexHull(imp, (PolygonRoi)roi));
-	}
-
-	// Finds the convex hull using the gift wrap algorithm
-	Roi makeConvexHull(IjxImagePlus imp, PolygonRoi roi) {
-		int n = roi.getNCoordinates();
-		int[] xCoordinates = roi.getXCoordinates();
-		int[] yCoordinates = roi.getYCoordinates();
-		Rectangle r = roi.getBounds();
-		int xbase = r.x;
-		int ybase = r.y;
-		int[] xx = new int[n];
-		int[] yy = new int[n];
-		int n2 = 0;
-		int p1 = findFirstPoint(xCoordinates, yCoordinates, n, imp); 
-		int pstart = p1;
-		int x1, y1, x2, y2, x3, y3, p2, p3;
-		int determinate;
-		do {
-			x1 = xCoordinates[p1];
-			y1 = yCoordinates[p1];
-			p2 = p1+1; if (p2==n) p2=0;
-			x2 = xCoordinates[p2];
-			y2 = yCoordinates[p2];
-			p3 = p2+1; if (p3==n) p3=0;
-			do {
-				x3 = xCoordinates[p3];
-				y3 = yCoordinates[p3];
-				determinate = x1*(y2-y3)-y1*(x2-x3)+(y3*x2-y2*x3);
-				if (determinate>0)
-					{x2=x3; y2=y3; p2=p3;}
-				p3 += 1;
-				if (p3==n) p3 = 0;
-			} while (p3!=p1);
-			if (n2<n) { 
-				xx[n2] = xbase + x1;
-				yy[n2] = ybase + y1;
-				n2++;
-			}
-			p1 = p2;
-		} while (p1!=pstart);
-		return new PolygonRoi(xx, yy, n2, roi.POLYGON);
+		Polygon p = roi.getConvexHull();
+		if (p!=null)
+			imp.setRoi(new PolygonRoi(p.xpoints, p.ypoints, p.npoints, roi.POLYGON));
 	}
 	
 	// Finds the index of the upper right point that is guaranteed to be on convex hull
-	int findFirstPoint(int[] xCoordinates, int[] yCoordinates, int n, IjxImagePlus imp) {
+	int findFirstPoint(int[] xCoordinates, int[] yCoordinates, int n, ImagePlus imp) {
 		int smallestY = imp.getHeight();
 		int x, y;
 		for (int i=0; i<n; i++) {
@@ -279,7 +250,7 @@ public class Selection implements PlugIn, Measurements {
 		return p1;
 	}
 	
-	void createMask(IjxImagePlus imp) {
+	void createMask(ImagePlus imp) {
 		Roi roi = imp.getRoi();
 		boolean useInvertingLut = Prefs.useInvertingLut;
 		Prefs.useInvertingLut = false;
@@ -288,15 +259,15 @@ public class Selection implements PlugIn, Measurements {
 			Prefs.useInvertingLut = useInvertingLut;
 			return;
 		}
-		IjxImagePlus maskImp = null;
-		IjxWindow frame = WindowManager.getFrame("Mask");
+		ImagePlus maskImp = null;
+		Frame frame = WindowManager.getFrame("Mask");
 		if (frame!=null && (frame instanceof ImageWindow))
 			maskImp = ((ImageWindow)frame).getImagePlus();
 		if (maskImp==null) {
 			ImageProcessor ip = new ByteProcessor(imp.getWidth(), imp.getHeight());
 			if (!Prefs.blackBackground)
 				ip.invertLut();
-			maskImp = IJ.getFactory().newImagePlus("Mask", ip);
+			maskImp = new ImagePlus("Mask", ip);
 			maskImp.show();
 		}
 		ImageProcessor ip = maskImp.getProcessor();
@@ -307,29 +278,26 @@ public class Selection implements PlugIn, Measurements {
 		Prefs.useInvertingLut = useInvertingLut;
 	}
 	
-	void createMaskFromThreshold(IjxImagePlus imp) {
+	void createMaskFromThreshold(ImagePlus imp) {
 		ImageProcessor ip = imp.getProcessor();
 		if (ip.getMinThreshold()==ImageProcessor.NO_THRESHOLD)
 			{IJ.error("Create Mask", "Area selection or thresholded image required"); return;}
 		double t1 = ip.getMinThreshold();
 		double t2 = ip.getMaxThreshold();
 		IJ.run("Duplicate...", "title=mask");
-		IjxImagePlus imp2 = WindowManager.getCurrentImage();
+		ImagePlus imp2 = WindowManager.getCurrentImage();
 		ImageProcessor ip2 = imp2.getProcessor();
 		ip2.setThreshold(t1, t2, ImageProcessor.NO_LUT_UPDATE);
 		IJ.run("Convert to Mask");
 	}
 
-	void createSelectionFromMask(IjxImagePlus imp) {
+	void createSelectionFromMask(ImagePlus imp) {
 		ImageProcessor ip = imp.getProcessor();
 		if (ip.getMinThreshold()!=ImageProcessor.NO_THRESHOLD) {
 			IJ.runPlugIn("ij.plugin.filter.ThresholdToSelection", "");
 			return;
 		}
-		ImageStatistics stats = null;
-		if (imp.getBitDepth()==8)
-			stats = imp.getStatistics();
-		if (stats==null || (stats.histogram[0]+stats.histogram[255]!=stats.pixelCount)) {
+		if (!ip.isBinary()) {
 			IJ.error("Create Selection",
 				"This command creates a composite selection from\n"+
 				"a mask (8-bit binary image with white background)\n"+
@@ -343,7 +311,7 @@ public class Selection implements PlugIn, Measurements {
 		IJ.runPlugIn("ij.plugin.filter.ThresholdToSelection", "");
 	}
 
-	void invert(IjxImagePlus imp) {
+	void invert(ImagePlus imp) {
 		Roi roi = imp.getRoi();
 		if (roi==null || !roi.isArea())
 			{IJ.error("Inverse", "Area selection required"); return;}
@@ -356,10 +324,10 @@ public class Selection implements PlugIn, Measurements {
 		imp.setRoi(s1.xor(s2));
 	}
 	
-	void addToRoiManager(IjxImagePlus imp) {
+	void addToRoiManager(ImagePlus imp) {
 		if (IJ.macroRunning() &&  Interpreter.isBatchModeRoiManager())
 			IJ.error("run(\"Add to Manager\") may not work in batch mode macros");
-		IjxWindow frame = WindowManager.getFrame("ROI Manager");
+		Frame frame = WindowManager.getFrame("ROI Manager");
 		if (frame==null)
 			IJ.run("ROI Manager...");
 		if (imp==null) return;
@@ -374,6 +342,41 @@ public class Selection implements PlugIn, Measurements {
 		if (altDown) IJ.setKeyDown(KeyEvent.VK_SHIFT);
 		rm.runCommand("add");
 		IJ.setKeyUp(IJ.ALL_KEYS);
+	}
+	
+	void createOverlay(ImagePlus imp) {
+		String macroOptions = Macro.getOptions();
+		if (macroOptions!=null && IJ.macroRunning() && macroOptions.indexOf("remove")!=-1) {
+			imp.setDisplayList(null);
+			return;
+		}
+		Roi roi = imp.getRoi();
+		if (roi==null && imp.getDisplayList()!=null) {
+			GenericDialog gd = new GenericDialog("No Selection");
+			gd.addMessage("\"Create Overlay\" requires a selection.");
+			gd.setInsets(15, 40, 0);
+			gd.addCheckbox("Remove existing overlay", false);
+			gd.showDialog();
+			if (gd.wasCanceled()) return;
+			if (gd.getNextBoolean()) imp.setDisplayList(null);
+			return;
+ 		}
+		if (!setProperties("Create Overlay", roi))
+			return;
+		ImageCanvas ic = imp.getCanvas();
+		Vector list = new Vector();
+		list.addElement(roi);
+		ic.setDisplayList(list);
+		imp.killRoi();
+	}
+	
+	boolean setProperties(String title, Roi roi) {
+		if (roi==null) {
+			IJ.error("This command requires a selection.");
+			return false;
+		}
+		RoiProperties rp = new RoiProperties(title, roi);
+		return rp.showDialog();
 	}
 
 }

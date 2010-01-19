@@ -5,6 +5,16 @@ import java.awt.*;
 /** This class processes binary images. */
 public class BinaryProcessor extends ByteProcessor {
 
+	static int[] table  =
+		//0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1
+		 {0,0,0,1,0,0,1,3,0,0,3,1,1,0,1,3,0,0,0,0,0,0,0,0,2,0,2,0,3,0,3,3,
+		  0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,3,0,2,2,
+		  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		  2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,3,0,2,0,
+		  0,0,3,1,0,0,1,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		  3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		  2,3,1,3,0,0,1,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		  2,3,0,1,0,0,0,1,0,0,0,0,0,0,0,0,3,3,0,1,0,0,0,0,2,2,0,0,2,0,0,0};
 	private ByteProcessor parent;
 	
 	/** Creates a BinaryProcessor from a ByteProcessor. The ByteProcessor
@@ -76,27 +86,18 @@ public class BinaryProcessor extends ByteProcessor {
 		at "http://rsb.info.nih.gov/ij/images/skeletonize-table.gif".
 	*/
 	public void  skeletonize() {
-		int[] table  =
-				//0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1
-				 {0,0,0,1,0,0,1,3,0,0,3,1,1,0,1,3,0,0,0,0,0,0,0,0,2,0,2,0,3,0,3,3,
-				  0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,3,0,2,2,
-				  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-				  2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,3,0,2,0,
-				  0,0,3,1,0,0,1,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-				  3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-				  2,3,1,3,0,0,1,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-				  2,3,0,1,0,0,0,1,0,0,0,0,0,0,0,0,3,3,0,1,0,0,0,0,2,2,0,0,2,0,0,0};
 		int pass = 0;
 		int pixelsRemoved;
+		resetRoi();
+		setColor(Color.white);
+		moveTo(0,0); lineTo(0,height-1);
+		moveTo(0,0); lineTo(width-1,0);
+		moveTo(width-1,0); lineTo(width-1,height-1);
+		moveTo(0,height-1); lineTo(width/*-1*/,height-1);
 		//ImageStack movie=null;
 		//boolean debug = IJ.altKeyDown();
 		//if (debug) movie = new ImageStack(width, height);
 		do {
-			setColor(Color.white);
-			if (roiX==0) {moveTo(0,0); lineTo(0,height-1);}
-			if (roiY==0) {moveTo(0,0); lineTo(width-1,0);}
-			if (roiWidth==width) {moveTo(width-1,0); lineTo(width-1,height-1);}
-			if (roiHeight==height) {moveTo(0,height-1); lineTo(width/*-1*/,height-1);}
 			snapshot();
 			//if (debug) movie.addSlice(""+pass, duplicate());
 			pixelsRemoved = thin(pass++, table);

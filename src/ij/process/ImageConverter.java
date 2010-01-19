@@ -1,22 +1,20 @@
 package ij.process;
 
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import ij.*;
 import ij.gui.*;
 import ij.measure.*;
-import ijx.IjxImageStack;
 
 /** This class converts an ImagePlus object to a different type. */
 public class ImageConverter {
-	private IjxImagePlus imp;
+	private ImagePlus imp;
 	private int type;
 	//private static boolean doScaling = Prefs.getBoolean(Prefs.SCALE_CONVERSIONS,true);
 	private static boolean doScaling = true;
 
 	/** Constructs an ImageConverter based on an ImagePlus object. */
-	public ImageConverter(IjxImagePlus imp) {
+	public ImageConverter(ImagePlus imp) {
 		this.imp = imp;
 		type = imp.getType();
 	}
@@ -67,7 +65,6 @@ public class ImageConverter {
 		ImageProcessor ip = imp.getProcessor();
 		imp.trimProcessor();
 		Calibration cal = imp.getCalibration();
-		//ip.setCalibrationTable(cal.getCTable());
 		imp.setProcessor(null, ip.convertToFloat());
 		imp.setCalibration(cal); //update calibration
 	}
@@ -100,7 +97,7 @@ public class ImageConverter {
 		
 		// Create stack and select Red channel
 		ColorModel cm = LookUpTable.createGrayscaleColorModel(false);
-		IjxImageStack stack = IJ.getFactory().newImageStack(width, height, cm);
+		ImageStack stack = new ImageStack(width, height, cm);
 		stack.addSlice("Red", R);
 		stack.addSlice("Green", G);
 		stack.addSlice("Blue", B);
@@ -112,30 +109,18 @@ public class ImageConverter {
 
 	/** Converts an RGB image to a HSB (hue, saturation and brightness) stack. */
 	public void convertToHSB() {
-		if (type!=IjxImagePlus.COLOR_RGB)
+		if (type!=ImagePlus.COLOR_RGB)
 			throw new IllegalArgumentException("Image must be RGB");
 
 		//convert to hue, saturation and brightness
 		//IJ.showProgress(0.1);
 		ColorProcessor cp;
-		if (imp.getType()==IjxImagePlus.COLOR_RGB)
+		if (imp.getType()==ImagePlus.COLOR_RGB)
 			cp = (ColorProcessor)imp.getProcessor();
 		else
 			cp = new ColorProcessor(imp.getImage());
-		int width = imp.getWidth();
-		int height = imp.getHeight();
-		byte[] H = new byte[width*height];
-		byte[] S = new byte[width*height];
-		byte[] B = new byte[width*height];
-		cp.getHSB(H, S, B);
+		ImageStack stack = cp.getHSBStack();
 		imp.trimProcessor();
-
-		//create stack and select hue channel
-		ColorModel cm = LookUpTable.createGrayscaleColorModel(false);
-		IjxImageStack stack = IJ.getFactory().newImageStack(width, height, cm);
-		stack.addSlice("Hue", H);
-		stack.addSlice("Saturation", S);
-		stack.addSlice("Brightness", B);
 		imp.setStack(null, stack);
 		imp.setDimensions(3, 1, 1);
 		//IJ.showProgress(1.0);
@@ -148,7 +133,7 @@ public class ImageConverter {
 			throw new IllegalArgumentException("2 or 3 slice 8-bit stack required");
 		int width = imp.getWidth();
 		int height = imp.getHeight();
-		IjxImageStack stack = imp.getStack();
+		ImageStack stack = imp.getStack();
 		byte[] R = (byte[])stack.getPixels(1);
 		byte[] G = (byte[])stack.getPixels(2);
 		byte[] B;
@@ -169,7 +154,7 @@ public class ImageConverter {
 	public void convertHSBToRGB() {
 		if (imp.getStackSize()!=3)
 			throw new IllegalArgumentException("3-slice 8-bit stack required");
-		IjxImageStack stack = imp.getStack();
+		ImageStack stack = imp.getStack();
 		byte[] H = (byte[])stack.getPixels(1);
 		byte[] S = (byte[])stack.getPixels(2);
 		byte[] B = (byte[])stack.getPixels(3);

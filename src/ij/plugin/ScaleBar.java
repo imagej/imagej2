@@ -1,6 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxImageWindow;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -30,7 +28,7 @@ public class ScaleBar implements PlugIn {
     static int defaultFontSize = 14;
     static int fontSize;
     static boolean labelAll;
-    IjxImagePlus imp;
+    ImagePlus imp;
     double imageWidth;
     double mag;
     int xloc, yloc;
@@ -49,7 +47,7 @@ public class ScaleBar implements PlugIn {
             IJ.noImage();
      }
 
-    void labelSlices(IjxImagePlus imp) {
+    void labelSlices(ImagePlus imp) {
         int slice = imp.getCurrentSlice();
         for (int i=1; i<=imp.getStackSize(); i++) {
             imp.setSlice(i);
@@ -58,7 +56,7 @@ public class ScaleBar implements PlugIn {
         imp.setSlice(slice);        
     }
 
-    boolean showDialog(IjxImagePlus imp) {
+    boolean showDialog(ImagePlus imp) {
         Roi roi = imp.getRoi();
         if (roi!=null) {
             Rectangle r = roi.getBounds();
@@ -71,7 +69,7 @@ public class ScaleBar implements PlugIn {
             location = locations[UPPER_RIGHT];
 
         Calibration cal = imp.getCalibration();
-        IjxImageWindow win = imp.getWindow();
+        ImageWindow win = imp.getWindow();
         mag = (win!=null)?win.getCanvas().getMagnification():1.0;
         if (mag>1.0)
             mag = 1.0;
@@ -136,7 +134,7 @@ public class ScaleBar implements PlugIn {
          return true;
     }
 
-    void drawScaleBar(IjxImagePlus imp) {
+    void drawScaleBar(ImagePlus imp) {
           if (!updateLocation())
             return;
         ImageProcessor ip = imp.getProcessor();

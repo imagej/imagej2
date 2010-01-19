@@ -170,7 +170,7 @@ class TextCanvas extends Canvas {
 	}
 	
 	void calcAutoWidth(int column) {
-		if (tp.sColHead==null || column>=tp.iColWidth.length)
+		if (tp.sColHead==null || column>=tp.iColWidth.length || gImage==null)
 			return;
 		if(fMetrics==null)
 			fMetrics=gImage.getFontMetrics();
@@ -193,6 +193,10 @@ class TextCanvas extends Canvas {
 			if (chars!=null)
 				w = Math.max(w,fMetrics.charsWidth(chars,0,chars.length));
 		}
+		//System.out.println("calcAutoWidth: "+column+"  "+tp.iRowCount);
+		char[] chars = tp.iRowCount>0?getChars(column, tp.iRowCount-1):null;
+		if (chars!=null)
+			w = Math.max(w,fMetrics.charsWidth(chars,0,chars.length));
 		tp.iColWidth[column] = w+15;
 	}
 

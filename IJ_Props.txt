@@ -1,12 +1,12 @@
-# IJ_Props.txt - This is the ImageJ properties file. ImageJ uses
+ # IJ_Props.txt - This is the ImageJ properties file. ImageJ uses
 # the information in this file to install plug-ins in menus.
 # ImageJ looks for this file in ij.jar. It can be edited by
-# opening ij.jar with a ZIP utility. With WinZip, you can open
+# opening ij.jar with a ZIP utility. With WinZip, you can open 
 # ij.jar and double click on IJ_Props.txt.
 
 # Note that commands must be unique.
 
-# Version 1.38
+# Version 1.43
 
 # Popup Menu
 popup01=Undo
@@ -24,9 +24,11 @@ popup12=Duplicate...
 
 # Plugins installed in the File/New submenu
 new01="Image...[n]",ij.plugin.Commands("new")
-new02="Text Window[N]",ij.plugin.NewPlugin("text")
-new03="Internal Clipboard",ij.plugin.Clipboard("show")
-new04="System Clipboard[V]",ij.plugin.Clipboard("showsys")
+new02="Hyperstack...",ij.plugin.HyperStackConverter("new")
+new03="Text Window[N]",ij.plugin.NewPlugin("text")
+new04="Internal Clipboard",ij.plugin.Clipboard("show")
+new05="System Clipboard[V]",ij.plugin.Clipboard("showsys")
+
 # Plugins installed in the File/Import submenu
 import01="Image Sequence...",ij.plugin.FolderOpener
 import02="Raw...",ij.plugin.Raw
@@ -35,6 +37,9 @@ import04="Text Image... ",ij.plugin.TextReader
 import05="Text File... ",ij.plugin.TextFileReader
 import06="Results...",ij.plugin.SimpleCommands("import")
 import07="URL...",ij.plugin.URLOpener
+import08="Stack From List...",ij.plugin.ListVirtualStack
+import09="TIFF Virtual Stack...",ij.plugin.FileInfoVirtualStack
+import10="AVI...",ij.plugin.AVI_Reader
 #import08="TWAIN...",ij.plugin.twain.Twain
 #import09="Capture Video...",QT_Capture
 #import10="QuickTime Movie...",Movie_Opener
@@ -48,7 +53,7 @@ save04="Text Image...",ij.plugin.filter.Writer("text")
 save05="ZIP...",ij.plugin.filter.Writer("zip")
 save06="Raw Data...",ij.plugin.filter.Writer("raw")
 save07="Image Sequence... ",ij.plugin.StackWriter
-save08="AVI... ",ij.plugin.filter.AVIWriter
+save08="AVI... ",ij.plugin.filter.AVI_Writer
 save09="BMP...",ij.plugin.filter.Writer("bmp")
 save10="PNG...",ij.plugin.filter.Writer("png")
 save11="PGM...",ij.plugin.filter.Writer("pgm")
@@ -68,43 +73,53 @@ selection04="Fit Spline",ij.plugin.Selection("spline")
 selection05="Fit Ellipse",ij.plugin.Selection("ellipse")
 selection06="Convex Hull",ij.plugin.Selection("hull")
 selection07="Make Inverse",ij.plugin.Selection("inverse")
-selection08="Create Mask",ij.plugin.Selection("mask")
-selection09="Create Selection",ij.plugin.Selection("from")
+selection08="Create Selection",ij.plugin.Selection("from")
+selection09="Create Mask",ij.plugin.Selection("mask")
 selection10=-
-selection11="Rotate...",ij.plugin.Selection("rotate")
-selection12="Enlarge...",ij.plugin.Selection("enlarge")
-selection13="Make Band...",ij.plugin.Selection("band")
-selection14="Specify...",ij.plugin.SpecifyROI
-selection15="Add to Manager [t]",ij.plugin.Selection("add")
+selection11="Properties... ",ij.plugin.Selection("properties")
+selection12="Rotate...",ij.plugin.Selection("rotate")
+selection13="Enlarge...",ij.plugin.Selection("enlarge")
+selection14="Make Band...",ij.plugin.Selection("band")
+selection15="Specify...",ij.plugin.SpecifyROI
+selection16="Straighten...",ij.plugin.Straightener
+selection17="Add to Manager [t]",ij.plugin.Selection("add")
 
 # Plugins installed in the Edit/Options submenu
 options01="Line Width...",ij.plugin.Options("line")
 options02="Input/Output...",ij.plugin.Options("io")
 options03="Fonts...",ij.plugin.frame.Fonts
 options04="Profile Plot Options...",ij.plugin.filter.Profiler("set")
-options05="Point Tool...",ij.plugin.Colors("point")
-options06="Colors...",ij.plugin.Colors
-options07="Appearance...",ij.plugin.Options("display")
-options08="Conversions...",ij.plugin.Options("conv")
-options09="Memory & Threads...",ij.plugin.Memory
-options10="Misc...",ij.plugin.Options("misc")
+options05="Arrow Tool...",ij.plugin.ArrowToolOptions
+options06="Point Tool...",ij.plugin.Colors("point")
+options07="Wand Tool...",ij.plugin.WandToolOptions
+options08="Colors...",ij.plugin.Colors
+options09="Appearance...",ij.plugin.Options("display")
+options10="Conversions...",ij.plugin.Options("conv")
+options11="Memory & Threads...",ij.plugin.Memory
+options12="Proxy Settings...",ij.plugin.ProxySettings
+options13="Compiler...",ij.plugin.Compiler("options")
+options14="Misc...",ij.plugin.Options("misc")
 
 # Plugins installed in the Image/Adjust submenu
 adjust01="Brightness/Contrast...[C]",ij.plugin.frame.ContrastAdjuster
 adjust02="Window/Level...",ij.plugin.frame.ContrastAdjuster("wl")
 adjust03="Color Balance...",ij.plugin.frame.ContrastAdjuster("balance")
 adjust04="Threshold...[T]",ij.plugin.frame.ThresholdAdjuster
-adjust05="Size...",ij.plugin.filter.Resizer
-adjust06="Canvas Size...",ij.plugin.CanvasResizer
+adjust05="Color Threshold...",ij.plugin.frame.ColorThresholder
+adjust06="Size...",ij.plugin.Resizer
+adjust07="Canvas Size...",ij.plugin.CanvasResizer
+adjust08="Line Width... ",ij.plugin.frame.LineWidthAdjuster
 
 # Plugins installed in the Image/Color submenu
-color01="Convert Stack to RGB",ij.plugin.RGBStackConverter
-color02="Convert to Composite",ij.plugin.Composite_Image
-color03="RGB Split",ij.plugin.filter.RGBStackSplitter
-color04="RGB Merge...",ij.plugin.RGBStackMerge
-color05="Show LUT",ij.plugin.filter.LutViewer
-color06="Edit LUT...",ij.plugin.LUT_Editor
-color07="Color Picker...[K]",ij.plugin.ColorPicker
+color01="Split Channels",ij.plugin.filter.RGBStackSplitter
+color02="Merge Channels...",ij.plugin.RGBStackMerge
+color03="Channels Tool... ",ij.plugin.frame.Channels
+color04=-
+color05="Stack to RGB",ij.plugin.RGBStackConverter
+color06="Make Composite",ij.plugin.CompositeConverter
+color07="Show LUT",ij.plugin.filter.LutViewer
+color08="Edit LUT...",ij.plugin.LUT_Editor
+color09="Color Picker...[K]",ij.plugin.frame.ColorPicker
 
 # Plugins installed in the Image/Stacks submenu
 stacks01="Add Slice",ij.plugin.StackEditor("add")
@@ -113,35 +128,58 @@ stacks03="Next Slice [>]",ij.plugin.Animator("next")
 stacks04="Previous Slice [<]",ij.plugin.Animator("previous")
 stacks05="Set Slice...",ij.plugin.Animator("set")
 stacks06=-
-stacks07="Images to Stack",ij.plugin.StackEditor("tostack")
+stacks07="Images to Stack",ij.plugin.ImagesToStack
 stacks08="Stack to Images",ij.plugin.StackEditor("toimages")
-stacks09="Stack to HyperVolume...",ij.plugin.StackEditor("stackto5d")
-stacks10="HyperVolume to Stack",ij.plugin.StackEditor("5dtostack")
-stacks11=-
-stacks12="Make Montage...",ij.plugin.MontageMaker
-stacks13="Reslice [/]...",ij.plugin.Slicer
-stacks14="Z Project...",ij.plugin.ZProjector
-stacks15="3D Project...",ij.plugin.filter.Projector
-stacks16="Plot Z-axis Profile",ij.plugin.filter.ZAxisProfiler
-stacks17=-
-stacks18="Start Animation [\\]",ij.plugin.Animator("start")
-stacks19="Stop Animation",ij.plugin.Animator("stop")
-stacks20="Animation Options...",ij.plugin.Animator("options")
+stacks09="Make Montage...",ij.plugin.MontageMaker
+stacks10="Reslice [/]...",ij.plugin.Slicer
+stacks11="Orthogonal Views",ij.plugin.Orthogonal_Views
+stacks12="Z Project...",ij.plugin.ZProjector
+stacks13="3D Project...",ij.plugin.filter.Projector
+stacks14="Plot Z-axis Profile",ij.plugin.filter.ZAxisProfiler
+stacks15=-
+stacks16="Label...",ij.plugin.filter.StackLabeler
+stacks17="Combine...",ij.plugin.StackCombiner
+stacks18="Concatenate...",ij.plugin.Concatenator
+stacks19=-
+stacks20="Start Animation [\\]",ij.plugin.Animator("start")
+stacks21="Stop Animation",ij.plugin.Animator("stop")
+stacks22="Animation Options...",ij.plugin.Animator("options")
 
-# Plugins installed in the Image/Rotate submenu
-rotate01="Flip Horizontally",ij.plugin.filter.Transformer("fliph")
-rotate02="Flip Vertically",ij.plugin.filter.Transformer("flipv")
-rotate03="Rotate 90 Degrees Right",ij.plugin.filter.Transformer("right")
-rotate04="Rotate 90 Degrees Left",ij.plugin.filter.Transformer("left")
-rotate05="Arbitrarily...",ij.plugin.filter.Rotator
+# Plugins installed in the Image/Hyperstacks submenu
+hyperstacks01="New Hyperstack...",ij.plugin.HyperStackConverter("new")
+hyperstacks02="Stack to Hyperstack...",ij.plugin.HyperStackConverter("stacktohs")
+hyperstacks03="Hyperstack to Stack",ij.plugin.HyperStackConverter("hstostack")
+hyperstacks04="Reduce Dimensionality...",ij.plugin.HyperStackReducer
+hyperstacks05="Channels Tool...[Z]",ij.plugin.frame.Channels
+
+# Plugins installed in the Image/Transform submenu
+transform01="Flip Horizontally",ij.plugin.filter.Transformer("fliph")
+transform02="Flip Vertically",ij.plugin.filter.Transformer("flipv")
+transform03="Flip Z",ij.plugin.StackReverser
+transform04="Rotate 90 Degrees Right",ij.plugin.filter.Transformer("right")
+transform05="Rotate 90 Degrees Left",ij.plugin.filter.Transformer("left")
+transform06="Rotate... ",ij.plugin.filter.Rotator
+transform07="Translate...",ij.plugin.filter.Translator
 
 # Plugins installed in the Image/Zoom submenu
 zoom01="In[+]",ij.plugin.Zoom("in")
 zoom02="Out[-]",ij.plugin.Zoom("out")
-zoom03="View 100%",ij.plugin.Zoom("100%")
-zoom04="Original Scale",ij.plugin.Zoom("orig")
+zoom03="Original Scale[4]",ij.plugin.Zoom("orig")
+zoom04="View 100%[5]",ij.plugin.Zoom("100%")
 zoom05="To Selection",ij.plugin.Zoom("to")
-#zoom06="Maximize",ij.plugin.Zoom("max")
+zoom06="Set... ",ij.plugin.Zoom("set")
+#zoom07="Maximize",ij.plugin.Zoom("max")
+
+# Plugins installed in the Image/Overlay submenu
+overlay01="Add Selection...[b]",ij.plugin.OverlayCommands("add")
+overlay02="Add Image...",ij.plugin.OverlayCommands("image")
+overlay03="Hide Overlay",ij.plugin.OverlayCommands("hide")
+overlay04="Show Overlay",ij.plugin.OverlayCommands("show")
+overlay05="From ROI Manager",ij.plugin.OverlayCommands("from")
+overlay06="To ROI Manager",ij.plugin.OverlayCommands("to")
+overlay07="Remove Overlay",ij.plugin.OverlayCommands("remove")
+overlay08="Flatten[F]",ij.plugin.OverlayCommands("flatten")
+
 # Plugins installed in the Image/Lookup Tables submenu
 lookup01="Invert LUT",ij.plugin.LutLoader("invert")
 lookup02="Apply LUT",ij.plugin.filter.LutApplier
@@ -192,12 +230,13 @@ binary08="Close-",ij.plugin.filter.Binary("close")
 binary09="Options...",ij.plugin.filter.Binary("options")
 binary10=-
 binary11="Outline",ij.plugin.filter.Binary("outline")
-binary12="Fill Holes",ij.plugin.filter.BinaryFiller
+binary12="Fill Holes",ij.plugin.filter.Binary("fill")
 binary13="Skeletonize",ij.plugin.filter.Binary("skel")
 binary14=-
 binary15="Distance Map",ij.plugin.filter.EDM("edm")
 binary16="Ultimate Points",ij.plugin.filter.EDM("points")
 binary17="Watershed",ij.plugin.filter.EDM("watershed")
+binary18="Voronoi",ij.plugin.filter.EDM("voronoi")
 
 # Plugins installed in the Process/Math submenu
 math01="Add...",ij.plugin.filter.ImageMath("add")
@@ -210,13 +249,15 @@ math07="XOR...",ij.plugin.filter.ImageMath("xor")
 math08="Min...",ij.plugin.filter.ImageMath("min")
 math09="Max...",ij.plugin.filter.ImageMath("max")
 math10="Gamma...",ij.plugin.filter.ImageMath("gamma")
-math11="Log",ij.plugin.filter.ImageMath("log")
-math12="Exp",ij.plugin.filter.ImageMath("exp")
-math13="Square",ij.plugin.filter.ImageMath("sqr")
-math14="Square Root",ij.plugin.filter.ImageMath("sqrt")
-math15="Reciprocal",ij.plugin.filter.ImageMath("reciprocal")
-math16="NaN Background",ij.plugin.filter.ImageMath("nan")
-math17="Abs",ij.plugin.filter.ImageMath("abs")
+math11="Set...",ij.plugin.filter.ImageMath("set")
+math12="Log",ij.plugin.filter.ImageMath("log")
+math13="Exp",ij.plugin.filter.ImageMath("exp")
+math14="Square",ij.plugin.filter.ImageMath("sqr")
+math15="Square Root",ij.plugin.filter.ImageMath("sqrt")
+math16="Reciprocal",ij.plugin.filter.ImageMath("reciprocal")
+math17="NaN Background",ij.plugin.filter.ImageMath("nan")
+math18="Abs",ij.plugin.filter.ImageMath("abs")
+math19="Macro...",ij.plugin.filter.ImageMath("macro")
 
 # Plugins installed in the Process/FFT submenu
 fft01="FFT",ij.plugin.FFT("fft")
@@ -241,6 +282,13 @@ filters08="Variance...",ij.plugin.filter.RankFilters("variance")
 filters09=-
 filters10="Show Circular Masks...",ij.plugin.filter.RankFilters("masks")
 
+# Plugins installed in the File/Batch submenu
+batch01="Measure...",ij.plugin.BatchMeasure
+batch02="Convert...",ij.plugin.BatchConverter
+batch03="Macro... ",ij.plugin.BatchProcesser
+batch04="Virtual Stack...",ij.plugin.BatchProcesser("stack")
+
+
 # Plugins installed in the Analyze/Gels submenu
 gels01="Select First Lane[1]",ij.plugin.GelAnalyzer("first")
 gels02="Select Next Lane[2]",ij.plugin.GelAnalyzer("next")
@@ -264,11 +312,10 @@ tools07="Calibration Bar...",ij.plugin.filter.CalibrationBar
 plug-in01=>"Macros"
 plug-in02=>"Shortcuts"
 plug-in03=>"Utilities"
-plug-in04="New... ",ij.plugin.NewPlugin
-plug-in05="Edit...",ij.plugin.Compiler("edit")
-plug-in06="Compile and Run...",ij.plugin.Compiler
-plug-in07=-
-#plug-in08=>"User_Plugins"
+plug-in04=>"New_"
+plug-in05="Compile and Run...",ij.plugin.Compiler
+#plug-in06=-
+#plug-in07=>"User_Plugins"
 
 # Install user plugins located in ij.jar to Plugins>User Plugins submenu
 #user_plugins01="Red And Blue",RedAndBlue_
@@ -276,12 +323,13 @@ plug-in07=-
 
 
 # Plugins installed in the Plugins/Macros submenu
-# 'baseCount' in MacroInstaller must be updated if more items are added
+# 'MACROS_MENU_COMMANDS' in MacroInstaller must be updated when items are added
 macros01="Install...[M]",ij.plugin.MacroInstaller
 macros02="Run...",ij.plugin.Macro_Runner
-macros03="Startup Macros...",ij.plugin.Commands("startup")
-macros04="Record...",ij.plugin.frame.Recorder
-macros05=-
+macros03="Edit...",ij.plugin.Compiler("edit")
+macros04="Startup Macros...",ij.plugin.Commands("startup")
+macros05="Record...",ij.plugin.frame.Recorder
+macros06=-
 
 # Plugins installed in the Plugins/Shortcuts submenu
 shortcuts01="Create Shortcut... ",ij.plugin.Hotkeys("install")
@@ -292,14 +340,26 @@ shortcuts04=-
 # Plugins installed in the Plugins/Utilities submenu
 utilities01="Control Panel...",ij.plugin.ControlPanel
 utilities02="ImageJ Properties...",ij.plugin.JavaProperties
-utilities03="List Commands...",ij.plugin.CommandLister
-utilities04="List Shortcuts...",ij.plugin.CommandLister("shortcuts")
-utilities05="Threads...",ij.plugin.ThreadLister
-utilities06="Benchmark",ij.plugin.filter.Benchmark
-utilities07="Reset...",ij.plugin.SimpleCommands("reset")
-utilities08="Monitor Memory...",ij.plugin.MemoryMonitor
-utilities09="Search...",ij.plugin.SimpleCommands("search")
-utilities10="Capture Screen [G]",ij.plugin.ScreenGrabber
+utilities03="List Shortcuts...",ij.plugin.CommandLister("shortcuts")
+utilities04="Threads...",ij.plugin.ThreadLister
+utilities05="Benchmark",ij.plugin.filter.Benchmark
+utilities06="Reset...",ij.plugin.SimpleCommands("reset")
+utilities07="Monitor Memory...",ij.plugin.MemoryMonitor
+utilities08="Search...",ij.plugin.SimpleCommands("search")
+utilities09="Capture Screen [G]",ij.plugin.ScreenGrabber
+utilities10="Capture Image",ij.plugin.ScreenGrabber("image")
+utilities11="Find Commands... [l]",ij.plugin.CommandFinder
+
+# Plugins installed in the Plugins/New submenu
+new_01="Macro",ij.plugin.NewPlugin("macro")
+new_02="JavaScript",ij.plugin.NewPlugin("javascript")
+new_03=-
+new_04="Plugin",ij.plugin.NewPlugin("plugin")
+new_05="Plugin Filter",ij.plugin.NewPlugin("filter")
+new_06="Plugin Frame",ij.plugin.NewPlugin("frame")
+new_07=-
+new_08="Text Window...",ij.plugin.NewPlugin("text+dialog")
+new_09="Table...",ij.plugin.NewPlugin("table")
 
 # Plugins installed in the Help/About submenu
 about01="About This Submenu...",ij.plugin.SimpleCommands("about")
@@ -320,25 +380,25 @@ open05="Boats (356K)",ij.plugin.URLOpener("boats.gif")
 open06="Bridge (174K)",ij.plugin.URLOpener("bridge.gif")
 open07="Cardio (768K, RGB DICOM)",ij.plugin.URLOpener("cardio.dcm.zip")
 open08="Cell Colony (31K)",ij.plugin.URLOpener("Cell_Colony.jpg")
-open09="Ceretec Sagittals (12K)",ij.plugin.URLOpener("cer-sag.gif")
-open10="Clown (14K)",ij.plugin.URLOpener("clown.jpg")
+open09="Clown (14K)",ij.plugin.URLOpener("clown.jpg")
+open10="Confocal Series (2.2MB)",ij.plugin.URLOpener("confocal-series.zip")
 open11="CT (420K, 16-bit DICOM)",ij.plugin.URLOpener("ct.dcm.zip")
 open12="Dot Blot (7K)",ij.plugin.URLOpener("Dot_Blot.jpg")
 open13="Embryos (42K)",ij.plugin.URLOpener("embryos.jpg")
-open14="Enhance Me (25K)",ij.plugin.URLOpener("enhance-me.gif")
-open15="Fibroblast Cell Nucleus (17K)",ij.plugin.URLOpener("Fibroblast_Cell_Nucleus.jpg")
-open16="Fluorescent Cells (58K)",ij.plugin.URLOpener("FluorescentCells.jpg")
-open17="Gel (105K)",ij.plugin.URLOpener("gel.gif")
-open18="HeLa Cells (1.3M, 48-bit RGB)",ij.plugin.URLOpener("hela-cells.zip")
-open19="Leaf (36K)",ij.plugin.URLOpener("leaf.jpg")
-open20="Lena (68K)",ij.plugin.URLOpener("lena.jpg")
-open21="Line Graph (21K)",ij.plugin.URLOpener("LineGraph.jpg")
-open22="Mandrill (70K)",ij.plugin.URLOpener("baboon.jpg")
-open23="MRI Stack (528K)",ij.plugin.URLOpener("mri-stack.zip")
-open24="M51 Galaxy (177K, 16-bits)",ij.plugin.URLOpener("m51.zip")
-open25="M51 Galaxy  (116K, RGB)",ij.plugin.URLOpener("m51.jpg")
-open26="Particles (75K)",ij.plugin.URLOpener("particles.gif")
-open27="PET Scan (11K)",ij.plugin.URLOpener("PET_Scan.gif")
+open14="Fluorescent Cells (400K)",ij.plugin.URLOpener("FluorescentCells.zip")
+open15="Fly Brain (1MB)",ij.plugin.URLOpener("flybrain.zip")
+open16="Gel (105K)",ij.plugin.URLOpener("gel.gif")
+open17="HeLa Cells (1.3M, 48-bit RGB)",ij.plugin.URLOpener("hela-cells.zip")
+open18="Leaf (36K)",ij.plugin.URLOpener("leaf.jpg")
+open19="Lena (68K)",ij.plugin.URLOpener("lena-std.tif")
+open20="Line Graph (21K)",ij.plugin.URLOpener("LineGraph.jpg")
+open21="Mitosis (26MB, 5D stack)",ij.plugin.URLOpener("Spindly-GFP.zip")
+open22="MRI Stack (528K)",ij.plugin.URLOpener("mri-stack.zip")
+open23="M51 Galaxy (177K, 16-bits)",ij.plugin.URLOpener("m51.zip")
+open24="Neuron (1.6M, 5 channels)",ij.plugin.URLOpener("Rat_Hippocampal_Neuron.zip")
+open25="Nile Bend (1.9M)",ij.plugin.URLOpener("NileBend.jpg")
+open26="Organ of Corti (2.8M, 4D stack)",ij.plugin.URLOpener("organ-of-corti.zip")
+open27="Particles (75K)",ij.plugin.URLOpener("particles.gif")
 open28="T1 Head (2.4M, 16-bits)",ij.plugin.URLOpener("t1-head.zip")
 open29="T1 Head Renderings (736K)",ij.plugin.URLOpener("t1-rendering.zip")
 open30="TEM Filter (112K)",ij.plugin.URLOpener("TEM_filter_sample.jpg")

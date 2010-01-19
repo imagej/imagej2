@@ -1,6 +1,4 @@
 package ij.plugin;
-import ijx.IjxApplication;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.io.*;
 import ij.macro.*;
@@ -8,6 +6,7 @@ import ij.text.*;
 import ij.util.*;
 import ij.plugin.frame.Editor;
 import java.io.*;
+import java.lang.reflect.*;
 
 /** Opens and runs a macro file. */
 public class Macro_Runner implements PlugIn {
@@ -113,7 +112,7 @@ public class Macro_Runner implements PlugIn {
 			String macro = new String(buffer, 0, size, "ISO8859_1");
 			in.close();
 			if (name.endsWith(".js"))
-				return runJavaScript(macro);
+				return runJavaScript(macro, arg);
 			else
 				return runMacro(macro, arg);
 		}
@@ -125,45 +124,34 @@ public class Macro_Runner implements PlugIn {
 
     /** Opens and runs the specified macro on the current thread. Macros can
     	retrieve the optional string argument by calling the getArgument() macro function. 
-    	Returns the String value returned by the macro or null if the macro does not
-    	return a value. */
+    	Returns the String value returned by the macro, null if the macro does not
+    	return a value, or "[aborted]" if the macro was aborted due to an error. */
 	public String runMacro(String macro, String arg) {
 		Interpreter interp = new Interpreter();
 		try {
 			return interp.run(macro, arg);
 		} catch(Throwable e) {
-			Interpreter.abort(interp);
+			interp.abortMacro();
 			IJ.showStatus("");
 			IJ.showProgress(1.0);
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.unlock();
 			String msg = e.getMessage();
 			if (e instanceof RuntimeException && msg!=null && e.getMessage().equals(Macro.MACRO_CANCELED))
-				return null;
-			CharArrayWriter caw = new CharArrayWriter();
-			PrintWriter pw = new PrintWriter(caw);
-			e.printStackTrace(pw);
-			String s = caw.toString();
-			if (IJ.isMacintosh())
-				s = Tools.fixNewLines(s);
-			//Don't show exceptions resulting from window being closed
-			if (!(s.indexOf("NullPointerException")>=0 && s.indexOf("ij.process")>=0)) {
-				if (IJ.getInstance()!=null)
-					new ij.text.TextWindow("Exception", s, 350, 250);
-				else
-					IJ.log(s);
-			}
+				return  "[aborted]";
+			IJ.handleException(e);
 		}
-		return null;
+		return  "[aborted]";
 	}
 	
 	public String runMacroFromIJJar(String name, String arg) {
-		IjxApplication ij = IJ.getInstance();
-		if (ij==null) return null;
+		ImageJ ij = IJ.getInstance();
+		//if (ij==null) return null;
+		Class c = ij!=null?ij.getClass():(new ImageStack()).getClass();
 		name = name.substring(7);
 		String macro = null;
         try {
-			InputStream is = ij.getClass().getResourceAsStream("/macros/"+name+".txt");
+			InputStream is = c .getResourceAsStream("/macros/"+name+".txt");
 			//IJ.log(is+"  "+("/macros/"+name+".txt"));
 			if (is==null)
 				return runMacroFile(name, arg);
@@ -187,13 +175,27 @@ public class Macro_Runner implements PlugIn {
 			return null;
 	}
 	
-	String runJavaScript(String text) {
+	/** Runs a script on the current thread, passing 'arg', which
+		the script can retrieve using the getArgument() function.*/
+	public String runJavaScript(String script, String arg) {
+		if (arg==null) arg = "";
+		Object js = null;
 		if (IJ.isJava16() && !IJ.isMacOSX())
-			IJ.runPlugIn("JavaScriptEvaluator", text);
-		else {
-			Object js = IJ.runPlugIn("JavaScript", Editor.JavaScriptIncludes+text);
-			if (js==null)
-				IJ.error(Editor.JS_NOT_FOUND);
+			js = IJ.runPlugIn("JavaScriptEvaluator", "");
+		else
+			js = IJ.runPlugIn("JavaScript", "");
+		if (js==null) IJ.error(Editor.JS_NOT_FOUND);
+		script = Editor.getJSPrefix(arg)+script;
+		try {
+			Class c = js.getClass();
+			Method m = c.getMethod("run", new Class[] {script.getClass(), arg.getClass()});
+			String s = (String)m.invoke(js, new Object[] {script, arg});			
+		} catch(Exception e) {
+			String msg = ""+e;
+			if (msg.indexOf("NoSuchMethod")!=0)
+				msg = "\"JavaScript.jar\" ("+IJ.URL+"/download/tools/JavaScript.jar)\nis outdated";
+			IJ.error(msg);
+			return null;
 		}
 		return null;
 	}

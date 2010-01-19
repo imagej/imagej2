@@ -1,8 +1,8 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
+import ij.io.Opener;
 
 /** This plugin implements the Plugins/Utilities/Unlock, Image/Rename
 	and Plugins/Utilities/Search commands. */
@@ -14,8 +14,8 @@ public class SimpleCommands implements PlugIn {
 	public void run(String arg) {
 		if (arg.equals("search"))
 			search();
-		if (arg.equals("import"))
-			IJ.runMacroFile("ij.jar:ImportResultsTable");
+		else if (arg.equals("import")) 
+			Opener.openResultsTable("");
 		else if (arg.equals("rename"))
 			rename();
 		else if (arg.equals("reset"))
@@ -40,9 +40,7 @@ public class SimpleCommands implements PlugIn {
 	}
 	
 	void unlock() {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
-		if (imp==null)
-			{IJ.noImage(); return;}
+		ImagePlus imp = IJ.getImage();
 		boolean wasUnlocked = imp.lockSilently();
 		if (wasUnlocked)
 			IJ.showStatus("\""+imp.getTitle()+"\" is not locked");
@@ -54,7 +52,7 @@ public class SimpleCommands implements PlugIn {
 	}
 
 	void resetClipboard() {
-		IJ.resetClipboard();
+		ImagePlus.resetClipboard();
 		IJ.showStatus("Clipboard reset");
 	}
 	
@@ -64,9 +62,7 @@ public class SimpleCommands implements PlugIn {
 	}
 	
 	void rename() {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
-		if (imp==null)
-			{IJ.noImage(); return;}
+		ImagePlus imp = IJ.getImage();
 		GenericDialog gd = new GenericDialog("Rename");
 		gd.addStringField("Title:", imp.getTitle(), 30);
 		gd.showDialog();
@@ -79,7 +75,7 @@ public class SimpleCommands implements PlugIn {
 	void search() {
 		searchArg = IJ.runMacroFile("ij.jar:Search", searchArg);
 	}
-	
+		
 	void installation() {
 		String url = IJ.URL+"/docs/install/";
 		if (IJ.isMacintosh())
@@ -90,7 +86,7 @@ public class SimpleCommands implements PlugIn {
 			url += "linux.html";
 		IJ.runPlugIn("ij.plugin.BrowserLauncher", url);
 	}
-
+	
 	void aboutPluginsHelp() {
 		IJ.showMessage("\"About Plugins\" Submenu", 
 			"Plugins packaged as JAR files can add entries\n"+

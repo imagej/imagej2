@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 
@@ -31,7 +30,7 @@ import ij.process.*;
  *<p>
  * Flag <code>DONE</code> stops this sequence of calls.
  */
-public interface ExtendedPlugInFilter extends IjxPlugInFilter {
+public interface ExtendedPlugInFilter extends PlugInFilter {
 
     /**
      * This method is called after <code>setup(arg, imp)</code> unless the
@@ -51,7 +50,7 @@ public interface ExtendedPlugInFilter extends IjxPlugInFilter {
      * of the flags specified in interfaces <code>PlugInFilter</code> and
      * <code>ExtendedPlugInFilter</code>.
      */
-    public int showDialog(IjxImagePlus imp, String command, PlugInFilterRunner pfr);
+    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr);
 
     /**
      * This method is called by ImageJ to inform the plugin-filter

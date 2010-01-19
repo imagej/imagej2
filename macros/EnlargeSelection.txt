@@ -3,25 +3,47 @@
 // it will attempt to convert a composite selection 
 // into a polygon selection.
 
-  pixels = parseFloat(getArgument());
-  if (isNaN(pixels)) exit("Distance is invalid: "+getArgument());
+  arg = getArgument();
+  usePixels = false;
+  if (indexOf(arg, "pixels")!=-1)
+      usePixels = true;
+  pixels = parseFloat(arg);
+  if (isNaN(pixels)) pixels = 15;
   saveSettings();
   getPixelSize(unit, pixelWidth, pixelHeight);
-  n = pixels*pixelWidth;
+  scaled = !startsWith(unit, "pixel");
+  n = pixels;
+  if (usePixels)
+      unit = "pixels";
+  else
+      n = pixels*pixelWidth;
   decimalPlaces = 0;
   if (floor(n)!=n) decimalPlaces = 2;
   Dialog.create("Enlarge Selection");
-  Dialog.addNumber("    Enlarge by", n, decimalPlaces, 4, unit);
+  Dialog.addNumber("Enlarge by", n, decimalPlaces, 4, unit);
+  if (scaled) {
+      Dialog.setInsets(0, 20, 0);
+      Dialog.addCheckbox("Pixel Units", usePixels);
+  }
+  Dialog.setInsets(10, 0, 0);
   Dialog.addMessage("Enter negative number to shrink");
   Dialog.show();
   n = Dialog.getNumber();
-  pixels = n/pixelWidth;
+  if (scaled)
+      usePixels = Dialog.getCheckbox();
+  if (usePixels)
+      pixels = n;
+  else
+      pixels = n/pixelWidth;
   if (n==0)
       convertToPolygon();
   else 
       enlarge(pixels);
   restoreSettings();
-  return toString(pixels); 
+  str = toString(pixels);
+  if (usePixels)
+      str = str + " pixels";
+  return str; 
 
   function enlarge(n) {
        if (selectionType==0 || selectionType==1) {

@@ -1,7 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxImageWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -13,10 +10,10 @@ public class Zoom implements PlugIn{
 
 	/** 'arg' must be "in", "out", "100%" or "orig". */
 	public void run(String arg) {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null)
 			{IJ.noImage(); return;}
-		IjxImageCanvas ic = imp.getCanvas();
+		ImageCanvas ic = imp.getCanvas();
 		if (ic==null) return;
 		Point loc = ic.getCursorLoc();
 		int x = ic.screenX(loc.x);
@@ -33,14 +30,16 @@ public class Zoom implements PlugIn{
     		ic.zoom100Percent();
 		else if (arg.equals("to"))
 			zoomToSelection(imp, ic);
+		else if (arg.equals("set"))
+			setZoom(imp, ic);
 		else if (arg.equals("max")) {
-			IjxImageWindow win = imp.getWindow();
+			ImageWindow win = imp.getWindow();
 			win.setBounds(win.getMaximumBounds());
 			win.maximize();
 		}
 	}
 	
-	void zoomToSelection(IjxImagePlus imp, IjxImageCanvas ic) {
+	void zoomToSelection(ImagePlus imp, ImageCanvas ic) {
 		Roi roi = imp.getRoi();
 		ic.unzoom();
 		if (roi==null) return;
@@ -51,14 +50,36 @@ public class Zoom implements PlugIn{
 		int marginh = (int)((w.height - mag * imp.getHeight()));
 		int x = r.x+r.width/2;
 		int y = r.y+r.height/2;
-		mag = ImageCanvasHelper.getHigherZoomLevel(mag);
+		mag = ic.getHigherZoomLevel(mag);
 		while(r.width*mag<w.width - marginw && r.height*mag<w.height - marginh) {
 			ic.zoomIn(ic.screenX(x), ic.screenY(y));
 			double cmag = ic.getMagnification();
 			if (cmag==32.0) break;
-			mag = ImageCanvasHelper.getHigherZoomLevel(cmag);
+			mag = ic.getHigherZoomLevel(cmag);
 			w = imp.getWindow().getBounds();
 		}
+	}
+	
+	/** Based on Albert Cardona's ZoomExact plugin:
+		http://albert.rierol.net/software.html */
+	void setZoom(ImagePlus imp, ImageCanvas ic) {
+		ImageWindow win = imp.getWindow();
+		GenericDialog gd = new GenericDialog("Set Zoom");
+		gd.addNumericField("Zoom (%): ", ic.getMagnification() * 200, 0);
+		gd.showDialog();
+		if (gd.wasCanceled()) return;
+		double mag = gd.getNextNumber()/100.0;
+		if (mag<=0.0) mag = 1.0;
+		win.getCanvas().setMagnification(mag);
+		double w = imp.getWidth()*mag;
+		double h = imp.getHeight()*mag;
+		Dimension screen = IJ.getScreenSize();
+		if (w>screen.width-20) w = screen.width - 20;  // does it fit?
+		if (h>screen.height-50) h = screen.height - 50;
+		ic.setSourceRect(new Rectangle(0, 0, (int)(w/mag), (int)(h/mag)));
+		ic.setDrawingSize((int)w, (int)h);
+		win.pack();
+		ic.repaint();
 	}
 	
 }

@@ -45,7 +45,7 @@ public class Hotkeys implements PlugIn {
 		int err = Menus.installPlugin(plugin,Menus.SHORTCUTS_MENU,"*"+command,shortcut,IJ.getInstance());
 		switch (err) {
 			case Menus.INVALID_SHORTCUT:
-				IJ.showMessage(TITLE, "The shortcut must be a single character or F1-F12.");
+				IJ.showMessage(TITLE, "The shortcut must be a single character or F1-F24.");
 				break;
 			case Menus.SHORTCUT_IN_USE:
 				IJ.showMessage("The \""+shortcut+"\" shortcut is already being used.");

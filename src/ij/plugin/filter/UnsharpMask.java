@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.GenericDialog;
 import ij.gui.DialogListener;
@@ -29,7 +28,7 @@ public class UnsharpMask implements ExtendedPlugInFilter, DialogListener {
      * @return Code describing supported formats etc.
      * (see ij.plugin.filter.PlugInFilter & ExtendedPlugInFilter)
      */
-    public int setup(String arg, IjxImagePlus imp) {
+    public int setup(String arg, ImagePlus imp) {
         return flags;
     }
     
@@ -58,7 +57,7 @@ public class UnsharpMask implements ExtendedPlugInFilter, DialogListener {
     }
 
     /** Ask the user for the parameters */
-    public int showDialog(IjxImagePlus imp, String command, PlugInFilterRunner pfr) {
+    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
         String options = Macro.getOptions();
         boolean oldMacro = false;    //for old macros, "gaussian radius" was 2.5 sigma
         if  (options!=null) {

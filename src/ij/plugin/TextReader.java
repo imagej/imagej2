@@ -8,7 +8,9 @@ import ij.process.*;
 import ij.util.Tools;
 
 
-/** This plugin opens a tab-delimeted text file as an image. */
+/** This plugin opens a tab or comma delimeted text file as an image.
+	Modified to accept commas as delimiters on 4/22/08 by 
+	Jay Unruh, Stowers Institute for Medical Research. */
 public class TextReader implements PlugIn {
     int words = 0, chars = 0, lines = 0, width=1;;
     String directory, name, path;
@@ -19,7 +21,7 @@ public class TextReader implements PlugIn {
             IJ.showStatus("Opening: " + path);
             ImageProcessor ip = open(path);
             if (ip!=null)
-                IJ.getFactory().newImagePlus(name, ip).show();
+                new ImagePlus(name, ip).show();
         }
     }
     
@@ -82,9 +84,11 @@ public class TextReader implements PlugIn {
         int wordsPerLine=0, wordsInPreviousLine=0;
 
         tok.resetSyntax();
-        tok.wordChars(33, 127);
-        tok.whitespaceChars(0, ' ');
-        tok.whitespaceChars(128, 255);
+        tok.wordChars(45, 127);
+        tok.whitespaceChars(0, 44);
+        //tok.wordChars(33, 127);
+        //tok.whitespaceChars(0, ' ');
+		tok.whitespaceChars(128, 255);
         tok.eolIsSignificant(true);
 
         while (tok.nextToken() != StreamTokenizer.TT_EOF) {
@@ -116,8 +120,11 @@ public class TextReader implements PlugIn {
     void read(Reader r, int size, float[] pixels) throws IOException {
         StreamTokenizer tok = new StreamTokenizer(r);
         tok.resetSyntax();
-        tok.wordChars(33, 127);
-        tok.whitespaceChars(0, ' ');
+        // the next two lines were changed by JU to allow for comma delimiters
+        tok.wordChars(45, 127);
+        tok.whitespaceChars(0, 44);
+        //tok.wordChars(33, 127);
+        //tok.whitespaceChars(0, ' ');
         tok.whitespaceChars(128, 255);
         //tok.parseNumbers();
 

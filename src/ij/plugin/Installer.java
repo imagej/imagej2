@@ -29,7 +29,7 @@ public class Installer implements PlugIn {
 			IJ.error("No plugins found");
 			return;
 		}
-		GenericDialog gd = new GenericDialog("Install Plugin", IJ.getTopComponentFrame());
+		GenericDialog gd = new GenericDialog("Install Plugin", IJ.getInstance());
 		gd.addChoice("Plugin:", plugins, defaultPlugin);
 		gd.addChoice("Menu:", menus, menuStr);
 		gd.addStringField("Command:", command, 16);

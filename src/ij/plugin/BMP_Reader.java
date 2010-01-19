@@ -286,10 +286,9 @@ class BMPDecoder {
                 ColorModel cm;
                 MemoryImageSource mis;
 
-                if (noOfEntries > 0) {
+                if (noOfEntries>0 && bitsPerPixel!=24) {
                         // There is a color palette; create an IndexColorModel
-                        cm = new IndexColorModel(bitsPerPixel,
-                                        noOfEntries, r, g, b);
+                        cm = new IndexColorModel(bitsPerPixel, noOfEntries, r, g, b);
                 } else {
                         // There is no palette; use the default RGB color model
                         cm = ColorModel.getRGBdefault();

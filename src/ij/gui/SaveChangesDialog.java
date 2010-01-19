@@ -1,13 +1,11 @@
 package ij.gui;
-import ijx.gui.IjxDialog;
 import ij.IJ;
 import java.awt.*;
 import java.awt.event.*;
 
 /** A modal dialog box with a one line message and
 	"Don't Save", "Cancel" and "Save" buttons. */
-
-public class SaveChangesDialog extends Dialog implements IjxDialog, ActionListener, KeyListener {
+public class SaveChangesDialog extends Dialog implements ActionListener, KeyListener {
 	private Button dontSave, cancel, save;
 	private boolean cancelPressed, savePressed;
 

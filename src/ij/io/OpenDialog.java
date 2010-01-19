@@ -3,6 +3,7 @@ import ij.*;
 import ij.gui.*;
 import ij.plugin.frame.Recorder;
 import ij.util.Java2;
+import ij.macro.Interpreter;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
@@ -18,7 +19,7 @@ import javax.swing.filechooser.*;
 	private static String defaultDirectory;
 	private static Frame sharedFrame;
 	private String title;
-	static String lastDir, lastName;
+	private static String lastDir, lastName;
 
 	
 	/** Displays a file open dialog with 'title' as
@@ -30,7 +31,16 @@ import javax.swing.filechooser.*;
 		if (macroOptions!=null && (path==null||path.equals(""))) {
 			path = Macro.getValue(macroOptions, title, path);
 			if (path==null || path.equals(""))
-				path = Macro.getValue(macroOptions, "path", path);		
+				path = Macro.getValue(macroOptions, "path", path);
+			if ((path==null || path.equals("")) && title!=null && title.equals("Open As String"))
+				path = Macro.getValue(macroOptions, "OpenAsString", path);
+			if (path!=null && path.indexOf(".")==-1 && !((new File(path)).exists())) {
+				// Is 'path' a macro variable?
+				if (path.startsWith("&")) path=path.substring(1);
+				Interpreter interp = Interpreter.getInstance();
+				String path2 = interp!=null?interp.getStringVariable(path):null;
+				if (path2!=null) path = path2;
+			}
 		}
 		if (path==null || path.equals("")) {
 			if (Prefs.useJFileChooser)
@@ -87,7 +97,7 @@ import javax.swing.filechooser.*;
 			fc.setCurrentDirectory(fdir);
 		if (fileName!=null)
 			fc.setSelectedFile(new File(fileName));
-		int returnVal = fc.showOpenDialog(IJ.getTopComponentFrame());
+		int returnVal = fc.showOpenDialog(IJ.getInstance());
 		if (returnVal!=JFileChooser.APPROVE_OPTION)
 			{Macro.abort(); return;}
 		File file = fc.getSelectedFile();
@@ -111,7 +121,7 @@ import javax.swing.filechooser.*;
 					fc.setCurrentDirectory(fdir);
 				if (fileName!=null)
 					fc.setSelectedFile(new File(fileName));
-				int returnVal = fc.showOpenDialog(IJ.getTopComponentFrame());
+				int returnVal = fc.showOpenDialog(IJ.getInstance());
 				if (returnVal!=JFileChooser.APPROVE_OPTION)
 					{Macro.abort(); return;}
 				File file = fc.getSelectedFile();
@@ -126,7 +136,7 @@ import javax.swing.filechooser.*;
 	
 	// Uses the AWT FileDialog class to display the dialog box
 	void open(String title, String path, String fileName) {
-		Frame parent = IJ.getTopComponentFrame();
+		Frame parent = IJ.getInstance();
 		if (parent==null) {
 			if (sharedFrame==null) sharedFrame = new Frame();
 			parent = sharedFrame;
@@ -178,7 +188,7 @@ import javax.swing.filechooser.*;
 		returned string always ends with the separator character ("/" or "\").*/
 	public static String getDefaultDirectory() {
 		if (defaultDirectory==null)
-			defaultDirectory = Prefs.getString(Prefs.DIR_IMAGE);
+			defaultDirectory = Prefs.getDefaultDirectory();
 		return defaultDirectory;
 	}
 

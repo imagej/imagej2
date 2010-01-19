@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -7,12 +6,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 /** Implements the Process/Plot Profile and Edit/Options/Profile Plot Options commands. */
-public class Profiler implements IjxPlugInFilter {
+public class Profiler implements PlugInFilter {
 
-	IjxImagePlus imp;
+	ImagePlus imp;
 	static boolean verticalProfile;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		if (arg.equals("set"))
 			{doOptions(); return DONE;}
 		this.imp = imp;
@@ -30,18 +29,19 @@ public class Profiler implements IjxPlugInFilter {
 		boolean fixedScale = ymin!=0.0 || ymax!=0.0;
 		boolean wasFixedScale = fixedScale;
 		
-		GenericDialog gd = new GenericDialog("Profile Plot Options", IJ.getTopComponentFrame());
+		GenericDialog gd = new GenericDialog("Profile Plot Options", IJ.getInstance());
 		gd.addNumericField("Width (pixels):", PlotWindow.plotWidth, 0);
 		gd.addNumericField("Height (pixels):", PlotWindow.plotHeight, 0);
 		gd.addNumericField("Minimum Y:", ymin, 2);
 		gd.addNumericField("Maximum Y:", ymax, 2);
-		gd.addCheckbox("Fixed Y-axis Scale", fixedScale);
-		gd.addCheckbox("Do Not Save X-Values", !PlotWindow.saveXValues);
+		gd.addCheckbox("Fixed y-axis scale", fixedScale);
+		gd.addCheckbox("Do not save x-values", !PlotWindow.saveXValues);
 		gd.addCheckbox("Auto-close", PlotWindow.autoClose);
-		gd.addCheckbox("Vertical Profile", verticalProfile);
-		gd.addCheckbox("List Values", PlotWindow.listValues);
-		gd.addCheckbox("Interpolate Line Profiles", PlotWindow.interpolate);
-		gd.addCheckbox("Draw Grid Lines", !PlotWindow.noGridLines);
+		gd.addCheckbox("Vertical profile", verticalProfile);
+		gd.addCheckbox("List values", PlotWindow.listValues);
+		gd.addCheckbox("Interpolate line profiles", PlotWindow.interpolate);
+		gd.addCheckbox("Draw grid lines", !PlotWindow.noGridLines);
+		gd.addHelp(IJ.URL+"/docs/menus/edit.html#plot-options");
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;

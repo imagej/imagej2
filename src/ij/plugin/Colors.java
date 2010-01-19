@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -11,14 +10,14 @@ import java.util.Vector;
 
 /** This plugin implements most of the Edit/Options/Colors command. */
 public class Colors implements PlugIn, ItemListener {
-	private String[] colors = {"red","green","blue","magenta","cyan","yellow","orange","black","white"};
+	public static final String[] colors = {"red","green","blue","magenta","cyan","yellow","orange","black","white"};
 	private Choice fchoice, bchoice, schoice;
 	private Color fc2, bc2, sc2;
 
  	public void run(String arg) {
-		if (arg.equals("point"))
-			pointToolOptions();
-		else
+ 		if (arg.equals("point"))
+ 			pointToolOptions();
+ 		else
 			showDialog();
 	}
 
@@ -47,7 +46,7 @@ public class Colors implements PlugIn, ItemListener {
 			if (bc2!=bc) Toolbar.setBackgroundColor(bc);
 			if (sc2!=sc) {
 				Roi.setColor(sc);
-				IjxImagePlus imp = WindowManager.getCurrentImage();
+				ImagePlus imp = WindowManager.getCurrentImage();
 				if (imp!=null && imp.getRoi()!=null) imp.draw();
 			}
 			return;
@@ -62,13 +61,14 @@ public class Colors implements PlugIn, ItemListener {
 		if (bc2!=bc) Toolbar.setBackgroundColor(bc2);
 		if (sc2!=sc) {
 			Roi.setColor(sc2);
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.draw();
 			Toolbar.getInstance().repaint();
 		}
 	}
 	
-	String getColorName(Color c, String defaultName) {
+	public static String getColorName(Color c, String defaultName) {
+		if (c==null) return defaultName;
 		String name = defaultName;
 		if (c.equals(Color.red)) name = colors[0];
 		else if (c.equals(Color.green)) name = colors[1];
@@ -82,7 +82,8 @@ public class Colors implements PlugIn, ItemListener {
 		return name;
 	}
 	
-	Color getColor(String name, Color defaultColor) {
+	public static Color getColor(String name, Color defaultColor) {
+		if (name==null) return defaultColor;
 		Color c = defaultColor;
 		if (name.equals(colors[0])) c = Color.red;
 		else if (name.equals(colors[1])) c = Color.green;
@@ -96,6 +97,59 @@ public class Colors implements PlugIn, ItemListener {
 		return c;
 	}
 
+	public static Color decode(String hexColor, Color defaultColor) {
+		Color color = getColor(hexColor, Color.gray);
+		if (color==Color.gray) {
+			if (hexColor.startsWith("#"))
+				hexColor = hexColor.substring(1);
+			int len = hexColor.length();
+			if (!(len==6 || len==8))
+				return defaultColor;
+			float alpha = len==8?parseHex(hexColor.substring(0,2)):1f;
+			if (len==8)
+				hexColor = hexColor.substring(2);
+			float red = parseHex(hexColor.substring(0,2));
+			float green = parseHex(hexColor.substring(2,4));
+			float blue = parseHex(hexColor.substring(4,6));
+			color = new Color(red, green, blue, alpha);
+		}
+		return color;
+	}
+
+	/** Converts a hex color (e.g., "ffff00") into "red", "green", "yellow", etc.
+		Returns null if the color is not one of the eight primary colors. */
+	public static String hexToColor(String hex) {
+		if (hex==null) return null;
+		if (hex.startsWith("#"))
+			hex = hex.substring(1);
+		String color = null;
+		if (hex.equals("ff0000")) color = "red";
+		else if (hex.equals("00ff00")) color = "green";
+		else if (hex.equals("0000ff")) color = "blue";
+		else if (hex.equals("000000")) color = "black";
+		else if (hex.equals("ffffff")) color = "white";
+		else if (hex.equals("ffff00")) color = "yellow";
+		else if (hex.equals("00ffff")) color = "cyan";
+		else if (hex.equals("ff00ff")) color = "magenta";
+		return color;
+	}
+	
+	/** Converts a Color into a string ("red", "green", #aa55ff, etc.). */
+	public static String colorToString(Color color) {
+		String str = color!=null?"#"+Integer.toHexString(color.getRGB()):"none";
+		if (str.length()==9 && str.startsWith("#ff"))
+			str = "#"+str.substring(3);
+		String str2 = hexToColor(str);
+		return str2!=null?str2:str;
+	}
+
+	private static float parseHex(String hex) {
+		float value = 0f;
+		try {value=Integer.parseInt(hex,16);}
+		catch(Exception e) { }
+		return value/255f;
+	}
+
 	public void itemStateChanged(ItemEvent e) {
 		Choice choice = (Choice)e.getSource();
 		String item = choice.getSelectedItem();
@@ -106,7 +160,7 @@ public class Colors implements PlugIn, ItemListener {
 			Toolbar.setBackgroundColor(color);
 		else if (choice==schoice) {
 			Roi.setColor(color);
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null && imp.getRoi()!=null) imp.draw();
 			Toolbar.getInstance().repaint();
 		}
@@ -121,6 +175,7 @@ public class Colors implements PlugIn, ItemListener {
 		gd.addNumericField("Mark Width:", Analyzer.markWidth, 0, 2, "pixels");
 		gd.addCheckbox("Auto-Measure", Prefs.pointAutoMeasure);
 		gd.addCheckbox("Auto-Next Slice", Prefs.pointAutoNextSlice);
+		gd.addCheckbox("Add to ROI Manager", Prefs.pointAddToManager);
 		gd.addCheckbox("Label Points", !Prefs.noPointLabels);
 		gd.addChoice("Selection Color:", colors, sname);
 		Vector choices = gd.getChoices();
@@ -130,7 +185,7 @@ public class Colors implements PlugIn, ItemListener {
 		if (gd.wasCanceled()) {
 			if (sc2!=sc) {
 				Roi.setColor(sc);
-				IjxImagePlus imp = WindowManager.getCurrentImage();
+				ImagePlus imp = WindowManager.getCurrentImage();
 				if (imp!=null && imp.getRoi()!=null) imp.draw();
 				Toolbar.getInstance().repaint();
 			}
@@ -141,21 +196,22 @@ public class Colors implements PlugIn, ItemListener {
 		Analyzer.markWidth = width;
 		Prefs.pointAutoMeasure = gd.getNextBoolean();
 		Prefs.pointAutoNextSlice = gd.getNextBoolean();
+		Prefs.pointAddToManager = gd.getNextBoolean();
 		Prefs.noPointLabels = !gd.getNextBoolean();
 		sname = gd.getNextChoice();
 		sc2 = getColor(sname, Color.yellow);
-		if (Prefs.pointAutoNextSlice) Prefs.pointAutoMeasure = true;
+		if (Prefs.pointAutoNextSlice&&!Prefs.pointAddToManager)
+			Prefs.pointAutoMeasure = true;
 		if (Prefs.noPointLabels!=saveNoPointLabels) {
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.draw();
 		}
 		if (sc2!=sc) {
 			Roi.setColor(sc2);
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.draw();
 			Toolbar.getInstance().repaint();
 		}
 	}
-
 
 }

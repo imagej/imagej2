@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.io.*;
 import ij.process.*;
@@ -72,7 +71,7 @@ public class LutLoader extends ImagePlus implements PlugIn {
 	}
 	
 	void showLut(FileInfo fi, boolean showImage) {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null) {
 			if (imp.getType()==ImagePlus.COLOR_RGB)
 				IJ.error("Color tables cannot be assiged to RGB Images.");
@@ -92,7 +91,7 @@ public class LutLoader extends ImagePlus implements PlugIn {
 	}
 	
 	void invertLut() {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null)
 			{IJ.noImage(); return;}
 		if (imp.getType()==ImagePlus.COLOR_RGB)

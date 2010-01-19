@@ -1,5 +1,4 @@
 package ij.plugin.frame;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import ij.*;
@@ -74,7 +73,7 @@ public class PasteController extends PlugInFrame implements PlugIn, ItemListener
 		Roi.setPasteMode(mode);
 		if (Recorder.record)
 			Recorder.record("setPasteMode", pasteMode.getSelectedItem());
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 	}
 	
     public void windowClosing(WindowEvent e) {

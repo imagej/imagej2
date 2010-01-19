@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.io.*;
 import java.text.DecimalFormat;	
@@ -9,24 +8,24 @@ import ij.io.*;
 import ij.gui.*;
 import ij.measure.Calibration;
 import ij.process.*;
-import ijx.IjxImageStack;
 
-/** Writes the slices of stack as separate files. */
+/** This plugin, which saves the images in a stack as separate files, 
+	implements the File/Save As/Image Sequence command. */
 public class StackWriter implements PlugIn {
 
 	//private static String defaultDirectory = null;
 	private static String[] choices = {"BMP",  "FITS", "GIF", "JPEG", "PGM", "PNG", "Raw", "Text", "TIFF",  "ZIP"};
 	private static String fileType = "TIFF";
 	private static int ndigits = 4;
-	private static int startAt;
 	private static boolean useLabels;
 	private static boolean firstTime = true;
+	private int startAt;
 	private boolean hyperstack;
 	private int[] dim;
 	//private static boolean startAtZero;
 
 	public void run(String arg) {
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null || (imp!=null && imp.getStackSize()<2)) {
 			IJ.error("Stack Writer", "This command requires a stack.");
 			return;
@@ -50,14 +49,14 @@ public class StackWriter implements PlugIn {
 			}
 		}
 		
-		
 		GenericDialog gd = new GenericDialog("Save Image Sequence");
 		gd.addChoice("Format:", choices, fileType);
 		gd.addStringField("Name:", name, 12);
 		if (!hyperstack)
 			gd.addNumericField("Start At:", startAt, 0);
 		gd.addNumericField("Digits (1-8):", ndigits, 0);
-		gd.addCheckbox("Use Slice Labels as File Names", useLabels);
+		if (!hyperstack)
+			gd.addCheckbox("Use slice labels as file names", useLabels);
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;
@@ -67,8 +66,10 @@ public class StackWriter implements PlugIn {
 			startAt = (int)gd.getNextNumber();
 		if (startAt<0) startAt = 0;
 		ndigits = (int)gd.getNextNumber();
-		useLabels = gd.getNextBoolean();
-		if (useLabels) hyperstack = false;
+		if (!hyperstack)
+			useLabels = gd.getNextBoolean();
+		else
+			useLabels = false;
 		int number = 0;
 		if (ndigits<1) ndigits = 1;
 		if (ndigits>8) ndigits = 8;
@@ -99,15 +100,16 @@ public class StackWriter implements PlugIn {
 			return;
 		String directory = sd.getDirectory();
 		
-		IjxImageStack stack = imp.getStack();
-		IjxImagePlus imp2 =IJ.getFactory().newImagePlus();
+		ImageStack stack = imp.getStack();
+		ImagePlus imp2 = new ImagePlus();
 		imp2.setTitle(imp.getTitle());
 		Calibration cal = imp.getCalibration();
 		int nSlices = stack.getSize();
 		String path,label=null;
+		imp.lock();
 		for (int i=1; i<=nSlices; i++) {
 			IJ.showStatus("writing: "+i+"/"+nSlices);
-			IJ.showProgress((double)i/nSlices);
+			IJ.showProgress(i, nSlices);
 			ImageProcessor ip = stack.getProcessor(i);
 			if (luts!=null && nChannels>1 && hyperstack) {
 				ip.setColorModel(luts[lutIndex++]);
@@ -126,6 +128,7 @@ public class StackWriter implements PlugIn {
 			if (useLabels) {
 				label = stack.getShortSliceLabel(i);
 				if (label!=null && label.equals("")) label = null;
+				if (label!=null) label = label.replaceAll("/","-");
 			}
 			if (label==null)
 				path = directory+name+digits+extension;
@@ -133,8 +136,8 @@ public class StackWriter implements PlugIn {
 				path = directory+label+extension;
 			IJ.saveAs(imp2, format, path);
 		}
+		imp.unlock();
 		IJ.showStatus("");
-		IJ.showProgress(1.0);
 	}
 	
 	String getDigits(int n) {

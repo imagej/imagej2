@@ -14,6 +14,7 @@ public class Program implements MacroConstants {
 	Symbol[] table = new Symbol[maxSymbols];
     static Symbol[] systemTable;
 	int[] code = new int[maxProgramSize];
+	int[] lineNumbers = new int[maxProgramSize];
 	Variable[] globals;
 	boolean hasVars, hasFunctions;
 	int macroCount;
@@ -86,15 +87,21 @@ public class Program implements MacroConstants {
 		table[stLoc] = sym;
 	}
 	
-	void addToken(int tok) {
+	void addToken(int tok, int lineNumber) {//n__
 		pc++;
 		if (pc==code.length) {
 			int[] tmp = new int[maxProgramSize*2];
 			System.arraycopy(code, 0, tmp, 0, maxProgramSize);
 			code = tmp;
+
+            tmp = new int[maxProgramSize*2];  //n__
+			System.arraycopy(lineNumbers, 0, tmp, 0, maxProgramSize);
+			lineNumbers = tmp;
+
 			maxProgramSize *= 2;
-		}
+        }
 		code[pc] = tok;
+        lineNumbers[pc] = lineNumber; //n__
 	}
 
 	/** Looks up a word in the symbol table. Returns null if the word is not found. */
@@ -139,7 +146,7 @@ public class Program implements MacroConstants {
 		String str;
 		int token, address;
 		for (int i=0; i<=pc; i++) 
-			IJ.log(i+"	"+(code[i]&TOK_MASK)+"  "+decodeToken(code[i]));
+			IJ.log(i+"	 "+lineNumbers[i]+"   "+(code[i]&TOK_MASK)+"   "+decodeToken(code[i]));
 	}
 	
 	public Variable[] getGlobals() {
@@ -178,9 +185,6 @@ public class Program implements MacroConstants {
 					str = IJ.d2s(v,0);
 				else
 					str = ""+v;
-				break;
-			case EOL:
-				str = "EOL";
 				break;
 			case EOF:
 				str = "EOF";
@@ -250,4 +254,18 @@ public class Program implements MacroConstants {
         return menus;
     }
 
+	// Returns 'true' if this macro program contains the specified word. */
+	public boolean hasWord(String word) {
+		int token, tokenAddress;
+		for (int i=0; i<code.length; i++) {
+			token = code[i];
+			if (token<=127) continue;
+			if (token==EOF) return false;
+			tokenAddress = token>>TOK_SHIFT;
+			String str = table[tokenAddress].str;
+			if (str!=null && str.equals(word)) return true;
+		}
+		return false;
+	}
+	
 } // Program

@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -58,17 +57,19 @@ public class FileInfoVirtualStack extends VirtualStack implements PlugIn {
 			for (int i=0; i<n; i++) {
 				info[i] = (FileInfo)fi.clone();
 				info[i].nImages = 1;
-				info[i].longOffset = (long)fi.offset + i*(size + fi.gapBetweenImages);
+				info[i].longOffset = fi.getOffset() + i*(size + fi.gapBetweenImages);
 			}
 		}
 		nImages = info.length;
 		FileOpener fo = new FileOpener(info[0] );
-		IjxImagePlus imp = fo.open(false);
+		ImagePlus imp = fo.open(false);
 		Properties props = fo.decodeDescriptionString(fi);
-		IjxImagePlus imp2 = IJ.getFactory().newImagePlus(fi.fileName, this);
+		ImagePlus imp2 = new ImagePlus(fi.fileName, this);
 		imp2.setFileInfo(fi);
 		if (imp!=null && props!=null) {
 			imp2.setCalibration(imp.getCalibration());
+			if (fi.info!=null)
+				imp2.setProperty("Info", fi.info);
 			int channels = getInt(props,"channels");
 			int slices = getInt(props,"slices");
 			int frames = getInt(props,"frames");
@@ -129,7 +130,7 @@ public class FileInfoVirtualStack extends VirtualStack implements PlugIn {
 		if (IJ.debugMode) IJ.log("FileInfoVirtualStack.getProcessor: "+n);
 		info[n-1].nImages = 1; // why is this needed?
 		FileOpener fo = new FileOpener(info[n-1]);
-		IjxImagePlus imp = fo.open(false);
+		ImagePlus imp = fo.open(false);
 		if (imp!=null)
 			return imp.getProcessor();
 		else
@@ -141,9 +142,14 @@ public class FileInfoVirtualStack extends VirtualStack implements PlugIn {
 		return nImages;
 	}
 
-	/** Returns null. */
+	/** Returns the label of the Nth image. */
 	public String getSliceLabel(int n) {
-		 return null;
+		if (n<1 || n>nImages)
+			throw new IllegalArgumentException("Argument out of range: "+n);
+		if (info[0].sliceLabels==null || info[0].sliceLabels.length!=nImages)
+			return null;
+		else
+			return info[0].sliceLabels[n-1];
 	}
 
 	public int getWidth() {

@@ -1,16 +1,15 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.util.*;
 import ij.*;
 import ij.process.*;
 
 /** Implements ImageJ's Process/Noise/Salt and Pepper command. */
-public class SaltAndPepper implements IjxPlugInFilter {
+public class SaltAndPepper implements PlugInFilter {
 
 	Random r = new Random();
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		return IJ.setupDialog(imp, DOES_8G+DOES_8C+SUPPORTS_MASKING);
 	}
 

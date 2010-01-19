@@ -1,13 +1,11 @@
 package ij.text;
 
-import ijx.IjxApplication;
 import java.awt.*;
 import java.io.*;
 import java.awt.event.*;
 import ij.*;
 import ij.io.*;
 import ij.gui.*;
-import ijx.gui.IjxWindow;
 import ij.plugin.filter.Analyzer;
 import ij.measure.ResultsTable;
 import ij.macro.Interpreter;
@@ -15,12 +13,13 @@ import ij.macro.Interpreter;
 /** Uses a TextPanel to displays text in a window.
 	@see TextPanel
 */
-public class TextWindow extends Frame implements IjxWindow, ActionListener, FocusListener, ItemListener {
+public class TextWindow extends Frame implements ActionListener, FocusListener, ItemListener {
 
 	public static final String LOC_KEY = "results.loc";
 	public static final String WIDTH_KEY = "results.width";
 	public static final String HEIGHT_KEY = "results.height";
 	public static final String LOG_LOC_KEY = "log.loc";
+	public static final String DEBUG_LOC_KEY = "debug.loc";
 	static final String FONT_SIZE = "tw.font.size";
 	static final String FONT_ANTI= "tw.font.anti";
 	TextPanel textPanel;
@@ -50,7 +49,7 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 	public TextWindow(String title, String headings, String data, int width, int height) {
 		super(title);
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-		if (IJ.isLinux()) setBackground(IJ.backgroundColor);
+		if (IJ.isLinux()) setBackground(ImageJ.backgroundColor);
 		textPanel = new TextPanel(title);
 		textPanel.setTitle(title);
 		add("Center", textPanel);
@@ -58,7 +57,7 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 		if (data!=null && !data.equals(""))
 			textPanel.append(data);
 		addKeyListener(textPanel);
-		Frame ij = IJ.getTopComponentFrame();
+		ImageJ ij = IJ.getInstance();
 		if (ij!=null) {
 			Image img = ij.getIconImage();
 			if (img!=null)
@@ -77,6 +76,10 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 			h = (int)Prefs.get(HEIGHT_KEY, 0.0);
 		} else if (title.equals("Log")) {
 			loc = Prefs.getLocation(LOG_LOC_KEY);
+			w = width;
+			h = height;
+		} else if (title.equals("Debug")) {
+			loc = Prefs.getLocation(DEBUG_LOC_KEY);
 			w = width;
 			h = height;
 		}
@@ -218,7 +221,7 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 		super.processWindowEvent(e);
 		int id = e.getID();
 		if (id==WindowEvent.WINDOW_CLOSING)
-			canClose();	
+			close();	
 		else if (id==WindowEvent.WINDOW_ACTIVATED)
 			WindowManager.setWindow(this);
 	}
@@ -226,14 +229,11 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 	public void itemStateChanged(ItemEvent e) {
         setFont();
 	}
-    public void close() {
-		canClose();
-    }
 
-	public boolean canClose() {
+	public void close() {
 		if (getTitle().equals("Results")) {
 			if (!Analyzer.resetCounter())
-				return true;
+				return;
 			IJ.setTextPanel(null);
 			Prefs.saveLocation(LOC_KEY, getLocation());
 			Dimension d = getSize();
@@ -243,20 +243,22 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 			Prefs.saveLocation(LOG_LOC_KEY, getLocation());
 			IJ.debugMode = false;
 			IJ.log("\\Closed");
+			IJ.notifyEventListeners(IJEventListener.LOG_WINDOW_CLOSED);
+		} else if (getTitle().equals("Debug")) {
+			Prefs.saveLocation(DEBUG_LOC_KEY, getLocation());
 		} else if (textPanel!=null && textPanel.rt!=null) {
-			if (!saveContents()) return true;
+			if (!saveContents()) return;
 		}
 		setVisible(false);
 		dispose();
 		WindowManager.removeWindow(this);
 		textPanel.flush();
-        return true;
 	}
 	
 	boolean saveContents() {
 		int lineCount = textPanel.getLineCount();
 		if (!textPanel.unsavedLines) lineCount = 0;
-		IjxApplication ij = IJ.getInstance();
+		ImageJ ij = IJ.getInstance();
 		boolean macro = IJ.macroRunning() || Interpreter.isBatchMode();
 		if (lineCount>0 && !macro && ij!=null && !ij.quitting()) {
 			YesNoCancelDialog d = new YesNoCancelDialog(this, getTitle(), "Save "+lineCount+" measurements?");
@@ -297,9 +299,5 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 	}
 
 	public void focusLost(FocusEvent e) {}
-
-    public boolean isClosed() {
-        return true;
-    }
 
 }

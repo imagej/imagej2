@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -7,6 +6,7 @@ import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.util.Tools;
+import ij.measure.Calibration;
 
 /**
  *      This plugin implements the Edit/Selection/Specify command.<p>
@@ -32,42 +32,62 @@ import ij.util.Tools;
  *      
  */
 public class SpecifyROI implements PlugIn, DialogListener {
-    int             iX;
-    int             iY;
-    int             iXROI;
-    int             iYROI;
-    int             iSlice;
-    int             iWidth;
-    int             iHeight;
-    boolean         bAbort;
-    IjxImagePlus       imp;
+    static double xRoi, yRoi, width, height;
     static boolean  oval;
     static boolean  centered;
+    static boolean scaledUnits;
+    static Rectangle prevRoi;
+    static double prevPixelWidth = 1.0;
+    int iSlice;
+    boolean bAbort;
+    ImagePlus imp;
     Vector fields, checkboxes;
     int stackSize;
 
-    public void run(String arg) {
-        imp = IJ.getImage();
-        stackSize = imp!=null?imp.getStackSize():0;
-        Roi roi = imp.getRoi();
-        Rectangle r = roi!=null?roi.getBounds():imp.getProcessor().getRoi();
-        iWidth = r.width;
-        iHeight = r.height;
-        iXROI = r.x;
-        iYROI = r.y;
-        if (roi==null) { // No existing ROI, make default
-        	iWidth /= 2;
-        	iHeight /= 2;
-        	iXROI += iWidth/2;
-        	iYROI += iHeight/2; 
-        }
-	  if (centered) {	// Make iXROI and iYROI consistent when centered mode is active
-        	iXROI += iWidth/2;
-        	iYROI += iHeight/2; 
-	  }
-        iSlice = imp.getCurrentSlice();
-        showDialog();
-     }
+	public void run(String arg) {
+		imp = IJ.getImage();
+		stackSize = imp!=null?imp.getStackSize():0;
+		Roi roi = imp.getRoi();
+		Calibration cal = imp.getCalibration();
+		if (roi!=null && roi.getBounds().equals(prevRoi) && cal.pixelWidth==prevPixelWidth)
+			roi = null;
+		if (roi!=null) {
+    		boolean rectOrOval = roi!=null && (roi.getType()==Roi.RECTANGLE||roi.getType()==Roi.OVAL);
+    		oval = rectOrOval && (roi.getType()==Roi.OVAL);	// Handle existing oval ROI
+			Rectangle r = roi.getBounds();
+			width = r.width;
+			height = r.height;
+			xRoi = r.x;
+			yRoi = r.y;
+			if (scaledUnits && cal.scaled()) {
+				xRoi = xRoi*cal.pixelWidth;
+				yRoi = yRoi*cal.pixelHeight;
+				width = width*cal.pixelWidth;
+				height = height*cal.pixelHeight;
+			}
+    	} else if (!validDialogValues()) {
+			width = imp.getWidth()/2;
+			height = imp.getHeight()/2;
+			xRoi = width/2;
+			yRoi = height/2; 
+		}
+		if (centered) {	// Make xRoi and yRoi consistent when centered mode is active
+			xRoi += width/2.0;
+			yRoi += height/2.0; 
+		}
+		iSlice = imp.getCurrentSlice();
+		showDialog();
+	}
+	
+	boolean validDialogValues() {
+		Calibration cal = imp.getCalibration();
+		double pw=cal.pixelWidth, ph=cal.pixelHeight;
+		if (width/pw<1.5 || height/ph<1.5)
+			return false;
+		if (xRoi/pw>=imp.getWidth() || yRoi/ph>=imp.getHeight())
+			return false;
+		return true;
+	}
 
     /**
      *	Creates a dialog box, allowing the user to enter the requested
@@ -75,20 +95,24 @@ public class SpecifyROI implements PlugIn, DialogListener {
      *  option for oval, and option for whether x & y coordinates to be centered.
      */
     void showDialog() {
+    	Calibration cal = imp.getCalibration();
+    	int digits = 0;
+    	if (scaledUnits && cal.scaled())
+    		digits = 2;
     	Roi roi = imp.getRoi();
-    	boolean rectOrOval = roi!=null && (roi.getType()==Roi.RECTANGLE||roi.getType()==Roi.OVAL);
-	oval = rectOrOval && (roi.getType()==Roi.OVAL);	// Handle existing oval ROI
-    	if (roi==null || !rectOrOval)
+    	if (roi==null)
     		drawRoi();
         GenericDialog gd = new GenericDialog("Specify");
-        gd.addNumericField("Width:", iWidth, 0);
-        gd.addNumericField("Height:", iHeight, 0);
-        gd.addNumericField("X Coordinate:", iXROI, 0);
-        gd.addNumericField("Y Coordinate:", iYROI, 0);
+        gd.addNumericField("Width:", width, digits);
+        gd.addNumericField("Height:", height, digits);
+        gd.addNumericField("X Coordinate:", xRoi, digits);
+        gd.addNumericField("Y Coordinate:", yRoi, digits);
         if (stackSize>1)
         	gd.addNumericField("Slice:", iSlice, 0);
         gd.addCheckbox("Oval", oval);
         gd.addCheckbox("Centered",centered);
+        if (cal.scaled())
+            gd.addCheckbox("Scaled Units ("+cal.getUnits()+")", scaledUnits);
         fields = gd.getNumericFields();
         gd.addDialogListener(this);
         gd.showDialog();
@@ -100,36 +124,52 @@ public class SpecifyROI implements PlugIn, DialogListener {
         }
     }
     
-    void drawRoi() {
-        if (centered) {
-            iX = iXROI - (iWidth/2);
-            iY = iYROI - (iHeight/2);
-        } else {
-            iX = iXROI;
-            iY = iYROI;
-        }
-        if (oval)
-            imp.setRoi(new OvalRoi(iX, iY, iWidth, iHeight,imp));
-        else
-            imp.setRoi(iX, iY, iWidth, iHeight);
-    }
+	void drawRoi() {
+		int iX = (int)xRoi;
+		int iY = (int)yRoi;
+		if (centered) {
+			iX = (int)(xRoi - (width/2));
+			iY = (int)(yRoi - (height/2));
+		}
+		int iWidth = (int)width;
+		int iHeight = (int)height;
+		Calibration cal = imp.getCalibration();
+		if (scaledUnits && cal.scaled()) {
+			iX = (int)Math.round(xRoi/cal.pixelWidth);
+			iY = (int)Math.round(yRoi/cal.pixelHeight);
+			iWidth = (int)Math.round(width/cal.pixelWidth);
+			iHeight = (int)Math.round(height/cal.pixelHeight);
+			prevPixelWidth = cal.pixelWidth;
+		}
+		Roi roi;
+		if (oval)
+			roi = new OvalRoi(iX, iY, iWidth, iHeight, imp);
+		else
+			roi = new Roi(iX, iY, iWidth, iHeight);
+		imp.setRoi(roi);
+		prevRoi = roi.getBounds();
+		prevPixelWidth = cal.pixelWidth;
+	}
     	
 	public boolean dialogItemChanged(GenericDialog gd, AWTEvent e) {
-		iWidth = (int) gd.getNextNumber();
-		iHeight = (int) gd.getNextNumber();
-		iXROI = (int) gd.getNextNumber();	
-		iYROI = (int) gd.getNextNumber();
+		if (IJ.isMacOSX()) IJ.wait(100);
+		width = gd.getNextNumber();
+		height = gd.getNextNumber();
+		xRoi = gd.getNextNumber();	
+		yRoi = gd.getNextNumber();
 		if (stackSize>1)	
-			iSlice = (int) gd.getNextNumber();  
+			iSlice = (int) gd.getNextNumber(); 
 		oval = gd.getNextBoolean();
 		centered = gd.getNextBoolean();
+		if (imp.getCalibration().scaled())
+			scaledUnits = gd.getNextBoolean();
 		if (gd.invalidNumber())
 			return false;
 		else {
 			if (stackSize>1 && iSlice>0 && iSlice<=stackSize)
 			    imp.setSlice(iSlice);
 			drawRoi();
-        		return true;
+			return true;
 		}
     }
 

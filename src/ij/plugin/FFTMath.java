@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -17,7 +16,7 @@ public class FFTMath implements PlugIn {
     private static int operation = CONJUGATE_MULTIPLY;
     private static boolean doInverse = true;
     private static String title = "Result";
-    private IjxImagePlus imp1, imp2;
+    private ImagePlus imp1, imp2;
             
     public void run(String arg) {
         if (showDialog())
@@ -32,7 +31,7 @@ public class FFTMath implements PlugIn {
         }
         String[] titles = new String[wList.length];
         for (int i=0; i<wList.length; i++) {
-            IjxImagePlus imp = WindowManager.getImage(wList[i]);
+            ImagePlus imp = WindowManager.getImage(wList[i]);
             if (imp!=null)
                 titles[i] = imp.getTitle();
             else
@@ -61,7 +60,7 @@ public class FFTMath implements PlugIn {
         return true;
    }
     
-    public void doMath(IjxImagePlus imp1, IjxImagePlus imp2) {
+    public void doMath(ImagePlus imp1, ImagePlus imp2) {
     	FHT h1, h2=null;
     	ImageProcessor fht1, fht2;
 		fht1  = (ImageProcessor)imp1.getProperty("FHT");
@@ -122,11 +121,11 @@ public class FFTMath implements PlugIn {
 			result.swapQuadrants();
 			IJ.showStatus("Display image");
 			result.resetMinAndMax();
-        	IJ.getFactory().newImagePlus(title, result).show();
+        	new ImagePlus(title, result).show();
 		} else {
 			IJ.showStatus("Power spectrum");
 			ImageProcessor ps = result.getPowerSpectrum();
-			IjxImagePlus imp3 = IJ.getFactory().newImagePlus(title, ps.convertToFloat());
+			ImagePlus imp3 = new ImagePlus(title, ps.convertToFloat());
 			result.quadrantSwapNeeded = true;
 			imp3.setProperty("FHT", result);
         	imp3.show();

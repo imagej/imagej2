@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import java.io.*;
 import java.util.*;
 import java.net.URL;
@@ -104,31 +103,23 @@ public class DICOM extends ImagePlus implements PlugIn {
 		}
 		if (fi!=null && fi.width>0 && fi.height>0 && fi.offset>0) {
 			FileOpener fo = new FileOpener(fi);
-			IjxImagePlus imp = fo.open(false);
+			ImagePlus imp = fo.open(false);
 			ImageProcessor ip = imp.getProcessor();
 			if (fi.fileType==FileInfo.GRAY16_SIGNED) {
-				//if (dd.rescaleSlope!=0.0&&dd.rescaleSlope!=1.0) 
-				//	ip.multiply(dd.rescaleSlope);
 				if (dd.rescaleIntercept!=0.0 && dd.rescaleSlope==1.0)
 					ip.add(dd.rescaleIntercept);
-			} else {
-				if (dd.rescaleIntercept!=0.0 && dd.rescaleSlope==1.0) {
-					double[] coeff = new double[2];
-					coeff[0] = dd.rescaleIntercept;
-					coeff[1] = dd.rescaleSlope;
- 					imp.getCalibration().setFunction(Calibration.STRAIGHT_LINE, coeff, "gray value");
-  				}
+			} else if (dd.rescaleIntercept!=0.0 && (dd.rescaleSlope==1.0||fi.fileType==FileInfo.GRAY8)) {
+				double[] coeff = new double[2];
+				coeff[0] = dd.rescaleIntercept;
+				coeff[1] = dd.rescaleSlope;
+				imp.getCalibration().setFunction(Calibration.STRAIGHT_LINE, coeff, "gray value");
 			}
-			//if (fi.fileType==FileInfo.GRAY16_SIGNED && imp.getStackSize()==1)
-			//	convertToUnsigned(imp, fi);
 			if (dd.windowWidth>0.0) {
 				double min = dd.windowCenter-dd.windowWidth/2;
 				double max = dd.windowCenter+dd.windowWidth/2;
 				Calibration cal = imp.getCalibration();
-				if (cal.getCValue(0)!=0) {
-					min -= cal.getCValue(0);
-					max -= cal.getCValue(0);
-				}
+				min = cal.getRawValue(min);
+				max = cal.getRawValue(max);
 				ip.setMinAndMax(min, max);
 				if (IJ.debugMode) IJ.log("window: "+min+"-"+max);
 			}
@@ -163,7 +154,7 @@ public class DICOM extends ImagePlus implements PlugIn {
 	}
 	
 	/** Convert 16-bit signed to unsigned if all pixels>=0. */
-	void convertToUnsigned(IjxImagePlus imp, FileInfo fi) {
+	void convertToUnsigned(ImagePlus imp, FileInfo fi) {
 		ImageProcessor ip = imp.getProcessor();
 		short[] pixels = (short[])ip.getPixels();
 		int min = Integer.MAX_VALUE;
@@ -387,9 +378,9 @@ class DicomDecoder {
 		vr = (b0<<8) + b1;
 		
 		switch (vr) {
-			case OB: case OW: case SQ: case UN:
+			case OB: case OW: case SQ: case UN: case UT:
 				// Explicit VR with 32-bit length if other two bytes are zero
-					if ( (b2 == 0) || (b3 == 0) ) return getInt();
+				if ( (b2 == 0) || (b3 == 0) ) return getInt();
 				// Implicit VR with 32-bit length
 				vr = IMPLICIT_VR;
 				if (littleEndian)
@@ -398,7 +389,7 @@ class DicomDecoder {
 					return ((b0<<24) + (b1<<16) + (b2<<8) + b3);		
 			case AE: case AS: case AT: case CS: case DA: case DS: case DT:  case FD:
 			case FL: case IS: case LO: case LT: case PN: case SH: case SL: case SS:
-			case ST: case TM:case UI: case UL: case US: case UT: case QQ:
+			case ST: case TM:case UI: case UL: case US: case QQ:
 				// Explicit vr with 16-bit length
 				if (littleEndian)
 					return ((b3<<8) + b2);
@@ -463,8 +454,9 @@ class DicomDecoder {
 		String photoInterpretation = "";
 				
 		if (inputStream!=null) {
+			// Use large buffer to allow URL stream to be reset after reading header
 			f = inputStream;
-			f.mark(200000);
+			f.mark(400000);
 		} else
 			f = new BufferedInputStream(new FileInputStream(directory + fileName));
 		if (IJ.debugMode) {
@@ -722,19 +714,19 @@ class DicomDecoder {
 			return id+": "+value;
 		switch (vr) {
 			case FD:
-				if (FD==8)
+				if (elementLength==8)
 					value = Double.toString(getDouble());
 				else
 					for (int i=0; i<elementLength; i++) getByte();
 				break;
 			case FL:
-				if (FD==8)
+				if (elementLength==4)
 					value = Float.toString(getFloat());
 				else
 					for (int i=0; i<elementLength; i++) getByte();
 				break;
-			case UT:
-				throw new IOException("ImageJ cannot read UT (unlimited text) DICOMs");
+			//case UT:
+				//throw new IOException("ImageJ cannot read UT (unlimited text) DICOMs");
 			case AE: case AS: case AT: case CS: case DA: case DS: case DT:  case IS: case LO: 
 			case LT: case PN: case SH: case ST: case TM: case UI:
 				value = getString(elementLength);
@@ -871,6 +863,7 @@ class DicomDictionary {
 		"00080033=TMImage Time",
 		"00080034=TMOverlay Time",
 		"00080035=TMCurve Time",
+		"00080040=USData Set Type",
 		"00080041=LOData Set Subtype",
 		"00080042=CSNuclear Medicine Series Type",
 		"00080050=SHAccession Number",
@@ -930,7 +923,7 @@ class DicomDictionary {
 		"00082200=CSTransducer Position",
 		"00082204=CSTransducer Orientation",
 		"00082208=CSAnatomic Structure",
-
+		
 		"00100010=PNPatient's Name",
 		"00100020=LOPatient ID",
 		"00100021=LOIssuer of Patient ID",
@@ -950,7 +943,7 @@ class DicomDictionary {
 		"001021A0=CSSmoking Status",
 		"001021B0=LTAdditional Patient History",
 		"00104000=LTPatient Comments",
-
+		
 		"00180010=LOContrast/Bolus Agent",
 		"00180015=CSBody Part Examined",
 		"00180020=CSScanning Sequence",
@@ -1214,7 +1207,7 @@ class DicomDictionary {
 		"00187062=LTExposure Control Mode Description",
 		"00187064=CSExposure Status",
 		"00187065=DSPhototimer Setting",
-
+		
 		"0020000D=UIStudy Instance UID",
 		"0020000E=UISeries Instance UID",
 		"00200010=SHStudy ID",
@@ -1252,7 +1245,7 @@ class DicomDictionary {
 		"00201206=ISNumber of Study Related Series",
 		"00201208=ISNumber of Study Related Images",
 		"00204000=LTImage Comments",
-
+		
 		"00280002=USSamples per Pixel",
 		"00280004=CSPhotometric Interpretation",
 		"00280006=USPlanar Configuration",
@@ -1301,7 +1294,7 @@ class DicomDictionary {
 		"30020011=DSImage Plane Pixel Spacing",
 		"30020022=DSRadiation Machine SAD",
 		"30020026=DSRT IMAGE SID",
-
+		
 		"0032000A=CSStudy Status ID",
 		"0032000C=CSStudy Priority ID",
 		"00320012=LOStudy ID Issuer",
@@ -1327,7 +1320,7 @@ class DicomDictionary {
 		"00321064=SQRequested Procedure Code Sequence",
 		"00321070=LORequested Contrast Agent",
 		"00324000=LTStudy Comments",
-
+		
 		"00400001=AEScheduled Station AE Title",
 		"00400002=DAScheduled Procedure Step Start Date",
 		"00400003=TMScheduled Procedure Step Start Time",
@@ -1463,88 +1456,117 @@ class DicomDictionary {
 		"0040DB0C=UITemplate Extension Organization UID",
 		"0040DB0D=UITemplate Extension Creator UID",
 		"0040DB73=ULReferenced Content Item Identifier",
+		
+		"00540011=USNumber of Energy Windows",
+		"00540012=SQEnergy Window Information Sequence",
+		"00540013=SQEnergy Window Range Sequence",
+		"00540014=DSEnergy Window Lower Limit",
+		"00540015=DSEnergy Window Upper Limit",
+		"00540016=SQRadiopharmaceutical Information Sequence",
+		"00540017=ISResidual Syringe Counts",
+		"00540018=SHEnergy Window Name",
+		"00540020=USDetector Vector",
+		"00540021=USNumber of Detectors",
+		"00540022=SQDetector Information Sequence",
+		"00540030=USPhase Vector",
+		"00540031=USNumber of Phases",
+		"00540032=SQPhase Information Sequence",
+		"00540033=USNumber of Frames in Phase",
+		"00540036=ISPhase Delay",
+		"00540038=ISPause Between Frames",
+		"00540039=CSPhase Description",
+		"00540050=USRotation Vector",
+		"00540051=USNumber of Rotations",
+		"00540052=SQRotation Information Sequence",
+		"00540053=USNumber of Frames in Rotation",
+		"00540060=USR-R Interval Vector",
+		"00540061=USNumber of R-R Intervals",
+		"00540062=SQGated Information Sequence",
+		"00540063=SQData Information Sequence",
+		"00540070=USTime Slot Vector",
+		"00540071=USNumber of Time Slots",
+		"00540072=SQTime Slot Information Sequence",
+		"00540073=DSTime Slot Time",
+		"00540080=USSlice Vector",
+		"00540081=USNumber of Slices",
+		"00540090=USAngular View Vector",
+		"00540100=USTime Slice Vector",
+		"00540101=USNumber of Time Slices",
+		"00540200=DSStart Angle",
+		"00540202=CSType of Detector Motion",
+		"00540210=ISTrigger Vector",
+		"00540211=USNumber of Triggers in Phase",
+		"00540220=SQView Code Sequence",
+		"00540222=SQView Modifier Code Sequence",
+		"00540300=SQRadionuclide Code Sequence",
+		"00540302=SQAdministration Route Code Sequence",
+		"00540304=SQRadiopharmaceutical Code Sequence",
+		"00540306=SQCalibration Data Sequence",
+		"00540308=USEnergy Window Number",
+		"00540400=SHImage ID",
+		"00540410=SQPatient Orientation Code Sequence",
+		"00540412=SQPatient Orientation Modifier Code Sequence",
+		"00540414=SQPatient Gantry Relationship Code Sequence",
+		"00540500=CSSlice Progression Direction",
+		"00541000=CSSeries Type",
+		"00541001=CSUnits",
+		"00541002=CSCounts Source",
+		"00541004=CSReprojection Method",
+		"00541100=CSRandoms Correction Method",
+		"00541101=LOAttenuation Correction Method",
+		"00541102=CSDecay Correction",
+		"00541103=LOReconstruction Method",
+		"00541104=LODetector Lines of Response Used",
+		"00541105=LOScatter Correction Method",
+		"00541200=DSAxial Acceptance",
+		"00541201=ISAxial Mash",
+		"00541202=ISTransverse Mash",
+		"00541203=DSDetector Element Size",
+		"00541210=DSCoincidence Window Width",
+		"00541220=CSSecondary Counts Type",
+		"00541300=DSFrame Reference Time",
+		"00541310=ISPrimary (Prompts) Counts Accumulated",
+		"00541311=ISSecondary Counts Accumulated",
+		"00541320=DSSlice Sensitivity Factor",
+		"00541321=DSDecay Factor",
+		"00541322=DSDose Calibration Factor",
+		"00541323=DSScatter Fraction Factor",
+		"00541324=DSDead Time Factor",
+		"00541330=USImage Index",
+		"00541400=CSCounts Included",
+		"00541401=CSDead Time Correction Flag",
+		
+		"30020002=SHRT Image Label",
+		"30020003=LORT Image Name",
+		"30020004=STRT Image Description",
+		"3002000A=CSReported Values Origin",
+		"3002000C=CSRT Image Plane",
+		"3002000D=DSX-Ray Image Receptor Translation",
+		"3002000E=DSX-Ray Image Receptor Angle",
+		"30020011=DSImage Plane Pixel Spacing",
+		"30020012=DSRT Image Position",
+		"30020020=SHRadiation Machine Name",
+		"30020022=DSRadiation Machine SAD",
+		"30020026=DSRT Image SID",
+		"30020029=ISFraction Number",
+		"30020030=SQExposure Sequence",
+		"30020032=DSMeterset Exposure",
+		
+		"300A011E=DSGantry Angle",
+		"300A0120=DSBeam Limiting Device Angle",
+		"300A0122=DSPatient Support Angle",
+		"300A0128=DSTable Top Vertical Position",
+		"300A0129=DSTable Top Longitudinal Position",
+		"300A012A=DSTable Top Lateral Position",
+		"300A00B3=CSPrimary Dosimeter Unit",
+		"300A00F0=ISNumber of Blocks",
+		
+		"300C0006=ISReferenced Beam Number",
+		"300C0008=DSStart Cumulative Meterset Weight",
+		"300C0022=ISReferenced Fraction Group Number",
 
-        "00540011=USNumber of Energy Windows",
-        "00540012=SQEnergy Window Information Sequence",
-        "00540013=SQEnergy Window Range Sequence",
-        "00540014=DSEnergy Window Lower Limit",
-        "00540015=DSEnergy Window Upper Limit",
-        "00540016=SQRadiopharmaceutical Information Sequence",
-        "00540017=ISResidual Syringe Counts",
-        "00540018=SHEnergy Window Name",
-        "00540020=USDetector Vector",
-        "00540021=USNumber of Detectors",
-        "00540022=SQDetector Information Sequence",
-        "00540030=USPhase Vector",
-        "00540031=USNumber of Phases",
-        "00540032=SQPhase Information Sequence",
-        "00540033=USNumber of Frames in Phase",
-        "00540036=ISPhase Delay",
-        "00540038=ISPause Between Frames",
-        "00540039=CSPhase Description",
-        "00540050=USRotation Vector",
-        "00540051=USNumber of Rotations",
-        "00540052=SQRotation Information Sequence",
-        "00540053=USNumber of Frames in Rotation",
-        "00540060=USR-R Interval Vector",
-        "00540061=USNumber of R-R Intervals",
-        "00540062=SQGated Information Sequence",
-        "00540063=SQData Information Sequence",
-        "00540070=USTime Slot Vector",
-        "00540071=USNumber of Time Slots",
-        "00540072=SQTime Slot Information Sequence",
-        "00540073=DSTime Slot Time",
-        "00540080=USSlice Vector",
-        "00540081=USNumber of Slices",
-        "00540090=USAngular View Vector",
-        "00540100=USTime Slice Vector",
-        "00540101=USNumber of Time Slices",
-        "00540200=DSStart Angle",
-        "00540202=CSType of Detector Motion",
-        "00540210=ISTrigger Vector",
-        "00540211=USNumber of Triggers in Phase",
-        "00540220=SQView Code Sequence",
-        "00540222=SQView Modifier Code Sequence",
-        "00540300=SQRadionuclide Code Sequence",
-        "00540302=SQAdministration Route Code Sequence",
-        "00540304=SQRadiopharmaceutical Code Sequence",
-        "00540306=SQCalibration Data Sequence",
-        "00540308=USEnergy Window Number",
-        "00540400=SHImage ID",
-        "00540410=SQPatient Orientation Code Sequence",
-        "00540412=SQPatient Orientation Modifier Code Sequence",
-        "00540414=SQPatient Gantry Relationship Code Sequence",
-        "00540500=CSSlice Progression Direction",
-        "00541000=CSSeries Type",
-        "00541001=CSUnits",
-        "00541002=CSCounts Source",
-        "00541004=CSReprojection Method",
-        "00541100=CSRandoms Correction Method",
-        "00541101=LOAttenuation Correction Method",
-        "00541102=CSDecay Correction",
-        "00541103=LOReconstruction Method",
-        "00541104=LODetector Lines of Response Used",
-        "00541105=LOScatter Correction Method",
-        "00541200=DSAxial Acceptance",
-        "00541201=ISAxial Mash",
-        "00541202=ISTransverse Mash",
-        "00541203=DSDetector Element Size",
-        "00541210=DSCoincidence Window Width",
-        "00541220=CSSecondary Counts Type",
-        "00541300=DSFrame Reference Time",
-        "00541310=ISPrimary (Prompts) Counts Accumulated",
-        "00541311=ISSecondary Counts Accumulated",
-        "00541320=DSSlice Sensitivity Factor",
-        "00541321=DSDecay Factor",
-        "00541322=DSDose Calibration Factor",
-        "00541323=DSScatter Fraction Factor",
-        "00541324=DSDead Time Factor",
-        "00541330=USImage Index",
-        "00541400=CSCounts Included",
-        "00541401=CSDead Time Correction Flag",
-        
 		"7FE00010=OXPixel Data",
-
+		
 		"FFFEE000=DLItem",
 		"FFFEE00D=DLItem Delimitation Item",
 		"FFFEE0DD=DLSequence Delimitation Item"

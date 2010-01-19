@@ -58,6 +58,16 @@ public class FloatBlitter implements Blitter {
 					for (int i=r1.width; --i>=0;)
 						pixels[dstIndex++] = srcPixels[srcIndex++];
 					break;
+				case COPY_ZERO_TRANSPARENT:
+					for (int i=r1.width; --i>=0;) {
+						src = srcPixels[srcIndex++];
+						if (src==0f)
+							dst = pixels[dstIndex];
+						else
+							dst = src;
+						pixels[dstIndex++] = dst;
+					}
+					break;
 				case ADD:
 					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						pixels[dstIndex] = srcPixels[srcIndex]+pixels[dstIndex];

@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
@@ -30,28 +29,25 @@ assumes that the object is always low-dimensional (i.e. the phase with
 the smallest number of pixels). Now it works fine for sets with D near to 2.0
 
 */
-public class FractalBoxCounter implements IjxPlugInFilter {
-
+public class FractalBoxCounter implements PlugInFilter {
 	static String sizes = "2,3,4,6,8,12,16,32,64";
 	static boolean blackBackground;
-
 	int[] boxSizes;
 	float[] boxCountSums;
 	int maxBoxSize;
 	int[] counts;
 	Rectangle roi;
 	int foreground;
-	IjxImagePlus imp;
-	int boxSum;
+	ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_8G+NO_CHANGES;
 	}
 
 	public void run(ImageProcessor ip) {
 
-		GenericDialog gd = new GenericDialog("Fractal Box Counter", IJ.getTopComponentFrame());
+		GenericDialog gd = new GenericDialog("Fractal Box Counter", IJ.getInstance());
 		gd.addStringField("Box Sizes:", sizes, 20);
 		gd.addCheckbox("Black Background", blackBackground);
 
@@ -74,8 +70,7 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 			maxBoxSize = Math.max(maxBoxSize, boxSizes[i]);
 		counts = new int[maxBoxSize*maxBoxSize+1];
 		imp.killRoi();
-		ImageStatistics stats = imp.getStatistics();
-		if (stats.histogram[0]+stats.histogram[255]!=stats.pixelCount) {
+		if (!ip.isBinary()) {
 			IJ.error("8-bit binary image (0 and 255) required.");
 			return;
 		}
@@ -98,7 +93,7 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 		int[] ints = new int[nInts];
 		for(int i=0; i<nInts; i++) {
 			try {ints[i] = Integer.parseInt(st.nextToken());}
-			catch (NumberFormatException e) {IJ.write(""+e); return null;}
+			catch (NumberFormatException e) {IJ.log(""+e); return null;}
 		}
 		return ints;
 	}
@@ -150,19 +145,7 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 		return true;
 	}
 
-	void displayCounts(int size) {
-		boxSum = 0;
-		int nBoxes;
-		int maxCount = size*size;
-		for (int i=1; i<=maxCount; i++) {
-			nBoxes = counts[i];
-			if (nBoxes!=0)
-				boxSum += nBoxes;
-		}
-		IJ.write(size + "\t" + boxSum);
-	}
-
-	void count(int size, ImageProcessor ip) {
+	int count(int size, ImageProcessor ip) {
 		int[] histogram = new int[256];
 		int count;
 		int x = roi.x;
@@ -193,11 +176,17 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 				}
 			}
 		} while (!done);
-
-		displayCounts(size);
+		int boxSum = 0;
+		int nBoxes;
+		for (int i=1; i<=maxCount; i++) {
+			nBoxes = counts[i];
+			if (nBoxes!=0)
+				boxSum += nBoxes;
+		}
+		return boxSum;
 	}
 	
-	void plot() {
+	double plot() {
 		int n = boxSizes.length;
 		float[] sizes = new float[boxSizes.length];
 		for (int i=0; i<n; i++)
@@ -205,7 +194,8 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 		CurveFitter cf = new CurveFitter(Tools.toDouble(sizes), Tools.toDouble(boxCountSums));
 		cf.doFit(CurveFitter.STRAIGHT_LINE);
 		double[] p = cf.getParams();
-		String label = "D="+IJ.d2s(-p[1],4);
+		double D = -p[1];
+		String label = "D="+IJ.d2s(D,4);
 		float[] px = new float[100];
 		float[] py = new float[100];
 		double[] a = Tools.getMinMax(sizes);
@@ -219,28 +209,32 @@ public class FractalBoxCounter implements IjxPlugInFilter {
 			tmp += inc;
 		}
 		for (int i=0; i<100; i++)
-			py[i] = (float)CurveFitter.f(CurveFitter.STRAIGHT_LINE, p, px[i]);
+			py[i] = (float)cf.f(p, px[i]);
 		a = Tools.getMinMax(py);
 		ymin = Math.min(ymin, a[0]);
 		ymax = Math.max(ymax, a[1]);
-		Plot plot = new Plot("Plot", "log(box size)", "log(count)", px, py);
+		Plot plot = new Plot("Plot", "log (box size)", "log (count)", px, py);
 		plot.setLimits(xmin,xmax,ymin,ymax);
 		plot.addPoints(sizes, boxCountSums, PlotWindow.CIRCLE);
 		plot.addLabel(0.8, 0.2, label);
-		plot.show();				
-		IJ.write("");
-		IJ.write(label);
+		plot.show();
+		return D;			
 	}
 
 	void doBoxCounts(ImageProcessor ip) {
 		if (!FindMargins(ip))
 			return;
-		IJ.setColumnHeadings("size\tcount");
+		ResultsTable rt=ResultsTable.getResultsTable();
+		rt.incrementCounter();
+		rt.setLabel(imp.getShortTitle(), rt.getCounter()-1);
 		for (int i=0; i<boxSizes.length; i++) {
-			count(boxSizes[i], ip);
+			int boxSum = count(boxSizes[i], ip);
+			rt.addValue("C"+boxSizes[i], boxSum);
 			boxCountSums[i] = (float)Math.log(boxSum);
 		}
-		plot();
+		double D = plot();
+		rt.addValue("D", D);
+		rt.show("Results");
 		imp.killRoi();
 	}
 }

@@ -1,12 +1,14 @@
 package ij;
-import ijx.IjxImagePlus;
 import ij.util.Tools;
 import ij.text.TextWindow;
 import ij.plugin.MacroInstaller;
 import ij.plugin.frame.Recorder;
+import ij.io.OpenDialog;
 import java.io.*;
 import java.util.*;
 import java.awt.event.KeyEvent;
+import java.awt.Menu;
+
 
 /** Runs ImageJ menu commands in a separate thread.*/
 public class Executer implements Runnable {
@@ -57,10 +59,13 @@ public class Executer implements Runnable {
 				Recorder.saveCommand();
 			} else
 				runCommand(command);
+			int len = command.length();
+			if (command.charAt(len-1)!=']' && !(len<4&&(command.equals("In")||command.equals("Out"))))
+				IJ.setKeyUp(IJ.ALL_KEYS);  // set keys up except for "<", ">", "+" and "-" shortcuts
 		} catch(Throwable e) {
 			IJ.showStatus("");
-			IJ.showProgress(1.0);
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			IJ.showProgress(1, 1);
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.unlock();
 			String msg = e.getMessage();
 			if (e instanceof OutOfMemoryError)
@@ -77,8 +82,23 @@ public class Executer implements Runnable {
 						return;
 					s = Tools.fixNewLines(s);
 				}
+				int w=350, h=250;
+				if (s.indexOf("UnsupportedClassVersionError")!=-1) {
+					if (s.indexOf("version 49.0")!=-1) {
+						s = e + "\n \nThis plugin requires Java 1.5 or later.";
+						w=700; h=150;
+					}
+					if (s.indexOf("version 50.0")!=-1) {
+						s = e + "\n \nThis plugin requires Java 1.6 or later.";
+						w=700; h=150;
+					}
+					if (s.indexOf("version 51.0")!=-1) {
+						s = e + "\n \nThis plugin requires Java 1.7 or later.";
+						w=700; h=150;
+					}
+				}
 				if (IJ.getInstance()!=null)
-					new TextWindow("Exception", s, 350, 250);
+					new TextWindow("Exception", s, w, h);
 				else
 					IJ.log(s);
 			}
@@ -98,23 +118,38 @@ public class Executer implements Runnable {
 					className = className.substring(0, argStart);
 				}
 			}
-			if (IJ.shiftKeyDown() && className.startsWith("ij.plugin.Macro_Runner") && !Menus.getShortcuts().contains("*"+cmd)) {
+			if (IJ.shiftKeyDown() && className.startsWith("ij.plugin.Macro_Runner") && !Menus.getShortcuts().contains("*"+cmd))
     			IJ.open(IJ.getDirectory("plugins")+arg);
-				IJ.setKeyUp(KeyEvent.VK_SHIFT);		
-    		} else
+    		else
 				IJ.runPlugIn(cmd, className, arg);
 		} else {
 			// Is this command in Plugins>Macros?
 			if (MacroInstaller.runMacroCommand(cmd))
 				return;
 			// Is this command a LUT name?
-			String path = Prefs.getHomeDir()+File.separator+"luts"+File.separator+cmd+".lut";
+			String path = IJ.getDirectory("luts")+cmd+".lut";
 			File f = new File(path);
-			if (f.exists())
+			if (f.exists()) {
+				String dir = OpenDialog.getLastDirectory();
 				IJ.open(path);
-			else
+				OpenDialog.setLastDirectory(dir);
+			} else if (!openRecent(cmd))
 				IJ.error("Unrecognized command: " + cmd);
 	 	}
+    }
+    
+    /** Opens a file from the File/Open Recent menu 
+ 	      and returns 'true' if successful. */
+    boolean openRecent(String cmd) {
+		Menu menu = Menus.openRecentMenu;
+		if (menu==null) return false;
+		for (int i=0; i<menu.getItemCount(); i++) {
+			if (menu.getItem(i).getLabel().equals(cmd)) {
+				IJ.open(cmd);
+				return true;
+			}
+		}
+		return false;
     }
 
 	/** Returns the last command executed. Returns null

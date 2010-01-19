@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -106,9 +105,8 @@ public class Distribution implements PlugIn, TextListener {
 		}
 
 		ImageProcessor ip = new FloatProcessor(count, 1, data, null);
-		IjxImagePlus imp = IJ.getFactory().newImagePlus("", ip);
-//		ImageStatistics stats = new StackStatistics(imp, nBins, 0, 0);
-		ImageStatistics stats = new StackStatistics(imp, nBins, nMin, nMax); // GL new line
+		ImagePlus imp = new ImagePlus("", ip);
+		ImageStatistics stats = new StackStatistics(imp, nBins, nMin, nMax);
 		int maxCount = 0;
 		for (int i=0; i<stats.histogram.length; i++) {
 			if (stats.histogram[i]>maxCount)
@@ -116,7 +114,6 @@ public class Distribution implements PlugIn, TextListener {
 		}
 		stats.histYMax = maxCount;
 		new HistogramWindow(parameter+" Distribution", imp, stats);
-		//new HistogramWindow(parameter+" Distribution", new ImagePlus("",ip), nBins);
 	}
 	
 	int getIndex(String[] strings) {

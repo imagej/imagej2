@@ -1,7 +1,4 @@
 package ij.plugin;
-import ijx.gui.IjxWindow;
-import ijx.IjxApplication;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -29,12 +26,12 @@ public class Commands implements PlugIn {
 		else if (cmd.equals("save"))
 			save();
 		else if (cmd.equals("ij")) {
-			Frame ij = IJ.getTopComponentFrame();
+			ImageJ ij = IJ.getInstance();
 			if (ij!=null) ij.toFront();
 		} else if (cmd.equals("tab"))
 			WindowManager.putBehind();
 		else if (cmd.equals("quit")) {
-			IjxApplication ij = IJ.getInstance();
+			ImageJ ij = IJ.getInstance();
 			if (ij!=null) ij.quit();
 		} else if (cmd.equals("revert"))
 			revert();
@@ -45,7 +42,7 @@ public class Commands implements PlugIn {
     }
     
     void revert() {
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
+    	ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null)
 			imp.revert();
 		else
@@ -53,15 +50,18 @@ public class Commands implements PlugIn {
 	}
 
     void save() {
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
-		if (imp!=null)
+    	ImagePlus imp = WindowManager.getCurrentImage();
+		if (imp!=null) {
+			boolean unlockedImage = imp.getStackSize()==1&&!imp.isLocked();
+			if (unlockedImage) imp.lock();
 			new FileSaver(imp).save();
-		else
+			if (unlockedImage) imp.unlock();
+		} else
 			IJ.noImage();
 	}
 	
     void undo() {
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
+    	ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null)
 			Undo.undo();
 		else
@@ -69,8 +69,8 @@ public class Commands implements PlugIn {
 	}
 
 	void close() {
-    	IjxImagePlus imp = WindowManager.getCurrentImage();
-		IjxWindow frame = WindowManager.getFrontWindow();
+    	ImagePlus imp = WindowManager.getCurrentImage();
+		Frame frame = WindowManager.getFrontWindow();
 		if (frame==null || (Interpreter.isBatchMode() && frame instanceof ImageWindow))
 			closeImage(imp);
 		else if (frame instanceof PlugInFrame)
@@ -81,14 +81,17 @@ public class Commands implements PlugIn {
 			closeImage(imp);
 	}
 
-	void closeImage(IjxImagePlus imp) {
+	void closeImage(ImagePlus imp) {
 		if (imp==null) {
 			IJ.noImage();
 			return;
 		}
 		imp.close();
-		if (Recorder.record) {
-			Recorder.record("close");
+		if (Recorder.record && !IJ.isMacro()) {
+			if (Recorder.scriptMode())
+				Recorder.recordCall("imp.close();");
+			else
+				Recorder.record("close");
 			Recorder.setCommand(null); // don't record run("Close")
 		}
 	}

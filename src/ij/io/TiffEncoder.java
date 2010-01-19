@@ -116,16 +116,22 @@ public class TiffEncoder {
 		if (metaDataSize>0)
 			writeMetaData(out);
 		new ImageWriter(fi).write(out);
-        if (nextIFD>0L) {
-            for (int i=2; i<=fi.nImages; i++) {
-                if (i==fi.nImages)
-                    nextIFD = 0;
-                else
-                    nextIFD += ifdSize;
-                imageOffset += imageSize;
-                writeIFD(out, (int)imageOffset, (int)nextIFD);
-            }
-        }
+		if (nextIFD>0L) {
+			int ifdSize2 = ifdSize;
+			if (metaDataSize>0) {
+				metaDataSize = 0;
+				nEntries -= 2;
+				ifdSize2 -= 2*12;
+			}
+			for (int i=2; i<=fi.nImages; i++) {
+				if (i==fi.nImages)
+					nextIFD = 0;
+				else
+					nextIFD += ifdSize2;
+				imageOffset += imageSize;
+				writeIFD(out, (int)imageOffset, (int)nextIFD);
+			}
+		}
 	}
 	
 	public void write(DataOutputStream out) throws IOException {
@@ -237,8 +243,8 @@ public class TiffEncoder {
 		int tagDataOffset = HDR_SIZE + ifdSize;
 		writeShort(out, nEntries);
 		writeEntry(out, TiffDecoder.NEW_SUBFILE_TYPE, 4, 1, 0);
-		writeEntry(out, TiffDecoder.IMAGE_WIDTH,      3, 1, fi.width);
-		writeEntry(out, TiffDecoder.IMAGE_LENGTH,     3, 1, fi.height);
+		writeEntry(out, TiffDecoder.IMAGE_WIDTH, 4, 1, fi.width);
+		writeEntry(out, TiffDecoder.IMAGE_LENGTH, 4, 1, fi.height);
 		if (fi.fileType==FileInfo.RGB||fi.fileType==FileInfo.RGB48) {
 			writeEntry(out, TiffDecoder.BITS_PER_SAMPLE,  3, 3, tagDataOffset);
 			tagDataOffset += BPS_DATA_SIZE;

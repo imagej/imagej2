@@ -1,20 +1,18 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
 import ij.measure.*;
 import ij.plugin.filter.Analyzer;
 import ij.util.Tools;
-import ijx.IjxImageStack;
 import java.awt.Rectangle;
 
 /** Implements the Image/Stack/Plot Z-axis Profile command. */
-public class ZAxisProfiler implements IjxPlugInFilter, Measurements  {
+public class ZAxisProfiler implements PlugInFilter, Measurements  {
 
-	IjxImagePlus imp;
+	ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_ALL+NO_CHANGES;
 	}
@@ -42,20 +40,20 @@ public class ZAxisProfiler implements IjxPlugInFilter, Measurements  {
 				title = imp.getTitle()+"-"+r.x+"-"+r.y;
 			} else
 				title = imp.getTitle()+"-0-0";
-			PlotWindow pw = new PlotWindow(title, "Slice", "Mean", x, y);
+			Plot plot = new Plot(title, "Slice", "Mean", x, y);
 			double ymin = ProfilePlot.getFixedMin();
 			double ymax= ProfilePlot.getFixedMax();
 			if (!(ymin==0.0 && ymax==0.0)) {
 				double[] a = Tools.getMinMax(x);
 				double xmin=a[0]; double xmax=a[1];
-				pw.setLimits(xmin, xmax, ymin, ymax);
+				plot.setLimits(xmin, xmax, ymin, ymax);
 			}
-			pw.draw();
+			plot.show();
 		}			
 	}
 		
 	float[] getZAxisProfile(Roi roi, double minThreshold, double maxThreshold) {
-		IjxImageStack stack = imp.getStack();
+		ImageStack stack = imp.getStack();
 		int size = stack.getSize();
 		float[] values = new float[size];
 		Calibration cal = imp.getCalibration();

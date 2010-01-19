@@ -1,7 +1,4 @@
 package ij.plugin.filter;
-import ijx.gui.IjxWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.image.IndexColorModel;
 import java.util.Properties;
@@ -15,7 +12,6 @@ import ij.plugin.frame.Recorder;
 import ij.plugin.frame.RoiManager;
 import ij.macro.Interpreter;
 import ij.util.Tools;
-import ijx.IjxImageStack;
 
 /** Implements ImageJ's Analyze Particles command.
 	<p>
@@ -30,7 +26,7 @@ import ijx.IjxImageStack;
 				continue the scan
 	</pre>
 */
-public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
+public class ParticleAnalyzer implements PlugInFilter, Measurements {
 
 	/** Display results in the ImageJ console. */
 	public static final int SHOW_RESULTS = 1;
@@ -71,6 +67,9 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	/** Display image containing binary masks of measured particles. */
 	public static final int SHOW_MASKS = 4096;
 
+	/** Use 4-connected particle tracing. */
+	public static final int FOUR_CONNECTED = 8192;
+
 	static final String OPTIONS = "ap.options";
 	
 	static final int BYTE=0, SHORT=1, FLOAT=2, RGB=3;
@@ -79,6 +78,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	
 	private static double staticMinSize = 0.0;
 	private static double staticMaxSize = DEFAULT_MAX_SIZE;
+	private static boolean pixelUnits;
 	private static int staticOptions = Prefs.getInt(OPTIONS,CLEAR_WORKSHEET);
 	private static String[] showStrings = {"Nothing", "Outlines", "Masks", "Ellipses", "Count Masks"};
 	private static double minCircularity=0.0, maxCircularity=1.0;
@@ -86,7 +86,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		
 	protected static final int NOTHING=0,OUTLINES=1,MASKS=2,ELLIPSES=3,ROI_MASKS=4;
 	protected static int showChoice;
-	protected IjxImagePlus imp;
+	protected ImagePlus imp;
 	protected ResultsTable rt;
 	protected Analyzer analyzer;
 	protected int slice;
@@ -107,7 +107,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	private ImageProcessor drawIP;
 	private int width,height;
 	private boolean canceled;
-	private IjxImageStack outlines;
+	private ImageStack outlines;
 	private IndexColorModel customLut;
 	private int particleCount;
 	private int maxParticleCount = 0;
@@ -117,7 +117,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	private int imageType, imageType2;
 	private boolean roiNeedsImage;
 	private int minX, maxX, minY, maxY;
-	private IjxImagePlus redirectImp;
+	private ImagePlus redirectImp;
 	private ImageProcessor redirectIP;
 	private PolygonFiller pf;
 	private Roi saveRoi;
@@ -128,10 +128,12 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	private FloodFiller ff;
 	private Polygon polygon;
 	private RoiManager roiManager;
-	private IjxImagePlus outputImage;
+	private ImagePlus outputImage;
 	private boolean hideOutputImage;
-		
-	
+	private int roiType;
+	private int wandMode = Wand.LEGACY_MODE;
+
+			
 	/** Constructs a ParticleAnalyzer.
 		@param options	a flag word created by Oring SHOW_RESULTS, EXCLUDE_EDGE_PARTICLES, etc.
 		@param measurements a flag word created by ORing constants defined in the Measurements interface
@@ -160,6 +162,10 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			showChoice = MASKS;
 		if ((options&SHOW_NONE)!=0)
 			showChoice = NOTHING;
+		if ((options&FOUR_CONNECTED)!=0) {
+			wandMode = Wand.FOUR_CONNECTED;
+			options |= INCLUDE_HOLES;
+		}
 	}
 	
 	/** Constructs a ParticleAnalyzer using the default min and max circularity values (0 and 1). */
@@ -172,15 +178,22 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		slice = 1;
 	}
 	
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.arg = arg;
 		this.imp = imp;
 		IJ.register(ParticleAnalyzer.class);
 		if (imp==null)
 			{IJ.noImage();return DONE;}
+		if (imp.getBitDepth()==24 && !isBinaryRGB(imp)) {
+			IJ.error("Particle Analyzer",
+			"RGB images must be converted to binary using\n"
+			+"Process>Binary>Make Binary or thresholded\n"
+			+"using Image>Adjust>Color Threshold.");
+			return DONE;
+		}
 		if (!showDialog())
 			return DONE;
-		int baseFlags = DOES_8G+DOES_16+DOES_32+NO_CHANGES+NO_UNDO;
+		int baseFlags = DOES_ALL+NO_CHANGES+NO_UNDO;
 		int flags = IJ.setupDialog(imp, baseFlags);
 		processStack = (flags&DOES_STACKS)!=0;
 		slice = 0;
@@ -197,6 +210,11 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		slice++;
 		if (imp.getStackSize()>1 && processStack)
 			imp.setSlice(slice);
+		if (imp.getType()==ImagePlus.COLOR_RGB) {
+			ip = ip.convertToByte(false);
+			int t = Prefs.blackBackground?255:0;
+			ip.setThreshold(t, t, ImageProcessor.NO_LUT_UPDATE);
+		}		
 		if (!analyze(imp, ip))
 			canceled = true;
 		if (slice==imp.getStackSize()) {
@@ -209,9 +227,15 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	public boolean showDialog() {
 		Calibration cal = imp!=null?imp.getCalibration():(new Calibration());
 		double unitSquared = cal.pixelWidth*cal.pixelHeight;
+		if (pixelUnits)
+			unitSquared = 1.0;
 		if (Macro.getOptions()!=null) {
 			boolean oldMacro = updateMacroOptions();
 			if (oldMacro) unitSquared = 1.0;
+			staticMinSize = 0.0;
+			staticMaxSize = DEFAULT_MAX_SIZE;
+			minCircularity=0.0; maxCircularity=1.0;
+			showChoice = NOTHING;
 		}
 		GenericDialog gd = new GenericDialog("Analyze Particles");
 		minSize = staticMinSize;
@@ -219,9 +243,12 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		if (maxSize==999999) maxSize = DEFAULT_MAX_SIZE;
 		options = staticOptions;
 		String unit = cal.getUnit();
+		boolean scaled = cal.scaled();
 		if (unit.equals("inch")) {
 			unit = "pixel";
 			unitSquared = 1.0;
+			scaled = false;
+			pixelUnits = true;
 		}
 		String units = unit+"^2";
 		int places = 0;
@@ -229,24 +256,29 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		if ((int)cmin!=cmin) places = 2;
 		double cmax = maxSize*unitSquared;
 		if ((int)cmax!=cmax && cmax!=DEFAULT_MAX_SIZE) places = 2;
-		String minStr = IJ.d2s(cmin,places);
+		String minStr = ResultsTable.d2s(cmin,places);
 		if (minStr.indexOf("-")!=-1) {
 			for (int i=places; i<=6; i++) {
-				minStr = IJ.d2s(cmin, i);
+				minStr = ResultsTable.d2s(cmin, i);
 				if (minStr.indexOf("-")==-1) break;
 			}
 		}
-		String maxStr = IJ.d2s(cmax, places);
+		String maxStr = ResultsTable.d2s(cmax, places);
 		if (maxStr.indexOf("-")!=-1) {
 			for (int i=places; i<=6; i++) {
-				maxStr = IJ.d2s(cmax, i);
+				maxStr = ResultsTable.d2s(cmax, i);
 				if (maxStr.indexOf("-")==-1) break;
 			}
 		}
+		if (scaled)
+			gd.setInsets(5, 0, 0);
 		gd.addStringField("Size ("+units+"):", minStr+"-"+maxStr, 12);
+		if (scaled) {
+			gd.setInsets(0, 40, 5);
+			gd.addCheckbox("Pixel Units", pixelUnits);
+		}
 		gd.addStringField("Circularity:", IJ.d2s(minCircularity)+"-"+IJ.d2s(maxCircularity), 12);
 		gd.addChoice("Show:", showStrings, showStrings[showChoice]);
-		
 		String[] labels = new String[7];
 		boolean[] states = new boolean[7];
 		labels[0]="Display Results"; states[0] = (options&SHOW_RESULTS)!=0;
@@ -262,11 +294,13 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		if (gd.wasCanceled())
 			return false;
 			
-		String size = gd.getNextString();
-		if (size.indexOf("p")!=-1) { // unit is "pixel"?
-			size = size.replaceAll("p", "");
+		String size = gd.getNextString(); // min-max size
+		if (scaled)
+			pixelUnits = gd.getNextBoolean();
+		if (pixelUnits)
 			unitSquared = 1.0;
-		}
+		else
+			unitSquared = cal.pixelWidth*cal.pixelHeight;
 		String[] minAndMax = Tools.split(size, " -");
 		double mins = Tools.parseDouble(minAndMax[0]);
 		double maxs = minAndMax.length==2?Tools.parseDouble(minAndMax[1]):Double.NaN;
@@ -274,8 +308,10 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		maxSize = Double.isNaN(maxs)?DEFAULT_MAX_SIZE:maxs/unitSquared;
 		if (minSize<DEFAULT_MIN_SIZE) minSize = DEFAULT_MIN_SIZE;
 		if (maxSize<minSize) maxSize = DEFAULT_MAX_SIZE;
+		staticMinSize = minSize;
+		staticMaxSize = maxSize;
 		
-		minAndMax = Tools.split(gd.getNextString(), " -");
+		minAndMax = Tools.split(gd.getNextString(), " -"); // min-max circularity
 		double minc = Tools.parseDouble(minAndMax[0]);
 		double maxc = minAndMax.length==2?Tools.parseDouble(minAndMax[1]):Double.NaN;
 		minCircularity = Double.isNaN(minc)?0.0:minc;
@@ -289,8 +325,6 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			canceled = true;
 			return false;
 		}
-		staticMinSize = minSize;
-		staticMaxSize = maxSize;
 		showChoice = gd.getNextChoiceIndex();
 		if (gd.getNextBoolean())
 			options |= SHOW_RESULTS; else options &= ~SHOW_RESULTS;
@@ -313,6 +347,17 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		return true;
 	}
 	
+	private boolean isBinaryRGB(ImagePlus imp) {
+		ImageProcessor ip = imp.getProcessor();
+		int[] pixels = (int[])ip.getPixels();
+		int size = imp.getWidth()*imp.getHeight();
+		for (int i=0; i<size; i++) {
+			if ((pixels[i]&0xffffff)!=0 && (pixels[i]&0xffffff)!=0xffffff)
+				return false;
+		}
+		return true;
+	}
+
 	boolean updateMacroOptions() {
 		String options = Macro.getOptions();
 		int index = options.indexOf("maximum=");
@@ -331,13 +376,13 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 
 	/** Performs particle analysis on the specified image. Returns
 		false if there is an error. */
-	public boolean analyze(IjxImagePlus imp) {
+	public boolean analyze(ImagePlus imp) {
 		return analyze(imp, imp.getProcessor());
 	}
 
 	/** Performs particle analysis on the specified ImagePlus and
 		ImageProcessor. Returns false if there is an error. */
-	public boolean analyze(IjxImagePlus imp, ImageProcessor ip) {
+	public boolean analyze(ImagePlus imp, ImageProcessor ip) {
 		if (this.imp==null) this.imp = imp;
 		showResults = (options&SHOW_RESULTS)!=0;
 		excludeEdgeParticles = (options&EXCLUDE_EDGE_PARTICLES)!=0;
@@ -355,7 +400,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			if (redirectImp==null) return false;
 			int depth = redirectImp.getStackSize();
 			if (depth>1 && depth==imp.getStackSize()) {
-				IjxImageStack redirectStack = redirectImp.getStack();
+				ImageStack redirectStack = redirectImp.getStack();
 				redirectIP = redirectStack.getProcessor(imp.getCurrentSlice());
 			} else
 				redirectIP = redirectImp.getProcessor();
@@ -366,7 +411,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		height = ip.getHeight();
 		if (showChoice!=NOTHING) {
 			if (slice==1)
-				outlines = IJ.getFactory().newImageStack(width, height);
+				outlines = new ImageStack(width, height);
 			if (showChoice==ROI_MASKS)
 				drawIP = new ShortProcessor(width, height);
 			else
@@ -424,15 +469,15 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		double value;
 		int inc = Math.max(r.height/25, 1);
 		int mi = 0;
-		ImageWindow win = (ImageWindow) imp.getWindow();
+		ImageWindow win = imp.getWindow();
 		if (win!=null)
-			win.setRunning(true);
+			win.running = true;
 		if (measurements==0)
 			measurements = Analyzer.getMeasurements();
 		if (showChoice==ELLIPSES)
 			measurements |= ELLIPSE;
 		measurements &= ~LIMIT;	 // ignore "Limit to Threshold"
-		roiNeedsImage = (measurements&PERIMETER)!=0 || (measurements&CIRCULARITY)!=0 || (measurements&FERET)!=0;
+		roiNeedsImage = (measurements&PERIMETER)!=0 || (measurements&SHAPE_DESCRIPTORS)!=0 || (measurements&FERET)!=0;
 		particleCount = 0;
 		wand = new Wand(ip);
 		pf = new PolygonFiller();
@@ -441,6 +486,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			ipf.setValue(fillColor);
 			ff = new FloodFiller(ipf);
 		}
+		roiType = Wand.allPoints()?Roi.FREEROI:Roi.TRACED_ROI;
 
 		for (int y=r.y; y<(r.y+r.height); y++) {
 			offset = y*width;
@@ -457,7 +503,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			if (showProgress && ((y%inc)==0))
 				IJ.showProgress((double)(y-r.y)/r.height);
 			if (win!=null)
-				canceled = !win.isRunning();
+				canceled = !win.running;
 			if (canceled) {
 				Macro.abort();
 				break;
@@ -465,15 +511,15 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		}
 		if (showProgress)
 			IJ.showProgress(1.0);
+		if (showResults)
+			rt.updateResults();
 		imp.killRoi();
 		ip.resetRoi();
 		ip.reset();
 		if (displaySummary && IJ.getInstance()!=null)
 			updateSliceSummary();
-		if (addToManager && roiManager!=null) {
-			IjxImageCanvas ic = imp.getCanvas();
-			if (ic!=null) ic.setShowAllROIs(true);
-		}
+		if (addToManager && roiManager!=null)
+			roiManager.setEditMode(imp, true);
 		maxParticleCount = (particleCount > maxParticleCount) ? particleCount : maxParticleCount;
 		totalCount += particleCount;
 		if (!canceled)
@@ -499,13 +545,13 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			sum += areas[i];
 		int places = Analyzer.getPrecision();
 		Calibration cal = imp.getCalibration();
-		String total = "\t"+IJ.d2s(sum,places);
-		String average = "\t"+IJ.d2s(sum/particleCount,places);
-		String fraction = "\t"+IJ.d2s(sum*100.0/totalArea,1);
+		String total = "\t"+ResultsTable.d2s(sum,places);
+		String average = "\t"+ResultsTable.d2s(sum/particleCount,places);
+		String fraction = "\t"+ResultsTable.d2s(sum*100.0/totalArea,1);
 		aLine = label+"\t"+particleCount+total+average+fraction;
 		aLine = addMeans(aLine, start);
 		if (slices==1) {
-			IjxWindow frame = WindowManager.getFrame("Summary");
+			Frame frame = WindowManager.getFrame("Summary");
 			if (frame!=null && (frame instanceof TextWindow) && summaryHdr.equals(prevHdr))
 				tw = (TextWindow)frame;
 		}
@@ -527,10 +573,17 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			line=addMean(ResultsTable.MINOR, line, start);
 			line=addMean(ResultsTable.ANGLE, line, start);
 		}
-		if ((measurements&CIRCULARITY)!=0)
+		if ((measurements&SHAPE_DESCRIPTORS)!=0) {
 			line=addMean(ResultsTable.CIRCULARITY, line, start);
-		if ((measurements&FERET)!=0)
+			line=addMean(ResultsTable.SOLIDITY, line, start);
+		}
+		if ((measurements&FERET)!=0) {
 			line=addMean(ResultsTable.FERET, line, start);
+			line=addMean(ResultsTable.FERET_X, line, start);
+			line=addMean(ResultsTable.FERET_Y, line, start);
+			line=addMean(ResultsTable.FERET_ANGLE, line, start);
+			line=addMean(ResultsTable.MIN_FERET, line, start);
+		}
 		if ((measurements&INTEGRATED_DENSITY)!=0)
 			line=addMean(ResultsTable.INTEGRATED_DENSITY, line, start);
 		if ((measurements&MEDIAN)!=0)
@@ -562,9 +615,9 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	String n(double n) {
 		String s;
 		if (Math.round(n)==n)
-			s = IJ.d2s(n,0);
+			s = ResultsTable.d2s(n,0);
 		else
-			s = IJ.d2s(n, Analyzer.getPrecision());
+			s = ResultsTable.d2s(n, Analyzer.getPrecision());
 		return "\t"+s;
 	}
 
@@ -612,7 +665,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		return true;
 	}
 
-	boolean setThresholdLevels(IjxImagePlus imp, ImageProcessor ip) {
+	boolean setThresholdLevels(ImagePlus imp, ImageProcessor ip) {
 		double t1 = ip.getMinThreshold();
 		double t2 = ip.getMaxThreshold();
 		boolean invertedLut = imp.isInvertedLut();
@@ -676,13 +729,13 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	
 	int counter = 0;
 	
-	void analyzeParticle(int x, int y, IjxImagePlus imp, ImageProcessor ip) {
+	void analyzeParticle(int x, int y, ImagePlus imp, ImageProcessor ip) {
 		//Wand wand = new Wand(ip);
 		ImageProcessor ip2 = redirectIP!=null?redirectIP:ip;
-		wand.autoOutline(x,y, level1, level2);
+		wand.autoOutline(x, y, level1, level2, wandMode);
 		if (wand.npoints==0)
 			{IJ.log("wand error: "+x+" "+y); return;}
-		Roi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.TRACED_ROI);
+		Roi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, roiType);
 		Rectangle r = roi.getBounds();
 		if (r.width>1 && r.height>1) {
 			PolygonRoi proi = (PolygonRoi)roi;
@@ -725,6 +778,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			particleCount++;
 			if (roiNeedsImage)
 				roi.setImage(imp);
+			stats.xstart=x; stats.ystart=y;
 			saveResults(stats, roi);
 			if (showChoice!=NOTHING)
 				drawParticle(drawIP, roi, stats, mask);
@@ -754,19 +808,15 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	protected void saveResults(ImageStatistics stats, Roi roi) {
 		analyzer.saveResults(stats, roi);
 		if (recordStarts) {
-			int coordinates = ((PolygonRoi)roi).getNCoordinates();
-			Rectangle r = roi.getBounds();
-			int x = r.x+((PolygonRoi)roi).getXCoordinates()[coordinates-1];
-			int y = r.y+((PolygonRoi)roi).getYCoordinates()[coordinates-1];
-			rt.addValue("XStart", x);
-			rt.addValue("YStart", y);
+			rt.addValue("XStart", stats.xstart);
+			rt.addValue("YStart", stats.ystart);
 		}
 		if (addToManager) {
 			if (roiManager==null) {
 				if (Macro.getOptions()!=null && Interpreter.isBatchMode())
 					roiManager = Interpreter.getBatchModeRoiManager();
 				if (roiManager==null) {
-					IjxWindow frame = WindowManager.getFrame("ROI Manager");
+					Frame frame = WindowManager.getFrame("ROI Manager");
 					if (frame==null)
 						IJ.run("ROI Manager...");
 					frame = WindowManager.getFrame("ROI Manager");
@@ -777,10 +827,10 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 				if (resetCounter)
 					roiManager.runCommand("reset");
 			}
-			roiManager.add(imp, roi, Analyzer.getCounter());
+			roiManager.add(imp, roi, rt.getCounter());
 		}
 		if (showResults)
-			analyzer.displayResults();
+			rt.addResults();
 	}
 	
 	/** Draws a selected particle in a separate image.	This is
@@ -813,7 +863,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 		for (int i=1; i<nPoints; i++)
 			ip.lineTo(x+xp[i], y+yp[i]);
 		ip.lineTo(x+xp[0], y+yp[0]);
-		String s = IJ.d2s(count,0);
+		String s = ResultsTable.d2s(count,0);
 		ip.moveTo(r.x+r.width/2-ip.getStringWidth(s)/2, r.y+r.height/2+4);
 		ip.setValue(1.0);
 		ip.drawString(s);
@@ -845,7 +895,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 			else
 				prefix = "Drawing of ";
 			outlines.update(drawIP);
-			outputImage = IJ.getFactory().newImagePlus(prefix+title, outlines);
+			outputImage = new ImagePlus(prefix+title, outlines);
 			if (!hideOutputImage) outputImage.show();
 		}
 		if (showResults && !processStack) {
@@ -857,7 +907,7 @@ public class ParticleAnalyzer implements IjxPlugInFilter, Measurements {
 	
 	/** Returns the "Outlines", "Masks", "Elipses" or "Count Masks" image,
 		or null if "Nothing" is selected in the "Show:" menu. */
-	public IjxImagePlus getOutputImage() {
+	public ImagePlus getOutputImage() {
 		return outputImage;
 	}
 

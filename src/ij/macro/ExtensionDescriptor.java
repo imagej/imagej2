@@ -257,7 +257,7 @@ public class ExtensionDescriptor {
     interp.getLeftParen();
     
     Variable[] vArgs = null;
-    int next = interp.nextNonEolToken();
+    int next = interp.nextToken();
     if (next != ')') {
       vArgs = parseArgumentList(func);
     }

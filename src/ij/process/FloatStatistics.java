@@ -27,7 +27,7 @@ public class FloatStatistics extends ImageStatistics {
 		getStatistics(ip, minThreshold, maxThreshold);
 		if ((mOptions&MODE)!=0)
 			getMode();
-		if ((mOptions&ELLIPSE)!=0)
+		if ((mOptions&ELLIPSE)!=0 || (mOptions&SHAPE_DESCRIPTORS)!=0)
 			fitEllipse(ip);
 		else if ((mOptions&CENTROID)!=0)
 			getCentroid(ip, minThreshold, maxThreshold);

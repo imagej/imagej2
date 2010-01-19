@@ -12,8 +12,6 @@ public class JavaProperties implements PlugIn {
 	StringBuffer sb = new StringBuffer();
 	
 	public void run(String arg) {
-		sb.append("\n");
-		sb.append("Java properties applets can read:\n");
 		show("java.version");
 		show("java.vendor");
 		if (IJ.isMacintosh()) show("mrj.version");
@@ -50,7 +48,6 @@ public class JavaProperties implements PlugIn {
 			return;
 		}
 		sb.append("\n");
-		sb.append("Java properties only applications can read:\n");
 		show("user.name");
 		show("user.home");
 		show("user.dir");
@@ -63,13 +60,11 @@ public class JavaProperties implements PlugIn {
 		show("java.io.tmpdir");
 		
 		sb.append("\n");
-		sb.append("Other properties:\n");
 		String userDir = System.getProperty("user.dir");
 		String userHome = System.getProperty("user.home");
 		String osName = System.getProperty("os.name");
 		sb.append("  IJ.getVersion: "+IJ.getVersion()+"\n");
 		sb.append("  IJ.isJava2: "+IJ.isJava2()+"\n");
-		sb.append("  IJ.isJava14: "+IJ.isJava14()+"\n");
 		sb.append("  IJ.isJava15: "+IJ.isJava15()+"\n");
 		sb.append("  IJ.isJava16: "+IJ.isJava16()+"\n");
 		sb.append("  IJ.isLinux: "+IJ.isLinux()+"\n");
@@ -97,15 +92,20 @@ public class JavaProperties implements PlugIn {
 		sb.append("  Prefs.doubleBuffer: "+Prefs.doubleBuffer+"\n");		
 		sb.append("  Prefs.noPointLabels: "+Prefs.noPointLabels+"\n");		
 		sb.append("  Prefs.disableUndo: "+Prefs.disableUndo+"\n");		
+		sb.append("  Prefs.runSocketListener: "+Prefs.runSocketListener+"\n");		
 		sb.append("  Prefs dir: "+Prefs.getPrefsDir()+"\n");
 		sb.append("  Current dir: "+OpenDialog.getDefaultDirectory()+"\n");
 		sb.append("  Sample images dir: "+Prefs.getImagesURL()+"\n");
 		Dimension d = IJ.getScreenSize();
 		sb.append("  Screen size: " + d.width + "x" + d.height+"\n");
+		System.gc();
 		sb.append("  Memory in use: "+IJ.freeMemory()+"\n");	
 		if (IJ.altKeyDown())
 			doFullDump();
-		TextWindow tw = new TextWindow("Properties", new String(sb), 400, 500);
+		if (IJ.getInstance()==null)
+			IJ.log(new String(sb));
+		else
+			new TextWindow("Properties", new String(sb), 400, 500);
 	}
 	
 	String cores() {

@@ -1,6 +1,5 @@
 package ij.text;
 
-import ijx.IjxApplication;
 import java.awt.*;
 import java.io.*;
 import java.awt.event.*;
@@ -68,7 +67,7 @@ public class TextPanel extends Panel implements AdjustmentListener,
 		sbVert=new Scrollbar(Scrollbar.VERTICAL);
 		sbVert.addAdjustmentListener(this);
 		sbVert.setFocusable(false);
-		IjxApplication ij = IJ.getInstance();
+		ImageJ ij = IJ.getInstance();
 		if (ij!=null) {
 			sbHoriz.addKeyListener(ij);
 			sbVert.addKeyListener(ij);
@@ -142,6 +141,22 @@ public class TextPanel extends Panel implements AdjustmentListener,
 		return labels==null?"":labels;
 	}
 	
+	public synchronized void updateColumnHeadings(String labels) {
+		this.labels = labels;
+		if (labels.equals("")) {
+			iColCount = 1;
+			sColHead=new String[1];
+			sColHead[0] = "";
+		} else {
+			if (labels.endsWith("\t"))
+				this.labels = labels.substring(0, labels.length()-1);
+			sColHead = Tools.split(this.labels, "\t");
+        	iColCount = sColHead.length;
+			iColWidth=new int[iColCount];
+			columnsManuallyAdjusted = false;
+		}
+	}
+
 	public void setFont(Font font, boolean antialiased) {
 		tc.fFont = font;
 		tc.iImage = null;
@@ -190,14 +205,28 @@ public class TextPanel extends Panel implements AdjustmentListener,
 		}
 	}
 	
-	/** Adds a single line to the end of this TextPanel without updating the display. */
-	void appendWithoutUpdate(String data) {
-		char[] chars = data.toCharArray();
-		vData.addElement(chars);
-		iRowCount++;
+	/** Adds strings contained in an ArrayList to the end of this TextPanel. */
+	public void append(ArrayList list) {
+		if (list==null) return;
+		if (vData==null) setColumnHeadings("");
+		for (int i=0; i<list.size(); i++)
+			appendWithoutUpdate((String)list.get(i));
+		if (isShowing()) {
+			updateDisplay();
+			unsavedLines = true;
+		}
 	}
 
-	void updateDisplay() {
+	/** Adds a single line to the end of this TextPanel without updating the display. */
+	public void appendWithoutUpdate(String data) {
+		if (vData!=null) {
+			char[] chars = data.toCharArray();
+			vData.addElement(chars);
+			iRowCount++;
+		}
+	}
+
+	public void updateDisplay() {
 		iY=iRowHeight*(iRowCount+1);
 		adjustVScroll();
 		if (iColCount>1 && iRowCount<=10 && !columnsManuallyAdjusted)
@@ -347,7 +376,9 @@ public class TextPanel extends Panel implements AdjustmentListener,
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if (keyListener!=null&&key!=KeyEvent.VK_S&& key!=KeyEvent.VK_C && key!=KeyEvent.VK_X&& key!=KeyEvent.VK_A)
+		if (key==KeyEvent.VK_BACK_SPACE)
+			clearSelection();
+		else if (keyListener!=null&&key!=KeyEvent.VK_S&& key!=KeyEvent.VK_C && key!=KeyEvent.VK_X&& key!=KeyEvent.VK_A)
 			keyListener.keyPressed(e);
 		
 	}
@@ -498,8 +529,8 @@ public class TextPanel extends Panel implements AdjustmentListener,
 		clip.setContents(cont,this);
 		if (s.length()>0) {
 			IJ.showStatus((selEnd-selStart+1)+" lines copied to clipboard");
-//			if (this.getParent() instanceof ImageJ)
-//				Analyzer.setUnsavedMeasurements(false);  // @todo fix...
+			if (this.getParent() instanceof ImageJ)
+				Analyzer.setUnsavedMeasurements(false);
 		}
 		return s.length();
 	}
@@ -528,6 +559,8 @@ public class TextPanel extends Panel implements AdjustmentListener,
 				IJ.error("Selection required");
 			return;
 		}
+		if (Recorder.record)
+			Recorder.recordString("IJ.deleteRows("+selStart+", "+selEnd+");\n");
 		if (selStart==0 && selEnd==(iRowCount-1)) {
 			vData.removeAllElements();
 			iRowCount = 0;
@@ -627,33 +660,41 @@ public class TextPanel extends Panel implements AdjustmentListener,
 		'false' if the user cancels the save as dialog.*/
 	public boolean saveAs(String path) {
 		boolean isResults = IJ.isResultsWindow() && IJ.getTextPanel()==this;
-		if (path.equals("")) {
-			IJ.wait(10);
-			boolean hasHeadings = !getColumnHeadings().equals("");
-			String ext = isResults||hasHeadings?Prefs.get("options.ext", ".xls"):".txt";
-			SaveDialog sd = new SaveDialog("Save as Text", title, ext);
-			String file = sd.getFileName();
-			if (file == null) return false;
-			path = sd.getDirectory() + file;
+		if (rt!=null) {
+			try {
+				rt.saveAs(path);
+			} catch (IOException e) {
+				IJ.error(""+e);
+			}
+		} else {
+			if (path.equals("")) {
+				IJ.wait(10);
+				boolean hasHeadings = !getColumnHeadings().equals("");
+				String ext = isResults||hasHeadings?Prefs.get("options.ext", ".xls"):".txt";
+				SaveDialog sd = new SaveDialog("Save as Text", title, ext);
+				String file = sd.getFileName();
+				if (file == null) return false;
+				path = sd.getDirectory() + file;
+			}
+			PrintWriter pw = null;
+			try {
+				FileOutputStream fos = new FileOutputStream(path);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				pw = new PrintWriter(bos);
+			}
+			catch (IOException e) {
+				//IJ.write("" + e);
+				return true;
+			}
+			save(pw);
+			pw.close();
 		}
-		PrintWriter pw = null;
-		try {
-			FileOutputStream fos = new FileOutputStream(path);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			pw = new PrintWriter(bos);
-		}
-		catch (IOException e) {
-			//IJ.write("" + e);
-			return true;
-		}
-		save(pw);
-		pw.close();
 		if (isResults) {
 			Analyzer.setUnsavedMeasurements(false);
-			if (Recorder.record)
+			if (Recorder.record && !IJ.isMacro())
 				Recorder.record("saveAs", "Measurements", path);
 		} else {
-			if (Recorder.record)
+			if (Recorder.record && !IJ.isMacro())
 				Recorder.record("saveAs", "Text", path);
 		}
 		IJ.showStatus("");
@@ -721,7 +762,16 @@ public class TextPanel extends Panel implements AdjustmentListener,
 	public void setResultsTable(ResultsTable rt) {
 		this.rt = rt;
 	}
-
+	
+	public void scrollToTop() {
+		sbVert.setValue(0);
+		iY = 0;
+		for(int i=0;i<iColCount;i++)
+			tc.calcAutoWidth(i);
+		adjustHScroll();
+		tc.repaint();
+	}
+        
 	void flush() {
 		if (vData!=null)
 			vData.removeAllElements();

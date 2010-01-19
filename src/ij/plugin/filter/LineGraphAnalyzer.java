@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import java.awt.Color;
 import ij.*;
 import ij.gui.*;
@@ -8,11 +7,11 @@ import ij.plugin.filter.ParticleAnalyzer;
 import ij.measure.*;
 import ij.util.*;
 
-/** Implements ImageJ's Analyze/Analyze Line Graph command. */
-public class LineGraphAnalyzer implements IjxPlugInFilter, Measurements  {
-	IjxImagePlus imp;
+/** Implements ImageJ's Analyze/Tools/Analyze Line Graph command. */
+public class LineGraphAnalyzer implements PlugInFilter, Measurements  {
+	ImagePlus imp;
 
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		return DOES_8G+NO_CHANGES;
 	}
@@ -23,7 +22,7 @@ public class LineGraphAnalyzer implements IjxPlugInFilter, Measurements  {
 	
 	/** Uses ImageJ's particle analyzer to extract a set
 		of coordinate pairs from a digitized line graph. */
-	public void analyze(IjxImagePlus imp) {
+	public void analyze(ImagePlus imp) {
 		ByteProcessor ip = (ByteProcessor)imp.getProcessor();
 		ImageProcessor ip2 = ip.crop();
 		int width = ip2.getWidth();
@@ -34,7 +33,7 @@ public class LineGraphAnalyzer implements IjxPlugInFilter, Measurements  {
 			ip2.lineTo(i,height-1);
 		}
 		ip2 = ip2.rotateRight();
-		IjxImagePlus imp2 = imp.createImagePlus();
+		ImagePlus imp2 = imp.createImagePlus();
 		ip2.setThreshold(ip.getMinThreshold(), ip.getMaxThreshold(), ImageProcessor.NO_LUT_UPDATE);
 		imp2.setProcessor("Temp", ip2);
 		Calibration cal = imp2.getCalibration();
@@ -65,9 +64,9 @@ public class LineGraphAnalyzer implements IjxPlugInFilter, Measurements  {
 		String units = " ("+cal.getUnits()+")";
 		String xLabel = "X"+units;
 		String yLabel = "Y"+units;
-		PlotWindow plot = new PlotWindow("Line Graph", xLabel, yLabel, x, y);
+		Plot plot = new Plot("Line Graph", xLabel, yLabel, x, y);
 		plot.setLimits(0.0, width*ph, 0.0, height*pw);				
-		plot.draw();				
+		plot.show();				
 	}
 	
 }

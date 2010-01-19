@@ -1,6 +1,4 @@
 package ij.plugin;
-import ijx.IjxApplication;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -15,24 +13,25 @@ import java.awt.image.*;
 		static final int SMALL_FONT=14, LARGE_FONT=30;
 
 	public void run(String arg) {
+		System.gc();
 		int lines = 7;
 		String[] text = new String[lines];
-		text[0] = "ImageJ "+ImageJ.VERSION;
+		text[0] = "ImageJ "+ImageJ.VERSION+ImageJ.BUILD;
 		text[1] = "Wayne Rasband";
 		text[2] = "National Institutes of Health, USA";
 		text[3] = IJ.URL;
-		text[4] = "Java "+System.getProperty("java.version");
+		text[4] = "Java "+System.getProperty("java.version")+(IJ.is64Bit()?" (64-bit)":" (32-bit)");
 		text[5] = IJ.freeMemory();
 		text[6] = "ImageJ is in the public domain";
 		ImageProcessor ip = null;
-		IjxApplication ij = IJ.getInstance();
+		ImageJ ij = IJ.getInstance();
 		URL url = ij .getClass() .getResource("/about.jpg");
 		if (url!=null) {
 			Image img = null;
-			try {img = IJ.getTopComponentFrame().createImage((ImageProducer)url.getContent());}
+			try {img = ij.createImage((ImageProducer)url.getContent());}
 			catch(Exception e) {}
 			if (img!=null) {
-				IjxImagePlus imp = IJ.getFactory().newImagePlus("", img);
+				ImagePlus imp = new ImagePlus("", img);
 				ip = imp.getProcessor();
 			}
 		}
@@ -68,8 +67,8 @@ import java.awt.image.*;
 			ip.drawString(text[5], x(text[5],ip,max), y);
 		}
 		ip.drawString(text[6], ip.getWidth()-ip.getStringWidth(text[6])-10, ip.getHeight()-3);
-		IJ.setCenterOnScreen(true);
-		IJ.getFactory().newImagePlus("About ImageJ", ip).show();
+		ImageWindow.centerNextImage();
+		new ImagePlus("About ImageJ", ip).show();
 	}
 
 	int x(String text, ImageProcessor ip, int max) {

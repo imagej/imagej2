@@ -1,17 +1,12 @@
 package ij.gui;
-import ijx.gui.IjxStackWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxApplication;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.measure.Calibration;
-import ijx.IjxImageStack;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 
 /** This class is an extended ImageWindow used to display image stacks. */
-public class StackWindow extends ImageWindow implements IjxStackWindow {
+public class StackWindow extends ImageWindow implements Runnable, AdjustmentListener, ActionListener, MouseWheelListener {
 
 	protected Scrollbar channelSelector, sliceSelector, frameSelector;
 	protected Thread thread;
@@ -22,14 +17,14 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 	int c=1, z=1, t=1;
 	
 
-	public StackWindow(IjxImagePlus imp) {
+	public StackWindow(ImagePlus imp) {
 		this(imp, null);
 	}
     
-    public StackWindow(IjxImagePlus imp, IjxImageCanvas ic) {
+    public StackWindow(ImagePlus imp, ImageCanvas ic) {
 		super(imp, ic);
 		// add slice selection slider
-		IjxImageStack s = imp.getStack();
+		ImageStack s = imp.getStack();
 		int stackSize = s.getSize();
 		nSlices = stackSize;
 		hyperStack = imp.getOpenAsHyperStack();
@@ -46,7 +41,7 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 		if (nSlices==stackSize) hyperStack = false;
 		if (nChannels*nSlices*nFrames!=stackSize) hyperStack = false;
 		addMouseWheelListener(this);
-		IjxApplication ij = IJ.getInstance();
+		ImageJ ij = IJ.getInstance();
 		if (nChannels>1) {
 			channelSelector = new Scrollbar(Scrollbar.HORIZONTAL, 1, 1, 1, nChannels+1);
 			Panel panel = new Panel(new BorderLayout(2, 0));
@@ -85,7 +80,7 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 			sliceSelector = new Scrollbar(); // prevents Image5D from crashing
 		//IJ.log(nChannels+" "+nSlices+" "+nFrames);
 		pack();
-		ic = (ImageCanvas) imp.getCanvas();
+		ic = imp.getCanvas();
 		if (ic!=null) ic.setMaxBounds();
 		show();
 		int previousSlice = imp.getCurrentSlice();
@@ -98,14 +93,18 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 	}
 
 	public synchronized void adjustmentValueChanged(AdjustmentEvent e) {
-		if (!isRunning2()) {
+		if (!running2) {
 			//slice = sliceSelector.getValue();
-			if (e.getSource()==channelSelector)
+			if (e.getSource()==channelSelector) {
 				c = channelSelector.getValue();
-			else if (e.getSource()==sliceSelector)
+				if (c==imp.getChannel()) return;
+			} else if (e.getSource()==sliceSelector) {
 				z = sliceSelector.getValue();
-			else if (e.getSource()==frameSelector)
+				if (z==imp.getSlice()) return;
+			} else if (e.getSource()==frameSelector) {
 				t = frameSelector.getValue();
+				if (t==imp.getFrame()) return;
+			}
 			updatePosition();
 			notify();
 		}
@@ -137,15 +136,9 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 			}
 		}
 	}
-    
-    public void close() {
-		setVisible(false);
-		dispose();
-		WindowManager.removeWindow(this);
-    }
-    
-	public boolean canClose() {
-		if (!super.canClose())
+
+	public boolean close() {
+		if (!super.close())
 			return false;
 		synchronized(this) {
 			done = true;
@@ -202,7 +195,7 @@ public class StackWindow extends ImageWindow implements IjxStackWindow {
 		}
 		if (frames>1)
 			s += "t:"+imp.getFrame()+"/"+frames;
-		if (isRunning2()) return s;
+		if (running2) return s;
 		int index = subtitle.indexOf(";");
 		if (index!=-1) {
 			int index2 = subtitle.indexOf("(");

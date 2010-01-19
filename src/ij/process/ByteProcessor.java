@@ -4,6 +4,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import ij.gui.*;
+import ij.Prefs;
 
 /**
 This is an 8-bit image and methods that operate on that image. Based on the ImageProcessor class
@@ -17,10 +18,9 @@ public class ByteProcessor extends ImageProcessor {
 	private int bgColor = 255; //white
 	private boolean bgColorSet;
 	private int min=0, max=255;
-
     private int binaryCount, binaryBackground;
 
-	/**Creates a ByteProcessor from an 8-bit, indexed color AWT Image. */
+	/**Creates a ByteProcessor from an AWT Image. */
 	public ByteProcessor(Image img) {
 		width = img.getWidth(null);
 		height = img.getHeight(null);
@@ -100,6 +100,7 @@ public class ByteProcessor extends ImageProcessor {
 			raster = Raster.createWritableRaster(sm, db, null);
 		}
 		if (image==null || cm!=cm2) {
+			if (cm==null) cm=getDefaultColorModel();
 			image = new BufferedImage(cm, raster, false, null);
 			cm2 = cm;
 		}
@@ -108,7 +109,13 @@ public class ByteProcessor extends ImageProcessor {
 	
 	/** Returns this image as a BufferedImage. */
 	public BufferedImage getBufferedImage() {
-		return (BufferedImage)createBufferedImage();
+		if (isDefaultLut()) {
+			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+			Graphics g = bi.createGraphics();
+			g.drawImage(createImage(), 0, 0, null);
+			return bi;
+		} else
+			return (BufferedImage)createBufferedImage();
 	}
 
 	/** Returns a new, blank ByteProcessor with the specified width and height. */
@@ -117,6 +124,7 @@ public class ByteProcessor extends ImageProcessor {
 		ip2 =  new ByteProcessor(width, height, new byte[width*height], getColorModel());
 		if (baseCM!=null)
 			ip2.setMinAndMax(min, max);
+		ip2.setInterpolationMethod(interpolationMethod);
 		return ip2;
 	}
 
@@ -191,8 +199,11 @@ public class ByteProcessor extends ImageProcessor {
 			{fill(); return;}
 		int roiWidth=this.roiWidth, roiHeight=this.roiHeight;
 		int roiX=this.roiX, roiY=this.roiY;
-		if (mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight)
-			return;
+		if (mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight) {
+			mask = getMask();
+			if (mask==null||mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight)
+				return;
+		}
 		byte[] mpixels = (byte[])mask.getPixels();
 		for (int y=roiY, my=0; y<(roiY+roiHeight); y++, my++) {
 			int i = y * width + roiX;
@@ -223,20 +234,33 @@ public class ByteProcessor extends ImageProcessor {
 
 	static double oldx, oldy;
 
-	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
+	/** Uses the current interpolation method (BILINEAR or BICUBIC) 
+		to calculate the pixel value at real coordinates (x,y). */
 	public double getInterpolatedPixel(double x, double y) {
-		if (x<0.0) x = 0.0;
-		if (x>=width-1.0) x = width-1.001;
-		if (y<0.0) y = 0.0;
-		if (y>=height-1.0) y = height-1.001;
-		return getInterpolatedPixel(x, y, pixels);
+		if (interpolationMethod==BICUBIC)
+			return getBicubicInterpolatedPixel(x, y, this);
+		else {
+			if (x<0.0) x = 0.0;
+			if (x>=width-1.0) x = width-1.001;
+			if (y<0.0) y = 0.0;
+			if (y>=height-1.0) y = height-1.001;
+			return getInterpolatedPixel(x, y, pixels);
+		}
 	}
 
 	final public int getPixelInterpolated(double x, double y) {
-		if (x<0.0 || y<0.0 || x>=width-1 || y>=height-1)
-			return 0;
-		else
-			return (int)Math.round(getInterpolatedPixel(x, y, pixels));
+		if (interpolationMethod==BILINEAR) {
+			if (x<0.0 || y<0.0 || x>=width-1 || y>=height-1)
+				return 0;
+			else
+				return (int)Math.round(getInterpolatedPixel(x, y, pixels));
+		} else if (interpolationMethod==BICUBIC) {
+			int value = (int)(getBicubicInterpolatedPixel(x, y, this)+0.5);
+			if (value<0) value = 0;
+			if (value>255) value = 255;
+			return value;
+		} else
+			return getPixel((int)(x+0.5), (int)(y+0.5));
 	}
 	
  	public float getPixelValue(int x, int y) {
@@ -271,6 +295,11 @@ public class ByteProcessor extends ImageProcessor {
 		bgColorSet = true;
 	}
 
+	/** Returns the background fill value. */
+	public double getBackgroundValue() {
+		return bgColor;
+	}
+
 	/** Stores the specified real value at (x,y). Does
 		nothing if (x,y) is outside the image boundary.
 		Values outside the range 0-255 are clipped. */
@@ -287,7 +316,7 @@ public class ByteProcessor extends ImageProcessor {
 	/** Stores the specified value at (x,y). Does
 		nothing if (x,y) is outside the image boundary.
 		Values outside the range 0-255 are clipped. */
-	public void putPixel(int x, int y, int value) {
+	public final void putPixel(int x, int y, int value) {
 		if (x>=0 && x<width && y>=0 && y<height) {
 			if (value>255) value = 255;
 			if (value<0) value = 0;
@@ -410,8 +439,7 @@ public class ByteProcessor extends ImageProcessor {
 	/** Copies the image contained in 'ip' to (xloc, yloc) using one of
 		the transfer modes defined in the Blitter interface. */
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode) {
-		if (!(ip instanceof ByteProcessor || ip instanceof ColorProcessor))
-			throw new IllegalArgumentException("8-bit or RGB image required");
+		ip = ip.convertToByte(true);
 		new ByteBlitter(this).copyBits(ip, xloc, yloc, mode);
 	}
 
@@ -603,14 +631,14 @@ public class ByteProcessor extends ImageProcessor {
 				
 				pixels[offset++] = (byte)sum;
 			}
-			if (y%inc==0)
-				showProgress((double)(y-roiY)/roiHeight);
+			//if (y%inc==0)
+			//	showProgress((double)(y-roiY)/roiHeight);
 		}
         if (xMin==1) filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
         if (yMin==1) filterEdge(type, pixels2, roiWidth, roiX, roiY, 1, 0);
         if (xMax==width-2) filterEdge(type, pixels2, roiHeight, width-1, roiY, 0, 1);
         if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
-		showProgress(1.0);
+		//showProgress(1.0);
 	}
 
 	void filterEdge(int type, byte[] pixels2, int n, int x, int y, int xinc, int yinc) {
@@ -619,16 +647,22 @@ public class ByteProcessor extends ImageProcessor {
         int count;
         int binaryForeground = 255 - binaryBackground;
 		int bg = binaryBackground;
+		int fg = binaryForeground;
+		
 		for (int i=0; i<n; i++) {
-            if (type==ERODE || type==DILATE) {
-                p1=getEdgePixel0(pixels2,bg,x-1,y-1); p2=getEdgePixel0(pixels2,bg,x,y-1); p3=getEdgePixel0(pixels2,bg,x+1,y-1);
-                p4=getEdgePixel0(pixels2,bg,x-1,y); p5=getEdgePixel0(pixels2,bg,x,y); p6=getEdgePixel0(pixels2,bg,x+1,y);
-                p7=getEdgePixel0(pixels2,bg,x-1,y+1); p8=getEdgePixel0(pixels2,bg,x,y+1); p9=getEdgePixel0(pixels2,bg,x+1,y+1);
-            } else {
-                p1=getEdgePixel(pixels2,x-1,y-1); p2=getEdgePixel(pixels2,x,y-1); p3=getEdgePixel(pixels2,x+1,y-1);
-                p4=getEdgePixel(pixels2,x-1,y); p5=getEdgePixel(pixels2,x,y); p6=getEdgePixel(pixels2,x+1,y);
-                p7=getEdgePixel(pixels2,x-1,y+1); p8=getEdgePixel(pixels2,x,y+1); p9=getEdgePixel(pixels2,x+1,y+1);
-            }
+			if ((!Prefs.padEdges && type==ERODE) || type==DILATE) {
+				p1=getEdgePixel0(pixels2,bg,x-1,y-1); p2=getEdgePixel0(pixels2,bg,x,y-1); p3=getEdgePixel0(pixels2,bg,x+1,y-1);
+				p4=getEdgePixel0(pixels2,bg,x-1,y); p5=getEdgePixel0(pixels2,bg,x,y); p6=getEdgePixel0(pixels2,bg,x+1,y);
+				p7=getEdgePixel0(pixels2,bg,x-1,y+1); p8=getEdgePixel0(pixels2,bg,x,y+1); p9=getEdgePixel0(pixels2,bg,x+1,y+1);
+			}  else if (Prefs.padEdges && type==ERODE) {
+				p1=getEdgePixel1(pixels2,fg, x-1,y-1); p2=getEdgePixel1(pixels2,fg,x,y-1); p3=getEdgePixel1(pixels2,fg,x+1,y-1);
+				p4=getEdgePixel1(pixels2,fg, x-1,y); p5=getEdgePixel1(pixels2,fg,x,y); p6=getEdgePixel1(pixels2,fg,x+1,y);
+				p7=getEdgePixel1(pixels2,fg,x-1,y+1); p8=getEdgePixel1(pixels2,fg,x,y+1); p9=getEdgePixel1(pixels2,fg,x+1,y+1);
+			} else {
+				p1=getEdgePixel(pixels2,x-1,y-1); p2=getEdgePixel(pixels2,x,y-1); p3=getEdgePixel(pixels2,x+1,y-1);
+				p4=getEdgePixel(pixels2,x-1,y); p5=getEdgePixel(pixels2,x,y); p6=getEdgePixel(pixels2,x+1,y);
+				p7=getEdgePixel(pixels2,x-1,y+1); p8=getEdgePixel(pixels2,x,y+1); p9=getEdgePixel(pixels2,x+1,y+1);
+			}
             switch (type) {
                 case BLUR_MORE:
                     sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
@@ -711,6 +745,13 @@ public class ByteProcessor extends ImageProcessor {
 		if (y<=0) y = 0;
 		if (y>=height) y = height-1;
 		return pixels2[x+y*width]&255;
+	}
+
+	final int getEdgePixel1(byte[] pixels2, int foreground, int x, int y) {
+		if (x<0 || x>width-1 || y<0 || y>height-1)
+            return foreground;
+        else
+            return pixels2[x+y*width]&255;
 	}
 
 	final int getEdgePixel0(byte[] pixels2, int background, int x, int y) {
@@ -825,34 +866,55 @@ public class ByteProcessor extends ImageProcessor {
 			ymax = roiY + roiHeight - 1;
 		}
 		byte[] pixels2 = (byte[])getPixelsCopy();
+		ImageProcessor ip2 = null;
+		if (interpolationMethod==BICUBIC) {
+			ip2 = new ByteProcessor(getWidth(), getHeight(), pixels2, null);
+			ip2.setBackgroundValue(getBackgroundValue());
+		}
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
 		int index1, index2, xsi, ysi;
 		double ys, xs;
-		double xlimit = width-1.0, xlimit2 = width-1.001;
-		double ylimit = height-1.0, ylimit2 = height-1.001;
-		for (int y=ymin; y<=ymax; y++) {
-			ys = (y-yCenter)/yScale + yCenter;
-			ysi = (int)ys;
-			if (ys<0.0) ys = 0.0;			
-			if (ys>=ylimit) ys = ylimit2;
-			index1 = y*width + xmin;
-			index2 = width*(int)ys;
-			for (int x=xmin; x<=xmax; x++) {
-				xs = (x-xCenter)/xScale + xCenter;
-				xsi = (int)xs;
-				if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
-					pixels[index1++] = (byte)bgColor;
-				else {
-					if (interpolate) {
-						if (xs<0.0) xs = 0.0;
-						if (xs>=xlimit) xs = xlimit2;
-						pixels[index1++] =(byte)((int)(getInterpolatedPixel(xs, ys, pixels2)+0.5)&255);
-					} else
-						pixels[index1++] = pixels2[index2+xsi];
+		if (interpolationMethod==BICUBIC) {
+			for (int y=ymin; y<=ymax; y++) {
+				ys = (y-yCenter)/yScale + yCenter;
+				index1 = y*width + xmin;
+				index2 = width*(int)ys;
+				for (int x=xmin; x<=xmax; x++) {
+					xs = (x-xCenter)/xScale + xCenter;
+					int value = (int)(getBicubicInterpolatedPixel(xs, ys, ip2)+0.5);
+					if (value<0) value = 0;
+					if (value>255) value = 255;
+					pixels[index1++] = (byte)value;
 				}
+				if (y%30==0) showProgress((double)(y-ymin)/height);
 			}
-			if (y%20==0)
-			showProgress((double)(y-ymin)/height);
+		} else {
+			double xlimit = width-1.0, xlimit2 = width-1.001;
+			double ylimit = height-1.0, ylimit2 = height-1.001;
+			for (int y=ymin; y<=ymax; y++) {
+				ys = (y-yCenter)/yScale + yCenter;
+				ysi = (int)ys;
+				if (ys<0.0) ys = 0.0;			
+				if (ys>=ylimit) ys = ylimit2;
+				index1 = y*width + xmin;
+				index2 = width*(int)ys;
+				for (int x=xmin; x<=xmax; x++) {
+					xs = (x-xCenter)/xScale + xCenter;
+					xsi = (int)xs;
+					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
+						pixels[index1++] = (byte)bgColor;
+					else {
+						if (interpolationMethod==BILINEAR) {
+							if (xs<0.0) xs = 0.0;
+							if (xs>=xlimit) xs = xlimit2;
+							pixels[index1++] =(byte)((int)(getInterpolatedPixel(xs, ys, pixels2)+0.5)&255);
+						} else
+							pixels[index1++] = pixels2[index2+xsi];
+					}
+				}
+				if (y%30==0)
+				showProgress((double)(y-ymin)/height);
+			}
 		}
 		showProgress(1.0);
 	}
@@ -887,47 +949,69 @@ public class ByteProcessor extends ImageProcessor {
 		double dstCenterY = dstHeight/2.0;
 		double xScale = (double)dstWidth/roiWidth;
 		double yScale = (double)dstHeight/roiHeight;
-		if (interpolate) {
+		if (interpolationMethod!=NONE) {
 			dstCenterX += xScale/2.0;
 			dstCenterY += yScale/2.0;
 		}
 		ImageProcessor ip2 = createProcessor(dstWidth, dstHeight);
 		byte[] pixels2 = (byte[])ip2.getPixels();
 		double xs, ys;
-		double xlimit = width-1.0, xlimit2 = width-1.001;
-		double ylimit = height-1.0, ylimit2 = height-1.001;
 		int index1, index2;
-		for (int y=0; y<=dstHeight-1; y++) {
-			ys = (y-dstCenterY)/yScale + srcCenterY;
-			if (interpolate) {
-				if (ys<0.0) ys = 0.0;
-				if (ys>=ylimit) ys = ylimit2;
+		if (interpolationMethod==BICUBIC) {
+			for (int y=0; y<=dstHeight-1; y++) {
+				ys = (y-dstCenterY)/yScale + srcCenterY;
+				index1 = width*(int)ys;
+				index2 = y*dstWidth;
+				for (int x=0; x<=dstWidth-1; x++) {
+					xs = (x-dstCenterX)/xScale + srcCenterX;
+					int value = (int)(getBicubicInterpolatedPixel(xs, ys, this)+0.5);
+					if (value<0) value = 0;
+					if (value>255) value = 255;
+					pixels2[index2++] = (byte)value;
+				}
+				if (y%30==0)
+				showProgress((double)y/dstHeight);
 			}
-			index1 = width*(int)ys;
-			index2 = y*dstWidth;
-			for (int x=0; x<=dstWidth-1; x++) {
-				xs = (x-dstCenterX)/xScale + srcCenterX;
-				if (interpolate) {
-					if (xs<0.0) xs = 0.0;
-					if (xs>=xlimit) xs = xlimit2;
-					pixels2[index2++] = (byte)((int)(getInterpolatedPixel(xs, ys, pixels)+0.5)&255);
-				} else
-		  			pixels2[index2++] = pixels[index1+(int)xs];
+		} else {
+			double xlimit = width-1.0, xlimit2 = width-1.001;
+			double ylimit = height-1.0, ylimit2 = height-1.001;
+			for (int y=0; y<=dstHeight-1; y++) {
+				ys = (y-dstCenterY)/yScale + srcCenterY;
+				if (interpolationMethod==BILINEAR) {
+					if (ys<0.0) ys = 0.0;
+					if (ys>=ylimit) ys = ylimit2;
+				}
+				index1 = width*(int)ys;
+				index2 = y*dstWidth;
+				for (int x=0; x<=dstWidth-1; x++) {
+					xs = (x-dstCenterX)/xScale + srcCenterX;
+					if (interpolationMethod==BILINEAR) {
+						if (xs<0.0) xs = 0.0;
+						if (xs>=xlimit) xs = xlimit2;
+						pixels2[index2++] = (byte)((int)(getInterpolatedPixel(xs, ys, pixels)+0.5)&255);
+					} else
+						pixels2[index2++] = pixels[index1+(int)xs];
+				}
+				if (y%30==0)
+				showProgress((double)y/dstHeight);
 			}
-			if (y%20==0)
-			showProgress((double)y/dstHeight);
 		}
 		showProgress(1.0);
 		return ip2;
 	}
 
 	/** Rotates the image or ROI 'angle' degrees clockwise.
-		@see ImageProcessor#setInterpolate
+		@see ImageProcessor#setInterpolationMethod
 	*/
 	public void rotate(double angle) {
         if (angle%360==0)
         	return;
 		byte[] pixels2 = (byte[])getPixelsCopy();
+		ImageProcessor ip2 = null;
+		if (interpolationMethod==BICUBIC) {
+			ip2 = new ByteProcessor(getWidth(), getHeight(), pixels2, null);
+			ip2.setBackgroundValue(getBackgroundValue());
+		}
 		double centerX = roiX + (roiWidth-1)/2.0;
 		double centerY = roiY + (roiHeight-1)/2.0;
 		int xMax = roiX + this.roiWidth - 1;
@@ -944,32 +1028,49 @@ public class ByteProcessor extends ImageProcessor {
 		double xlimit = width-1.0, xlimit2 = width-1.001;
 		double ylimit = height-1.0, ylimit2 = height-1.001;
 		
-		for (int y=roiY; y<(roiY + roiHeight); y++) {
-			index = y*width + roiX;
-			tmp3 = tmp1 - y*sa + centerX;
-			tmp4 = tmp2 + y*ca + centerY;
-			for (int x=roiX; x<=xMax; x++) {
-				xs = x*ca + tmp3;
-				ys = x*sa + tmp4;
-				if ((xs>=-0.01) && (xs<dwidth) && (ys>=-0.01) && (ys<dheight)) {
-					if (interpolate) {
-						if (xs<0.0) xs = 0.0;
-						if (xs>=xlimit) xs = xlimit2;
-						if (ys<0.0) ys = 0.0;			
-						if (ys>=ylimit) ys = ylimit2;
-						pixels[index++] = (byte)((int)(getInterpolatedPixel(xs, ys, pixels2)+0.5)&255);
-				  	} else {
-				  		ixs = (int)(xs+0.5);
-				  		iys = (int)(ys+0.5);
-				  		if (ixs>=width) ixs = width - 1;
-				  		if (iys>=height) iys = height -1;
-						pixels[index++] = pixels2[width*iys+ixs];
-					}
-				} else
-					pixels[index++] = (byte)bgColor;
+		if (interpolationMethod==BICUBIC) {
+			for (int y=roiY; y<(roiY + roiHeight); y++) {
+				index = y*width + roiX;
+				tmp3 = tmp1 - y*sa + centerX;
+				tmp4 = tmp2 + y*ca + centerY;
+				for (int x=roiX; x<=xMax; x++) {
+					xs = x*ca + tmp3;
+					ys = x*sa + tmp4;
+					int value = (int)(getBicubicInterpolatedPixel(xs, ys, ip2)+0.5);
+					if (value<0) value = 0;
+					if (value>255) value = 255;
+					pixels[index++] = (byte)value;
+				}
+				if (y%30==0) showProgress((double)(y-roiY)/roiHeight);
 			}
-			if (y%30==0)
-				showProgress((double)(y-roiY)/roiHeight);
+		} else {
+			for (int y=roiY; y<(roiY + roiHeight); y++) {
+				index = y*width + roiX;
+				tmp3 = tmp1 - y*sa + centerX;
+				tmp4 = tmp2 + y*ca + centerY;
+				for (int x=roiX; x<=xMax; x++) {
+					xs = x*ca + tmp3;
+					ys = x*sa + tmp4;
+					if ((xs>=-0.01) && (xs<dwidth) && (ys>=-0.01) && (ys<dheight)) {
+						if (interpolationMethod==BILINEAR) {
+							if (xs<0.0) xs = 0.0;
+							if (xs>=xlimit) xs = xlimit2;
+							if (ys<0.0) ys = 0.0;			
+							if (ys>=ylimit) ys = ylimit2;
+							pixels[index++] = (byte)(getInterpolatedPixel(xs, ys, pixels2)+0.5);
+						} else {
+							ixs = (int)(xs+0.5);
+							iys = (int)(ys+0.5);
+							if (ixs>=width) ixs = width - 1;
+							if (iys>=height) iys = height -1;
+							pixels[index++] = pixels2[width*iys+ixs];
+						}
+					} else
+						pixels[index++] = (byte)bgColor;
+				}
+				if (y%30==0)
+					showProgress((double)(y-roiY)/roiHeight);
+			}
 		}
 		showProgress(1.0);
 	}
@@ -1100,8 +1201,8 @@ public class ByteProcessor extends ImageProcessor {
 			fPixels[i] = pixels[i]&0xff;
 		fp.setRoi(getRoi());
 		fp.setMask(mask);
-		fp.setThreshold(minThreshold, maxThreshold, ImageProcessor.NO_LUT_UPDATE);
 		fp.setMinAndMax(min, max);
+		fp.setThreshold(minThreshold, maxThreshold, ImageProcessor.NO_LUT_UPDATE);
 		return fp;
 	}
 	
@@ -1115,12 +1216,21 @@ public class ByteProcessor extends ImageProcessor {
 		float value;
 		int size = width*height;
 		for (int i=0; i<size; i++) {
-			value = fPixels[i] + 0.49999995f;
+			value = fPixels[i] + 0.5f;
 			if (value<0f) value = 0f;
 			if (value>255f) value = 255f;
 			pixels[i] = (byte)value;
 		}
 		setMinAndMax(fp.getMin(), fp.getMax());
+	}
+	
+	/** Returns 'true' if this is a binary image (8-bit-image with only 0 and 255). */
+	public boolean isBinary() {
+		for (int i=0; i<width*height; i++) {
+			if (pixels[i]!=0 && pixels[i]!=(byte)255)
+				return false;
+		}
+		return true;
 	}
 	
 	byte[] create8BitImage() {

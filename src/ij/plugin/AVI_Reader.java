@@ -1,5 +1,4 @@
 package ij.plugin;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -9,7 +8,6 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-import com.sun.image.codec.jpeg.*;
 import javax.imageio.ImageIO;
 
 /** <pre>
@@ -148,7 +146,7 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
     //for conversion to ImageJ stack
     private  Vector            frameInfos;  //for virtual stack: long[] with frame pos&size in file, time(usec)
     private  ImageStack        stack;
-	private  IjxImagePlus	       imp;
+	private  ImagePlus	       imp;
     //for debug messages
     private  boolean           verbose = IJ.debugMode;
     private  long              startTime;
@@ -226,17 +224,21 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
             IJ.showMessage("AVI Reader","Error: No Frames Found"+rangeText);
             return;
         }
-        imp = IJ.getFactory().newImagePlus(fileName, stack);
+        imp = new ImagePlus(fileName, stack);
         if (imp.getBitDepth()==16)
         	imp.getProcessor().resetMinAndMax();
         setFramesPerSecond(imp);
+        FileInfo fi = new FileInfo();
+        fi.fileName = fileName;
+        fi.directory = fileDir;
+        imp.setFileInfo(fi);
         if (arg.equals(""))
         	imp.show();
         IJ.showTime(imp, startTime, "Read AVI in ", stack.getSize());
     }
 
     /** Returns the ImagePlus opened by run(). */
-	public IjxImagePlus getImagePlus() {
+	public ImagePlus getImagePlus() {
 		return imp;
 	}
 
@@ -281,7 +283,7 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
         return stack;
     }
 
-    /** Returns an ImageProcessor for the specified slice of this virtual stack (if it is one)
+    /** Returns an ImageProcessor for the specified frame of this virtual stack (if it is one)
         where 1<=n<=nslices. Returns null if no virtual stack or no slices.
     */
     public synchronized ImageProcessor getProcessor(int n) {
@@ -349,6 +351,10 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
     private boolean showDialog (String fileName) {
     	if (lastFrameNumber!=-1)
     		lastFrameNumber = dwTotalFrames;
+    	if (IJ.macroRunning()) {
+    		firstFrameNumber = 1;
+    		lastFrameNumber = dwTotalFrames;
+    	}
         GenericDialog gd = new GenericDialog("AVI Reader");
         gd.addNumericField("First Frame: ", firstFrameNumber, 0);
         gd.addNumericField("Last Frame: ", lastFrameNumber, 0, 6, "");
@@ -728,11 +734,7 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
     private Object readCompressedFrame (RandomAccessFile rFile, int size)
             throws Exception, IOException {
         InputStream inputStream = new raInputStream(rFile, size, biCompression==MJPG_COMPRESSION);
-        BufferedImage bi = null;
-        if (dataCompression == JPEG_COMPRESSION)
-            bi = JPEGCodec.createJPEGDecoder(inputStream).decodeAsBufferedImage();
-        else
-            bi = ImageIO.read(inputStream);
+        BufferedImage bi = ImageIO.read(inputStream);
         int type = bi.getType();
         ImageProcessor ip = null;
         //IJ.log("BufferedImage Type="+type);
@@ -941,7 +943,7 @@ public class AVI_Reader extends VirtualStack implements PlugIn {
         }
     }
 
-    private void setFramesPerSecond (IjxImagePlus imp) {
+    private void setFramesPerSecond (ImagePlus imp) {
         if (dwMicroSecPerFrame<1000 && dwStreamRate>0)  //if no reasonable frame time, get it from rate
             dwMicroSecPerFrame = (int)(dwStreamScale*1e6/dwStreamRate);
         if (dwMicroSecPerFrame>=1000)

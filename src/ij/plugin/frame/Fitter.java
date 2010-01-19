@@ -1,5 +1,4 @@
 package ij.plugin.frame;
-import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -34,6 +33,8 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 
 	static CurveFitter cf;
 	static int fitType;
+	static String equation = "y = a + b*x + c*x*x";
+	static final int USER_DEFINED = 100;
 
 	public Fitter() {
 		super("Curve Fitter");
@@ -42,6 +43,7 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 		fit = new Choice();
 		for (int i=0; i<CurveFitter.fitList.length; i++)
 			fit.addItem(CurveFitter.fitList[i]);
+		fit.addItem("*User-defined*");
 		fit.addItemListener(this);
 		panel.add(fit);
 		doIt = new Button(" Fit ");
@@ -72,19 +74,34 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 	}
 
 	public void doFit(int fitType) {
+		if (fitType>=CurveFitter.fitList.length)
+			fitType = USER_DEFINED;
 		this.fitType = fitType;
 		if (!getData())
 			return;
 		cf = new CurveFitter(x, y);
-		//double[] params = {0.4, 3.0, 4.6, 44.0};
-		//cf.setInitialParameters(params);
-		cf.doFit(fitType, settings.getState());
+		if (fitType==USER_DEFINED) {
+			String eqn = getEquation();
+			if (eqn==null) return;
+			int params = cf.doCustomFit(eqn, null, settings.getState());
+			if (params==0) return;
+		} else
+			cf.doFit(fitType, settings.getState());
 		IJ.log(cf.getResultString());
 		plot(cf);
 	}
 	
+	String getEquation() {
+		GenericDialog gd = new GenericDialog("Formula");
+		gd.addStringField("Formula:", equation, 38);
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return null;
+		equation = gd.getNextString();
+		return equation;
+	}
+	
 	public static void plot(CurveFitter cf) {
-		int fit = cf.getFit();
 		double[] x = cf.getXPoints();
 		double[] y = cf.getYPoints();
 		double[] a = Tools.getMinMax(x);
@@ -99,28 +116,29 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 			px[i]=(float)tmp;
 			tmp += inc;
 		}
+		double[] params = cf.getParams();
 		for (int i=0; i<100; i++)
-			py[i] = (float)CurveFitter.f(fit, cf.getParams(), px[i]);
+			py[i] = (float)cf.f(params, px[i]);
 		a = Tools.getMinMax(py);
 		ymin = Math.min(ymin, a[0]);
 		ymax = Math.max(ymax, a[1]);
-		PlotWindow pw = new PlotWindow(cf.fList[fit],"X","Y",px,py);
-		pw.setLimits(xmin, xmax, ymin, ymax);
-		pw.addPoints(x, y, PlotWindow.CIRCLE);
+		Plot plot = new Plot(cf.getFormula(),"X","Y",px,py);
+		plot.setLimits(xmin, xmax, ymin, ymax);
+		plot.addPoints(x, y, PlotWindow.CIRCLE);
 		double yloc = 0.1;
 		double yinc = 0.085;
-		pw.addLabel(0.02, yloc, cf.fitList[fit]); yloc+=yinc;
-		pw.addLabel(0.02, yloc, cf.fList[fit]);  yloc+=yinc;
+		plot.addLabel(0.02, yloc, cf.getName()); yloc+=yinc;
+		plot.addLabel(0.02, yloc, cf.getFormula());  yloc+=yinc;
         double[] p = cf.getParams();
         int n = cf.getNumParams();
         char pChar = 'a';
         for (int i = 0; i < n; i++) {
-			pw.addLabel(0.02, yloc, pChar+"="+IJ.d2s(p[i],4));
+			plot.addLabel(0.02, yloc, pChar+"="+IJ.d2s(p[i],4));
 			yloc+=yinc;
 			pChar++;
         }
-		pw.addLabel(0.02, yloc, "R^2="+IJ.d2s(cf.getRSquared(),3));  yloc+=yinc;
-		pw.draw();									
+		plot.addLabel(0.02, yloc, "R^2="+IJ.d2s(cf.getRSquared(),3));  yloc+=yinc;
+		plot.show();									
 	}
 	
 	double sqr(double x) {return x*x;}
@@ -149,7 +167,7 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 			IJ.error("No function available");
 			return;
 		}
-		IjxImagePlus img = WindowManager.getCurrentImage();
+		ImagePlus img = WindowManager.getCurrentImage();
 		if (img==null) {
 			IJ.noImage();
 			return;
@@ -168,11 +186,11 @@ public class Fitter extends PlugInFrame implements PlugIn, ItemListener, ActionL
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
 				value = ip.getPixelValue(x,y);
-				data[y*width+x] = (float)CurveFitter.f(fitType, p, value);
+				data[y*width+x] = (float)cf.f(p, value);
 			}
 		}
 		ImageProcessor ip2 = new FloatProcessor(width, height, data, ip.getColorModel());
-		IJ.getFactory().newImagePlus(img.getTitle()+"-transformed", ip2).show();
+		new ImagePlus(img.getTitle()+"-transformed", ip2).show();
 	}
 
 	double getNum(StringTokenizer st) {

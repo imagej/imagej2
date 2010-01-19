@@ -12,16 +12,23 @@ import javax.swing.filechooser.*;
  public class DirectoryChooser {
  	private String directory;
  	private static String defaultDir;
+ 	private String title;
  
  	/** Display a dialog using the specified title. */
  	public DirectoryChooser(String title) {
- 		if (IJ.isMacOSX() && IJ.isJava14())
+ 		this.title = title;
+ 		if (IJ.isMacOSX())
 			getDirectoryUsingFileDialog(title);
  		else {
- 			if (EventQueue.isDispatchThread())
- 				getDirectoryUsingJFileChooserOnThisThread(title);
- 			else
- 				getDirectoryUsingJFileChooser(title);
+			String macroOptions = Macro.getOptions();
+			if (macroOptions!=null)
+				directory = Macro.getValue(macroOptions, title, null);
+			if (directory==null) {
+ 				if (EventQueue.isDispatchThread())
+ 					getDirectoryUsingJFileChooserOnThisThread(title);
+ 				else
+ 					getDirectoryUsingJFileChooser(title);
+ 			}
  		}
  	}
  	
@@ -43,7 +50,8 @@ import javax.swing.filechooser.*;
 						directory = dir.getPath();
 						if (!directory.endsWith(File.separator))
 							directory += File.separator;
-						defaultDir = directory;
+						if (directory!=null)
+							defaultDir = (new File(directory)).getParent();
 						String fileName = file.getName();
 						if (fileName.indexOf(":\\")!=-1)
 							directory = defaultDir = fileName;
@@ -72,7 +80,8 @@ import javax.swing.filechooser.*;
 				directory = dir.getPath();
 				if (!directory.endsWith(File.separator))
 					directory += File.separator;
-				defaultDir = directory;
+					if (directory!=null)
+						defaultDir = (new File(directory)).getParent();
 				String fileName = file.getName();
 				if (fileName.indexOf(":\\")!=-1)
 					directory = defaultDir = fileName;
@@ -92,7 +101,8 @@ import javax.swing.filechooser.*;
 			directory = null;
 		else
 			directory = od.getDirectory() + od.getFileName() + "/";
-		defaultDir = directory;
+		if (directory!=null)
+			defaultDir = (new File(directory)).getParent();
 		System.setProperty("apple.awt.fileDialogForDirectories", "false");
  		Prefs.useJFileChooser = saveUseJFC;
 	}
@@ -100,6 +110,8 @@ import javax.swing.filechooser.*;
  	/** Returns the directory selected by the user. */
  	public String getDirectory() {
  		//IJ.log("getDirectory: "+directory);
+		if (Recorder.record && !IJ.isMacOSX())
+			Recorder.recordPath(title, directory);
  		return directory;
  	}
  	

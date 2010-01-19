@@ -1,5 +1,4 @@
 package ij.plugin.filter;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
@@ -14,7 +13,7 @@ import java.io.*;
 
 
 /** Implements the Analyze/Calibrate command. */
-public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener {
+public class Calibrator implements PlugInFilter, Measurements, ActionListener {
 
 	private static final String NONE = "None";
 	private static final String INVERTER = "Pixel Inverter";
@@ -22,7 +21,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 	private static final String CUSTOM = "Custom";
 	private static boolean showSettings;
 	private boolean global1, global2;
-    private IjxImagePlus imp;
+    private ImagePlus imp;
 	private int choiceIndex;
 	private String[] functions;
 	private	int nFits = CurveFitter.fitList.length;
@@ -40,7 +39,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 	private Button open, save;
 	private GenericDialog gd;
 	
-	public int setup(String arg, IjxImagePlus imp) {
+	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
 		IJ.register(Calibrator.class);
 		return DOES_ALL-DOES_RGB+NO_CHANGES;
@@ -53,7 +52,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 		if (choiceIndex==customIndex) {
 			showPlot(null, null, imp.getCalibration(), null);
 			return;
-		} else if (imp.getType()==IjxImagePlus.GRAY32) {
+		} else if (imp.getType()==ImagePlus.GRAY32) {
 			if (choiceIndex==0)
 				imp.getCalibration().setValueUnit(unit);
 			else
@@ -62,7 +61,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 			calibrate(imp);
 	}
 
-	public boolean showDialog(IjxImagePlus imp) {
+	public boolean showDialog(ImagePlus imp) {
 		String defaultChoice;
 		Calibration cal = imp.getCalibration();
 		functions = getFunctionList(cal.getFunction()==Calibration.CUSTOM);
@@ -84,7 +83,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 			defaultChoice=NONE;
 			
 		String tmpText = getMeans();
-		if (!importedValues)	
+		if (!importedValues && !tmpText.equals(""))	
 			xText = tmpText;	
 		gd = new GenericDialog("Calibrate...");
 		gd.addChoice("Function:", functions, defaultChoice);
@@ -108,7 +107,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 		}
 	}
 
-	/** Creates a panel containing "Save..." and "Save..." buttons. */
+	/** Creates a panel containing "Open..." and "Save..." buttons. */
 	Panel makeButtonPanel(GenericDialog gd) {
 		Panel buttons = new Panel();
     	buttons.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -121,11 +120,11 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 		return buttons;
 	}
 	
-	public void calibrate(IjxImagePlus imp) {
+	public void calibrate(ImagePlus imp) {
 		Calibration cal = imp.getCalibration();
 		Calibration calOrig = cal.copy();
 		int function = Calibration.NONE;
-		boolean is16Bits = imp.getType()==IjxImagePlus.GRAY16;
+		boolean is16Bits = imp.getType()==ImagePlus.GRAY16;
 		double[] parameters = null;
 		double[] x=null, y=null;
 		boolean zeroClip=false;
@@ -135,10 +134,6 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 			function = Calibration.NONE;
 		} else if (choiceIndex<=nFits) {
 			function = choiceIndex - 1;
-			//if (function>0 && is16Bits) {
-			//	IJ.error("Calibrate", "Calibration of 16-bit images, except with straight\nline functions, is currently not supported.");
-			//	return;
-			//}
 			x = getData(xText);
 			y = getData(yText);
 			if (!cal.calibrated() || y.length!=0 || function!=oldFunction) {
@@ -196,7 +191,7 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 		}
 		int n = x.length;
 		double xmin=0.0,xmax;
-		if (imp.getType()==IjxImagePlus.GRAY16)
+		if (imp.getType()==ImagePlus.GRAY16)
 			xmax=65535.0; 
 		else
 			xmax=255.0;
@@ -237,34 +232,34 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 		double ymax = a[1];
 		int fit = cal.getFunction();
 		String unit = cal.getValueUnit();
-		PlotWindow pw = new PlotWindow("Calibration Function","pixel value",unit,px,py);
-		pw.setLimits(xmin,xmax,ymin,ymax);
+		Plot plot = new Plot("Calibration Function","pixel value",unit,px,py);
+		plot.setLimits(xmin,xmax,ymin,ymax);
 		if (x!=null&&y!=null&&x.length>0&&y.length>0)
-			pw.addPoints(x, y, PlotWindow.CIRCLE);
+			plot.addPoints(x, y, PlotWindow.CIRCLE);
 		double[] p = cal.getCoefficients();
 		if (fit<=Calibration.LOG2) {
-			drawLabel(pw, CurveFitter.fList[fit]);
+			drawLabel(plot, CurveFitter.fList[fit]);
 			ly += 0.04;
 		}
 		if (p!=null) {
 			int np = p.length;
-			drawLabel(pw, "a="+IJ.d2s(p[0],6));
-			drawLabel(pw, "b="+IJ.d2s(p[1],6));
+			drawLabel(plot, "a="+IJ.d2s(p[0],6));
+			drawLabel(plot, "b="+IJ.d2s(p[1],6));
 			if (np>=3)
-				drawLabel(pw, "c="+IJ.d2s(p[2],6));
+				drawLabel(plot, "c="+IJ.d2s(p[2],6));
 			if (np>=4)
-				drawLabel(pw, "d="+IJ.d2s(p[3],6));
+				drawLabel(plot, "d="+IJ.d2s(p[3],6));
 			if (np>=5)
-				drawLabel(pw, "e="+IJ.d2s(p[4],6));
+				drawLabel(plot, "e="+IJ.d2s(p[4],6));
 			ly += 0.04;
 		}
 		if (rSquared!=null)
-			{drawLabel(pw, "R^2="+rSquared); rSquared=null;}
-		pw.draw();
+			{drawLabel(plot, "R^2="+rSquared); rSquared=null;}
+		plot.show();
 	}
 
-	void drawLabel(PlotWindow pw, String label) {
-		pw.addLabel(lx, ly, label);
+	void drawLabel(Plot plot, String label) {
+		plot.addLabel(lx, ly, label);
 		ly += 0.08;
 	}
 	
@@ -301,6 +296,14 @@ public class Calibrator implements IjxPlugInFilter, Measurements, ActionListener
 	}
 
 	double[] getData(String xData) {
+		int len = xData.length();
+		StringBuffer sb = new StringBuffer(len);
+		for (int i=0; i<len; i++) {
+			char c = xData.charAt(i);
+			if ((c>='0'&&c<='9') || c=='.' || c==',' || c=='\n' || c=='\r')
+				sb.append(c);
+		}
+		xData = sb.toString();
 		StringTokenizer st = new StringTokenizer(xData);
 		int nTokens = st.countTokens();
 		if (nTokens<1)

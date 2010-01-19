@@ -21,6 +21,7 @@ public interface PlugInFilter {
         arg = "final" after all other processing is done.
      */
 	public int setup(String arg, ImagePlus imp);
+
 	/** Filters use this method to process the image. If the
 	 	SUPPORTS_STACKS flag was set, it is called for each slice in
 	 	a stack. With CONVERT_TO_FLOAT, the filter is called with
@@ -79,7 +80,8 @@ public interface PlugInFilter {
      *  the calls to the run(ip) have finished. The argument <code>arg</code> of setup
      *  will be "final" in that case. */
     public final int FINAL_PROCESSING = 65536;
+    /** Set this flag to keep the invisible binary threshold from being reset. */
+    public final int KEEP_THRESHOLD = 131072;
 
     // flags 0x01000000 and above are reserved for ExtendedPlugInFilter
-
 }

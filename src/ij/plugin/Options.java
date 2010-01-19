@@ -1,13 +1,10 @@
 package ij.plugin;
-import ijx.gui.IjxImageWindow;
-import ijx.IjxImagePlus;
 import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.io.*;
 import ij.plugin.filter.*;
 import ij.plugin.frame.LineWidthAdjuster;
-import ijx.IjxImageStack;
 import java.awt.*;
 
 /** This plugin implements most of the commands
@@ -29,16 +26,17 @@ public class Options implements PlugIn {
 				
 	// Miscellaneous Options
 	void miscOptions() {
-		String key = IJ.isMacintosh()?"Command":"Control";
-		GenericDialog gd = new GenericDialog("Miscellaneous Options", IJ.getTopComponentFrame());
-		gd.addStringField("Divide by Zero Value:", ""+FloatBlitter.divideByZeroValue, 10);
-		gd.addCheckbox("Use Pointer Cursor", Prefs.usePointerCursor);
-		gd.addCheckbox("Hide \"Process Stack?\" Dialog", IJ.hideProcessStackDialog);
+		String key = IJ.isMacintosh()?"command":"control";
+		GenericDialog gd = new GenericDialog("Miscellaneous Options", IJ.getInstance());
+		gd.addStringField("Divide by zero value:", ""+FloatBlitter.divideByZeroValue, 10);
+		gd.addCheckbox("Use pointer cursor", Prefs.usePointerCursor);
+		gd.addCheckbox("Hide \"Process Stack?\" dialog", IJ.hideProcessStackDialog);
 		//gd.addCheckbox("Antialiased_Text", Prefs.antialiasedText);
-		gd.addCheckbox("Antialiased_Tool Icons", Prefs.antialiasedTools);
-		gd.addCheckbox("Require "+key+" Key for Shortcuts", Prefs.requireControlKey);
-		gd.addCheckbox("Move Isolated Plugins to Misc. Menu", Prefs.moveToMisc);
-		gd.addCheckbox("Debug Mode", IJ.debugMode);
+		gd.addCheckbox("Require "+key+" key for shortcuts", Prefs.requireControlKey);
+		gd.addCheckbox("Move isolated plugins to Misc. menu", Prefs.moveToMisc);
+		gd.addCheckbox("Run single instance listener", Prefs.runSocketListener);
+		gd.addCheckbox("Debug mode", IJ.debugMode);
+		gd.addHelp(IJ.URL+"/docs/menus/edit.html#misc");
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;
@@ -62,12 +60,9 @@ public class Options implements PlugIn {
 		Prefs.usePointerCursor = gd.getNextBoolean();
 		IJ.hideProcessStackDialog = gd.getNextBoolean();
 		//Prefs.antialiasedText = gd.getNextBoolean();
-		boolean antialiasedTools = gd.getNextBoolean();
-		boolean change = antialiasedTools!=Prefs.antialiasedTools;
-		Prefs.antialiasedTools = antialiasedTools;
-		if (change) Toolbar.getInstance().repaint();
 		Prefs.requireControlKey = gd.getNextBoolean();
 		Prefs.moveToMisc = gd.getNextBoolean();
+		Prefs.runSocketListener = gd.getNextBoolean();
 		IJ.debugMode = gd.getNextBoolean();
 	}
 
@@ -76,7 +71,7 @@ public class Options implements PlugIn {
 		if (width==IJ.CANCELED) return;
 		Line.setWidth(width);
 		LineWidthAdjuster.update();
-		IjxImagePlus imp = WindowManager.getCurrentImage();
+		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp!=null && imp.isProcessor()) {
 			ImageProcessor ip = imp.getProcessor();
 			ip.setLineWidth(Line.getWidth());
@@ -139,14 +134,15 @@ public class Options implements PlugIn {
 	}
 		
 	void appearance() {
-		GenericDialog gd = new GenericDialog("Appearance", IJ.getTopComponentFrame());
-		gd.addCheckbox("Interpolate Zoomed Images", Prefs.interpolateScaledImages);
-		gd.addCheckbox("Open Images at 100%", Prefs.open100Percent);
-		gd.addCheckbox("Black Canvas", Prefs.blackCanvas);
-		gd.addCheckbox("No Image Border", Prefs.noBorder);
-		gd.addCheckbox("Use Inverting Lookup Table", Prefs.useInvertingLut);
-		gd.addCheckbox("Double Buffer Selections", Prefs.doubleBuffer);
-		gd.addNumericField("Menu Font Size:", Menus.getFontSize(), 0, 3, "points");
+		GenericDialog gd = new GenericDialog("Appearance", IJ.getInstance());
+		gd.addCheckbox("Interpolate zoomed images", Prefs.interpolateScaledImages);
+		gd.addCheckbox("Open images at 100%", Prefs.open100Percent);
+		gd.addCheckbox("Black canvas", Prefs.blackCanvas);
+		gd.addCheckbox("No image border", Prefs.noBorder);
+		gd.addCheckbox("Use inverting lookup table", Prefs.useInvertingLut);
+		gd.addCheckbox("Antialiased tool icons", Prefs.antialiasedTools);
+		gd.addNumericField("Menu font size:", Menus.getFontSize(), 0, 3, "points");
+        gd.addHelp(IJ.URL+"/docs/menus/edit.html#appearance");
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;			
@@ -155,19 +151,22 @@ public class Options implements PlugIn {
 		boolean blackCanvas = gd.getNextBoolean();
 		boolean noBorder = gd.getNextBoolean();
 		boolean useInvertingLut = gd.getNextBoolean();
-		Prefs.doubleBuffer = gd.getNextBoolean();
+		boolean antialiasedTools = gd.getNextBoolean();
+		boolean change = antialiasedTools!=Prefs.antialiasedTools;
+		Prefs.antialiasedTools = antialiasedTools;
+		if (change) Toolbar.getInstance().repaint();
 		int menuSize = (int)gd.getNextNumber();
 		if (interpolate!=Prefs.interpolateScaledImages) {
 			Prefs.interpolateScaledImages = interpolate;
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null)
 				imp.draw();
 		}
 		if (blackCanvas!=Prefs.blackCanvas) {
 			Prefs.blackCanvas = blackCanvas;
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) {
-				IjxImageWindow win = (IjxImageWindow)imp.getWindow();
+				ImageWindow win = imp.getWindow();
 				if (win!=null) {
 					if (Prefs.blackCanvas) {
 						win.setForeground(Color.white);
@@ -182,16 +181,12 @@ public class Options implements PlugIn {
 		}
 		if (noBorder!=Prefs.noBorder) {
 			Prefs.noBorder = noBorder;
-			IjxImagePlus imp = WindowManager.getCurrentImage();
+			ImagePlus imp = WindowManager.getCurrentImage();
 			if (imp!=null) imp.repaintWindow();
 		}
 		if (useInvertingLut!=Prefs.useInvertingLut) {
 			invertLuts(useInvertingLut);
 			Prefs.useInvertingLut = useInvertingLut;
-		}
-		if (Prefs.doubleBuffer && IJ.isMacOSX()) {
-			IJ.error("Double-buffering is built into Mac OS X.");
-			Prefs.doubleBuffer = false;
 		}
 		if (menuSize!=Menus.getFontSize() && !IJ.isMacintosh()) {
 			Menus.setFontSize(menuSize);
@@ -203,7 +198,7 @@ public class Options implements PlugIn {
 		int[] list = WindowManager.getIDList();
 		if (list==null) return;
 		for (int i=0; i<list.length; i++) {
-			IjxImagePlus imp = WindowManager.getImage(list[i]);
+			ImagePlus imp = WindowManager.getImage(list[i]);
 			if (imp==null) return;
 			ImageProcessor ip = imp.getProcessor();
 			if (useInvertingLut != ip.isInvertedLut() && !ip.isColorLut()) {
@@ -212,7 +207,7 @@ public class Options implements PlugIn {
 				if (nImages==1)
 					ip.invert();
 				else {
-					IjxImageStack stack2 = imp.getStack();
+					ImageStack stack2 = imp.getStack();
 					for (int slice=1; slice<=nImages; slice++)
 						stack2.getProcessor(slice).invert();
 					stack2.setColorModel(ip.getColorModel());
@@ -220,5 +215,5 @@ public class Options implements PlugIn {
 			}
 		}
 	}
-
+	
 } // class Options
