@@ -4,18 +4,12 @@ import java.awt.Color;
 
 import static org.junit.Assert.*;
 
-import java.awt.Color;
-import java.util.StringTokenizer;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.StringTokenizer;
-
-import java.text.*;
 
 public class ToolsTest {
 
