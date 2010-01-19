@@ -832,16 +832,16 @@ public class FloatProcessorTest {
         float[] refPixels = (float[]) refFloatProcessorTest.getPixels();
 
         //create a test int[][]
-        int[][]  testPixels = {{1,1},{2,2}};
+        float[]  testPixels = {1, 1, 2, 2};
 
         //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
-         FloatProcessor testFloatProcessorTest  = new FloatProcessor(testPixels);
+         FloatProcessor testFloatProcessorTest  = new FloatProcessor(imageFloatData);
 
-        //set the fill value
+        //apply the change
+        testFloatProcessorTest.setPixels(testPixels);
+
+        //change array to back same dimensions
         testFloatProcessorTest.setPixels(refPixels);
-
-        //set the height and width
-        testFloatProcessorTest.
 
         //get the test value
         float testResult = testFloatProcessorTest.getPixelValue( testFloatProcessorTest.width-1, testFloatProcessorTest.height-1 );
@@ -854,8 +854,36 @@ public class FloatProcessorTest {
 	}
 
 	@Test
-	public void testCopyBits() {
-		fail("Not yet implemented");
+	public void testCopyBits()
+    {
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor refFloatProcessor  = new FloatProcessor(imageFloatData);
+
+        //create a test int[][]
+        float[][]  testPixels = {{1, 1}, {2, 2}};
+
+        //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
+        FloatProcessor testFloatProcessor  = new FloatProcessor(imageFloatData);
+
+        //copy the reference image into the test image
+        testFloatProcessor.copyBits(refFloatProcessor, 0, 0, Blitter.COPY);
+
+        //check to see if each pixel is the same
+
+        for(int i = 0; i<refFloatProcessor.height-1; i++)
+        {
+            for(int j = 0; j<refFloatProcessor.width-1; j++)
+            {
+                //get the test value
+                float testResult = testFloatProcessor.getPixelValue( j, i );
+
+                //get the reference value
+                float referenceResult = refFloatProcessor.getPixelValue( j, i );
+
+                //check the result
+                assertEquals( referenceResult, testResult, 0.0);
+            }
+        }
 	}
 
 	@Test
