@@ -5,12 +5,17 @@ import java.awt.Color;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
+import java.util.StringTokenizer;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.StringTokenizer;
+
+import java.text.*;
 
 public class ToolsTest {
 
@@ -221,17 +226,95 @@ public class ToolsTest {
 
 	@Test
 	public void testGetDecimalPlaces() {
-		fail("Not yet implemented");
+		assertEquals(2,Tools.getDecimalPlaces(Double.MAX_VALUE, Double.MAX_VALUE));
+		assertEquals(7,Tools.getDecimalPlaces(Double.MIN_VALUE, Double.MIN_VALUE));
+		assertEquals(2,Tools.getDecimalPlaces(Double.NaN, Double.NaN));
+		assertEquals(7,Tools.getDecimalPlaces(Double.MAX_VALUE, Double.MIN_VALUE));
+		assertEquals(2,Tools.getDecimalPlaces(Double.MAX_VALUE, Double.NaN));
+		assertEquals(2,Tools.getDecimalPlaces(Double.MIN_VALUE, Double.NaN));
+		assertEquals(0,Tools.getDecimalPlaces(0.0, 0.0));
+		assertEquals(0,Tools.getDecimalPlaces(88.0, 88.0));
+		assertEquals(0,Tools.getDecimalPlaces(-3.0, -3.0));
+		assertEquals(0,Tools.getDecimalPlaces(-3.0, 3.0));
+		assertEquals(3,Tools.getDecimalPlaces(17.1, 4.1));
+		assertEquals(3,Tools.getDecimalPlaces(4.1, 17.1));
+		assertEquals(3,Tools.getDecimalPlaces(0.0, 1.4));
+		assertEquals(7,Tools.getDecimalPlaces(1.4, 0.0));
+		assertEquals(3,Tools.getDecimalPlaces(0.25, 1000.25));
+		assertEquals(3,Tools.getDecimalPlaces(1000.25, 0.25));
+		assertEquals(3,Tools.getDecimalPlaces(-0.25, -1000.25));
+		assertEquals(3,Tools.getDecimalPlaces(-1000.25, -0.25));
+		assertEquals(3,Tools.getDecimalPlaces(0.6, 100000.6));
+		assertEquals(3,Tools.getDecimalPlaces(-100000.6, -0.6));
+		assertEquals(3,Tools.getDecimalPlaces(3.2, 7.55));
+		assertEquals(3,Tools.getDecimalPlaces(7.55, 3.2));
+		assertEquals(3,Tools.getDecimalPlaces(1001.25,983.7563));
+		assertEquals(3,Tools.getDecimalPlaces(983.7563, 1001.25));
+		assertEquals(2,Tools.getDecimalPlaces(1000.4, 2444.0));
+		assertEquals(3,Tools.getDecimalPlaces(99.4, 200.1));
+		assertEquals(4,Tools.getDecimalPlaces(0.05, 200.1));
+		assertEquals(5,Tools.getDecimalPlaces(0.005, 200.1));
+		assertEquals(6,Tools.getDecimalPlaces(0.0005, 200.1));
+		assertEquals(7,Tools.getDecimalPlaces(0.00005, 200.1));
+		assertEquals(7,Tools.getDecimalPlaces(0.0000001, 200.1));
+		assertEquals(2,Tools.getDecimalPlaces(1000.4, 1444.0));
+		assertEquals(3,Tools.getDecimalPlaces(1000.4, 1001.45));
+		assertEquals(4,Tools.getDecimalPlaces(1000.4, 1000.45));
+		assertEquals(5,Tools.getDecimalPlaces(1000.4, 1000.405));
+		assertEquals(6,Tools.getDecimalPlaces(1000.4, 1000.4005));
+		assertEquals(7,Tools.getDecimalPlaces(1000.4, 1000.40005));
+		assertEquals(7,Tools.getDecimalPlaces(1000.4, 1000.400005));
 	}
 
+	// should ideally do a comparison between our split and String.split(regex)
+	//   but there are some differences that I needed to special code for and it
+	//   was easier to just send in expected array
+	
+	void testSplit(String str, String[] expectedArray)
+	{
+    	String[] ijWay = Tools.split(str);
+		
+		assertArrayEquals(expectedArray,ijWay);
+	}
+	
 	@Test
 	public void testSplitString() {
-		fail("Not yet implemented");
+		testSplit("", new String[] {""});
+		testSplit("abc", new String[] {"abc"});
+		testSplit("a\tb\tc\t", new String[] {"a", "b", "c"});
+		testSplit("a\rb\rc\r", new String[] {"a", "b", "c"});
+		testSplit("a\nb\nc\n", new String[] {"a", "b", "c"});
+		testSplit("a b c", new String[] {"a", "b", "c"});
+		testSplit("a\n\n\nb", new String[] {"a", "b"});
+		testSplit("\na\r", new String[] {"a"});
+		testSplit(" a ", new String[] {"a"});
+		testSplit("a\tb\rc\nd", new String[] {"a", "b", "c", "d"});
+		testSplit("\n\n", new String[] {"\n\n"}); // BDZ: expected array value nonintuitive
+		testSplit("\r\r", new String[] {"\r\r"}); // BDZ: expected array value nonintuitive
+		testSplit("\t\t", new String[] {"\t\t"}); // BDZ: expected array value nonintuitive
+		testSplit("  ", new String[] {"  "});     // BDZ: expected array value nonintuitive
+		testSplit("a\r\t\n \n\t\rz", new String[] {"a", "z"});
 	}
 
+	void testSplit2(String str, String delims, String[] expectedArray)
+	{
+		String[] ijWay = Tools.split(str,delims);
+		
+		assertArrayEquals(expectedArray,ijWay);
+	}
+	
 	@Test
 	public void testSplitStringString() {
-		fail("Not yet implemented");
+		testSplit2("","#",new String[] {""});
+		testSplit2("###agh###", "#", new String[] {"agh"});
+		testSplit2("#k#o#pppp#","#", new String[] {"k","o","pppp"});
+		testSplit2("c:\\", ":", new String[] {"c", "\\"});
+		testSplit2("> m < bob == fred", "<>=", new String[] {" m ", " bob ", " fred"});
+		testSplit2("a?b?c","#",new String[] {"a?b?c"});
+		testSplit2("a?b?c","?",new String[] {"a","b","c"});
+		testSplit2("!!","!",new String[] {"!!"});  // BDZ: expected array value nonintuitive
+		testSplit2("7777m7s77d777f7777g","7",new String[] {"m","s","d","f","g"});
+		testSplit2("12366a","6",new String[] {"123","a"});
 	}
 
 }
