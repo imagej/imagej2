@@ -15,12 +15,13 @@ public class StringSorterTest {
 	// make sure that StringSorter's implementation matches a known good sort algo: Java's Collections.sort
 	private void testThisStringArray(String[] strings)
 	{
+	    String[] dupes = strings.clone();
+
 		// create the baseline case from Java's API 
 	    List<String> baselineList = Arrays.asList(strings);
 		Collections.sort(baselineList);
 		
 		// create the IJ case from StringSorter
-	    String[] dupes = strings.clone();
 		StringSorter.sort(dupes);
 		List<String> dupesList = Arrays.asList(dupes);
 		
