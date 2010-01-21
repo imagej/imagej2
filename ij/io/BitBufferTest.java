@@ -41,16 +41,14 @@ public class BitBufferTest {
 
 		// original IJ code for BitBuffer does not check for null array
 		//   - later runtime errors possible
-		try{
+		if (IJInfo.runEnhancedTests)
+		{
 			bits = bitsFromBytes(null);
-			fail();
-		} catch (NullPointerException e) {
-			assertEquals(true,true);
+			assertNotNull(bits);
 		}
-
+		
 		bits = bitsFromBytes(new byte[]{1});
-        
-		assertEquals(true,true);
+		assertNotNull(bits);
 	}
 
 	@Test
@@ -58,13 +56,10 @@ public class BitBufferTest {
 	
 		// can't test bitsFromBytes(null) followed by getBits() as original code would bomb
 		// test against for now and support existing behavior but need to fix in code
-		try{
+		if (IJInfo.runEnhancedTests)
+		{
 			bits = bitsFromBytes(null);
-			bits.getBits(1);
-			fail();
-		}
-		catch (NullPointerException e){
-			assertEquals(true,true);
+			assertEquals(0,bits.getBits(1));
 		}
 
 		// test if end of file works with empty buffer
