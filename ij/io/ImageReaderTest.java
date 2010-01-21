@@ -19,7 +19,11 @@ public class ImageReaderTest {
 
 	// for future testing when holes fixed in existing implementations
 	
-	boolean underlyingLibraryImprovedOverOriginalIJ = false;
+	static final byte[] pix3x3byte = new byte[] {11,12,13,21,22,23,31,32,33};
+	static final short[] pix3x3short = new short[] {11,12,13,21,22,23,31,32,33};
+	static final int[] pix3x3int = new int[] {11,12,13,21,22,23,31,32,33};
+	static final float[] pix3x3float = new float[] {11,12,13,21,22,23,31,32,33};
+	static final double[] pix3x3double = new double[] {11,12,13,21,22,23,31,32,33};
 	
 	ByteVector bv;
 	
@@ -52,7 +56,7 @@ public class ImageReaderTest {
 	public void testByteVectorSize(){
 
 		// this next test crashes on original IJ
-		if (underlyingLibraryImprovedOverOriginalIJ){
+		if (!IJInfo.testVsOrigIJ){
 			// test if bv can handle bad initial size
 			bv = new ByteVector(-1);
 			assertNotNull(bv);
@@ -94,7 +98,7 @@ public class ImageReaderTest {
 		bv = new ByteVector();
 		assertNotNull(bv);
 
-		if (underlyingLibraryImprovedOverOriginalIJ)
+		if (!IJInfo.testVsOrigIJ)
 		{
 			// test what happens if we pass in null : original IJ has a null ptr exception here
 			bv.add(null);
@@ -144,7 +148,7 @@ public class ImageReaderTest {
 	public void testByteVectorConsInt(){
 
 		// crash : negative array size exception - ByteVector does not do any testing of input value
-		if (underlyingLibraryImprovedOverOriginalIJ)
+		if (!IJInfo.testVsOrigIJ)
 		{
 			// try passing bad size
 			bv = new ByteVector(-1);
@@ -171,7 +175,7 @@ public class ImageReaderTest {
 		// ByteVector(byte[]) allows you to specify the initial buffer to use for data
 		
 		// this next test crashes on original IJ : no checking on input data
-		if (underlyingLibraryImprovedOverOriginalIJ)
+		if (!IJInfo.testVsOrigIJ)
 		{
 			// try passing null
 			bv = new ByteVector(null);
@@ -230,9 +234,8 @@ public class ImageReaderTest {
 	{
 		byte[] inBytes = new byte[] {5,3,1};
 		
-		FileInfo fi = new FileInfo();
-		
-		fi.fileType = -184625640;
+		FileInfo fi = new FileInfo();		
+		fi.fileType = -184625640;  // crazy file type
 		
 		Object pixels = readPixelHelper(fi,inBytes);
 		
@@ -250,7 +253,7 @@ public class ImageReaderTest {
 		FileInfo fi;
 
 		// GRAY8 uncompressed
-		inBytes = new byte[] {11,12,13,21,22,23,31,32,33};
+		inBytes = pix3x3byte;
 		fi = new FileInfo();
 		fi.height = 3;
 		fi.width = 3;
@@ -301,17 +304,17 @@ public class ImageReaderTest {
 			
 			for (int i = 0; i < arr.length; i++)
 			{
-				outputBytes[4*i] = (byte)((arr[i] & 0xff000000) >> 24);
-				outputBytes[4*i+1] = (byte)((arr[i] & 0x00ff0000) >> 16);
-				outputBytes[4*i+2] = (byte)((arr[i] & 0x0000ff00) >> 8);
-				outputBytes[4*i+3] = (byte)((arr[i] & 0x000000ff) >> 0);
+				outputBytes[4*i] = (byte)((arr[i] & 0xff000000L) >> 24);
+				outputBytes[4*i+1] = (byte)((arr[i] & 0x00ff0000L) >> 16);
+				outputBytes[4*i+2] = (byte)((arr[i] & 0x0000ff00L) >> 8);
+				outputBytes[4*i+3] = (byte)((arr[i] & 0x000000ffL) >> 0);
 			}
 			return outputBytes;
 		}
 		
 		if (inArray instanceof long[])
 		{
-			fail("not implemented");
+			// for now not needed I think - fall through to nul return below
 		}
 		
 		if (inArray instanceof float[])
@@ -323,16 +326,18 @@ public class ImageReaderTest {
 			{
 				int bits = Float.floatToIntBits(arr[i]);
 				
-				outputBytes[4*i] = (byte)((bits & 0xff000000) >> 24);
-				outputBytes[4*i+1] = (byte)((bits & 0x00ff0000) >> 16);
-				outputBytes[4*i+2] = (byte)((bits & 0x0000ff00) >> 8);
-				outputBytes[4*i+3] = (byte)((bits & 0x000000ff) >> 0);
+				outputBytes[4*i] = (byte)((bits & 0xff000000L) >> 24);
+				outputBytes[4*i+1] = (byte)((bits & 0x00ff0000L) >> 16);
+				outputBytes[4*i+2] = (byte)((bits & 0x0000ff00L) >> 8);
+				outputBytes[4*i+3] = (byte)((bits & 0x000000ffL) >> 0);
 			}
+			
+			return outputBytes;
 		}
 		
 		if (inArray instanceof double[])
 		{
-			fail("not implemented");
+			// for now not needed I think - fall through to nul return below
 		}
 		
 		return null;
@@ -350,7 +355,7 @@ public class ImageReaderTest {
 		short[] inPixels;
 
 		// GRAY16_UNSIGNED uncompressed
-		inPixels = new short[] {11,12,13,21,22,23,31,32,33};
+		inPixels = pix3x3short;
 		inBytes = convertToBytes(inPixels);
 		fi = new FileInfo();
 		fi.height = 3;
@@ -369,7 +374,7 @@ public class ImageReaderTest {
 		// GRAY_UNSIGNED PACK_BITS
 		
 		// GRAY16_SIGNED uncompressed
-		//inPixels = new short[] {11,12,13,21,22,23,31,32,33};
+		//inPixels = pix3x3short;
 		//inBytes = convertToBytes(inPixels);
 		//fi = new FileInfo();
 		//fi.height = 3;
@@ -394,9 +399,10 @@ public class ImageReaderTest {
 		FileInfo fi;
 		byte[] inBytes;
 		int[] inPixels;
+		float[] inPixelsF;
 
 		// GRAY32_UNSIGNED
-		inPixels = new int[] {11,12,13,21,22,23,31,32,33};
+		inPixels = pix3x3int;
 		inBytes = convertToBytes(inPixels);
 		fi = new FileInfo();
 		fi.height = 3;
@@ -410,7 +416,7 @@ public class ImageReaderTest {
 			assertEquals((float)inPixels[i],((float[])pixels)[i],0.001f);
 		
 		// GRAY32_INT
-		inPixels = new int[] {11,12,13,21,22,23,31,32,33};
+		inPixels = pix3x3int;
 		inBytes = convertToBytes(inPixels);
 		fi = new FileInfo();
 		fi.height = 3;
@@ -424,14 +430,25 @@ public class ImageReaderTest {
 			assertEquals((float)inPixels[i],((float[])pixels)[i],0.001f);
 
 		// GRAY32_FLOAT
-		
-		// note to self: to get it working I did the GRAY32_UNSIGNED case as int[] rather than float[]
-		//   must massage this to get a general solution for all three types if possible
+		inPixelsF = pix3x3float;
+		inBytes = convertToBytes(inPixelsF);
+		fi = new FileInfo();
+		fi.height = 3;
+		fi.width = 3;
+		fi.fileType = FileInfo.GRAY32_FLOAT;
+		fi.compression = FileInfo.COMPRESSION_NONE;
+		pixels= readPixelHelper(fi,inBytes);
+		assertNotNull(pixels);
+		assertTrue(pixels instanceof float[]);
+		for (int i = 0; i < inPixels.length; i++)
+			assertEquals(inPixelsF[i],((float[])pixels)[i],0.001f);
 	}
 	
 	// FileInfo.GRAY64_FLOAT
+	//   sub cases
+	//   intelByteOrder
 	private void testRead64bitPixelData(){
-		fail();
+		fail("not implemented");
 	}
 	
 	// FileInfo.RGB:
@@ -440,42 +457,45 @@ public class ImageReaderTest {
 	// FileInfo.ABGR:
 	// FileInfo.BARG:
 	//   sub cases - compression
-    private void testReadRGBPixelData()
+	//   intelByteOrder
+   private void testReadRGBPixelData()
     {
-		fail();
+		fail("not implemented");
     }
     
 	// FileInfo.RGB_PLANAR:
 	//   sub cases - compression
     private void testReadRGBPlanarPixelData()
     {
-		fail();
+		fail("not implemented");
     }
     
 	// FileInfo.BITMAP:
     private void testRead1bitPixelData()
     {
-		fail();
+		fail("not implemented");
     }
     
 	// FileInfo.RGB48:
 	// FileInfo.RGB48_PLANAR:
-	//   sub cases - compression
+	//   sub cases
+    //   compression
+	//   intelByteOrder
     private void testRead48bitData()
     {
-		fail();
+		fail("not implemented");
     }
     
 	// FileInfo.GRAY12_UNSIGNED:
     private void testRead12bitData()
     {
-		fail();
+		fail("not implemented");
     }
     
 	// FileInfo.GRAY24_UNSIGNED:
 	private void testRead24bitData()
 	{
-		fail();
+		fail("not implemented");
 	}
 	
 	@Test
