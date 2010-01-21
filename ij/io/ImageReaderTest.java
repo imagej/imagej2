@@ -56,7 +56,7 @@ public class ImageReaderTest {
 	public void testByteVectorSize(){
 
 		// this next test crashes on original IJ
-		if (!IJInfo.testVsOrigIJ){
+		if (IJInfo.runEnhancedTests){
 			// test if bv can handle bad initial size
 			bv = new ByteVector(-1);
 			assertNotNull(bv);
@@ -98,7 +98,7 @@ public class ImageReaderTest {
 		bv = new ByteVector();
 		assertNotNull(bv);
 
-		if (!IJInfo.testVsOrigIJ)
+		if (IJInfo.runEnhancedTests)
 		{
 			// test what happens if we pass in null : original IJ has a null ptr exception here
 			bv.add(null);
@@ -148,7 +148,7 @@ public class ImageReaderTest {
 	public void testByteVectorConsInt(){
 
 		// crash : negative array size exception - ByteVector does not do any testing of input value
-		if (!IJInfo.testVsOrigIJ)
+		if (IJInfo.runEnhancedTests)
 		{
 			// try passing bad size
 			bv = new ByteVector(-1);
@@ -175,7 +175,7 @@ public class ImageReaderTest {
 		// ByteVector(byte[]) allows you to specify the initial buffer to use for data
 		
 		// this next test crashes on original IJ : no checking on input data
-		if (!IJInfo.testVsOrigIJ)
+		if (IJInfo.runEnhancedTests)
 		{
 			// try passing null
 			bv = new ByteVector(null);
