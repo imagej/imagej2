@@ -6,4 +6,7 @@ public class IJInfo {
 	//   tests I have created this constant for runtime checking so that more rigorous tests can be exercised after
 	//   the refactor and when those changed systems have been hardened.
 	public static final boolean runEnhancedTests = false;
+	
+	// BDZ: some methods interact with the GUI. Enable the following boolean to run those tests interaactively.
+	public static final boolean runGuiTests = false;
 }
