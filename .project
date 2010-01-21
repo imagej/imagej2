@@ -3,7 +3,6 @@
 	<name>ij-tests</name>
 	<comment></comment>
 	<projects>
-		<project>imagejdev</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
