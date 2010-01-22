@@ -33,7 +33,7 @@ public class DirectoryChooserTest {
 
 	@Test
 	public void testDirectoryChooser() {
-		if (IJInfo.runGuiTests) {
+		if (IJInfo.RUN_GUI_TESTS) {
 			DirectoryChooser chooser = new DirectoryChooser("Choose any path");
 			assertEquals(true,true);
 		}
@@ -43,7 +43,7 @@ public class DirectoryChooserTest {
 	// do these tests need to go away? Or do we need to make mock calls to choose a directory?
 	@Test
 	public void testGetDirectory() {
-		if (IJInfo.runGuiTests) {
+		if (IJInfo.RUN_GUI_TESTS) {
 			DirectoryChooser chooser = new DirectoryChooser("Choose path called /System/");
 			assertEquals("/System/", chooser.getDirectory());
 		}
@@ -51,7 +51,7 @@ public class DirectoryChooserTest {
 
 	@Test
 	public void testSetDefaultDirectory() {
-		if (IJInfo.runGuiTests) {
+		if (IJInfo.RUN_GUI_TESTS) {
 			DirectoryChooser.setDefaultDirectory("/Library/");
 			DirectoryChooser chooser = new DirectoryChooser("See that path == /Library/");
 			assertEquals(true,true);

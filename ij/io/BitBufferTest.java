@@ -41,7 +41,7 @@ public class BitBufferTest {
 
 		// original IJ code for BitBuffer does not check for null array
 		//   - later runtime errors possible
-		if (IJInfo.runEnhancedTests)
+		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			bits = bitsFromBytes(null);
 			assertNotNull(bits);
@@ -56,7 +56,7 @@ public class BitBufferTest {
 	
 		// can't test bitsFromBytes(null) followed by getBits() as original code would bomb
 		// test against for now and support existing behavior but need to fix in code
-		if (IJInfo.runEnhancedTests)
+		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			bits = bitsFromBytes(null);
 			assertEquals(0,bits.getBits(1));
