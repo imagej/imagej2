@@ -1833,7 +1833,7 @@ public class FloatProcessorTest {
             ivalue = (int)((value*scale)+0.5f);
             if (ivalue>255) ivalue = 255;
             pixels8[i] = (byte)ivalue;
-
+                                                             
             //check to see that the two are equal
             assertEquals(pixels8[i], test8Bit[i]);
         }
