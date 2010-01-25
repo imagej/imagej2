@@ -58,7 +58,6 @@ public class FloatProcessorTest {
 
 		imageFloatData = imageProcessor.getFloatArray();
 		combined = new float[2][imageProcessor.width*imageFloatData[0].length];
-
 	}
 
 
@@ -1634,7 +1633,6 @@ public class FloatProcessorTest {
         }
 	}
 
-    //TODO: This test doesn't work
 	@Test
 	public void testCrop()
     {
@@ -1654,7 +1652,7 @@ public class FloatProcessorTest {
         {
             for(int j = 0; j<testFloatProcessor.width; j++)
             {
-                //System.out.println(refFloatProcessor.getPixelValue(j,i) + " = " + testFloatProcessor.getPixelValue(j,i));
+                System.out.println(refFloatProcessor.getPixelValue(j,i) + " = " + testFloatProcessor.getPixelValue(j,i));
 
                 //check the result
                 assertEquals(refFloatProcessor.getPixelValue(j,i), testFloatProcessor.getPixelValue(j,i), 0.0 );
