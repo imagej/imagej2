@@ -266,7 +266,7 @@ public class ToolsTest {
 	
 	void testSplit(String str, String[] expectedArray)
 	{
-    	String[] ijWay = Tools.split(str);
+		String[] ijWay = Tools.split(str);
 		
 		assertArrayEquals(expectedArray,ijWay);
 	}

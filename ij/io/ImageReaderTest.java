@@ -28,7 +28,7 @@ public class ImageReaderTest {
 	static final byte[] Pix3x3bgr = new byte[] {0x11,0,0,0x12,0,0,0x13,0,0,0x21,0,0,0x22,0,0,0x23,0,0,0x31,0,0,0x32,0,0,0x33,0,0};
 	static final int[] Pix3x3argb = new int[] {0xff000011, 0xff000012, 0xff000013, 0xff000021, 0xff000022, 0xff000023, 0xff000031, 0xff000032, 0xff000033};
 	static final int[] Pix3x3barg = new int[] {0x11ff0000, 0x12ff0000, 0x13ff0000, 0x21ff0000, 0x22ff0000, 0x23ff0000, 0x31ff0000, 0x32ff0000, 0x33ff0000};
-	// file type ABGR is stored as BGRA! go figure
+	// Note that file type ABGR is stored as BGRA
 	static final int[] Pix3x3abgr = new int[] {0x110000ff, 0x120000ff, 0x130000ff, 0x210000ff, 0x220000ff, 0x230000ff, 0x310000ff, 0x320000ff, 0x330000ff};
 	static final byte[] Pix3x3rgbPlanar = new byte[] {00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,0x11,0x12,0x13,0x21,0x22,0x23,0x31,0x32,0x33};
 	static final byte[] Pix3x3bitmap = new byte[] {};
@@ -221,8 +221,8 @@ public class ImageReaderTest {
 		// test a populated array
 		bytes = new byte[] {99,98,87,76};
 		bv = new ByteVector(bytes);
-		for (int i=0; i < bytes.length; i++)
-			bv.add(bytes[i]);
+		for (byte b : bytes)
+			bv.add(b);
 		assertArrayEquals(bytes,bv.toByteArray());
 	}
 
@@ -326,6 +326,27 @@ public class ImageReaderTest {
 		return rdr.readPixels(stream);
 	}
 	
+	private void lociAssertArrayEquals(float[] a, float[] b)
+	{
+		assertEquals(a.length,b.length);
+		for (int i = 0; i < a.length; i++)
+			assertEquals(a[i],b[i],FLOAT_TOL);
+	}
+	
+	private void lociAssertArrayEquals(int[] a, float[] b)
+	{
+		assertEquals(a.length,b.length);
+		for (int i = 0; i < a.length; i++)
+			assertEquals((float)a[i],b[i],FLOAT_TOL);
+	}
+	
+	private void lociAssertArrayEquals(double[] a, float[] b)
+	{
+		assertEquals(a.length,b.length);
+		for (int i = 0; i < a.length; i++)
+			assertEquals((float)a[i],b[i],FLOAT_TOL);
+	}
+
 	// *********************** ImageReader Tests  **************************************
 
 	@Test
@@ -453,9 +474,7 @@ public class ImageReaderTest {
 		pixels = readPixelHelper(FileInfo.GRAY32_INT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3int);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof float[]);
-		assertTrue(Pix3x3int.length == ((float[])pixels).length);
-		for (int i = 0; i < Pix3x3int.length; i++)
-			assertEquals((float)Pix3x3int[i],((float[])pixels)[i],FLOAT_TOL);
+		lociAssertArrayEquals(Pix3x3int,(float[])pixels);
 	}
 	
 	// FileInfo.GRAY32_UNSIGNED
@@ -469,9 +488,7 @@ public class ImageReaderTest {
 		pixels = readPixelHelper(FileInfo.GRAY32_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,Pix3x3int);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof float[]);
-		assertTrue(Pix3x3int.length == ((float[])pixels).length);
-		for (int i = 0; i < Pix3x3int.length; i++)
-			assertEquals((float)Pix3x3int[i],((float[])pixels)[i],FLOAT_TOL);
+		lociAssertArrayEquals(Pix3x3int,(float[])pixels);
 	}
 	
 	// FileInfo.GRAY32_FLOAT
@@ -485,9 +502,7 @@ public class ImageReaderTest {
 		pixels = readPixelHelper(FileInfo.GRAY32_FLOAT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3float);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof float[]);
-		assertTrue(Pix3x3float.length == ((float[])pixels).length);
-		for (int i = 0; i < Pix3x3float.length; i++)
-			assertEquals((float)Pix3x3float[i],((float[])pixels)[i],FLOAT_TOL);
+		lociAssertArrayEquals(Pix3x3float,(float[])pixels);
 	}
 	
 	// FileInfo.GRAY64_FLOAT
@@ -500,9 +515,7 @@ public class ImageReaderTest {
 		pixels = readPixelHelper(FileInfo.GRAY64_FLOAT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3double);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof float[]);
-		assertTrue(Pix3x3double.length == ((float[])pixels).length);
-		for (int i = 0; i < Pix3x3double.length; i++)
-			assertEquals((float)Pix3x3double[i],((float[])pixels)[i],FLOAT_TOL);
+		lociAssertArrayEquals(Pix3x3double,(float[])pixels);
 	}
 	
 	// FileInfo.RGB:
@@ -573,77 +586,77 @@ public class ImageReaderTest {
 	//   compression
 	//   intelByteOrder
 	private void readBARGFileType()
-    {
+	{
 		Object pixels;
-
+	
 		// BARG uncompressed
 		pixels = readPixelHelper(FileInfo.BARG,FileInfo.COMPRESSION_NONE,3,3,Pix3x3barg);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof int[]);
 		// notice the switch of expected pixels here from barg to argb
 		assertArrayEquals(Pix3x3argb,(int[])pixels);
-    }
+	}
     
 	// FileInfo.RGB_PLANAR:
 	//   sub cases
-   //    compression
-    private void readRGBPlanarFileType()
-    {
+	//    compression
+	private void readRGBPlanarFileType()
+	{
 		Object pixels;
-
+	
 		// RGB_PLANAR uncompressed
 		pixels = readPixelHelper(FileInfo.RGB_PLANAR,FileInfo.COMPRESSION_NONE,3,3,Pix3x3rgbPlanar);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof int[]);
 		// notice the switch of expected pixels here from barg to argb
 		assertArrayEquals(Pix3x3argb,(int[])pixels);
-    }
+	}
     
 	// FileInfo.BITMAP:
-    private void readBitmapFileType()
-    {
-    	byte[] input = new byte[] {(byte)128,64,32};
-    	byte[] expectedOutput = {(byte)255, 0, 0, 0, (byte)255, 0, 0, 0, (byte)255};
-
-    	Object pixels;
-
+	private void readBitmapFileType()
+	{
+		byte[] input = new byte[] {(byte)128,64,32};
+		byte[] expectedOutput = {(byte)255, 0, 0, 0, (byte)255, 0, 0, 0, (byte)255};
+	
+		Object pixels;
+	
 		// BITMAP
 		pixels = readPixelHelper(FileInfo.BITMAP,FileInfo.COMPRESSION_NONE,3,3,input);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof byte[]);
 		assertArrayEquals(expectedOutput,(byte[])pixels);
-     }
+	 }
     
 	// FileInfo.RGB48:
 	//   sub cases
-    //   compression
+	//   compression
 	//   intelByteOrder
-    private void readRGB48FileType()
-    {
+	private void readRGB48FileType()
+	{
 		//Object pixels;
-
+	
 		// RGB48 uncompressed
 		//pixels = readPixelHelper(FileInfo.RGB48,FileInfo.COMPRESSION_NONE,3,3,Pix3x3rgb48);
 		//assertNotNull(pixels);
 		//assertTrue(pixels instanceof short[][]);
 		// notice the switch of expected pixels from A to B
 		//assertArrayEquals(null,(short[][])pixels);
-    }
+	}
     
 	// FileInfo.RGB48_PLANAR:
 	//   sub cases
-    //   compression
+	//   compression
 	//   intelByteOrder
-    private void readRGB48PlanarFileType()
-    {
+	private void readRGB48PlanarFileType()
+	{
 		//fail("not implemented");
-    }
+	}
     
 	// FileInfo.GRAY12_UNSIGNED:
-    private void readGray12UnsugnedFileType()
-    {
+	private void readGray12UnsugnedFileType()
+	{
 		//fail("not implemented");
-    }
+	}
     
 	// FileInfo.GRAY24_UNSIGNED:
 	private void readGray24UnsignedFileType()
@@ -656,10 +669,11 @@ public class ImageReaderTest {
 		// GRAY24_UNSIGNED
 		pixels = readPixelHelper(FileInfo.GRAY24_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,input);
 		assertNotNull(pixels);
-		assertTrue(pixels instanceof float[]);
-		assertTrue(expected.length == ((float[])pixels).length);
-		for (int i = 0; i < expected.length; i++)
-			assertEquals(expected[i],((float[])pixels)[i],FLOAT_TOL);
+		lociAssertArrayEquals(expected,(float[])pixels);
+		//assertTrue(pixels instanceof float[]);
+		//assertTrue(expected.length == ((float[])pixels).length);
+		//for (int i = 0; i < expected.length; i++)
+			//assertEquals(expected[i],((float[])pixels)[i],FLOAT_TOL);
 	}
 	
 	@Test
