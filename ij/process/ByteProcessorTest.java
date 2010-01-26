@@ -917,28 +917,21 @@ public class ByteProcessorTest {
         testByteProcessor.setSnapshotPixels( imageByteData );
 
         //reset from new imageprocessor
-        testByteProcessor.reset( new ByteProcessor(width, height, imageByteData, cm) );
+        testByteProcessor.reset();
 
 		for(int y = 0; y<height; y++)
         {
 			for(int x = 0; x<width; x++)
 			{
 				int reference = y*width + x;
-
-                float result =  testByteProcessor.getf( reference );
-
-                int refValue;
-                if ( imageByteData[reference] < 0)
-                {    refValue = imageByteData[reference] + 256; }
-                else
-                {   refValue = imageByteData[reference]; }
-                assertEquals( refValue, result, 0.0);
+                assertEquals( refByteProcessor.getf( reference ), testByteProcessor.getf( reference ), 0.0);
             }
         }
 	}
 
 	@Test
-	public void testGetSnapshotPixels() {
+	public void testGetSnapshotPixels()
+    {
 		fail("Not yet implemented");
 	}
 
