@@ -531,7 +531,7 @@ public class ByteProcessorTest {
 			{
                 //Bilinear interpolation
 		        int xbase = x;
-		        int ybase = y;     
+		        int ybase = y;      
 
 		        double xFraction = x - xbase;
 		        double yFraction = y - ybase;

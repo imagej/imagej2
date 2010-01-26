@@ -613,7 +613,7 @@ public class FloatProcessorTest {
 
                 //get the pixel value that was set
                 int[] result = floatProcessorTest.getPixel(j, i, null);
-
+                                                                  
                 //check the result
                 assertEquals( inputArray[0] ,result[0]);
 
