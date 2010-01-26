@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.awt.*;
-import java.awt.image.ColorModel;
+import java.awt.image.*;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +18,7 @@ public class ByteProcessorTest {
     private static int width;
     private static int height;
     private static byte[] imageByteData;
-    private static ColorModel cm; 
+    private static ColorModel cm;
 
     /*
      * Open an known image for internal testing...
@@ -108,7 +108,7 @@ public class ByteProcessorTest {
         //set the background
 		byteProcessor.setBackgroundValue(refBackground);
 
-        
+
         //get the value
         double returnedReferenceValue = byteProcessor.getBackgroundValue();
 
@@ -167,7 +167,7 @@ public class ByteProcessorTest {
 		//see if the test passes assertEquals(float expected, float actual, float delta)
 		assertEquals(max, byteProcessor.getMax(), 1.0);
         assertEquals(min, byteProcessor.getMin(), 1.0);
-        
+
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class ByteProcessorTest {
                 {    refValue = imageByteData[reference] + 256; }
                 else
                 {   refValue = imageByteData[reference]; }
-                
+
                 assertEquals( refValue, result, 0.0);
             }
         }
@@ -433,7 +433,7 @@ public class ByteProcessorTest {
 				//get the set value (converted back to an int)
 				float result =  byteProcessor.getf( x, y );
                 int refValue;
-                
+
                 if ( imageByteData[reference] < 0)
                 {    refValue = imageByteData[reference] + 256; }
                 else
@@ -531,7 +531,7 @@ public class ByteProcessorTest {
 			{
                 //Bilinear interpolation
 		        int xbase = x;
-		        int ybase = y;      
+		        int ybase = y;
 
 		        double xFraction = x - xbase;
 		        double yFraction = y - ybase;
@@ -586,7 +586,7 @@ public class ByteProcessorTest {
 		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
 
                 //get the pixel value that was set
-                double result = byteProcessor.getInterpolatedPixel((double) x, (double) y);
+                double result = byteProcessor.getPixelInterpolated( (double) x, (double) y);
 
                 //check the result
                 assertEquals( referenceResult, result, Float.MAX_VALUE );
@@ -595,73 +595,346 @@ public class ByteProcessorTest {
     }
 
 	@Test
-	public void testPutPixelIntIntInt() {
-		fail("Not yet implemented");
+	public void testPutPixelIntIntInt()
+    {
+		//Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //set a reference value
+        int refValue = 2;
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+                byteProcessor.putPixel( x, y, refValue);
+
+				//get the set value (converted back to an int)
+				int result =  byteProcessor.get( reference );
+
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testGetPixelValue() {
-		fail("Not yet implemented");
+	public void testGetPixelValue()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+				//get the set value (converted back to an int)
+				float result =  byteProcessor.getPixelValue( x, y );
+                int refValue;
+
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+
+                assertEquals( refValue, result, 0.0);
+            }
+        }
+    }
+
+	@Test
+	public void testPutPixelValue()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        double refValue = 3.0;
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+				//get the set value (converted back to an int)
+				byteProcessor.putPixelValue( x, y, refValue );
+
+                float result =  byteProcessor.getPixelValue( x, y );
+
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testPutPixelValue() {
-		fail("Not yet implemented");
+	public void testDrawPixel()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height,imageByteData, cm);
+
+        //set the default fill value
+		float setColorValue = 1;
+
+		byteProcessor.setValue(setColorValue);
+
+		//overwrite the pixel value with the new default fill value
+		byteProcessor.drawPixel(1, 1);
+
+		//see if the value was over-writen with the SetColor value
+		float postDrawPixelValue = byteProcessor.getf(1, 1);
+
+		assertEquals(setColorValue, postDrawPixelValue, 0.0);
+    }
+
+	@Test
+	public void testSetPixelsObject()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height);
+
+        byteProcessor.setPixels( imageByteData );
+
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  byteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+                assertEquals( refValue, result, 0.0);
+            }
+        }
+    }
+
+	@Test
+	public void testCopyBits()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+ 		ByteProcessor testByteProcessor =  new ByteProcessor(width, height);
+
+        testByteProcessor.copyBits( byteProcessor, 0, 0, Blitter.COPY  );
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+                
+                assertEquals( byteProcessor.getf( reference ), testByteProcessor.getf( reference ), 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testDrawPixel() {
-		fail("Not yet implemented");
+	public void testApplyTable()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+        int[] sine_table = {99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99};
+
+        byteProcessor.applyTable(sine_table);
+        
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  byteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+
+                int lutValue = sine_table[refValue];
+
+                assertEquals( lutValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testSetPixelsObject() {
-		fail("Not yet implemented");
+	public void testCreateImage()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //get the image
+        Image testImage = byteProcessor.createImage();
+
+        assertEquals( testImage.getWidth(null), width);
+        assertEquals( testImage.getHeight(null), height);
+
+        //TODO: add testing for actual image objects
 	}
 
 	@Test
-	public void testCopyBits() {
-		fail("Not yet implemented");
+	public void testGetBufferedImage()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //get the image
+        BufferedImage testImage = byteProcessor.getBufferedImage();
+
+        assertEquals( testImage.getWidth(null), width);
+        assertEquals( testImage.getHeight(null), height);
+
+        //create a reference image
+        //TODO: Compare the images
 	}
 
 	@Test
-	public void testApplyTable() {
-		fail("Not yet implemented");
+	public void testCreateProcessor()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //get the image
+        ByteProcessor testByteProcessor = (ByteProcessor) byteProcessor.createProcessor(width, height);
+
+        //test empty image
+        assertEquals( testByteProcessor.getWidth(), width);
+        assertEquals( testByteProcessor.getHeight(), height);      
 	}
 
 	@Test
-	public void testCreateImage() {
-		fail("Not yet implemented");
+	public void testSnapshot()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //take a snapshot
+        byteProcessor.snapshot();
+
+        //change the entire image
+        byteProcessor.flipVertical();
+
+        //revert from snapshot
+        byteProcessor.reset();
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  byteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testGetBufferedImage() {
-		fail("Not yet implemented");
+	public void testReset()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //take a snapshot
+        byteProcessor.snapshot();
+
+        //change the entire image
+        byteProcessor.flipVertical();
+
+        //revert from snapshot
+        byteProcessor.reset();
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  byteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testCreateProcessor() {
-		fail("Not yet implemented");
+	public void testResetImageProcessor()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor byteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+
+        //change the entire image
+        byteProcessor.flipVertical();
+
+        //reset from new imageprocessor
+        byteProcessor.reset( new ByteProcessor(width, height, imageByteData, cm));
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  byteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testSnapshot() {
-		fail("Not yet implemented");
-	}
+	public void testSetSnapshotPixels()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor refByteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+		ByteProcessor testByteProcessor =  new ByteProcessor(width, height);
 
-	@Test
-	public void testReset() {
-		fail("Not yet implemented");
-	}
+        //change the entire image
+        testByteProcessor.setSnapshotPixels( imageByteData );
 
-	@Test
-	public void testResetImageProcessor() {
-		fail("Not yet implemented");
-	}
+        //reset from new imageprocessor
+        testByteProcessor.reset( new ByteProcessor(width, height, imageByteData, cm) );
 
-	@Test
-	public void testSetSnapshotPixels() {
-		fail("Not yet implemented");
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+
+                float result =  testByteProcessor.getf( reference );
+
+                int refValue;
+                if ( imageByteData[reference] < 0)
+                {    refValue = imageByteData[reference] + 256; }
+                else
+                {   refValue = imageByteData[reference]; }
+                assertEquals( refValue, result, 0.0);
+            }
+        }
 	}
 
 	@Test
