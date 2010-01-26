@@ -151,8 +151,15 @@ public class FloatProcessorTest {
 		//Create a new FloatProcessor object for testing
 		FloatProcessor floatProcessor = new FloatProcessor(imageFloatData);
 
+		//set the values for max and min used in the test
+		double max = 2.99;
+		double min = 1.99;
+
+        floatProcessor.setMinAndMax(min, max);
+
 		//see if the test passes assertEquals(float expected, float actual, float delta)
-		assertEquals(floatProcessor.getMax(), floatProcessor.getMax(), 0.0);
+		assertEquals(max, floatProcessor.getMax(), 1.0);
+        assertEquals(min, floatProcessor.getMin(), 1.0);
 	}
 
 	@Test
@@ -431,13 +438,15 @@ public class FloatProcessorTest {
 		boolean result  = true;
 
 		for(int i = 0; i<floatProcessorTest.height; i++)
+        {
 			for(int j = 0; j<floatProcessorTest.width; j++)
 				if(floatProcessorTest.getPixel(j, i) != Float.floatToIntBits( imageFloatData[j][i] ) )
 				{
 					//System.out.println( floatProcessorTest.getf(j, i) + " i " + i + " j " + j + " " + imageFloatData[j][i] );
 					result = false;
 				}
-
+        }
+        
 		//ensure that all pixel values were the same
 		assertEquals(true, result);
 	}
