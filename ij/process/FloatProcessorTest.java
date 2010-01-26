@@ -121,8 +121,14 @@ public class FloatProcessorTest {
 		//Create a new FloatProcessor object for testing
 		FloatProcessor floatProcessor = new FloatProcessor(imageFloatData);
 
+        float min = Float.MAX_VALUE;
+
+        for (float[] fa : imageFloatData)
+            for (float f : fa)
+               if(f < min) min = f;
+
 		//see if the test passes assertEquals(float expected, float actual, float delta)
-		assertEquals(floatProcessor.getMin(), floatProcessor.getMin(), 0.0);
+		assertEquals(min, floatProcessor.getMin(), 0.0);
 	}
 
 	@Test
@@ -130,8 +136,14 @@ public class FloatProcessorTest {
 		//Create a new FloatProcessor object for testing
 		FloatProcessor floatProcessor = new FloatProcessor(imageFloatData);
 
+        float max = Float.MIN_VALUE;
+
+        for (float[] fa : imageFloatData)
+            for (float f : fa)
+               if(f > max) max = f;
+
 		//see if the test passes assertEquals(float expected, float actual, float delta)
-		assertEquals(floatProcessor.getMax(), floatProcessor.getMax(), 0.0);
+		assertEquals(max, floatProcessor.getMax(), 0.0);
 	}
 
 	@Test
