@@ -6,11 +6,7 @@
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build" />
     <!-- Build everything; add debug="on" to debug -->
-    <javac srcdir="." destdir="build" optimize="on" source="1.4" target="1.4" debug="on">
-      <!-- The plugins directory only needs to be 
-             present at runtime, not at build time. -->
-      <exclude name="plugins/**"/>
-    </javac>
+    <javac srcdir="src" destdir="build" optimize="on" source="1.4" target="1.4" debug="on"/>
   </target>
   
 
@@ -19,7 +15,7 @@
     <copy file="IJ_Props.txt" todir="build" />
     <copy file="images/microscope.gif" tofile="build/microscope.gif" />
     <copy file="images/about.jpg" tofile="build/about.jpg" />
-	<copy file="plugins/MacAdapter.class" tofile="build/MacAdapter.class" /> 
+<!--	<copy file="plugins/MacAdapter.class" tofile="build/MacAdapter.class" /> -->
 	<copy file="plugins/JavaScriptEvaluator.class" tofile="build/JavaScriptEvaluator.class" /> 
     <copy todir="build/macros"><fileset dir="macros"/></copy>
     <!-- Build ij.jar. -->
