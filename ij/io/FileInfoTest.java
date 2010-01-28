@@ -198,6 +198,7 @@ public class FileInfoTest {
 		assertEquals(15,FileInfo.BARG);	
 		assertEquals(16,FileInfo.GRAY64_FLOAT);	
 		assertEquals(17,FileInfo.RGB48_PLANAR);	
+		assertEquals(18,FileInfo.ABGR);	
 
 		// File formats
 		assertEquals(0,FileInfo.UNKNOWN);
@@ -228,7 +229,7 @@ public class FileInfoTest {
 		//   this will make sure that later ports define all the same fields
 
 		setFileInfoJunkData(fInfo);
-        
+		
 		assertEquals(true,true);
 	}
 	
