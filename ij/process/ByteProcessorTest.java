@@ -932,17 +932,160 @@ public class ByteProcessorTest {
 	@Test
 	public void testGetSnapshotPixels()
     {
-		fail("Not yet implemented");
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor testByteProcessor =  new ByteProcessor(width, height);
+
+        //change the entire image
+        testByteProcessor.setSnapshotPixels( imageByteData );
+
+        byte[] snapShotPixels = ( byte[] )testByteProcessor.getSnapshotPixels();
+
+		for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+                assertEquals( snapShotPixels[ reference ], imageByteData[ reference ], 0.0);
+            }
+        }
+	}
+
+	@Test    //TODO: fix this test
+	public void testConvolve3x3()
+    {
+	    //Create a new ByteProcessor object for testing
+		ByteProcessor refByteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+ 		ByteProcessor testByteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+        byte[] refPixels = new byte[width*height];
+
+        int[] kernel = {-1, -1, -1, -1, 8, -1, -1, -1, -1};
+        testByteProcessor.convolve3x3(kernel);
+        byte[] testPixels = (byte[]) testByteProcessor.getPixels();
+
+
+        int p1, p2, p3,
+            p4, p5, p6,
+            p7, p8, p9;
+        int k1=kernel[0], k2=kernel[1], k3=kernel[2],
+            k4=kernel[3], k5=kernel[4], k6=kernel[5],
+            k7=kernel[6], k8=kernel[7], k9=kernel[8];
+
+        int scale = 0;
+        for (int i=0; i<kernel.length; i++)
+            scale += kernel[i];
+        if (scale==0) scale = 1;
+        int inc = refByteProcessor.roiHeight/25;
+        if (inc<1) inc = 1;
+
+        byte[] pixels2 = (byte[]) refByteProcessor.getPixelsCopy();
+        int offset, sum;
+        int rowOffset = refByteProcessor.width;
+        for (int y=refByteProcessor.yMin; y<=refByteProcessor.yMax; y++) {
+            offset = refByteProcessor.xMin + y * refByteProcessor.width;
+            p1 = 0;
+            p2 = pixels2[offset-rowOffset-1]&0xff;
+            p3 = pixels2[offset-rowOffset]&0xff;
+            p4 = 0;
+            p5 = pixels2[offset-1]&0xff;
+            p6 = pixels2[offset]&0xff;
+            p7 = 0;
+            p8 = pixels2[offset+rowOffset-1]&0xff;
+            p9 = pixels2[offset+rowOffset]&0xff;
+
+            for (int x=refByteProcessor.xMin; x<=refByteProcessor.xMax; x++) {
+                p1 = p2; p2 = p3;
+                p3 = pixels2[offset-rowOffset+1]&0xff;
+                p4 = p5; p5 = p6;
+                p6 = pixels2[offset+1]&0xff;
+                p7 = p8; p8 = p9;
+                p9 = pixels2[offset+rowOffset+1]&0xff;
+
+                sum = k1*p1 + k2*p2 + k3*p3
+                    + k4*p4 + k5*p5 + k6*p6
+                    + k7*p7 + k8*p8 + k9*p9;
+                sum /= scale;
+
+                if(sum>255) sum= 255;
+                if(sum<0) sum= 0;
+
+                refPixels[offset++] = (byte)sum;
+            }
+        }
+
+        //test
+        for(int y = 0; y<refByteProcessor.height; y++)
+        {
+			for(int x = 0; x<refByteProcessor.width; x++)
+			{
+				int reference = y*refByteProcessor.width + x;
+                assertEquals( refPixels[ reference ], testPixels[ reference ], 0.0);
+            }
+        }
 	}
 
 	@Test
-	public void testConvolve3x3() {
-		fail("Not yet implemented");
-	}
+	public void testFilter()
+    {
+    //Test Filter:BLUR_MORE
+        //Create a new ByteProcessor object for testing
+		ByteProcessor refByteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+        ByteProcessor testByteProcessor =  new ByteProcessor(width, height, imageByteData, cm);
+        byte[] refPixelArray = (byte[]) refByteProcessor.getPixelsCopy();
+        
+        int p1, p2, p3, p4, p5, p6, p7, p8, p9;
+           int inc = refByteProcessor.roiHeight/25;
+           if (inc<1) inc = 1;
 
-	@Test
-	public void testFilter() {
-		fail("Not yet implemented");
+           byte[] pixels2 = (byte[])refByteProcessor.getPixelsCopy();
+           if (width==1) {
+               refByteProcessor.filterEdge(refByteProcessor.BLUR_MORE, pixels2, refByteProcessor.roiHeight, refByteProcessor.roiX, refByteProcessor.roiY, 0, 1);
+               return;
+           }
+
+           int offset, sum=0;
+           int rowOffset = width;
+
+           for (int y=refByteProcessor.yMin; y<=refByteProcessor.yMax; y++) {
+               offset = refByteProcessor.xMin + y * width;
+               p2 = pixels2[offset-rowOffset-1]&0xff;
+               p3 = pixels2[offset-rowOffset]&0xff;
+               p5 = pixels2[offset-1]&0xff;
+               p6 = pixels2[offset]&0xff;
+               p8 = pixels2[offset+rowOffset-1]&0xff;
+               p9 = pixels2[offset+rowOffset]&0xff;
+
+               for (int x=refByteProcessor.xMin; x<=refByteProcessor.xMax; x++) {
+                   p1 = p2; p2 = p3;
+                   p3 = pixels2[offset-rowOffset+1]&0xff;
+                   p4 = p5; p5 = p6;
+                   p6 = pixels2[offset+1]&0xff;
+                   p7 = p8; p8 = p9;
+                   p9 = pixels2[offset+rowOffset+1]&0xff;
+
+                  sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+
+                  refPixelArray[offset++] = (byte)sum;
+               }
+               //if (y%inc==0)
+               //  showProgress((double)(y-roiY)/roiHeight);
+           }
+           if (refByteProcessor.xMin==1) refByteProcessor.filterEdge(refByteProcessor.BLUR_MORE, pixels2, refByteProcessor.roiHeight, refByteProcessor.roiX, refByteProcessor.roiY, 0, 1);
+           if (refByteProcessor.yMin==1) refByteProcessor.filterEdge(refByteProcessor.BLUR_MORE, pixels2, refByteProcessor.roiWidth, refByteProcessor.roiX, refByteProcessor.roiY, 1, 0);
+           if (refByteProcessor.xMax==width-2) refByteProcessor.filterEdge(refByteProcessor.BLUR_MORE, pixels2, refByteProcessor.roiHeight, width-1, refByteProcessor.roiY, 0, 1);
+           if (refByteProcessor.yMax==height-2) refByteProcessor.filterEdge(refByteProcessor.BLUR_MORE, pixels2, refByteProcessor.roiWidth, refByteProcessor.roiX, height-1, 1, 0);
+
+        //assert testFilter:BLUR_MORE
+        testByteProcessor.filter(ImageProcessor.BLUR_MORE);
+        byte[] testPixels = (byte[]) testByteProcessor.getPixelsCopy();
+
+        for(int y = 0; y<height; y++)
+        {
+			for(int x = 0; x<width; x++)
+			{
+				int reference = y*width + x;
+                assertEquals( refPixelArray[ reference ], testPixels[ reference ], 0.0);
+            }
+        }
 	}
 
 	@Test
