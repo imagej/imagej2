@@ -1005,7 +1005,7 @@ public class ByteProcessorTest {
                     + k7*p7 + k8*p8 + k9*p9;
                 sum /= scale;
                                                       
-                if(sum>255) sum= 255;
+                if(sum>255) sum= 255;                                 
                 if(sum<0) sum= 0;
 
                 refPixels[offset++] = (byte)sum;
