@@ -1004,7 +1004,7 @@ public class ByteProcessorTest {
                     + k4*p4 + k5*p5 + k6*p6
                     + k7*p7 + k8*p8 + k9*p9;
                 sum /= scale;
-
+                                                      
                 if(sum>255) sum= 255;
                 if(sum<0) sum= 0;
 
