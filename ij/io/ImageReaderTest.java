@@ -17,22 +17,6 @@ import java.io.*;
 
 public class ImageReaderTest {
 
-	// constant image data used by readPixels() tests. All in form {{11,12,13},{21,22,23},{31,32,33}};
-	
-	static final byte[] Pix3x3byte = new byte[] {11,12,13,21,22,23,31,32,33};
-	static final short[] Pix3x3short = new short[] {11,12,13,21,22,23,31,32,33};
-	static final int[] Pix3x3int = new int[] {11,12,13,21,22,23,31,32,33};
-	static final float[] Pix3x3float = new float[] {11,12,13,21,22,23,31,32,33};
-	static final double[] Pix3x3double = new double[] {11,12,13,21,22,23,31,32,33};
-	static final byte[] Pix3x3rgb = new byte[] {0,0,0x11,0,0,0x12,0,0,0x13,0,0,0x21,0,0,0x22,0,0,0x23,0,0,0x31,0,0,0x32,0,0,0x33};
-	static final byte[] Pix3x3bgr = new byte[] {0x11,0,0,0x12,0,0,0x13,0,0,0x21,0,0,0x22,0,0,0x23,0,0,0x31,0,0,0x32,0,0,0x33,0,0};
-	static final int[] Pix3x3argb = new int[] {0xff000011, 0xff000012, 0xff000013, 0xff000021, 0xff000022, 0xff000023, 0xff000031, 0xff000032, 0xff000033};
-	static final int[] Pix3x3barg = new int[] {0x11ff0000, 0x12ff0000, 0x13ff0000, 0x21ff0000, 0x22ff0000, 0x23ff0000, 0x31ff0000, 0x32ff0000, 0x33ff0000};
-	// Note that file type ABGR is stored as BGRA
-	static final int[] Pix3x3abgr = new int[] {0x110000ff, 0x120000ff, 0x130000ff, 0x210000ff, 0x220000ff, 0x230000ff, 0x310000ff, 0x320000ff, 0x330000ff};
-	static final byte[] Pix3x3rgbPlanar = new byte[] {00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,0x11,0x12,0x13,0x21,0x22,0x23,0x31,0x32,0x33};
-	static final byte[] Pix3x3bitmap = new byte[] {};
-	
 	static final int[][] BaseImage1x1 = {{77}};
 	static final int[][] BaseImage3x3 = {{11,12,13},{21,22,23},{31,32,33}};
 	static final int[][] BaseImage1x9 = {{11,12,13,14,15,16,17,18,19}};
@@ -347,26 +331,24 @@ public class ImageReaderTest {
 			assertEquals(a[i],b[i],FLOAT_TOL);
 	}
 	
-	private void lociAssertArrayEquals(int[] a, float[] b)
-	{
-		assertEquals(a.length,b.length);
-		for (int i = 0; i < a.length; i++)
-			assertEquals((float)a[i],b[i],FLOAT_TOL);
-	}
-	
-	private void lociAssertArrayEquals(double[] a, float[] b)
-	{
-		assertEquals(a.length,b.length);
-		for (int i = 0; i < a.length; i++)
-			assertEquals((float)a[i],b[i],FLOAT_TOL);
-	}
-	
 	private byte[] prependFakeHeader(int headerBytes, byte[] pixData)
 	{
 		byte[] header = new byte[headerBytes];
 		byte[] output = new byte[header.length + pixData.length];
 		System.arraycopy(header,0,output,0,header.length);
 		System.arraycopy(pixData,0,output,header.length,pixData.length);
+		return output;
+	}
+	
+	// note: assumes everyX is even!
+	private byte[] intelSwap(byte[] input, int everyX)
+	{
+		byte[] output = new byte[input.length];
+		
+		for (int i = 0; i < input.length; i += everyX)
+			for (int j = 0; j < everyX; j++)
+				output[i+j] = input[i+everyX-1-j];
+		
 		return output;
 	}
 
@@ -415,8 +397,8 @@ public class ImageReaderTest {
 			for (int pix : row)
 				output[i++] = (byte)(pix & 0xff);
 	
-		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+		//if (intelByteOrder)
+		//	; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -467,15 +449,6 @@ public class ImageReaderTest {
 	//     skip()
 	private void readGray8FileType()
 	{
-		// Object pixels;
-		
-		// GRAY8 uncompressed
-		//pixels = readPixelHelper(FileInfo.GRAY8,FileInfo.COMPRESSION_NONE,3,3,Pix3x3byte);
-
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof byte[]);
-		//assertArrayEquals(Pix3x3byte,(byte[])pixels);
-		
 
 		// GRAY8 uncompressed
 		tryGray8Map(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -486,6 +459,7 @@ public class ImageReaderTest {
 		tryGray8Map(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
+		tryGray8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
 		
 		// GRAY8 compressed LZW
 		// GRAY8 compressed LZW_WITH_DIFFERENCING
@@ -509,8 +483,8 @@ public class ImageReaderTest {
 			for (int pix : row)
 				output[i++] = (byte)(pix & 0xff);
 	
-		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+		//if (intelByteOrder)
+		//	; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -561,13 +535,6 @@ public class ImageReaderTest {
 	//     skip()
 	private void readColor8FileType()
 	{
-		//Object pixels;
-
-		// COLOR8 uncompressed
-		//pixels = readPixelHelper(FileInfo.COLOR8,FileInfo.COMPRESSION_NONE,3,3,Pix3x3byte);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof byte[]);
-		//assertArrayEquals(Pix3x3byte,(byte[])pixels);
 
 		// COLOR8 uncompressed
 		tryColor8Map(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -578,6 +545,8 @@ public class ImageReaderTest {
 		tryColor8Map(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryColor8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
+		tryColor8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
+		
 		// COLOR8 compressed LZW		
 		// COLOR8 compressed LZW_WITH_DIFFERENCING
 		// COLOR8 compressed PACK_BITS
@@ -605,7 +574,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,2);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -655,20 +624,6 @@ public class ImageReaderTest {
 	//     fi.intelByteOrder
 	private void readGray16SignedFileType()
 	{
-		//Object pixels;
-
-		// GRAY16_SIGNED uncompressed
-		//pixels = readPixelHelper(FileInfo.GRAY16_SIGNED,FileInfo.COMPRESSION_NONE,3,3,Pix3x3short);
-
-		// MAY NEED TO REDESIGN THIS TEST:
-		//   readPixels() biases input GRAY16_SIGNED bytes by 32768 - match behavior in test
-		//short[] inPixelsXformed = new short[Pix3x3short.length];
-		//for (int i = 0; i < inPixelsXformed.length; i++)
-		//	inPixelsXformed[i] = (short) (32768 + Pix3x3short[i]);
-
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof short[]);
-		//assertArrayEquals(inPixelsXformed,(short[])pixels);
 
 		// GRAY16_SIGNED uncompressed
 		tryGray16SignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -679,6 +634,7 @@ public class ImageReaderTest {
 		tryGray16SignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray16SignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,1003,false);  // test header specifically
+		tryGray16SignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);      // test intel specifically
 
 		// GRAY_SIGNED LZW
 		
@@ -710,7 +666,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,2);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -760,14 +716,6 @@ public class ImageReaderTest {
 	//     fi.intelByteOrder
 	private void readGray16UnsignedFileType()
 	{
-		//Object pixels;
-
-		// GRAY16_UNSIGNED uncompressed
-		//pixels = readPixelHelper(FileInfo.GRAY16_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,Pix3x3short);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof short[]);
-		//assertArrayEquals(Pix3x3short,(short[])pixels);
-
 		// GRAY16_UNSIGNED uncompressed
 		tryGray16UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray16UnsignedImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -777,6 +725,7 @@ public class ImageReaderTest {
 		tryGray16UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray16UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,16,false);  // test header specifically
+		tryGray16UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
 
 		// GRAY_UNSIGNED LZW
 		
@@ -809,7 +758,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,4);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -858,14 +807,6 @@ public class ImageReaderTest {
 	//  intelByteOrder?
 	private void readGray32IntFileType()
 	{
-		//Object pixels;
-
-		// GRAY32_INT
-		//pixels = readPixelHelper(FileInfo.GRAY32_INT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3int);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof float[]);
-		//lociAssertArrayEquals(Pix3x3int,(float[])pixels);
-
 		// GRAY32_INT
 		tryGray32IntImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32IntImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -875,6 +816,7 @@ public class ImageReaderTest {
 		tryGray32IntImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray32IntImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,404,false);  // test header specifically
+		tryGray32IntImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] gray32UnsignedPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -901,7 +843,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,4);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -950,14 +892,6 @@ public class ImageReaderTest {
 	//  intelByteOrder?
 	private void readGray32UnsignedFileType()
 	{
-		//Object pixels;
-
-		// GRAY32_UNSIGNED
-		//pixels = readPixelHelper(FileInfo.GRAY32_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,Pix3x3int);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof float[]);
-		//lociAssertArrayEquals(Pix3x3int,(float[])pixels);
-
 		// GRAY32_UNSIGNED
 		tryGray32UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32UnsignedImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -967,6 +901,7 @@ public class ImageReaderTest {
 		tryGray32UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray32UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,101,false);  // test header specifically
+		tryGray32UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] gray32FloatPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -995,7 +930,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,4);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -1044,14 +979,6 @@ public class ImageReaderTest {
 	//  intelByteOrder?
 	private void readGray32FloatFileType()
 	{
-		//Object pixels;
-
-		// GRAY32_FLOAT
-		//pixels = readPixelHelper(FileInfo.GRAY32_FLOAT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3float);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof float[]);
-		//lociAssertArrayEquals(Pix3x3float,(float[])pixels);
-
 		// GRAY32_FLOAT
 		tryGray32FloatImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32FloatImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1061,6 +988,7 @@ public class ImageReaderTest {
 		tryGray32FloatImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray32FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,611,false);  // test header specifically
+		tryGray32FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] gray64FloatPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1093,7 +1021,7 @@ public class ImageReaderTest {
 			}
 		
 		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
+			output = intelSwap(output,8);
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -1141,14 +1069,6 @@ public class ImageReaderTest {
 	//   sub cases
 	//   intelByteOrder
 	private void readGray64FloatFileType(){
-		//Object pixels;
-
-		// GRAY64_FLOAT
-		//pixels = readPixelHelper(FileInfo.GRAY64_FLOAT,FileInfo.COMPRESSION_NONE,3,3,Pix3x3double);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof float[]);
-		//lociAssertArrayEquals(Pix3x3double,(float[])pixels);
-
 		// GRAY64_FLOAT
 		tryGray64FloatImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray64FloatImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1158,6 +1078,7 @@ public class ImageReaderTest {
 		tryGray64FloatImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray64FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,382,false);  // test header specifically
+		tryGray64FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] rgbPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1236,15 +1157,6 @@ public class ImageReaderTest {
 	//   intelByteOrder
 	private void readRgbFileType()
 	{
-		//Object pixels;
-
-		// RGB uncompressed
-		//pixels = readPixelHelper(FileInfo.RGB,FileInfo.COMPRESSION_NONE,3,3,Pix3x3rgb);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		// notice the switch of expected pixels here from rgb to argb
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
-
 		tryRgbImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
@@ -1253,6 +1165,7 @@ public class ImageReaderTest {
 		tryRgbImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryRgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
+		tryRgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] bgrPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1331,14 +1244,7 @@ public class ImageReaderTest {
 	//   intelByteOrder
 	private void readBgrFileType()
 	{
-		//Object pixels;
-
 		// BGR uncompressed
-		//pixels = readPixelHelper(FileInfo.BGR,FileInfo.COMPRESSION_NONE,3,3,Pix3x3bgr);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		// notice the switch of expected pixels here from rgb to argb
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
 
 		tryBgrImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryBgrImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1348,6 +1254,7 @@ public class ImageReaderTest {
 		tryBgrImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryBgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
+		tryBgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] argbPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1366,15 +1273,22 @@ public class ImageReaderTest {
 		for (int[] row : inputData)
 			for (int pix : row)
 			{
-				output[4*i+0] = (byte)((pix & 0xff000000) >> 24);
-				output[4*i+1] = (byte)((pix & 0x00ff0000) >> 16);
-				output[4*i+2] = (byte)((pix & 0x0000ff00) >> 8);
-				output[4*i+3] = (byte)((pix & 0x000000ff) >> 0);
+				if (intelByteOrder)
+				{
+					output[4*i+0] = (byte)((pix & 0x00ff0000) >> 16);
+					output[4*i+1] = (byte)((pix & 0x0000ff00) >> 8);
+					output[4*i+2] = (byte)((pix & 0x000000ff) >> 0);
+					output[4*i+3] = (byte)((pix & 0xff000000) >> 24);
+				}
+				else
+				{
+					output[4*i+0] = (byte)((pix & 0xff000000) >> 24);
+					output[4*i+1] = (byte)((pix & 0x00ff0000) >> 16);
+					output[4*i+2] = (byte)((pix & 0x0000ff00) >> 8);
+					output[4*i+3] = (byte)((pix & 0x000000ff) >> 0);
+				}
 				i++;
 			}
-		
-		if (intelByteOrder)
-			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
 			; // output = lzwCompress(output); // compress the output data
@@ -1425,14 +1339,7 @@ public class ImageReaderTest {
 	//   intelByteOrder
 	private void readArgbFileType()
 	{
-		//Object pixels;
-
 		// ARGB uncompressed
-		//pixels = readPixelHelper(FileInfo.ARGB,FileInfo.COMPRESSION_NONE,3,3,Pix3x3argb);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
-
 		tryArgbImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryArgbImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
 		tryArgbImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
@@ -1441,6 +1348,7 @@ public class ImageReaderTest {
 		tryArgbImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryArgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,501,false);  // test header specifically
+		tryArgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] abgrPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1520,14 +1428,7 @@ public class ImageReaderTest {
 	//   intelByteOrder
 	private void readAbgrFileType()
 	{
-		//Object pixels;
-
 		// ABGR uncompressed
-		//pixels = readPixelHelper(FileInfo.ABGR,FileInfo.COMPRESSION_NONE,3,3,Pix3x3abgr);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		// notice the switch of expected pixels here from abgr to argb
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
 
 		tryAbgrImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryAbgrImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1537,6 +1438,7 @@ public class ImageReaderTest {
 		tryAbgrImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryAbgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,222,false);  // test header specifically
+		tryAbgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] bargPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1615,14 +1517,7 @@ public class ImageReaderTest {
 	//   intelByteOrder
 	private void readBargFileType()
 	{
-		//Object pixels;
-	
 		// BARG uncompressed
-		//pixels = readPixelHelper(FileInfo.BARG,FileInfo.COMPRESSION_NONE,3,3,Pix3x3barg);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		// notice the switch of expected pixels here from barg to argb
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
 
 		tryBargImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryBargImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1632,6 +1527,7 @@ public class ImageReaderTest {
 		tryBargImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryBargImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,777,false);  // test header specifically
+		tryBargImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] rgbPlanarPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1708,14 +1604,7 @@ public class ImageReaderTest {
 	//    compression
 	private void readRgbPlanarFileType()
 	{
-		//Object pixels;
-	
 		// RGB_PLANAR uncompressed
-		//pixels = readPixelHelper(FileInfo.RGB_PLANAR,FileInfo.COMPRESSION_NONE,3,3,Pix3x3rgbPlanar);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof int[]);
-		// notice the switch of expected pixels here from barg to argb
-		//assertArrayEquals(Pix3x3argb,(int[])pixels);
 
 		tryRgbPlanarImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbPlanarImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1725,10 +1614,14 @@ public class ImageReaderTest {
 		tryRgbPlanarImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryRgbPlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,923,false);  // test header specifically
+		tryRgbPlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
 	private byte[] bitmapPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
 	{
+		int rows = inputData.length;
+		int cols = inputData[0].length;
+		
 		// set FileInfo fields for subsequent calls
 		
 		fi.fileType = FileInfo.BITMAP;
@@ -1737,20 +1630,25 @@ public class ImageReaderTest {
 		fi.height = inputData.length;
 		fi.width = inputData[0].length;
 		
-		byte[] output = new byte[fi.height * fi.width];
+		int pixPerRow = (int) Math.ceil(fi.width / 8.0);
+		
+		byte[] output = new byte[fi.height * pixPerRow];
+
+		// note that I am only using the lowest 1 bit of the int for testing purposes
 		
 		int i = 0;
-		for (int[] row : inputData)
-			for (int pix : row)
+		byte currByte = 0;
+		
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
 			{
-				//int builtPix = 0;
-				//for (int j = 7; j >= 0; j--)
-				//{
-				//	if ((pix & (1 << j)) != 0)
-				//		builtPix |= (1 << j);
-				//	output[i++] = (byte) builtPix;
-				//}
-				output[i++] = (byte)(pix & 0xff);
+				if ((inputData[r][c] & 1) == 1) // if odd
+					currByte |= (1 << (7-(c%8)));
+				if (((c%8) == 7) || (c == (cols-1)))
+				{
+					output[i++] = currByte;
+					currByte = 0;
+				}
 			}
 		
 		if (intelByteOrder)
@@ -1779,19 +1677,20 @@ public class ImageReaderTest {
 
 	private byte[] bitmapExpectedOutput(int[][] image, boolean intelByteOrder)
 	{
-		byte[] output = new byte[image.length * image[0].length];
+		int rows = image.length;
+		int cols = image[0].length;
+		
+		byte[] output = new byte[rows * cols];
 	
 		// from earlier testing it was case that
 		//   input = {128,64,32}
 		//   output = {255,0,0,0,255,0,0,0,255}
 		// this following code does not seem to match this
 		
-		// NOTICE I am only using the lowest byte of the input data
-		
 		int i = 0;
-		for (int[] row : image)
-			for (int pix: row)
-				output[i++] = (byte) (pix & 0xff);
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
+				output[i++] = ((image[r][c] & 1) == 1) ? (byte)255 : 0;
 		
 		return output;
 	}
@@ -1809,81 +1708,222 @@ public class ImageReaderTest {
 	// FileInfo.BITMAP:
 	private void readBitmapFileType()
 	{
-		byte[] input = new byte[] {(byte)128,64,32};
-		byte[] expectedOutput = {(byte)255, 0, 0, 0, (byte)255, 0, 0, 0, (byte)255};
-	
-		Object pixels;
-	
 		// BITMAP
-		pixels = readPixelHelper(FileInfo.BITMAP,FileInfo.COMPRESSION_NONE,3,3,input);
-		assertNotNull(pixels);
-		assertTrue(pixels instanceof byte[]);
-		assertArrayEquals(expectedOutput,(byte[])pixels);
 
-//		tryBitmapImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
-//		tryBitmapImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
-//		tryBitmapImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
-//		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
-//		tryBitmapImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
-//		tryBitmapImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryBitmapImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-//		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,386,false);  // test header specifically
+		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,386,false);  // test header specifically
+		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
-	//TODO
+	private byte[] rgb48PixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
+	{
+		// set FileInfo fields for subsequent calls
+		
+		fi.fileType = FileInfo.RGB48;
+		fi.compression = compression;
+		fi.intelByteOrder = intelByteOrder;
+		fi.height = inputData.length;
+		fi.width = inputData[0].length;
+		
+		byte[] output = new byte[fi.height * fi.width * 6];
+
+		// note that I am only using the lowest 8 bits of the int for testing purposes
+		
+		int i = 0;
+		for (int[] row : inputData)
+			for (int wholeInt : row)
+			{
+				for (int n = 0; n < 5; n++)
+					output[i++] = 0;
+				output[i++] = (byte) (wholeInt & 0xff);
+			}
+		
+		if (intelByteOrder)
+			output = intelSwap(output,2);
+		
+		if (compression == FileInfo.LZW)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.PACK_BITS)
+			; // output = packBitsCompress(output); // compress the output data
+
+		// else assuming its COMPRESSION_NONE : do nothing		
+		
+		// create a bogus header if desired
+		//   note that this may not work correctly as skip is figured from strips too investigate further
+		if (headerBytes > 0)
+		{
+			fi.offset = headerBytes;
+			fi.longOffset = headerBytes;
+			output = prependFakeHeader(headerBytes,output);
+		}
+		
+		return output;
+	}
+
+	private short[][] rgb48ExpectedOutput(int[][] image, boolean intelByteOrder)
+	{
+		int rows = image.length;
+		int cols = image[0].length;
+
+		short[][] output = new short[3][];
+		
+		for (int i = 0; i < 3; i++)
+			output[i] = new short[rows*cols];
+		
+		// at this point three arrays representing the 16 bit planes and all are zero
+		
+		// set the last plane of data
+		int i = 0;
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
+				output[2][i++] = (short) (image[r][c] & 0xff);  // NOTICE I am only using the lowest byte of the input data
+		
+		return output;
+	}
+
+	private void tryRgb48Image(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
+	{
+		FileInfo fi = new FileInfo();
+		byte[] pixInData = rgb48PixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
+		
+		// Set strip info: Needed for this case
+		
+		// lets do one strip per row
+		fi.stripLengths = new int[baseImage.length];
+		fi.stripOffsets = new int[baseImage.length];
+		for (int i = 0; i < baseImage.length; i++)
+		{
+			fi.stripLengths[i] = 6*baseImage[0].length;
+			fi.stripOffsets[i] = 6*i;
+		}
+		
+		Object pixels = callReadPixels(fi,pixInData);
+		assertNotNull(pixels);
+		assertTrue(pixels instanceof short[][]);
+		assertArrayEquals(rgb48ExpectedOutput(baseImage,intelByteOrder),(short[][])pixels);
+	}
+
 	// FileInfo.RGB48:
 	//   sub cases
 	//   compression
 	//   intelByteOrder
 	private void readRgb48FileType()
 	{
-		Object pixels;
-	
 		// RGB48 uncompressed
-		byte[] inBytes = new byte[] {0,0,0,0,0,11,0,0,0,0,0,12,0,0,0,0,0,13,0,0,0,0,0,21,0,0,0,0,0,22,0,0,0,0,0,23,0,0,0,0,0,31,0,0,0,0,0,32,0,0,0,0,0,33};
-		short[][] expShorts = new short[][] {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{11,12,13,21,22,23,31,32,33}};
-		FileInfo fi = new FileInfo();
-		fi.fileType = FileInfo.RGB48;
-		fi.compression = FileInfo.COMPRESSION_NONE;
-		fi.width = 3;
-		fi.height = 3;
-		fi.stripLengths = new int[] {18,18,18};
-		fi.stripOffsets = new int[] {0,18,36};
-		ByteArrayInputStream stream = new ByteArrayInputStream(inBytes);
-		ImageReader rdr = new ImageReader(fi);
-		pixels = rdr.readPixels(stream);
-		assertNotNull(pixels);
-		assertTrue(pixels instanceof short[][]);
-		short[][] outPix = (short[][])pixels;
-		assertArrayEquals(expShorts,outPix);
+
+		tryRgb48Image(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48Image(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48Image(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48Image(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48Image(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
+		
+		tryRgb48Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
+		tryRgb48Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 	
-	//TODO
-	// FileInfo.RGB48_PLANAR:
-	//   sub cases
-	//   compression
-	//   intelByteOrder
-	private void readRgb48PlanarFileType()
-	{
-		Object pixels;
-		
-		byte[] inBytes = new byte[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,12,0,13,0,21,0,22,0,23,0,31,0,32,0,33};
-		short[][] expShorts = new short[][] {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{11,12,13,21,22,23,31,32,33}};
 
-		// it reads three straight 16 bit images (red, then green, then blue)
-		// compression needs to be tested
-		// pixel channels are always treated as unsigned shorts
+	private byte[] rgb48PlanarPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
+	{
+		int rows = inputData.length;
+		int cols = inputData[0].length;
 		
-		FileInfo fi = new FileInfo();
+		// set FileInfo fields for subsequent calls
+		
 		fi.fileType = FileInfo.RGB48_PLANAR;
-		fi.compression = FileInfo.COMPRESSION_NONE;
-		fi.width = 3;
-		fi.height = 3;
+		fi.compression = compression;
+		fi.intelByteOrder = intelByteOrder;
+		fi.height = inputData.length;
+		fi.width = inputData[0].length;
 		
-		ByteArrayInputStream stream = new ByteArrayInputStream(inBytes);
-		ImageReader rdr = new ImageReader(fi);
-		pixels = rdr.readPixels(stream);
+		byte[] output = new byte[fi.height * fi.width * 6];
+
+		// note that I am only using the lowest 8 bits of the int for testing purposes
 		
+		int i = 0;
+		
+		while (i < 2*2*rows*cols)
+		{
+			output[i++] = 0;
+		}
+		
+		for (int[] row : inputData)
+			for (int wholeInt : row)
+			{
+				output[i++] = 0;
+				output[i++] = (byte) (wholeInt & 0xff);
+			}
+		
+		if (intelByteOrder)
+			output = intelSwap(output,2);
+		
+		if (compression == FileInfo.LZW)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.PACK_BITS)
+			; // output = packBitsCompress(output); // compress the output data
+
+		// else assuming its COMPRESSION_NONE : do nothing		
+		
+		// create a bogus header if desired
+		//   note that this may not work correctly as skip is figured from strips too investigate further
+		if (headerBytes > 0)
+		{
+			fi.offset = headerBytes;
+			fi.longOffset = headerBytes;
+			output = prependFakeHeader(headerBytes,output);
+		}
+		
+		return output;
+	}
+
+	private short[][] rgb48PlanarExpectedOutput(int[][] image, boolean intelByteOrder)
+	{
+		int rows = image.length;
+		int cols = image[0].length;
+
+		short[][] output = new short[3][];
+		
+		for (int i = 0; i < 3; i++)
+			output[i] = new short[rows*cols];
+		
+		// at this point three arrays representing the 16 bit planes and all are zero
+		
+		// set the last plane of data
+		int i = 0;
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
+				output[2][i++] = (short) (image[r][c] & 0xffff);  // NOTICE I am only using the lowest word of the input data
+		
+		return output;
+	}
+
+	private void tryRgb48PlanarImage(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
+	{
+		FileInfo fi = new FileInfo();
+		byte[] pixInData = rgb48PlanarPixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
+		
+		// Set strip info: Needed for this case - If I add this test dies cuz readPixels() thinks data is compressed
+		
+		// lets do one strip per row
+		//fi.stripLengths = new int[baseImage.length];
+		//fi.stripOffsets = new int[baseImage.length];
+		//for (int i = 0; i < baseImage.length; i++)
+		//{
+		//	fi.stripLengths[i] = 6*baseImage[0].length;
+		//	fi.stripOffsets[i] = 6*baseImage[0].length*i;
+		//}
+		
+		Object pixels = callReadPixels(fi,pixInData);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof Object[]);
 		
@@ -1892,71 +1932,140 @@ public class ImageReaderTest {
 		assertTrue(planeList[1] instanceof short[]);		
 		assertTrue(planeList[2] instanceof short[]);		
 		
+		short[][] expShorts = rgb48PlanarExpectedOutput(baseImage,intelByteOrder);
+		
+		assertNotNull(expShorts);
+		assertTrue(expShorts.length == 3);
 		assertArrayEquals(expShorts[0],(short[])planeList[0]);
 		assertArrayEquals(expShorts[1],(short[])planeList[1]);
 		assertArrayEquals(expShorts[2],(short[])planeList[2]);
 	}
+
+	// FileInfo.RGB48_PLANAR:
+	//   sub cases
+	//   compression
+	//   intelByteOrder
+	private void readRgb48PlanarFileType()
+	{
+		tryRgb48PlanarImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48PlanarImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48PlanarImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48PlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48PlanarImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryRgb48PlanarImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
+		
+		tryRgb48PlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
+		tryRgb48PlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+	}
 	
 	// helper: input ints assumed to be in 12-bit range
-	private byte[] encode12bit(int[] inPix)
+	private byte[] encode12bit(int[][] inPix)
 	{
-		int outSize = inPix.length * 12 / 8;
+		int rows = inPix.length;
+		int cols = inPix[0].length;
 		
-		if (inPix.length % 2 == 1)
-			outSize++;
+		int bytesPerRow = (int) Math.ceil(cols * 1.5); // 1.5 bytes per pix
 		
-		byte[] output = new byte[outSize];
-		
-		for (int i = 0, o = 0; i < inPix.length; i++)
-		{
-			if (i%2 == 0) // even
-			{
-				// set this byte's 8 bits plus next byte's high 4 bits
-				// use 12 bits of the input int
-				output[o] = (byte)((inPix[i] & 0xff0) >> 4) ;
-				output[o+1] = (byte)((inPix[i] & 0x00f) << 4);				
-				o += 1;  // finished 1 pixel
-			}
-			else // odd
-			{
-				// set this byte's low 4 bits and next byte's 8 bits
-				// use 12 bits of the input int
-				output[o] = (byte)(output[o] | ((inPix[i] & 0xf00) >> 8));
-				output[o+1] = (byte)(inPix[i] & 0x0ff);
-				o += 2;  // finished 2 pixels
-			}
-		}
+		byte[] output = new byte[rows * bytesPerRow];
+
+		int o = 0;
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
+				if (c%2 == 0) // even numbered column
+				{
+					// set this byte's 8 bits plus next byte's high 4 bits
+					// use 12 bits of the input int
+					output[o] = (byte)((inPix[r][c] & 0xff0) >> 4) ;
+					output[o+1] = (byte)((inPix[r][c] & 0x00f) << 4);				
+					o += 1;  // finished 1 pixel
+					if (c == cols-1)
+						o += 1; // if end of row then next pixel completed also
+				}
+				else // odd numbered column
+				{
+					// set this byte's low 4 bits and next byte's 8 bits
+					// use 12 bits of the input int
+					output[o] = (byte)(output[o] | ((inPix[r][c] & 0xf00) >> 8));
+					output[o+1] = (byte)(inPix[r][c] & 0x0ff);
+					o += 2;  // finished 2 pixels
+				}
 		
 		return output;
 	}
 	
-	//TODO
+
+	private byte[] gray12UnsignedPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
+	{		
+		// set FileInfo fields for subsequent calls
+		
+		fi.fileType = FileInfo.GRAY12_UNSIGNED;
+		fi.compression = compression;
+		fi.intelByteOrder = intelByteOrder;
+		fi.height = inputData.length;
+		fi.width = inputData[0].length;
+		
+		byte[] output = encode12bit(inputData);
+		
+		if (intelByteOrder)
+			; // nothing to do for a byte oriented data stream
+		
+		if (compression == FileInfo.LZW)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
+			; // output = lzwCompress(output); // compress the output data
+		else if (compression == FileInfo.PACK_BITS)
+			; // output = packBitsCompress(output); // compress the output data
+
+		// else assuming its COMPRESSION_NONE : do nothing		
+		
+		// create a bogus header if desired
+		//   note that this may not work correctly as skip is figured from strips too investigate further
+		if (headerBytes > 0)
+		{
+			fi.offset = headerBytes;
+			fi.longOffset = headerBytes;
+			output = prependFakeHeader(headerBytes,output);
+		}
+		
+		return output;
+	}
+
+	private short[] gray12UnsignedExpectedOutput(int[][] image, boolean intelByteOrder)
+	{
+		short[] output = new short[image.length * image[0].length];
+			
+		int i = 0;
+		for (int[] row : image)
+			for (int pix: row)
+				output[i++] = (short)pix;
+		
+		return output;
+	}
+
+	private void tryGray12UnsignedImage(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
+	{
+		FileInfo fi = new FileInfo();
+		byte[] pixInData = gray12UnsignedPixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
+		Object pixels = callReadPixels(fi,pixInData);
+		assertNotNull(pixels);
+		assertTrue(pixels instanceof short[]);
+		assertArrayEquals(gray12UnsignedExpectedOutput(baseImage,intelByteOrder),(short[])pixels);
+	}
+
 	// FileInfo.GRAY12_UNSIGNED:
 	private void readGray12UnsignedFileType()
 	{
-		Object pixels;
-				
-		byte[] input = encode12bit(new int[] {11,12,13,14,21,22,23,24,31,32,33,34});
-		short[] expected = new short[] {11,12,13,14,21,22,23,24,31,32,33,34};
-
 		// GRAY12_UNSIGNED
-		pixels = readPixelHelper(FileInfo.GRAY12_UNSIGNED,FileInfo.COMPRESSION_NONE,3,4,input);
-		assertNotNull(pixels);
-		assertTrue(pixels instanceof short[]);
-		assertArrayEquals(expected,(short[])pixels);
+
+		tryGray12UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray12UnsignedImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray12UnsignedImage(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray12UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray12UnsignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray12UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		if (IJInfo.RUN_ENHANCED_TESTS)
-		{
-			// this commented code fails due to ImageReader bug for 12-bit images - can only handle even number of pixels
-			input = encode12bit(new int[] {11,12,13,21,22,23,31,32,33});
-			expected = new short[] {11,12,13,21,22,23,31,32,33};
-			// GRAY12_UNSIGNED
-			
-			pixels = readPixelHelper(FileInfo.GRAY12_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,input);
-			assertNotNull(pixels);
-			assertTrue(pixels instanceof short[]);
-			assertArrayEquals(expected,(short[])pixels);
-		}
+		tryGray12UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
+		tryGray12UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
 
 	private byte[] gray24UnsignedPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -2030,16 +2139,7 @@ public class ImageReaderTest {
 	// FileInfo.GRAY24_UNSIGNED:
 	private void readGray24UnsignedFileType()
 	{
-		//byte[] input = new byte[] {11,0,0,12,0,0,13,0,0,21,0,0,22,0,0,23,0,0,31,0,0,32,0,0,33,0,0};
-		//float[] expected = new float[] {11,12,13,21,22,23,31,32,33};
-		
-		//Object pixels;
-
 		// GRAY24_UNSIGNED
-		//pixels = readPixelHelper(FileInfo.GRAY24_UNSIGNED,FileInfo.COMPRESSION_NONE,3,3,input);
-		//assertNotNull(pixels);
-		//assertTrue(pixels instanceof float[]);
-		//lociAssertArrayEquals(expected,(float[])pixels);
 
 		tryGray24UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray24UnsignedImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -2049,7 +2149,16 @@ public class ImageReaderTest {
 		tryGray24UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
 		tryGray24UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
+		tryGray24UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
 	}
+	
+	// if time were less of a factor a refactor would be nice
+	//   make readXFileType a class/interface
+	//   define each one as an extension/impl
+	//   keep an array of readers
+	//   keep an array of test images
+	//   iterate over images, applying all readers, with all values of flags
+	// then adding a new image (might happen regularly) or a new filetype (less often?) is a lot easier to accommodate
 	
 	@Test
 	public void testReadPixelsFromInputStream() {
