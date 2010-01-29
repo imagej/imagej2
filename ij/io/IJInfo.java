@@ -7,6 +7,6 @@ public class IJInfo {
 	//   the refactor and when those changed systems have been hardened.
 	public static final boolean RUN_ENHANCED_TESTS = false;
 	
-	// BDZ: some methods interact with the GUI. Enable the following boolean to run those tests interaactively.
+	// BDZ: some methods interact with the GUI. Enable the following boolean to run those tests interactively.
 	public static final boolean RUN_GUI_TESTS = false;
 }
