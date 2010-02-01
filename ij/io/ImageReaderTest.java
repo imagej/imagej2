@@ -9,11 +9,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.*;
+
+import loci.formats.codec.CodecOptions;
+import loci.formats.codec.LZWCodec;
 
 // NOTES
 //   This suite of tests also exercises the public class ByteVector which is defined in ImageReader.java
 //   Due to the API definitions of ByteVector it is difficult to exercise single methods. The tests tend
 //   to be interdependent so some methods are tested in multiple places.
+
+// TODO
+//   readPixels()
+//     debug LZW compression tests for the various pixel types - waiting on Wayne re: 4 byte pixels
+//     implement and test LZW DIFF compression tests
+//     implement PACKBITS compression tests
+//     do I need to do something for JPEG compression? it's called in the hunkyRGB cases in ImageReader
+//     make and use images with pix vals > 255
 
 public class ImageReaderTest {
 
@@ -24,6 +36,8 @@ public class ImageReaderTest {
 	static final int[][] BaseImage5x4 = {{255,255,255,255},{127,127,127,127},{63,63,63,63},{31,31,31,31},{15,15,15,15}};
 	static final int[][] BaseImage4x6 = {{0,255,100,200,77,153},{255,254,253,252,251,250},{1,2,3,4,5,6},{0,0,0,0,0,0},{67,67,67,67,67,67},{8,99,8,99,8,255}};
 
+	static final int[][] BaseTestImage = BaseImage4x6;
+	
 	static final float FLOAT_TOL = 0.00001f;
 
 	private ByteVector bv;
@@ -340,7 +354,6 @@ public class ImageReaderTest {
 		return output;
 	}
 	
-	// note: assumes everyX is even!
 	private byte[] intelSwap(byte[] input, int everyX)
 	{
 		byte[] output = new byte[input.length];
@@ -364,7 +377,7 @@ public class ImageReaderTest {
 	}
 
 	// unknown file type
-	private void readBogusFileType()
+	private void runBogusFileTypeTests()
 	{
 		byte[] inBytes = new byte[] {5,3,1};
 		
@@ -401,7 +414,16 @@ public class ImageReaderTest {
 		//	; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -433,7 +455,7 @@ public class ImageReaderTest {
 		return output;
 	}
 
-	private void tryGray8Map(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
+	private void tryGray8Image(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
 	{
 		FileInfo fi = new FileInfo();
 		byte[] pixInData = gray8PixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
@@ -447,21 +469,23 @@ public class ImageReaderTest {
 	//   subcases:
 	//     compression
 	//     skip()
-	private void readGray8FileType()
+	private void runGray8FileTypeTests()
 	{
 
 		// GRAY8 uncompressed
-		tryGray8Map(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
-		tryGray8Map(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
-		tryGray8Map(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
-		tryGray8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
-		tryGray8Map(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
-		tryGray8Map(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryGray8Image(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
-		tryGray8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
+		tryGray8Image(BaseTestImage,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
+		tryGray8Image(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
 		
 		// GRAY8 compressed LZW
+		tryGray8Image(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
+
 		// GRAY8 compressed LZW_WITH_DIFFERENCING
 		// GRAY8 compressed PACK_BITS
 	}
@@ -487,7 +511,16 @@ public class ImageReaderTest {
 		//	; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -519,7 +552,7 @@ public class ImageReaderTest {
 		return output;
 	}
 
-	private void tryColor8Map(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
+	private void tryColor8Image(int[][] baseImage, int compression, int headerBytes, boolean intelByteOrder)
 	{
 		FileInfo fi = new FileInfo();
 		byte[] pixInData = color8PixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
@@ -533,21 +566,23 @@ public class ImageReaderTest {
 	//   subcases:
 	//     compression
 	//     skip()
-	private void readColor8FileType()
+	private void runColor8FileTypeTests()
 	{
 
 		// COLOR8 uncompressed
-		tryColor8Map(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
-		tryColor8Map(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
-		tryColor8Map(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
-		tryColor8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
-		tryColor8Map(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
-		tryColor8Map(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage1x9,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
+		tryColor8Image(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryColor8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
-		tryColor8Map(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
+		tryColor8Image(BaseTestImage,FileInfo.COMPRESSION_NONE,63,false);  // test header specifically
+		tryColor8Image(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
 		
 		// COLOR8 compressed LZW		
+		tryColor8Image(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
+
 		// COLOR8 compressed LZW_WITH_DIFFERENCING
 		// COLOR8 compressed PACK_BITS
 	}
@@ -577,7 +612,16 @@ public class ImageReaderTest {
 			output = intelSwap(output,2);
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -622,7 +666,7 @@ public class ImageReaderTest {
 	//   subcases:
 	//     compression
 	//     fi.intelByteOrder
-	private void readGray16SignedFileType()
+	private void runGray16SignedFileTypeTests()
 	{
 
 		// GRAY16_SIGNED uncompressed
@@ -633,11 +677,12 @@ public class ImageReaderTest {
 		tryGray16SignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray16SignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray16SignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,1003,false);  // test header specifically
-		tryGray16SignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);      // test intel specifically
+		tryGray16SignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,1003,false);  // test header specifically
+		tryGray16SignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);      // test intel specifically
 
 		// GRAY_SIGNED LZW
-		
+		tryGray16SignedImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
+
 		// GRAY_SIGNED LZW_WITH_DIFFERENCING
 		
 		// GRAY_SIGNED PACK_BITS
@@ -669,7 +714,16 @@ public class ImageReaderTest {
 			output = intelSwap(output,2);
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -714,7 +768,7 @@ public class ImageReaderTest {
 	//   subcases:
 	//     compression
 	//     fi.intelByteOrder
-	private void readGray16UnsignedFileType()
+	private void runGray16UnsignedFileTypeTests()
 	{
 		// GRAY16_UNSIGNED uncompressed
 		tryGray16UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -724,10 +778,11 @@ public class ImageReaderTest {
 		tryGray16UnsignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray16UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray16UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,16,false);  // test header specifically
-		tryGray16UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
+		tryGray16UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,16,false);  // test header specifically
+		tryGray16UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);    // test intel specifically
 
 		// GRAY_UNSIGNED LZW
+		tryGray16UnsignedImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 		
 		// GRAY_UNSIGNED LZW_WITH_DIFFERENCING
 		
@@ -805,7 +860,7 @@ public class ImageReaderTest {
 	// FileInfo.GRAY32_INT
 	//  subcases
 	//  intelByteOrder?
-	private void readGray32IntFileType()
+	private void runGray32IntFileTypeTests()
 	{
 		// GRAY32_INT
 		tryGray32IntImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -815,8 +870,10 @@ public class ImageReaderTest {
 		tryGray32IntImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32IntImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray32IntImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,404,false);  // test header specifically
-		tryGray32IntImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray32IntImage(BaseTestImage,FileInfo.COMPRESSION_NONE,404,false);  // test header specifically
+		tryGray32IntImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+
+		tryGray32IntImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] gray32UnsignedPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -890,7 +947,7 @@ public class ImageReaderTest {
 	// FileInfo.GRAY32_UNSIGNED
 	//  subcases
 	//  intelByteOrder?
-	private void readGray32UnsignedFileType()
+	private void runGray32UnsignedFileTypeTests()
 	{
 		// GRAY32_UNSIGNED
 		tryGray32UnsignedImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -900,8 +957,9 @@ public class ImageReaderTest {
 		tryGray32UnsignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray32UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,101,false);  // test header specifically
-		tryGray32UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray32UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,101,false);  // test header specifically
+		tryGray32UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray32UnsignedImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] gray32FloatPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -977,7 +1035,7 @@ public class ImageReaderTest {
 	// FileInfo.GRAY32_FLOAT
 	//  subcases
 	//  intelByteOrder?
-	private void readGray32FloatFileType()
+	private void runGray32FloatFileTypeTests()
 	{
 		// GRAY32_FLOAT
 		tryGray32FloatImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -987,8 +1045,9 @@ public class ImageReaderTest {
 		tryGray32FloatImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray32FloatImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray32FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,611,false);  // test header specifically
-		tryGray32FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray32FloatImage(BaseTestImage,FileInfo.COMPRESSION_NONE,611,false);  // test header specifically
+		tryGray32FloatImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray32FloatImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] gray64FloatPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1068,7 +1127,7 @@ public class ImageReaderTest {
 	// FileInfo.GRAY64_FLOAT
 	//   sub cases
 	//   intelByteOrder
-	private void readGray64FloatFileType(){
+	private void runGray64FloatFileTypeTests(){
 		// GRAY64_FLOAT
 		tryGray64FloatImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray64FloatImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1077,8 +1136,9 @@ public class ImageReaderTest {
 		tryGray64FloatImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray64FloatImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray64FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,382,false);  // test header specifically
-		tryGray64FloatImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray64FloatImage(BaseTestImage,FileInfo.COMPRESSION_NONE,382,false);  // test header specifically
+		tryGray64FloatImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray64FloatImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] rgbPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1107,7 +1167,16 @@ public class ImageReaderTest {
 			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1155,7 +1224,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readRgbFileType()
+	private void runRgbFileTypeTests()
 	{
 		tryRgbImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1164,8 +1233,9 @@ public class ImageReaderTest {
 		tryRgbImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryRgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
-		tryRgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgbImage(BaseTestImage,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
+		tryRgbImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgbImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] bgrPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1194,7 +1264,16 @@ public class ImageReaderTest {
 			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1242,7 +1321,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readBgrFileType()
+	private void runBgrFileTypeTests()
 	{
 		// BGR uncompressed
 
@@ -1253,8 +1332,9 @@ public class ImageReaderTest {
 		tryBgrImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryBgrImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryBgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
-		tryBgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryBgrImage(BaseTestImage,FileInfo.COMPRESSION_NONE,873,false);  // test header specifically
+		tryBgrImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryBgrImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] argbPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1291,7 +1371,16 @@ public class ImageReaderTest {
 			}
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1337,7 +1426,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readArgbFileType()
+	private void runArgbFileTypeTests()
 	{
 		// ARGB uncompressed
 		tryArgbImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
@@ -1347,8 +1436,10 @@ public class ImageReaderTest {
 		tryArgbImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryArgbImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryArgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,501,false);  // test header specifically
-		tryArgbImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryArgbImage(BaseTestImage,FileInfo.COMPRESSION_NONE,501,false);  // test header specifically
+		tryArgbImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		// TODO: this one fails
+		//tryArgbImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] abgrPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1380,7 +1471,16 @@ public class ImageReaderTest {
 			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1426,7 +1526,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readAbgrFileType()
+	private void runAbgrFileTypeTests()
 	{
 		// ABGR uncompressed
 
@@ -1437,8 +1537,10 @@ public class ImageReaderTest {
 		tryAbgrImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryAbgrImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryAbgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,222,false);  // test header specifically
-		tryAbgrImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryAbgrImage(BaseTestImage,FileInfo.COMPRESSION_NONE,222,false);  // test header specifically
+		tryAbgrImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		//TODO : this one fails
+		//tryAbgrImage(BaseTestImage,FileInfo.LZW,0,false);    // test LZW compression specifically
 	}
 	
 	private byte[] bargPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1468,7 +1570,16 @@ public class ImageReaderTest {
 			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1515,7 +1626,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readBargFileType()
+	private void runBargFileTypeTests()
 	{
 		// BARG uncompressed
 
@@ -1526,8 +1637,10 @@ public class ImageReaderTest {
 		tryBargImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryBargImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryBargImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,777,false);  // test header specifically
-		tryBargImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryBargImage(BaseTestImage,FileInfo.COMPRESSION_NONE,777,false);  // test header specifically
+		tryBargImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		//TODO : this one fails
+		//tryBargImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 	private byte[] rgbPlanarPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1540,15 +1653,17 @@ public class ImageReaderTest {
 		fi.height = inputData.length;
 		fi.width = inputData[0].length;
 		
-		byte[] output = new byte[fi.height * fi.width * 3];
+		int planeSize = fi.height * fi.width;
+		
+		byte[] output = new byte[planeSize * 3];
 		
 		int i = 0;
 		for (int[] row : inputData)
 			for (int pix : row)
 			{				
-				output[(0*fi.width*fi.height)+i] = (byte)((pix & 0x00ff0000) >> 16);
-				output[(1*fi.width*fi.height)+i] = (byte)((pix & 0x0000ff00) >> 8);
-				output[(2*fi.width*fi.height)+i] = (byte)((pix & 0x000000ff) >> 0);
+				output[(0*planeSize)+i] = (byte)((pix & 0x00ff0000) >> 16);
+				output[(1*planeSize)+i] = (byte)((pix & 0x0000ff00) >> 8);
+				output[(2*planeSize)+i] = (byte)((pix & 0x000000ff) >> 0);
 				i++;
 			}
 		
@@ -1556,7 +1671,16 @@ public class ImageReaderTest {
 			; // nothing to do for a byte oriented data stream
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1602,7 +1726,7 @@ public class ImageReaderTest {
 	// FileInfo.RGB_PLANAR:
 	//   sub cases
 	//    compression
-	private void readRgbPlanarFileType()
+	private void runRgbPlanarFileTypeTests()
 	{
 		// RGB_PLANAR uncompressed
 
@@ -1613,15 +1737,13 @@ public class ImageReaderTest {
 		tryRgbPlanarImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgbPlanarImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryRgbPlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,923,false);  // test header specifically
-		tryRgbPlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgbPlanarImage(BaseTestImage,FileInfo.COMPRESSION_NONE,923,false);  // test header specifically
+		tryRgbPlanarImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgbPlanarImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 	private byte[] bitmapPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
 	{
-		int rows = inputData.length;
-		int cols = inputData[0].length;
-		
 		// set FileInfo fields for subsequent calls
 		
 		fi.fileType = FileInfo.BITMAP;
@@ -1639,6 +1761,8 @@ public class ImageReaderTest {
 		int i = 0;
 		byte currByte = 0;
 		
+		int rows = fi.height;
+		int cols = fi.width;
 		for (int r = 0; r < rows; r++)
 			for (int c = 0; c < cols; c++)
 			{
@@ -1706,7 +1830,7 @@ public class ImageReaderTest {
 	}
 
 	// FileInfo.BITMAP:
-	private void readBitmapFileType()
+	private void runBitmapFileTypeTests()
 	{
 		// BITMAP
 
@@ -1717,8 +1841,9 @@ public class ImageReaderTest {
 		tryBitmapImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryBitmapImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,386,false);  // test header specifically
-		tryBitmapImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryBitmapImage(BaseTestImage,FileInfo.COMPRESSION_NONE,386,false);  // test header specifically
+		tryBitmapImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryBitmapImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 	private byte[] rgb48PixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -1730,6 +1855,16 @@ public class ImageReaderTest {
 		fi.intelByteOrder = intelByteOrder;
 		fi.height = inputData.length;
 		fi.width = inputData[0].length;
+		
+		// Set strip info: Needed for this case: for now lets do one strip per row
+		fi.stripLengths = new int[inputData.length];
+		fi.stripOffsets = new int[inputData.length];
+		for (int i = 0; i < inputData.length; i++)
+		{
+			fi.stripLengths[i] = 6*inputData[0].length;
+			// was this and seemed to work fi.stripOffsets[i] = 6*i;
+			fi.stripOffsets[i] = (i == 0 ? 0 : (fi.stripOffsets[i-1] + fi.stripLengths[i]));
+		}
 		
 		byte[] output = new byte[fi.height * fi.width * 6];
 
@@ -1748,7 +1883,16 @@ public class ImageReaderTest {
 			output = intelSwap(output,2);
 		
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			try {
+				output = new LZWCodec().compress(output, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			fi.stripLengths = new int[] {output.length};
+			fi.stripOffsets = new int[] {0};
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
@@ -1794,17 +1938,6 @@ public class ImageReaderTest {
 		FileInfo fi = new FileInfo();
 		byte[] pixInData = rgb48PixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
 		
-		// Set strip info: Needed for this case
-		
-		// lets do one strip per row
-		fi.stripLengths = new int[baseImage.length];
-		fi.stripOffsets = new int[baseImage.length];
-		for (int i = 0; i < baseImage.length; i++)
-		{
-			fi.stripLengths[i] = 6*baseImage[0].length;
-			fi.stripOffsets[i] = 6*i;
-		}
-		
 		Object pixels = callReadPixels(fi,pixInData);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof short[][]);
@@ -1815,7 +1948,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readRgb48FileType()
+	private void runRgb48FileTypeTests()
 	{
 		// RGB48 uncompressed
 
@@ -1826,16 +1959,14 @@ public class ImageReaderTest {
 		tryRgb48Image(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgb48Image(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryRgb48Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
-		tryRgb48Image(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgb48Image(BaseTestImage,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
+		tryRgb48Image(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgb48Image(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 
 	private byte[] rgb48PlanarPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
 	{
-		int rows = inputData.length;
-		int cols = inputData[0].length;
-		
 		// set FileInfo fields for subsequent calls
 		
 		fi.fileType = FileInfo.RGB48_PLANAR;
@@ -1844,35 +1975,86 @@ public class ImageReaderTest {
 		fi.height = inputData.length;
 		fi.width = inputData[0].length;
 		
-		byte[] output = new byte[fi.height * fi.width * 6];
+		// Set strip info:
+		//   let's do one big strip of data : any more strips and decompression code runs in ImageReader (that could be a bug there)
+		fi.stripLengths = new int[] {fi.height * fi.width * 6};
+		fi.stripOffsets = new int[] {0};
+		
+		// note that I am only using the lowest 8 bits of the input int pixel for testing purposes
 
-		// note that I am only using the lowest 8 bits of the int for testing purposes
+		int rows = fi.height;
+		int cols = fi.width;
+		int totPix = rows * cols;
+
+		byte[] plane1 = new byte[totPix*2];
+		byte[] plane2 = new byte[totPix*2];
+		byte[] plane3 = new byte[totPix*2];
 		
-		int i = 0;
-		
-		while (i < 2*2*rows*cols)
+		// first two planes all zero
+		for (int i = 0; i < totPix; i++)
 		{
-			output[i++] = 0;
+			plane1[2*i+0] = 0;
+			plane1[2*i+1] = 0;
+			plane2[2*i+0] = 0;
+			plane2[2*i+1] = 0;
 		}
 		
+		// last plane populated from int data
+		int i = 0;
 		for (int[] row : inputData)
 			for (int wholeInt : row)
 			{
-				output[i++] = 0;
-				output[i++] = (byte) (wholeInt & 0xff);
+				plane3[2*i+0] = 0;
+				plane3[2*i+1] = (byte) (wholeInt & 0xff);
+				i++;
 			}
 		
 		if (intelByteOrder)
-			output = intelSwap(output,2);
+		{
+			plane1 = intelSwap(plane1,2);
+			plane2 = intelSwap(plane2,2);
+			plane3 = intelSwap(plane3,2);
+		}
 		
+		int biggestPlane = Math.max(Math.max(plane1.length, plane2.length), plane2.length);
+
+		byte[] output = new byte[biggestPlane*3];
+
 		if (compression == FileInfo.LZW)
-			; // output = lzwCompress(output); // compress the output data
+		{
+			try {
+				plane1 = new LZWCodec().compress(plane1, CodecOptions.getDefaultOptions()); // compress the output data
+				plane2 = new LZWCodec().compress(plane2, CodecOptions.getDefaultOptions()); // compress the output data
+				plane3 = new LZWCodec().compress(plane3, CodecOptions.getDefaultOptions()); // compress the output data
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			// does not work
+			//output = new byte[plane1.length + plane2.length + plane3.length];
+			//fi.stripLengths = new int[] {output.length};
+			//fi.stripOffsets = new int[] {0};
+			
+			// apparently the 48 bit planar type stores three sixteen bit images.
+			// when read the stripOffsets are reused so each plane must be stored in the same size strip.
+			// so must allocate the overall pixel array to be big enough to contain the biggest plane three times and
+			// setup the strip offsets to be the same for each plane.
+			
+			fi.stripLengths = new int[] {biggestPlane};
+			fi.stripOffsets = new int[] {0};
+		}
 		else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			; // output = lzwCompress(output); // compress the output data
 		else if (compression == FileInfo.PACK_BITS)
 			; // output = packBitsCompress(output); // compress the output data
 
 		// else assuming its COMPRESSION_NONE : do nothing		
+
+		// finally combine planes : note that the written planes are <= biggestPlane in length
+		System.arraycopy(plane1, 0, output, 0, plane1.length);
+		System.arraycopy(plane2, 0, output, biggestPlane, plane2.length);
+		System.arraycopy(plane3, 0, output, 2*biggestPlane, plane3.length);
 		
 		// create a bogus header if desired
 		//   note that this may not work correctly as skip is figured from strips too investigate further
@@ -1912,17 +2094,6 @@ public class ImageReaderTest {
 		FileInfo fi = new FileInfo();
 		byte[] pixInData = rgb48PlanarPixelBytes(baseImage,fi,compression,headerBytes,intelByteOrder);
 		
-		// Set strip info: Needed for this case - If I add this test dies cuz readPixels() thinks data is compressed
-		
-		// lets do one strip per row
-		//fi.stripLengths = new int[baseImage.length];
-		//fi.stripOffsets = new int[baseImage.length];
-		//for (int i = 0; i < baseImage.length; i++)
-		//{
-		//	fi.stripLengths[i] = 6*baseImage[0].length;
-		//	fi.stripOffsets[i] = 6*baseImage[0].length*i;
-		//}
-		
 		Object pixels = callReadPixels(fi,pixInData);
 		assertNotNull(pixels);
 		assertTrue(pixels instanceof Object[]);
@@ -1945,7 +2116,7 @@ public class ImageReaderTest {
 	//   sub cases
 	//   compression
 	//   intelByteOrder
-	private void readRgb48PlanarFileType()
+	private void runRgb48PlanarFileTypeTests()
 	{
 		tryRgb48PlanarImage(BaseImage1x1,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgb48PlanarImage(BaseImage3x3,FileInfo.COMPRESSION_NONE,0,false);
@@ -1954,8 +2125,9 @@ public class ImageReaderTest {
 		tryRgb48PlanarImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryRgb48PlanarImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryRgb48PlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
-		tryRgb48PlanarImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgb48PlanarImage(BaseTestImage,FileInfo.COMPRESSION_NONE,559,false);  // test header specifically
+		tryRgb48PlanarImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryRgb48PlanarImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 	// helper: input ints assumed to be in 12-bit range
@@ -2053,7 +2225,7 @@ public class ImageReaderTest {
 	}
 
 	// FileInfo.GRAY12_UNSIGNED:
-	private void readGray12UnsignedFileType()
+	private void runGray12UnsignedFileTypeTests()
 	{
 		// GRAY12_UNSIGNED
 
@@ -2064,8 +2236,9 @@ public class ImageReaderTest {
 		tryGray12UnsignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray12UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray12UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
-		tryGray12UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray12UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
+		tryGray12UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray12UnsignedImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 
 	private byte[] gray24UnsignedPixelBytes(int[][] inputData, FileInfo fi, int compression, int headerBytes, boolean intelByteOrder)
@@ -2137,7 +2310,7 @@ public class ImageReaderTest {
 	}
 
 	// FileInfo.GRAY24_UNSIGNED:
-	private void readGray24UnsignedFileType()
+	private void runGray24UnsignedFileTypeTests()
 	{
 		// GRAY24_UNSIGNED
 
@@ -2148,12 +2321,13 @@ public class ImageReaderTest {
 		tryGray24UnsignedImage(BaseImage5x4,FileInfo.COMPRESSION_NONE,0,false);
 		tryGray24UnsignedImage(BaseImage4x6,FileInfo.COMPRESSION_NONE,0,false);
 		
-		tryGray24UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
-		tryGray24UnsignedImage(BaseImage7x2,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray24UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,885,false);  // test header specifically
+		tryGray24UnsignedImage(BaseTestImage,FileInfo.COMPRESSION_NONE,0,true);     // test intel specifically
+		tryGray24UnsignedImage(BaseTestImage,FileInfo.LZW,0,false);     // test LZW specifically
 	}
 	
 	// if time were less of a factor a refactor would be nice
-	//   make readXFileType a class/interface
+	//   make runXFileTypeTests as classes/interfaces
 	//   define each one as an extension/impl
 	//   keep an array of readers
 	//   keep an array of test images
@@ -2162,50 +2336,226 @@ public class ImageReaderTest {
 	
 	@Test
 	public void testReadPixelsFromInputStream() {
-		readBogusFileType();
-		readGray8FileType();
-		readColor8FileType();
-		readGray16SignedFileType();
-		readGray16UnsignedFileType();
-		readGray32IntFileType();
-		readGray32UnsignedFileType();
-		readGray32FloatFileType();
-		readGray64FloatFileType();
-		readRgbFileType();
-		readBgrFileType();
-		readArgbFileType();
-		readArgbFileType();
-		readBargFileType();
-		readRgbPlanarFileType();
-		readBitmapFileType();
-		readRgb48FileType();
-		readRgb48PlanarFileType();
-		readGray12UnsignedFileType();
-		readGray24UnsignedFileType();
+		runBogusFileTypeTests();
+		runGray8FileTypeTests();
+		runColor8FileTypeTests();
+		runGray16SignedFileTypeTests();
+		runGray16UnsignedFileTypeTests();
+		runGray32IntFileTypeTests();
+		runGray32UnsignedFileTypeTests();
+		runGray32FloatFileTypeTests();
+		runGray64FloatFileTypeTests();
+		runRgbFileTypeTests();
+		runBgrFileTypeTests();
+		runArgbFileTypeTests();
+		runAbgrFileTypeTests();
+		runBargFileTypeTests();
+		runRgbPlanarFileTypeTests();
+		runBitmapFileTypeTests();
+		runRgb48FileTypeTests();
+		runRgb48PlanarFileTypeTests();
+		runGray12UnsignedFileTypeTests();
+		runGray24UnsignedFileTypeTests();
 	}
 
 	@Test
 	public void testReadPixelsFromInputStreamLong() {
-		//fail("Not yet implemented");
+
+		FileInfo fi = new FileInfo();
+		fi.width = 3;
+		fi.height = 3;
+		fi.fileType = FileInfo.COLOR8;
+		
+		ImageReader rdr = new ImageReader(fi);
+		
+		byte[] bytes = new byte[] {1,2,3,4,5,6,7,8,9};
+		ByteArrayInputStream str = new ByteArrayInputStream(bytes);
+		
+		Object pixels = rdr.readPixels(str,0L);
+		
+		assertNotNull(pixels);
+		assertTrue(pixels instanceof byte[]);
+		assertArrayEquals(bytes,(byte[]) pixels);
+
+		bytes = new byte[] {0,0,0,0,1,2,3,4,5,6,7,8,9};
+		str = new ByteArrayInputStream(bytes);
+		
+		pixels = rdr.readPixels(str,4);
+		
+		assertNotNull(pixels);
+		assertTrue(pixels instanceof byte[]);
+		assertArrayEquals(new byte[] {1,2,3,4,5,6,7,8,9},(byte[]) pixels);
 	}
+
 
 	@Test
 	public void testReadPixelsFromURL() {
-		//fail("Not yet implemented");
+		// don't really know a good way to test this
+		//   it looks like you need to have a inet resource to do this
+		//   I could do a file url that points to a file of bytes in a known location but that is a bit troublesome
+		//   Maybe we need an ij-tests data directory to store data files that we can locate for testing
+		// it looks like you need to setup a correct FileInfo that describes data in the remote file and you
+		//   are just reading basic pixel data
 	}
 
 	@Test
 	public void testLzwUncompress() {
-		//fail("Not yet implemented");
+		try {
+			CodecOptions options = CodecOptions.getDefaultOptions();
+			ImageReader rdr = new ImageReader(new FileInfo());
+			byte[] bytes = {1,4,8,44,13,99,(byte)200,(byte)255,67,54,98,(byte)171,113};
+			byte[] compressedBytes = new LZWCodec().compress(bytes,options);
+			assertArrayEquals(bytes,rdr.lzwUncompress(compressedBytes));
+		}
+		catch (Exception e)
+		{
+			fail();
+		}
+	}
+
+	// do a quick and dirty encoding
+	private byte[] encodePackBitsNaive(byte[] inPix)
+	{
+		byte[] output = new byte[inPix.length*2];
+
+		int i = 0;
+		
+		for (byte b : inPix)
+		{
+			output[i++] = 0;
+			output[i++] = b;
+		}
+		
+		return output;
+	}
+	
+	private boolean morePix(byte[] pix, int pnum)
+	{
+		return pnum < pix.length;
+	}
+
+	private boolean twoPixInARow(byte[] pix, int pnum)
+	{
+		if (pnum+1 >= pix.length)
+			return false;
+		if (pix[pnum] != pix[pnum+1])
+			return false;
+		return true;
+	}
+
+	private byte[] encodePackBitsReal(byte[] inPix)
+	{
+		ArrayList<Byte> compressedData = new ArrayList<Byte>();
+		ArrayList<Byte> unpairedData = new ArrayList<Byte>();
+		int i = 0;
+		while (morePix(inPix,i))
+		{
+			byte currPix = inPix[i];
+			int pairs = 0;
+			while ((morePix(inPix,i)) && (twoPixInARow(inPix,i))) {
+				pairs++;
+				i++;
+			}
+	    
+			if (pairs > 0)  // don't count second byte of pair twice
+				i++;
+
+			for (int n = 0; n < pairs; n+=127)
+			{
+				int pairsInThisChunk = Math.min(pairs - n,127);
+				compressedData.add((byte)-pairsInThisChunk);
+				compressedData.add(currPix);
+			}
+
+			unpairedData.clear();
+			while ((morePix(inPix,i)) && (!twoPixInARow(inPix,i)))
+				unpairedData.add(inPix[i++]);
+
+			int numBytes = unpairedData.size();
+			for (int n = 0; n < numBytes; n += 128)
+			{
+				int bytesInThisChunk = Math.min(numBytes,128);
+				compressedData.add((byte)(bytesInThisChunk-1));
+				for (int bnum = 0; bnum < bytesInThisChunk; bnum++)
+					compressedData.add(unpairedData.get(n+bnum));
+			}
+
+		}  // while morePix()
+
+		byte[] output = new byte[compressedData.size()];
+		for (int j = 0; j < output.length; j++)
+			output[j] = compressedData.get(j);
+
+		return output;
 	}
 
 	@Test
 	public void testPackBitsUncompress() {
-		//fail("Not yet implemented");
+		
+		// FIRST test my encodeBitsReal() method
+		
+		// {} case
+		assertArrayEquals(new byte[]{},encodePackBitsReal(new byte[]{}));
+		// {a} case
+		assertArrayEquals(new byte[]{0,0},encodePackBitsReal(new byte[]{0}));
+		// {aa} case
+		assertArrayEquals(new byte[]{-1,0},encodePackBitsReal(new byte[]{0,0})); 
+		// {ab} case
+		assertArrayEquals(new byte[]{1,0,1},encodePackBitsReal(new byte[]{0,1}));
+		// {aaa} case
+		assertArrayEquals(new byte[]{-2,0},encodePackBitsReal(new byte[]{0,0,0}));
+		// {aab} case
+		assertArrayEquals(new byte[]{-1,0,0,1},encodePackBitsReal(new byte[]{0,0,1}));
+		// {aba} case
+		assertArrayEquals(new byte[]{2,0,1,0},encodePackBitsReal(new byte[]{0,1,0}));
+		// {aaaa} case
+		assertArrayEquals(new byte[]{-3,0},encodePackBitsReal(new byte[]{0,0,0,0}));
+		// {aaab} case
+		assertArrayEquals(new byte[]{-2,0,0,1},encodePackBitsReal(new byte[]{0,0,0,1}));
+		// {aaba} case
+		assertArrayEquals(new byte[]{-1,0,1,1,0},encodePackBitsReal(new byte[]{0,0,1,0}));
+		// {abaa} case
+		assertArrayEquals(new byte[]{1,0,1,-1,0},encodePackBitsReal(new byte[]{0,1,0,0}));
+		// {aabb} case
+		assertArrayEquals(new byte[]{-1,0,-1,1},encodePackBitsReal(new byte[]{0,0,1,1}));
+		// {abab} case
+		assertArrayEquals(new byte[]{1,0,1,-1,0},encodePackBitsReal(new byte[]{0,1,0,0}));
+		// {abba} case
+		assertArrayEquals(new byte[]{0,0,-1,1,0,0},encodePackBitsReal(new byte[]{0,1,1,0}));
+		// {abbb} case
+		assertArrayEquals(new byte[]{0,0,-2,1},encodePackBitsReal(new byte[]{0,1,1,1}));
+		
+		// then test that ImageReader is returning the same info
+		
+		try {
+			byte[] bytes = {1,4,8,44,44,44,44,13,99,(byte)200,(byte)255,67,54,98,98,98,(byte)171,113,113,113,113};
+
+			ImageReader rdr = new ImageReader(new FileInfo());
+			
+			byte[] compressedBytes = encodePackBitsNaive(bytes);
+			assertArrayEquals(bytes,rdr.packBitsUncompress(compressedBytes,bytes.length));
+
+			compressedBytes = encodePackBitsReal(bytes);
+			assertArrayEquals(bytes,rdr.packBitsUncompress(compressedBytes,bytes.length));
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			fail();
+		}
 	}
 
 	@Test
 	public void testPublicIVarsMinAndMax() {
-		//fail("Not yet implemented");
+		ImageReader rdr = new ImageReader(new FileInfo());
+		
+		assertEquals(rdr.min,0.0,FLOAT_TOL);
+		assertEquals(rdr.max,0.0,FLOAT_TOL);
+
+		rdr.min = 4000.0;
+		rdr.max = 8888.7;
+		
+		assertEquals(rdr.min,4000.0,FLOAT_TOL);
+		assertEquals(rdr.max,8888.7,FLOAT_TOL);
 	}
 }
