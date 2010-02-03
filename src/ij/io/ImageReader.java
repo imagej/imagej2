@@ -405,19 +405,35 @@ public class ImageReader {
 			int pmax = base+pixelsRead;
 			if (pmax > nPixels) pmax = nPixels;
 			for (int j=base; j<pmax; j++) {
+				// BDZ 2-3-10
+				// The following code branches this class off the main trunk. It was done to get the ImageReaderTest.java class
+				// in project ij-tests to run to completion. The case logic was taken from ImageReader::readChunkyRGB() above.
 				if (bytesPerPixel==4) {
-					if (fi.intelByteOrder) {
+					if (fi.fileType==FileInfo.BARG) {  // MCID
+						blue = byteArray[k++]&0xff;
+						k++; // ignore alfa byte
+						red = byteArray[k++]&0xff;
+						green = byteArray[k++]&0xff;
+					} else if (fi.fileType==FileInfo.ABGR) {
+						blue = byteArray[k++]&0xff;
+						green = byteArray[k++]&0xff;
+						red = byteArray[k++]&0xff;
+						k++; // ignore alfa byte
+					} else if (fi.intelByteOrder) { // ARGB
 						red = byteArray[k++]&0xff;
 						green = byteArray[k++]&0xff;
 						blue = byteArray[k++]&0xff;
 						k++; // ignore alfa byte
-					} else {
+					} else { // ARGB
 						k++; // ignore alfa byte
-						blue = byteArray[k++]&0xff;
-						green = byteArray[k++]&0xff;
 						red = byteArray[k++]&0xff;
+						green = byteArray[k++]&0xff;
+						blue = byteArray[k++]&0xff;
 					}
-				} else {
+				}
+				// BDZ - end changes
+				else // bytes per pix == 3
+				{
 					red = byteArray[k++]&0xff;
 					green = byteArray[k++]&0xff;
 					blue = byteArray[k++]&0xff;
@@ -594,22 +610,46 @@ public class ImageReader {
 		return stack;
 	}
 
-	short[] read12bitImage(InputStream in) throws IOException {
-		int nBytes = (int)(nPixels*1.5);
-		if ((nPixels&1)==1) nBytes++; // add 1 if odd
-		byte[] buffer = new byte[nBytes];
-		short[] pixels = new short[nPixels];
-		DataInputStream dis = new DataInputStream(in);
-		dis.readFully(buffer);
-		int i = 0;
-		int j = 0;
-		for (int index=0; index<buffer.length/3; index++) {
-			pixels[j++] = (short)(((buffer[i]&0xff)*16) + ((buffer[i+1]>>4)&0xf));
-			pixels[j++] = (short)(((buffer[i+1]&0xf)*256) + (buffer[i+2]&0xff));
-			i += 3;
-		}
-		return pixels;
-	}
+	// wayne's change to deal with BDZ reported bug
+	 short[] read12bitImage(InputStream in) throws IOException {
+         int bytesPerLine = (int)(width*1.5);
+         if ((width&1)==1) bytesPerLine++; // add 1 if odd
+         byte[] buffer = new byte[bytesPerLine*height];
+         short[] pixels = new short[nPixels];
+         DataInputStream dis = new DataInputStream(in);
+         dis.readFully(buffer);
+         for (int y=0; y<height; y++) {
+                 int index1 = y*bytesPerLine;
+                 int index2 = y*width;
+                 int count = 0;
+                 while (count<width) {
+                         pixels[index2+count] = (short)(((buffer[index1]&0xff)*16) + ((buffer[index1+1]>>4)&0xf));
+                         count++;
+                         if (count==width) break;
+                         pixels[index2+count] = (short)(((buffer[index1+1]&0xf)*256) + (buffer[index1+2]&0xff));
+                         count++; index1+=3;
+                 }
+         }
+         return pixels;
+	 }
+	
+	 // the old way
+	//short[] read12bitImage(InputStream in) throws IOException {
+	//	int nBytes = (int)(nPixels*1.5);
+	//	if ((nPixels&1)==1) nBytes++; // add 1 if odd
+	//	byte[] buffer = new byte[nBytes];
+	//	short[] pixels = new short[nPixels];
+	//	DataInputStream dis = new DataInputStream(in);
+	//	dis.readFully(buffer);
+	//	int i = 0;
+	//	int j = 0;
+	//	for (int index=0; index<buffer.length/3; index++) {
+	//		pixels[j++] = (short)(((buffer[i]&0xff)*16) + ((buffer[i+1]>>4)&0xf));
+	//		pixels[j++] = (short)(((buffer[i+1]&0xf)*256) + (buffer[i+2]&0xff));
+	//		i += 3;
+	//	}
+	//	return pixels;
+	//}
 
 	float[] read24bitImage(InputStream in) throws IOException {
 		byte[] buffer = new byte[width*3];
