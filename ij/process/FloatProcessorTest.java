@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 public class FloatProcessorTest {
     
 
-	private static float[][] imageFloatData;
+	public static float[][] imageFloatData;
 
     public static float[][] combined;
 
@@ -32,7 +32,7 @@ public class FloatProcessorTest {
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	    String id = "/Volumes/data/khoros/samples/head.xv";
+	    String id = "data/head.xv";
 		ImagePlusReader imagePlusReader = new ImagePlusReader();
 		ImageProcessor imageProcessor = null;
 
@@ -78,9 +78,10 @@ public class FloatProcessorTest {
 
 		//set the value
 		floatProcessor.setColor(setcolorvalue);
+		floatProcessor.fill();
 
 		//see if the test passes
-		assertEquals(setcolorvalue, floatProcessor.fgColor, 0.0);
+		assertEquals(setcolorvalue, floatProcessor.get(0), 0.0);
 	}
 
 	@Test
@@ -1341,7 +1342,7 @@ public class FloatProcessorTest {
         g.drawImage(refFloatProcessor.createImage(), 0, 0, null);
 
         //check the result
-        assertEquals( refBufferedImage, refBufferedImage );
+        assertEquals( refBufferedImage.getWidth(), refFloatProcessor.getBufferedImage().getWidth() );
 		
 	}
 
@@ -2031,7 +2032,7 @@ public class FloatProcessorTest {
 
         FloatProcessor testFloatProcessor = new FloatProcessor(imageFloatData);
 
-        //rotate the image 180 degrees
+        //scale the image 1:1
         testFloatProcessor.scale(1.0, 1.0);
 
         //test the two arrays are the same
