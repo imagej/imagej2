@@ -13,23 +13,29 @@ import java.util.*;
 
 import loci.formats.codec.CodecOptions;
 import loci.formats.codec.LZWCodec;
+import loci.formats.codec.JPEGCodec;
 
 // NOTES
 //   This suite of tests also exercises the public class ByteVector which is defined in ImageReader.java
 //   Due to the API definitions of ByteVector it is difficult to exercise single methods. The tests tend
 //   to be interdependent so some methods are tested in multiple places.
 
+// IMPORTANT: I have made changes to our local copy of ImageJ to work around bugs in ImageReader.
+//   - 4 byte pixels with LZW and PACK_BITS compression: ImageReader.readPixels() had different code for channel selection
+//       when the code called was either readChunkyRGB() or readCompressedChunkyRGB(). Fixed in local repository.
+//   - gray16 signed data reading when compressed LZW_WITH_DIFFERENCING: the 32768 bias was being computed before
+//       the differences were being used. Until I can confirm this bug with an image I have changed my local copy
+//       (not the local repository) of ImageReader.readPixels().
+//   - lurking bug in ImageReader for 16-bit files? If strips > 1 then it assumes its compressed regardless of the
+//       compression flag. However uncompress() doesn't know what to do with it and does no uncompression.
+
 // TODO
-//   only readPixels() not totally finished
-//     the 4 byte pixel (LZW and PACK_BITS) compression tests are in place and working because I changed ImageReader
-//       they will start failing when ImageJ pulled from original repository
-//     test LZW DIFF compression tests
-//       some cases work and some don't - not sure why yet
-//     I need something for JPEG compression - it's called in the chunkyRGB cases in ImageReader
+//   readPixels() not totally finished
+//     JPEG code in place but failing tests - this is due to the fact that ImageJ uses the JDK's inbuilt JPEG support which is lossy.
+//       I think for now we'll not test it.
 //     Almost all tests below do not pass more than one strip to readPixels() - will want to test that better
-//     Need a true 48 bit map to exercise all code
-//   lurking bug in ImageReader for 16-bit files? If strips > 1 then it assumes its compressed regardless of the
-//     compression flag. However uncompress() doesn't know what to do with it and does no compression.
+//   readPixelsFromURL() - not being tested - see note below
+//   packbitsEncoder - needs to be updated - not working for runs >= 129 bytes
 
 public class ImageReaderTest {
 
@@ -50,13 +56,22 @@ public class ImageReaderTest {
 												{1,10,100,1000,10000},
 												{0,0,0,0,0},
 												{88,367092,1037745,88,4}};
-
+	static final long[][] Base48BitImage6x6 = {{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
+		{0,0xffffffffffffL,0,0xffffffffffffL,0,0xffffffffffffL},
+		{1,2,3,4,5,6},
+		{0xff0000000000L,0x00ff00000000L, 0x0000ff000000,0x000000ff0000,0x00000000ff00,0x0000000000ff},
+		{111111111111L,222222222222L,333333333333L,444444444444L,555555555555L,666666666666L},
+		{0,567,0,582047483,0,1},
+		{12345,554224678,90909090,9021,666666,3145926}
+	};
+	
 	// swap this as desired for debugging
 	//static final long[][] BaseTestImage = BaseImage4x6;
-	static final long[][] BaseTestImage = Base24BitImage5x5;
+	//static final long[][] BaseTestImage = BaseImage5x5;
+	static final long[][] BaseTestImage = Base48BitImage6x6;
 
 	final long[][][] Images = new long[][][] {BaseImage1x1, BaseImage3x3, BaseImage3x3, BaseImage1x9, BaseImage7x2, BaseImage5x4, BaseImage4x6,
-			Base24BitImage5x5};
+			Base24BitImage5x5, Base48BitImage6x6};
 
 	private FormatTester gray8Tester= new FormatTester(new Gray8Format());
 	private FormatTester color8Tester= new FormatTester(new Color8Format());
@@ -102,6 +117,7 @@ public class ImageReaderTest {
 	private LzwEncoder lzwEncoder = new LzwEncoder();
 	private LzwDiffEncoder lzwDiffEncoder = new LzwDiffEncoder();
 	private TwelveBitEncoder twelveBitEncoder = new TwelveBitEncoder();
+	private JpegEncoder jpegEncoder = new JpegEncoder();
 	
 	// swap this as desired for debugging
 	private PackbitsEncoder packbitsEncoder = packbitsEncoderReal;
@@ -240,6 +256,30 @@ public class ImageReaderTest {
 		}
 	}
 
+	class JpegEncoder {
+		JpegEncoder() {}
+		
+		public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
+		{
+			byte[] output = null;
+			try {
+				CodecOptions codecOptions = new CodecOptions();
+				codecOptions.height = fi.height;
+				codecOptions.width = fi.width;
+				codecOptions.channels = format.numSamples();
+				codecOptions.bitsPerSample = format.bitsPerSample();
+				codecOptions.interleaved = (format.planes() == 1);
+				codecOptions.littleEndian = fi.intelByteOrder;
+				//codecOptions.signed = (format == gray16SignedFormat);
+				codecOptions.signed = false;
+				output = new JPEGCodec().compress(input, codecOptions);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return output;
+		}
+	}
+	
 	class LzwEncoder {
 		
 		LzwEncoder() {}
@@ -261,27 +301,65 @@ public class ImageReaderTest {
 		
 		LzwDiffEncoder() {}
 		
-		private byte[] differentiate(byte[] input, int width, int bytesPerPix)
+		// unfortunately this method needed to be tweaked outside the overall design to accommodate intel byte orders for 16 bit
+		//   sample depths. We could eliminate the extra code at the expense of redesigning some of the other classes.
+		
+		private byte[] differentiate(byte[] input, PixelFormat format, FileInfo fi)
 		{
-			for (int b=input.length-1; b>=0; b--)
+			int offset = format.numSamples();
+			
+			// multiplane data is stored contiguously a plane at a time : offset to neighbor byte
+			if (format.planes() > 1)
+				offset = 1;
+			
+			byte[] data = input.clone();
+			
+			// if 16 bit samples must calc differences on original pixel data and not bytes
+			if (format.bitsPerSample() == 16)
 			{
-				// this code taken from TiffCompression code in BioFormats
-				if (b / bytesPerPix % width == 0)
-					continue;
-				input[b] -= input[b - bytesPerPix];
-
-				// first attempt: works for single bytePerPix data
-				//if (b % width == 0)
-				//	continue;
-				//input[b] -= input[b-1];
+				int actualPix = data.length / 2;
+				
+				for (int b = actualPix-1; b >= 0; b--)
+				{
+					if (b / offset % fi.width == 0)
+						continue;
+					
+					int currPix, prevPix;
+					
+					if (fi.intelByteOrder)
+					{
+						currPix = ((data[b*2+0] & 0xff) << 0) | ((data[b*2+1] & 0xff) << 8);
+						prevPix = ((data[b*2-2] & 0xff) << 0) | ((data[b*2-1] & 0xff) << 8);
+						currPix -= prevPix;
+						data[b*2+0] = (byte)((currPix & 0x00ff) >> 0);
+						data[b*2+1] = (byte)((currPix & 0xff00) >> 8);
+					}
+					else
+					{
+						currPix = ((data[b*2+0] & 0xff) << 8) | ((data[b*2+1] & 0xff) << 0);
+						prevPix = ((data[b*2-2] & 0xff) << 8) | ((data[b*2-1] & 0xff) << 0);
+						currPix -= prevPix;
+						data[b*2+0] = (byte)((currPix & 0xff00) >> 8);
+						data[b*2+1] = (byte)((currPix & 0x00ff) >> 0);
+					}
+				}
+				
 			}
+			else // input data is of type byte and we can calc differences as is
+				for (int b=data.length-1; b>=0; b--)
+				{
+					// this code adapted from TiffCompression code in BioFormats
+					if (b / offset % fi.width == 0)
+						continue;
+					data[b] -= data[b - offset];
+				}
 		      
-			return input;
+			return data;
 		}
 		
-		public byte[] encode(byte[] input, int cols, int bytesPerPix)
+		public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
 		{
-			input = differentiate(input,cols, bytesPerPix);
+			input = differentiate(input, format, fi);
 			
 			byte[] output = lzwEncoder.encode(input);
 
@@ -374,8 +452,14 @@ public class ImageReaderTest {
 			fail("myAssertArrayEquals(int[],int[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
 		
 		for (int i = 0; i < expected.length; i++)
+		{
 			if (expected[i] != actual[i])
+			{
+				System.out.println("Expected: a=" + ((expected[i] & 0xff000000L) >> 24) + " r=" + ((expected[i] & 0xff0000) >> 16) + " g=" + ((expected[i] & 0x00ff00)>>8) + " b=" + ((expected[i] & 0x0000ff)>>0) + " (" + expected[i] + ")");
+				System.out.println("Actual:   a=" + ((actual[i] & 0xff000000L) >> 24) + " r=" + ((actual[i] & 0xff0000) >> 16) + " g=" + ((actual[i] & 0x0000ff00)>>8) + " b=" + ((actual[i] & 0x0000ff)>>0) + " (" + actual[i] + ")");
 				fail("myAssertArrayEquals(int[],int[]) items differ at index " + i + ": expected "+ expected[i] + " and got " + actual[i]);
+			}
+		}
 	}
 	
 	void myAssertArrayEquals(long[] expected, long[] actual)
@@ -474,7 +558,7 @@ public class ImageReaderTest {
 			fail("assertSame() passed unsupported data format type : (" + aClass.getName() + ")");
 	}
 	
-	private void initializeFileInfo(FileInfo fi, int ftype, int compression, ByteOrder byteOrder, int rows, int cols, int samples)
+	private void initializeFileInfo(FileInfo fi, int ftype, int compression, ByteOrder byteOrder, int rows, int cols)
 	{
 		fi.fileType = ftype;
 		fi.compression = compression;
@@ -484,7 +568,6 @@ public class ImageReaderTest {
 			fi.intelByteOrder = false;
 		fi.height = rows;
 		fi.width = cols;
-		fi.samplesPerPixel = samples;
 	}
 	
 	private byte[] intelSwap(byte[] input, int everyX)
@@ -492,22 +575,24 @@ public class ImageReaderTest {
 		byte[] output = new byte[input.length];
 		
 		for (int i = 0; i < input.length; i += everyX)
-			for (int j = 0; j < everyX; j++)            // TODO: should this be everyX/2 ???
+			for (int j = 0; j < everyX; j++)
 				output[i+j] = input[i+everyX-1-j];
 		
 		return output;
 	}
 
-	private byte[] compress(FileInfo fi, int compression, byte[] input)
+	private byte[] compress(PixelFormat format, FileInfo fi, byte[] input)
 	{
 		byte[] compressed = input;
 		
 		if (fi.compression == FileInfo.LZW)
 			compressed = lzwEncoder.encode(input);
 		else if (fi.compression == FileInfo.LZW_WITH_DIFFERENCING)
-			compressed = lzwDiffEncoder.encode(input,fi.width,fi.samplesPerPixel);
+			compressed = lzwDiffEncoder.encode(input,format,fi);
 		else if (fi.compression == FileInfo.PACK_BITS)
 			compressed = packbitsEncoder.encode(input);
+		else if (fi.compression == FileInfo.JPEG)
+			compressed = jpegEncoder.encode(input,format,fi);
 		else
 			; // do nothing
 
@@ -567,10 +652,20 @@ public class ImageReaderTest {
 	abstract class PixelFormat {
 		
 		private String name;  // might be useful for debugging purposes. otherwise could be an interface
+		private int numSamples;
+		private int bitsPerSample;
+		private int planes;
 		
-		PixelFormat(String name)
+		public int numSamples()    { return numSamples; }
+		public int bitsPerSample() { return bitsPerSample; }
+		public int planes()        { return planes; }
+		
+		PixelFormat(String name, int numSamples, int bitsPerSample, int planes)
 		{
 			this.name = name;
+			this.numSamples = numSamples;
+			this.bitsPerSample = bitsPerSample;
+			this.planes = planes;
 		}
 		
 		abstract boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes);
@@ -583,14 +678,11 @@ public class ImageReaderTest {
 	{
 		Gray8Format()
 		{
-			super("Gray8");
+			super("Gray8",1,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)
@@ -604,7 +696,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY8,compression,byteOrder,image.length,image[0].length,1);
+			initializeFileInfo(fi,FileInfo.GRAY8,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width];
 			
@@ -616,7 +708,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -640,14 +732,11 @@ public class ImageReaderTest {
 	{
 		Color8Format()
 		{
-			super("Color8");
+			super("Color8",1,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)
@@ -661,7 +750,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.COLOR8,compression,byteOrder,image.length,image[0].length,1);
+			initializeFileInfo(fi,FileInfo.COLOR8,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width];
 			
@@ -673,7 +762,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 			
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -697,14 +786,11 @@ public class ImageReaderTest {
 	{
 		Gray16SignedFormat()
 		{
-			super("Gray16Signed");
+			super("Gray16Signed",1,16,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-				return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)
@@ -717,7 +803,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY16_SIGNED,compression,byteOrder,image.length,image[0].length,2);
+			initializeFileInfo(fi,FileInfo.GRAY16_SIGNED,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 2];
 			
@@ -733,7 +819,7 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				output = intelSwap(output,2);
 			
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -756,14 +842,11 @@ public class ImageReaderTest {
 	{
 		Gray16UnsignedFormat()
 		{
-			super("Gray16Unsigned");
+			super("Gray16Unsigned",1,16,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-				return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)
@@ -776,7 +859,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY16_UNSIGNED,compression,byteOrder,image.length,image[0].length,2);
+			initializeFileInfo(fi,FileInfo.GRAY16_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 2];
 			
@@ -792,7 +875,7 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				output = intelSwap(output,2);
 			
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -815,7 +898,7 @@ public class ImageReaderTest {
 	{
 		Gray32IntFormat()
 		{
-			super("Gray32Int");
+			super("Gray32Int",1,32,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -828,7 +911,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY32_INT,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.GRAY32_INT,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -860,7 +943,7 @@ public class ImageReaderTest {
 			int i = 0;
 			for (long[] row : inputImage)
 				for (long pix : row)
-					output[i++] = (float)pix;
+					output[i++] = (float)(int)(pix & 0xffffffffL);
 			return output;
 		}
 	}
@@ -869,7 +952,7 @@ public class ImageReaderTest {
 	{
 		Gray32UnsignedFormat()
 		{
-			super("Gray32Unsigned");
+			super("Gray32Unsigned",1,32,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -882,7 +965,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY32_UNSIGNED,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.GRAY32_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -914,7 +997,7 @@ public class ImageReaderTest {
 			int i = 0;
 			for (long[] row : inputImage)
 				for (long pix : row)
-					output[i++] = (float)pix;
+					output[i++] = (float)(pix & 0xffffffffL);
 			return output;
 		}
 	}
@@ -923,7 +1006,7 @@ public class ImageReaderTest {
 	{
 		Gray32FloatFormat()
 		{
-			super("Gray32Float");
+			super("Gray32Float",1,32,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -936,7 +1019,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY32_FLOAT,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.GRAY32_FLOAT,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -979,7 +1062,7 @@ public class ImageReaderTest {
 	{
 		Gray64FloatFormat()
 		{
-			super("Gray64Float");
+			super("Gray64Float",1,64,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -992,7 +1075,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY64_FLOAT,compression,byteOrder,image.length,image[0].length,8);
+			initializeFileInfo(fi,FileInfo.GRAY64_FLOAT,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 8];
 			
@@ -1039,14 +1122,11 @@ public class ImageReaderTest {
 	{
 		RgbFormat()
 		{
-			super("Rgb");
+			super("Rgb",3,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1060,7 +1140,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.RGB,compression,byteOrder,image.length,image[0].length,3);
+			initializeFileInfo(fi,FileInfo.RGB,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 3];
 			
@@ -1077,7 +1157,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 			
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1103,14 +1183,11 @@ public class ImageReaderTest {
 	{
 		BgrFormat()
 		{
-			super("Bgr");
+			super("Bgr",3,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1124,7 +1201,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.BGR,compression,byteOrder,image.length,image[0].length,3);
+			initializeFileInfo(fi,FileInfo.BGR,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 3];
 			
@@ -1141,7 +1218,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 			
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1167,14 +1244,11 @@ public class ImageReaderTest {
 	{
 		ArgbFormat()
 		{
-			super("Argb");
+			super("Argb",4,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1185,7 +1259,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.ARGB,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.ARGB,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -1210,7 +1284,7 @@ public class ImageReaderTest {
 					i++;
 				}
 						
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1236,14 +1310,11 @@ public class ImageReaderTest {
 	{
 		AbgrFormat()
 		{
-			super("Abgr");
+			super("Abgr",4,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1257,7 +1328,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.ABGR,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.ABGR,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -1275,7 +1346,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1301,14 +1372,11 @@ public class ImageReaderTest {
 	{
 		BargFormat()
 		{
-			super("Barg");
+			super("Barg",4,8,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1322,7 +1390,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.BARG,compression,byteOrder,image.length,image[0].length,4);
+			initializeFileInfo(fi,FileInfo.BARG,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 4];
 			
@@ -1340,7 +1408,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1366,14 +1434,11 @@ public class ImageReaderTest {
 	{
 		RgbPlanarFormat()
 		{
-			super("RgbPlanar");
+			super("RgbPlanar",3,8,3);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			//if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			//	return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1387,7 +1452,7 @@ public class ImageReaderTest {
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.RGB_PLANAR,compression,byteOrder,image.length,image[0].length,1);  // 1 cuz channel bytes right next to each other
+			initializeFileInfo(fi,FileInfo.RGB_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
 			int planeSize = fi.height * fi.width;
 			
@@ -1406,7 +1471,7 @@ public class ImageReaderTest {
 			//if (byteOrder == ByteOrder.INTEL)
 			//	; // nothing to do
 
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1432,7 +1497,7 @@ public class ImageReaderTest {
 	{
 		BitmapFormat()
 		{
-			super("Bitmap");
+			super("Bitmap",1,1,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -1448,7 +1513,7 @@ public class ImageReaderTest {
 
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.BITMAP,compression,byteOrder,image.length,image[0].length,0);
+			initializeFileInfo(fi,FileInfo.BITMAP,compression,byteOrder,image.length,image[0].length);
 			
 			int pixPerRow = (int) Math.ceil(fi.width / 8.0);
 			
@@ -1490,11 +1555,6 @@ public class ImageReaderTest {
 			
 			byte[] output = new byte[rows * cols];
 		
-			// from earlier testing it was case that
-			//   input = {128,64,32}
-			//   output = {255,0,0,0,255,0,0,0,255}
-			// this following code does not seem to match this
-			
 			int i = 0;
 			for (int r = 0; r < rows; r++)
 				for (int c = 0; c < cols; c++)
@@ -1508,12 +1568,11 @@ public class ImageReaderTest {
 	{
 		Rgb48Format()
 		{
-			super("Rgb48");
+			super("Rgb48",3,16,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
 			if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 				return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
@@ -1526,7 +1585,7 @@ public class ImageReaderTest {
 
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.RGB48,compression,byteOrder,image.length,image[0].length,3);
+			initializeFileInfo(fi,FileInfo.RGB48,compression,byteOrder,image.length,image[0].length);
 			
 			// Set strip info: Needed for this case: for now lets do one strip per row
 			fi.stripLengths = new int[image.length];
@@ -1540,8 +1599,6 @@ public class ImageReaderTest {
 			
 			byte[] output = new byte[fi.height * fi.width * 6];
 
-			// note that I am only using the lowest 8 bits of the int for testing purposes
-			
 			int i = 0;
 			for (long[] row : image)
 				for (long wholeLong : row)
@@ -1557,7 +1614,7 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				output = intelSwap(output,2);
 
-			output = compress(fi,compression,output);
+			output = compress(this,fi,output);
 
 			output = attachHeader(fi,headerBytes,output);
 			
@@ -1592,14 +1649,11 @@ public class ImageReaderTest {
 	{
 		Rgb48PlanarFormat()
 		{
-			super("Rgb48Planar");
+			super("Rgb48Planar",3,16,3);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
 		{
-			// TODO: until refactored don't handle lzw-diff
-			if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-				return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
 			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
@@ -1612,15 +1666,13 @@ public class ImageReaderTest {
 
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.RGB48_PLANAR,compression,byteOrder,image.length,image[0].length,6);
+			initializeFileInfo(fi,FileInfo.RGB48_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
 			// Set strip info:
-			//   let's do one big strip of data : any more strips and decompression code runs in ImageReader (TODO that could be a bug there)
+			//   let's do one big strip of data : any more strips and decompression code runs in ImageReader
 			fi.stripLengths = new int[] {fi.height * fi.width * 6};
 			fi.stripOffsets = new int[] {0};
 			
-			// note that I am only using the lowest 8 bits of the input int pixel for testing purposes
-
 			int rows = fi.height;
 			int cols = fi.width;
 			int totPix = rows * cols;
@@ -1680,9 +1732,9 @@ public class ImageReaderTest {
 			}
 			else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 			{
-				plane1 = lzwDiffEncoder.encode(plane1,fi.width,fi.samplesPerPixel); // compress the output data
-				plane2 = lzwDiffEncoder.encode(plane2,fi.width,fi.samplesPerPixel); // compress the output data
-				plane3 = lzwDiffEncoder.encode(plane3,fi.width,fi.samplesPerPixel); // compress the output data
+				plane1 = lzwDiffEncoder.encode(plane1,this,fi); // compress the output data
+				plane2 = lzwDiffEncoder.encode(plane2,this,fi); // compress the output data
+				plane3 = lzwDiffEncoder.encode(plane3,this,fi); // compress the output data
 			
 				biggestPlane = Math.max(Math.max(plane1.length, plane2.length), plane2.length);
 				
@@ -1748,7 +1800,7 @@ public class ImageReaderTest {
 	{
 		Gray12UnsignedFormat()
 		{
-			super("Gray12Unsigned");
+			super("Gray12Unsigned",1,12,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -1764,7 +1816,7 @@ public class ImageReaderTest {
 
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY12_UNSIGNED,compression,byteOrder,image.length,image[0].length,0);
+			initializeFileInfo(fi,FileInfo.GRAY12_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = twelveBitEncoder.encode(image);
 			
@@ -1793,7 +1845,7 @@ public class ImageReaderTest {
 	{
 		Gray24UnsignedFormat()
 		{
-			super("Gray24Unsigned");
+			super("Gray24Unsigned",1,24,1);
 		}
 		
 		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
@@ -1809,7 +1861,7 @@ public class ImageReaderTest {
 
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
 		{
-			initializeFileInfo(fi,FileInfo.GRAY24_UNSIGNED,compression,byteOrder,image.length,image[0].length,3);
+			initializeFileInfo(fi,FileInfo.GRAY24_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
 			byte[] output = new byte[fi.height * fi.width * 3];
 			
@@ -1908,13 +1960,21 @@ public class ImageReaderTest {
 	@Test
 	public void testReadPixelsFromInputStream()
 	{
+		// TODO : not working with simple map containing a large value
+		gray32IntTester.runTest(new long[][] {{0xffffffffffffL}},FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
+		
+		// TODO: jpeg not working on simple map
+		//rgbTester.runTest(BaseImage1x1,FileInfo.JPEG,ByteOrder.DEFAULT,0);
+
 		// run test on basic functionality for each pixel type
 		//   these end up getting run twice but these next calls simplify debugging
 		gray8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		color8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray16SignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray16UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
+		//TODO: this not working with 48 bit map
 		gray32IntTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
+		//TODO: this not working with 48 bit map
 		gray32UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray32FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray64FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
@@ -1929,7 +1989,7 @@ public class ImageReaderTest {
 		rgb48PlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray12UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
 		gray24UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		
+
 		// now run all legal combos of input parameters
 		for (FormatTester tester : Testers)
 			for (long[][] image : Images)
