@@ -9,7 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.*;
 
 import loci.formats.codec.CodecOptions;
 import loci.formats.codec.LZWCodec;
@@ -32,10 +31,9 @@ import loci.formats.codec.JPEGCodec;
 // TODO
 //   readPixels() not totally finished
 //     JPEG code in place but failing tests - this is due to the fact that ImageJ uses the JDK's inbuilt JPEG support which is lossy.
-//       I think for now we'll not test it.
-//     Almost all tests below do not pass more than one strip to readPixels() - will want to test that better
-//   readPixelsFromURL() - not being tested - see note below
-//   packbitsEncoder - needs to be updated - not working for runs >= 129 bytes
+//       I think for now we'll not test it. Capabilities commented out below.
+//     ImageReader can handle more than one strip for compressed 8 bit, compressed 16 bit, compressed rgb, compressed rgb48, and
+//       uncompressed rgb48. This is not yet completely tested below.
 
 public class ImageReaderTest {
 
@@ -56,7 +54,8 @@ public class ImageReaderTest {
 												{1,10,100,1000,10000},
 												{0,0,0,0,0},
 												{88,367092,1037745,88,4}};
-	static final long[][] Base48BitImage6x6 = {{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
+	static final long[][] Base48BitImage6x6 = 
+	{{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
 		{0,0xffffffffffffL,0,0xffffffffffffL,0,0xffffffffffffL},
 		{1,2,3,4,5,6},
 		{0xff0000000000L,0x00ff00000000L, 0x0000ff000000,0x000000ff0000,0x00000000ff00,0x0000000000ff},
@@ -106,6 +105,8 @@ public class ImageReaderTest {
 	
 	final int[] HeaderOffsets = new int[] {0,10,100,1000,203,356,404,513,697,743,819,983};
 
+	final boolean[] EncodeAsStrips = new boolean[] {false, true};
+	
 	static final float FLOAT_TOL = 0.00001f;
 
 	interface PackbitsEncoder{
@@ -150,60 +151,147 @@ public class ImageReaderTest {
 		
 		RealPackbitsEncoder() {}
 
-		private boolean moreInput(byte[] input, int pnum)
-		{
-			return pnum < input.length;
-		}
-
-		private boolean twoBytesInARow(byte[] input, int pnum)
-		{
-			if (pnum+1 >= input.length)
-				return false;
-			if (input[pnum] != input[pnum+1])
-				return false;
-			return true;
-		}
-
+		// one byte lookahead
 		public byte[] encode(byte[] input)
 		{
-			ByteVector compressedData = new ByteVector();
-			ArrayList<Byte> unpairedData = new ArrayList<Byte>();
-			int i = 0;
-			while (moreInput(input,i))
+			int inputLen = input.length;
+
+			if (inputLen == 0) return new byte[] {};
+			if (inputLen == 1) return new byte[] {0,input[0]};
+
+			// else two or more bytes in list
+
+			ByteVector output = new ByteVector();
+
+			// setup initial state
+			int curr = 0;
+			int offset = 1;
+			boolean inMatch = false;
+
+			if (input[0] == input[1])
+				inMatch = true;
+
+			while (curr+offset < inputLen)
 			{
-				byte currByte = input[i];
-				int pairs = 0;
-				while ((moreInput(input,i)) && (twoBytesInARow(input,i))) {
-					pairs++;
-					i++;
-				}
-		    
-				if (pairs > 0)  // don't count second byte of pair twice
-					i++;
-
-				for (int n = 0; n < pairs; n+=127)
+				if (curr+offset+1 >= inputLen) // next char is beyond end of input
 				{
-					int pairsInThisChunk = Math.min(pairs - n,127);
-					compressedData.add((byte)-pairsInThisChunk);
-					compressedData.add(currByte);
+					if (inMatch)
+					{
+						output.add((byte)-offset);
+						output.add(input[curr]);
+					}
+					else  // not in match
+					{
+						output.add((byte)offset);
+						for (int i = 0; i < offset+1; i++)
+							output.add(input[curr+i]);
+					}
+					curr = inputLen;
+					offset = 0;
 				}
+				else if (input[curr+offset] == input[curr+offset+1]) // next char matches
+				{	                                      
+					if (inMatch)
+					{
+						if (offset < 127)  // not counted max num of pairs in a run
+							offset++;
+						else // offset == 127 : in this case offset ==  num pairs found so far
+						{
+							// write out the matched block
+							output.add((byte)-127);
+							output.add(input[curr]);
 
-				unpairedData.clear();
-				while ((moreInput(input,i)) && (!twoBytesInARow(input,i)))
-					unpairedData.add(input[i++]);
-
-				int numBytes = unpairedData.size();
-				for (int n = 0; n < numBytes; n += 128)
+							// start over at next char
+							if ((curr+offset+1) == (inputLen-1))  // the next char is the last char
+							{
+								// write out 0, input[inputLen-1]
+								output.add((byte)0);
+								output.add(input[inputLen-1]);
+								curr = inputLen;
+								offset = 0;
+							}
+							else // at least two more chars - reset state
+							{
+								curr += offset+1;
+								offset = 1;
+								if (input[curr] == input[curr+1])
+									inMatch = true;
+								else
+									inMatch = false;
+							}
+						}
+					}
+					else // not currently in match
+					{
+						// write out the unmatched data
+						output.add((byte)(offset-1));
+						for (int i = 0; i < offset; i++)
+							output.add(input[curr+i]);
+						inMatch = true;
+						curr += offset;  // not +1 cuz we'll reconsider the curr one as part of new run
+						offset=1;
+					}
+				}
+				else // next char is different from me
 				{
-					int bytesInThisChunk = Math.min(numBytes,128);
-					compressedData.add((byte)(bytesInThisChunk-1));
-					for (int bnum = 0; bnum < bytesInThisChunk; bnum++)
-						compressedData.add(unpairedData.get(n+bnum));
+					if (inMatch == false)
+					{
+						if (offset < 127)  // not reached max non-run length
+							offset++;
+						else // offset == 127: reached max non-run length
+						{
+							// write out matched data
+							output.add((byte)offset);
+							for (int i = 0; i < offset+1; i++)
+								output.add(input[curr+i]);
+								
+							// start over at next char
+							if (curr+offset+1 == inputLen-1)  // is the next char the last one?
+							{
+								output.add((byte)0);
+								output.add(input[inputLen-1]);
+								curr = inputLen;
+								offset = 0;
+							}
+							else  // next char is available - reset state
+							{
+								curr += offset+1;
+								offset = 1;
+								if (input[curr] == input[curr+1])
+									inMatch = true;
+								else
+									inMatch = false;
+							}
+						}
+					}
+					else // in a match
+					{
+						// match must end
+						output.add((byte)-offset);
+						output.add(input[curr]);
+						
+						// start over at next char
+						if (curr+offset+1 == inputLen-1)  // is the next char the last one?
+						{
+							output.add((byte)0);
+							output.add(input[inputLen-1]);
+							curr = inputLen;
+							offset = 0;
+						}
+						else  // next char is available - reset state
+						{
+							curr += offset+1;
+							offset = 1;
+							if (input[curr] == input[curr+1])
+								inMatch = true;
+							else
+								inMatch = false;
+						}
+					}
 				}
+			}
 
-			}  // while moreInput()
-
-			return compressedData.toByteArray();
+			return output.toByteArray();
 		}
 
 		private void runTests()
@@ -242,17 +330,40 @@ public class ImageReaderTest {
 				biggerOne[i] = 1;
 			assertArrayEquals(new byte[] {-127,1},encode(biggerOne));
 
-			// TODO : this fails
-			//biggerOne = new byte[129];
-			//for (int i = 0; i < biggerOne.length; i++)
-			//	biggerOne[i] = 1;
-			//assertArrayEquals(new byte[] {-127,1,0,1},encode(biggerOne));
+			biggerOne = new byte[129];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,0,1},encode(biggerOne));
 
-			// TODO : this fails
-			//biggerOne = new byte[130];
-			//for (int i = 0; i < biggerOne.length; i++)
-			//	biggerOne[i] = 1;
-			//assertArrayEquals(new byte[] {-127,1,-1,1},encode(biggerOne));
+			biggerOne = new byte[130];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-1,1},encode(biggerOne));
+
+			biggerOne = new byte[134];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-5,1},encode(biggerOne));
+
+			biggerOne = new byte[255];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-126,1},encode(biggerOne));
+
+			biggerOne = new byte[256];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-127,1},encode(biggerOne));
+
+			biggerOne = new byte[257];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-127,1,0,1},encode(biggerOne));
+
+			biggerOne = new byte[258];
+			for (int i = 0; i < biggerOne.length; i++)
+				biggerOne[i] = 1;
+			assertArrayEquals(new byte[] {-127,1,-127,1,-1,1},encode(biggerOne));
 		}
 	}
 
@@ -406,7 +517,8 @@ public class ImageReaderTest {
 		}
 	}
 	
-	// the readPixels test is difficult to debug: make helper classes
+	// Note:
+	//   the readPixels() test near the bottom is difficult to debug: make helper classes where breakpoints can be easily handled
 	
 	void myAssertArrayEquals(byte[] expected, byte[] actual)
 	{
@@ -628,13 +740,13 @@ public class ImageReaderTest {
 			this.theFormat = format;
 		}
 		
-		void runTest(long[][] image, int compression, ByteOrder byteOrder, int headerOffset)
+		void runTest(long[][] image, int compression, ByteOrder byteOrder, int headerOffset, boolean asStrips)
 		{
-			if (theFormat.canDoImageCombo(compression,byteOrder,headerOffset))
+			if (theFormat.canDoImageCombo(compression,byteOrder,headerOffset,asStrips))
 			{
 				FileInfo fi = new FileInfo();
 				
-				byte[] pixBytes = theFormat.getBytes(image,compression,byteOrder,headerOffset,fi);
+				byte[] pixBytes = theFormat.getBytes(image,compression,byteOrder,headerOffset,asStrips,fi);
 				
 				ByteArrayInputStream byteStream = new ByteArrayInputStream(pixBytes);
 				
@@ -668,8 +780,8 @@ public class ImageReaderTest {
 			this.planes = planes;
 		}
 		
-		abstract boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes);
-		abstract byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi);
+		abstract boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped);
+		abstract byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi);
 		abstract Object expectedResults(long[][] inputImage);
 		
 	}
@@ -681,7 +793,7 @@ public class ImageReaderTest {
 			super("Gray8",1,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
@@ -691,10 +803,13 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY8,compression,byteOrder,image.length,image[0].length);
 			
@@ -735,7 +850,7 @@ public class ImageReaderTest {
 			super("Color8",1,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
@@ -745,10 +860,13 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.COLOR8,compression,byteOrder,image.length,image[0].length);
 			
@@ -789,7 +907,7 @@ public class ImageReaderTest {
 			super("Gray16Signed",1,16,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
@@ -798,10 +916,13 @@ public class ImageReaderTest {
 			if (compression == FileInfo.PACK_BITS)
 				return false;
 			
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY16_SIGNED,compression,byteOrder,image.length,image[0].length);
 			
@@ -845,7 +966,7 @@ public class ImageReaderTest {
 			super("Gray16Unsigned",1,16,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
@@ -854,10 +975,13 @@ public class ImageReaderTest {
 			if (compression == FileInfo.PACK_BITS)
 				return false;
 			
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY16_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
@@ -901,15 +1025,18 @@ public class ImageReaderTest {
 			super("Gray32Int",1,32,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
+				return false;
+
+			if (stripped)
 				return false;
 			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY32_INT,compression,byteOrder,image.length,image[0].length);
 			
@@ -955,15 +1082,18 @@ public class ImageReaderTest {
 			super("Gray32Unsigned",1,32,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
+				return false;
+			
+			if (stripped)
 				return false;
 			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY32_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
@@ -1009,15 +1139,18 @@ public class ImageReaderTest {
 			super("Gray32Float",1,32,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
+				return false;
+			
+			if (stripped)
 				return false;
 			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY32_FLOAT,compression,byteOrder,image.length,image[0].length);
 			
@@ -1065,15 +1198,18 @@ public class ImageReaderTest {
 			super("Gray64Float",1,64,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
+				return false;
+		
+			if (stripped)
 				return false;
 			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY64_FLOAT,compression,byteOrder,image.length,image[0].length);
 			
@@ -1125,20 +1261,23 @@ public class ImageReaderTest {
 			super("Rgb",3,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 			
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB,compression,byteOrder,image.length,image[0].length);
 			
@@ -1186,20 +1325,23 @@ public class ImageReaderTest {
 			super("Bgr",3,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 			
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.BGR,compression,byteOrder,image.length,image[0].length);
 			
@@ -1247,17 +1389,20 @@ public class ImageReaderTest {
 			super("Argb",4,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
+				return false;
+			
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
 				return false;
 			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.ARGB,compression,byteOrder,image.length,image[0].length);
 			
@@ -1313,20 +1458,23 @@ public class ImageReaderTest {
 			super("Abgr",4,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.ABGR,compression,byteOrder,image.length,image[0].length);
 			
@@ -1375,20 +1523,23 @@ public class ImageReaderTest {
 			super("Barg",4,8,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.BARG,compression,byteOrder,image.length,image[0].length);
 			
@@ -1437,20 +1588,23 @@ public class ImageReaderTest {
 			super("RgbPlanar",3,8,3);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+				return false;
+			
 			return true;
 		}
 		
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
@@ -1500,7 +1654,7 @@ public class ImageReaderTest {
 			super("Bitmap",1,1,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
 				return false;
@@ -1508,10 +1662,13 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 
+			if (stripped)
+				return false;
+			
 			return true;
 		}
 
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.BITMAP,compression,byteOrder,image.length,image[0].length);
 			
@@ -1571,19 +1728,23 @@ public class ImageReaderTest {
 			super("Rgb48",3,16,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.LZW_WITH_DIFFERENCING)
 				return false;
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
+				return false;
+
+			// this class always works with strips
+			if (stripped == false)
 				return false;
 			
 			return true;
 		}
 
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB48,compression,byteOrder,image.length,image[0].length);
 			
@@ -1593,7 +1754,6 @@ public class ImageReaderTest {
 			for (int i = 0; i < image.length; i++)
 			{
 				fi.stripLengths[i] = 6*image[0].length;
-				// was this and seemed to work fi.stripOffsets[i] = 6*i;
 				fi.stripOffsets[i] = (i == 0 ? 0 : (fi.stripOffsets[i-1] + fi.stripLengths[i]));
 			}
 			
@@ -1652,19 +1812,23 @@ public class ImageReaderTest {
 			super("Rgb48Planar",3,16,3);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression == FileInfo.COMPRESSION_UNKNOWN)
 				return false;
-			if (compression == FileInfo.JPEG)  // TODO: remove this restriction when working
+			if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 				return false;
 			if (compression == FileInfo.PACK_BITS)
+				return false;
+			
+			// this method always exercises strips
+			if (stripped == false)
 				return false;
 			
 			return true;
 		}
 
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB48_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
@@ -1803,7 +1967,7 @@ public class ImageReaderTest {
 			super("Gray12Unsigned",1,12,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
 				return false;
@@ -1811,10 +1975,13 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 			
+			if (stripped)
+				return false;
+			
 			return true;
 		}
 
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY12_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
@@ -1848,7 +2015,7 @@ public class ImageReaderTest {
 			super("Gray24Unsigned",1,24,1);
 		}
 		
-		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes)
+		boolean canDoImageCombo(int compression, ByteOrder byteOrder, int headerBytes, boolean stripped)
 		{
 			if (compression != FileInfo.COMPRESSION_NONE)
 				return false;
@@ -1856,10 +2023,13 @@ public class ImageReaderTest {
 			if (byteOrder == ByteOrder.INTEL)
 				return false;
 			
+			if (stripped)
+				return false;
+
 			return true;
 		}
 
-		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, FileInfo fi)
+		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean asStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.GRAY24_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
@@ -1960,35 +2130,27 @@ public class ImageReaderTest {
 	@Test
 	public void testReadPixelsFromInputStream()
 	{
-		// TODO : not working with simple map containing a large value
-		gray32IntTester.runTest(new long[][] {{0xffffffffffffL}},FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		
-		// TODO: jpeg not working on simple map
-		//rgbTester.runTest(BaseImage1x1,FileInfo.JPEG,ByteOrder.DEFAULT,0);
-
 		// run test on basic functionality for each pixel type
 		//   these end up getting run twice but these next calls simplify debugging
-		gray8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		color8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray16SignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray16UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		//TODO: this not working with 48 bit map
-		gray32IntTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		//TODO: this not working with 48 bit map
-		gray32UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray32FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray64FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		rgbTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		bgrTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		argbTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		abgrTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		bargTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		rgbPlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		bitmapTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		rgb48Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		rgb48PlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray12UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
-		gray24UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0);
+		gray8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		color8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray16SignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray16UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray32IntTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray32UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray32FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray64FloatTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		rgbTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		bgrTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		argbTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		abgrTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		bargTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		rgbPlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		bitmapTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		rgb48Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		rgb48PlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray12UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
+		gray24UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.DEFAULT,0,false);
 
 		// now run all legal combos of input parameters
 		for (FormatTester tester : Testers)
@@ -1996,7 +2158,8 @@ public class ImageReaderTest {
 				for (int compression : CompressionModes)
 					for (ByteOrder byteOrder : ByteOrders)
 						for (int headerOffset : HeaderOffsets)
-							tester.runTest(image,compression,byteOrder,headerOffset);
+							for (boolean stripped : EncodeAsStrips)
+								tester.runTest(image,compression,byteOrder,headerOffset,stripped);
 	}
 	
 	// since readPixels heavily tested above this method will do minimal testing
@@ -2033,12 +2196,22 @@ public class ImageReaderTest {
 
 	@Test
 	public void testReadPixelsFromURL() {
-		// don't really know a good way to test this
-		//   it looks like you need to have a inet resource to do this
-		//   I could do a file url that points to a file of bytes in a known location but that is a bit troublesome
-		//   Maybe we need an ij-tests data directory to store data files that we can locate for testing
-		// it looks like you need to setup a correct FileInfo that describes data in the remote file and you
-		//   are just reading basic pixel data
+
+		ImageReader rdr = new ImageReader(new FileInfo());
+
+		// malformed URL
+		assertNull(rdr.readPixels("ashdjjfj"));
+		
+		// stream that can't be opened
+		assertNull(rdr.readPixels("http://fred.joe.john.edu/zoobat/ironman/guppy.tiff"));
+
+		// another stream that can't be opened
+		assertNull(rdr.readPixels("http://www.yahoo.com/ooglywooglygugglychoogly.tiff"));
+		
+		// not testing positive case:
+		//   - underlying code simply sets up a stream and calls readPixels() on it. We've thoroughly tested this above.
+		//   - don't have a file of pixels sitting on a web server somewhere to access and don't want this dependency.
+		//      could do a file:/// url to ij-tests data directory and setup FileInfo beforehand 
 	}
 
 	@Test
