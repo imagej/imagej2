@@ -188,7 +188,11 @@ public class ImageReader {
 			if (fi.compression==FileInfo.LZW_WITH_DIFFERENCING) {
 				for (int b=base; b<pmax; b++) {
 					pixels[b] += last;
-					last = b % fi.width == fi.width - 1 ? 0 : pixels[b];
+					if (fi.fileType == FileInfo.GRAY16_SIGNED)
+						last = b % fi.width == fi.width - 1 ? 0 : (short)(pixels[b] - 32768);
+					else
+						last = b % fi.width == fi.width - 1 ? 0 : pixels[b];
+						
 				}
 			}
 			base += pixelsRead;
