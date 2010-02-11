@@ -2,55 +2,30 @@ package ij.process;
 
 import static org.junit.Assert.*;
 
+import ij.ImageStack;
+
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.List;
-import java.awt.Point;
+
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
+
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ConvolveOp;
-import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Kernel;
-import java.awt.image.Raster;
-import java.awt.image.RescaleOp;
+
 import java.awt.image.SampleModel;
-import java.io.BufferedReader;
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
-import loci.formats.FormatException;
-import loci.formats.gui.BufferedImageReader;
-import loci.plugins.util.ImagePlusReader;
-
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
-import com.sun.tools.javac.util.ByteBuffer;
 
 public class ColorProcessorTest {
 
@@ -603,8 +578,6 @@ public class ColorProcessorTest {
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(width, height+1), 0.0);
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(width+1, height), 0.0);
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(width, height), 0.0);
-
-		int i = 0;
 		
 		//check each component
 		for(int y = 0; y < height-1; y++)
@@ -633,7 +606,7 @@ public class ColorProcessorTest {
 	{
 		return (byte) (integer >> (3 - position) * 8 );
 	}
-	//TODO: Finish the interpolated test
+
 	@Test
 	public void testGetPixelInterpolated() 
 	{
@@ -644,7 +617,6 @@ public class ColorProcessorTest {
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(0, -1), 0.0);
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(width, height+1), 0.0);
 		assertEquals( 0.0, testColorProcessor.getPixelInterpolated(width+1, height), 0.0);
-		int i = 0;
 		
 		//check each component
 		for(int y = 0; y < height-1; y++)
@@ -685,7 +657,6 @@ public class ColorProcessorTest {
 	public void testGetPixelValue() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		int index = 0;
 		
 		//check each component
 		for(int y = 0; y < height; y++)
@@ -694,9 +665,13 @@ public class ColorProcessorTest {
 			for(int x = 0; x < width; x++)
 			{
 				float testValue =  testColorProcessor.getPixelValue( x, y ) ;
-			
-				//TODO: Implement test
-				//assertEquals( imageIntData[index++], testValue, 0.0 );
+				int refValue = testColorProcessor.getPixel(x, y);
+				int[] refARGB = getARGB( refValue );
+				double[] refWeights = testColorProcessor.getWeightingFactors();
+				
+				float refFLOAT = (float) ( refARGB[1] * refWeights[0] + refARGB[2] * refWeights[1] + refARGB[3] * refWeights[2] );
+
+				assertEquals( refFLOAT, testValue, 0.0 );
 			}
 		} 
 	}
@@ -1074,7 +1049,7 @@ public class ColorProcessorTest {
 	public void testResizeIntInt() 
 	{
 		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		refColorProcessor.setInterpolationMethod(refColorProcessor.BICUBIC);
+		refColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
 		ColorProcessor testColorProcessor = (ColorProcessor) refColorProcessor.resize(width*3, height*3);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Bicubic 5x", 300);
 		
@@ -1099,7 +1074,7 @@ public class ColorProcessorTest {
 	public void testRotate() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod(testColorProcessor.BICUBIC);
+		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
 		testColorProcessor.rotate(19.99);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Rotate 19.99 degrees", 300);
 		
@@ -1190,7 +1165,7 @@ public class ColorProcessorTest {
 	public void testConvolve() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod(testColorProcessor.BICUBIC);
+		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
 	    float[] kernel = {-1,-1,-1,-1,8,-1,-1,-1,-1};
 		testColorProcessor.convolve( kernel, 3, 3);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Convolve", 300);
@@ -1216,7 +1191,7 @@ public class ColorProcessorTest {
 	public void testAutoThreshold() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod(testColorProcessor.BICUBIC);
+		testColorProcessor.setInterpolationMethod( ColorProcessor.BICUBIC );
 		testColorProcessor.autoThreshold();
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "AutoThreshold", 300);
 		
@@ -1280,19 +1255,71 @@ public class ColorProcessorTest {
 		//does nothing
 	}
 
+	/**
+	 * Gives 0-255 mapped ARGB in 4 element int array when given an ARGB packed int
+	 * @param combinedInt - ARGB packed int
+	 * @return
+	 */
+	public static int[] getARGB(int combinedInt)
+	{
+		int[] argbIntArray = new int[4];
+		 
+		argbIntArray[0] = ( combinedInt & 0xff000000 ) >> 24;
+		argbIntArray[1] = ( combinedInt & 0x00ff0000) >> 16;
+		argbIntArray[2] = ( combinedInt & 0x0000ff00) >> 8;
+		argbIntArray[3] = combinedInt & 0x000000ff;
+		
+		return argbIntArray;
+	}
+	
+	/**
+	 * returns true if only the RGB color components are the same binary value
+	 * prints out the results if the values do not match
+	 * @param referenceInt 4Byte value representing ARGB reference values
+	 * @param testInt 4Byte value representing ARGB reference values
+	 * @return
+	 */
+	public static boolean compareARGBInts(int referenceInt, int testInt)
+	{
+		int refAlpha, refRed, refBlue, refGreen, testAlpha, testRed, testBlue, testGreen;
+		refAlpha = ( referenceInt & 0xff000000 ) >> 24;
+		refRed = ( referenceInt & 0x00ff0000) >> 16;
+		refGreen = ( referenceInt & 0x0000ff00) >> 8;
+		refBlue = referenceInt & 0x000000ff;
+		
+		testAlpha = ( testInt & 0xff000000 ) >> 24;
+		testRed = ( testInt & 0x00ff0000 ) >> 16;
+		testGreen = ( testInt & 0x0000ff00 ) >> 8;
+		testBlue = testInt & 0x000000ff;
+		
+		boolean results = false;
+		
+		if ( refRed == testRed && refGreen == testGreen && refBlue == testBlue )
+		{	results = true; }
+		else
+		{
+			System.out.println("Reference alpha = " + refAlpha + " .. test alpha = " + testAlpha );			
+			System.out.println("Reference red = " + refRed + " .. test red = " + testRed );
+			System.out.println("Reference green = " + refGreen + " .. test green = " + testGreen );
+			System.out.println("Reference blue = " + refBlue + " test blue = " + testBlue );	
+		}
+				
+		return results;
+	}
 	@Test
 	public void testColorProcessorImage() 
 	{
 		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
 		ColorProcessor testColorProcessor = new ColorProcessor( refColorProcessor.createImage() );
 		
+		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "test color image from AWT Image type", 300);
+		
 		for(int y = 0; y < refColorProcessor.height; y++)
 		{
 			for(int x = 0; x < refColorProcessor.width; x++)
 			{
-				int result = testColorProcessor.getPixel(x, y);
-				
-				assertEquals( refColorProcessor.getPixel(x, y),  result  );
+				boolean results = compareARGBInts( refColorProcessor.getPixel(x, y), testColorProcessor.getPixel(x, y) );
+				assertEquals( true, results );
 			}
 		}
 	}
@@ -1301,8 +1328,8 @@ public class ColorProcessorTest {
 	public void testColorProcessorIntInt() 
 	{
 		ColorProcessor refColorProcessor = new ColorProcessor( width, height );
-		assertEquals( refColorProcessor.getWidth(),  width  );
-		assertEquals( refColorProcessor.getHeight(), height );
+		assertEquals( width, refColorProcessor.getWidth() );
+		assertEquals( height, refColorProcessor.getHeight() );
 	}
 
 	@Test
@@ -1314,7 +1341,8 @@ public class ColorProcessorTest {
 			//check each component
 			for(int x = 0; x < width; x++)
 			{
-				assertEquals( imageIntData[y*width+x], testColorProcessor.get(y*width+x), 0.0);
+				boolean results = compareARGBInts( imageIntData[y*width+x], testColorProcessor.get(y*width+x));
+				assertEquals( true, results );
 			}
 		}	
 	}
@@ -1322,102 +1350,421 @@ public class ColorProcessorTest {
 	@Test
 	public void testCreateColorModel() 
 	{
-		fail("Not yet implemented");
+		//tested in DirectColorModelTest.java
+		
 	}
 
 	@Test
-	public void testCreateBufferedImage() {
-		fail("Not yet implemented");
+	public void testCreateBufferedImage() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		BufferedImage testBufferedImage = (BufferedImage) testColorProcessor.createBufferedImage();
+		
+		int[] refImageArray = getRefImageArray();
+		
+		for(int y = 0; y < height; y++)
+		{
+			//check each component
+			for(int x = 0; x < width; x++)
+			{
+				boolean results = compareARGBInts( refImageArray[y*width+x], testBufferedImage.getRGB(x, y) );
+				assertEquals( true, results );
+			}
+		}	
 	}
 
 	@Test
-	public void testGetRGBSampleModel() {
-		fail("Not yet implemented");
+	public void testGetRGBSampleModel() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		SampleModel testSampleModel = testColorProcessor.getRGBSampleModel();
+		assertEquals( width, testSampleModel.getWidth() );
+		assertEquals( height, testSampleModel.getHeight() );
+		
 	}
 
 	@Test
-	public void testGetColor() {
-		fail("Not yet implemented");
+	public void testGetColor() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		
+		int[] refImageArray = getRefImageArray() ;
+		
+		for(int y = 0; y < height; y++)
+		{
+			//check each component
+			for(int x = 0; x < width; x++)
+			{
+				int[] argbComponentArray = getARGB( refImageArray[width*y+x] );
+				Color refColor = new Color( argbComponentArray[1], argbComponentArray[2], argbComponentArray[3], argbComponentArray[0] );
+				Color testColor = testColorProcessor.getColor(x, y);
+				assertEquals( refColor.getRed(), testColor.getRed() );
+				assertEquals( refColor.getGreen(), testColor.getGreen() );
+				assertEquals( refColor.getBlue(), testColor.getBlue() );
+			}
+		}	
+		
 	}
 
 	@Test
-	public void testSetMinAndMaxDoubleDoubleInt() {
-		fail("Not yet implemented");
+	public void testSetMinAndMaxDoubleDoubleInt() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.setMinAndMax( 100,200 );
+		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), " setminandmax to 100 - 200", 3000);
+		
+		//test single pixel
+		assertEquals( 255, testColorProcessor.getPixel(width/2, height/2, null)[0] );	
+		assertEquals( 255, testColorProcessor.getPixel(width/2, height/2, null)[1] );	
+		assertEquals( 189, testColorProcessor.getPixel(width/2, height/2, null)[2] );
+		
 	}
 
 	@Test
-	public void testGetHSB() {
-		fail("Not yet implemented");
+	public void testGetHSB() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		
+		byte[] hue = new byte[ width * height ]; byte[] saturation = new byte[ width * height ]; byte[] brightness = new byte[ width * height ];
+		testColorProcessor.getHSB(hue, saturation, brightness);
+		assertEquals( 0, hue[ (width/2) * (height/2) ] );  
+		assertEquals( -56, saturation[ (width/2) * (height/2) ] ); 
+		assertEquals( 93, brightness[ (width/2) * (height/2) ] ); 
+		
 	}
 
 	@Test
-	public void testGetHSBStack() {
-		fail("Not yet implemented");
+	public void testGetHSBStack() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		ImageStack imageStack = testColorProcessor.getHSBStack();
+		
+		byte[] hue = new byte[ width * height ]; byte[] saturation = new byte[ width * height ]; byte[] brightness = new byte[ width * height ];
+		testColorProcessor.getHSB(hue, saturation, brightness);
+		
+		byte[] testHue = (byte[]) imageStack.getPixels(1);
+		byte[] testSaturation = (byte[]) imageStack.getPixels(2);
+		byte[] testBrightness = (byte[]) imageStack.getPixels(3);
+		
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				assertEquals( hue[y*height+x], testHue[y*height+x] );
+				assertEquals( saturation[y*height+x], testSaturation[y*height+x] );
+				assertEquals( brightness[y*height+x], testBrightness[y*height+x] );
+			}
+		}
+
 	}
 
 	@Test
-	public void testGetBrightness() {
-		fail("Not yet implemented");
+	public void testGetBrightness() 
+	{
+		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		FloatProcessor testFloatProcessor = refColorProcessor.getBrightness();
+		float[] testBrightnessValues = (float[]) testFloatProcessor.getPixels();
+		
+		int[] refImageArray = getRefImageArray();
+		
+		//find the reference values
+		
+		
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				int[] refPixelValue = getARGB( refImageArray[y*width+x] );
+				
+				int r = refPixelValue[1];
+				int g = refPixelValue[2];
+				int b = refPixelValue[3];
+				float refBrightness =  ( Color.RGBtoHSB( r, g, b, null) )[2];
+				
+				assertEquals( refBrightness, testBrightnessValues[y*width+x], 0.0 );
+			}
+		}
+		
+		
 	}
 
 	@Test
-	public void testGetRGB() {
-		fail("Not yet implemented");
+	public void testGetRGB() 
+	{
+		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		byte[] r = new byte[width*height];
+		byte[] g = new byte[width*height];
+		byte[] b = new byte[width*height];
+		
+		refColorProcessor.getRGB(r, g, b);
+		
+		int[] refImageArray = getRefImageArray();
+		
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				int[] refPixelValue = getARGB( refImageArray[y*width+x] );
+				
+				assertEquals( refPixelValue[1], r[y*width+x]&0xff, 0.0 );
+				assertEquals( refPixelValue[2], g[y*width+x]&0xff, 0.0 );
+				assertEquals( refPixelValue[3], b[y*width+x]&0xff, 0.0 );
+				
+			}
+		}
 	}
 
 	@Test
-	public void testSetRGB() {
-		fail("Not yet implemented");
+	public void testSetRGB() 
+	{
+		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		byte[] r = new byte[width*height];
+		byte[] g = new byte[width*height];
+		byte[] b = new byte[width*height];
+		
+		refColorProcessor.getRGB(r, g, b);
+		
+		
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height );
+		testColorProcessor.setRGB(r, g, b);
+		
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				boolean results = compareARGBInts( refColorProcessor.getPixel(x, y), testColorProcessor.getPixel(x, y)  );
+				assertEquals( true, results );	
+			}
+		}
+		
+		
+	}
+
+	public static int byteToInt(byte b)
+	{
+		int i = ( (b < 0) ? 256 + b : b );
+		return i;
+	}
+	
+	@Test
+	public void testSetHSB() 
+	{
+		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		byte[] hue = new byte[ width * height ]; byte[] saturation = new byte[ width * height ]; byte[] brightness = new byte[ width * height ];
+		refColorProcessor.getHSB(hue, saturation, brightness);
+		
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height );
+		testColorProcessor.setHSB(hue, saturation, brightness);
+		
+	
+		int[] testARGB = getARGB( testColorProcessor.getPixel(width/2, width/2) );
+				
+		assertEquals( 110, testARGB[1] );
+		assertEquals( 62, testARGB[2] );
+		assertEquals( 62, testARGB[3] );
 	}
 
 	@Test
-	public void testSetHSB() {
-		fail("Not yet implemented");
+	public void testSetBrightness() 
+	{
+		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		FloatProcessor refFloatProcessor = refColorProcessor.getBrightness();
+		byte[] hue = new byte[ width * height ]; byte[] saturation = new byte[ width * height ]; byte[] brightness = new byte[ width * height ];
+		refColorProcessor.getHSB(hue, saturation, brightness);
+		
+		
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height );
+		testColorProcessor.setBrightness( refFloatProcessor );
+		byte[] testHue = new byte[ width * height ]; byte[] testSaturation = new byte[ width * height ]; byte[] testBrightness = new byte[ width * height ];	
+		testColorProcessor.getHSB(testHue, testSaturation, testBrightness );
+		
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				assertEquals( brightness[width*y+x], testBrightness[width*y+x] );	
+			}
+		}
 	}
 
 	@Test
-	public void testSetBrightness() {
-		fail("Not yet implemented");
+	public void testApplyTableIntArrayInt() 
+	{
+		final int[] rampLut = new int[256];
+		
+		for(int i = 0; i < rampLut.length; i++)
+		{
+			rampLut[i]=i;
+		}
+		
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.applyTable( rampLut );
+			
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				int[] testARGB = getARGB( testColorProcessor.getPixel(x, y) );
+				int[] refARGB = getARGB( imageIntData[width*y+x] );
+				
+				Color testColor = new Color( testARGB[1], testARGB[2], testARGB[3] );
+				Color refColor = new Color( refARGB[1], refARGB[2], refARGB[3] );
+				assertEquals( testColor, refColor );	
+			}
+		}
 	}
 
 	@Test
-	public void testApplyTableIntArrayInt() {
-		fail("Not yet implemented");
+	public void testFilterRGBIntDouble() 
+	{
+		//tested in testFilterRGBIntDoubleDouble()
 	}
 
 	@Test
-	public void testFilterRGBIntDouble() {
-		fail("Not yet implemented");
+	public void testFilterRGBIntDoubleDouble() 
+	{		
+	 //case RGB_NOISE:
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_NOISE, 99.0 );
+		int refInt = (0x00 << 24) | (0x58 << 16) | (0xb3 << 8) | (0xff);
+		boolean results; // = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		//assertEquals( false, false );	
+		
+     //case RGB_MEDIAN:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_MEDIAN, 10.0 );
+		refInt = (0x00 << 24) | (0xe7 << 16) | (0xd2 << 8) | (0xb3);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_FIND_EDGES:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_FIND_EDGES, 10.0 );
+		refInt = (0x00 << 24) | (0x15 << 16) | (0x0c << 8) | (0x0c);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+  
+     //case RGB_ERODE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_ERODE, 10.0 );
+		refInt = (0x00 << 24) | (0xf8 << 16) | (0xe2 << 8) | (0xc3);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_DILATE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_DILATE, 10.0 );
+		refInt = (0x00 << 24) | (0xd1 << 16) | (0xba << 8) | (0x9b);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_THRESHOLD:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_THRESHOLD, 10.0 );
+		refInt = (0x00 << 24) | (0xff << 16) | (0xff << 8) | (0xff);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_ROTATE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_ROTATE, 10.0 );
+		refInt = (0x00 << 24) | (0xe4 << 16) | (0xcd << 8) | (0xae);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_SCALE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_SCALE, 10.0 );
+		refInt = (0x00 << 24) | (0x9a << 16) | (0x51 << 8) | (0x28);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_RESIZE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_RESIZE, 10.0 );
+		refInt = (0x00 << 24) | (0xe4 << 16) | (0xcd << 8) | (0xae);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
+
+     //case RGB_TRANSLATE:
+		testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.filterRGB( ColorProcessor.RGB_TRANSLATE, 10.0 );
+		refInt = (0x00 << 24) | (0xde << 16) | (0xc3 << 8) | (0xa6);
+		results = compareARGBInts( refInt, testColorProcessor.getPixel(width/2, height/2)  );
+		assertEquals( true, results );	
 	}
 
 	@Test
-	public void testFilterRGBIntDoubleDouble() {
-		fail("Not yet implemented");
+	public void testGetInterpolatedRGBPixel() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		int testInt = testColorProcessor.getInterpolatedRGBPixel(width/3, height/3);
+		int refInt = (0x00 << 24) | (0xb3 << 16) | (0x6e << 8) | (0x4f);
+		boolean results = compareARGBInts( refInt, testInt  );
+		assertEquals( true, results );	
 	}
 
 	@Test
-	public void testGetInterpolatedRGBPixel() {
-		fail("Not yet implemented");
+	public void testMakeThumbnail() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		ImageProcessor testThumbnail = testColorProcessor.makeThumbnail(width/2, height/2, 1.0);
+		int testInt = testThumbnail.getPixel( testThumbnail.getWidth()/2, testThumbnail.getHeight()/2 );
+		int refInt = (0x00 << 24) | (0xe9 << 16) | (0xd2 << 8) | (0xb3);
+		boolean results = compareARGBInts( refInt, testInt );
+		assertEquals( true, results );	
 	}
 
 	@Test
-	public void testMakeThumbnail() {
-		fail("Not yet implemented");
+	public void testGetHistogramImageProcessor() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		final int[] refHistogram = {0,5,18,63,216,400,363,419,513,246,348,224,184,181,163,152,137,129,140,116,100,95,101,108,68,92,79,87,96,83,77,86,94,116,97,101,88,84,90,102,105,79,82,105,96,99,104,107,101,96,96,96,113,89,112,91,100,101,113,107,96,77,95,103,102,107,94,98,87,124,105,101,109,95,97,101,120,97,80,92,112,88,80,92,86,90,72,85,75,89,103,78,69,74,73,83,66,67,62,61,56,70,72,88,78,89,74,77,85,65,72,62,69,63,66,68,69,75,59,59,49,67,54,62,51,46,37,54,41,47,45,51,44,39,40,39,24,34,32,27,26,34,30,34,27,38,21,40,34,41,34,29,27,28,28,27,35,39,27,27,23,22,19,26,27,24,25,20,20,21,23,16,26,24,30,37,27,19,23,16,30,20,18,26,25,20,28,18,32,20,31,30,27,19,24,33,30,29,18,30,30,23,20,25,24,23,23,27,25,18,25,30,26,24,24,14,23,24,29,23,19,14,18,6,7,11,14,12,8,7,7,6,2,8,6,3,5,6,5,1,2,4,0,3,0,3,2,2,0,0,0,0,0,0,0,0};
+		byte[] testPattern = new byte[width * height];
+		for(int h=0; h<height;h++)
+			for(int w=0; w<width;w++)
+				if(h%2==0&&w%2==0) testPattern[h * width + w] = (byte)0xff;
+		
+		ImageProcessor mask = new ByteProcessor( width, height, testPattern, null );
+		
+		
+		int[] histogram = testColorProcessor.getHistogram(mask);
+		
+		for(int i=0;i<refHistogram.length; i++)
+			assertEquals( refHistogram[i], histogram[i] );		
 	}
 
 	@Test
-	public void testGetHistogramImageProcessor() {
-		fail("Not yet implemented");
+	public void testSetWeightingFactors() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		testColorProcessor.setWeightingFactors(0.1, 0.4, 0.5);
+		//displayGraphicsInNewJFrame( testColorProcessor.getBufferedImage(), "weighting low red, and high blue/green", 3000 );
+		
+		final int[] refHistogram = {1,74,151,480,309,755,624,502,357,263,229,210,175,143,163,158,134,128,147,148,139,157,139,128,137,128,134,142,144,142,132,151,140,168,139,122,124,142,130,131,118,133,126,122,114,124,119,103,121,109,117,128,114,112,107,110,113,126,112,100,107,101,92,98,96,80,80,94,89,113,86,103,87,94,97,74,89,75,67,87,82,75,67,81,70,58,60,60,60,64,45,53,66,51,47,42,45,34,31,37,30,32,33,44,35,28,41,38,36,41,30,26,29,27,29,21,26,26,28,22,22,26,32,25,25,29,14,21,32,27,29,27,26,39,20,22,25,28,25,34,17,17,26,28,18,27,22,17,22,12,21,21,14,24,26,24,22,23,16,22,15,22,22,24,14,15,22,12,18,13,20,26,29,25,28,16,26,22,29,25,24,11,25,26,26,26,31,15,30,20,28,22,23,20,19,22,16,25,24,21,17,24,22,18,25,18,21,14,15,23,14,14,14,8,7,10,6,9,11,13,4,4,2,5,7,4,4,2,5,4,3,3,2,1,2,1,1,4,1,0,1,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0};
+		byte[] testPattern = new byte[width * height];
+		for(int h=0; h<height;h++)
+			for(int w=0; w<width;w++)
+				if(h%2==0&&w%2==0) testPattern[h * width + w] = (byte)0xff;
+		
+		ImageProcessor mask = new ByteProcessor( width, height, testPattern, null );
+		
+		
+		int[] histogram = testColorProcessor.getHistogram(mask);
+		
+		for(int i=0;i<refHistogram.length; i++)
+			assertEquals( refHistogram[i], histogram[i] );	
 	}
 
 	@Test
-	public void testSetWeightingFactors() {
-		fail("Not yet implemented");
+	public void testGetWeightingFactors() 
+	{
+		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
+		double[] refWeights = {0.1, 0.2, 0.8};
+		testColorProcessor.setWeightingFactors( refWeights[0], refWeights[1], refWeights[2] );
+		double[] results = testColorProcessor.getWeightingFactors();
+		
+		for(int i=0;i<refWeights.length; i++)
+			assertEquals( refWeights[i], results[i], 0.0 );			
 	}
-
-	@Test
-	public void testGetWeightingFactors() {
-		fail("Not yet implemented");
-	}
-
 }
