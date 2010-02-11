@@ -32,7 +32,11 @@ import loci.formats.codec.JPEGCodec;
 //     JPEG code in place but failing tests - this is due to the fact that ImageJ uses the JDK's inbuilt JPEG support which is lossy.
 //       I think for now we'll not test it (we'll assume Java knows what its doing). JPEG capabilities blocked in canDoImageCombo()
 //       below for appropriate classes.
-//   could make some classes static
+//     Planar pixel formats below pass data in one strip. RgbPlanar does one strip for all three planes. Rgb48Planar does one strip
+//       per plane. ImageReader inspections show that the written code there could conceivably handle multiple strips per plane. However
+//       this may be an oversight in the original source code. Since the readPixels() subcase that reads these formats just reads the
+//       underlying 8 and 16 bit subcases the strip lengths and offsets are reused and thus the strips have to be encoded with a fixed
+//       size as big as the maximum compressed strip size. I doubt people are doing this but might need to test this.
 
 public class ImageReaderTest {
 
@@ -110,30 +114,15 @@ public class ImageReaderTest {
 	
 	static final float FLOAT_TOL = 0.00001f;
 
-	interface PackbitsEncoder{
-		byte[] encode(byte[] input);
-	}
-	
-	private NaivePackbitsEncoder packbitsEncoderNaive = new NaivePackbitsEncoder();
-	private RealPackbitsEncoder packbitsEncoderReal = new RealPackbitsEncoder();
-	private LzwEncoder lzwEncoder = new LzwEncoder();
-	private LzwDiffEncoder lzwDiffEncoder = new LzwDiffEncoder();
-	private TwelveBitEncoder twelveBitEncoder = new TwelveBitEncoder();
-	private JpegEncoder jpegEncoder = new JpegEncoder();
-	
-	// swap this as desired for debugging
-	private PackbitsEncoder packbitsEncoder = packbitsEncoderReal;
-//	private PackbitsEncoder packbitsEncoder = packbitsEncoderNaive;
-
-	// NaivePackBitsEncoder is designed with two things in mind
+	// PackbitsEncoderNaive is designed with two things in mind
 	//   - test ImageReader's ability to handle more than one style of packbits encoded data
 	//   - stand in for RealPackBitsEncoder if we think it is ever faulty
 	
-	class NaivePackbitsEncoder implements PackbitsEncoder {
+	static class PackbitsEncoderNaive {
 		
-		NaivePackbitsEncoder() {}
+		PackbitsEncoderNaive() {}
 		
-		public byte[] encode(byte[] input)
+		static public byte[] encode(byte[] input)
 		{
 			byte[] output = new byte[input.length*2];
 			int i = 0;
@@ -148,12 +137,12 @@ public class ImageReaderTest {
 	
 	// RealPackBitsEncoder is needed to test packbits compression in ImageReader::readPixels()
 	
-	class RealPackbitsEncoder implements PackbitsEncoder {
+	static class PackbitsEncoder {
 		
-		RealPackbitsEncoder() {}
+		PackbitsEncoder() {}
 
 		// one byte lookahead
-		public byte[] encode(byte[] input)
+		static public byte[] encode(byte[] input)
 		{
 			int inputLen = input.length;
 
@@ -295,7 +284,7 @@ public class ImageReaderTest {
 			return output.toByteArray();
 		}
 
-		private byte[] xOnes(int x)
+		static private byte[] xOnes(int x)
 		{
 			byte[] output = new byte[x];
 			for (int i = 0; i < x; i++)
@@ -303,7 +292,7 @@ public class ImageReaderTest {
 			return output;
 		}
 		
-		private void runTests()
+		static private void runTests()
 		{
 			assertArrayEquals(new byte[]{},encode(new byte[]{}));                         // {} case
 			assertArrayEquals(new byte[]{0,0},encode(new byte[]{0}));                     // {a} case
@@ -338,10 +327,10 @@ public class ImageReaderTest {
 		}
 	}
 
-	class JpegEncoder {
+	static class JpegEncoder {
 		JpegEncoder() {}
 		
-		public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
+		static public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
 		{
 			byte[] output = null;
 			try {
@@ -362,11 +351,11 @@ public class ImageReaderTest {
 		}
 	}
 	
-	class LzwEncoder {
+	static class LzwEncoder {
 		
 		LzwEncoder() {}
 		
-		public byte[] encode(byte[] input)
+		static public byte[] encode(byte[] input)
 		{
 			byte[] output = null;
 			try {
@@ -379,14 +368,14 @@ public class ImageReaderTest {
 		}
 	}
 	
-	class LzwDiffEncoder {
+	static class LzwDiffEncoder {
 		
 		LzwDiffEncoder() {}
 		
 		// unfortunately this method needed to be tweaked outside the overall design to accommodate intel byte orders for 16 bit
 		//   sample depths. We could eliminate the extra code at the expense of redesigning some of the other classes.
 		
-		private byte[] differentiate(byte[] input, PixelFormat format, FileInfo fi)
+		static private byte[] differentiate(byte[] input, PixelFormat format, FileInfo fi)
 		{
 			int offset = format.numSamples();
 			
@@ -439,21 +428,21 @@ public class ImageReaderTest {
 			return data;
 		}
 		
-		public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
+		static public byte[] encode(byte[] input, PixelFormat format, FileInfo fi)
 		{
 			input = differentiate(input, format, fi);
 			
-			byte[] output = lzwEncoder.encode(input);
+			byte[] output = LzwEncoder.encode(input);
 
 			return output;
 		}
 	}
 
-	class TwelveBitEncoder
+	static class TwelveBitEncoder
 	{
 		TwelveBitEncoder() {}
 		
-		private byte[] encode(long[][] inPix)
+		static private byte[] encode(long[][] inPix)
 		{
 			int rows = inPix.length;
 			int cols = inPix[0].length;
@@ -654,54 +643,6 @@ public class ImageReaderTest {
 		fi.width = cols;
 	}
 	
-	private byte[] intelSwap(byte[] input, int everyX)
-	{
-		if (everyX == 0)
-			return input; // nothing to do
-		
-		byte[] output = new byte[input.length];
-		
-		for (int i = 0; i < input.length; i += everyX)
-			for (int j = 0; j < everyX; j++)
-				output[i+j] = input[i+everyX-1-j];
-		
-		return output;
-	}
-
-	private byte[] compress(PixelFormat format, FileInfo fi, byte[] input)
-	{
-		byte[] compressed = input;
-		
-		if (fi.compression == FileInfo.LZW)
-			compressed = lzwEncoder.encode(input);
-		else if (fi.compression == FileInfo.LZW_WITH_DIFFERENCING)
-			compressed = lzwDiffEncoder.encode(input,format,fi);
-		else if (fi.compression == FileInfo.PACK_BITS)
-			compressed = packbitsEncoder.encode(input);
-		else if (fi.compression == FileInfo.JPEG)
-			compressed = jpegEncoder.encode(input,format,fi);
-		else
-			; // do nothing
-
-		return compressed;
-	}
-	
-	private byte[] prependFakeHeader(int headerBytes, byte[] pixData)
-	{
-		byte[] header = new byte[headerBytes];
-		byte[] output = new byte[header.length + pixData.length];
-		System.arraycopy(header,0,output,0,header.length);
-		System.arraycopy(pixData,0,output,header.length,pixData.length);
-		return output;
-	}
-	
-	private byte[] attachHeader(FileInfo fi, int headerBytes, byte[] pixData)
-	{
-		fi.offset = headerBytes;
-		fi.longOffset = headerBytes;
-		return prependFakeHeader(headerBytes,pixData);	
-	}
-	
 	class FormatTester {
 		
 		PixelFormat theFormat;
@@ -737,11 +678,59 @@ public class ImageReaderTest {
 		}
 	}
 	
-	class PixelArranger
+	static class PixelArranger
 	{
 		PixelArranger() {}
 		
-		byte[] arrangeInStrips(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
+		static byte[] intelSwap(byte[] input, int everyX)
+		{
+			if (everyX == 0)
+				return input; // nothing to do
+			
+			byte[] output = new byte[input.length];
+			
+			for (int i = 0; i < input.length; i += everyX)
+				for (int j = 0; j < everyX; j++)
+					output[i+j] = input[i+everyX-1-j];
+			
+			return output;
+		}
+
+		static byte[] compress(PixelFormat format, FileInfo fi, byte[] input)
+		{
+			byte[] compressed = input;
+			
+			if (fi.compression == FileInfo.LZW)
+				compressed = LzwEncoder.encode(input);
+			else if (fi.compression == FileInfo.LZW_WITH_DIFFERENCING)
+				compressed = LzwDiffEncoder.encode(input,format,fi);
+			else if (fi.compression == FileInfo.PACK_BITS)
+				compressed = PackbitsEncoder.encode(input);
+			else if (fi.compression == FileInfo.JPEG)
+				compressed = JpegEncoder.encode(input,format,fi);
+			else
+				; // do nothing
+
+			return compressed;
+		}
+		
+		static private byte[] prependFakeHeader(int headerBytes, byte[] pixData)
+		{
+			byte[] header = new byte[headerBytes];
+			byte[] output = new byte[header.length + pixData.length];
+			System.arraycopy(header,0,output,0,header.length);
+			System.arraycopy(pixData,0,output,header.length,pixData.length);
+			return output;
+		}
+		
+		static byte[] attachHeader(FileInfo fi, int headerBytes, byte[] pixData)
+		{
+			fi.offset = headerBytes;
+			fi.longOffset = headerBytes;
+			return prependFakeHeader(headerBytes,pixData);	
+		}
+
+		static byte[] arrangeInStrips(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
 		{
 			int rows = image.length;
 			int cols = image[0].length;
@@ -796,7 +785,7 @@ public class ImageReaderTest {
 			return output;
 		}
 		
-		byte[] arrangeContiguously(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
+		static byte[] arrangeContiguously(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
 		{
 			byte[] output = new byte[fi.height * fi.width * format.nativeBytes(0,byteOrder).length];
 			
@@ -817,6 +806,82 @@ public class ImageReaderTest {
 			fi.stripOffsets = new int[] {0};
 			fi.stripLengths = new int[] {output.length};
 			fi.rowsPerStrip = fi.height;
+			
+			return output;
+		}
+		
+		// TODO: if multistrip planar testing needed
+		//    make arrangeAsPlanesContiguously() and arrangeAsPlanesStripped()
+		//    and then call here appropriately based on stripped parameter
+		//    making such a routine would entail encoding each strip ahead of time, figuring the biggest strip, using that size
+		//      to repeatedly fill the stripLengths and stripOffsets, etc. See how compressEach planes is used below.
+		
+		static byte[] arrangeAsPlanes(PixelFormat format, long[][] image, FileInfo fi, boolean stripped, boolean compressEachPlane,
+				ByteOrder byteOrder, int swapEvery)
+		{
+			int planes = format.planes();
+			int bytesPerPix = format.nativeBytes(0,byteOrder).length;
+			int pixBytesPerPlane = bytesPerPix / planes;
+			
+			byte[][] planeData = new byte[planes][];
+			
+			for (int i = 0; i < planes; i++)
+				planeData[i] = new byte[fi.height * fi.width * pixBytesPerPlane];
+
+			int offset = 0;
+			for (long[] row : image)
+				for (long pix : row)
+				{
+					byte[] bytes = format.nativeBytes(pix,byteOrder);
+					int b = 0;
+					for (int p = 0; p < planes; p++)
+						for (int i = 0; i < pixBytesPerPlane; i++)
+							planeData[p][offset+i] = bytes[b++];
+					offset += pixBytesPerPlane;
+				}
+
+			if (byteOrder == ByteOrder.INTEL)
+				for (int p = 0; p < planes; p++)
+					planeData[p] = intelSwap(planeData[p],swapEvery);
+			
+			byte[] output = new byte[]{};
+			
+			if (compressEachPlane)
+			{
+				// compress the planes
+				for (int p = 0; p < planes; p++)
+					planeData[p] = compress(format,fi,planeData[p]);
+
+				int biggestPlane = 0;
+				for (int p = 0; p < planes; p++)
+					if (planeData[p].length > biggestPlane)
+						biggestPlane = planeData[p].length;
+				
+				output = new byte[planes * biggestPlane * pixBytesPerPlane];
+
+				// finally combine planes : note that the written planes are <= biggestPlane in length
+				for (int p = 0; p < planes; p++)
+					System.arraycopy(planeData[p], 0, output, biggestPlane*p, planeData[p].length);
+
+				fi.stripOffsets = new int[] {0};
+				fi.stripLengths = new int[] {biggestPlane};
+				fi.rowsPerStrip = fi.height;
+			}
+			else  // compress all as one plane
+			{
+				output = new byte[fi.height * fi.width * bytesPerPix];
+				
+				int planeLength = fi.height * fi.width * pixBytesPerPlane;
+				
+				for (int p = 0; p < planes; p++)
+					System.arraycopy(planeData[p], 0, output, planeLength*p, planeLength);
+				
+				output = compress(format,fi,output);
+
+				fi.stripOffsets = new int[] {0};
+				fi.stripLengths = new int[] {output.length};
+				fi.rowsPerStrip = fi.height;
+			}
 			
 			return output;
 		}
@@ -884,11 +949,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -941,11 +1006,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1002,11 +1067,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,2);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1062,11 +1127,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,2);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1120,11 +1185,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,4);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1178,11 +1243,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,4);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1240,9 +1305,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			// ALWAYS contiguous in this case
-			output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,4);
+			output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1305,9 +1370,9 @@ public class ImageReaderTest {
 			byte[] output;
 
 			// ALWAYS contiguous in this case
-			output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,8);
+			output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,8);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 
@@ -1366,11 +1431,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 
@@ -1432,11 +1497,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1505,11 +1570,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
+				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
+				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -1571,11 +1636,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 
@@ -1638,11 +1703,11 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = new PixelArranger().arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
 			else
-				output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 
@@ -1688,46 +1753,23 @@ public class ImageReaderTest {
 		
 		byte[] nativeBytes(long pix, ByteOrder byteOrder)
 		{
-			// since this is multiplane the basic model does not fit
-			// relevant info:
-			//   output[(0*planeSize)+i] = (byte)((pix & 0x00ff0000) >> 16);
-			//   output[(1*planeSize)+i] = (byte)((pix & 0x0000ff00) >> 8);
-			//   output[(2*planeSize)+i] = (byte)((pix & 0x000000ff) >> 0);
+			byte[] output = new byte[3];
+
+			output[0] = (byte)((pix & 0x00ff0000) >> 16);
+			output[1] = (byte)((pix & 0x0000ff00) >> 8);
+			output[2] = (byte)((pix & 0x000000ff) >> 0);
 			
-			return null;
+			return output;
 		}
-		
-		// TODO: make an arrangeInPlanes() method that the two planar methods use?
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
-			int planeSize = fi.height * fi.width;
+			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, false, ByteOrder.DEFAULT, 0);
 			
-			byte[] output = new byte[planeSize * 3];
-			
-			int i = 0;
-			for (long[] row : image)
-				for (long pix : row)
-				{				
-					output[(0*planeSize)+i] = (byte)((pix & 0x00ff0000) >> 16);
-					output[(1*planeSize)+i] = (byte)((pix & 0x0000ff00) >> 8);
-					output[(2*planeSize)+i] = (byte)((pix & 0x000000ff) >> 0);
-					i++;
-				}
-						
-			//if (byteOrder == ByteOrder.INTEL)
-			//	; // nothing to do
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
-			output = compress(this,fi,output);
-
-			fi.stripOffsets = new int[] {0};
-			fi.stripLengths = new int[] {output.length};
-			fi.rowsPerStrip = fi.height;
-			
-			output = attachHeader(fi,headerBytes,output);
-			
 			return output;
 		}
 
@@ -1783,7 +1825,7 @@ public class ImageReaderTest {
 			
 			byte[] output = new byte[fi.height * pixPerRow];
 
-			// note that I am only using the lowest 1 bit of the int for testing purposes
+			// note that I am only using the lowest 1 bit of the image long for testing purposes
 			
 			int i = 0;
 			byte currByte = 0;
@@ -1807,7 +1849,7 @@ public class ImageReaderTest {
 
 			//output = compress(fi,compression,output);
 
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 			
 			return output;
 		}
@@ -1871,9 +1913,9 @@ public class ImageReaderTest {
 
 			// ALWAYS only do stripped data for this format
 			
-			byte[] output = new PixelArranger().arrangeInStrips(this,image,fi,byteOrder,2);
+			byte[] output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
 
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 			
 			return output;
 		}
@@ -1927,121 +1969,31 @@ public class ImageReaderTest {
 
 		byte[] nativeBytes(long pix, ByteOrder byteOrder)
 		{
-			// since this is multiplane the basic model does not fit
+			byte[] output = new byte[6];
 			
-			// relevant info:
-			//long channel1 = ((wholeLong & 0x00000000ffffL) >> 0);
-			//long channel2 = ((wholeLong & 0x0000ffff0000L) >> 16);
-			//long channel3 = ((wholeLong & 0xffff00000000L) >> 32);
+			long channel1 = ((pix & 0x00000000ffffL) >> 0);
+			long channel2 = ((pix & 0x0000ffff0000L) >> 16);
+			long channel3 = ((pix & 0xffff00000000L) >> 32);
 			//
-			// divide the int into three channels
-			//plane1[2*i+0] = (byte) ((channel1 & 0xff00) >> 8);
-			//plane1[2*i+1] = (byte) ((channel1 & 0x00ff) >> 0);
-			//plane2[2*i+0] = (byte) ((channel2 & 0xff00) >> 8);
-			//plane2[2*i+1] = (byte) ((channel2 & 0x00ff) >> 0);
-			//plane3[2*i+0] = (byte) ((channel3 & 0xff00) >> 8);
-			//plane3[2*i+1] = (byte) ((channel3 & 0x00ff) >> 0);
+			// divide the long into three channels
+			output[0] = (byte) ((channel1 & 0xff00) >> 8);
+			output[1] = (byte) ((channel1 & 0x00ff) >> 0);
+			output[2] = (byte) ((channel2 & 0xff00) >> 8);
+			output[3] = (byte) ((channel2 & 0x00ff) >> 0);
+			output[4] = (byte) ((channel3 & 0xff00) >> 8);
+			output[5] = (byte) ((channel3 & 0x00ff) >> 0);
 			
-			return null;
+			return output;
 		}
 		
 		byte[] getBytes(long[][] image, int compression, ByteOrder byteOrder, int headerBytes, boolean inStrips, FileInfo fi)
 		{
 			initializeFileInfo(fi,FileInfo.RGB48_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
-			// Set strip info:
-			//   let's do one big strip of data : any more strips and decompression code runs in ImageReader
-			fi.stripLengths = new int[] {fi.height * fi.width * 6};
-			fi.stripOffsets = new int[] {0};
+			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, true, byteOrder, 2);
 			
-			int rows = fi.height;
-			int cols = fi.width;
-			int totPix = rows * cols;
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
-			byte[] plane1 = new byte[totPix*2];
-			byte[] plane2 = new byte[totPix*2];
-			byte[] plane3 = new byte[totPix*2];
-			
-			// populate planes from int data
-			int i = 0;
-			for (long[] row : image)
-				for (long wholeLong : row)
-				{
-					long channel1 = ((wholeLong & 0x00000000ffffL) >> 0);
-					long channel2 = ((wholeLong & 0x0000ffff0000L) >> 16);
-					long channel3 = ((wholeLong & 0xffff00000000L) >> 32);
-					
-					// divide the int into three channels
-					plane1[2*i+0] = (byte) ((channel1 & 0xff00) >> 8);
-					plane1[2*i+1] = (byte) ((channel1 & 0x00ff) >> 0);
-					plane2[2*i+0] = (byte) ((channel2 & 0xff00) >> 8);
-					plane2[2*i+1] = (byte) ((channel2 & 0x00ff) >> 0);
-					plane3[2*i+0] = (byte) ((channel3 & 0xff00) >> 8);
-					plane3[2*i+1] = (byte) ((channel3 & 0x00ff) >> 0);
-					i++;
-				}
-			
-			if (byteOrder == ByteOrder.INTEL)
-			{
-				plane1 = intelSwap(plane1,2);
-				plane2 = intelSwap(plane2,2);
-				plane3 = intelSwap(plane3,2);
-			}
-			
-			int biggestPlane = Math.max(Math.max(plane1.length, plane2.length), plane2.length);
-
-			if (compression == FileInfo.LZW)
-			{
-				plane1 = lzwEncoder.encode(plane1); // compress the output data
-				plane2 = lzwEncoder.encode(plane2); // compress the output data
-				plane3 = lzwEncoder.encode(plane3); // compress the output data
-			
-				biggestPlane = Math.max(Math.max(plane1.length, plane2.length), plane2.length);
-				
-				// does not work
-				//output = new byte[plane1.length + plane2.length + plane3.length];
-				//fi.stripLengths = new int[] {output.length};
-				//fi.stripOffsets = new int[] {0};
-				
-				// apparently the 48 bit planar type stores three sixteen bit images.
-				// when read the stripOffsets are reused so each plane must be stored in the same size strip.
-				// so must allocate the overall pixel array to be big enough to contain the biggest plane three times and
-				// setup the strip offsets to be the same for each plane.
-				
-				fi.stripLengths = new int[] {biggestPlane};
-				fi.stripOffsets = new int[] {0};
-			}
-			else if (compression == FileInfo.LZW_WITH_DIFFERENCING)
-			{
-				plane1 = lzwDiffEncoder.encode(plane1,this,fi); // compress the output data
-				plane2 = lzwDiffEncoder.encode(plane2,this,fi); // compress the output data
-				plane3 = lzwDiffEncoder.encode(plane3,this,fi); // compress the output data
-			
-				biggestPlane = Math.max(Math.max(plane1.length, plane2.length), plane2.length);
-				
-				// does not work
-				//output = new byte[plane1.length + plane2.length + plane3.length];
-				//fi.stripLengths = new int[] {output.length};
-				//fi.stripOffsets = new int[] {0};
-				
-				// apparently the 48 bit planar type stores three sixteen bit images.
-				// when read the stripOffsets are reused so each plane must be stored in the same size strip.
-				// so must allocate the overall pixel array to be big enough to contain the biggest plane three times and
-				// setup the strip offsets to be the same for each plane.
-				
-				fi.stripLengths = new int[] {biggestPlane};
-				fi.stripOffsets = new int[] {0};
-			}
-
-			byte[] output = new byte[biggestPlane*3];
-
-			// finally combine planes : note that the written planes are <= biggestPlane in length
-			System.arraycopy(plane1, 0, output, 0, plane1.length);
-			System.arraycopy(plane2, 0, output, biggestPlane, plane2.length);
-			System.arraycopy(plane3, 0, output, 2*biggestPlane, plane3.length);
-
-			output = attachHeader(fi,headerBytes,output);
-			
 			return output;
 		}
 
@@ -2110,12 +2062,12 @@ public class ImageReaderTest {
 		{
 			initializeFileInfo(fi,FileInfo.GRAY12_UNSIGNED,compression,byteOrder,image.length,image[0].length);
 			
-			byte[] output = twelveBitEncoder.encode(image);
+			byte[] output = TwelveBitEncoder.encode(image);
 			
 			// if (byteOrder == ByteOrder.INTEL)
 			//	;  // nothing to do
 
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 			
 			return output;
 		}
@@ -2172,9 +2124,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			// ALWAYS arrange contiguously in this case
-			output = new PixelArranger().arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+			output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
 			
-			output = attachHeader(fi,headerBytes,output);
+			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
 			return output;
 		}
@@ -2354,7 +2306,7 @@ public class ImageReaderTest {
 	public void testLzwUncompress() {
 		try {
 			byte[] bytes = {1,4,8,44,13,99,(byte)200,(byte)255,67,54,98,(byte)171,113};
-			byte[] compressedBytes = lzwEncoder.encode(bytes);
+			byte[] compressedBytes = LzwEncoder.encode(bytes);
 			ImageReader rdr = new ImageReader(new FileInfo());
 			assertArrayEquals(bytes,rdr.lzwUncompress(compressedBytes));
 		}
@@ -2369,7 +2321,7 @@ public class ImageReaderTest {
 	public void testPackBitsUncompress() {
 		
 		// FIRST test my encodeBitsReal() method
-		packbitsEncoderReal.runTests();
+		PackbitsEncoder.runTests();
 		
 		// then test that ImageReader is returning the same info
 		
@@ -2378,10 +2330,10 @@ public class ImageReaderTest {
 
 			ImageReader rdr = new ImageReader(new FileInfo());
 			
-			byte[] compressedBytes = packbitsEncoderNaive.encode(bytes);
+			byte[] compressedBytes = PackbitsEncoderNaive.encode(bytes);
 			assertArrayEquals(bytes,rdr.packBitsUncompress(compressedBytes,bytes.length));
 
-			compressedBytes = packbitsEncoderReal.encode(bytes);
+			compressedBytes = PackbitsEncoder.encode(bytes);
 			assertArrayEquals(bytes,rdr.packBitsUncompress(compressedBytes,bytes.length));
 		}
 		catch (Exception e)
