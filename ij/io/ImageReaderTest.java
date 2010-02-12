@@ -681,19 +681,19 @@ public class ImageReaderTest {
 	static class PixelArranger
 	{
 		PixelArranger() {}
-		
-		static byte[] intelSwap(byte[] input, int everyX)
+
+		static void reverse(byte[] bytes)
 		{
-			if (everyX == 0)
-				return input; // nothing to do
-			
-			byte[] output = new byte[input.length];
-			
-			for (int i = 0; i < input.length; i += everyX)
-				for (int j = 0; j < everyX; j++)
-					output[i+j] = input[i+everyX-1-j];
-			
-			return output;
+			int totBytes = bytes.length;
+			int last = totBytes - 1;
+			int halfLen = totBytes / 2;
+			for (int i = 0; i < halfLen; i++)
+			{
+				byte tmp = bytes[i];
+				bytes[i] = bytes[last-i];
+				bytes[last-i] = tmp;
+			}
+			// note should work for even and odd lengths as middle element of an odd list need not be swapped
 		}
 
 		static byte[] compress(PixelFormat format, FileInfo fi, byte[] input)
@@ -730,8 +730,12 @@ public class ImageReaderTest {
 			return prependFakeHeader(headerBytes,pixData);	
 		}
 
-		static byte[] arrangeInStrips(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
+		static byte[] arrangeInStrips(PixelFormat format, long[][] image, FileInfo fi)
 		{
+			ByteOrder myByteOrder = ByteOrder.DEFAULT;
+			if (fi.intelByteOrder)
+				myByteOrder = ByteOrder.INTEL;
+			
 			int rows = image.length;
 			int cols = image[0].length;
 			
@@ -745,29 +749,26 @@ public class ImageReaderTest {
 			else
 				strips = 1;
 			
-			fi.stripLengths = new int[rows];
-			fi.stripOffsets = new int[rows];
+			fi.stripLengths = new int[strips];
+			fi.stripOffsets = new int[strips];
 			fi.rowsPerStrip = rows / strips;
 
 			byte[] output = new byte[] {};
 			
 			for (int s = 0; s < strips; s++)
 			{
-				byte[] strip = new byte[fi.rowsPerStrip * cols * format.nativeBytes(0,ByteOrder.DEFAULT).length];
+				byte[] strip = new byte[fi.rowsPerStrip * cols * format.nativeBytes(0,myByteOrder).length];
 				
 				int i = 0;
 				for (int r = 0; r < fi.rowsPerStrip; r++)
 				{
 					for (int c = 0; c < cols; c++)
 					{
-						byte[] pixBytes = format.nativeBytes(image[fi.rowsPerStrip*s + r][c], byteOrder);
+						byte[] pixBytes = format.nativeBytes(image[fi.rowsPerStrip*s + r][c], myByteOrder);
 						for (int k = 0; k < pixBytes.length; k++)
 							strip[i++] = pixBytes[k];
 					}
 				}
-				
-				if (byteOrder == ByteOrder.INTEL)
-					strip = intelSwap(strip,swapEvery);
 				
 				strip = compress(format,fi,strip);
 
@@ -785,22 +786,23 @@ public class ImageReaderTest {
 			return output;
 		}
 		
-		static byte[] arrangeContiguously(PixelFormat format, long[][] image, FileInfo fi, ByteOrder byteOrder, int swapEvery)
+		static byte[] arrangeContiguously(PixelFormat format, long[][] image, FileInfo fi)
 		{
-			byte[] output = new byte[fi.height * fi.width * format.nativeBytes(0,byteOrder).length];
+			ByteOrder myByteOrder = ByteOrder.DEFAULT;
+			if (fi.intelByteOrder)
+				myByteOrder = ByteOrder.INTEL;
+			
+			byte[] output = new byte[fi.height * fi.width * format.nativeBytes(0,myByteOrder).length];
 			
 			int i = 0;
 			for (long[] row : image)
 				for (long pix : row)
 				{
-					byte[] bytes = format.nativeBytes(pix,byteOrder);
+					byte[] bytes = format.nativeBytes(pix,myByteOrder);
 					for (int k = 0; k < bytes.length; k++)
 						output[i++] = bytes[k];
 				}
 		
-			if (byteOrder == ByteOrder.INTEL)
-				output = intelSwap(output,swapEvery);
-
 			output = compress(format,fi,output);
 			
 			fi.stripOffsets = new int[] {0};
@@ -816,11 +818,14 @@ public class ImageReaderTest {
 		//    making such a routine would entail encoding each strip ahead of time, figuring the biggest strip, using that size
 		//      to repeatedly fill the stripLengths and stripOffsets, etc. See how compressEach planes is used below.
 		
-		static byte[] arrangeAsPlanes(PixelFormat format, long[][] image, FileInfo fi, boolean stripped, boolean compressEachPlane,
-				ByteOrder byteOrder, int swapEvery)
+		static byte[] arrangeAsPlanes(PixelFormat format, long[][] image, FileInfo fi, boolean stripped, boolean compressEachPlane)
 		{
+			ByteOrder myByteOrder = ByteOrder.DEFAULT;
+			if (fi.intelByteOrder)
+				myByteOrder = ByteOrder.INTEL;
+
 			int planes = format.planes();
-			int bytesPerPix = format.nativeBytes(0,byteOrder).length;
+			int bytesPerPix = format.nativeBytes(0,myByteOrder).length;
 			int pixBytesPerPlane = bytesPerPix / planes;
 			
 			byte[][] planeData = new byte[planes][];
@@ -832,7 +837,7 @@ public class ImageReaderTest {
 			for (long[] row : image)
 				for (long pix : row)
 				{
-					byte[] bytes = format.nativeBytes(pix,byteOrder);
+					byte[] bytes = format.nativeBytes(pix,myByteOrder);
 					int b = 0;
 					for (int p = 0; p < planes; p++)
 						for (int i = 0; i < pixBytesPerPlane; i++)
@@ -840,10 +845,6 @@ public class ImageReaderTest {
 					offset += pixBytesPerPlane;
 				}
 
-			if (byteOrder == ByteOrder.INTEL)
-				for (int p = 0; p < planes; p++)
-					planeData[p] = intelSwap(planeData[p],swapEvery);
-			
 			byte[] output = new byte[]{};
 			
 			if (compressEachPlane)
@@ -949,9 +950,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1006,9 +1007,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1057,6 +1058,9 @@ public class ImageReaderTest {
 			output[0] = (byte)((pix & 0xff00) >> 8);
 			output[1] = (byte)((pix & 0x00ff) >> 0);
 			
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+			
 			return output;
 		}
 		
@@ -1067,9 +1071,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1117,6 +1121,9 @@ public class ImageReaderTest {
 			output[0] = (byte)((pix & 0xff00) >> 8);
 			output[1] = (byte)((pix & 0x00ff) >> 0);
 			
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+
 			return output;
 		}
 		
@@ -1127,9 +1134,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,2);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1175,6 +1182,9 @@ public class ImageReaderTest {
 			output[2] = (byte)((pix & 0x0000ff00) >> 8);
 			output[3] = (byte)((pix & 0x000000ff) >> 0);
 			
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+
 			return output;
 		}
 		
@@ -1185,9 +1195,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1233,6 +1243,9 @@ public class ImageReaderTest {
 			output[2] = (byte)((pix & 0x0000ff00) >> 8);
 			output[3] = (byte)((pix & 0x000000ff) >> 0);
 
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+
 			return output;
 		}
 		
@@ -1243,9 +1256,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1295,6 +1308,9 @@ public class ImageReaderTest {
 			output[2] = (byte)((bPix & 0x0000ff00) >> 8);
 			output[3] = (byte)((bPix & 0x000000ff) >> 0);
 			
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+
 			return output;
 		}
 		
@@ -1305,7 +1321,7 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			// ALWAYS contiguous in this case
-			output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,4);
+			output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1359,6 +1375,9 @@ public class ImageReaderTest {
 			output[6] = (byte)((bPix & 0x000000000000ff00L) >> 8);
 			output[7] = (byte)((bPix & 0x00000000000000ffL) >> 0);
 			
+			if (byteOrder == byteOrder.INTEL)
+				PixelArranger.reverse(output);
+
 			return output;
 		}
 		
@@ -1370,7 +1389,7 @@ public class ImageReaderTest {
 			byte[] output;
 
 			// ALWAYS contiguous in this case
-			output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,8);
+			output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1431,9 +1450,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1497,9 +1516,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1570,9 +1589,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,byteOrder,0);  // 0 is intentional: want channel ordering but no byte swap
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1636,9 +1655,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1703,9 +1722,9 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			if (inStrips)
-				output = PixelArranger.arrangeInStrips(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeInStrips(this,image,fi);
 			else
-				output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+				output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1766,7 +1785,7 @@ public class ImageReaderTest {
 		{
 			initializeFileInfo(fi,FileInfo.RGB_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
-			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, false, ByteOrder.DEFAULT, 0);
+			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, false);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -1897,12 +1916,25 @@ public class ImageReaderTest {
 		{
 			byte[] output = new byte[6];
 			
-			output[0] = (byte)((pix & 0xff0000000000L) >> 40);
-			output[1] = (byte)((pix & 0xff00000000L) >> 32);
-			output[2] = (byte)((pix & 0xff000000L) >> 24);
-			output[3] = (byte)((pix & 0xff0000L) >> 16);
-			output[4] = (byte)((pix & 0xff00L) >> 8);
-			output[5] = (byte)((pix & 0xffL) >> 0);
+			
+			if (byteOrder == byteOrder.INTEL)
+			{
+				output[0] = (byte)((pix & 0xff00000000L) >> 32);
+				output[1] = (byte)((pix & 0xff0000000000L) >> 40);
+				output[2] = (byte)((pix & 0xff0000L) >> 16);
+				output[3] = (byte)((pix & 0xff000000L) >> 24);
+				output[4] = (byte)((pix & 0xffL) >> 0);
+				output[5] = (byte)((pix & 0xff00L) >> 8);
+			}
+			else
+			{
+				output[0] = (byte)((pix & 0xff0000000000L) >> 40);
+				output[1] = (byte)((pix & 0xff00000000L) >> 32);
+				output[2] = (byte)((pix & 0xff000000L) >> 24);
+				output[3] = (byte)((pix & 0xff0000L) >> 16);
+				output[4] = (byte)((pix & 0xff00L) >> 8);
+				output[5] = (byte)((pix & 0xffL) >> 0);
+			}
 			
 			return output;
 		}
@@ -1913,7 +1945,7 @@ public class ImageReaderTest {
 
 			// ALWAYS only do stripped data for this format
 			
-			byte[] output = PixelArranger.arrangeInStrips(this,image,fi,byteOrder,2);
+			byte[] output = PixelArranger.arrangeInStrips(this,image,fi);
 
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 			
@@ -1976,12 +2008,24 @@ public class ImageReaderTest {
 			long channel3 = ((pix & 0xffff00000000L) >> 32);
 			//
 			// divide the long into three channels
-			output[0] = (byte) ((channel1 & 0xff00) >> 8);
-			output[1] = (byte) ((channel1 & 0x00ff) >> 0);
-			output[2] = (byte) ((channel2 & 0xff00) >> 8);
-			output[3] = (byte) ((channel2 & 0x00ff) >> 0);
-			output[4] = (byte) ((channel3 & 0xff00) >> 8);
-			output[5] = (byte) ((channel3 & 0x00ff) >> 0);
+			if (byteOrder == byteOrder.INTEL)
+			{
+				output[0] = (byte) ((channel1 & 0x00ff) >> 0);
+				output[1] = (byte) ((channel1 & 0xff00) >> 8);
+				output[2] = (byte) ((channel2 & 0x00ff) >> 0);
+				output[3] = (byte) ((channel2 & 0xff00) >> 8);
+				output[4] = (byte) ((channel3 & 0x00ff) >> 0);
+				output[5] = (byte) ((channel3 & 0xff00) >> 8);
+			}
+			else
+			{
+				output[0] = (byte) ((channel1 & 0xff00) >> 8);
+				output[1] = (byte) ((channel1 & 0x00ff) >> 0);
+				output[2] = (byte) ((channel2 & 0xff00) >> 8);
+				output[3] = (byte) ((channel2 & 0x00ff) >> 0);
+				output[4] = (byte) ((channel3 & 0xff00) >> 8);
+				output[5] = (byte) ((channel3 & 0x00ff) >> 0);
+			}
 			
 			return output;
 		}
@@ -1990,7 +2034,7 @@ public class ImageReaderTest {
 		{
 			initializeFileInfo(fi,FileInfo.RGB48_PLANAR,compression,byteOrder,image.length,image[0].length);
 			
-			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, true, byteOrder, 2);
+			byte[] output = PixelArranger.arrangeAsPlanes(this, image, fi, inStrips, true);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -2124,7 +2168,7 @@ public class ImageReaderTest {
 			byte[] output;
 			
 			// ALWAYS arrange contiguously in this case
-			output = PixelArranger.arrangeContiguously(this,image,fi,ByteOrder.DEFAULT,0);
+			output = PixelArranger.arrangeContiguously(this,image,fi);
 			
 			output = PixelArranger.attachHeader(fi,headerBytes,output);
 
@@ -2239,8 +2283,8 @@ public class ImageReaderTest {
 							{
 /*
 								System.out.println("tester("+tester.name()+") image("+image.length+"x"+image[0].length+") compress("+compression+") byteOrder("+byteOrder+") header("+headerOffset+") stripped("+stripped+")");
-								if ((tester.name() == "Rgb48") && (image.length == 3) && (image[0].length == 3) && (compression == 1) &&
-										(byteOrder == ByteOrder.DEFAULT) && (headerOffset == 0) && (stripped))
+								if ((tester.name() == "Rgb48") && (image.length == 1) && (image[0].length == 1) && (compression == 1) &&
+										(byteOrder == ByteOrder.INTEL) && (headerOffset == 0) && (stripped))
 								{
 									System.out.println("About to fail");
 								}
