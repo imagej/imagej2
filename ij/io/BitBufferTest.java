@@ -6,12 +6,14 @@ package ij.io;
 
 import static org.junit.Assert.*;
 
-import ij.io.BitBuffer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import ij.io.BitBuffer;
+import src.IJInfo;
 
 public class BitBufferTest {
 	private BitBuffer bits = null;

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.*;
 
+import src.IJInfo;
 import loci.formats.codec.CodecOptions;
 import loci.formats.codec.LZWCodec;
 import loci.formats.codec.JPEGCodec;

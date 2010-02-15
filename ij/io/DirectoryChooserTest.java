@@ -1,17 +1,16 @@
 package ij.io;
 
-
 import static org.junit.Assert.*;
-
-import java.io.File;
-
-import ij.io.DirectoryChooser;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import ij.io.DirectoryChooser;
+import src.IJInfo;
 
 public class DirectoryChooserTest {
 
