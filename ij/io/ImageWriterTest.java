@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
 import ij.VirtualStack;
-import ij.process.ImageProcessor;
 import ij.io.Assert;
 
 /*
