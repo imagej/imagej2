@@ -16,14 +16,11 @@ import ij.VirtualStack;
 import ij.io.Assert;
 
 /*
-	Some notes
-	- will probably want to break out ImageReader classes so I can reuse some info here
-	- plan
 	    for each test
 	      create a file info
-	      populate the correct image data from an image (long[][]?)
+	      populate the correct image data from an image (long[][])
 	      call writeImage() to a byte stream
-	      compare byte stream to expectedBytes() [which is not written right now]
+	      compare byte stream to expectedBytes()
 	        this is affected by Intel byte order	      
 	        
 	 TODO
@@ -34,48 +31,7 @@ import ij.io.Assert;
 
 public class ImageWriterTest {
 
-	static long[][] Image3x1sub1 = new long[][] {{1,2},{3,4},{5,6}};
-	static long[][] Image3x1sub2 = new long[][] {{6,5},{4,3},{2,1}};
-	static long[][] Image3x1sub3 = new long[][] {{4,6},{9,8},{1,7}};
-
-	static long[][][] Images3x1 = {Image3x1sub1, Image3x1sub2, Image3x1sub3};
-
-	static long[][] Image2x4sub1 = new long[][] {{1,2,3,4},{5,6,7,8}};
-	static long[][] Image2x4sub2 = new long[][] {{8,7,6,5},{4,3,2,1}};
-	static long[][] Image2x4sub3 = new long[][] {{1,0,1,0},{0,1,0,1}};
-
-	static long[][][] Images2x4 = {Image3x1sub1, Image3x1sub2, Image3x1sub3};
-
-	static final long[][] Image6x6sub1 = 
-	{	{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
-		{0,0xffffffffffffL,0,0xffffffffffffL,0,0xffffffffffffL},
-		{1,2,3,4,5,6},
-		{0xff0000000000L,0x00ff00000000L, 0x0000ff000000,0x000000ff0000,0x00000000ff00,0x0000000000ff},
-		{111111111111L,222222222222L,333333333333L,444444444444L,555555555555L,666666666666L},
-		{0,567,0,582047483,0,1},
-		{12345,554224678,90909090,9021,666666,3145926}
-	};
-
-	static final long[][] Image6x6sub2 = 
-	{	{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
-		{0,0xffffffffffffL,0,0xffffffffffffL,0,0xffffffffffffL},
-		{1,2,3,4,5,6},
-		{0xff0000000000L,0x00ff00000000L, 0x0000ff000000,0x000000ff0000,0x00000000ff00,0x0000000000ff},
-		{111111111111L,222222222222L,333333333333L,444444444444L,555555555555L,666666666666L},
-		{0,567,0,582047483,0,1},
-		{12345,554224678,90909090,9021,666666,3145926}
-	};
-
-	static long[][] Image1x1sub1 = {{0xffffffffffffL}};
-	static long[][] Image1x1sub2 = {{0x00ff00ff00ffL}};
-	
-	static long[][][] Images1x1 = {Image1x1sub1, Image1x1sub2};
-	
-	static long[][][] Images6x6 = {Image6x6sub1,Image6x6sub2};
-	
-	static long[][][][] ImageSets = new long[][][][] {Images1x1,Images3x1,Images2x4,Images6x6/**/};
-
-	//  *******    Helper classes  ****************************
+	//  *******    Helper methods  ****************************
 	
 	byte[] concat(byte[] a, byte[] b)
 	{
@@ -187,7 +143,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryColor8BitStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new Color8Format();
 			byte[] expectedAfterWrite = new byte[] {};
@@ -221,31 +177,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryColor8BitImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new Color8Format();
+			byte[] expected = (byte[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.COLOR8;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				byte[] actual = (byte[])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Color8Format();
-				byte[] expected = (byte[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.COLOR8;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					byte[] actual = (byte[])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -266,7 +219,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray8BitStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new Gray8Format();
 			byte[] expectedAfterWrite = new byte[] {};
@@ -300,31 +253,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray8BitImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new Gray8Format();
+			byte[] expected = (byte[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.GRAY8;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				byte[] actual = (byte[])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Gray8Format();
-				byte[] expected = (byte[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.GRAY8;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					byte[] actual = (byte[])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -345,7 +295,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16SignedStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new Gray16SignedFormat();
 			short[] expectedAfterWrite = new short[] {};
@@ -379,31 +329,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16SignedImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new Gray16SignedFormat();
+			short[] expected = (short[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.GRAY16_SIGNED;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				short[] actual = (short[])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Gray16SignedFormat();
-				short[] expected = (short[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.GRAY16_SIGNED;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					short[] actual = (short[])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -424,7 +371,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16UnsignedStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new Gray16UnsignedFormat();
 			short[] expectedAfterWrite = new short[] {};
@@ -458,31 +405,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16UnsignedImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new Gray16UnsignedFormat();
+			short[] expected = (short[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.GRAY16_UNSIGNED;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				short[] actual = (short[])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Gray16UnsignedFormat();
-				short[] expected = (short[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.GRAY16_UNSIGNED;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					short[] actual = (short[])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -502,7 +446,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryRgbStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new RgbFormat();
 			int[] expectedAfterWrite = new int[] {};
@@ -536,31 +480,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryRgbImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new RgbFormat();
+			int[] expected = (int[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.RGB;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				int[] actual = (int[])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new RgbFormat();
-				int[] expected = (int[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.RGB;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					int[] actual = (int[])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -581,7 +522,7 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray32FloatStack() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)
 		{
 			PixelFormat format = new Gray32FloatFormat();
 			float[] expectedAfterWrite = new float[] {};
@@ -615,31 +556,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray32FloatImage() {
-		for (long[][][] imageSet : ImageSets)
+		for (long[][] image : Images.Images)
 		{
-			for (long[][] image : imageSet)
+			PixelFormat format = new Gray32FloatFormat();
+			float[] expected = (float[])(format.expectedResults(image)); 
+			
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.GRAY32_FLOAT;
+			fi.nImages = 1;
+			fi.virtualStack = null;
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expected;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				float[] actual = (float[])format.pixelsFromBytes(stream.toByteArray());
+				Assert.assertFloatArraysEqual(expected,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Gray32FloatFormat();
-				float[] expected = (float[])(format.expectedResults(image)); 
-				
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.GRAY32_FLOAT;
-				fi.nImages = 1;
-				fi.virtualStack = null;
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expected;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					float[] actual = (float[])format.pixelsFromBytes(stream.toByteArray());
-					Assert.assertFloatArraysEqual(expected,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
 		}
 	}
@@ -651,29 +589,28 @@ public class ImageWriterTest {
 	}
 	
 	private void tryRgb48Image() {
-		for (long[][][] imageSet : ImageSets)
-			for (long[][] image : imageSet)
+		for (long[][] image : Images.Images)
+		{
+			PixelFormat format = new Rgb48Format();
+			short[][] expectedAfterWrite = (short[][]) format.expectedResults(image);
+			FileInfo fi = new FileInfo();
+			fi.intelByteOrder = false;
+			fi.fileType = FileInfo.RGB48;
+			// no other preconditions!
+			fi.height = image.length;
+			fi.width = image[0].length;
+			fi.pixels = expectedAfterWrite;
+			try {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				ImageWriter writer = new ImageWriter(fi);
+				writer.write(stream);
+				short[][] actual = (short[][])format.pixelsFromBytes(stream.toByteArray());
+				assertArrayEquals(expectedAfterWrite,actual);
+			} catch(Exception e)
 			{
-				PixelFormat format = new Rgb48Format();
-				short[][] expectedAfterWrite = (short[][]) format.expectedResults(image);
-				FileInfo fi = new FileInfo();
-				fi.intelByteOrder = false;
-				fi.fileType = FileInfo.RGB48;
-				// no other preconditions!
-				fi.height = image.length;
-				fi.width = image[0].length;
-				fi.pixels = expectedAfterWrite;
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					ImageWriter writer = new ImageWriter(fi);
-					writer.write(stream);
-					short[][] actual = (short[][])format.pixelsFromBytes(stream.toByteArray());
-					assertArrayEquals(expectedAfterWrite,actual);
-				} catch(Exception e)
-				{
-					fail(e.getMessage());
-				}
+				fail(e.getMessage());
 			}
+		}
 	}
 	
 	private void tryRgb48() {

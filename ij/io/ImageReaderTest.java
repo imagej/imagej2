@@ -39,6 +39,7 @@ import ij.io.Assert;
 
 public class ImageReaderTest {
 
+/*
 	static final long[][] BaseImage1x1 = {{77}};
 	static final long[][] BaseImage3x3 = {{11,12,13},{21,22,23},{31,32,33}};
 	static final long[][] BaseImage1x9 = {{11,12,13,14,15,16,17,18,19}};
@@ -72,7 +73,7 @@ public class ImageReaderTest {
 
 	final long[][][] Images = new long[][][] {BaseImage1x1, BaseImage3x3, BaseImage3x3, BaseImage1x9, BaseImage7x2, BaseImage5x4, BaseImage4x6,
 			Base24BitImage5x5, Base48BitImage6x6};
-
+*/
 	private FormatTester gray8Tester= new FormatTester(new Gray8Format());
 	private FormatTester color8Tester= new FormatTester(new Color8Format());
 	private FormatTester gray16SignedTester= new FormatTester(new Gray16SignedFormat());
@@ -204,6 +205,7 @@ public class ImageReaderTest {
 	@Test
 	public void testReadPixelsFromInputStream()
 	{
+/*	
 		// run test on basic functionality for each pixel type
 		//   these end up getting run twice but these next calls simplify debugging
 		gray8Tester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.Value.DEFAULT,0,false);
@@ -225,10 +227,11 @@ public class ImageReaderTest {
 		rgb48PlanarTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.Value.DEFAULT,0,false);
 		gray12UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.Value.DEFAULT,0,false);
 		gray24UnsignedTester.runTest(BaseTestImage,FileInfo.COMPRESSION_NONE,ByteOrder.Value.DEFAULT,0,false);
+*/
 
-		// now run all legal combos of input parameters
+		// run all legal combos of input parameters
 		for (FormatTester tester : Testers)
-			for (long[][] image : Images)
+			for (long[][] image : Images.Images)
 				for (int compression : CompressionModes)
 					for (ByteOrder.Value byteOrder : ByteOrders)
 						for (int headerOffset : HeaderOffsets)
