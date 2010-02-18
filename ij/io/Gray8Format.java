@@ -56,7 +56,7 @@ class Gray8Format extends PixelFormat
 		return output;
 	}
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		return bytes;
 	}

@@ -55,7 +55,7 @@ class Gray12UnsignedFormat extends PixelFormat
 		return output;
 	}		
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		// this method not tested by ImageWriter. Therefore no implementation until it will be used.
 		return null;

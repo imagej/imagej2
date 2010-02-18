@@ -62,14 +62,17 @@ class Gray16UnsignedFormat extends PixelFormat
 		return output;
 	}
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numShorts = bytes.length / 2;
 		short[] output = new short[numShorts];
 		
 		for (int i = 0; i < numShorts; i++)
 		{
-			output[i] = (short)(((bytes[2*i] & 0xff) << 8) | (bytes[2*i+1] & 0xff));
+			if (order == ByteOrder.Value.INTEL)
+				output[i] = (short)(((bytes[2*i+1] & 0xff) << 8) | (bytes[2*i] & 0xff));
+			else
+				output[i] = (short)(((bytes[2*i] & 0xff) << 8) | (bytes[2*i+1] & 0xff));
 		}
 		return output;
 	}

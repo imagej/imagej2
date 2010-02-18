@@ -86,7 +86,7 @@ class Rgb48Format extends PixelFormat
 		return output;
 	}		
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numPix = bytes.length / 6;
 
@@ -102,9 +102,18 @@ class Rgb48Format extends PixelFormat
 		int i = 0;
 		for (int j = 0; j < numPix; j++)
 		{
-			output[0][j] = (short) (((bytes[i+0] & 0xff) << 8) | (bytes[i+1] & 0xff));
-			output[1][j] = (short) (((bytes[i+2] & 0xff) << 8) | (bytes[i+3] & 0xff));
-			output[2][j] = (short) (((bytes[i+4] & 0xff) << 8) | (bytes[i+5] & 0xff));
+			if (order == ByteOrder.Value.INTEL)
+			{
+				output[0][j] = (short) (((bytes[i+1] & 0xff) << 8) | (bytes[i+0] & 0xff));
+				output[1][j] = (short) (((bytes[i+3] & 0xff) << 8) | (bytes[i+2] & 0xff));
+				output[2][j] = (short) (((bytes[i+5] & 0xff) << 8) | (bytes[i+4] & 0xff));
+			}
+			else
+			{
+				output[0][j] = (short) (((bytes[i+0] & 0xff) << 8) | (bytes[i+1] & 0xff));
+				output[1][j] = (short) (((bytes[i+2] & 0xff) << 8) | (bytes[i+3] & 0xff));
+				output[2][j] = (short) (((bytes[i+4] & 0xff) << 8) | (bytes[i+5] & 0xff));
+			}
 			i += 6;
 		}
 		
