@@ -62,13 +62,18 @@ class Gray32FloatFormat extends PixelFormat
 		return output;
 	}
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numFloats = bytes.length / 4;
 		float[] output = new float[numFloats];
 		for (int i = 0; i < numFloats; i++)
 		{
-			int theInt = ((bytes[4*i+0] & 0xff) << 24) | ((bytes[4*i+1] & 0xff) << 16) | ((bytes[4*i+2] & 0xff) << 8) | ((bytes[4*i+3] & 0xff) << 0);
+			int theInt;
+			
+			if (order == ByteOrder.Value.INTEL)
+				theInt = ((bytes[4*i+3] & 0xff) << 24) | ((bytes[4*i+2] & 0xff) << 16) | ((bytes[4*i+1] & 0xff) << 8) | ((bytes[4*i+0] & 0xff) << 0);
+			else
+				theInt = ((bytes[4*i+0] & 0xff) << 24) | ((bytes[4*i+1] & 0xff) << 16) | ((bytes[4*i+2] & 0xff) << 8) | ((bytes[4*i+3] & 0xff) << 0);
 			output[i] = Float.intBitsToFloat(theInt);
 		}
 		return output;

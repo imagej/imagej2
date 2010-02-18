@@ -65,7 +65,7 @@ class RgbFormat extends PixelFormat
 		return output;
 	}
 
-	Object pixelsFromBytes(byte[] bytes)
+	Object pixelsFromBytes(byte[] bytes, ByteOrder.Value order)
 	{
 		int numInts = bytes.length / 3;
 		int[] output = new int[numInts];

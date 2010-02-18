@@ -17,7 +17,7 @@ abstract class PixelFormat {
 	abstract byte[] nativeBytes(long pixel, ByteOrder.Value byteOrder);
 	abstract byte[] getBytes(long[][] image, int compression, ByteOrder.Value byteOrder, int headerBytes, boolean inStrips, FileInfo fi);
 	abstract Object expectedResults(long[][] inputImage);
-	abstract Object pixelsFromBytes(byte[] bytes);
+	abstract Object pixelsFromBytes(byte[] bytes, ByteOrder.Value byteOrder);
 	
 	PixelFormat(String name, int numSamples, int bitsPerSample, int planes)
 	{

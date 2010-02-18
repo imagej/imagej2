@@ -34,30 +34,30 @@ public class Images {
 			{12345,554224678,90909090,9021,666666,3145926}
 		};
 
-	private static long[][] Image1x1sub1 = new long[][] {{83}};
-	private static long[][] Image1x1sub2 = new long[][] {{121}};
-	private static long[][] Image1x1sub3 = new long[][] {{415}};
+	private static final long[][] Image1x1sub1 = new long[][] {{83}};
+	private static final long[][] Image1x1sub2 = new long[][] {{121}};
+	private static final long[][] Image1x1sub3 = new long[][] {{415}};
 
-	private static long[][][] ImageSet1x1 = {Image1x1sub1, Image1x1sub2, Image1x1sub3 };
+	private static final long[][][] ImageSet1x1 = {Image1x1sub1, Image1x1sub2, Image1x1sub3 };
 
-	private static long[][] Image3x1sub1 = new long[][] {{1,2},{3,4},{5,6}};
-	private static long[][] Image3x1sub2 = new long[][] {{6,5},{4,3},{2,1}};
-	private static long[][] Image3x1sub3 = new long[][] {{4,6},{9,8},{1,7}};
+	private static final long[][] Image3x1sub1 = new long[][] {{1,2},{3,4},{5,6}};
+	private static final long[][] Image3x1sub2 = new long[][] {{6,5},{4,3},{2,1}};
+	private static final long[][] Image3x1sub3 = new long[][] {{4,6},{9,8},{1,7}};
 
-	private static long[][][] ImageSet3x1 = {Image3x1sub1, Image3x1sub2, Image3x1sub3 };
+	private static final long[][][] ImageSet3x1 = {Image3x1sub1, Image3x1sub2, Image3x1sub3 };
 	
-	private static long[][] Image2x4sub1 = new long[][] {{1,2,3,4},{5,6,7,8}};
-	private static long[][] Image2x4sub2 = new long[][] {{8,7,6,5},{4,3,2,1}};
-	private static long[][] Image2x4sub3 = new long[][] {{1,0,1,0},{0,1,0,1}};
+	private static final long[][] Image2x4sub1 = new long[][] {{1,2,3,4},{5,6,7,8}};
+	private static final long[][] Image2x4sub2 = new long[][] {{8,7,6,5},{4,3,2,1}};
+	private static final long[][] Image2x4sub3 = new long[][] {{1,0,1,0},{0,1,0,1}};
 
-	private static long[][][] ImageSet2x4 = {Image2x4sub1, Image2x4sub2, Image2x4sub3 };
+	private static final long[][][] ImageSet2x4 = {Image2x4sub1, Image2x4sub2, Image2x4sub3 };
 	
-	private static long[][][] ImageSet6x6 = {Base48BitImage6x6, Base48BitImage6x6};
+	private static final long[][][] ImageSet6x6 = {Base48BitImage6x6, Base48BitImage6x6};
 
 	// ********************** PUBLIC ACCESS POINTS  ***************************************
 	
-	public static long[][][] Images = {BaseImage1x1, BaseImage3x3, BaseImage1x9, BaseImage7x2,
+	public static final long[][][] Images = {BaseImage1x1, BaseImage3x3, BaseImage1x9, BaseImage7x2,
 		BaseImage5x4, BaseImage4x6, Base24BitImage5x5, Base48BitImage6x6};
 	
-	public static long[][][][] ImageSets = {ImageSet1x1, ImageSet3x1, ImageSet2x4, ImageSet6x6};
+	public static final long[][][][] ImageSets = {ImageSet1x1, ImageSet3x1, ImageSet2x4, ImageSet6x6};
 }
