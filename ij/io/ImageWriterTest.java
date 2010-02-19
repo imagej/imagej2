@@ -379,9 +379,6 @@ public class ImageWriterTest {
 			short[] expected = new short[] {0,10280,20560,30840,-24416,-14136,0,10280,20560,30840,-24416,-14136};
 			
 			assertArrayEquals(expected,actual);
-	
-			// for 1x5 gray16signedA and B .tif
-			// assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
 		}
 		
 		// try with filename hack that flips pixels
@@ -405,9 +402,6 @@ public class ImageWriterTest {
 			short[] expected = new short[] {30840,-24416,-14136,0,10280,20560,30840,-24416,-14136,0,10280,20560};
 			
 			assertArrayEquals(expected,actual);
-	
-			// for 1x5 gray16signedA and B .tif
-			// assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
 		}
 	}
 	
@@ -487,10 +481,6 @@ public class ImageWriterTest {
 			
 			short[] actual = (short[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			short[] expected = new short[] {0,10280,20560,30840,-24416,-14136,0,10280,20560,30840,-24416,-14136};
 			
 			assertArrayEquals(expected,actual);
@@ -514,10 +504,6 @@ public class ImageWriterTest {
 			
 			short[] actual = (short[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			short[] expected = new short[] {30840,-24416,-14136,0,10280,20560,30840,-24416,-14136,0,10280,20560};
 			
 			assertArrayEquals(expected,actual);
@@ -600,10 +586,6 @@ public class ImageWriterTest {
 			
 			int[] actual = (int[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			int[] expected = new int[] {-16777216,-14145496,-11513776,-8882056,-6250336,-3618616,
 										-16777216,-14145496,-11513776,-8882056,-6250336,-3618616};
 			
@@ -628,10 +610,6 @@ public class ImageWriterTest {
 			
 			int[] actual = (int[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			int[] expected = new int[] {-8882056,-6250336,-3618616,-16777216,-14145496,-11513776,
 										-8882056,-6250336,-3618616,-16777216,-14145496,-11513776};
 			
@@ -714,10 +692,6 @@ public class ImageWriterTest {
 			
 			float[] actual = (float[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			float[] expected = new float[] {0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f,
 											0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f};
 			
@@ -742,10 +716,6 @@ public class ImageWriterTest {
 			
 			float[] actual = (float[])format.pixelsFromBytes(bytes, order);
 			
-			// for gray16unsignedA and B .tif
-			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
-			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
-	
 			float[] expected = new float[] {0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f,
 											0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f};
 			
