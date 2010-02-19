@@ -21,9 +21,6 @@ import ij.io.Assert;
 		Therefore must make sure you don't pass a "stack" of 1 thing to the tryX() routines as ImageWriter will
 		assume the data is not stacked and will fail to cast the pixels correctly. This requirement enforced
 		by making sure Images.ImageSets contain sets with more than one image in them.
-	        
-	TODO
-		virtual stacks - will need to collect some data first and then implement tests
  */
 
 public class ImageWriterTest {
@@ -44,7 +41,7 @@ public class ImageWriterTest {
 		fi.pixels = pixels;
 	}
 
-	private byte[] writeData(FileInfo fi, boolean expectException)
+	private byte[] writeData(FileInfo fi, boolean expectIOException)
 	{
 		try {
 			
@@ -53,12 +50,13 @@ public class ImageWriterTest {
 			writer.write(stream);
 			return stream.toByteArray();
 			
-		} catch (Exception e)
-		{
-			if (expectException)
+		} catch (IOException e){
+			if (expectIOException)
 				assertTrue(true);
 			else
 				fail(e.getMessage());
+		} catch(Exception e){
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -145,22 +143,63 @@ public class ImageWriterTest {
 		writeData(fi, true);
 	}
 	
-	// TODO - write this
 	private void tryColor8BitVirtualStack() {
-		// if (fi.nImages>1 && fi.virtualStack!=null)
-		FileInfo fi = new FileInfo();
-		fi.intelByteOrder = false;
-		fi.fileType = FileInfo.COLOR8;
-		fi.nImages = 2;
-		fi.virtualStack = new VirtualStack();
+
+		PixelFormat format = new Gray8Format();
+		
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray8-2x3-sub1.tif");
+			vStack.addSlice("gray8-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+	
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.COLOR8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			byte[] actual = (byte[])format.pixelsFromBytes(bytes, order);
+			
+			byte[] expected = new byte[] {0,40,80,(byte)120,(byte)160,(byte)200,
+											0,40,80,(byte)120,(byte)160,(byte)200};
+			
+			assertArrayEquals(expected,actual);
+		}
+		
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray8-2x3-sub1.tif");
+			vStack.addSlice("gray8-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+	
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.COLOR8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+			
+			byte[] bytes = writeData(fi, false);
+			
+			byte[] actual = (byte[])format.pixelsFromBytes(bytes, order);
+			
+			byte[] expected = new byte[] {120,(byte)160,(byte)200,0,40,80,120,(byte)160,(byte)200,0,40,80};
+			
+			assertArrayEquals(expected,actual);
+		}
 	}
 	
 	private void tryColor8BitStack() {
+		PixelFormat format = new Color8Format();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Color8Format();
 				byte[] expectedAfterWrite = new byte[] {};
 				byte[][] imageStack = new byte[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -184,11 +223,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryColor8BitImage() {
+		PixelFormat format = new Color8Format();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Color8Format();
 				byte[] expected = (byte[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -210,21 +249,63 @@ public class ImageWriterTest {
 		tryColor8BitImage();
 	}
 	
-	// TODO - write this
 	private void tryGray8BitVirtualStack() {
-		// if (fi.nImages>1 && fi.virtualStack!=null)
-		// sub-case:	write8BitVirtualStack(out, fi.virtualStack);
-		FileInfo fi = new FileInfo();
-		fi.intelByteOrder = false;
-		fi.fileType = FileInfo.GRAY8;
+
+		PixelFormat format = new Gray8Format();
+		
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray8-2x3-sub1.tif");
+			vStack.addSlice("gray8-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+	
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			byte[] actual = (byte[])format.pixelsFromBytes(bytes, order);
+			
+			byte[] expected = new byte[] {0,40,80,(byte)120,(byte)160,(byte)200,
+											0,40,80,(byte)120,(byte)160,(byte)200};
+			
+			assertArrayEquals(expected,actual);
+		}
+		
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray8-2x3-sub1.tif");
+			vStack.addSlice("gray8-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+	
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY8, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+			
+			byte[] bytes = writeData(fi, false);
+			
+			byte[] actual = (byte[])format.pixelsFromBytes(bytes, order);
+			
+			byte[] expected = new byte[] {120,(byte)160,(byte)200,0,40,80,120,(byte)160,(byte)200,0,40,80};
+			
+			assertArrayEquals(expected,actual);
+		}
 	}
 	
 	private void tryGray8BitStack() {
+		PixelFormat format = new Gray8Format();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray8Format();
 				byte[] expectedAfterWrite = new byte[] {};
 				byte[][] imageStack = new byte[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -248,11 +329,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray8BitImage() {
+		PixelFormat format = new Gray8Format();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray8Format();
 				byte[] expected = (byte[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -274,36 +355,68 @@ public class ImageWriterTest {
 		tryGray8BitImage();
 	}
 	
-	// TODO - write this
 	private void tryGray16SignedVirtualStack() {
-
-		VirtualStack vStack = new VirtualStack(5, 1, (ColorModel) null, "data/");
-		
-		vStack.addSlice("gray16signedA.tif");
-		vStack.addSlice("gray16signedB.tif");
-		
-		assertNotNull(vStack.getProcessor(1));
 
 		PixelFormat format = new Gray16SignedFormat();
 		
-		FileInfo fi = new FileInfo();
-		setFileInfo(fi, FileInfo.GRAY16_SIGNED, 1, 5, false, 2, vStack, null);
-
-		byte[] bytes = writeData(fi, false);
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray16-2x3-sub1.tif");
+			vStack.addSlice("gray16-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			short[] actual = (short[])format.pixelsFromBytes(bytes,order);
+			
+			short[] expected = new short[] {0,10280,20560,30840,-24416,-14136,0,10280,20560,30840,-24416,-14136};
+			
+			assertArrayEquals(expected,actual);
+	
+			// for 1x5 gray16signedA and B .tif
+			// assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
+		}
 		
-		short[] actual = (short[])format.pixelsFromBytes(bytes, ByteOrder.Value.DEFAULT);
-		
-		//assertArrayEquals(new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5},bytes);
-		//assertArrayEquals(new short[] {1,2,3,4,5,1,2,3,4,5},actual);  // fails
-		assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray16-2x3-sub1.tif");
+			vStack.addSlice("gray16-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY16_SIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+			
+			byte[] bytes = writeData(fi, false);
+			
+			short[] actual = (short[])format.pixelsFromBytes(bytes,order);
+			
+			short[] expected = new short[] {30840,-24416,-14136,0,10280,20560,30840,-24416,-14136,0,10280,20560};
+			
+			assertArrayEquals(expected,actual);
+	
+			// for 1x5 gray16signedA and B .tif
+			// assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
+		}
 	}
 	
 	private void tryGray16SignedStack() {
+		PixelFormat format = new Gray16SignedFormat();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray16SignedFormat();
 				short[] expectedAfterWrite = new short[] {};
 				short[][] imageStack = new short[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -327,11 +440,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16SignedImage() {
+		PixelFormat format = new Gray16SignedFormat();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray16SignedFormat();
 				short[] expected = (short[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -353,35 +466,70 @@ public class ImageWriterTest {
 		tryGray16SignedImage();
 	}
 	
-	// TODO - write this - not finished - copied from above - needs work
 	private void tryGray16UnsignedVirtualStack() {
-
-		VirtualStack vStack = new VirtualStack(5, 1, (ColorModel) null, "data/");
-		
-		vStack.addSlice("gray16signedA.tif");
-		vStack.addSlice("gray16signedB.tif");
-		
-		assertNotNull(vStack.getProcessor(1));
 
 		PixelFormat format = new Gray16UnsignedFormat();
 		
-		FileInfo fi = new FileInfo();
-		setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 1, 5, false, 2, vStack, null);
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray16-2x3-sub1.tif");
+			vStack.addSlice("gray16-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			short[] actual = (short[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			short[] expected = new short[] {0,10280,20560,30840,-24416,-14136,0,10280,20560,30840,-24416,-14136};
+			
+			assertArrayEquals(expected,actual);
+		}
 
-		byte[] bytes = writeData(fi, false);
-		
-		short[] actual = (short[])format.pixelsFromBytes(bytes, ByteOrder.Value.DEFAULT);
-		
-		// assertArrayEquals(new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5},bytes);
-		assertArrayEquals(new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763},actual);
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray16-2x3-sub1.tif");
+			vStack.addSlice("gray16-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY16_UNSIGNED, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+	
+			byte[] bytes = writeData(fi, false);
+			
+			short[] actual = (short[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			short[] expected = new short[] {30840,-24416,-14136,0,10280,20560,30840,-24416,-14136,0,10280,20560};
+			
+			assertArrayEquals(expected,actual);
+		}
 	}
 	
 	private void tryGray16UnsignedStack() {
+		PixelFormat format = new Gray16UnsignedFormat();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray16UnsignedFormat();
 				short[] expectedAfterWrite = new short[] {};
 				short[][] imageStack = new short[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -405,11 +553,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray16UnsignedImage() {
+		PixelFormat format = new Gray16UnsignedFormat();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray16UnsignedFormat();
 				short[] expected = (short[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -431,20 +579,72 @@ public class ImageWriterTest {
 		tryGray16UnsignedImage();
 	}
 	
-	// TODO - write this
 	private void tryRgbVirtualStack() {
-		// if (fi.nImages>1 && fi.virtualStack!=null)
-		// sub-case: writeRGBVirtualStack(out, fi.virtualStack);
-		FileInfo fi = new FileInfo();
-		fi.fileType = FileInfo.RGB;
+
+		PixelFormat format = new RgbFormat();
+		
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray24-2x3-sub1.tif");
+			vStack.addSlice("gray24-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.RGB, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			int[] actual = (int[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			int[] expected = new int[] {-16777216,-14145496,-11513776,-8882056,-6250336,-3618616,
+										-16777216,-14145496,-11513776,-8882056,-6250336,-3618616};
+			
+			assertArrayEquals(expected,actual);
+		}
+
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray24-2x3-sub1.tif");
+			vStack.addSlice("gray24-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.RGB, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+	
+			byte[] bytes = writeData(fi, false);
+			
+			int[] actual = (int[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			int[] expected = new int[] {-8882056,-6250336,-3618616,-16777216,-14145496,-11513776,
+										-8882056,-6250336,-3618616,-16777216,-14145496,-11513776};
+			
+			assertArrayEquals(expected,actual);
+		}
 	}
 	
 	private void tryRgbStack() {
+		PixelFormat format = new RgbFormat();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new RgbFormat();
 				int[] expectedAfterWrite = new int[] {};
 				int[][] imageStack = new int[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -468,11 +668,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryRgbImage() {
+		PixelFormat format = new RgbFormat();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new RgbFormat();
 				int[] expected = (int[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -494,21 +694,71 @@ public class ImageWriterTest {
 		tryRgbImage();
 	}
 	
-	// TODO - write this
 	private void tryGray32FloatVirtualStack() {
-		// if (fi.nImages>1 && fi.virtualStack!=null)
-		// sub-case: writeFloatVirtualStack(out, fi.virtualStack);
-		FileInfo fi = new FileInfo();
-		fi.intelByteOrder = false;
-		fi.fileType = FileInfo.GRAY32_FLOAT;
+		PixelFormat format = new Gray32FloatFormat();
+		
+		// try regular
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray32float-2x3-sub1.tif");
+			vStack.addSlice("gray32float-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+	
+			byte[] bytes = writeData(fi, false);
+			
+			float[] actual = (float[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			float[] expected = new float[] {0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f,
+											0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f};
+			
+			Assert.assertFloatArraysEqual(expected,actual);
+		}
+
+		// try with filename hack that flips pixels
+		for (ByteOrder.Value order : ByteOrders)
+		{
+			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
+			
+			vStack.addSlice("gray32float-2x3-sub1.tif");
+			vStack.addSlice("gray32float-2x3-sub2.tif");
+			
+			assertNotNull(vStack.getProcessor(1));
+			
+			FileInfo fi = new FileInfo();
+			setFileInfo(fi, FileInfo.GRAY32_FLOAT, 2, 3, (order == ByteOrder.Value.INTEL), 2, vStack, null);
+			fi.fileName = "FlipTheseImages";
+	
+			byte[] bytes = writeData(fi, false);
+			
+			float[] actual = (float[])format.pixelsFromBytes(bytes, order);
+			
+			// for gray16unsignedA and B .tif
+			// expected = new byte[] {-128,1,-128,2,-128,3,-128,4,-128,5,-128,1,-128,2,-128,3,-128,4,-128,5};
+			// expected = new short[] {-32767,-32766,-32765,-32764,-32763,-32767,-32766,-32765,-32764,-32763};
+	
+			float[] expected = new float[] {0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f,
+											0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f};
+			
+			Assert.assertFloatArraysEqual(expected,actual);
+		}
 	}
 	
 	private void tryGray32FloatStack() {
+		PixelFormat format = new Gray32FloatFormat();
 		for (long[][][] imageSet : Images.ImageSets)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray32FloatFormat();
 				float[] expectedAfterWrite = new float[] {};
 				float[][] imageStack = new float[imageSet.length][];
 				for (int i = 0; i < imageSet.length; i++)
@@ -532,11 +782,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryGray32FloatImage() {
+		PixelFormat format = new Gray32FloatFormat();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Gray32FloatFormat();
 				float[] expected = (float[])(format.expectedResults(image)); 
 				
 				FileInfo fi = new FileInfo();
@@ -559,11 +809,11 @@ public class ImageWriterTest {
 	}
 	
 	private void tryRgb48Image() {
+		PixelFormat format = new Rgb48Format();
 		for (long[][] image : Images.Images)
 		{
 			for (ByteOrder.Value order : ByteOrders)
 			{
-				PixelFormat format = new Rgb48Format();
 				short[][] expected = (short[][]) format.expectedResults(image);
 	
 				FileInfo fi = new FileInfo();
