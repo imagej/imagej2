@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ij.io.Assert;
+
 import java.awt.image.IndexColorModel;
 
 import src.IJInfo;
@@ -109,10 +111,14 @@ public class LUTTest {
 		byte[] blues = bytes(size,88);
 		byte[] greens = bytes(size,104);
 		byte[] temp = new byte[size];
-		LUT lut = new LUT(bits,size,reds,blues,greens);
+		LUT lut = new LUT(bits,size,reds,greens,blues);
 		assertNotNull(lut);
 		lut.getReds(temp);
 		assertArrayEquals(reds,temp);
+		lut.getGreens(temp);
+		assertArrayEquals(greens,temp);
+		lut.getBlues(temp);
+		assertArrayEquals(blues,temp);
 	}
 	
 	@Test
@@ -218,13 +224,13 @@ public class LUTTest {
 		lut.getBlues(temp);
 		assertArrayEquals(blues,temp);
 		
-		assertEquals(1.0,lut.min,0.00000001);
-		assertEquals(1000.0,lut.max,0.00000001);
+		assertEquals(1.0,lut.min,Assert.DOUBLE_TOL);
+		assertEquals(1000.0,lut.max,Assert.DOUBLE_TOL);
 
 		// min and max reversed
 		lut = new LUT(cm,1000.0,1.0);
-		assertEquals(1000.0,lut.min,0.00000001);
-		assertEquals(1.0,lut.max,0.00000001);
+		assertEquals(1000.0,lut.min,Assert.DOUBLE_TOL);
+		assertEquals(1.0,lut.max,Assert.DOUBLE_TOL);
 		
 		// should throw an exception if passed a null colormodel
 		try {
@@ -331,16 +337,16 @@ public class LUTTest {
 		blues = bytes(12,58);
 		greens = bytes(12,99);
 		lut = new LUT(4,12,reds,blues,greens);
-		assertEquals(0.0,lut.min,0.00000001);
-		assertEquals(0.0,lut.max,0.00000001);
+		assertEquals(0.0,lut.min,Assert.DOUBLE_TOL);
+		assertEquals(0.0,lut.max,Assert.DOUBLE_TOL);
 		
 		// check their values after they are set by other constructors
 		IndexColorModel cm = new IndexColorModel(4,12,reds,greens,blues);
 		
 		lut = new LUT(cm,66.34,Double.MAX_VALUE);
 		assertNotNull(lut);
-		assertEquals(66.34,lut.min,0.00000001);
-		assertEquals(Double.MAX_VALUE,lut.max,0.00000001);
+		assertEquals(66.34,lut.min,Assert.DOUBLE_TOL);
+		assertEquals(Double.MAX_VALUE,lut.max,Assert.DOUBLE_TOL);
 	}
 
 }

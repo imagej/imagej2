@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 public class Assert {
 	
 	public static final float FLOAT_TOL = 0.00001f;
+	public static final double DOUBLE_TOL = 0.0000001f;
 	
 	public static void assertFloatArraysEqual(float[] expected, float[] actual)
 	{
