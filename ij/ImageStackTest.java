@@ -822,7 +822,6 @@ public class ImageStackTest {
 	private void tryTest(int howMany)
 	{
 		int numToBeDeleted;
-		int max;
 		
 		is = new ImageStack(2,2);
 		for (int i = 0; i < howMany; i++)
