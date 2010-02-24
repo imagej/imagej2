@@ -88,13 +88,13 @@ public class ColorProcessorTest {
 	
 	}
 	
-	//TODO: add to utils class
+	
 	/**
-	 * Converts a byte[] to an int[]; assumes native byte ordering
+	 * Converts a byte[] to an int[]; assumes native byte ordering; 
 	 * @param b - Byte[] 
 	 * @return
 	 */
-	public static int[] byteArrayToIntArray(byte[] b ) 
+	private static int[] byteArrayToIntArray(byte[] b ) 
 	{
 		int intSize = b.length/3;
 	
