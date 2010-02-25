@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ij.io.DirectoryChooser;
-import src.IJInfo;
+import ij.IJInfo;
 
 public class DirectoryChooserTest {
 

@@ -12,7 +12,7 @@ import ij.io.Assert;
 
 import java.awt.image.IndexColorModel;
 
-import src.IJInfo;
+import ij.IJInfo;
 
 public class LUTTest {
 
