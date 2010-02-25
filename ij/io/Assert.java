@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 public class Assert {
 	
 	public static final float FLOAT_TOL = 0.00001f;
-	public static final double DOUBLE_TOL = 0.0000001f;
+	public static final double DOUBLE_TOL = 0.0000001;
 	
 	public static void assertFloatArraysEqual(float[] expected, float[] actual)
 	{
@@ -25,6 +25,25 @@ public class Assert {
 		for (int i = 0; i < expected.length; i++)
 			if (Math.abs(expected[i]-actual[i]) > FLOAT_TOL)
 				fail("Assert.assertFloatArraysEqual(float[],float[]) items differ at index " + i + ": expected "+ expected[i] + " and got " + actual[i]);
+	}
+	
+	public static void assertDoubleArraysEqual(double[] expected, double[] actual)
+	{
+		if (expected == actual)
+			return;
+
+		if (expected == null)
+			fail("Assert.assertDoubleArraysEqual(double[],double[]) passed in null data for first parameter");
+
+		if (actual == null)
+			fail("Assert.assertDoubleArraysEqual(double[],double[]) passed in null data for second parameter");
+		
+		if (expected.length != actual.length)
+			fail("Assert.assertDoubleArraysEqual(double[],double[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
+		
+		for (int i = 0; i < expected.length; i++)
+			if (Math.abs(expected[i]-actual[i]) > DOUBLE_TOL)
+				fail("Assert.assertDoubleArraysEqual(double[],double[]) items differ at index " + i + ": expected "+ expected[i] + " and got " + actual[i]);
 	}
 	
 	public static void assertArraysSame(Object expected, Object actual)
