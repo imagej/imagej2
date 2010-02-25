@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ij.io.BitBuffer;
-import src.IJInfo;
+import ij.IJInfo;
 
 public class BitBufferTest {
 	private BitBuffer bits = null;

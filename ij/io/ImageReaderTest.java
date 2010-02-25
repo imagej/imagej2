@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.io.*;
 
-import src.IJInfo;
+import ij.IJInfo;
 import ij.io.Assert;
 
 // NOTES
