@@ -398,10 +398,54 @@ public class Calibration implements Cloneable {
 		catch (CloneNotSupportedException e) {return null;}
 	}
 
+	/** Generic calibration equality test for unit tests */
+	// tests more internals of a Calibration than equals() below. Made to not break existing code.
+	public boolean isSameAs(Calibration other)
+	{
+		if (this == other)
+			return true;
+
+		// I'm going to continue testing floating point for equality - usually a no-no but its precedent
+		if ((pixelWidth != other.pixelWidth) ||
+				(pixelHeight != other.pixelHeight) ||
+				(pixelDepth != other.pixelDepth) ||
+				(frameInterval != other.frameInterval) ||
+				(fps != other.fps) ||
+				(loop != other.loop) ||
+				(xOrigin != other.xOrigin) ||
+				(yOrigin != other.yOrigin) ||
+				(zOrigin != other.zOrigin) ||
+				((info == null && other.info != null) ||
+						((info != null) && (!info.equals(other.info)))) ||
+				((coefficients == null && other.coefficients != null) ||
+						((coefficients != null) && (!coefficients.equals(other.coefficients)))) ||
+				((unit == null && other.unit != null) ||
+						((unit != null) && (!unit.equals(other.unit))) ||
+				((yunit == null && other.yunit != null) ||
+						((yunit != null) && !yunit.equals(other.yunit)))) ||
+				((zunit == null && other.zunit != null) ||
+						((zunit != null) && (!zunit.equals(other.zunit)))) ||
+				((units == null && other.units != null) ||
+						((units != null) && (!units.equals(other.units)))) ||
+				((valueUnit == null && other.valueUnit != null) ||
+						((valueUnit != null) && (!valueUnit.equals(other.valueUnit)))) ||
+				((timeUnit == null && other.timeUnit != null) ||
+						((timeUnit != null) && (!timeUnit.equals(other.timeUnit)))) ||
+				(function != other.function) ||
+				((cTable == null && other.cTable != null) ||
+						((cTable != null) && (!cTable.equals(other.cTable)))) ||
+				(invertedLut != other.invertedLut) ||
+				(bitDepth != other.bitDepth) ||
+				(zeroClip != other.zeroClip) ||
+				(invertY != other.invertY)
+				)
+			return false;
+		
+		return true;
+	}
+	
 	/** Compares two Calibration objects for equality. */
  	public boolean equals(Calibration cal) {
- 		if (cal==null)
- 			return false;
  		boolean equal = true;
  		if (cal.pixelWidth!=pixelWidth || cal.pixelHeight!=pixelHeight || cal.pixelDepth!=pixelDepth)
  			equal = false;
