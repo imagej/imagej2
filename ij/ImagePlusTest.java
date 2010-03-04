@@ -10,21 +10,33 @@ import org.junit.Test;
 
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
+import java.util.Arrays;
+import java.util.Properties;
 
-import ij.gui.ImageWindow;
+//import ij.gui.ImageWindow;
+//import ij.gui.StackWindow;
+//import ij.io.FileInfo;
+import ij.gui.Line;
+import ij.gui.Roi;
 import ij.gui.StackWindow;
-import ij.io.FileInfo;
+import ij.io.Assert;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ShortProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
+import ij.process.ImageStatistics;
+import ij.measure.Measurements;
 
 public class ImagePlusTest {
 
 	ImagePlus ip;
+	ImageStack st;
+	ImageProcessor proc;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -41,7 +53,7 @@ public class ImagePlusTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	// make sure our public constants exist and have correct values
 	@Test
 	public void testPublicConstants() {
@@ -60,11 +72,13 @@ public class ImagePlusTest {
 	public void testPublicInstanceVars() {
 		ip = new ImagePlus();
 		assertFalse(ip.changes);
+		/* OBSOLETE
 		assertEquals(1.0,ip.pixelHeight,0.0);
 		assertEquals(1.0,ip.pixelWidth,0.0);
 		assertEquals("pixel",ip.unit);
 		assertEquals("pixel",ip.units);
 		assertFalse(ip.sCalibrated);
+		*/
 	}
 
 	@Test
@@ -94,8 +108,10 @@ public class ImagePlusTest {
 	public void testImagePlusStringImageProcessor() {
 		// note the underlying ImagePlus method does nothing except call a public method. That method is tested later
 		// in this file so really there is nothing to do here
-		ip = new ImagePlus("Houdini", new ByteProcessor(20,45));
+		proc = new ByteProcessor(20,45);
+		ip = new ImagePlus("Houdini", proc);
 		assertNotNull(ip);
+		assertEquals(proc,ip.getProcessor());
 	}
 
 	@Test
@@ -142,9 +158,9 @@ public class ImagePlusTest {
 			assertTrue(true);
 		}
 		
-		ImageStack stack = new ImageStack(2,3);
-		stack.addSlice("Zaphod",new byte[] {1,2,3,4,5,6});
-		ip = new ImagePlus("Beeplebrox",stack);
+		st = new ImageStack(2,3);
+		st.addSlice("Zaphod",new byte[] {1,2,3,4,5,6});
+		ip = new ImagePlus("Beeplebrox",st);
 		assertNotNull(ip);
 		// note: this constructor call delegates everything to setStack(). So we'll test that down below.
 		//   No more testing required beyond existence test
@@ -180,28 +196,28 @@ public class ImagePlusTest {
 
 	@Test
 	public void testDraw() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
 	@Test
 	public void testDrawIntIntIntInt() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
 	@Test
 	public void testUpdateAndDraw() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
 	@Test
 	public void testUpdateChannelAndDraw() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
@@ -210,7 +226,7 @@ public class ImagePlusTest {
 	public void testGetChannelProcessor() {
 		// getChannelProcessor() overridden by other classes. Default should be same as getProcessor()
 		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
-		ImageProcessor proc = ip.getProcessor();
+		proc = ip.getProcessor();
 		assertEquals(proc,ip.getChannelProcessor());
 	}
 
@@ -223,14 +239,14 @@ public class ImagePlusTest {
 
 	@Test
 	public void testRepaintWindow() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
 	@Test
 	public void testUpdateAndRepaintWindow() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
@@ -259,14 +275,15 @@ public class ImagePlusTest {
 
 	@Test
 	public void testShow() {
-		// no need to test
+		// note - no need to test
 		//  just calls show(String) method with argument "".
 		// if next test thorough this routine automatically handled
 	}
 
+	// TODO: think how to test better
 	@Test
 	public void testShowString() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 			// NOTE - when do test make sure it can handle string argument of "".
 		}
@@ -314,14 +331,13 @@ public class ImagePlusTest {
 
 	@Test
 	public void testGetID() {
-		// can't really test. Its a getter with no side effects. Can't predict its value since its different
-		// after every creation of an ImagePlus.
+		// note - can't really test. Its a getter with no side effects. Can't predict its value since its
+		// different after every creation of an ImagePlus.
 	}
 
 	@Test
 	public void testSetImage() {
 		BufferedImage b;
-		ImagePlus savedIp;
 		
 		// send in Buffered Image of TYPE_USHORT_GRAY
 		ip = new ImagePlus();
@@ -339,6 +355,8 @@ public class ImagePlusTest {
 		assertNotNull(ip.getProcessor());
 		assertTrue(ip.getProcessor() instanceof ByteProcessor);
 		
+		// TODO: might need to test more re: setupProcessor() call inside setImage()
+		
 		// send in Buffered Image of some other type
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
@@ -355,9 +373,6 @@ public class ImagePlusTest {
 	@Test
 	public void testSetProcessor() {
 
-		ImageProcessor proc;
-		ImageStack st;
-		
 		// throws exception if passed null processor
 		ip = new ImagePlus();
 		try {
@@ -407,8 +422,9 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getStackSize());
 		assertEquals(1,ip.currentSlice);
 		
+		// TODO: think how to test the setprocessor2 side effects better?
 		// otherwise fall through and setProc2() gets run internally so test some vars afterwards
-		//   null title
+		//   try with null title
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		st = new ImageStack(1,3);
 		st.addSlice("Slice1",proc);
@@ -424,7 +440,7 @@ public class ImagePlusTest {
 		assertEquals(ImagePlus.GRAY8,ip.getType());
 		assertEquals(8,ip.getBitDepth());
 		assertEquals(1,ip.getBytesPerPixel());
-		//   non-null title
+		//   try with non-null title
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		st = new ImageStack(1,3);
 		st.addSlice("Slice1",proc);
@@ -444,10 +460,7 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSetStackStringImageStack() {
-		// will only test non-gui capabilities of method
-		
-		ImageStack st;
-		ImageProcessor proc;
+		// note - will only test non-gui capabilities of method
 		
 		// stack size == 0 throws illArgExc
 		ip = new ImagePlus();
@@ -484,7 +497,6 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSetStackImageStackIntIntInt() {
-		ImageStack st;
 		
 		// input dimensions do not match stack's size
 		st = new ImageStack(1,2,24);  // 24 slices of 1x2 images
@@ -503,7 +515,7 @@ public class ImagePlusTest {
 				
 		// otherwise input dimensions match
 		//   .. delegates to setStack() - tested earlier
-		//   just need to test that title did not change
+		//   so just need to test that title did not change
 		ip = new ImagePlus();
 		ip.width = 1;
 		ip.height = 2;
@@ -518,43 +530,43 @@ public class ImagePlusTest {
 	@Test
 	public void testSetFileInfo() {
 
-		// Sets a private variable. getFileInfo() is not a getter but instead has a lot of side effects.
+		// note - sets a private variable. And getFileInfo() can't act as a getter because it has a lot of side effects.
 		// As it is I can't really test this method.
 		
 	}
 
 	@Test
 	public void testGetWindow() {
-		// can only test nonGUI part of this code
+		// note - can only test nonGUI part of this code
 		ip = new ImagePlus();
 		assertNull(ip.getWindow());
 	}
 
 	@Test
 	public void testIsVisible() {
-		// can only test nonGUI part of this code
+		// note - can only test nonGUI part of this code
 		ip = new ImagePlus();
 		assertFalse(ip.isVisible());
 	}
 
 	@Test
 	public void testSetWindow() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
 	@Test
 	public void testGetCanvas() {
-		// for now cannot test
+		// note - for now cannot test
 		if (IJInfo.RUN_GUI_TESTS) {
 		}
 	}
 
+	// Note: can't really test and relies on package visibility which could change
 	@Test
 	public void testSetColor() {
 		
-		ImageProcessor proc;
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 
 		if (IJInfo.RUN_ENHANCED_TESTS)
@@ -567,14 +579,16 @@ public class ImagePlusTest {
 		// try to set color of ImagePlus with no processor
 		//   ... should do nothing
 		ip = new ImagePlus();
+		// can't rely on as packages may change : assertNull(ip.ip);
 		ip.setColor(Color.yellow);
-		assertTrue(true);
+		// can't do due to access: assertEquals(ip.ip.drawingColor,Color.black);
 		
 		// try to set color of processor when it exists
 		//   ... should set something lower -> defers to ImageProcessor.setColor() -> test there
 		ip = new ImagePlus("MyChemicalRomance", proc);
+		// can't rely on as packages may change : assertEquals(proc,ip.ip);
 		ip.setColor(Color.magenta);
-		assertTrue(true);
+		// can't do due to access: assertEquals(ip.ip.drawingColor,Color.magenta);
 	}
 
 	@Test
@@ -583,7 +597,6 @@ public class ImagePlusTest {
 		ip = new ImagePlus();
 		assertFalse(ip.isProcessor());
 		
-		ImageProcessor proc;
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("FredFred",proc);
 		assertTrue(ip.isProcessor());
@@ -595,156 +608,795 @@ public class ImagePlusTest {
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
 		
-		// otherwise get into the method
-		ImageProcessor proc;
+		// otherwise it gets into the method
+		
+		//   uncalibrated subcase
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("FredFred",proc);
 		assertEquals(proc,ip.getProcessor());
+		assertEquals(Line.getWidth(),proc.getLineWidth());
+		assertNull(proc.getCalibrationTable());
+
+		//   calibrated subcase
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("FredFred",proc);
+		ip.getCalibration().setFunction(Calibration.STRAIGHT_LINE, new double[] {3,5}, "Splutterflits");
+		assertEquals(proc,ip.getProcessor());
+		assertEquals(Line.getWidth(),proc.getLineWidth());
+		assertNotNull(proc.getCalibrationTable());
+		
+		// note - untested side effect - Recorder records image was updated (sets a flag to true)
 	}
 
 	@Test
 	public void testTrimProcessor() {
-		fail("Not yet implemented");
+		byte[] bytes = new byte[] {6,5,4};
+		
+		// default case - not locked and not null proc
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		proc.setSnapshotPixels(bytes);
+		ip = new ImagePlus("Hookah",proc);
+		ip.trimProcessor();
+		assertNull(proc.getSnapshotPixels());
+		
+		// if locked
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		proc.setSnapshotPixels(bytes);
+		ip = new ImagePlus("Hookah",proc);
+		ip.lock();
+		ip.trimProcessor();
+		assertEquals(bytes,proc.getSnapshotPixels());
+		
+		// no need to test null proc case
 	}
 
+	/* OBSOLETE
 	@Test
 	public void testKillProcessor() {
-		fail("Not yet implemented");
+		ip = new ImagePlus();
+		ip.killProcessor();
 	}
+	*/
 
 	@Test
 	public void testGetMask() {
-		fail("Not yet implemented");
+		
+		// if roi is null
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("CornPalace",proc);
+		assertEquals(new Rectangle(0,0,1,3),proc.getRoi());
+		proc.setRoi(new Rectangle(0,1,0,1));
+		assertEquals(new Rectangle(0,1,0,1),proc.getRoi());
+		assertNull(ip.getMask());
+		assertEquals(new Rectangle(0,0,1,3),proc.getRoi());
+		
+		// else roi not null and rectangular roi
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		proc.setRoi(new Rectangle(0,1,0,1));
+		ip = new ImagePlus("CowMadHouse",proc);
+		assertNull(ip.getMask());  // always should return null for rectangle roi's
+
+		// else roi not null and nonrectangular roi
+		Roi region = new Roi(0,0,1,1,1); // last param key : arcsize != 0
+		proc = new ByteProcessor(2,2,new byte[] {1,2,3,4},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		proc.setRoi(new Roi(new Rectangle(0,0,1,0)));
+		ip = new ImagePlus("ChickenLooneyBin",proc);
+		ip.setRoi(region);
+		assertNotNull(ip.getMask());
+		// TODO - fails this next test though object inspection makes them look the same.
+		//        Once again I need my own equals() code - one for each kind of processor.
+		//assertEquals(region.getMask(),ip.getProcessor().getMask());
+		assertEquals(region.getBounds(),ip.getProcessor().getRoi());
 	}
 
+	// note - ImageStatistics does not override equals() so I need to do some testing of my own
+	//   Will test a subset of fields. Will also test floats for equality - usually a no-no but desired here I think
+	
+	private boolean imageStatsEquals(ImageStatistics a, ImageStatistics b)
+	{
+		if (!Arrays.equals(a.histogram, b.histogram))
+			return false;
+
+		if (a.pixelCount != b.pixelCount)	
+			return false;
+
+		if (a.mode != b.mode)	
+			return false;
+
+		if (a.dmode != b.dmode)	
+			return false;
+
+		if (a.area != b.area)	
+			return false;
+
+		if (a.min != b.min)	
+			return false;
+
+		if (a.max != b.max)	
+			return false;
+
+		if (a.mean != b.mean)	
+			return false;
+
+		if (a.median != b.median)	
+			return false;
+
+		if (a.stdDev != b.stdDev)	
+			return false;
+
+		if (a.skewness != b.skewness)	
+			return false;
+
+		if (a.kurtosis != b.kurtosis)	
+			return false;
+
+		if (a.xCentroid != b.xCentroid)	
+			return false;
+
+		if (a.yCentroid != b.yCentroid)	
+			return false;
+
+		if (a.xCenterOfMass != b.xCenterOfMass)
+			return false;
+
+		if (a.yCenterOfMass != b.yCenterOfMass)
+			return false;
+
+		return true;
+	}
+	
 	@Test
 	public void testGetStatistics() {
-		fail("Not yet implemented");
+		ImageStatistics expected,actual;
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("HilarityEnsues",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX);
+		actual = ip.getStatistics();
+		assertTrue(imageStatsEquals(expected,actual));
 	}
 
 	@Test
 	public void testGetStatisticsInt() {
-		fail("Not yet implemented");
+		ImageStatistics expected,actual;
+		
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("MySocksAreBunched",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,256,0.0,0.0);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX);
+		assertTrue(imageStatsEquals(expected,actual));
 	}
 
 	@Test
 	public void testGetStatisticsIntInt() {
-		fail("Not yet implemented");
+		ImageStatistics expected,actual;
+		
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("GaleForceWinds",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,0,0.0,0.0);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,0);
+		assertTrue(imageStatsEquals(expected,actual));
+		
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("GaleForceWinds",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,3,0.0,0.0);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,3);
+		assertTrue(imageStatsEquals(expected,actual));
+
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("GaleForceWinds",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,7,0.0,0.0);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,7);
+		assertTrue(imageStatsEquals(expected,actual));
+
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("GaleForceWinds",proc);
+		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,1024,0.0,0.0);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,1024);
+		assertTrue(imageStatsEquals(expected,actual));
 	}
 
 	@Test
 	public void testGetStatisticsIntIntDoubleDouble() {
-		fail("Not yet implemented");
+		ImageStatistics actual;
+
+		// try {1,2,3}
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("SuperPotato",proc);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,3,0.0,0.0);
+		assertEquals(3.0,actual.area,Assert.DOUBLE_TOL);
+		assertEquals(2.0,actual.mean,Assert.DOUBLE_TOL);
+		assertEquals(1.0,actual.stdDev,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.xCenterOfMass,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.yCenterOfMass,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.histogram[0],Assert.DOUBLE_TOL);
+		assertEquals(1.0,actual.histogram[1],Assert.DOUBLE_TOL);
+		assertEquals(1.0,actual.histogram[2],Assert.DOUBLE_TOL);
+		assertEquals(1.0,actual.histogram[3],Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.histogram[4],Assert.DOUBLE_TOL);
+
+		// try {1,1,2,2,3,3,1,2,1}
+		proc = new ByteProcessor(3,3,new byte[] {1,1,2,2,3,3,1,2,1},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		ip = new ImagePlus("SuperPotato",proc);
+		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,3,0.0,0.0);
+		assertEquals(9.0,actual.area,Assert.DOUBLE_TOL);
+		assertEquals(16.0/9,actual.mean,Assert.DOUBLE_TOL);
+		assertEquals(0.83333333333,actual.stdDev,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.xCenterOfMass,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.yCenterOfMass,Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.histogram[0],Assert.DOUBLE_TOL);
+		assertEquals(4.0,actual.histogram[1],Assert.DOUBLE_TOL);
+		assertEquals(3.0,actual.histogram[2],Assert.DOUBLE_TOL);
+		assertEquals(2.0,actual.histogram[3],Assert.DOUBLE_TOL);
+		assertEquals(0.0,actual.histogram[4],Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testGetTitle() {
-		fail("Not yet implemented");
+		ip = new ImagePlus(null,(Image)null);
+		assertEquals("",ip.getTitle());
+		
+		ip = new ImagePlus("TitleToCar",(Image)null);
+		assertEquals("TitleToCar",ip.getTitle());
 	}
 
 	@Test
 	public void testGetShortTitle() {
-		fail("Not yet implemented");
+		
+		// null string input
+		ip = new ImagePlus(null,(Image)null);
+		assertEquals("",ip.getShortTitle());
+		
+		// no spaces or periods
+		ip = new ImagePlus("HelloWorld",(Image)null);
+		assertEquals("HelloWorld",ip.getShortTitle());
+
+		// only a space
+		ip = new ImagePlus(" ",(Image)null);
+		assertEquals("",ip.getShortTitle());
+		
+		// space at beginning
+		ip = new ImagePlus(" HelloWorld",(Image)null);
+		assertEquals("",ip.getShortTitle());
+		
+		// space at end
+		ip = new ImagePlus("HelloWorld ",(Image)null);
+		assertEquals("HelloWorld",ip.getShortTitle());
+		
+		// space in middle
+		ip = new ImagePlus("Hello World",(Image)null);
+		assertEquals("Hello",ip.getShortTitle());
+
+		// dot at beginning
+		ip = new ImagePlus(".HelloWorld",(Image)null);
+		assertEquals(".HelloWorld",ip.getShortTitle());
+
+		// dot at end
+		ip = new ImagePlus("HelloWorld.",(Image)null);
+		assertEquals("HelloWorld",ip.getShortTitle());
+
+		// dot in middle
+		ip = new ImagePlus("Hello.World",(Image)null);
+		assertEquals("Hello",ip.getShortTitle());
+	
+		// dot in middle before space
+		ip = new ImagePlus("Hello.Fred World",(Image)null);
+		assertEquals("Hello",ip.getShortTitle());
+
+		// dot all alone
+		ip = new ImagePlus(".",(Image)null);
+		assertEquals(".",ip.getShortTitle());
 	}
 
 	@Test
 	public void testSetTitle() {
-		fail("Not yet implemented");
+		// note - there is some gui stuff here that is not tested
+		if (IJInfo.RUN_GUI_TESTS)
+		{
+		}
+		
+		ip = new ImagePlus("TrainWreck",(Image)null);
+		ip.setTitle(null);
+		assertEquals("TrainWreck",ip.getTitle());
+		
+		ip = new ImagePlus("HorseAndBuggy",(Image)null);
+		ip.setTitle("MopAndBroom");
+		assertEquals("MopAndBroom",ip.getTitle());
 	}
 
 	@Test
 	public void testGetWidth() {
-		fail("Not yet implemented");
+		// just a getter - do a compile time test
+		ip = new ImagePlus();
+		ip.getWidth();
 	}
 
 	@Test
 	public void testGetHeight() {
-		fail("Not yet implemented");
+		// just a getter - do a compile time test
+		ip = new ImagePlus();
+		ip.getHeight();
 	}
 
 	@Test
 	public void testGetStackSize() {
-		fail("Not yet implemented");
+		
+		ip = new ImagePlus();
+		assertEquals(1,ip.getStackSize());
+
+		st = new ImageStack(2,2);
+		st.addSlice("GrandmaKat", new byte[] {0,8,4,1});
+		st.addSlice("GrandpaHuff", new byte[] {0,8,4,1});
+		st.addSlice("UncleRemus", new byte[] {0,8,4,1});
+		st.addSlice("AuntRomulus", new byte[] {0,8,4,1});
+		st.addSlice("BabyAchilles", new byte[] {0,8,4,1});
+		
+		ip.setStack("CarribeanDreams", st);
+		assertEquals(5,ip.getStackSize());
+		
+		st.deleteLastSlice();
+		assertEquals(4,ip.getStackSize());
 	}
 
 	@Test
 	public void testGetImageStackSize() {
-		fail("Not yet implemented");
+		// note - getImageStackSize() is nearly identical to getStackSize() - one needs to be retired?
+		// same tests will suffice
+		
+		ip = new ImagePlus();
+		assertEquals(1,ip.getImageStackSize());
+
+		st = new ImageStack(2,2);
+		st.addSlice("GrandmaKat", new byte[] {0,8,4,1});
+		st.addSlice("GrandpaHuff", new byte[] {0,8,4,1});
+		st.addSlice("UncleRemus", new byte[] {0,8,4,1});
+		st.addSlice("AuntRomulus", new byte[] {0,8,4,1});
+		st.addSlice("BabyAchilles", new byte[] {0,8,4,1});
+		
+		ip.setStack("CarribeanDreams", st);
+		assertEquals(5,ip.getImageStackSize());
+		
+		st.deleteLastSlice();
+		assertEquals(4,ip.getImageStackSize());
 	}
 
+	// there is some gui code in the setDimensions method that is untested here
 	@Test
 	public void testSetDimensions() {
-		fail("Not yet implemented");
+		
+		// empty stack
+		ip = new ImagePlus();
+		ip.setDimensions(1,2,3);
+		assertEquals(1,ip.getNChannels());
+		assertEquals(1,ip.getNSlices());
+		assertEquals(ip.getStackSize(),ip.getNFrames());
+		
+		// stack but dimensions don't match
+		ip = new ImagePlus("Kerbam",(Image)null);
+		st = new ImageStack(2,2);
+		st.addSlice("Oranges", new byte[] {1,2,3,4});
+		st.addSlice("Apples", new byte[] {1,2,3,4});
+		st.addSlice("Pears", new byte[] {1,2,3,4});
+		ip.setStack("Kaboom",st);
+		ip.setDimensions(1,2,3);
+		assertEquals(1,ip.getNChannels());
+		assertEquals(ip.getStackSize(),ip.getNSlices());
+		assertEquals(1,ip.getNFrames());
+		
+		// stack with matching dimensions
+		ip = new ImagePlus("Kerbam",(Image)null);
+		st = new ImageStack(1,4);
+		st.addSlice("Oranges", new byte[] {1,2,3,4});
+		st.addSlice("Apples", new byte[] {1,2,3,4});
+		st.addSlice("Pears", new byte[] {1,2,3,4});
+		st.addSlice("Quinces", new byte[] {1,2,3,4});
+		st.addSlice("Kiwis", new byte[] {1,2,3,4});
+		st.addSlice("Bananas", new byte[] {1,2,3,4});
+		ip.setStack("Kaboom",st);
+		ip.setDimensions(1,2,3);
+		assertEquals(1,ip.getNChannels());
+		assertEquals(2,ip.getNSlices());
+		assertEquals(3,ip.getNFrames());
 	}
 
 	@Test
 	public void testIsHyperStack() {
-		fail("Not yet implemented");
+		// due to lack of gui during tests, inside isHyperStack() - isDisplayedHyperStack() always false
+
+		// openAs false, nDimensions <= 3
+		ip = new ImagePlus("ack phooey", (Image)null);
+		st = new ImageStack(1,4);
+		st.addSlice("ouch",new byte[] {1,2,3,4});
+		st.addSlice("yowee",new byte[] {1,2,3,4});
+		st.addSlice("zounds",new byte[] {1,2,3,4});
+		ip.setStack("wonder twins activate", st);
+		ip.setDimensions(1,1,3);
+		ip.setOpenAsHyperStack(false);
+		assertFalse(ip.isHyperStack());
+		
+		// openAs false, nDimensions > 3
+		ip = new ImagePlus("ack phooey", (Image)null);
+		st = new ImageStack(1,4);
+		st.addSlice("ouch",new byte[] {1,2,3,4});
+		st.addSlice("yowee",new byte[] {1,2,3,4});
+		st.addSlice("zounds",new byte[] {1,2,3,4});
+		st.addSlice("oof",new byte[] {1,2,3,4});
+		ip.setStack("wonder twins activate", st);
+		ip.setDimensions(1,1,4);
+		ip.setOpenAsHyperStack(false);
+		assertFalse(ip.isHyperStack());
+		
+		// openAs true, nDimensions <= 3
+		ip = new ImagePlus("ack phooey", (Image)null);
+		st = new ImageStack(1,4);
+		st.addSlice("ouch",new byte[] {1,2,3,4});
+		st.addSlice("yowee",new byte[] {1,2,3,4});
+		st.addSlice("zounds",new byte[] {1,2,3,4});
+		ip.setStack("wonder twins activate", st);
+		ip.setDimensions(1,1,3);
+		ip.setOpenAsHyperStack(true);
+		assertFalse(ip.isHyperStack());
+		
+		// openAs true, nDimensions > 3
+		ip = new ImagePlus("ack phooey", (Image)null);
+		st = new ImageStack(1,4);
+		st.addSlice("ouch",new byte[] {1,2,3,4});
+		st.addSlice("yowee",new byte[] {1,2,3,4});
+		st.addSlice("zounds",new byte[] {1,2,3,4});
+		st.addSlice("oof",new byte[] {1,2,3,4});
+		ip.setStack("wonder twins activate", st);
+		ip.setDimensions(1,2,2);
+		ip.setOpenAsHyperStack(true);
+		assertTrue(ip.isHyperStack());
 	}
 
 	@Test
 	public void testGetNDimensions() {
-		fail("Not yet implemented");
+		// all dims <= 1
+		ip = new ImagePlus("Agent007", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("suave",new byte[] {1,2,3,4,5,6});
+		ip.setStack("MoneyPenny",st);
+		ip.setDimensions(1,1,1);
+		assertEquals(2,ip.getNDimensions());
+
+		ip = new ImagePlus("Agent007", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("suave",new byte[] {1,2,3,4,5,6});
+		st.addSlice("debonair",new byte[] {1,2,3,4,5,6});
+		st.addSlice("sophisticated",new byte[] {1,2,3,4,5,6});
+		st.addSlice("handsome",new byte[] {1,2,3,4,5,6});
+		st.addSlice("humorous",new byte[] {1,2,3,4,5,6});
+		st.addSlice("aloof",new byte[] {1,2,3,4,5,6});
+		st.addSlice("calm",new byte[] {1,2,3,4,5,6});
+		st.addSlice("composed",new byte[] {1,2,3,4,5,6});
+		ip.setStack("MoneyPenny", st);
+
+		// one dim > 1
+		ip.setDimensions(1,1,8);
+		assertEquals(3,ip.getNDimensions());
+		ip.setDimensions(1,8,1);
+		assertEquals(3,ip.getNDimensions());
+		ip.setDimensions(8,1,1);
+		assertEquals(3,ip.getNDimensions());
+
+		// two dims > 1
+		ip.setDimensions(1,2,4);
+		assertEquals(4,ip.getNDimensions());
+		ip.setDimensions(1,4,2);
+		assertEquals(4,ip.getNDimensions());
+		ip.setDimensions(2,1,4);
+		assertEquals(4,ip.getNDimensions());
+		ip.setDimensions(2,4,1);
+		assertEquals(4,ip.getNDimensions());
+		ip.setDimensions(4,1,2);
+		assertEquals(4,ip.getNDimensions());
+		ip.setDimensions(4,2,1);
+		assertEquals(4,ip.getNDimensions());
+
+		// three dims > 1
+		ip.setDimensions(2,2,2);
+		assertEquals(5,ip.getNDimensions());
 	}
 
 	@Test
 	public void testIsDisplayedHyperStack() {
-		fail("Not yet implemented");
+		// note - method requires a gui - can't fully test
+		ip = new ImagePlus();
+		assertFalse(ip.isDisplayedHyperStack());
 	}
 
 	@Test
 	public void testGetNChannels() {
-		fail("Not yet implemented");
+		// stack does not match dimensions
+		ip = new ImagePlus("Groening", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("silly",new byte[] {1,2,3,4,5,6});
+		ip.setStack("AyeCarumba",st);
+		ip.setDimensions(1,1,3);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(1,3,1);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(3,1,1);
+		assertEquals(1,ip.getNChannels());
+
+		// stack matches dimensions
+		ip = new ImagePlus("Agent007", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("suave",new byte[] {1,2,3,4,5,6});
+		st.addSlice("debonair",new byte[] {1,2,3,4,5,6});
+		st.addSlice("sophisticated",new byte[] {1,2,3,4,5,6});
+		st.addSlice("handsome",new byte[] {1,2,3,4,5,6});
+		st.addSlice("humorous",new byte[] {1,2,3,4,5,6});
+		st.addSlice("aloof",new byte[] {1,2,3,4,5,6});
+		st.addSlice("calm",new byte[] {1,2,3,4,5,6});
+		st.addSlice("composed",new byte[] {1,2,3,4,5,6});
+		ip.setStack("MoneyPenny", st);
+
+		// one dim > 1
+		ip.setDimensions(1,1,8);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(1,8,1);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(8,1,1);
+		assertEquals(8,ip.getNChannels());
+
+		// two dims > 1
+		ip.setDimensions(1,2,4);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(1,4,2);
+		assertEquals(1,ip.getNChannels());
+		ip.setDimensions(2,1,4);
+		assertEquals(2,ip.getNChannels());
+		ip.setDimensions(2,4,1);
+		assertEquals(2,ip.getNChannels());
+		ip.setDimensions(4,1,2);
+		assertEquals(4,ip.getNChannels());
+		ip.setDimensions(4,2,1);
+		assertEquals(4,ip.getNChannels());
+
+		// three dims > 1
+		ip.setDimensions(2,2,2);
+		assertEquals(2,ip.getNChannels());
 	}
 
 	@Test
 	public void testGetNSlices() {
-		fail("Not yet implemented");
+		// stack does not match dimensions
+		ip = new ImagePlus("Groening", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("silly",new byte[] {1,2,3,4,5,6});
+		ip.setStack("AyeCarumba",st);
+		ip.setDimensions(1,1,3);
+		assertEquals(1,ip.getNSlices());
+		ip.setDimensions(1,3,1);
+		assertEquals(1,ip.getNSlices());
+		ip.setDimensions(3,1,1);
+		assertEquals(1,ip.getNSlices());
+
+		// stack matches dimensions
+		ip = new ImagePlus("Agent007", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("suave",new byte[] {1,2,3,4,5,6});
+		st.addSlice("debonair",new byte[] {1,2,3,4,5,6});
+		st.addSlice("sophisticated",new byte[] {1,2,3,4,5,6});
+		st.addSlice("handsome",new byte[] {1,2,3,4,5,6});
+		st.addSlice("humorous",new byte[] {1,2,3,4,5,6});
+		st.addSlice("aloof",new byte[] {1,2,3,4,5,6});
+		st.addSlice("calm",new byte[] {1,2,3,4,5,6});
+		st.addSlice("composed",new byte[] {1,2,3,4,5,6});
+		ip.setStack("MoneyPenny", st);
+
+		// one dim > 1
+		ip.setDimensions(1,1,8);
+		assertEquals(1,ip.getNSlices());
+		ip.setDimensions(1,8,1);
+		assertEquals(8,ip.getNSlices());
+		ip.setDimensions(8,1,1);
+		assertEquals(1,ip.getNSlices());
+
+		// two dims > 1
+		ip.setDimensions(1,2,4);
+		assertEquals(2,ip.getNSlices());
+		ip.setDimensions(1,4,2);
+		assertEquals(4,ip.getNSlices());
+		ip.setDimensions(2,1,4);
+		assertEquals(1,ip.getNSlices());
+		ip.setDimensions(2,4,1);
+		assertEquals(4,ip.getNSlices());
+		ip.setDimensions(4,1,2);
+		assertEquals(1,ip.getNSlices());
+		ip.setDimensions(4,2,1);
+		assertEquals(2,ip.getNSlices());
+
+		// three dims > 1
+		ip.setDimensions(2,2,2);
+		assertEquals(2,ip.getNSlices());
 	}
 
 	@Test
 	public void testGetNFrames() {
-		fail("Not yet implemented");
+		// stack does not match dimensions
+		ip = new ImagePlus("Groening", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("silly",new byte[] {1,2,3,4,5,6});
+		ip.setStack("AyeCarumba",st);
+		ip.setDimensions(1,1,3);
+		assertEquals(1,ip.getNFrames());
+		ip.setDimensions(1,3,1);
+		assertEquals(1,ip.getNFrames());
+		ip.setDimensions(3,1,1);
+		assertEquals(1,ip.getNFrames());
+
+		// stack matches dimensions
+		ip = new ImagePlus("Agent007", (Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("suave",new byte[] {1,2,3,4,5,6});
+		st.addSlice("debonair",new byte[] {1,2,3,4,5,6});
+		st.addSlice("sophisticated",new byte[] {1,2,3,4,5,6});
+		st.addSlice("handsome",new byte[] {1,2,3,4,5,6});
+		st.addSlice("humorous",new byte[] {1,2,3,4,5,6});
+		st.addSlice("aloof",new byte[] {1,2,3,4,5,6});
+		st.addSlice("calm",new byte[] {1,2,3,4,5,6});
+		st.addSlice("composed",new byte[] {1,2,3,4,5,6});
+		ip.setStack("MoneyPenny", st);
+
+		// one dim > 1
+		ip.setDimensions(1,1,8);
+		assertEquals(8,ip.getNFrames());
+		ip.setDimensions(1,8,1);
+		assertEquals(1,ip.getNFrames());
+		ip.setDimensions(8,1,1);
+		assertEquals(1,ip.getNFrames());
+
+		// two dims > 1
+		ip.setDimensions(1,2,4);
+		assertEquals(4,ip.getNFrames());
+		ip.setDimensions(1,4,2);
+		assertEquals(2,ip.getNFrames());
+		ip.setDimensions(2,1,4);
+		assertEquals(4,ip.getNFrames());
+		ip.setDimensions(2,4,1);
+		assertEquals(1,ip.getNFrames());
+		ip.setDimensions(4,1,2);
+		assertEquals(2,ip.getNFrames());
+		ip.setDimensions(4,2,1);
+		assertEquals(1,ip.getNFrames());
+
+		// three dims > 1
+		ip.setDimensions(2,2,2);
+		assertEquals(2,ip.getNFrames());
 	}
 
 	@Test
 	public void testGetDimensions() {
-		fail("Not yet implemented");
+		ip = new ImagePlus("MobyDick",(Image)null);
+		st = new ImageStack(2,3);
+		st.addSlice("1",new byte[] {1,2,3,4,5,6});
+		st.addSlice("2",new byte[] {1,2,3,4,5,6});
+		st.addSlice("3",new byte[] {1,2,3,4,5,6});
+		st.addSlice("4",new byte[] {1,2,3,4,5,6});
+		st.addSlice("5",new byte[] {1,2,3,4,5,6});
+		st.addSlice("6",new byte[] {1,2,3,4,5,6});
+		st.addSlice("7",new byte[] {1,2,3,4,5,6});
+		st.addSlice("8",new byte[] {1,2,3,4,5,6});
+		ip.setStack("TharSheBlows", st);
+		
+		// dimensions do not match stack
+		ip.setDimensions(1, 1, 1);
+		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
+		ip.setDimensions(1, 1, 5);
+		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
+		ip.setDimensions(1, 5, 1);
+		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
+		ip.setDimensions(5, 1, 1);
+		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
+
+		// dimensions match stack
+		ip.setDimensions(1, 1, 8);
+		assertArrayEquals(new int[] {2,3,1,1,8}, ip.getDimensions());
+		ip.setDimensions(1, 8, 1);
+		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
+		ip.setDimensions(8, 1, 1);
+		assertArrayEquals(new int[] {2,3,8,1,1}, ip.getDimensions());
+		ip.setDimensions(1, 2, 4);
+		assertArrayEquals(new int[] {2,3,1,2,4}, ip.getDimensions());
+		ip.setDimensions(1, 4, 2);
+		assertArrayEquals(new int[] {2,3,1,4,2}, ip.getDimensions());
+		ip.setDimensions(2, 1, 4);
+		assertArrayEquals(new int[] {2,3,2,1,4}, ip.getDimensions());
+		ip.setDimensions(2, 4, 1);
+		assertArrayEquals(new int[] {2,3,2,4,1}, ip.getDimensions());
+		ip.setDimensions(4, 1, 2);
+		assertArrayEquals(new int[] {2,3,4,1,2}, ip.getDimensions());
+		ip.setDimensions(4, 2, 1);
+		assertArrayEquals(new int[] {2,3,4,2,1}, ip.getDimensions());
+		ip.setDimensions(2, 2, 2);
+		assertArrayEquals(new int[] {2,3,2,2,2}, ip.getDimensions());
 	}
 
 	@Test
 	public void testGetType() {
-		fail("Not yet implemented");
+		// TODO - figure out how to get a COLOR_256 image
+		//proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		//ip = new ImagePlus("SoupySales",proc);
+		//assertEquals(ImagePlus.COLOR_256,ip.getType());
+
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3}, null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(ImagePlus.GRAY8,ip.getType());
+
+		proc = new ShortProcessor(1,3,new short[] {1,2,3},null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(ImagePlus.GRAY16,ip.getType());
+
+		proc = new ColorProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(ImagePlus.COLOR_RGB,ip.getType());
+
+		proc = new FloatProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(ImagePlus.GRAY32,ip.getType());
 	}
 
 	@Test
 	public void testGetBitDepth() {
-		fail("Not yet implemented");
+		// TODO - figure out how to get a COLOR_256 image
+		//proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		//ip = new ImagePlus("SoupySales",proc);
+		//assertEquals(8,ip.getBitDepth());
+
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3}, null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(8,ip.getBitDepth());
+
+		proc = new ShortProcessor(1,3,new short[] {1,2,3},null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(16,ip.getBitDepth());
+
+		proc = new ColorProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(24,ip.getBitDepth());
+
+		proc = new FloatProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(32,ip.getBitDepth());
 	}
 
 	@Test
 	public void testGetBytesPerPixel() {
-		fail("Not yet implemented");
+		// TODO - figure out how to get a COLOR_256 image
+		//proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
+		//ip = new ImagePlus("SoupySales",proc);
+		//assertEquals(1,ip.getBytesPerPixel());
+
+		proc = new ByteProcessor(1,3,new byte[] {1,2,3},null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(1,ip.getBytesPerPixel());
+
+		proc = new ShortProcessor(1,3,new short[] {1,2,3},null);
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(2,ip.getBytesPerPixel());
+
+		proc = new ColorProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(4,ip.getBytesPerPixel());
+
+		proc = new FloatProcessor(1,3,new int[] {1,2,3});
+		ip = new ImagePlus("SoupySales",proc);
+		assertEquals(4,ip.getBytesPerPixel());
 	}
 
 	@Test
-	public void testSetType() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetProperty() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProperty() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProperties() {
-		fail("Not yet implemented");
+	public void testPropertyMethods() {
+		ip = new ImagePlus();
+		assertNull(ip.getProperties());
+		assertNull(ip.getProperty("Anything"));
+		ip.setProperty("Anything", new Float(4.0));
+		assertNotNull(ip.getProperties());
+		assertEquals(4.0f,ip.getProperty("Anything"));
+		assertNull(ip.getProperty("SomethingElse"));
+		ip.setProperty("Anything",null);
+		assertNull(ip.getProperty("Anything"));
 	}
 
 	@Test
@@ -1082,25 +1734,25 @@ public class ImagePlusTest {
 		fail("Not yet implemented");
 	}
 
+	/* OBSOLETE
+
 	@Test
 	public void testSetDisplayListVector() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testGetDisplayList() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetDisplayListShapeColorBasicStroke() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testSetDisplayListRoiColorIntColor() {
-		fail("Not yet implemented");
 	}
+
+	*/
 
 	@Test
 	public void testClone() {
