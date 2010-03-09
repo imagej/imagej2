@@ -9,7 +9,7 @@ public class Images {
 	private static final long[][] BaseImage1x9 = {{11,12,13,14,15,16,17,18,19}};
 	private static final long[][] BaseImage7x2 = {{11,12},{21,22},{31,32},{41,42},{51,52},{61,62},{71,72}};
 	private static final long[][] BaseImage5x4 = {{255,255,255,255},{127,127,127,127},{63,63,63,63},{31,31,31,31},{15,15,15,15}};
-	private static final long[][] BaseImage4x6 =
+	private static final long[][] BaseImage6x6 =
 		{	{0,255,100,200,77,153},
 			{255,254,253,252,251,250},
 			{1,2,3,4,5,6},
@@ -57,7 +57,7 @@ public class Images {
 	// ********************** PUBLIC ACCESS POINTS  ***************************************
 	
 	public static final long[][][] Images = {BaseImage1x1, BaseImage3x3, BaseImage1x9, BaseImage7x2,
-		BaseImage5x4, BaseImage4x6, Base24BitImage5x5, Base48BitImage6x6};
+		BaseImage5x4, BaseImage6x6, Base24BitImage5x5, Base48BitImage6x6};
 	
 	public static final long[][][][] ImageSets = {ImageSet1x1, ImageSet3x1, ImageSet2x4, ImageSet6x6};
 }

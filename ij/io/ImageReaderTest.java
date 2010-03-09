@@ -21,8 +21,10 @@ import ij.io.Assert;
 // IMPORTANT: I have made changes to our local copy of ImageJ to work around bugs in ImageReader.
 //   - 4 byte pixels with LZW and PACK_BITS compression: ImageReader.readPixels() had different code for channel selection
 //       when the code called was either readChunkyRGB() or readCompressedChunkyRGB(). Fixed in local repository.
+//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
 //   - gray16 signed data reading when compressed LZW_WITH_DIFFERENCING: the 32768 bias was being computed before
 //       the differences were being used. I have updated ImageReader in the local repository.
+//       3-9-10 - BDZ integrated Wayne's fixes into our copy of ImageReader.java
 //   - lurking bug in ImageReader for 16-bit files? If strips > 1 then it assumes its compressed regardless of the
 //       compression flag. However uncompress() doesn't know what to do with it and does no uncompression.
 
@@ -39,41 +41,6 @@ import ij.io.Assert;
 
 public class ImageReaderTest {
 
-/*
-	static final long[][] BaseImage1x1 = {{77}};
-	static final long[][] BaseImage3x3 = {{11,12,13},{21,22,23},{31,32,33}};
-	static final long[][] BaseImage1x9 = {{11,12,13,14,15,16,17,18,19}};
-	static final long[][] BaseImage7x2 = {{11,12},{21,22},{31,32},{41,42},{51,52},{61,62},{71,72}};
-	static final long[][] BaseImage5x4 = {{255,255,255,255},{127,127,127,127},{63,63,63,63},{31,31,31,31},{15,15,15,15}};
-	static final long[][] BaseImage4x6 =	{
-												{0,255,100,200,77,153},
-												{255,254,253,252,251,250},
-												{1,2,3,4,5,6},
-												{0,0,0,0,0,0},
-												{67,67,67,67,67,67},
-												{8,99,8,99,8,255}
-											};
-	static final long[][] Base24BitImage5x5 =	{	{0xffffff,0xff0000,0x00ff00,0x0000ff, 0},
-													{16777216,100000,5999456,7070708,4813},
-													{1,10,100,1000,10000},
-													{0,0,0,0,0},
-													{88,367092,1037745,88,4}
-												};
-	static final long[][] Base48BitImage6x6 = 
-		{	{0xffffffffffffL, 0xffffffffff00L, 0xffffffff0000L, 0xffffff000000L, 0xffff00000000L, 0xff0000000000L},
-			{0,0xffffffffffffL,0,0xffffffffffffL,0,0xffffffffffffL},
-			{1,2,3,4,5,6},
-			{0xff0000000000L,0x00ff00000000L, 0x0000ff000000,0x000000ff0000,0x00000000ff00,0x0000000000ff},
-			{111111111111L,222222222222L,333333333333L,444444444444L,555555555555L,666666666666L},
-			{0,567,0,582047483,0,1},
-			{12345,554224678,90909090,9021,666666,3145926}
-		};
-	
-	static final long[][] BaseTestImage = Base48BitImage6x6;
-
-	final long[][][] Images = new long[][][] {BaseImage1x1, BaseImage3x3, BaseImage3x3, BaseImage1x9, BaseImage7x2, BaseImage5x4, BaseImage4x6,
-			Base24BitImage5x5, Base48BitImage6x6};
-*/
 	private FormatTester gray8Tester= new FormatTester(new Gray8Format());
 	private FormatTester color8Tester= new FormatTester(new Color8Format());
 	private FormatTester gray16SignedTester= new FormatTester(new Gray16SignedFormat());
@@ -237,14 +204,14 @@ public class ImageReaderTest {
 						for (int headerOffset : HeaderOffsets)
 							for (boolean stripped : EncodeAsStrips)
 							{
-/*
+								/*
 								System.out.println("tester("+tester.name()+") image("+image.length+"x"+image[0].length+") compress("+compression+") byteOrder("+byteOrder+") header("+headerOffset+") stripped("+stripped+")");
-								if ((tester.name() == "Rgb48") && (image.length == 1) && (image[0].length == 1) && (compression == 1) &&
-										(byteOrder == ByteOrder.Value.INTEL) && (headerOffset == 0) && (stripped))
+								if ((tester.name() == "Gray16Signed") && (image.length == 6) && (image[0].length == 6) && (compression == 2) &&
+										(byteOrder == ByteOrder.Value.DEFAULT) && (headerOffset == 0) && (stripped))
 								{
 									System.out.println("About to fail");
 								}
-*/
+								 */
 								tester.runTest(image,compression,byteOrder,headerOffset,stripped);
 							}
 	
