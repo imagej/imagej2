@@ -9,8 +9,14 @@ class AbgrFormat extends PixelFormat
 	
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
-		if (compression == FileInfo.COMPRESSION_UNKNOWN)
+		// top test replaced commented out test after Wayne's changes to ImageReader in 143.s3
+		
+		if (compression != FileInfo.COMPRESSION_NONE)
 			return false;
+
+		//if (compression == FileInfo.COMPRESSION_UNKNOWN)
+		//	return false;
+
 		if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 			return false;
 		

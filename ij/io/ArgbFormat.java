@@ -9,8 +9,17 @@ class ArgbFormat extends PixelFormat
 	
 	boolean canDoImageCombo(int compression, ByteOrder.Value byteOrder, int headerBytes, boolean stripped)
 	{
-		if (compression == FileInfo.COMPRESSION_UNKNOWN)
+		// top two tests replaced commented out test after Wayne's changes to ImageReader in 143.s3
+		
+		if (byteOrder == ByteOrder.Value.INTEL)
 			return false;
+		
+		if (compression != FileInfo.COMPRESSION_NONE)
+			return false;
+
+		//if (compression == FileInfo.COMPRESSION_UNKNOWN)
+		//	return false;
+
 		if (compression == FileInfo.JPEG)  // TODO: remove this restriction to test jpeg compression
 			return false;
 		
@@ -24,20 +33,22 @@ class ArgbFormat extends PixelFormat
 	{
 		byte[] output = new byte[4];
 				
-		if (byteOrder == ByteOrder.Value.INTEL)
-		{
+		// commented out code in this routine done so to jibe with Wayne's changes to ImageReader in 1.43s3
+		
+		//if (byteOrder == ByteOrder.Value.INTEL)
+		//{
 			output[0] = (byte)((pix & 0x00ff0000) >> 16);
 			output[1] = (byte)((pix & 0x0000ff00) >> 8);
 			output[2] = (byte)((pix & 0x000000ff) >> 0);
 			output[3] = (byte)((pix & 0xff000000) >> 24);
-		}
-		else
-		{
-			output[0] = (byte)((pix & 0xff000000) >> 24);
-			output[1] = (byte)((pix & 0x00ff0000) >> 16);
-			output[2] = (byte)((pix & 0x0000ff00) >> 8);
-			output[3] = (byte)((pix & 0x000000ff) >> 0);
-		}
+		//}
+		//else
+		//{
+		//	output[0] = (byte)((pix & 0xff000000) >> 24);
+		//	output[1] = (byte)((pix & 0x00ff0000) >> 16);
+		//	output[2] = (byte)((pix & 0x0000ff00) >> 8);
+		//	output[3] = (byte)((pix & 0x000000ff) >> 0);
+		//}
 
 		return output;
 	}
