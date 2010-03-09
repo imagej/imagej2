@@ -1022,6 +1022,52 @@ public class ImagePlus implements ImageObserver, Measurements {
 	*/
 	public int[] getPixel(int x, int y) {
 		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
+		switch (imageType) {
+			case GRAY8: case COLOR_256:
+				int index;
+				if (ip!=null)
+					index = ip.getPixel(x, y);
+				else {
+					byte[] pixels8;
+					if (img==null) return pvalue;
+					PixelGrabber pg = new PixelGrabber(img,x,y,1,1,false);
+					try {pg.grabPixels();}
+					catch (InterruptedException e){return pvalue;};
+					pixels8 = (byte[])(pg.getPixels());
+					index = pixels8!=null?pixels8[0]&0xff:0;
+				}
+				if (imageType!=COLOR_256) {
+					pvalue[0] = index;
+					return pvalue;
+				}
+				pvalue[3] = index;
+				// fall through to get rgb values
+			case COLOR_RGB:
+				int c = 0;
+				if (imageType==COLOR_RGB && ip!=null)
+					c = ip.getPixel(x, y);
+				else {
+					int[] pixels32 = new int[1];
+					if (img==null) return pvalue;
+					PixelGrabber pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
+					try {pg.grabPixels();}
+					catch (InterruptedException e) {return pvalue;};
+					c = pixels32[0];
+				}
+				int r = (c&0xff0000)>>16;
+				int g = (c&0xff00)>>8;
+				int b = c&0xff;
+				pvalue[0] = r;
+				pvalue[1] = g;
+				pvalue[2] = b;
+				break;
+			case GRAY16: case GRAY32:
+				if (ip!=null) pvalue[0] = ip.getPixel(x, y);
+				break;
+		}
+		return pvalue;
+/* old way that I changed to get tests working before Wayne fixed the problem above.
+		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
 		if (img == null)
 			return pvalue;
 		switch (imageType) {
@@ -1045,7 +1091,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 				// fall through to get rgb values
 			case COLOR_RGB:
 				int[] pixels32 = new int[1];
-				if (win==null) break;
+				// BDZ removed next line: I think Wayne removed next line after I reported the problem
+				// if (win==null) break;
 				PixelGrabber pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
 				try {pg.grabPixels();}
 				catch (InterruptedException e){return pvalue;};
@@ -1062,6 +1109,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 				break;
 		}
 		return pvalue;
+*/
 	}
     
 	/** Returns an empty image stack that has the same
