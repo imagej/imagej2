@@ -61,7 +61,8 @@ public class Overlay {
     }
     
     public Roi[] toArray() {
-    	return (Roi[])list.toArray();
+       	Roi[] array = new Roi[list.size()];
+       	return (Roi[])list.toArray(array);
     }
     
     public String toString() {

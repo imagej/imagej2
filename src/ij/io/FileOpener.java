@@ -55,7 +55,8 @@ public class FileOpener {
 	public ImagePlus open(boolean show) {
 		ImagePlus imp=null;
 		Object pixels;
-		ProgressBar pb=null;
+		// BDZ commented out unused(?) reference 
+		// ProgressBar pb=null;
 	    ImageProcessor ip;
 		
 		ColorModel cm = createColorModel(fi);
@@ -218,7 +219,8 @@ public class FileOpener {
 	/** Restores original disk or network version of image. */
 	public void revertToSaved(ImagePlus imp) {
 		Image img;
-		ProgressBar pb = IJ.getInstance().getProgressBar();
+		// BDZ - commented out this code to avoid ij-tests from bombing here
+		//ProgressBar pb = IJ.getInstance().getProgressBar();
 		ImageProcessor ip;
 		String path = fi.directory + fi.fileName;
 		
