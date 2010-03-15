@@ -13,11 +13,13 @@ class Gray16SignedFormat extends PixelFormat
 			return false;
 		if (compression == FileInfo.JPEG)
 			return false;
-		if (compression == FileInfo.PACK_BITS)
-			return false;
+		// BDZ - removed to reflect code as of 1.43s7
+		//if (compression == FileInfo.PACK_BITS)
+		//	return false;
 		
-		if (stripped && (compression == FileInfo.COMPRESSION_NONE))
-			return false;
+		// BDZ - removed to reflect code as of 1.43s7
+		//if (stripped && (compression == FileInfo.COMPRESSION_NONE))
+		//	return false;
 		
 		return true;
 	}
