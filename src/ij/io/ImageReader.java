@@ -38,7 +38,7 @@ public class ImageReader {
 	}
 	
 	byte[] read8bitImage(InputStream in) throws IOException {
-		if (fi.compression==FileInfo.LZW || fi.compression==FileInfo.LZW_WITH_DIFFERENCING || fi.compression==FileInfo.PACK_BITS)
+		if (fi.compression!=FileInfo.COMPRESSION_NONE)
 			return readCompressed8bitImage(in);
 		byte[] pixels = new byte[nPixels];
 		// assume contiguous strips
@@ -95,8 +95,7 @@ public class ImageReader {
 	
 	/** Reads a 16-bit image. Signed pixels are converted to unsigned by adding 32768. */
 	short[] read16bitImage(InputStream in) throws IOException {
-		if (fi.compression==FileInfo.LZW || fi.compression==FileInfo.LZW_WITH_DIFFERENCING
-		|| (fi.stripOffsets!=null&&fi.stripOffsets.length>1))
+		if (fi.compression!=FileInfo.COMPRESSION_NONE || (fi.stripOffsets!=null&&fi.stripOffsets.length>1))
 			return readCompressed16bitImage(in);
 		int pixelsRead;
 		byte[] buffer = new byte[bufferSize];
@@ -143,8 +142,7 @@ public class ImageReader {
 		}
 		return pixels;
 	}
-/**/	
-	// Wayne's code pulled from 1.43s3
+	
 	short[] readCompressed16bitImage(InputStream in) throws IOException {
 		in = new DataInputStream(in);
 		short[] pixels = new short[nPixels];
@@ -184,80 +182,17 @@ public class ImageReader {
 					last = b % fi.width == fi.width - 1 ? 0 : pixels[b];
 				}
 			}
-			if (fi.fileType==FileInfo.GRAY16_SIGNED) {
-				// convert to unsigned
-				// BDZ replaced this next line - mistake by Wayne
-				//for (int i=0; i<nPixels; i++)
-				for (int i=base; i<pmax; i++)
-					pixels[i] = (short)(pixels[i]+32768);
-			}
 			base += pixelsRead;
 			showProgress(k+1, fi.stripOffsets.length);
 		}
-		return pixels;
-	}
-/**/
-	
-// our version modified from Wayne's old code
-/*
-	short[] readCompressed16bitImage(InputStream in) throws IOException {
-		in = new DataInputStream(in);
-		short[] pixels = new short[nPixels];
-		int base = 0;
-		short last = 0;
-		for (int k=0; k<fi.stripOffsets.length; k++) {
-			//IJ.log("seek: "+fi.stripOffsets[k]+" "+(in instanceof RandomAccessStream));
-			if (in instanceof RandomAccessStream)
-				((RandomAccessStream)in).seek(fi.stripOffsets[k]);
-			else if (k > 0) {
-				int skip = fi.stripOffsets[k] - fi.stripOffsets[k-1] - fi.stripLengths[k-1];
-				if (skip > 0) in.skip(skip);
-			}
-			byte[] byteArray = new byte[fi.stripLengths[k]];
-			int read = 0, left = byteArray.length;
-			while (left > 0) {
-				int r = in.read(byteArray, read, left);
-				if (r == -1) {eofError(); break;}
-				read += r;
-				left -= r;
-			}
-			byteArray = uncompress(byteArray);
-			int pixelsRead = byteArray.length/bytesPerPixel;
-			pixelsRead = pixelsRead - (pixelsRead%fi.width);
-			int pmax = base+pixelsRead;
-			if (pmax > nPixels) pmax = nPixels;
-			if (fi.intelByteOrder) {
-				if (fi.fileType==FileInfo.GRAY16_SIGNED)
-					for (int i=base,j=0; i<pmax; i++,j+=2)
-						pixels[i] = (short)((((byteArray[j+1]&0xff)<<8) | (byteArray[j]&0xff))+32768);
-				else
-					for (int i=base,j=0; i<pmax; i++,j+=2)
-						pixels[i] = (short)(((byteArray[j+1]&0xff)<<8) | (byteArray[j]&0xff));
-			} else {
-				if (fi.fileType==FileInfo.GRAY16_SIGNED)
-					for (int i=base,j=0; i<pmax; i++,j+=2)
-						pixels[i] = (short)((((byteArray[j]&0xff)<<8) | (byteArray[j+1]&0xff))+32768);
-				else
-					for (int i=base,j=0; i<pmax; i++,j+=2)
-						pixels[i] = (short)(((byteArray[j]&0xff)<<8) | (byteArray[j+1]&0xff));
-			}
-			if (fi.compression==FileInfo.LZW_WITH_DIFFERENCING) {
-				for (int b=base; b<pmax; b++) {
-					pixels[b] += last;
-					if (fi.fileType == FileInfo.GRAY16_SIGNED)
-						last = b % fi.width == fi.width - 1 ? 0 : (short)(pixels[b] - 32768);
-					else
-						last = b % fi.width == fi.width - 1 ? 0 : pixels[b];
-						
-				}
-			}
-			base += pixelsRead;
-			showProgress(k+1, fi.stripOffsets.length);
+		if (fi.fileType==FileInfo.GRAY16_SIGNED) {
+			// convert to unsigned
+			for (int i=0; i<nPixels; i++)
+				pixels[i] = (short)(pixels[i]+32768);
 		}
 		return pixels;
 	}
-/**/
-	
+
 	float[] read32bitImage(InputStream in) throws IOException {
 		int pixelsRead;
 		byte[] buffer = new byte[bufferSize];
@@ -359,87 +294,11 @@ public class ImageReader {
 		return pixels;
 	}
 
-	// our code modified from Wayne's old code
-/*
 	int[] readChunkyRGB(InputStream in) throws IOException {
-		if (fi.compression==FileInfo.LZW || fi.compression==FileInfo.LZW_WITH_DIFFERENCING || fi.compression==FileInfo.PACK_BITS)
-			return readCompressedChunkyRGB(in);
-		else if (fi.compression==FileInfo.JPEG)
+		if (fi.compression==FileInfo.JPEG)
 			return readJPEG(in);
-		int pixelsRead;
-		bufferSize = 24*width;
-		byte[] buffer = new byte[bufferSize];
-		int[] pixels = new int[nPixels];
-		int totalRead = 0;
-		int base = 0;
-		int count, value;
-		int bufferCount;
-		int r, g, b;
-		
-		while (totalRead<byteCount) {
-			if ((totalRead+bufferSize)>byteCount)
-				bufferSize = byteCount-totalRead;
-			bufferCount = 0;
-			while (bufferCount<bufferSize) { // fill the buffer
-				count = in.read(buffer, bufferCount, bufferSize-bufferCount);
-				if (count==-1) {
-					if (bufferCount>0)
-						for (int i=bufferCount; i<bufferSize; i++) buffer[i] = 0;
-					totalRead = byteCount;
-					eofError();
-					break;
-				}
-				bufferCount += count;
-			}
-			totalRead += bufferSize;
-			showProgress(totalRead, byteCount);
-			pixelsRead = bufferSize/bytesPerPixel;
-			boolean bgr = fi.fileType==FileInfo.BGR;
-			int j = 0;
-			for (int i=base; i<(base+pixelsRead); i++) {
-				if (bytesPerPixel==4) {
-					if (fi.fileType==FileInfo.BARG) {  // MCID
-						b = buffer[j++]&0xff;
-						j++; // ignore alfa byte
-						r = buffer[j++]&0xff;
-						g = buffer[j++]&0xff;
-					} else if (fi.fileType==FileInfo.ABGR) {
-						b = buffer[j++]&0xff;
-						g = buffer[j++]&0xff;
-						r = buffer[j++]&0xff;
-						j++; // ignore alfa byte
-					} else if (fi.intelByteOrder) { // ARGB
-						r = buffer[j++]&0xff;
-						g = buffer[j++]&0xff;
-						b = buffer[j++]&0xff;
-						j++; // ignore alfa byte
-					} else { // ARGB
-						j++; // ignore alfa byte
-						r = buffer[j++]&0xff;
-						g = buffer[j++]&0xff;
-						b = buffer[j++]&0xff;
-					}
-				} else {
-					r = buffer[j++]&0xff;
-					g = buffer[j++]&0xff;
-					b = buffer[j++]&0xff;
-				}
-				if (bgr)
-					pixels[i] = 0xff000000 | (b<<16) | (g<<8) | r;
-				else
-					pixels[i] = 0xff000000 | (r<<16) | (g<<8) | b;
-			}
-			base += pixelsRead;
-		}
-		return pixels;
-	}
-*/
-	// Wayne's code from 1.43s3
-	int[] readChunkyRGB(InputStream in) throws IOException {
-		if (fi.compression==FileInfo.LZW || fi.compression==FileInfo.LZW_WITH_DIFFERENCING || fi.compression==FileInfo.PACK_BITS)
+		else if (fi.compression!=FileInfo.COMPRESSION_NONE)
 			return readCompressedChunkyRGB(in);
-		else if (fi.compression==FileInfo.JPEG)
-			return readJPEG(in);
 		int pixelsRead;
 		bufferSize = 24*width;
 		byte[] buffer = new byte[bufferSize];
@@ -503,7 +362,6 @@ public class ImageReader {
 		return pixels;
 	}
 
-	// Wayne's code from 1.43s3
 	int[] readCompressedChunkyRGB(InputStream in) throws IOException {
 		int[] pixels = new int[nPixels];
 		int base = 0;
@@ -559,88 +417,6 @@ public class ImageReader {
 		return pixels;
 	}
 	
-
-	// our code modified from Wayne's old code
-/*
-	int[] readCompressedChunkyRGB(InputStream in) throws IOException {
-		int[] pixels = new int[nPixels];
-		int base = 0;
-		int lastRed=0, lastGreen=0, lastBlue=0;
-		int nextByte;
-		int red=0, green=0, blue=0;
-		boolean bgr = fi.fileType==FileInfo.BGR;
-		boolean differencing = fi.compression == FileInfo.LZW_WITH_DIFFERENCING;
-		for (int i=0; i<fi.stripOffsets.length; i++) {
-			if (i > 0) {
-				int skip = fi.stripOffsets[i] - fi.stripOffsets[i-1] - fi.stripLengths[i-1];
-				if (skip > 0) in.skip(skip);
-			}
-			byte[] byteArray = new byte[fi.stripLengths[i]];
-			int read = 0, left = byteArray.length;
-			while (left > 0) {
-				int r = in.read(byteArray, read, left);
-				if (r == -1) {eofError(); break;}
-				read += r;
-				left -= r;
-			}
-			byteArray = uncompress(byteArray);
-			if (differencing) {
-				for (int b=0; b<byteArray.length; b++) {
-					if (b / bytesPerPixel % fi.width == 0) continue;
-					byteArray[b] += byteArray[b - bytesPerPixel];
-				}
-			}
-			int k = 0;
-			int pixelsRead = byteArray.length/bytesPerPixel;
-			pixelsRead = pixelsRead - (pixelsRead%fi.width);
-			int pmax = base+pixelsRead;
-			if (pmax > nPixels) pmax = nPixels;
-			for (int j=base; j<pmax; j++) {
-				// BDZ 2-3-10
-				// The following code branches this class off the main trunk. It was done to get the ImageReaderTest.java class
-				// in project ij-tests to run to completion. The case logic was taken from ImageReader::readChunkyRGB() above.
-				if (bytesPerPixel==4) {
-					if (fi.fileType==FileInfo.BARG) {  // MCID
-						blue = byteArray[k++]&0xff;
-						k++; // ignore alfa byte
-						red = byteArray[k++]&0xff;
-						green = byteArray[k++]&0xff;
-					} else if (fi.fileType==FileInfo.ABGR) {
-						blue = byteArray[k++]&0xff;
-						green = byteArray[k++]&0xff;
-						red = byteArray[k++]&0xff;
-						k++; // ignore alfa byte
-					} else if (fi.intelByteOrder) { // ARGB
-						red = byteArray[k++]&0xff;
-						green = byteArray[k++]&0xff;
-						blue = byteArray[k++]&0xff;
-						k++; // ignore alfa byte
-					} else { // ARGB
-						k++; // ignore alfa byte
-						red = byteArray[k++]&0xff;
-						green = byteArray[k++]&0xff;
-						blue = byteArray[k++]&0xff;
-					}
-				}
-				// BDZ - end changes
-				else // bytes per pix == 3
-				{
-					red = byteArray[k++]&0xff;
-					green = byteArray[k++]&0xff;
-					blue = byteArray[k++]&0xff;
-				}
-				if (bgr)
-					pixels[j] = 0xff000000 | (blue<<16) | (green<<8) | red;
-				else
-					pixels[j] = 0xff000000 | (red<<16) | (green<<8) | blue;
-			}
-			base += pixelsRead;
-			showProgress(i+1, fi.stripOffsets.length);
-		}
-		return pixels;
-	}
-*/
-	
 	int[] readJPEG(InputStream in) throws IOException {
 		BufferedImage bi = ImageIO.read(in);
 		ImageProcessor ip =  new ColorProcessor(bi);
@@ -648,7 +424,7 @@ public class ImageReader {
 	}
 
 	int[] readPlanarRGB(InputStream in) throws IOException {
-		if (fi.compression == FileInfo.LZW || fi.compression == FileInfo.LZW_WITH_DIFFERENCING || fi.compression==FileInfo.PACK_BITS)
+		if (fi.compression!=FileInfo.COMPRESSION_NONE)
 			return readCompressedPlanarRGBImage(in);
 		DataInputStream dis = new DataInputStream(in);
 		int planeSize = nPixels; // 1/3 image size
@@ -709,13 +485,17 @@ public class ImageReader {
 	}
 	
 	Object readRGB48(InputStream in) throws IOException {
-		if (fi.compression==FileInfo.LZW || fi.compression==FileInfo.LZW_WITH_DIFFERENCING || fi.compression==FileInfo.PACK_BITS)
+		if (fi.compression!=FileInfo.COMPRESSION_NONE)
 			return readCompressedRGB48(in);
 		int channels = 3;
 		short[][] stack = new short[channels][nPixels];
 		DataInputStream dis = new DataInputStream(in);
 		int pixel = 0;
 		int min=65535, max=0;
+		if (fi.stripLengths==null) {
+			fi.stripLengths = new int[fi.stripOffsets.length];
+			fi.stripLengths[0] = width*height*bytesPerPixel;
+		}
 		for (int i=0; i<fi.stripOffsets.length; i++) {
 			if (i>0) {
 				int skip = fi.stripOffsets[i] - fi.stripOffsets[i-1] - fi.stripLengths[i-1];
@@ -802,46 +582,27 @@ public class ImageReader {
 		return stack;
 	}
 
-	// wayne's change to deal with BDZ reported bug
-	 short[] read12bitImage(InputStream in) throws IOException {
-         int bytesPerLine = (int)(width*1.5);
-         if ((width&1)==1) bytesPerLine++; // add 1 if odd
-         byte[] buffer = new byte[bytesPerLine*height];
-         short[] pixels = new short[nPixels];
-         DataInputStream dis = new DataInputStream(in);
-         dis.readFully(buffer);
-         for (int y=0; y<height; y++) {
-                 int index1 = y*bytesPerLine;
-                 int index2 = y*width;
-                 int count = 0;
-                 while (count<width) {
-                         pixels[index2+count] = (short)(((buffer[index1]&0xff)*16) + ((buffer[index1+1]>>4)&0xf));
-                         count++;
-                         if (count==width) break;
-                         pixels[index2+count] = (short)(((buffer[index1+1]&0xf)*256) + (buffer[index1+2]&0xff));
-                         count++; index1+=3;
-                 }
-         }
-         return pixels;
-	 }
-	
-	 // the old way
-	//short[] read12bitImage(InputStream in) throws IOException {
-	//	int nBytes = (int)(nPixels*1.5);
-	//	if ((nPixels&1)==1) nBytes++; // add 1 if odd
-	//	byte[] buffer = new byte[nBytes];
-	//	short[] pixels = new short[nPixels];
-	//	DataInputStream dis = new DataInputStream(in);
-	//	dis.readFully(buffer);
-	//	int i = 0;
-	//	int j = 0;
-	//	for (int index=0; index<buffer.length/3; index++) {
-	//		pixels[j++] = (short)(((buffer[i]&0xff)*16) + ((buffer[i+1]>>4)&0xf));
-	//		pixels[j++] = (short)(((buffer[i+1]&0xf)*256) + (buffer[i+2]&0xff));
-	//		i += 3;
-	//	}
-	//	return pixels;
-	//}
+	short[] read12bitImage(InputStream in) throws IOException {
+		int bytesPerLine = (int)(width*1.5);
+		if ((width&1)==1) bytesPerLine++; // add 1 if odd
+		byte[] buffer = new byte[bytesPerLine*height];
+		short[] pixels = new short[nPixels];
+		DataInputStream dis = new DataInputStream(in);
+		dis.readFully(buffer);
+		for (int y=0; y<height; y++) {
+			int index1 = y*bytesPerLine;
+			int index2 = y*width;
+			int count = 0;
+			while (count<width) {
+				pixels[index2+count] = (short)(((buffer[index1]&0xff)*16) + ((buffer[index1+1]>>4)&0xf));
+				count++;
+				if (count==width) break;
+				pixels[index2+count] = (short)(((buffer[index1+1]&0xf)*256) + (buffer[index1+2]&0xff));
+				count++; index1+=3;
+			}
+		}
+		return pixels;
+	}
 
 	float[] read24bitImage(InputStream in) throws IOException {
 		byte[] buffer = new byte[width*3];
@@ -863,6 +624,8 @@ public class ImageReader {
 	}
 
 	byte[] read1bitImage(InputStream in) throws IOException {
+		if (fi.compression==FileInfo.LZW)
+			throw new IOException("ImageJ cannot open 1-bit LZW compressed TIFFs");
  		int scan=(int)Math.ceil(width/8.0);
 		int len = scan*height;
 		byte[] buffer = new byte[len];
@@ -1100,6 +863,7 @@ public class ImageReader {
 	 
 	/** Based on the Bio-Formats PackbitsCodec written by Melissa Linkert. */
 	public byte[] packBitsUncompress(byte[] input, int expected) {
+		if (expected==0) expected = Integer.MAX_VALUE;
 		ByteVector output = new ByteVector(1024);
 		int index = 0;
 		while (output.size()<expected && index<input.length) {
