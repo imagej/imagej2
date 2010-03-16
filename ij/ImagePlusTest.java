@@ -2100,8 +2100,9 @@ public class ImagePlusTest {
 		// note - not testing revert to file stored at a URL.
 		
 		// simple test - stacked item should not revert
-		proc = new ByteProcessor(1,2,new byte[] {1,2},null);
-		ip = new ImagePlus("Zowblooie",proc);
+		//proc = new ByteProcessor(1,2,new byte[] {1,2},null);
+		//ip = new ImagePlus("Zowblooie",proc);
+		ip = new ImagePlus("Zowblooie",(Image)null);
 		st = new ImageStack(1,2);
 		st.addSlice("uno", new byte[] {3,4});
 		st.addSlice("dos", new byte[] {5,6});
@@ -2448,8 +2449,9 @@ public class ImagePlusTest {
 
 	@Test
 	public void testFlush() {
-		proc = new ShortProcessor(2,3,new short[] {1,2,3,4,5,6},null);
-		ip = new ImagePlus("Hello Kitty",proc);
+		//proc = new ShortProcessor(2,3,new short[] {1,2,3,4,5,6},null);
+		//ip = new ImagePlus("Hello Kitty",proc);
+		ip = new ImagePlus("Hello Kitty",(Image)null);
 		st = new ImageStack(2,3);
 		st.addSlice("1",new short[] {1,2,3,4,5,6});
 		st.addSlice("2",new short[] {1,2,3,4,5,6});
@@ -2818,8 +2820,9 @@ public class ImagePlusTest {
 		assertEquals(" x=5, y=3",ip.getLocationAsString(5, 3));
 		
 		//    stack
-		proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
-		ip = new ImagePlus("Superman",proc);
+		//proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
+		//ip = new ImagePlus("Superman",proc);
+		ip = new ImagePlus("Superman",(Image)null);
 		st = new ImageStack(4,2);
 		st.addSlice("Super Strength", new float[] {8,7,6,5,4,3,2,1});
 		st.addSlice("Unaided Flight", new float[] {8,7,6,5,4,3,2,1});
@@ -2843,8 +2846,9 @@ public class ImagePlusTest {
 		assertEquals(" x=20, y=35",ip.getLocationAsString(20, 35));
 		
 		//    stack
-		proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
-		ip = new ImagePlus("Superman",proc);
+		//proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
+		//ip = new ImagePlus("Superman",proc);
+		ip = new ImagePlus("Superman",(Image)null);
 		st = new ImageStack(4,2);
 		st.addSlice("Super Strength", new float[] {8,7,6,5,4,3,2,1});
 		st.addSlice("Unaided Flight", new float[] {8,7,6,5,4,3,2,1});
@@ -3383,8 +3387,9 @@ public class ImagePlusTest {
 		assertEquals(str,ip.toString());
 		
 		// a stacked ImagePlus
-		proc = new ByteProcessor(2,1,new byte[] {2,1}, null);
-		ip = new ImagePlus("Arckle",proc);
+		//proc = new ByteProcessor(2,1,new byte[] {2,1}, null);
+		//ip = new ImagePlus("Arckle",proc);
+		ip = new ImagePlus("Arckle",(Image)null);
 		st = new ImageStack(2,1);
 		st.addSlice("bank 1",new byte[] {0,5});
 		st.addSlice("bank 2",new byte[] {4,9});
