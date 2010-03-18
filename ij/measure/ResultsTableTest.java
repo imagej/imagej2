@@ -1,5 +1,7 @@
 package ij.measure;
 
+// test
+
 import static org.junit.Assert.*;
 import ij.IJInfo;
 import ij.io.Assert;
