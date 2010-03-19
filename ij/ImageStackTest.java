@@ -157,48 +157,6 @@ public class ImageStackTest {
 		assertEquals(256,is.getSize());
 	}
 
-	// This test should behave exactly the same as the previous test. I've cut and pasted the tests but have
-	// only modified the parameters to increase coverage.
-	
-	@Test
-	public void testAddUnsignedShortSliceLabelPixels()
-	{
-		// null pixels passed in should throw exception
-		
-		is = new ImageStack();
-		
-		try {
-			is.addUnsignedShortSlice("Zooky", (Object)null);  // null pixels
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
-		}
-
-		// passing in data other than an array of numbers should throw an exception
-		
-		is = new ImageStack();
-
-		try {
-			is.addUnsignedShortSlice("42", new DirectColorModel(24,0xff0000,0x00ff00,0x0000ff,0));
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
-		}
-		
-		// do one that does not cause a stack expansion
-		
-		is = new ImageStack(3,2);
-		is.addUnsignedShortSlice("Worse pixels", new byte[] {6,5,4,3,2,1});
-		assertEquals(1,is.getSize());
-		
-		// now do one that should cause a stack expansion
-		is = new ImageStack(3,2);
-		for (int i = 0; i < 1200; i++)
-			is.addUnsignedShortSlice(("Even worser pixels "+i), new short[] {42,42,42,42,42,42});
-
-		assertEquals(1200,is.getSize());
-	}
-
 	@Test
 	public void testAddSliceLabelProcessor()
 	{
