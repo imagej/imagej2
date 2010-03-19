@@ -1,0 +1,3 @@
+ ,Label,Smiles,Winks,Nods
+Fred,Jones,3,5,7
+Joe,Bob,1,2,8
