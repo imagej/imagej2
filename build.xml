@@ -16,7 +16,7 @@
     <copy file="images/microscope.gif" tofile="build/microscope.gif" />
     <copy file="images/about.jpg" tofile="build/about.jpg" />
 <!--	<copy file="plugins/MacAdapter.class" tofile="build/MacAdapter.class" /> -->
-	<copy file="plugins/JavaScriptEvaluator.class" tofile="build/JavaScriptEvaluator.class" /> 
+<!--	<copy file="plugins/JavaScriptEvaluator.class" tofile="build/JavaScriptEvaluator.class" /> -->
     <copy todir="build/macros"><fileset dir="macros"/></copy>
     <!-- Build ij.jar. -->
     <jar jarfile="ij.jar" basedir="build"
