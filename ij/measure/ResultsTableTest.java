@@ -6,10 +6,15 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+import java.awt.*;
 
 import ij.IJInfo;
 import ij.io.Assert;
 import ij.plugin.filter.Analyzer;
+import ij.process.*;
+import ij.gui.Roi;
+import ij.*;
+import ij.measure.*;
 
 public class ResultsTableTest {
 	
@@ -1151,15 +1156,11 @@ public class ResultsTableTest {
 	@Test
 	public void testDeleteRow() {
 
-		// Have reported this to Wayne as a bug
-		if (IJInfo.RUN_ENHANCED_TESTS)
-		{
-			// delete the -1th row
-			r = n();
-			r.incrementCounter();
-			r.deleteRow(-1);
-			assertEquals(1,r.getCounter());
-		}
+		// delete the -1th row
+		r = n();
+		r.incrementCounter();
+		r.deleteRow(-1);
+		assertEquals(1,r.getCounter());
 		
 		// no rows to delete
 		r = n();
@@ -1291,7 +1292,59 @@ public class ResultsTableTest {
 
 	@Test
 	public void testUpdate() {
-		//TODO - revisit - may be testable
+		int measurements =
+			Measurements.AREA+Measurements.MEAN+Measurements.STD_DEV+Measurements.MODE+Measurements.MIN_MAX+
+			Measurements.CENTROID+Measurements.CENTER_OF_MASS+Measurements.PERIMETER+Measurements.RECT+
+			Measurements.ELLIPSE+Measurements.SHAPE_DESCRIPTORS+Measurements.FERET+Measurements.INTEGRATED_DENSITY+
+			Measurements.MEDIAN+Measurements.SKEWNESS+Measurements.KURTOSIS+Measurements.AREA_FRACTION;
+
+		ByteProcessor proc = new ByteProcessor(2,3,new byte[] {1,2,3,4,5,6},null);
+		ImagePlus ip = new ImagePlus("ZutAlors",proc);
+		Roi roi = new Roi(new Rectangle(0,0,1,1));  // should be {1,2,3,4} of {1,2,3,4,5,6}
+		r = n();
+		r.incrementCounter();
+		for (int i = 0; i < 35; i++)
+			assertNull(r.getColumnHeading(i));
+		
+		r.update(measurements, ip, roi);
+
+		assertEquals(34,r.getLastColumn());
+		assertNull(r.getLabel(0));
+		assertEquals("Area",r.getColumnHeading(0));
+		assertEquals("Mean",r.getColumnHeading(1));
+		assertEquals("StdDev",r.getColumnHeading(2));
+		assertEquals("Mode",r.getColumnHeading(3));
+		assertEquals("Min",r.getColumnHeading(4));
+		assertEquals("Max",r.getColumnHeading(5));
+		assertEquals("X",r.getColumnHeading(6));
+		assertEquals("Y",r.getColumnHeading(7));
+		assertEquals("XM",r.getColumnHeading(8));
+		assertEquals("YM",r.getColumnHeading(9));
+		assertEquals("Perim.",r.getColumnHeading(10));
+		assertEquals("BX",r.getColumnHeading(11));
+		assertEquals("BY",r.getColumnHeading(12));
+		assertEquals("Width",r.getColumnHeading(13));
+		assertEquals("Height",r.getColumnHeading(14));
+		assertEquals("Major",r.getColumnHeading(15));
+		assertEquals("Minor",r.getColumnHeading(16));
+		assertEquals("Angle",r.getColumnHeading(17));
+		assertEquals("Circ.",r.getColumnHeading(18));
+		assertEquals("Feret",r.getColumnHeading(19));
+		assertEquals("IntDen",r.getColumnHeading(20));
+		assertEquals("Median",r.getColumnHeading(21));
+		assertEquals("Skew",r.getColumnHeading(22));
+		assertEquals("Kurt",r.getColumnHeading(23));
+		assertEquals("%Area",r.getColumnHeading(24));
+		assertNull(r.getColumnHeading(25));
+		assertNull(r.getColumnHeading(26));
+		assertNull(r.getColumnHeading(27));
+		assertEquals("FeretX",r.getColumnHeading(28));
+		assertEquals("FeretY",r.getColumnHeading(29));
+		assertEquals("FeretAngle",r.getColumnHeading(30));
+		assertEquals("MinFeret",r.getColumnHeading(31));
+		assertEquals("AR",r.getColumnHeading(32));
+		assertEquals("Round",r.getColumnHeading(33));
+		assertEquals("Solidity",r.getColumnHeading(34));
 	}
 
 	@Test
