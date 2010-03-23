@@ -395,8 +395,8 @@ public class FileOpenerTest {
 		newPix = ip.getProcessor().getPixel(0,0);
 		if (origPix == newPix)
 			fail("Failed to set pixel correctly");
-		else
-			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		//else
+		//	System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
 		fo.revertToSaved(ip);
 		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
 	}
@@ -423,8 +423,8 @@ public class FileOpenerTest {
 		newPix = ip.getProcessor().getPixel(0,0);
 		if (origPix == newPix)
 			fail("Failed to set pixel correctly");
-		else
-			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		//else
+		//	System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
 		fo.revertToSaved(ip);
 		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
 	}
@@ -451,19 +451,14 @@ public class FileOpenerTest {
 		newPix = ip.getProcessor().getPixel(0,0);
 		if (origPix == newPix)
 			fail("Failed to set pixel correctly");
-		else
-			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		//else
+		//	System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
 		fo.revertToSaved(ip);
 		assertFalse(origPix == ip.getProcessor().getPixel(0,0));
 	}
 	
 	@Test
 	public void testRevertToSaved() {
-		
-		// for debugging - sleep long enough that other methods' print statements do not clutter output
-		try {
-			Thread.sleep(1000L);
-		} catch (Exception e) {}
 		
 		// nImages > 1 and not a special case file -> no reversion
 		expectFailure("head8bit.tif",FileInfo.TIFF,2,256,228);
@@ -477,8 +472,10 @@ public class FileOpenerTest {
 		expectSuccess("gray16.zip",FileInfo.ZIP_ARCHIVE,1,154,284);
 		expectSuccess("lena-std.png",FileInfo.IMAGEIO,1,154,284);
 		expectSuccess("01.dcm",FileInfo.DICOM,1,426,640);
-		// tifs failing: expectSuccess("head8bit.tif",FileInfo.TIFF,1,228,256);
-		
+		// note - tifs failing - following up with Wayne
+		//expectSuccess("head8bit.tif",FileInfo.TIFF,1,228,256);
+
+		// fall through case -> it calls readPixels()
 		expectSuccessReadPixelsCase("clown.raw",FileInfo.UNKNOWN,100,100);
 	}
 
