@@ -170,11 +170,6 @@ public class FileOpenerTest {
 	}
 
 	@Test
-	public void testRevertToSaved() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testCreateColorModel() {
 		FileInfo fi;
 		ColorModel cm;
@@ -368,4 +363,123 @@ public class FileOpenerTest {
 		FileOpener.setShowConflictMessage(true);
 		FileOpener.setShowConflictMessage(false);
 	}
+
+	
+	// In method below
+	//   open image
+	//   save orig info
+	//   make some changes
+	//   assert their values
+	//   revert
+	//   assert vals back to original
+
+	private void expectSuccess(String fname, int format, int nImages, int height, int width)
+	{
+		FileInfo fi;
+		ImagePlus ip;
+		int origPix,newPix;
+	
+		fi = new FileInfo();
+		fi.directory = "data/";
+		fi.fileName = fname;
+		fi.fileFormat = format;
+		fi.nImages = nImages;
+		fi.height = height;
+		fi.width = width;
+		fo = new FileOpener(fi);
+		//ip = fo.open(false);
+		ip = new Opener().openImage("data/",fname);
+		assertNotNull(ip);
+		origPix = ip.getProcessor().getPixel(0,0);
+		ip.getProcessor().set(0,0,origPix+1);
+		newPix = ip.getProcessor().getPixel(0,0);
+		if (origPix == newPix)
+			fail("Failed to set pixel correctly");
+		else
+			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		fo.revertToSaved(ip);
+		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
+	}
+
+	private void expectSuccessReadPixelsCase(String fname, int format, int height, int width)
+	{
+		FileInfo fi;
+		ImagePlus ip;
+		int origPix,newPix;
+	
+		fi = new FileInfo();
+		fi.directory = "data/";
+		fi.fileName = fname;
+		fi.fileFormat = format;
+		fi.nImages = 1;
+		fi.height = height;
+		fi.width = width;
+		fo = new FileOpener(fi);
+		ip = fo.open(false);
+		//ip = new Opener().openImage("data/",fname);
+		assertNotNull(ip);
+		origPix = ip.getProcessor().getPixel(0,0);
+		ip.getProcessor().set(0,0,origPix+1);
+		newPix = ip.getProcessor().getPixel(0,0);
+		if (origPix == newPix)
+			fail("Failed to set pixel correctly");
+		else
+			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		fo.revertToSaved(ip);
+		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
+	}
+		
+	private void expectFailure(String fname, int format, int nImages, int height, int width)
+	{
+		FileInfo fi;
+		ImagePlus ip;
+		int origPix,newPix;
+	
+		fi = new FileInfo();
+		fi.directory = "data/";
+		fi.fileName = fname;
+		fi.fileFormat = format;
+		fi.nImages = nImages;
+		fi.height = height;
+		fi.width = width;
+		fo = new FileOpener(fi);
+		//ip = fo.open(false);
+		ip = new Opener().openImage("data/",fname);
+		assertNotNull(ip);
+		origPix = ip.getProcessor().getPixel(0,0);
+		ip.getProcessor().set(0,0,origPix+1);
+		newPix = ip.getProcessor().getPixel(0,0);
+		if (origPix == newPix)
+			fail("Failed to set pixel correctly");
+		else
+			System.out.println("OrigPix = "+origPix+" and newPix = "+newPix);
+		fo.revertToSaved(ip);
+		assertFalse(origPix == ip.getProcessor().getPixel(0,0));
+	}
+	
+	@Test
+	public void testRevertToSaved() {
+		
+		// for debugging - sleep long enough that other methods' print statements do not clutter output
+		try {
+			Thread.sleep(1000L);
+		} catch (Exception e) {}
+		
+		// nImages > 1 and not a special case file -> no reversion
+		expectFailure("head8bit.tif",FileInfo.TIFF,2,256,228);
+
+		// various file formats - supported ones
+		expectSuccess("blobs.gif",FileInfo.GIF_OR_JPG,1,254,256);
+		expectSuccess("Cell_Colony.jpg",FileInfo.GIF_OR_JPG,1,408,406);
+		expectSuccess("embryos.bmp",FileInfo.BMP,1,1200,1600);
+		expectSuccess("Tree_Rings.pgm",FileInfo.PGM,1,162,1796);
+		expectSuccess("bat-cochlea-renderings.fits",FileInfo.FITS,1,154,284);
+		expectSuccess("gray16.zip",FileInfo.ZIP_ARCHIVE,1,154,284);
+		expectSuccess("lena-std.png",FileInfo.IMAGEIO,1,154,284);
+		expectSuccess("01.dcm",FileInfo.DICOM,1,426,640);
+		// tifs failing: expectSuccess("head8bit.tif",FileInfo.TIFF,1,228,256);
+		
+		expectSuccessReadPixelsCase("clown.raw",FileInfo.UNKNOWN,100,100);
+	}
+
 }
