@@ -429,7 +429,7 @@ public class FileOpenerTest {
 		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
 	}
 		
-	private void expectFailure(String fname, int format, int nImages, int height, int width)
+	private void expectFailureReadPixelsCase(String fname, int format, int nImages, int height, int width)
 	{
 		FileInfo fi;
 		ImagePlus ip;
@@ -443,8 +443,8 @@ public class FileOpenerTest {
 		fi.height = height;
 		fi.width = width;
 		fo = new FileOpener(fi);
-		//ip = fo.open(false);
-		ip = new Opener().openImage("data/",fname);
+		ip = fo.open(false);
+		//ip = new Opener().openImage("data/",fname);
 		assertNotNull(ip);
 		origPix = ip.getProcessor().getPixel(0,0);
 		ip.getProcessor().set(0,0,origPix+1);
@@ -460,9 +460,6 @@ public class FileOpenerTest {
 	@Test
 	public void testRevertToSaved() {
 		
-		// nImages > 1 and not a special case file -> no reversion
-		expectFailure("head8bit.tif",FileInfo.TIFF,2,256,228);
-
 		// various file formats - supported ones
 		expectSuccess("blobs.gif",FileInfo.GIF_OR_JPG,1,254,256);
 		expectSuccess("Cell_Colony.jpg",FileInfo.GIF_OR_JPG,1,408,406);
@@ -472,11 +469,16 @@ public class FileOpenerTest {
 		expectSuccess("gray16.zip",FileInfo.ZIP_ARCHIVE,1,154,284);
 		expectSuccess("lena-std.png",FileInfo.IMAGEIO,1,154,284);
 		expectSuccess("01.dcm",FileInfo.DICOM,1,426,640);
+		
 		// note - tifs failing - following up with Wayne
 		//expectSuccess("head8bit.tif",FileInfo.TIFF,1,228,256);
 
 		// fall through case -> it calls readPixels()
 		expectSuccessReadPixelsCase("clown.raw",FileInfo.UNKNOWN,100,100);
+
+		// nImages > 1 and not a special case file -> no reversion
+		expectFailureReadPixelsCase("clown.raw",FileInfo.UNKNOWN,2,256,228);
+
 	}
 
 }
