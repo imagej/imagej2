@@ -695,7 +695,7 @@ public class ImageWriterTest {
 			float[] expected = new float[] {0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f,
 											0,0.15686275f,0.3137255f,0.47058824f,0.627451f,0.78431374f};
 			
-			Assert.assertFloatArraysEqual(expected,actual);
+			Assert.assertFloatArraysEqual(expected,actual,Assert.FLOAT_TOL);
 		}
 
 		// try with filename hack that flips pixels
@@ -719,7 +719,7 @@ public class ImageWriterTest {
 			float[] expected = new float[] {0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f,
 											0.47058824f,0.627451f,0.78431374f,0,0.15686275f,0.3137255f};
 			
-			Assert.assertFloatArraysEqual(expected,actual);
+			Assert.assertFloatArraysEqual(expected,actual,Assert.FLOAT_TOL);
 		}
 	}
 	
@@ -746,7 +746,7 @@ public class ImageWriterTest {
 				
 				float[] actual = (float[])format.pixelsFromBytes(bytes, order);
 				
-				Assert.assertFloatArraysEqual(expectedAfterWrite,actual);
+				Assert.assertFloatArraysEqual(expectedAfterWrite,actual,Assert.FLOAT_TOL);
 			}
 		}
 	}
@@ -767,7 +767,7 @@ public class ImageWriterTest {
 				
 				float[] actual = (float[])format.pixelsFromBytes(bytes, order);
 				
-				Assert.assertFloatArraysEqual(expected,actual);
+				Assert.assertFloatArraysEqual(expected,actual,Assert.FLOAT_TOL);
 			}
 		}
 	}

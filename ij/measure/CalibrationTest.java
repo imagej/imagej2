@@ -513,7 +513,7 @@ public class CalibrationTest {
 			// run the method we're testing
 		c.setImage(imp);
 		assertEquals(Calibration.STRAIGHT_LINE,c.getFunction());
-		Assert.assertDoubleArraysEqual(coeffs, c.getCoefficients());
+		Assert.assertDoubleArraysEqual(coeffs, c.getCoefficients(),Assert.DOUBLE_TOL);
 		assertEquals("Gray Value",c.getValueUnit());
 			// can't test bit depth as its private with no accessor
 		

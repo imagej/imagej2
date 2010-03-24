@@ -2236,7 +2236,7 @@ public class ImagePlusTest {
 		assertEquals(7.0,fi.pixelDepth,Assert.DOUBLE_TOL);
 		assertEquals(4.0,fi.frameInterval,Assert.DOUBLE_TOL);
 		assertEquals(Calibration.POLY3,fi.calibrationFunction);
-		Assert.assertDoubleArraysEqual(new double[] {1,2,3,4},fi.coefficients);
+		Assert.assertDoubleArraysEqual(new double[] {1,2,3,4},fi.coefficients,Assert.DOUBLE_TOL);
 		assertEquals("hoogerams",fi.valueUnit);
 		assertEquals(FileInfo.GRAY8,fi.fileType);
 		assertEquals(256,fi.lutSize);
@@ -2410,7 +2410,7 @@ public class ImagePlusTest {
 		assertEquals(a.pixelDepth,b.pixelDepth,Assert.DOUBLE_TOL);
 		assertEquals(a.frameInterval,b.frameInterval,Assert.DOUBLE_TOL);
 		assertEquals(a.calibrationFunction,b.calibrationFunction);
-		Assert.assertDoubleArraysEqual(a.coefficients,b.coefficients);
+		Assert.assertDoubleArraysEqual(a.coefficients,b.coefficients,Assert.DOUBLE_TOL);
 		assertEquals(a.valueUnit,b.valueUnit);
 		assertEquals(a.fileType,b.fileType);
 		assertEquals(a.lutSize,b.lutSize);

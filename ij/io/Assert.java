@@ -6,9 +6,9 @@ import static org.junit.Assert.fail;
 public class Assert {
 	
 	public static final float FLOAT_TOL = 0.00001f;
-	public static final double DOUBLE_TOL = 0.0000001;
+	public static final double DOUBLE_TOL = 0.00001;
 	
-	public static void assertFloatArraysEqual(float[] expected, float[] actual)
+	public static void assertFloatArraysEqual(float[] expected, float[] actual, float tolerance)
 	{
 		if (expected == actual)
 			return;
@@ -23,11 +23,11 @@ public class Assert {
 			fail("Assert.assertFloatArraysEqual(float[],float[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
 		
 		for (int i = 0; i < expected.length; i++)
-			if (Math.abs(expected[i]-actual[i]) > FLOAT_TOL)
+			if (Math.abs(expected[i]-actual[i]) > tolerance)
 				fail("Assert.assertFloatArraysEqual(float[],float[]) items differ at index " + i + ": expected "+ expected[i] + " and got " + actual[i]);
 	}
 	
-	public static void assertDoubleArraysEqual(double[] expected, double[] actual)
+	public static void assertDoubleArraysEqual(double[] expected, double[] actual, double tolerance)
 	{
 		if (expected == actual)
 			return;
@@ -42,7 +42,7 @@ public class Assert {
 			fail("Assert.assertDoubleArraysEqual(double[],double[]) array lengths differ: expected "+expected.length + " and got " + actual.length);
 		
 		for (int i = 0; i < expected.length; i++)
-			if (Math.abs(expected[i]-actual[i]) > DOUBLE_TOL)
+			if (Math.abs(expected[i]-actual[i]) > tolerance)
 				fail("Assert.assertDoubleArraysEqual(double[],double[]) items differ at index " + i + ": expected "+ expected[i] + " and got " + actual[i]);
 	}
 	
@@ -73,7 +73,7 @@ public class Assert {
 		else if (expected instanceof Object[])
 			assertArrayEquals((Object[])expected,(Object[])actual);
 		else if (expected instanceof float[])
-			assertFloatArraysEqual((float[])expected,(float[])actual);  // JUnit does not have a float[] method
+			assertFloatArraysEqual((float[])expected,(float[])actual,FLOAT_TOL);  // JUnit does not have a float[] method
 		else
 			fail("Assert.assertArraysSame() passed unsupported data format type : (" + aClass.getName() + ")");
 	}
