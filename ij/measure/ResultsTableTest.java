@@ -9,12 +9,12 @@ import java.util.*;
 import java.awt.*;
 
 import ij.IJInfo;
-import ij.io.Assert;
+import ij.Assert;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import ij.gui.Roi;
 import ij.*;
-import ij.measure.*;
+
 
 public class ResultsTableTest {
 	
