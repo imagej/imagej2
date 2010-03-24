@@ -21,7 +21,7 @@ import java.util.Arrays;
 import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.io.Assert;
+import ij.Assert;
 import ij.io.FileInfo;
 import ij.io.Opener;
 import ij.measure.Calibration;

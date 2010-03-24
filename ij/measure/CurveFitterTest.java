@@ -2,7 +2,7 @@ package ij.measure;
 
 import static org.junit.Assert.*;
 import ij.IJInfo;
-import ij.io.Assert;
+import ij.Assert;
 
 import org.junit.Test;
 

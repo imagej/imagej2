@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.*;
 
 import ij.IJInfo;
-import ij.io.Assert;
+import ij.Assert;
 
 // NOTES
 //   This suite of tests also exercises the public class ByteVector which is defined in ImageReader.java

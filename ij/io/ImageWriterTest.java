@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
 import ij.VirtualStack;
-import ij.io.Assert;
+import ij.Assert;
 
 /*
 	NOTES

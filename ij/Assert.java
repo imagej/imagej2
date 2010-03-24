@@ -1,4 +1,4 @@
-package ij.io;
+package ij;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;

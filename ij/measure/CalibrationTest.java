@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ij.io.Assert;
+import ij.Assert;
 import ij.ImagePlus;
 import ij.plugin.filter.Analyzer;
 import ij.gui.NewImage;
