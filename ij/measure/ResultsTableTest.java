@@ -428,7 +428,7 @@ public class ResultsTableTest {
 			r.setValue(i,0,i);
 
 		results = r.getColumn(149);
-		Assert.assertFloatArraysEqual(new float[]{149},results);
+		Assert.assertFloatArraysEqual(new float[]{149},results,Assert.FLOAT_TOL);
 
 		// try on a table of 3 rows with data
 		r = n();
@@ -443,7 +443,7 @@ public class ResultsTableTest {
 		}
 		
 		results = r.getColumn(44);
-		Assert.assertFloatArraysEqual(new float[]{44,444,844},results);
+		Assert.assertFloatArraysEqual(new float[]{44,444,844},results,Assert.FLOAT_TOL);
 }
 
 	@Test
@@ -500,7 +500,7 @@ public class ResultsTableTest {
 			r.setValue(i,0,i);
 
 		results = r.getColumnAsDoubles(149);
-		Assert.assertDoubleArraysEqual(new double[]{149},results);
+		Assert.assertDoubleArraysEqual(new double[]{149},results,Assert.FLOAT_TOL);
 
 		// try on a table of 3 rows with data
 		r = n();
@@ -515,7 +515,7 @@ public class ResultsTableTest {
 		}
 		
 		results = r.getColumnAsDoubles(44);
-		Assert.assertDoubleArraysEqual(new double[]{44,444,844},results);
+		Assert.assertDoubleArraysEqual(new double[]{44,444,844},results,Assert.FLOAT_TOL);
 	}
 
 	@Test
