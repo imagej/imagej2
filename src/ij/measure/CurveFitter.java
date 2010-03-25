@@ -176,7 +176,7 @@ public class CurveFitter {
                     restart(best);
              }
         }
-        fitType = saveFitType;
+        fit = saveFitType;
 		time = System.currentTimeMillis()-startTime;
     }
         
