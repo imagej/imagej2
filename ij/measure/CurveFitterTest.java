@@ -18,6 +18,123 @@ public class CurveFitterTest {
 	CurveFitter cf;
 	double[] xs,ys;
 
+	// helper method : add noise to smooth data
+
+	private static double[] makeNoisy(double[] d, int percent)
+	{
+		if ((percent < 0) || (percent > 100))
+			throw new IllegalArgumentException("Percent must be between 0 and 100");
+		
+		double[] output = new double[d.length];
+		double delta = percent / 100.0;
+
+		for (int i = 0; i < d.length; i++)
+		{
+			double tmp = 0.0;
+			switch (i % 3)
+			{
+				case 0:
+					tmp = d[i] * (1+delta);
+					break;
+				case 1:
+					tmp = d[i] * (1-delta);
+					break;
+				case 2:
+					tmp = d[i];
+					break;
+			}
+			output[i] = tmp;
+		}
+		
+		return output;
+	}
+	
+	// helper method : get a y value from input x data
+	private static double getYValue(int func, double x, double[] coeffs)
+	{
+		double y;
+		double[] p = coeffs;
+        switch (func) {
+	        case CurveFitter.STRAIGHT_LINE:
+	            return p[0] + p[1]*x;
+	        case CurveFitter.POLY2:
+	        	return p[0] + p[1]*x + p[2]* x*x;
+	        case CurveFitter.POLY3:
+	        	return p[0] + p[1]*x + p[2]*x*x + p[3]*x*x*x;
+	        case CurveFitter.POLY4:
+	        	return p[0] + p[1]*x + p[2]*x*x + p[3]*x*x*x + p[4]*x*x*x*x;
+	        case CurveFitter.EXPONENTIAL:
+	        	return p[0]*Math.exp(p[1]*x);
+	        case CurveFitter.EXP_WITH_OFFSET:
+	        	return p[0]*Math.exp(p[1]*x*-1)+p[2];
+	        case CurveFitter.EXP_RECOVERY:
+	        	return p[0]*(1-Math.exp(-p[1]*x))+p[2];
+	        case CurveFitter.GAUSSIAN:
+	        	return p[0]+(p[1]-p[0])*Math.exp(-(x-p[2])*(x-p[2])/(2.0*p[3]*p[3]));
+	        case CurveFitter.POWER:
+	            if (x == 0.0)
+	            	return 0.0;
+	            else
+	            	return p[0]*Math.exp(p[1]*Math.log(x)); //y=ax^b
+	        case CurveFitter.LOG:
+	            if (x == 0.0)
+	                x = 0.5;
+	            return p[0]*Math.log(p[1]*x);
+	        case CurveFitter.RODBARD:
+				double ex;
+				if (x == 0.0)
+					ex = 0.0;
+				else
+					ex = Math.exp(Math.log(x/p[2])*p[1]);
+				y = p[0]-p[3];
+				y = y /(1.0+ex);
+				return y+p[3];
+	        case CurveFitter.GAMMA_VARIATE:
+	            if (p[0] >= x) return 0.0;
+	            if (p[1] <= 0) return -100000.0;
+	            if (p[2] <= 0) return -100000.0;
+	            if (p[3] <= 0) return -100000.0;
+	            
+	            double pw = Math.pow((x - p[0]), p[2]);
+	            double e = Math.exp((-(x - p[0]))/p[3]);
+	            return p[1]*pw*e;
+	        case CurveFitter.LOG2:
+	        	double tmp = x-p[2];
+	        	if (tmp<0.001) tmp = 0.001;
+	        	return p[0]+p[1]*Math.log(tmp);
+	        case CurveFitter.RODBARD2:
+				if (x<=p[0])
+					y = 0.0;
+				else {
+					y = (p[0]-x)/(x-p[3]);
+					y = Math.exp(Math.log(y)*(1.0/p[1]));  //y=y**(1/b)
+					y = y*p[2];
+				}
+				return y;
+	        default:
+	        	return 0.0;
+        }
+	}
+	
+	// helper method : get smooth data
+	
+	private static double[] getYValues(int func, double[] xValues, double[] coeffs)
+	{
+		double[] yValues = new double[xValues.length];
+		
+		for (int i = 0; i < xValues.length; i++)
+			yValues[i] = getYValue(func, xValues[i], coeffs);
+		
+		return yValues;
+	}
+	
+	// helper method : get noisy data
+	
+	private static double[] getNoisyYValues(int func, double[] xValues, double[] coeffs, int percent)
+	{
+		return makeNoisy(getYValues(func,xValues,coeffs),percent);
+	}
+	
 	@Test
 	public void testConstants() {
 
@@ -104,28 +221,78 @@ public class CurveFitterTest {
 		// note - no need to test. just calls doFit() with false as param. I test doFit() next.
 	}
 	
-	private void tryFit(int func, double[] xs, double[] ys, double[] expParams)
+	// helper method
+	
+	private void tryFit(int func, double[] xs, double[] ys, double[] cs)
 	{
 		cf = new CurveFitter(xs,ys);
 		cf.doFit(func,false);
+		
 		double[] actParams = cf.getParams();
+		
+		double[] expParams = new double[actParams.length];
+		System.arraycopy(cs, 0, expParams, 0, actParams.length-1);
+		expParams[actParams.length-1] = 0;
+		
+		System.out.println("================================================================");
+		System.out.println("xs = "+xs[0]+" "+xs[1]+" "+xs[2]+" "+xs[3]+" "+xs[4]+" "+xs[5]+" "+xs[6]);
+		System.out.println("ys = "+ys[0]+" "+ys[1]+" "+ys[2]+" "+ys[3]+" "+ys[4]+" "+ys[5]+" "+ys[6]);
+		System.out.println("exp =");
+		for (int i = 0; i < expParams.length; i++)
+			System.out.println(expParams[i]);
+		
+		System.out.println("act = ");
+		for (int i = 0; i < actParams.length; i++)
+			System.out.println(actParams[i]);
+		
 		Assert.assertDoubleArraysEqual(expParams, actParams, Tolerance);
 	}
 
+	private void tryFunc(int func, double[] xVals, double[] coeffs, int percent)
+	{
+		double[] yVals;
+		
+		if (percent == 0)
+			yVals = getYValues(func, xVals, coeffs);
+		else
+			yVals = getNoisyYValues(func, xVals, coeffs, percent);
+		
+		tryFit(func,xVals,yVals,coeffs);
+	}
+	
 	@Test
 	public void testDoFitIntBoolean() {
 		
 		// note - doFit(func,true) case runs gui stuff - can't test
 		//        doFit(func,false) cases all follow
 
-		xs = new double[] {1,2,3};
+		double[] coeffs;
+		
+		xs = new double[] {1,2,3,4,5,6,7};
+		coeffs = new double[] {2,3,4,5,6};
 		
 		// perfect fit tests
-		tryFit(CurveFitter.STRAIGHT_LINE, xs, new double[] {4,6,8}, new double[] {2,2,0});
-		tryFit(CurveFitter.POLY2, xs, new double[] {10,21,37}, new double[] {4,3.5,2.5,0});
+		
+		tryFunc(CurveFitter.STRAIGHT_LINE,xs,coeffs, 0);
+		tryFunc(CurveFitter.POLY2, xs, coeffs, 0);
+		tryFunc(CurveFitter.POLY3, xs, coeffs, 0);
+		tryFunc(CurveFitter.EXPONENTIAL, xs, coeffs, 0);
+		tryFunc(CurveFitter.POWER, xs, coeffs, 0);
+		tryFunc(CurveFitter.RODBARD, xs, coeffs, 0);
+		tryFunc(CurveFitter.GAMMA_VARIATE, xs, coeffs, 0);
+		tryFunc(CurveFitter.EXP_WITH_OFFSET, xs, coeffs, 0);
+		tryFunc(CurveFitter.GAUSSIAN, xs, coeffs, 0);
+		tryFunc(CurveFitter.EXP_RECOVERY, xs, coeffs, 0);
+		// broken ones
+		tryFunc(CurveFitter.LOG, xs, coeffs, 0);
+		tryFunc(CurveFitter.LOG2, xs, coeffs, 0);
+		tryFunc(CurveFitter.POLY4, xs, coeffs, 0);
+		tryFunc(CurveFitter.RODBARD2, xs, coeffs, 0);
 
 
+		/*
 		// approximate fit tests
+		tryFunc(CurveFitter.STRAIGHT_LINE,xs,coeffs,5);
 		tryFit(CurveFitter.STRAIGHT_LINE, xs, new double[] {4,6.5,8.2}, new double[] {2.03333,2.10000,0.10667});
 		tryFit(CurveFitter.POLY2, xs, new double[] {10.6,24.2,33}, new double[] {-7.8,20.8,-2.4,0});
 		tryFit(CurveFitter.POLY3, xs, new double[] {6,63,104.2}, new double[] {-60.16957,68.54422,-1.26957,-1.10507,0});
@@ -140,6 +307,7 @@ public class CurveFitterTest {
 		tryFit(CurveFitter.EXP_WITH_OFFSET, xs, new double[] {44,88,257}, new double[] {182.24613,14.64237,129.66677,25288.68033});
 		tryFit(CurveFitter.GAUSSIAN, xs, new double[] {1,58,14},  new double[] {0.03542,68.17796,2.24211,-0.42566,0});
 		tryFit(CurveFitter.EXP_RECOVERY, xs, new double[] {44,22,12},  new double[] {-88.73333,0.78845,92.4,0});
+		*/
 	}
 
 	@Test
@@ -339,7 +507,8 @@ public class CurveFitterTest {
 		assertEquals(-0.59996,cf.getFitGoodness(),Tolerance);  // negative fit measure is not a bug
 	}
 
-	// remove the Time substring from the expected results - otherwise assertions fail randomly
+	// helper method : remove the Time substring from the expected results - otherwise assertions fail randomly
+	
 	private String removeTime(String str)
 	{
 		String tmp = "";
