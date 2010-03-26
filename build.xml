@@ -6,7 +6,7 @@
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build" />
     <!-- Build everything; add debug="on" to debug -->
-    <javac srcdir="src" destdir="build" optimize="on" source="1.4" target="1.4" debug="on"/>
+    <javac srcdir="src" destdir="build" optimize="on" source="1.5" target="1.5" debug="on"/>
   </target>
   
 
