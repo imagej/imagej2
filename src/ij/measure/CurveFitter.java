@@ -311,8 +311,8 @@ public class CurveFitter {
                 simp[0][1] = 1.0;
                 break;
             case LOG:
-                simp[0][0] = 0.5;
-                simp[0][1] = 0.05;
+                simp[0][0] = 1.0; // bdz was 0.5;, I think this is the change Wayne made
+                simp[0][1] = 1.0; // bdz was 0.05;, I think this is the change Wayne made
                 break;
             case RODBARD: case RODBARD2:
                 simp[0][0] = firsty;
