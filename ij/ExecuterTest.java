@@ -6,10 +6,6 @@ import java.awt.event.KeyEvent;
 
 import org.junit.Test;
 
-import ij.process.*;
-import ij.macro.*;
-import ij.measure.*;
-import ij.plugin.filter.*;
 
 public class ExecuterTest {
 
