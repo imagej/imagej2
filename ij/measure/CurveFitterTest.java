@@ -50,6 +50,7 @@ public class CurveFitterTest {
 	}
 	
 	// helper method : get a y value from input x data. taken from imagej source code in CurveFitter
+
 	private static double getYValue(int func, double x, double[] coeffs)
 	{
 		double y;
@@ -807,7 +808,7 @@ public class CurveFitterTest {
 		cf.doCustomFit("y=a*x",new double[] {1,2,3,4},false);
 		assertEquals(20,cf.getFit());
 
-		// test a basic ones
+		// test the basic ones
 		
 		cf.doFit(CurveFitter.STRAIGHT_LINE);
 		assertEquals(CurveFitter.STRAIGHT_LINE,cf.getFit());
@@ -850,7 +851,7 @@ public class CurveFitterTest {
 		cf.doCustomFit("y=a*x*x*x*x*x*x*x",new double[] {6,5,4,3},false);
 		assertEquals("User-defined",cf.getName());
 
-		// test a basic ones
+		// test the basic ones
 		
 		cf.doFit(CurveFitter.STRAIGHT_LINE);
 		assertEquals("Straight Line",cf.getName());
@@ -892,7 +893,7 @@ public class CurveFitterTest {
 		cf.doCustomFit("y=a*x*x*x*x*x*x",new double[] {1,2,3,4},false);
 		assertEquals("y=a*x*x*x*x*x*x",cf.getFormula());
 
-		// test a basic ones
+		// test the basic ones
 
 		cf.doFit(CurveFitter.STRAIGHT_LINE);
 		assertEquals("y = a+bx",cf.getFormula());
