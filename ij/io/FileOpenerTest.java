@@ -167,6 +167,9 @@ public class FileOpenerTest {
 		ip = fo.open(false);
 		assertNotNull(ip);
 		assertNotNull(ip.getStack());
+		assertEquals(2,ip.getStack().getSize());
+		assertEquals(2,ip.getStack().getHeight());
+		assertEquals(3,ip.getStack().getWidth());
 	}
 
 	@Test
@@ -428,7 +431,7 @@ public class FileOpenerTest {
 		fo.revertToSaved(ip);
 		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
 	}
-		
+	
 	private void expectFailureReadPixelsCase(String fname, int format, int nImages, int height, int width)
 	{
 		FileInfo fi;

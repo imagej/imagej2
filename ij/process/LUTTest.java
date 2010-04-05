@@ -15,6 +15,8 @@ public class LUTTest {
 	LUT lut;
 	byte[] reds, blues, greens;
 	
+	// helper: create number of bytes with same value
+	
 	private byte[] bytes(int number, int value)
 	{
 		byte[] bytes = new byte[number];
@@ -74,6 +76,8 @@ public class LUTTest {
 		assertArrayEquals(bytes(256,88),temp);
 	}
 
+	// helper func
+	
 	private void shouldBeIllegalArgument(int bits, int size)
 	{
 		try{
@@ -85,6 +89,8 @@ public class LUTTest {
 		}
 	}
 
+	// helper func
+	
 	private void shouldBeOkay(int bits, int size)
 	{
 		byte[] reds = bytes(size,31);
@@ -256,6 +262,7 @@ public class LUTTest {
 		assertArrayEquals(blues,temp);
 	}
 
+	// helper func : return a list of bytes in ascending order starting at 0
 	private byte[] bytesAscending(int number)
 	{
 		byte[] results = new byte[number];
@@ -265,6 +272,7 @@ public class LUTTest {
 		return results;
 	}
 	
+	// helper func : return a list of bytes in descending order starting at number
 	private byte[] bytesDescending(int number)
 	{
 		byte[] results = new byte[number];

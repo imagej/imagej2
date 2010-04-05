@@ -77,6 +77,7 @@ public class ResultsTableTest {
 	public void testResultsTable() {
 		r = n();
 		assertNotNull(r);
+		assertEquals(0,r.getCounter());
 	}
 
 	@Test

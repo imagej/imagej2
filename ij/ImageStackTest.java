@@ -21,7 +21,7 @@ public class ImageStackTest {
 		assertEquals(0,is.getHeight());
 	}
 
-	private void tryCons1(int width, int height)
+	private void tryConsWH(int width, int height)
 	{
 		is = new ImageStack(width,height);
 		assertNotNull(is);
@@ -32,16 +32,16 @@ public class ImageStackTest {
 	@Test
 	public void testImageStackWidthHeight()
 	{
-		tryCons1(-1,-1);
-		tryCons1(0,0);
-		tryCons1(1,1);
-		tryCons1(1,10);
-		tryCons1(10,1);
-		tryCons1(257,257);
-		tryCons1(65537,65537);
+		tryConsWH(-1,-1);
+		tryConsWH(0,0);
+		tryConsWH(1,1);
+		tryConsWH(1,10);
+		tryConsWH(10,1);
+		tryConsWH(257,257);
+		tryConsWH(65537,65537);
 	}
 
-	private void tryCons2(int width, int height, int initialSize)
+	private void tryConsWHI(int width, int height, int initialSize)
 	{
 		is = new ImageStack(width,height,initialSize);
 		assertNotNull(is);
@@ -54,22 +54,22 @@ public class ImageStackTest {
 	public void testImageStackWidthHeightSize()
 	{
 		try {
-			tryCons2(-1,-1,-1);
+			tryConsWHI(-1,-1,-1);
 			fail();
 		} catch (NegativeArraySizeException e)
 		{
 			assertTrue(true);
 		}
 
-		tryCons2(0,0,0);
-		tryCons2(1,1,1);
-		tryCons2(1,10,5);
-		tryCons2(10,1,5);
-		tryCons2(257,257,257);
-		tryCons2(65537,65537,65537);
+		tryConsWHI(0,0,0);
+		tryConsWHI(1,1,1);
+		tryConsWHI(1,10,5);
+		tryConsWHI(10,1,5);
+		tryConsWHI(257,257,257);
+		tryConsWHI(65537,65537,65537);
 	}
 
-	private void tryCons3(int width, int height, ColorModel cm)
+	private void tryConsWHC(int width, int height, ColorModel cm)
 	{
 		is = new ImageStack(width,height,cm);
 		assertNotNull(is);
@@ -84,18 +84,18 @@ public class ImageStackTest {
 	{
 		ColorModel cm = new DirectColorModel(32,0x00ff0000,0x0000ff00,0x000000ff,0xff000000);
 		
-		tryCons3(-1,-1,null);
-		tryCons3(-1,-1,cm);
-		tryCons3(0,0,null);
-		tryCons3(0,0,cm);
-		tryCons3(1,1,null);
-		tryCons3(1,1,cm);
-		tryCons3(1,10,null);
-		tryCons3(1,10,cm);
-		tryCons3(10,1,null);
-		tryCons3(10,1,cm);
-		tryCons3(257,257,null);
-		tryCons3(257,257,cm);
+		tryConsWHC(-1,-1,null);
+		tryConsWHC(-1,-1,cm);
+		tryConsWHC(0,0,null);
+		tryConsWHC(0,0,cm);
+		tryConsWHC(1,1,null);
+		tryConsWHC(1,1,cm);
+		tryConsWHC(1,10,null);
+		tryConsWHC(1,10,cm);
+		tryConsWHC(10,1,null);
+		tryConsWHC(10,1,cm);
+		tryConsWHC(257,257,null);
+		tryConsWHC(257,257,cm);
 	}
 
 	@Test
@@ -361,9 +361,9 @@ public class ImageStackTest {
 		// can test cm via is.getColorModel();
 		
 		is = new ImageStack();
-		assertEquals(null,is.getColorModel());
+		assertNull(is.getColorModel());
 		is.update(null);
-		assertEquals(null,is.getColorModel());
+		assertNull(is.getColorModel());
 
 		ColorModel cm = new DirectColorModel(8,224,28,3);
 		is = new ImageStack(40,50,cm);
@@ -372,7 +372,7 @@ public class ImageStackTest {
 		
 		ImageProcessor ip = new ByteProcessor(2,2,new byte[] {0,10,20,30},cm);
 		is = new ImageStack(2,2);
-		assertEquals(null,is.getColorModel());
+		assertNull(is.getColorModel());
 		is.update(ip);
 		assertEquals(cm,is.getColorModel());
 	}
@@ -477,7 +477,7 @@ public class ImageStackTest {
 		//   no real test but exercise so that a compile time check exists for the method
 
 		is = new ImageStack();
-		assertArrayEquals(null,is.getImageArray());
+		assertNull(is.getImageArray());
 	}
 
 	@Test
@@ -491,12 +491,12 @@ public class ImageStackTest {
 	{
 		// if 0 slices it should return null
 		is = new ImageStack();
-		assertArrayEquals(null,is.getSliceLabels());
+		assertNull(is.getSliceLabels());
 		
 		// otherwise it should return label list
 		is = new ImageStack(4,4,null);
 		is.addSlice("SuperFred", new byte[] {});
-		assertTrue(null != is.getSliceLabels());
+		assertNotNull(is.getSliceLabels());
 	}
 
 	@Test
@@ -544,13 +544,13 @@ public class ImageStackTest {
 		is = new ImageStack(2,2);
 
 		is.addSlice(null,new byte[] {1,2,3,4});
-		assertEquals(null,is.getShortSliceLabel(1));
+		assertNull(is.getShortSliceLabel(1));
 		
 		is.addSlice("a",new byte[] {1,2,3,4});
 		assertEquals("a",is.getShortSliceLabel(2));
 
 		is.addSlice("\nZippyMan",new byte[] {1,2,3,4});
-		assertEquals(null,is.getShortSliceLabel(3));
+		assertNull(is.getShortSliceLabel(3));
 
 		is.addSlice("a\nb",new byte[] {1,2,3,4});
 		assertEquals("a",is.getShortSliceLabel(4));

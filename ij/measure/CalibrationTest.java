@@ -335,12 +335,12 @@ public class CalibrationTest {
 		assertEquals(((imageHeight-y-1)*c.pixelHeight),c.getY(y,imageHeight),Assert.DOUBLE_TOL);
 	}
 
-	// this method defined because of uncertain furute of Calibration::eqausl(Calibration c)
+	// this method defined because of uncertain future of Calibration::equals(Calibration c)
 	
 	private void assertCalibsSame(Calibration expected, Calibration actual)
 	{
 		// if we can change Calibration::equals() to take an Object or if we write our own
-		// Calibration::eqausl(Obejct) then do this code ...
+		// Calibration::equals(Object) then do this code ...
 
 		//assertEquals(expected, actual);
 
@@ -581,10 +581,14 @@ public class CalibrationTest {
 	@Test
 	public void testCalibrated() {
 
+		// default case returns false
 		assertFalse(c.calibrated());
 		
+		// if set to NONE then returns false
 		c.setFunction(Calibration.NONE, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
 		assertFalse(c.calibrated());
+		
+		// all other cases should return true
 		
 		c.setFunction(Calibration.STRAIGHT_LINE, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
 		assertTrue(c.calibrated());
@@ -628,6 +632,46 @@ public class CalibrationTest {
 
 	@Test
 	public void testGetFunction() {
+		
+		c.setFunction(Calibration.NONE, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.NONE,c.getFunction());
+		
+		c.setFunction(Calibration.STRAIGHT_LINE, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.STRAIGHT_LINE,c.getFunction());
+		
+		c.setFunction(Calibration.POLY2, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.POLY2,c.getFunction());
+		
+		c.setFunction(Calibration.POLY3, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.POLY3,c.getFunction());
+		
+		c.setFunction(Calibration.POLY4, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.POLY4,c.getFunction());
+		
+		c.setFunction(Calibration.EXPONENTIAL, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.EXPONENTIAL,c.getFunction());
+		
+		c.setFunction(Calibration.POWER, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.POWER,c.getFunction());
+		
+		c.setFunction(Calibration.LOG, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.LOG,c.getFunction());
+		
+		c.setFunction(Calibration.RODBARD, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.RODBARD,c.getFunction());
+		
+		c.setFunction(Calibration.GAMMA_VARIATE, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.GAMMA_VARIATE,c.getFunction());
+		
+		c.setFunction(Calibration.LOG2, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.LOG2,c.getFunction());
+		
+		c.setFunction(Calibration.RODBARD2, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.RODBARD2,c.getFunction());
+		
+		c.setFunction(Calibration.UNCALIBRATED_OD, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
+		assertEquals(Calibration.UNCALIBRATED_OD,c.getFunction());
+		
 		c.setFunction(Calibration.CUSTOM, new double[] { 1,2,3,4,5,6,7,8,9,10 }, "grand poobahs");
 		assertEquals(Calibration.CUSTOM,c.getFunction());
 	}
@@ -988,7 +1032,7 @@ public class CalibrationTest {
 		
 		// passed in table null - calls makeTable
 		// NOTE - will not test this subcase. makeCTable() indirectly tested elsewhere.
-		//   There is no code that tests the validity of the constructed cTable but and test of CurveFitter
+		//   There is no code that tests the validity of the constructed cTable but tests of CurveFitter
 		//   should take care of this.
 		//c = new Calibration(imp);
 		//c.setCTable(null, "joules");

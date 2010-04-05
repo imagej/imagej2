@@ -1,5 +1,7 @@
 package ij.util;
 
+import ij.Assert;
+
 import java.awt.Color;
 
 import static org.junit.Assert.*;
@@ -71,8 +73,8 @@ public class ToolsTest {
 	private void testMinMaxDouble(double eMin, double eMax, double[] input){
 		double[] minMax = Tools.getMinMax(input);
 		assertTrue(minMax.length == 2);
-		assertEquals(eMin,minMax[0],0.00001);
-		assertEquals(eMax,minMax[1],0.00001);
+		assertEquals(eMin,minMax[0],Assert.DOUBLE_TOL);
+		assertEquals(eMax,minMax[1],Assert.DOUBLE_TOL);
 	}
 	
 	@Test
@@ -95,8 +97,8 @@ public class ToolsTest {
 	private void testMinMaxDouble(double eMin, double eMax, float[] input){
 		double[] minMax = Tools.getMinMax(input);
 		assertTrue(minMax.length == 2);
-		assertEquals(eMin,minMax[0],0.00001);
-		assertEquals(eMax,minMax[1],0.00001);
+		assertEquals(eMin,minMax[0],Assert.DOUBLE_TOL);
+		assertEquals(eMax,minMax[1],Assert.DOUBLE_TOL);
 	}
 	
 	@Test
@@ -120,7 +122,7 @@ public class ToolsTest {
 		assertNotNull(doubles);
 		assertTrue(floats.length == doubles.length);
 		for (int i = 0; i < floats.length; i++)
-			assertEquals((double)floats[i],doubles[i],0.0000001);
+			assertEquals((double)floats[i],doubles[i],Assert.DOUBLE_TOL);
 	}
 
 	@Test
@@ -143,7 +145,7 @@ public class ToolsTest {
 		assertNotNull(floats);
 		assertTrue(floats.length == doubles.length);
 		for (int i = 0; i < doubles.length; i++)
-			assertEquals((float)doubles[i],floats[i],0.0000001);
+			assertEquals((float)doubles[i],floats[i],Assert.DOUBLE_TOL);
 	}
 
 	@Test
@@ -176,26 +178,26 @@ public class ToolsTest {
 
 	@Test
 	public void testParseDoubleStringDouble() {
-		assertEquals(5.0,Tools.parseDouble(null,5.0),0.00001);
-		assertEquals(5.0,Tools.parseDouble("",5.0),0.00001);
-		assertEquals(5.0,Tools.parseDouble("fred",5.0),0.00001);
-		assertEquals(4.33,Tools.parseDouble("4.33",5.0),0.00001);
-		assertEquals(99.0,Tools.parseDouble("99",5.0),0.00001);
-		assertEquals(-6.2,Tools.parseDouble("-6.2",5.0),0.00001);
-		assertEquals(1.3e17,Tools.parseDouble("1.3e17",5.0),0.00001);
+		assertEquals(5.0,Tools.parseDouble(null,5.0),Assert.FLOAT_TOL);
+		assertEquals(5.0,Tools.parseDouble("",5.0),Assert.FLOAT_TOL);
+		assertEquals(5.0,Tools.parseDouble("fred",5.0),Assert.FLOAT_TOL);
+		assertEquals(4.33,Tools.parseDouble("4.33",5.0),Assert.FLOAT_TOL);
+		assertEquals(99.0,Tools.parseDouble("99",5.0),Assert.FLOAT_TOL);
+		assertEquals(-6.2,Tools.parseDouble("-6.2",5.0),Assert.FLOAT_TOL);
+		assertEquals(1.3e17,Tools.parseDouble("1.3e17",5.0),Assert.FLOAT_TOL);
 	}
 
 	@Test
 	public void testParseDoubleString() {
-		assertEquals(Double.NaN,Tools.parseDouble(null),0.00001);
-		assertEquals(Double.NaN,Tools.parseDouble(""),0.00001);
-		assertEquals(Double.NaN,Tools.parseDouble("Himalayas"),0.00001);
-		assertEquals(Double.NaN,Tools.parseDouble("%$^&UYTGH"),0.00001);
-		assertEquals(42e42,Tools.parseDouble("42e42"),0.00001);
-		assertEquals(1.4,Tools.parseDouble("1.4"),0.00001);
-		assertEquals(73,Tools.parseDouble("73"),0.00001);
-		assertEquals(-6.7,Tools.parseDouble("-6.7"),0.00001);
-		assertEquals(0.0,Tools.parseDouble("0"),0.00001);
+		assertEquals(Double.NaN,Tools.parseDouble(null),Assert.FLOAT_TOL);
+		assertEquals(Double.NaN,Tools.parseDouble(""),Assert.FLOAT_TOL);
+		assertEquals(Double.NaN,Tools.parseDouble("Himalayas"),Assert.FLOAT_TOL);
+		assertEquals(Double.NaN,Tools.parseDouble("%$^&UYTGH"),Assert.FLOAT_TOL);
+		assertEquals(42e42,Tools.parseDouble("42e42"),Assert.FLOAT_TOL);
+		assertEquals(1.4,Tools.parseDouble("1.4"),Assert.FLOAT_TOL);
+		assertEquals(73,Tools.parseDouble("73"),Assert.FLOAT_TOL);
+		assertEquals(-6.7,Tools.parseDouble("-6.7"),Assert.FLOAT_TOL);
+		assertEquals(0.0,Tools.parseDouble("0"),Assert.FLOAT_TOL);
 	}
 
 	@Test
