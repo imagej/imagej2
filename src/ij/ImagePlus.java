@@ -1600,6 +1600,13 @@ public class ImagePlus implements ImageObserver, Measurements {
 		}
 		stack = null;
 		img = null;
+		win = null;
+		if (roi!=null) roi.setImage(null);
+		roi = null;
+		properties = null;
+		calibration = null;
+		overlay = null;
+		flatteningCanvas = null;
 	}
 	
 	public void setIgnoreFlush(boolean ignoreFlush) {
