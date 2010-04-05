@@ -37,6 +37,8 @@ public class ImageWriterTest {
 		fi.pixels = pixels;
 	}
 
+	// the test routine everything else calls
+	
 	private byte[] writeData(FileInfo fi, boolean expectIOException)
 	{
 		try {
@@ -57,6 +59,8 @@ public class ImageWriterTest {
 		return null;
 	}
 
+	// the concats() are used below for creating expected data sets for stacks
+	
 	byte[] concat(byte[] a, byte[] b)
 	{
 		byte[] output = new byte[a.length + b.length];
@@ -105,7 +109,7 @@ public class ImageWriterTest {
 		fi.pixels = null;
 		fi.virtualStack = null;
 		
-		writeData(fi, true);	
+		writeData(fi, true);	// expecting IOException
 	}
 
 	private void tryBadPix()
@@ -113,8 +117,8 @@ public class ImageWriterTest {
 		FileInfo fi = new FileInfo();
 		fi.nImages = 2;
 		fi.virtualStack = null;
-		fi.pixels = "Any Object not instanceof Object[]";
-		writeData(fi, true);
+		fi.pixels = "Any Object not instanceof Object[]";  // bad pix
+		writeData(fi, true);  // expecting IOException
 	}
 	
 	private void tryColor8BitVirtualStack() {
@@ -170,9 +174,9 @@ public class ImageWriterTest {
 	
 	private void tryColor8BitStack() {
 		PixelFormat format = new Color8Format();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				byte[] expectedAfterWrite = new byte[] {};
 				byte[][] imageStack = new byte[imageSet.length][];
@@ -198,9 +202,9 @@ public class ImageWriterTest {
 	
 	private void tryColor8BitImage() {
 		PixelFormat format = new Color8Format();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				byte[] expected = (byte[])(format.expectedResults(image)); 
 				
@@ -228,7 +232,7 @@ public class ImageWriterTest {
 		PixelFormat format = new Gray8Format();
 		
 		// try regular
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -251,7 +255,7 @@ public class ImageWriterTest {
 		}
 		
 		// try with filename hack that flips pixels
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -276,9 +280,9 @@ public class ImageWriterTest {
 	
 	private void tryGray8BitStack() {
 		PixelFormat format = new Gray8Format();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				byte[] expectedAfterWrite = new byte[] {};
 				byte[][] imageStack = new byte[imageSet.length][];
@@ -304,9 +308,9 @@ public class ImageWriterTest {
 	
 	private void tryGray8BitImage() {
 		PixelFormat format = new Gray8Format();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				byte[] expected = (byte[])(format.expectedResults(image)); 
 				
@@ -334,7 +338,7 @@ public class ImageWriterTest {
 		PixelFormat format = new Gray16SignedFormat();
 		
 		// try regular
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -381,9 +385,9 @@ public class ImageWriterTest {
 	
 	private void tryGray16SignedStack() {
 		PixelFormat format = new Gray16SignedFormat();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				short[] expectedAfterWrite = new short[] {};
 				short[][] imageStack = new short[imageSet.length][];
@@ -409,9 +413,9 @@ public class ImageWriterTest {
 	
 	private void tryGray16SignedImage() {
 		PixelFormat format = new Gray16SignedFormat();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				short[] expected = (short[])(format.expectedResults(image)); 
 				
@@ -439,7 +443,7 @@ public class ImageWriterTest {
 		PixelFormat format = new Gray16UnsignedFormat();
 		
 		// try regular
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -461,7 +465,7 @@ public class ImageWriterTest {
 		}
 
 		// try with filename hack that flips pixels
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -486,9 +490,9 @@ public class ImageWriterTest {
 	
 	private void tryGray16UnsignedStack() {
 		PixelFormat format = new Gray16UnsignedFormat();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				short[] expectedAfterWrite = new short[] {};
 				short[][] imageStack = new short[imageSet.length][];
@@ -514,9 +518,9 @@ public class ImageWriterTest {
 	
 	private void tryGray16UnsignedImage() {
 		PixelFormat format = new Gray16UnsignedFormat();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				short[] expected = (short[])(format.expectedResults(image)); 
 				
@@ -544,7 +548,7 @@ public class ImageWriterTest {
 		PixelFormat format = new RgbFormat();
 		
 		// try regular
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -567,7 +571,7 @@ public class ImageWriterTest {
 		}
 
 		// try with filename hack that flips pixels
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -593,9 +597,9 @@ public class ImageWriterTest {
 	
 	private void tryRgbStack() {
 		PixelFormat format = new RgbFormat();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				int[] expectedAfterWrite = new int[] {};
 				int[][] imageStack = new int[imageSet.length][];
@@ -621,9 +625,9 @@ public class ImageWriterTest {
 	
 	private void tryRgbImage() {
 		PixelFormat format = new RgbFormat();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				int[] expected = (int[])(format.expectedResults(image)); 
 				
@@ -650,7 +654,7 @@ public class ImageWriterTest {
 		PixelFormat format = new Gray32FloatFormat();
 		
 		// try regular
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -673,7 +677,7 @@ public class ImageWriterTest {
 		}
 
 		// try with filename hack that flips pixels
-		for (ByteOrder.Value order : ByteOrders)
+		for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 		{
 			VirtualStack vStack = new VirtualStack(3, 2, (ColorModel) null, "data/");
 			
@@ -699,9 +703,9 @@ public class ImageWriterTest {
 	
 	private void tryGray32FloatStack() {
 		PixelFormat format = new Gray32FloatFormat();
-		for (long[][][] imageSet : Images.ImageSets)
+		for (long[][][] imageSet : Images.ImageSets)  // for each test image set we have
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				float[] expectedAfterWrite = new float[] {};
 				float[][] imageStack = new float[imageSet.length][];
@@ -727,9 +731,9 @@ public class ImageWriterTest {
 	
 	private void tryGray32FloatImage() {
 		PixelFormat format = new Gray32FloatFormat();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				float[] expected = (float[])(format.expectedResults(image)); 
 				
@@ -754,9 +758,9 @@ public class ImageWriterTest {
 	
 	private void tryRgb48Image() {
 		PixelFormat format = new Rgb48Format();
-		for (long[][] image : Images.Images)
+		for (long[][] image : Images.Images) // for all test images
 		{
-			for (ByteOrder.Value order : ByteOrders)
+			for (ByteOrder.Value order : ByteOrders)  // for all possible byte orders
 			{
 				short[][] expected = (short[][]) format.expectedResults(image);
 	
