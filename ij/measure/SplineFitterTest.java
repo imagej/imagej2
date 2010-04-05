@@ -64,7 +64,7 @@ public class SplineFitterTest {
 		sf = new SplineFitter(new int[]{3,7},new int[]{6,11},2);
 		x = new int[] {6,5};
 		y = new int[] {8,4};
-		assertEquals(20, sf.evalSpline(x, y, 2, 9.0), Assert.DOUBLE_TOL);
+		assertEquals(20.0, sf.evalSpline(x, y, 2, 9.0), Assert.DOUBLE_TOL);
 
 		// 3.0, 3 frame, 2 vals, frame x inc, frame y inc, x inc, y inc
 		sf = new SplineFitter(new int[]{1,2,3},new int[]{4,5,6},3);
