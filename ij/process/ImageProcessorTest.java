@@ -43,6 +43,384 @@ public class ImageProcessorTest
 	private static byte[] rawByte;
 	private static int[] imageIntData;
 
+	
+
+	@Test
+	public void testInvertLut() {
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		ImageProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		testByteProcessor.invertLut();
+		//displayGraphicsInNewJFrame(testByteProcessor.getBufferedImage(), "InvertLut", 3000);
+		testImageStats( testByteProcessor, "stats[count=64000, mean=71.654640625, min=0.0, max=248.0] 148.8276150772684 72.22557495294814 160.0 100.0");
+	}
+
+	@Test
+	public void testGetBestIndex() 
+	{
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		int test = testColorProcessor.getBestIndex(new Color(1,128,255));
+		assertEquals( 0 , test);
+		test = testColorProcessor.getBestIndex(new Color(128,128,128));
+		assertEquals( 0 , test);
+		test = testColorProcessor.getBestIndex(new Color(220,220,220));
+		assertEquals( 0 , test);
+	}
+
+	@Test
+	public void testIsInvertedLut() 
+	{
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		ImageProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		testByteProcessor.invertLut();
+		assertEquals( true, testByteProcessor.isInvertedLut() );
+	}
+
+
+	@Test
+	public void testSetColorColor() 
+	{
+		//abstract
+		
+	}
+
+	@Test
+	public void testSetColorInt() {
+		//abstract
+	}
+
+	@Test
+	public void testSetValue() {
+		//abstract
+	}
+
+	@Test
+	public void testSetBackgroundValue() {
+		//abstract
+	}
+
+	@Test
+	public void testGetBackgroundValue() {
+		//abstract
+	}
+
+	@Test
+	public void testGetMin() {
+		//abstract
+	}
+
+	@Test
+	public void testGetMax() {
+		//abstract
+	}
+
+	@Test
+	public void testSetMinAndMax() {
+		//abstract
+	}
+
+	
+
+	@Test
+	public void testFindEdges() {
+		//abstract
+	}
+
+	@Test
+	public void testFlipVertical() {
+		//abstract
+	}
+
+
+
+	@Test
+	public void testFill() {
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		testColorProcessor.fill();
+		testImageStats( testColorProcessor, "stats[count=64000, mean=0.0, min=0.0, max=0.0] NaN NaN 160.0 100.0");
+
+	}
+
+	@Test
+	public void testFillImageProcessor() 
+	{
+		//abstract
+	}
+
+	@Test
+	public void testGetPixels() 
+	{
+		//abstract
+	}
+
+	@Test
+	public void testGetPixelsCopy() {
+		//abstract
+	}
+
+	@Test
+	public void testGetPixelIntInt() {
+		//abstract
+	}
+
+
+	@Test
+	public void testGetIntInt() {
+		//abstract
+	}
+
+	@Test
+	public void testGetInt() {
+		//abstract
+	}
+
+	@Test
+	public void testSetIntIntInt() {
+		//abstract
+	}
+
+	@Test
+	public void testSetIntInt() {
+		//abstract
+	}
+
+	@Test
+	public void testGetfIntInt() {
+		//abstract
+	}
+
+	@Test
+	public void testGetfInt() {
+		//abstract
+	}
+
+	@Test
+	public void testSetfIntIntFloat() {
+		//abstract
+	}
+
+	@Test
+	public void testSetfIntFloat() {
+		//abstract
+	}
+
+
+	@Test
+	public void testGetPixelIntIntIntArray() {
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		ImageProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		int[] i = testByteProcessor.getPixel(0, 10, null);
+		assertEquals( 125, i[0]);
+	}
+
+	@Test
+	public void testPutPixelIntIntIntArray() {
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height  );
+		int[] i = { 99 };
+		ImageProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		 testByteProcessor.putPixel(0, 10, i);
+		 int[] r = testByteProcessor.getPixel(0, 10, null);
+		assertEquals( 99, r[0] );
+	}
+
+	@Test
+	public void testGetInterpolatedPixel() {
+		//abstract
+	}
+
+	@Test
+	public void testGetPixelInterpolated() {
+		//abstract
+	}
+
+
+	@Test
+	public void testPutPixelIntIntInt() {
+		//abstract
+	}
+
+	@Test
+	public void testGetPixelValue() {
+		//abstract
+	}
+
+	@Test
+	public void testPutPixelValue() {
+		//abstract
+	}
+
+	@Test
+	public void testDrawPixel() {
+		//abstract
+	}
+
+	@Test
+	public void testSetPixelsObject() {
+		//abstract
+	}
+
+	@Test
+	public void testCopyBits() {
+		//abstract
+	}
+
+	@Test
+	public void testApplyTable() {
+		//abstract
+	}
+
+
+	@Test
+	public void testCreateImage() {
+		//abstract
+	}
+
+
+	@Test
+	public void testCreateProcessor() {
+		//abstract
+	}
+
+	@Test
+	public void testSnapshot() {
+		//abstract
+	}
+
+	@Test
+	public void testReset() {
+		//abstract
+	}
+
+	@Test
+	public void testResetImageProcessor() {
+		//abstract
+	}
+
+	@Test
+	public void testSetSnapshotPixels() {
+		//abstract
+	}
+
+	@Test
+	public void testGetSnapshotPixels() {
+		//abstract
+	}
+
+	@Test
+	public void testConvolve3x3() {
+		//abstract
+	}
+
+	@Test
+	public void testFilter() {
+		//abstract
+	}
+
+	@Test
+	public void testMedianFilter() {
+		//abstract
+	}
+
+	@Test
+	public void testNoise() {
+		//abstract
+	}
+
+	@Test
+	public void testCrop() {
+		//abstract
+	}
+
+	@Test
+	public void testThreshold() {
+		//abstract
+	}
+
+	@Test
+	public void testDuplicate() {
+		//abstract
+	}
+
+	@Test
+	public void testScale() {
+		//abstract
+	}
+
+	@Test
+	public void testResizeIntInt() {
+		//abstract
+	}
+
+
+	@Test
+	public void testRotate() {
+		//abstract
+	}
+
+
+	@Test
+	public void testGetHistogram() {
+		//abstract
+	}
+
+	@Test
+	public void testErode() {
+		//abstract
+	}
+
+	@Test
+	public void testDilate() {
+		//abstract
+	}
+
+	@Test
+	public void testConvolve() {
+		//abstract
+	}
+
+	@Test
+	public void testAutoThreshold() {
+		//abstract
+	}
+
+
+	@Test
+	public void testGetNChannels() {
+		//returns 1
+	}
+
+	@Test
+	public void testToFloat() {
+		//abstract
+	}
+
+	@Test
+	public void testSetPixelsIntFloatProcessor() {
+		//abstract
+	}
+
+	@Test
+	public void testUpdateComposite() {
+		ImageProcessor testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		ByteProcessor testByteProcessor = new ByteProcessor( width, height );
+		int[] results = new int[width*height];
+		testColorProcessor.updateComposite( results, 1 );
+		testImageStats( new ColorProcessor(width, height, results), "stats[count=64000, mean=0.0, min=0.0, max=0.0] NaN NaN 160.0 100.0");
+		testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		testColorProcessor.updateComposite( results, 2 );
+		testImageStats( testColorProcessor, "stats[count=64000, mean=71.654640625, min=0.0, max=248.0] 148.83278391018192 72.21954665945063 160.0 100.0");
+		testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		testColorProcessor.updateComposite( results, 3 );
+		testImageStats( testColorProcessor, "stats[count=64000, mean=71.654640625, min=0.0, max=248.0] 148.83278391018192 72.21954665945063 160.0 100.0");
+		testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		testColorProcessor.updateComposite( results, 4 );
+		testImageStats( testColorProcessor, "stats[count=64000, mean=71.654640625, min=0.0, max=248.0] 148.83278391018192 72.21954665945063 160.0 100.0");
+		testColorProcessor = new ColorProcessor(width, height, getRefImageArray() );
+		testColorProcessor.updateComposite( results, 5 );
+		testImageStats( testColorProcessor, "stats[count=64000, mean=71.654640625, min=0.0, max=248.0] 148.83278391018192 72.21954665945063 160.0 100.0");	
+	}
+
+	
+	
 	/*
 	 * Open an known image test image for global use
 	 */
@@ -1610,4 +1988,6 @@ public class ImageProcessorTest
 		//sets hidden private field
 	}
 
+	
+	
 }
