@@ -1,5 +1,5 @@
 .DS_Store
 *.class
-*.jar
 *~
 build
+build-eclipse
