@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/curtis/code/LOCI/imagej/precompiled/loci_tools.jar"/>
+	<classpathentry kind="lib" path="/Users/curtis/code/LOCI/imagej/precompiled/junit-4.5.jar"/>
+	<classpathentry kind="output" path="build-eclipse"/>
+</classpath>
