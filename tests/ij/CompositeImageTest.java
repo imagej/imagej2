@@ -6,9 +6,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.awt.image.*;
+
 import ij.io.FileInfo;
 import ij.process.*;
-
 import ij.measure.*;
 
 public class CompositeImageTest {
@@ -365,38 +366,110 @@ public class CompositeImageTest {
 
 	@Test
 	public void testSetChannelColorModel() {
-		//fail("Not yet implemented");
+		
+		// create lut channel data
+		byte[] reds = ByteCreator.ascending(256);
+		byte[] greens = ByteCreator.descending(256);
+		byte[] blues = ByteCreator.repeated(256,51);
+		
+		// make a color model
+		IndexColorModel cm = new IndexColorModel(8, 256, reds, greens, blues);
+
+		// call the method
+		ci.setChannelColorModel(cm);
+
+		// see if there was a lut created with the correct values
+		
+		LUT lut = ci.getChannelLut();
+		byte[] tmp = new byte[256];
+		
+		lut.getReds(tmp);
+		assertArrayEquals(reds,tmp);
+
+		lut.getGreens(tmp);
+		assertArrayEquals(greens,tmp);
+
+		lut.getBlues(tmp);
+		assertArrayEquals(blues,tmp);
 	}
 
 	
 	@Test
 	public void testSetDisplayRangeDoubleDouble() {
-		//fail("Not yet implemented");
+
+		ci.setDisplayRange(100, 900);
+		
+		// make sure max and min set
+		double actMin = ci.getDisplayRangeMin();
+		double actMax = ci.getDisplayRangeMax();
+		assertEquals(100,actMin,Assert.DOUBLE_TOL);
+		assertEquals(900,actMax,Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testGetDisplayRangeMinAndMax() {
-		LUT lut = ci.getChannelLut(1);
-		int channel = ci.getChannelIndex();
+		
 		ci.setDisplayRange(100, 900);
-		double min = ci.getDisplayRangeMin();
-		double max = ci.getDisplayRangeMax();
-		assertEquals(100,min,Assert.DOUBLE_TOL);
-		assertEquals(900,max,Assert.DOUBLE_TOL);
-		assertEquals(ci.getLuts()[channel].min,min,Assert.DOUBLE_TOL);
-		assertEquals(ci.getLuts()[channel].max,max,Assert.DOUBLE_TOL);
+		
+		// make sure old invariant holds
+		int channel = ci.getChannelIndex();
+		assertEquals(ci.getLuts()[channel].min, ci.getDisplayRangeMin(), Assert.DOUBLE_TOL);
+		assertEquals(ci.getLuts()[channel].max, ci.getDisplayRangeMax(), Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testResetDisplayRange() {
+		
+		// setup lut mins and maxes to be non default
+		LUT lut = ci.getChannelLut(1);
+		lut.min = 494;
+		lut.max = 88888;
+		assertEquals(494, ci.getDisplayRangeMin(), Assert.DOUBLE_TOL);
+		assertEquals(88888, ci.getDisplayRangeMax(), Assert.DOUBLE_TOL);
+		
+		// setup proc mins and maxes to be non default
 		ci.getProcessor().setMinAndMax(100, 900);
-		assertEquals(100,ci.getProcessor().getMin(),Assert.DOUBLE_TOL);
-		assertEquals(900,ci.getProcessor().getMax(),Assert.DOUBLE_TOL);
+		assertEquals(100, ci.getProcessor().getMin(), Assert.DOUBLE_TOL);
+		assertEquals(900, ci.getProcessor().getMax(), Assert.DOUBLE_TOL);
+	
+		// reset the display range
+		ci.resetDisplayRange();
+
+		// see that they are put back to sane values
+		assertEquals(0, ci.getProcessor().getMin(), Assert.DOUBLE_TOL);
+		assertEquals(255, ci.getProcessor().getMax(), Assert.DOUBLE_TOL);
+		assertEquals(0, ci.getDisplayRangeMin(), Assert.DOUBLE_TOL);
+		assertEquals(255, ci.getDisplayRangeMax(), Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testHasCustomLuts() {
-		//fail("Not yet implemented");
+
+		byte[] vals = new byte[256];
+		for (int i = 0; i < vals.length; i++)
+			vals[i] = (byte)i;
+		
+		LUT lut = new LUT(vals,vals,vals);
+		
+		ip = new ImagePlus("Fred",new ColorProcessor(4,4));
+
+		//  customLut true and color == GRAYSCALE
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		ci.setChannelLut(lut);
+		assertFalse(ci.hasCustomLuts());
+		
+		//  customLut true and color != GRAYSCALE
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		ci.setChannelLut(lut);
+		assertTrue(ci.hasCustomLuts());
+		
+		//  customLut false and color == GRAYSCALE
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		assertFalse(ci.hasCustomLuts());
+		
+		//  customLut false and color != GRAYSCALE
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		assertFalse(ci.hasCustomLuts());		
 	}
 
 }

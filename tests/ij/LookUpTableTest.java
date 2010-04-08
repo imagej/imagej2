@@ -17,53 +17,15 @@ public class LookUpTableTest {
 	byte[] reds, greens, blues;
 	LookUpTable lut;
 	
-	//  *********  helper methods of LookupTest
-	
-	// helper - create a list of bytes in ascending order
-	private byte[] ascending(int count)
-	{
-		byte[] output = new byte[count];
-		for (int i = 0; i < count; i++)
-			output[i] = (byte)i;
-		return output;
-	}
-	
-	// helper - create a list of bytes in descending order
-	private byte[] descending(int count)
-	{
-		byte[] output = new byte[count];
-		for (int i = 0; i < count; i++)
-			output[i] = (byte)(count-i-1);
-		return output;
-	}
-	
-	// helper - create a list of repeated bytes
-	private byte[] repeated(int count, int value)
-	{
-		byte[] output = new byte[count];
-		for (int i = 0; i < count; i++)
-			output[i] = (byte)value;
-		return output;
-	}
-	
-	// helper - create a list of random bytes from 0 .. range-1
-	private byte[] random(int count, int range)
-	{
-		byte[] output = new byte[count];
-		for (int i = 0; i < count; i++)
-			output[i] = (byte)Math.floor(range*Math.random());
-		return output;
-	}
-	
 	//  **********     Test code for LookUpTest follows
 	
 	// default code run before every test
 	@Before
 	public void setup()
 	{
-		reds = ascending(256);
-		greens = descending(256);
-		blues = repeated(256,73);
+		reds = ByteCreator.ascending(256);
+		greens = ByteCreator.descending(256);
+		blues = ByteCreator.repeated(256,73);
 		cm = new IndexColorModel(8, 256, reds, greens, blues);
 		lut = new LookUpTable(cm);
 	}
@@ -98,9 +60,9 @@ public class LookUpTableTest {
 		assertEquals(256,lut.getMapSize());
 		
 		// try a non-256 color case
-		reds = repeated(16,0);
-		greens = repeated(16,1);
-		blues = repeated(16,2);
+		reds = ByteCreator.repeated(16,0);
+		greens = ByteCreator.repeated(16,1);
+		blues = ByteCreator.repeated(16,2);
 		cm = new IndexColorModel(4,16,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertNotNull(lut);
@@ -131,41 +93,41 @@ public class LookUpTableTest {
 		assertFalse(lut.isGrayscale());
 		
 		// test another random LUT
-		reds = repeated(256,22);
-		greens = repeated(256,33);
-		blues = repeated(256,44);
+		reds = ByteCreator.repeated(256,22);
+		greens = ByteCreator.repeated(256,33);
+		blues = ByteCreator.repeated(256,44);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertFalse(lut.isGrayscale());
 		
 		// test off by one in reds
-		reds = repeated(256,21);
-		greens = repeated(256,22);
-		blues = repeated(256,22);
+		reds = ByteCreator.repeated(256,21);
+		greens = ByteCreator.repeated(256,22);
+		blues = ByteCreator.repeated(256,22);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertFalse(lut.isGrayscale());
 		
 		// test off by one in greens
-		reds = repeated(256,22);
-		greens = repeated(256,21);
-		blues = repeated(256,22);
+		reds = ByteCreator.repeated(256,22);
+		greens = ByteCreator.repeated(256,21);
+		blues = ByteCreator.repeated(256,22);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertFalse(lut.isGrayscale());
 		
 		// test off by one in blues
-		reds = repeated(256,22);
-		greens = repeated(256,22);
-		blues = repeated(256,21);
+		reds = ByteCreator.repeated(256,22);
+		greens = ByteCreator.repeated(256,22);
+		blues = ByteCreator.repeated(256,21);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertFalse(lut.isGrayscale());
 		
 		// test lutsize != 256
-		reds = repeated(255,22);
-		greens = repeated(255,22);
-		blues = repeated(255,22);
+		reds = ByteCreator.repeated(255,22);
+		greens = ByteCreator.repeated(255,22);
+		blues = ByteCreator.repeated(255,22);
 		cm = new IndexColorModel(8,255,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertFalse(lut.isGrayscale());
@@ -173,31 +135,31 @@ public class LookUpTableTest {
 		// THESE ARE GRAYSCALE
 		
 		// test an ascending LUT
-		reds = ascending(256);
-		greens = ascending(256);
-		blues = ascending(256);
+		reds = ByteCreator.ascending(256);
+		greens = ByteCreator.ascending(256);
+		blues = ByteCreator.ascending(256);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertTrue(lut.isGrayscale());
 		
 		// test a descending LUT
-		reds = descending(256);
-		greens = descending(256);
-		blues = descending(256);
+		reds = ByteCreator.descending(256);
+		greens = ByteCreator.descending(256);
+		blues = ByteCreator.descending(256);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertTrue(lut.isGrayscale());
 		
 		// test a repeating LUT
-		reds = repeated(256,22);
-		greens = repeated(256,22);
-		blues = repeated(256,22);
+		reds = ByteCreator.repeated(256,22);
+		greens = ByteCreator.repeated(256,22);
+		blues = ByteCreator.repeated(256,22);
 		cm = new IndexColorModel(8,256,reds,greens,blues);
 		lut = new LookUpTable(cm);
 		assertTrue(lut.isGrayscale());
 		
 		// test a random LUT where the r,g,b values agree
-		reds = random(256,256);
+		reds = ByteCreator.random(256,256);
 		greens = reds.clone();
 		blues = reds.clone();
 		cm = new IndexColorModel(8,256,reds,greens,blues);
@@ -223,9 +185,9 @@ public class LookUpTableTest {
 		int maxW = 20;
 		int maxH = 6;
 		
-		reds = ascending(256);
-		greens = ascending(256);
-		blues = repeated(256,44);
+		reds = ByteCreator.ascending(256);
+		greens = ByteCreator.ascending(256);
+		blues = ByteCreator.repeated(256,44);
 
 		// case 1 : byteproc and indexcolormodel
 		
@@ -319,9 +281,9 @@ public class LookUpTableTest {
 		ColorModel c;
 		
 		// setup channel data for comparison
-		reds = ascending(256);
-		greens = ascending(256);
-		blues = ascending(256);
+		reds = ByteCreator.ascending(256);
+		greens = ByteCreator.ascending(256);
+		blues = ByteCreator.ascending(256);
 
 		// try an ascending grayscale color model
 		c = LookUpTable.createGrayscaleColorModel(false);
