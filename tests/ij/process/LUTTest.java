@@ -4,37 +4,25 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import ij.Assert;
-
 import java.awt.image.IndexColorModel;
 
 import ij.IJInfo;
+import ij.Assert;
+import ij.ByteCreator;
 
 public class LUTTest {
 
 	LUT lut;
 	byte[] reds, blues, greens;
 	
-	// helper: create number of bytes with same value
-	
-	private byte[] bytes(int number, int value)
-	{
-		byte[] bytes = new byte[number];
-		
-		for (int i = 0; i < number; i++)
-			bytes[i] = (byte)value;
-		
-		return bytes;
-	}
-	
 	@Test
 	public void testLUTByteArrayByteArrayByteArray() {
 
 		byte[] temp = new byte[256];
 		
-		reds = bytes(256,23);
-		greens = bytes(256,47);
-		blues = bytes(256,88);
+		reds = ByteCreator.repeated(256,23);
+		greens = ByteCreator.repeated(256,47);
+		blues = ByteCreator.repeated(256,88);
 		
 		lut = new LUT(reds,greens,blues);
 		assertNotNull(lut);
@@ -51,29 +39,29 @@ public class LUTTest {
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			// in existing IJ code this constructor crashes when passed less than 256 entries for r,g,b 
-			reds = bytes(255,23);
-			greens = bytes(255,47);
-			blues = bytes(255,88);
+			reds = ByteCreator.repeated(255,23);
+			greens = ByteCreator.repeated(255,47);
+			blues = ByteCreator.repeated(255,88);
 			lut = new LUT(reds,greens,blues);
 			assertNotNull(lut);
 		}
 		
 		// try passing too many lut entries
 		
-		reds = bytes(257,23);
-		greens = bytes(257,47);
-		blues = bytes(257,88);
+		reds = ByteCreator.repeated(257,23);
+		greens = ByteCreator.repeated(257,47);
+		blues = ByteCreator.repeated(257,88);
 		lut = new LUT(reds,greens,blues);
 		assertNotNull(lut);
 		
 		lut.getReds(temp);
-		assertArrayEquals(bytes(256,23),temp);
+		assertArrayEquals(ByteCreator.repeated(256,23),temp);
 		
 		lut.getGreens(temp);
-		assertArrayEquals(bytes(256,47),temp);
+		assertArrayEquals(ByteCreator.repeated(256,47),temp);
 		
 		lut.getBlues(temp);
-		assertArrayEquals(bytes(256,88),temp);
+		assertArrayEquals(ByteCreator.repeated(256,88),temp);
 	}
 
 	// helper func
@@ -81,7 +69,7 @@ public class LUTTest {
 	private void shouldBeIllegalArgument(int bits, int size)
 	{
 		try{
-			lut = new LUT(bits,size,bytes(size,31),bytes(size,88),bytes(size,104));
+			lut = new LUT(bits,size,ByteCreator.repeated(size,31),ByteCreator.repeated(size,88),ByteCreator.repeated(size,104));
 			fail();
 		} catch (IllegalArgumentException e)
 		{
@@ -93,9 +81,9 @@ public class LUTTest {
 	
 	private void shouldBeOkay(int bits, int size)
 	{
-		byte[] reds = bytes(size,31);
-		byte[] blues = bytes(size,88);
-		byte[] greens = bytes(size,104);
+		byte[] reds = ByteCreator.repeated(size,31);
+		byte[] blues = ByteCreator.repeated(size,88);
+		byte[] greens = ByteCreator.repeated(size,104);
 		byte[] temp = new byte[size];
 		LUT lut = new LUT(bits,size,reds,greens,blues);
 		assertNotNull(lut);
@@ -140,25 +128,25 @@ public class LUTTest {
 		
 		// more r,g,b's than 2^numbits
 		
-		reds = bytes(17,45);
-		blues = bytes(17,58);
-		greens = bytes(17,99);
+		reds = ByteCreator.repeated(17,45);
+		blues = ByteCreator.repeated(17,58);
+		greens = ByteCreator.repeated(17,99);
 		lut = new LUT(4,17,reds,blues,greens);
 		assertNotNull(lut);
 		
 		// less r,g,b's than 2^numbits
 		
-		reds = bytes(15,45);
-		blues = bytes(15,58);
-		greens = bytes(15,99);
+		reds = ByteCreator.repeated(15,45);
+		blues = ByteCreator.repeated(15,58);
+		greens = ByteCreator.repeated(15,99);
 		lut = new LUT(4,15,reds,blues,greens);
 		assertNotNull(lut);
 		
 		// what if r,g,b's are all different sizes?
 		
-		reds = bytes(12,45);
-		blues = bytes(14,58);
-		greens = bytes(16,99);
+		reds = ByteCreator.repeated(12,45);
+		blues = ByteCreator.repeated(14,58);
+		greens = ByteCreator.repeated(16,99);
 
 		// this one works - underlying code only uses the 12 that all define
 		lut = new LUT(4,12,reds,blues,greens);
@@ -192,9 +180,9 @@ public class LUTTest {
 
 		int size = 5;
 		byte[] temp = new byte[size];
-		reds = bytes(size,101);
-		blues = bytes(size,44);
-		greens = bytes(size,86);
+		reds = ByteCreator.repeated(size,101);
+		blues = ByteCreator.repeated(size,44);
+		greens = ByteCreator.repeated(size,86);
 
 		IndexColorModel cm = new IndexColorModel(2,size,reds,greens,blues);
 		
@@ -234,9 +222,9 @@ public class LUTTest {
 		byte[] results;
 		IndexColorModel cm;
 		
-		reds = bytes(256,12);
-		greens = bytes(256,33);
-		blues = bytes(256,50);
+		reds = ByteCreator.repeated(256,12);
+		greens = ByteCreator.repeated(256,33);
+		blues = ByteCreator.repeated(256,50);
 
 		// null if size != 256:
 		cm = new IndexColorModel(8,255,reds,greens,blues);
@@ -261,39 +249,19 @@ public class LUTTest {
 		System.arraycopy(results, 512, temp, 0, 256);
 		assertArrayEquals(blues,temp);
 	}
-
-	// helper func : return a list of bytes in ascending order starting at 0
-	private byte[] bytesAscending(int number)
-	{
-		byte[] results = new byte[number];
-		
-		for (int i = 0; i < number; i++)
-			results[i] = (byte) i;
-		return results;
-	}
-	
-	// helper func : return a list of bytes in descending order starting at number
-	private byte[] bytesDescending(int number)
-	{
-		byte[] results = new byte[number];
-		
-		for (int i = 0; i < number; i++)
-			results[i] = (byte) (number-1-i);
-		return results;
-	}
 	
 	@Test
 	public void testCreateInvertedLut() {
 		
-		reds = bytesAscending(256);
-		blues = bytesAscending(256);
-		greens = bytesAscending(256);
+		reds = ByteCreator.ascending(256);
+		blues = ByteCreator.ascending(256);
+		greens = ByteCreator.ascending(256);
 		
 		lut = new LUT(reds,greens,blues);
 		LUT invLut = lut.createInvertedLut();
 		
 		byte[] temp = new byte[256];
-		byte[] invBytes = bytesDescending(256);
+		byte[] invBytes = ByteCreator.descending(256);
 		
 		invLut.getReds(temp);
 		assertArrayEquals(invBytes,temp);
@@ -308,9 +276,9 @@ public class LUTTest {
 	@Test
 	public void testClone() {
 		
-		reds = bytesAscending(256);
-		blues = bytesDescending(256);  // descend
-		greens = bytesAscending(256);
+		reds = ByteCreator.ascending(256);
+		blues = ByteCreator.descending(256);  // descend
+		greens = ByteCreator.ascending(256);
 		
 		lut = new LUT(reds,greens,blues);
 		
@@ -321,9 +289,9 @@ public class LUTTest {
 
 	@Test
 	public void testMinAndMax() {
-		reds = bytes(12,45);
-		blues = bytes(12,58);
-		greens = bytes(12,99);
+		reds = ByteCreator.repeated(12,45);
+		blues = ByteCreator.repeated(12,58);
+		greens = ByteCreator.repeated(12,99);
 		lut = new LUT(4,12,reds,blues,greens);
 		assertEquals(0.0,lut.min,Assert.DOUBLE_TOL);
 		assertEquals(0.0,lut.max,Assert.DOUBLE_TOL);
