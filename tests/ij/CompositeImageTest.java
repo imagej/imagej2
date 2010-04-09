@@ -6,9 +6,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.awt.Color;
+import java.awt.Frame;
 import java.awt.image.*;
 
 import ij.io.FileInfo;
+import ij.plugin.frame.Channels;
 import ij.process.*;
 import ij.measure.*;
 
@@ -20,6 +23,82 @@ public class CompositeImageTest {
 	ImagePlus ip;
 	ImageStack st;
 
+	// helper method: needed because surprisingly bools1.equals(bools2) seems to compare references 
+	private boolean boolsEqual(boolean[] a, boolean[] b) {
+		if (a.length != b.length)
+			return false;
+		for (int i = 0; i < a.length; i++)
+			if (a[i] != b[i])
+				return false;
+		return true;
+	}
+	
+	// helper method: needed because surprisingly bytes1.equals(bytes2) seems to compare references 
+	private boolean bytesEqual(byte[] a, byte[] b) {
+		if (a.length != b.length)
+			return false;
+		for (int i = 0; i < a.length; i++)
+			if (a[i] != b[i])
+				return false;
+		return true;
+	}
+	
+	// helper method
+	private boolean lutsEqual(LUT a, LUT b) {
+		
+		byte[] tmpA = new byte[256];
+		byte[] tmpB = new byte[256];
+
+		a.getReds(tmpA);
+		b.getReds(tmpB);
+		
+		if (!bytesEqual(tmpA,tmpB))
+			return false;
+		
+		a.getBlues(tmpA);
+		b.getBlues(tmpB);
+		
+		if (!bytesEqual(tmpA,tmpB))
+			return false;
+		
+		a.getGreens(tmpA);
+		b.getGreens(tmpB);
+		
+		if (!bytesEqual(tmpA,tmpB))
+			return false;
+		
+		return true;
+	}
+
+	// helper method
+	private boolean lutArraysEqual(LUT[] a, LUT[] b)
+	{
+		if (a.length != b.length)
+			return false;
+		
+		for (int i = 0; i < a.length; i++)
+			if (!lutsEqual(a[i],b[i]))
+				return false;
+		
+		return true;
+	}
+
+	// helper method
+	private LUT lut(int v) {
+		return new LUT(ByteCreator.repeated(256,v),ByteCreator.repeated(256,v+5),ByteCreator.repeated(256,v+10));
+	}
+	
+	// helper method
+	private LUT[] lutCollection(int[] vals) {
+
+		LUT[] luts = new LUT[vals.length];
+
+		for (int i = 0; i < vals.length; i++)
+			luts[i] = lut(vals[i]);
+		
+		return luts;
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		st = new ImageStack(2,2);
@@ -33,7 +112,7 @@ public class CompositeImageTest {
 		assertEquals(1,CompositeImage.COMPOSITE);
 		assertEquals(2,CompositeImage.COLOR);
 		assertEquals(3,CompositeImage.GRAYSCALE);
-		assertEquals(4,CompositeImage.TRANSPARENT);
+		//assertEquals(4,CompositeImage.TRANSPARENT);
 		assertEquals(7,CompositeImage.MAX_CHANNELS);
 	}
 	
@@ -82,19 +161,21 @@ public class CompositeImageTest {
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
-		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE+1);  // semi-illegal value - may change
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE+1);  // if TRANSPARENT added by Wayne this will have to change
 		assertNotNull(ci);
 		assertEquals(CompositeImage.COLOR,ci.getMode());
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
+		/*
+		// TODO - Wayne was in middle of defining TRANSPARENT when I started this test. For now don't test.
 		ci = new CompositeImage(ip,CompositeImage.TRANSPARENT);
 		assertNotNull(ci);
-		// TODO - broken code makes next test fail - getting info from Wayne
-		//assertEquals(CompositeImage.TRANSPARENT,ci.getMode());
+		assertEquals(CompositeImage.TRANSPARENT,ci.getMode());
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
-
+		*/
+		
 		//  if rgb and stack size != 1 should throw excep
 		try {
 			st = new ImageStack(4,4);
@@ -176,7 +257,7 @@ public class CompositeImageTest {
 		st = new ImageStack(2,2);
 		for (int i = 0; i < 4; i++)
 			st.addSlice(""+i,new byte[]{1,2,3,4});
-		ip = new ImagePlus("Angel",st);
+		ip = new ImagePlus("Cordelia",st);
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
 		assertNotNull(ci);
 		for (int i = 0; i < CompositeImage.MAX_CHANNELS; i++)
@@ -196,7 +277,7 @@ public class CompositeImageTest {
 		assertArrayEquals(ip.getFileInfo().channelLuts,fi.channelLuts);
 		assertArrayEquals(new int[] {1600,1200,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
-		// now multiple tests that the calib copy was successful
+		// now make multiple tests that the calib copy was successful
 		// bitDepth changed between the two so can't use isSameAs()
 		// test publicly accessible fields
 		Calibration act = ci.getCalibration();
@@ -228,7 +309,6 @@ public class CompositeImageTest {
 
 	@Test
 	public void testUpdateAllChannelsAndDraw() {
-		//fail("Not yet implemented");
 		// more gui oriented code
 		// TODO - need to think how to better test this after we figure out testing update code
 		ci.updateAllChannelsAndDraw();
@@ -236,43 +316,95 @@ public class CompositeImageTest {
 
 	@Test
 	public void testGetChannelProcessor() {
-		//fail("Not yet implemented");
+		
+		// if cip null
+		assertTrue(ci.getChannelProcessor().equals(ci.getProcessor()));
+		
+		// if channel == -1
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		ci.setMode(CompositeImage.COMPOSITE);  // this sets channel to -1
+		ci.reset();  // this populates cip
+		assertTrue(ci.getChannelProcessor().equals(ci.getProcessor()));
+		
+		// otherwise
+		ImageProcessor[] ips = new ImageProcessor[3];
+		
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset();  // this populates cip
+
+		ci.setPosition(1,1,1);
+		ci.updateImage();
+		ips[0] = ci.getChannelProcessor();
+
+		ci.setPosition(2,1,1);
+		ci.updateImage();
+		ips[1] = ci.getChannelProcessor();
+
+		ci.setPosition(3,1,1);
+		ci.updateImage();
+		ips[2] = ci.getChannelProcessor();
+		
+		for (int i=0; i<ips.length; i++)
+			assertNotNull(ips[i]);
+		
+		assertFalse(ips[0] == ips[1]);
+		assertFalse(ips[1] == ips[2]);
+		assertFalse(ips[2] == ips[0]);
+
+		assertFalse(ips[0].equals(ci.getProcessor()));
+		assertFalse(ips[1].equals(ci.getProcessor()));
+		assertFalse(ips[2].equals(ci.getProcessor()));
 	}
 
-	/*
-	public void resetDisplayRanges() {
-		int channels = getNChannels();
-		ImageStack stack2 = getImageStack();
-		if (lut==null || channels!=lut.length || channels>stack2.getSize() || channels>MAX_CHANNELS)
-			return;
-		for (int i=0; i<channels; ++i) {
-			ImageProcessor ip2 = stack2.getProcessor(i+1);
-			ip2.resetMinAndMax();
-			lut[i].min = ip2.getMin();
-			lut[i].max = ip2.getMax();
-		}
-	}
-	*/
-	
 	@Test
 	public void testResetDisplayRanges() {
 		double min,max;
 		LUT lut;
 		
 		// if lut == null do nothing
+		ci = new CompositeImage(ip);
+		ci.getProcessor().setMinAndMax(47, 903);
+		ci.resetDisplayRanges();
+		assertEquals(47,ci.getProcessor().getMin(),Assert.DOUBLE_TOL);
+		assertEquals(903,ci.getProcessor().getMax(),Assert.DOUBLE_TOL);
+		
 		// if channel count != lut.length do nothing
+		// can't replicate conditions
+		/*
+		ci = new CompositeImage(ip);
+		ci.setLuts(lutCollection(new int[] {44,33,22,11})); // purposely not the right number of luts
+		ci.getProcessor().setMinAndMax(47, 903);
+		ci.resetDisplayRanges();
+		assertEquals(47,ci.getProcessor().getMin(),Assert.DOUBLE_TOL);
+		assertEquals(903,ci.getProcessor().getMax(),Assert.DOUBLE_TOL);
+		*/
+
 		// if channel count > stack size do nothing
+		// can't replicate conditions
+
 		// if channel count > MAX_CHANNELS do nothing
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 24; i++)
+			st.addSlice(""+i,new byte[] {1,2,3,4});
+		ImagePlus ip2 = new ImagePlus("Fred",st);
+		ip2.setDimensions(8,3,1);
+		ci = new CompositeImage(ip2);
+		lut = ci.getChannelLut(1);
+		lut.min = 53;
+		lut.max = 192;
+		ci.resetDisplayRanges();
+		assertEquals(53,lut.min,Assert.DOUBLE_TOL);
+		assertEquals(192,lut.max,Assert.DOUBLE_TOL);
 		
 		// otherwise it should work
-		
+		ci = new CompositeImage(ip);
 		lut = ci.getChannelLut(1);
 		
 		min = lut.min;
 		max = lut.max;
 		lut.min = min - 5000;
 		lut.max = max + 1005;
-		
+
 		ci.resetDisplayRanges();
 		
 		assertEquals(min,lut.min,Assert.DOUBLE_TOL);
@@ -284,84 +416,441 @@ public class CompositeImageTest {
 		// note: all code not tested elsewhere is gui oriented here and cannot be tested
 	}
 
+	// TODO - must implement
 	@Test
 	public void testUpdateImage() {
-		//fail("Not yet implemented");
 	}
 
 	@Test
 	public void testCreateLutFromColor() {
-		//fail("Not yet implemented");
+		LUT lut;
+		byte[] tmp = new byte[256];
+		
+		byte[] zeroes = ByteCreator.repeated(256,0);
+		byte[] ascend = ByteCreator.ascending(256);
+		
+		lut = ci.createLutFromColor(Color.black);
+		lut.getReds(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getGreens(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getBlues(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+
+		lut = ci.createLutFromColor(Color.red);
+		lut.getReds(tmp);
+		assertTrue(bytesEqual(ascend,tmp));
+		lut.getGreens(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getBlues(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+
+		lut = ci.createLutFromColor(Color.green);
+		lut.getReds(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getGreens(tmp);
+		assertTrue(bytesEqual(ascend,tmp));
+		lut.getBlues(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		
+		lut = ci.createLutFromColor(Color.blue);
+		lut.getReds(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getGreens(tmp);
+		assertTrue(bytesEqual(zeroes,tmp));
+		lut.getBlues(tmp);
+		assertTrue(bytesEqual(ascend,tmp));
 	}
 
 	@Test
 	public void testGetChannelColor() {
-		//fail("Not yet implemented");
+		// lut == null
+		assertEquals(Color.black,ci.getChannelColor());
+		
+		// mode == grayscale
+		ci = new CompositeImage(ip, CompositeImage.GRAYSCALE);
+		ci.setLuts(lutCollection(new int[] {98,99,100}));
+		assertEquals(Color.black, ci.getChannelColor());
+
+		// no lut for the channel
+		//   I don't think this case is reachable code
+		
+		// otherwise
+		ci = new CompositeImage(ip, CompositeImage.COLOR);
+		ci.setLuts(lutCollection(new int[] {98,99,100}));
+		ci.setPosition(1,1,1);
+		assertEquals(new Color(98,103,108), ci.getChannelColor());
+		ci.setPosition(2,1,1);
+		assertEquals(new Color(99,104,109), ci.getChannelColor());
+		ci.setPosition(3,1,1);
+		assertEquals(new Color(0,0,0), ci.getChannelColor());
 	}
 
 	@Test
 	public void testGetProcessorInt() {
-		//fail("Not yet implemented");
+		
+		// cip == null
+		assertNull(ci.getProcessor(1));
+		
+		// channel < 1
+		if (IJInfo.RUN_ENHANCED_TESTS)
+		{
+			ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+			ci.reset();  // this populates cip
+			assertNull(ci.getProcessor(0));
+		}
+		
+		// channel > cip.length
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset();  // this populates cip
+		assertNull(ci.getProcessor(4));
+
+		// otherwise
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset();  // this populates cip
+		assertNotNull(ci.getProcessor(1));
+		assertNotNull(ci.getProcessor(2));
+		assertNotNull(ci.getProcessor(3));
 	}
 
 	@Test
 	public void testGetActiveChannels() {
-		//fail("Not yet implemented");
+		// nothing really to test so put in a compile time check
+		ci.getActiveChannels();
 	}
+
+	/*
+
+	public void setMode(int mode) {
+		if (mode<COMPOSITE || mode>GRAYSCALE)
+			return;
+		if (mode==COMPOSITE && getNChannels()>MAX_CHANNELS)
+			mode = COLOR;
+		for (int i=0; i<MAX_CHANNELS; i++)
+			active[i] = true;
+		if (this.mode!=COMPOSITE && mode==COMPOSITE)
+			img = null;
+		this.mode = mode;
+		if (mode==COLOR || mode==GRAYSCALE) {
+			if (cip!=null) {
+				for (int i=0; i<cip.length; i++) {
+					if (cip[i]!=null) cip[i].setPixels(null);
+					cip[i] = null;
+				}
+			}
+			cip = null;
+			rgbPixels = null;
+			awtImage = null;
+			currentChannel = -1;
+		}
+		if (mode==GRAYSCALE || mode==TRANSPARENT)
+			ip.setColorModel(ip.getDefaultColorModel());
+		Frame channels = Channels.getInstance();
+		if (channels!=null) ((Channels)channels).update();
+	}
+
+	 */
 
 	@Test
 	public void testSetMode() {
-		//fail("Not yet implemented");
+		
+		ImagePlus ip2;
+		boolean[] bools;
+		
+		// if mode out of legal range do nothing
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		ci.setMode(0);
+		ci.setMode(4);
+		assertEquals(CompositeImage.GRAYSCALE,ci.getMode());
+		
+		// if going to mode composite and channels > MAX_CHANNELS go as COLOR
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 32; i++)
+			st.addSlice(""+i,new byte[]{1,2,3,4});
+		ip2 = new ImagePlus("Spike",st);
+		ip2.setDimensions(8,2,2);
+		ci = new CompositeImage(ip2,CompositeImage.GRAYSCALE);
+		ci.setMode(CompositeImage.COMPOSITE);
+		assertEquals(CompositeImage.COLOR,ci.getMode());
+		bools = ci.getActiveChannels();
+		for (int i = 0; i < bools.length; i++)
+			assertTrue(bools[i]);
+		
+		// if changing to COMPOSITE destroy existing img
+		//left off here
+		// if mode going to COLOR or GRAYSCALE free up channel data if non null
+		// if mode going to GRAYSCALE set the color model to the internal proc's default color model
+		// some gui oriented code (updating Channels()) not tested
 	}
 
 	@Test
 	public void testGetMode() {
-		//fail("Not yet implemented");
+
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		assertEquals(CompositeImage.COLOR,ci.getMode());
+
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		assertEquals(CompositeImage.GRAYSCALE,ci.getMode());
+
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		assertEquals(CompositeImage.COMPOSITE,ci.getMode());
 	}
 
 	@Test
 	public void testGetModeAsString() {
-		//fail("Not yet implemented");
+
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		assertEquals("color",ci.getModeAsString());
+
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		assertEquals("grayscale",ci.getModeAsString());
+
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		assertEquals("composite",ci.getModeAsString());
 	}
 
-	@Test
-	public void testGetChannelLutInt() {
-		//fail("Not yet implemented");
-	}
-
+	// this method tests both versions of getChannelLut()
 	@Test
 	public void testGetChannelLut() {
-		//fail("Not yet implemented");
+		LUT[] luts = new LUT[3];
+		LUT lut;
+		
+		ci.setPosition(1,1,1);
+		assertEquals(1,ci.getChannel());
+		luts[0] = ci.getChannelLut();
+
+		ci.setPosition(2,1,1);
+		assertEquals(2,ci.getChannel());
+		luts[1] = ci.getChannelLut();
+
+		ci.setPosition(3,1,1);
+		assertEquals(3,ci.getChannel());
+		luts[2] = ci.getChannelLut();
+
+		// make sure we don't have the same lut over and over
+		assertFalse(lutsEqual(luts[0],luts[1]) && lutsEqual(luts[1],luts[2]) && lutsEqual(luts[2],luts[0]));
+		
+		assertTrue(lutsEqual(luts[0],ci.getChannelLut(1)));
+		assertTrue(lutsEqual(luts[1],ci.getChannelLut(2)));
+		assertTrue(lutsEqual(luts[2],ci.getChannelLut(3)));
 	}
 
 	@Test
 	public void testGetLuts() {
-		//fail("Not yet implemented");
+		LUT[] ciLuts, tmp;
+		
+		// luts null - creates them and passes back
+		ciLuts = ci.getLuts();
+		assertEquals(3,ciLuts.length);
+
+		// otherwise passes back cloned luts
+		ciLuts = lutCollection(new int[] {7,44,15});
+		ci.setLuts(ciLuts);
+		tmp = ci.getLuts();
+		assertTrue(lutArraysEqual(ciLuts,tmp));
 	}
 
 	@Test
 	public void testSetLuts() {
-		//fail("Not yet implemented");
+		LUT[] ciLuts;
+		
+		proc = new ColorProcessor(2,2);
+		ip = new ImagePlus("Zorba",proc);
+		ci = new CompositeImage(ip);
+		
+		ciLuts = lutCollection(new int[] {4,1,44});
+		ci.setLuts(ciLuts);
+		assertTrue(lutsEqual(ciLuts[0],ci.getChannelLut(1)));
+		assertTrue(lutsEqual(ciLuts[1],ci.getChannelLut(2)));
+		assertTrue(lutsEqual(ciLuts[2],ci.getChannelLut(3)));
 	}
 
 	@Test
 	public void testCopyLuts() {
-		//fail("Not yet implemented");
+
+		LUT[] cLuts = lutCollection(new int[] {10,55,14});
+		LUT[] ciLuts = lutCollection(new int[] {1,2,3});
+		LUT[] laterLuts;
+		
+		CompositeImage c;
+		ImagePlus cip;
+
+		// try with non composite image
+		cip = new ImagePlus("ZappyDo",new ColorProcessor(3,2));
+		ci.setLuts(ciLuts);
+		ci.copyLuts(cip);
+		laterLuts = ci.getLuts();
+		assertArrayEquals(ciLuts,laterLuts);
+		
+		// try with composite image channels != ci's channels
+		st = new ImageStack(2,2);
+		st.addSlice("a",new byte[] {1,2,3,4});
+		st.addSlice("b",new byte[] {1,2,3,4});
+		cip = new ImagePlus("Zooropa",st);
+		c = new CompositeImage(cip);
+		ci.setLuts(cLuts);
+		ci.copyLuts(c);
+		laterLuts = ci.getLuts();
+		assertArrayEquals(cLuts,laterLuts);
+		
+		// try with compatible CompositeImages
+		st = new ImageStack(2,2);
+		st.addSlice("a",new byte[] {1,2,3,4});
+		st.addSlice("b",new byte[] {1,2,3,4});
+		st.addSlice("c",new byte[] {1,2,3,4});
+		cip = new ImagePlus("Zooropa",st);
+		c = new CompositeImage(cip);
+		c.setLuts(cLuts);
+		ci.setLuts(ciLuts);
+		ci.copyLuts(c);
+		laterLuts = ci.getLuts();
+		assertFalse(lutArraysEqual(ciLuts,laterLuts));
+		assertTrue(lutArraysEqual(cLuts,laterLuts));
+		
+		// see that mode changes to c's mode
+		st = new ImageStack(2,2);
+		st.addSlice("a",new byte[] {1,2,3,4});
+		st.addSlice("b",new byte[] {1,2,3,4});
+		st.addSlice("c",new byte[] {1,2,3,4});
+		cip = new ImagePlus("Zooropa",st);
+		c = new CompositeImage(cip,CompositeImage.GRAYSCALE);
+		c.setLuts(cLuts);
+		ci.setLuts(ciLuts);
+		assertFalse(ci.getMode() == c.getMode());
+		ci.copyLuts(c);
+		assertTrue(ci.getMode() == c.getMode());
+		
+		// in the case of a COMPOSITE image see that activated field gets copied too
+		//   can't find a way to test this.
+		/*
+		st = new ImageStack(2,2);
+		st.addSlice("a",new byte[] {1,2,3,4});
+		st.addSlice("b",new byte[] {1,2,3,4});
+		st.addSlice("c",new byte[] {1,2,3,4});
+		cip = new ImagePlus("Zooropa",st);
+		c = new CompositeImage(cip,CompositeImage.COMPOSITE);
+		c.setLuts(cLuts);
+		ci.setLuts(ciLuts);
+		assertFalse(boolsSame(ci.getActiveChannels(),c.getActiveChannels()));  // always seems to be true rather than false
+		ci.copyLuts(c);
+		assertTrue(boolsSame(ci.getActiveChannels(),c.getActiveChannels()));
+		*/
 	}
 
 	@Test
 	public void testReset() {
-		//fail("Not yet implemented");
+		
+		// COMPOSITE images have some special case code
+		LUT[] luts = lutCollection(new int[] {4,19,21});
+		
+		luts[0].min = -4000;
+		luts[0].max = 9000;
+		
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.setLuts(luts);
+		assertNull(ci.getProcessor(1));
+		ci.reset();
+		assertNotNull(ci.getProcessor(1));
+		assertEquals(-4000, ci.getProcessor(1).getMin(), Assert.DOUBLE_TOL);
+		assertEquals(9000, ci.getProcessor(1).getMax(), Assert.DOUBLE_TOL);
+		
+		// COLOR images do not have special case code
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		assertNull(ci.getProcessor(1));
+		ci.reset();
+		assertNull(ci.getProcessor(1));
+
+		// GRAYSCALE images do not have special case code
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		assertNull(ci.getProcessor(1));
+		ci.reset();
+		assertNull(ci.getProcessor(1));
+		
+		// in any case test that luts get created by call to reset
+		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);
+		// internal lut table should be null at this point but there is no safe way to test that w/o side effects
+		ci.reset();
+		// note - reset() called private methods for lut setup that have a lot of special cases. I'm just testing existence.
+		assertNotNull(ci.getChannelLut(1));
+		assertNotNull(ci.getChannelLut(2));
+		assertNotNull(ci.getChannelLut(3));
 	}
 
 	@Test
 	public void testSetChannelLutLUT() {
-		//fail("Not yet implemented");
+		
+		LUT lut = lut(23);
+		
+		// default ci I construct has 3 channels
+		
+		// try to set beyond LUT array for weird index
+		try {
+			ci = new CompositeImage(ip);
+			ci.setChannelLut(lut,-1);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try to set beyond an end of LUT array at 0
+		try {
+			ci = new CompositeImage(ip);
+			ci.setChannelLut(lut,0);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try to set beyond an end of LUT array at 4
+		try {
+			ci = new CompositeImage(ip);
+			ci.setChannelLut(lut,4);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try channel 1
+		ci = new CompositeImage(ip);
+		assertFalse(lutsEqual(lut,ci.getChannelLut(1)));
+		ci.setChannelLut(lut,1);
+		assertTrue(lutsEqual(lut,ci.getChannelLut(1)));
+		
+		// try channel 2
+		ci = new CompositeImage(ip);
+		assertFalse(lutsEqual(lut,ci.getChannelLut(2)));
+		ci.setChannelLut(lut,2);
+		assertTrue(lutsEqual(lut,ci.getChannelLut(2)));
+		
+		// try channel 3
+		ci = new CompositeImage(ip);
+		assertFalse(lutsEqual(lut,ci.getChannelLut(3)));
+		ci.setChannelLut(lut,3);
+		assertTrue(lutsEqual(lut,ci.getChannelLut(3)));
+		
+		// show that setChanLut changes behavior related to instance var cip
+		st = new ImageStack(2,2);
+		st.addSlice("a",new byte[] {1,2,3,4});
+		st.addSlice("b",new byte[] {1,2,3,4});
+		ip = new ImagePlus("Sara",st);
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset();
+		assertNotNull(ci.getProcessor(1));
+		ci.setChannelLut(lut,1);
+		assertNull(ci.getProcessor(1));
 	}
 
 	@Test
 	public void testSetChannelLutLUTInt() {
-		//fail("Not yet implemented");
+		
+		// create lut channel data
+		LUT lut = lut(55);
+		
+		ci.setChannelLut(lut,2);
+		
+		LUT actual = ci.getChannelLut(2);
+		
+		assertEquals(lut,actual);
 	}
 
 	@Test
@@ -445,11 +934,7 @@ public class CompositeImageTest {
 	@Test
 	public void testHasCustomLuts() {
 
-		byte[] vals = new byte[256];
-		for (int i = 0; i < vals.length; i++)
-			vals[i] = (byte)i;
-		
-		LUT lut = new LUT(vals,vals,vals);
+		LUT lut = lut(74);
 		
 		ip = new ImagePlus("Fred",new ColorProcessor(4,4));
 
