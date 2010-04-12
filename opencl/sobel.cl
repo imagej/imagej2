@@ -1,15 +1,18 @@
 __kernel void sobel(
-	__global uchar* input,
-	__global uchar* output,
+	__global char* input,
+	__global char* output,
 	int width, int height)
 {
 	const int x = get_global_id(0);
 	const int y = get_global_id(1);
 	int p[9];
-	int offset = 1 + y * width + x;
+	int offset = y * width + x;
 
   // CTR TODO fix offset bugs
-  if (offset > 0 && offset < (width*height - 1)) {
+  //if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
+ //   output[offset] = 0;
+ // }
+ // else {
     p[0] = input[offset - width - 1] & 0xff;
     p[1] = input[offset - width] & 0xff;
     p[2] = input[offset - width + 1] & 0xff;
@@ -24,8 +27,8 @@ __kernel void sobel(
     int sum2 = p[0] + 2*p[3] + p[6] - p[2] - 2*p[5] - p[8];
     float sum3 = sum1*sum1 + sum2*sum2;
 
-    int sum = (int) sqrt(sum3);
+    int sum = (int) sqrt( sum3 );
     if (sum > 255) sum = 255;
-    output[offset] = (char) sum & 0xff;
-  }
+    output[offset] = (char) sum&0xff;
+  //}
 };

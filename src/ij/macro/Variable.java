@@ -27,8 +27,8 @@ class Variable implements MacroConstants, Cloneable {
         this.array = array;
     }
 
-    Variable(byte[] array) {
-    	this.array = new Variable[array.length];
+    Variable( byte[] array ) {
+    	this.array = new Variable[ array.length ];
     	for (int i=0; i<array.length; i++)
     		this.array[i] = new Variable(array[i]&255);
     }
