@@ -1033,7 +1033,7 @@ public class ShortProcessorTest {
 		int[] data = new int[width*height];
 		refShortProcessor.getRow2( 0, 0, data, data.length );
 		ColorProcessor fp = new ColorProcessor( width, height, data );
-		testImageStats( fp, "stats[count=1000000, mean=13.480793, min=0.0, max=204.0] 498.3031433806256 422.7151296323461 500.0 500.0" );
+		testImageStats( fp, "stats[count=1000000, mean=5.616306, min=0.0, max=85.0] 498.30314335718765 422.7151296491211 500.0 500.0" );
 	}
 
 	//TODO: this contains an error

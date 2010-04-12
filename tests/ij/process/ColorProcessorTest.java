@@ -1737,32 +1737,28 @@ public class ColorProcessorTest {
 	@Test
 	public void testSetWeightingFactors() 
 	{
-		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setWeightingFactors(0.1, 0.4, 0.5);
-		//displayGraphicsInNewJFrame( testColorProcessor.getBufferedImage(), "weighting low red, and high blue/green", 3000 );
+		double[] refWeights = {0.1, 0.2, 0.8};
+		double[] priorWeights = ColorProcessor.getWeightingFactors();
+		ColorProcessor.setWeightingFactors( refWeights[0], refWeights[1], refWeights[2] );
+		double[] results = ColorProcessor.getWeightingFactors();
 		
-		final int[] refHistogram = {1,74,151,480,309,755,624,502,357,263,229,210,175,143,163,158,134,128,147,148,139,157,139,128,137,128,134,142,144,142,132,151,140,168,139,122,124,142,130,131,118,133,126,122,114,124,119,103,121,109,117,128,114,112,107,110,113,126,112,100,107,101,92,98,96,80,80,94,89,113,86,103,87,94,97,74,89,75,67,87,82,75,67,81,70,58,60,60,60,64,45,53,66,51,47,42,45,34,31,37,30,32,33,44,35,28,41,38,36,41,30,26,29,27,29,21,26,26,28,22,22,26,32,25,25,29,14,21,32,27,29,27,26,39,20,22,25,28,25,34,17,17,26,28,18,27,22,17,22,12,21,21,14,24,26,24,22,23,16,22,15,22,22,24,14,15,22,12,18,13,20,26,29,25,28,16,26,22,29,25,24,11,25,26,26,26,31,15,30,20,28,22,23,20,19,22,16,25,24,21,17,24,22,18,25,18,21,14,15,23,14,14,14,8,7,10,6,9,11,13,4,4,2,5,7,4,4,2,5,4,3,3,2,1,2,1,1,4,1,0,1,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0};
-		byte[] testPattern = new byte[width * height];
-		for(int h=0; h<height;h++)
-			for(int w=0; w<width;w++)
-				if(h%2==0&&w%2==0) testPattern[h * width + w] = (byte)0xff;
+		//Changing the globals....
+		ColorProcessor.setWeightingFactors( priorWeights[0], priorWeights[1], priorWeights[2] );
 		
-		ImageProcessor mask = new ByteProcessor( width, height, testPattern, null );
-		
-		
-		int[] histogram = testColorProcessor.getHistogram(mask);
-		
-		for(int i=0;i<refHistogram.length; i++)
-			assertEquals( refHistogram[i], histogram[i] );	
+		for(int i=0;i<refWeights.length; i++)
+			assertEquals( refWeights[i], results[i], 0.0 );			
 	}
 
 	@Test
 	public void testGetWeightingFactors() 
 	{
-		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
 		double[] refWeights = {0.1, 0.2, 0.8};
-		testColorProcessor.setWeightingFactors( refWeights[0], refWeights[1], refWeights[2] );
-		double[] results = testColorProcessor.getWeightingFactors();
+		double[] priorWeights = ColorProcessor.getWeightingFactors();
+		ColorProcessor.setWeightingFactors( refWeights[0], refWeights[1], refWeights[2] );
+		double[] results = ColorProcessor.getWeightingFactors();
+		
+		//Changing the globals....
+		ColorProcessor.setWeightingFactors( priorWeights[0], priorWeights[1], priorWeights[2] );
 		
 		for(int i=0;i<refWeights.length; i++)
 			assertEquals( refWeights[i], results[i], 0.0 );			
