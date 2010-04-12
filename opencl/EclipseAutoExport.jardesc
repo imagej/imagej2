@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="MacRoman" standalone="no"?>
+<jardesc>
+    <jar path="imagej/opencl/javacldemo_.jar"/>
+    <options buildIfNeeded="true" compress="false" descriptionLocation="/imagej/opencl/EclipseAutoExport.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="/DisplayImage/MANIFEST.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="false" exportJavaFiles="true" exportOutputFolder="true">
+        <file path="/imagej/opencl/rowtemp1.cl"/>
+        <file path="/imagej/opencl/rad4but2.cl"/>
+        <file path="/imagej/opencl/sobel.cl"/>
+        <folder path="/imagej/opencl/src"/>
+        <file path="/imagej/opencl/plugins.config"/>
+        <file path="/imagej/opencl/bitrev1.cl"/>
+        <file path="/imagej/opencl/rad4but1.cl"/>
+        <file path="/imagej/opencl/bitrev2.cl"/>
+        <file path="/imagej/opencl/profile1.cl"/>
+        <file path="/imagej/opencl/dfht3.cl"/>
+        <file path="/imagej/opencl/rowtemp2.cl"/>
+    </selectedElements>
+</jardesc>
