@@ -1032,6 +1032,7 @@ public class ByteProcessorTest {
 		if (type==ByteProcessor.MEDIAN_FILTER) values = new int[10];
 		int rowOffset = refByteProcessor.width;
 
+		byte[] pixels = refByteProcessor.getPixelsArray();
 		for (int y=refByteProcessor.yMin; y<=refByteProcessor.yMax; y++) 
 		{
 			offset = refByteProcessor.xMin + y * width;
@@ -1126,7 +1127,7 @@ public class ByteProcessorTest {
 	                            sum = binaryBackground;
 	                    }
 				}
-				refByteProcessor.pixels[offset++] = (byte)sum;
+				pixels[offset++] = (byte)sum;
 			}
 		}
 		
@@ -1613,7 +1614,7 @@ public class ByteProcessorTest {
 		ByteProcessor referenceByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		if (referenceByteProcessor.raster==null) {
 			SampleModel sm = referenceByteProcessor.getIndexSampleModel();
-			DataBuffer db = new DataBufferByte(referenceByteProcessor.pixels, width*height, 0);
+			DataBuffer db = new DataBufferByte(referenceByteProcessor.getPixelsArray(), width*height, 0);
 			referenceByteProcessor.raster = Raster.createWritableRaster(sm, db, null);
 		}
 		if (referenceByteProcessor.image==null || cm!=referenceByteProcessor.cm2) {

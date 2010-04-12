@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="precompiled/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="precompiled/loci_tools.jar"/>
+	<classpathentry kind="lib" path="precompiled/imglib.jar"/>
 	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
