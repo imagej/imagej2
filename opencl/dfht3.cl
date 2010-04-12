@@ -1,4 +1,7 @@
-__kernel void sobel( __global char* input, __global char* output, int width, int height)
+__kernel void sobel(
+    __global char* input,
+    __global char* output,
+    int width, int height)
 {
     int x = get_global_id(0);
     int y = get_global_id(1);
@@ -8,7 +11,7 @@ if( x < 1 || y < 1 || x > width - 2 || y > height - 2 )
 {
   output[offset] = 0; //TODO implement image edges
 }
-else
+  else
 {
     p[0] = input[offset - width - 1] & 0xff;
     p[1] = input[offset - width] & 0xff;

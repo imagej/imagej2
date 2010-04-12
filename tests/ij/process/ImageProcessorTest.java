@@ -1768,18 +1768,20 @@ public class ImageProcessorTest
 	public void testMin() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.min( 199.9 );
+		ByteProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		testByteProcessor.min( 199.9 );
 		
-		testImageStats( testColorProcessor, "stats[count=64000, mean=200.633515625, min=199.0, max=248.0] 159.6069770546586 99.61663560682503 160.0 100.0");
+		testImageStats( testByteProcessor, "stats[count=64000, mean=199.625765625, min=199.0, max=248.0] 159.85932564128393 99.86286405914693 160.0 100.0");
 	}
 
 	@Test
 	public void testMax() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.max( 199.9 );
+		ByteProcessor testByteProcessor = (ByteProcessor) testColorProcessor.convertToByte(false);
+		testByteProcessor.max( 199.9 );
 		
-		testImageStats( testColorProcessor, "stats[count=64000, mean=70.021984375, min=0.0, max=199.0] 149.69840112272797 72.66977148822238 160.0 100.0");
+		testImageStats( testByteProcessor, "stats[count=64000, mean=71.028875, min=0.0, max=199.0] 149.12454969897806 72.3663006330172 160.0 100.0");
 	}
 
 	@Test

@@ -1427,7 +1427,7 @@ public class ColorProcessorTest {
 		
 		byte[] hue = new byte[ width * height ]; byte[] saturation = new byte[ width * height ]; byte[] brightness = new byte[ width * height ];
 		testColorProcessor.getHSB(hue, saturation, brightness);
-		assertEquals( 0, hue[ (width/2) * (height/2) ] );  
+		assertEquals( 16, hue[ (width/2) * (height/2) ] );  
 		assertEquals( -56, saturation[ (width/2) * (height/2) ] ); 
 		assertEquals( 93, brightness[ (width/2) * (height/2) ] ); 
 		
@@ -1560,7 +1560,7 @@ public class ColorProcessorTest {
 		int[] testARGB = getARGB( testColorProcessor.getPixel(width/2, width/2) );
 				
 		assertEquals( 110, testARGB[1] );
-		assertEquals( 62, testARGB[2] );
+		assertEquals( 82, testARGB[2] );
 		assertEquals( 62, testARGB[3] );
 	}
 
