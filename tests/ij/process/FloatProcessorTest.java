@@ -73,15 +73,11 @@ public class FloatProcessorTest {
 		//Create a new FloatProcessor object for testing
 		FloatProcessor floatProcessor =  new FloatProcessor(imageFloatData);
 
-		//set the default fill value
-		int setcolorvalue = 2;
-
-		//set the value
-		floatProcessor.setColor(setcolorvalue);
+		floatProcessor.setColor(0);
 		floatProcessor.fill();
 
 		//see if the test passes
-		assertEquals(setcolorvalue, floatProcessor.get(0), 0.0);
+		assertEquals( 0, floatProcessor.get(0), 0.0 );
 	}
 
 	@Test
