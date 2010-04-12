@@ -36,6 +36,7 @@ public class BinaryProcessor extends ByteProcessor {
 		if (parent.isInvertedLut())
 			bgColor = 0;
 
+		byte[] pixels = getPixelsArray();
 		byte[] pixels2 = (byte[])parent.getPixelsCopy();
 		int offset, v=0, sum;
         int rowOffset = width;
@@ -117,6 +118,7 @@ public class BinaryProcessor extends ByteProcessor {
 		if (parent.isInvertedLut())
 			bgColor = 0;
 			
+		byte[] pixels = getPixelsArray();
 		byte[] pixels2 = (byte[])getPixelsCopy();
 		int v, index, code;
         int offset, rowOffset = width;
