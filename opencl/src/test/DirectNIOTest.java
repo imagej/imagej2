@@ -16,7 +16,7 @@ public class DirectNIOTest {
 	// -- Constants --
 
 	public static final int ITERATIONS = 3;
-	public static final int DEFAULT_SIZE = 10000000;
+	public static final int DEFAULT_SIZE = Integer.MAX_VALUE/4;
 	public static final int BPP = 4;
 
 	// -- Fields --
