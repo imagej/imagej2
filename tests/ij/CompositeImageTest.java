@@ -7,11 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.image.*;
 
 import ij.io.FileInfo;
-import ij.plugin.frame.Channels;
 import ij.process.*;
 import ij.measure.*;
 
@@ -83,6 +81,33 @@ public class CompositeImageTest {
 		return true;
 	}
 
+	// helper method
+	private boolean colorModelsEqual(IndexColorModel cm1, IndexColorModel cm2)
+	{
+		if (cm1.hashCode() != cm2.hashCode())
+			return false;
+
+		byte[] bytes1 = new byte[256];
+		byte[] bytes2 = new byte[256];
+		
+		cm1.getReds(bytes1);
+		cm2.getReds(bytes2);
+		if (!bytesEqual(bytes1,bytes2))
+			return false;
+		
+		cm1.getGreens(bytes1);
+		cm2.getGreens(bytes2);
+		if (!bytesEqual(bytes1,bytes2))
+			return false;
+		
+		cm1.getBlues(bytes1);
+		cm2.getBlues(bytes2);
+		if (!bytesEqual(bytes1,bytes2))
+			return false;
+		
+		return true;
+	}
+	
 	// helper method
 	private LUT lut(int v) {
 		return new LUT(ByteCreator.repeated(256,v),ByteCreator.repeated(256,v+5),ByteCreator.repeated(256,v+10));
@@ -167,15 +192,6 @@ public class CompositeImageTest {
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
-		/*
-		// TODO - Wayne was in middle of defining TRANSPARENT when I started this test. For now don't test.
-		ci = new CompositeImage(ip,CompositeImage.TRANSPARENT);
-		assertNotNull(ci);
-		assertEquals(CompositeImage.TRANSPARENT,ci.getMode());
-		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
-		assertFalse(ci.getOpenAsHyperStack());
-		*/
-		
 		//  if rgb and stack size != 1 should throw excep
 		try {
 			st = new ImageStack(4,4);
@@ -302,15 +318,30 @@ public class CompositeImageTest {
 
 	@Test
 	public void testUpdateChannelAndDraw() {
-		// can set singleChannel to true but can't test this fact
-		// otherwise just calls updateAndDraw.
+
+		// calls more gui code
+		
+		// no code of its own to test
+		// but it can affect how updateImage() runs
+		
+		// I call it from testUpdateImage() below
+
+		// compile time check
 		ci.updateChannelAndDraw();
 	}
 
 	@Test
 	public void testUpdateAllChannelsAndDraw() {
-		// more gui oriented code
-		// TODO - need to think how to better test this after we figure out testing update code
+		// calls more gui oriented code
+
+		// inspection shows that updateAllChannelsAndDraw() needs to just see that the we test updateImage()
+		//   with customLuts false (and thus singleChannel true) and with customLuts true
+		
+		// if mode != COMPOSITE this calls updateChannelAndDraw which we've tested elsewhere
+		// if mode == COMPOSITE we need to test updateImage() with singleChannel = false and syncChannels = true
+		//   In this case I call it from testUpdateImage() below
+		
+		// compile time check
 		ci.updateAllChannelsAndDraw();
 	}
 
@@ -416,9 +447,72 @@ public class CompositeImageTest {
 		// note: all code not tested elsewhere is gui oriented here and cannot be tested
 	}
 
-	// TODO - must implement
+	// note - the underlying methods called here have lots of internal untestable behavior
 	@Test
 	public void testUpdateImage() {
+		// not COMPOSITE - create image
+		ci = new CompositeImage(ip,CompositeImage.COLOR);
+		assertNull(ci.img);
+		ci.updateImage();
+		assertNotNull(ci.img);
+		
+		// Everything after here is a COMPOSITE image
+
+		// 1 channel
+		//   note - this case is logically impossible (see constructor) - can't test
+		
+		// out of synch with internal cip tracking
+		proc = new ColorProcessor(2,2,new int[] {1,2,3,4});
+		ip = new ImagePlus("Fred",proc);
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		assertNull(ci.cip);
+		ci.updateImage();
+		assertNotNull(ci.cip);
+		
+		// new channel (also change in currslice/currframe)
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 24; i++)
+			st.addSlice(""+i,new byte[] {(byte)(i*10),2,3,4});
+		ip = new ImagePlus("Foop",st);
+		ip.setDimensions(2,3,4);
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.updateImage();  // call to set current channel
+		assertEquals(0,ci.getProcessor(1).get(0, 0));
+		assertEquals(10,ci.getProcessor(2).get(0, 0));
+		ci.setPosition(2, 1, 3);
+		ci.getProcessor().setMinAndMax(13, 200);
+		ci.updateImage();  // call to detect new channel case
+		assertEquals(0,ci.getProcessor().getMin(),Assert.DOUBLE_TOL);
+		assertEquals(255,ci.getProcessor().getMax(),Assert.DOUBLE_TOL);
+		assertEquals(120,ci.getProcessor(1).get(0, 0));
+		assertEquals(130,ci.getProcessor(2).get(0, 0));
+		
+		// rgbPixels == null
+		//   nothing testable
+		
+		// single channel and nchannels <= 3
+		proc = new ColorProcessor(2,2);
+		ip = new ImagePlus("PlusSize",proc);
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset(); // populate stuff used by getProcessor(i)
+		assertEquals(0,ci.getProcessor(1).get(0,0));
+		ci.getProcessor(1).set(0,0,210);
+		assertEquals(210,ci.getProcessor(1).get(0,0));
+		assertNull(ci.img);
+		ci.updateChannelAndDraw();
+		assertNotNull(ci.img);
+
+		// not a single channel (and sync true)
+		proc = new ColorProcessor(2,2);
+		ip = new ImagePlus("PlusSize",proc);
+		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
+		ci.reset(); // populate stuff used by getProcessor(i)
+		assertEquals(0,ci.getProcessor(1).get(0,0));
+		ci.getProcessor(1).set(0,0,210);
+		assertEquals(210,ci.getProcessor(1).get(0,0));
+		assertNull(ci.img);
+		ci.updateAllChannelsAndDraw();
+		assertNotNull(ci.img);
 	}
 
 	@Test
@@ -519,38 +613,6 @@ public class CompositeImageTest {
 		ci.getActiveChannels();
 	}
 
-	/*
-
-	public void setMode(int mode) {
-		if (mode<COMPOSITE || mode>GRAYSCALE)
-			return;
-		if (mode==COMPOSITE && getNChannels()>MAX_CHANNELS)
-			mode = COLOR;
-		for (int i=0; i<MAX_CHANNELS; i++)
-			active[i] = true;
-		if (this.mode!=COMPOSITE && mode==COMPOSITE)
-			img = null;
-		this.mode = mode;
-		if (mode==COLOR || mode==GRAYSCALE) {
-			if (cip!=null) {
-				for (int i=0; i<cip.length; i++) {
-					if (cip[i]!=null) cip[i].setPixels(null);
-					cip[i] = null;
-				}
-			}
-			cip = null;
-			rgbPixels = null;
-			awtImage = null;
-			currentChannel = -1;
-		}
-		if (mode==GRAYSCALE || mode==TRANSPARENT)
-			ip.setColorModel(ip.getDefaultColorModel());
-		Frame channels = Channels.getInstance();
-		if (channels!=null) ((Channels)channels).update();
-	}
-
-	 */
-
 	@Test
 	public void testSetMode() {
 		
@@ -576,10 +638,46 @@ public class CompositeImageTest {
 		for (int i = 0; i < bools.length; i++)
 			assertTrue(bools[i]);
 		
-		// if changing to COMPOSITE destroy existing img
-		//left off here
-		// if mode going to COLOR or GRAYSCALE free up channel data if non null
+		// if changing to COMPOSITE from something else destroy existing img
+		// note - can't test this side effect as accessors have side effects that always create a replacement image
+		
+		// if mode going to GRAYSCALE free up channel data if non null
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 4; i++)
+			st.addSlice(""+i,new byte[]{1,2,3,4});
+		ip2 = new ImagePlus("Spike",st);
+		ci = new CompositeImage(ip2,CompositeImage.COMPOSITE);
+		ci.reset();  // make sure channel processors are setup
+		ci.setMode(CompositeImage.GRAYSCALE);
+		assertNull(ci.getProcessor(1));
+		
+		// if mode going to COLOR free up channel data if non null
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 4; i++)
+			st.addSlice(""+i,new byte[]{1,2,3,4});
+		ip2 = new ImagePlus("Spike",st);
+		ci = new CompositeImage(ip2,CompositeImage.COMPOSITE);
+		ci.reset();  // make sure channel processors are setup
+		ci.setMode(CompositeImage.COLOR);
+		assertNull(ci.getProcessor(1));
+
 		// if mode going to GRAYSCALE set the color model to the internal proc's default color model
+		byte[] reds = ByteCreator.ascending(256);
+		byte[] greens = ByteCreator.descending(256);
+		byte[] blues = ByteCreator.repeated(256,51);
+		IndexColorModel cm = new IndexColorModel(8, 256, reds, greens, blues);
+		st = new ImageStack(2,2);
+		for (int i = 0; i < 4; i++)
+			st.addSlice(""+i,new byte[]{1,2,3,4});
+		ip2 = new ImagePlus("Spike",st);
+		ci = new CompositeImage(ip2,CompositeImage.COLOR);
+		ci.getProcessor().setColorModel(cm);
+		assertFalse(colorModelsEqual((IndexColorModel)ci.getProcessor().getDefaultColorModel(),
+				(IndexColorModel)ci.getProcessor().getColorModel()));
+		ci.setMode(CompositeImage.GRAYSCALE);
+		assertTrue(colorModelsEqual((IndexColorModel)ci.getProcessor().getDefaultColorModel(),
+				(IndexColorModel)ci.getProcessor().getColorModel()));
+
 		// some gui oriented code (updating Channels()) not tested
 	}
 
@@ -834,7 +932,7 @@ public class CompositeImageTest {
 		st.addSlice("b",new byte[] {1,2,3,4});
 		ip = new ImagePlus("Sara",st);
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
-		ci.reset();
+		ci.reset();  // sets up internal cip vars
 		assertNotNull(ci.getProcessor(1));
 		ci.setChannelLut(lut,1);
 		assertNull(ci.getProcessor(1));
