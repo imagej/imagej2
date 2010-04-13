@@ -43,7 +43,6 @@ public class OpenCL_Demo implements PlugInFilter
     private static CLDevice device;
     private static Source source;
 
-    @Override
     public void run(ImageProcessor imageProcessor)
     {
         int width = imageProcessor.getWidth();
@@ -72,7 +71,6 @@ public class OpenCL_Demo implements PlugInFilter
         currentImage.updateAndDraw();
     }
 
-    @Override
     public int setup(String arg, ImagePlus imp)
     {
         currentImage = imp;
