@@ -1,4 +1,4 @@
-package plugin;
+package src.plugin;
 
 import ij.IJ;
 
@@ -7,11 +7,8 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import opencl.ChooseOpenCLDevice;
-import opencl.DeviceList;
-import opencl.DeviceValidator;
-import opencl.OpenCLManager;
-import opencl.Source;
+import src.opencl.OpenCLManager;
+
 
 import com.nativelibs4java.opencl.CLBuildException;
 import com.nativelibs4java.opencl.CLByteBuffer;

@@ -1,14 +1,9 @@
-package opencl;
+package src.opencl;
 
-import ij.IJ;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
-import plugin.OpenCL_Demo;
-
 
 public class Source 
 {
@@ -28,7 +23,7 @@ public class Source
 	 */
 	public Source( String resourcePath ) throws IOException
 	{
-		InputStream inputStream = OpenCL_Demo.class.getResourceAsStream( resourcePath );
+		InputStream inputStream = src.plugin.OpenCL_Demo.class.getResourceAsStream( resourcePath );
 		byte[] sourceBytes;
 		sourceBytes = new byte[ inputStream.available() ];
 		inputStream.read(sourceBytes);

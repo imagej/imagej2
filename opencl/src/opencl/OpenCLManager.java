@@ -1,8 +1,9 @@
-package opencl;
+package src.opencl;
 
 import ij.IJ;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.nativelibs4java.opencl.CLBuildException;
@@ -115,6 +116,43 @@ public class OpenCLManager
 		}
 		
 		return true;
+	}
+	
+	public static long findMaxAvailableDirectNIOMemory()
+	{
+		Runtime runtime = Runtime.getRuntime();  
+		      
+		long maxMemory = runtime.maxMemory();  
+		long allocatedMemory = runtime.totalMemory();  
+		long freeMemory = runtime.freeMemory();  
+		      
+		System.out.println("maxMemory " + maxMemory );
+		System.out.println("allocatedMemory " + allocatedMemory );
+		System.out.println("freeMemory " + freeMemory );
+		System.out.println("Integer.MAX_VALUE " + Integer.MAX_VALUE );
+		
+		long max = Integer.MAX_VALUE;
+		long min = 0;
+		long test = (max-min)/2;
+		boolean keepTesting = true;
+		
+		ByteBuffer buff1 = null;
+		while( keepTesting )
+		{ 
+			try 
+			{
+				buff1 = ByteBuffer.allocateDirect( (int) max );
+				System.out.println("Memory " + max  + "tested successfully ");
+				keepTesting = false;
+			} 
+			catch (Throwable t)
+			{
+				keepTesting = false;
+				System.out.println("Memory " + test  + "failed ");
+			} 
+		}
+			
+		return min;
 	}
 
 }

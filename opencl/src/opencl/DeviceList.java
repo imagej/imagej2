@@ -1,4 +1,4 @@
-package opencl;
+package src.opencl;
 
 import ij.IJ;
 

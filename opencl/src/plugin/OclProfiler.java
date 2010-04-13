@@ -1,13 +1,14 @@
-package plugin;
+package src.plugin;
 
 import java.nio.FloatBuffer;
+
+import src.opencl.OpenCLManager;
 
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLFloatBuffer;
 import com.nativelibs4java.opencl.CLMem;
 import com.nativelibs4java.util.NIOUtils;
 
-import opencl.OpenCLManager;
 
 public class OclProfiler {
 
@@ -36,11 +37,17 @@ public class OclProfiler {
 			System.out.print( "source could not be set " + e.toString() );
 		}
     }
-
+    
 	 
-	public static void main(String[] args) 
+    public static void main(String[] args) 
 	{
-		//pick device
+		
+		System.out.print( OpenCLManager.findMaxAvailableDirectNIOMemory() );	
+	}
+    
+    public float[] testArrayMath()
+    {
+    	//pick device
 		initialize();
 		
 		//determine device working memory size
@@ -79,7 +86,6 @@ public class OclProfiler {
 		aFloatBuffer.rewind();
 		aFloatBuffer.get( s );
 		
-		for(float t:s)
-		  System.out.print(t + " ");
-	}
+		return s;
+    }
 }
