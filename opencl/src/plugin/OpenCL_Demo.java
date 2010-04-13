@@ -1,4 +1,4 @@
-package plugin;
+package src.plugin;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import opencl.ChooseOpenCLDevice;
-import opencl.DeviceList;
-import opencl.DeviceValidator;
-import opencl.Source;
+import src.opencl.ChooseOpenCLDevice;
+import src.opencl.DeviceList;
+import src.opencl.DeviceValidator;
+import src.opencl.Source;
 
 import com.nativelibs4java.opencl.CLBuildException;
 import com.nativelibs4java.opencl.CLByteBuffer;
