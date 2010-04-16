@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ij.Assert;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.Undo;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,6 +22,7 @@ public class RoiTest {
 
 	Roi roi;
 
+	// helper method
 	private ArrayList<Double> getCoords(Polygon p) {
 		ArrayList<Double> vals = new ArrayList<Double>();
 		
@@ -33,6 +37,7 @@ public class RoiTest {
 		return vals;
 	}
 	
+	// helper method
 	private boolean doublesEqual(Double[] a, Double[] b, double tol) {
 		
 		if (a.length != b.length)
@@ -45,6 +50,7 @@ public class RoiTest {
 		return true;
 	}
 
+	// helper method
 	private boolean polysEqual(Polygon a, Polygon b){
 		Double[] da = new Double[]{}, db = new Double[]{};
 		ArrayList<Double> ptsA = getCoords(a);
@@ -52,6 +58,7 @@ public class RoiTest {
 		return doublesEqual(ptsA.toArray(da), ptsB.toArray(db), Assert.DOUBLE_TOL);
 	}
 	
+	// helper method
 	private boolean rectsEqual(Rectangle a, Rectangle b) {
 		if (a.x != b.x) return false;
 		if (a.y != b.y) return false;
@@ -88,6 +95,7 @@ public class RoiTest {
 		assertEquals(-1,Roi.NOT_PASTING); 
 	}
 
+	// helper method
 	private void testValues(Roi roi, double perim, String name, int state, int type, int x, int y)
 	{
 		assertNotNull(roi);
@@ -337,7 +345,7 @@ public class RoiTest {
 		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POLYLINE);
 		assertEquals(Roi.CONSTRUCTING,roi.getState());
 		
-		// can't test
+		// note - can't test some subcases
 		// MOVING - can't get an ImageCanvas w/o gui so code never reached
 		// RESIZING - not present in Roi code - dead constant?
 		// MOVING_HANDLE - only settable via protected method
@@ -527,7 +535,9 @@ public class RoiTest {
 		ImagePlus ip = new ImagePlus("Fweek",proc);
 		roi = new Roi(1,2,3,4);
 		roi.setImage(ip);
-		assertNotNull(roi.clone());
+		Roi newRoi = (Roi) roi.clone();
+		assertNotNull(newRoi);
+		assertEquals(roi,newRoi);
 	}
 
 	@Test
@@ -690,138 +700,487 @@ public class RoiTest {
 		}
 	}
 
+	// helper method
+	private void tryOneDraw(int w, int h, Rectangle region, byte[] expectedResults) {
+		ImageProcessor proc = new ByteProcessor(w,h,new byte[w*h],null);
+		proc.setValue(3);
+		roi = new Roi(region);
+		roi.drawPixels(proc);
+		assertArrayEquals(expectedResults,(byte[])proc.getPixels());
+	}
+	
 	@Test
 	public void testDrawPixelsImageProcessor() {
-		ImageProcessor proc = new ByteProcessor(3,3,new byte[]{0,0,0,0,0,0,0,0,0},null);
-		Rectangle r = new Rectangle(0,0,3,3);
-		roi = new Roi(r);
-		roi.drawPixels(proc);
-		// TODO - left off here
+		
+		tryOneDraw(1,1,new Rectangle(0,0,1,1), new byte[]{3});
+		tryOneDraw(2,2,new Rectangle(0,0,1,1), new byte[]{3,0,0,0});
+		tryOneDraw(2,2,new Rectangle(1,0,1,2), new byte[]{0,3,0,3});
+		tryOneDraw(3,3,new Rectangle(0,0,3,3), new byte[]{3,3,3,3,0,3,3,3,3});
+		tryOneDraw(3,3,new Rectangle(1,1,1,1), new byte[]{0,0,0,0,3,0,0,0,0});
+		tryOneDraw(3,3,new Rectangle(0,1,2,2), new byte[]{0,0,0,3,3,0,3,3,0});
 	}
 
 	@Test
 	public void testContains() {
-		fail("Not yet implemented");
+		roi = new Roi(0,0,4,3);
+		
+		// corners
+		assertTrue(roi.contains(0,0));
+		assertTrue(roi.contains(0,2));
+		assertTrue(roi.contains(3,2));
+		assertTrue(roi.contains(3,0));
+		
+		// an interior point
+		assertTrue(roi.contains(1,1));
+		
+		// outside the boundaries
+		assertFalse(roi.contains(0,-1));
+		assertFalse(roi.contains(-1,0));
+		assertFalse(roi.contains(0,3));
+		assertFalse(roi.contains(4,2));
+		assertFalse(roi.contains(4,0));
+		assertFalse(roi.contains(1000,2000));
+		assertFalse(roi.contains(-2,-2));
 	}
 
 	@Test
 	public void testIsHandle() {
-		fail("Not yet implemented");
+		// note - can't test. Needs instance var ic to be nonnull to return anything other than -1. This instance var
+		//   is only set when the Roi's associated ImagePlus has a Window with an Canvas. Since gui is not active we
+		//   can't recreate these conditions.
+		roi = new Roi(1,2,3,4);
+		assertEquals(-1,roi.isHandle(1, 1));
 	}
 
+	// helper method
+	private void tryUpdateCase(boolean add, boolean sub, int expectedState) {
+		Roi.previousRoi = new Roi(1,2,3,4);
+		assertEquals(Roi.NO_MODS,Roi.previousRoi.modState);
+		roi.update(add, sub);
+		assertEquals(expectedState,Roi.previousRoi.modState);
+	}
+	
 	@Test
 	public void testUpdate() {
-		fail("Not yet implemented");
+		roi = new Roi(8,7,24,33);
+
+		// try all possible cases when previousRoi is null
+		Roi.previousRoi = null;
+		
+		roi.update(false, false);
+		assertNull(Roi.previousRoi);
+		
+		roi.update(false, true);
+		assertNull(Roi.previousRoi);
+		
+		roi.update(true, false);
+		assertNull(Roi.previousRoi);
+		
+		roi.update(true, true);
+		assertNull(Roi.previousRoi);
+		
+		// try all possible cases when previousRoi is nonNull
+		
+		tryUpdateCase(false,false,Roi.NO_MODS);
+		tryUpdateCase(false,true,Roi.SUBTRACT_FROM_ROI);
+		tryUpdateCase(true,false,Roi.ADD_TO_ROI);
+		tryUpdateCase(true,true,Roi.ADD_TO_ROI);
 	}
 
 	@Test
 	public void testGetMask() {
-		fail("Not yet implemented");
+		ImageProcessor proc;
+		
+		// regular rect
+		roi = new Roi(0,0,3,3);
+		assertNull(roi.getMask());
+		
+		// rounded rect
+		roi = new Roi(0,0,3,3,1);
+		proc = roi.getMask();
+		assertNotNull(proc);
+		assertArrayEquals(new byte[]{0,-1,-1,-1,-1,-1,-1,-1,-1},(byte[])proc.getPixels()); // -1 == 255
+
+		// rounded rect
+		roi = new Roi(0,0,4,4,3);
+		proc = roi.getMask();
+		assertNotNull(proc);
+		assertArrayEquals(new byte[]{0,0,-1,0,0,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1},(byte[])proc.getPixels()); // -1 == 255
 	}
 
 	@Test
 	public void testStartPaste() {
-		fail("Not yet implemented");
+		ImageProcessor proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ImagePlus ip = new ImagePlus("Loki",proc);
+		roi = new Roi(1,2,3,4);
+		roi.setImage(ip);
+		ImageProcessor proc2 = new ByteProcessor(1,1,new byte[]{7},null);
+		ImagePlus ip2 = new ImagePlus("Hercules",proc2);
+		
+		assertNull(proc.getSnapshotPixels());
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		roi.startPaste(ip2);
+		assertNotNull(proc.getSnapshotPixels());
+		assertEquals(Blitter.COPY,roi.getPasteMode());
+		
+		// underlying method does some gui stuff we can't test
 	}
+
 
 	@Test
 	public void testEndPaste() {
-		fail("Not yet implemented");
+		ImageProcessor proc, proc2;
+		ImagePlus ip, ip2;
+		byte[] snapshot;
+		int origPasteMode;
+		
+		origPasteMode = Roi.pasteMode;
+
+		// try to endPaste with no paste started
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Loki",proc);
+		roi = new Roi(1,2,3,4);
+		roi.setImage(ip);
+		assertNull(proc.getSnapshotPixels());
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		
+		roi.endPaste();
+		assertNull(proc.getSnapshotPixels());
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		
+
+		// try a legit paste in COPY mode
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Loki",proc);
+		proc2 = new ByteProcessor(1,1,new byte[]{7},null);
+		ip2 = new ImagePlus("Hercules",proc2);
+		roi = new Roi(0,0,1,1);
+		roi.setImage(ip);
+		ip.setRoi(roi);
+		
+		Roi.setPasteMode(Blitter.COPY);
+		roi.startPaste(ip2);
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertNotNull(snapshot);
+		assertEquals(1,snapshot[0]);
+		assertEquals(Blitter.COPY,roi.getPasteMode());
+		
+		roi.endPaste();
+		
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertEquals(7,snapshot[0]);
+		
+		// try a legit paste in some other mode
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Loki",proc);
+		proc2 = new ByteProcessor(1,1,new byte[]{7},null);
+		ip2 = new ImagePlus("Hercules",proc2);
+		roi = new Roi(0,0,1,1);
+		roi.setImage(ip);
+		ip.setRoi(roi);
+		
+		Roi.setPasteMode(Blitter.ADD);
+		roi.startPaste(ip2);
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertNotNull(snapshot);
+		assertEquals(1,snapshot[0]);
+		assertEquals(Blitter.ADD,roi.getPasteMode());
+		
+		roi.endPaste();
+		
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertEquals(8,snapshot[0]);
+		
+		// try a non-rectangular roi
+		proc = new ByteProcessor(3,3,new byte[] {0,0,0,0,0,0,0,0,0},null);
+		ip = new ImagePlus("Loki",proc);
+		proc2 = new ByteProcessor(2,2,new byte[]{1,2,3,4},null);
+		ip2 = new ImagePlus("Hercules",proc2);
+		roi = new OvalRoi(1,1,1,1);
+		roi.setImage(ip);
+		ip.setRoi(roi);
+		
+		Roi.setPasteMode(Blitter.COPY);
+		roi.startPaste(ip2);
+		
+		roi.endPaste();
+		assertArrayEquals(new byte[]{0,0,0,0,1,2,0,3,4},(byte[])proc.getPixels());
+		
+		// restore static variables
+		Roi.setPasteMode(origPasteMode);
 	}
 
 	@Test
 	public void testAbortPaste() {
-		fail("Not yet implemented");
+		ImageProcessor proc, proc2;
+		ImagePlus ip, ip2;
+		byte[] snapshot;
+
+		// start and abort a paste
+		
+		// setup
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Loki",proc);
+		proc2 = new ByteProcessor(1,1,new byte[]{7},null);
+		ip2 = new ImagePlus("Hercules",proc2);
+		roi = new Roi(0,0,1,1);
+		roi.setImage(ip);
+		ip.setRoi(roi);
+		
+		roi.startPaste(ip2);
+		
+		assertEquals(Blitter.COPY,roi.getPasteMode());
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertNotNull(snapshot);
+		assertEquals(1,snapshot[0]);
+		
+		roi.abortPaste();
+		
+		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
+		snapshot = (byte[]) proc.getSnapshotPixels();
+		assertEquals(1,snapshot[0]);
 	}
 
+	// note - Roi.java: this method belongs elsewhere in some utility class
 	@Test
 	public void testGetAngle() {
-		fail("Not yet implemented");
+		Calibration cal;
+		ImagePlus ip;
+		ImageProcessor proc;
+		
+		// try basic functionality
+		roi = new Roi(0,0,22,13);
+		assertEquals(0, roi.getAngle(0,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(1,1,1,1), Assert.DOUBLE_TOL);
+		assertEquals(-90, roi.getAngle(0,0,0,1), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(0,0,1,0), Assert.DOUBLE_TOL);
+		assertEquals(-45, roi.getAngle(0,0,1,1), Assert.DOUBLE_TOL);
+		assertEquals(90, roi.getAngle(0,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(180, roi.getAngle(1,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(135, roi.getAngle(1,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(118.81079, roi.getAngle(8,13,-3,-7), Assert.DOUBLE_TOL);
+		assertEquals(-70.55997, roi.getAngle(1,2,7,19), Assert.DOUBLE_TOL);
+		assertEquals(142.65065, roi.getAngle(400,300,20,10), Assert.DOUBLE_TOL);
+		
+		// now include a roi with a calibrated imageplus and the alt key is down
+		cal = new Calibration();
+		cal.pixelHeight = 1.2;
+		cal.pixelWidth = 0.7;
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Pan",proc);
+		ip.setCalibration(cal);
+		roi = new Roi(1,2,3,4);
+		roi.setImage(ip);
+		IJ.setKeyDown(KeyEvent.VK_ALT);
+		assertTrue(IJ.altKeyDown());
+		assertEquals(0, roi.getAngle(0,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(1,1,1,1), Assert.DOUBLE_TOL);
+		assertEquals(-90, roi.getAngle(0,0,0,1), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(0,0,1,0), Assert.DOUBLE_TOL);
+		assertEquals(-45, roi.getAngle(0,0,1,1), Assert.DOUBLE_TOL);
+		assertEquals(90, roi.getAngle(0,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(180, roi.getAngle(1,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(135, roi.getAngle(1,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(118.81079, roi.getAngle(8,13,-3,-7), Assert.DOUBLE_TOL);
+		assertEquals(-70.55997, roi.getAngle(1,2,7,19), Assert.DOUBLE_TOL);
+		assertEquals(142.65065, roi.getAngle(400,300,20,10), Assert.DOUBLE_TOL);
+		IJ.setKeyUp(KeyEvent.VK_ALT);
+		
+		// now include a roi with a calibrated imageplus and the alt key is NOT down
+		cal = new Calibration();
+		cal.pixelHeight = 1.2;
+		cal.pixelWidth = 0.7;
+		proc = new ByteProcessor(1,1,new byte[]{1},null);
+		ip = new ImagePlus("Pan",proc);
+		ip.setCalibration(cal);
+		roi = new Roi(1,2,3,4);
+		roi.setImage(ip);
+		assertFalse(IJ.altKeyDown());
+		assertEquals(0, roi.getAngle(0,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(1,1,1,1), Assert.DOUBLE_TOL);
+		assertEquals(-90, roi.getAngle(0,0,0,1), Assert.DOUBLE_TOL);
+		assertEquals(0, roi.getAngle(0,0,1,0), Assert.DOUBLE_TOL);
+		assertEquals(-59.74356, roi.getAngle(0,0,1,1), Assert.DOUBLE_TOL);
+		assertEquals(90, roi.getAngle(0,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(180, roi.getAngle(1,0,0,0), Assert.DOUBLE_TOL);
+		assertEquals(120.25644, roi.getAngle(1,1,0,0), Assert.DOUBLE_TOL);
+		assertEquals(107.78797, roi.getAngle(8,13,-3,-7), Assert.DOUBLE_TOL);
+		assertEquals(-78.36637, roi.getAngle(1,2,7,19), Assert.DOUBLE_TOL);
+		assertEquals(127.39313, roi.getAngle(400,300,20,10), Assert.DOUBLE_TOL);
 	}
 
 	@Test
-	public void testSetColor() {
-		fail("Not yet implemented");
+	public void testSetAndGetColor() {
+
+		Color savedColor = Roi.getColor();
+		
+		Roi.setColor(Color.black);
+		assertEquals(Color.black,Roi.getColor());
+		
+		Roi.setColor(Color.magenta);
+		assertEquals(Color.magenta,Roi.getColor());
+
+		Roi.setColor(savedColor);
 	}
 
 	@Test
-	public void testGetColor() {
-		fail("Not yet implemented");
+	public void testSetAndGetStrokeColor() {
+		roi = new Roi(1,2,3,4);
+		roi.setStrokeColor(Color.orange);
+		assertEquals(Color.orange,roi.getStrokeColor());
+		
+		roi.setStrokeColor(Color.green);
+		assertEquals(Color.green,roi.getStrokeColor());
 	}
 
 	@Test
-	public void testSetStrokeColor() {
-		fail("Not yet implemented");
+	public void testSetAndGetFillColor() {
+		roi = new Roi(1,2,3,4);
+		roi.setFillColor(Color.red);
+		assertEquals(Color.red,roi.getFillColor());
+		
+		roi.setFillColor(Color.cyan);
+		assertEquals(Color.cyan,roi.getFillColor());
 	}
 
 	@Test
-	public void testGetStrokeColor() {
-		fail("Not yet implemented");
-	}
+	public void testSetAndGetDefaultFillColor() {
+		Color savedColor = Roi.getDefaultFillColor();
+		
+		Roi.setDefaultFillColor(Color.yellow);
+		assertEquals(Color.yellow,Roi.getDefaultFillColor());
+		
+		Roi.setDefaultFillColor(Color.white);
+		assertEquals(Color.white,Roi.getDefaultFillColor());
 
-	@Test
-	public void testSetFillColor() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetFillColor() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetDefaultFillColor() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetDefaultFillColor() {
-		fail("Not yet implemented");
+		Roi.setDefaultFillColor(savedColor);
 	}
 
 	@Test
 	public void testCopyAttributes() {
-		fail("Not yet implemented");
+		Roi roi2 = new Roi(7,2,43,22);
+		roi2.setFillColor(Color.orange);
+		roi2.setStrokeColor(Color.blue);
+		roi2.setStroke(new BasicStroke());
+		
+		roi = new Roi(1,2,3,4);
+		
+		assertFalse(roi.getFillColor() == roi2.getFillColor());
+		assertFalse(roi.getStrokeColor() == roi2.getStrokeColor());
+		assertFalse(roi.getStroke() == roi2.getStroke());
+		
+		roi.copyAttributes(roi2);
+
+		assertTrue(roi.getFillColor() == roi2.getFillColor());
+		assertTrue(roi.getStrokeColor() == roi2.getStrokeColor());
+		assertTrue(roi.getStroke() == roi2.getStroke());
 	}
 
 	@Test
 	public void testUpdateWideLine() {
-		fail("Not yet implemented");
+
+		Color c, savedColor;
+		
+		savedColor = Roi.getColor();
+		Roi.setColor(new Color(13, 99, 44));
+		
+		// isLine() false : do nothing
+		roi = new Roi(4,2,6,9);
+		
+		// isLine() true cases follow from here on in
+		
+		// make sure wideline is true after this
+		roi = new Line(1,7,3,5);
+		roi.updateWideLine(7);
+		assertEquals(7,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+		roi.setStrokeWidth(3);
+		assertEquals(BasicStroke.CAP_BUTT,roi.getStroke().getEndCap());
+		assertEquals(BasicStroke.JOIN_BEVEL,roi.getStroke().getLineJoin());
+
+		// getStrokeColor != null case
+		roi = new Line(1,7,3,5);
+		assertNotNull(roi.getStrokeColor());
+		roi.updateWideLine(17);
+		assertEquals(17,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+
+		// getStrokeColor == null case
+		roi = new Line(1,7,3,5);
+		roi.setStrokeColor(null);
+		assertNull(roi.getStrokeColor());
+		roi.updateWideLine(11);
+		assertEquals(11,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+		c = roi.getStrokeColor();
+		assertNotNull(c);
+		assertEquals(77,c.getAlpha());
+		assertEquals(Roi.getColor().getRed(),c.getRed());
+		assertEquals(Roi.getColor().getGreen(),c.getGreen());
+		assertEquals(Roi.getColor().getBlue(),c.getBlue());
+		
+		Roi.setColor(savedColor);
 	}
 
 	@Test
 	public void testSetNonScalable() {
-		fail("Not yet implemented");
+		// note - just a setter. Might be used by TextRoi but all in nonpublic methods. Could be hard to tease out behavior.
+		//   Just do a compile time test
+		roi = new Roi(1,2,3,4);
+		roi.setNonScalable(false);
+		roi.setNonScalable(true);
 	}
 
 	@Test
 	public void testSetStrokeWidth() {
-		fail("Not yet implemented");
+		// wide line case
+		roi = new Line(1,7,3,5);
+		roi.updateWideLine(7);
+		assertEquals(7,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+		roi.setStrokeWidth(3);
+		assertEquals(BasicStroke.CAP_BUTT,roi.getStroke().getEndCap());
+		assertEquals(BasicStroke.JOIN_BEVEL,roi.getStroke().getLineJoin());
+		
+		// regular case and width <= 1
+		roi = new Roi(1,2,3,4);
+		roi.setFillColor(Color.orange);
+		assertNotNull(roi.getFillColor());
+		roi.setStrokeWidth(0.99999f);
+		assertEquals(0.99999,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+		assertNotNull(roi.getFillColor());
+
+		// regular case and width > 1
+		roi = new Roi(1,2,3,4);
+		roi.setFillColor(Color.orange);
+		assertNotNull(roi.getFillColor());
+		roi.setStrokeWidth(1.00001f);
+		assertEquals(1.00001,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
+		assertNull(roi.getFillColor());
 	}
 
 	@Test
 	public void testGetStrokeWidth() {
-		fail("Not yet implemented");
+		// mostly tested in previous test
+		// need to test case where Roi's stroke == null
+		roi = new Roi(1,2,3,4);
+		assertNull(roi.getStroke());
+		assertEquals(1,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
 	}
 
 	@Test
-	public void testSetStroke() {
-		fail("Not yet implemented");
+	public void testSetAndGetStroke() {
+		roi = new Roi(1,2,3,4);
+		BasicStroke bs = new BasicStroke();
+		assertFalse(bs == roi.getStroke());
+		roi.setStroke(bs);
+		assertTrue(bs == roi.getStroke());
 	}
 
 	@Test
-	public void testGetStroke() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetName() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetName() {
-		fail("Not yet implemented");
+	public void testSetAndGetName() {
+		roi = new Roi(1,2,3,4);
+		assertFalse("Floopy".equals(roi.getName()));
+		roi.setName("Floopy");
+		assertTrue("Floopy".equals(roi.getName()));
 	}
 
 	@Test
