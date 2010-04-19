@@ -1184,53 +1184,278 @@ public class RoiTest {
 	}
 
 	@Test
-	public void testSetPasteMode() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetRoundRectArcSize() {
-		fail("Not yet implemented");
+	public void testsPasteMode() {
+		int savedMode = Roi.getCurrentPasteMode();
+		
+		Roi.setPasteMode(Blitter.AND);
+		assertEquals(Blitter.AND, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.ADD);
+		assertEquals(Blitter.ADD, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.AVERAGE);
+		assertEquals(Blitter.AVERAGE, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.COPY);
+		assertEquals(Blitter.COPY, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.COPY_INVERTED);
+		assertEquals(Blitter.COPY_INVERTED, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.COPY_TRANSPARENT);
+		assertEquals(Blitter.COPY_TRANSPARENT, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.COPY_ZERO_TRANSPARENT);
+		assertEquals(Blitter.COPY_ZERO_TRANSPARENT, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.DIFFERENCE);
+		assertEquals(Blitter.DIFFERENCE, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.DIVIDE);
+		assertEquals(Blitter.DIVIDE, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.MAX);
+		assertEquals(Blitter.MAX, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.MIN);
+		assertEquals(Blitter.MIN, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.MULTIPLY);
+		assertEquals(Blitter.MULTIPLY, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.OR);
+		assertEquals(Blitter.OR, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.SUBTRACT);
+		assertEquals(Blitter.SUBTRACT, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(Blitter.XOR);
+		assertEquals(Blitter.XOR, Roi.getCurrentPasteMode());
+		
+		Roi.setPasteMode(savedMode);
 	}
 
 	@Test
 	public void testGetPasteMode() {
-		fail("Not yet implemented");
+		
+		int savedMode = Roi.getCurrentPasteMode();
+
+		// should be not pasting if clipboard is empty
+		
+		roi = new Roi(1,2,3,4);
+		assertEquals(Roi.NOT_PASTING, roi.getPasteMode());
+		
+		// try when clipboard populated
+		
+		ImagePlus img1 = new ImagePlus("Fred",new ByteProcessor(1,1,new byte[]{1},null));
+		ImagePlus img2 = new ImagePlus("Zach",new ByteProcessor(1,1,new byte[]{1},null));
+		roi.setImage(img1);
+		roi.startPaste(img2);
+		Roi.setPasteMode(Blitter.XOR);
+		assertEquals(Blitter.XOR, roi.getPasteMode());
+
+		Roi.setPasteMode(savedMode);
 	}
 
 	@Test
-	public void testGetCurrentPasteMode() {
-		fail("Not yet implemented");
+	public void testSetRoundRectArcSize() {
+
+		roi = new Roi(1,2,3,4);
+		assertFalse(roi.isDrawingTool());
+		
+		roi.setRoundRectArcSize(13);
+		assertTrue(roi.isDrawingTool());
 	}
 
 	@Test
 	public void testIsArea() {
-		fail("Not yet implemented");
+		roi = new Roi(1,2,3,4);
+		assertEquals(Roi.RECTANGLE,roi.getType());
+		assertTrue(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POLYGON);
+		assertEquals(Roi.POLYGON,roi.getType());
+		assertTrue(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.FREEROI);
+		assertEquals(Roi.FREEROI,roi.getType());
+		assertTrue(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.FREELINE);
+		assertEquals(Roi.FREELINE,roi.getType());
+		assertFalse(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POLYLINE);
+		assertEquals(Roi.POLYLINE,roi.getType());
+		assertFalse(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.TRACED_ROI);
+		assertEquals(Roi.TRACED_ROI,roi.getType());
+		assertTrue(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.ANGLE);
+		assertEquals(Roi.ANGLE,roi.getType());
+		assertFalse(roi.isArea());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POINT);
+		assertEquals(Roi.POINT,roi.getType());
+		assertFalse(roi.isArea());
+		
+		roi = new OvalRoi(1,2,3,4);
+		assertEquals(Roi.OVAL,roi.getType());
+		assertTrue(roi.isArea());
+		
+		roi = new Line(1,2,3,4);
+		assertEquals(Roi.LINE,roi.getType());
+		assertFalse(roi.isArea());
+
+		roi = new Roi(1,2,3,4);
+		roi = new ShapeRoi(roi,1,2,false,false,false,100);
+		assertEquals(Roi.COMPOSITE,roi.getType());
+		assertTrue(roi.isArea());
 	}
 
 	@Test
 	public void testIsLine() {
-		fail("Not yet implemented");
+		roi = new Roi(1,2,3,4);
+		assertEquals(Roi.RECTANGLE,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POLYGON);
+		assertEquals(Roi.POLYGON,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.FREEROI);
+		assertEquals(Roi.FREEROI,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.FREELINE);
+		assertEquals(Roi.FREELINE,roi.getType());
+		assertTrue(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POLYLINE);
+		assertEquals(Roi.POLYLINE,roi.getType());
+		assertTrue(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.TRACED_ROI);
+		assertEquals(Roi.TRACED_ROI,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.ANGLE);
+		assertEquals(Roi.ANGLE,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POINT);
+		assertEquals(Roi.POINT,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new OvalRoi(1,2,3,4);
+		assertEquals(Roi.OVAL,roi.getType());
+		assertFalse(roi.isLine());
+		
+		roi = new Line(1,2,3,4);
+		assertEquals(Roi.LINE,roi.getType());
+		assertTrue(roi.isLine());
+
+		roi = new Roi(1,2,3,4);
+		roi = new ShapeRoi(roi,1,2,false,false,false,100);
+		assertEquals(Roi.COMPOSITE,roi.getType());
+		assertFalse(roi.isLine());
 	}
 
 	@Test
 	public void testIsDrawingTool() {
-		fail("Not yet implemented");
+
+		roi = new Roi(1,2,3,4);
+		assertFalse(roi.isDrawingTool());
+		
+		roi.setRoundRectArcSize(13);
+		assertTrue(roi.isDrawingTool());
 	}
 
 	@Test
 	public void testIsVisible() {
-		fail("Not yet implemented");
+		// note - underlying code will always return false when gui not active. can't really test
+		
+		roi = new Roi(1,2,3,4);
+		assertFalse(roi.isVisible());
 	}
 
 	@Test
 	public void testEqualsObject() {
-		fail("Not yet implemented");
+		Roi roi1, roi2;
+		
+		roi1 = new Roi(1,2,3,4);
+		
+		// test a against a nonRoi object
+		assertFalse(roi1.equals("Zappaploo"));
+		
+		// types differ
+		roi2 = new Line(1,2,3,4);
+		assertFalse(roi1.equals(roi2));
+		
+		// bounds differ
+		roi2 = new Roi(1,2,4,5);
+		assertFalse(roi1.equals(roi2));
+
+		// length differ
+		/*
+		 * unreachable test case: need to define two rois of same type and same bounds whose length is not equal. not possible.
+		assertFalse(roi1.equals(roi2));
+		*/
+		
+		// otherwise should be equal
+		roi1 = new Roi(3,4,7,8);
+		roi2 = new Roi(3,4,7,8);
+		assertTrue(roi1.equals(roi2));
 	}
 
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		roi = new Roi(5,-3,18,8080);
+		assertEquals(Roi.RECTANGLE,roi.getType());
+		assertEquals("Roi[Rectangle, x=5, y=-3, width=18, height=8080]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{1,7},new int[]{3,19},2,Roi.POLYGON);
+		assertEquals(Roi.POLYGON,roi.getType());
+		assertEquals("Roi[Polygon, x=1, y=3, width=6, height=16]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{3,2,7},new int[]{9,12,9},3,Roi.FREEROI);
+		assertEquals(Roi.FREEROI,roi.getType());
+		assertEquals("Roi[Freehand, x=2, y=9, width=5, height=3]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{1,2,3,4},new int[]{6,7,8,9},4,Roi.FREELINE);
+		assertEquals(Roi.FREELINE,roi.getType());
+		assertEquals("Roi[Freeline, x=1, y=6, width=3, height=3]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{8,22,55},new int[]{19,3,99},3,Roi.POLYLINE);
+		assertEquals(Roi.POLYLINE,roi.getType());
+		assertEquals("Roi[Polyline, x=8, y=3, width=47, height=96]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{12,2,8,4},new int[]{1,7,9,31},4,Roi.TRACED_ROI);
+		assertEquals(Roi.TRACED_ROI,roi.getType());
+		assertEquals("Roi[Traced, x=2, y=1, width=10, height=30]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{1,2,3},new int[]{7,4,5},3,Roi.ANGLE);
+		assertEquals(Roi.ANGLE,roi.getType());
+		assertEquals("Roi[Angle, x=1, y=4, width=2, height=3]",roi.toString());
+		
+		roi = new PolygonRoi(new int[]{1},new int[]{3},1,Roi.POINT);
+		assertEquals(Roi.POINT,roi.getType());
+		assertEquals("Roi[Point, x=1, y=3, width=0, height=0]",roi.toString());
+		
+		roi = new OvalRoi(8,6,7,11);
+		assertEquals(Roi.OVAL,roi.getType());
+		assertEquals("Roi[Oval, x=8, y=6, width=7, height=11]",roi.toString());
+		
+		roi = new Line(9,22,909,303);
+		assertEquals(Roi.LINE,roi.getType());
+		assertEquals("Roi[Straight Line, x=9, y=22, width=900, height=281]",roi.toString());
+
+		roi = new Roi(1,2,3,4);
+		roi = new ShapeRoi(roi,1,2,false,false,false,100);
+		assertEquals(Roi.COMPOSITE,roi.getType());
+		assertEquals("Roi[Composite, x=1, y=2, width=3, height=4]",roi.toString());
 	}
 
 }
