@@ -762,6 +762,8 @@ public class RoiTest {
 	
 	@Test
 	public void testUpdate() {
+		Roi savedRoi = Roi.previousRoi;
+		
 		roi = new Roi(8,7,24,33);
 
 		// try all possible cases when previousRoi is null
@@ -785,6 +787,8 @@ public class RoiTest {
 		tryUpdateCase(false,true,Roi.SUBTRACT_FROM_ROI);
 		tryUpdateCase(true,false,Roi.ADD_TO_ROI);
 		tryUpdateCase(true,true,Roi.ADD_TO_ROI);
+		
+		Roi.previousRoi = savedRoi;
 	}
 
 	@Test
