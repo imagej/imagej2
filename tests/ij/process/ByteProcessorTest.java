@@ -5,6 +5,8 @@ import loci.plugins.util.ImagePlusReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ij.Assert;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -180,8 +182,9 @@ public class ByteProcessorTest {
         byteProcessor.setMinAndMax(min, max);
 
 		//see if the test passes assertEquals(float expected, float actual, float delta)
-		assertEquals(max, byteProcessor.getMax(), 1.0);
-        assertEquals(min, byteProcessor.getMin(), 1.0);
+        // BDZ: was testing with granularity 1.0
+		assertEquals(max, byteProcessor.getMax(), Assert.DOUBLE_TOL);
+        assertEquals(min, byteProcessor.getMin(), Assert.DOUBLE_TOL);
 
 	}
 
@@ -205,6 +208,7 @@ public class ByteProcessorTest {
 
 		//see if the test passes assertEquals(float expected, float actual, float delta)
 		assertEquals(refMax, byteProcessor.getMax(), 0.0);
+		assertEquals(refMin, byteProcessor.getMin(), 0.0);  // BDZ: was missing test
 
 	}
 
@@ -542,6 +546,7 @@ public class ByteProcessorTest {
 
                 //check the result
                 assertEquals( referenceResult, result, Float.MAX_VALUE );
+                // fails - BDZ: assertEquals( referenceResult, result, Assert.FLOAT_TOL );
             }
         }
     }
@@ -580,6 +585,7 @@ public class ByteProcessorTest {
 
                 //check the result
                 assertEquals( referenceResult, result, Float.MAX_VALUE );
+                // fails: BDZ - assertEquals( referenceResult, result, Assert.FLOAT_TOL );
             }
         }
     }
@@ -754,6 +760,7 @@ public class ByteProcessorTest {
         assertEquals( testImage.getHeight(null), height);
 
         //TODO: add testing for actual image objects
+        // BDZ - still needs to be done?
 	}
 
 	@Test
@@ -770,6 +777,7 @@ public class ByteProcessorTest {
 
         //create a reference image
         //TODO: Compare the images
+        // BDZ - still needs to be done?
 	}
 
 	@Test
@@ -783,7 +791,9 @@ public class ByteProcessorTest {
 
         //test empty image
         assertEquals( testByteProcessor.getWidth(), width);
-        assertEquals( testByteProcessor.getHeight(), height);      
+        assertEquals( testByteProcessor.getHeight(), height);
+        
+        // BDZ: something needed here?
 	}
 
 	@Test
@@ -916,6 +926,7 @@ public class ByteProcessorTest {
         }
 	}
 
+    // BDZ - still needs to be done?
 	@Test    //TODO: fix this test
 	public void testConvolve3x3()
     {
@@ -1245,7 +1256,7 @@ public class ByteProcessorTest {
 	@Test
 	public void testMedianFilter()
     {
-
+		// BDZ: wasn't implemented
 	}
 
 	@Test
@@ -1357,6 +1368,7 @@ public class ByteProcessorTest {
 	public void testScale() 
 	{
 		//TODO: define a real test for each scaling operation
+        // BDZ - still needs to be done?
 		assertEquals( true, true);
 	}
 
@@ -1364,6 +1376,7 @@ public class ByteProcessorTest {
 	public void testResizeIntInt() 
 	{
 		//TODO: define a real test for each scaling operation
+        // BDZ - still needs to be done?
 		assertEquals( true, true);
 	}
 
@@ -1371,7 +1384,7 @@ public class ByteProcessorTest {
 	public void testRotate() 
 	{
 		 ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		 testByteProcessor.rotate(180);
+		 testByteProcessor.rotate(180);  // BDZ: not sufficient testing
 		 testByteProcessor.rotate(180);
 		 
 	     byte[] testPixelData = (byte[]) testByteProcessor.getPixelsCopy();
@@ -1630,6 +1643,9 @@ public class ByteProcessorTest {
 		assertEquals( referenceImage.getHeight(null), testImage.getHeight(null));
 	}
 	
+	// BDZ: can replace everywhere with JUnit's assertArrayEquals(arr1,arr2)
+	//   also our tests/Assert class has floatArrayEq and doubleArrayEq methods for those cases
+	
 	//TODO: Move to util test class or find standardize method for replacement
 	/**
 	 * Wraps the JUnit4 assertEquals method to compare two byte arrays.  Length is based off the reference array.
@@ -1648,6 +1664,7 @@ public class ByteProcessorTest {
 	    	assertEquals( ref[index], test[index]);
 	    }
 	}
+	
 	//TODO: move to utils class
 	/**
 	 * Prints out a byte array in the format {0x01,0x02,...,0x99}; for ease of use
@@ -1773,6 +1790,8 @@ public class ByteProcessorTest {
 		
 		//test elements  are equal
 		//asserteq (ref, test);
+		
+		// BDZ: missing implementation
 	}
 
 	@Test
