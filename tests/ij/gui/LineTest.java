@@ -270,15 +270,6 @@ public class LineTest {
 		assertEquals(23,proc.get(2,3));
 	}
 
-	/*
-	public boolean contains(int x, int y) {
-		if (getStrokeWidth()>1)
-			return getPolygon().contains(x, y);
-		else
-			return false;
-	}
-
-	 */
 	@Test
 	public void testContains() {
 		line = new Line(2,2,17,4);

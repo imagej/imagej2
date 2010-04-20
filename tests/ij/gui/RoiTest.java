@@ -1090,8 +1090,12 @@ public class RoiTest {
 		savedColor = Roi.getColor();
 		Roi.setColor(new Color(13, 99, 44));
 		
-		// isLine() false : do nothing
+		// isLine() false : should do nothing
 		roi = new Roi(4,2,6,9);
+		roi.setStrokeWidth(19);
+		assertEquals(19,roi.getStrokeWidth(),Assert.FLOAT_TOL);
+		roi.updateWideLine(99);
+		assertEquals(19,roi.getStrokeWidth(),Assert.FLOAT_TOL);
 		
 		// isLine() true cases follow from here on in
 		
@@ -1105,6 +1109,7 @@ public class RoiTest {
 
 		// getStrokeColor != null case
 		roi = new Line(1,7,3,5);
+		roi.setStrokeColor(Color.magenta);
 		assertNotNull(roi.getStrokeColor());
 		roi.updateWideLine(17);
 		assertEquals(17,roi.getStrokeWidth(),Assert.DOUBLE_TOL);
