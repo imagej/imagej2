@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
@@ -181,8 +182,6 @@ public class ByteProcessorTest {
 
         byteProcessor.setMinAndMax(min, max);
 
-		//see if the test passes assertEquals(float expected, float actual, float delta)
-        // BDZ: was testing with granularity 1.0
 		assertEquals(max, byteProcessor.getMax(), Assert.DOUBLE_TOL);
         assertEquals(min, byteProcessor.getMin(), Assert.DOUBLE_TOL);
 
@@ -207,8 +206,8 @@ public class ByteProcessorTest {
 		byteProcessor.resetMinAndMax();
 
 		//see if the test passes assertEquals(float expected, float actual, float delta)
-		assertEquals(refMax, byteProcessor.getMax(), 0.0);
-		assertEquals(refMin, byteProcessor.getMin(), 0.0);  // BDZ: was missing test
+		assertEquals(refMax, byteProcessor.getMax(), Assert.DOUBLE_TOL);
+		assertEquals(refMin, byteProcessor.getMin(), Assert.DOUBLE_TOL);
 
 	}
 
@@ -515,40 +514,12 @@ public class ByteProcessorTest {
 	@Test
 	public void testGetInterpolatedPixel()
     {
-		//Create a new ByteProcessor object for testing
-		ByteProcessor byteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-
-        byteProcessor.setInterpolationMethod(ImageProcessor.BILINEAR);
-		for(int y = 0; y < height-1; y++)
-        {
-			for(int x = 0; x < width-1; x++)
-			{
-                //Bilinear interpolation
-		        int xbase = x;
-		        int ybase = y;
-
-		        double xFraction = x - xbase;
-		        double yFraction = y - ybase;
-
-		        int offset = ybase * width + xbase;
-
-		        double lowerLeft = imageByteData[offset];
-		        double lowerRight = imageByteData[offset + 1];
-		        double upperRight = imageByteData[offset + width + 1];
-		        double upperLeft = imageByteData[offset + width];
-                double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
-		        double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
-
-		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
-
-                //get the pixel value that was set
-                double result = byteProcessor.getInterpolatedPixel((double) x, (double) y);
-
-                //check the result
-                assertEquals( referenceResult, result, Float.MAX_VALUE );
-                // fails - BDZ: assertEquals( referenceResult, result, Assert.FLOAT_TOL );
-            }
-        }
+		ByteProcessor byteProcessor =  new ByteProcessor( width, height, getImageByteData(), cm );
+		byte[] imageRef = getImageByteData();
+        assertEquals( imageRef[0], byteProcessor.getInterpolatedPixel(0, 0), Assert.DOUBLE_TOL ); //test beginning
+        assertEquals( imageRef[(width)*(height/2)+(width/2)], byteProcessor.getPixelInterpolated( (width/2),(height/2)) ); //test middle
+        assertEquals( imageRef[width*height-1], byteProcessor.getPixelInterpolated(width-1, height-1) ); //test endpoint
+ 
     }
 
 	@Test
@@ -556,38 +527,11 @@ public class ByteProcessorTest {
     {
 		//Create a new ByteProcessor object for testing
 		ByteProcessor byteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-
-        byteProcessor.setInterpolationMethod(ImageProcessor.BILINEAR);
-		for(int y = 0; y < height-1; y++)
-        {
-			for(int x = 0; x < width-1; x++)
-			{
-                //Bilinear interpolation
-		        int xbase = x;
-		        int ybase = y;
-
-		        double xFraction = x - xbase;
-		        double yFraction = y - ybase;
-
-		        int offset = ybase * width + xbase;
-
-		        double lowerLeft = imageByteData[offset];
-		        double lowerRight = imageByteData[offset + 1];
-		        double upperRight = imageByteData[offset + width + 1];
-		        double upperLeft = imageByteData[offset + width];
-                double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
-		        double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
-
-		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
-
-                //get the pixel value that was set
-                double result = byteProcessor.getPixelInterpolated( (double) x, (double) y);
-
-                //check the result
-                assertEquals( referenceResult, result, Float.MAX_VALUE );
-                // fails: BDZ - assertEquals( referenceResult, result, Assert.FLOAT_TOL );
-            }
-        }
+		byte[] imageRef = getImageByteData();
+        assertEquals( imageRef[0], byteProcessor.getPixelInterpolated(0, 0) ); //test beginning
+        assertEquals( imageRef[(width)*(height/2)+(width/2)], byteProcessor.getPixelInterpolated( (width/2),(height/2)) ); //test middle
+        assertEquals( imageRef[width*height-1], byteProcessor.getPixelInterpolated(width-1, height-1) ); //test endpoint
+ 
     }
 
 	@Test
@@ -755,13 +699,38 @@ public class ByteProcessorTest {
 
         //get the image
         Image testImage = byteProcessor.createImage();
+        /*
+        byte[] r = new byte[256];
+		byte[] g = new byte[256];
+		byte[] b = new byte[256];
+		for(int i=0; i<256; i++) 
+		{
+			r[i]=(byte)i;
+			g[i]=(byte)i;
+			b[i]=(byte)i;
+		}
+		
+		IndexColorModel icm = new IndexColorModel( 8, 256, r, g, b );
 
-        assertEquals( testImage.getWidth(null), width);
-        assertEquals( testImage.getHeight(null), height);
+		WritableRaster wr = icm.createCompatibleWritableRaster( 1, 1 );
+		SampleModel sm = wr.getSampleModel();
+		sm = sm.createCompatibleSampleModel( width, height );
+		DataBuffer db = new DataBufferByte( getImageByteData(), width*height, 0 );
+		Raster raster = Raster.createWritableRaster( sm, db, null );
+		Image image = new BufferedImage( icm, (WritableRaster) raster, false, null);	
+		
+		
+		MemoryImageSource ms = new MemoryImageSource(width, height, cm, getImageByteData(), 0, width);
+		ms.setAnimated(true);
+		ms.setFullBufferUpdates(true);
+		Image img = Toolkit.getDefaultToolkit().createImage(ms);
+		*/
+    	testImageStats( new ByteProcessor(testImage), "stats[count=58368, mean=45.3469880756579, min=0.0, max=255.0] 125.60450794974938 112.74068266250771 128.0 114.0");
+	
 
-        //TODO: add testing for actual image objects
-        // BDZ - still needs to be done?
 	}
+	
+	
 
 	@Test
 	public void testGetBufferedImage()
@@ -771,13 +740,9 @@ public class ByteProcessorTest {
 
         //get the image
         BufferedImage testImage = byteProcessor.getBufferedImage();
-
-        assertEquals( testImage.getWidth(null), width);
-        assertEquals( testImage.getHeight(null), height);
-
-        //create a reference image
-        //TODO: Compare the images
-        // BDZ - still needs to be done?
+        ByteProcessor tbp = new ByteProcessor(testImage);
+    	testImageStats( tbp, "stats[count=0, mean=NaN, min=255.0, max=0.0] NaN NaN NaN NaN");
+    	
 	}
 
 	@Test
@@ -787,13 +752,11 @@ public class ByteProcessorTest {
 		ByteProcessor byteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 
         //get the image
-        ImageProcessor testByteProcessor = byteProcessor.createProcessor(width, height);
+        ImageProcessor testByteProcessor = byteProcessor.createProcessor( width, height );
 
         //test empty image
         assertEquals( testByteProcessor.getWidth(), width);
         assertEquals( testByteProcessor.getHeight(), height);
-        
-        // BDZ: something needed here?
 	}
 
 	@Test
@@ -926,8 +889,8 @@ public class ByteProcessorTest {
         }
 	}
 
-    // BDZ - still needs to be done?
-	@Test    //TODO: fix this test
+ 
+	@Test  
 	public void testConvolve3x3()
     {
 	    //Create a new ByteProcessor object for testing
@@ -1256,7 +1219,10 @@ public class ByteProcessorTest {
 	@Test
 	public void testMedianFilter()
     {
-		// BDZ: wasn't implemented
+        ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
+        refByteProcessor.medianFilter();
+    	testImageStats( refByteProcessor, "stats[count=58368, mean=44.95233689692982, min=0.0, max=237.0] 125.63334245504002 112.74784147134399 128.0 114.0");
+    	
 	}
 
 	@Test
@@ -1342,7 +1308,7 @@ public class ByteProcessorTest {
 
 		//test the values
 		for( int index = 0; index< width*height; index++ )
-		{
+		{ 
 			assertEquals( refPixelData[index], (byte) testByteProcessor.get( index ), 0.0);
 		}
 	}
@@ -1367,34 +1333,27 @@ public class ByteProcessorTest {
 	@Test
 	public void testScale() 
 	{
-		//TODO: define a real test for each scaling operation
-        // BDZ - still needs to be done?
-		assertEquals( true, true);
+        ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
+        refByteProcessor.scale( 0.5, 0.5 );
+        testImageStats( refByteProcessor, "stats[count=58368, mean=202.58825041118422, min=0.0, max=255.0] 127.94548089329504 113.97381555055527 128.0 114.0");
 	}
 
 	@Test
 	public void testResizeIntInt() 
 	{
-		//TODO: define a real test for each scaling operation
-        // BDZ - still needs to be done?
-		assertEquals( true, true);
+	       ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
+	       refByteProcessor.resize( 50, 50 );
+	       testImageStats( refByteProcessor, "stats[count=58368, mean=45.3469880756579, min=0.0, max=255.0] 125.60450794974938 112.74068266250771 128.0 114.0");
+
 	}
 
 	@Test
 	public void testRotate() 
 	{
 		 ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		 testByteProcessor.rotate(180);  // BDZ: not sufficient testing
-		 testByteProcessor.rotate(180);
-		 
-	     byte[] testPixelData = (byte[]) testByteProcessor.getPixelsCopy();
-	     byte[] refPixelData = getImageByteData();
-			
-		//test the values
-		for( int index = 0; index< width*height; index++ )
-		{
-			assertEquals( refPixelData[index], testPixelData[index], 0.0);
-		}
+		 testByteProcessor.rotate(-99);  
+		 testImageStats( testByteProcessor, "stats[count=58368, mean=71.48273026315789, min=0.0, max=255.0] 126.41098946768979 116.11916821017836 128.0 114.0");
+
 	}
 
 	@Test
@@ -1642,10 +1601,7 @@ public class ByteProcessorTest {
 
 		assertEquals( referenceImage.getHeight(null), testImage.getHeight(null));
 	}
-	
-	// BDZ: can replace everywhere with JUnit's assertArrayEquals(arr1,arr2)
-	//   also our tests/Assert class has floatArrayEq and doubleArrayEq methods for those cases
-	
+
 	//TODO: Move to util test class or find standardize method for replacement
 	/**
 	 * Wraps the JUnit4 assertEquals method to compare two byte arrays.  Length is based off the reference array.
@@ -1785,13 +1741,7 @@ public class ByteProcessorTest {
 	{
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		testByteProcessor.dilate(3,0);
-		byte[] test = testByteProcessor.create8BitImage();
-		byte[] ref = new byte[width * height];
-		
-		//test elements  are equal
-		//asserteq (ref, test);
-		
-		// BDZ: missing implementation
+		testImageStats( testByteProcessor, "stats[count=58368, mean=0.004368832236842105, min=0.0, max=255.0] 199.5 33.5 128.0 114.0" );
 	}
 
 	@Test
@@ -1911,6 +1861,16 @@ public class ByteProcessorTest {
 		{
 			assertEquals( refFloatArrays[0][index], testByteData[index]&0xff, 0.0);
 		}	
+	}
+	
+	private void testImageStats( ImageProcessor ip, String expected)
+	{
+		ImageStatistics imageStatistics = ImageStatistics.getStatistics( ip, 0xFFFFFFFF, null );
+		imageStatistics.getCentroid( ip );
+		String testResults = imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid;
+		
+		assertEquals( expected, testResults );
+	
 	}
 
 }
