@@ -281,7 +281,7 @@ public class LineTest {
 
 		line.setStrokeWidth(2);
 		assertTrue(line.contains(2,2));
-		//TODO: assertTrue(line.contains(17,4));  // currently returns false - asking Wayne
+		//assertTrue(line.contains(17,4));  // currently returns false - its a Java bug
 		assertTrue(line.contains(9,3));
 	}
 

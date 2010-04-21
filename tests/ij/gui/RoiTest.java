@@ -22,51 +22,6 @@ public class RoiTest {
 
 	Roi roi;
 
-	// helper method
-	private ArrayList<Double> getCoords(Polygon p) {
-		ArrayList<Double> vals = new ArrayList<Double>();
-		
-		for (PathIterator iter = p.getPathIterator(null); !iter.isDone();)
-		{
-			double[] coords = new double[2];
-			iter.currentSegment(coords);
-			vals.add(coords[0]);
-			vals.add(coords[1]);
-			iter.next();
-		}
-		return vals;
-	}
-	
-	// helper method
-	private boolean doublesEqual(Double[] a, Double[] b, double tol) {
-		
-		if (a.length != b.length)
-			return false;
-		
-		for (int i = 0; i < a.length; i++)
-			if (Math.abs(a[i]-b[i]) > tol)
-				return false;
-		
-		return true;
-	}
-
-	// helper method
-	private boolean polysEqual(Polygon a, Polygon b){
-		Double[] da = new Double[]{}, db = new Double[]{};
-		ArrayList<Double> ptsA = getCoords(a);
-		ArrayList<Double> ptsB = getCoords(b);
-		return doublesEqual(ptsA.toArray(da), ptsB.toArray(db), Assert.DOUBLE_TOL);
-	}
-	
-	// helper method
-	private boolean rectsEqual(Rectangle a, Rectangle b) {
-		if (a.x != b.x) return false;
-		if (a.y != b.y) return false;
-		if (a.width != b.width) return false;
-		if (a.height != b.height) return false;
-		return true;
-	}
-
 	@Test
 	public void testConstantsAndVars() {
 		
@@ -348,7 +303,7 @@ public class RoiTest {
 		// note - can't test some subcases
 		// MOVING - can't get an ImageCanvas w/o gui so code never reached
 		// RESIZING - not present in Roi code - dead constant?
-		// MOVING_HANDLE - only settable via protected method
+		// MOVING_HANDLE - can only set via protected method
 	}
 
 	@Test
@@ -452,19 +407,19 @@ public class RoiTest {
 		// other Rois override things like getPolygon() and getConvexHull() so can only test rectangles
 		
 		roi = new Roi(0,0,0,0);
-		assertTrue(polysEqual(roi.getPolygon(),roi.getConvexHull()));
+		assertTrue(RoiHelpers.polysEqual(roi.getPolygon(),roi.getConvexHull()));
 		
 		roi = new Roi(-1,-1,-1,-1);
-		assertTrue(polysEqual(roi.getPolygon(),roi.getConvexHull()));
+		assertTrue(RoiHelpers.polysEqual(roi.getPolygon(),roi.getConvexHull()));
 		
 		roi = new Roi(1,1,1,1);
-		assertTrue(polysEqual(roi.getPolygon(),roi.getConvexHull()));
+		assertTrue(RoiHelpers.polysEqual(roi.getPolygon(),roi.getConvexHull()));
 		
 		roi = new Roi(1,6,13,8);
-		assertTrue(polysEqual(roi.getPolygon(),roi.getConvexHull()));
+		assertTrue(RoiHelpers.polysEqual(roi.getPolygon(),roi.getConvexHull()));
 		
 		roi = new Roi(22,14,88,106);
-		assertTrue(polysEqual(roi.getPolygon(),roi.getConvexHull()));
+		assertTrue(RoiHelpers.polysEqual(roi.getPolygon(),roi.getConvexHull()));
 	}
 
 	@Test
@@ -475,24 +430,24 @@ public class RoiTest {
 		{
 			r = new  Rectangle(0,0,0,0);
 			roi = new Roi(r);
-			assertTrue(rectsEqual(r,roi.getBounds()));
+			assertTrue(RoiHelpers.rectsEqual(r,roi.getBounds()));
 			
 			r = new  Rectangle(-1,-1,-1,-1);
 			roi = new Roi(r);
-			assertTrue(rectsEqual(r,roi.getBounds()));
+			assertTrue(RoiHelpers.rectsEqual(r,roi.getBounds()));
 		}
 		
 		r = new  Rectangle(1,1,1,1);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getBounds()));
 		
 		r = new  Rectangle(1,99,66,13);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getBounds()));
 		
 		r = new  Rectangle(200,2000,10000,9678);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getBounds()));
 	}
 
 	@Test
@@ -503,24 +458,24 @@ public class RoiTest {
 		{
 			r = new  Rectangle(0,0,0,0);
 			roi = new Roi(r);
-			assertTrue(rectsEqual(r,roi.getPolygon().getBounds()));
+			assertTrue(RoiHelpers.rectsEqual(r,roi.getPolygon().getBounds()));
 
 			r = new  Rectangle(-1,-1,-1,-1);
 			roi = new Roi(r);
-			assertTrue(rectsEqual(r,roi.getPolygon().getBounds()));
+			assertTrue(RoiHelpers.rectsEqual(r,roi.getPolygon().getBounds()));
 		}
 		
 		r = new  Rectangle(1,1,1,1);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getPolygon().getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getPolygon().getBounds()));
 		
 		r = new  Rectangle(1,99,66,13);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getPolygon().getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getPolygon().getBounds()));
 		
 		r = new  Rectangle(200,2000,10000,9678);
 		roi = new Roi(r);
-		assertTrue(rectsEqual(r,roi.getPolygon().getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(r,roi.getPolygon().getBounds()));
 	}
 
 	@Test
@@ -558,11 +513,11 @@ public class RoiTest {
 
 		// nudge once - should work
 		roi.nudge(KeyEvent.VK_UP);
-		assertTrue(rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
 
 		// nudge again - should hit edge and do nothing
 		roi.nudge(KeyEvent.VK_UP);
-		assertTrue(rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
 
 		// DOWN arrow
 		
@@ -573,11 +528,11 @@ public class RoiTest {
 
 		// nudge once - should work
 		roi.nudge(KeyEvent.VK_DOWN);
-		assertTrue(rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
 
 		// nudge again - should hit edge and do nothing
 		roi.nudge(KeyEvent.VK_DOWN);
-		assertTrue(rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
 
 		// RIGHT arrow
 		
@@ -588,11 +543,11 @@ public class RoiTest {
 
 		// nudge once - should work
 		roi.nudge(KeyEvent.VK_RIGHT);
-		assertTrue(rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
 
 		// nudge again - should hit edge and do nothing
 		roi.nudge(KeyEvent.VK_RIGHT);
-		assertTrue(rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(1,0,1,1),roi.getBounds()));
 
 		// LEFT arrow
 		
@@ -603,18 +558,18 @@ public class RoiTest {
 
 		// nudge once - should work
 		roi.nudge(KeyEvent.VK_LEFT);
-		assertTrue(rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
 
 		// nudge again - should hit edge and do nothing
 		roi.nudge(KeyEvent.VK_LEFT);
-		assertTrue(rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,1,1,1),roi.getBounds()));
 		
 		// PASTE test after reaching edge
 		// nudge during a paste even beyond edge of bounds - should work
 		ImagePlus ip2 = new ImagePlus("Fwob",new FloatProcessor(1,1,new float[]{3},null));
 		roi.startPaste(ip2);
 		roi.nudge(KeyEvent.VK_LEFT);
-		assertTrue(rectsEqual(new Rectangle(-1,1,1,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(-1,1,1,1),roi.getBounds()));
 		
 		// note : can't test shape != RECTANGLE but it should also allow nudging beyond borders
 	}
@@ -634,11 +589,11 @@ public class RoiTest {
 		
 		// nudge corner once - should work
 		roi.nudgeCorner(KeyEvent.VK_UP);
-		assertTrue(rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
 		
 		// nudge again - should hit boundary and fail
 		roi.nudgeCorner(KeyEvent.VK_UP);
-		assertTrue(rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
 
 		// DOWN arrow
 		
@@ -649,11 +604,11 @@ public class RoiTest {
 		
 		// nudge corner once - should work
 		roi.nudgeCorner(KeyEvent.VK_DOWN);
-		assertTrue(rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
 		
 		// nudge again - should hit boundary and fail
 		roi.nudgeCorner(KeyEvent.VK_DOWN);
-		assertTrue(rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
 
 		// LEFT arrow
 		
@@ -664,11 +619,11 @@ public class RoiTest {
 		
 		// nudge corner once - should work
 		roi.nudgeCorner(KeyEvent.VK_LEFT);
-		assertTrue(rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
 		
 		// nudge again - should hit boundary and fail
 		roi.nudgeCorner(KeyEvent.VK_LEFT);
-		assertTrue(rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,1,2),roi.getBounds()));
 
 		// RIGHT arrow
 		
@@ -679,11 +634,11 @@ public class RoiTest {
 		
 		// nudge corner once - should work
 		roi.nudgeCorner(KeyEvent.VK_RIGHT);
-		assertTrue(rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
 		
 		// nudge again - should hit boundary and fail
 		roi.nudgeCorner(KeyEvent.VK_RIGHT);
-		assertTrue(rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
+		assertTrue(RoiHelpers.rectsEqual(new Rectangle(0,0,2,1),roi.getBounds()));
 	}
 
 	@Test

@@ -66,25 +66,6 @@ public class ArrowTest {
 		// note - untestable. again it needs an ImageCanvas to do anything and also a Graphics object
 	}
 
-	private boolean find(int val, int[] arr) {
-		for (int i = 0; i < arr.length; i++)
-			if (arr[i] == val)
-				return true;
-		return false;
-	}
-	
-	private void validateResult(ImageProcessor proc, int refVal, int[] expectedNonZeroes)
-	{
-		int h = proc.getHeight();
-		int w = proc.getWidth();
-		
-		for (int i = 0; i < h*w; i++)
-			if (find(i,expectedNonZeroes))
-				assertEquals(refVal,proc.get(i));
-			else
-				assertEquals(0,proc.get(i));
-	}
-	
 	@Test
 	public void testDrawPixelsImageProcessor() {
 		ImageProcessor proc;
@@ -97,21 +78,21 @@ public class ArrowTest {
 		proc.setColor(refVal);
 		ar = new Arrow(1,1,3,3);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{0,1,10,11,12,21,22});
+		RoiHelpers.validateResult(proc,refVal,new int[]{0,1,10,11,12,21,22});
 
 		// single headed - horizontal line
 		proc = new ByteProcessor(dims,dims,new byte[dims*dims],null);
 		proc.setColor(refVal);
 		ar = new Arrow(2,2,5,2);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{10,11,20,21,22,23,24,30,31});
+		RoiHelpers.validateResult(proc,refVal,new int[]{10,11,20,21,22,23,24,30,31});
 
 		// single headed - vertical line
 		proc = new ByteProcessor(dims,dims,new byte[dims*dims],null);
 		proc.setColor(refVal);
 		ar = new Arrow(2,2,2,5);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42});
+		RoiHelpers.validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42});
 		
 		// double headed - diagonal line
 		proc = new ByteProcessor(dims,dims,new byte[dims*dims],null);
@@ -119,7 +100,7 @@ public class ArrowTest {
 		ar = new Arrow(1,1,3,3);
 		ar.setDoubleHeaded(true);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{0,1,10,11,12,21,22,23,32,33,34,35,43,44,45,46,47,53,54,55,56,57,58,59,64,65,66,
+		RoiHelpers.validateResult(proc,refVal,new int[]{0,1,10,11,12,21,22,23,32,33,34,35,43,44,45,46,47,53,54,55,56,57,58,59,64,65,66,
 												67,68,69,74,75,76,77,78,79,85,86,87,88,89,95,96,97,98,99});
 
 		// double headed - horizontal line
@@ -128,7 +109,7 @@ public class ArrowTest {
 		ar = new Arrow(2,2,5,2);
 		ar.setDoubleHeaded(true);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{8,9,10,11,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,35,36,37,38,39,48,49});
+		RoiHelpers.validateResult(proc,refVal,new int[]{8,9,10,11,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,35,36,37,38,39,48,49});
 
 		// double headed - vertical line
 		proc = new ByteProcessor(dims,dims,new byte[dims*dims],null);
@@ -136,14 +117,7 @@ public class ArrowTest {
 		ar = new Arrow(2,2,2,5);
 		ar.setDoubleHeaded(true);
 		ar.drawPixels(proc);
-		validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42,52,61,62,63,71,72,73,81,82,83,90,91,92,93,94});
-		
-/*  helper: data dumper
-		for (int i = 0; i < dims*dims; i++)
-			if (proc.get(i) != 0)
-				System.out.println("("+i+") == "+proc.get(i));
-		
- */
+		RoiHelpers.validateResult(proc,refVal,new int[]{1,2,3,11,12,13,21,22,23,32,42,52,61,62,63,71,72,73,81,82,83,90,91,92,93,94});		
 	}
 
 	@Test
