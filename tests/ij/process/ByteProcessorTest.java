@@ -757,6 +757,7 @@ public class ByteProcessorTest {
         //test empty image
         assertEquals( testByteProcessor.getWidth(), width);
         assertEquals( testByteProcessor.getHeight(), height);
+    	testImageStats( testByteProcessor, "stats[count=58368, mean=0.0, min=0.0, max=0.0] 128.0 114.0 128.0 114.0");
 	}
 
 	@Test
