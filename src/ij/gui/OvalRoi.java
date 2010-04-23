@@ -273,21 +273,22 @@ public class OvalRoi extends Roi {
 		return new Polygon(wand.xpoints, wand.ypoints, wand.npoints);
 	}		
 
-	/** Tests if the specified point is inside the boundary of this OvalRoi.
-	@author Michael Schmid
-	*/
-	public boolean contains(int x, int y) {
-		// equation for an ellipse is x^2/a^2 + y^2/b^2 = 1
-		if (!super.contains(x, y))
-			return false;
-		else {
-			double twoDx = 2*x - (2*this.x+width-1);
-			double twoDy = 2*y - (2*this.y+height-1);
-			double twoRx = width;
-			double twoRy = height;
-			return (twoDx*twoDx/(twoRx*twoRx)
-				+ twoDy*twoDy/(twoRy*twoRy)) < 1.0;
-		}
+    /** Tests if the specified point is inside the boundary of this OvalRoi.
+	    * @author Barry DeZonia
+	    */
+	public boolean contains(int ox, int oy) {
+		// BDZ - needed to comment out. Java has a bug and gives incorrect results for some points on the boundary of Rectangles
+		//if (!super.contains(ox, oy))
+		//	return false;
+		//else {
+			double a = width/2.0;
+			double b = height/2.0;
+			double cx = x + a;
+			double cy = y + b;
+			double dx = ox - cx;
+			double dy = oy - cy;
+			return ((dx*dx)/(a*a) + (dy*dy)/(b*b)) <= 1.0;
+		//}
 	}
 		
 	/** Returns a handle number if the specified screen coordinates are  
