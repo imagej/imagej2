@@ -1281,7 +1281,7 @@ public class ImageProcessorTest
 	public void testSetFont() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
+		Font font = new Font("SansSerif", Font.BOLD, 22);
 		testColorProcessor.setFont(font);
 		String s = "On Target";
 
@@ -1293,7 +1293,7 @@ public class ImageProcessorTest
 	public void testSetAntialiasedText() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
+		Font font = new Font("SansSerif", Font.BOLD, 22);
 		testColorProcessor.setAntialiasedText( true );
 		testColorProcessor.setFont(font);
 		String s = "On Target";
@@ -1306,7 +1306,7 @@ public class ImageProcessorTest
 	public void testGetStringWidth() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
+		Font font = new Font("SansSerif", Font.BOLD, 22);
 		testColorProcessor.setAntialiasedText( true );
 		testColorProcessor.setFont(font);
 		String s = "On Target";
@@ -1318,7 +1318,7 @@ public class ImageProcessorTest
 	public void testGetFont() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
+		Font font = new Font("SansSerif", Font.BOLD, 22);
 		testColorProcessor.setFont(font);
 		assertEquals( font, testColorProcessor.getFont() );
 	}
@@ -1327,7 +1327,7 @@ public class ImageProcessorTest
 	public void testGetFontMetrics() 
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
+		Font font = new Font("SansSerif", Font.BOLD, 22);
 		testColorProcessor.setFont(font);
 		FontMetrics refFM = testColorProcessor.getFontMetrics();
 		assertEquals( "sun.font.FontDesignMetrics[font=java.awt.Font[family=SansSerif,name=SansSerif,style=bold,size=22]ascent=22, descent=5, height=27]", refFM.toString() );
