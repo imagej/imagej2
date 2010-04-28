@@ -36,6 +36,7 @@ public class RoiHelpers {
 		int h = proc.getHeight();
 		int w = proc.getWidth();
 		
+		System.out.println(""+w+"x"+h+" pixels ----------------");
 		for (int i = 0; i < w*h; i++)
 			if (proc.get(i) != 0)
 				System.out.println("("+i+") == "+proc.get(i));
