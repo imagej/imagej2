@@ -1002,6 +1002,14 @@ public class PolygonRoi extends Roi {
 		int ybase = r.y;
 		int[] xx = new int[n];
 		int[] yy = new int[n];
+		// BDZ - Wayne added this (n<3) subcase to fix a bug I reported - added for 1.44a
+		if (n<3) {
+			for (int i=0; i<n; i++) {
+				xx[i] = xbase+xCoordinates[i];
+				yy[i] = ybase+yCoordinates[i];
+            }
+            return new Polygon(xx, yy, n);
+		}
 		int n2 = 0;
 		int smallestY = Integer.MAX_VALUE;
 		int x, y;
