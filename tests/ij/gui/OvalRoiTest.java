@@ -177,7 +177,9 @@ public class OvalRoiTest {
 		// check all four tangent points
 		assertTrue(o.contains(0,2));
 		assertTrue(o.contains(2,0));
+		//TODO - fails with 144.a3 code:
 		assertTrue(o.contains(2,4));
+		//TODO - fails with 144.a3 code:
 		assertTrue(o.contains(4,2));
 		
 		// check some interior points
@@ -185,6 +187,7 @@ public class OvalRoiTest {
 		assertTrue(o.contains(2,3));
 		assertTrue(o.contains(3,2));
 		assertTrue(o.contains(1,1));
+		//TODO - fails with 144.a3 code:
 		assertTrue(o.contains(3,3));
 
 		// elliptical shape with left corner of region not at 0,0
@@ -200,7 +203,9 @@ public class OvalRoiTest {
 		// check all four tangent points
 		assertTrue(o.contains(1,6));
 		assertTrue(o.contains(4,1));
+		//TODO - fails with 144.a3 code:
 		assertTrue(o.contains(4,11));
+		//TODO - fails with 144.a3 code:
 		assertTrue(o.contains(7,6));
 		
 		// check some interior points
