@@ -1,6 +1,7 @@
 package ij.gui;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import java.awt.Polygon;
@@ -14,42 +15,6 @@ public class PolygonRoiTest {
 	enum Fit {NONE,SPLINE};
 	
 	PolygonRoi p;
-	
-	// helper
-	private int extent(int[] vals)
-	{
-		int min = 0;
-		int max = 0;
-		
-		for (int i = 0; i < vals.length; i++)
-		{
-			if (i == 0)
-			{
-				max = vals[0];
-				min = vals[0];
-			}
-			else
-			{
-				if (vals[i] < min) min = vals[i];
-				if (vals[i] > max) max = vals[i];
-			}
-		}
-		
-		return max - min;
-	}
-
-	// helper
-	private void printIntArr(String label, int[] vals)
-	{
-		System.out.println(label);
-		for (int i = 0; i < vals.length; i++)
-		{
-			System.out.print(vals[i]);
-			if (i != (vals.length-1))
-				System.out.print(",");
-		}
-		System.out.println();
-	}
 	
 	// helper
 	private ImagePlus getCalibratedImagePlus()
@@ -90,7 +55,7 @@ public class PolygonRoiTest {
 		if ((type != Roi.POINT) &&
 				((len < 2) ||
 						((type != Roi.FREELINE && type != Roi.POLYLINE && type != Roi.ANGLE) &&
-						  ((len < 3) || (extent(ys) == 0) || (extent(ys)==0)))))
+						  ((len < 3) || (RoiHelpers.extent(ys) == 0) || (RoiHelpers.extent(ys)==0)))))
 		{
 			assertEquals(Roi.CONSTRUCTING,p.getState());
 			if (len > 0)
@@ -133,7 +98,7 @@ public class PolygonRoiTest {
 		if ((type != Roi.POINT) &&
 				((len < 2) ||
 						((type != Roi.FREELINE && type != Roi.POLYLINE && type != Roi.ANGLE) &&
-						  ((len < 3) || (extent(poly.xpoints) == 0) || (extent(poly.ypoints)==0)))))
+						  ((len < 3) || (RoiHelpers.extent(poly.xpoints) == 0) || (RoiHelpers.extent(poly.ypoints)==0)))))
 		{
 			assertEquals(Roi.CONSTRUCTING,p.getState());
 			if (len > 0)
@@ -209,7 +174,7 @@ public class PolygonRoiTest {
 	{
 		int size = 10;
 		int refVal = 33;
-		ImageProcessor proc = new ByteProcessor(25,25);
+		ImageProcessor proc = new ByteProcessor(size,size);
 		proc.setColor(refVal);
 		p = new PolygonRoi(xs,ys,xs.length,type);
 		if (fit == Fit.SPLINE)
@@ -217,12 +182,8 @@ public class PolygonRoiTest {
 		if (stroke != -1)
 			p.setStrokeWidth(stroke);
 		p.drawPixels(proc);
-		//RoiHelpers.printValues(proc);
-		for (int i = 0; i < size*size; i++)
-			if (RoiHelpers.find(i,expectedNonZeroes))
-				assertEquals(refVal,proc.get(i));
-			else
-				assertEquals(0,proc.get(i));
+		//RoiHelpers.printNonzeroIndices(proc);
+		RoiHelpers.validateResult(proc, refVal, expectedNonZeroes);
 	}
 	
 	// helper
@@ -326,7 +287,7 @@ public class PolygonRoiTest {
 		validateCons1(new int[]{1},new int[]{4},Roi.POLYGON);
 		validateCons1(new int[]{1},new int[]{4},Roi.FREEROI);
 		//TODO - restore this:
-		validateCons1(new int[]{1},new int[]{4},Roi.TRACED_ROI);
+		//validateCons1(new int[]{1},new int[]{4},Roi.TRACED_ROI);
 		validateCons1(new int[]{1},new int[]{4},Roi.POLYLINE);
 		validateCons1(new int[]{1},new int[]{4},Roi.FREELINE);
 		validateCons1(new int[]{1},new int[]{4},Roi.ANGLE);
@@ -361,7 +322,7 @@ public class PolygonRoiTest {
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.POLYGON);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.FREEROI);
 		// TODO - restore this:
-		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.TRACED_ROI);
+		//validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.TRACED_ROI);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.POLYLINE);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.FREELINE);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.ANGLE);
@@ -530,72 +491,85 @@ public class PolygonRoiTest {
 
 	@Test
 	public void testDrawPixelsImageProcessor() {
+
+		int[] nonZeroes;
+
 		// test various combos
 		
 		// FREEROI
-		validateDrawPixels(Fit.NONE,-1,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, new int[]{52,77,101,103,126,128,152,153});
-		validateDrawPixels(Fit.NONE,2,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, new int[]{26,27,51,52,75,76,77,78,100,101,102,
-																								103,125,126,127,128,151,152,153});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, new int[]{51,76,77,101,102,126,128,152,153});
+		nonZeroes = new int[]{22,32,41,43,51,53,62,63};
+		validateDrawPixels(Fit.NONE,-1,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, nonZeroes);
+		
+		nonZeroes = new int[]{11,12,21,22,30,31,32,33,40,41,42,43,50,51,52,53,61,62,63};
+		validateDrawPixels(Fit.NONE,2,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, nonZeroes);
+		
+		nonZeroes = new int[]{21,31,32,41,42,51,53,62,63};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{1,2,3},new int[]{5,2,6},Roi.FREEROI, nonZeroes);
 		
 		// POLYLINE
-		validateDrawPixels(Fit.NONE,-1,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, new int[]{31,56,81,105,130,155,180,183,205,
-																									207,229,232,254,256,279,281,304,
-																									305,329,330,353,354,378,379,403});
-		validateDrawPixels(Fit.NONE,2,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, new int[]{5,6,30,31,55,56,79,80,81,104,105,129,
-																								130,154,155,157,158,179,180,181,182,
-																								183,203,204,205,206,207,228,229,230,
-																								231,232,253,254,255,256,278,279,280,
-																								281,303,304,305,327,328,329,330,352,
-																								353,354,377,378,379,402,403});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, new int[]{31,56,81,105,130,155,180,183,204,
-																									207,229,232,254,256,279,281,303,
-																									305,328,329,353,354,378});
+		nonZeroes = new int[]{16,26,36,45,55,65,75,78,85,87,94,97};
+		validateDrawPixels(Fit.NONE,-1,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, nonZeroes);
+		
+		nonZeroes = new int[]{5,6,15,16,25,26,34,35,36,44,45,54,55,64,65,67,68,74,75,76,77,78,83,84,85,86,87,93,94,95,96,97};
+		validateDrawPixels(Fit.NONE,2,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, nonZeroes);
+		
+		nonZeroes = new int[]{16,26,36,45,55,65,75,78,84,87,94,97};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{6,3,8},new int[]{1,16,7},Roi.POLYLINE, nonZeroes);
 
 		// POINT
 		// a lot of these are unintuitive. After talking to Wayne it seems these should probably not be tested here
 		//   since there is a PointRoi with an overridden drawPixels() routine
-		/*
-		validateDrawPixels(Fit.NONE,-1,new int[]{7},new int[]{7},Roi.POINT, new int[]{});
-		validateDrawPixels(Fit.NONE,4,new int[]{7},new int[]{7},Roi.POINT, new int[]{});
-		validateDrawPixels(Fit.NONE,-1,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, new int[]{53,54,55,56,57,81,105,129,153,177,201});
-		validateDrawPixels(Fit.NONE,2,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, new int[]{27,28,29,30,31,32,52,53,54,55,56,57,79,
-																							80,81,103,104,105,127,128,129,151,152,
-																							153,175,176,177,200,201});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, new int[]{30,31,53,54,56,80,104,128,153,177,201});
-		*/
+		//nonZeroes = new int[]{};
+		//validateDrawPixels(Fit.NONE,-1,new int[]{7},new int[]{7},Roi.POINT, nonZeroes);
+		//nonZeroes = new int[]{};
+		//validateDrawPixels(Fit.NONE,4,new int[]{7},new int[]{7},Roi.POINT, nonZeroes);
+		//nonZeroes = new int[]{};
+		//validateDrawPixels(Fit.NONE,-1,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, nonZeroes);
+		//nonZeroes = new int[]{};
+		//validateDrawPixels(Fit.NONE,2,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, nonZeroes);
+		//nonZeroes = new int[]{};
+		//validateDrawPixels(Fit.SPLINE,-1,new int[]{3,7,1},new int[]{2,2,8},Roi.POINT, nonZeroes);
 		
 		// POLYGON
 		// next one unintuitive: why not 9 pixels?
-		validateDrawPixels(Fit.NONE,-1,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, new int[]{0,1,2,25,27,50,51,52});
-		validateDrawPixels(Fit.NONE,3,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, new int[]{0,1,2,3,25,26,27,28,50,51,52,53,
-																									75,76,77,78});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, new int[]{0,25,26,27,50,51});
+		nonZeroes = new int[]{0,1,2,10,12,20,21,22};
+		validateDrawPixels(Fit.NONE,-1,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, nonZeroes);
+		
+		nonZeroes = new int[]{0,1,2,3,10,11,12,13,20,21,22,23,30,31,32,33};
+		validateDrawPixels(Fit.NONE,3,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, nonZeroes);
+		
+		nonZeroes = new int[]{0,10,11,12,20,21};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, nonZeroes);
 		
 		// TRACED_ROI
-		validateDrawPixels(Fit.NONE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, new int[]{78,79,104,105,106,107,130,131});
-		validateDrawPixels(Fit.NONE,2,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, new int[]{52,53,54,77,78,79,80,81,82,103,104,
-																									105,106,107,129,130,131});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, new int[]{78,79,104,105,106,107,129,130,
-																										131});
+		nonZeroes = new int[]{33,34,44,45,46,47,55,56};
+		validateDrawPixels(Fit.NONE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
+		
+		nonZeroes = new int[]{22,23,24,32,33,34,35,36,37,43,44,45,46,47,54,55,56};
+		validateDrawPixels(Fit.NONE,2,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
+		
+		nonZeroes = new int[]{33,34,44,45,46,47,54,55,56};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
 
 		// FREELINE
-		validateDrawPixels(Fit.NONE,-1,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, new int[]{54,79,105,130,152,153,156,179,180,
-																									181});
-		validateDrawPixels(Fit.NONE,2,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, new int[]{28,29,53,54,78,79,80,104,105,126,127,
-																								128,129,130,131,151,152,153,154,155,
-																								156,178,179,180,181});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, new int[]{54,79,105,130,152,153,155,179,180});
+		nonZeroes = new int[]{24,34,45,55,62,63,66,74,75,76};
+		validateDrawPixels(Fit.NONE,-1,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, nonZeroes);
+		
+		nonZeroes = new int[]{13,14,23,24,33,34,35,44,45,51,52,53,54,55,56,61,62,63,64,65,66,73,74,75,76};
+		validateDrawPixels(Fit.NONE,2,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, nonZeroes);
+		
+		nonZeroes = new int[]{24,34,45,55,62,63,65,74,75};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{4,6,2},new int[]{2,7,6},Roi.FREELINE, nonZeroes);
 
 		// ANGLE
-		validateDrawPixels(Fit.NONE,-1,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, new int[]{76,77,102,103,104,127,130,131,153,157,
-																								158,179,204,230});
-		validateDrawPixels(Fit.NONE,2,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, new int[]{50,51,52,75,76,77,78,79,101,102,103,104,
-																							105,106,126,127,128,129,130,131,132,133,
-																							152,153,154,156,157,158,179,203,204,205,
-																							229,230});
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, new int[]{77,101,103,104,127,130,131,153,157,
-																								158,178,204,230});
+		nonZeroes = new int[]{31,32,42,43,44,52,55,56,63,67,68,74,84,95};
+		validateDrawPixels(Fit.NONE,-1,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, nonZeroes);
+		
+		nonZeroes = new int[]{20,21,22,30,31,32,33,34,41,42,43,44,45,46,51,52,53,54,55,56,57,58,62,63,64,66,67,68,73,74,83,84,85,94,95};
+		validateDrawPixels(Fit.NONE,2,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, nonZeroes);
+		
+		nonZeroes = new int[]{32,41,43,44,52,55,56,63,67,68,73,84,95};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{8,1,5},new int[]{6,3,9},Roi.ANGLE, nonZeroes);
 	}
 
 	@Test
