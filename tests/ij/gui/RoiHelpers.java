@@ -42,7 +42,54 @@ public class RoiHelpers {
 				System.out.println("("+i+") == "+proc.get(i));
 	}
 	
-	public static boolean doublesEqual(Double[] a, Double[] b, double tol) {
+	public static void printNonzeroIndices(ImageProcessor proc)
+	{
+		int h = proc.getHeight();
+		int w = proc.getWidth();
+		
+		for (int i = 0; i < w*h; i++)
+			if (proc.get(i) != 0)
+				System.out.print(""+i+",");
+		System.out.println();
+	}
+	
+	// helper
+	public static int extent(int[] vals)
+	{
+		int min = 0;
+		int max = 0;
+		
+		for (int i = 0; i < vals.length; i++)
+		{
+			if (i == 0)
+			{
+				max = vals[0];
+				min = vals[0];
+			}
+			else
+			{
+				if (vals[i] < min) min = vals[i];
+				if (vals[i] > max) max = vals[i];
+			}
+		}
+		
+		return max - min;
+	}
+
+	// helper
+	public static void printIntArr(String label, int[] vals)
+	{
+		System.out.println(label);
+		for (int i = 0; i < vals.length; i++)
+		{
+			System.out.print(vals[i]);
+			if (i != (vals.length-1))
+				System.out.print(",");
+		}
+		System.out.println();
+	}
+	
+	public static boolean doubleArraysEqual(Double[] a, Double[] b, double tol) {
 		
 		if (a.length != b.length)
 			return false;
@@ -72,7 +119,7 @@ public class RoiHelpers {
 		Double[] da = new Double[]{}, db = new Double[]{};
 		ArrayList<Double> ptsA = getCoords(a);
 		ArrayList<Double> ptsB = getCoords(b);
-		return doublesEqual(ptsA.toArray(da), ptsB.toArray(db), Assert.DOUBLE_TOL);
+		return doubleArraysEqual(ptsA.toArray(da), ptsB.toArray(db), Assert.DOUBLE_TOL);
 	}
 	
 	public static boolean rectsEqual(Rectangle a, Rectangle b) {
