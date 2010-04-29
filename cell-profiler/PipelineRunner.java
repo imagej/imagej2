@@ -1,5 +1,5 @@
 //
-// Cell_Profiler.java
+// PipelineRunner.java
 //
 
 import ij.ImagePlus;
@@ -12,10 +12,10 @@ import java.io.File;
 import java.util.HashMap;
 
 /** A plugin for accessing CellProfiler pipelines from within ImageJ. */
-public class CellProfilerPipeline implements PlugIn {
-	
+public class PipelineRunner implements PlugIn {
+
 	// -- Constants --
-	
+
 	private static final String NO_IMAGE = "<no open images>";
 
 	// -- PlugIn methods --
@@ -23,17 +23,17 @@ public class CellProfilerPipeline implements PlugIn {
 	public void run(String arg) {
 		String pipelinePath = choosePipeline();
 
-		PipelineBridge bridge = new PipelineBridge(pipelinePath);
-		ImagePlus[] inputs = chooseImages(bridge);
+		Pipeline pipeline = new Pipeline(pipelinePath);
+		ImagePlus[] inputs = chooseImages(pipeline);
 		if (inputs == null) return; // canceled
 
-		bridge.runPipeline(inputs);
+		pipeline.runPipeline(inputs);
 
-		ImagePlus[] outputs = bridge.getOutputImages();
+		ImagePlus[] outputs = pipeline.getOutputImages();
 		displayResults(outputs);
 	}
 
-	// -- CellProfilerPipeline methods --
+	// -- PipelineRunner methods --
 
 	public String choosePipeline() {
 		OpenDialog od = new OpenDialog("Pipeline to run", null);
@@ -43,15 +43,15 @@ public class CellProfilerPipeline implements PlugIn {
 		return new File(dir, name).getAbsolutePath();
 	}
 
-	public ImagePlus[] chooseImages(PipelineBridge bridge) {
-		String[] inputNames = bridge.getImageNames();
-		
+	public ImagePlus[] chooseImages(Pipeline pipeline) {
+		String[] inputNames = pipeline.getImageNames();
+
 		HashMap<String, ImagePlus> imageMap = makeImageMap();
-    String[] imageNames = imageMap.keySet().toArray(new String[0]);
- 
-    // NB: To allow null images to be passed to CellProfiler in general,
-    //     we could remove the conditional here and instead always add
-    //     NO_IMAGE to the image map.
+		String[] imageNames = imageMap.keySet().toArray(new String[0]);
+
+		// NB: To allow null images to be passed to CellProfiler in general,
+		//     we could remove the conditional here and instead always add
+		//     NO_IMAGE to the image map.
     if (imageNames.length == 0) imageNames = new String[] {NO_IMAGE};
 
 		GenericDialog gd = new GenericDialog("Select images");
@@ -61,7 +61,7 @@ public class CellProfilerPipeline implements PlugIn {
 		}
 		gd.showDialog();
 		if (gd.wasCanceled()) return null;
-		
+
 		ImagePlus[] images = new ImagePlus[imageNames.length];
 		for (int i=0; i<images.length; i++) {
 			String imageName = gd.getNextChoice();
@@ -71,7 +71,7 @@ public class CellProfilerPipeline implements PlugIn {
 		}
 		return images;
 	}
-	
+
 	public void displayResults(ImagePlus[] outputs) {
 		for (ImagePlus image : outputs) image.show();
 	}
@@ -91,5 +91,5 @@ public class CellProfilerPipeline implements PlugIn {
 		}
 		return imageMap;
 	}
-	
+
 }

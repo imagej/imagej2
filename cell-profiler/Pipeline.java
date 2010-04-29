@@ -1,25 +1,38 @@
 //
-// CellProfilerPipeline.java
+// Pipeline.java
 //
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 
 /** A helper class for working with CellProfiler pipelines. */
-public class PipelineBridge {
-	
+public class Pipeline {
+
 	// -- Fields --
 
-	@SuppressWarnings("unused")
+	/** Path to the pipeline on disk. */
 	private String path;
-	
+
+	/** Link with CellProfiler in Python land. */
+	private PythonLink link;
+
+	/** Results from the pipeline execution. */
 	private ImagePlus[] results;
 
 	// -- Constructor --
 
-	public PipelineBridge(String pipelinePath) {
+	public Pipeline(String pipelinePath) {
 		path = pipelinePath;
+		link = new PythonLink();
+		initializePipeline(path);
 	}
+
+/*
+import cellprofiler.pipeline as cpp
+pipeline = cpp.Pipeline()
+data = '/Users/curtis/code/Other/CellProfiler/ExampleImages/ExampleSBSImages/ExampleSBS.cp'
+pipeline.load(data)
+*/
 
 	// -- CellProfilerPipeline methods --
 
@@ -43,9 +56,15 @@ public class PipelineBridge {
 		ImagePlus imp = new ImagePlus("result", proc);
 		results = new ImagePlus[] {imp};
 	}
-	
+
 	public ImagePlus[] getOutputImages() {
 		return results;
 	}
-	
+
+  // -- Helper methods --
+
+  private void initializePipeline(String path) {
+    // TODO
+  }
+
 }
