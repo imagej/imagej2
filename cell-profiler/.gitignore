@@ -1,0 +1,6 @@
+*.class
+*.dll
+*.h
+*.jnilib
+*.o
+*.so
