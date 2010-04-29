@@ -210,6 +210,15 @@ public class PolygonRoiTest {
 				assertEquals(0,proc.get(i));
 	}
 
+	private void validateExitNoChange(int type)
+	{
+		PolygonRoi before = new PolygonRoi(new int[]{1,4,6,3},new int[]{8,3,6,1},4,type);
+		PolygonRoi after = (PolygonRoi)before.clone();
+		assertEquals(before,after);
+		after.exitConstructingMode();
+		assertEquals(before,after);
+	}
+	
 	// helper
 	private void validateFitSplineInt(int[] xs, int[]ys, int numSplinePts, int[] spXs, int[] spYs)
 	{
@@ -653,15 +662,6 @@ public class PolygonRoiTest {
 		validateGetMask(Fit.SPLINE, new int[]{1,4,7,3}, new int[]{1,2,4,2}, new int[]{1,9});
 	}
 
-	private void validateExitNoChange(int type)
-	{
-		PolygonRoi before = new PolygonRoi(new int[]{1,4,6,3},new int[]{8,3,6,1},4,type);
-		PolygonRoi after = (PolygonRoi)before.clone();
-		assertEquals(before,after);
-		after.exitConstructingMode();
-		assertEquals(before,after);
-	}
-	
 	@Test
 	public void testExitConstructingMode() {
 		// things that shouldn't change
