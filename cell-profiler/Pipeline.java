@@ -2,19 +2,48 @@
 // Pipeline.java
 //
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 
 /** A helper class for working with CellProfiler pipelines. */
 public class Pipeline {
 
-	// -- Fields --
+	// -- Constants --
 
-	/** Path to the pipeline on disk. */
-	private String path;
+	private static final String INIT_SCRIPT =
+		"print 'Running script...'\n" +//TEMP
+		"import traceback\n" +
+		"try:\n" +
+		"  import cellprofiler.utilities.jutil as jutil\n" +
+		"  import cellprofiler.pipeline as cpp\n" +
+		"  pipeline = cpp.Pipeline()\n" +
+		"  print jutil.to_string(path)\n" +//TEMP
+		"  print 'Loading pipeline: ' + jutil.to_string(path)\n" +//TEMP
+// TODO - figure out why pipeline.load crashes -- probably GUI-related
+//		"  pipeline.load(jutil.to_string(path))\n" +
+		"  print 'Pipeline loaded.'\n" +//TEMP
+//		"  ext_image_names = pipeline.find_external_input_images()\n" +
+		"  ext_image_names = ['original']\n" +//TEMP
+		"  dict = jutil.get_dictionary_wrapper(vars)\n" +
+		"  for i in range(len(ext_image_names)):\n" +
+		"    dict.put('ext_image_name' + str(i), ext_image_names[i])\n" +
+		"  print 'Script finished.'\n" +//TEMP
+		"except:\n" +
+		"  print 'so sorry, caught exception'\n" +
+		"  traceback.print_exc()\n";
+
+	// -- Fields --
 
 	/** Link with CellProfiler in Python land. */
 	private PythonLink link;
+
+	/** Variables accessible from the Python universe. */
+	private Map<String, Object> vars;
 
 	/** Results from the pipeline execution. */
 	private ImagePlus[] results;
@@ -22,49 +51,35 @@ public class Pipeline {
 	// -- Constructor --
 
 	public Pipeline(String pipelinePath) {
-		path = pipelinePath;
 		link = new PythonLink();
-		initializePipeline(path);
+		link.put("path", pipelinePath);
+		vars = new HashMap<String, Object>();
+		link.put("vars", vars);
+		link.runString(INIT_SCRIPT);
 	}
 
-/*
-import cellprofiler.pipeline as cpp
-pipeline = cpp.Pipeline()
-data = '/Users/curtis/code/Other/CellProfiler/ExampleImages/ExampleSBSImages/ExampleSBS.cp'
-pipeline.load(data)
-*/
-
-	// -- CellProfilerPipeline methods --
+	// -- Pipeline methods --
 
 	public String[] getImageNames() {
 		//TEMP - give some dummy input image names
-		return new String[] {"input", "kernel", "background"};
+		List<String> nameList = new ArrayList<String>();
+		for (int i=0;; i++) {
+			Object o = vars.get("ext_image_name" + i);
+			if (o == null || !(o instanceof String)) break;
+			nameList.add((String) o);
+		}
+		return nameList.toArray(new String[0]);
 	}
 
 	public void runPipeline(ImagePlus[] images) {
 		//TEMP - create a dummy output image
-		int width = 512, height = 512;
-		float[][] pix = new float[width][height];
-		for (int row=0; row<height; row++) {
-			float rowNorm = (float) row / height;
-			for (int col=0; col<width; col++) {
-				float colNorm = (float) col / height;
-				pix[row][col] = rowNorm * colNorm;
-			}
-		}
-		FloatProcessor proc = new FloatProcessor(pix);
-		ImagePlus imp = new ImagePlus("result", proc);
+		ImagePlus imp = PipelineRunner.makeTestImage("result", 512, 512);
 		results = new ImagePlus[] {imp};
+		//TODO - pipeline.find_external_output_images()
 	}
 
 	public ImagePlus[] getOutputImages() {
 		return results;
 	}
-
-  // -- Helper methods --
-
-  private void initializePipeline(String path) {
-    // TODO
-  }
 
 }

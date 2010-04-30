@@ -2,11 +2,13 @@
 // PipelineRunner.java
 //
 
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
+import ij.process.FloatProcessor;
 
 import java.io.File;
 import java.util.HashMap;
@@ -90,6 +92,29 @@ public class PipelineRunner implements PlugIn {
 			}
 		}
 		return imageMap;
+	}
+
+	// -- Static utility methods --
+
+	public static ImagePlus makeTestImage(String title, int width, int height) {
+    float[][] pix = new float[width][height];
+    for (int row=0; row<height; row++) {
+      float rowNorm = (float) row / height;
+      for (int col=0; col<width; col++) {
+        float colNorm = (float) col / height;
+        pix[row][col] = rowNorm * colNorm;
+      }
+    }
+    FloatProcessor proc = new FloatProcessor(pix);
+    return new ImagePlus(title, proc);
+	}
+
+	// -- Main method --
+
+	public static void main(String[] args) {
+		new ImageJ();
+		makeTestImage("gradient", 512, 512).show();
+		new PipelineRunner().run("");
 	}
 
 }

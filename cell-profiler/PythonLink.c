@@ -61,7 +61,6 @@ JNIEXPORT void JNICALL Java_PythonLink_runString
   }
   //ltoa((long)env, memory_addr, 10);
   sprintf(memory_addr, "%p", env);
-  printf("%s\n", memory_addr);//TEMP
   py_args = Py_BuildValue("(s)", memory_addr);
   if (py_args == NULL) {
     exception = "Failed to build arguments for attach_ext_env";
@@ -86,7 +85,6 @@ JNIEXPORT void JNICALL Java_PythonLink_runString
     }
   //ltoa((long)locals, memory_addr, 10);
   sprintf(memory_addr, "%p", locals);
-  printf("%s\n", memory_addr);//TEMP
   py_args = Py_BuildValue("(s)", memory_addr);
   py_locals = PyEval_CallObject(py_make_run_dictionary, py_args);
   Py_DECREF(py_args);

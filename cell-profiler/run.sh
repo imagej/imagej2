@@ -1,2 +1,3 @@
 #!/bin/bash
-java PyJava $*
+#java -cp . CellProfilerTest $*
+java -cp .:../ij.jar PipelineRunner $*
