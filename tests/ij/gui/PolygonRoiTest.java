@@ -812,13 +812,17 @@ public class PolygonRoiTest {
 	}
 
 	@Test
-	public void testGetXCoordinates() {
-		// tested elsewhere
-	}
-
-	@Test
-	public void testGetYCoordinates() {
-		// tested elsewhere
+	public void testGetXandYCoordinates() {
+		
+		// regular case
+		p = new PolygonRoi(new int[]{1,2,3},new int[]{7,5,1},3,Roi.POLYGON);
+		assertArrayEquals(new int[]{0,1,2},p.getXCoordinates());
+		assertArrayEquals(new int[]{6,4,0},p.getYCoordinates());
+		
+		// spline case
+		p.fitSpline(5);
+		assertArrayEquals(new int[]{0,1,2,2,0},p.getXCoordinates());
+		assertArrayEquals(new int[]{5,4,0,0,5},p.getYCoordinates());
 	}
 
 	@Test
