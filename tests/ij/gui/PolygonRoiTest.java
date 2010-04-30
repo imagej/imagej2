@@ -30,21 +30,26 @@ public class PolygonRoiTest {
 	// helper
 	private void validateCons1(int[] xs, int[] ys, int type)
 	{
+		// TRACED_ROIs can overwrite input points. Make a copy for our reference.
+		
+		int[] xsIn = xs.clone();
+		int[] ysIn = ys.clone();
+		
 		int len = xs.length;
 		
-		p = new PolygonRoi(xs,ys,len,type);
+		p = new PolygonRoi(xsIn,ysIn,len,type);
 		
 		assertNotNull(p);
 		assertEquals(type,p.getType());
 		assertEquals(len,p.nPoints);
 		
 		if (type == Roi.TRACED_ROI) {
-			assertSame(xs,p.xp);
-			assertSame(ys,p.yp);
+			assertSame(xsIn,p.xp);
+			assertSame(ysIn,p.yp);
 		}
 		else {
-			assertNotSame(xs,p.xp);
-			assertNotSame(ys,p.yp);
+			assertNotSame(xsIn,p.xp);
+			assertNotSame(ysIn,p.yp);
 		}
 		
 		for (int i = 0; i < len; i++) {
@@ -73,6 +78,11 @@ public class PolygonRoiTest {
 	// helper: same as previous method
 	private void validateCons2(Polygon poly, int type)
 	{
+		// TRACED_ROIs can overwrite input points. Make a copy for our reference.
+		
+		int[] xsIn = poly.xpoints.clone();
+		int[] ysIn = poly.ypoints.clone();
+		
 		int len = poly.npoints;
 		
 		p = new PolygonRoi(poly,type);
@@ -91,8 +101,8 @@ public class PolygonRoiTest {
 		}
 		
 		for (int i = 0; i < len; i++) {
-			assertEquals(poly.xpoints[i],p.x+p.xp[i]);
-			assertEquals(poly.ypoints[i],p.y+p.yp[i]);
+			assertEquals(xsIn[i],p.x+p.xp[i]);
+			assertEquals(ysIn[i],p.y+p.yp[i]);
 		}
 
 		if ((type != Roi.POINT) &&
@@ -295,8 +305,7 @@ public class PolygonRoiTest {
 		// vary type
 		validateCons1(new int[]{1},new int[]{4},Roi.POLYGON);
 		validateCons1(new int[]{1},new int[]{4},Roi.FREEROI);
-		//TODO - restore this:
-		//validateCons1(new int[]{1},new int[]{4},Roi.TRACED_ROI);
+		validateCons1(new int[]{1,2,3,4},new int[]{5,6,7,8},Roi.TRACED_ROI);
 		validateCons1(new int[]{1},new int[]{4},Roi.POLYLINE);
 		validateCons1(new int[]{1},new int[]{4},Roi.FREELINE);
 		validateCons1(new int[]{1},new int[]{4},Roi.ANGLE);
@@ -330,8 +339,7 @@ public class PolygonRoiTest {
 		// vary type
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.POLYGON);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.FREEROI);
-		// TODO - restore this:
-		//validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.TRACED_ROI);
+		validateCons2(new Polygon(new int[]{1,2,3,4},new int[]{5,6,7,8},4),Roi.TRACED_ROI);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.POLYLINE);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.FREELINE);
 		validateCons2(new Polygon(new int[]{1},new int[]{4},1),Roi.ANGLE);
@@ -551,14 +559,14 @@ public class PolygonRoiTest {
 		validateDrawPixels(Fit.SPLINE,-1,new int[]{0,2,2,0},new int[]{0,0,2,2},Roi.POLYGON, nonZeroes);
 		
 		// TRACED_ROI
-		nonZeroes = new int[]{33,34,44,45,46,47,55,56};
-		validateDrawPixels(Fit.NONE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
+		nonZeroes = new int[]{33,44,47,55,56,58,66,67,68,78,79,89};
+		validateDrawPixels(Fit.NONE,-1,new int[]{3,5,7,9},new int[]{3,5,4,8},Roi.TRACED_ROI, nonZeroes);
 		
-		nonZeroes = new int[]{22,23,24,32,33,34,35,36,37,43,44,45,46,47,54,55,56};
-		validateDrawPixels(Fit.NONE,2,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
+		nonZeroes = new int[]{22,23,32,33,34,36,37,43,44,45,46,47,48,54,55,56,57,58,65,66,67,68,69,77,78,79,88,89};
+		validateDrawPixels(Fit.NONE,2,new int[]{3,5,7,9},new int[]{3,5,4,8},Roi.TRACED_ROI, nonZeroes);
 		
-		nonZeroes = new int[]{33,34,44,45,46,47,54,55,56};
-		validateDrawPixels(Fit.SPLINE,-1,new int[]{3,5,7},new int[]{3,5,4},Roi.TRACED_ROI, nonZeroes);
+		nonZeroes = new int[]{33,44,47,55,56,58,66,67,68,78,79,89};
+		validateDrawPixels(Fit.SPLINE,-1,new int[]{3,5,7,9},new int[]{3,5,4,8},Roi.TRACED_ROI, nonZeroes);
 
 		// FREELINE
 		nonZeroes = new int[]{24,34,45,55,62,63,66,74,75,76};
@@ -619,7 +627,7 @@ public class PolygonRoiTest {
 		// special cases
 		
 		// not spline fit and TRACED_ROI
-		p = new PolygonRoi(new int[]{1,2,3},new int[]{4,7,2},3,Roi.TRACED_ROI);
+		p = new PolygonRoi(new int[]{1,2,3,4},new int[]{4,7,2,3},4,Roi.TRACED_ROI);
 		assertEquals(-1,p.isHandle(0,0));
 
 		// not spline fit and FREEROI
