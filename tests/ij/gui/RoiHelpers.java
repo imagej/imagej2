@@ -1,6 +1,6 @@
 package ij.gui;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -8,7 +8,10 @@ import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
 import ij.Assert;
+import ij.ImagePlus;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 
 public class RoiHelpers {
 	
@@ -27,6 +30,18 @@ public class RoiHelpers {
 		for (int i = 0; i < h*w; i++)
 			if (find(i,expectedNonZeroes))
 				assertEquals(refVal,proc.get(i));
+			else
+				assertEquals(0,proc.get(i));
+	}
+	
+	public static void validateNonzeroResult(ImageProcessor proc, int[] expectedNonZeroes)
+	{
+		int h = proc.getHeight();
+		int w = proc.getWidth();
+		
+		for (int i = 0; i < h*w; i++)
+			if (find(i,expectedNonZeroes))
+				assertTrue(proc.get(i) != 0);
 			else
 				assertEquals(0,proc.get(i));
 	}
@@ -130,4 +145,15 @@ public class RoiHelpers {
 		return true;
 	}
 
+	// helper
+	public static ImagePlus getCalibratedImagePlus()
+	{
+		ImagePlus ip = new ImagePlus("Zakky",new ShortProcessor(5,5,new short[5*5],null));
+		Calibration cal = new Calibration();
+		cal.pixelWidth = 14.1;
+		cal.pixelHeight = 8.7;
+		ip.setCalibration(cal);
+		return ip;
+	}
+	
 }

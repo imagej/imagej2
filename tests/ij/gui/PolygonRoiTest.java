@@ -17,17 +17,6 @@ public class PolygonRoiTest {
 	PolygonRoi p;
 	
 	// helper
-	private ImagePlus getCalibratedImagePlus()
-	{
-		ImagePlus ip = new ImagePlus("Zakky",new ShortProcessor(5,5,new short[5*5],null));
-		Calibration cal = new Calibration();
-		cal.pixelWidth = 14.1;
-		cal.pixelHeight = 8.7;
-		ip.setCalibration(cal);
-		return ip;
-	}
-	
-	// helper
 	private void validateCons1(int[] xs, int[] ys, int type)
 	{
 		// TRACED_ROIs can overwrite input points. Make a copy for our reference.
@@ -391,24 +380,24 @@ public class PolygonRoiTest {
 		
 		//   with calibration: spline and POLYGON
 		p = new PolygonRoi(new int[]{104,88,66,31},new int[]{10,20,30,40},4,Roi.POLYGON);
-		p.setImage(getCalibratedImagePlus());
+		p.setImage(RoiHelpers.getCalibratedImagePlus());
 		p.fitSpline(20);
 		assertEquals(2142.30092,p.getLength(),Assert.DOUBLE_TOL);
 		
 		//   with calibration: spline and not a POLYGON
 		p = new PolygonRoi(new int[]{18,73,44,33},new int[]{40,30,20,10},4,Roi.POLYLINE);
-		p.setImage(getCalibratedImagePlus());
+		p.setImage(RoiHelpers.getCalibratedImagePlus());
 		p.fitSpline(20);
 		assertEquals(1398.21248,p.getLength(),Assert.DOUBLE_TOL);
 		
 		//   with calibration: no spline and POLYGON
 		p = new PolygonRoi(new int[]{22,4,88,63},new int[]{100,200,300,400},4,Roi.POLYGON);
-		p.setImage(getCalibratedImagePlus());
+		p.setImage(RoiHelpers.getCalibratedImagePlus());
 		assertEquals(5987.81253,p.getLength(),Assert.DOUBLE_TOL);
 
 		//   with calibration: no spline and not a POLYGON
 		p = new PolygonRoi(new int[]{22,4,88,63},new int[]{100,200,300,400},4,Roi.POLYLINE);
-		p.setImage(getCalibratedImagePlus());
+		p.setImage(RoiHelpers.getCalibratedImagePlus());
 		assertEquals(3314.55616,p.getLength(),Assert.DOUBLE_TOL);
 
 		//   no calibration: spline and POLYGON
