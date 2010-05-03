@@ -97,6 +97,9 @@ public class TextRoiTest {
 	@Test
 	public void testAddChar() {
 		
+		// Wayne has said this should not be tested. He has updated documentation to tell people not to use it.
+		
+		/*
 		// EMPTY string tests
 		
 		// backspace
@@ -121,6 +124,7 @@ public class TextRoiTest {
 		
 		// Some general cases
 		// TODO
+		 */
 	}
 
 	@Test
