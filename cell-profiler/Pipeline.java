@@ -21,14 +21,16 @@ public class Pipeline {
 		"try:\n" +
 		"  import cellprofiler.utilities.jutil as jutil\n" +
 		"  import cellprofiler.pipeline as cpp\n" +
+		"  from cellprofiler.preferences import set_headless\n" +
+		"  set_headless()\n" +
 		"  pipeline = cpp.Pipeline()\n" +
 		"  print jutil.to_string(path)\n" +//TEMP
 		"  print 'Loading pipeline: ' + jutil.to_string(path)\n" +//TEMP
-// TODO - figure out why pipeline.load crashes -- probably GUI-related
-//		"  pipeline.load(jutil.to_string(path))\n" +
+		// TODO - figure out why pipeline.load crashes
+		"  pipeline.load(jutil.to_string(path))\n" +
 		"  print 'Pipeline loaded.'\n" +//TEMP
-//		"  ext_image_names = pipeline.find_external_input_images()\n" +
-		"  ext_image_names = ['original']\n" +//TEMP
+		"  ext_image_names = pipeline.find_external_input_images()\n" +
+		//"  ext_image_names = ['original']\n" +//TEMP
 		"  dict = jutil.get_dictionary_wrapper(vars)\n" +
 		"  for i in range(len(ext_image_names)):\n" +
 		"    dict.put('ext_image_name' + str(i), ext_image_names[i])\n" +
