@@ -17,15 +17,14 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Random;
 
-import mpicbg.imglib.container.Container;
+import mpicbg.imglib.container.array.Array;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.container.basictypecontainer.DataAccess;
+import mpicbg.imglib.container.basictypecontainer.ByteAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ByteArray;
 import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.type.numeric.ByteType;
+import mpicbg.imglib.type.numeric.integer.ByteType;
 
 /**
 This is an 8-bit image and methods that operate on that image. Based on the ImageProcessor class
@@ -1341,17 +1340,18 @@ public class ByteProcessor extends ImageProcessor {
 	
 	/** Gets the pixels array backing the imglib image. */
 	protected byte[] getPixelsArray() {
-		final ByteArray array = (ByteArray) imageData.getContainer().update(null);
-		return array.getCurrentStorageArray();
+		return getByteArray(imageData).getCurrentStorageArray();
 	}
 	
 	protected void setPixelsArray(byte[] data) {
 		setPixelsArray(imageData, data);
 	}
-
-	private void setPixelsArray(mpicbg.imglib.image.Image<ByteType> img, byte[] data) {
-		// CTR: HACK: what a terrible solution...
-		final ByteArray array = (ByteArray) img.getContainer().update(null);
+	
+	private void setPixelsArray(mpicbg.imglib.image.Image<ByteType> img,
+		byte[] data)
+	{
+		// HACK: No mutator for ByteArray backing data...
+		final ByteArray array = getByteArray(img);
 		Field f;
 		try {
 			f = array.getClass().getDeclaredField("data");
@@ -1370,6 +1370,14 @@ public class ByteProcessor extends ImageProcessor {
 		catch (IllegalAccessException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private ByteArray getByteArray(mpicbg.imglib.image.Image<ByteType> img) {
+		// CTR: Is there a better solution?
+		final Array<ByteType, ByteAccess> array =
+			(Array<ByteType, ByteAccess>) img.getContainer();
+		return (ByteArray) array.update(null);
 	}
 
 }
