@@ -175,17 +175,17 @@ public class ShapeRoiTest {
 		ImageProcessor proc = new ByteProcessor(r.width,r.height,new byte[r.width*r.height],null);
 		proc.setColor(99);
 		s.drawPixels(proc);
-		RoiHelpers.printNonzeroIndices(proc);
+		//RoiHelpers.printNonzeroIndices(proc);
 		RoiHelpers.validateResult(proc, 99, expectedNonZeroes);
 	}
 	
 	@Test
 	public void testDrawPixelsImageProcessor() {
-		//drawPixelsTest(new OvalRoi(3,7,3,4), new int[]{});  // TODO crash
-		//drawPixelsTest(new Line(3,7,5,4), new int[]{});  // TODO crash
-		//drawPixelsTest(new Roi(3,7,5,4), new int[]{});  // TODO crash
-		//drawPixelsTest(new TextRoi(4, 8, "Zapplepop"), new int[]{});  // TODO crash
-		//drawPixelsTest(new PolygonRoi(new int[]{1,5,3}, new int[]{6,9,3},3, Roi.POLYGON), new int[]{});  // TODO crash
+		drawPixelsTest(new OvalRoi(3,7,12,14), new int[]{91,92,93,94,95,101,102,103,107,112,113,124,135,136,147,159});
+		drawPixelsTest(new Line(6,2,19,11), new int[]{32,46,47,61,75,76,90});
+		drawPixelsTest(new Roi(8,16,32,24), new int[]{520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,552,584,616,648,680,712,744});
+		drawPixelsTest(new TextRoi(4, 8, "Zapplepop"), new int[]{});
+		drawPixelsTest(new PolygonRoi(new int[]{1,5,3}, new int[]{6,9,3},3, Roi.POLYGON), new int[]{15,18,19,22});
 	}
 
 	private void containsTest(Shape sh)
@@ -254,7 +254,7 @@ public class ShapeRoiTest {
 	private void orTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
 	{
 		s = a.or(b);
-		printOut(s);
+		//printOut(s);
 		assertEquals(exp,s);
 	}
 	
@@ -300,20 +300,16 @@ public class ShapeRoiTest {
 
 	private void andTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
 	{
-		s = a.or(b);
-		printOut(s);
+		s = a.and(b);
+		//printOut(s);
 		assertEquals(exp,s);
 	}
-	
-	// TODO - left off working here. Things to note:
-	//  1) the testOr() code seems unintuitive in the disjoint areas test.
-	//  2) the testAnd() code behaves exactly the same as the testOr()!?!!?
-	//  3) above drawPixels(proc) throws exceptions - reported to Wayne
 	
 	@Test
 	public void testAnd() {
 		Shape sh;
 		ShapeRoi a,b,exp;
+		float[] floats;
 		
 		// same area
 		sh = new Rectangle2D.Double(0, 0, 1, 1);
@@ -327,7 +323,7 @@ public class ShapeRoiTest {
 		a = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(1, 0, 2, 2);
 		b = new ShapeRoi(sh);
-		sh = new Rectangle2D.Double(0, 0, 3, 2);
+		sh = new Rectangle2D.Double(1, 0, 1, 2);
 		exp = new ShapeRoi(sh);
 		andTest(a,b,exp);
 
@@ -336,9 +332,58 @@ public class ShapeRoiTest {
 		a = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(2, 0, 2, 2);
 		b = new ShapeRoi(sh);
+		floats = new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0};
+		exp = new ShapeRoi(floats);
+		andTest(a,b,exp);
+
+		// disjoint areas
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(3, 0, 2, 2);
+		b = new ShapeRoi(sh);
+		floats = new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0};
+		exp = new ShapeRoi(floats);
+		andTest(a,b,exp);
+	}
+
+	private void xorTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
+	{
+		s = a.xor(b);
+		//printOut(s);
+		assertEquals(exp,s);
+	}
+	
+	@Test
+	public void testXor() {
+		Shape sh;
+		ShapeRoi a,b,exp;
+		float[] floats;
+		
+		// same area
+		floats = new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0};
+		sh = new Rectangle2D.Double(0, 0, 0, 0);
+		a = new ShapeRoi(sh);
+		b = new ShapeRoi(sh);
+		exp = new ShapeRoi(floats);
+		xorTest(a,b,exp);
+		
+		// intersecting area
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(1, 0, 2, 2);
+		b = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(0, 0, 3, 2);
+		exp = new ShapeRoi(sh);
+		xorTest(a,b,exp);
+
+		// just touching area
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(2, 0, 2, 2);
+		b = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(0, 0, 4, 2);
 		exp = new ShapeRoi(sh);
-		andTest(a,b,exp);
+		xorTest(a,b,exp);
 
 		// disjoint areas
 		sh = new Rectangle2D.Double(0, 0, 2, 2);
@@ -347,22 +392,69 @@ public class ShapeRoiTest {
 		b = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(0, 0, 5, 2);
 		exp = new ShapeRoi(sh);
-		andTest(a,b,exp);
+		xorTest(a,b,exp);
 	}
 
-	@Test
-	public void testXor() {
-		fail("Not yet implemented");
+	private void notTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
+	{
+		s = a.not(b);
+		//printOut(s);
+		assertEquals(exp,s);
 	}
-
+	
 	@Test
 	public void testNot() {
-		fail("Not yet implemented");
+		Shape sh;
+		ShapeRoi a,b,exp;
+		float[] floats;
+		
+		// same area
+		floats = new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_LINETO,0,0};
+		sh = new Rectangle2D.Double(0, 0, 0, 0);
+		a = new ShapeRoi(sh);
+		b = new ShapeRoi(sh);
+		exp = new ShapeRoi(floats);
+		notTest(a,b,exp);
+		
+		// intersecting area
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(1, 0, 2, 2);
+		b = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(0, 0, 1, 2);
+		exp = new ShapeRoi(sh);
+		notTest(a,b,exp);
+
+		// just touching area
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(2, 0, 2, 2);
+		b = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		exp = new ShapeRoi(sh);
+		notTest(a,b,exp);
+
+		// disjoint areas
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		a = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(3, 0, 2, 2);
+		b = new ShapeRoi(sh);
+		sh = new Rectangle2D.Double(0, 0, 2, 2);
+		exp = new ShapeRoi(sh);
+		notTest(a,b,exp);
 	}
 
 	@Test
 	public void testGetRois() {
-		fail("Not yet implemented");
+		// shape == null case
+		// savedRois exist case
+		// Rectangle2D.Double case
+		// Ellipse2D.Double case
+		// Line2D.Double case
+		// Polygon case
+		// GeneralPath case
+		
+		fail("Unfinished");
 	}
 
 	@Test

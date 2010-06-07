@@ -1076,8 +1076,9 @@ public class ShapeRoi extends Roi {
 	 * <br> This method will always draw a flattened version of the actual shape
 	 * (i.e., all curve segments will be approximated by line segments).
 	 */
-	public void drawPixels(ImageProcessor ip) {
-		PathIterator pIter = getFlatteningPathIterator(shape,flatness);
+
+    public void drawPixels(ImageProcessor ip) {
+		PathIterator pIter = shape.getPathIterator(new AffineTransform(), flatness);
 		float[] coords = new float[6];
 		float sx=0f, sy=0f;
 		while (!pIter.isDone()) {
