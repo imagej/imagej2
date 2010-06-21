@@ -7,20 +7,24 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import ij.Assert;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.process.*;
 
 public class ShapeRoiTest {
 
 	ShapeRoi s;
 
-	private void consTest(ShapeRoi roi, int x, int y, int w, int h)
+	private void basicTests(Roi roi, int type, int x, int y, int w, int h)
 	{
-		assertNotNull(s);
-		Rectangle r = s.getBounds();
+		assertNotNull(roi);
+		Rectangle r = roi.getBounds();
 		assertEquals(x,r.x);
 		assertEquals(y,r.y);
 		assertEquals(w,r.width);
 		assertEquals(h,r.height);
+		assertEquals(type,roi.getType());
 	}
 	
 	@Test
@@ -34,65 +38,68 @@ public class ShapeRoiTest {
 		
 		// try an oval
 		s = new ShapeRoi(new OvalRoi(14,2,5,10));
-		consTest(s,14,2,5,10);
+		basicTests(s,Roi.COMPOSITE,14,2,5,10);
 
 		// try a line
 		s = new ShapeRoi(new Line(15,-5,-13,-2));
-		consTest(s,-13,-5,28,3);
+		basicTests(s,Roi.COMPOSITE,-13,-5,28,3);
 		
 		// try an image
 		s = new ShapeRoi(new ImageRoi(5, 2, new ColorProcessor(5,7,new int[5*7])));
-		consTest(s,5,2,5,7);
+		basicTests(s,Roi.COMPOSITE,5,2,5,7);
 	}
 
 	@Test
 	public void testShapeRoiShape() {
+		
 		Shape sh;
 		
 		// make from an arc
 		sh = new Arc2D.Double(1.4, 2.7, 4.7, 9.6, 23.0, 14.5, Arc2D.PIE);
 		s = new ShapeRoi(sh);
-		consTest(s,1,2,6,11);
+		basicTests(s,Roi.COMPOSITE,1,2,6,11);
 		
 		// make from a Polygon
 		sh = new Polygon(new int[]{1,6,3,7}, new int[] {0,-4,6,1},4);
 		s = new ShapeRoi(sh);
-		consTest(s,1,-4,6,10);
+		basicTests(s,Roi.COMPOSITE,1,-4,6,10);
 	}
 
 	@Test
 	public void testShapeRoiIntIntShape() {
+		
 		Shape sh;
 
 		// try a round rect
 		sh = new RoundRectangle2D.Double(17.6,93.7,1008.8,400,8,5);
 		s = new ShapeRoi(sh);
-		consTest(s,17,93,1010,401);
+		basicTests(s,Roi.COMPOSITE,17,93,1010,401);
 		
 		// try a cubic curve
 		sh = new CubicCurve2D.Double(1, 3, 4, 2, 8, 11, 9, 14);
 		s = new ShapeRoi(sh);
-		consTest(s,1,2,8,12);
+		basicTests(s,Roi.COMPOSITE,1,2,8,12);
 	}
 
 	@Test
 	public void testShapeRoiFloatArray() {
+		
 		float[] floats;
 		
 		// make a polyline
 		floats = new float[]{PathIterator.SEG_MOVETO,1,1,PathIterator.SEG_LINETO,4,7};
 		s = new ShapeRoi(floats);
-		consTest(s,1,1,3,6);
+		basicTests(s,Roi.COMPOSITE,1,1,3,6);
 		
 		// make a polygon
 		floats = new float[]{PathIterator.SEG_MOVETO,7,3,PathIterator.SEG_LINETO,4,7,PathIterator.SEG_LINETO,13,23,PathIterator.SEG_CLOSE};
 		s = new ShapeRoi(floats);
-		consTest(s,4,3,9,20);
+		basicTests(s,Roi.COMPOSITE,4,3,9,20);
 
 		// make a curve
 		floats = new float[]{PathIterator.SEG_MOVETO,13,1,PathIterator.SEG_QUADTO,7,4,9,2,PathIterator.SEG_QUADTO,8,12,14,16};
 		s = new ShapeRoi(floats);
-		consTest(s,7,1,7,15);
+		basicTests(s,Roi.COMPOSITE,7,1,7,15);
 	}
 
 	private void lengthTest(Roi roi)
@@ -260,6 +267,7 @@ public class ShapeRoiTest {
 	
 	@Test
 	public void testOr() {
+		
 		Shape sh;
 		ShapeRoi a,b,exp;
 		
@@ -307,6 +315,7 @@ public class ShapeRoiTest {
 	
 	@Test
 	public void testAnd() {
+		
 		Shape sh;
 		ShapeRoi a,b,exp;
 		float[] floats;
@@ -355,6 +364,7 @@ public class ShapeRoiTest {
 	
 	@Test
 	public void testXor() {
+		
 		Shape sh;
 		ShapeRoi a,b,exp;
 		float[] floats;
@@ -404,6 +414,7 @@ public class ShapeRoiTest {
 	
 	@Test
 	public void testNot() {
+		
 		Shape sh;
 		ShapeRoi a,b,exp;
 		float[] floats;
@@ -444,47 +455,185 @@ public class ShapeRoiTest {
 		notTest(a,b,exp);
 	}
 
+	private void roisTest(ShapeRoi shr, int type, int ox, int oy, int w, int h)
+	{
+		Roi[] rois = shr.getRois();
+		assertNotNull(rois);
+		assertEquals(1,rois.length);
+		Roi roi = rois[0];
+		assertEquals(type,roi.getType());
+		basicTests(roi,type,ox,oy,w,h);
+	}
+	
 	@Test
 	public void testGetRois() {
+
 		// shape == null case
-		// savedRois exist case
-		// Rectangle2D.Double case
-		// Ellipse2D.Double case
-		// Line2D.Double case
-		// Polygon case
-		// GeneralPath case
+		//   can't find a way to give rise to this case
 		
-		fail("Unfinished");
+		// savedRois exist case
+		//   as far as I can see saveRoi(roi) is never called in ImageJ. No way for this case to arise.
+		
+		// Rectangle2D.Double case
+		s = new ShapeRoi(new Rectangle2D.Double(0, 0, 2, 2));
+		roisTest(s,Roi.POLYGON,0,0,2,2);
+		
+		
+		// Ellipse2D.Double case
+		s = new ShapeRoi(new Ellipse2D.Double(0, 0, 2, 2));
+		roisTest(s,Roi.COMPOSITE,0,0,2,2);
+		
+		// Line2D.Double case
+		s = new ShapeRoi(new Line2D.Double(0, 0, 2, 2));
+		roisTest(s,Roi.POLYGON,0,0,2,2);
+
+		// Polygon case
+		PolygonRoi pr = new PolygonRoi(new int[]{0,2,1},new int[]{0,0,1},3,Roi.POLYGON);
+		roisTest(new ShapeRoi(pr),Roi.POLYGON,0,0,2,1);
+		
+		// GeneralPath case
+		float[] floats = new float[]{PathIterator.SEG_MOVETO,7,3,PathIterator.SEG_LINETO,4,7,PathIterator.SEG_LINETO,13,23,PathIterator.SEG_CLOSE};
+		roisTest(new ShapeRoi(floats),Roi.POLYGON,4,3,9,20);
 	}
 
 	@Test
 	public void testShapeToRoi() {
-		fail("Not yet implemented");
+
+		Shape sh;
+		Roi roi;
+		
+		// shape == null case
+		//   can't find a way to give rise to this case
+
+		// shape not instanceof GeneralPath case
+		//   this should be impossible. Shape implements GeneralPath. Only true if shape null which we can't do.
+		
+		// can't parse path case
+		//   this only happens if Java returns a null PathIterator for a Shape. I don't think this happens unless
+		//   memory is an issue. won't test for.
+		
+		// get back one roi case
+		sh = new Rectangle(1,2,3,4);
+		s = new ShapeRoi(sh);
+		roi = s.shapeToRoi();
+		assertNotNull(roi);
+		assertEquals(Roi.TRACED_ROI,roi.getType());
+		Rectangle r = roi.getBounds();
+		assertEquals(1,r.getX(),Assert.DOUBLE_TOL);
+		assertEquals(2,r.getY(),Assert.DOUBLE_TOL);
+		assertEquals(3,r.getWidth(),Assert.DOUBLE_TOL);
+		assertEquals(4,r.getHeight(),Assert.DOUBLE_TOL);
+		
+		// num rois get back != 1 case
+		float[] floats = new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,2,0,PathIterator.SEG_LINETO,0,2,PathIterator.SEG_LINETO,0,0,PathIterator.SEG_MOVETO,3,0,PathIterator.SEG_LINETO,5,0,PathIterator.SEG_LINETO,0,5,PathIterator.SEG_LINETO,3,0};
+		s = new ShapeRoi(floats);
+		assertNull(s.shapeToRoi());
 	}
 
+	private void shapeAsArrayTest(float[] floats)
+	{
+		s = new ShapeRoi(floats);
+		float[] output = s.getShapeAsArray();
+		Assert.assertFloatArraysEqual(floats,output,Assert.FLOAT_TOL);
+	}
+	
 	@Test
 	public void testGetShapeAsArray() {
-		fail("Not yet implemented");
+		// shape == null case
+		//   can't find a way to give rise to this case
+
+		// can't parse path case
+		//   this only happens if Java returns a null PathIterator for a Shape. I don't think this happens unless
+		//   memory is an issue. won't test for.
+
+		// otherwise regular cases
+
+		// point
+		shapeAsArrayTest(new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_CLOSE});
+		
+		// line
+		shapeAsArrayTest(new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_LINETO,8,8,PathIterator.SEG_CLOSE});
+		
+		// quadric line
+		shapeAsArrayTest(new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_QUADTO,2,0,0,2,PathIterator.SEG_CLOSE});
+		
+		// cubic line
+		shapeAsArrayTest(new float[]{PathIterator.SEG_MOVETO,0,0,PathIterator.SEG_CUBICTO,3,0,0,3,2,2,PathIterator.SEG_CLOSE});
 	}
 
 	@Test
 	public void testDrawRoiBrush() {
-		fail("Not yet implemented");
+		// note - can't test : does gui ops on a Graphics context
 	}
 
 	@Test
 	public void testGetShape() {
-		fail("Not yet implemented");
+		s = new ShapeRoi(new Rectangle(1,2,3,4));
+		assertNotNull(s.getShape());
 	}
 
 	@Test
 	public void testAddCircle() {
-		fail("Not yet implemented");
+
+		ImagePlus imp;
+		Roi roi;
+		
+		// case that no image in IJ : should allow us to call but do nothing
+		assertEquals(null,IJ.getImage());
+		ShapeRoi.addCircle("2", "4", "6");
+		
+		// case that roi already exists
+		imp = new ImagePlus("Zooks",new ShortProcessor(2,2,new short[]{1,2,3,4},null));
+		WindowManager.setTempCurrentImage(imp);
+		assertEquals(imp,IJ.getImage());
+		assertNull(imp.getRoi());
+		roi = new Roi(0,0,1,1);
+		imp.setRoi(roi);
+		assertSame(roi,imp.getRoi());
+		assertFalse(imp.getRoi().contains(2, 4));
+		ShapeRoi.addCircle("2", "4", "6");
+		assertNotSame(roi,imp.getRoi());
+		assertTrue(imp.getRoi().contains(2, 4));
+		
+		// case that we create new roi
+		imp = new ImagePlus("Zooks",new ShortProcessor(2,2,new short[]{1,2,3,4},null));
+		WindowManager.setTempCurrentImage(imp);
+		assertEquals(imp,IJ.getImage());
+		assertNull(imp.getRoi());
+		ShapeRoi.addCircle("2", "4", "6");
+		roi = imp.getRoi();
+		assertNotNull(roi);
+		assertTrue(roi.contains(2, 4));
+
+		// reset so other tests not confused
+		WindowManager.setTempCurrentImage(null);
 	}
 
 	@Test
 	public void testSubtractCircle() {
-		fail("Not yet implemented");
+
+		ImagePlus imp;
+		Roi roi;
+
+		// case that no image in IJ : should allow us to call but do nothing
+		assertEquals(null,IJ.getImage());
+		ShapeRoi.subtractCircle("2", "4", "6");
+		
+		// case that roi already exists
+		imp = new ImagePlus("Zooks",new ShortProcessor(2,2,new short[]{1,2,3,4},null));
+		WindowManager.setTempCurrentImage(imp);
+		assertEquals(imp,IJ.getImage());
+		assertNull(imp.getRoi());
+		roi = new Roi(0,0,8,8);
+		imp.setRoi(roi);
+		assertSame(roi,imp.getRoi());
+		assertTrue(imp.getRoi().contains(2, 4));
+		ShapeRoi.subtractCircle("2", "4", "6");
+		assertNotSame(roi,imp.getRoi());
+		assertFalse(imp.getRoi().contains(2, 4));
+
+		// reset so other tests not confused
+		WindowManager.setTempCurrentImage(null);
 	}
 
 }
