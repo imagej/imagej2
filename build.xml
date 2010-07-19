@@ -6,9 +6,12 @@
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build" />
     <!-- Build everything; add debug="on" to debug -->
-    <javac srcdir="src" destdir="build" optimize="on" source="1.5" target="1.5" debug="on"/>
+    <javac srcdir="src" destdir="build" optimize="on" source="1.5" target="1.5" debug="on">
+		  <classpath>
+			  <pathelement location="precompiled/imglib.jar"/>
+			</classpath>
+		</javac>
   </target>
-  
 
   <target name="build" depends="compile" description="Build ij.jar.">
     <!-- Copy needed files into the build directory. -->
