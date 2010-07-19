@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.awt.Dimension;
 
 import ij.Assert;
-import ij.IJInfo;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 
