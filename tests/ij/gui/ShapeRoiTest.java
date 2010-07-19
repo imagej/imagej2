@@ -572,6 +572,13 @@ public class ShapeRoiTest {
 		assertNotNull(s.getShape());
 	}
 
+	/*
+	   Note BDZ - not testing the next two methods. Although when run standalone the tests pass but when all tests are run
+	   simultaneously (i.e. from the command line or build tool) the tests fail (because PlotTest and ProfilePlotTest
+	   each create windows that confuses IJ.getImage()). The ShapeRoi code is very likely just wrong. I've verified
+	   that as of 1.43o these two methods are never called from ImageJ. Not sure if any plugin calls them.
+	   7-19-10 - Wayne affirms these methods are obsolete and removes them.
+	    
 	@Test
 	public void testAddCircle() {
 
@@ -616,6 +623,8 @@ public class ShapeRoiTest {
 		Roi roi;
 
 		// case that no image in IJ : should allow us to call but do nothing
+		
+		WindowManager.setTempCurrentImage(null);
 		assertEquals(null,IJ.getImage());
 		ShapeRoi.subtractCircle("2", "4", "6");
 		
@@ -635,5 +644,6 @@ public class ShapeRoiTest {
 		// reset so other tests not confused
 		WindowManager.setTempCurrentImage(null);
 	}
+	*/
 
 }
