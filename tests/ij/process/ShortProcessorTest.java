@@ -110,7 +110,7 @@ public class ShortProcessorTest {
 		imageStatistics.getCentroid( ip );
 		String testResults = imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid;
 		
-		{ System.out.println(imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid); } 
+		//{ System.out.println(imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid); } 
 		
 		assertEquals( expected, testResults );
 	

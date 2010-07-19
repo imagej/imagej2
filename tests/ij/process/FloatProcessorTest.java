@@ -1670,7 +1670,7 @@ public class FloatProcessorTest {
         {
             for(int j = 0; j<testFloatProcessor.width; j++)
             {
-                System.out.println(refFloatProcessor.getPixelValue(j,i) + " = " + testFloatProcessor.getPixelValue(j,i));
+                //System.out.println(refFloatProcessor.getPixelValue(j,i) + " = " + testFloatProcessor.getPixelValue(j,i));
 
                 //check the result
                 assertEquals(refFloatProcessor.getPixelValue(j,i), testFloatProcessor.getPixelValue(j,i), 0.0 );
