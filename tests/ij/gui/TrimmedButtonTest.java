@@ -39,4 +39,10 @@ public class TrimmedButtonTest {
 	
 	*/
 
+	// at least one test must be present
+	@Test
+	public void testNothing()
+	{
+		assertTrue(true);
+	}
 }
