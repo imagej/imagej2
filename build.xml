@@ -108,13 +108,5 @@
       </batchtest>
     </junit>
   </target>
-
-  <target name="shellTests" depends="compileTests">
-  	  <exec executable="bash" newenvironment="false" dir=".">
-  	  	<arg value="-c"/>
-  	    <!-- <arg line="java"/> -->
-  	    <arg line="java -cp precompiled/loci_tools.jar:precompiled/junit-4.5.jar:precompiled/imglib.jar:build-tests:build org.junit.runner.JUnitCore ij.io.ImageReaderTest"/>
-  	  </exec>
-  </target>
 	
 </project>
