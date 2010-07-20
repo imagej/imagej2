@@ -2789,6 +2789,7 @@ public class ImagePlusTest {
 		
 		//ImagePlus ip2;
 		Calibration cal;
+		String str;
 		
 		// if properties FHT
 
@@ -2798,7 +2799,8 @@ public class ImagePlusTest {
 		cal = new Calibration();
 		ip.setCalibration(cal);
 		ip.setProperty("FHT","ForThisCodeAnythingWillDo");
-		assertEquals("r=0.02 p/c (265), theta= 325.29¡",ip.getLocationAsString(220, 150));
+		str = ip.getLocationAsString(220, 150);
+		assertEquals("r=0.02 p/c (265), theta= 325.29",str.substring(0, str.length()-1));  // ignore degree symbol - hudson dislikes
 		
 		//    cal scaled
 		proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
@@ -2808,7 +2810,8 @@ public class ImagePlusTest {
 		cal.pixelWidth = 13.6;
 		ip.setCalibration(cal);
 		ip.setProperty("FHT","ForThisCodeAnythingWillDo");
-		assertEquals("r=0.21 OrcNoses/c (265), theta= 325.29¡",ip.getLocationAsString(220, 150));
+		str = ip.getLocationAsString(220, 150);
+		assertEquals("r=0.21 OrcNoses/c (265), theta= 325.29",str.substring(0, str.length()-1));  // ignore degree symbol - hudson dislikes
 
 		// Test alt key down cases
 		IJ.setKeyDown(KeyEvent.VK_ALT);
