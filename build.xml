@@ -75,7 +75,7 @@
   </target>
 
 
-  <target name="compileTests" depends="build" description="Compile tests.">
+  <target name="compileTests" depends="build,cleanTests" description="Compile tests.">
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build-tests" />
     <!-- Build everything; add debug="on" to debug -->
@@ -90,8 +90,9 @@
   </target>
 
 
-  <target name="test" depends="cleanTests,compileTests" description="Run all defined unit tests.">
+  <target name="test" depends="compileTests" description="Run all defined unit tests.">
     <junit haltonfailure="true" printsummary="false">
+      <!-- <jvmarg value="-Djava.awt.headless=true"/> -->
       <classpath>
         <pathelement path="build-tests"/>
         <pathelement location="ij.jar"/>
@@ -100,7 +101,6 @@
         <pathelement location="precompiled/junit-4.5.jar"/> <!-- FIX ME LATER : change to newer version when necessary -->
       </classpath>
       <formatter type="brief" usefile="false"/>
-      <jvmarg value="-Djava.awt.headless=true"/>
       <batchtest>
         <fileset dir="build-tests">
           <include name="ij/**/*Test.class"/>
@@ -109,4 +109,12 @@
     </junit>
   </target>
 
+  <target name="shellTests" depends="compileTests">
+  	  <exec executable="bash" newenvironment="false" dir=".">
+  	  	<arg value="-c"/>
+  	    <!-- <arg line="java"/> -->
+  	    <arg line="java -cp precompiled/loci_tools.jar:precompiled/junit-4.5.jar:precompiled/imglib.jar:build-tests:build org.junit.runner.JUnitCore ij.io.ImageReaderTest"/>
+  	  </exec>
+  </target>
+	
 </project>

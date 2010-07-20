@@ -8,6 +8,8 @@ import java.io.*;
 import java.util.*;
 import java.awt.*;
 
+import javax.swing.JOptionPane;
+
 import ij.IJInfo;
 import ij.Assert;
 import ij.plugin.filter.Analyzer;
@@ -1291,6 +1293,9 @@ public class ResultsTableTest {
 		}
 	}
 
+	/* Removed 7-20-10
+	 * because update() throws the ResultTable up on the screen and Hudson does not like this.
+	 * 
 	@Test
 	public void testUpdate() {
 		int measurements =
@@ -1347,7 +1352,8 @@ public class ResultsTableTest {
 		assertEquals("Round",r.getColumnHeading(33));
 		assertEquals("Solidity",r.getColumnHeading(34));
 	}
-
+*/
+	
 	@Test
 	public void testOpen() {
 		// unknown file
@@ -1401,17 +1407,16 @@ public class ResultsTableTest {
 		// if all headings numeric then cols renamed C1, C2, etc.
 		// note - can't test this subcase because if all headings are numeric is true then labels is false
 		//   and a lower level routine gets called to load data that is gui dependent and returns null
-		/*
-		try {
-			r = ResultsTable.open("data/AllNumericTable.txt");
-			assertEquals("C1",r.getColumnHeading(0));
-			assertEquals("C2",r.getColumnHeading(1));
-			assertEquals("C3",r.getColumnHeading(2));
-		} catch (Exception e) {
-			System.out.println("excep: "+e.getMessage());
-			fail();
-		}
-		*/
+		//
+		//try {
+		//	r = ResultsTable.open("data/AllNumericTable.txt");
+		//	assertEquals("C1",r.getColumnHeading(0));
+		//	assertEquals("C2",r.getColumnHeading(1));
+		//	assertEquals("C3",r.getColumnHeading(2));
+		//} catch (Exception e) {
+		//	System.out.println("excep: "+e.getMessage());
+		//	fail();
+		//}
 	}
 
 	@Test
@@ -1513,5 +1518,4 @@ public class ResultsTableTest {
 		String str = "ctr="+r.getCounter()+", hdr="+r.getColumnHeadings();
 		assertEquals(str,r.toString());
 	}
-
 }

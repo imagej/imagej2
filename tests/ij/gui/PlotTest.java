@@ -153,7 +153,7 @@ public class PlotTest {
 		p = newPlot();
 		p.draw();
 	}
-
+	
 	@Test
 	public void testGetProcessor() {
 		p = newPlot();
@@ -166,10 +166,13 @@ public class PlotTest {
 		p.getImagePlus();
 	}
 
+	/* Removed 7-20-10
+	 * because it shows a window and Hudson is not happy with this.
 	@Test
 	public void testShow() {
 		p = newPlot();
 		p.show();
 	}
+	*/
 
 }
