@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class TrimmedButtonTest {
 	
-	TrimmedButton b;
+	TrimmedButton b; 
 
 	/* Tests removed 7-20-10
 	 * because hudson complains about missing gui
