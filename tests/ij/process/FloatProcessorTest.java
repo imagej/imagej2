@@ -1,12 +1,10 @@
 package ij.process;
 
-import loci.formats.FormatException;
-import loci.plugins.util.ImagePlusReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.ByteArrayOutputStream;
@@ -16,10 +14,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import loci.formats.FormatException;
+import loci.plugins.util.ImageProcessorReader;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class FloatProcessorTest {
-    
+
 
 	public static float[][] imageFloatData;
 
@@ -33,11 +36,11 @@ public class FloatProcessorTest {
 	public static void runBeforeClass()
 	{
 	    String id = "data/head.xv";
-		ImagePlusReader imagePlusReader = new ImagePlusReader();
+		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
 		ImageProcessor imageProcessor = null;
 
 		try {
-			imagePlusReader.setId(id);
+			imageProcessorReader.setId(id);
 		} catch (FormatException e) {
 
 			e.printStackTrace();
@@ -47,12 +50,12 @@ public class FloatProcessorTest {
 		}
 
 		try {
-			imageProcessor = imagePlusReader.openProcessors(0)[0];
+			imageProcessor = imageProcessorReader.openProcessors(0)[0];
 		} catch (FormatException e) {
 
 			e.printStackTrace();
 		} catch (IOException e) {
-                                              
+
 			e.printStackTrace();
 		}
 
@@ -443,7 +446,7 @@ public class FloatProcessorTest {
 					result = false;
 				}
         }
-        
+
 		//ensure that all pixel values were the same
 		assertEquals(true, result);
 	}
@@ -610,7 +613,7 @@ public class FloatProcessorTest {
 
                 //get the pixel value that was set
                 int[] result = floatProcessorTest.getPixel(j, i, null);
-                                                                  
+
                 //check the result
                 assertEquals( inputArray[0] ,result[0]);
 
@@ -630,7 +633,7 @@ public class FloatProcessorTest {
     {
         //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
         FloatProcessor floatProcessorTest  = new FloatProcessor(imageFloatData);
-        
+
         //get the underlying 1D array
         float[] pixels = (float[]) floatProcessorTest.getPixels();
 
@@ -657,7 +660,7 @@ public class FloatProcessorTest {
 		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
 
                 //get the pixel value that was set
-                double result = floatProcessorTest.getInterpolatedPixel((double) j, (double) i);
+                double result = floatProcessorTest.getInterpolatedPixel(j, i);
 
                 //check the result
                 assertEquals( referenceResult, result, Float.MAX_VALUE );
@@ -696,7 +699,7 @@ public class FloatProcessorTest {
 		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
 
                 //get the pixel value that was set
-                double result = floatProcessorTest.getPixelInterpolated((double) j, (double) i);
+                double result = floatProcessorTest.getPixelInterpolated(j, i);
 
                 //check the result
                 assertEquals( result, referenceResult, Float.MAX_VALUE );
@@ -735,7 +738,7 @@ public class FloatProcessorTest {
 		        double referenceResult = lowerAverage + yFraction * (upperAverage - lowerAverage);
 
                 //get the pixel value that was set
-                double result = floatProcessorTest.getPixelInterpolated((double) j, (double) i);
+                double result = floatProcessorTest.getPixelInterpolated(j, i);
 
                 //check the result
                 assertEquals( result, referenceResult, Float.MAX_VALUE );
@@ -1182,7 +1185,7 @@ public class FloatProcessorTest {
         }
 	}
 
-	@Test          
+	@Test
 	public void testAbs()
     {
 		//create a new floatProcessor given the float array data from the imageProcessor returned by the reader
@@ -1299,7 +1302,7 @@ public class FloatProcessorTest {
         byte[] pixels8 = new byte[size];
         float value;
         int ivalue;
-        
+
         float scale = 255f/((float)max-(float)min);
         for (int i=0; i<size; i++)
         {
@@ -1332,14 +1335,14 @@ public class FloatProcessorTest {
 
         int height = imageFloatData[0].length;
         int width = imageFloatData.length;
-        
+
         BufferedImage refBufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = ((Graphics2D)refBufferedImage.getGraphics());
         g.drawImage(refFloatProcessor.createImage(), 0, 0, null);
 
         //check the result
         assertEquals( refBufferedImage.getWidth(), refFloatProcessor.getBufferedImage().getWidth() );
-		
+
 	}
 
 	@Test
@@ -1384,7 +1387,7 @@ public class FloatProcessorTest {
 
         //get the reference pixels
         float[] testSnapshotPixels = (float[]) refFloatProcessor.getSnapshotPixels();
-        
+
          //test each Pixel Value
          for(int i = 0; i<refFloatProcessor.height; i++)
          {
@@ -1415,7 +1418,7 @@ public class FloatProcessorTest {
 
         //check the Height
          assertEquals( refFloatProcessor.getHeight(), testFloatProcessor.getHeight() );
-        
+
          //check the Width
          assertEquals( refFloatProcessor.getWidth(), testFloatProcessor.getWidth() );
 
@@ -1445,7 +1448,7 @@ public class FloatProcessorTest {
 
         //check the Height
          assertEquals( refFloatProcessor.getHeight(), testFloatProcessor.snapshotHeight );
-        
+
          //check the Width
          assertEquals( refFloatProcessor.getWidth(), testFloatProcessor.snapshotWidth );
 
@@ -1497,13 +1500,13 @@ public class FloatProcessorTest {
 
 	}
 
-    
+
 	@Test
 	public void testConvolve3x3()
     {
         //create a new floatProcessor given the float array data from the imageProcessor returned by the reader
         FloatProcessor refFloatProcessor  = new FloatProcessor(imageFloatData);
-        FloatProcessor testFloatProcessor = new FloatProcessor(imageFloatData);        
+        FloatProcessor testFloatProcessor = new FloatProcessor(imageFloatData);
 
         //convolve3x3 int array
         int[] kernel = {-1,-1,-1,-1,8,-1,-1,-1,-1};
@@ -1627,7 +1630,7 @@ public class FloatProcessorTest {
 
         Random rnd=new Random();
         for (int y=roiY; y<(roiY+roiHeight); y++)
-        {                                           
+        {
             int i = y * width + roiX;
             for (int x=roiX; x<(roiX+roiWidth); x++)
             {
@@ -1636,7 +1639,7 @@ public class FloatProcessorTest {
                 i++;
             }
         }
-        
+
         refFloatProcessor.resetMinAndMax();
 
         //test the two arrays are the same
@@ -1663,7 +1666,7 @@ public class FloatProcessorTest {
         testFloatProcessor.setRoi(testROI);
 
         testFloatProcessor = (FloatProcessor) testFloatProcessor.crop();
-        
+
         //test the two arrays are the same
         //test each Pixel Value
         for(int i = 0; i<testFloatProcessor.height; i++)
@@ -1693,7 +1696,7 @@ public class FloatProcessorTest {
         FloatProcessor testFloatProcessor;
 
         testFloatProcessor = (FloatProcessor) refFloatProcessor.duplicate();
-        
+
         //test the two arrays are the same
         //test each Pixel Value
         for(int i = 0; i<testFloatProcessor.height; i++)
@@ -1835,7 +1838,7 @@ public class FloatProcessorTest {
         int width = imageFloatData.length;
         float max = (float) refFloatProcessor.getMax();
         float min = (float) refFloatProcessor.getMin();
-        
+
         // scale from float to 8-bits
         int size = width*height;
         byte[] pixels8 = new byte[size];
@@ -1849,7 +1852,7 @@ public class FloatProcessorTest {
             ivalue = (int)((value*scale)+0.5f);
             if (ivalue>255) ivalue = 255;
             pixels8[i] = (byte)ivalue;
-                                                             
+
             //check to see that the two are equal
             assertEquals(pixels8[i], test8Bit[i]);
         }
@@ -1934,7 +1937,7 @@ public class FloatProcessorTest {
         {
             for(int j = 0; j < refFloatProcessor.width; j++)
             {
-                refArray[i*refFloatProcessor.width+j] = (double) refFloatProcessor.getf(i*refFloatProcessor.width+j); //check the result
+                refArray[i*refFloatProcessor.width+j] = refFloatProcessor.getf(i*refFloatProcessor.width+j); //check the result
             }
         }
 
@@ -2002,7 +2005,7 @@ public class FloatProcessorTest {
         double testMax = refFloatProcessor.getMax();
         double refMin = Double.MAX_VALUE;
         double refMax = Double.MIN_VALUE;
-        
+
         //test the two arrays are the same
         for(int i = 0; i<refFloatProcessor.height; i++)
         {
@@ -2099,7 +2102,7 @@ public class FloatProcessorTest {
 
         //convolve 3x3
         testFloatProcessor.filter3x3(ImageProcessor.BLUR_MORE, kernel);
-        
+
         //perform reference 3x3
         Rectangle refRoiRect = refFloatProcessor.getRoi();
         int roiHeight = refRoiRect.height;

@@ -1,28 +1,27 @@
 package ij.process;
 
-import loci.formats.FormatException;
-import loci.plugins.util.ImagePlusReader;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
 import ij.Assert;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import loci.formats.FormatException;
+import loci.plugins.util.ImageProcessorReader;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class ByteProcessorTest {
 
@@ -40,18 +39,18 @@ public class ByteProcessorTest {
 	{
 	    String id = "data/head8bit.tif";
 
-		ImagePlusReader imagePlusReader = new ImagePlusReader();
+		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
 		ImageProcessor imageProcessor = null;
 
         try {
-            imagePlusReader.setId(id);
+            imageProcessorReader.setId(id);
         } catch (FormatException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
-            imageProcessor = imagePlusReader.openProcessors(0)[0];
+            imageProcessor = imageProcessorReader.openProcessors(0)[0];
         } catch (FormatException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
@@ -60,9 +59,9 @@ public class ByteProcessorTest {
         width = imageProcessor.getWidth();
         height = imageProcessor.getHeight();
         imageByteData = new byte[width*height];
-        
+
         try {
-            imagePlusReader.openBytes( 0, imageByteData );
+            imageProcessorReader.openBytes( 0, imageByteData );
         } catch (FormatException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
@@ -72,7 +71,7 @@ public class ByteProcessorTest {
         //assign the color model
         cm = imageProcessor.getColorModel();
     }
-	
+
 	public byte[] getImageByteData()
 	{
 		return imageByteData.clone();
@@ -373,7 +372,7 @@ public class ByteProcessorTest {
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[ index]&0xff , byteProcessor.get( index) );
-	    }   
+	    }
 
 	}
 
@@ -436,7 +435,7 @@ public class ByteProcessorTest {
 
         //get the reference data
         byte[] refImageArray = getImageByteData();
-	    
+
 	    for(int y = 0; y<height; y++)
         {
 			for(int x = 0; x<width; x++)
@@ -460,7 +459,7 @@ public class ByteProcessorTest {
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[index]&0xff, byteProcessor.getf(index), 0.0 );
-	    }   
+	    }
 	}
 
 	@Test
@@ -519,7 +518,7 @@ public class ByteProcessorTest {
         assertEquals( imageRef[0], byteProcessor.getInterpolatedPixel(0, 0), Assert.DOUBLE_TOL ); //test beginning
         assertEquals( imageRef[(width)*(height/2)+(width/2)], byteProcessor.getPixelInterpolated( (width/2),(height/2)) ); //test middle
         assertEquals( imageRef[width*height-1], byteProcessor.getPixelInterpolated(width-1, height-1) ); //test endpoint
- 
+
     }
 
 	@Test
@@ -531,7 +530,7 @@ public class ByteProcessorTest {
         assertEquals( imageRef[0], byteProcessor.getPixelInterpolated(0, 0) ); //test beginning
         assertEquals( imageRef[(width)*(height/2)+(width/2)], byteProcessor.getPixelInterpolated( (width/2),(height/2)) ); //test middle
         assertEquals( imageRef[width*height-1], byteProcessor.getPixelInterpolated(width-1, height-1) ); //test endpoint
- 
+
     }
 
 	@Test
@@ -566,7 +565,7 @@ public class ByteProcessorTest {
 
         //get the reference data
         byte[] refImageArray = getImageByteData();
-	    
+
 	    for(int y = 0; y<height; y++)
         {
 			for(int x = 0; x<width; x++)
@@ -638,7 +637,7 @@ public class ByteProcessorTest {
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[index], testImageArray[index] );
-	    }   
+	    }
     }
 
 	@Test
@@ -658,7 +657,7 @@ public class ByteProcessorTest {
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[index], testImageArray[index] );
-	    }  
+	    }
 	}
 
 	@Test
@@ -667,9 +666,9 @@ public class ByteProcessorTest {
 	    //Create a new ByteProcessor object for testing
 		ByteProcessor byteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
         int[] sine_table = {99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99};
-        
+
         byteProcessor.applyTable(sine_table);
-        
+
 		for(int y = 0; y<height; y++)
         {
 			for(int x = 0; x<width; x++)
@@ -703,13 +702,13 @@ public class ByteProcessorTest {
         byte[] r = new byte[256];
 		byte[] g = new byte[256];
 		byte[] b = new byte[256];
-		for(int i=0; i<256; i++) 
+		for(int i=0; i<256; i++)
 		{
 			r[i]=(byte)i;
 			g[i]=(byte)i;
 			b[i]=(byte)i;
 		}
-		
+
 		IndexColorModel icm = new IndexColorModel( 8, 256, r, g, b );
 
 		WritableRaster wr = icm.createCompatibleWritableRaster( 1, 1 );
@@ -717,20 +716,20 @@ public class ByteProcessorTest {
 		sm = sm.createCompatibleSampleModel( width, height );
 		DataBuffer db = new DataBufferByte( getImageByteData(), width*height, 0 );
 		Raster raster = Raster.createWritableRaster( sm, db, null );
-		Image image = new BufferedImage( icm, (WritableRaster) raster, false, null);	
-		
-		
+		Image image = new BufferedImage( icm, (WritableRaster) raster, false, null);
+
+
 		MemoryImageSource ms = new MemoryImageSource(width, height, cm, getImageByteData(), 0, width);
 		ms.setAnimated(true);
 		ms.setFullBufferUpdates(true);
 		Image img = Toolkit.getDefaultToolkit().createImage(ms);
 		*/
     	testImageStats( new ByteProcessor(testImage), "stats[count=58368, mean=45.3469880756579, min=0.0, max=255.0] 125.60450794974938 112.74068266250771 128.0 114.0");
-	
+
 
 	}
-	
-	
+
+
 
 	@Test
 	public void testGetBufferedImage()
@@ -742,7 +741,7 @@ public class ByteProcessorTest {
         BufferedImage testImage = byteProcessor.getBufferedImage();
         ByteProcessor tbp = new ByteProcessor(testImage);
     	testImageStats( tbp, "stats[count=0, mean=NaN, min=255.0, max=0.0] NaN NaN NaN NaN");
-    	
+
 	}
 
 	@Test
@@ -811,12 +810,12 @@ public class ByteProcessorTest {
         //get the reference data
         byte[] refImageArray = getImageByteData();
         byte[] testImageArray = byteProcessor.create8BitImage();
-        
+
         //check the values
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[ index ], testImageArray[ index ], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
@@ -824,10 +823,10 @@ public class ByteProcessorTest {
     {
 	    //Create a new ByteProcessor object for testing
 		ByteProcessor byteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		
+
 		//take a snapshot of the ROI
 		byteProcessor.snapshot();
-		
+
         //change the entire image
         byteProcessor.flipVertical();
         byteProcessor.flipVertical();
@@ -837,13 +836,13 @@ public class ByteProcessorTest {
 
         //get the reference data
         byte[] refImageArray = getImageByteData();
-        byte[] testImageArray = byteProcessor.create8BitImage();   
-        
+        byte[] testImageArray = byteProcessor.create8BitImage();
+
         //check the values
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	assertEquals( refImageArray[ index ], testImageArray[ index ], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
@@ -890,8 +889,8 @@ public class ByteProcessorTest {
         }
 	}
 
- 
-	@Test  
+
+	@Test
 	public void testConvolve3x3()
     {
 	    //Create a new ByteProcessor object for testing
@@ -900,7 +899,7 @@ public class ByteProcessorTest {
         byte[] refPixels = getImageByteData();
 
         final int[] kernel = {-1, -1, -1, -1, 8, -1, -1, -1, -1};
- 
+
         int p1, p2, p3,
             p4, p5, p6,
             p7, p8, p9;
@@ -942,19 +941,19 @@ public class ByteProcessorTest {
                     + k4*p4 + k5*p5 + k6*p6
                     + k7*p7 + k8*p8 + k9*p9;
                 sum /= scale;
-                                                      
-                if(sum>255) sum= 255;                                 
+
+                if(sum>255) sum= 255;
                 if(sum<0) sum= 0;
 
                 refPixels[offset++] = (byte)sum;
             }
         }
-        
+
         //generate the test data
  		ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
         testByteProcessor.convolve3x3(kernel);
         byte[] testPixels = (byte[]) testByteProcessor.getPixels();
-        
+
         //evaluate the results
         for(int y = 0; y<height; y++)
         {
@@ -962,7 +961,7 @@ public class ByteProcessorTest {
 			{
 
 				int reference = y*refByteProcessor.width + x;
-	
+
                 assertEquals( refPixels[ reference ], testPixels[ reference ], 0.0);
             }
         }
@@ -986,29 +985,29 @@ public class ByteProcessorTest {
                     max = values[j];
             return max;
         }
-    
+
     private void filter(ByteProcessor refByteProcessor, int type, int binaryCount, int binaryBackground )
     {
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
         int binaryForeground = 255 - binaryBackground;
-        
+
 		int inc = refByteProcessor.roiHeight/25;
 		if (inc<1) inc = 1;
 
 		byte[] pixels2 = (byte[])refByteProcessor.getPixelsCopy();
-		if (refByteProcessor.width==1) 
+		if (refByteProcessor.width==1)
 		{
 			refByteProcessor.filterEdge(type, pixels2, refByteProcessor.roiHeight, refByteProcessor.roiX, refByteProcessor.roiY, 0, 1);
 			return;
 		}
-		
+
 		int offset, sum1, sum2=0, sum=0;
 		int[] values = new int[10];
 		if (type==ByteProcessor.MEDIAN_FILTER) values = new int[10];
 		int rowOffset = refByteProcessor.width;
 
-		byte[] pixels = refByteProcessor.getPixelsArray();
-		for (int y=refByteProcessor.yMin; y<=refByteProcessor.yMax; y++) 
+		byte[] pixels = (byte[]) refByteProcessor.getPixels();
+		for (int y=refByteProcessor.yMin; y<=refByteProcessor.yMax; y++)
 		{
 			offset = refByteProcessor.xMin + y * width;
 			p2 = pixels2[offset-rowOffset-1]&0xff;
@@ -1018,7 +1017,7 @@ public class ByteProcessorTest {
 			p8 = pixels2[offset+rowOffset-1]&0xff;
 			p9 = pixels2[offset+rowOffset]&0xff;
 
-			for (int x=refByteProcessor.xMin; x<=refByteProcessor.xMax; x++) 
+			for (int x=refByteProcessor.xMin; x<=refByteProcessor.xMax; x++)
 			{
 				p1 = p2; p2 = p3;
 				p3 = pixels2[offset-rowOffset+1]&0xff;
@@ -1076,7 +1075,7 @@ public class ByteProcessorTest {
 	                        if (p6==binaryBackground) count++;
 	                        if (p7==binaryBackground) count++;
 	                        if (p8==binaryBackground) count++;
-	                        if (p9==binaryBackground) count++;                          
+	                        if (p9==binaryBackground) count++;
 	                        if (count>=binaryCount)
 	                            sum = binaryBackground;
 	                        else
@@ -1095,7 +1094,7 @@ public class ByteProcessorTest {
 	                        if (p6==binaryForeground) count++;
 	                        if (p7==binaryForeground) count++;
 	                        if (p8==binaryForeground) count++;
-	                        if (p9==binaryForeground) count++;                          
+	                        if (p9==binaryForeground) count++;
 	                        if (count>=binaryCount)
 	                            sum = binaryForeground;
 	                        else
@@ -1105,14 +1104,14 @@ public class ByteProcessorTest {
 				pixels[offset++] = (byte)sum;
 			}
 		}
-		
+
 		if (refByteProcessor.xMin==1) refByteProcessor.filterEdge(type, pixels2, refByteProcessor.roiHeight, refByteProcessor.roiX, refByteProcessor.roiY, 0, 1);
 		if (refByteProcessor.yMin==1) refByteProcessor.filterEdge(type, pixels2, refByteProcessor.roiWidth, refByteProcessor.roiX, refByteProcessor.roiY, 1, 0);
 		if (refByteProcessor.xMax==refByteProcessor.width-2) refByteProcessor.filterEdge(type, pixels2, refByteProcessor.roiHeight, refByteProcessor.width-1, refByteProcessor.roiY, 0, 1);
 		if (refByteProcessor.yMax==refByteProcessor.height-2) refByteProcessor.filterEdge(type, pixels2, refByteProcessor.roiWidth, refByteProcessor.roiX, refByteProcessor.height-1, 1, 0);
 
     }
-    
+
 	@Test
 	public void testFilter()
 	{
@@ -1121,7 +1120,7 @@ public class ByteProcessorTest {
 		int type = ImageProcessor.BLUR_MORE;
 		ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		filter(refByteProcessor, type, 0, 0);
-		
+
 		//Create a new ByteProcessor object for testing
 		ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		testByteProcessor.filter(type);
@@ -1130,18 +1129,18 @@ public class ByteProcessorTest {
 		{
 			int result =  testByteProcessor.get( i );
             if ( result < 0)
-                result = result + 256; 
+                result = result + 256;
 
             //System.out.println(i + " = " +  refByteProcessor.get( i ) + " == " + result);
 			assertEquals( refByteProcessor.get( i ), result, 0.0);
 		}
-		
+
 		//Test Filter:FIND_EDGES
 		//Create a new ByteProcessor object for testing
 		type = ImageProcessor.FIND_EDGES;
 		refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		filter(refByteProcessor, type, 0, 0);
-		
+
 		//Create a new ByteProcessor object for testing
 		testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		testByteProcessor.filter(type);
@@ -1150,18 +1149,18 @@ public class ByteProcessorTest {
 		{
 			int result =  testByteProcessor.get( i );
             if ( result < 0)
-                result = result + 256; 
+                result = result + 256;
 
             //System.out.println(i + " = " +  refByteProcessor.get( i ) + " == " + result);
 			assertEquals( refByteProcessor.get( i ), result, 0.0);
 		}
-		
+
 		//Test Filter:MEDIAN_FILTER
 		//Create a new ByteProcessor object for testing
 		type = ImageProcessor.MEDIAN_FILTER;
 		refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		filter(refByteProcessor, type, 0, 0);
-		
+
 		//Create a new ByteProcessor object for testing
 		testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		testByteProcessor.filter(type);
@@ -1170,18 +1169,18 @@ public class ByteProcessorTest {
 		{
 			int result =  testByteProcessor.get( i );
             if ( result < 0)
-                result = result + 256; 
+                result = result + 256;
 
             //System.out.println(i + " = " +  refByteProcessor.get( i ) + " == " + result);
 			assertEquals( refByteProcessor.get( i ), result, 0.0);
 		}
-		
+
 		//Test Filter:MIN
 		//Create a new ByteProcessor object for testing
 		type = ImageProcessor.MIN;
 		refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		filter(refByteProcessor, type, 0, 0);
-		
+
 		//Create a new ByteProcessor object for testing
 		testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		testByteProcessor.filter(type);
@@ -1190,18 +1189,18 @@ public class ByteProcessorTest {
 		{
 			int result =  testByteProcessor.get( i );
             if ( result < 0)
-                result = result + 256; 
+                result = result + 256;
 
             //System.out.println(i + " = " +  refByteProcessor.get( i ) + " == " + result);
 			assertEquals( refByteProcessor.get( i ), result, 0.0);
 		}
-		
+
 		//Test Filter:MAX
 		//Create a new ByteProcessor object for testing
 		type = ImageProcessor.MAX;
 		refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		filter(refByteProcessor, type, 0, 0);
-		
+
 		//Create a new ByteProcessor object for testing
 		testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		testByteProcessor.filter(type);
@@ -1210,7 +1209,7 @@ public class ByteProcessorTest {
 		{
 			int result =  testByteProcessor.get( i );
             if ( result < 0)
-                result = result + 256; 
+                result = result + 256;
 
             //System.out.println(i + " = " +  refByteProcessor.get( i ) + " == " + result);
 			assertEquals( refByteProcessor.get( i ), result, 0.0);
@@ -1223,7 +1222,7 @@ public class ByteProcessorTest {
         ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
         refByteProcessor.medianFilter();
     	testImageStats( refByteProcessor, "stats[count=58368, mean=44.95233689692982, min=0.0, max=237.0] 125.63334245504002 112.74784147134399 128.0 114.0");
-    	
+
 	}
 
 	@Test
@@ -1249,7 +1248,7 @@ public class ByteProcessorTest {
                 i++;
             }
         }
-        
+
        //find the test value
        ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
        testByteProcessor.noise(testRange);
@@ -1264,21 +1263,21 @@ public class ByteProcessorTest {
 				assertEquals( refPixels[ index ], testPixels[ index ], 256);
             }
         }
-        
+
 
 	}
 
 	@Test
-	public void testCrop() 
+	public void testCrop()
 	{
 		ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		
+
 		Rectangle roi = new Rectangle(1, 1, 1, 1);  //grab a one by one region at 1,1
 		byte[] refPixelData = getImageByteData();
-		
+
 		refByteProcessor.setRoi(roi);
 		ImageProcessor testIP = refByteProcessor.crop();
-		
+
         for(int y = 0; y < roi.height; y++)
         {
 			for(int x = 0; x < roi.width; x++)
@@ -1290,12 +1289,12 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testThreshold() 
+	public void testThreshold()
 	{
 		byte[] refPixelData = getImageByteData();
 
 		int level = 128;
-		for (int i=0; i<refPixelData.length; i++) 
+		for (int i=0; i<refPixelData.length; i++)
 		{
 			if ( (refPixelData[i] & 0xff) <= level)
 				refPixelData[i] = 0;
@@ -1309,7 +1308,7 @@ public class ByteProcessorTest {
 
 		//test the values
 		for( int index = 0; index< width*height; index++ )
-		{ 
+		{
 			assertEquals( refPixelData[index], (byte) testByteProcessor.get( index ), 0.0);
 		}
 	}
@@ -1317,13 +1316,13 @@ public class ByteProcessorTest {
 
 
 	@Test
-	public void testDuplicate() 
+	public void testDuplicate()
 	{
         ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
         ImageProcessor testIP = refByteProcessor.duplicate();
         byte[] testPixelData = (byte[]) testIP.getPixelsCopy();
 		byte[] refPixelData = getImageByteData();
-		
+
 		//test the values
 		for( int index = 0; index< width*height; index++ )
 		{
@@ -1332,7 +1331,7 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testScale() 
+	public void testScale()
 	{
         ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
         refByteProcessor.scale( 0.5, 0.5 );
@@ -1340,7 +1339,7 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testResizeIntInt() 
+	public void testResizeIntInt()
 	{
 	       ByteProcessor refByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 	       refByteProcessor.resize( 50, 50 );
@@ -1349,21 +1348,21 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testRotate() 
+	public void testRotate()
 	{
 		 ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		 testByteProcessor.rotate(-99);  
+		 testByteProcessor.rotate(-99);
 		 testImageStats( testByteProcessor, "stats[count=58368, mean=71.48273026315789, min=0.0, max=255.0] 126.41098946768979 116.11916821017836 128.0 114.0");
 
 	}
 
 	@Test
-	public void testGetHistogram() 
+	public void testGetHistogram()
 	{
 		byte[] refByteArray = getImageByteData();
 		 ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		 int[] testHistogram = testByteProcessor.getHistogram();
-		 
+
 		 int[] refHistogram = new int[256];
 	        for (int y=testByteProcessor.roiY; y<(testByteProcessor.roiY+testByteProcessor.roiHeight); y++) {
 	            int i = y * width + testByteProcessor.roiX;
@@ -1372,134 +1371,134 @@ public class ByteProcessorTest {
 	                refHistogram[v]++;
 	            }
 	        }
-	        
+
 			//test the values
 			for( int index = 0; index< refHistogram.length; index++ )
 			{
 				assertEquals( refHistogram[index], testHistogram[index], 0.0);
-			}            
-	                
+			}
+
 }
 
 	@Test
-	public void testErode() 
+	public void testErode()
 	{
 		ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		ByteProcessor referenceByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);	       
+		ByteProcessor referenceByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		if (referenceByteProcessor.isInvertedLut())
 			filter(referenceByteProcessor, ImageProcessor.MIN, 0, 0);
 		else
 			filter(referenceByteProcessor, ImageProcessor.MAX, 0, 0);
-        
+
 		testByteProcessor.erode();
-		
+
 		//test the values
 		for( int index = 0; index< referenceByteProcessor.width*referenceByteProcessor.height; index++ )
 		{
 			assertEquals( referenceByteProcessor.get(index), testByteProcessor.get(index), 0.0);
-		}        
-		
+		}
+
 	}
 
 	@Test
-	public void testDilate() 
+	public void testDilate()
 	{
 		ByteProcessor testByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
-		ByteProcessor referenceByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);	       
+		ByteProcessor referenceByteProcessor =  new ByteProcessor(width, height, getImageByteData(), cm);
 		if (referenceByteProcessor.isInvertedLut())
 			filter(referenceByteProcessor, ImageProcessor.MAX, 0, 0);
 		else
 			filter(referenceByteProcessor, ImageProcessor.MIN, 0, 0);
-        
+
 		testByteProcessor.dilate();
-		
+
 		//test the values
 		for( int index = 0; index< referenceByteProcessor.width*referenceByteProcessor.height; index++ )
 		{
 			assertEquals( referenceByteProcessor.get(index), testByteProcessor.get(index), 0.0);
-		} 
+		}
 	}
 
 	@Test
-	public void testConvolve() 
+	public void testConvolve()
 	{
 		//This calls through to ij.plugin.filter.Convolver.java
 		assertEquals( true, true);
 	}
 
 	@Test
-	public void testToFloat() 
+	public void testToFloat()
 	{
 		byte[] refByteArray = getImageByteData();
 		int size = width * height;
 		float[] refFloatArray = new float[size];
 		ByteProcessor testByteProcessor = new ByteProcessor(width, height, getImageByteData(), cm);
 		FloatProcessor testFloatProcessor = testByteProcessor.toFloat( 0, null );
-		 
+
 	    //reference conversion values
 	    for (int i=0; i<size; i++)
 	    	refFloatArray[i] = refByteArray[i]&0xff;
-	    
+
 	    //check the values
 	    for( int index = 0; index< size; index++ )
 			{
 	    		assertEquals( refFloatArray[index], testByteProcessor.get(index), 0.0);
-	    	}   
-	    
+	    	}
+
 	    assertEquals( testByteProcessor.width, testFloatProcessor.width);
 	    assertEquals( testByteProcessor.height, testFloatProcessor.height);
 	    assertEquals( testByteProcessor.getRoi(), testFloatProcessor.getRoi());
-	    assertEquals( testByteProcessor.getMax(), testFloatProcessor.getMax(), 0.0);	
+	    assertEquals( testByteProcessor.getMax(), testFloatProcessor.getMax(), 0.0);
 	    assertEquals( testByteProcessor.getMin(), testFloatProcessor.getMin(), 0.0);
 		assertEquals( testByteProcessor.maxThreshold, testFloatProcessor.maxThreshold, 0.0);
 		assertEquals( testByteProcessor.minThreshold, testFloatProcessor.minThreshold, 0.0);
 
 	}
-	
+
 	@Test
-	public void testSetPixelsIntFloatProcessor() 
+	public void testSetPixelsIntFloatProcessor()
 	{
 		//get the reference image data
 		byte[] refByteArray = getImageByteData();
-		
+
 		float[] refFloatArray = new float[refByteArray.length];
-		 
+
 	    //reference conversion values
 	    for (int i=0; i<refByteArray.length; i++)
-	    	refFloatArray[i] = refByteArray[i]&0xff;   
-	    
+	    	refFloatArray[i] = refByteArray[i]&0xff;
+
 		FloatProcessor referenceFloatProcessor = new FloatProcessor(width, height, refFloatArray, cm);
-		
+
 		ByteProcessor testByteProcessor = new ByteProcessor(width, height);
-		testByteProcessor.setPixels(0, referenceFloatProcessor);	
-		
+		testByteProcessor.setPixels(0, referenceFloatProcessor);
+
 		 //check the values
 	    for( int index = 0; index< refByteArray.length; index++ )
 	    {
 	    	//System.out.println( (refByteArray[index]&0xff) + " " + index + " " +  testByteProcessor.get(index) );
 	    	assertEquals( refFloatArray[index], testByteProcessor.get(index), 0.0);
-	    }   
+	    }
 	}
 
 	@Test
-	public void testCreate8BitImage() 
+	public void testCreate8BitImage()
 	{
 		//get the reference image data
 		byte[] refByteArray = getImageByteData();
-		
+
 		//get the reference array
 		byte[] testByteArray = new ByteProcessor(width, height, getImageByteData(), cm).create8BitImage();
-		
+
 		//check the values
 	    for( int index = 0; index< refByteArray.length; index++ )
 	    {
 	    	//System.out.println( (refByteArray[index]&0xff) + " " + index + " " +  testByteProcessor.get(index) );
 	    	assertEquals( refByteArray[index], testByteArray[index], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
-	public void testByteProcessorImage() 
+	public void testByteProcessorImage()
 	{
         java.awt.image.ColorModel cm = new ByteProcessor(width, height, getImageByteData(), null).getColorModel();
         byte[] pixels8 = getImageByteData();
@@ -1507,11 +1506,11 @@ public class ByteProcessorTest {
         source.setAnimated(true);
         source.setFullBufferUpdates(true);
         java.awt.Image refImage = Toolkit.getDefaultToolkit().createImage(source);
-		
+
         //find the test data
         byte[] testByteProcessor =  new ByteProcessor(refImage).create8BitImage();
-   
-        
+
+
         //find the reference data
 	    PixelGrabber pg = new PixelGrabber(refImage, 0, 0, width, height, false);
 	    try {
@@ -1519,75 +1518,75 @@ public class ByteProcessorTest {
 	    } catch (InterruptedException e) {
 	    System.err.println(e);
 	    };
-	    
+
 	    byte[] refImageArray = (byte[]) pg.getPixels();
-	   
+
 		//check the values
 	    for( int index = 0; index< refImageArray.length; index++ )
 	    {
 	    	//System.out.println( (refByteArray[index]&0xff) + " " + index + " " +  testByteProcessor.get(index) );
 	    	assertEquals( refImageArray[index], testByteProcessor[index], 0.0);
-	    }   
+	    }
 	}
 
-	
+
 	@Test
-	public void testByteProcessorIntInt() 
+	public void testByteProcessorIntInt()
 	{
 		//get the reference array
 		byte[] testByteArray = new ByteProcessor( width, height ).create8BitImage();
-		
+
 		//check the values
 	    for( int index = 0; index< testByteArray.length; index++ )
 	    {
 	    	//System.out.println( (refByteArray[index]&0xff) + " " + index + " " +  testByteProcessor.get(index) );
 	    	assertEquals( 0.0f, testByteArray[index], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
-	public void testByteProcessorIntIntByteArrayColorModel() 
+	public void testByteProcessorIntIntByteArrayColorModel()
 	{
 		//get the reference array
 		byte[] testByteArray = new ByteProcessor( width, height, getImageByteData(), cm ).create8BitImage();
-		
+
 		//get the reference image data
 		byte[] refByteArray = getImageByteData();
-	
+
 		//check the values
 	    for( int index = 0; index< refByteArray.length; index++ )
 	    {
 	    	assertEquals( refByteArray[index], testByteArray[index], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
-	public void testByteProcessorBufferedImage() 
+	public void testByteProcessorBufferedImage()
 	{
 		//get the reference array
 		BufferedImage referenceBufferedImage = new ByteProcessor( width, height, getImageByteData(), cm ).getBufferedImage();
-		
+
 	    //get the test array
 	    byte[] refByteArray = new ByteProcessor( referenceBufferedImage ).create8BitImage();
-	    
+
 		//get the reference array
 		byte[] testByteArray = new ByteProcessor( width, height, getImageByteData(), cm ).create8BitImage();
-	
+
 		//check the values
 	    for( int index = 0; index< refByteArray.length; index++ )
 	    {
 	    	assertEquals( refByteArray[index], testByteArray[index], 0.0);
-	    }   
+	    }
 	}
 
 	@Test
-	public void testCreateBufferedImage() 
+	public void testCreateBufferedImage()
 	{
 		//get the reference array
 		ByteProcessor referenceByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		if (referenceByteProcessor.raster==null) {
 			SampleModel sm = referenceByteProcessor.getIndexSampleModel();
-			DataBuffer db = new DataBufferByte(referenceByteProcessor.getPixelsArray(), width*height, 0);
+			DataBuffer db = new DataBufferByte((byte[]) referenceByteProcessor.getPixels(), width*height, 0);
 			referenceByteProcessor.raster = Raster.createWritableRaster(sm, db, null);
 		}
 		if (referenceByteProcessor.image==null || cm!=referenceByteProcessor.cm2) {
@@ -1596,7 +1595,7 @@ public class ByteProcessorTest {
 			referenceByteProcessor.cm2 = cm;
 		}
 		Image referenceImage = referenceByteProcessor.image;
-        
+
         //get the test array
         Image testImage = new ByteProcessor ( width, height, getImageByteData(), cm ).createBufferedImage();
 
@@ -1617,11 +1616,11 @@ public class ByteProcessorTest {
 	    	//print if not =
 	 	   if (ref[index] != test[index])
 		    	System.out.println( "ref[" + index + "] " + ref[index] + " != test[" + index + "] " + test[index] );
-	 	   
+
 	    	assertEquals( ref[index], test[index]);
 	    }
 	}
-	
+
 	//TODO: move to utils class
 	/**
 	 * Prints out a byte array in the format {0x01,0x02,...,0x99}; for ease of use
@@ -1634,59 +1633,59 @@ public class ByteProcessorTest {
 		sb.append("{");
 		for(final byte bm:b)
 			sb.append("(byte) 0x" + HEXES.charAt((bm & 0xF0) >> 4) + HEXES.charAt((bm & 0x0F)) + ",");
-		
+
 		sb.deleteCharAt( sb.lastIndexOf(",") );
 		sb.append("};");
-		
-		System.out.println( sb );	
+
+		System.out.println( sb );
 	}
-	
+
 	private void testFilterEdgeHelper(int type, ByteProcessor referenceByteProcessor, byte[] referenceImageArray, byte[] referenceArray1, byte[] referenceArray2, byte[] referenceArray3, byte[] referenceArray4)
 	{
         if (referenceByteProcessor.xMin==1) referenceByteProcessor.filterEdge(type, referenceImageArray, referenceByteProcessor.roiHeight, referenceByteProcessor.roiX, referenceByteProcessor.roiY, 0, 1);
         asserteq( referenceByteProcessor.create8BitImage(), referenceArray1 );
-        
+
         if (referenceByteProcessor.yMin==1) referenceByteProcessor.filterEdge(type, referenceImageArray, referenceByteProcessor.roiWidth, referenceByteProcessor.roiX, referenceByteProcessor.roiY, 1, 0);
         asserteq( referenceByteProcessor.create8BitImage(), referenceArray2 );
-        
+
         if (referenceByteProcessor.xMax==width-2) referenceByteProcessor.filterEdge(type, referenceImageArray, referenceByteProcessor.roiHeight, width-1, referenceByteProcessor.roiY, 0, 1);
         asserteq( referenceByteProcessor.create8BitImage(), referenceArray3 );
-        
+
         if (referenceByteProcessor.yMax==height-2) referenceByteProcessor.filterEdge(type, referenceImageArray, referenceByteProcessor.roiWidth, referenceByteProcessor.roiX, height-1, 1, 0);
         asserteq( referenceByteProcessor.create8BitImage(), referenceArray4 );
-        
+
 	}
-	
+
 	@Test
-	public void testFilterEdge() 
+	public void testFilterEdge()
 	{
 		//define the reference data
 		final byte[] refImageByteArray = {0x10,0x20,0x30,0x40,0x50,0x60,0x70,0x11,0x01};
-		final byte[][] refByteArray = {{0x25, (byte) 0x20, (byte) 0x30, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x53, (byte) 0x36, (byte) 0x3F, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x4C, (byte) 0x57, (byte) 0x6B, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x50, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},  
-		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},  
-		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x00, (byte) 0x60, (byte) 0x60, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01}, 
-		{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01},  
+		final byte[][] refByteArray = {{0x25, (byte) 0x20, (byte) 0x30, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x2E, (byte) 0x36, (byte) 0x3F, (byte) 0x3D, (byte) 0x50, (byte) 0x60, (byte) 0x4C, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x53, (byte) 0x36, (byte) 0x3F, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x53, (byte) 0x57, (byte) 0x6B, (byte) 0x4C, (byte) 0x50, (byte) 0x60, (byte) 0xb8, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x4C, (byte) 0x57, (byte) 0x6B, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x60, (byte) 0x11, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x50, (byte) 0x11, (byte) 0x11, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x50, (byte) 0x60, (byte) 0x60, (byte) 0x50, (byte) 0x50, (byte) 0x60, (byte) 0x50, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x00, (byte) 0x60, (byte) 0x60, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01},
+		{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x50, (byte) 0x60, (byte) 0x00, (byte) 0x11, (byte) 0x01},
+		{(byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01},
+		{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01},
+		{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01},
 		{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x50, (byte) 0x60, (byte) 0xff, (byte) 0x11, (byte) 0x01}};
-		
+
 		//test each filter mode
 		int i =0;
 		testFilterEdgeHelper( ByteProcessor.BLUR_MORE, new ByteProcessor ( 3, 3, refImageByteArray, cm ), refImageByteArray, refByteArray[i++], refByteArray[i++], refByteArray[i++], refByteArray[i++] );
@@ -1697,9 +1696,9 @@ public class ByteProcessorTest {
 		testFilterEdgeHelper( ByteProcessor.DILATE, new ByteProcessor ( 3, 3, refImageByteArray, cm ), refImageByteArray, refByteArray[i++], refByteArray[i++], refByteArray[i++], refByteArray[i++] );
 
 	}
-    
+
 	@Test
-	public void testGetEdgePixel() 
+	public void testGetEdgePixel()
 	{
 		final byte[] refImageByteArray = {0x10,0x20,0x30,0x40,0x50,0x60,0x70,0x11,0x01};
 		ByteProcessor byteProcessor = new ByteProcessor ( 3, 3, refImageByteArray, cm );
@@ -1711,7 +1710,7 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testGetEdgePixel0() 
+	public void testGetEdgePixel0()
 	{
 		final byte[] refImageByteArray = {0x10,0x20,0x30,0x40,0x50,0x60,0x70,0x11,0x01};
 		ByteProcessor byteProcessor = new ByteProcessor ( 3, 3, refImageByteArray, cm );
@@ -1723,22 +1722,22 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testErodeIntInt() 
+	public void testErodeIntInt()
 	{
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		testByteProcessor.erode(3,0);
 		byte[] test = testByteProcessor.create8BitImage();
-		
+
 		ByteProcessor refByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		filter(refByteProcessor, ByteProcessor.ERODE, 3, 0);
 		byte[] ref = refByteProcessor.create8BitImage();
-		
+
 		//test elements  are equal
-		asserteq (ref, test);	
+		asserteq (ref, test);
 	}
 
 	@Test
-	public void testDilateIntInt() 
+	public void testDilateIntInt()
 	{
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		testByteProcessor.dilate(3,0);
@@ -1746,19 +1745,19 @@ public class ByteProcessorTest {
 	}
 
 	@Test
-	public void testOutline() 
+	public void testOutline()
 	{
 		//this test is in the BinaryProcessorClass
 	}
 
 	@Test
-	public void testSkeletonize() 
+	public void testSkeletonize()
 	{
 		//this test is in the BinaryProcessorClass
 	}
 
 	@Test
-	public void testGetHistogramImageProcessor() 
+	public void testGetHistogramImageProcessor()
 	{
 		//set up the reference histogram
 		final int[] refHistogram = {0, 2850, 4349, 4054, 3075, 2173, 1489, 0, 1149, 935, 669, 492, 375, 307, 239, 277, 259, 241, 214, 193, 236, 225, 0, 225, 225, 244, 218, 241, 237, 276, 234, 269, 285, 283, 313, 323, 359, 0, 389, 342, 328, 360, 295, 362, 340, 364, 371, 378, 408, 346, 402, 391, 0, 390, 415, 355, 419, 396, 397, 402, 441, 417, 369, 394, 430, 427, 425, 0, 428, 417, 395, 423, 416, 447, 439, 445, 437, 439, 511, 530, 566, 513, 0, 578, 584, 578, 623, 602, 601, 649, 625, 627, 619, 594, 564, 494, 425, 0, 453, 397, 347, 256, 267, 239, 173, 125, 99, 91, 58, 62, 47, 51, 0, 44, 41, 42, 42, 25, 46, 27, 34, 40, 38, 26, 40, 32, 35, 26, 0, 26, 28, 25, 31, 26, 25, 34, 25, 29, 35, 19, 29, 29, 0, 36, 26, 20, 18, 26, 29, 16, 29, 21, 30, 25, 21, 20, 13, 0, 22, 22, 15, 16, 22, 19, 24, 25, 26, 21, 19, 23, 14, 22, 0, 12, 22, 18, 19, 16, 22, 27, 19, 26, 21, 23, 17, 21, 7, 0, 12, 15, 16, 12, 13, 18, 13, 14, 13, 15, 10, 12, 14, 8, 0, 10, 12, 13, 12, 12, 9, 9, 14, 7, 9, 5, 9, 6, 9, 0, 11, 7, 11, 9, 4, 10, 5, 9, 4, 6, 9, 8, 7, 7, 0, 3, 7, 7, 8, 7, 7, 4, 8, 2, 0, 0, 3, 3, 3, 1, 0, 1, 1, 0, 0, 2, 0, 1};
@@ -1767,22 +1766,22 @@ public class ByteProcessorTest {
 		testByteProcessor.flipHorizontal();
 		ImageProcessor mask = new ByteProcessor(width, height, testByteProcessor.create8BitImage(), cm );
 		int[] testHistogram = testByteProcessor.getHistogram(mask);
-		
+
 		//check the values
 		for( int index = 0; index< testHistogram.length; index++ )
 		{
 		   assertEquals( refHistogram[index], testHistogram[index]);
-		}	 
+		}
 	}
 
 	@Test
-	public void testApplyLut() 
+	public void testApplyLut()
 	{
 		final byte[] refImageByteArray = {(byte) 0x01, (byte) 0x02, (byte) 0x30, (byte) 0x40, (byte) 0x50, (byte) 0x60, (byte) 0x99, (byte) 0xf9,(byte) 0xff};
 		ByteProcessor testByteProcessor =  new ByteProcessor(3, 3, refImageByteArray, cm);
 		testByteProcessor.setMinAndMax(3.0,100.0);
 		testByteProcessor.applyLut();
-		
+
 		//get the data
 		byte[] testImageByteArray = (byte[]) testByteProcessor.getPixelsCopy();
 		byte[] refResult = {(byte) 0x00,(byte) 0x00,(byte) 0x76,(byte) 0xa0,(byte) 0xcb,(byte) 0xf5,(byte) 0xff,(byte) 0xff,(byte) 0xff};
@@ -1791,87 +1790,87 @@ public class ByteProcessorTest {
 		for( int index = 0; index< refResult.length; index++ )
 		{
 		   assertEquals( refResult[index], testImageByteArray[index]);
-		}	 		
+		}
 	}
 
 	@Test
-	public void testToFloatProcessors() 
+	public void testToFloatProcessors()
 	{
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		FloatProcessor[] testFloatProcessors = testByteProcessor.toFloatProcessors();
 		byte[] testByteArray = testFloatProcessors[0].create8BitImage();
-		
+
 		byte[] refData = getImageByteData();
-		
+
 		//check the values
 		for( int index = 0; index< refData.length; index++ )
 		{
 			assertEquals( refData[index], testByteArray[index], 0.0);
-		}	 
+		}
 	}
 
 	@Test
-	public void testSetFromFloatProcessors() 
+	public void testSetFromFloatProcessors()
 	{
 		float[][] refFloatArray = new ByteProcessor( width, height, getImageByteData(), cm ).getFloatArray();
 		FloatProcessor[] refFloatProcessors = new FloatProcessor[1];
 		refFloatProcessors[0] = new FloatProcessor(refFloatArray);
-			
+
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height);
 		testByteProcessor.setFromFloatProcessors(refFloatProcessors);
-		
+
 		byte[] testByteArray = testByteProcessor.create8BitImage();
-		
+
 		byte[] refData = getImageByteData();
-		
+
 		//check the values
 		for( int index = 0; index< refData.length; index++ )
 		{
 			assertEquals( refData[index], testByteArray[index], 0.0);
-		}	
+		}
 	}
 
 	@Test
-	public void testToFloatArrays() 
+	public void testToFloatArrays()
 	{
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		float[][] testFloatArrays = testByteProcessor.toFloatArrays();
 		byte[] refData = getImageByteData();
-		float[][] refFloatArrays = new float[1][refData.length+1];		
-		
+		float[][] refFloatArrays = new float[1][refData.length+1];
+
 		//check the values
 		for( int index = 0; index< refData.length; index++ )
 		{
 			refFloatArrays[0][index] = refData[index]&0xff;
 			assertEquals( refFloatArrays[0][index], testFloatArrays[0][index], 0.0);
-		}	 	
+		}
 	}
 
 	@Test
-	public void testSetFromFloatArrays() 
+	public void testSetFromFloatArrays()
 	{
 		ByteProcessor refByteProcessor = new ByteProcessor( width, height, getImageByteData(), cm );
 		float[][] refFloatArrays = refByteProcessor.toFloatArrays();
-		
+
 		ByteProcessor testByteProcessor = new ByteProcessor( width, height);
 		testByteProcessor.setFromFloatArrays(refFloatArrays);
 		byte[] testByteData = testByteProcessor.create8BitImage();
-		
+
 		//check the values
 		for( int index = 0; index< refFloatArrays[0].length; index++ )
 		{
 			assertEquals( refFloatArrays[0][index], testByteData[index]&0xff, 0.0);
-		}	
+		}
 	}
-	
+
 	private void testImageStats( ImageProcessor ip, String expected)
 	{
 		ImageStatistics imageStatistics = ImageStatistics.getStatistics( ip, 0xFFFFFFFF, null );
 		imageStatistics.getCentroid( ip );
 		String testResults = imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid;
-		
+
 		assertEquals( expected, testResults );
-	
+
 	}
 
 }
