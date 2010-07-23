@@ -885,8 +885,11 @@ public class ShortProcessorTest {
 	    
 	    //get sha1 of histogram array
 	    byte[] results = FloatProcessorTest.getSHA1DigestFromByteArray( baos.toByteArray() );
-	    String reference = "ÄË-ì‹EÙû©◊SxÕƒÈE]ò";
-	    assertEquals( reference, new String( results ) );
+			byte[] reference = {
+				-0x80, -0x18, 0x2d, 0x19, -0x6d, -0x24, 0x45, -0xc, -0x62, -0x57,
+				-0x29, 0x53, 0x78, -0x33, -0x3c, -0x17, 0x45, 0x5d, -0x68, 0x13
+			};
+			assertArrayEquals( reference, results );
 	}
 
 	@Test
@@ -949,9 +952,12 @@ public class ShortProcessorTest {
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipHorizontal();
 		byte[] results = testShortProcessor.create8BitImage();
-		String reference = "íåV…πr^◊~}ù(”‡";
 		byte[] sha1Results = FloatProcessorTest.getSHA1DigestFromByteArray( results );
-		assertEquals( reference, new String( sha1Results ) );
+		byte[] reference = {
+			-0x6e, -0x74, 0x56, 0x1d, -0x37, -0x47, 0x1, 0x72, 0x1b, 0x5e,
+			-0x29, 0x1d, 0x1a, 0x7e, 0x7d, -0x63, 0x28, -0x2d, 0x5, -0x20
+		};
+		assertArrayEquals( reference, sha1Results );
 	}
 
 	@Test
@@ -1083,9 +1089,11 @@ public class ShortProcessorTest {
 	    
 	    //get sha1 of histogram array
 	    byte[] results = FloatProcessorTest.getSHA1DigestFromByteArray( baos.toByteArray() );
-	    String reference = "WûÓ‰ *~‡A’ÔìπÁ{≈›";
-	    
-	    assertEquals( reference, new String( results ) );
+			byte[] reference = {
+				0x57, -0x62, 0x1b, -0x12, 0x15, -0x1c, -0x36, 0x2a, 0x7e, -0x20,
+				0x41, -0x2b, -0x11, -0x6d, 0x1a, -0x47, -0x19, 0x7b, -0x3b, -0x23
+			};
+			assertArrayEquals ( reference, results );
 	}
 
 }
