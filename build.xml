@@ -6,9 +6,10 @@
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build" />
     <!-- Build everything; add debug="on" to debug -->
-    <javac srcdir="src" destdir="build" optimize="on" source="1.5" target="1.5" debug="on">
+    <javac srcdir="src" destdir="build" optimize="on" source="1.6" target="1.6" debug="on">
       <classpath>
         <pathelement location="precompiled/imglib.jar"/>
+        <pathelement location="precompiled/loci_tools.jar"/>
       </classpath>
     </javac>
   </target>
@@ -79,7 +80,7 @@
     <!-- First, ensure the build directory exists. -->
     <mkdir dir="build-tests" />
     <!-- Build everything; add debug="on" to debug -->
-    <javac srcdir="tests" destdir="build-tests" optimize="on" source="1.5" target="1.5" debug="on">
+    <javac srcdir="tests" destdir="build-tests" optimize="on" source="1.6" target="1.6" debug="on">
       <classpath>
         <pathelement location="ij.jar"/>
         <pathelement location="precompiled/imglib.jar"/>
