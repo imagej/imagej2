@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+BDZ - 7-23-10 - purposely break build to test Hudson
 
 public class ToolsTest {
 
