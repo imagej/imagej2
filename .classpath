@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="cell-profiler"/>
-	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="src" path="opencl"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6"/>
 	<classpathentry kind="lib" path="precompiled/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="precompiled/loci_tools.jar"/>
-	<classpathentry kind="lib" path="precompiled/imglib.jar"/>
-	<classpathentry kind="lib" path="precompiled/javacl-1.0-beta-4-shaded.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/imglib"/>
 	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
