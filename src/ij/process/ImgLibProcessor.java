@@ -31,7 +31,10 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 
 	private final Image<T> imageData;
-	private final T type;
+
+	// TODO: How can we use generics here without breaking javac?
+	@SuppressWarnings("unchecked")
+	private final ComplexType type;
 
 	/**
    * Dimensional coordinates for this processor's plane.
@@ -434,39 +437,39 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 	@SuppressWarnings("unchecked")
 	public Object getPixelsArray() {
 		if (type instanceof ByteType) {
-			Image<ByteType> im = (Image<ByteType>) imageData;
+			Image<ByteType> im = (Image) imageData;
 			return getPlaneBytes(im, width, height, coords);
 		}
 		if (type instanceof UnsignedByteType) {
-			Image<UnsignedByteType> im = (Image<UnsignedByteType>) imageData;
+			Image<UnsignedByteType> im = (Image) imageData;
 			return getPlaneUnsignedBytes(im, width, height, coords);
 		}
 		if (type instanceof ShortType) {
-			Image<ShortType> im = (Image<ShortType>) imageData;
+			Image<ShortType> im = (Image) imageData;
 			return getPlaneShorts(im, width, height, coords);
 		}
 		if (type instanceof UnsignedShortType) {
-			Image<UnsignedShortType> im = (Image<UnsignedShortType>) imageData;
+			Image<UnsignedShortType> im = (Image) imageData;
 			return getPlaneUnsignedShorts(im, width, height, coords);
 		}
 		if (type instanceof IntType) {
-			Image<IntType> im = (Image<IntType>) imageData;
+			Image<IntType> im = (Image) imageData;
 			return getPlaneInts(im, width, height, coords);
 		}
 		if (type instanceof UnsignedIntType) {
-			Image<UnsignedIntType> im = (Image<UnsignedIntType>) imageData;
+			Image<UnsignedIntType> im = (Image) imageData;
 			return getPlaneUnsignedInts(im, width, height, coords);
 		}
 		if (type instanceof LongType) {
-			Image<LongType> im = (Image<LongType>) imageData;
+			Image<LongType> im = (Image) imageData;
 			return getPlaneLongs(im, width, height, coords);
 		}
 		if (type instanceof FloatType) {
-			Image<FloatType> im = (Image<FloatType>) imageData;
+			Image<FloatType> im = (Image) imageData;
 			return getPlaneFloats(im, width, height, coords);
 		}
 		if (type instanceof DoubleType) {
-			Image<DoubleType> im = (Image<DoubleType>) imageData;
+			Image<DoubleType> im = (Image) imageData;
 			return getPlaneDoubles(im, width, height, coords);
 		}
 		return getPlaneData();
