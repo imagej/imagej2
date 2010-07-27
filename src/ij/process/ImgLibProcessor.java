@@ -17,7 +17,7 @@ import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.LOCI;
-import mpicbg.imglib.type.numeric.ComplexType;
+import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -28,13 +28,30 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
-public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
+// NOTES
+// Image may change to Img to avoid name conflict with java.awt.Image.
+//
+// TODO
+// 1. Add a new container that uses array-backed data of the proper primitive
+//    type, plane by plane.
+// 2. Then we can return the data with getPixels by reference in that case
+//    (and use the current cursor approach in other cases).
+//
+// For create8BitImage, we can call imageData.getDisplay().get8Bit* to extract
+// displayable image data as bytes [was LocalizableByPlaneCursor relevant here
+// as well? can't remember].
+//
+// For getPlane* methods, we can use a LocalizablePlaneCursor (see
+// ImageJVirtualStack.extractSliceFloat for an example) to grab the data
+// plane-by-plane; this way the container knows the optimal way to traverse.
+
+public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	private final Image<T> imageData;
 
 	// TODO: How can we use generics here without breaking javac?
-	@SuppressWarnings("unchecked")
-	private final ComplexType type;
+	@SuppressWarnings("rawtypes")
+	private final RealType type;
 
 	/**
    * Dimensional coordinates for this processor's plane.
@@ -58,8 +75,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 			this.coords = new int[dims.length - 2];
 		}
 		else if (coords.length == dims.length - 2) {
-			this.coords = new int[coords.length];
-			System.arraycopy(coords, 0, this.coords, 0, coords.length);
+			this.coords = coords.clone();
 		}
 		else {
 			throw new IllegalArgumentException("Dimensional mismatch: image is " +
@@ -218,6 +234,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 	@Override
 	public Object getPixels() {
 		// TODO: could add a special case for single-image 8-bit array-backed data
+		// TODO: special case for new container
 		return getPixelsArray();
 	}
 
@@ -380,6 +397,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 	@Override
 	public byte[] create8BitImage()
 	{
+		// TODO: use imageData.getDisplay().get8Bit* methods
 		Object pixels = getPixels();
 
 		if (pixels instanceof byte[])
@@ -434,7 +452,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 //		);
 //	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Object getPixelsArray() {
 		if (type instanceof ByteType) {
 			Image<ByteType> im = (Image) imageData;
@@ -476,11 +494,12 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 	}
 
 	public double[] getPlaneData() {
+	  // TODO - use LocalizablePlaneCursor
+		// example in ImageJVirtualStack.extractSliceFloat
 		final double[] data = new double[width * height];
 		final LocalizableByDimCursor<T> cursor =
 			imageData.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<height; y++) {
 			pos[1] = y;
@@ -502,8 +521,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final byte[] data = new byte[w * h];
 		final LocalizableByDimCursor<ByteType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -522,8 +540,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final byte[] data = new byte[w * h];
 		final LocalizableByDimCursor<UnsignedByteType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -542,10 +559,8 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final short[] data = new short[w * h];
 		final LocalizableByDimCursor<ShortType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
-		System.arraycopy(coords, 0, pos, 2, coords.length);
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
 			for (int x=0; x<w; x++) {
@@ -563,8 +578,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final short[] data = new short[w * h];
 		final LocalizableByDimCursor<UnsignedShortType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -583,8 +597,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final int[] data = new int[w * h];
 		final LocalizableByDimCursor<IntType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -603,8 +616,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final int[] data = new int[w * h];
 		final LocalizableByDimCursor<UnsignedIntType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -623,8 +635,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final long[] data = new long[w * h];
 		final LocalizableByDimCursor<LongType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -643,8 +654,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final float[] data = new float[w * h];
 		final LocalizableByDimCursor<FloatType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -663,8 +673,7 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 		final double[] data = new double[w * h];
 		final LocalizableByDimCursor<DoubleType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = new int[2 + coords.length];
-		System.arraycopy(coords, 0, pos, 2, coords.length);
+		final int[] pos = makePosArray(coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -675,6 +684,12 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 			}
 		}
 		return data;
+	}
+
+	public static int[] makePosArray(int[] coords) {
+		int[] pos = new int[2 + coords.length];
+		for (int i=0; i<coords.length; i++) pos[i + 2] = coords[i];
+		return pos;
 	}
 
 	public static void main(String[] args) {
@@ -699,9 +714,6 @@ public class ImgLibProcessor<T extends ComplexType<T>> extends ImageProcessor {
 			imageStack.addSlice("" + (i + 1), ip);
 		}
 		ImagePlus imp = new ImagePlus(fileName, imageStack);
-		//ImgLibProcessor<UnsignedByteType> imgLibProcessor =
-		//	new ImgLibProcessor<UnsignedByteType>(image,new UnsignedByteType());
-    //ImagePlus imp = new ImagePlus("Test", imgLibProcessor);
     new ImageJ();
     imp.show();
 	}
