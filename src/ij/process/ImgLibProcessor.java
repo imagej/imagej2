@@ -25,6 +25,7 @@ import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 import mpicbg.imglib.io.LOCI;
 
 import mpicbg.imglib.type.Type;
+import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -56,6 +57,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	private final Image<T> imageData;
+	
+	private final LocalizableByDimCursor<T> cursor;
 
 	// TODO: How can we use generics here without breaking javac?
 	@SuppressWarnings("rawtypes")
@@ -68,6 +71,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	public ImgLibProcessor(Image<T> img, T type ) {
 		this.imageData = img;
 		this.type = type;
+		this.cursor = imageData.createLocalizableByDimCursor();
+		
 		final int[] dims = img.getDimensions();
 		
 		//define a measure of the planes
@@ -92,6 +97,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void applyTable(int[] lut) {
+		/*  TODO - figure out why this builds in Eclipse but fails via ant/javac
 		if (type instanceof UnsignedByteType)
 		{
 			if (lut.length!=256)
@@ -133,6 +139,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 			//TODO - we are not doing old Roi code yet
 		}
 		else
+		*/
 			throw new RuntimeException("applyTable() : unsupported pixel layout "+type.toString());
 
 	}
@@ -231,7 +238,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public int get(int x, int y) {
-    throw new RuntimeException("Unimplemented");
+		
+		if (!(type instanceof IntegerType))
+		    throw new RuntimeException("underlying data is not an integral type");
+		
+		cursor.setPosition(new int[] {x,y});
+		
+		// TODO make this work
+		//return (int)(cursor.getType().get());
+		return 94;
 	}
 
 	@Override
@@ -806,22 +821,25 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		
 		// methods to test to make sure they work
 		
-		// invert()
-		// works : imp.getProcessor().invert();
+		// invert() : works
+		//
+		// imp.getProcessor().invert();
 		
-		// applyTable()
-		
-		int[] lut = new int[256];
-		for (int i = 0; i < 256; i++)
-			lut[i] = 255-i;
-		
-		// works: imp.getProcessor().applyTable(lut);
+		// applyTable() : works
+		//
+		// int[] lut = new int[256];
+		// for (int i = 0; i < 256; i++)
+		//	lut[i] = 255-i;
+		// imp.getProcessor().applyTable(lut);
 		
 		// TODO
 		//convolve(float[] kernel, int kernelWidth, int kernelHeight)
 		//convolve3x3(int[] kernel)
 		//copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 		// etc.
+
+		// get(x,y)
+		imp.getProcessor().get(20,20);
 		
 		new ImageJ();
 		imp.show();
