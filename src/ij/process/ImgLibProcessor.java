@@ -60,8 +60,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	private final Image<T> imageData;
-	
-	private final LocalizableByDimCursor<T> cursor;
+
 
 	// TODO: How can we use generics here without breaking javac?
 	@SuppressWarnings("rawtypes")
@@ -74,7 +73,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	public ImgLibProcessor(Image<T> img, T type ) {
 		this.imageData = img;
 		this.type = type;
-		this.cursor = imageData.createLocalizableByDimCursor();
 		
 		final int[] dims = img.getDimensions();
 		
@@ -224,59 +222,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void flipVertical() {
+    throw new RuntimeException("Unimplemented");
 
-		final LocalizableByDimCursor<T> cursor1 = imageData.createLocalizableByDimCursor( );
-		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
-		
-		final int[] position1 = new int[imageData.getDimensions().length];
-		final int[] position2 = new int[imageData.getDimensions().length];
-		
-		final int minX = roiX;
-		final int minY = roiY;
-		final int maxX = minX + roiWidth - 1;
-		final int maxY = minY + roiHeight - 1;
-		
-		int halfRoiHeight = roiHeight / 2;
-		
-		for (int yoff = 0; yoff < halfRoiHeight; yoff++) {
-			
-			int y1 = minY + yoff;
-			int y2 = maxY - yoff;
-			
-			for (int x=minX; x<=maxX; x++) {
-				
-				position1[0] = x;
-				position1[1] = y1;
-
-				position2[0] = x;
-				position2[1] = y2;
-
-				cursor1.setPosition(position1);
-				double pixVal1 = cursor1.getType().getRealDouble();
-				
-				cursor2.setPosition(position2);
-				double pixVal2 = cursor2.getType().getRealDouble();
-		
-				cursor2.getType().setReal(pixVal1);
-				cursor1.getType().setReal(pixVal2);
-			}
-		}
-		
-		cursor1.close();
-		cursor2.close();
 	}
 
 	@Override
 	public int get(int x, int y) 
 	{	
+		int value;
+		
+		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
 		cursor.setPosition(new int[] {x,y});
 		
-		return (int)( cursor.getType().getRealDouble() );
+		value = (int)( cursor.getType().getRealDouble() );
+		
+		cursor.close( );
+		
+		return value;
 	}
 
 	@Override
 	public int get(int index) {
-    throw new RuntimeException("Unimplemented");
+		//imageData
+		int x = index/width;
+		int y = index%width;
+		return get( x, y) ;
 	}
 
 	@Override
@@ -402,8 +372,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	@Override
 	public void set(int x, int y, int value) 
 	{
+		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
+		
 		cursor.setPosition(new int[] {x,y});
 		cursor.getType().setReal( value );
+		
+		cursor.close();
 	}
 
 	@Override
@@ -867,11 +841,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		// etc.
 
 		// get(x,y)
-		//imp.getProcessor().set( 20, 20,175 );
-		//System.out.println( imp.getProcessor().get(20,20) );
+		imp.getProcessor().set( 20, 20,175 );
+		System.out.println( imp.getProcessor().get(20,20) );
 		
-		imp.getProcessor().flipVertical();
-
 		new ImageJ();
 		imp.show();
 
