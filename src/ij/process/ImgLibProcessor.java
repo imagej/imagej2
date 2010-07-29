@@ -19,6 +19,7 @@ import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.exception.ImgLibException;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.display.imagej.ImageJFunctions;
@@ -95,21 +96,37 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	
 	}
 
+	/*
+	final Image<T> img;
+	final Cursor<T> cursor = img.createCursor();
+	 
+	// we set all pixels to a certain value
+	final T value;
+	 
+	// Cursor implements java.lang.Iterable<T>
+	for ( final T pixel : cursor )
+	    pixel.set( value );	
+	 
+	cursor.close();*/
+	
 	@Override
 	public void applyTable(int[] lut) {
-		/*  TODO - figure out why this builds in Eclipse but fails via ant/javac
-		if (type instanceof UnsignedByteType)
-		{
+		//TODO - figure out why this builds in Eclipse but fails via ant/javac
+		//if (type instanceof UnsignedByteType)
+		//{
 			if (lut.length!=256)
 				throw new IllegalArgumentException("lut.length!=256");
 			
+			roiX = 50;roiY = 50;roiWidth = 20; roiHeight = 20;
 			 //Fill the image with data - first get a cursor
-			final Cursor<UnsignedByteType> imageCursor = (Cursor<UnsignedByteType>) imageData.createCursor( );
-
-			for (final UnsignedByteType pixel:imageCursor)
+			//final Cursor<UnsignedByteType> imageCursor = (Cursor<UnsignedByteType>) imageData.createCursor( );
+			final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
+            RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, new int[] {roiX, roiY}, new int[] { roiWidth, roiHeight} );
+		
+			for (final T pixel:imageRegionOfInterestCursor)
 			{
 				//System.out.print("pix "+pixel.get()+" lut"+lut[pixel.get()]);
-				pixel.set( lut[ pixel.get() ] );
+				pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
 				//System.out.println( " value is now " + pixel.get()  );
    			}
 			
@@ -117,7 +134,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 			imageCursor.close( );
 			
 			//TODO - we are not doing old Roi code yet
-		}
+		/*}
 		else if (type instanceof UnsignedShortType)
 		{
 			if (lut.length!=65536)
@@ -139,9 +156,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 			//TODO - we are not doing old Roi code yet
 		}
 		else
-		*/
+		
 			throw new RuntimeException("applyTable() : unsupported pixel layout "+type.toString());
-
+*/
 	}
 
 	@Override
@@ -827,10 +844,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		
 		// applyTable() : works
 		//
-		// int[] lut = new int[256];
-		// for (int i = 0; i < 256; i++)
-		//	lut[i] = 255-i;
-		// imp.getProcessor().applyTable(lut);
+		int[] lut = new int[256];
+		for (int i = 0; i < 256; i++)
+		lut[i] = 255-i;
+		imp.getProcessor().applyTable(lut);
 		
 		// TODO
 		//convolve(float[] kernel, int kernelWidth, int kernelHeight)
