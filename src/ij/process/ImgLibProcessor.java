@@ -220,46 +220,60 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	}
 
+	/** swap the rows of an image about its central row */
 	@Override
 	public void flipVertical() {
 
+		// create suitable cursor
 		final LocalizableByDimCursor<T> cursor1 = imageData.createLocalizableByDimCursor( );
 		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
 		
+		// allocate arrays that will hold position variables
 		final int[] position1 = new int[imageData.getDimensions().length];
 		final int[] position2 = new int[imageData.getDimensions().length];
 		
+		// calc some useful variables in regards to our region of interest.
 		final int minX = roiX;
 		final int minY = roiY;
 		final int maxX = minX + roiWidth - 1;
 		final int maxY = minY + roiHeight - 1;
 		
-		int halfRoiHeight = roiHeight / 2;
+		// calc half height - we will only need to swap the top half of the rows with the bottom half
+		final int halfRoiHeight = roiHeight / 2;
 		
+		// the half the rows
 		for (int yoff = 0; yoff < halfRoiHeight; yoff++) {
 			
-			int y1 = minY + yoff;
-			int y2 = maxY - yoff;
+			// calc locations of the two rows to be swapped
+			final int y1 = minY + yoff;
+			final int y2 = maxY - yoff;
 			
+			// for each col in this row
 			for (int x=minX; x<=maxX; x++) {
 				
+				// setup position index for cursor 1
 				position1[0] = x;
 				position1[1] = y1;
 
+				// setup position index for cursor 2
 				position2[0] = x;
 				position2[1] = y2;
 
+				// move to position1 and save the current value
 				cursor1.setPosition(position1);
-				double pixVal1 = cursor1.getType().getRealDouble();
+				final double pixVal1 = cursor1.getType().getRealDouble();
 				
+				// move to position2 and save the current value
 				cursor2.setPosition(position2);
-				double pixVal2 = cursor2.getType().getRealDouble();
+				final double pixVal2 = cursor2.getType().getRealDouble();
 		
+				// write the values back in swapped order
 				cursor2.getType().setReal(pixVal1);
 				cursor1.getType().setReal(pixVal2);
 			}
 		}
 		
+		// close the cursors when done with them
 		cursor1.close();
 		cursor2.close();
 	}
