@@ -29,6 +29,8 @@ import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
+import mpicbg.imglib.type.numeric.integer.GenericByteType;
+import mpicbg.imglib.type.numeric.integer.GenericShortType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
@@ -95,70 +97,43 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
 	
 	}
-
-	/*
-	final Image<T> img;
-	final Cursor<T> cursor = img.createCursor();
-	 
-	// we set all pixels to a certain value
-	final T value;
-	 
-	// Cursor implements java.lang.Iterable<T>
-	for ( final T pixel : cursor )
-	    pixel.set( value );	
-	 
-	cursor.close();*/
 	
-	@Override
-	public void applyTable(int[] lut) {
-		//TODO - figure out why this builds in Eclipse but fails via ant/javac
-		//if (type instanceof UnsignedByteType)
-		//{
+	/*
+	 * Throws an exceptions if the LUT length is wrong for the pixel layout type
+	 */
+	private void testLUTLength( int[] lut )
+	{
+		if ( type instanceof GenericByteType< ? > )
+		{
 			if (lut.length!=256)
-				throw new IllegalArgumentException("lut.length!=256");
-			
-			roiX = 50;roiY = 50;roiWidth = 20; roiHeight = 20;
-			 //Fill the image with data - first get a cursor
-			//final Cursor<UnsignedByteType> imageCursor = (Cursor<UnsignedByteType>) imageData.createCursor( );
-			final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
-            RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, new int[] {roiX, roiY}, new int[] { roiWidth, roiHeight} );
-		
-			for (final T pixel:imageRegionOfInterestCursor)
-			{
-				//System.out.print("pix "+pixel.get()+" lut"+lut[pixel.get()]);
-				pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
-				//System.out.println( " value is now " + pixel.get()  );
-   			}
-			
-			//close the cursor?
-			imageCursor.close( );
-			
-			//TODO - we are not doing old Roi code yet
-		/*}
-		else if (type instanceof UnsignedShortType)
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		} else if( type instanceof GenericShortType< ? > )
 		{
 			if (lut.length!=65536)
-				throw new IllegalArgumentException("lut.length!=65536");
-			
-			 //Fill the image with data - first get a cursor
-			final Cursor<UnsignedShortType> imageCursor = (Cursor<UnsignedShortType>) imageData.createCursor( );
-
-			for (final UnsignedShortType pixel:imageCursor)
-			{
-				//System.out.print("pix "+pixel.get()+" lut"+lut[pixel.get()]);
-				pixel.set( lut[ pixel.get() ] );
-				//System.out.println( " value is now " + pixel.get()  );
-   			}
-			
-			//close the cursor?
-			imageCursor.close( );
-			
-			//TODO - we are not doing old Roi code yet
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		} else {
+			throw new IllegalArgumentException("LUT NA for type " + type ); 
 		}
-		else
+	}
+	
+	
+	@Override
+	public void applyTable(int[] lut) 
+	{
+		//test "lut" length
+		testLUTLength(lut);
 		
-			throw new RuntimeException("applyTable() : unsupported pixel layout "+type.toString());
-*/
+		//Fill the image with data - first get a cursor
+		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
+        RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, new int[] {roiX, roiY}, new int[] { roiWidth, roiHeight} );
+		
+		for (final T pixel:imageRegionOfInterestCursor)
+		{
+			pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
+		}
+		
+		//close the cursor?
+		imageCursor.close( );
 	}
 
 	@Override
@@ -254,16 +229,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	}
 
 	@Override
-	public int get(int x, int y) {
-		
-		if (!(type instanceof IntegerType))
-		    throw new RuntimeException("underlying data is not an integral type");
-		
+	public int get(int x, int y) 
+	{	
 		cursor.setPosition(new int[] {x,y});
 		
-		// TODO make this work
-		//return (int)(cursor.getType().get());
-		return 94;
+		return (int)( cursor.getType().getRealDouble() );
 	}
 
 	@Override
@@ -392,15 +362,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	}
 
 	@Override
-	public void set(int x, int y, int value) {
-    throw new RuntimeException("Unimplemented");
-
+	public void set(int x, int y, int value) 
+	{
+		cursor.setPosition(new int[] {x,y});
+		cursor.getType().setReal( value );
 	}
 
 	@Override
-	public void set(int index, int value) {
-    throw new RuntimeException("Unimplemented");
-
+	public void set(int index, int value) 
+	{
+		int x = index/width;
+		int y = index%width;
+		set( x, y, value) ;
 	}
 
 	@Override
@@ -856,7 +829,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		// etc.
 
 		// get(x,y)
-		imp.getProcessor().get(20,20);
+		imp.getProcessor().set( 20, 20,175 );
+		System.out.println( imp.getProcessor().get(20,20) );
 		
 		new ImageJ();
 		imp.show();
