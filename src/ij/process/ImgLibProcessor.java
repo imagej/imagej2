@@ -224,8 +224,46 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void flipVertical() {
-    throw new RuntimeException("Unimplemented");
 
+		final LocalizableByDimCursor<T> cursor1 = imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
+		
+		final int[] position1 = new int[imageData.getDimensions().length];
+		final int[] position2 = new int[imageData.getDimensions().length];
+		
+		final int minX = roiX;
+		final int minY = roiY;
+		final int maxX = minX + roiWidth - 1;
+		final int maxY = minY + roiHeight - 1;
+		
+		int halfRoiHeight = roiHeight / 2;
+		
+		for (int yoff = 0; yoff < halfRoiHeight; yoff++) {
+			
+			int y1 = minY + yoff;
+			int y2 = maxY - yoff;
+			
+			for (int x=minX; x<=maxX; x++) {
+				
+				position1[0] = x;
+				position1[1] = y1;
+
+				position2[0] = x;
+				position2[1] = y2;
+
+				cursor1.setPosition(position1);
+				double pixVal1 = cursor1.getType().getRealDouble();
+				
+				cursor2.setPosition(position2);
+				double pixVal2 = cursor2.getType().getRealDouble();
+		
+				cursor2.getType().setReal(pixVal1);
+				cursor1.getType().setReal(pixVal2);
+			}
+		}
+		
+		cursor1.close();
+		cursor2.close();
 	}
 
 	@Override
@@ -829,9 +867,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		// etc.
 
 		// get(x,y)
-		imp.getProcessor().set( 20, 20,175 );
-		System.out.println( imp.getProcessor().get(20,20) );
+		//imp.getProcessor().set( 20, 20,175 );
+		//System.out.println( imp.getProcessor().get(20,20) );
 		
+		imp.getProcessor().flipVertical();
+
 		new ImageJ();
 		imp.show();
 
