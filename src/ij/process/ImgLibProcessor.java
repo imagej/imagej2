@@ -341,7 +341,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public float getPixelValue(int x, int y) {
-    throw new RuntimeException("Unimplemented");
+		return getf(x,y);
 	}
 
 	@Override
@@ -499,7 +499,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void setf(int x, int y, float value) {
-    throw new RuntimeException("Unimplemented");
+		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
+		
+		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
+		cursor.getType().setReal( value );
+		
+		cursor.close();
 
 	}
 
