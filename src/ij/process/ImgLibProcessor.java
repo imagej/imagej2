@@ -492,11 +492,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	}
 
 	@Override
-	public void setValue(double value) {
-		fgColor = (int)value;
-		if (fgColor<0) fgColor = 0;
-		if (fgColor>65535) fgColor = 65535;
-
+	public void setValue(double value) 
+	{
+		fgColor = (int) value;
+		
+		fgColor =boundIntValueToType(fgColor);
 	}
 
 	@Override
@@ -899,6 +899,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		}
 		
 		return imageDimensions;
+	}
+
+	public int boundIntValueToType(int inputValue)
+	{
+		if (type instanceof ByteType ||
+			type instanceof UnsignedByteType ||
+			type instanceof ShortType ||
+			type instanceof UnsignedShortType ) 
+		{
+			if (inputValue < type.getMinValue() ) inputValue = ( int ) type.getMinValue();
+			if (inputValue > type.getMaxValue() ) inputValue = (int) type.getMaxValue();
+		}
+
+		return inputValue;
 	}
 	
 	public static void main(String[] args) {
