@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.util.ProfileExecutionTime;
 
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -21,6 +20,7 @@ import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.cursor.Localizable;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.exception.ImgLibException;
@@ -287,7 +287,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		int value;
 		
 		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
-		cursor.setPosition(new int[] {x,y});
+		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
 		
 		value = (int)( cursor.getType().getRealDouble() );
 		
@@ -362,11 +362,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	}
 
 	@Override
-	public float getf(int x, int y) {
+	public float getf(int x, int y) 
+	{
 		float value;
 		
 		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
-		cursor.setPosition(new int[] {x,y});
+				
+		cursor.setPosition( getMultiDimensionalPositionArray(x, y) );
 		
 		value =  ( float ) cursor.getType().getRealDouble();
 		
@@ -439,7 +441,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	{
 		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
 		
-		cursor.setPosition(new int[] {x,y});
+		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
 		cursor.getType().setReal( value );
 		
 		cursor.close();
@@ -873,6 +875,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		return new ImagePlus(img.getName(),processor);
 	}
 	
+	private int[] getMultiDimensionalPositionArray( int x, int y )
+	{
+		//get the dimensions
+		int[] imageDimensions = imageData.getDimensions( ).clone( );
+		
+		//copy in x and y
+		imageDimensions[0] = x;
+		imageDimensions[1] = y;
+		
+		//assign the dimensions
+		for(int i = 2; i < (2 + extraDimensions.length); i++)
+		{
+			imageDimensions[i]=extraDimensions[i-2];
+		}
+		
+		return imageDimensions;
+	}
+	
 	public static void main(String[] args) {
 		final JFileChooser chooser = new JFileChooser();
 		int rval = chooser.showOpenDialog(null);
@@ -911,15 +931,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		
 		//Start the timer
 		long a = System.currentTimeMillis( );
-		ProfileExecutionTime pet = new ProfileExecutionTime( );
 		for(int x = 0;x<1000;x++)
 			imp.getProcessor().flipVertical();
 		
 		//stop the timer
-		long imgLibFlipTime = pet.getExecutionNanoSeconds();
 		long b = System.currentTimeMillis( );
 		
-		System.out.println("Took imglib " + (imgLibFlipTime) + " nanoseconds or " + (imgLibFlipTime/1000000000) + " seconds to do an image flip.");
 		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1000) + " seconds to do an image flip.");
 
 		new ImageJ();
