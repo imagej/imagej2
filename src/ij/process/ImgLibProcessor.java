@@ -493,7 +493,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void setValue(double value) {
-    throw new RuntimeException("Unimplemented");
+		fgColor = (int)value;
+		if (fgColor<0) fgColor = 0;
+		if (fgColor>65535) fgColor = 65535;
 
 	}
 
@@ -510,8 +512,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public void setf(int index, float value) {
-    throw new RuntimeException("Unimplemented");
-
+		int x = index/width;
+		int y = index%width;
+		setf( x, y, value);
 	}
 
 	@Override
