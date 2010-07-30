@@ -4,6 +4,7 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.util.ProfileExecutionTime;
 
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -13,6 +14,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import loci.common.DataTools;
+import mpicbg.imglib.algorithm.roi.MedianFilter;
+import mpicbg.imglib.algorithm.roi.StructuringElement;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
@@ -229,8 +232,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
 		
 		// allocate arrays that will hold position variables
-		final int[] position1 = makePosArray(extraDimensions);
-		final int[] position2 = makePosArray(extraDimensions);
+		final int[] position1 = new int[imageData.getDimensions().length];
+		final int[] position2 = new int[imageData.getDimensions().length];
 		
 		// calc some useful variables in regards to our region of interest.
 		final int minX = roiX;
@@ -328,7 +331,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public int getPixel(int x, int y) {
-    throw new RuntimeException("Unimplemented");
+		return get(x,y);
 	}
 
 	@Override
@@ -360,18 +363,28 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 
 	@Override
 	public float getf(int x, int y) {
-    throw new RuntimeException("Unimplemented");
+		float value;
+		
+		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
+		cursor.setPosition(new int[] {x,y});
+		
+		value =  ( float ) cursor.getType().getRealDouble();
+		
+		cursor.close( );
+		
+		return value;
 	}
 
 	@Override
 	public float getf(int index) {
-    throw new RuntimeException("Unimplemented");
+		int x = index/width;
+		int y = index%width;
+		return getf( x, y) ;
 	}
 
 	@Override
 	public void medianFilter() {
-    throw new RuntimeException("Unimplemented");
-
+	    throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
@@ -896,11 +909,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		//imp.getProcessor().set( 20, 20,175 );
 		//System.out.println( imp.getProcessor().get(20,20) );
 		
-		imp.getProcessor().flipVertical();
+		//Start the timer
+		long a = System.currentTimeMillis( );
+		ProfileExecutionTime pet = new ProfileExecutionTime( );
+		for(int x = 0;x<1000;x++)
+			imp.getProcessor().flipVertical();
+		
+		//stop the timer
+		long imgLibFlipTime = pet.getExecutionNanoSeconds();
+		long b = System.currentTimeMillis( );
+		
+		System.out.println("Took imglib " + (imgLibFlipTime) + " nanoseconds or " + (imgLibFlipTime/1000000000) + " seconds to do an image flip.");
+		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1000) + " seconds to do an image flip.");
 
 		new ImageJ();
 		imp.show();
-
+		
+		
 		/*
 		final int[] dims = image.getDimensions();
 		final int width = dims[0];
