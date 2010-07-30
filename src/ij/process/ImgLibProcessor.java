@@ -133,7 +133,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 			pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
 		}
 		
-		//close the cursor?
+		//close the cursor
 		imageCursor.close( );
 	}
 
@@ -524,9 +524,22 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	}
 
 	@Override
-	public void threshold(int level) {
-    throw new RuntimeException("Unimplemented");
-
+	public void threshold(int thresholdLevel) 
+	{
+		//ensure level is OK for underlying type & convert to double
+		double thresholdLevelAsDouble = boundIntValueToType( thresholdLevel );
+		
+		
+		//Get a cursor
+		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
+        
+		for (final T pixel : imageCursor)
+		{
+			pixel.setReal( pixel.getRealDouble() <= thresholdLevelAsDouble ? pixel.getMinValue( ) : pixel.getMaxValue() );
+		}
+		
+		//close the cursor
+		imageCursor.close( );
 	}
 
 	@Override
