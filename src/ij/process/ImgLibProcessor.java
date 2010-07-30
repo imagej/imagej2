@@ -232,8 +232,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
 		
 		// allocate arrays that will hold position variables
-		final int[] position1 = new int[imageData.getDimensions().length];
-		final int[] position2 = new int[imageData.getDimensions().length];
+		final int[] position1 = makePosArray(extraDimensions);
+		final int[] position2 = makePosArray(extraDimensions);
 		
 		// calc some useful variables in regards to our region of interest.
 		final int minX = roiX;
