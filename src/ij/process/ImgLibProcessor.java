@@ -496,7 +496,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 	{
 		fgColor = (int) value;
 		
-		fgColor =boundIntValueToType(fgColor);
+		fgColor = boundIntValueToType(fgColor);
 	}
 
 	@Override
@@ -901,6 +901,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor {
 		return imageDimensions;
 	}
 
+	//TODO add to utility class...
+	/**
+	 * Limits and returns the range of the input value
+	 * to the corresponding max and min values respective to the
+	 * underlying type.
+	 */
 	public int boundIntValueToType(int inputValue)
 	{
 		if (type instanceof ByteType ||
