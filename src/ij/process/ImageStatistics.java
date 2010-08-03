@@ -3,8 +3,8 @@ import ij.measure.*;
 import java.awt.*;
 
 /** Statistics, including the histogram, of an image or selection. */
-public class ImageStatistics implements Measurements {
-
+public class ImageStatistics implements Measurements 
+{
 	public int[] histogram;
 	public int pixelCount;
 	public int mode;
