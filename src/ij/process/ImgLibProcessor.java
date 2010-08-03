@@ -104,7 +104,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 	
 	/*
-	 * Throws an exceptions if the LUT length is wrong for the pixel layout type
+	 * Throws an exception if the LUT length is wrong for the pixel layout type
 	 */
 	private void testLUTLength( int[] lut )
 	{
@@ -326,13 +326,30 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMax() 
 	{
+		//get the current image data
+		int[] imageDimensionsOffset = makePosArray( imageProperties.getExtraDimensions() );
+		int[] imageDimensionsSize = makePosArray( imageProperties.getExtraDimensions() );
+		
+		//set the size
+		imageDimensionsSize[0] = imageData.getDimensions()[0];
+		imageDimensionsSize[1] = imageData.getDimensions()[1];
+		
 		//Get a cursor
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
-       
+		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
+				
 		//assign the return value
-		double max = imageCursor.getType().getMaxValue();
+		double max = imageCursor.getType().getMinValue();
  
+		//iterate over all the pixels, of the selected image plane
+		for(T pixel:imageROICursor)
+		{
+			if( pixel.getRealDouble() > max )
+				max = pixel.getRealDouble();
+		}
+		
 		//close the cursor
+		imageROICursor.close( );
 		imageCursor.close( );
 		
 		return max;
@@ -341,16 +358,32 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMin() 
 	{
+		//get the current image data
+		int[] imageDimensionsOffset = makePosArray( imageProperties.getExtraDimensions() );
+		int[] imageDimensionsSize = makePosArray( imageProperties.getExtraDimensions() );
+		
+		//set the size
+		imageDimensionsSize[0] = imageData.getDimensions()[0];
+		imageDimensionsSize[1] = imageData.getDimensions()[1];
+		
 		//Get a cursor
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
-       
+		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
+
 		//assign the return value
-		double max = imageCursor.getType().getMaxValue();
+		double min = imageCursor.getType().getMaxValue();
  
+		//iterate over all the pixels, of the selected image plane
+		for(T pixel:imageROICursor)
+		{
+			if( pixel.getRealDouble() < min )
+				min = pixel.getRealDouble();
+		}
+		
 		//close the cursor
 		imageCursor.close( );
 		
-		return max;
+		return min;
 	}
 
 	@Override

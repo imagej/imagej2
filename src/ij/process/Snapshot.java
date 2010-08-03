@@ -1,7 +1,6 @@
 package ij.process;
 
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.*;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.real.*;
 import mpicbg.imglib.container.array.*;
