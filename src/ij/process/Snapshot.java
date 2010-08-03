@@ -96,19 +96,18 @@ public class Snapshot<T extends RealType<T>>
 	    //iterate over the target data...
 	    while( sourceROICursor.hasNext() && destinationROICursor.hasNext() )
 	    {
-
 	    	//iterate the cursors
 	    	sourceROICursor.fwd();
 	    	destinationROICursor.fwd();
 	    	
 	    	//get the source value
-	    	double real = destinationROICursor.getType().getPowerDouble();
-	    	double complex = destinationROICursor.getType().getPhaseDouble();
+	    	double real = sourceROICursor.getType().getPowerDouble();
+	    	double complex = sourceROICursor.getType().getPhaseDouble();
 	    	
 	    	System.out.println("Source values are " + real + " and " + complex );
 
 	    	//set the destination value
-	    	sourceROICursor.getType().setComplexNumber(real, complex);
+	    	destinationROICursor.getType().setComplexNumber(real, complex);
 	    }
 	    
 	    //close the open cursors
@@ -178,6 +177,12 @@ public class Snapshot<T extends RealType<T>>
 	    cursor3.fwd();
 	    cursor3.getType().setReal(2.88f);
 	    cursor3.close();
+	    
+		//see if the value was copied to snapshot image
+		Cursor<FloatType> cursor6 = image.createCursor();
+	    cursor6.fwd();
+	    System.out.println("Simulated change to image after snapshot. Value is " + cursor6.getType().getRealFloat() );
+	    cursor6.close();
 	    
 	    //restore
 	    snap.restoreData(image);
