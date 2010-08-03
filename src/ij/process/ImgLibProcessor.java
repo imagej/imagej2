@@ -17,8 +17,6 @@ import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.LocalizablePlaneCursor;
-import mpicbg.imglib.cursor.imageplus.ImagePlusLocalizablePlaneCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.exception.ImgLibException;
 import mpicbg.imglib.image.Image;
@@ -68,39 +66,35 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/**
 	 * */
 	private byte[] pixels8;
-	private Snapshot snapShot;
+	private Snapshot<T> snapshot;
 	private ImageProperties<T> imageProperties;
 	
 
 	public ImgLibProcessor(Image<T> img, T type ) {
+
+		final int[] dims = img.getDimensions();
+		
+		if (dims.length < 2)
+			throw new IllegalArgumentException("Image must be at least 2-D");
+
 		this.imageData = img;
 		this.type = type;
 		
 		//assign the properties object for the image
 		imageProperties = new ImageProperties< T >( );
 		
-		final int[] dims = img.getDimensions();
-		
 		//define a measure of the planes
 		int[] extraDimensions = new int[dims.length - 2];
 		
-		
-		if (dims.length < 2) {
-			throw new IllegalArgumentException("Image must be at least 2-D");
-		} else {
-			//populate the array
-		
-			for (int i = 0; i < extraDimensions.length; i++)
-			{
-				extraDimensions[i] = dims[i+2];
-			}
-			
-			imageProperties.setExtraDimensions( extraDimensions );
+		for (int i = 0; i < extraDimensions.length; i++)
+		{
+			extraDimensions[i] = dims[i+2];
 		}
+		
+		imageProperties.setExtraDimensions( extraDimensions );
 
 		this.width = dims[0]; // TODO: Dimensional labels are safer way to find X
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
-	
 	}
 	
 	/*
@@ -411,16 +405,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixelsCopy() {
     throw new RuntimeException("Unimplemented");
+    	// TODO - in ShortProcessor this method can return a copy of snapshot pixels. Need to look into this further. 
 	}
 
 	@Override
 	public Object getSnapshotPixels() {
-		
-		//check if snaphot is null
-		if ( snapShot == null)
-			return null;
-		
-		return snapShot.getImageSnapshot();
+		// TODO - this may be problematic - see how its used elsewhere
+		return snapshot;
 	}
 
 	@Override
@@ -472,32 +463,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@SuppressWarnings( "unchecked" )
 	@Override
 	public void reset() {
-		if (snapShot==null)
-			return;
 		
-	    //plane cursor
-		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
-				
-		Image<T> image = (Image<T>) snapShot.getImageSnapshot();
-		
-		//create a local 2D array for iterating the image cursor location
-		int[] positionArray = makePosArray( imageProperties.getExtraDimensions() );
-		for(T pixel : image )
+		if (snapshot!=null)
 		{
-			//set the position
-			cursor.setPosition( positionArray );
-			
-			//set the value
-			cursor.getType( ).setReal( pixel.getRealDouble() );
-			
-			//increment the snapShot cursor
-			increment2DArray( positionArray );
-			
-		}		
-		
-		//close the cursor
-		cursor.close( );
-
+			snapshot.pasteIntoImage(this.imageData);
+		}
+		// TODO - ShortProcessor kept track of max and min here. Might need to do so also. But imglib or Rick may do too.
 	}
 
 	/**
@@ -520,7 +491,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void reset(ImageProcessor mask) {
     throw new RuntimeException("Unimplemented");
-
+    // TODO - this method relies on the snapshot
 	}
 
 	@Override
@@ -591,8 +562,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void setSnapshotPixels(Object pixels) {
-    throw new RuntimeException("Unimplemented");
-
+		// TODO - this may be problematic
+		this.snapshot = (Snapshot<T>) pixels;
 	}
 
 	@Override
@@ -623,8 +594,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void snapshot() 
 	{
-		//try to clone this object and assign it to the private field (reference) "snapShot"
-		try { ImgLibProcessor snapShot = (ImgLibProcessor) this.clone(); } catch ( CloneNotSupportedException e ) { e.printStackTrace(); }
+		int[] origins = makePosArray( imageProperties.getExtraDimensions() );
+		
+		origins[0] = 0;
+		origins[1] = 0;
+		
+		int[] spans = makePosArray( imageProperties.getExtraDimensions() );
+		
+		spans[0] = this.width;
+		spans[1] = this.height;
+		
+		snapshot.copyFromImage(imageData, origins, spans);
+		
+		// TODO - ShortProcessor kept track of max and min here. Might need to do so also. But imglib or Rick may do too.
 	}
 
 	@Override
