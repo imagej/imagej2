@@ -23,9 +23,9 @@ public class Snapshot<T extends RealType<T>>
 	
 	
 	/** a Snapshot is taken from an image starting at an origin and spanning each dimension */
-	public Snapshot(Image<T> image, int[] origin, int[] span)
+	public Snapshot(Image<T> image, int[] origins, int[] spans)
 	{
-		copyFromImage(image,origin,span);
+		copyFromImage(image,origins,spans);
 	}
 	
 	// TODO - not sure why this is needed. Called in imglibProcessor but not good.
