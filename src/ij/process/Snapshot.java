@@ -12,6 +12,8 @@ import mpicbg.imglib.image.*;
 /** an N-dimensional copy of a subset of an Image's data with ability to capture and restore values */
 public class Snapshot<T extends RealType<T>>
 {
+	// ************** Instance variables ********************************************************************
+	
 	/** The start index in the referenced image that the snapshot copies. */
 	private int[] dimensionOrigins;
 	
@@ -22,19 +24,8 @@ public class Snapshot<T extends RealType<T>>
 	private Image<T> snapshot;
 	
 	
-	/** a Snapshot is taken from an image starting at an origin and spanning each dimension */
-	public Snapshot(Image<T> image, int[] origins, int[] spans)
-	{
-		copyFromImage(image,origins,spans);
-	}
-	
-	// TODO - not sure why this is needed. Called in imglibProcessor but not good.
-	/** allow access to snapshot data */ 
-	public Image<T> getImageSnapshot()
-	{
-		return snapshot;
-	}
-	
+	// ************** Private helper methods ********************************************************************
+
 	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
 	private void testDimensionBoundaries(int[] imageDimensions, int[] origins, int[] spans)
 	{
@@ -62,31 +53,12 @@ public class Snapshot<T extends RealType<T>>
 				throw new IllegalArgumentException("testDimensionBoundaries() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
 	
-	/** take a snapshot of an Image's data from given origin and across each span dimension */
-	public void copyFromImage(Image<T> image, int[] origins, int[] spans)
-	{
-		testDimensionBoundaries(image.getDimensions(),origins,spans);
-		
-		this.dimensionOrigins = origins.clone();
-		this.dimensionSpans = spans.clone();
-		
-		ImageFactory<T> factory = new ImageFactory<T>(image.createType(),image.getContainerFactory());
-		
-		snapshot = factory.createImage(this.dimensionSpans);
-			
-		copyFromImageToImage( image, snapshot, dimensionOrigins, new int[image.getDimensions().length], dimensionSpans );
-	}
-
-	/** paste snapshot data into an image */
-	public void pasteToImage(Image<T> image)
-	{
-		copyFromImageToImage(snapshot, image, new int[image.getDimensions().length], dimensionOrigins, dimensionSpans );
-	}
-	
 	/** copies data from one image to another given origins and dimensional spans */
 	private void copyFromImageToImage(Image<T> sourceImage, Image<T> destinationImage, int[] sourceDimensionOrigins, int[] destinationDimensionOrigins, int[] dimensionSpans)
 	{
-		// copy data
+		// COPY DATA FROM SOURCE IMAGE TO DEST IMAGE:
+		
+		// create cursors
 		final LocalizableByDimCursor<T> sourceCursor = sourceImage.createLocalizableByDimCursor();
 		final LocalizableByDimCursor<T> destinationCursor = destinationImage.createLocalizableByDimCursor();
 		final RegionOfInterestCursor<T> sourceROICursor = new RegionOfInterestCursor< T >( sourceCursor, sourceDimensionOrigins, dimensionSpans );
@@ -95,7 +67,7 @@ public class Snapshot<T extends RealType<T>>
 		//iterate over the target data...
 		while( sourceROICursor.hasNext() && destinationROICursor.hasNext() )
 		{
-			//iterate the cursors
+			//point cursors to current value
 			sourceROICursor.fwd();
 			destinationROICursor.fwd();
 			
@@ -130,6 +102,48 @@ public class Snapshot<T extends RealType<T>>
 		str.append("]");
 		
 		return str.toString();
+	}
+	
+	// ************** Public methods ********************************************************************
+	
+	/** a Snapshot is taken from an image starting at an origin and spanning each dimension */
+	public Snapshot(Image<T> image, int[] origins, int[] spans)
+	{
+		copyFromImage(image,origins,spans);
+	}
+	
+	// TODO - not sure why this is needed. Called in imglibProcessor but not good.
+	/** allow access to snapshot data */ 
+	public Image<T> getImageSnapshot()
+	{
+		return snapshot;
+	}
+	
+	/** take a snapshot of an Image's data from given origin and across each span dimension */
+	public void copyFromImage(Image<T> image, int[] origins, int[] spans)
+	{
+		// verify input
+		testDimensionBoundaries(image.getDimensions(),origins,spans);
+		
+		// remember dimensions
+		this.dimensionOrigins = origins.clone();
+		this.dimensionSpans = spans.clone();
+		
+		// get factory to create a data repository
+		ImageFactory<T> factory = new ImageFactory<T>(image.createType(),image.getContainerFactory());
+
+		// create the data repository
+		snapshot = factory.createImage(this.dimensionSpans);
+			
+		// copy the data
+		copyFromImageToImage( image, snapshot, dimensionOrigins, new int[image.getDimensions().length], dimensionSpans );
+	}
+
+	/** paste snapshot data into an image */
+	public void pasteIntoImage(Image<T> image)
+	{
+		// copy from the snapshot to the image
+		copyFromImageToImage(snapshot, image, new int[image.getDimensions().length], dimensionOrigins, dimensionSpans );
 	}
 	
 	/** encode a snapshot as a String */
@@ -186,7 +200,7 @@ public class Snapshot<T extends RealType<T>>
 		cursor6.close();
 		
 		//restore
-		snap.pasteToImage(image);
+		snap.pasteIntoImage(image);
 		
 		Cursor<FloatType> cursor2 = image.createCursor();
 		cursor2.fwd();
