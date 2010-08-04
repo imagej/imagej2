@@ -22,7 +22,6 @@ import mpicbg.imglib.exception.ImgLibException;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 import mpicbg.imglib.io.LOCI;
-
 import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -56,6 +55,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
+	static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE};
+	
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -101,6 +102,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return pos;
 	}
 
+	private int[] onePlaneExtent(int width, int height, int totalDims)
+	{
+		int[] spans = new int[totalDims];
+		
+		spans[0] = width;
+		spans[1] = height;
+		for (int i = 2; i < spans.length; i++)
+			spans[i] = 1;
+		
+		return spans;
+	}
+	
 	/*
 	 * Throws an exception if the LUT length is wrong for the pixel layout type
 	 */
@@ -198,6 +211,56 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return getPlaneDoubles(im, w, h, extraDims);
 		}
 		return getPlaneData(image, w, h, extraDims);
+	}
+	
+	private double getPixValue(Object pixels, PixelType type, int pixNum)
+	{
+		switch (type) {
+			case BYTE:
+				return ((byte[])pixels)[pixNum];
+			case SHORT:
+				return ((short[])pixels)[pixNum];
+			case INT:
+				return ((int[])pixels)[pixNum];
+			case FLOAT:
+				return ((float[])pixels)[pixNum];
+			case DOUBLE:
+				return ((double[])pixels)[pixNum];
+			default:
+				throw new IllegalArgumentException("unknown pixel type");
+		}
+	}
+	
+	private void setSnapshotPlane(Object pixels, PixelType type, int numPixels)
+	{
+		Image<T> data = snapshot.getStorage();
+
+		long totalSamples = 1;
+		for (int i = 0; i < data.getNumDimensions(); i++)
+			totalSamples *= data.getDimension(i);
+		
+		if (numPixels != totalSamples)
+			throw new IllegalArgumentException("snapshot size does not match number of pixels passed in");
+		
+		int[] extraDims = createExtraDimensions(data.getDimensions());
+		
+		int[] origin = makePosArray(extraDims);
+		
+		int[] extents = onePlaneExtent(width,height,data.getNumDimensions());
+		
+		final LocalizableByDimCursor<T> snapCursor = data.createLocalizableByDimCursor( );
+		
+        RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor< T >( snapCursor, origin, extents );
+		
+        int i = 0;
+		for (final T pixel:snapRoiCursor)
+		{
+			pixel.setReal( getPixValue(pixels,type,i) );
+		}
+		
+		//close the cursors
+		snapRoiCursor.close();
+		snapCursor.close();
 	}
 	
 	//****************** public interface *******************************************************
@@ -530,7 +593,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public Object getSnapshotPixels() {
-		return this.snapshot.getStorage();
+		Image<T> image = this.snapshot.getStorage();
+		int[] extraDims = createExtraDimensions(image.getDimensions());
+		return getCopyOfPixelsFromImage(image, type, extraDims);
 	}
 
 	@Override
@@ -592,8 +657,48 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void reset(ImageProcessor mask) {
-    throw new RuntimeException("Unimplemented");
-    // TODO - this method relies on the snapshot
+		
+		if (mask==null || snapshot==null)
+			return;
+		
+		if (mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight)
+			throw new IllegalArgumentException(maskSizeError(mask));
+
+		Image<T> snapData = snapshot.getStorage();
+		
+		LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> snapshotCursor = snapData.createLocalizableByDimCursor();
+
+		int[] originInImage = makePosArray(imageProperties.getExtraDimensions());
+		originInImage[0] = roiX;
+		originInImage[1] = roiY;
+		int[] originInSnapshot = new int[snapData.getNumDimensions()];
+
+		int[] spanInImage = onePlaneExtent(roiWidth,roiHeight,imageData.getNumDimensions());
+		int[] spanInSnapshot = onePlaneExtent(roiWidth,roiHeight,snapData.getNumDimensions());
+		
+		RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor<T>(imageCursor, originInImage, spanInImage);
+		RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor<T>(snapshotCursor, originInSnapshot, spanInSnapshot);
+		
+		byte[] maskPixels = (byte[])mask.getPixels();
+		
+		int i = 0;
+		while (imageRoiCursor.hasNext() && snapRoiCursor.hasNext())
+		{
+			imageRoiCursor.fwd();
+			snapRoiCursor.fwd();
+			
+			if (maskPixels[i++] == 0)
+			{
+				double pix = snapRoiCursor.getType().getRealDouble();
+				imageRoiCursor.getType().setReal(pix);
+			}
+		}
+		
+		snapRoiCursor.close();
+		imageRoiCursor.close();
+		snapshotCursor.close();
+		imageCursor.close();
 	}
 
 	@Override
@@ -665,7 +770,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setSnapshotPixels(Object pixels)
 	{
-		this.snapshot.setStorage((Image<T>)pixels);
+		if (pixels instanceof byte[])
+			setSnapshotPlane(pixels,PixelType.BYTE,((byte[])pixels).length);
+		else if (pixels instanceof short[])
+			setSnapshotPlane(pixels,PixelType.SHORT,((short[])pixels).length);
+		else if (pixels instanceof int[])
+			setSnapshotPlane(pixels,PixelType.INT,((int[])pixels).length);
+		else if (pixels instanceof float[])
+			setSnapshotPlane(pixels,PixelType.FLOAT,((float[])pixels).length);
+		else if (pixels instanceof double[])
+			setSnapshotPlane(pixels,PixelType.DOUBLE,((double[])pixels).length);
+		else
+			throw new IllegalArgumentException();
 	}
 
 	@Override
@@ -701,12 +817,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		origins[0] = 0;
 		origins[1] = 0;
 		
-		int[] spans = makePosArray( imageProperties.getExtraDimensions() );
-		
-		spans[0] = this.width;
-		spans[1] = this.height;
-		for (int i = 2; i < spans.length; i++)
-			spans[i] = 1;
+		int[] spans = onePlaneExtent(width, height, imageData.getNumDimensions());
 		
 		this.snapshot.copyFromImage(imageData, origins, spans);
 		
