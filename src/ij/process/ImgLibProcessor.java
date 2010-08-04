@@ -56,6 +56,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
+	//****************** Instance variables *******************************************************
+	
 	private final Image<T> imageData;
 
 
@@ -63,12 +65,114 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@SuppressWarnings("rawtypes")
 	private final RealType type;
 
-	/**
-	 * */
 	private byte[] pixels8;
 	private Snapshot<T> snapshot;
 	private ImageProperties<T> imageProperties;
 	
+
+	//****************** Helper methods *******************************************************
+
+	protected ImageProperties<T> getImageProperties() {
+		return imageProperties;
+	}
+
+	/*
+	 * Throws an exception if the LUT length is wrong for the pixel layout type
+	 */
+	private void testLUTLength( int[] lut )
+	{
+		if ( type instanceof GenericByteType< ? > )
+		{
+			if (lut.length!=256)
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		} else if( type instanceof GenericShortType< ? > )
+		{
+			if (lut.length!=65536)
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		} else {
+			throw new IllegalArgumentException("LUT NA for type " + type ); 
+		}
+	}
+	
+//	@SuppressWarnings("unchecked")
+//	private ArrayDataAccess<?> getAccess(mpicbg.imglib.image.Image<T> img) {
+//		final Container<?> container = img.getContainer();
+//		if (!(container instanceof Array<?, ?>)) return null;
+//		final Array<T, ?> array = (Array<T, ?>) img.getContainer();
+//		ArrayDataAccess<?> access = (ArrayDataAccess<?>) array.update(null);
+//		return access;
+//	}
+
+	// TODO is there a better way? ask.
+
+//	private boolean isSignedType(T t) {
+//		return !(
+//			(t instanceof UnsignedByteType) ||
+//			(t instanceof UnsignedIntType) ||
+//			(t instanceof UnsignedShortType)
+//		);
+//	}
+
+	private int[] getMultiDimensionalPositionArray( int x, int y )
+	{
+		//get the dimensions
+		int[] imageDimensions = imageData.getDimensions( ).clone( );
+		
+		//copy in x and y
+		imageDimensions[0] = x;
+		imageDimensions[1] = y;
+		
+		//assign the dimensions
+		for(int i = 2; i < (2 + imageProperties.getExtraDimensions().length); i++)
+		{
+			imageDimensions[i]=imageProperties.getExtraDimensions()[i-2];
+		}
+		
+		return imageDimensions;
+	}
+
+	private Object getCopyOfPixelsFromImage(Image<T> image, int[] extraDims)
+	{
+		if (type instanceof ByteType) {
+			Image<ByteType> im = (Image) image;
+			return getPlaneBytes(im, width, height, extraDims);
+		}
+		if (type instanceof UnsignedByteType) {
+			Image<UnsignedByteType> im = (Image) image;
+			return getPlaneUnsignedBytes(im, width, height, extraDims);
+		}
+		if (type instanceof ShortType) {
+			Image<ShortType> im = (Image) image;
+			return getPlaneShorts(im, width, height, extraDims );
+		}
+		if (type instanceof UnsignedShortType) {
+			Image<UnsignedShortType> im = (Image) image;
+			return getPlaneUnsignedShorts(im, width, height, extraDims);
+		}
+		if (type instanceof IntType) {
+			Image<IntType> im = (Image) image;
+			return getPlaneInts(im, width, height, extraDims);
+		}
+		if (type instanceof UnsignedIntType) {
+			Image<UnsignedIntType> im = (Image) image;
+			return getPlaneUnsignedInts(im, width, height, extraDims);
+		}
+		if (type instanceof LongType) {
+			Image<LongType> im = (Image) image;
+			return getPlaneLongs(im, width, height, extraDims);
+		}
+		if (type instanceof FloatType) {
+			Image<FloatType> im = (Image) image;
+			return getPlaneFloats(im, width, height, extraDims);
+		}
+		if (type instanceof DoubleType) {
+			Image<DoubleType> im = (Image) image;
+			return getPlaneDoubles(im, width, height, extraDims);
+		}
+		return getPlaneData();
+	}
+	
+	//****************** public interface *******************************************************
 
 	public ImgLibProcessor(Image<T> img, T type ) {
 
@@ -97,25 +201,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
 	}
 	
-	/*
-	 * Throws an exception if the LUT length is wrong for the pixel layout type
-	 */
-	private void testLUTLength( int[] lut )
-	{
-		if ( type instanceof GenericByteType< ? > )
-		{
-			if (lut.length!=256)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		} else if( type instanceof GenericShortType< ? > )
-		{
-			if (lut.length!=65536)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		} else {
-			throw new IllegalArgumentException("LUT NA for type " + type ); 
-		}
-	}
-	
-	
 	@Override
 	public void applyTable(int[] lut) 
 	{
@@ -123,7 +208,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		testLUTLength(lut);
 		
 		//Fill the image with data - first get a cursor
-		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
         RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, new int[] {roiX, roiY}, new int[] { roiWidth, roiHeight} );
 		
 		for (final T pixel:imageRegionOfInterestCursor)
@@ -226,21 +311,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void flipVertical() {
 
 		// create suitable cursor
-		final LocalizableByDimCursor<T> cursor1 = imageData.createLocalizableByDimCursor( );
-		final LocalizableByDimCursor<T> cursor2 = imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> cursor1 = this.imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> cursor2 = this.imageData.createLocalizableByDimCursor( );
 		
 		// allocate arrays that will hold position variables
-		final int[] position1 = makePosArray( imageProperties.getExtraDimensions() );
-		final int[] position2 = makePosArray( imageProperties.getExtraDimensions() );
+		final int[] position1 = makePosArray( this.imageProperties.getExtraDimensions() );
+		final int[] position2 = makePosArray( this.imageProperties.getExtraDimensions() );
 		
 		// calc some useful variables in regards to our region of interest.
-		final int minX = roiX;
-		final int minY = roiY;
-		final int maxX = minX + roiWidth - 1;
-		final int maxY = minY + roiHeight - 1;
+		final int minX = this.roiX;
+		final int minY = this.roiY;
+		final int maxX = minX + this.roiWidth - 1;
+		final int maxY = minY + this.roiHeight - 1;
 		
 		// calc half height - we will only need to swap the top half of the rows with the bottom half
-		final int halfRoiHeight = roiHeight / 2;
+		final int halfRoiHeight = this.roiHeight / 2;
 		
 		// the half the rows
 		for (int yoff = 0; yoff < halfRoiHeight; yoff++) {
@@ -404,14 +489,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public Object getPixelsCopy() {
-    throw new RuntimeException("Unimplemented");
-    	// TODO - in ShortProcessor this method can return a copy of snapshot pixels. Need to look into this further. 
+		
+		if (snapshot!=null && snapshotCopyMode) {
+			snapshotCopyMode = false;
+			int[] extraDims = new int[snapshot.getStorage().getNumDimensions() - 2];
+			for (int i = 0; i < extraDims.length; i++)
+				extraDims[i] = snapshot.getStorage().getDimension(i+2);
+			return getCopyOfPixelsFromImage(snapshot.getStorage(),extraDims);
+		} else {
+			return getPixelsArray();
+		}
 	}
 
 	@Override
 	public Object getSnapshotPixels() {
-		// TODO - this may be problematic - see how its used elsewhere
-		return snapshot;
+		return this.snapshot.getStorage();
 	}
 
 	@Override
@@ -464,28 +556,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void reset() {
 		
-		if (snapshot!=null)
+		if (this.snapshot!=null)
 		{
-			snapshot.pasteIntoImage(this.imageData);
+			this.snapshot.pasteIntoImage(this.imageData);
 		}
 		// TODO - ShortProcessor kept track of max and min here. Might need to do so also. But imglib or Rick may do too.
-	}
-
-	/**
-	 * Increments over this objects 2D array structure
-	 */
-	private void increment2DArray( int[] positionArray )
-	{
-		positionArray[0]++;
-		//test 1D in bounds
-		if( positionArray[0] == (this.width - 1) )
-		{
-			positionArray[0] = 0;
-			positionArray[1]++;
-			
-			//TODO check 2D bounds...		
-		}
-		
 	}
 
 	@Override
@@ -561,9 +636,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void setSnapshotPixels(Object pixels) {
-		// TODO - this may be problematic
-		this.snapshot = (Snapshot<T>) pixels;
+	public void setSnapshotPixels(Object pixels)
+	{
+		this.snapshot.setStorage((Image<T>)pixels);
 	}
 
 	@Override
@@ -595,7 +670,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void snapshot() 
 	{
 		int[] origins = makePosArray( imageProperties.getExtraDimensions() );
-		
+
 		origins[0] = 0;
 		origins[1] = 0;
 		
@@ -603,8 +678,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		spans[0] = this.width;
 		spans[1] = this.height;
+		for (int i = 2; i < spans.length; i++)
+			spans[i] = 1;
 		
-		snapshot.copyFromImage(imageData, origins, spans);
+		this.snapshot.copyFromImage(imageData, origins, spans);
 		
 		// TODO - ShortProcessor kept track of max and min here. Might need to do so also. But imglib or Rick may do too.
 	}
@@ -671,66 +748,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return pixels8;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	private ArrayDataAccess<?> getAccess(mpicbg.imglib.image.Image<T> img) {
-//		final Container<?> container = img.getContainer();
-//		if (!(container instanceof Array<?, ?>)) return null;
-//		final Array<T, ?> array = (Array<T, ?>) img.getContainer();
-//		ArrayDataAccess<?> access = (ArrayDataAccess<?>) array.update(null);
-//		return access;
-//	}
-
-	// TODO is there a better way? ask.
-
-//	private boolean isSignedType(T t) {
-//		return !(
-//			(t instanceof UnsignedByteType) ||
-//			(t instanceof UnsignedIntType) ||
-//			(t instanceof UnsignedShortType)
-//		);
-//	}
-
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Object getPixelsArray() {
-		if (type instanceof ByteType) {
-			Image<ByteType> im = (Image) imageData;
-			return getPlaneBytes(im, width, height, imageProperties.getExtraDimensions() );
-		}
-		if (type instanceof UnsignedByteType) {
-			Image<UnsignedByteType> im = (Image) imageData;
-			return getPlaneUnsignedBytes(im, width, height, imageProperties.getExtraDimensions() );
-		}
-		if (type instanceof ShortType) {
-			Image<ShortType> im = (Image) imageData;
-			return getPlaneShorts(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof UnsignedShortType) {
-			Image<UnsignedShortType> im = (Image) imageData;
-			return getPlaneUnsignedShorts(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof IntType) {
-			Image<IntType> im = (Image) imageData;
-			return getPlaneInts(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof UnsignedIntType) {
-			Image<UnsignedIntType> im = (Image) imageData;
-			return getPlaneUnsignedInts(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof LongType) {
-			Image<LongType> im = (Image) imageData;
-			return getPlaneLongs(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof FloatType) {
-			Image<FloatType> im = (Image) imageData;
-			return getPlaneFloats(im, width, height, imageProperties.getExtraDimensions());
-		}
-		if (type instanceof DoubleType) {
-			Image<DoubleType> im = (Image) imageData;
-			return getPlaneDoubles(im, width, height, imageProperties.getExtraDimensions());
-		}
-		return getPlaneData();
+		return getCopyOfPixelsFromImage(this.imageData,this.imageProperties.getExtraDimensions());
 	}
 
+	// TODO - this one needs to be passed an Image so snapshot can use it
+	
 	public double[] getPlaneData() {
 	  // TODO - use LocalizablePlaneCursor
 		// example in ImageJVirtualStack.extractSliceFloat
@@ -989,24 +1013,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return new ImagePlus(img.getName(),processor);
 	}
 	
-	private int[] getMultiDimensionalPositionArray( int x, int y )
-	{
-		//get the dimensions
-		int[] imageDimensions = imageData.getDimensions( ).clone( );
-		
-		//copy in x and y
-		imageDimensions[0] = x;
-		imageDimensions[1] = y;
-		
-		//assign the dimensions
-		for(int i = 2; i < (2 + imageProperties.getExtraDimensions().length); i++)
-		{
-			imageDimensions[i]=imageProperties.getExtraDimensions()[i-2];
-		}
-		
-		return imageDimensions;
-	}
-
 	//TODO add to utility class...
 	/**
 	 * Limits and returns the range of the input value
