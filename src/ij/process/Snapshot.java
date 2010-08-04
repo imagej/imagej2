@@ -17,11 +17,11 @@ public class Snapshot<T extends RealType<T>>
 	/** The start index in the referenced image that the snapshot copies. */
 	private int[] dimensionOrigins;
 	
-	/** The widths of each dimension */
+	/** The width of each dimension */
 	private int[] dimensionSpans;
 
 	/** Internal multidimensional storage reference. Has same number of dimensions as referenced data set but actual sizes may differ. */
-	private Image<T> snapshot;
+	private Image<T> storage;
 	
 	
 	// ************** Private helper methods ********************************************************************
@@ -112,11 +112,25 @@ public class Snapshot<T extends RealType<T>>
 		copyFromImage(image,origins,spans);
 	}
 	
-	// TODO - not sure why this is needed. Called in imglibProcessor but not good.
 	/** allow access to snapshot data */ 
-	public Image<T> getImageSnapshot()
+	public Image<T> getStorage()
 	{
-		return snapshot;
+		return this.storage;
+	}
+	
+	public void setStorage(Image<T> newStorage)
+	{
+		int[] currDimensions = this.storage.getDimensions();
+		int[] newDimensions  = newStorage.getDimensions();
+		
+		if (currDimensions.length != newDimensions.length)
+			throw new IllegalArgumentException("Snapshot::setStorage() passed an Image whose dimensions do not match current storage layout.");
+		
+		for (int i = 0; i < currDimensions.length; i++)
+			if (currDimensions[i] != newDimensions[i])
+				throw new IllegalArgumentException("Snapshot::setStorage() passed an Image whose dimensions do not match current storage layout.");
+		
+		this.storage = newStorage;
 	}
 	
 	/** take a snapshot of an Image's data from given origin and across each span dimension */
@@ -133,17 +147,17 @@ public class Snapshot<T extends RealType<T>>
 		ImageFactory<T> factory = new ImageFactory<T>(image.createType(),image.getContainerFactory());
 
 		// create the data repository
-		snapshot = factory.createImage(this.dimensionSpans);
+		this.storage = factory.createImage(this.dimensionSpans);
 			
 		// copy the data
-		copyFromImageToImage( image, snapshot, dimensionOrigins, new int[image.getDimensions().length], dimensionSpans );
+		copyFromImageToImage( image, this.storage, this.dimensionOrigins, new int[image.getDimensions().length], this.dimensionSpans );
 	}
 
 	/** paste snapshot data into an image */
 	public void pasteIntoImage(Image<T> image)
 	{
 		// copy from the snapshot to the image
-		copyFromImageToImage(snapshot, image, new int[image.getDimensions().length], dimensionOrigins, dimensionSpans );
+		copyFromImageToImage(this.storage, image, new int[image.getDimensions().length], this.dimensionOrigins, this.dimensionSpans );
 	}
 	
 	/** encode a snapshot as a String */
@@ -152,9 +166,9 @@ public class Snapshot<T extends RealType<T>>
 	{
 		StringBuffer str = new StringBuffer();
 		str.append( "snapshot(" );
-		str.append( arrayToStr(snapshot.getDimensions()) );
-		str.append( arrayToStr(dimensionOrigins) );
-		str.append( arrayToStr(dimensionSpans) );
+		str.append( arrayToStr(this.storage.getDimensions()) );
+		str.append( arrayToStr(this.dimensionOrigins) );
+		str.append( arrayToStr(this.dimensionSpans) );
 		str.append( ")" );
 		
 		return str.toString();
@@ -183,7 +197,7 @@ public class Snapshot<T extends RealType<T>>
 		Snapshot<FloatType> snap = new Snapshot<FloatType>(image, origin, span);
 		
 		//see if the value was copied to snapshot image
-		Cursor<FloatType> cursor4 = snap.snapshot.createCursor();
+		Cursor<FloatType> cursor4 = snap.getStorage().createCursor();
 		cursor4.fwd();
 		System.out.println("Snap value is " + cursor4.getType().getRealFloat() );
 		cursor4.close();
