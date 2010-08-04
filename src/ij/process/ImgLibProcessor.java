@@ -102,7 +102,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return pos;
 	}
 
-	private int[] onePlaneExtent(int width, int height, int totalDims)
+	private static int[] onePlaneExtent(int width, int height, int totalDims)
 	{
 		int[] spans = new int[totalDims];
 		
