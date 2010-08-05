@@ -159,8 +159,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 	
 	// TODO is there a better way? ask.
-
-	private boolean isUnsignedType(T t) {
+	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+	private boolean isUnsignedType(RealType t) {
 		return (
 			(t instanceof UnsignedByteType) ||
 			(t instanceof UnsignedIntType) ||
