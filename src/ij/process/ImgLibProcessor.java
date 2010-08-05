@@ -55,8 +55,60 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
-	static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE};
+	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE};
 	
+	private static class Index {
+		
+		/** create an index array of length numDims initialized to zeroes */
+		public static int[] create(int numDims)
+		{
+			return new int[numDims];
+		}
+		
+		/** create an index array initialized to passed in values */
+		public static int[] create(int[] initialValues)
+		{
+			return initialValues.clone();
+		}
+		
+		/** create an index array setting the first 2 dims to x & y and the remaining dims populated with passed in values */
+		public static int[] create(int x, int y, int[] otherDims)
+		{
+			int[] values = new int[otherDims.length + 2];
+			values[0] = x;
+			values[1] = y;
+			for (int i = 2; i < values.length; i++)
+				values[i] = otherDims[1-2];
+			return values;
+		}
+	}
+	
+	private static class Span {
+		
+		/** create a span array of length numDims initialized to zeroes */
+		public static int[] create(int numDims)
+		{
+			return new int[numDims];
+		}
+		
+		/** create a span array initialized to passed in values */
+		public static int[] create(int[] initialValues)
+		{
+			return initialValues.clone();
+		}
+		
+		/** create a span array that encompasses one plane of dimension width X height and all other dimensions at 1 */
+		public static int[] singlePlane(int width, int height, int totalDims)
+		{
+			int[] values = new int[totalDims];
+			values[0] = width;
+			values[1] = height;
+			for (int i = 2; i < totalDims; i++)
+				values[i] = 1;
+			return values;
+		}
+	}
+
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -88,32 +140,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return extraDimensions;
 	}
 	
-	/**
-	 * Returns plane preserving multidimensional array.
-	 * First two dimensions are zeroized by new call. (E.g.
-	 * { x, y, c, z, t...} where x & y will be zero.
- 	 * @param coords
-	 * @return
-	 */
-	private static int[] makePosArray(int[] coords) 
-	{
-		int[] pos = new int[2 + coords.length];
-		for (int i=0; i<coords.length; i++) pos[i + 2] = coords[i];
-		return pos;
-	}
-
-	private static int[] onePlaneExtent(int width, int height, int totalDims)
-	{
-		int[] spans = new int[totalDims];
-		
-		spans[0] = width;
-		spans[1] = height;
-		for (int i = 2; i < spans.length; i++)
-			spans[i] = 1;
-		
-		return spans;
-	}
-	
 	/*
 	 * Throws an exception if the LUT length is wrong for the pixel layout type
 	 */
@@ -132,41 +158,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	private ArrayDataAccess<?> getAccess(mpicbg.imglib.image.Image<T> img) {
-//		final Container<?> container = img.getContainer();
-//		if (!(container instanceof Array<?, ?>)) return null;
-//		final Array<T, ?> array = (Array<T, ?>) img.getContainer();
-//		ArrayDataAccess<?> access = (ArrayDataAccess<?>) array.update(null);
-//		return access;
-//	}
-
 	// TODO is there a better way? ask.
 
-//	private boolean isSignedType(T t) {
-//		return !(
-//			(t instanceof UnsignedByteType) ||
-//			(t instanceof UnsignedIntType) ||
-//			(t instanceof UnsignedShortType)
-//		);
-//	}
+	private boolean isUnsignedType(T t) {
+		return (
+			(t instanceof UnsignedByteType) ||
+			(t instanceof UnsignedIntType) ||
+			(t instanceof UnsignedShortType)
+		);
+	}
 
 	private int[] getMultiDimensionalPositionArray( int x, int y )
 	{
-		//get the dimensions
-		int[] imageDimensions = imageData.getDimensions( ).clone( );
-		
-		//copy in x and y
-		imageDimensions[0] = x;
-		imageDimensions[1] = y;
-		
-		//assign the dimensions
-		for(int i = 2; i < (2 + imageProperties.getExtraDimensions().length); i++)
-		{
-			imageDimensions[i]=imageProperties.getExtraDimensions()[i-2];
-		}
-		
-		return imageDimensions;
+		return Index.create(x,y,imageProperties.getExtraDimensions());
 	}
 
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType type, int[] extraDims)
@@ -213,15 +217,27 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getPlaneData(image, w, h, extraDims);
 	}
 	
-	private double getPixValue(Object pixels, PixelType type, int pixNum)
+	private double getPixValue(Object pixels, PixelType inputType, boolean unsigned, int pixNum)
 	{
-		switch (type) {
+		switch (inputType) {
 			case BYTE:
-				return ((byte[])pixels)[pixNum];
+				byte b = ((byte[])pixels)[pixNum];
+				if ((unsigned) && (b < 0))
+					return 256.0 + b;
+				else
+					return b;
 			case SHORT:
-				return ((short[])pixels)[pixNum];
+				short s = ((short[])pixels)[pixNum];
+				if ((unsigned) && (s < 0))
+					return 65536.0 + s;
+				else
+					return s;
 			case INT:
-				return ((int[])pixels)[pixNum];
+				int i = ((int[])pixels)[pixNum];
+				if ((unsigned) && (i < 0))
+					return 4294967296.0 + i;
+				else
+					return i;
 			case FLOAT:
 				return ((float[])pixels)[pixNum];
 			case DOUBLE:
@@ -231,7 +247,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 	
-	private void setSnapshotPlane(Object pixels, PixelType type, int numPixels)
+	private void setSnapshotPlane(Object pixels, PixelType inputType, int numPixels)
 	{
 		Image<T> data = snapshot.getStorage();
 
@@ -244,18 +260,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		int[] extraDims = createExtraDimensions(data.getDimensions());
 		
-		int[] origin = makePosArray(extraDims);
-		
-		int[] extents = onePlaneExtent(width,height,data.getNumDimensions());
+		int[] origin = Index.create(0,0,extraDims);
+
+		int[] extents = Span.singlePlane(width,height,data.getNumDimensions());
 		
 		final LocalizableByDimCursor<T> snapCursor = data.createLocalizableByDimCursor( );
 		
         RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor< T >( snapCursor, origin, extents );
 		
+        boolean targetIsUnsigned = isUnsignedType(snapCursor.getType());
+        
         int i = 0;
 		for (final T pixel:snapRoiCursor)
 		{
-			pixel.setReal( getPixValue(pixels,type,i) );
+			pixel.setReal( getPixValue(pixels,inputType,targetIsUnsigned,i) );
 		}
 		
 		//close the cursors
@@ -296,9 +314,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//test "lut" length
 		testLUTLength(lut);
 		
+		int[] index = Index.create(roiX,roiY,imageProperties.getExtraDimensions());
+		int[] span = Span.singlePlane(roiWidth, roiHeight, imageData.getNumDimensions());
+		
 		//Fill the image with data - first get a cursor
 		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
-        RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, new int[] {roiX, roiY}, new int[] { roiWidth, roiHeight} );
+        RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, index, span );
 		
 		for (final T pixel:imageRegionOfInterestCursor)
 		{
@@ -404,8 +425,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final LocalizableByDimCursor<T> cursor2 = this.imageData.createLocalizableByDimCursor( );
 		
 		// allocate arrays that will hold position variables
-		final int[] position1 = makePosArray( this.imageProperties.getExtraDimensions() );
-		final int[] position2 = makePosArray( this.imageProperties.getExtraDimensions() );
+		final int[] position1 = Index.create(0,0,this.imageProperties.getExtraDimensions());
+		final int[] position2 = Index.create(0,0,this.imageProperties.getExtraDimensions());
 		
 		// calc some useful variables in regards to our region of interest.
 		final int minX = this.roiX;
@@ -471,8 +492,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int get(int index) {
 		//imageData
-		int x = index/width;
-		int y = index%width;
+		int x = index / width;
+		int y = index % width;
 		return get( x, y) ;
 	}
 
@@ -494,13 +515,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMax() 
 	{
-		//get the current image data
-		int[] imageDimensionsOffset = makePosArray( imageProperties.getExtraDimensions() );
-		int[] imageDimensionsSize = makePosArray( imageProperties.getExtraDimensions() );
-		
 		//set the size
-		imageDimensionsSize[0] = imageData.getDimensions()[0];
-		imageDimensionsSize[1] = imageData.getDimensions()[1];
+		int width = imageData.getDimension(0);
+		int height = imageData.getDimension(1);
+		
+		//get the current image data
+		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
+		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
 		
 		//Get a cursor
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
@@ -526,13 +547,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMin() 
 	{
-		//get the current image data
-		int[] imageDimensionsOffset = makePosArray( imageProperties.getExtraDimensions() );
-		int[] imageDimensionsSize = makePosArray( imageProperties.getExtraDimensions() );
-		
 		//set the size
-		imageDimensionsSize[0] = imageData.getDimensions()[0];
-		imageDimensionsSize[1] = imageData.getDimensions()[1];
+		int width = imageData.getDimension(0);
+		int height = imageData.getDimension(1);
+		
+		//get the current image data
+		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
+		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
 		
 		//Get a cursor
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
@@ -616,8 +637,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public float getf(int index) {
-		int x = index/width;
-		int y = index%width;
+		int x = index / width;
+		int y = index % width;
 		return getf( x, y) ;
 	}
 
@@ -669,13 +690,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor();
 		LocalizableByDimCursor<T> snapshotCursor = snapData.createLocalizableByDimCursor();
 
-		int[] originInImage = makePosArray(imageProperties.getExtraDimensions());
-		originInImage[0] = roiX;
-		originInImage[1] = roiY;
-		int[] originInSnapshot = new int[snapData.getNumDimensions()];
+		int[] originInImage = Index.create(roiX,roiY,imageProperties.getExtraDimensions());
+		int[] originInSnapshot = Index.create(snapData.getNumDimensions());
 
-		int[] spanInImage = onePlaneExtent(roiWidth,roiHeight,imageData.getNumDimensions());
-		int[] spanInSnapshot = onePlaneExtent(roiWidth,roiHeight,snapData.getNumDimensions());
+		int[] spanInImage = Span.singlePlane(roiWidth,roiHeight,imageData.getNumDimensions());
+		int[] spanInSnapshot = Span.singlePlane(roiWidth,roiHeight,snapData.getNumDimensions());
 		
 		RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor<T>(imageCursor, originInImage, spanInImage);
 		RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor<T>(snapshotCursor, originInSnapshot, spanInSnapshot);
@@ -732,8 +751,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void set(int index, int value) 
 	{
-		int x = index/width;
-		int y = index%width;
+		int x = index / width;
+		int y = index % width;
 		set( x, y, value) ;
 	}
 
@@ -804,20 +823,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void setf(int index, float value) {
-		int x = index/width;
-		int y = index%width;
+		int x = index / width;
+		int y = index % width;
 		setf( x, y, value);
 	}
 
 	@Override
 	public void snapshot() 
 	{
-		int[] origins = makePosArray( imageProperties.getExtraDimensions() );
+		int[] origins = Index.create(0,0,imageProperties.getExtraDimensions());
 
 		origins[0] = 0;
 		origins[1] = 0;
 		
-		int[] spans = onePlaneExtent(width, height, imageData.getNumDimensions());
+		int[] spans = Span.singlePlane(width, height, imageData.getNumDimensions());
 		
 		this.snapshot.copyFromImage(imageData, origins, spans);
 		
@@ -901,7 +920,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			// example in ImageJVirtualStack.extractSliceFloat
 			final double[] data = new double[w * h];
 			final LocalizableByDimCursor<T> cursor = image.createLocalizableByDimCursor();
-			final int[] pos = makePosArray(extraDims);
+			final int[] pos = Index.create(0,0,extraDims);
 			int index = 0;
 			for (int y=0; y<h; y++) {
 				pos[1] = y;
@@ -922,7 +941,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final byte[] data = new byte[w * h];
 		final LocalizableByDimCursor<ByteType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -940,7 +959,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final byte[] data = new byte[w * h];
 		final LocalizableByDimCursor<UnsignedByteType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -958,7 +977,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final short[] data = new short[w * h];
 		final LocalizableByDimCursor<ShortType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -976,7 +995,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final short[] data = new short[w * h];
 		final LocalizableByDimCursor<UnsignedShortType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -994,7 +1013,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final int[] data = new int[w * h];
 		final LocalizableByDimCursor<IntType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -1012,7 +1031,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final int[] data = new int[w * h];
 		final LocalizableByDimCursor<UnsignedIntType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -1030,7 +1049,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final long[] data = new long[w * h];
 		final LocalizableByDimCursor<LongType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -1048,7 +1067,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final float[] data = new float[w * h];
 		final LocalizableByDimCursor<FloatType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -1066,7 +1085,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final double[] data = new double[w * h];
 		final LocalizableByDimCursor<DoubleType> cursor =
 			im.createLocalizableByDimCursor();
-		final int[] pos = makePosArray(coords);
+		final int[] pos = Index.create(0,0,coords);
 		int index = 0;
 		for (int y=0; y<h; y++) {
 			pos[1] = y;
@@ -1100,19 +1119,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			    imp.show();
 			  }
 
-	//public <T extends Type<T>> ImgLibProcessor(final Image<T> img)
-	//{
-	//	
-	//}
-/*	
-	public static <T extends RealType<T>> ImagePlus createImagePlus(final Image<T> img)
-	{
-		ImageProcessor processor = new ImgLibProcessor<T>(img, img.createCursor().getType() );
-		ImagePlus imp = new ImagePlus(img.getName(),processor);
-		return imp;
-	}
-*/
-	
 	public static ImagePlus createImagePlus(final Image<?> img)
 	{
 		ImageProcessor processor = null;
@@ -1188,13 +1194,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		//Start the timer
 		long a = System.currentTimeMillis( );
-		for(int x = 0;x<1000;x++)
+		for(int x = 0;x<1001;x++)
 			imp.getProcessor().flipVertical();
 		
 		//stop the timer
 		long b = System.currentTimeMillis( );
 		
-		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1000) + " seconds to do an image flip.");
+		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1001) + " seconds to do an image flip.");
 
 		new ImageJ();
 		imp.show();
