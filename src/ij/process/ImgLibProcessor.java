@@ -24,6 +24,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 import mpicbg.imglib.io.LOCI;
 import mpicbg.imglib.type.Type;
+import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.GenericByteType;
@@ -167,6 +168,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		);
 	}
 
+	// TODO is there a better way? ask.
+	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+	private boolean isIntegralType(RealType t) {
+		return (t instanceof IntegerType);
+	}
 	private int[] getMultiDimensionalPositionArray( int x, int y )
 	{
 		return Index.create(x,y,imageProperties.getExtraDimensions());
@@ -819,11 +825,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void setf(int x, int y, float value) {
+
+		// NOTES - for an integer type backed data store imglib rounds float values. imagej has always truncated float values.
+		//   I need to detect beforehand and do my truncation if an integer type.
+		
 		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
 		
 		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
-		cursor.getType().setReal( value );
 		
+		if (isIntegralType(cursor.getType()))
+			value = (float)Math.floor(value);
+		
+		cursor.getType().setReal( value ); 
+
 		cursor.close();
 	}
 

@@ -10,14 +10,7 @@ import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.LOCI;
-import mpicbg.imglib.type.numeric.integer.ByteType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
-import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
@@ -25,15 +18,6 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 	
-	//Image<UnsignedByteType>  ubImage;
-	//Image<ByteType>          bImage;
-	//Image<UnsignedShortType> usImage;
-	//Image<ShortType>         sImage;
-	//Image<UnsignedIntType>   uiImage;
-	//Image<IntType>           iImage;
-	//Image<FloatType>         fImage;
-	//Image<DoubleType>        dImage;
-
 	int width;
 	int height;
 	ImgLibProcessor<UnsignedByteType> iProc;
@@ -443,9 +427,7 @@ public class ImgLibProcessorTest {
 		iProc.setf(3*maxPixels/5, 17.4f);
 		iProc.setf(4*maxPixels/5, 18.5f);
 		
-		/*  TODO - BROKEN - rounding errors?
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
@@ -453,21 +435,19 @@ public class ImgLibProcessorTest {
 		
 		// set the ByteProcessor
 		bProc.setf(0, 0, 11.1f);
-		bProc.setf(0, height-1, 22.2f);
-		bProc.setf(width-1, 0, 33.3f);
-		bProc.setf(width-1, height-1, 44.4f);
-		bProc.setf(width/2,height/2, 55.5f);
+		bProc.setf(0, height-1, 22.3f);
+		bProc.setf(width-1, 0, 33.5f);
+		bProc.setf(width-1, height-1, 44.7f);
+		bProc.setf(width/2,height/2, 55.9f);
 
 		// set the ImgLibProcessor
 		iProc.setf(0, 0, 11.1f);
-		iProc.setf(0, height-1, 22.2f);
-		iProc.setf(width-1, 0, 33.3f);
-		iProc.setf(width-1, height-1, 44.4f);
-		iProc.setf(width/2,height/2, 55.5f);
+		iProc.setf(0, height-1, 22.3f);
+		iProc.setf(width-1, 0, 33.5f);
+		iProc.setf(width-1, height-1, 44.7f);
+		iProc.setf(width/2,height/2, 55.9f);
 		
-		/*  TODO - BROKEN - rounding errors?
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
