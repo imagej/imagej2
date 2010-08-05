@@ -113,7 +113,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private final Image<T> imageData;
 
-
 	// TODO: How can we use generics here without breaking javac?
 	@SuppressWarnings("rawtypes")
 	private final RealType type;
@@ -122,7 +121,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private Snapshot<T> snapshot;
 	private ImageProperties<T> imageProperties;
 	
-
 	//****************** Helper methods *******************************************************
 
 	private static int[] createExtraDimensions(int[] dims)
@@ -251,6 +249,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		Image<T> data = snapshot.getStorage();
 
+		// data.getNumPixels() returns an int!!! calc our own for now
 		long totalSamples = 1;
 		for (int i = 0; i < data.getNumDimensions(); i++)
 			totalSamples *= data.getDimension(i);
@@ -268,12 +267,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
         RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor< T >( snapCursor, origin, extents );
 		
-        boolean targetIsUnsigned = isUnsignedType(snapCursor.getType());
+        boolean destImageIsUnsigned = isUnsignedType(snapCursor.getType());
         
         int i = 0;
 		for (final T pixel:snapRoiCursor)
 		{
-			pixel.setReal( getPixValue(pixels,inputType,targetIsUnsigned,i) );
+			pixel.setReal( getPixValue(pixels,inputType,destImageIsUnsigned,i) );
 		}
 		
 		//close the cursors
@@ -302,6 +301,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		this.width = dims[0]; // TODO: Dimensional labels are safer way to find X
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
+		
+		resetRoi();
 	}
 	
 	protected ImageProperties<T> getImageProperties() {
@@ -311,7 +312,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void applyTable(int[] lut) 
 	{
-		//test "lut" length
 		testLUTLength(lut);
 		
 		int[] index = Index.create(roiX,roiY,imageProperties.getExtraDimensions());
@@ -326,7 +326,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
 		}
 		
-		//close the cursor
+		//close the cursors
+		imageRegionOfInterestCursor.close( );
 		imageCursor.close( );
 	}
 
@@ -759,6 +760,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setBackgroundValue(double value) 
 	{
+		//TODO - this is not finished ...
 		imageProperties.getBackgroundValue();
 	}
 
@@ -1170,10 +1172,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final ImagePlus imp = createImagePlus(image);
 		
 		// methods to test to make sure they work
-		
+
+		/*
 		// invert() : works
-		//
-		// imp.getProcessor().invert();
+		
+		imp.getProcessor().invert();
+		*/
 		
 		// applyTable() : works
 		//
@@ -1182,25 +1186,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		lut[i] = 255-i;
 		imp.getProcessor().applyTable(lut);
 		
-		// TODO
-		//convolve(float[] kernel, int kernelWidth, int kernelHeight)
-		//convolve3x3(int[] kernel)
-		//copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
-		// etc.
-
+		/*
 		// get(x,y)
-		//imp.getProcessor().set( 20, 20,175 );
-		//System.out.println( imp.getProcessor().get(20,20) );
+		imp.getProcessor().set( 20, 20,175 );
+		System.out.println( imp.getProcessor().get(20,20) );
+		*/
 		
+		/*
 		//Start the timer
 		long a = System.currentTimeMillis( );
-		for(int x = 0;x<1001;x++)
+		for(int x = 0;x<1000;x++)
 			imp.getProcessor().flipVertical();
 		
 		//stop the timer
 		long b = System.currentTimeMillis( );
 		
-		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1001) + " seconds to do an image flip.");
+		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1000) + " seconds to do an image flip.");
+		*/
 
 		new ImageJ();
 		imp.show();
