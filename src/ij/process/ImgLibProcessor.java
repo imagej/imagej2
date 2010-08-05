@@ -16,6 +16,7 @@ import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
+import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.exception.ImgLibException;
@@ -303,6 +304,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
 		
 		resetRoi();
+		
+		// TODO 
+		// findMinAndMax();
 	}
 	
 	protected ImageProperties<T> getImageProperties() {
@@ -369,7 +373,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			source.newPixels();
 
 		lutAnimation = false;
-	  return img;
+		return img;
 	}
 
 	@Override
@@ -493,8 +497,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int get(int index) {
 		//imageData
-		int x = index / width;
-		int y = index % width;
+		int x = index % width;
+		int y = index / width;
 		return get( x, y) ;
 	}
 
@@ -638,8 +642,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public float getf(int index) {
-		int x = index / width;
-		int y = index % width;
+		int x = index % width;
+		int y = index / width;
 		return getf( x, y) ;
 	}
 
@@ -752,8 +756,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void set(int index, int value) 
 	{
-		int x = index / width;
-		int y = index % width;
+		int x = index % width;
+		int y = index / width;
 		set( x, y, value) ;
 	}
 
@@ -825,8 +829,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void setf(int index, float value) {
-		int x = index / width;
-		int y = index % width;
+		int x = index % width;
+		int y = index / width;
 		setf( x, y, value);
 	}
 
@@ -865,7 +869,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp) {
-    throw new RuntimeException("Unimplemented");
+		int size = width*height;
+		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
+			fp = new FloatProcessor(width, height, new float[size], cm);
+		float[] fPixels = (float[])fp.getPixels();
+
+		int pixNum = 0;
+		Cursor<T> cursor = imageData.createCursor();  // TODO - need a plane cursor here?
+		for (T pixel : cursor)
+		{
+			fPixels[pixNum++] = pixel.getRealFloat();
+		}
+		fp.setRoi(getRoi());
+		fp.setMask(mask);
+		// TODO
+		// fp.setMinAndMax(min, max);
+		fp.setThreshold(minThreshold, maxThreshold, ImageProcessor.NO_LUT_UPDATE);
+		return fp;
 	}
 
 	@Override
