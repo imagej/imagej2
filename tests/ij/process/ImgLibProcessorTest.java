@@ -14,6 +14,8 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
 import org.junit.Test;
 
+// TODO - add comparisons to FloatProcessor and ShortProcessor also
+
 public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
@@ -22,54 +24,30 @@ public class ImgLibProcessorTest {
 	int height;
 	ImgLibProcessor<UnsignedByteType> iProc;
 	ByteProcessor bProc;
+	FloatProcessor fProc;
+	ShortProcessor sProc;
+	ColorProcessor cProc;  // may not need to test this for comparison
 
 	// ************* Helper methods ***********************************************
 
-	/*
-
-	private byte[] getRow(ImgLibProcessor<UnsignedByteType> proc, int r)
-	{
-		int cols = proc.getWidth();
-		
-		byte[] row = new byte[cols];
-		
-		for (int col = 0; col < cols; col++)
-		{
-			row[col] = (byte) proc.get(col, r);
-		}
-		
-		return row;
-	}
-	
-	private byte[] getCol(ImgLibProcessor<UnsignedByteType> proc, int c)
-	{
-		int rows = proc.getHeight();
-		
-		byte[] column = new byte[rows];
-		
-		for (int row = 0; row < rows; row++)
-		{
-			column[row] = (byte) proc.get(c, row);
-		}
-		
-		return column;
-	}
-
-	*/
 	
 	// ************* Helper tests ***********************************************
 
-	private void compareData(ImageProcessor bProc, ImageProcessor iProc)
+	private void compareData(int w, int h, ImageProcessor bProc, ImageProcessor iProc)
 	{
-		assertEquals(height,iProc.getHeight());
-		assertEquals(width,iProc.getWidth());
+		assertEquals(h,bProc.getHeight());
+		assertEquals(w,bProc.getWidth());
+		
+		assertEquals(h,iProc.getHeight());
+		assertEquals(w,iProc.getWidth());
 	
-		for (int x = 0; x < width; x++)
-			for (int y = 0; y < height; y++)
-				if (bProc.get(x,y) != iProc.get(x,y))
-					fail("processor data differs at ("+x+","+y+") : ij(" + bProc.get(x,y) +") imglib("+iProc.get(x,y)+")");
+		for (int x = 0; x < w; x++)
+			for (int y = 0; y < h; y++)
+				if (Math.abs(bProc.getf(x,y)-iProc.getf(x,y)) > Assert.FLOAT_TOL)
+					fail("processor data differs at ("+x+","+y+") : ij(" + bProc.getf(x,y) +") imglib("+iProc.getf(x,y)+")");
 	}
-	
+
+	// the following initialization code runs before every test
 	@Before
 	public void initialize()
 	{
@@ -84,7 +62,7 @@ public class ImgLibProcessorTest {
 		Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(filename, containerFactory);
 		iProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType());
 		
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	// ************* Tests ***********************************************
@@ -100,27 +78,68 @@ public class ImgLibProcessorTest {
 		// apply to both
 		bProc.applyTable(newLut);
 		iProc.applyTable(newLut);
-		compareData(bProc,iProc);
-	}
-
-	@Test
-	public void testBoundIntValueToType() {
-		//fail("Not yet implemented");
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
 	public void testConvolve() {
-		//fail("Not yet implemented");
+		
+		/* TODO - enable
+		float[][] kernel2d = new float[][] {{-1.2f,-1.2f,-1.2f,-1.2f,-1.2f},
+											{-1.2f,-2.4f,-2.4f,-2.4f,-1.2f},
+											{-1.2f,-2.4f,38.4f,-2.4f,-1.2f},
+											{-1.2f,-2.4f,-2.4f,-2.4f,-1.2f},
+											{-1.2f,-1.2f,-1.2f,-1.2f,-1.2f}};
+
+		int height = kernel2d.length;
+		int width = kernel2d[0].length;
+		
+		float[] kernel = new float[height * width];
+		int i = 0;
+		for (int x=0; x < width; x++)
+			for (int y=0; y < height; y++)
+				kernel[i++] = kernel2d[x][y];
+		
+		bProc.convolve(kernel, width, height);
+		iProc.convolve(kernel, width, height);
+		compareData(bProc,iProc);
+		*/
 	}
 
 	@Test
 	public void testConvolve3x3() {
-		//fail("Not yet implemented");
+		
+		/* TODO - enable
+		int[][] kernel2d = new int[][] {{1,3,1},{3,-16,3},{1,3,1}};
+
+		int height = kernel2d.length;
+		int width = kernel2d[0].length;
+		
+		int[] kernel = new int[height * width];
+		int i = 0;
+		for (int x=0; x < width; x++)
+			for (int y=0; y < height; y++)
+				kernel[i++] = kernel2d[x][y];
+		
+		bProc.convolve3x3(kernel);
+		iProc.convolve3x3(kernel);
+		compareData(bProc,iProc);
+		*/
 	}
 
 	@Test
 	public void testCopyBits() {
-		//fail("Not yet implemented");
+		
+		/* TODO - enable
+		ImageProcessor data = new ByteProcessor(5,5,new byte[]{-1,1,-2,2,-3,3,1,2,3,4,5,6,7,8,11,10,9,8,7,6,5,4,3,2,1},null);
+		
+		for (int mode = ImageProcessor.INVERT; mode <= ImageProcessor.ABS; mode++)
+		{
+			bProc.copyBits(data, 23, 19, mode);
+			iProc.copyBits(data, 23, 19, mode);
+			compareData(bProc,iProc);
+		}
+		*/
 	}
 
 	@Test
@@ -130,27 +149,72 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testCreateImage() {
-		assertNotNull(iProc.createImage());
+		java.awt.Image bImage = bProc.createImage(); 
+		java.awt.Image iImage = iProc.createImage(); 
+
+		assertNotNull(bImage);
+		assertNotNull(iImage);
+		
+		// TODO - do some other kind of comparisons?
 	}
 
 	@Test
 	public void testCreateImagePlus() {
-		//fail("Not yet implemented");
+		// TODO - test if we keep it around
 	}
 
 	@Test
 	public void testCreateProcessor() {
-		//fail("Not yet implemented");
+		
+		int width = 73;
+		int height = 22;
+		
+		ImageProcessor newProc = iProc.createProcessor(width,height);
+		
+		assertEquals(width,newProc.getWidth());
+		assertEquals(height,newProc.getHeight());
+		
+		assertEquals(iProc.getMin(),newProc.getMin(),Assert.DOUBLE_TOL);
+		/* TODO - enable when min/max calc working
+		assertEquals(iProc.getMax(),newProc.getMax(),Assert.DOUBLE_TOL);
+		*/
+		assertEquals(iProc.getColorModel(),newProc.getColorModel());
+		assertEquals(iProc.getInterpolate(),newProc.getInterpolate());
 	}
 
 	@Test
 	public void testCrop() {
-		//fail("Not yet implemented");
+	
+		int ox = 22;
+		int oy = 53;
+		int w = 107;
+		int h = 214;
+		
+		bProc.setRoi(ox,oy,w,h);
+		iProc.setRoi(ox,oy,w,h);
+		
+		ImageProcessor baseline = bProc.crop();
+		ImageProcessor result = iProc.crop();
+		
+		compareData(baseline.getWidth(),baseline.getHeight(),baseline,result);
 	}
 
 	@Test
 	public void testDilate() {
-		//fail("Not yet implemented");
+		
+		/* TODO - enable
+		iProc.dilate();
+		bProc.dilate();
+		compareData(bProc,iProc);
+
+		iProc.dilate();
+		bProc.dilate();
+		compareData(bProc,iProc);
+
+		iProc.dilate();
+		bProc.dilate();
+		compareData(bProc,iProc);
+		*/
 	}
 
 	@Test
@@ -170,7 +234,20 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testErode() {
-		//fail("Not yet implemented");
+
+		/* TODO - enable
+		iProc.erode();
+		bProc.erode();
+		compareData(bProc,iProc);
+
+		iProc.erode();
+		bProc.erode();
+		compareData(bProc,iProc);
+
+		iProc.erode();
+		bProc.erode();
+		compareData(bProc,iProc);
+		*/
 	}
 
 	@Test
@@ -187,7 +264,7 @@ public class ImgLibProcessorTest {
 	public void testFlipVertical() {
 		iProc.flipVertical();
 		bProc.flipVertical();
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -374,13 +451,32 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
-	public void testReset() {
-		//fail("Not yet implemented");
-	}
-
-	@Test
 	public void testResetImageProcessor() {
-		//fail("Not yet implemented");
+
+		ByteProcessor mask = new ByteProcessor(7, 7);
+		for (int x = 0; x < 7; x++)
+			for (int y = 0; y < 7; y++)
+				mask.set(x,y,(x+y)%2);
+		
+		bProc.setRoi(1, 2, 7, 7);
+		iProc.setRoi(1, 2, 7, 7);
+		
+		bProc.snapshot();
+		iProc.snapshot();
+		
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				bProc.set(x,y,(x+y)%256);
+				iProc.set(x,y,(x+y)%256);
+			}
+		}
+		
+		compareData(width,height,bProc,iProc);
+
+		bProc.reset(mask);
+		iProc.reset(mask);
+		
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -427,7 +523,7 @@ public class ImgLibProcessorTest {
 		iProc.setf(3*maxPixels/5, 17.4f);
 		iProc.setf(4*maxPixels/5, 18.5f);
 		
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -447,7 +543,7 @@ public class ImgLibProcessorTest {
 		iProc.setf(width-1, height-1, 44.7f);
 		iProc.setf(width/2,height/2, 55.9f);
 		
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -469,7 +565,7 @@ public class ImgLibProcessorTest {
 		iProc.set(3*maxPixels/5, 80);
 		iProc.set(4*maxPixels/5, 90);
 		
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -489,7 +585,7 @@ public class ImgLibProcessorTest {
 		iProc.set(width-1, height-1, 80);
 		iProc.set(width/2,height/2,90);
 		
-		compareData(bProc,iProc);
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -518,8 +614,23 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
-	public void testSnapshot() {
-		//fail("Not yet implemented");
+	public void testSnapshotAndReset() {
+		
+		bProc.snapshot();
+		iProc.snapshot();
+	
+		for (int i = 0; i < width*height; i++)
+		{
+			bProc.set(i, i%256);
+			iProc.set(i, i%256);
+		}
+		
+		compareData(width,height,bProc,iProc);
+		
+		bProc.reset();
+		iProc.reset();
+		
+		compareData(width,height,bProc,iProc);
 	}
 
 	@Test
@@ -529,9 +640,17 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testToFloat() {
-		FloatProcessor bFloat = bProc.toFloat(0, null);
-		FloatProcessor iFloat = iProc.toFloat(0, null);
 		
-		compareData(bFloat,iFloat);
+		FloatProcessor bFloat, iFloat;
+		
+		bFloat = bProc.toFloat(0, null);
+		iFloat = iProc.toFloat(0, null);
+		
+		compareData(width,height,bProc,iProc);
+
+		bFloat = bProc.toFloat(1, null);
+		iFloat = iProc.toFloat(1, null);
+		
+		compareData(width,height,bProc,iProc);
 	}
 }

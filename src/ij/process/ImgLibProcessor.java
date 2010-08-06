@@ -55,6 +55,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // ImageJVirtualStack.extractSliceFloat for an example) to grab the data
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
+// TODO / NOTE - We should break out the private static classes here as public ones and write tests for them
+
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE};
@@ -111,6 +113,42 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	public static class TypeManager {
+
+		// TODO is there a better way? ask.
+		//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+		public static boolean isUnsignedType(RealType t) {
+			return (
+				(t instanceof UnsignedByteType) ||
+				(t instanceof UnsignedIntType) ||
+				(t instanceof UnsignedShortType)
+			);
+		}
+
+		// TODO is there a better way? ask.
+		//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+		private static boolean isIntegralType(RealType t) {
+			return (t instanceof IntegerType);
+		}
+		
+		/**
+		 * Limits and returns the range of the input value
+		 * to the corresponding max and min values respective to the
+		 * underlying type.
+		 */
+		public static int boundIntValueToType(RealType type, int inputValue)
+		{
+			if (isIntegralType(type))
+			{
+				if (inputValue < type.getMinValue() ) inputValue = ( int ) type.getMinValue();
+				if (inputValue > type.getMaxValue() ) inputValue = (int) type.getMaxValue();
+			}
+	
+			return inputValue;
+		}
+	
+	}
+
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -158,21 +196,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 	
-	// TODO is there a better way? ask.
-	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
-	private boolean isUnsignedType(RealType t) {
-		return (
-			(t instanceof UnsignedByteType) ||
-			(t instanceof UnsignedIntType) ||
-			(t instanceof UnsignedShortType)
-		);
-	}
-
-	// TODO is there a better way? ask.
-	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
-	private boolean isIntegralType(RealType t) {
-		return (t instanceof IntegerType);
-	}
 	private int[] getMultiDimensionalPositionArray( int x, int y )
 	{
 		return Index.create(x,y,imageProperties.getExtraDimensions());
@@ -274,7 +297,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
         RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor< T >( snapCursor, origin, extents );
 		
-        boolean destImageIsUnsigned = isUnsignedType(snapCursor.getType());
+        boolean destImageIsUnsigned = TypeManager.isUnsignedType(snapCursor.getType());
         
         int i = 0;
 		for (final T pixel:snapRoiCursor)
@@ -384,18 +407,57 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public ImageProcessor createProcessor(int width, int height) {
-    throw new RuntimeException("Unimplemented");
+		Image<T> image = imageData.createNewImage(new int[]{width,height});
+		ImageProcessor ip2 = new ImgLibProcessor<T>(image, (T)type);
+		ip2.setColorModel(getColorModel());
+		if (baseCM!=null)
+			ip2.setMinAndMax(getMin(), getMax());
+		ip2.setInterpolationMethod(interpolationMethod);
+		return ip2;
 	}
 
 	@Override
 	public ImageProcessor crop() {
-    throw new RuntimeException("Unimplemented");
+		
+		int[] originInImage = Index.create(roiX,roiY,imageProperties.getExtraDimensions());
+		int[] extentsInImage = Span.singlePlane(roiWidth, roiHeight, imageData.getNumDimensions());
+		
+		// TODO - fine as is? pass all dims with some extent of 1? or even crop all planes of Image?
+		int[] originInNewImage = Index.create(2);
+		int[] extentsInNewImage = Span.singlePlane(roiWidth, roiHeight, 2);
+
+		Image<T> newImage = imageData.createNewImage(extentsInNewImage);
+		
+		LocalizableByDimCursor<T> imageDimCursor = imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> newImageDimCursor = newImage.createLocalizableByDimCursor();
+		
+		RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor<T>(imageDimCursor,originInImage,extentsInImage);
+		RegionOfInterestCursor<T> newImageRoiCursor = new RegionOfInterestCursor<T>(newImageDimCursor,originInNewImage,extentsInNewImage);
+		
+		while (imageRoiCursor.hasNext() && newImageRoiCursor.hasNext())
+		{
+			imageRoiCursor.fwd();
+			newImageRoiCursor.fwd();
+			double value = imageRoiCursor.getType().getRealDouble(); 
+			newImageRoiCursor.getType().setReal(value); 
+		}
+		
+		imageRoiCursor.close();
+		newImageRoiCursor.close();
+		imageDimCursor.close();
+		newImageDimCursor.close();
+
+		return new ImgLibProcessor<T>(newImage, (T)type);
 	}
 
 	@Override
 	public void dilate() {
-    throw new RuntimeException("Unimplemented");
-
+		// only applicable to integral types (or is it just for lut backed types?)
+		if (TypeManager.isIntegralType(this.type))
+		{
+			// TODO
+		}
+		throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
@@ -411,8 +473,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void erode() {
-    throw new RuntimeException("Unimplemented");
-
+		// only applicable to integral types (or is it just for lut backed types?)
+		if (TypeManager.isIntegralType(this.type))
+		{
+			// TODO
+		}
+		throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
@@ -625,8 +691,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public Object getSnapshotPixels() {
+		
+		if (this.snapshot == null)
+			return null;
+		
 		Image<T> image = this.snapshot.getStorage();
+		
 		int[] extraDims = createExtraDimensions(image.getDimensions());
+		
 		return getCopyOfPixelsFromImage(image, type, extraDims);
 	}
 
@@ -703,6 +775,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		int[] originInImage = Index.create(roiX,roiY,imageProperties.getExtraDimensions());
 		int[] originInSnapshot = Index.create(snapData.getNumDimensions());
+		originInSnapshot[0] = roiX;
+		originInSnapshot[1] = roiY;
 
 		int[] spanInImage = Span.singlePlane(roiWidth,roiHeight,imageData.getNumDimensions());
 		int[] spanInSnapshot = Span.singlePlane(roiWidth,roiHeight,snapData.getNumDimensions());
@@ -820,23 +894,26 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		fgColor = (int) value;
 		
-		fgColor = boundIntValueToType(fgColor);
+		fgColor = TypeManager.boundIntValueToType(type,fgColor);
 	}
 
 	@Override
 	public void setf(int x, int y, float value) {
 
-		// NOTES - for an integer type backed data store imglib rounds float values. imagej has always truncated float values.
+		// TODO - verify this is what we want to do
+		// NOTE - for an integer type backed data store imglib rounds float values. imagej has always truncated float values.
 		//   I need to detect beforehand and do my truncation if an integer type.
 		
 		final LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
-		
+
 		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
 		
-		if (isIntegralType(cursor.getType()))
+		RealType pixRef = cursor.getType();
+
+		if (TypeManager.isIntegralType(pixRef))
 			value = (float)Math.floor(value);
 		
-		cursor.getType().setReal( value ); 
+		pixRef.setReal( value ); 
 
 		cursor.close();
 	}
@@ -853,12 +930,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		int[] origins = Index.create(0,0,imageProperties.getExtraDimensions());
 
-		origins[0] = 0;
-		origins[1] = 0;
-		
 		int[] spans = Span.singlePlane(width, height, imageData.getNumDimensions());
 		
-		this.snapshot.copyFromImage(imageData, origins, spans);
+		this.snapshot = new Snapshot(imageData, origins, spans);
 		
 		// TODO - ShortProcessor kept track of max and min here. Might need to do so also. But imglib or Rick may do too.
 	}
@@ -867,7 +941,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void threshold(int thresholdLevel) 
 	{
 		//ensure level is OK for underlying type & convert to double
-		double thresholdLevelAsDouble = boundIntValueToType( thresholdLevel );
+		double thresholdLevelAsDouble = TypeManager.boundIntValueToType(type,thresholdLevel);
 		
 		//Get a cursor
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
@@ -1170,26 +1244,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			throw new IllegalArgumentException("no processor type was matched");
 		
 		return new ImagePlus(img.getName(),processor);
-	}
-	
-	//TODO add to utility class...
-	/**
-	 * Limits and returns the range of the input value
-	 * to the corresponding max and min values respective to the
-	 * underlying type.
-	 */
-	public int boundIntValueToType(int inputValue)
-	{
-		if (type instanceof ByteType ||
-			type instanceof UnsignedByteType ||
-			type instanceof ShortType ||
-			type instanceof UnsignedShortType ) 
-		{
-			if (inputValue < type.getMinValue() ) inputValue = ( int ) type.getMinValue();
-			if (inputValue > type.getMaxValue() ) inputValue = (int) type.getMaxValue();
-		}
-
-		return inputValue;
 	}
 	
 	public static void main(String[] args) {
