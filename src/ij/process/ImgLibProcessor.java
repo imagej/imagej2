@@ -160,6 +160,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private byte[] pixels8;
 	private Snapshot<T> snapshot;
 	private ImageProperties<T> imageProperties;
+	// TODO - move these next two to imageProperties
+	private double min, max;
+	private double fillColor;
 	
 	//****************** Helper methods *******************************************************
 
@@ -176,6 +179,43 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		
 		return extraDimensions;
+	}
+	
+	private void findMinAndMax()
+	{
+		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
+
+		//set the size
+		int width = imageData.getDimension(0);
+		int height = imageData.getDimension(1);
+		
+		//get the current image data
+		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
+		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
+		
+		//Get a cursor
+		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
+		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
+				
+		//assign the return value
+		this.max = imageCursor.getType().getMinValue();
+		this.min = imageCursor.getType().getMaxValue();
+ 
+		//iterate over all the pixels, of the selected image plane
+		for (T sample : imageROICursor)
+		{
+			double value = sample.getRealDouble();
+			
+			if ( value > max )
+				max = value;
+
+			if ( value < min )
+				min = value;
+		}
+		
+		//close the cursor
+		imageROICursor.close( );
+		imageCursor.close( );
 	}
 	
 	/*
@@ -331,11 +371,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		this.width = dims[0]; // TODO: Dimensional labels are safer way to find X
 		this.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
+	
+		this.fillColor = 0;
 		
 		resetRoi();
 		
-		// TODO 
-		// findMinAndMax();
+		findMinAndMax();
 	}
 	
 	protected ImageProperties<T> getImageProperties() {
@@ -410,8 +451,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Image<T> image = imageData.createNewImage(new int[]{width,height});
 		ImageProcessor ip2 = new ImgLibProcessor<T>(image, (T)type);
 		ip2.setColorModel(getColorModel());
-		if (baseCM!=null)
-			ip2.setMinAndMax(getMin(), getMax());
+		// TODO - ByteProcessor does this conditionally. Do we mirror here?
+		ip2.setMinAndMax(getMin(), getMax());
 		ip2.setInterpolationMethod(interpolationMethod);
 		return ip2;
 	}
@@ -592,64 +633,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMax() 
 	{
-		//set the size
-		int width = imageData.getDimension(0);
-		int height = imageData.getDimension(1);
-		
-		//get the current image data
-		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
-		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
-		
-		//Get a cursor
-		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
-		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
-				
-		//assign the return value
-		double max = imageCursor.getType().getMinValue();
- 
-		//iterate over all the pixels, of the selected image plane
-		for(T pixel:imageROICursor)
-		{
-			if( pixel.getRealDouble() > max )
-				max = pixel.getRealDouble();
-		}
-		
-		//close the cursor
-		imageROICursor.close( );
-		imageCursor.close( );
-		
-		return max;
+		return this.max;
 	}
 
 	@Override
 	public double getMin() 
 	{
-		//set the size
-		int width = imageData.getDimension(0);
-		int height = imageData.getDimension(1);
-		
-		//get the current image data
-		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
-		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
-		
-		//Get a cursor
-		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
-		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
-
-		//assign the return value
-		double min = imageCursor.getType().getMaxValue();
- 
-		//iterate over all the pixels, of the selected image plane
-		for(T pixel:imageROICursor)
-		{
-			if( pixel.getRealDouble() < min )
-				min = pixel.getRealDouble();
-		}
-		
-		//close the cursor
-		imageCursor.close( );
-		
-		return min;
+		return this.min;
 	}
 
 	@Override
@@ -856,8 +846,29 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public void setMinAndMax(double min, double max) {
-    throw new RuntimeException("Unimplemented");
+	
+		if (min==0.0 && max==0.0)
+		{
+			resetMinAndMax();
+			return;
+		}
+	
+		this.min = min;
+		this.max = max;
+		
+		// From FLoatProc - huh? fixedScale = true;
+		
+		resetThreshold();
+	}
 
+	@Override
+	public void resetMinAndMax() {
+		
+		// from FloatProc : fixedScale = false;
+		
+		findMinAndMax();
+		
+		resetThreshold();
 	}
 
 	@Override
@@ -892,9 +903,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setValue(double value) 
 	{
-		fgColor = (int) value;
-		
-		fgColor = TypeManager.boundIntValueToType(type,fgColor);
+		fillColor = value;
+		if (TypeManager.isIntegralType(type))
+		{
+			fgColor = TypeManager.boundIntValueToType(type,(int)fillColor);
+		}
 	}
 
 	@Override
