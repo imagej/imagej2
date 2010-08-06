@@ -33,18 +33,18 @@ public class ImgLibProcessorTest {
 	
 	// ************* Helper tests ***********************************************
 
-	private void compareData(int w, int h, ImageProcessor bProc, ImageProcessor iProc)
+	private void compareData(ImageProcessor baselineProc, ImageProcessor testedProc)
 	{
-		assertEquals(h,bProc.getHeight());
-		assertEquals(w,bProc.getWidth());
-		
-		assertEquals(h,iProc.getHeight());
-		assertEquals(w,iProc.getWidth());
+		int w = baselineProc.getWidth();
+		int h = baselineProc.getHeight();
+	
+		assertEquals(w,testedProc.getWidth());
+		assertEquals(h,testedProc.getHeight());
 	
 		for (int x = 0; x < w; x++)
 			for (int y = 0; y < h; y++)
-				if (Math.abs(bProc.getf(x,y)-iProc.getf(x,y)) > Assert.FLOAT_TOL)
-					fail("processor data differs at ("+x+","+y+") : ij(" + bProc.getf(x,y) +") imglib("+iProc.getf(x,y)+")");
+				if (Math.abs(baselineProc.getf(x,y)-testedProc.getf(x,y)) > Assert.FLOAT_TOL)
+					fail("processor data differs at ("+x+","+y+") : ij(" + baselineProc.getf(x,y) +") imglib("+testedProc.getf(x,y)+")");
 	}
 
 	// the following initialization code runs before every test
@@ -62,7 +62,7 @@ public class ImgLibProcessorTest {
 		Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(filename, containerFactory);
 		iProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType());
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	// ************* Tests ***********************************************
@@ -78,7 +78,8 @@ public class ImgLibProcessorTest {
 		// apply to both
 		bProc.applyTable(newLut);
 		iProc.applyTable(newLut);
-		compareData(width,height,bProc,iProc);
+
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -91,17 +92,17 @@ public class ImgLibProcessorTest {
 											{-1.2f,-2.4f,-2.4f,-2.4f,-1.2f},
 											{-1.2f,-1.2f,-1.2f,-1.2f,-1.2f}};
 
-		int height = kernel2d.length;
-		int width = kernel2d[0].length;
+		int kh = kernel2d.length;
+		int kw = kernel2d[0].length;
 		
-		float[] kernel = new float[height * width];
+		float[] kernel = new float[kw * kh];
 		int i = 0;
-		for (int x=0; x < width; x++)
-			for (int y=0; y < height; y++)
+		for (int x=0; x < kw; x++)
+			for (int y=0; y < kh; y++)
 				kernel[i++] = kernel2d[x][y];
 		
-		bProc.convolve(kernel, width, height);
-		iProc.convolve(kernel, width, height);
+		bProc.convolve(kernel, kw, kh);
+		iProc.convolve(kernel, kw, kh);
 		compareData(bProc,iProc);
 		*/
 	}
@@ -112,13 +113,13 @@ public class ImgLibProcessorTest {
 		/* TODO - enable
 		int[][] kernel2d = new int[][] {{1,3,1},{3,-16,3},{1,3,1}};
 
-		int height = kernel2d.length;
-		int width = kernel2d[0].length;
+		int kh = kernel2d.length;
+		int kw = kernel2d[0].length;
 		
-		int[] kernel = new int[height * width];
+		int[] kernel = new int[kw * kh];
 		int i = 0;
-		for (int x=0; x < width; x++)
-			for (int y=0; y < height; y++)
+		for (int x=0; x < kw; x++)
+			for (int y=0; y < kh; y++)
 				kernel[i++] = kernel2d[x][y];
 		
 		bProc.convolve3x3(kernel);
@@ -175,9 +176,7 @@ public class ImgLibProcessorTest {
 		assertEquals(height,newProc.getHeight());
 		
 		assertEquals(iProc.getMin(),newProc.getMin(),Assert.DOUBLE_TOL);
-		/* TODO - enable when min/max calc working
 		assertEquals(iProc.getMax(),newProc.getMax(),Assert.DOUBLE_TOL);
-		*/
 		assertEquals(iProc.getColorModel(),newProc.getColorModel());
 		assertEquals(iProc.getInterpolate(),newProc.getInterpolate());
 	}
@@ -196,7 +195,7 @@ public class ImgLibProcessorTest {
 		ImageProcessor baseline = bProc.crop();
 		ImageProcessor result = iProc.crop();
 		
-		compareData(baseline.getWidth(),baseline.getHeight(),baseline,result);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -264,7 +263,7 @@ public class ImgLibProcessorTest {
 	public void testFlipVertical() {
 		iProc.flipVertical();
 		bProc.flipVertical();
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -471,12 +470,12 @@ public class ImgLibProcessorTest {
 			}
 		}
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 
 		bProc.reset(mask);
 		iProc.reset(mask);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -523,7 +522,7 @@ public class ImgLibProcessorTest {
 		iProc.setf(3*maxPixels/5, 17.4f);
 		iProc.setf(4*maxPixels/5, 18.5f);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -543,7 +542,7 @@ public class ImgLibProcessorTest {
 		iProc.setf(width-1, height-1, 44.7f);
 		iProc.setf(width/2,height/2, 55.9f);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -565,7 +564,7 @@ public class ImgLibProcessorTest {
 		iProc.set(3*maxPixels/5, 80);
 		iProc.set(4*maxPixels/5, 90);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -585,12 +584,20 @@ public class ImgLibProcessorTest {
 		iProc.set(width-1, height-1, 80);
 		iProc.set(width/2,height/2,90);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
 	public void testSetMinAndMax() {
-		//fail("Not yet implemented");
+		
+		double min = 22.0;
+		double max = 96.0;
+		
+		bProc.setMinAndMax(min, max);
+		iProc.setMinAndMax(min, max);
+		
+		assertEquals(bProc.getMin(),iProc.getMin(),0);
+		assertEquals(bProc.getMax(),iProc.getMax(),0);
 	}
 
 	@Test
@@ -610,7 +617,22 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetValue() {
-		//fail("Not yet implemented");
+		
+		bProc.setValue(0);
+		iProc.setValue(0);
+		assertEquals(bProc.fgColor,iProc.fgColor);
+
+		bProc.setValue(-1);
+		iProc.setValue(-1);
+		assertEquals(bProc.fgColor,iProc.fgColor);
+
+		bProc.setValue(1);
+		iProc.setValue(1);
+		assertEquals(bProc.fgColor,iProc.fgColor);
+
+		bProc.setValue(14.2);
+		iProc.setValue(14.2);
+		assertEquals(bProc.fgColor,iProc.fgColor);
 	}
 
 	@Test
@@ -625,12 +647,12 @@ public class ImgLibProcessorTest {
 			iProc.set(i, i%256);
 		}
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 		
 		bProc.reset();
 		iProc.reset();
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -646,11 +668,11 @@ public class ImgLibProcessorTest {
 		bFloat = bProc.toFloat(0, null);
 		iFloat = iProc.toFloat(0, null);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 
 		bFloat = bProc.toFloat(1, null);
 		iFloat = iProc.toFloat(1, null);
 		
-		compareData(width,height,bProc,iProc);
+		compareData(bProc,iProc);
 	}
 }
