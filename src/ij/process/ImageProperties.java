@@ -25,6 +25,7 @@ public class ImageProperties<T extends RealType<T>>
 	
 	/** Given a input Value and Image array, assigns the background value according to
 	 * Generic Type Range Limits. */
+	/* BDZ - I don't think this is right. ImageJ only does this on ByteType. Not Float or Short. Replaced with next method.
 	public void setBackgroundValue( double value, Image<T> imageData )
 	{
 		//Get a cursor
@@ -37,7 +38,15 @@ public class ImageProperties<T extends RealType<T>>
 		//close the cursor
 		imageCursor.close();
 	}
-
+	*/
+	
+	// see notes on previous method
+	/** A value used to represent a background measure **/
+	public void setBackgroundValue(double value)
+	{
+		backgroundValue = value;
+	}
+	
 	/** Stores a copy of the array extra dimensions */
 	public void setExtraDimensions( int[] extraDimensionsInputArray )
 	{

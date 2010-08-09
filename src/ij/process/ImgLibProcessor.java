@@ -3,6 +3,7 @@ package ij.process;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -82,7 +83,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			values[0] = x;
 			values[1] = y;
 			for (int i = 2; i < values.length; i++)
-				values[i] = otherDims[1-2];
+				values[i] = otherDims[i-2];
 			return values;
 		}
 	}
@@ -185,10 +186,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
-		//set the size
-		int width = imageData.getDimension(0);
-		int height = imageData.getDimension(1);
-		
 		//get the current image data
 		int[] imageDimensionsOffset = Index.create(0,0,imageProperties.getExtraDimensions());
 		int[] imageDimensionsSize = Span.singlePlane(width,height,imageData.getNumDimensions());
@@ -197,7 +194,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final LocalizableByDimCursor<T> imageCursor = imageData.createLocalizableByDimCursor( );
 		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
 				
-		//assign the return value
+		//assign crazy values
 		this.max = imageCursor.getType().getMinValue();
 		this.min = imageCursor.getType().getMaxValue();
  
@@ -317,6 +314,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private void setSnapshotPlane(Object pixels, PixelType inputType, int numPixels)
 	{
+		// must create snapshot data structures if they don't exist. we'll overwrite data
+		if (this.snapshot == null)
+			snapshot();
+		
 		Image<T> data = snapshot.getStorage();
 
 		// data.getNumPixels() returns an int!!! calc our own for now
@@ -329,25 +330,40 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		int[] extraDims = createExtraDimensions(data.getDimensions());
 		
-		int[] origin = Index.create(0,0,extraDims);
+		int[] position = Index.create(0,0,extraDims);
 
-		int[] extents = Span.singlePlane(width,height,data.getNumDimensions());
-		
 		final LocalizableByDimCursor<T> snapCursor = data.createLocalizableByDimCursor( );
 		
-        RegionOfInterestCursor<T> snapRoiCursor = new RegionOfInterestCursor< T >( snapCursor, origin, extents );
-		
         boolean destImageIsUnsigned = TypeManager.isUnsignedType(snapCursor.getType());
-        
-        int i = 0;
-		for (final T pixel:snapRoiCursor)
-		{
-			pixel.setReal( getPixValue(pixels,inputType,destImageIsUnsigned,i) );
-		}
+
+        int pixIndex = 0;
+    	for (int y = 0; y < this.height; y++) {
+    		position[1] = y; 
+    		for (int x = 0; x < this.width; x++) {
+    			double newValue = getPixValue(pixels,inputType,destImageIsUnsigned,pixIndex);
+    			position[0] = x;
+    			snapCursor.setPosition(position);
+    			snapCursor.getType().setReal(newValue);
+    			pixIndex++;
+    		}
+    	}
 		
 		//close the cursors
-		snapRoiCursor.close();
 		snapCursor.close();
+	}
+
+	private double getValue(Image<T> data, int pixNum)
+	{
+		Cursor<T> cursor = data.createCursor();
+		
+		for (int i = 0; i < pixNum; i++)
+		{
+			cursor.fwd();
+			if (i == pixNum-1)
+				return cursor.getType().getRealDouble();
+		}
+		
+		return -1234567;
 	}
 	
 	//****************** public interface *******************************************************
@@ -374,15 +390,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 		this.fillColor = 0;
 		
+		if (this.type instanceof UnsignedByteType)
+			imageProperties.setBackgroundValue(255);
+
 		resetRoi();
 		
 		findMinAndMax();
 	}
 	
+	/* Unnecessary?????
 	protected ImageProperties<T> getImageProperties() {
 		return imageProperties;
 	}
-
+	*/
+	
 	@Override
 	public void applyTable(int[] lut) 
 	{
@@ -509,7 +530,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public ImageProcessor duplicate() {
-    throw new RuntimeException("Unimplemented");
+		ImageProcessor proc = createProcessor(imageData.getDimension(0), imageData.getDimension(1));
+
+		LocalizableByDimCursor<T> cursor = imageData.createLocalizableByDimCursor();
+		
+		int[] position = Index.create(0, 0, imageProperties.getExtraDimensions());
+		
+		for (int x = 0; x < this.width; x++) {
+			position[0] = x;
+			for (int y = 0; y < this.height; y++) {
+				position[1] = y;
+				cursor.setPosition(position);
+				float floatVal = cursor.getType().getRealFloat();
+				proc.setf(x,y,floatVal);
+			}
+		}
+		
+		return proc;
 	}
 
 	@Override
@@ -531,7 +568,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void filter(int type) {
     throw new RuntimeException("Unimplemented");
-
+    	// TODO - make special calls to erode() and dilate() I think when ByteType. Copy ByteProcessor. See other processors too.
 	}
 
 	/** swap the rows of an image about its central row */
@@ -622,7 +659,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@Override
 	public int[] getHistogram() {
-    throw new RuntimeException("Unimplemented");
+		/* TODO - work from here
+		if ((type instanceof UnsignedByteType) || (type instanceof UnsignedShortType))
+		{
+			if (super.mask != null)
+				return maskedHistogram();
+			else
+				return regularHistogram();
+		}
+		*/
+	    throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
@@ -834,8 +880,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setBackgroundValue(double value) 
 	{
-		//TODO - this is not finished ...
-		imageProperties.getBackgroundValue();
+		// only set for unsigned byte type like ImageJ (maybe need to extend to integral types and check min/max pixel ranges
+		// see ImageProperties.setBackground() for some additional notes.
+		if (type instanceof UnsignedByteType)
+		{
+			if (value < 0) value = 0;
+			if (value > 255) value = 255;
+			value = (int) value;
+			imageProperties.setBackgroundValue(value);
+		}
 	}
 
 	@Override
@@ -897,7 +950,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		else if (pixels instanceof double[])
 			setSnapshotPlane(pixels,PixelType.DOUBLE,((double[])pixels).length);
 		else
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("unknow object passed to ImgLibProcessor::setSnapshotPixels() - "+ pixels.getClass());
 	}
 
 	@Override
@@ -906,7 +959,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		fillColor = value;
 		if (TypeManager.isIntegralType(type))
 		{
-			fgColor = TypeManager.boundIntValueToType(type,(int)fillColor);
+			super.fgColor = TypeManager.boundIntValueToType(type,(int)fillColor);
 		}
 	}
 
@@ -953,6 +1006,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void threshold(int thresholdLevel) 
 	{
+		if (!TypeManager.isIntegralType(type))
+			return;
+		
 		//ensure level is OK for underlying type & convert to double
 		double thresholdLevelAsDouble = TypeManager.boundIntValueToType(type,thresholdLevel);
 		
@@ -990,7 +1046,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public byte[] create8BitImage()
+	byte[] create8BitImage()
 	{
 		// TODO: use imageData.getDisplay().get8Bit* methods
 		Object pixels = getPixels();
@@ -1221,42 +1277,98 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return data;
 	}
 
+	/* BDZ - remove for now - talk to Curtis
 	public static <T extends RealType<T>> void display(Image<T> img,
 			    String title)
-			  {
-			    ImagePlus imp = null;
-			    Container<T> c = img.getContainer();
-			    if (c instanceof ImagePlusContainer<?, ?>) {
-			      ImagePlusContainer<T, ?> ipc = (ImagePlusContainer<T, ?>) c;
-			      try {
-			        imp = ipc.getImagePlus();
-			      }
-			      catch (ImgLibException exc) {
-			        IJ.log("Warning: " + exc.getMessage());
-			      }
-			    }
-			    if (imp == null) {
-			      imp = ImageJFunctions.copyToImagePlus(img);
-			    }
-			    if (title != null) imp.setTitle(title);
-			    imp.show();
-			  }
+	{
+		ImagePlus imp = null;
+		
+		Container<T> c = img.getContainer();
+		
+		if (c instanceof ImagePlusContainer<?, ?>) {
+		
+			ImagePlusContainer<T, ?> ipc = (ImagePlusContainer<T, ?>) c;
+			
+			try {
+				imp = ipc.getImagePlus();
+			}
+			catch (ImgLibException exc) {
+				IJ.log("Warning: " + exc.getMessage());
+			}
+		}
 
+		if (imp == null)
+			imp = ImageJFunctions.copyToImagePlus(img);
+
+		if (title != null)
+			imp.setTitle(title);
+			
+		imp.show();
+	}
+	 */
+	
 	public static ImagePlus createImagePlus(final Image<?> img)
 	{
-		ImageProcessor processor = null;
-		
 		Type runtimeT = img.createCursor().getType();
 		
-		if (runtimeT instanceof UnsignedByteType)
-		{
-			processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, new UnsignedByteType());
-		}
-			
-		if (processor == null)
-			throw new IllegalArgumentException("no processor type was matched");
+		int[] dimensions = img.getDimensions();
+		long numPlanes = 1;
+		for (int dimension : dimensions)
+			numPlanes *= dimension;
+
+		ImageStack stack = new ImageStack(img.getDimension(0), img.getDimension(1));
 		
-		return new ImagePlus(img.getName(),processor);
+		for (long plane = 0; plane < numPlanes; plane++)
+		{
+			ImageProcessor processor = null;
+			
+			if (runtimeT instanceof UnsignedByteType)
+			{
+				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, new UnsignedByteType());
+			}
+				
+			if (runtimeT instanceof ByteType)
+			{
+				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, new ByteType());
+			}
+				
+			if (runtimeT instanceof UnsignedShortType)
+			{
+				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, new UnsignedShortType());
+			}
+				
+			if (runtimeT instanceof ShortType)
+			{
+				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, new ShortType());
+			}
+				
+			if (runtimeT instanceof UnsignedIntType)
+			{
+				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, new UnsignedIntType());
+			}
+				
+			if (runtimeT instanceof IntType)
+			{
+				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, new IntType());
+			}
+				
+			if (runtimeT instanceof FloatType)
+			{
+				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, new FloatType());
+			}
+				
+			if (runtimeT instanceof DoubleType)
+			{
+				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, new DoubleType());
+			}
+				
+			if (processor == null)
+				throw new IllegalArgumentException("no processor type was matched");
+			
+			stack.addSlice(""+plane, processor);
+		}
+		
+		return new ImagePlus(img.getName(),stack);
 	}
 	
 	public static void main(String[] args) {
