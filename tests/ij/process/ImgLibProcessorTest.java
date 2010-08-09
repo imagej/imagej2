@@ -18,7 +18,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 import org.junit.Test;
 
-// TODO - add comparisons to FloatProcessor and ShortProcessor also
+// TODO - Right now doing all comparisons versus a ByteProcessor. Add comparison code vs. FloatProcessor and ShortProcessor also
 
 public class ImgLibProcessorTest {
 
@@ -409,7 +409,34 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetInterpolatedPixel() {
-		//fail("Not yet implemented");
+		
+		/* TODO - enable
+		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
+		{
+			bProc.setInterpolationMethod(interpMethod);
+			iProc.setInterpolationMethod(interpMethod);
+		
+			double[][] points = new double[][] {
+					new double[] {0,0},
+					new double[] {width-1,0},
+					new double[] {0,height-1},
+					new double[] {width-1,height-1},
+					new double[] {-1,-1},
+					new double[] {5000,5000},
+					new double[] {1,1},
+					new double[] {4.7,3.2},
+					new double[] {9.1,18.9},
+					new double[] {25.75,96.35}
+			};
+			
+			for (double[] point : points)
+			{
+				double x = point[0];
+				double y = point[1];
+				assertEquals(bProc.getInterpolatedPixel(x,y), iProc.getInterpolatedPixel(x,y), Assert.DOUBLE_TOL);
+			}
+		}
+		*/
 	}
 
 	@Test
@@ -424,32 +451,96 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetPixelInterpolated() {
-		//fail("Not yet implemented");
+		/* TODO - enable
+		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
+		{
+			bProc.setInterpolationMethod(interpMethod);
+			iProc.setInterpolationMethod(interpMethod);
+		
+			double[][] points = new double[][] {
+					new double[] {0,0},
+					new double[] {width-1,0},
+					new double[] {0,height-1},
+					new double[] {width-1,height-1},
+					new double[] {-1,-1},
+					new double[] {5000,5000},
+					new double[] {1,1},
+					new double[] {4.7,3.2},
+					new double[] {9.1,18.9},
+					new double[] {25.75,96.35}
+			};
+			
+			for (double[] point : points)
+			{
+				double x = point[0];
+				double y = point[1];
+				assertEquals(bProc.getPixelInterpolated(x,y), iProc.getPixelInterpolated(x,y), Assert.DOUBLE_TOL);
+			}
+		}
+		*/
 	}
 
 	@Test
 	public void testGetPixelIntInt() {
-		//fail("Not yet implemented");
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				assertEquals(bProc.get(x,y),iProc.get(x,y));
+			}
+		}
 	}
 
 	@Test
 	public void testGetPixels() {
-		//fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetPixelsArray() {
-		//fail("Not yet implemented");
+		byte[] bPix = (byte[])bProc.getPixels();
+		byte[] iPix = (byte[])iProc.getPixels();
+		
+		assertArrayEquals(bPix,iPix);
 	}
 
 	@Test
 	public void testGetPixelsCopy() {
-		//fail("Not yet implemented");
+		byte[] bPix = (byte[])bProc.getPixelsCopy();
+		byte[] iPix = (byte[])iProc.getPixelsCopy();
+		
+		assertArrayEquals(bPix,iPix);
 	}
 
 	@Test
 	public void testGetPixelValue() {
-		//fail("Not yet implemented");
+
+		/* TODO - enable
+		
+		// a few cases in ByteProc & ShortProc
+		//   out of bounds
+		//   in bounds with no ctable
+		//   in bounds with ctable
+		// FloatProc - just basically a get(x,y)
+		
+		
+		// TODO - do something that alters whether cTable is created or not and try all cases below
+		
+		int[][] badPoints = new int[][] {
+				new int[] {0,-1},
+				new int[] {-1,0},
+				new int[] {0,height},
+				new int[] {width,0},
+				new int[] {width,height},
+				new int[] {-1,-1},
+				new int[] {5000,5000}
+		};
+		
+		for (int[] point : badPoints)
+		{
+			int x = point[0];
+			int y = point[1];
+			assertEquals(bProc.getPixelValue(x,y), iProc.getPixelValue(x,y), Assert.DOUBLE_TOL);
+		}
+
+		// all the good points
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+				assertEquals(bProc.getPixelValue(x,y), iProc.getPixelValue(x,y), Assert.DOUBLE_TOL);
+		*/
 	}
 
 	@Test
