@@ -1,6 +1,9 @@
 package ij.process;
 
 import static org.junit.Assert.*;
+
+import java.awt.Color;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -10,19 +13,32 @@ import ij.ImageStack;
 
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.io.LOCI;
+import mpicbg.imglib.type.numeric.integer.ByteType;
+import mpicbg.imglib.type.numeric.integer.IntType;
+import mpicbg.imglib.type.numeric.integer.LongType;
+import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import mpicbg.imglib.type.numeric.real.DoubleType;
+import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
+
+import com.sun.org.apache.bcel.internal.classfile.Visitor;
 
 // TODO - Right now doing all comparisons versus a ByteProcessor. Add comparison code vs. FloatProcessor and ShortProcessor also
 
 public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
+
+	static boolean IMGLIBPROC_UNIMPLEMENTED = true;  // some ImgLibProcessor methods are unimplemented. Don't 
 	
 	static int width;
 	static int height;
@@ -101,7 +117,8 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testConvolve() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		float[][] kernel2d = new float[][] {{-1.2f,-1.2f,-1.2f,-1.2f,-1.2f},
 											{-1.2f,-2.4f,-2.4f,-2.4f,-1.2f},
 											{-1.2f,-2.4f,38.4f,-2.4f,-1.2f},
@@ -120,13 +137,13 @@ public class ImgLibProcessorTest {
 		bProc.convolve(kernel, kw, kh);
 		iProc.convolve(kernel, kw, kh);
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testConvolve3x3() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		int[][] kernel2d = new int[][] {{1,3,1},{3,-16,3},{1,3,1}};
 
 		int kh = kernel2d.length;
@@ -141,13 +158,13 @@ public class ImgLibProcessorTest {
 		bProc.convolve3x3(kernel);
 		iProc.convolve3x3(kernel);
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testCopyBits() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		ImageProcessor data = new ByteProcessor(5,5,new byte[]{-1,1,-2,2,-3,3,1,2,3,4,5,6,7,8,11,10,9,8,7,6,5,4,3,2,1},null);
 		
 		for (int mode = ImageProcessor.INVERT; mode <= ImageProcessor.ABS; mode++)
@@ -156,7 +173,6 @@ public class ImgLibProcessorTest {
 			iProc.copyBits(data, 23, 19, mode);
 			compareData(bProc,iProc);
 		}
-		*/
 	}
 
 	@Test
@@ -173,10 +189,11 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testCreateImagePlus() {
 		
-		// TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		//   note it crashes right now. its possible the extraDimenions need to be passed in to ImgLibProcessor so that it knows which
 		//       slice of the image the processor is tied with.
-		/*
+
 		ContainerFactory contFact = new ArrayContainerFactory();
 		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), contFact);
 		Image<UnsignedShortType> image = factory.createImage(new int[] {3,4,5,6,7});
@@ -201,7 +218,6 @@ public class ImgLibProcessorTest {
 			assertEquals(image.getDimension(0),proc.getWidth());
 			assertEquals(image.getDimension(1),proc.getHeight());
 		}
-		*/
 	}
 
 	@Test
@@ -241,7 +257,8 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testDilate() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		iProc.dilate();
 		bProc.dilate();
 		compareData(bProc,iProc);
@@ -253,14 +270,13 @@ public class ImgLibProcessorTest {
 		iProc.dilate();
 		bProc.dilate();
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testDrawPixel() {
 		
-		/* TODO - enable
-
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		bProc.setColor(14);
 		iProc.setColor(14);
 		
@@ -272,23 +288,23 @@ public class ImgLibProcessorTest {
 			}
 		
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testDuplicate() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		ImageProcessor newProc = iProc.duplicate();
 		assertTrue(newProc instanceof ImgLibProcessor<?>);
 		compareData(iProc,newProc);
-		*/
 	}
 
 	@Test
 	public void testErode() {
 
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		iProc.erode();
 		bProc.erode();
 		compareData(bProc,iProc);
@@ -300,13 +316,13 @@ public class ImgLibProcessorTest {
 		iProc.erode();
 		bProc.erode();
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testFillImageProcessor() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		ByteProcessor byteMask = new ByteProcessor(width,height);
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
@@ -320,13 +336,13 @@ public class ImgLibProcessorTest {
 		iProc.fill(byteMask);
 
 		compareData(bProc,iProc);
-		*/
 	}
 
 	@Test
 	public void testFilter() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		for (int filterType = ImageProcessor.BLUR_MORE; filterType <= ImageProcessor.CONVOLVE; filterType++)
 		{
 			initialize();
@@ -334,7 +350,6 @@ public class ImgLibProcessorTest {
 			iProc.filter(filterType);
 			compareData(bProc,iProc);
 		}
-		*/
 	}
 
 	@Test
@@ -379,11 +394,11 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetHistogram() {
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		int[] bHist = bProc.getHistogram();
 		int[] iHist = bProc.getHistogram();
 		assertArrayEquals(bHist,iHist);
-		*/
 	}
 
 	@Test
@@ -410,7 +425,8 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetInterpolatedPixel() {
 		
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
 		{
 			bProc.setInterpolationMethod(interpMethod);
@@ -436,7 +452,6 @@ public class ImgLibProcessorTest {
 				assertEquals(bProc.getInterpolatedPixel(x,y), iProc.getInterpolatedPixel(x,y), Assert.DOUBLE_TOL);
 			}
 		}
-		*/
 	}
 
 	@Test
@@ -451,7 +466,8 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetPixelInterpolated() {
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
 		{
 			bProc.setInterpolationMethod(interpMethod);
@@ -477,7 +493,6 @@ public class ImgLibProcessorTest {
 				assertEquals(bProc.getPixelInterpolated(x,y), iProc.getPixelInterpolated(x,y), Assert.DOUBLE_TOL);
 			}
 		}
-		*/
 	}
 
 	@Test
@@ -508,7 +523,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelValue() {
 
-		/* TODO - enable
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
 		
 		// a few cases in ByteProc & ShortProc
 		//   out of bounds
@@ -540,67 +555,306 @@ public class ImgLibProcessorTest {
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
 				assertEquals(bProc.getPixelValue(x,y), iProc.getPixelValue(x,y), Assert.DOUBLE_TOL);
-		*/
 	}
 
 	@Test
 	public void testGetPlaneData() {
-		//fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetPlaneDataImageOfTIntIntIntArray() {
-		//fail("Not yet implemented");
+		
+		double[] pixels = iProc.getPlaneData();
+		
+		for (int i = 0; i < width*height; i++)
+			assertEquals((double)iProc.get(i), pixels[i], Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testGetPlaneBytes() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<ByteType> factory = new ImageFactory<ByteType>( new ByteType(), new ArrayContainerFactory() );
+
+		Image<ByteType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<ByteType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (ByteType value : genCursor) {
+			value.set( (byte) (255 - (i%256)) );
+			i++;
+		}
+		
+		byte[] pixels = ImgLibProcessor.getPlaneBytes(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<ByteType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneUnsignedBytes() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>( new UnsignedByteType(), new ArrayContainerFactory() );
+
+		Image<UnsignedByteType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<UnsignedByteType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (UnsignedByteType value : genCursor) {
+			value.set( (byte) (255 - (i%256)) );
+			i++;
+		}
+		
+		byte[] pixels = ImgLibProcessor.getPlaneUnsignedBytes(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<UnsignedByteType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals((byte)cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneShorts() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<ShortType> factory = new ImageFactory<ShortType>( new ShortType(), new ArrayContainerFactory() );
+
+		Image<ShortType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<ShortType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (ShortType value : genCursor) {
+			value.set( (short) (65535 - (i%65536)) );
+			i++;
+		}
+		
+		short[] pixels = ImgLibProcessor.getPlaneShorts(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<ShortType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneUnsignedShorts() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>( new UnsignedShortType(), new ArrayContainerFactory() );
+
+		Image<UnsignedShortType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<UnsignedShortType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (UnsignedShortType value : genCursor) {
+			value.set( (short) (65535 - (i%65536)) );
+			i++;
+		}
+		
+		short[] pixels = ImgLibProcessor.getPlaneUnsignedShorts(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<UnsignedShortType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals((short)cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneInts() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<IntType> factory = new ImageFactory<IntType>( new IntType(), new ArrayContainerFactory() );
+
+		Image<IntType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<IntType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (IntType value : genCursor) {
+			value.set( (int) (1234567 - (i%1234568)) );
+			i++;
+		}
+		
+		int[] pixels = ImgLibProcessor.getPlaneInts(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<IntType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneUnsignedInts() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>( new UnsignedIntType(), new ArrayContainerFactory() );
+
+		Image<UnsignedIntType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<UnsignedIntType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (UnsignedIntType value : genCursor) {
+			value.set( (int) (1234567 - (i%1234568)) );
+			i++;
+		}
+		
+		int[] pixels = ImgLibProcessor.getPlaneUnsignedInts(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<UnsignedIntType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneLongs() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<LongType> factory = new ImageFactory<LongType>( new LongType(), new ArrayContainerFactory() );
+
+		Image<LongType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<LongType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (LongType value : genCursor) {
+			value.set( (long) (1234567 - (i%1234568)) );
+			i++;
+		}
+		
+		long[] pixels = ImgLibProcessor.getPlaneLongs(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<LongType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum]);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneFloats() {
-		//fail("Not yet implemented");
+		
+		ImageFactory<FloatType> factory = new ImageFactory<FloatType>( new FloatType(), new ArrayContainerFactory() );
+
+		Image<FloatType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<FloatType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (FloatType value : genCursor) {
+			value.set( i+103030.689f );
+			i++;
+		}
+		
+		float[] pixels = ImgLibProcessor.getPlaneFloats(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<FloatType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetPlaneDoubles() {
-		//fail("Not yet implemented");
+
+		ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>( new DoubleType(), new ArrayContainerFactory() );
+
+		Image<DoubleType> image = factory.createImage(new int[]{width,height});
+		
+		Cursor<DoubleType> genCursor = image.createCursor();
+		
+		int i = 0;
+		for (DoubleType value : genCursor) {
+			value.set( i+103030.689 );
+			i++;
+		}
+		
+		double[] pixels = ImgLibProcessor.getPlaneDoubles(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<DoubleType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
+	    		pNum++;
+	    	}
+	    }
 	}
 
 	@Test
 	public void testGetSnapshotPixels() {
-		//fail("Not yet implemented");
+		
+		assertNull(bProc.getSnapshotPixels());
+		assertNull(iProc.getSnapshotPixels());
+		
+		bProc.snapshot();
+		iProc.snapshot();
+
+		assertArrayEquals((byte[])bProc.getSnapshotPixels(),(byte[])iProc.getSnapshotPixels());
 	}
 
 	@Test
@@ -610,22 +864,55 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testMedianFilter() {
-		//fail("Not yet implemented");
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		bProc.medianFilter();
+		iProc.medianFilter();
+		compareData(bProc,iProc);
 	}
 
 	@Test
 	public void testNoise() {
-		//fail("Not yet implemented");
+
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		double[] noises = new double[]{0,1,2,3,4,0.5,1.2};
+		
+		for (double noiseVal : noises) {
+			
+			initialize();
+			bProc.noise(noiseVal);
+			iProc.noise(noiseVal);
+			compareData(bProc,iProc);
+		}
 	}
 
 	@Test
 	public void testPutPixelIntIntInt() {
-		//fail("Not yet implemented");
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				int newValue = Math.abs(x-y) % 256;
+				bProc.putPixel(x,y,newValue);
+				iProc.putPixel(x,y,newValue);
+			}
+		}
+		compareData(bProc,iProc);
 	}
 
 	@Test
 	public void testPutPixelValue() {
-		//fail("Not yet implemented");
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				double newValue = (Math.abs(x-y) % 512) / 2.7;
+				bProc.putPixelValue(x,y,newValue);
+				iProc.putPixelValue(x,y,newValue);
+			}
+		}
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -659,28 +946,120 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testResizeIntInt() {
-		//fail("Not yet implemented");
+		
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
+			int[][] points = new int[][] {
+				new int[]{0,0},
+				new int[]{width+5,height+5},
+				new int[]{width,1},
+				new int[]{1,height},
+				new int[]{width,height},
+				new int[]{bProc.roiWidth,bProc.roiHeight},
+				new int[]{10,20},
+				new int[]{41,36}
+			};
+			
+			for (int[] point : points) {
+				
+				ImageProcessor newBProc, newIProc;
+				
+				bProc.setInterpolationMethod(interpMethod);
+				iProc.setInterpolationMethod(interpMethod);
+				
+				newBProc = bProc.resize(point[0],point[1]);
+				newIProc = iProc.resize(point[0],point[1]);
+				
+				compareData(newBProc,newIProc);
+			}
+		}
 	}
 
 	@Test
 	public void testRotate() {
-		//fail("Not yet implemented");
+		
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
+			
+			double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
+			
+			for (double rotation : rotations) {
+				
+				initialize();
+				
+				bProc.setInterpolationMethod(interpMethod);
+				iProc.setInterpolationMethod(interpMethod);
+				
+				bProc.rotate(rotation);
+				iProc.rotate(rotation);
+				
+				compareData(bProc,iProc);
+			}
+		}
 	}
 
 	@Test
 	public void testScale() {
-		//fail("Not yet implemented");
+
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
+			
+			double[][] scales = new double[][] {
+					new double[]{0,0},
+					new double[]{0.3,0.3},
+					new double[]{0.5,0.5},
+					new double[]{0.7,0.7},
+					new double[]{1,1},
+					new double[]{1,2},
+					new double[]{2,1},
+					new double[]{4.6,6.1}
+			};
+			
+			for (double[] scale : scales) {
+				
+				initialize();
+				
+				bProc.setInterpolationMethod(interpMethod);
+				iProc.setInterpolationMethod(interpMethod);
+				
+				bProc.scale(scale[0],scale[1]);
+				iProc.scale(scale[0],scale[1]);
+				
+				compareData(bProc,iProc);
+			}
+		}
 	}
 
 	@Test
 	public void testSetBackgroundValue() {
-		//fail("Not yet implemented");
+		
+		double[] bgVals = new double[] {-1,0,1,44,55.8,66.1,254,255,256,1000};
+		
+		for (double bg : bgVals) {
+			bProc.setBackgroundValue(bg);
+			iProc.setBackgroundValue(bg);
+			assertEquals(bProc.getBackgroundValue(),iProc.getBackgroundValue(),0);
+		}
 	}
 
 	@Test
 	public void testSetColorColor() {
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
 
-		//fail("Not yet implemented");
+		Color[] colors = new Color[]{Color.white,Color.black,Color.blue,Color.red,Color.green,Color.gray,Color.magenta};
+		
+		for (Color color : colors)
+		{
+			bProc.setColor(color);
+			iProc.setColor(color);
+			
+			assertEquals(bProc.drawingColor,iProc.drawingColor);
+			assertEquals(bProc.fgColor,iProc.fgColor);
+		}
+
 	}
 
 	@Test
@@ -772,12 +1151,33 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetPixelsIntFloatProcessor() {
-		//fail("Not yet implemented");
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+
+		FloatProcessor fProc = new FloatProcessor(width,height);
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+				fProc.setf(x,y,0.6f*(x+y));
+
+		for (int channel = 0; channel < 3; channel++) {
+			bProc.setPixels(channel,fProc);
+			iProc.setPixels(channel,fProc);
+			compareData(bProc,iProc);
+		}
 	}
 
 	@Test
 	public void testSetPixelsObject() {
-		//fail("Not yet implemented");
+		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		
+		byte[] newPixels = new byte[width*height];
+		
+		for (int i = 0; i < width*height; i++)
+			newPixels[i] = (byte) ((123 + i) % 256);
+		
+		bProc.setPixels(newPixels);
+		iProc.setPixels(newPixels);
+		
+		compareData(bProc,iProc);
 	}
 
 	@Test
@@ -862,11 +1262,11 @@ public class ImgLibProcessorTest {
 		bFloat = bProc.toFloat(0, null);
 		iFloat = iProc.toFloat(0, null);
 		
-		compareData(bProc,iProc);
+		compareData(bFloat,iFloat);
 
 		bFloat = bProc.toFloat(1, null);
 		iFloat = iProc.toFloat(1, null);
 		
-		compareData(bProc,iProc);
+		compareData(bFloat,iFloat);
 	}
 }
