@@ -30,8 +30,6 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-import com.sun.org.apache.bcel.internal.classfile.Visitor;
-
 // TODO - Right now doing all comparisons versus a ByteProcessor. Add comparison code vs. FloatProcessor and ShortProcessor also
 
 public class ImgLibProcessorTest {
@@ -83,7 +81,7 @@ public class ImgLibProcessorTest {
 		
 		final ContainerFactory containerFactory = new ArrayContainerFactory();
 		Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(filename, containerFactory);
-		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType());
+		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
 
 		compareData(origBProc,origIProc);
 	}
@@ -189,32 +187,31 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testCreateImagePlus() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
-		
 		//   note it crashes right now. its possible the extraDimenions need to be passed in to ImgLibProcessor so that it knows which
 		//       slice of the image the processor is tied with.
 
+		int[] dimensions = new int[]{3,4,5,6,7};
+		
 		ContainerFactory contFact = new ArrayContainerFactory();
 		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), contFact);
-		Image<UnsignedShortType> image = factory.createImage(new int[] {3,4,5,6,7});
+		Image<UnsignedShortType> image = factory.createImage(dimensions);
 		ImagePlus imp = ImgLibProcessor.createImagePlus(image);
 		
 		int slices   = image.getDimension(2);
 		int channels = image.getDimension(3);
 		int frames   = image.getDimension(4);
 		
-		int totalPlanes = slices * channels * frames;
-		
-		assertEquals(totalPlanes,imp.getNDimensions());
 		assertEquals(frames,imp.getNFrames());
 		assertEquals(channels,imp.getNChannels());
 		assertEquals(slices,imp.getNSlices());
-		
+
 		ImageStack stack = imp.getStack();
+		int totalPlanes = slices * channels * frames;
 		for (int i = 0; i < totalPlanes; i++)
 		{
 			ImageProcessor proc = stack.getProcessor(i+1); 
-			assertTrue(proc instanceof ImgLibProcessor<?>);
+			//TODO : enable this when IJ does not screw up the processors
+			//assertTrue(proc instanceof ImgLibProcessor);
 			assertEquals(image.getDimension(0),proc.getWidth());
 			assertEquals(image.getDimension(1),proc.getHeight());
 		}
@@ -845,6 +842,118 @@ public class ImgLibProcessorTest {
 	    }
 	}
 
+	private void getPlanePositionShouldFail(int[] dimensions, int index)
+	{
+		try {
+			ImgLibProcessor.getPlanePosition(dimensions, index);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testGetPlanePosition() {
+		
+		int[] dimensions;
+		
+		dimensions = new int[]{};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+		
+		dimensions = new int[]{50};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+
+		// TODO - the middle case is unintuitive. Its up to the user to specify a MxNx1 image for a single plane
+		dimensions = new int[]{50,60};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{}, ImgLibProcessor.getPlanePosition(dimensions, 0));
+		getPlanePositionShouldFail(dimensions, 1);
+
+		dimensions = new int[]{50,60,3};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0}, ImgLibProcessor.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{1}, ImgLibProcessor.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{2}, ImgLibProcessor.getPlanePosition(dimensions, 2));
+		getPlanePositionShouldFail(dimensions, 3);
+
+		dimensions = new int[]{50,60,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0}, ImgLibProcessor.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,1}, ImgLibProcessor.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{1,0}, ImgLibProcessor.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,1}, ImgLibProcessor.getPlanePosition(dimensions, 3));
+		getPlanePositionShouldFail(dimensions, 4);
+
+		dimensions = new int[]{50,60,2,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0,0}, ImgLibProcessor.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,0,1}, ImgLibProcessor.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1,0}, ImgLibProcessor.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{0,1,1}, ImgLibProcessor.getPlanePosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,0,0}, ImgLibProcessor.getPlanePosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,0,1}, ImgLibProcessor.getPlanePosition(dimensions, 5));
+		assertArrayEquals(new int[]{1,1,0}, ImgLibProcessor.getPlanePosition(dimensions, 6));
+		assertArrayEquals(new int[]{1,1,1}, ImgLibProcessor.getPlanePosition(dimensions, 7));
+		getPlanePositionShouldFail(dimensions, 8);
+	}
+	
+	private void getPositionShouldFail(int[] dimensions, int index)
+	{
+		try {
+			ImgLibProcessor.getPosition(dimensions, index);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testGetPosition() {
+	
+		int[] emptyPosition = new int[]{};
+
+		int[] dimensions;
+		
+		dimensions = new int[]{};
+		getPositionShouldFail(dimensions, -1);
+		getPositionShouldFail(dimensions, 0);
+		getPositionShouldFail(dimensions, 1);
+		
+		dimensions = new int[]{4};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0}, ImgLibProcessor.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{1}, ImgLibProcessor.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{2}, ImgLibProcessor.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{3}, ImgLibProcessor.getPosition(dimensions, 3));
+		getPositionShouldFail(dimensions, 4);
+
+		dimensions = new int[]{2,3};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0}, ImgLibProcessor.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,1}, ImgLibProcessor.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,2}, ImgLibProcessor.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,0}, ImgLibProcessor.getPosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,1}, ImgLibProcessor.getPosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,2}, ImgLibProcessor.getPosition(dimensions, 5));
+		getPositionShouldFail(dimensions, 6);
+
+		dimensions = new int[]{2,2,2};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0,0}, ImgLibProcessor.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,0,1}, ImgLibProcessor.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1,0}, ImgLibProcessor.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{0,1,1}, ImgLibProcessor.getPosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,0,0}, ImgLibProcessor.getPosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,0,1}, ImgLibProcessor.getPosition(dimensions, 5));
+		assertArrayEquals(new int[]{1,1,0}, ImgLibProcessor.getPosition(dimensions, 6));
+		assertArrayEquals(new int[]{1,1,1}, ImgLibProcessor.getPosition(dimensions, 7));
+		getPositionShouldFail(dimensions, 8);
+	}
+	
 	@Test
 	public void testGetSnapshotPixels() {
 		

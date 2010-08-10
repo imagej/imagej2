@@ -14,8 +14,8 @@ public class ImageProperties<T extends RealType<T>>
 	/** The minimum value contained in the 2D image plane */
 	private double minimumPixelValue;
 	
-	/** The number of dimensions beyond two */
-	private static int[] extraDimensions;
+	/** The dimensional coordinates of this plane within its parent Image<T> */
+	private static int[] planePosition;
 	
 	/** A value used to represent a background measure **/
 	public double getBackgroundValue()
@@ -47,15 +47,15 @@ public class ImageProperties<T extends RealType<T>>
 		backgroundValue = value;
 	}
 	
-	/** Stores a copy of the array extra dimensions */
-	public void setExtraDimensions( int[] extraDimensionsInputArray )
+	/** Stores a copy of the plane position within the parent Image<T> */
+	public void setPlanePosition( int[] planePosition )
 	{
-		extraDimensions = extraDimensionsInputArray.clone();
+		this.planePosition = planePosition.clone();
 	}
 	
-	/** Returns a copy of the internal array extraDimensions */
-	public int[] getExtraDimensions()
+	/** returns a copy of the plane position within the parent Image<T> */
+	public int[] getPlanePosition()
 	{
-		return extraDimensions.clone();
+		return planePosition.clone();
 	}
 }
