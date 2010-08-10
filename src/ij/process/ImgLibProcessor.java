@@ -15,7 +15,6 @@ import javax.swing.JFileChooser;
 import loci.common.DataTools;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
@@ -52,8 +51,10 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // ImageJVirtualStack.extractSliceFloat for an example) to grab the data
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
-// TODO / NOTE - We should break out the private static classes here as public ones and write tests for them
-//   Also make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
+// BDZ TODO / NOTES
+//   We should break out the private static classes here as public ones and write tests for them
+//   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
+//   All methods below broken for ComplexType and and LongType 
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
@@ -161,7 +162,39 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// TODO - move these next two to imageProperties
 	private double min, max;
 	private double fillColor;
+
+	//****************** Constructors *************************************************************
 	
+	public ImgLibProcessor(Image<T> img, T type ) {
+
+		final int[] dims = img.getDimensions();
+		
+		if (dims.length < 2)
+			throw new IllegalArgumentException("Image must be at least 2-D");
+
+		this.imageData = img;
+		this.type = type;
+		
+		//assign the properties object for the image
+		this.imageProperties = new ImageProperties< T >( );
+		
+		int[] extraDimensions = createExtraDimensions(dims);
+		
+		this.imageProperties.setExtraDimensions( extraDimensions );
+
+		super.width = dims[0]; // TODO: Dimensional labels are safer way to find X
+		super.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
+	
+		this.fillColor = 0;
+		
+		if (this.type instanceof UnsignedByteType)
+			this.imageProperties.setBackgroundValue(255);
+
+		resetRoi();
+		
+		findMinAndMax();
+	}
+
 	//****************** Helper methods *******************************************************
 
 	private static int[] createExtraDimensions(int[] dims)
@@ -353,38 +386,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getCopyOfPixelsFromImage(this.imageData, this.type, this.imageProperties.getExtraDimensions());
 	}
 
-	//****************** public interface *******************************************************
+	//****************** public methods *******************************************************
 
-	public ImgLibProcessor(Image<T> img, T type ) {
-
-		final int[] dims = img.getDimensions();
-		
-		if (dims.length < 2)
-			throw new IllegalArgumentException("Image must be at least 2-D");
-
-		this.imageData = img;
-		this.type = type;
-		
-		//assign the properties object for the image
-		this.imageProperties = new ImageProperties< T >( );
-		
-		int[] extraDimensions = createExtraDimensions(dims);
-		
-		this.imageProperties.setExtraDimensions( extraDimensions );
-
-		super.width = dims[0]; // TODO: Dimensional labels are safer way to find X
-		super.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
-	
-		this.fillColor = 0;
-		
-		if (this.type instanceof UnsignedByteType)
-			this.imageProperties.setBackgroundValue(255);
-
-		resetRoi();
-		
-		findMinAndMax();
-	}
-	
 	/* Unnecessary?????
 	protected ImageProperties<T> getImageProperties() {
 		return imageProperties;
@@ -1006,6 +1009,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin = Index.create(0,0,this.imageProperties.getExtraDimensions());
 		int[] span = Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
 		
+		// must use a RoiCursor to stay on our single plane
 		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
 		final RegionOfInterestCursor<T> roiCursor = new RegionOfInterestCursor<T>(imageCursor,origin,span);
 
@@ -1097,7 +1101,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getPlaneData(this.imageData,super.width,super.height,this.imageProperties.getExtraDimensions());
 	}
 	
-	public double[] getPlaneData(Image<T> image, int w, int h, int[] extraDims) {
+	// Note - can't make static: <T> needed. If use <?> then won't compile. Difficult to use. Making private.
+	private double[] getPlaneData(Image<T> image, int w, int h, int[] extraDims) {
 		  // TODO - use LocalizablePlaneCursor
 			// example in ImageJVirtualStack.extractSliceFloat
 			final double[] data = new double[w * h];
