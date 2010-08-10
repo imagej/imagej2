@@ -118,6 +118,7 @@ public class Snapshot<T extends RealType<T>>
 		return this.storage;
 	}
 	
+	/*
 	public void setStorage(Image<T> newStorage)
 	{
 		int[] currDimensions = this.storage.getDimensions();
@@ -132,6 +133,7 @@ public class Snapshot<T extends RealType<T>>
 		
 		this.storage = newStorage;
 	}
+	*/
 	
 	/** take a snapshot of an Image's data from given origin and across each span dimension */
 	public void copyFromImage(Image<T> image, int[] origins, int[] spans)
