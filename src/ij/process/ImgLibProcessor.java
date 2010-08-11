@@ -52,26 +52,26 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
 // BDZ TODO / NOTES
-//   We should break out the static classes here as public ones and write tests for them
 //   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
-//   Nearly all methods below broken for ComplexType and and LongType 
+//   Nearly all methods below broken for ComplexType and and LongType
+//   Rename ImgLibProcessor to GenericProcessor????
+//   Rename TypeManager to TypeUtils
+//   Rename Image<> to something else like Dataset<>
 //   Improvements to ImgLib
 //     Rename LocalizableByDimCursor to PositionCursor. Be able to say posCursor.setPosition(int[] pos) and posCursor.setPosition(long sampIndex).
 //       Another possibility: just call it a Cursor. And then cursor.get() or cursor.get(int[] pos) or cursor.get(long sampleNumber) 
 //     Create ROICursors directly from an Image<T> and have that ctor setup its own LocalizableByDimCursor for you.
 //     Allow new Image<ByteType>(rows,cols). Have a default factory and a default container and have other constructors that you use in the cases
-//       where you want to specify them. Also allow new Image<? extends RealType>(rows,cols,pixels).
+//       where you want to specify them. Also allow new Image<T extends RealType<T>>(rows,cols,pixels).
 //     Have a few static ContainerFactories that we can just refer to rather than newing them all the time. Maybe do so also for Types so that
 //       we're not always having to pass a new UnsignedByteType() but rather a static one and if a new one needed the ctor can create.
 //     In general come up with much shorter names to make use less cumbersome.
-//     Put in our code somewhere for totalSamples(), totalPlanes(), the getPlane...() routines, the SnapShot copytoimagefromimage stuff, and the
-//       setpixels kinds of code. Also the index and span stuff.
+//     Put our ImageUtils class code somewhere in Imglib. Also maybe include the Index and Span classes too. Also TypeManager class.
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
 
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 	
-
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -259,7 +259,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private void setSnapshotPlane(Object pixels, PixelType inputType, long numPixels)
 	{
-		// must create snapshot data structures if they don't exist. we'll overwrite data
+		// must create snapshot data structures if they don't exist. we'll overwrite it's data soon.
 		if (this.snapshot == null)
 			snapshot();
 		
@@ -295,6 +295,46 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	private Object getPixelsArray() {
 		return getCopyOfPixelsFromImage(this.imageData, this.type, this.imageProperties.getPlanePosition());
+	}
+
+
+	@Override
+	byte[] create8BitImage()
+	{
+		// TODO: use imageData.getDisplay().get8Bit* methods
+		Object pixels = getPixels();
+
+		if (pixels instanceof byte[])
+		{
+			this.pixels8 = (byte[]) pixels;
+		}
+		else if (pixels instanceof short[])
+		{
+			short[] pix = (short[]) pixels;
+			this.pixels8 = DataTools.shortsToBytes(pix, false);
+		}
+		else if (pixels instanceof int[])
+		{
+			int[] pix = (int[]) pixels;
+			this.pixels8 = DataTools.intsToBytes(pix, false);
+		}
+		else if (pixels instanceof float[])
+		{
+			float[] pix = (float[]) pixels;
+			this.pixels8 = DataTools.floatsToBytes(pix, false);
+		}
+		else if (pixels instanceof double[])
+		{
+			double[] pix = (double[]) pixels;
+			this.pixels8 = DataTools.doublesToBytes(pix, false);
+		}
+		else if (pixels instanceof long[])
+		{
+			long[] pix = (long[]) pixels;
+			this.pixels8 = DataTools.longsToBytes(pix, false);
+		}
+
+		return this.pixels8;
 	}
 
 	//****************** public methods *******************************************************
@@ -628,19 +668,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public Object getSnapshotPixels() {
-		
-		if (this.snapshot == null)
-			return null;
-		
-		Image<T> snapStorage = this.snapshot.getStorage();
-		
-		int[] planePosOfZero = Index.create(this.imageProperties.getPlanePosition().length);
-
-		return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero);
-	}
-
-	@Override
 	public float getf(int x, int y) 
 	{
 		float value;
@@ -661,6 +688,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int x = index % super.width;
 		int y = index / super.width;
 		return getf( x, y) ;
+	}
+
+	public double[] getPlaneData()
+	{
+		return ImageUtils.getPlaneData(this.imageData, super.width, super.height, this.imageProperties.getPlanePosition());
+	}
+
+	@Override
+	public Object getSnapshotPixels() {
+		
+		if (this.snapshot == null)
+			return null;
+		
+		Image<T> snapStorage = this.snapshot.getStorage();
+		
+		int[] planePosOfZero = Index.create(this.imageProperties.getPlanePosition().length);
+
+		return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero);
 	}
 
 	@Override
@@ -814,7 +859,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.min = min;
 		this.max = max;
 		
-		// From FLoatProc - huh? fixedScale = true;
+		// From FloatProc - huh? fixedScale = true;
 		
 		resetThreshold();
 	}
@@ -855,7 +900,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		else if (pixels instanceof double[])
 			setSnapshotPlane(pixels,PixelType.DOUBLE,((double[])pixels).length);
 		else if (pixels instanceof long[])
-			setSnapshotPlane(pixels,PixelType.LONG,((double[])pixels).length);
+			setSnapshotPlane(pixels,PixelType.LONG,((long[])pixels).length);
 		else
 			throw new IllegalArgumentException("unknow object passed to ImgLibProcessor::setSnapshotPixels() - "+ pixels.getClass());
 	}
@@ -873,16 +918,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setf(int x, int y, float value) {
 
-		// TODO - verify this is what we want to do
-		// NOTE - for an integer type backed data store imglib rounds float values. imagej has always truncated float values.
-		//   I need to detect beforehand and do my truncation if an integer type.
-		
 		final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
 
 		cursor.setPosition( getMultiDimensionalPositionArray( x, y ) );
 		
 		RealType pixRef = cursor.getType();
 
+		// TODO - verify the following implementation is what we want to do:
+		// NOTE - for an integer type backed data store imglib rounds float values. ImageJ has always truncated float values.
+		//   I need to detect beforehand and do my truncation if an integer type.
+		
 		if (TypeManager.isIntegralType(pixRef))
 			value = (float)Math.floor(value);
 		
@@ -969,50 +1014,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		fp.setMinAndMax(this.min, this.max);
 		fp.setThreshold(super.minThreshold, super.maxThreshold, ImageProcessor.NO_LUT_UPDATE);
 		return fp;
-	}
-
-	@Override
-	byte[] create8BitImage()
-	{
-		// TODO: use imageData.getDisplay().get8Bit* methods
-		Object pixels = getPixels();
-
-		if (pixels instanceof byte[])
-		{
-			this.pixels8 = (byte[]) pixels;
-		}
-		else if (pixels instanceof short[])
-		{
-			short[] pix = (short[]) pixels;
-			this.pixels8 = DataTools.shortsToBytes(pix, false);
-		}
-		else if (pixels instanceof int[])
-		{
-			int[] pix = (int[]) pixels;
-			this.pixels8 = DataTools.intsToBytes(pix, false);
-		}
-		else if (pixels instanceof float[])
-		{
-			float[] pix = (float[]) pixels;
-			this.pixels8 = DataTools.floatsToBytes(pix, false);
-		}
-		else if (pixels instanceof double[])
-		{
-			double[] pix = (double[]) pixels;
-			this.pixels8 = DataTools.doublesToBytes(pix, false);
-		}
-		else if (pixels instanceof long[])
-		{
-			long[] pix = (long[]) pixels;
-			this.pixels8 = DataTools.longsToBytes(pix, false);
-		}
-
-		return this.pixels8;
-	}
-
-	public double[] getPlaneData()
-	{
-		return ImageUtils.getPlaneData(this.imageData, super.width, super.height, this.imageProperties.getPlanePosition());
 	}
 	
 	// TODO - belongs elsewhere???

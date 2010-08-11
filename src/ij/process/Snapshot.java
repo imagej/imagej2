@@ -5,8 +5,6 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.real.*;
 import mpicbg.imglib.container.array.*;
 import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.*;
 
 /** an N-dimensional copy of a subset of an Image's data with ability to capture and restore values */
