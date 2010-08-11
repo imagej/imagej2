@@ -45,9 +45,9 @@ public class ImgLibProcessorTest {
 	
 	ImgLibProcessor<UnsignedByteType> iProc;
 	ByteProcessor bProc;
-	FloatProcessor fProc;
-	ShortProcessor sProc;
-	ColorProcessor cProc;  // may not need to test this for comparison
+	//FloatProcessor fProc;
+	//ShortProcessor sProc;
+	//ColorProcessor cProc;  // may not need to test this for comparison
 
 	// ************* Helper methods ***********************************************
 
