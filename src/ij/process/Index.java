@@ -17,11 +17,20 @@ public class Index {
 	/** create an index array setting the first 2 dims to x & y and the remaining dims populated with passed in values */
 	public static int[] create(int x, int y, int[] planePosition)
 	{
+		if (x < 0)
+			throw new IllegalArgumentException("x value must be >= 0");
+		
+		if (y < 0)
+			throw new IllegalArgumentException("y value must be >= 0");
+
 		int[] values = new int[planePosition.length + 2];
+		
 		values[0] = x;
 		values[1] = y;
+		
 		for (int i = 2; i < values.length; i++)
 			values[i] = planePosition[i-2];
+		
 		return values;
 	}
 }
