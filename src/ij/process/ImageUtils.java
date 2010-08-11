@@ -17,7 +17,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImageUtils {
 	
-	private static int[] getDimsBeyondXY(int[] fullDims)
+	public static int[] getDimsBeyondXY(int[] fullDims)
 	{
 		if (fullDims.length < 2)
 			throw new IllegalArgumentException("Image must be at least 2-D");

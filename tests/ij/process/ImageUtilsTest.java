@@ -27,6 +27,131 @@ public class ImageUtilsTest {
 	int width = 224, height = 403;
 	
 	@Test
+	public void testGetDimsBeyondXY() {
+		// TODO
+	}
+	
+	@Test
+	public void testGetTotalSamples() {
+		// TODO
+	}
+
+	@Test
+	public void testGetTotalPlanes() {
+		// TODO
+	}
+
+	private void getPositionShouldFail(int[] dimensions, int index)
+	{
+		try {
+			ImageUtils.getPosition(dimensions, index);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testGetPosition() {
+	
+		int[] dimensions;
+		
+		dimensions = new int[]{};
+		getPositionShouldFail(dimensions, -1);
+		getPositionShouldFail(dimensions, 0);
+		getPositionShouldFail(dimensions, 1);
+		
+		dimensions = new int[]{4};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0}, ImageUtils.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{1}, ImageUtils.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{2}, ImageUtils.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{3}, ImageUtils.getPosition(dimensions, 3));
+		getPositionShouldFail(dimensions, 4);
+
+		dimensions = new int[]{2,3};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0}, ImageUtils.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,1}, ImageUtils.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,2}, ImageUtils.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,0}, ImageUtils.getPosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,1}, ImageUtils.getPosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,2}, ImageUtils.getPosition(dimensions, 5));
+		getPositionShouldFail(dimensions, 6);
+
+		dimensions = new int[]{2,2,2};
+		getPositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0,0}, ImageUtils.getPosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,0,1}, ImageUtils.getPosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1,0}, ImageUtils.getPosition(dimensions, 2));
+		assertArrayEquals(new int[]{0,1,1}, ImageUtils.getPosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,0,0}, ImageUtils.getPosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,0,1}, ImageUtils.getPosition(dimensions, 5));
+		assertArrayEquals(new int[]{1,1,0}, ImageUtils.getPosition(dimensions, 6));
+		assertArrayEquals(new int[]{1,1,1}, ImageUtils.getPosition(dimensions, 7));
+		getPositionShouldFail(dimensions, 8);
+	}
+	
+	private void getPlanePositionShouldFail(int[] dimensions, int index)
+	{
+		try {
+			ImageUtils.getPlanePosition(dimensions, index);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testGetPlanePosition() {
+		
+		int[] dimensions;
+		
+		dimensions = new int[]{};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+		
+		dimensions = new int[]{50};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+
+		// TODO - the middle case is unintuitive. Its up to the user to specify a MxNx1 image for a single plane
+		dimensions = new int[]{50,60};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{}, ImageUtils.getPlanePosition(dimensions, 0));
+		getPlanePositionShouldFail(dimensions, 1);
+
+		dimensions = new int[]{50,60,3};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0}, ImageUtils.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{1}, ImageUtils.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{2}, ImageUtils.getPlanePosition(dimensions, 2));
+		getPlanePositionShouldFail(dimensions, 3);
+
+		dimensions = new int[]{50,60,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0}, ImageUtils.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,1}, ImageUtils.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{1,0}, ImageUtils.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,1}, ImageUtils.getPlanePosition(dimensions, 3));
+		getPlanePositionShouldFail(dimensions, 4);
+
+		dimensions = new int[]{50,60,2,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0,0,0}, ImageUtils.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{0,0,1}, ImageUtils.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1,0}, ImageUtils.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{0,1,1}, ImageUtils.getPlanePosition(dimensions, 3));
+		assertArrayEquals(new int[]{1,0,0}, ImageUtils.getPlanePosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,0,1}, ImageUtils.getPlanePosition(dimensions, 5));
+		assertArrayEquals(new int[]{1,1,0}, ImageUtils.getPlanePosition(dimensions, 6));
+		assertArrayEquals(new int[]{1,1,1}, ImageUtils.getPlanePosition(dimensions, 7));
+		getPlanePositionShouldFail(dimensions, 8);
+	}
+	
+	@Test
 	public void testGetPlaneBytes() {
 		
 		ImageFactory<ByteType> factory = new ImageFactory<ByteType>( new ByteType(), new ArrayContainerFactory() );
@@ -305,114 +430,40 @@ public class ImageUtilsTest {
 	    }
 	}
 
-	private void getPlanePositionShouldFail(int[] dimensions, int index)
-	{
-		try {
-			ImageUtils.getPlanePosition(dimensions, index);
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
-		}
-	}
-	
 	@Test
-	public void testGetPlanePosition() {
+	public void testGetPlaneData() {
+
+		ImageFactory<IntType> factory = new ImageFactory<IntType>( new IntType(), new ArrayContainerFactory() );
+
+		Image<IntType> image = factory.createImage(new int[]{width,height});
 		
-		int[] dimensions;
+		Cursor<IntType> genCursor = image.createCursor();
 		
-		dimensions = new int[]{};
-		getPlanePositionShouldFail(dimensions, -1);
-		getPlanePositionShouldFail(dimensions, 0);
-		getPlanePositionShouldFail(dimensions, 1);
-		
-		dimensions = new int[]{50};
-		getPlanePositionShouldFail(dimensions, -1);
-		getPlanePositionShouldFail(dimensions, 0);
-		getPlanePositionShouldFail(dimensions, 1);
-
-		// TODO - the middle case is unintuitive. Its up to the user to specify a MxNx1 image for a single plane
-		dimensions = new int[]{50,60};
-		getPlanePositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{}, ImageUtils.getPlanePosition(dimensions, 0));
-		getPlanePositionShouldFail(dimensions, 1);
-
-		dimensions = new int[]{50,60,3};
-		getPlanePositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0}, ImageUtils.getPlanePosition(dimensions, 0));
-		assertArrayEquals(new int[]{1}, ImageUtils.getPlanePosition(dimensions, 1));
-		assertArrayEquals(new int[]{2}, ImageUtils.getPlanePosition(dimensions, 2));
-		getPlanePositionShouldFail(dimensions, 3);
-
-		dimensions = new int[]{50,60,2,2};
-		getPlanePositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0,0}, ImageUtils.getPlanePosition(dimensions, 0));
-		assertArrayEquals(new int[]{0,1}, ImageUtils.getPlanePosition(dimensions, 1));
-		assertArrayEquals(new int[]{1,0}, ImageUtils.getPlanePosition(dimensions, 2));
-		assertArrayEquals(new int[]{1,1}, ImageUtils.getPlanePosition(dimensions, 3));
-		getPlanePositionShouldFail(dimensions, 4);
-
-		dimensions = new int[]{50,60,2,2,2};
-		getPlanePositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0,0,0}, ImageUtils.getPlanePosition(dimensions, 0));
-		assertArrayEquals(new int[]{0,0,1}, ImageUtils.getPlanePosition(dimensions, 1));
-		assertArrayEquals(new int[]{0,1,0}, ImageUtils.getPlanePosition(dimensions, 2));
-		assertArrayEquals(new int[]{0,1,1}, ImageUtils.getPlanePosition(dimensions, 3));
-		assertArrayEquals(new int[]{1,0,0}, ImageUtils.getPlanePosition(dimensions, 4));
-		assertArrayEquals(new int[]{1,0,1}, ImageUtils.getPlanePosition(dimensions, 5));
-		assertArrayEquals(new int[]{1,1,0}, ImageUtils.getPlanePosition(dimensions, 6));
-		assertArrayEquals(new int[]{1,1,1}, ImageUtils.getPlanePosition(dimensions, 7));
-		getPlanePositionShouldFail(dimensions, 8);
-	}
-	
-	private void getPositionShouldFail(int[] dimensions, int index)
-	{
-		try {
-			ImageUtils.getPosition(dimensions, index);
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
+		int i = 0;
+		for (IntType value : genCursor) {
+			value.set( i );
+			i++;
 		}
+		
+		double[] pixels = ImageUtils.getPlaneData(image, width, height, new int[0]);
+
+		LocalizableByDimCursor<IntType> cursor = image.createLocalizableByDimCursor();
+		int pNum = 0;
+		int[] position = new int[2];
+	    for (int y = 0; y < height; y++) {
+	    	for (int x = 0; x < width; x++) {
+	    		position[0] = x;
+	    		position[1] = y;
+	    		cursor.setPosition(position);
+	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
+	    		pNum++;
+	    	}
+	    }
 	}
-	
+
 	@Test
-	public void testGetPosition() {
-	
-		int[] dimensions;
-		
-		dimensions = new int[]{};
-		getPositionShouldFail(dimensions, -1);
-		getPositionShouldFail(dimensions, 0);
-		getPositionShouldFail(dimensions, 1);
-		
-		dimensions = new int[]{4};
-		getPositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0}, ImageUtils.getPosition(dimensions, 0));
-		assertArrayEquals(new int[]{1}, ImageUtils.getPosition(dimensions, 1));
-		assertArrayEquals(new int[]{2}, ImageUtils.getPosition(dimensions, 2));
-		assertArrayEquals(new int[]{3}, ImageUtils.getPosition(dimensions, 3));
-		getPositionShouldFail(dimensions, 4);
-
-		dimensions = new int[]{2,3};
-		getPositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0,0}, ImageUtils.getPosition(dimensions, 0));
-		assertArrayEquals(new int[]{0,1}, ImageUtils.getPosition(dimensions, 1));
-		assertArrayEquals(new int[]{0,2}, ImageUtils.getPosition(dimensions, 2));
-		assertArrayEquals(new int[]{1,0}, ImageUtils.getPosition(dimensions, 3));
-		assertArrayEquals(new int[]{1,1}, ImageUtils.getPosition(dimensions, 4));
-		assertArrayEquals(new int[]{1,2}, ImageUtils.getPosition(dimensions, 5));
-		getPositionShouldFail(dimensions, 6);
-
-		dimensions = new int[]{2,2,2};
-		getPositionShouldFail(dimensions, -1);
-		assertArrayEquals(new int[]{0,0,0}, ImageUtils.getPosition(dimensions, 0));
-		assertArrayEquals(new int[]{0,0,1}, ImageUtils.getPosition(dimensions, 1));
-		assertArrayEquals(new int[]{0,1,0}, ImageUtils.getPosition(dimensions, 2));
-		assertArrayEquals(new int[]{0,1,1}, ImageUtils.getPosition(dimensions, 3));
-		assertArrayEquals(new int[]{1,0,0}, ImageUtils.getPosition(dimensions, 4));
-		assertArrayEquals(new int[]{1,0,1}, ImageUtils.getPosition(dimensions, 5));
-		assertArrayEquals(new int[]{1,1,0}, ImageUtils.getPosition(dimensions, 6));
-		assertArrayEquals(new int[]{1,1,1}, ImageUtils.getPosition(dimensions, 7));
-		getPositionShouldFail(dimensions, 8);
+	public void testCopyFromImageToImage()
+	{
+		// TODO
 	}
-	
 }
