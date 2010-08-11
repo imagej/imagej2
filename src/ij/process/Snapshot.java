@@ -53,41 +53,6 @@ public class Snapshot<T extends RealType<T>>
 				throw new IllegalArgumentException("testDimensionBoundaries() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
 	
-	/** copies data from one image to another given origins and dimensional spans */
-	private void copyFromImageToImage(Image<T> sourceImage, Image<T> destinationImage, int[] sourceDimensionOrigins, int[] destinationDimensionOrigins, int[] dimensionSpans)
-	{
-		// COPY DATA FROM SOURCE IMAGE TO DEST IMAGE:
-		
-		// create cursors
-		final LocalizableByDimCursor<T> sourceCursor = sourceImage.createLocalizableByDimCursor();
-		final LocalizableByDimCursor<T> destinationCursor = destinationImage.createLocalizableByDimCursor();
-		final RegionOfInterestCursor<T> sourceROICursor = new RegionOfInterestCursor< T >( sourceCursor, sourceDimensionOrigins, dimensionSpans );
-		final RegionOfInterestCursor<T> destinationROICursor = new RegionOfInterestCursor< T >( destinationCursor, destinationDimensionOrigins, dimensionSpans );
-			
-		//iterate over the target data...
-		while( sourceROICursor.hasNext() && destinationROICursor.hasNext() )
-		{
-			//point cursors to current value
-			sourceROICursor.fwd();
-			destinationROICursor.fwd();
-			
-			//get the source value
-			double real = sourceROICursor.getType().getPowerDouble();
-			double complex = sourceROICursor.getType().getPhaseDouble();
-			
-			//System.out.println("Source values are " + real + " and " + complex );
-		
-			//set the destination value
-			destinationROICursor.getType().setComplexNumber(real, complex);
-		}
-		
-		//close the open cursors
-		sourceROICursor.close( );
-		destinationROICursor.close( );    	
-		sourceCursor.close( );
-		destinationCursor.close( );
-	}
-	
 	/** used by toString override */
 	private String arrayToStr(int[] arr)
 	{
@@ -152,14 +117,14 @@ public class Snapshot<T extends RealType<T>>
 		this.storage = factory.createImage(this.dimensionSpans);
 			
 		// copy the data
-		copyFromImageToImage( image, this.storage, this.dimensionOrigins, new int[image.getDimensions().length], this.dimensionSpans );
+		ImageUtils.copyFromImageToImage( image, this.storage, this.dimensionOrigins, new int[image.getDimensions().length], this.dimensionSpans );
 	}
 
 	/** paste snapshot data into an image */
 	public void pasteIntoImage(Image<T> image)
 	{
 		// copy from the snapshot to the image
-		copyFromImageToImage(this.storage, image, new int[image.getDimensions().length], this.dimensionOrigins, this.dimensionSpans );
+		ImageUtils.copyFromImageToImage(this.storage, image, new int[image.getDimensions().length], this.dimensionOrigins, this.dimensionSpans );
 	}
 	
 	/** encode a snapshot as a String */
