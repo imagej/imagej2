@@ -1,23 +1,18 @@
 package ij.process;
 
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
-import java.io.File;
-
-import javax.swing.JFileChooser;
 
 import loci.common.DataTools;
-import mpicbg.imglib.container.ContainerFactory;
-import mpicbg.imglib.container.array.ArrayContainerFactory;
+
+import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.io.LOCI;
 import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -761,19 +756,38 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int[] getHistogram() {
 		
-		if (!this.isIntegral)
-			return null;
-		
-		/* TODO - work from here
 		if ((type instanceof UnsignedByteType) || (type instanceof UnsignedShortType))
 		{
-			if (super.mask != null)
-				return maskedHistogram();
-			else
-				return regularHistogram();
+			Cursor<T> junkCursor = this.imageData.createCursor();
+			
+			int tableSize = ((int) junkCursor.getType().getMaxValue()) + 1;
+			
+			junkCursor.close();
+			
+			int[] hist = new int[tableSize];
+
+			int[] origin = Index.create(0,0,this.imageProperties.getPlanePosition());
+			
+			int[] span = Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
+			
+			LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
+			RegionOfInterestCursor<T> roiCursor = new RegionOfInterestCursor<T>(cursor, origin, span);
+			
+			int pixIndex = 0;
+			for (T sample : roiCursor)
+			{
+				if ((super.mask == null) || (super.mask.get(pixIndex) > 0))
+					hist[(int)sample.getRealDouble()]++;
+				pixIndex++;
+			}
+			
+			roiCursor.close();
+			cursor.close();
+			
+			return hist;
 		}
-		*/
-		throw new RuntimeException("Unimplemented");
+		
+		return null;
 	}
 
 	@Override
@@ -1262,7 +1276,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	public static ImagePlus createImagePlus(final Image<?> img)
 	{
-		Type runtimeT = img.createCursor().getType();
+		Cursor<?> cursor = img.createCursor();
+		
+		Type runtimeT = cursor.getType();
+		
+		cursor.close();
 		
 		int[] dimensions = img.getDimensions();
 		
@@ -1341,7 +1359,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		imp.setDimensions(channels, slices, frames);
 		
-		// TODO - prev calc only works for 5-d images and less with default ordering
+		// TODO - prev calc only works for 5-d images (or less) and requires default ordering of xyzct
 		
 		return imp;
 	}
