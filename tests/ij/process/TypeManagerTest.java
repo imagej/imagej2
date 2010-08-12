@@ -52,34 +52,34 @@ public class TypeManagerTest {
 		RealType type;
 		
 		type = new ByteType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(Byte.MIN_VALUE,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(Byte.MAX_VALUE,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(Byte.MIN_VALUE,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(Byte.MAX_VALUE,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 		
 		type = new UnsignedByteType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(0,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(255,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(0,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(255,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 
 		type = new ShortType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(-32768,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(32767,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(-32768,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(32767,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 		
 		type = new UnsignedShortType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(0,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(65535,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(0,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(65535,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 		
 		type = new IntType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(Integer.MIN_VALUE,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(Integer.MAX_VALUE,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(Integer.MIN_VALUE,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(Integer.MAX_VALUE,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 		
 		type = new UnsignedIntType();
-		assertEquals(0,TypeManager.boundIntValueToType(type, 0));
-		assertEquals(0,TypeManager.boundIntValueToType(type, Integer.MIN_VALUE));
-		assertEquals(Integer.MAX_VALUE,TypeManager.boundIntValueToType(type, Integer.MAX_VALUE));
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(0,TypeManager.boundValueToType(type, Integer.MIN_VALUE),0);
+		assertEquals(Integer.MAX_VALUE,TypeManager.boundValueToType(type, Integer.MAX_VALUE),0);
 	}
 
 }
