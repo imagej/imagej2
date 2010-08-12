@@ -50,8 +50,58 @@ public class ImgLibProcessorTest {
 	//ColorProcessor cProc;  // may not need to test this for comparison
 
 	// ************* Helper methods ***********************************************
-
 	
+	// this initialization code runs once - load the test image
+	@BeforeClass
+	public static void setup()
+	{
+		/*
+		String filename = "data/head8bit.tif";
+		
+		ImagePlus imp = new ImagePlus(filename);
+		origBProc = (ByteProcessor) imp.getProcessor();
+		width = origBProc.getWidth();
+		height = origBProc.getHeight();
+		
+		final ContainerFactory containerFactory = new ArrayContainerFactory();
+		Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(filename, containerFactory);
+		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
+		 */
+		
+		/* TODO - 300 x 400 kills this puppy with over 4 gig of ram use and system basically halts during tests */
+		width = 121;
+		height = 86;
+		
+		origBProc = new ByteProcessor(width,height);
+		
+		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),new ArrayContainerFactory());
+		
+		Image<UnsignedByteType> image = factory.createImage(new int[]{width,height});
+
+		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
+			
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int value = (19 + (x+y)) % 256;
+				origBProc.set(x,y,value);
+				origIProc.set(x,y,value);
+			}
+		}
+
+		origIProc.setMinAndMax(0, 255);  // TODO - if not here then getMax() test fails. Might point out some ImgLibProc code needed. Although
+											//     it might just be that IJ calls setMinAndMax() and we aren't using IJ infrastructure yet.
+		compareData(origBProc,origIProc);
+	}
+	
+	// the following initialization code runs before every test
+	@Before
+	public void initialize()
+	{
+		bProc = (ByteProcessor)origBProc.duplicate();
+		iProc = (ImgLibProcessor)origIProc.duplicate();
+		compareData(bProc,iProc);
+	}
+
 	// ************* Helper tests ***********************************************
 
 	private static void compareData(ImageProcessor baselineProc, ImageProcessor testedProc)
@@ -66,33 +116,6 @@ public class ImgLibProcessorTest {
 			for (int y = 0; y < h; y++)
 				if (Math.abs(baselineProc.getf(x,y)-testedProc.getf(x,y)) > Assert.FLOAT_TOL)
 					fail("processor data differs at ("+x+","+y+") : ij(" + baselineProc.getf(x,y) +") imglib("+testedProc.getf(x,y)+")");
-	}
-
-	// this initialization code runs once - load the test image
-	@BeforeClass
-	public static void setup()
-	{
-		String filename = "data/head8bit.tif";
-		
-		ImagePlus imp = new ImagePlus(filename);
-		origBProc = (ByteProcessor) imp.getProcessor();
-		width = origBProc.getWidth();
-		height = origBProc.getHeight();
-		
-		final ContainerFactory containerFactory = new ArrayContainerFactory();
-		Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(filename, containerFactory);
-		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
-
-		compareData(origBProc,origIProc);
-	}
-	
-	// the following initialization code runs before every test
-	@Before
-	public void initialize()
-	{
-		bProc = (ByteProcessor)origBProc.duplicate();
-		iProc = (ImgLibProcessor)origIProc.duplicate();
-		compareData(bProc,iProc);
 	}
 
 	// ************* Tests ***********************************************
@@ -240,10 +263,10 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testCrop() {
 	
-		int ox = 22;
-		int oy = 53;
-		int w = 107;
-		int h = 214;
+		int ox = 3, oy = 10, w = width/2, h = height/2;
+		
+		assertTrue((ox+w) <= width);
+		assertTrue((oy+h) <= height);
 		
 		bProc.setRoi(ox,oy,w,h);
 		iProc.setRoi(ox,oy,w,h);
@@ -275,13 +298,16 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testDrawPixel() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		int ox = 3, oy = 10, w = width/2, h = height/2;
+		
+		assertTrue((ox+w) <= width);
+		assertTrue((oy+h) <= height);
 		
 		bProc.setColor(14);
 		iProc.setColor(14);
 		
-		for (int x = 3; x < 22; x++)
-			for (int y = 10; y < 79; y++)
+		for (int x = ox; x < ox+w; x++)
+			for (int y = oy; y < oy+h; y++)
 			{
 				bProc.drawPixel(x, y);
 				iProc.drawPixel(x, y);
@@ -292,8 +318,6 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testDuplicate() {
-		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
 		
 		ImageProcessor newProc = iProc.duplicate();
 		assertTrue(newProc instanceof ImgLibProcessor<?>);
@@ -320,8 +344,6 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testFillImageProcessor() {
-		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
 		
 		ByteProcessor byteMask = new ByteProcessor(width,height);
 		for (int x = 0; x < width; x++)
@@ -457,10 +479,16 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetMax() {
 		assertEquals(bProc.getMax(), iProc.getMax(), Assert.DOUBLE_TOL);
+		bProc.setMinAndMax(42.4,107.6);
+		iProc.setMinAndMax(42.4,107.6);
+		assertEquals(bProc.getMax(), iProc.getMax(), Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testGetMin() {
+		assertEquals(bProc.getMin(), iProc.getMin(), Assert.DOUBLE_TOL);
+		bProc.setMinAndMax(42.4,107.6);
+		iProc.setMinAndMax(42.4,107.6);
 		assertEquals(bProc.getMin(), iProc.getMin(), Assert.DOUBLE_TOL);
 	}
 
@@ -610,8 +638,7 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testPutPixelIntIntInt() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
-		
+
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				int newValue = Math.abs(x-y) % 256;
@@ -872,7 +899,6 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetPixelsIntFloatProcessor() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
 
 		FloatProcessor fProc = new FloatProcessor(width,height);
 		for (int x = 0; x < width; x++)
@@ -888,8 +914,7 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetPixelsObject() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
-		
+
 		byte[] newPixels = new byte[width*height];
 		
 		for (int i = 0; i < width*height; i++)
@@ -966,11 +991,12 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testThreshold() {
 		int numTests = 5;
-		for (int i = 0; i < 255; i+= 256/numTests)
+		for (int i = 0; i < numTests; i++)
 		{
 			initialize();
-			bProc.threshold(i);
-			iProc.threshold(i);
+			int thresh = 256 / (i+1);
+			bProc.threshold(thresh);
+			iProc.threshold(thresh);
 			compareData(bProc,iProc);
 		}
 	}

@@ -29,12 +29,12 @@ public class TypeManager {
 	 * to the corresponding max and min values respective to the
 	 * underlying type.
 	 */
-	public static int boundIntValueToType(RealType type, int inputValue)
+	public static double boundValueToType(RealType type, double inputValue)
 	{
 		if (isIntegralType(type))
 		{
-			if (inputValue < type.getMinValue() ) inputValue = (int) type.getMinValue();
-			if (inputValue > type.getMaxValue() ) inputValue = (int) type.getMaxValue();
+			if (inputValue < type.getMinValue() ) inputValue = type.getMinValue();
+			if (inputValue > type.getMaxValue() ) inputValue = type.getMaxValue();
 		}
 
 		return inputValue;
