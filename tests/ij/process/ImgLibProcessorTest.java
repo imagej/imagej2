@@ -501,10 +501,23 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetHistogram() {
-		if (SKIP_UNFINISHED) return;
 		
+		// regular case
 		int[] bHist = bProc.getHistogram();
 		int[] iHist = iProc.getHistogram();
+		assertArrayEquals(bHist,iHist);
+		
+		// masked case
+		ImageProcessor mask = new ByteProcessor(width, height);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				bProc.set(x, y, (x+y) % 2);
+			}
+		}
+		bProc.setMask(mask);
+		iProc.setMask(mask);
+		bHist = bProc.getHistogram();
+		iHist = iProc.getHistogram();
 		assertArrayEquals(bHist,iHist);
 	}
 
