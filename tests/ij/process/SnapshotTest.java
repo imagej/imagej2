@@ -15,9 +15,13 @@ import mpicbg.imglib.image.ImageFactory;
 
 public class SnapshotTest {
 
+	// ************* Instance variables *******************************
+	
 	private Image<FloatType> image;
 	private static final int WIDTH = 104, HEIGHT = 73, DEPTH = 18;
 	private static int numDims;
+	
+	// ************* Helper methods *******************************
 	
 	@Before
 	public void setup()
@@ -56,6 +60,31 @@ public class SnapshotTest {
 		}
 	}
 	
+	private void tryCopyFromImage(int[] origin, int[] span)
+	{
+		setup();
+		
+		Snapshot<FloatType> snap = new Snapshot<FloatType>(image,origin,span);
+
+		// make sure data is the same after snapshot
+		compareData(image,origin,span,snap.getStorage());
+		
+		// set image data to something else
+		float value = 4995632;
+		Cursor<FloatType> cursor = image.createCursor();
+		for (FloatType sample : cursor)
+			sample.setReal(value--);
+		cursor.close();
+		
+		// copy the data
+		snap.copyFromImage(image, origin, span);
+
+		// make sure data is the same again
+		compareData(image,origin,span,snap.getStorage());
+	}
+	
+	// ************* Tests *******************************
+
 	@Test
 	public void testSnapshot() {
 
@@ -97,29 +126,6 @@ public class SnapshotTest {
 		assertNotNull(snap.getStorage());
 	}
 
-	private void tryCopyFromImage(int[] origin, int[] span)
-	{
-		setup();
-		
-		Snapshot<FloatType> snap = new Snapshot<FloatType>(image,origin,span);
-
-		// make sure data is the same after snapshot
-		compareData(image,origin,span,snap.getStorage());
-		
-		// set image data to something else
-		float value = 4995632;
-		Cursor<FloatType> cursor = image.createCursor();
-		for (FloatType sample : cursor)
-			sample.setReal(value--);
-		cursor.close();
-		
-		// copy the data
-		snap.copyFromImage(image, origin, span);
-
-		// make sure data is the same again
-		compareData(image,origin,span,snap.getStorage());
-	}
-	
 	@Test
 	public void testCopyFromImage() {
 
@@ -138,14 +144,54 @@ public class SnapshotTest {
 
 	@Test
 	public void testPasteIntoImage() {
-		// TODO
-		// fail("Not yet implemented");
+		
+		// make a snapshot of test image
+		
+		int[] origin = Index.create(numDims);
+		int[] span = Span.create(new int[]{WIDTH,HEIGHT,DEPTH});
+		Snapshot<FloatType> snap = new Snapshot<FloatType>(image,origin,span);
+		
+		// make another image same dims as original with different data
+		
+		Image<FloatType> image2 = image.createNewImage();
+
+		int value = 607;
+		
+		Cursor<FloatType> cursor = image2.createCursor();
+		for (FloatType sample : cursor)
+			sample.setReal(value++);
+		
+		cursor.close();
+		
+		// past into second image
+		
+		snap.pasteIntoImage(image2);
+		
+		// compare two images for equality
+		compareData(image,origin,span,image2);
 	}
 
 	@Test
 	public void testToString() {
-		// TODO
-		// fail("Not yet implemented");
+
+		int[] origin = Index.create(numDims);
+		int[] span = Span.singlePlane(WIDTH,HEIGHT,numDims);
+		Snapshot<FloatType> snap = new Snapshot<FloatType>(image,origin,span);
+
+		String expected = "snapshot(["+WIDTH+":"+HEIGHT+":"+1+"],["+
+							origin[0]+":"+origin[1]+":"+origin[2]+"],["+
+							span[0]+":"+span[1]+":"+span[2]+"])";
+		
+		assertEquals(expected,snap.toString());
+		
+		span = Span.create(new int[]{WIDTH,HEIGHT,DEPTH});
+		snap = new Snapshot<FloatType>(image,origin,span);
+
+		expected = "snapshot(["+WIDTH+":"+HEIGHT+":"+DEPTH+"],["+
+						origin[0]+":"+origin[1]+":"+origin[2]+"],["+
+						span[0]+":"+span[1]+":"+span[2]+"])";
+
+		assertEquals(expected,snap.toString());
 	}
 
 }

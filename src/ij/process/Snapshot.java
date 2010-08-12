@@ -132,7 +132,9 @@ public class Snapshot<T extends RealType<T>>
 		StringBuffer str = new StringBuffer();
 		str.append( "snapshot(" );
 		str.append( arrayToStr(this.storage.getDimensions()) );
+		str.append(",");
 		str.append( arrayToStr(this.dimensionOrigins) );
+		str.append(",");
 		str.append( arrayToStr(this.dimensionSpans) );
 		str.append( ")" );
 		
