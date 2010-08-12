@@ -259,6 +259,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				throw new IllegalArgumentException("unknown pixel type");
 		}
 	}
+
+	// TODO - refactor this method and setSnapshotPlane() so that hey share more code
 	
 	private void setPlane(Object pixels, PixelType inputType, long numPixels)
 	{
@@ -326,7 +328,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getCopyOfPixelsFromImage(this.imageData, this.type, this.imageProperties.getPlanePosition());
 	}
 
-
 	@Override
 	byte[] create8BitImage()
 	{
@@ -366,13 +367,95 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.pixels8;
 	}
 
+	private void doProcess(int op, double value)
+	{
+		switch (op)
+		{
+			case FILL:
+				throw new RuntimeException("Unimplemented");
+			case ADD:
+				throw new RuntimeException("Unimplemented");
+			case MULT:
+				throw new RuntimeException("Unimplemented");
+			case AND:
+				if (!this.isIntegral)
+					return; 
+				throw new RuntimeException("Unimplemented");
+			case OR:
+				if (!this.isIntegral)
+					return; 
+				throw new RuntimeException("Unimplemented");
+			case XOR:
+				if (!this.isIntegral)
+					return; 
+				throw new RuntimeException("Unimplemented");
+			case GAMMA:
+				throw new RuntimeException("Unimplemented");
+			case LOG:
+				throw new RuntimeException("Unimplemented");
+			case EXP:
+				throw new RuntimeException("Unimplemented");
+			case SQR:
+				throw new RuntimeException("Unimplemented");
+			case SQRT:
+				throw new RuntimeException("Unimplemented");
+			case ABS:
+				throw new RuntimeException("Unimplemented");
+			case MINIMUM:
+				throw new RuntimeException("Unimplemented");
+			case MAXIMUM:
+				throw new RuntimeException("Unimplemented");
+			default:
+				throw new IllegalArgumentException("doProcess() error: passed an unknown operation " + op);
+		}
+	}
+	
 	//****************** public methods *******************************************************
 
-	/* Unnecessary?????
-	protected ImageProperties<T> getImageProperties() {
-		return imageProperties;
-	}
-	*/
+	@Override
+	public void invert() {doProcess(INVERT, 0.0);}
+	
+	@Override
+	public void add(int value) {doProcess(ADD, value);}
+	
+	@Override
+	public void add(double value) {doProcess(ADD, value);}
+	
+	@Override
+	public void multiply(double value) {doProcess(MULT, value);}
+	
+	@Override
+	public void and(int value) {doProcess(AND,value);}
+	
+	@Override
+	public void or(int value)  {doProcess(OR,value);}
+	
+	@Override
+	public void xor(int value)  {doProcess(XOR,value);}
+	
+	@Override
+	public void gamma(double value) {doProcess(GAMMA, value);}
+	
+	@Override
+	public void log() {doProcess(LOG, 0.0);}
+	
+	@Override
+	public void exp() {doProcess(EXP, 0.0);}
+	
+	@Override
+	public void sqr() {doProcess(SQR, 0.0);}
+	
+	@Override
+	public void sqrt() {doProcess(SQRT, 0.0);}
+	
+	@Override
+	public void abs() {doProcess(ABS, 0.0);}
+	
+	@Override
+	public void min(double value) {doProcess(MINIMUM, value);}
+	
+	@Override
+	public void max(double value) {doProcess(MAXIMUM, value);}
 
 	@Override
 	public void autoThreshold()
@@ -544,6 +627,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			// TODO
 			throw new RuntimeException("Unimplemented");
 		}
+	}
+
+	@Override
+	public void fill() {
+		doProcess(FILL,0.0);
 	}
 
 	@Override
@@ -1050,27 +1138,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		// ignore channel number
 		
-		float[] pixels = (float[]) fp.getPixels();
-
-		if (pixels.length != getNumPixels())
-			throw new IllegalArgumentException("setPixels() error : input length does not have same dimensions as internal storage");
-		
-		LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-		
-		int[] position = Index.create(this.imageData.getNumDimensions());
-		
-		int i = 0;
-		
-		for (int y = 0; y < super.height; y++) {
-			position[1] = y;
-			for (int x = 0; x < super.width; x++) {
-				position[0] = x;
-				cursor.setPosition(position);
-				cursor.getType().setReal(pixels[i++]);
-			}
-		}
-		
-		cursor.close();
+		setPixels(fp.getPixels());
 	}
 
 	@Override
@@ -1276,55 +1344,5 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// TODO - prev calc only works for 5-d images and less with default ordering
 		
 		return imp;
-	}
-	
-	public static void main(String[] args) {
-		final JFileChooser chooser = new JFileChooser();
-		int rval = chooser.showOpenDialog(null);
-		if (rval != JFileChooser.APPROVE_OPTION) return;
-		final File file = chooser.getSelectedFile();
-		final String fileName = file.getAbsolutePath();
-		final ContainerFactory containerFactory = new ArrayContainerFactory();
-		//Image<?> image = LOCI.openLOCI( fileName, containerFactory );
-		final Image<UnsignedByteType> image = LOCI.openLOCIUnsignedByteType(fileName, containerFactory);
-		
-		// make our image plus from inglib image
-		final ImagePlus imp = createImagePlus(image);
-		
-		// methods to test to make sure they work
-
-		/*
-		// invert() : works
-		
-		imp.getProcessor().invert();
-		*/
-		
-		// applyTable() : works
-		//
-		int[] lut = new int[256];
-		for (int i = 0; i < 256; i++)
-		lut[i] = 255-i;
-		imp.getProcessor().applyTable(lut);
-		
-		/*
-		// get(x,y)
-		imp.getProcessor().set( 20, 20,175 );
-		System.out.println( imp.getProcessor().get(20,20) );
-		*/
-		
-		/*
-		//Start the timer
-		long a = System.currentTimeMillis( );
-		for(int x = 0;x<1000;x++)
-			imp.getProcessor().flipVertical();
-		
-		//stop the timer
-		long b = System.currentTimeMillis( );
-		
-		System.out.println("Took imglib " + (b-a) + " milliseconds or " + ((b-a)/1000) + " seconds to do an image flip.");
-		*/
-
-		new ImageJ();
-		imp.show();
 	}
 }

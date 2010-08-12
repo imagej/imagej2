@@ -13,19 +13,10 @@ import ij.ImageStack;
 
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.io.LOCI;
-import mpicbg.imglib.type.numeric.integer.ByteType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.LongType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
@@ -36,7 +27,7 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static boolean IMGLIBPROC_UNIMPLEMENTED = true;  // some ImgLibProcessor methods are unimplemented. Don't 
+	static boolean SKIP_UNFINISHED = true;  // some ImgLibProcessor methods are unimplemented. 
 	
 	static int width;
 	static int height;
@@ -121,6 +112,59 @@ public class ImgLibProcessorTest {
 	// ************* Tests ***********************************************
 
 	@Test
+	public void testAbs()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.abs();
+			iProc.abs();
+			compareData(bProc,iProc);
+		}
+	}
+
+	@Test
+	public void testAddDouble()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			double value = i*Math.PI;
+			bProc.add(value);
+			iProc.add(value);
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
+	public void testAddInt()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.add(i);
+			iProc.add(i);
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
+	public void testAndInt()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.and(i);
+			iProc.and(i);
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
 	public void testApplyTable() {
 
 		// make an inverted lut
@@ -138,7 +182,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testConvolve() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		float[][] kernel2d = new float[][] {{-1.2f,-1.2f,-1.2f,-1.2f,-1.2f},
 											{-1.2f,-2.4f,-2.4f,-2.4f,-1.2f},
@@ -163,7 +207,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testConvolve3x3() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		int[][] kernel2d = new int[][] {{1,3,1},{3,-16,3},{1,3,1}};
 
@@ -184,7 +228,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testCopyBits() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		ImageProcessor data = new ByteProcessor(5,5,new byte[]{-1,1,-2,2,-3,3,1,2,3,4,5,6,7,8,11,10,9,8,7,6,5,4,3,2,1},null);
 		
@@ -280,7 +324,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testDilate() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		iProc.dilate();
 		bProc.dilate();
@@ -327,7 +371,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testErode() {
 
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		iProc.erode();
 		bProc.erode();
@@ -339,6 +383,33 @@ public class ImgLibProcessorTest {
 
 		iProc.erode();
 		bProc.erode();
+		compareData(bProc,iProc);
+	}
+	
+	@Test
+	public void testExp()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.exp();
+			iProc.exp();
+			compareData(bProc,iProc);
+		}
+	}
+
+	@Test
+	public void testFill() {
+		
+		if (SKIP_UNFINISHED) return;
+		
+		bProc.setColor(7);
+		iProc.setColor(7);
+		
+		bProc.fill();
+		iProc.fill();
+
 		compareData(bProc,iProc);
 	}
 
@@ -363,7 +434,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testFilter() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int filterType = ImageProcessor.BLUR_MORE; filterType <= ImageProcessor.CONVOLVE; filterType++)
 		{
@@ -379,6 +450,20 @@ public class ImgLibProcessorTest {
 		iProc.flipVertical();
 		bProc.flipVertical();
 		compareData(bProc,iProc);
+	}
+
+	@Test
+	public void testGammaDouble()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			double value = i*0.68;
+			bProc.gamma(value);
+			iProc.gamma(value);
+			compareData(bProc,iProc);
+		}
 	}
 
 	@Test
@@ -416,10 +501,10 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetHistogram() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		int[] bHist = bProc.getHistogram();
-		int[] iHist = bProc.getHistogram();
+		int[] iHist = iProc.getHistogram();
 		assertArrayEquals(bHist,iHist);
 	}
 
@@ -447,7 +532,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetInterpolatedPixel() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
 		{
@@ -494,7 +579,7 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testGetPixelInterpolated() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC})
 		{
@@ -551,7 +636,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelValue() {
 
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		// a few cases in ByteProc & ShortProc
 		//   out of bounds
@@ -612,8 +697,45 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testInvert()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		bProc.invert();
+		iProc.invert();
+		compareData(bProc,iProc);
+	}
+
+	@Test
+	public void testLog()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.log();
+			iProc.log();
+			compareData(bProc,iProc);
+		}
+	}
+
+	@Test
+	public void testMaxDouble()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			double value = 2.0 * i;
+			bProc.max(value);
+			iProc.max(value);
+			compareData(bProc,iProc);
+		}
+	}
+
+	@Test
 	public void testMedianFilter() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		bProc.medianFilter();
 		iProc.medianFilter();
@@ -621,9 +743,37 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testMinDouble()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			double value = 2.0 * i;
+			bProc.min(value);
+			iProc.min(value);
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
+	public void testMultiplyDouble()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			double value = i*Math.PI;
+			bProc.multiply(value);
+			iProc.multiply(value);
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
 	public void testNoise() {
 
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		double[] noises = new double[]{0,1,2,3,4,0.5,1.2};
 		
@@ -632,6 +782,19 @@ public class ImgLibProcessorTest {
 			initialize();
 			bProc.noise(noiseVal);
 			iProc.noise(noiseVal);
+			compareData(bProc,iProc);
+		}
+	}
+
+	@Test
+	public void testOrInt()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.or(i);
+			iProc.or(i);
 			compareData(bProc,iProc);
 		}
 	}
@@ -651,7 +814,7 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testPutPixelValue() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -695,7 +858,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testResizeIntInt() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
 			int[][] points = new int[][] {
@@ -727,7 +890,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testRotate() {
 		
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
 			
@@ -751,7 +914,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testScale() {
 
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE,ImageProcessor.BILINEAR,ImageProcessor.BICUBIC}) {
 			
@@ -795,7 +958,7 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetColorColor() {
-		if (IMGLIBPROC_UNIMPLEMENTED) return;
+		if (SKIP_UNFINISHED) return;
 
 		Color[] colors = new Color[]{Color.white,Color.black,Color.blue,Color.red,Color.green,Color.gray,Color.magenta};
 		
@@ -987,6 +1150,32 @@ public class ImgLibProcessorTest {
 		
 		compareData(bProc,iProc);
 	}
+	
+	@Test
+	public void testSqr()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.sqr();
+			iProc.sqr();
+			compareData(bProc,iProc);
+		}
+	}
+	
+	@Test
+	public void testSqrt()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.sqrt();
+			iProc.sqrt();
+			compareData(bProc,iProc);
+		}
+	}
 
 	@Test
 	public void testThreshold() {
@@ -1015,5 +1204,18 @@ public class ImgLibProcessorTest {
 		iFloat = iProc.toFloat(1, null);
 		
 		compareData(bFloat,iFloat);
+	}
+
+	@Test
+	public void testXorInt()
+	{
+		if (SKIP_UNFINISHED) return;
+		
+		for (int i = 0; i < 12; i++)
+		{
+			bProc.xor(i);
+			iProc.xor(i);
+			compareData(bProc,iProc);
+		}
 	}
 }
