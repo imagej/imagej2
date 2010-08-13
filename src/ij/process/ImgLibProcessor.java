@@ -68,8 +68,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 
-	private static enum CursorUser {SET,SETF,GET};
-	
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -85,7 +83,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private double min, max;
 	private double fillColor;
 	
-	private LocalizableByDimCursor<T> cachedCursor;
+    private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
+        new ThreadLocal<LocalizableByDimCursor<T>>()
+        {
+        	@Override
+        	protected LocalizableByDimCursor<T> initialValue() {
+                return imageData.createLocalizableByDimCursor();
+        	}
+
+        	@Override
+        	protected void finalize() throws Throwable {
+        	    try {
+        	        cachedCursor.get().close();
+        	        //System.out.println("closing cursor at "+System.nanoTime());
+        	    } finally {
+        	        super.finalize();
+        	    }
+        	}
+        };
 
 	//****************** Constructors *************************************************************
 	
@@ -113,8 +128,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		this.isIntegral = TypeManager.isIntegralType(this.type);
 		
-		this.cachedCursor = imageData.createLocalizableByDimCursor();
-		
 		if (this.type instanceof UnsignedByteType)
 			this.imageProperties.setBackgroundValue(255);
 
@@ -125,14 +138,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	//****************** Helper methods *******************************************************
 
-	protected void finalize() throws Throwable {
-	    try {
-	        this.cachedCursor.close();
-	    } finally {
-	        super.finalize();
-	    }
-	}
-	
 	private long getNumPixels()
 	{
 		return ImageUtils.getTotalSamples(this.imageData.getDimensions());
@@ -147,7 +152,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageDimensionsSize = Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
 		
 		//Get a cursor
-		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> imageCursor = this.cachedCursor.get();
 		final RegionOfInterestCursor<T> imageROICursor = new RegionOfInterestCursor< T >( imageCursor, imageDimensionsOffset, imageDimensionsSize );
 				
 		//assign crazy values
@@ -168,7 +173,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		//close the cursor
 		imageROICursor.close( );
-		imageCursor.close( );
 	}
 	
 	/*
@@ -276,34 +280,32 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
 		
-		LocalizableByDimCursor<T> cursor = theImage.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> cursor = theImage.createLocalizableByDimCursor();  // cannot use cached cursor here
 		
 		int pixNum = 0;
 		
 		for (int y = 0; y < super.height; y++) {
+			
 			position[1] = y;
+			
 			for (int x = 0; x < super.width; x++) {
+				
 				position[0] = x;
+				
 				cursor.setPosition(position);
-				T pixRef = cursor.getType(); 
-				double inputPixValue = getPixValue(pixels, inputType, isUnsigned, pixNum);
+				
+				T pixRef = cursor.getType();
+				
+				double inputPixValue = getPixValue(pixels, inputType, isUnsigned, pixNum++);
+				
 				if (this.isIntegral)
-				{
-					double max = pixRef.getMaxValue();
-					double min = pixRef.getMinValue();
-					
-					if (inputPixValue > max)
-						inputPixValue = max;
-					
-					if (inputPixValue < min)
-						inputPixValue = min;
-				}
+					inputPixValue = TypeManager.boundValueToType(this.type, inputPixValue);
+				
 				pixRef.setReal(inputPixValue);
-				pixNum++;
 			}
 		}
 		
-		cursor.close();
+		cursor.close();  // since a local cursor close it
 	}
 	
 	private void setSnapshotPlane(Object pixels, PixelType inputType, long numPixels)
@@ -471,7 +473,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] span = Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
 		
 		//Fill the image with data - first get a cursor
-		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> imageCursor = this.cachedCursor.get();
 		RegionOfInterestCursor<T> imageRegionOfInterestCursor = new RegionOfInterestCursor< T >( imageCursor, index, span );
 		
 		for (final T pixel:imageRegionOfInterestCursor)
@@ -479,9 +481,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			pixel.setReal( lut[ (int) pixel.getRealDouble() ] );
 		}
 		
-		//close the cursors
+		//close the roi cursor
 		imageRegionOfInterestCursor.close( );
-		imageCursor.close( );
 	}
 
 	@Override
@@ -548,7 +549,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Image<T> newImage = this.imageData.createNewImage(extentsInNewImage);
 		
-		LocalizableByDimCursor<T> imageDimCursor = this.imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> imageDimCursor = this.cachedCursor.get();
 		LocalizableByDimCursor<T> newImageDimCursor = newImage.createLocalizableByDimCursor();
 		
 		RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor<T>(imageDimCursor, originInImage, extentsInImage);
@@ -561,10 +562,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			double value = imageRoiCursor.getType().getRealDouble(); 
 			newImageRoiCursor.getType().setReal(value); 
 		}
-		
+
+		// close the relevant cursors
 		imageRoiCursor.close();
 		newImageRoiCursor.close();
-		imageDimCursor.close();
 		newImageDimCursor.close();
 
 		return new ImgLibProcessor<T>(newImage, (T)this.type, 0);
@@ -595,7 +596,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public ImageProcessor duplicate() {
 		ImageProcessor proc = createProcessor(super.width, super.height);
 
-		LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
 		int[] position = Index.create(0, 0, this.imageProperties.getPlanePosition());
 		
@@ -608,8 +609,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				proc.setf(x, y, floatVal);
 			}
 		}
-		
-		cursor.close();
 		
 		return proc;
 	}
@@ -671,7 +670,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void flipVertical()
 	{
-		// create suitable cursor
+		// create suitable cursors - noncached
 		final LocalizableByDimCursor<T> cursor1 = this.imageData.createLocalizableByDimCursor( );
 		final LocalizableByDimCursor<T> cursor2 = this.imageData.createLocalizableByDimCursor( );
 		
@@ -720,7 +719,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			}
 		}
 		
-		// close the cursors when done with them
+		// close the noncached cursors when done with them
 		cursor1.close();
 		cursor2.close();
 	}
@@ -731,9 +730,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int value;
 		
 		//final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-		cachedCursor.setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
 		
-		value = (int)( cachedCursor.getType().getRealDouble() );
+		value = (int)( cachedCursor.get().getType().getRealDouble() );
 		
 		//cursor.close( );
 		
@@ -770,7 +769,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 			int[] span = Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
 			
-			LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
+			LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 			RegionOfInterestCursor<T> roiCursor = new RegionOfInterestCursor<T>(cursor, origin, span);
 			
 			int pixIndex = 0;
@@ -782,7 +781,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			}
 			
 			roiCursor.close();
-			cursor.close();
 			
 			return hist;
 		}
@@ -835,8 +833,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.snapshot!=null && super.snapshotCopyMode)
 		{
 			super.snapshotCopyMode = false;
+			
 			Image<T> snapStorage = this.snapshot.getStorage();
+			
 			int[] planePosOfZero = Index.create(imageProperties.getPlanePosition().length);
+			
 			return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero); 
 		}
 		else
@@ -850,13 +851,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		float value;
 		
-		//final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-				
-		cachedCursor.setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
 		
-		value =  ( float ) cachedCursor.getType().getRealDouble();
-		
-		//cursor.close( );
+		value =  ( float ) cachedCursor.get().getType().getRealDouble();
 		
 		return value;
 	}
@@ -952,7 +949,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Image<T> snapData = this.snapshot.getStorage();
 		
-		LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> imageCursor = this.cachedCursor.get();
 		LocalizableByDimCursor<T> snapshotCursor = snapData.createLocalizableByDimCursor();
 
 		int[] originInImage = Index.create(super.roiX, super.roiY, this.imageProperties.getPlanePosition());
@@ -984,7 +981,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		snapRoiCursor.close();
 		imageRoiCursor.close();
 		snapshotCursor.close();
-		imageCursor.close();
 		
 		findMinAndMax();
 	}
@@ -1009,12 +1005,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void set(int x, int y, int value) 
 	{
-		//final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-		
-		cachedCursor.setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
-		cachedCursor.getType().setReal( value );
-		
-		//cursor.close();
+		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		cachedCursor.get().getType().setReal( value );
 	}
 
 	@Override
@@ -1039,6 +1031,45 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/*
+	
+	// FloatProcessor
+	public void setColor(Color color) {
+		int bestIndex = getBestIndex(color);
+		if (bestIndex>0 && getMin()==0.0 && getMax()==0.0) {
+			fillColor = bestIndex;
+			setMinAndMax(0.0,255.0);
+		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0)
+			fillColor = 0f;
+		else
+			fillColor = (float)(min + (max-min)*(bestIndex/255.0));
+	}
+
+	// ShortProcessor
+	public void setColor(Color color) {
+		int bestIndex = getBestIndex(color);
+		if (bestIndex>0 && getMin()==0.0 && getMax()==0.0) {
+			setValue(bestIndex);
+			setMinAndMax(0.0,255.0);
+		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0) {
+			if (cTable!=null&&cTable[0]==-32768f) // signed image
+				setValue(32768.0);
+			else
+				setValue(0.0);
+		} else
+			fgColor = (int)(getMin() + (getMax()-getMin())*(bestIndex/255.0));
+
+	}
+	
+	//  ByteProcessor
+	public void setColor(Color color) {
+		//if (ij.IJ.altKeyDown()) throw new IllegalArgumentException("setColor: "+color);
+		drawingColor = color;
+		fgColor = getBestIndex(color);
+	}
+
+	 */
+	
 	@Override
 	public void setColor(Color color) {
 		throw new RuntimeException("Unimplemented");
@@ -1086,11 +1117,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	public void setd(int x, int y, double value) {
 
-		//final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-
-		cachedCursor.setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
 		
-		RealType pixRef = cachedCursor.getType();
+		RealType pixRef = cachedCursor.get().getType();
 
 		// TODO - verify the following implementation is what we want to do:
 		// NOTE - for an integer type backed data store imglib rounds float values. ImageJ has always truncated float values.
@@ -1100,8 +1129,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			value = (double)Math.floor(value);
 		
 		pixRef.setReal( value ); 
-
-		//cursor.close();
 	}
 
 	@Override
@@ -1224,7 +1251,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] span = Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
 		
 		// must use a RoiCursor to stay on our single plane
-		final LocalizableByDimCursor<T> imageCursor = this.imageData.createLocalizableByDimCursor( );
+		final LocalizableByDimCursor<T> imageCursor = this.cachedCursor.get();
 		final RegionOfInterestCursor<T> roiCursor = new RegionOfInterestCursor<T>(imageCursor, origin, span);
 
 		double minPossible = roiCursor.getType().getMinValue();
@@ -1235,9 +1262,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			pixel.setReal( pixel.getRealDouble() <= thresholdLevelAsDouble ? minPossible : maxPossible );
 		}
 		
-		//close the cursors
+		//close the cursor
 		roiCursor.close();
-		imageCursor.close();
 	}
 
 	@Override
@@ -1250,7 +1276,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		float[] fPixels = (float[])fp.getPixels();
 
-		LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
 		int[] position = Index.create(0, 0, this.imageProperties.getPlanePosition());
 		
@@ -1264,8 +1290,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			}
 		}
 
-		cursor.close();
-		
 		fp.setRoi(getRoi());
 		fp.setMask(super.mask);
 		fp.setMinAndMax(this.min, this.max);

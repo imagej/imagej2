@@ -3,6 +3,7 @@ package ij.process;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -1231,4 +1232,59 @@ public class ImgLibProcessorTest {
 			compareData(bProc, iProc);
 		}
 	}
+	
+	/*
+	@Test
+	public void testCachedCursorClose()
+	{
+		final ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
+		
+		final Image<UnsignedByteType> image = factory.createImage(new int[]{width, height});
+
+		final ImgLibProcessor<UnsignedByteType> proc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
+
+		for (int i = 0; i < 1000; i++) {
+			new Thread() {
+				@Override
+				public void run() {
+					
+					Random rand = new Random();
+					
+					rand.setSeed(System.nanoTime());
+					
+					double value = rand.nextDouble();
+					
+					int x = (int) (width * rand.nextDouble());
+					int y = (int) (height * rand.nextDouble());
+					
+					if (value < 0.2)
+					{
+						proc.get(x, y);
+					}
+					else if (value < 0.4)
+					{
+						proc.getHistogram();
+					}
+					else if (value < 0.5)
+					{
+						proc.snapshot();
+					}
+					else if (value < 0.6)
+					{
+						proc.reset();
+					}
+					else
+					{
+						for (int i = 0; i < 10; i++ )
+						{
+							int x1 = (int) (width * rand.nextDouble());
+							int y1 = (int) (height * rand.nextDouble());
+							proc.putPixelValue(x1, y1, value*255);
+						}
+					}
+				}
+			};
+		}
+	}
+	*/
 }
