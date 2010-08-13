@@ -61,8 +61,8 @@ public class ImgLibProcessorTest {
 		
 		/* TODO - without a cachedCursor 300 x 400 kills this puppy with over 4 gig of ram use and system basically halts during tests */
         //   with cachedCursor tests to 10Kx900 and worked though somewhat slow
-		width = 513;
-		height = 513;
+		width = 343;
+		height = 769;
 		
 		origBProc = new ByteProcessor(width, height);
 		
@@ -233,7 +233,7 @@ public class ImgLibProcessorTest {
 		
 		ImageProcessor data = new ByteProcessor(5, 5, new byte[]{-1,1,-2,2,-3,3,1,2,3,4,5,6,7,8,11,10,9,8,7,6,5,4,3,2,1}, null);
 		
-		for (int mode = ImageProcessor.INVERT; mode <= ImageProcessor.ABS; mode++)
+		for (int mode = Blitter.COPY; mode <= Blitter.COPY_ZERO_TRANSPARENT; mode++)
 		{
 			bProc.copyBits(data, 23, 19, mode);
 			iProc.copyBits(data, 23, 19, mode);
@@ -423,8 +423,8 @@ public class ImgLibProcessorTest {
 				if ((x+y)%2 == 0)
 					byteMask.set(x, y, 1);
 		
-		bProc.setColor(7);
-		iProc.setColor(7);
+		bProc.setColor(19);
+		iProc.setColor(19);
 		
 		bProc.fill(byteMask);
 		iProc.fill(byteMask);
@@ -972,7 +972,6 @@ public class ImgLibProcessorTest {
 
 	@Test
 	public void testSetColorColor() {
-		if (SKIP_UNFINISHED) return;
 
 		Color[] colors = new Color[]{Color.white, Color.black, Color.blue, Color.red, Color.green, Color.gray, Color.magenta};
 		
@@ -983,6 +982,7 @@ public class ImgLibProcessorTest {
 			
 			assertEquals(bProc.drawingColor, iProc.drawingColor);
 			assertEquals(bProc.fgColor, iProc.fgColor);
+			// TODO : for float types what about .fillColor??? since private don't worry about it? Or find some test that teases it out.
 		}
 
 	}
@@ -1233,17 +1233,13 @@ public class ImgLibProcessorTest {
 		}
 	}
 	
-	/*
 	@Test
 	public void testCachedCursorClose()
 	{
-		final ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
+		// have tested that the cached cursors eventually close via print statements in ImgLibProcessor using the below code
 		
-		final Image<UnsignedByteType> image = factory.createImage(new int[]{width, height});
-
-		final ImgLibProcessor<UnsignedByteType> proc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
-
-		for (int i = 0; i < 1000; i++) {
+		// hatch a mess of threads that will randomly change the images and compare that the shared cursors do not get out of synch 
+		for (int i = 0; i < 20000; i++) {
 			new Thread() {
 				@Override
 				public void run() {
@@ -1259,19 +1255,23 @@ public class ImgLibProcessorTest {
 					
 					if (value < 0.2)
 					{
-						proc.get(x, y);
+						assertEquals(bProc.get(x, y), iProc.get(x, y));
 					}
 					else if (value < 0.4)
 					{
-						proc.getHistogram();
+						assertEquals(bProc.getHistogram(), iProc.getHistogram());
 					}
 					else if (value < 0.5)
 					{
-						proc.snapshot();
+						iProc.snapshot();
+						bProc.snapshot();
+						compareData(bProc, iProc);
 					}
 					else if (value < 0.6)
 					{
-						proc.reset();
+						bProc.reset();
+						iProc.reset();
+						compareData(bProc, iProc);
 					}
 					else
 					{
@@ -1279,12 +1279,13 @@ public class ImgLibProcessorTest {
 						{
 							int x1 = (int) (width * rand.nextDouble());
 							int y1 = (int) (height * rand.nextDouble());
-							proc.putPixelValue(x1, y1, value*255);
+							bProc.putPixelValue(x1, y1, value*255);
+							iProc.putPixelValue(x1, y1, value*255);
 						}
+						compareData(bProc,iProc);
 					}
 				}
 			};
 		}
 	}
-	*/
 }

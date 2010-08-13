@@ -45,7 +45,11 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
 // More TODO / NOTES
+//   For copyBits() I may need to implement convertToFloat(), convertToByte(), and convertToShort()
 //   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
+//   I have not incorporated showProgress() yet where it needs to be. Compare to other ImageJ processors.
+//   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
+//   Review imglib's various cursors and perhaps change which ones I'm using.
 //   Nearly all methods below broken for ComplexType and and LongType
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
 //   Rename ImgLibProcessor to GenericProcessor????
@@ -58,13 +62,14 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //     Allow new Image<ByteType>(rows,cols). Have a default factory and a default container and have other constructors that you use in the cases
 //       where you want to specify them. Also allow new Image<T extends RealType<T>>(rows,cols,pixels).
 //     Have a few static ContainerFactories that we can just refer to rather than newing them all the time. Maybe do so also for Types so that
-//       we're not always having to pass a new UnsignedByteType() but rather a static one and if a new one needed the ctor can create.
+//       we're not always having to pass a new UnsignedByteType() but rather a static one and if a new one needed the ctor can clone.
 //     In general come up with much shorter names to make use less cumbersome.
 //     It would be good to specify axis order of a cursor's traversal : new Cursor(image,"zxtcy") and then just call cursor.get() as needed.
-//       Also could do cursor.fwd("x") which would iterate forward in that plane of the image skipping large groups of samples at a time. 
+//       Also could do cursor.fwd(T) which would iterate forward in the (here T) plane of the image skipping large groups of samples at a time. 
 //     Put our ImageUtils class code somewhere in Imglib. Also maybe include the Index and Span classes too. Also TypeManager class.
 
-public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable {
+public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable
+{
 
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 
@@ -104,8 +109,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	//****************** Constructors *************************************************************
 	
-	public ImgLibProcessor(Image<T> img, T type, long planeNumber ) {
-
+	public ImgLibProcessor(Image<T> img, T type, long planeNumber )
+	{
 		final int[] dims = img.getDimensions();
 		
 		if (dims.length < 2)
@@ -124,7 +129,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		super.width = dims[0]; // TODO: Dimensional labels are safer way to find X
 		super.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
 	
-		this.fillColor = 0;
+		this.fillColor = this.type.getMaxValue();
 		
 		this.isIntegral = TypeManager.isIntegralType(this.type);
 		
@@ -178,17 +183,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/*
 	 * Throws an exception if the LUT length is wrong for the pixel layout type
 	 */
-	private void testLUTLength( int[] lut )
+	private void verifyLutLengthOkay( int[] lut )
 	{
-		if ( this.type instanceof GenericByteType< ? > )
-		{
+		if ( this.type instanceof GenericByteType< ? > ) {
+			
 			if (lut.length!=256)
 				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		} else if( this.type instanceof GenericShortType< ? > )
-		{
+		}
+		else if( this.type instanceof GenericShortType< ? > ) {
+			
 			if (lut.length!=65536)
 				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		} else {
+		}
+		else {
+			
 			throw new IllegalArgumentException("LUT NA for type " + type ); 
 		}
 	}
@@ -364,8 +372,85 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.pixels8;
 	}
 
+	private void doLutProcess(int op, double value)
+	{
+		double SCALE = 255.0/Math.log(255.0);
+		int v;
+		
+		int[] lut = new int[256];
+		for (int i=0; i<256; i++) {
+			switch(op) {
+				case INVERT:
+					v = 255 - i;
+					break;
+				case FILL:
+					v = fgColor;
+					break;
+				case ADD:
+					v = i + (int)value;
+					break;
+				case MULT:
+					v = (int)Math.round(i * value);
+					break;
+				case AND:
+					v = i & (int)value;
+					break;
+				case OR:
+					v = i | (int)value;
+					break;
+				case XOR:
+					v = i ^ (int)value;
+					break;
+				case GAMMA:
+					v = (int)(Math.exp(Math.log(i/255.0)*value)*255.0);
+					break;
+				case LOG:
+					if (i==0)
+						v = 0;
+					else
+						v = (int)(Math.log(i) * SCALE);
+					break;
+				case EXP:
+					v = (int)(Math.exp(i/SCALE));
+					break;
+				case SQR:
+						v = i*i;
+					break;
+				case SQRT:
+						v = (int)Math.sqrt(i);
+					break;
+				case MINIMUM:
+					if (i<value)
+						v = (int)value;
+					else
+						v = i;
+					break;
+				case MAXIMUM:
+					if (i>value)
+						v = (int)value;
+					else
+						v = i;
+					break;
+				 default:
+				 	v = i;
+			}
+			if (v < 0)
+				v = 0;
+			if (v > 255)
+				v = 255;
+			lut[i] = v;
+		}
+		applyTable(lut);
+	}
+
 	private void doProcess(int op, double value)
 	{
+		if (this.type instanceof UnsignedByteType)
+		{
+			doLutProcess(op,value);
+			return;
+		}
+		
 		switch (op)
 		{
 			case FILL:
@@ -409,50 +494,41 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	//****************** public methods *******************************************************
 
-	@Override
-	public void invert() {doProcess(INVERT, 0.0);}
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
-	public void add(int value) {doProcess(ADD, value);}
+	public void abs()
+	{
+		doProcess(ABS, 0.0);
+	}
+
+	@Override
+	public void add(int value)
+	{
+		doProcess(ADD, value);
+	}
 	
 	@Override
-	public void add(double value) {doProcess(ADD, value);}
+	public void add(double value)
+	{
+		doProcess(ADD, value);
+	}
 	
 	@Override
-	public void multiply(double value) {doProcess(MULT, value);}
-	
-	@Override
-	public void and(int value) {doProcess(AND,value);}
-	
-	@Override
-	public void or(int value)  {doProcess(OR,value);}
-	
-	@Override
-	public void xor(int value)  {doProcess(XOR,value);}
-	
-	@Override
-	public void gamma(double value) {doProcess(GAMMA, value);}
-	
-	@Override
-	public void log() {doProcess(LOG, 0.0);}
-	
-	@Override
-	public void exp() {doProcess(EXP, 0.0);}
-	
-	@Override
-	public void sqr() {doProcess(SQR, 0.0);}
-	
-	@Override
-	public void sqrt() {doProcess(SQRT, 0.0);}
-	
-	@Override
-	public void abs() {doProcess(ABS, 0.0);}
-	
-	@Override
-	public void min(double value) {doProcess(MINIMUM, value);}
-	
-	@Override
-	public void max(double value) {doProcess(MAXIMUM, value);}
+	public void and(int value)
+	{
+		doProcess(AND,value);
+	}
 
 	@Override
 	public void autoThreshold()
@@ -467,7 +543,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		testLUTLength(lut);
+		verifyLutLengthOkay(lut);
 		
 		int[] index = Index.create(super.roiX, super.roiY, this.imageProperties.getPlanePosition());
 		int[] span = Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
@@ -486,26 +562,30 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void convolve(float[] kernel, int kernelWidth, int kernelHeight) {
+	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
+	{
 		throw new RuntimeException("Unimplemented");
 
 	}
 
 	@Override
-	public void convolve3x3(int[] kernel) {
+	public void convolve3x3(int[] kernel)
+	{
 		throw new RuntimeException("Unimplemented");
 
 	}
 
 	@Override
-	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode) {
-		throw new RuntimeException("Unimplemented");
-
+	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
+	{
+		FloatProcessor proc = ip.toFloat(0,null); 
+		new FloatBlitter(proc).copyBits(ip, xloc, yloc, mode);
 	}
 
 	//TODO ask about changing name of Image to avoid conflict with java.awt
 	@Override
-	public java.awt.Image createImage() {
+	public java.awt.Image createImage()
+	{
 		boolean firstTime = this.pixels8==null;
 		if (firstTime || !super.lutAnimation)
 			create8BitImage();
@@ -527,7 +607,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public ImageProcessor createProcessor(int width, int height) {
+	public ImageProcessor createProcessor(int width, int height)
+	{
 		Image<T> image = this.imageData.createNewImage(new int[]{width,height});
 		ImageProcessor ip2 = new ImgLibProcessor<T>(image, (T)this.type, 0);
 		ip2.setColorModel(getColorModel());
@@ -538,8 +619,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public ImageProcessor crop() {
-		
+	public ImageProcessor crop()
+	{	
 		int[] originInImage = Index.create(super.roiX, super.roiY, this.imageProperties.getPlanePosition());
 		int[] extentsInImage = Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
 		
@@ -572,9 +653,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void dilate() {
-		// only applicable to integral types (or is it just for lut backed types?)
-		if (this.isIntegral)
+	public void dilate()
+	{
+		if (this.type instanceof UnsignedByteType)
 		{
 			// TODO
 			throw new RuntimeException("Unimplemented");
@@ -582,7 +663,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void drawPixel(int x, int y) {
+	public void drawPixel(int x, int y)
+	{
 		if (x>=super.clipXMin && x<=super.clipXMax && y>=super.clipYMin && y<=super.clipYMax)
 		{
 			if (this.isIntegral)
@@ -593,7 +675,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public ImageProcessor duplicate() {
+	public ImageProcessor duplicate()
+	{
 		ImageProcessor proc = createProcessor(super.width, super.height);
 
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
@@ -614,9 +697,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void erode() {
-		// only applicable to integral types (or is it just for lut backed types?)
-		if (this.isIntegral)
+	public void erode()
+	{
+		if (this.type instanceof UnsignedByteType)
 		{
 			// TODO
 			throw new RuntimeException("Unimplemented");
@@ -624,13 +707,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void fill() {
+	public void exp()
+	{
+		doProcess(EXP, 0.0);
+	}
+	
+	@Override
+	public void fill()
+	{
 		doProcess(FILL,0.0);
 	}
 
 	@Override
-	public void fill(ImageProcessor mask) {
-		
+	public void fill(ImageProcessor mask)
+	{
 		if (mask==null) {
 			fill();
 			return;
@@ -661,7 +751,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void filter(int type) {
+	public void filter(int type)
+	{
 		throw new RuntimeException("Unimplemented");
 		// TODO - make special calls to erode() and dilate() I think when ByteType. Copy ByteProcessor. See other processors too.
 	}
@@ -725,6 +816,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
+	public void gamma(double value)
+	{
+		doProcess(GAMMA, value);
+	}
+	
+	@Override
 	public int get(int x, int y) 
 	{	
 		int value;
@@ -740,7 +837,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public int get(int index) {
+	public int get(int index)
+	{
 		//imageData
 		int x = index % super.width;
 		int y = index / super.width;
@@ -748,13 +846,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public double getBackgroundValue() {
+	public double getBackgroundValue()
+	{
 		return this.imageProperties.getBackgroundValue();
 	}
 
 	@Override
-	public int[] getHistogram() {
-		
+	public int[] getHistogram()
+	{
 		if ((type instanceof UnsignedByteType) || (type instanceof UnsignedShortType))
 		{
 			Cursor<T> junkCursor = this.imageData.createCursor();
@@ -789,7 +888,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public double getInterpolatedPixel(double x, double y) {
+	public double getInterpolatedPixel(double x, double y)
+	{
 		throw new RuntimeException("Unimplemented");
 	}
 
@@ -806,30 +906,34 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public int getPixel(int x, int y) {
+	public int getPixel(int x, int y)
+	{
 		return get(x, y);
 	}
 
 	@Override
-	public int getPixelInterpolated(double x, double y) {
+	public int getPixelInterpolated(double x, double y)
+	{
 		throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
-	public float getPixelValue(int x, int y) {
+	public float getPixelValue(int x, int y)
+	{
 		return getf(x, y);
 	}
 
 	@Override
-	public Object getPixels() {
+	public Object getPixels()
+	{
 		// TODO: could add a special case for single-image 8-bit array-backed data
 		// TODO: special case for new container
 		return getPixelsArray();
 	}
 
 	@Override
-	public Object getPixelsCopy() {
-		
+	public Object getPixelsCopy()
+	{
 		if (this.snapshot!=null && super.snapshotCopyMode)
 		{
 			super.snapshotCopyMode = false;
@@ -859,7 +963,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public float getf(int index) {
+	public float getf(int index)
+	{
 		int x = index % super.width;
 		int y = index / super.width;
 		return getf( x, y) ;
@@ -871,8 +976,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public Object getSnapshotPixels() {
-		
+	public Object getSnapshotPixels()
+	{
 		if (this.snapshot == null)
 			return null;
 		
@@ -884,8 +989,27 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void medianFilter() {
-		if (this.isIntegral)
+	public void invert()
+	{
+		doProcess(INVERT, 0.0);
+	}
+	
+	@Override
+	public void log()
+	{
+		doProcess(LOG, 0.0);
+	}
+	
+	@Override
+	public void max(double value)
+	{
+		doProcess(MAXIMUM, value);
+	}
+
+	@Override
+	public void medianFilter()
+	{
+		if (this.type instanceof UnsignedByteType)
 		{
 			// TODO
 			throw new RuntimeException("Unimplemented");
@@ -893,13 +1017,33 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void noise(double range) {
+	public void min(double value)
+	{
+		doProcess(MINIMUM, value);
+	}
+	
+	@Override
+	public void multiply(double value)
+	{
+		doProcess(MULT, value);
+	}
+	
+	@Override
+	public void noise(double range)
+	{
 		throw new RuntimeException("Unimplemented");
 
 	}
 
 	@Override
-	public void putPixel(int x, int y, int value) {
+	public void or(int value)
+	{
+		doProcess(OR,value);
+	}
+	
+	@Override
+	public void putPixel(int x, int y, int value)
+	{
 		if (x>=0 && x<super.width && y>=0 && y<super.height)
 		{
 			if (this.isIntegral)
@@ -913,7 +1057,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void putPixelValue(int x, int y, double value) {
+	public void putPixelValue(int x, int y, double value)
+	{
 		if (x>=0 && x<super.width && y>=0 && y<super.height)
 		{
 			if (this.isIntegral)
@@ -928,8 +1073,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public void reset() {
-		
+	public void reset()
+	{
 		if (this.snapshot!=null)
 		{
 			this.snapshot.pasteIntoImage(this.imageData);
@@ -939,8 +1084,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void reset(ImageProcessor mask) {
-		
+	public void reset(ImageProcessor mask)
+	{
 		if (mask==null || this.snapshot==null)
 			return;
 		
@@ -986,18 +1131,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public ImageProcessor resize(int dstWidth, int dstHeight) {
+	public ImageProcessor resize(int dstWidth, int dstHeight)
+	{
 		throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
-	public void rotate(double angle) {
+	public void rotate(double angle)
+	{
 		throw new RuntimeException("Unimplemented");
 
 	}
 
 	@Override
-	public void scale(double xScale, double yScale) {
+	public void scale(double xScale, double yScale)
+	{
 		throw new RuntimeException("Unimplemented");
 
 	}
@@ -1031,54 +1179,57 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/*
-	
-	// FloatProcessor
-	public void setColor(Color color) {
-		int bestIndex = getBestIndex(color);
-		if (bestIndex>0 && getMin()==0.0 && getMax()==0.0) {
-			fillColor = bestIndex;
-			setMinAndMax(0.0,255.0);
-		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0)
-			fillColor = 0f;
-		else
-			fillColor = (float)(min + (max-min)*(bestIndex/255.0));
-	}
-
-	// ShortProcessor
-	public void setColor(Color color) {
-		int bestIndex = getBestIndex(color);
-		if (bestIndex>0 && getMin()==0.0 && getMax()==0.0) {
-			setValue(bestIndex);
-			setMinAndMax(0.0,255.0);
-		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0) {
-			if (cTable!=null&&cTable[0]==-32768f) // signed image
-				setValue(32768.0);
-			else
-				setValue(0.0);
-		} else
-			fgColor = (int)(getMin() + (getMax()-getMin())*(bestIndex/255.0));
-
-	}
-	
-	//  ByteProcessor
-	public void setColor(Color color) {
-		//if (ij.IJ.altKeyDown()) throw new IllegalArgumentException("setColor: "+color);
-		drawingColor = color;
-		fgColor = getBestIndex(color);
-	}
-
-	 */
-	
 	@Override
-	public void setColor(Color color) {
-		throw new RuntimeException("Unimplemented");
+	public void setColor(Color color)
+	{
+		int bestIndex = getBestIndex(color);
+		
+		if (this.type instanceof GenericByteType<?>) {
 
+			super.drawingColor = color;
+			super.fgColor = bestIndex;
+		}
+		else { // not a Byte type
+
+			double min = getMin();
+			double max = getMax();
+			
+			if ((bestIndex>0) && (min == 0) && (max == 0)) {
+				
+				if (this.isIntegral)
+					setValue(bestIndex);
+				else  // floating type
+					fillColor = bestIndex;
+				
+				setMinAndMax(0,255);
+			}
+			else if ((bestIndex == 0) && (min > 0) && ((color.getRGB()&0xffffff) == 0)) {
+				
+				if (!this.isIntegral)
+					this.fillColor = 0;
+				else { // integral data that is not byte
+					
+					if (TypeManager.isUnsignedType(this.type))  // TODO - this logic is different than original code. Test!
+						setValue(0.0);
+					else
+						setValue(this.type.getMaxValue());
+				}
+			}
+			else {
+				
+				double value = (min + (max-min)*(bestIndex/255.0));
+				
+				if (this.isIntegral)
+					super.fgColor = (int)value;
+				else
+					this.fillColor = value;
+			}
+		}
 	}
 
 	@Override
-	public void setMinAndMax(double min, double max) {
-	
+	public void setMinAndMax(double min, double max)
+	{
 		if (min==0.0 && max==0.0)
 		{
 			resetMinAndMax();
@@ -1100,8 +1251,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void resetMinAndMax() {
-		
+	public void resetMinAndMax()
+	{
 		// from FloatProc : fixedScale = false;
 		
 		findMinAndMax();
@@ -1109,14 +1260,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		resetThreshold();
 	}
 
-	public void setd(int index, double value) {
+	public void setd(int index, double value)
+	{
 		int x = index % super.width;
 		int y = index / super.width;
 		setd( x, y, value);
 	}
 
-	public void setd(int x, int y, double value) {
-
+	public void setd(int x, int y, double value)
+	{
 		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
 		
 		RealType pixRef = cachedCursor.get().getType();
@@ -1132,20 +1284,22 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void setf(int index, float value) {
+	public void setf(int index, float value)
+	{
 		int x = index % super.width;
 		int y = index / super.width;
 		setf( x, y, value);
 	}
 
 	@Override
-	public void setf(int x, int y, float value) {
+	public void setf(int x, int y, float value)
+	{
 		setd(x, y, (double)value);
 	}
 
 	@Override
-	public void setPixels(Object pixels) {
-
+	public void setPixels(Object pixels)
+	{
 		int[] position = Index.create(0, 0, this.imageProperties.getPlanePosition());
 		
 		if (pixels instanceof byte[])
@@ -1177,8 +1331,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public void setPixels(int channelNumber, FloatProcessor fp) {
-		
+	public void setPixels(int channelNumber, FloatProcessor fp)
+	{
 		// ignore channel number - TODO - is this okay or wrong??? since we have a single plane of single channel data I think we should ignore
 		
 		setPixels(fp.getPixels());
@@ -1238,6 +1392,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
+	public void sqr()
+	{
+		doProcess(SQR, 0.0);
+	}
+	
+	@Override
+	public void sqrt()
+	{
+		doProcess(SQRT, 0.0);
+	}
+
+	@Override
 	public void threshold(int thresholdLevel) 
 	{
 		if (!this.isIntegral)
@@ -1267,8 +1433,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp) {
-		
+	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
+	{
 		long size = getNumPixels();
 		
 		if (fp == null || fp.getWidth()!=super.width || fp.getHeight()!=super.height)
@@ -1298,6 +1464,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return fp;
 	}
 	
+	@Override
+	public void xor(int value)
+	{
+		doProcess(XOR,value);
+	}
+
 	// TODO - belongs elsewhere???
 
 	public static ImagePlus createImagePlus(final Image<?> img)
@@ -1371,6 +1543,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImagePlus imp = new ImagePlus(img.getName(), stack);
 		
+		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
+		//   We should modify ImageJ to have a setDimensions(int[] dimension) and integrate its use throughout.
+		
+		// let ImageJ know about dimensions
+		
 		int slices = 1;
 		if (dimensions.length > 2)
 			slices = dimensions[2];
@@ -1384,8 +1561,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			frames = dimensions[4];
 
 		imp.setDimensions(channels, slices, frames);
-		
-		// TODO - prev calc only works for 5-d images (or less) and requires default ordering of xyzct
 		
 		return imp;
 	}
