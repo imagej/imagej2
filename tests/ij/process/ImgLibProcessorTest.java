@@ -237,6 +237,7 @@ public class ImgLibProcessorTest {
 		{
 			bProc.copyBits(data, 23, 19, mode);
 			iProc.copyBits(data, 23, 19, mode);
+			//System.out.println("blitter mode: "+mode);
 			compareData(bProc, iProc);
 		}
 	}
@@ -650,8 +651,6 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelValue() {
 
-		if (SKIP_UNFINISHED) return;
-		
 		// a few cases in ByteProc & ShortProc
 		//   out of bounds
 		//   in bounds with no ctable
