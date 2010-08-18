@@ -309,12 +309,12 @@ public class ImageUtils {
 			
 			//get the source value
 			double real = sourceROICursor.getType().getPowerDouble();
-			double complex = sourceROICursor.getType().getPhaseDouble();
+			double image = sourceROICursor.getType().getPhaseDouble();
 			
 			//System.out.println("Source values are " + real + " and " + complex );
 		
 			//set the destination value
-			destinationROICursor.getType().setComplexNumber(real, complex);
+			destinationROICursor.getType().setComplexNumber(real, image);
 		}
 		
 		//close the open cursors
