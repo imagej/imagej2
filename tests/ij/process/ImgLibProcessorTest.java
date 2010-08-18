@@ -231,13 +231,17 @@ public class ImgLibProcessorTest {
 		
 		if (SKIP_UNFINISHED) return;
 		
-		ImageProcessor data = new ByteProcessor(5, 5, new byte[]{-1,1,-2,2,-3,3,1,2,3,4,5,6,7,8,11,10,9,8,7,6,5,4,3,2,1}, null);
+		byte[] bytes = new byte[256];
+		for (int b = Byte.MIN_VALUE; b <= Byte.MAX_VALUE; b++)
+			bytes[b-Byte.MIN_VALUE] = (byte) b;
+		
+		ImageProcessor data = new ByteProcessor(16, 16, bytes, null);
 		
 		for (int mode = Blitter.COPY; mode <= Blitter.COPY_ZERO_TRANSPARENT; mode++)
 		{
 			bProc.copyBits(data, 23, 19, mode);
 			iProc.copyBits(data, 23, 19, mode);
-			//System.out.println("blitter mode: "+mode);
+			System.out.println("blitter mode: "+mode);
 			compareData(bProc, iProc);
 		}
 	}
