@@ -51,6 +51,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   Review imglib's various cursors and perhaps change which ones I'm using.
 //   Nearly all methods below broken for ComplexType and and LongType
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
+//     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
+//     its use throughout the application.
 //   Rename ImgLibProcessor to GenericProcessor????
 //   Rename TypeManager to TypeUtils
 //   Rename Image<> to something else like Dataset<> or NumericDataset<>
@@ -260,22 +262,29 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private void applyOperation(PositionalOperation op)
 	{
-		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
+		LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
 		
 		int[] position = Index.create(0,0,this.imageProperties.getPlanePosition());
 		
 		op.beforeIteration(this.type);
 		
 		for (int y = 0; y < super.height; y++) {
+			
 			position[1] = y;
+			
 			for (int x = 0; x < super.width; x++) {
+				
 				position[0] = x;
+				
 				cursor.setPosition(position);
+				
 				op.insideIteration(x,y,cursor.getType());
 			}
 		}
 		
 		op.afterIteration();
+
+		cursor.close();	
 	}
 	
 	private class ApplyLutOperation extends SingleCursorRoiOperation
@@ -438,8 +447,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		@Override
 		public void afterIteration() {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -1224,12 +1231,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{	
 		int value;
 		
-		//final LocalizableByDimCursor<T> cursor = this.imageData.createLocalizableByDimCursor();
-		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		int[] position = Index.create(x, y, this.imageProperties.getPlanePosition());
 		
-		value = (int)( cachedCursor.get().getType().getRealDouble() );
+		final LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
-		//cursor.close( );
+		cursor.setPosition( position );
+		
+		value = (int)( cursor.getType().getRealDouble() );
+		
+		// do not close cursor - using cached one
 		
 		return value;
 	}
@@ -1384,9 +1394,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		float value;
 		
-		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		int[] position = Index.create(x, y, this.imageProperties.getPlanePosition());
 		
-		value =  ( float ) cachedCursor.get().getType().getRealDouble();
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
+		
+		cursor.setPosition(position);
+		
+		value =  ( float ) cursor.getType().getRealDouble();
+		
+		// do not close cursor - using cached one
 		
 		return value;
 	}
@@ -1604,8 +1620,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void set(int x, int y, int value) 
 	{
-		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
-		cachedCursor.get().getType().setReal( value );
+		int[] position = Index.create(x, y, this.imageProperties.getPlanePosition());
+		
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
+		
+		cursor.setPosition(position);
+		
+		cursor.getType().setReal( value );
+		
+		// do not close cursor - using cached one
 	}
 
 	@Override
@@ -1729,9 +1752,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	public void setd(int x, int y, double value)
 	{
-		cachedCursor.get().setPosition( Index.create(x, y, this.imageProperties.getPlanePosition()) );
+		int[] position = Index.create(x, y, this.imageProperties.getPlanePosition());
 		
-		RealType pixRef = cachedCursor.get().getType();
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
+		
+		cursor.setPosition(position);
+		
+		RealType pixRef = cursor.getType();
 
 		// TODO - verify the following implementation is what we want to do:
 		// NOTE - for an integer type backed data store imglib rounds float values. ImageJ has always truncated float values.
@@ -1741,6 +1768,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			value = (double)Math.floor(value);
 		
 		pixRef.setReal( value ); 
+
+		// do not close cursor - using cached one
 	}
 
 	@Override
@@ -2046,7 +2075,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ImagePlus imp = new ImagePlus(img.getName(), stack);
 		
 		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
-		//   We should modify ImageJ to have a setDimensions(int[] dimension) and integrate its use throughout.
 		
 		// let ImageJ know about dimensions
 		
