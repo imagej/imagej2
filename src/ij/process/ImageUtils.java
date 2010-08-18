@@ -1,5 +1,6 @@
 package ij.process;
 
+import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
@@ -104,7 +105,8 @@ public class ImageUtils {
 			if (planeNumber != 0)
 				throw new IllegalArgumentException("getPlanePosition() 2-D image can only have 1 plane");
 			
-			return new int[]{};  // TODO - this is a little scary to do.
+			return new int[]{};  // TODO - this is a little scary to do. might need to throw exception and have other places fix the fact
+								//    that we have a rows x cols x 1 image
 		}
 			
 		int[] subDimensions = new int[numDims - 2];
@@ -287,6 +289,43 @@ public class ImageUtils {
 			}
 		}
 		return data;
+	}
+	
+	public static Object getPlane(Image<? extends RealType> im, int w, int h, int[] planePos)
+	{
+		Cursor<? extends RealType> cursor = im.createCursor();
+
+		RealType type = cursor.getType();
+
+		cursor.close();
+
+		if (type instanceof ByteType)
+			return getPlaneBytes((Image<ByteType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedByteType)
+			return getPlaneUnsignedBytes((Image<UnsignedByteType>)im,w,h,planePos);
+
+		if (type instanceof ShortType)
+			return getPlaneShorts((Image<ShortType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedShortType)
+			return getPlaneUnsignedShorts((Image<UnsignedShortType>)im,w,h,planePos);
+
+		if (type instanceof IntType)
+			return getPlaneInts((Image<IntType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedIntType)
+			return getPlaneUnsignedInts((Image<UnsignedIntType>)im,w,h,planePos);
+
+		if (type instanceof FloatType)
+			return getPlaneFloats((Image<FloatType>)im,w,h,planePos);
+
+		if (type instanceof DoubleType)
+			return getPlaneDoubles((Image<DoubleType>)im,w,h,planePos);
+
+		// TODO - longs and complex types
+
+		throw new IllegalArgumentException("getPlane(): unsupported type - "+type.getClass());
 	}
 	
 	/** copies data from one image to another given origins and dimensional spans */
