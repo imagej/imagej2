@@ -13,10 +13,10 @@ public class Snapshot<T extends RealType<T>>
 	// ************** Instance variables ********************************************************************
 	
 	/** The start index in the referenced image that the snapshot copies. */
-	private int[] dimensionOrigins;
+	private int[] origin;
 	
 	/** The width of each dimension */
-	private int[] dimensionSpans;
+	private int[] span;
 
 	/** Internal multidimensional storage reference. Has same number of dimensions as referenced data set but actual sizes may differ. */
 	private Image<T> storage;
@@ -25,29 +25,29 @@ public class Snapshot<T extends RealType<T>>
 	// ************** Private helper methods ********************************************************************
 
 	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
-	private void testDimensionBoundaries(int[] imageDimensions, int[] origins, int[] spans)
+	private void testDimensionBoundaries(int[] imageDimensions, int[] origin, int[] span)
 	{
 		// span dims should match origin dims
-		if (origins.length != spans.length)
-			throw new IllegalArgumentException("testDimensionBoundaries() : origins and spans arrays are of differing sizes");
+		if (origin.length != span.length)
+			throw new IllegalArgumentException("testDimensionBoundaries() : origin and span arrays are of differing sizes");
 
 		// origin/span dimensions should match image dimensions
-		if (origins.length != imageDimensions.length)
-			throw new IllegalArgumentException("testDimensionBoundaries() : origins/spans different size than input image");
+		if (origin.length != imageDimensions.length)
+			throw new IllegalArgumentException("testDimensionBoundaries() : origin/span different size than input image");
 		
 		// make sure origin in a valid range : within bounds of source image
-		for (int i = 0; i < origins.length; i++)
-			if ((origins[i] < 0) || (origins[i] >= imageDimensions[i]))
-				throw new IllegalArgumentException("testDimensionBoundaries() : origins outside bounds of input image at index " + i);
+		for (int i = 0; i < origin.length; i++)
+			if ((origin[i] < 0) || (origin[i] >= imageDimensions[i]))
+				throw new IllegalArgumentException("testDimensionBoundaries() : origin outside bounds of input image at index " + i);
 
 		// make sure span in a valid range : >= 1
-		for (int i = 0; i < spans.length; i++)
-			if (spans[i] < 1)
+		for (int i = 0; i < span.length; i++)
+			if (span[i] < 1)
 				throw new IllegalArgumentException("testDimensionBoundaries() : span size < 1 at index " + i);
 
 		// make sure origin + span within the bounds of the input image
-		for (int i = 0; i < spans.length; i++)
-			if ( (origins[i] + spans[i]) > imageDimensions[i] )
+		for (int i = 0; i < span.length; i++)
+			if ( (origin[i] + span[i]) > imageDimensions[i] )
 				throw new IllegalArgumentException("testDimensionBoundaries() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
 	
@@ -70,9 +70,9 @@ public class Snapshot<T extends RealType<T>>
 	// ************** Public methods ********************************************************************
 	
 	/** a Snapshot is taken from an image starting at an origin and spanning each dimension */
-	public Snapshot(Image<T> image, int[] origins, int[] spans)
+	public Snapshot(Image<T> image, int[] origin, int[] span)
 	{
-		copyFromImage(image,origins,spans);
+		copyFromImage(image,origin,span);
 	}
 	
 	/** allow access to snapshot data */ 
@@ -99,30 +99,30 @@ public class Snapshot<T extends RealType<T>>
 	*/
 	
 	/** take a snapshot of an Image's data from given origin and across each span dimension */
-	public void copyFromImage(Image<T> image, int[] origins, int[] spans)
+	public void copyFromImage(Image<T> image, int[] origin, int[] span)
 	{
 		// verify input
-		testDimensionBoundaries(image.getDimensions(),origins,spans);
+		testDimensionBoundaries(image.getDimensions(),origin,span);
 		
 		// remember dimensions
-		this.dimensionOrigins = origins.clone();
-		this.dimensionSpans = spans.clone();
+		this.origin = origin.clone();
+		this.span = span.clone();
 		
 		// get factory to create a data repository
 		ImageFactory<T> factory = new ImageFactory<T>(image.createType(),image.getContainerFactory());
 
 		// create the data repository
-		this.storage = factory.createImage(this.dimensionSpans);
+		this.storage = factory.createImage(this.span);
 			
 		// copy the data
-		ImageUtils.copyFromImageToImage( image, this.storage, this.dimensionOrigins, new int[image.getDimensions().length], this.dimensionSpans );
+		ImageUtils.copyFromImageToImage( image, this.origin, this.storage, Index.create(image.getDimensions().length), this.span );
 	}
 
 	/** paste snapshot data into an image */
 	public void pasteIntoImage(Image<T> image)
 	{
 		// copy from the snapshot to the image
-		ImageUtils.copyFromImageToImage(this.storage, image, new int[image.getDimensions().length], this.dimensionOrigins, this.dimensionSpans );
+		ImageUtils.copyFromImageToImage(this.storage, Index.create(image.getDimensions().length), image, this.origin, this.span );
 	}
 	
 	/** encode a snapshot as a String */
@@ -133,9 +133,9 @@ public class Snapshot<T extends RealType<T>>
 		str.append( "snapshot(" );
 		str.append( arrayToStr(this.storage.getDimensions()) );
 		str.append(",");
-		str.append( arrayToStr(this.dimensionOrigins) );
+		str.append( arrayToStr(this.origin) );
 		str.append(",");
-		str.append( arrayToStr(this.dimensionSpans) );
+		str.append( arrayToStr(this.span) );
 		str.append( ")" );
 		
 		return str.toString();

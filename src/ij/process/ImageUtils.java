@@ -21,6 +21,11 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
+// TODO
+//   Notice that copyFromImageToImage() could create a CopyOperation and apply it. This requires breaking Operations out of
+//     ImgLibProcessor first.
+//   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when we can call ImagePlus::setDimensions(int[] dims)
+
 public class ImageUtils {
 	
 	public static int[] getDimsBeyondXY(int[] fullDims)
@@ -57,8 +62,11 @@ public class ImageUtils {
 		
 		if (numDims < 2)
 			return 0;
+	
+		if (numDims == 2)
+			return 1;
 		
-		// else numDims >= 2
+		// else numDims > 2
 		
 		int[] sampleSpace = getDimsBeyondXY(dimensions);
 		
@@ -296,11 +304,11 @@ public class ImageUtils {
 		return data;
 	}
 	
-	public static Object getPlane(Image<? extends RealType> im, int w, int h, int[] planePos)
+	public static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
 	{
-		Cursor<? extends RealType> cursor = im.createCursor();
+		Cursor<? extends RealType<?>> cursor = im.createCursor();
 
-		RealType type = cursor.getType();
+		RealType<?> type = cursor.getType();
 
 		cursor.close();
 
@@ -322,6 +330,9 @@ public class ImageUtils {
 		if (type instanceof UnsignedIntType)
 			return getPlaneUnsignedInts((Image<UnsignedIntType>)im,w,h,planePos);
 
+		if (type instanceof LongType)
+			return getPlaneLongs((Image<LongType>)im,w,h,planePos);
+
 		if (type instanceof FloatType)
 			return getPlaneFloats((Image<FloatType>)im,w,h,planePos);
 
@@ -334,38 +345,39 @@ public class ImageUtils {
 	}
 	
 	/** copies data from one image to another given origins and dimensional spans */
-	public static <K extends ComplexType<K>> void copyFromImageToImage(Image<K> sourceImage, Image<K> destinationImage, int[] sourceDimensionOrigins, int[] destinationDimensionOrigins, int[] dimensionSpans)
+	public static <K extends ComplexType<K>>
+		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, Image<K> dstImage, int[] dstOrigin, int[] span)
 	{
 		// COPY DATA FROM SOURCE IMAGE TO DEST IMAGE:
 		
 		// create cursors
-		final LocalizableByDimCursor<K> sourceCursor = sourceImage.createLocalizableByDimCursor();
-		final LocalizableByDimCursor<K> destinationCursor = destinationImage.createLocalizableByDimCursor();
-		final RegionOfInterestCursor<K> sourceROICursor = new RegionOfInterestCursor< K >( sourceCursor, sourceDimensionOrigins, dimensionSpans );
-		final RegionOfInterestCursor<K> destinationROICursor = new RegionOfInterestCursor< K >( destinationCursor, destinationDimensionOrigins, dimensionSpans );
+		final LocalizableByDimCursor<K> srcCursor = srcImage.createLocalizableByDimCursor();
+		final LocalizableByDimCursor<K> dstCursor = dstImage.createLocalizableByDimCursor();
+		final RegionOfInterestCursor<K> srcROICursor = new RegionOfInterestCursor<K>( srcCursor, srcOrigin, span );
+		final RegionOfInterestCursor<K> dstROICursor = new RegionOfInterestCursor<K>( dstCursor, dstOrigin, span );
 			
 		//iterate over the target data...
-		while( sourceROICursor.hasNext() && destinationROICursor.hasNext() )
+		while( srcROICursor.hasNext() && dstROICursor.hasNext() )
 		{
 			//point cursors to current value
-			sourceROICursor.fwd();
-			destinationROICursor.fwd();
+			srcROICursor.fwd();
+			dstROICursor.fwd();
 			
 			//get the source value
-			double real = sourceROICursor.getType().getPowerDouble();
-			double image = sourceROICursor.getType().getPhaseDouble();
+			double real = srcROICursor.getType().getPowerDouble();
+			double image = srcROICursor.getType().getPhaseDouble();
 			
 			//System.out.println("Source values are " + real + " and " + complex );
 		
 			//set the destination value
-			destinationROICursor.getType().setComplexNumber(real, image);
+			dstROICursor.getType().setComplexNumber(real, image);
 		}
 		
 		//close the open cursors
-		sourceROICursor.close( );
-		destinationROICursor.close( );    	
-		sourceCursor.close( );
-		destinationCursor.close( );
+		srcROICursor.close( );
+		dstROICursor.close( );    	
+		srcCursor.close( );
+		dstCursor.close( );
 	}
 	
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
@@ -457,7 +469,7 @@ public class ImageUtils {
 	{
 		Cursor<?> cursor = img.createCursor();
 		
-		Type runtimeT = cursor.getType();
+		Type<?> runtimeT = cursor.getType();
 		
 		cursor.close();
 		
@@ -501,6 +513,11 @@ public class ImageUtils {
 				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, new IntType(), plane);
 			}
 				
+			if (runtimeT instanceof LongType)
+			{
+				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, new LongType(), plane);
+			}
+				
 			if (runtimeT instanceof FloatType)
 			{
 				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, new FloatType(), plane);
@@ -511,22 +528,18 @@ public class ImageUtils {
 				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, new DoubleType(), plane);
 			}
 				
-			if (runtimeT instanceof LongType)
-			{
-				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, new LongType(), plane);
-			}
-				
 			if (processor == null)
-				throw new IllegalArgumentException("no processor type was matched");
+				throw new IllegalArgumentException("createImagePlus(): unknown processor type requested - "+runtimeT.getClass());
 			
 			stack.addSlice(""+plane, processor);
 		}
 		
 		ImagePlus imp = new ImagePlus(img.getName(), stack);
 		
-		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
+		// let ImageJ know what dimension we have
 		
-		// let ImageJ know about dimensions
+		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
+		//          Need to be able to say imp.setDimensions(int[] dims);
 		
 		int slices = 1;
 		if (dimensions.length > 2)

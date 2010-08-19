@@ -25,24 +25,54 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
+// TODO - write test for copyFromImageToImage()
 
 public class ImageUtilsTest {
 	
 	int width = 224, height = 403;
 	
+	private void getDimsBeyondXYShouldFail(int[] dims)
+	{
+		try {
+			ImageUtils.getDimsBeyondXY(dims);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
 	@Test
 	public void testGetDimsBeyondXY() {
-		// TODO
+		getDimsBeyondXYShouldFail(new int[]{});
+		getDimsBeyondXYShouldFail(new int[]{1});
+		assertArrayEquals(new int[]{}, ImageUtils.getDimsBeyondXY(new int[]{1,2}));
+		assertArrayEquals(new int[]{3}, ImageUtils.getDimsBeyondXY(new int[]{1,2,3}));
+		assertArrayEquals(new int[]{3,4}, ImageUtils.getDimsBeyondXY(new int[]{1,2,3,4}));
+		assertArrayEquals(new int[]{3,4,5}, ImageUtils.getDimsBeyondXY(new int[]{1,2,3,4,5}));
 	}
 	
 	@Test
 	public void testGetTotalSamples() {
-		// TODO
+		assertEquals(0,ImageUtils.getTotalSamples(new int[]{}));
+		assertEquals(0,ImageUtils.getTotalSamples(new int[]{0}));
+		assertEquals(1,ImageUtils.getTotalSamples(new int[]{1}));
+		assertEquals(8,ImageUtils.getTotalSamples(new int[]{8}));
+		assertEquals(1,ImageUtils.getTotalSamples(new int[]{1,1}));
+		assertEquals(10,ImageUtils.getTotalSamples(new int[]{2,5}));
+		assertEquals(24,ImageUtils.getTotalSamples(new int[]{2,3,4}));
+		assertEquals(720,ImageUtils.getTotalSamples(new int[]{1,2,3,4,5,6}));
 	}
 
 	@Test
 	public void testGetTotalPlanes() {
-		// TODO
+		assertEquals(0,ImageUtils.getTotalPlanes(new int[]{}));
+		assertEquals(0,ImageUtils.getTotalPlanes(new int[]{0}));
+		assertEquals(0,ImageUtils.getTotalPlanes(new int[]{1}));
+		assertEquals(0,ImageUtils.getTotalPlanes(new int[]{8}));
+		assertEquals(1,ImageUtils.getTotalPlanes(new int[]{1,1}));
+		assertEquals(1,ImageUtils.getTotalPlanes(new int[]{2,5}));
+		assertEquals(4,ImageUtils.getTotalPlanes(new int[]{2,3,4}));
+		assertEquals(360,ImageUtils.getTotalPlanes(new int[]{1,2,3,4,5,6}));
 	}
 
 	private void getPositionShouldFail(int[] dimensions, int index)
@@ -469,6 +499,7 @@ public class ImageUtilsTest {
 	public void testCopyFromImageToImage()
 	{
 		// TODO
+		//ImageUtils.copyFromImageToImage(sourceImage, destinationImage, sourceDimensionOrigins, destinationDimensionOrigins, dimensionSpans);
 	}
 
 	// constructor 3
