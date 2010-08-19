@@ -601,8 +601,6 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelInterpolated()
 	{
-		if (SKIP_UNFINISHED) return;
-		
 		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 		{
 			bProc.setInterpolationMethod(interpMethod);
@@ -625,6 +623,7 @@ public class ImgLibProcessorTest {
 			{
 				double x = point[0];
 				double y = point[1];
+				//System.out.println("method("+interpMethod+") : attempting at point ("+x+","+y+")");
 				assertEquals(bProc.getPixelInterpolated(x, y), iProc.getPixelInterpolated(x, y), Assert.DOUBLE_TOL);
 			}
 		}

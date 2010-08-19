@@ -1131,11 +1131,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int ybase = (int)y;
 		double xFraction = x - xbase;
 		double yFraction = y - ybase;
-		int offset = ybase * width + xbase;
-		double lowerLeft = getd(offset);
-		double lowerRight = getd(offset+1);
-		double upperRight = getd(offset+width+1);
-		double upperLeft = getd(offset+width);
+		double lowerLeft = getd(xbase,ybase);
+		double lowerRight = getd(xbase+1,ybase);
+		double upperRight = getd(xbase+1,ybase+1);
+		double upperLeft = getd(xbase,ybase+1);
 		double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
 		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
@@ -1588,13 +1587,35 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int getPixel(int x, int y)
 	{
-		return get(x, y);
+		if ((x >= 0) && (x < super.width) && (y >= 0) && (y < super.height))
+			return get(x, y);
+		return 0;
 	}
 
 	@Override
 	public int getPixelInterpolated(double x, double y)
 	{
-		throw new RuntimeException("Unimplemented");
+		if (super.interpolationMethod == BILINEAR)
+		{
+			if (x<0.0 || y<0.0 || x>=width-1 || y>=height-1)
+				return 0;
+			else if (this.isIntegral)
+				return (int) Math.round(getInterpolatedPixel(x, y));
+			else
+				return Float.floatToIntBits((float)getInterpolatedPixel(x, y));
+		}
+		else if (interpolationMethod==BICUBIC)
+		{
+			if (this.isIntegral)
+			{
+				double value = getInterpolatedPixel(x, y) + 0.5;
+				value = TypeManager.boundValueToType(this.type, value);
+				return (int)value;
+			}
+			return Float.floatToIntBits((float)getBicubicInterpolatedPixel(x, y, this));
+		}
+		else
+			return getPixel((int)(x+0.5), (int)(y+0.5));
 	}
 
 	@Override
