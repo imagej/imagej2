@@ -2,8 +2,12 @@ package ij.process;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import ij.ImagePlus;
+import ij.ImageStack;
+import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -466,4 +470,54 @@ public class ImageUtilsTest {
 	{
 		// TODO
 	}
+
+	// constructor 3
+	@Test
+	public void testCreate()
+	{
+		int width= 3, height = 5;
+		
+		byte[] bytes = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+		
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, bytes, true);
+		
+		assertNotNull(proc);
+		assertEquals(width, proc.getWidth());
+		assertEquals(height, proc.getHeight());
+		assertArrayEquals(bytes,(byte[])proc.getPixels());
+	}
+
+	@Test
+	public void testCreateImagePlus()
+	{
+		int[] dimensions = new int[]{3,4,5,6,7};
+		
+		ContainerFactory contFact = new ArrayContainerFactory();
+		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), contFact);
+		Image<UnsignedShortType> image = factory.createImage(dimensions);
+		// TODO : set pixel data to something
+		ImagePlus imp = ImageUtils.createImagePlus(image);
+		
+		int slices   = image.getDimension(2);
+		int channels = image.getDimension(3);
+		int frames   = image.getDimension(4);
+		
+		assertEquals(frames, imp.getNFrames());
+		assertEquals(channels, imp.getNChannels());
+		assertEquals(slices, imp.getNSlices());
+
+		ImageStack stack = imp.getStack();
+		int totalPlanes = slices * channels * frames;
+		for (int i = 0; i < totalPlanes; i++)
+		{
+			ImageProcessor proc = stack.getProcessor(i+1); 
+			//TODO : enable this when IJ does not screw up the processors
+			//  it turns out that ImageStack.addSlice(processor) just copies the pixels of the processor. Later getProcessor() calls to
+			//  the ImagePlus creates a processor on the pixel data and since its a short[] here we get back a ShortProcessor.
+			//assertTrue(proc instanceof ImgLibProcessor);
+			assertEquals(image.getDimension(0), proc.getWidth());
+			assertEquals(image.getDimension(1), proc.getHeight());
+		}
+	}
+
 }

@@ -1,9 +1,14 @@
 package ij.process;
 
+import ij.ImagePlus;
+import ij.ImageStack;
+import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.image.ImageFactory;
+import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.ComplexType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -363,4 +368,180 @@ public class ImageUtils {
 		destinationCursor.close( );
 	}
 	
+	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
+	{
+		ImgLibProcessor<?> proc = null;
+		
+		int[] dimensions = new int[]{width, height, 1};
+		
+		if (pixels instanceof byte[])
+		{
+			if (unsigned)
+			{
+				ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),new ArrayContainerFactory());
+				Image<UnsignedByteType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, new UnsignedByteType(), 0);
+			}
+			else
+			{
+				ImageFactory<ByteType> factory = new ImageFactory<ByteType>(new ByteType(),new ArrayContainerFactory());
+				Image<ByteType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<ByteType>(hatchedImage, new ByteType(), 0);
+			}
+		}
+		else if (pixels instanceof short[])
+		{
+			if (unsigned)
+			{
+				ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(),new ArrayContainerFactory());
+				Image<UnsignedShortType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, new UnsignedShortType(), 0);
+			}
+			else
+			{
+				ImageFactory<ShortType> factory = new ImageFactory<ShortType>(new ShortType(),new ArrayContainerFactory());
+				Image<ShortType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<ShortType>(hatchedImage, new ShortType(), 0);
+			}
+		}
+		else if (pixels instanceof int[])
+		{
+			if (unsigned)
+			{
+				ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>(new UnsignedIntType(),new ArrayContainerFactory());
+				Image<UnsignedIntType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, new UnsignedIntType(), 0);
+			}
+			else
+			{
+				ImageFactory<IntType> factory = new ImageFactory<IntType>(new IntType(),new ArrayContainerFactory());
+				Image<IntType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<IntType>(hatchedImage, new IntType(), 0);
+			}
+		}
+		else if (pixels instanceof long[])
+		{
+			if (unsigned)
+			{
+				throw new IllegalArgumentException("createProcessor(): unsigned long is not a supported pixel type");
+			}
+			else
+			{
+				ImageFactory<LongType> factory = new ImageFactory<LongType>(new LongType(),new ArrayContainerFactory());
+				Image<LongType> hatchedImage = factory.createImage(dimensions);
+				proc = new ImgLibProcessor<LongType>(hatchedImage, new LongType(), 0);
+			}
+		}
+		else if (pixels instanceof float[])
+		{
+			ImageFactory<FloatType> factory = new ImageFactory<FloatType>(new FloatType(),new ArrayContainerFactory());
+			Image<FloatType> hatchedImage = factory.createImage(dimensions);
+			proc = new ImgLibProcessor<FloatType>(hatchedImage, new FloatType(), 0);
+		}
+		else if (pixels instanceof double[])
+		{
+			ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>(new DoubleType(),new ArrayContainerFactory());
+			Image<DoubleType> hatchedImage = factory.createImage(dimensions);
+			proc = new ImgLibProcessor<DoubleType>(hatchedImage, new DoubleType(), 0);
+		}
+		else
+			throw new IllegalArgumentException("createProcessor(): passed unknown type of pixels - "+pixels.getClass());
+		
+		proc.setPixels(pixels);
+		
+		return proc;
+	}
+	
+
+	public static ImagePlus createImagePlus(final Image<?> img)
+	{
+		Cursor<?> cursor = img.createCursor();
+		
+		Type runtimeT = cursor.getType();
+		
+		cursor.close();
+		
+		int[] dimensions = img.getDimensions();
+		
+		long numPlanes = ImageUtils.getTotalPlanes(dimensions);
+
+		ImageStack stack = new ImageStack(img.getDimension(0), img.getDimension(1));
+		
+		for (long plane = 0; plane < numPlanes; plane++)
+		{
+			ImageProcessor processor = null;
+			
+			if (runtimeT instanceof UnsignedByteType)
+			{
+				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, new UnsignedByteType(), plane);
+			}
+				
+			if (runtimeT instanceof ByteType)
+			{
+				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, new ByteType(), plane);
+			}
+				
+			if (runtimeT instanceof UnsignedShortType)
+			{
+				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, new UnsignedShortType(), plane);
+			}
+				
+			if (runtimeT instanceof ShortType)
+			{
+				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, new ShortType(), plane);
+			}
+				
+			if (runtimeT instanceof UnsignedIntType)
+			{
+				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, new UnsignedIntType(), plane);
+			}
+				
+			if (runtimeT instanceof IntType)
+			{
+				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, new IntType(), plane);
+			}
+				
+			if (runtimeT instanceof FloatType)
+			{
+				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, new FloatType(), plane);
+			}
+				
+			if (runtimeT instanceof DoubleType)
+			{
+				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, new DoubleType(), plane);
+			}
+				
+			if (runtimeT instanceof LongType)
+			{
+				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, new LongType(), plane);
+			}
+				
+			if (processor == null)
+				throw new IllegalArgumentException("no processor type was matched");
+			
+			stack.addSlice(""+plane, processor);
+		}
+		
+		ImagePlus imp = new ImagePlus(img.getName(), stack);
+		
+		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
+		
+		// let ImageJ know about dimensions
+		
+		int slices = 1;
+		if (dimensions.length > 2)
+			slices = dimensions[2];
+		
+		int channels = 1;
+		if (dimensions.length > 3)
+			channels = dimensions[3];
+
+		int frames = 1;
+		if (dimensions.length > 4)
+			frames = dimensions[4];
+
+		imp.setDimensions(channels, slices, frames);
+		
+		return imp;
+	}
 }
