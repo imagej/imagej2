@@ -151,7 +151,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testAbs()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -164,7 +164,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testAddDouble()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -178,7 +178,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testAddInt()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -191,7 +191,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testAndInt()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -394,7 +394,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testExp()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -407,7 +407,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testFill()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		bProc.setColor(7);
 		iProc.setColor(7);
@@ -461,7 +461,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGammaDouble()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -716,7 +716,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testInvert()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		bProc.invert();
 		iProc.invert();
@@ -726,7 +726,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testLog()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -739,7 +739,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testMaxDouble()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -763,7 +763,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testMinDouble()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -777,7 +777,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testMultiplyDouble()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -807,7 +807,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testOrInt()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -833,7 +833,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testPutPixelValue()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -933,13 +933,12 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testScale()
 	{
-
 		if (SKIP_UNFINISHED) return;
 		
 		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
 			
 			double[][] scales = new double[][] {
-					new double[]{0,0},
+					//TODO - enable this point: new double[]{0,0},
 					new double[]{0.3,0.3},
 					new double[]{0.5,0.5},
 					new double[]{0.7,0.7},
@@ -958,6 +957,8 @@ public class ImgLibProcessorTest {
 				
 				bProc.scale(scale[0], scale[1]);
 				iProc.scale(scale[0], scale[1]);
+				
+				System.out.println("trying scale(): interpMethod("+interpMethod+") scaleX("+scale[0]+") scaleY("+scale[1]+")");
 				
 				compareData(bProc, iProc);
 			}
@@ -1174,7 +1175,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testSqr()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -1187,7 +1188,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testSqrt()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{
@@ -1230,7 +1231,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testXorInt()
 	{
-		if (SKIP_UNFINISHED) return;
+		//if (SKIP_UNFINISHED) return;
 		
 		for (int i = 0; i < 12; i++)
 		{

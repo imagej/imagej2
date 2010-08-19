@@ -50,6 +50,9 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
 //     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
 //     its use throughout the application.
+//   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume X & Y are the frist 2 dimensions.
+//     This ideally means that its broken into planes in the last two dimensions. This may just be a convention we use but it may break things too.
+//     Must investigate.
 //   Rename ImgLibProcessor to GenericProcessor????
 //   Rename TypeManager to TypeUtils
 //   Rename Image<> to something else like Dataset<> or NumericDataset<>
@@ -1265,7 +1268,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Image<T> newImage = this.imageData.createNewImage(newImageSpan);
 		
-		ImageUtils.copyFromImageToImage(this.imageData, newImage, imageOrigin, newImageOrigin, imageSpan);
+		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, newImage, newImageOrigin, imageSpan);
 		
 		return new ImgLibProcessor<T>(newImage, (T)this.type, 0);  // cast required!
 	}
@@ -1820,8 +1823,80 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void scale(double xScale, double yScale)
 	{
-		throw new RuntimeException("Unimplemented");
-
+		double xCenter = roiX + roiWidth/2.0;
+		double yCenter = roiY + roiHeight/2.0;
+		int xmin, xmax, ymin, ymax;
+		if ((xScale>1.0) && (yScale>1.0)) {
+			//expand roi
+			xmin = (int)(xCenter-(xCenter-roiX)*xScale);
+			if (xmin<0) xmin = 0;
+			xmax = xmin + (int)(roiWidth*xScale) - 1;
+			if (xmax>=width) xmax = width - 1;
+			ymin = (int)(yCenter-(yCenter-roiY)*yScale);
+			if (ymin<0) ymin = 0;
+			ymax = ymin + (int)(roiHeight*yScale) - 1;
+			if (ymax>=height) ymax = height - 1;
+		} else {
+			xmin = roiX;
+			xmax = roiX + roiWidth - 1;
+			ymin = roiY;
+			ymax = roiY + roiHeight - 1;
+		}
+		Object pixels2 = getPixelsCopy();
+		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
+		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
+		int index1, index2, xsi, ysi;
+		double ys, xs;
+		if (interpolationMethod==BICUBIC) {
+			for (int y=ymin; y<=ymax; y++) {
+				ys = (y-yCenter)/yScale + yCenter;
+				int index = y*width + xmin;
+				for (int x=xmin; x<=xmax; x++) {
+					xs = (x-xCenter)/xScale + xCenter;
+					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
+					if (this.isIntegral)
+					{
+						value = (int) (value+0.5);
+						value = TypeManager.boundValueToType(this.type, value);
+					}
+					setd(index,value);
+				}
+				if (y%30==0) showProgress((double)(y-ymin)/height);
+			}
+		} else {
+			double xlimit = width-1.0, xlimit2 = width-1.001;
+			double ylimit = height-1.0, ylimit2 = height-1.001;
+			for (int y=ymin; y<=ymax; y++) {
+				ys = (y-yCenter)/yScale + yCenter;
+				ysi = (int)ys;
+				if (ys<0.0) ys = 0.0;			
+				if (ys>=ylimit) ys = ylimit2;
+				index1 = y*width + xmin;
+				index2 = width*(int)ys;
+				for (int x=xmin; x<=xmax; x++) {
+					xs = (x-xCenter)/xScale + xCenter;
+					xsi = (int)xs;
+					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
+						setd(index1++, this.min);
+					else {
+						if (interpolationMethod==BILINEAR) {
+							if (xs<0.0) xs = 0.0;
+							if (xs>=xlimit) xs = xlimit2;
+							double value = ip2.getInterpolatedPixel(xs, ys);
+							if (this.isIntegral)
+							{
+								value = (int) (value+0.5);
+								value = TypeManager.boundValueToType(this.type, value);
+							}
+							setd(index1++, value);
+						} else
+							setd(index1++, ip2.getd(index2+xsi));
+					}
+				}
+				if (y%30==0) showProgress((double)(y-ymin)/height);
+			}
+		}
+		showProgress(1.0);
 	}
 
 	@Override
