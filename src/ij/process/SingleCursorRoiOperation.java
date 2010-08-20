@@ -13,6 +13,8 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 		this.image = image;
 		this.origin = origin.clone();
 		this.span = span.clone();
+
+		ImageUtils.verifyDimensions(image.getDimensions(), origin, span);
 	}
 	
 	public Image<T> getImage() { return image; }

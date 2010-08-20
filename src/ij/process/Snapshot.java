@@ -24,33 +24,6 @@ public class Snapshot<T extends RealType<T>>
 	
 	// ************** Private helper methods ********************************************************************
 
-	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
-	private void testDimensionBoundaries(int[] imageDimensions, int[] origin, int[] span)
-	{
-		// span dims should match origin dims
-		if (origin.length != span.length)
-			throw new IllegalArgumentException("testDimensionBoundaries() : origin and span arrays are of differing sizes");
-
-		// origin/span dimensions should match image dimensions
-		if (origin.length != imageDimensions.length)
-			throw new IllegalArgumentException("testDimensionBoundaries() : origin/span different size than input image");
-		
-		// make sure origin in a valid range : within bounds of source image
-		for (int i = 0; i < origin.length; i++)
-			if ((origin[i] < 0) || (origin[i] >= imageDimensions[i]))
-				throw new IllegalArgumentException("testDimensionBoundaries() : origin outside bounds of input image at index " + i);
-
-		// make sure span in a valid range : >= 1
-		for (int i = 0; i < span.length; i++)
-			if (span[i] < 1)
-				throw new IllegalArgumentException("testDimensionBoundaries() : span size < 1 at index " + i);
-
-		// make sure origin + span within the bounds of the input image
-		for (int i = 0; i < span.length; i++)
-			if ( (origin[i] + span[i]) > imageDimensions[i] )
-				throw new IllegalArgumentException("testDimensionBoundaries() : span range (origin+span) beyond input image boundaries at index " + i);
-	}
-	
 	/** used by toString override */
 	private String arrayToStr(int[] arr)
 	{
@@ -102,7 +75,7 @@ public class Snapshot<T extends RealType<T>>
 	public void copyFromImage(Image<T> image, int[] origin, int[] span)
 	{
 		// verify input
-		testDimensionBoundaries(image.getDimensions(),origin,span);
+		ImageUtils.verifyDimensions(image.getDimensions(),origin,span);
 		
 		// remember dimensions
 		this.origin = origin.clone();
