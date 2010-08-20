@@ -9,15 +9,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import ij.Assert;
-import ij.ImagePlus;
-import ij.ImageStack;
 
-import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 import org.junit.Test;
 
