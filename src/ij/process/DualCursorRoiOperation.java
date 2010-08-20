@@ -17,6 +17,9 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 		this.img2 = img2;
 		this.origin2 = origin2.clone();
 		this.span2 = span2.clone();
+		
+		ImageUtils.verifyDimensions(img1.getDimensions(), origin1, span1);
+		ImageUtils.verifyDimensions(img2.getDimensions(), origin2, span2);
 	}
 	
 	public Image<T> getImage1()   { return img1; }

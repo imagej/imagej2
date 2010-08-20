@@ -344,11 +344,42 @@ public class ImageUtils {
 		throw new IllegalArgumentException("getPlane(): unsupported type - "+type.getClass());
 	}
 	
+	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
+	public static void verifyDimensions(int[] imageDimensions, int[] origin, int[] span)
+	{
+		// span dims should match origin dims
+		if (origin.length != span.length)
+			throw new IllegalArgumentException("verifyDimensions() : origin and span arrays are of differing sizes");
+
+		// origin/span dimensions should match image dimensions
+		if (origin.length != imageDimensions.length)
+			throw new IllegalArgumentException("verifyDimensions() : origin/span different size than input image");
+		
+		// make sure origin in a valid range : within bounds of source image
+		for (int i = 0; i < origin.length; i++)
+			if ((origin[i] < 0) || (origin[i] >= imageDimensions[i]))
+				throw new IllegalArgumentException("verifyDimensions() : origin outside bounds of input image at index " + i);
+
+		// make sure span in a valid range : >= 1
+		for (int i = 0; i < span.length; i++)
+			if (span[i] < 1)
+				throw new IllegalArgumentException("verifyDimensions() : span size < 1 at index " + i);
+
+		// make sure origin + span within the bounds of the input image
+		for (int i = 0; i < span.length; i++)
+			if ( (origin[i] + span[i]) > imageDimensions[i] )
+				throw new IllegalArgumentException("verifyDimensions() : span range (origin+span) beyond input image boundaries at index " + i);
+	}
+	
+
 	/** copies data from one image to another given origins and dimensional spans */
 	public static <K extends ComplexType<K>>
 		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, Image<K> dstImage, int[] dstOrigin, int[] span)
 	{
 		// COPY DATA FROM SOURCE IMAGE TO DEST IMAGE:
+		
+		verifyDimensions(srcImage.getDimensions(), srcOrigin, span);
+		verifyDimensions(dstImage.getDimensions(), dstOrigin, span);
 		
 		// create cursors
 		final LocalizableByDimCursor<K> srcCursor = srcImage.createLocalizableByDimCursor();

@@ -14,12 +14,8 @@ public abstract class PositionalOperation<T extends RealType<T>>
 		this.image = image;
 		this.origin = origin.clone();
 		this.span = span.clone();
-		
-		if (image.getNumDimensions() != origin.length)
-			throw new IllegalArgumentException("PositionalOperation(): image dimensions do not match origin dimensions");
-
-		if (span.length != origin.length)
-			throw new IllegalArgumentException("PositionalOperation(): span dimensions do not match origin dimensions");
+	
+		ImageUtils.verifyDimensions(image.getDimensions(), origin, span);
 	}
 	
 	public Image<T> getImage() { return image; }
