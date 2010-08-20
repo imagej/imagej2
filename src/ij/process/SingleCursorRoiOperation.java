@@ -7,7 +7,7 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 {
 	Image<T> image;
 	int[] origin, span;
-	
+
 	protected SingleCursorRoiOperation(Image<T> image, int[] origin, int[] span)
 	{
 		this.image = image;
@@ -16,7 +16,7 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 
 		ImageUtils.verifyDimensions(image.getDimensions(), origin, span);
 	}
-	
+
 	public Image<T> getImage() { return image; }
 	public int[] getOrigin() { return origin; }
 	public int[] getSpan() { return span; }
