@@ -33,5 +33,73 @@ public class Index {
 		
 		return values;
 	}
+	
+	public static boolean isValid(int[] position, int[] origin, int[] span)
+	{
+		for (int i = 0; i < position.length; i++)
+		{
+			if (position[i] < origin[i])
+				return false;
+			
+			if (position[i] >= (origin[i] + span[i]))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	// incrementing from left to right : not textbook but hacky way to get ImgLibProcessor::duplicate() working 
+	public static void increment(int[] position, int[] origin, int[] span)
+	{
+		int i = 0;
+
+		position[i]++;
+			
+		// if we're beyond end of this dimension
+		while (position[i] >= (origin[i] + span[i]))
+		{
+			// if this dim is the last then we've gone as far as we can go
+			if (i == position.length-1)
+			{
+				// return a value that isValid() will complain about
+				for (int j = 0; j < position.length; j++)
+					position[j] = origin[j] + span[j];
+				return;
+			}
+			
+			// otherwise set our dim to its origin value and increment the dimension to our right
+			position[i] = origin[i];
+			position[i+1]++;
+			i++;
+		}		
+	}
+	
+	/*
+	// incrementing from right to left
+	public static void increment(int[] position, int[] origin, int[] span)
+	{
+		int i = position.length - 1;
+
+		position[i]++;
+			
+		// if we're beyond end of this dimension
+		while (position[i] >= (origin[i] + span[i]))
+		{
+			// if this dim is the first then we've gone as far as we can go
+			if (i == 0)
+			{
+				// return a value that isValid() will complain about
+				for (int j = 0; j < position.length; j++)
+					position[j] = origin[j] + span[j];
+				return;
+			}
+			
+			// otherwise set our dim to its origin value and increment the dimension to our left
+			position[i] = origin[i];
+			position[i-1]++;
+			i--;
+		}		
+	}
+	*/
 }
 
