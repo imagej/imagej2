@@ -8,41 +8,40 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 
 import org.junit.Test;
 
-public class SingleCursorRoiOperationTest {
-	
-	private class FakeSingleCursorRoiOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
+
+public class ManyCursorRoiOperationTest {
+
+	private class FakeManyCursorRoiOperation<T extends RealType<T>> extends ManyCursorRoiOperation<T>
 	{
 		public int beforeCalls = 0;
 		public int insideCalls = 0;
 		public int afterCalls = 0;
 		
-		public FakeSingleCursorRoiOperation(Image<T> image, int[] origin, int[] span) {
-			super(image,origin,span);
+		protected FakeManyCursorRoiOperation(Image<T>[] images,	int[][] origins, int[][] spans)
+		{
+			super(images, origins, spans);
 		}
 
 		@Override
-		public void beforeIteration(RealType<?> type) {
+		public void beforeIteration(RealType<T>[] types) {
 			assertTrue(insideCalls == 0);
 			assertTrue(afterCalls == 0);
 			beforeCalls++;
 		}
 
 		@Override
-		public void insideIteration(RealType<?> sample) {
+		public void insideIteration(RealType<T>[] samples) {
 			assertTrue(beforeCalls == 1);
 			assertTrue(afterCalls == 0);
 			insideCalls++;
-			// TODO apparently the Roi cursor has its own unexpected order: 1,2,4,3,5,6. Might be a bug.
-			//assertEquals(insideCalls, sample.getRealDouble(), Assert.DOUBLE_TOL);
 		}
-
+		
 		@Override
 		public void afterIteration() {
 			assertTrue(beforeCalls == 1);
 			assertTrue(afterCalls == 0);
 			afterCalls++;
 		}
-
 	}
 
 	@Test
@@ -54,11 +53,20 @@ public class SingleCursorRoiOperationTest {
 
 		int[] span = new int[]{2,3,1};
 		
-		FakeSingleCursorRoiOperation<ByteType> op = new FakeSingleCursorRoiOperation<ByteType>(proc.getImage(),origin,span);
+		Image<ByteType>[] images = new Image[]{proc.getImage(), proc.getImage(), proc.getImage()};
 
-		assertEquals(proc.getImage(), op.getImage());
-		assertArrayEquals(origin, op.getOrigin());
-		assertArrayEquals(span, op.getSpan());
+		int[][] origins = new int[][]{origin,origin,origin};
+		
+		int[][] spans = new int[][]{span,span,span};
+		
+		FakeManyCursorRoiOperation<ByteType> op = new FakeManyCursorRoiOperation<ByteType>(images,origins,spans);
+
+		for (int i = 0; i < images.length; i++)
+		{
+			assertEquals(images[i], op.getImages()[i]);
+			assertArrayEquals(origin, op.getOrigins()[i]);
+			assertArrayEquals(span, op.getSpans()[i]);
+		}
 		
 		Operation.apply(op);
 		

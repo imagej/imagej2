@@ -3,6 +3,7 @@ package ij.process;
 import ij.process.DualCursorRoiOperation;
 import ij.process.PositionalOperation;
 import ij.process.SingleCursorRoiOperation;
+import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
@@ -59,6 +60,7 @@ public class Operation {
 		image2Cursor.close();
 	}
 	
+	
 	public static <T extends RealType<T>> void apply(PositionalOperation<T> op)
 	{
 		Image<T> image = op.getImage();
@@ -99,4 +101,71 @@ public class Operation {
 		cursor.close();	
 	}
 	
+	private static <T extends RealType<T>> void collectSamples(RegionOfInterestCursor<T>[] cursors, RealType<T>[] samples)
+	{
+		for (int i = 0; i < cursors.length; i++)
+			samples[i] = cursors[i].getType();
+	}
+	
+	private static <T extends RealType<T>> boolean hasNext(RegionOfInterestCursor<T>[] cursors)
+	{
+		for (int i = 0; i < cursors.length; i++)
+			if (!cursors[i].hasNext())
+				return false;
+				
+		return true;
+	}
+	
+	private static <T extends RealType<T>> void fwd(RegionOfInterestCursor<T>[] cursors)
+	{
+		for (int i = 0; i < cursors.length; i++)
+			cursors[i].fwd();
+	}
+	
+	private static <T extends RealType<T>> void close(Cursor<T>[] cursors)
+	{
+		for (int i = 0; i < cursors.length; i++)
+			cursors[i].close();
+	}
+	
+	public static <T extends RealType<T>> void apply(ManyCursorRoiOperation<T> op)
+	{
+		Image<T>[] images = op.getImages();
+		int[][] origins = op.getOrigins();
+		int[][] spans = op.getSpans();
+		
+		// create cursors
+		LocalizableByDimCursor<T>[] cursors = new LocalizableByDimCursor[images.length];
+		for (int i = 0; i < images.length; i++)
+			cursors[i] = images[i].createLocalizableByDimCursor();
+
+		// create roiCursors
+		RegionOfInterestCursor<T>[] roiCursors = new RegionOfInterestCursor[images.length];
+		for (int i = 0; i < images.length; i++)
+			roiCursors[i] = new RegionOfInterestCursor<T>(cursors[i], origins[i], spans[i]);
+
+		// gather type info to pass along
+		RealType<T>[] samples = new RealType[images.length];
+		collectSamples(roiCursors,samples);
+
+		// do the iteration
+		
+		op.beforeIteration(samples);  // pass along type info
+		
+		while (hasNext(roiCursors))
+		{
+			fwd(roiCursors);
+			
+			collectSamples(roiCursors,samples);
+			
+			op.insideIteration(samples);
+		}
+		
+		op.afterIteration();
+		
+		// close the cursors
+		
+		close(roiCursors);
+		close(cursors);
+	}
 }
