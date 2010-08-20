@@ -521,7 +521,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 	
-	private class GenericBlitter<K extends RealType<K>>  // TODO - purposely not extending Blitter as it uses ImageProcessors rather than ImgLibProcessors: rethink?
+	// TODO - purposely not extending Blitter as it uses ImageProcessors rather than ImgLibProcessors: rethink?
+	private class GenericBlitter<K extends RealType<K>>
 	{
 		ImgLibProcessor<K> ip;
 		double transparentColor;
@@ -557,7 +558,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//   just return ip
 		if (ip instanceof ImgLibProcessor<?>)
 		{
-			// TODO
+			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) ip;
+
+			if (TypeManager.sameKind(this.type,imglibProc.getType()))
+				return (ImgLibProcessor<T>) imglibProc;
 		}
 		
 		// otherwise
