@@ -1,10 +1,6 @@
 package ij.process;
 
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-
-public class ImageProperties<T extends RealType<T>>
+public class ImageProperties
 {
 	private double backgroundValue;
 	
@@ -15,7 +11,7 @@ public class ImageProperties<T extends RealType<T>>
 	private double minimumPixelValue;
 	
 	/** The dimensional coordinates of this plane within its parent Image<T> */
-	private static int[] planePosition;
+	private int[] planePosition;
 	
 	/** A value used to represent a background measure **/
 	public double getBackgroundValue()
@@ -56,6 +52,9 @@ public class ImageProperties<T extends RealType<T>>
 	/** returns a copy of the plane position within the parent Image<T> */
 	public int[] getPlanePosition()
 	{
+		if (planePosition == null)
+			return null;
+		
 		return planePosition.clone();
 	}
 }

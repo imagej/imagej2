@@ -10,7 +10,6 @@ import java.awt.image.MemoryImageSource;
 import loci.common.DataTools;
 
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -50,13 +49,13 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
 //     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
 //     its use throughout the application.
-//   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume X & Y are the frist 2 dimensions.
+//   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume X & Y are the first 2 dimensions.
 //     This ideally means that its broken into planes in the last two dimensions. This may just be a convention we use but it may break things too.
 //     Must investigate.
 //   Rename ImgLibProcessor to GenericProcessor????
 //   Rename TypeManager to TypeUtils
 //   Rename Image<> to something else like Dataset<> or NumericDataset<>
-//   Move some things to ImageUtils and/or their own classes: Operations, applyOperations()'s
+//   Move some things elsewhere (to their own classes or even package): Operations
 //   Improvements to ImgLib
 //     Rename LocalizableByDimCursor to PositionCursor. Be able to say posCursor.setPosition(int[] pos) and posCursor.setPosition(long sampIndex).
 //       Another possibility: just call it a Cursor. And then cursor.get() or cursor.get(int[] pos) or cursor.get(long sampleNumber) 
@@ -81,7 +80,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			divideByZeroValue = Float.POSITIVE_INFINITY;
 	}
 	
-
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 
 	//****************** Instance variables *******************************************************
@@ -93,7 +91,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private boolean isIntegral;
 	private byte[] pixels8;
 	private Snapshot<T> snapshot;
-	private ImageProperties<T> imageProperties;
+	private ImageProperties imageProperties;
 	// TODO - move some of these next ones to imageProperties
 	private double min, max;
 	private double fillColor;
@@ -130,7 +128,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.type = type;
 		
 		//assign the properties object for the image
-		this.imageProperties = new ImageProperties< T >( );
+		this.imageProperties = new ImageProperties();
 		
 		this.imageProperties.setPlanePosition( thisPlanePosition );
 
@@ -154,161 +152,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this(img, type, ImageUtils.getPlanePosition(img.getDimensions(), planeNumber));
 	}
 
-	//****************** Operations methods *******************************************************
+	
+	//****************** Operations *************************************************************
 
-	/*  idea to abstract the visiting of the image via applying Operations.
-	 *  To expand: flipVertical() challenges these designs.
-	*/
-	
-	private abstract class SingleCursorRoiOperation
-	{
-		Image<T> image;
-		int[] origin, span;
-		
-		protected SingleCursorRoiOperation(Image<T> image, int[] origin, int[] span)
-		{
-			this.image = image;
-			this.origin = origin.clone();
-			this.span = span.clone();
-		}
-		
-		public Image<T> getImage() { return image; }
-		public int[] getDimsOrigin() { return origin; }
-		public int[] getDimsSpan() { return span; }
-
-		public abstract void beforeIteration(RealType<?> type);
-		public abstract void insideIteration(RealType<?> sample);
-		public abstract void afterIteration();
-	}
-	
-	private abstract class DualCursorRoiOperation
-	{
-		Image<T> img1, img2;
-		int[] origin1, span1, origin2, span2;
-		
-		protected DualCursorRoiOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2)
-		{
-			this.img1 = img1;
-			this.origin1 = origin1.clone();
-			this.span1 = span1.clone();
-
-			this.img2 = img2;
-			this.origin2 = origin2.clone();
-			this.span2 = span2.clone();
-		}
-		
-		public Image<T> getImage1()   { return img1; }
-		public int[] getDimsOrigin1() { return origin1; }
-		public int[] getDimsSpan1()   { return span1; }
-		
-		public Image<T> getImage2()   { return img2; }
-		public int[] getDimsOrigin2() { return origin2; }
-		public int[] getDimsSpan2()   { return span2; }
-
-		public abstract void beforeIteration(RealType<?> type1, RealType<?> type2);
-		public abstract void insideIteration(RealType<?> sample1, RealType<?> sample2);
-		public abstract void afterIteration();
-	}
-	
-	private abstract class PositionalOperation
-	{
-		Image<T> inputImage;
-		ImageProcessor outputProc;
-		
-		PositionalOperation(Image<T> image, ImageProcessor proc)
-		{
-			this.inputImage = image;
-			this.outputProc = proc;
-		}
-		
-		public Image<T> getImage() { return inputImage; }
-		public ImageProcessor getProcessor() { return outputProc; }
-		
-		public abstract void beforeIteration(RealType<?> type);
-		public abstract void insideIteration(int[] position, RealType<?> sample);
-		public abstract void afterIteration();
-	}
-	
-	private void applyOperation(SingleCursorRoiOperation op)
-	{
-		final LocalizableByDimCursor<T> imageCursor = op.getImage().createLocalizableByDimCursor();
-		final RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor< T >( imageCursor, op.getDimsOrigin(), op.getDimsSpan() );
-		
-		op.beforeIteration(imageRoiCursor.getType());
-		
-		//iterate over all the pixels, of the selected image plane
-		for (T sample : imageRoiCursor)
-		{
-			op.insideIteration(sample);
-		}
-		
-		op.afterIteration();
-		
-		imageRoiCursor.close();
-		imageCursor.close();
-	}
-	
-	private void applyOperation(DualCursorRoiOperation op)
-	{
-		LocalizableByDimCursor<T> image1Cursor = op.getImage1().createLocalizableByDimCursor();
-		LocalizableByDimCursor<T> image2Cursor = op.getImage2().createLocalizableByDimCursor();
-
-		RegionOfInterestCursor<T> image1RoiCursor = new RegionOfInterestCursor<T>(image1Cursor, op.getDimsOrigin1(), op.getDimsSpan1());
-		RegionOfInterestCursor<T> image2RoiCursor = new RegionOfInterestCursor<T>(image2Cursor, op.getDimsOrigin2(), op.getDimsSpan2());
-		
-		op.beforeIteration(image1Cursor.getType(),image2Cursor.getType());
-		
-		while (image1RoiCursor.hasNext() && image2RoiCursor.hasNext())
-		{
-			image1RoiCursor.fwd();
-			image2RoiCursor.fwd();
-			
-			op.insideIteration(image1Cursor.getType(),image2Cursor.getType());
-		}
-		
-		op.afterIteration();
-		
-		image1RoiCursor.close();
-		image2RoiCursor.close();
-		image1Cursor.close();
-		image2Cursor.close();
-	}
-	
-	private void applyOperation(PositionalOperation op)
-	{
-		LocalizableByDimCursor<T> cursor = op.getImage().createLocalizableByDimCursor();
-		
-		int[] position = Index.create(0, 0, getPlanePosition());
-		
-		op.beforeIteration(this.type);
-		
-		int height = getHeight();
-		int width = getWidth();
-		
-		for (int y = 0; y < height; y++) {
-			
-			position[1] = y;
-			
-			for (int x = 0; x < width; x++) {
-				
-				position[0] = x;
-				
-				cursor.setPosition(position);
-				
-				op.insideIteration(position,cursor.getType());
-			}
-		}
-		
-		op.afterIteration();
-
-		cursor.close();	
-	}
-	
-	private class ApplyLutOperation extends SingleCursorRoiOperation
+	private class ApplyLutOperation<K extends RealType<K>> extends SingleCursorRoiOperation<K>
 	{
 		int[] lut;
 		
-		ApplyLutOperation(Image<T> image, int[] origin, int[] span, int[] lut)
+		ApplyLutOperation(Image<K> image, int[] origin, int[] span, int[] lut)
 		{
 			super(image,origin,span);
 		
@@ -331,14 +182,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 	
-	private class BlitterOperation extends DualCursorRoiOperation
+	private class BlitterOperation<K extends RealType<K>> extends DualCursorRoiOperation<K>
 	{
 		private static final double TOL = 0.00000001;
 
 		int mode;
 		boolean isIntegral;
 		double transparentValue;
-		ImgLibProcessor<T> ip;
+		ImgLibProcessor<?> ip;
 		
 		double min, max;
 		boolean useDBZValue = !Float.isInfinite(divideByZeroValue);
@@ -347,7 +198,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		long pixelsSoFar;
 		long numPixelsInTwentyRows;
 		
-		BlitterOperation(ImgLibProcessor<T> ip, ImgLibProcessor<T> other, int xloc, int yloc, int mode, double tranVal)
+		BlitterOperation(ImgLibProcessor<K> ip, ImgLibProcessor<K> other, int xloc, int yloc, int mode, double tranVal)
 		{
 			super(other.imageData,
 					Index.create(2),
@@ -503,35 +354,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 
-	class DuplicateOperation extends PositionalOperation
-	{
-		DuplicateOperation(Image<T> image, ImageProcessor proc)
-		{
-			super(image,proc);
-		}
-
-		@Override
-		public void beforeIteration(RealType<?> type) {
-		}
-
-		@Override
-		public void insideIteration(int[] position, RealType<?> sample) {
-			float floatVal = sample.getRealFloat();
-			getProcessor().setf(position[0], position[1], floatVal);
-		}
-
-		@Override
-		public void afterIteration() {
-		}
-	}
-	
-	private class HistogramOperation extends SingleCursorRoiOperation
+	private class HistogramOperation<K extends RealType<K>> extends SingleCursorRoiOperation<K>
 	{
 		ImageProcessor mask;
 		int[] histogram;
 		int pixIndex;
 		
-		HistogramOperation(Image<T> image, int[] origin, int[] span, ImageProcessor mask, int lutSize)
+		HistogramOperation(Image<K> image, int[] origin, int[] span, ImageProcessor mask, int lutSize)
 		{
 			super(image,origin,span);
 		
@@ -563,33 +392,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 
-	class SetToFloatOperation extends PositionalOperation
-	{
-		SetToFloatOperation(Image<T> image, ImageProcessor proc)
-		{
-			super(image,proc);
-		}
-
-		@Override
-		public void beforeIteration(RealType<?> type) {
-		}
-
-		@Override
-		public void insideIteration(int[] position, RealType<?> sample) {
-			getProcessor().setf(position[0], position[1], sample.getRealFloat());
-		}
-
-		@Override
-		public void afterIteration() {
-		}
-	}
-	
-
-	private class MinMaxOperation extends SingleCursorRoiOperation
+	private class MinMaxOperation<K extends RealType<K>> extends SingleCursorRoiOperation<K>
 	{
 		double min, max;
 		
-		MinMaxOperation(Image<T> image, int[] origin, int[] span)
+		MinMaxOperation(Image<K> image, int[] origin, int[] span)
 		{
 			super(image,origin,span);
 		}
@@ -622,12 +429,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	private class ResetUsingMaskOperation extends DualCursorRoiOperation
+	private class ResetUsingMaskOperation<K extends RealType<K>> extends DualCursorRoiOperation<K>
 	{
 		byte[] maskPixels;
 		int pixNum;
 		
-		ResetUsingMaskOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2, ImageProcessor mask)
+		ResetUsingMaskOperation(Image<K> img1, int[] origin1, int[] span1, Image<K> img2, int[] origin2, int[] span2, ImageProcessor mask)
 		{
 			super(img1,origin1,span1,img2,origin2,span2);
 			
@@ -654,11 +461,36 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 	
-	private class ThresholdOperation extends SingleCursorRoiOperation
+	class SetFloatValuesOperation<K extends RealType<K>> extends PositionalOperation<K>
+	{
+		ImageProcessor proc;
+		
+		SetFloatValuesOperation(Image<K> image, int[] origin, int[] span, ImageProcessor proc)
+		{
+			super(image,origin,span);
+			this.proc = proc;
+		}
+
+		@Override
+		public void beforeIteration(RealType<?> type) {
+		}
+
+		@Override
+		public void insideIteration(int[] position, RealType<?> sample) {
+			float floatVal = sample.getRealFloat();
+			this.proc.setf(position[0], position[1], floatVal);
+		}
+
+		@Override
+		public void afterIteration() {
+		}
+	}
+	
+	private class ThresholdOperation<K extends RealType<K>> extends SingleCursorRoiOperation<K>
 	{
 		double threshold, min, max;
 		
-		ThresholdOperation(Image<T> image, int[] origin, int[] span, double threshold)
+		ThresholdOperation(Image<K> image, int[] origin, int[] span, double threshold)
 		{
 			super(image,origin,span);
 			
@@ -689,26 +521,26 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 	
-	private class GenericBlitter  // TODO - purposely not extending Blitter as it uses ImageProcessors rather than ImgLibProcessors: rethink?
+	private class GenericBlitter<K extends RealType<K>>  // TODO - purposely not extending Blitter as it uses ImageProcessors rather than ImgLibProcessors: rethink?
 	{
-		ImgLibProcessor<T> ip;
+		ImgLibProcessor<K> ip;
 		double transparentColor;
 		
-		GenericBlitter(ImgLibProcessor<T> ip)
+		GenericBlitter(ImgLibProcessor<K> ip)
 		{
 			this.ip = ip;
 			if (TypeManager.isIntegralType(this.ip.getType()))
 				this.transparentColor = this.ip.getMaxAllowedValue();
 		}
 		
-		public void copyBits(ImgLibProcessor<T> other, int xloc, int yloc, int mode)
+		public void copyBits(ImgLibProcessor<K> other, int xloc, int yloc, int mode)
 		{
-			BlitterOperation blitOp = new BlitterOperation(this.ip, other, xloc, yloc, mode, this.transparentColor);
+			BlitterOperation<K> blitOp = new BlitterOperation<K>(this.ip, other, xloc, yloc, mode, this.transparentColor);
 			
 			//if (mode == Blitter.DIVIDE)
 			//	System.out.println("Here is my breakpoint anchor");
 				
-			this.ip.applyOperation(blitOp);
+			Operation.apply(blitOp);
 		}
 		
 		public void setTransparentColor(Color color)
@@ -757,9 +589,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageDimensionsOffset = Index.create(0, 0, getPlanePosition());
 		int[] imageDimensionsSize = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 
-		MinMaxOperation mmOp = new MinMaxOperation(this.imageData,imageDimensionsOffset,imageDimensionsSize);
+		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageDimensionsOffset,imageDimensionsSize);
 		
-		applyOperation(mmOp);
+		Operation.apply(mmOp);
 		
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
 		
@@ -1189,9 +1021,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] index = Index.create(roi.x, roi.y, getPlanePosition());
 		int[] span = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 
-		ApplyLutOperation lutOp = new ApplyLutOperation(this.imageData,index,span,lut);
+		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
 		
-		applyOperation(lutOp);
+		Operation.apply(lutOp);
 	}
 
 	@Override
@@ -1214,7 +1046,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// TODO - a possibly very expensive operation
 		ImgLibProcessor<T> otherProc = makeImageOfMyType(ip);
 		
-		new GenericBlitter(this).copyBits(otherProc, xloc, yloc, mode);
+		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, mode);
 	}
 
 	//TODO ask about changing name of Image to avoid conflict with java.awt
@@ -1298,11 +1130,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public ImageProcessor duplicate()
 	{
-		ImageProcessor proc = createProcessor(getWidth(), getHeight());
+		int width = getWidth();
+		int height = getHeight();
 		
-		DuplicateOperation duplicator = new DuplicateOperation(this.imageData, proc);
+		ImageProcessor proc = createProcessor(width, height);
+
+		int[] origin = Index.create(0,0,getPlanePosition());
 		
-		applyOperation(duplicator);
+		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
+		
+		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, proc);
+
+		Operation.apply(floatOp);
 		
 		return proc;
 	}
@@ -1531,9 +1370,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 			int lutSize = (int) (this.getMaxAllowedValue() + 1);
 	
-			HistogramOperation histOp = new HistogramOperation(this.imageData,origin,span,getMask(),lutSize);
+			HistogramOperation<T> histOp = new HistogramOperation<T>(this.imageData,origin,span,getMask(),lutSize);
 			
-			applyOperation(histOp);
+			Operation.apply(histOp);
 			
 			return histOp.getHistogram();
 		}
@@ -1802,9 +1641,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 
 		
-		ResetUsingMaskOperation resetOp = new ResetUsingMaskOperation(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
+		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
 		
-		applyOperation(resetOp);
+		Operation.apply(resetOp);
 	}
 	
 	@Override
@@ -2192,9 +2031,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin = Index.create(0, 0, getPlanePosition());
 		int[] span = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 		
-		ThresholdOperation threshOp = new ThresholdOperation(this.imageData,origin,span,thresholdLevel);
+		ThresholdOperation<T> threshOp = new ThresholdOperation<T>(this.imageData,origin,span,thresholdLevel);
 		
-		applyOperation(threshOp);
+		Operation.apply(threshOp);
 	}
 	
 	@Override
@@ -2208,9 +2047,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
 			fp = new FloatProcessor(width, height, new float[(int)size], super.cm);
 		
-		SetToFloatOperation floatOp = new SetToFloatOperation(this.imageData, fp);
+		int[] origin = Index.create(0,0,getPlanePosition());
 		
-		applyOperation(floatOp);
+		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
+		
+		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, fp);
+
+		Operation.apply(floatOp);
 		
 		fp.setRoi(getRoi());
 		fp.setMask(getMask());
