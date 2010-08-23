@@ -7,7 +7,7 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 {
 	Image<T> img1, img2;
 	int[] origin1, span1, origin2, span2;
-	
+
 	protected DualCursorRoiOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2)
 	{
 		this.img1 = img1;
