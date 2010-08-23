@@ -23,7 +23,7 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static boolean SKIP_UNFINISHED = true;  // some ImgLibProcessor methods are unimplemented. 
+	static boolean SKIP_UNFINISHED = false;  // some ImgLibProcessor methods are unimplemented. 
 	
 	static int width;
 	static int height;
@@ -905,8 +905,6 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testRotate() 
 	{
-		if (SKIP_UNFINISHED) return;
-		
 		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
 			
 			double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
@@ -929,19 +927,18 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testScale()
 	{
-		if (SKIP_UNFINISHED) return;
-		
 		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
 			
 			double[][] scales = new double[][] {
 					//TODO - enable this point: new double[]{0,0},
-					new double[]{0.3,0.3},
-					new double[]{0.5,0.5},
-					new double[]{0.7,0.7},
 					new double[]{1,1},
 					new double[]{1,2},
 					new double[]{2,1},
-					new double[]{4.6,6.1}
+					new double[]{1.4,1.5},
+					new double[]{2.6,2.7},
+					new double[]{3.8,3.9},
+					new double[]{7.4,5.9},
+					new double[]{0.2,0.3}
 			};
 			
 			for (double[] scale : scales) {
@@ -953,8 +950,6 @@ public class ImgLibProcessorTest {
 				
 				bProc.scale(scale[0], scale[1]);
 				iProc.scale(scale[0], scale[1]);
-				
-				System.out.println("trying scale(): interpMethod("+interpMethod+") scaleX("+scale[0]+") scaleY("+scale[1]+")");
 				
 				compareData(bProc, iProc);
 			}

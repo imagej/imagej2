@@ -729,7 +729,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImageProcessor proc = createProcessor(width, height);
 
-		int[] origin = Index.create(0,0,getPlanePosition());
+		int[] origin = Index.create(0, 0, getPlanePosition());
 		
 		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
 		
@@ -1249,13 +1249,100 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void rotate(double angle)
 	{
-		throw new RuntimeException("Unimplemented");
-
+        if (angle%360==0)
+        	return;
+		Object pixels2 = getPixelsCopy();
+		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
+		if (interpolationMethod==BICUBIC) {
+			ip2.setBackgroundValue(getBackgroundValue());
+		}
+		double centerX = roiX + (roiWidth-1)/2.0;
+		double centerY = roiY + (roiHeight-1)/2.0;
+		int xMax = roiX + this.roiWidth - 1;
+		
+		// TODO in original ByteProcessor code here:
+		// if (!bgColorSet && isInvertedLut()) bgColor = 0;
+		
+		double angleRadians = -angle/(180.0/Math.PI);
+		double ca = Math.cos(angleRadians);
+		double sa = Math.sin(angleRadians);
+		double tmp1 = centerY*sa-centerX*ca;
+		double tmp2 = -centerX*sa-centerY*ca;
+		double tmp3, tmp4, xs, ys;
+		int index, ixs, iys;
+		double dwidth=width, dheight=height;
+		double xlimit = width-1.0, xlimit2 = width-1.001;
+		double ylimit = height-1.0, ylimit2 = height-1.001;
+		
+		if (interpolationMethod==BICUBIC) {
+			for (int y=roiY; y<(roiY + roiHeight); y++) {
+				index = y*width + roiX;
+				tmp3 = tmp1 - y*sa + centerX;
+				tmp4 = tmp2 + y*ca + centerY;
+				for (int x=roiX; x<=xMax; x++) {
+					xs = x*ca + tmp3;
+					ys = x*sa + tmp4;
+					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
+					if (this.isIntegral)
+					{
+						value = (int) (value+0.5);
+						value = TypeManager.boundValueToType(this.type, value);
+					}
+					setd(index++,value);
+				}
+				if (y%30==0) showProgress((double)(y-roiY)/roiHeight);
+			}
+		} else {
+			for (int y=roiY; y<(roiY + roiHeight); y++) {
+				index = y*width + roiX;
+				tmp3 = tmp1 - y*sa + centerX;
+				tmp4 = tmp2 + y*ca + centerY;
+				for (int x=roiX; x<=xMax; x++) {
+					xs = x*ca + tmp3;
+					ys = x*sa + tmp4;
+					if ((xs>=-0.01) && (xs<dwidth) && (ys>=-0.01) && (ys<dheight))
+					{
+						if (interpolationMethod==BILINEAR) {
+							if (xs<0.0) xs = 0.0;
+							if (xs>=xlimit) xs = xlimit2;
+							if (ys<0.0) ys = 0.0;			
+							if (ys>=ylimit) ys = ylimit2;
+							double value = ip2.getInterpolatedPixel(xs, ys);
+							if (this.isIntegral)
+							{
+								value = (int) (value+0.5);
+								value = TypeManager.boundValueToType(this.type, value);
+							}
+							setd(index++, value);
+						} else {
+							ixs = (int)(xs+0.5);
+							iys = (int)(ys+0.5);
+							if (ixs>=width) ixs = width - 1;
+							if (iys>=height) iys = height -1;
+							setd(index++, ip2.getd(ixs,iys));
+						}
+					}
+					else
+					{
+						double value = 0;
+						if (this.isIntegral)
+							value = this.getBackgroundValue();
+						setd(index++,value);
+					}
+				}
+				if (y%30==0)
+					showProgress((double)(y-roiY)/roiHeight);
+			}
+		}
+		showProgress(1.0);
 	}
 
 	@Override
 	public void scale(double xScale, double yScale)
 	{
+		// TODO - in original ByteProcessor code right here
+		// if (!bgColorSet && isInvertedLut()) bgColor = 0;
+		
 		double xCenter = roiX + roiWidth/2.0;
 		double yCenter = roiY + roiHeight/2.0;
 		int xmin, xmax, ymin, ymax;
@@ -1292,7 +1379,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = (int) (value+0.5);
 						value = TypeManager.boundValueToType(this.type, value);
 					}
-					setd(index,value);
+					setd(index++,value);
 				}
 				if (y%30==0) showProgress((double)(y-ymin)/height);
 			}
@@ -1310,8 +1397,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					xs = (x-xCenter)/xScale + xCenter;
 					xsi = (int)xs;
 					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
-						setd(index1++, this.min);
-					else {
+					{
+						if (this.type instanceof UnsignedByteType)
+							setd(index1++, this.getBackgroundValue());
+						else
+							setd(index1++, this.min);
+					}
+					else  // interpolated pixel within bounds of image
+					{
 						if (interpolationMethod==BILINEAR) {
 							if (xs<0.0) xs = 0.0;
 							if (xs>=xlimit) xs = xlimit2;
@@ -1322,8 +1415,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 								value = TypeManager.boundValueToType(this.type, value);
 							}
 							setd(index1++, value);
-						} else
+						}
+						else  // interpolation type of NONE
+						{
 							setd(index1++, ip2.getd(index2+xsi));
+						}
 					}
 				}
 				if (y%30==0) showProgress((double)(y-ymin)/height);
@@ -1641,7 +1737,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
 			fp = new FloatProcessor(width, height, new float[(int)size], super.cm);
 		
-		int[] origin = Index.create(0,0,getPlanePosition());
+		int[] origin = Index.create(0, 0, getPlanePosition());
 		
 		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
 		
