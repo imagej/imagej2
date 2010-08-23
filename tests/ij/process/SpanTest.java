@@ -98,5 +98,13 @@ public class SpanTest {
 		vals = Span.singlePlane(width, height, totalDims);
 		assertArrayEquals(new int[]{658,476,1,1,1,1},vals);
 	}
+	
+	@Test
+	public void testSpanWholeRange()
+	{
+		int[] inputDims = new int[]{1,2,3,4,5,6,7,8,9};
+		
+		assertArrayEquals(new int[]{1,2,3,4,5,6,7,8,9}, Span.wholeRange(inputDims));
+	}
 
 }
