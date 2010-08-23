@@ -36,4 +36,9 @@ public class Span {
 		
 		return values;
 	}
+	
+	public static int[] wholeRange(int[] dimensions)
+	{
+		return dimensions.clone();
+	}
 }

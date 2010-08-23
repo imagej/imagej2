@@ -372,6 +372,7 @@ public class ImageUtils {
 	}
 	
 
+	// TODO - does this need to separate spans? Such as copy when we opy a 5d span with 3 of them set to 1 to a 2d image?
 	/** copies data from one image to another given origins and dimensional spans */
 	public static <K extends ComplexType<K>>
 		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, Image<K> dstImage, int[] dstOrigin, int[] span)
