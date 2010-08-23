@@ -1,7 +1,7 @@
 package ij.process;
 
 import ij.process.DualCursorRoiOperation;
-import ij.process.PositionalOperation;
+import ij.process.PositionalRoiOperation;
 import ij.process.SingleCursorRoiOperation;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -61,7 +61,7 @@ public class Operation {
 	}
 	
 	
-	public static <T extends RealType<T>> void apply(PositionalOperation<T> op)
+	public static <T extends RealType<T>> void apply(PositionalRoiOperation<T> op)
 	{
 		Image<T> image = op.getImage();
 		
@@ -72,13 +72,18 @@ public class Operation {
 		
 		int[] position = origin.clone();
 		
+		int[] positionCopy = origin.clone();
+		
 		op.beforeIteration(cursor.getType());
 		
 		while (Index.isValid(position,origin,span))
 		{
 			cursor.setPosition(position);
-				
-			op.insideIteration(position.clone(),cursor.getType());  // clone so that users can manipulate without messing us up
+			
+			for (int i = 0; i < position.length; i++)  // could clone but may take longer and cause a lot of object creation/destruction
+				positionCopy[i] = position[i];
+			
+			op.insideIteration(positionCopy,cursor.getType());  // send them a copy so that users can manipulate without messing us up
 			
 			Index.increment(position,origin,span);
 		}

@@ -9,11 +9,11 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 
 import org.junit.Test;
 
-public class PositionalOperationTest {
+public class PositionalRoiOperationTest {
 
 	// ***** fake support classes  ****************************************************************************************
 	
-	private class FakePositionalOperation<T extends RealType<T>> extends PositionalOperation<T>
+	private class FakePositionalOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
 	{
 		public int beforeCalls = 0;
 		public int insideCalls = 0;

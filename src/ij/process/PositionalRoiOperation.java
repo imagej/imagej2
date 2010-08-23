@@ -3,13 +3,13 @@ package ij.process;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public abstract class PositionalOperation<T extends RealType<T>>
+public abstract class PositionalRoiOperation<T extends RealType<T>>
 {
 	Image<T> image;
 	int[] origin;
 	int[] span;
 	
-	PositionalOperation(Image<T> image, int[] origin, int[] span)
+	PositionalRoiOperation(Image<T> image, int[] origin, int[] span)
 	{
 		this.image = image;
 		this.origin = origin.clone();
