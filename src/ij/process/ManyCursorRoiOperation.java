@@ -20,6 +20,10 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 
 			for (int i = 0; i < this.images.length; i++)
 				ImageUtils.verifyDimensions(this.images[i].getDimensions(), this.origins[i], this.spans[i]);
+			
+			// TODO - something needed here to test that the spans are compatible. For instance it is possible to have a 5d span where 3 of the
+			//        dimensions are 1 and a 2d span and you could synchronize ROI cursors across them. Could try to just have one span but then
+			//        some cases might not work. Must think about a good test for span equivalence.
 		}
 		
 		public Image<T>[] getImages() { return images; }

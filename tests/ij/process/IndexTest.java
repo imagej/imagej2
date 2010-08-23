@@ -127,13 +127,9 @@ public class IndexTest {
 
 	private void shouldFailIncrement(int[] position, int[] origin, int[] span)
 	{
-		int[] expectedResult = new int[position.length];
-		for (int i = 0; i < expectedResult.length; i++)
-			expectedResult[i] = origin[i] + span[i];
-		
 		Index.increment(position, origin, span);
 		
-		assertArrayEquals(expectedResult,position);
+		assertFalse(Index.isValid(position,origin,span));
 	}
 	
 	@Test
