@@ -552,10 +552,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 	}
 	
-	private ImgLibProcessor<T> makeImageOfMyType(ImageProcessor ip)
+	// TODO - left off here - about to pull out generic blitter to its own set of classes
+	
+	private ImgLibProcessor<T> getImageOfMyType(ImageProcessor ip)
 	{
 		// if ip's type matches me
 		//   just return ip
+		
 		if (ip instanceof ImgLibProcessor<?>)
 		{
 			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) ip;
@@ -1047,8 +1050,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
-		// TODO - a possibly very expensive operation
-		ImgLibProcessor<T> otherProc = makeImageOfMyType(ip);
+		ImgLibProcessor<T> otherProc = getImageOfMyType(ip);
 		
 		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, mode);
 	}
