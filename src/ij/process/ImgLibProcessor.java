@@ -461,7 +461,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	}
 	
-	class SetFloatValuesOperation<K extends RealType<K>> extends PositionalOperation<K>
+	class SetFloatValuesOperation<K extends RealType<K>> extends PositionalRoiOperation<K>
 	{
 		ImageProcessor proc;
 		
