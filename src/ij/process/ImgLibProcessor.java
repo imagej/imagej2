@@ -1,9 +1,12 @@
 package ij.process;
 
+import ij.Prefs;
+
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
+import java.util.Random;
 
 import loci.common.DataTools;
 
@@ -53,7 +56,6 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   Rename ImgLibProcessor to GenericProcessor????
 //   Rename TypeManager to TypeUtils
 //   Rename Image<> to something else like Dataset<> or NumericDataset<>
-//   Move some things elsewhere (to their own classes or even package): Operations
 //   Improvements to ImgLib
 //     Rename LocalizableByDimCursor to PositionCursor. Be able to say posCursor.setPosition(int[] pos) and posCursor.setPosition(long sampIndex).
 //       Another possibility: just call it a Cursor. And then cursor.get() or cursor.get(int[] pos) or cursor.get(long sampleNumber) 
@@ -72,6 +74,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 {
 	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 
+	// copied from various processors
+	public static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5, ERODE=10, DILATE=11;
+
+	public static enum FilterType {BLUR_MORE, FIND_EDGES, MEDIAN_FILTER, MIN, MAX, CONVOLVE, ERODE, DILATE};
+	
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
@@ -85,6 +92,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// TODO - move some of these next ones to imageProperties
 	private double min, max;
 	private double fillColor;
+    private int binaryCount, binaryBackground;
 	
     private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
         new ThreadLocal<LocalizableByDimCursor<T>>()
@@ -263,7 +271,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			case DOUBLE:
 				return ((double[])pixels)[pixNum];
 			case LONG:
-				return ((long[])pixels)[pixNum];  // TODO : possible precision loss here
+				return ((long[])pixels)[pixNum];  // TODO : possible precision loss here. Also unsigned not supported here.
 			default:
 				throw new IllegalArgumentException("unknown pixel type");
 		}
@@ -366,6 +374,36 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		
 		cursor.close();  // since a local cursor close it
+	}
+	
+	private void setImagePlanePixels(Image<T> image, int[] position, Object pixels)
+	{
+		if (pixels instanceof byte[])
+			
+			setPlane(image, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
+		
+		else if (pixels instanceof short[])
+			
+			setPlane(image, position, pixels, PixelType.SHORT, ((short[])pixels).length);
+		
+		else if (pixels instanceof int[])
+			
+			setPlane(image, position, pixels, PixelType.INT, ((int[])pixels).length);
+		
+		else if (pixels instanceof float[])
+			
+			setPlane(image, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
+		
+		else if (pixels instanceof double[])
+			
+			setPlane(image, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
+		
+		else if (pixels instanceof long[])
+			
+			setPlane(image, position, pixels, PixelType.LONG, ((long[])pixels).length);
+		
+		else
+			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
 	}
 	
 	@Override
@@ -543,6 +581,334 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 	
+	private int findMedian(int[] values)
+	{
+		//Finds the 5th largest of 9 values
+		for (int i = 1; i <= 4; i++) {
+			int max = 0;
+			int mj = 1;
+			for (int j = 1; j <= 9; j++)
+				if (values[j] > max) {
+					max = values[j];
+					mj = j;
+				}
+			values[mj] = 0;
+		}
+		int max = 0;
+		for (int j = 1; j <= 9; j++)
+			if (values[j] > max)
+				max = values[j];
+		return max;
+	}
+
+	private int getEdgePixel(byte[] pixels2, int x, int y) {
+		if (x<=0) x = 0;
+		if (x>=width) x = width-1;
+		if (y<=0) y = 0;
+		if (y>=height) y = height-1;
+		return pixels2[x+y*width]&255;
+	}
+
+	private int getEdgePixel0(byte[] pixels2, int background, int x, int y) {
+		if (x<0 || x>width-1 || y<0 || y>height-1)
+            return background;
+        else
+            return pixels2[x+y*width]&255;
+	}
+
+	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y) {
+		if (x<0 || x>width-1 || y<0 || y>height-1)
+            return foreground;
+        else
+            return pixels2[x+y*width]&255;
+	}
+
+	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc) {
+		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
+        int sum=0, sum1, sum2;
+        int count;
+        int binaryForeground = 255 - binaryBackground;
+		int bg = binaryBackground;
+		int fg = binaryForeground;
+		
+		for (int i=0; i<n; i++) {
+			if ((!Prefs.padEdges && type==FilterType.ERODE) || type==FilterType.DILATE) {
+				p1=getEdgePixel0(pixels2,bg,x-1,y-1); p2=getEdgePixel0(pixels2,bg,x,y-1); p3=getEdgePixel0(pixels2,bg,x+1,y-1);
+				p4=getEdgePixel0(pixels2,bg,x-1,y); p5=getEdgePixel0(pixels2,bg,x,y); p6=getEdgePixel0(pixels2,bg,x+1,y);
+				p7=getEdgePixel0(pixels2,bg,x-1,y+1); p8=getEdgePixel0(pixels2,bg,x,y+1); p9=getEdgePixel0(pixels2,bg,x+1,y+1);
+			}  else if (Prefs.padEdges && type==FilterType.ERODE) {
+				p1=getEdgePixel1(pixels2,fg, x-1,y-1); p2=getEdgePixel1(pixels2,fg,x,y-1); p3=getEdgePixel1(pixels2,fg,x+1,y-1);
+				p4=getEdgePixel1(pixels2,fg, x-1,y); p5=getEdgePixel1(pixels2,fg,x,y); p6=getEdgePixel1(pixels2,fg,x+1,y);
+				p7=getEdgePixel1(pixels2,fg,x-1,y+1); p8=getEdgePixel1(pixels2,fg,x,y+1); p9=getEdgePixel1(pixels2,fg,x+1,y+1);
+			} else {
+				p1=getEdgePixel(pixels2,x-1,y-1); p2=getEdgePixel(pixels2,x,y-1); p3=getEdgePixel(pixels2,x+1,y-1);
+				p4=getEdgePixel(pixels2,x-1,y); p5=getEdgePixel(pixels2,x,y); p6=getEdgePixel(pixels2,x+1,y);
+				p7=getEdgePixel(pixels2,x-1,y+1); p8=getEdgePixel(pixels2,x,y+1); p9=getEdgePixel(pixels2,x+1,y+1);
+			}
+            switch (type) {
+                case BLUR_MORE:
+                    sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+                    break;
+                case FIND_EDGES: // 3x3 Sobel filter
+                    sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
+                    sum2 = p1  + 2*p4 + p7 - p3 - 2*p6 - p9;
+                    sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
+                    if (sum> 255) sum = 255;
+                    break;
+                case MIN:
+                    sum = p5;
+                    if (p1<sum) sum = p1;
+                    if (p2<sum) sum = p2;
+                    if (p3<sum) sum = p3;
+                    if (p4<sum) sum = p4;
+                    if (p6<sum) sum = p6;
+                    if (p7<sum) sum = p7;
+                    if (p8<sum) sum = p8;
+                    if (p9<sum) sum = p9;
+                    break;
+                case MAX:
+                    sum = p5;
+                    if (p1>sum) sum = p1;
+                    if (p2>sum) sum = p2;
+                    if (p3>sum) sum = p3;
+                    if (p4>sum) sum = p4;
+                    if (p6>sum) sum = p6;
+                    if (p7>sum) sum = p7;
+                    if (p8>sum) sum = p8;
+                    if (p9>sum) sum = p9;
+                    break;
+				case ERODE:
+					if (p5==binaryBackground)
+						sum = binaryBackground;
+					else {
+						count = 0;
+						if (p1==binaryBackground) count++;
+						if (p2==binaryBackground) count++;
+						if (p3==binaryBackground) count++;
+						if (p4==binaryBackground) count++;
+						if (p6==binaryBackground) count++;
+						if (p7==binaryBackground) count++;
+						if (p8==binaryBackground) count++;
+						if (p9==binaryBackground) count++;							
+						if (count>=binaryCount)
+							sum = binaryBackground;
+						else
+						sum = binaryForeground;
+					}
+					break;
+				case DILATE:
+					if (p5==binaryForeground)
+						sum = binaryForeground;
+					else {
+						count = 0;
+						if (p1==binaryForeground) count++;
+						if (p2==binaryForeground) count++;
+						if (p3==binaryForeground) count++;
+						if (p4==binaryForeground) count++;
+						if (p6==binaryForeground) count++;
+						if (p7==binaryForeground) count++;
+						if (p8==binaryForeground) count++;
+						if (p9==binaryForeground) count++;							
+						if (count>=binaryCount)
+							sum = binaryForeground;
+						else
+							sum = binaryBackground;
+					}
+					break;
+            }
+            setd(x, y, (byte)sum);  // we know its an unsigned byte type so cast is correct
+            x+=xinc; y+=yinc;
+        }
+    }
+
+	private void filterUnsignedByte(FilterType type)
+	{
+		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
+		
+		byte[] pixels2 = (byte[])getPixelsCopy();
+		if (width==1) {
+        	filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
+        	return;
+		}
+		int offset, sum1, sum2=0, sum=0;
+        int[] values = new int[10];
+        if (type==FilterType.MEDIAN_FILTER) values = new int[10];
+        int rowOffset = width;
+        int count;
+        int binaryForeground = 255 - binaryBackground;
+		for (int y=yMin; y<=yMax; y++) {
+			offset = xMin + y * width;
+			p2 = pixels2[offset-rowOffset-1]&0xff;
+			p3 = pixels2[offset-rowOffset]&0xff;
+			p5 = pixels2[offset-1]&0xff;
+			p6 = pixels2[offset]&0xff;
+			p8 = pixels2[offset+rowOffset-1]&0xff;
+			p9 = pixels2[offset+rowOffset]&0xff;
+
+			for (int x=xMin; x<=xMax; x++) {
+				p1 = p2; p2 = p3;
+				p3 = pixels2[offset-rowOffset+1]&0xff;
+				p4 = p5; p5 = p6;
+				p6 = pixels2[offset+1]&0xff;
+				p7 = p8; p8 = p9;
+				p9 = pixels2[offset+rowOffset+1]&0xff;
+
+				switch (type) {
+					case BLUR_MORE:
+						sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+						break;
+					case FIND_EDGES: // 3x3 Sobel filter
+	        			sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
+	        			sum2 = p1  + 2*p4 + p7 - p3 - 2*p6 - p9;
+	        			sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
+	        			if (sum> 255) sum = 255;
+						break;
+					case MEDIAN_FILTER:
+						values[1]=p1; values[2]=p2; values[3]=p3; values[4]=p4; values[5]=p5;
+						values[6]=p6; values[7]=p7; values[8]=p8; values[9]=p9;
+						sum = findMedian(values);
+						break;
+					case MIN:
+						sum = p5;
+						if (p1<sum) sum = p1;
+						if (p2<sum) sum = p2;
+						if (p3<sum) sum = p3;
+						if (p4<sum) sum = p4;
+						if (p6<sum) sum = p6;
+						if (p7<sum) sum = p7;
+						if (p8<sum) sum = p8;
+						if (p9<sum) sum = p9;
+						break;
+					case MAX:
+						sum = p5;
+						if (p1>sum) sum = p1;
+						if (p2>sum) sum = p2;
+						if (p3>sum) sum = p3;
+						if (p4>sum) sum = p4;
+						if (p6>sum) sum = p6;
+						if (p7>sum) sum = p7;
+						if (p8>sum) sum = p8;
+						if (p9>sum) sum = p9;
+						break;
+					case ERODE:
+						if (p5==binaryBackground)
+							sum = binaryBackground;
+						else {
+							count = 0;
+							if (p1==binaryBackground) count++;
+							if (p2==binaryBackground) count++;
+							if (p3==binaryBackground) count++;
+							if (p4==binaryBackground) count++;
+							if (p6==binaryBackground) count++;
+							if (p7==binaryBackground) count++;
+							if (p8==binaryBackground) count++;
+							if (p9==binaryBackground) count++;							
+							if (count>=binaryCount)
+								sum = binaryBackground;
+							else
+							sum = binaryForeground;
+						}
+						break;
+					case DILATE:
+						if (p5==binaryForeground)
+							sum = binaryForeground;
+						else {
+							count = 0;
+							if (p1==binaryForeground) count++;
+							if (p2==binaryForeground) count++;
+							if (p3==binaryForeground) count++;
+							if (p4==binaryForeground) count++;
+							if (p6==binaryForeground) count++;
+							if (p7==binaryForeground) count++;
+							if (p8==binaryForeground) count++;
+							if (p9==binaryForeground) count++;							
+							if (count>=binaryCount)
+								sum = binaryForeground;
+							else
+								sum = binaryBackground;
+						}
+						break;
+				}
+				
+				setd(offset++, (byte)sum);  // we know its unsigned byte type so cast is correct
+			}
+			//if (y%inc==0)
+			//	showProgress((double)(y-roiY)/roiHeight);
+		}
+        if (xMin==1) filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
+        if (yMin==1) filterEdge(type, pixels2, roiWidth, roiX, roiY, 1, 0);
+        if (xMax==width-2) filterEdge(type, pixels2, roiHeight, width-1, roiY, 0, 1);
+        if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
+		//showProgress(1.0);
+	}
+	
+	private void filterGeneralType(FilterType type)
+	{
+		throw new RuntimeException("Unimplemented");
+	}
+	
+	private void convolve3x3UnsignedByte(int[] kernel)
+	{
+		int p1, p2, p3,
+		    p4, p5, p6,
+		    p7, p8, p9;
+		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
+		    k4=kernel[3], k5=kernel[4], k6=kernel[5],
+		    k7=kernel[6], k8=kernel[7], k9=kernel[8];
+	
+		int scale = 0;
+		for (int i=0; i<kernel.length; i++)
+			scale += kernel[i];
+		if (scale==0) scale = 1;
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
+		
+		byte[] pixels2 = (byte[])getPixelsCopy();
+		int offset, sum;
+	    int rowOffset = width;
+		for (int y=yMin; y<=yMax; y++) {
+			offset = xMin + y * width;
+			p1 = 0;
+			p2 = pixels2[offset-rowOffset-1]&0xff;
+			p3 = pixels2[offset-rowOffset]&0xff;
+			p4 = 0;
+			p5 = pixels2[offset-1]&0xff;
+			p6 = pixels2[offset]&0xff;
+			p7 = 0;
+			p8 = pixels2[offset+rowOffset-1]&0xff;
+			p9 = pixels2[offset+rowOffset]&0xff;
+	
+			for (int x=xMin; x<=xMax; x++) {
+				p1 = p2; p2 = p3;
+				p3 = pixels2[offset-rowOffset+1]&0xff;
+				p4 = p5; p5 = p6;
+				p6 = pixels2[offset+1]&0xff;
+				p7 = p8; p8 = p9;
+				p9 = pixels2[offset+rowOffset+1]&0xff;
+	
+				sum = k1*p1 + k2*p2 + k3*p3
+				    + k4*p4 + k5*p5 + k6*p6
+				    + k7*p7 + k8*p8 + k9*p9;
+				sum /= scale;
+	
+				if(sum>255) sum= 255;
+				if(sum<0) sum= 0;
+	
+				setd(offset++, (byte)sum);
+			}
+			if (y%inc==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
+		showProgress(1.0);
+	}
+	
+	private void convolve3x3GeneralType(int[] kernel)
+	{
+		throw new RuntimeException("Unimplemented");
+	}
+	
 	//****************** public methods *******************************************************
 
 	@Override
@@ -624,15 +990,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
 	{
-		throw new RuntimeException("Unimplemented");
-
+		ImageProcessor ip2 = toFloat(0,null);
+		ip2.setRoi(getRoi());
+		new ij.plugin.filter.Convolver().convolve(ip2, kernel, kernelWidth, kernelHeight);
+		setPixels(ip2.getPixels());
 	}
 
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		throw new RuntimeException("Unimplemented");
-
+		if (this.type instanceof UnsignedByteType)
+			convolve3x3UnsignedByte(kernel);
+		else
+			convolve3x3GeneralType(kernel);
 	}
 
 	@Override
@@ -703,9 +1073,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void dilate()
 	{
 		if (this.type instanceof UnsignedByteType)
+			filter(FilterType.DILATE);
+	}
+
+	public void dilate(int count, int background)
+	{
+		if (this.type instanceof UnsignedByteType)
 		{
-			// TODO
-			throw new RuntimeException("Unimplemented");
+	        binaryCount = count;
+	        binaryBackground = background;
+	        filter(FilterType.DILATE);
 		}
 	}
 
@@ -744,9 +1121,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void erode()
 	{
 		if (this.type instanceof UnsignedByteType)
+			filter(FilterType.ERODE);
+	}
+
+	public void erode(int count, int background)
+	{
+		if (this.type instanceof UnsignedByteType)
 		{
-			// TODO
-			throw new RuntimeException("Unimplemented");
+	        binaryCount = count;
+	        binaryBackground = background;
+	        filter(FilterType.ERODE);
 		}
 	}
 
@@ -795,11 +1179,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	public void filter(FilterType type)
+	{
+		if (this.type instanceof UnsignedByteType)
+			filterUnsignedByte(type);
+		else
+			filterGeneralType(type);
+	}
+
+	// TODO - deprecate
 	@Override
 	public void filter(int type)
 	{
-		throw new RuntimeException("Unimplemented");
-		// TODO - make special calls to erode() and dilate() I think when ByteType. Copy ByteProcessor. See other processors too.
+		switch (type)
+		{
+			case BLUR_MORE:		filter(FilterType.BLUR_MORE);		break;
+			case FIND_EDGES:	filter(FilterType.FIND_EDGES);		break;
+			case MEDIAN_FILTER:	filter(FilterType.MEDIAN_FILTER);	break;
+			case MIN:			filter(FilterType.MIN);				break;
+			case MAX:			filter(FilterType.MAX);				break;
+			case CONVOLVE:		filter(FilterType.CONVOLVE);		break;
+			case ERODE:			filter(FilterType.ERODE);			break;
+			case DILATE:		filter(FilterType.DILATE);			break;
+			default:
+				throw new IllegalArgumentException("filter(): unknown filter type requested - "+type);
+		}
 	}
 
 	/** swap the rows of an image about its central row */
@@ -1145,8 +1549,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		if (this.type instanceof UnsignedByteType)
 		{
-			// TODO
-			throw new RuntimeException("Unimplemented");
+			filter(FilterType.MEDIAN_FILTER);
 		}
 	}
 
@@ -1165,8 +1568,28 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void noise(double range)
 	{
-		throw new RuntimeException("Unimplemented");
-
+		Random rnd=new Random();
+		double v, ran;
+		boolean inRange;
+		for (int y=roiY; y<(roiY+roiHeight); y++) {
+			for (int x=roiX; x<(roiX+roiWidth); x++) {
+				inRange = false;
+				do {
+					ran = Math.round(rnd.nextGaussian()*range);
+					v = getd(x, y) + ran;
+					inRange = TypeManager.validValue(this.type, v);
+					if (inRange)
+					{
+						if (this.isIntegral)
+							v = TypeManager.boundValueToType(this.type, v);
+						setd(x, y, v);
+					}
+				} while (!inRange);
+			}
+			if (y%20==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
+		showProgress(1.0);
 	}
 
 	@Override
@@ -1243,7 +1666,78 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
-		throw new RuntimeException("Unimplemented");
+		if (roiWidth==dstWidth && roiHeight==dstHeight)
+			return crop();
+
+		double value;
+		double srcCenterX = roiX + roiWidth/2.0;
+		double srcCenterY = roiY + roiHeight/2.0;
+		double dstCenterX = dstWidth/2.0;
+		double dstCenterY = dstHeight/2.0;
+		double xScale = (double)dstWidth/roiWidth;
+		double yScale = (double)dstHeight/roiHeight;
+		if (interpolationMethod!=NONE) {
+			dstCenterX += xScale/2.0;
+			dstCenterY += yScale/2.0;
+		}
+		ImgLibProcessor<?> ip2 = (ImgLibProcessor<?>)createProcessor(dstWidth, dstHeight);
+		double xs, ys;
+		if (interpolationMethod==BICUBIC) {
+			for (int y=0; y<=dstHeight-1; y++) {
+				ys = (y-dstCenterY)/yScale + srcCenterY;
+				int index = y*dstWidth;
+				for (int x=0; x<=dstWidth-1; x++) {
+					xs = (x-dstCenterX)/xScale + srcCenterX;
+					value = getBicubicInterpolatedPixel(xs, ys, this);
+					if (this.isIntegral)
+					{
+						value += 0.5;
+						value = TypeManager.boundValueToType(this.type, value);
+					}
+					ip2.setd(index++, value);
+				}
+				if (y%30==0) showProgress((double)y/dstHeight);
+			}
+		} else {  // not BICUBIC
+			double xlimit = width-1.0, xlimit2 = width-1.001;
+			double ylimit = height-1.0, ylimit2 = height-1.001;
+			int index1, index2;
+			for (int y=0; y<=dstHeight-1; y++) {
+				ys = (y-dstCenterY)/yScale + srcCenterY;
+				if (interpolationMethod==BILINEAR) {
+					if (ys<0.0) ys = 0.0;
+					if (ys>=ylimit) ys = ylimit2;
+				}
+				index1 = width*(int)ys;
+				index2 = y*dstWidth;
+				for (int x=0; x<=dstWidth-1; x++) {
+					xs = (x-dstCenterX)/xScale + srcCenterX;
+					if (interpolationMethod==BILINEAR)
+					{
+						if (xs<0.0) xs = 0.0;
+						if (xs>=xlimit) xs = xlimit2;
+						value = getInterpolatedPixel(xs, ys);
+						if (this.isIntegral)
+						{
+							value += 0.5;
+							//value = ((byte) value) & ((byte)this.type.getMaxValue());
+							//value = (byte)(((byte) value) & (255));  // 128 goes to -128
+							//value = ((int) value) & ((int)this.type.getMaxValue());
+							value = TypeManager.boundValueToType(this.type, value);  // TODO - is this correct?????
+						}
+						ip2.setd(index2++, value);
+					}
+					else  // interp == NONE
+					{
+						value = getd(index1+(int)xs);
+						ip2.setd(index2++, value);
+					}
+				}
+				if (y%30==0) showProgress((double)y/dstHeight);
+			}
+		}
+		showProgress(1.0);
+		return ip2;
 	}
 
 	@Override
@@ -1605,32 +2099,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		int[] position = Index.create(0, 0, getPlanePosition());
 		
-		if (pixels instanceof byte[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
-		
-		else if (pixels instanceof short[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.SHORT, ((short[])pixels).length);
-		
-		else if (pixels instanceof int[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.INT, ((int[])pixels).length);
-		
-		else if (pixels instanceof float[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
-		
-		else if (pixels instanceof double[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
-		
-		else if (pixels instanceof long[])
-			
-			setPlane(this.imageData, position, pixels, PixelType.LONG, ((long[])pixels).length);
-		
-		else
-			throw new IllegalArgumentException("unknown object passed to ImgLibProcessor::setPixels() - "+ pixels.getClass());
+		setImagePlanePixels(this.imageData, position, pixels);
 	}
 
 	@Override
@@ -1651,33 +2120,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Image<T> snapStorage = this.snapshot.getStorage();
 		
 		int[] position = Index.create(snapStorage.getNumDimensions());
-		
-		if (pixels instanceof byte[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
-		
-		else if (pixels instanceof short[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.SHORT, ((short[])pixels).length);
-		
-		else if (pixels instanceof int[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.INT, ((int[])pixels).length);
-		
-		else if (pixels instanceof float[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
-		
-		else if (pixels instanceof double[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
-		
-		else if (pixels instanceof long[])
-			
-			setPlane(snapStorage, position, pixels, PixelType.LONG, ((long[])pixels).length);
-		
-		else
-			throw new IllegalArgumentException("unknown object passed to ImgLibProcessor::setSnapshotPixels() - "+ pixels.getClass());
+	
+		setImagePlanePixels(snapStorage, position, pixels);
 	}
 
 	@Override

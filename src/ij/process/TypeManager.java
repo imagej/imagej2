@@ -77,4 +77,9 @@ public class TypeManager {
 		
 		return false;
 	}
+	
+	public static boolean validValue(RealType<?> type, double value)
+	{
+		return (value >= type.getMinValue()) && (value <= type.getMaxValue());
+	}
 }
