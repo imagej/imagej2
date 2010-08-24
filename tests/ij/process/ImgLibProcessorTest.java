@@ -23,7 +23,7 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static boolean SKIP_UNFINISHED = true;  // some ImgLibProcessor methods are unimplemented. 
+	static boolean SKIP_UNFINISHED = false;  // some ImgLibProcessor methods are unimplemented. 
 
 	static int width;
 	static int height;
@@ -338,8 +338,6 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testDilate()
 	{
-		if (SKIP_UNFINISHED) return;
-		
 		iProc.dilate();
 		bProc.dilate();
 		compareData(bProc, iProc);
@@ -401,8 +399,6 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testErode() 
 	{
-		if (SKIP_UNFINISHED) return;
-
 		iProc.erode();
 		bProc.erode();
 		compareData(bProc, iProc);
