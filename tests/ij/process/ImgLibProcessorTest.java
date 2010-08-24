@@ -68,8 +68,10 @@ public class ImgLibProcessorTest {
 
 		origIProc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
 			
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
 				int value = (19 + (x+y)) % 256;
 				origBProc.set(x, y, value);
 				origIProc.set(x, y, value);
@@ -352,7 +354,7 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
-	public void testDilateCounts()  // TODO - this passed even when dilate() was broken. Make sure these are valid tests.
+	public void testDilateCounts()
 	{
 		iProc.dilate(50,5);
 		bProc.dilate(50,5);
@@ -379,11 +381,13 @@ public class ImgLibProcessorTest {
 		iProc.setColor(14);
 		
 		for (int x = ox; x < ox+w; x++)
+		{
 			for (int y = oy; y < oy+h; y++)
 			{
 				bProc.drawPixel(x, y);
 				iProc.drawPixel(x, y);
 			}
+		}
 		
 		compareData(bProc, iProc);
 	}
@@ -413,7 +417,7 @@ public class ImgLibProcessorTest {
 	}
 	
 	@Test
-	public void testErodeCounts()  // TODO - this passed even when erode() was broken. Make sure these are valid tests.
+	public void testErodeCounts()
 	{
 		iProc.erode(50,5);
 		bProc.erode(50,5);
@@ -476,8 +480,8 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testFilter()
 	{
-		int[] filterTypes = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,
-										ImgLibProcessor.MIN, ImgLibProcessor.MAX, ImgLibProcessor.CONVOLVE, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
+		int[] filterTypes = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,	ImgLibProcessor.MIN,
+										ImgLibProcessor.MAX, ImgLibProcessor.CONVOLVE, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
 		
 		for (int filterType : filterTypes)
 		{
@@ -554,8 +558,10 @@ public class ImgLibProcessorTest {
 		
 		// masked case
 		ImageProcessor mask = new ByteProcessor(width, height);
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
 				bProc.set(x, y, (x+y) % 2);
 			}
 		}
@@ -596,7 +602,8 @@ public class ImgLibProcessorTest {
 			bProc.setInterpolationMethod(interpMethod);
 			iProc.setInterpolationMethod(interpMethod);
 		
-			double[][] points = new double[][] {
+			double[][] points = new double[][]
+			{
 					new double[] {0,0},
 					new double[] {width-1,0},
 					new double[] {0,height-1},
@@ -644,7 +651,8 @@ public class ImgLibProcessorTest {
 			bProc.setInterpolationMethod(interpMethod);
 			iProc.setInterpolationMethod(interpMethod);
 		
-			double[][] points = new double[][] {
+			double[][] points = new double[][]
+			{
 					new double[] {0,0},
 					new double[] {width-1,0},
 					new double[] {0,height-1},
@@ -670,8 +678,10 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelIntInt()
 	{
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
 				assertEquals(bProc.get(x, y), iProc.get(x, y));
 			}
 		}
@@ -707,7 +717,8 @@ public class ImgLibProcessorTest {
 		
 		// TODO - do something that alters whether cTable is created or not and try all cases below
 		
-		int[][] badPoints = new int[][] {
+		int[][] badPoints = new int[][]
+		{
 				new int[] {0,-1},
 				new int[] {-1,0},
 				new int[] {0,height},
@@ -832,8 +843,8 @@ public class ImgLibProcessorTest {
 		
 		double[] noises = new double[]{0,1,2,3,4,0.5,1.2};
 		
-		for (double noiseVal : noises) {
-			
+		for (double noiseVal : noises)
+		{
 			initialize();
 			bProc.noise(noiseVal);
 			iProc.noise(noiseVal);
@@ -858,8 +869,10 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testPutPixelIntIntInt()
 	{
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
 				int newValue = Math.abs(x-y) % 256;
 				bProc.putPixel(x, y, newValue);
 				iProc.putPixel(x, y, newValue);
@@ -873,8 +886,10 @@ public class ImgLibProcessorTest {
 	{
 		//if (SKIP_UNFINISHED) return;
 		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
 				double newValue = (Math.abs(x-y) % 512) / 2.7;
 				bProc.putPixelValue(x, y, newValue);
 				iProc.putPixelValue(x, y, newValue);
@@ -897,8 +912,10 @@ public class ImgLibProcessorTest {
 		bProc.snapshot();
 		iProc.snapshot();
 		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
 				bProc.set(x, y, (x+y)%256);
 				iProc.set(x, y, (x+y)%256);
 			}
@@ -917,7 +934,8 @@ public class ImgLibProcessorTest {
 	{
 		// TODO - set bProc's and iProc's rois to something
 		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
-			int[][] points = new int[][] {
+			int[][] points = new int[][]
+			{
 				// new int[]{0,0},  // TODO - ImgLib does not like this. Changes dimensions from (0,0) to (1,1)
 				new int[]{width+5,height+5},
 				new int[]{width,1},
@@ -928,8 +946,8 @@ public class ImgLibProcessorTest {
 				new int[]{(int)(width*1.2), (int)(height*1.375)}
 			};
 			
-			for (int[] point : points) {
-
+			for (int[] point : points)
+			{
 				ImageProcessor newBProc, newIProc;
 				
 				bProc.setInterpolationMethod(interpMethod);
@@ -946,12 +964,12 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testRotate() 
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
-			
+		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		{
 			double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
 			
-			for (double rotation : rotations) {
-				
+			for (double rotation : rotations)
+			{
 				initialize();
 				
 				bProc.setInterpolationMethod(interpMethod);
@@ -968,9 +986,10 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testScale()
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
-			
-			double[][] scales = new double[][] {
+		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		{
+			double[][] scales = new double[][]
+			{
 					//TODO - enable this point: new double[]{0,0},
 					new double[]{1,1},
 					new double[]{1,2},
@@ -982,8 +1001,8 @@ public class ImgLibProcessorTest {
 					new double[]{0.2,0.3}
 			};
 			
-			for (double[] scale : scales) {
-				
+			for (double[] scale : scales)
+			{
 				initialize();
 				
 				bProc.setInterpolationMethod(interpMethod);
@@ -1002,7 +1021,8 @@ public class ImgLibProcessorTest {
 	{
 		double[] bgVals = new double[] {-1,0,1,44,55.8,66.1,254,255,256,1000};
 		
-		for (double bg : bgVals) {
+		for (double bg : bgVals)
+		{
 			bProc.setBackgroundValue(bg);
 			iProc.setBackgroundValue(bg);
 			assertEquals(bProc.getBackgroundValue(), iProc.getBackgroundValue(), 0);
@@ -1121,7 +1141,8 @@ public class ImgLibProcessorTest {
 			for (int y = 0; y < height; y++)
 				fProc.setf(x, y, 0.6f*(x+y));
 
-		for (int channel = 0; channel < 3; channel++) {
+		for (int channel = 0; channel < 3; channel++)
+		{
 			bProc.setPixels(channel, fProc);
 			iProc.setPixels(channel, fProc);
 			compareData(bProc, iProc);
@@ -1279,11 +1300,13 @@ public class ImgLibProcessorTest {
 		// have tested that the cached cursors eventually close via print statements in ImgLibProcessor using the below code
 		
 		// hatch a mess of threads that will randomly change the images and compare that the shared cursors do not get out of synch 
-		for (int i = 0; i < 20000; i++) {
-			new Thread() {
+		for (int i = 0; i < 20000; i++)
+		{
+			new Thread()
+			{
 				@Override
-				public void run() {
-					
+				public void run()
+				{
 					Random rand = new Random();
 					
 					rand.setSeed(System.nanoTime());

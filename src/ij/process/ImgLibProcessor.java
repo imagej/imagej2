@@ -76,7 +76,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// copied from various processors
 	public static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5, ERODE=10, DILATE=11;
 
+	// safer way
 	public static enum FilterType {BLUR_MORE, FIND_EDGES, MEDIAN_FILTER, MIN, MAX, CONVOLVE, ERODE, DILATE};
+	
+	// TODO later: define a FilterOperation class that gets applied. Create various filters from it.
 	
 	//****************** Instance variables *******************************************************
 	
