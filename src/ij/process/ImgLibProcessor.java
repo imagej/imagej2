@@ -1,6 +1,7 @@
 package ij.process;
 
 import ij.Prefs;
+import ij.process.SetPlaneOperation.PixelType;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -72,8 +73,6 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable
 {
-	private static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
-
 	// copied from various processors
 	public static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5, ERODE=10, DILATE=11;
 
@@ -245,135 +244,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ImageUtils.getPlaneData(image, w, h, planePos);
 	}
 	
-	private double getPixValue(Object pixels, PixelType inputType, boolean unsigned, int pixNum)
-	{
-		switch (inputType) {
-			case BYTE:
-				byte b = ((byte[])pixels)[pixNum];
-				if ((unsigned) && (b < 0))
-					return 256.0 + b;
-				else
-					return b;
-			case SHORT:
-				short s = ((short[])pixels)[pixNum];
-				if ((unsigned) && (s < 0))
-					return 65536.0 + s;
-				else
-					return s;
-			case INT:
-				int i = ((int[])pixels)[pixNum];
-				if ((unsigned) && (i < 0))
-					return 4294967296.0 + i;
-				else
-					return i;
-			case FLOAT:
-				return ((float[])pixels)[pixNum];
-			case DOUBLE:
-				return ((double[])pixels)[pixNum];
-			case LONG:
-				return ((long[])pixels)[pixNum];  // TODO : possible precision loss here. Also unsigned not supported here.
-			default:
-				throw new IllegalArgumentException("unknown pixel type");
-		}
-	}
-
-	/*
-	 * since setPlane relies on position array being passed in (since used to set pixel data and snapshot data) I will need to rework
-	 * the foundations of positional operation before I can use this code.
-
-	private class SetPlaneOperation extends PositionalOperation
-	{
-		// set in constructor
-		int[] position;
-		Object pixels;
-		PixelType pixType;
-		
-		// set before iteration
-		int pixNum;
-		RealType type;
-		boolean isIntegral;
-		
-		SetPlaneOperation(Image<?> theImage, int[] position, Object pixels, PixelType inputType)
-		{
-			super(theImage,null);
-			this.position = position;
-			this.pixels = pixels;
-			this.pixType = inputType;
-		}
-		
-		@Override
-		public void beforeIteration(RealType type) {
-			this.pixNum = 0;
-			this.type = type;
-			this.isIntegral = TypeManager.isIntegralType(type);
-		}
-
-		@Override
-		public void insideIteration(int[] position, RealType sample) {
-
-			double inputPixValue = getPixValue(pixels, pixType, isUnsigned, this.pixNum++);
-			
-			if (this.isIntegral)
-				inputPixValue = TypeManager.boundValueToType(this.type, inputPixValue);
-			
-			sample.setReal(inputPixValue);
-		}
-
-		@Override
-		public void afterIteration() {
-		}
-	}
-
-	private void setPlane(Image<T> theImage, int[] position, Object pixels, PixelType inputType, long numPixels)
+	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
 	{
 		if (numPixels != getNumPixels(theImage))
 			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
 
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
 		
-		SetPlaneOperation setOp = new SetPlaneOperation(withCorrectParams);  // somehow include position array as it stores planePosition
+		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType, isUnsigned);
 		
-		applyOperation(correctImage);  // this shows its broken since we have Image<T> and not ImgLibProcessors
-	}
-	
-	*/
-	
-	private void setPlane(Image<T> theImage, int[] position, Object pixels, PixelType inputType, long numPixels)
-	{
-		if (numPixels != getNumPixels(theImage))
-			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
-		
-		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
-		
-		LocalizableByDimCursor<T> cursor = theImage.createLocalizableByDimCursor();  // cannot use cached cursor here
-		
-		int pixNum = 0;
-		
-		int height = getHeight();
-		int width = getWidth();
-		
-		for (int y = 0; y < height; y++) {
-			
-			position[1] = y;
-			
-			for (int x = 0; x < width; x++) {
-				
-				position[0] = x;
-				
-				cursor.setPosition(position);
-				
-				T pixRef = cursor.getType();
-				
-				double inputPixValue = getPixValue(pixels, inputType, isUnsigned, pixNum++);
-				
-				if (this.isIntegral)
-					inputPixValue = TypeManager.boundValueToType(this.type, inputPixValue);
-				
-				pixRef.setReal(inputPixValue);
-			}
-		}
-		
-		cursor.close();  // since a local cursor close it
+		Operation.apply(setOp);
 	}
 	
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
