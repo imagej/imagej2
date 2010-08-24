@@ -376,8 +376,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		cursor.close();  // since a local cursor close it
 	}
 	
-	private void setImagePlanePixels(Image<T> image, int[] position, Object pixels)
+	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
+		int[] position = Index.create(0,0,planePosition);
+		
 		if (pixels instanceof byte[])
 			
 			setPlane(image, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
@@ -693,7 +695,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						if (count>=binaryCount)
 							sum = binaryBackground;
 						else
-						sum = binaryForeground;
+							sum = binaryForeground;
 					}
 					break;
 				case DILATE:
@@ -734,7 +736,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		int offset, sum1, sum2=0, sum=0;
         int[] values = new int[10];
-        if (type==FilterType.MEDIAN_FILTER) values = new int[10];
         int rowOffset = width;
         int count;
         int binaryForeground = 255 - binaryBackground;
@@ -1073,7 +1074,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void dilate()
 	{
 		if (this.type instanceof UnsignedByteType)
-			filter(FilterType.DILATE);
+		{
+			if (isInvertedLut())
+				filter(FilterType.MAX);
+			else
+				filter(FilterType.MIN);
+		}
 	}
 
 	public void dilate(int count, int background)
@@ -1121,7 +1127,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void erode()
 	{
 		if (this.type instanceof UnsignedByteType)
-			filter(FilterType.ERODE);
+		{
+			if (isInvertedLut())
+				filter(FilterType.MIN);
+			else
+				filter(FilterType.MAX);
+		}
 	}
 
 	public void erode(int count, int background)
@@ -1187,7 +1198,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			filterGeneralType(type);
 	}
 
-	// TODO - deprecate
+	@Deprecated
 	@Override
 	public void filter(int type)
 	{
@@ -2097,9 +2108,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setPixels(Object pixels)
 	{
-		int[] position = Index.create(0, 0, getPlanePosition());
-		
-		setImagePlanePixels(this.imageData, position, pixels);
+		setImagePlanePixels(this.imageData, getPlanePosition(), pixels);
 	}
 
 	@Override
@@ -2119,9 +2128,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Image<T> snapStorage = this.snapshot.getStorage();
 		
-		int[] position = Index.create(snapStorage.getNumDimensions());
+		int[] planePosition = Index.create(snapStorage.getNumDimensions()-2);
 	
-		setImagePlanePixels(snapStorage, position, pixels);
+		setImagePlanePixels(snapStorage, planePosition, pixels);
 	}
 
 	@Override
