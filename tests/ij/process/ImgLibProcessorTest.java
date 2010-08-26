@@ -15,6 +15,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
@@ -25,23 +26,25 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static boolean SKIP_THIS_ONE = true; 
+	static boolean SKIP_THIS_ONE = true; // used to skip various tests during development to keep Hudson tests passing
 
 	static int width;
 	static int height;
+	
 	static ImgLibProcessor<UnsignedByteType> origIUBProc;
 	static ImgLibProcessor<UnsignedShortType> origIUSProc;
 	static ByteProcessor origBProc;
 	static ShortProcessor origSProc;
 	
-	ImgLibProcessor<UnsignedByteType> iubProc;
-	ByteProcessor bProc;
-	ImgLibProcessor<UnsignedByteType> iusProc;
-	ShortProcessor sProc;
-	//FloatProcessor fProc;
-	//ColorProcessor cProc;  // may not need to test this for comparison
+	private ByteProcessor bProc;
+	private ShortProcessor sProc;
+	private FloatProcessor fProc;
+	private ImgLibProcessor<UnsignedByteType> iubProc;
+	private ImgLibProcessor<UnsignedShortType> iusProc;
+	private ImgLibProcessor<FloatType> ifProc;
 
 	ImageProcessor[][] PROC_PAIRS;
+	ImageProcessor[] PROCS;
 
 	// ************* Helper methods ***********************************************
 	
@@ -113,7 +116,9 @@ public class ImgLibProcessorTest {
 		iusProc = (ImgLibProcessor)origIUSProc.duplicate();
 		compareData(sProc, iusProc);
 		
-		PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc}};
+		// TODO - this is where float processor will get added when the time is right.
+		 PROCS = new ImageProcessor[]{iubProc, iusProc};
+		 PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc}};
 	}
 
 	// ************* Helper tests ***********************************************
@@ -363,8 +368,7 @@ public class ImgLibProcessorTest {
 		int width = 73;
 		int height = 22;
 
-		// TODO - note this one is different than others - needs updating when floatproc support added
-		for (ImageProcessor proc : new ImageProcessor[]{iubProc, iusProc})
+		for (ImageProcessor proc : PROCS)
 		{
 			ImageProcessor newProc = proc.createProcessor(width, height);
 			

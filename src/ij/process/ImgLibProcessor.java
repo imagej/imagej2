@@ -167,10 +167,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
 		//get the current image data
-		int[] imageDimensionsOffset = Index.create(0, 0, getPlanePosition());
-		int[] imageDimensionsSize = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+		int[] imageOrigin = Index.create(0, 0, getPlanePosition());
+		int[] imageSpan = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 
-		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageDimensionsOffset,imageDimensionsSize);
+		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
 		
 		Operation.apply(mmOp);
 		
@@ -819,7 +819,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int inc = roiHeight/25;
 		if (inc<1) inc = 1;
 		
-		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, super.width, super.height, getPlanePosition());
+		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
 		int xEnd = roiX + roiWidth;
 		int yEnd = roiY + roiHeight;
 		for (int y=roiY; y<yEnd; y++) {
@@ -1009,14 +1009,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Operation.apply(lutOp);
 	}
 
-	public ImgLibProcessor<T> coerceToImageOfMatchingType(ImageProcessor ip)
+	public ImgLibProcessor<T> getImgLibProcThatMatchesMyType(ImageProcessor inputProc)
 	{
-		// if ip's type matches me
-		//   just return ip
+		// if inputProc's type matches me
+		//   just return inputProc
 		
-		if (ip instanceof ImgLibProcessor<?>)
+		if (inputProc instanceof ImgLibProcessor<?>)
 		{
-			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) ip;
+			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) inputProc;
 
 			if (TypeManager.sameKind(this.type,imglibProc.getType()))
 				return (ImgLibProcessor<T>) imglibProc;
@@ -1027,11 +1027,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//   populate the pixels
 		//   return it
 
-		Image<T> image = imageData.createNewImage(new int[]{ ip.getWidth(), ip.getHeight() } );
+		Image<T> image = imageData.createNewImage(new int[]{ inputProc.getWidth(), inputProc.getHeight() } );
 		
 		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, (T)type, 0);  // cast required!
 		
-		newProc.setPixels(ip.getPixels());
+		newProc.setPixels(inputProc.getPixels());
 		
 		return newProc;
 	}
@@ -1057,7 +1057,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
-		ImgLibProcessor<T> otherProc = coerceToImageOfMatchingType(ip);
+		ImgLibProcessor<T> otherProc = getImgLibProcThatMatchesMyType(ip);
 		
 		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, mode);
 	}
