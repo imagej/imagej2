@@ -44,6 +44,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
 // More TODO / NOTES
+//   Recently pulled a lot of code in for filters/convolve/etc. This could should be refactored to use multiple classes to implement these
+//     features. Waiting to do this once I've got all tests passing for byte/short/floats.
 //   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
 //   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
 //   Review imglib's various cursors and perhaps change which ones I'm using.
@@ -94,26 +96,26 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// TODO - move some of these next ones to imageProperties
 	private double min, max;
 	private double fillColor;
-    private int binaryCount, binaryBackground;
+	private int binaryCount, binaryBackground;
 	
-    private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
-        new ThreadLocal<LocalizableByDimCursor<T>>()
-        {
-        	@Override
-        	protected LocalizableByDimCursor<T> initialValue() {
-                return imageData.createLocalizableByDimCursor();
-        	}
+	private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
+		new ThreadLocal<LocalizableByDimCursor<T>>()
+		{
+			@Override
+			protected LocalizableByDimCursor<T> initialValue() {
+				return imageData.createLocalizableByDimCursor();
+			}
 
-        	@Override
-        	protected void finalize() throws Throwable {
-        	    try {
-        	        cachedCursor.get().close();
-        	        //System.out.println("closing cursor at "+System.nanoTime());
-        	    } finally {
-        	        super.finalize();
-        	    }
-        	}
-        };
+			@Override
+			protected void finalize() throws Throwable {
+				try {
+					cachedCursor.get().close();
+					//System.out.println("closing cursor at "+System.nanoTime());
+				} finally {
+					super.finalize();
+				}
+			}
+		};
 
 	//****************** Constructors *************************************************************
 	
@@ -401,6 +403,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		applyTable(lut);
 	}
 
+	
 	private void doProcess(int op, double value)
 	{
 		if (this.type instanceof UnsignedByteType)
@@ -408,46 +411,101 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			doLutProcess(op,value);
 			return;
 		}
+
+		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different and this code may fail for signed data.
 		
-		switch (op)
-		{
-			case FILL:
-				throw new RuntimeException("Unimplemented");
-			case ADD:
-				throw new RuntimeException("Unimplemented");
-			case MULT:
-				throw new RuntimeException("Unimplemented");
-			case AND:
-				if (!this.isIntegral)
-					return; 
-				throw new RuntimeException("Unimplemented");
-			case OR:
-				if (!this.isIntegral)
-					return; 
-				throw new RuntimeException("Unimplemented");
-			case XOR:
-				if (!this.isIntegral)
-					return; 
-				throw new RuntimeException("Unimplemented");
-			case GAMMA:
-				throw new RuntimeException("Unimplemented");
-			case LOG:
-				throw new RuntimeException("Unimplemented");
-			case EXP:
-				throw new RuntimeException("Unimplemented");
-			case SQR:
-				throw new RuntimeException("Unimplemented");
-			case SQRT:
-				throw new RuntimeException("Unimplemented");
-			case ABS:
-				throw new RuntimeException("Unimplemented");
-			case MINIMUM:
-				throw new RuntimeException("Unimplemented");
-			case MAXIMUM:
-				throw new RuntimeException("Unimplemented");
-			default:
-				throw new IllegalArgumentException("doProcess() error: passed an unknown operation " + op);
+		double c, v1, v2;
+		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
+		c = value;
+		for (int y=roiY; y<(roiY+roiHeight); y++) {
+			int i = y * width + roiX;
+			for (int x=roiX; x<(roiX+roiWidth); x++) {
+				v1 = getd(i);
+				switch(op) {
+					case INVERT:
+						v2 = max - (v1 - min);
+						break;
+					case FILL:
+						v2 = fillColor;
+						break;
+					case ADD:
+						v2 = v1 + c;
+						break;
+					case MULT:
+						v2 = v1 * c;
+						break;
+					case AND:
+						if (this.isIntegral)
+							v2 = (int)v1 & (int)value;
+						else
+							v2 = v1;
+						break;
+					case OR:
+						if (this.isIntegral)
+							v2 = (int)v1 | (int)value;
+						else
+							v2 = v1;
+						break;
+					case XOR:
+						if (this.isIntegral)
+							v2 = (int)v1 ^ (int)value;
+						else
+							v2 = v1;
+						break;
+					case GAMMA:
+						if (v1<=0f)
+							v2 = 0f;
+						else
+							v2 = Math.exp(c*Math.log(v1));
+						break;
+					case LOG:
+						if (v1<=0f)
+							v2 = 0f;
+						else
+							v2 = Math.log(v1);
+						break;
+					case EXP:
+						// TODO - this does not match ShortProc for signed data
+						//		- also int type falls thru to float. Since IJ has no true int type don't know best behavior here. 
+						if (this.type instanceof GenericShortType<?>)
+						{
+							v2 = (int)(Math.exp(v1*(Math.log(this.max)/this.max)));
+						}
+						else // a float or int type
+							v2 = Math.exp(v1);
+						break;
+					case SQR:
+							v2 = v1*v1;
+						break;
+					case SQRT:
+						if (v1<=0f)
+							v2 = 0f;
+						else
+							v2 = Math.sqrt(v1);
+						break;
+					case ABS:
+							v2 = Math.abs(v1);
+						break;
+					case MINIMUM:
+						if (v1<value)
+							v2 = value;
+						else
+							v2 = v1;
+						break;
+					case MAXIMUM:
+						if (v1>value)
+							v2 = value;
+						else
+							v2 = v1;
+						break;
+					 default:
+					 	v2 = v1;
+				}
+				setd(i++, v2);
+			}
 		}
+		if (resetMinMax)
+			findMinAndMax();
 	}
 	
 	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
@@ -465,7 +523,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
-	
+
+	// copied from ByteProcessor - really belongs elsewhere
 	private int findMedian(int[] values)
 	{
 		//Finds the 5th largest of 9 values
@@ -486,7 +545,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return max;
 	}
 
-	private int getEdgePixel(byte[] pixels2, int x, int y) {
+	private int getEdgePixel(byte[] pixels2, int x, int y)
+	{
 		if (x<=0) x = 0;
 		if (x>=width) x = width-1;
 		if (y<=0) y = 0;
@@ -494,74 +554,83 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return pixels2[x+y*width]&255;
 	}
 
-	private int getEdgePixel0(byte[] pixels2, int background, int x, int y) {
+	private int getEdgePixel0(byte[] pixels2, int background, int x, int y)
+	{
 		if (x<0 || x>width-1 || y<0 || y>height-1)
-            return background;
-        else
-            return pixels2[x+y*width]&255;
+			return background;
+		else
+			return pixels2[x+y*width]&255;
 	}
 
-	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y) {
+	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y)
+	{
 		if (x<0 || x>width-1 || y<0 || y>height-1)
-            return foreground;
-        else
-            return pixels2[x+y*width]&255;
+			return foreground;
+		else
+			return pixels2[x+y*width]&255;
 	}
 
-	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc) {
+	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
+	{
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
-        int sum=0, sum1, sum2;
-        int count;
-        int binaryForeground = 255 - binaryBackground;
+		int sum=0, sum1, sum2;
+		int count;
+		int binaryForeground = 255 - binaryBackground;
 		int bg = binaryBackground;
 		int fg = binaryForeground;
 		
-		for (int i=0; i<n; i++) {
-			if ((!Prefs.padEdges && type==FilterType.ERODE) || type==FilterType.DILATE) {
+		for (int i=0; i<n; i++)
+		{
+			if ((!Prefs.padEdges && type==FilterType.ERODE) || type==FilterType.DILATE)
+			{
 				p1=getEdgePixel0(pixels2,bg,x-1,y-1); p2=getEdgePixel0(pixels2,bg,x,y-1); p3=getEdgePixel0(pixels2,bg,x+1,y-1);
 				p4=getEdgePixel0(pixels2,bg,x-1,y); p5=getEdgePixel0(pixels2,bg,x,y); p6=getEdgePixel0(pixels2,bg,x+1,y);
 				p7=getEdgePixel0(pixels2,bg,x-1,y+1); p8=getEdgePixel0(pixels2,bg,x,y+1); p9=getEdgePixel0(pixels2,bg,x+1,y+1);
-			}  else if (Prefs.padEdges && type==FilterType.ERODE) {
+			}
+			else if (Prefs.padEdges && type==FilterType.ERODE)
+			{
 				p1=getEdgePixel1(pixels2,fg, x-1,y-1); p2=getEdgePixel1(pixels2,fg,x,y-1); p3=getEdgePixel1(pixels2,fg,x+1,y-1);
 				p4=getEdgePixel1(pixels2,fg, x-1,y); p5=getEdgePixel1(pixels2,fg,x,y); p6=getEdgePixel1(pixels2,fg,x+1,y);
 				p7=getEdgePixel1(pixels2,fg,x-1,y+1); p8=getEdgePixel1(pixels2,fg,x,y+1); p9=getEdgePixel1(pixels2,fg,x+1,y+1);
-			} else {
+			}
+			else
+			{
 				p1=getEdgePixel(pixels2,x-1,y-1); p2=getEdgePixel(pixels2,x,y-1); p3=getEdgePixel(pixels2,x+1,y-1);
 				p4=getEdgePixel(pixels2,x-1,y); p5=getEdgePixel(pixels2,x,y); p6=getEdgePixel(pixels2,x+1,y);
 				p7=getEdgePixel(pixels2,x-1,y+1); p8=getEdgePixel(pixels2,x,y+1); p9=getEdgePixel(pixels2,x+1,y+1);
 			}
-            switch (type) {
-                case BLUR_MORE:
-                    sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
-                    break;
-                case FIND_EDGES: // 3x3 Sobel filter
-                    sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
-                    sum2 = p1  + 2*p4 + p7 - p3 - 2*p6 - p9;
-                    sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
-                    if (sum> 255) sum = 255;
-                    break;
-                case MIN:
-                    sum = p5;
-                    if (p1<sum) sum = p1;
-                    if (p2<sum) sum = p2;
-                    if (p3<sum) sum = p3;
-                    if (p4<sum) sum = p4;
-                    if (p6<sum) sum = p6;
-                    if (p7<sum) sum = p7;
-                    if (p8<sum) sum = p8;
-                    if (p9<sum) sum = p9;
-                    break;
-                case MAX:
-                    sum = p5;
-                    if (p1>sum) sum = p1;
-                    if (p2>sum) sum = p2;
-                    if (p3>sum) sum = p3;
-                    if (p4>sum) sum = p4;
-                    if (p6>sum) sum = p6;
-                    if (p7>sum) sum = p7;
-                    if (p8>sum) sum = p8;
-                    if (p9>sum) sum = p9;
-                    break;
+			switch (type) {
+				case BLUR_MORE:
+					sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+					break;
+				case FIND_EDGES: // 3x3 Sobel filter
+					sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
+					sum2 = p1 + 2*p4 + p7 - p3 - 2*p6 - p9;
+					sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
+					if (sum> 255) sum = 255;
+					break;
+				case MIN:
+					sum = p5;
+					if (p1<sum) sum = p1;
+					if (p2<sum) sum = p2;
+					if (p3<sum) sum = p3;
+					if (p4<sum) sum = p4;
+					if (p6<sum) sum = p6;
+					if (p7<sum) sum = p7;
+					if (p8<sum) sum = p8;
+					if (p9<sum) sum = p9;
+					break;
+				case MAX:
+					sum = p5;
+					if (p1>sum) sum = p1;
+					if (p2>sum) sum = p2;
+					if (p3>sum) sum = p3;
+					if (p4>sum) sum = p4;
+					if (p6>sum) sum = p6;
+					if (p7>sum) sum = p7;
+					if (p8>sum) sum = p8;
+					if (p9>sum) sum = p9;
+					break;
 				case ERODE:
 					if (p5==binaryBackground)
 						sum = binaryBackground;
@@ -600,11 +669,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							sum = binaryBackground;
 					}
 					break;
-            }
-            setd(x, y, (byte)sum);  // we know its an unsigned byte type so cast is correct
-            x+=xinc; y+=yinc;
-        }
-    }
+			}
+			setd(x, y, (byte)sum); // we know its an unsigned byte type so cast is correct
+			x+=xinc;
+			y+=yinc;
+		}
+	}
 
 	private void filterUnsignedByte(FilterType type)
 	{
@@ -614,14 +684,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		byte[] pixels2 = (byte[])getPixelsCopy();
 		if (width==1) {
-        	filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
-        	return;
+			filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
+			return;
 		}
 		int offset, sum1, sum2=0, sum=0;
-        int[] values = new int[10];
-        int rowOffset = width;
-        int count;
-        int binaryForeground = 255 - binaryBackground;
+		int[] values = new int[10];
+		int rowOffset = width;
+		int count;
+		int binaryForeground = 255 - binaryBackground;
 		for (int y=yMin; y<=yMax; y++) {
 			offset = xMin + y * width;
 			p2 = pixels2[offset-rowOffset-1]&0xff;
@@ -644,10 +714,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
 						break;
 					case FIND_EDGES: // 3x3 Sobel filter
-	        			sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
-	        			sum2 = p1  + 2*p4 + p7 - p3 - 2*p6 - p9;
-	        			sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
-	        			if (sum> 255) sum = 255;
+						sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
+						sum2 = p1  + 2*p4 + p7 - p3 - 2*p6 - p9;
+						sum = (int)Math.sqrt(sum1*sum1 + sum2*sum2);
+						if (sum> 255) sum = 255;
 						break;
 					case MEDIAN_FILTER:
 						values[1]=p1; values[2]=p2; values[3]=p3; values[4]=p4; values[5]=p5;
@@ -716,31 +786,126 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						break;
 				}
 				
-				setd(offset++, (byte)sum);  // we know its unsigned byte type so cast is correct
+				setd(offset++, (byte)sum); // we know its unsigned byte type so cast is correct
 			}
 			//if (y%inc==0)
 			//	showProgress((double)(y-roiY)/roiHeight);
 		}
-        if (xMin==1) filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
-        if (yMin==1) filterEdge(type, pixels2, roiWidth, roiX, roiY, 1, 0);
-        if (xMax==width-2) filterEdge(type, pixels2, roiHeight, width-1, roiY, 0, 1);
-        if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
+		if (xMin==1) filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
+		if (yMin==1) filterEdge(type, pixels2, roiWidth, roiX, roiY, 1, 0);
+		if (xMax==width-2) filterEdge(type, pixels2, roiHeight, width-1, roiY, 0, 1);
+		if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
 		//showProgress(1.0);
 	}
 	
-	private void filterGeneralType(FilterType type)
+	private void filterGeneralType(FilterType type, int[] kernel)
 	{
-		throw new RuntimeException("Unimplemented");
+		double v1, v2, v3;           //input pixel values around the current pixel
+		double v4, v5, v6;
+		double v7, v8, v9;
+		double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
+		double k4=0, k5=0, k6=0;
+		double k7=0, k8=0, k9=0;
+		double scale = 0;
+		if (type==FilterType.CONVOLVE) {
+			k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
+			k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
+			k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
+			for (int i=0; i<kernel.length; i++)
+				scale += kernel[i];
+			if (scale==0) scale = 1;
+			scale = 1/scale; //multiplication factor (multiply is faster than divide)
+		}
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
+		
+		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, super.width, super.height, getPlanePosition());
+		int xEnd = roiX + roiWidth;
+		int yEnd = roiY + roiHeight;
+		for (int y=roiY; y<yEnd; y++) {
+			int p = roiX + y*width;            //points to current pixel
+			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
+			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
+			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
+			v2 = pixels2[p3];
+			v5 = pixels2[p6];
+			v8 = pixels2[p9];
+			if (roiX>0) { p3++; p6++; p9++; }
+			v3 = pixels2[p3];
+			v6 = pixels2[p6];
+			v9 = pixels2[p9];
+
+			switch (type) {
+				case BLUR_MORE:
+					for (int x=roiX; x<xEnd; x++,p++)
+					{
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
+						if (this.type instanceof GenericShortType<?>)
+						{
+							val += 4;
+							val /= 9;
+							val = (short) val;
+						}
+						else
+							val *= 0.11111111; //0.111... = 1/9
+						setd(p, val);
+					}
+					break;
+				case FIND_EDGES:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						// TODO - may need to do this in float if a ShortProcessor to avoid rounding issues
+						double sum1 = (v1 + 2*v2 + v3 - v7 - 2*v8 - v9);
+						double sum2 = (v1 + 2*v4 + v7 - v3 - 2*v6 - v9);
+						setd(p, Math.sqrt(sum1*sum1 + sum2*sum2));
+					}
+					break;
+				case CONVOLVE:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						double sum = k1*v1 + k2*v2 + k3*v3
+									+ k4*v4 + k5*v5 + k6*v6
+									+ k7*v7 + k8*v8 + k9*v9;
+						sum *= scale;
+						if (this.isIntegral)
+							sum = TypeManager.boundValueToType(this.type, sum);
+						setd(p, sum);
+					}
+					break;
+			}
+			if (y%inc==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
+		showProgress(1.0);
 	}
 	
 	private void convolve3x3UnsignedByte(int[] kernel)
 	{
 		int p1, p2, p3,
-		    p4, p5, p6,
-		    p7, p8, p9;
+			p4, p5, p6,
+			p7, p8, p9;
 		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
-		    k4=kernel[3], k5=kernel[4], k6=kernel[5],
-		    k7=kernel[6], k8=kernel[7], k9=kernel[8];
+			k4=kernel[3], k5=kernel[4], k6=kernel[5],
+			k7=kernel[6], k8=kernel[7], k9=kernel[8];
 	
 		int scale = 0;
 		for (int i=0; i<kernel.length; i++)
@@ -751,7 +916,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		byte[] pixels2 = (byte[])getPixelsCopy();
 		int offset, sum;
-	    int rowOffset = width;
+		int rowOffset = width;
 		for (int y=yMin; y<=yMax; y++) {
 			offset = xMin + y * width;
 			p1 = 0;
@@ -773,8 +938,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				p9 = pixels2[offset+rowOffset+1]&0xff;
 	
 				sum = k1*p1 + k2*p2 + k3*p3
-				    + k4*p4 + k5*p5 + k6*p6
-				    + k7*p7 + k8*p8 + k9*p9;
+					+ k4*p4 + k5*p5 + k6*p6
+					+ k7*p7 + k8*p8 + k9*p9;
 				sum /= scale;
 	
 				if(sum>255) sum= 255;
@@ -790,7 +955,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private void convolve3x3GeneralType(int[] kernel)
 	{
-		throw new RuntimeException("Unimplemented");
+		filterGeneralType(FilterType.CONVOLVE, kernel);
 	}
 	
 	//****************** public methods *******************************************************
@@ -969,9 +1134,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		if (this.type instanceof UnsignedByteType)
 		{
-	        binaryCount = count;
-	        binaryBackground = background;
-	        filter(FilterType.DILATE);
+			binaryCount = count;
+			binaryBackground = background;
+			filter(FilterType.DILATE);
 		}
 	}
 
@@ -1022,9 +1187,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		if (this.type instanceof UnsignedByteType)
 		{
-	        binaryCount = count;
-	        binaryBackground = background;
-	        filter(FilterType.ERODE);
+			binaryCount = count;
+			binaryBackground = background;
+			filter(FilterType.ERODE);
 		}
 	}
 
@@ -1078,7 +1243,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.type instanceof UnsignedByteType)
 			filterUnsignedByte(type);
 		else
-			filterGeneralType(type);
+			filterGeneralType(type,null);
 	}
 
 	@Deprecated
@@ -1299,7 +1464,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	public double getMaxAllowedValue() 
 	{
-		return this.cachedCursor.get().getType().getMaxValue();
+		return this.type.getMaxValue();
 	}
 	
 	@Override
@@ -1310,7 +1475,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	public double getMinAllowedValue() 
 	{
-		return this.cachedCursor.get().getType().getMinValue();
+		return this.type.getMinValue();
 	}
 	
 	public long getNumPixels()
@@ -1637,8 +1802,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void rotate(double angle)
 	{
-        if (angle%360==0)
-        	return;
+		if (angle%360==0)
+			return;
 		Object pixels2 = getPixelsCopy();
 		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
 		if (interpolationMethod==BICUBIC) {
