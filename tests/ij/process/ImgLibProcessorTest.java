@@ -19,14 +19,13 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-// TODO - Right now doing all comparisons versus a ByteProcessor. Add comparison code vs. FloatProcessor and ShortProcessor also
-//    See TODO below that says "left off here"
+// TODO - Right now doing all comparisons versus a ByteProcessor and ShortProcessor(partial support). Will add comparison code vs. FloatProcessor.
 
 public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static boolean SKIP_THIS_ONE = true; // used to skip various tests during development to keep Hudson tests passing
+	static boolean SKIP_THIS_ONE = true; // TODO : used to skip various tests during development to keep Hudson tests passing
 
 	static int width;
 	static int height;
@@ -547,18 +546,15 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testFilter()
 	{
-		if (SKIP_THIS_ONE) return;  // currently not passing. skip so we can check in code. see TODO below.
+		//if (SKIP_THIS_ONE) return;  // currently not passing. skip so we can check in code. see TODO below.
 		
-		int[] filterNumbers = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,	ImgLibProcessor.MIN,
-										ImgLibProcessor.MAX, ImgLibProcessor.CONVOLVE, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
+		int[] filterNumbers = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,
+										ImgLibProcessor.MIN, ImgLibProcessor.MAX, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
 		
 		for (int filterNum : filterNumbers)
 		{
-			// TODO - rounding difference for FIND_EDGES in ShortProc. Using doubles versus floats maybe making a difference.
-			System.out.println("filter("+filterNum+")");
 			for (ImageProcessor[] procPair : PROC_PAIRS)
 			{
-				System.out.println("  do a pass");
 				initialize();
 				procPair[0].filter(filterNum);
 				procPair[1].filter(filterNum);
@@ -578,29 +574,33 @@ public class ImgLibProcessorTest {
 		}
 	}
 
-	// TODO - left off here in expanding tests to handle multiple processor types
-	
 	@Test
 	public void testGammaDouble()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double value = i*0.68;
-			bProc.gamma(value);
-			iubProc.gamma(value);
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				double value = i*0.68;
+				procPair[0].gamma(value);
+				procPair[1].gamma(value);
+				compareData(procPair[0],procPair[1]);
+			}
 		}
 	}
 
 	@Test
 	public void testGetBackgroundValue()
 	{
-		assertEquals(bProc.getBackgroundValue(), iubProc.getBackgroundValue(), 0.0);
-		for (int i = 0; i < 25; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.setBackgroundValue(i+0.5);
-			iubProc.setBackgroundValue(i+0.5);
-			assertEquals(bProc.getBackgroundValue(), iubProc.getBackgroundValue(), 0.0);
+			assertEquals(procPair[0].getBackgroundValue(), procPair[1].getBackgroundValue(), 0.0);
+			for (int i = 0; i < 25; i++)
+			{
+				procPair[0].setBackgroundValue(i + (i%4)*0.5);
+				procPair[1].setBackgroundValue(i + (i%4)*0.5);
+				assertEquals(procPair[0].getBackgroundValue(), procPair[1].getBackgroundValue(), 0.0);
+			}
 		}
 	}
 
@@ -609,45 +609,54 @@ public class ImgLibProcessorTest {
 	{
 		int maxPixels = width*height;
 		
-		assertEquals(bProc.getf(0*maxPixels/5), iubProc.getf(0*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(1*maxPixels/5), iubProc.getf(1*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(2*maxPixels/5), iubProc.getf(2*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(3*maxPixels/5), iubProc.getf(3*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(4*maxPixels/5), iubProc.getf(4*maxPixels/5), Assert.FLOAT_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].getf(0*maxPixels/5), procPair[1].getf(0*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(1*maxPixels/5), procPair[1].getf(1*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(2*maxPixels/5), procPair[1].getf(2*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(3*maxPixels/5), procPair[1].getf(3*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(4*maxPixels/5), procPair[1].getf(4*maxPixels/5), Assert.FLOAT_TOL);
+		}
 	}
 
 	@Test
 	public void testGetfIntInt()
 	{
-		assertEquals(bProc.getf(0,0), iubProc.getf(0,0), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(width-1,0), iubProc.getf(width-1,0), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(0,height-1), iubProc.getf(0,height-1), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(width-1,height-1), iubProc.getf(width-1,height-1), Assert.FLOAT_TOL);
-		assertEquals(bProc.getf(width/2,height/2), iubProc.getf(width/2,height/2), Assert.FLOAT_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].getf(0,0), procPair[1].getf(0,0), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(width-1,0), procPair[1].getf(width-1,0), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(0,height-1), procPair[1].getf(0,height-1), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(width-1,height-1), procPair[1].getf(width-1,height-1), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(width/2,height/2), procPair[1].getf(width/2,height/2), Assert.FLOAT_TOL);
+		}
 	}
 
 	@Test
 	public void testGetHistogram()
 	{
-		// regular case
-		int[] bHist = bProc.getHistogram();
-		int[] iHist = iubProc.getHistogram();
-		assertArrayEquals(bHist, iHist);
-		
-		// masked case
-		ImageProcessor mask = new ByteProcessor(width, height);
-		for (int y = 0; y < height; y++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int x = 0; x < width; x++)
+			// regular case
+			int[] bHist = procPair[0].getHistogram();
+			int[] iHist = procPair[1].getHistogram();
+			assertArrayEquals(bHist, iHist);
+			
+			// masked case
+			ImageProcessor mask = new ByteProcessor(width, height);
+			for (int y = 0; y < height; y++)
 			{
-				bProc.set(x, y, (x+y) % 2);
+				for (int x = 0; x < width; x++)
+				{
+					mask.set(x, y, (x+y) % 2);
+				}
 			}
+			procPair[0].setMask(mask);
+			procPair[1].setMask(mask);
+			bHist = procPair[0].getHistogram();
+			iHist = procPair[1].getHistogram();
+			assertArrayEquals(bHist, iHist);
 		}
-		bProc.setMask(mask);
-		iubProc.setMask(mask);
-		bHist = bProc.getHistogram();
-		iHist = iubProc.getHistogram();
-		assertArrayEquals(bHist, iHist);
 	}
 
 	@Test
@@ -655,50 +664,59 @@ public class ImgLibProcessorTest {
 	{
 		int maxPixels = width*height;
 		
-		assertEquals(bProc.get(0*maxPixels/5), iubProc.get(0*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(1*maxPixels/5), iubProc.get(1*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(2*maxPixels/5), iubProc.get(2*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(3*maxPixels/5), iubProc.get(3*maxPixels/5), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(4*maxPixels/5), iubProc.get(4*maxPixels/5), Assert.FLOAT_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].get(0*maxPixels/5), procPair[1].get(0*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(1*maxPixels/5), procPair[1].get(1*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(2*maxPixels/5), procPair[1].get(2*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(3*maxPixels/5), procPair[1].get(3*maxPixels/5), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(4*maxPixels/5), procPair[1].get(4*maxPixels/5), Assert.FLOAT_TOL);
+		}
 	}
 
 	@Test
 	public void testGetIntInt()
 	{
-		assertEquals(bProc.get(0,0), iubProc.get(0,0), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(width-1,0), iubProc.get(width-1,0), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(0,height-1), iubProc.get(0,height-1), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(width-1,height-1), iubProc.get(width-1,height-1), Assert.FLOAT_TOL);
-		assertEquals(bProc.get(width/2,height/2), iubProc.get(width/2,height/2), Assert.FLOAT_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].get(0,0), procPair[1].get(0,0), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(width-1,0), procPair[1].get(width-1,0), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(0,height-1), procPair[1].get(0,height-1), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(width-1,height-1), procPair[1].get(width-1,height-1), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].get(width/2,height/2), procPair[1].get(width/2,height/2), Assert.FLOAT_TOL);
+		}
 	}
 
 	@Test
 	public void testGetInterpolatedPixel()
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.setInterpolationMethod(interpMethod);
-			iubProc.setInterpolationMethod(interpMethod);
-		
-			double[][] points = new double[][]
+			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-					new double[] {0,0},
-					new double[] {width-1,0},
-					new double[] {0,height-1},
-					new double[] {width-1,height-1},
-					new double[] {-1,-1},
-					new double[] {5000,5000},
-					new double[] {1,1},
-					new double[] {4.7,3.2},
-					new double[] {9.1,18.9},
-					new double[] {25.75,96.35}
-			};
+				procPair[0].setInterpolationMethod(interpMethod);
+				procPair[1].setInterpolationMethod(interpMethod);
 			
-			for (double[] point : points)
-			{
-				double x = point[0];
-				double y = point[1];
-				assertEquals(bProc.getInterpolatedPixel(x, y), iubProc.getInterpolatedPixel(x, y), Assert.DOUBLE_TOL);
+				double[][] points = new double[][]
+				{
+						new double[] {0,0},
+						new double[] {width-1,0},
+						new double[] {0,height-1},
+						new double[] {width-1,height-1},
+						new double[] {-1,-1},
+						new double[] {5000,5000},
+						new double[] {1,1},
+						new double[] {4.7,3.2},
+						new double[] {9.1,18.9},
+						new double[] {25.75,96.35}
+				};
+				
+				for (double[] point : points)
+				{
+					double x = point[0];
+					double y = point[1];
+					assertEquals(procPair[0].getInterpolatedPixel(x, y), procPair[1].getInterpolatedPixel(x, y), Assert.DOUBLE_TOL);
+				}
 			}
 		}
 	}
@@ -706,49 +724,58 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetMax()
 	{
-		assertEquals(bProc.getMax(), iubProc.getMax(), Assert.DOUBLE_TOL);
-		bProc.setMinAndMax(42.4,107.6);
-		iubProc.setMinAndMax(42.4,107.6);
-		assertEquals(bProc.getMax(), iubProc.getMax(), Assert.DOUBLE_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].getMax(), procPair[1].getMax(), Assert.DOUBLE_TOL);
+			procPair[0].setMinAndMax(42.4,107.6);
+			procPair[1].setMinAndMax(42.4,107.6);
+			assertEquals(procPair[0].getMax(), procPair[1].getMax(), Assert.DOUBLE_TOL);
+		}
 	}
 
 	@Test
 	public void testGetMin()
 	{
-		assertEquals(bProc.getMin(), iubProc.getMin(), Assert.DOUBLE_TOL);
-		bProc.setMinAndMax(42.4,107.6);
-		iubProc.setMinAndMax(42.4,107.6);
-		assertEquals(bProc.getMin(), iubProc.getMin(), Assert.DOUBLE_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertEquals(procPair[0].getMin(), procPair[1].getMin(), Assert.DOUBLE_TOL);
+			procPair[0].setMinAndMax(42.4,107.6);
+			procPair[1].setMinAndMax(42.4,107.6);
+			assertEquals(procPair[0].getMin(), procPair[1].getMin(), Assert.DOUBLE_TOL);
+		}
 	}
 
 	@Test
 	public void testGetPixelInterpolated()
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.setInterpolationMethod(interpMethod);
-			iubProc.setInterpolationMethod(interpMethod);
-		
-			double[][] points = new double[][]
+			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-					new double[] {0,0},
-					new double[] {width-1,0},
-					new double[] {0,height-1},
-					new double[] {width-1,height-1},
-					new double[] {-1,-1},
-					new double[] {5000,5000},
-					new double[] {1,1},
-					new double[] {4.7,3.2},
-					new double[] {9.1,18.9},
-					new double[] {25.75,96.35}
-			};
+				procPair[0].setInterpolationMethod(interpMethod);
+				procPair[1].setInterpolationMethod(interpMethod);
 			
-			for (double[] point : points)
-			{
-				double x = point[0];
-				double y = point[1];
-				//System.out.println("method("+interpMethod+") : attempting at point ("+x+","+y+")");
-				assertEquals(bProc.getPixelInterpolated(x, y), iubProc.getPixelInterpolated(x, y), Assert.DOUBLE_TOL);
+				double[][] points = new double[][]
+				{
+						new double[] {0,0},
+						new double[] {width-1,0},
+						new double[] {0,height-1},
+						new double[] {width-1,height-1},
+						new double[] {-1,-1},
+						new double[] {5000,5000},
+						new double[] {1,1},
+						new double[] {4.7,3.2},
+						new double[] {9.1,18.9},
+						new double[] {25.75,96.35}
+				};
+				
+				for (double[] point : points)
+				{
+					double x = point[0];
+					double y = point[1];
+					//System.out.println("method("+interpMethod+") : attempting at point ("+x+","+y+")");
+					assertEquals(procPair[0].getPixelInterpolated(x, y), procPair[1].getPixelInterpolated(x, y), Assert.DOUBLE_TOL);
+				}
 			}
 		}
 	}
@@ -756,11 +783,14 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixelIntInt()
 	{
-		for (int x = 0; x < width; x++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
 			{
-				assertEquals(bProc.get(x, y), iubProc.get(x, y));
+				for (int y = 0; y < height; y++)
+				{
+					assertEquals(procPair[0].get(x, y), procPair[1].get(x, y));
+				}
 			}
 		}
 	}
@@ -768,19 +798,33 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPixels()
 	{
-		byte[] bPix = (byte[])bProc.getPixels();
-		byte[] iPix = (byte[])iubProc.getPixels();
-		
-		assertArrayEquals(bPix, iPix);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			if (procPair[0] instanceof ByteProcessor)
+				assertArrayEquals((byte[])procPair[0].getPixels(), (byte[])procPair[1].getPixels());
+			else if (procPair[0] instanceof ShortProcessor)
+				assertArrayEquals((short[])procPair[0].getPixels(), (short[])procPair[1].getPixels());
+			else if (procPair[0] instanceof FloatProcessor)
+				Assert.assertFloatArraysEqual((float[])procPair[0].getPixels(), (float[])procPair[1].getPixels(), Assert.FLOAT_TOL);
+			else
+				fail("unknown processor type : " + procPair[0].getClass());
+		}
 	}
 
 	@Test
 	public void testGetPixelsCopy()
 	{
-		byte[] bPix = (byte[])bProc.getPixelsCopy();
-		byte[] iPix = (byte[])iubProc.getPixelsCopy();
-		
-		assertArrayEquals(bPix, iPix);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			if (procPair[0] instanceof ByteProcessor)
+				assertArrayEquals((byte[])procPair[0].getPixelsCopy(), (byte[])procPair[1].getPixelsCopy());
+			else if (procPair[0] instanceof ShortProcessor)
+				assertArrayEquals((short[])procPair[0].getPixelsCopy(), (short[])procPair[1].getPixelsCopy());
+			else if (procPair[0] instanceof FloatProcessor)
+				Assert.assertFloatArraysEqual((float[])procPair[0].getPixelsCopy(), (float[])procPair[1].getPixelsCopy(), Assert.FLOAT_TOL);
+			else
+				fail("unknown processor type : " + procPair[0].getClass());
+		}
 	}
 
 	@Test
@@ -795,232 +839,285 @@ public class ImgLibProcessorTest {
 		
 		// TODO - do something that alters whether cTable is created or not and try all cases below
 		
-		int[][] badPoints = new int[][]
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-				new int[] {0,-1},
-				new int[] {-1,0},
-				new int[] {0,height},
-				new int[] {width,0},
-				new int[] {width,height},
-				new int[] {-1,-1},
-				new int[] {5000,5000}
-		};
-		
-		for (int[] point : badPoints)
-		{
-			int x = point[0];
-			int y = point[1];
-			assertEquals(bProc.getPixelValue(x, y), iubProc.getPixelValue(x, y), Assert.DOUBLE_TOL);
+			int[][] badPoints = new int[][]
+			{
+					new int[] {0,-1},
+					new int[] {-1,0},
+					new int[] {0,height},
+					new int[] {width,0},
+					new int[] {width,height},
+					new int[] {-1,-1},
+					new int[] {5000,5000}
+			};
+			
+			for (int[] point : badPoints)
+			{
+				int x = point[0];
+				int y = point[1];
+				assertEquals(procPair[0].getPixelValue(x, y), procPair[1].getPixelValue(x, y), Assert.DOUBLE_TOL);
+			}
+	
+			// all the good points
+			for (int x = 0; x < width; x++)
+				for (int y = 0; y < height; y++)
+					assertEquals(procPair[0].getPixelValue(x, y), procPair[1].getPixelValue(x, y), Assert.DOUBLE_TOL);
 		}
-
-		// all the good points
-		for (int x = 0; x < width; x++)
-			for (int y = 0; y < height; y++)
-				assertEquals(bProc.getPixelValue(x, y), iubProc.getPixelValue(x, y), Assert.DOUBLE_TOL);
 	}
 
 	@Test
 	public void testGetPlaneData()
 	{
-		double[] pixels = iubProc.getPlaneData();
-		
-		for (int i = 0; i < width*height; i++)
-			assertEquals((double)iubProc.get(i),  pixels[i], Assert.DOUBLE_TOL);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			double[] pixels = ((ImgLibProcessor<?>)procPair[1]).getPlaneData();
+			
+			for (int i = 0; i < width*height; i++)
+				assertEquals((double)procPair[1].get(i),  pixels[i], Assert.DOUBLE_TOL);
+		}
 	}
 
 	@Test
 	public void testGetSnapshotPixels() 
 	{
-		assertNull(bProc.getSnapshotPixels());
-		assertNull(iubProc.getSnapshotPixels());
-		
-		bProc.snapshot();
-		iubProc.snapshot();
-
-		assertArrayEquals((byte[])bProc.getSnapshotPixels(), (byte[])iubProc.getSnapshotPixels());
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			assertNull(procPair[0].getSnapshotPixels());
+			assertNull(procPair[1].getSnapshotPixels());
+			
+			procPair[0].snapshot();
+			procPair[1].snapshot();
+	
+			if (procPair[0] instanceof ByteProcessor)
+				assertArrayEquals((byte[])procPair[0].getSnapshotPixels(), (byte[])procPair[1].getSnapshotPixels());
+			else if (procPair[0] instanceof ShortProcessor)
+				assertArrayEquals((short[])procPair[0].getSnapshotPixels(), (short[])procPair[1].getSnapshotPixels());
+			else if (procPair[0] instanceof FloatProcessor)
+				Assert.assertFloatArraysEqual((float[])procPair[0].getSnapshotPixels(), (float[])procPair[1].getSnapshotPixels(), Assert.FLOAT_TOL);
+			else
+				fail("unknown processor type : " + procPair[0].getClass());
+		}
 	}
 
 	@Test
 	public void testInvert()
 	{
-		bProc.invert();
-		iubProc.invert();
-		compareData(bProc, iubProc);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			procPair[0].invert();
+			procPair[1].invert();
+			compareData(procPair[0], procPair[1]);
+		}
 	}
 
 	@Test
 	public void testLog()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.log();
-			iubProc.log();
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				procPair[0].log();
+				procPair[1].log();
+				compareData(procPair[0], procPair[1]);
+			}
 		}
 	}
 
 	@Test
 	public void testMaxDouble()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double value = 2.0 * i;
-			bProc.max(value);
-			iubProc.max(value);
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				double value = 2.0 * i;
+				procPair[0].max(value);
+				procPair[1].max(value);
+				compareData(procPair[0], procPair[1]);
+			}
 		}
 	}
 
 	@Test
 	public void testMedianFilter() 
 	{
-		bProc.medianFilter();
-		iubProc.medianFilter();
-		compareData(bProc, iubProc);
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			procPair[0].medianFilter();
+			procPair[1].medianFilter();
+			compareData(procPair[0], procPair[1]);
+		}
 	}
 
 	@Test
 	public void testMinDouble()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double value = 2.0 * i;
-			bProc.min(value);
-			iubProc.min(value);
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				double value = 2.0 * i;
+				procPair[0].min(value);
+				procPair[1].min(value);
+				compareData(procPair[0], procPair[1]);
+			}
 		}
 	}
 	
 	@Test
 	public void testMultiplyDouble()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double value = i*Math.PI;
-			bProc.multiply(value);
-			iubProc.multiply(value);
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				double value = i*Math.PI;
+				procPair[0].multiply(value);
+				procPair[1].multiply(value);
+				compareData(procPair[0], procPair[1]);
+			}
 		}
 	}
 	
 	@Test
 	public void testNoise()
 	{
-		// NOTE - can't test this one for equality: they utilize random number generators with no seed set.
+		// NOTE/TODO - can't test this one for equality: they utilize random number generators with no seed set.
 		//   Must think of some way to test. The noise() routine is small and looks correct. Still would rather test somehow.
-		
-		double[] noises = new double[]{0,1,2,3,4,0.5,1.2};
-		
-		for (double noiseVal : noises)
+	
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			initialize();
-			bProc.noise(noiseVal);
-			iubProc.noise(noiseVal);
-			//compareData(bProc, iubProc);
-			assertTrue(true);
+			double[] noises = new double[]{0,1,2,3,4,0.5,1.2};
+			
+			for (double noiseVal : noises)
+			{
+				initialize();
+				procPair[0].noise(noiseVal);
+				procPair[1].noise(noiseVal);
+				//compareData(bProc, iubProc);
+				assertTrue(true);
+			}
 		}
 	}
 
 	@Test
 	public void testOrInt()
 	{
-		for (int i = 0; i < 12; i++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.or(i);
-			iubProc.or(i);
-			compareData(bProc, iubProc);
+			for (int i = 0; i < 12; i++)
+			{
+				procPair[0].or(i);
+				procPair[1].or(i);
+				compareData(procPair[0], procPair[1]);
+			}
 		}
 	}
 
 	@Test
 	public void testPutPixelIntIntInt()
 	{
-		for (int x = 0; x < width; x++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
 			{
-				int newValue = Math.abs(x-y) % 256;
-				bProc.putPixel(x, y, newValue);
-				iubProc.putPixel(x, y, newValue);
+				for (int y = 0; y < height; y++)
+				{
+					int newValue = Math.abs(x-y) % 256;
+					procPair[0].putPixel(x, y, newValue);
+					procPair[1].putPixel(x, y, newValue);
+				}
 			}
+			compareData(procPair[0], procPair[1]);
 		}
-		compareData(bProc, iubProc);
 	}
 
 	@Test
 	public void testPutPixelValue()
 	{
-		for (int x = 0; x < width; x++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
 			{
-				double newValue = (Math.abs(x-y) % 512) / 2.7;
-				bProc.putPixelValue(x, y, newValue);
-				iubProc.putPixelValue(x, y, newValue);
+				for (int y = 0; y < height; y++)
+				{
+					double newValue = (Math.abs(x-y) % 512) / 2.7;
+					procPair[0].putPixelValue(x, y, newValue);
+					procPair[1].putPixelValue(x, y, newValue);
+				}
 			}
+			compareData(procPair[0], procPair[1]);
 		}
-		compareData(bProc, iubProc);
 	}
 
 	@Test
 	public void testResetImageProcessor()
 	{
-		ByteProcessor mask = new ByteProcessor(7, 7);
-		for (int x = 0; x < 7; x++)
-			for (int y = 0; y < 7; y++)
-				mask.set(x, y, (x+y)%2);
-		
-		bProc.setRoi(1, 2, 7, 7);
-		iubProc.setRoi(1, 2, 7, 7);
-		
-		bProc.snapshot();
-		iubProc.snapshot();
-		
-		for (int x = 0; x < width; x++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int y = 0; y < height; y++)
+			ByteProcessor mask = new ByteProcessor(7, 7);
+			for (int x = 0; x < 7; x++)
+				for (int y = 0; y < 7; y++)
+					mask.set(x, y, (x+y)%2);
+			
+			procPair[0].setRoi(1, 2, 7, 7);
+			procPair[1].setRoi(1, 2, 7, 7);
+			
+			procPair[0].snapshot();
+			procPair[1].snapshot();
+			
+			for (int x = 0; x < width; x++)
 			{
-				bProc.set(x, y, (x+y)%256);
-				iubProc.set(x, y, (x+y)%256);
+				for (int y = 0; y < height; y++)
+				{
+					procPair[0].set(x, y, (x+y)%256);
+					procPair[1].set(x, y, (x+y)%256);
+				}
 			}
+			
+			compareData(procPair[0], procPair[1]);
+	
+			procPair[0].reset(mask);
+			procPair[1].reset(mask);
+			
+			compareData(procPair[0], procPair[1]);
 		}
-		
-		compareData(bProc, iubProc);
-
-		bProc.reset(mask);
-		iubProc.reset(mask);
-		
-		compareData(bProc, iubProc);
 	}
 
 	@Test
 	public void testResizeIntInt()
 	{
-		// TODO - set bProc's and iubProc's rois to something
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC}) {
-			int[][] points = new int[][]
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			// TODO - set bProc's and iubProc's rois to something
+			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-				// new int[]{0,0},  // TODO - ImgLib does not like this. Changes dimensions from (0,0) to (1,1)
-				new int[]{width+5,height+5},
-				new int[]{width,1},
-				new int[]{1,height},
-				new int[]{width,height},
-				new int[]{bProc.roiWidth,bProc.roiHeight},
-				new int[]{width/3,height/4},
-				new int[]{(int)(width*1.2), (int)(height*1.375)}
-			};
-			
-			for (int[] point : points)
-			{
-				ImageProcessor newBProc, newIProc;
+				int[][] points = new int[][]
+				{
+					// new int[]{0,0},  // TODO - ImgLib does not like this. Changes dimensions from (0,0) to (1,1)
+					new int[]{width+5,height+5},
+					new int[]{width,1},
+					new int[]{1,height},
+					new int[]{width,height},
+					new int[]{bProc.roiWidth,bProc.roiHeight},
+					new int[]{width/3,height/4},
+					new int[]{(int)(width*1.2), (int)(height*1.375)}
+				};
 				
-				bProc.setInterpolationMethod(interpMethod);
-				iubProc.setInterpolationMethod(interpMethod);
-				
-				newBProc = bProc.resize(point[0], point[1]);
-				newIProc = iubProc.resize(point[0], point[1]);
-				
-				compareData(newBProc, newIProc);
+				for (int[] point : points)
+				{
+					ImageProcessor newIjProc, newImglibProc;
+					
+					procPair[0].setInterpolationMethod(interpMethod);
+					procPair[1].setInterpolationMethod(interpMethod);
+					
+					newIjProc = procPair[0].resize(point[0], point[1]);
+					newImglibProc = procPair[1].resize(point[0], point[1]);
+					
+					compareData(newIjProc, newImglibProc);
+				}
 			}
 		}
 	}
@@ -1028,21 +1125,24 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testRotate() 
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
-			
-			for (double rotation : rotations)
+			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-				initialize();
+				double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
 				
-				bProc.setInterpolationMethod(interpMethod);
-				iubProc.setInterpolationMethod(interpMethod);
-				
-				bProc.rotate(rotation);
-				iubProc.rotate(rotation);
-				
-				compareData(bProc, iubProc);
+				for (double rotation : rotations)
+				{
+					initialize();
+					
+					procPair[0].setInterpolationMethod(interpMethod);
+					procPair[1].setInterpolationMethod(interpMethod);
+					
+					procPair[0].rotate(rotation);
+					procPair[1].rotate(rotation);
+					
+					compareData(procPair[0], procPair[1]);
+				}
 			}
 		}
 	}
@@ -1050,32 +1150,35 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testScale()
 	{
-		for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			double[][] scales = new double[][]
+			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-					//TODO - enable this point: new double[]{0,0},
-					new double[]{1,1},
-					new double[]{1,2},
-					new double[]{2,1},
-					new double[]{1.4,1.5},
-					new double[]{2.6,2.7},
-					new double[]{3.8,3.9},
-					new double[]{7.4,5.9},
-					new double[]{0.2,0.3}
-			};
-			
-			for (double[] scale : scales)
-			{
-				initialize();
+				double[][] scales = new double[][]
+				{
+						//TODO - enable this point: new double[]{0,0},
+						new double[]{1,1},
+						new double[]{1,2},
+						new double[]{2,1},
+						new double[]{1.4,1.5},
+						new double[]{2.6,2.7},
+						new double[]{3.8,3.9},
+						new double[]{7.4,5.9},
+						new double[]{0.2,0.3}
+				};
 				
-				bProc.setInterpolationMethod(interpMethod);
-				iubProc.setInterpolationMethod(interpMethod);
-				
-				bProc.scale(scale[0], scale[1]);
-				iubProc.scale(scale[0], scale[1]);
-				
-				compareData(bProc, iubProc);
+				for (double[] scale : scales)
+				{
+					initialize();
+					
+					procPair[0].setInterpolationMethod(interpMethod);
+					procPair[1].setInterpolationMethod(interpMethod);
+					
+					procPair[0].scale(scale[0], scale[1]);
+					procPair[1].scale(scale[0], scale[1]);
+					
+					compareData(procPair[0], procPair[1]);
+				}
 			}
 		}
 	}
@@ -1083,33 +1186,40 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testSetBackgroundValue()
 	{
-		double[] bgVals = new double[] {-1,0,1,44,55.8,66.1,254,255,256,1000};
-		
-		for (double bg : bgVals)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.setBackgroundValue(bg);
-			iubProc.setBackgroundValue(bg);
-			assertEquals(bProc.getBackgroundValue(), iubProc.getBackgroundValue(), 0);
+			double[] bgVals = new double[] {-1,0,1,44,55.8,66.1,254,255,256,1000};
+			
+			for (double bg : bgVals)
+			{
+				procPair[0].setBackgroundValue(bg);
+				procPair[1].setBackgroundValue(bg);
+				assertEquals(procPair[0].getBackgroundValue(), procPair[1].getBackgroundValue(), 0);
+			}
 		}
 	}
 
 	@Test
 	public void testSetColorColor()
 	{
-		Color[] colors = new Color[]{Color.white, Color.black, Color.blue, Color.red, Color.green, Color.gray, Color.magenta};
-		
-		for (Color color : colors)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			bProc.setColor(color);
-			iubProc.setColor(color);
+			Color[] colors = new Color[]{Color.white, Color.black, Color.blue, Color.red, Color.green, Color.gray, Color.magenta};
 			
-			assertEquals(bProc.drawingColor, iubProc.drawingColor);
-			assertEquals(bProc.fgColor, iubProc.fgColor);
-			// TODO : for float types what about .fillColor??? since private don't worry about it? Or find some test that teases it out.
+			for (Color color : colors)
+			{
+				procPair[0].setColor(color);
+				procPair[1].setColor(color);
+				
+				assertEquals(procPair[0].drawingColor, procPair[1].drawingColor);
+				assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+				// TODO : for float types what about .fillColor??? since private don't worry about it? Or find some test that teases it out.
+			}
 		}
-
 	}
 
+	// TODO: left off here for short/float integration
+	
 	@Test
 	public void testSetfIntFloat()
 	{

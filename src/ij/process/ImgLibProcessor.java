@@ -412,8 +412,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
-		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different and this code may fail for signed data.
+		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different. Also this code may fail for signed 16-bit data.
 		
+		double range = max - min;
 		double c, v1, v2;
 		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
 		c = value;
@@ -453,16 +454,36 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							v2 = v1;
 						break;
 					case GAMMA:
-						if (v1<=0f)
-							v2 = 0f;
-						else
-							v2 = Math.exp(c*Math.log(v1));
+						if (this.isIntegral)
+						{
+							if (range<=0.0 || v1 <= min)
+								v2 = v1;
+							else					
+								v2 = (int)(Math.exp(value*Math.log((v1-min)/range))*range+min);
+						}
+						else // float
+						{
+							if (v1 <= 0)
+								v2 = 0f;
+							else
+								v2 = Math.exp(c*Math.log(v1));
+						}
 						break;
 					case LOG:
-						if (v1<=0f)
-							v2 = 0f;
-						else
-							v2 = Math.log(v1);
+						if (this.isIntegral)
+						{
+							if (v1<=0)
+								v2 = 0;
+							else 
+								v2 = (int)(Math.log(v1)*(max/Math.log(max)));
+						}
+						else // float
+						{
+							if (v1<=0f)
+								v2 = 0f;
+							else
+								v2 = Math.log(v1);
+						}
 						break;
 					case EXP:
 						// TODO - this does not match ShortProc for signed data
@@ -808,6 +829,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		double k7=0, k8=0, k9=0;
 		double scale = 0;
 		if (type==FilterType.CONVOLVE) {
+			if (kernel == null)
+				throw new IllegalArgumentException("filterGeneralType(): convolve asked for but no kernel given");
 			k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
 			k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
 			k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
@@ -867,10 +890,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						v6 = pixels2[p6];
 						v7 = v8; v8 = v9;
 						v9 = pixels2[p9];
-						// TODO - may need to do this in float if a ShortProcessor to avoid rounding issues
 						double sum1 = (v1 + 2*v2 + v3 - v7 - 2*v8 - v9);
 						double sum2 = (v1 + 2*v4 + v7 - v3 - 2*v6 - v9);
-						setd(p, Math.sqrt(sum1*sum1 + sum2*sum2));
+						double offset = 0;
+						if (this.isIntegral)
+							offset = 0.5;
+						setd(p, Math.sqrt(sum1*sum1 + sum2*sum2) + offset);
 					}
 					break;
 				case CONVOLVE:
@@ -1588,6 +1613,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void invert()
 	{
+		if (this.isIntegral)
+			resetMinAndMax();
+		
 		doProcess(INVERT, 0.0);
 	}
 	
@@ -1726,7 +1754,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
 		if (roiWidth==dstWidth && roiHeight==dstHeight)
-			return crop();
+			if (this.type instanceof UnsignedByteType)
+				return crop();
 
 		double value;
 		double srcCenterX = roiX + roiWidth/2.0;
@@ -1802,7 +1831,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void rotate(double angle)
 	{
-		if (angle%360==0)
+		// TODO - for some reason Float and Short don't check for rotate by 0.0 and their results are different than doing nothing!!!!!
+		if ((angle%360==0) && (this.type instanceof UnsignedByteType))
 			return;
 		Object pixels2 = getPixelsCopy();
 		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
