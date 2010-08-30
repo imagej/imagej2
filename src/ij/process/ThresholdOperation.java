@@ -5,7 +5,7 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class ThresholdOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
-	double threshold, min, max;
+	double threshold;
 	
 	ThresholdOperation(Image<T> image, int[] origin, int[] span, double threshold)
 	{
@@ -18,17 +18,15 @@ public class ThresholdOperation<T extends RealType<T>> extends SingleCursorRoiOp
 	public void beforeIteration(RealType<?> type)
 	{
 		this.threshold = TypeManager.boundValueToType(type, this.threshold);
-		this.min = type.getMinValue();
-		this.max = type.getMaxValue();
 	}
 	
 	@Override
 	public void insideIteration(RealType<?> sample)
 	{
 		if (sample.getRealDouble() <= this.threshold)
-			sample.setReal(this.min);
+			sample.setReal(0);
 		else
-			sample.setReal(this.max);
+			sample.setReal(255);
 	}
 	
 	@Override

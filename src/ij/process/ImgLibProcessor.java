@@ -497,6 +497,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						break;
 					case SQR:
 							v2 = v1*v1;
+							if (this.type instanceof UnsignedShortType)
+								if (v2 > Integer.MAX_VALUE)
+									v2 = 0;
 						break;
 					case SQRT:
 						if (v1<=0f)
@@ -522,6 +525,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					 default:
 					 	v2 = v1;
 				}
+				
+				if (this.isIntegral)
+					v2 = TypeManager.boundValueToType(this.type, v2);
+				
 				setd(i++, v2);
 			}
 		}
