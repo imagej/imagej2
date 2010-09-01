@@ -146,18 +146,17 @@ public class ImgLibProcessorTest {
 	public void initialize()
 	{
 		bProc = (ByteProcessor)origBProc.duplicate();
-		iubProc = (ImgLibProcessor)origIUBProc.duplicate();
+		iubProc = (ImgLibProcessor<UnsignedByteType>)origIUBProc.duplicate();
 		compareData(bProc, iubProc);
 
 		sProc = (ShortProcessor)origSProc.duplicate();
-		iusProc = (ImgLibProcessor)origIUSProc.duplicate();
+		iusProc = (ImgLibProcessor<UnsignedShortType>)origIUSProc.duplicate();
 		compareData(sProc, iusProc);
 		
 		fProc = (FloatProcessor)origFProc.duplicate();
-		ifProc = (ImgLibProcessor)origIFProc.duplicate();
+		ifProc = (ImgLibProcessor<FloatType>)origIFProc.duplicate();
 		compareData(sProc, iusProc);
 		
-		// TODO - this is where float processor will get added when the time is right.
 		 PROCS = new ImageProcessor[]{iubProc, iusProc, ifProc};
 		 PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc},/*{fProc,ifProc}*/};
 	}
