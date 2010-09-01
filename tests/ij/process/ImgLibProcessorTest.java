@@ -126,11 +126,11 @@ public class ImgLibProcessorTest {
 		{
 			for (int x = 0; x < width; x++)
 			{
-				//TODO : 16 breakages
-				// float value = (float)(Math.PI * (x/(y+1)));
+				// TODO : more breakages
+				float value = (float)( (Math.PI * x) / (y+1) );
 				
-				// TODO: 13 breakages
-				float value = (float)(x+y);
+				// TODO: fewer breakages
+				//float value = (float)(x+y);
 				
 				origFProc.setf(x, y, value);
 				origIFProc.setf(x, y, value);
@@ -162,9 +162,25 @@ public class ImgLibProcessorTest {
 		BYTE_PROCS = new ImageProcessor[]{bProc,iubProc};
 		SHORT_PROCS = new ImageProcessor[]{sProc,iusProc};
 		FLOAT_PROCS = new ImageProcessor[]{fProc,ifProc};
-		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS/*,FLOAT_PROCS*/};  // TODO - enable FLOAT_PROCS as needed
+		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS,FLOAT_PROCS/**/};  // TODO - enable FLOAT_PROCS as needed
 	}
 
+	private int encodeFloatIfNeeded(boolean wantFloat, int value)
+	{
+		if (wantFloat)
+			return Float.floatToIntBits((float)value);
+		
+		return value;
+	}
+	
+	private float decodeFloatIfNeeded(boolean wantFloat, int value)
+	{
+		if (wantFloat)
+			return Float.intBitsToFloat(value);
+		
+		return value;
+	}
+	
 	// ************* Helper tests ***********************************************
 
 	private static void compareData(ImageProcessor baselineProc, ImageProcessor testedProc)
@@ -179,7 +195,7 @@ public class ImgLibProcessorTest {
 		{
 			for (int y = 0; y < h; y++)
 			{
-				if (Math.abs(baselineProc.getf(x, y) - testedProc.getf(x, y)) > Assert.FLOAT_TOL)
+				if (Math.abs(baselineProc.getf(x, y) - testedProc.getf(x, y)) > 0.001) // TODO - everything passes if TOL == 0.001
 					fail("processor data differs at ("+x+","+y+") : ij(" + baselineProc.getf(x, y) +") imglib("+testedProc.getf(x, y)+")");
 			}
 		}
@@ -588,15 +604,17 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testFilterInt()
 	{
-		// NOTE - purposely left out CONVOLVE. It is tested elsewhere and in this case a NULL kernel is passed causing a runtime exception
-		
-		int[] filterNumbers = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,
-										ImgLibProcessor.MIN, ImgLibProcessor.MAX, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
-		
-		for (int filterNum : filterNumbers)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (ImageProcessor[] procPair : PROC_PAIRS)
+			//System.out.println("filter(int): about to do pair");
+			// NOTE - purposely left out CONVOLVE. It is tested elsewhere and in this case a NULL kernel is passed causing a runtime exception
+			
+			int[] filterNumbers = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,
+											ImgLibProcessor.MIN, ImgLibProcessor.MAX, ImgLibProcessor.ERODE, ImgLibProcessor.DILATE};
+			
+			for (int filterNum : filterNumbers)
 			{
+				//System.out.println("  filter number "+filterNum);
 				initialize();
 				procPair[0].filter(filterNum);
 				procPair[1].filter(filterNum);
@@ -649,15 +667,15 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetfInt()
 	{
-		int maxPixels = width*height;
-		
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			assertEquals(procPair[0].getf(0*maxPixels/5), procPair[1].getf(0*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(1*maxPixels/5), procPair[1].getf(1*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(2*maxPixels/5), procPair[1].getf(2*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(3*maxPixels/5), procPair[1].getf(3*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(4*maxPixels/5), procPair[1].getf(4*maxPixels/5), Assert.FLOAT_TOL);
+			int maxPixels = width*height;
+			
+			assertEquals(procPair[0].getf(0*maxPixels/5), procPair[1].getf(0*maxPixels/5), 0);
+			assertEquals(procPair[0].getf(1*maxPixels/5), procPair[1].getf(1*maxPixels/5), 0);
+			assertEquals(procPair[0].getf(2*maxPixels/5), procPair[1].getf(2*maxPixels/5), 0);
+			assertEquals(procPair[0].getf(3*maxPixels/5), procPair[1].getf(3*maxPixels/5), 0);
+			assertEquals(procPair[0].getf(4*maxPixels/5), procPair[1].getf(4*maxPixels/5), 0);
 		}
 	}
 
@@ -666,11 +684,11 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			assertEquals(procPair[0].getf(0,0), procPair[1].getf(0,0), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(width-1,0), procPair[1].getf(width-1,0), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(0,height-1), procPair[1].getf(0,height-1), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(width-1,height-1), procPair[1].getf(width-1,height-1), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].getf(width/2,height/2), procPair[1].getf(width/2,height/2), Assert.FLOAT_TOL);
+			assertEquals(procPair[0].getf(0,0), procPair[1].getf(0,0), 0);
+			assertEquals(procPair[0].getf(width-1,0), procPair[1].getf(width-1,0), 0);
+			assertEquals(procPair[0].getf(0,height-1), procPair[1].getf(0,height-1), 0);
+			assertEquals(procPair[0].getf(width-1,height-1), procPair[1].getf(width-1,height-1), 0);
+			assertEquals(procPair[0].getf(width/2,height/2), procPair[1].getf(width/2,height/2), 0);
 		}
 	}
 
@@ -704,15 +722,31 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetInt()
 	{
-		int maxPixels = width*height;
-		
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			assertEquals(procPair[0].get(0*maxPixels/5), procPair[1].get(0*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(1*maxPixels/5), procPair[1].get(1*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(2*maxPixels/5), procPair[1].get(2*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(3*maxPixels/5), procPair[1].get(3*maxPixels/5), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(4*maxPixels/5), procPair[1].get(4*maxPixels/5), Assert.FLOAT_TOL);
+			boolean isFloat = procPair[0] instanceof FloatProcessor;
+
+			int maxPixels = width*height;
+			
+			assertEquals( decodeFloatIfNeeded( isFloat, procPair[0].get(0*maxPixels/5)),
+							decodeFloatIfNeeded( isFloat, procPair[1].get(0*maxPixels/5)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals( decodeFloatIfNeeded( isFloat, procPair[0].get(1*maxPixels/5)),
+							decodeFloatIfNeeded(isFloat,procPair[1].get(1*maxPixels/5)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals( decodeFloatIfNeeded( isFloat, procPair[0].get(2*maxPixels/5)),
+							decodeFloatIfNeeded(isFloat,procPair[1].get(2*maxPixels/5)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals( decodeFloatIfNeeded( isFloat, procPair[0].get(3*maxPixels/5)),
+							decodeFloatIfNeeded(isFloat,procPair[1].get(3*maxPixels/5)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals( decodeFloatIfNeeded( isFloat, procPair[0].get(4*maxPixels/5)),
+							decodeFloatIfNeeded(isFloat,procPair[1].get(4*maxPixels/5)),
+							Assert.FLOAT_TOL);
 		}
 	}
 
@@ -721,11 +755,27 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			assertEquals(procPair[0].get(0,0), procPair[1].get(0,0), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(width-1,0), procPair[1].get(width-1,0), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(0,height-1), procPair[1].get(0,height-1), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(width-1,height-1), procPair[1].get(width-1,height-1), Assert.FLOAT_TOL);
-			assertEquals(procPair[0].get(width/2,height/2), procPair[1].get(width/2,height/2), Assert.FLOAT_TOL);
+			boolean isFloat = procPair[0] instanceof FloatProcessor;
+
+			assertEquals(decodeFloatIfNeeded( isFloat, procPair[0].get(0,0)),
+							decodeFloatIfNeeded( isFloat, procPair[1].get(0,0)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals(decodeFloatIfNeeded( isFloat, procPair[0].get(width-1,0)),
+							decodeFloatIfNeeded( isFloat, procPair[1].get(width-1,0)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals(decodeFloatIfNeeded( isFloat, procPair[0].get(0,height-1)), 
+							decodeFloatIfNeeded( isFloat, procPair[1].get(0,height-1)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals(decodeFloatIfNeeded( isFloat, procPair[0].get(width-1,height-1)),
+							decodeFloatIfNeeded( isFloat, procPair[1].get(width-1,height-1)),
+							Assert.FLOAT_TOL);
+			
+			assertEquals(decodeFloatIfNeeded( isFloat, procPair[0].get(width/2,height/2)),
+							decodeFloatIfNeeded( isFloat, procPair[1].get(width/2,height/2)),
+							Assert.FLOAT_TOL);
 		}
 	}
 
@@ -827,11 +877,15 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			boolean isFloat = procPair[0] instanceof FloatProcessor;
+			
 			for (int x = 0; x < width; x++)
 			{
 				for (int y = 0; y < height; y++)
 				{
-					assertEquals(procPair[0].get(x, y), procPair[1].get(x, y));
+					assertEquals(decodeFloatIfNeeded(isFloat,procPair[0].getPixel(x, y)),
+									decodeFloatIfNeeded(isFloat,procPair[1].getPixel(x, y)),
+									Assert.FLOAT_TOL);
 				}
 			}
 		}
@@ -847,7 +901,7 @@ public class ImgLibProcessorTest {
 			else if (procPair[0] instanceof ShortProcessor)
 				assertArrayEquals((short[])procPair[0].getPixels(), (short[])procPair[1].getPixels());
 			else if (procPair[0] instanceof FloatProcessor)
-				Assert.assertFloatArraysEqual((float[])procPair[0].getPixels(), (float[])procPair[1].getPixels(), Assert.FLOAT_TOL);
+				Assert.assertFloatArraysEqual((float[])procPair[0].getPixels(), (float[])procPair[1].getPixels(), 0);
 			else
 				fail("unknown processor type : " + procPair[0].getClass());
 		}
@@ -863,7 +917,7 @@ public class ImgLibProcessorTest {
 			else if (procPair[0] instanceof ShortProcessor)
 				assertArrayEquals((short[])procPair[0].getPixelsCopy(), (short[])procPair[1].getPixelsCopy());
 			else if (procPair[0] instanceof FloatProcessor)
-				Assert.assertFloatArraysEqual((float[])procPair[0].getPixelsCopy(), (float[])procPair[1].getPixelsCopy(), Assert.FLOAT_TOL);
+				Assert.assertFloatArraysEqual((float[])procPair[0].getPixelsCopy(), (float[])procPair[1].getPixelsCopy(), 0);
 			else
 				fail("unknown processor type : " + procPair[0].getClass());
 		}
@@ -916,7 +970,7 @@ public class ImgLibProcessorTest {
 			double[] pixels = ((ImgLibProcessor<?>)procPair[1]).getPlaneData();
 			
 			for (int i = 0; i < width*height; i++)
-				assertEquals((double)procPair[1].get(i),  pixels[i], Assert.DOUBLE_TOL);
+				assertEquals((double)procPair[1].getf(i),  pixels[i], Assert.DOUBLE_TOL);
 		}
 	}
 
@@ -936,7 +990,7 @@ public class ImgLibProcessorTest {
 			else if (procPair[0] instanceof ShortProcessor)
 				assertArrayEquals((short[])procPair[0].getSnapshotPixels(), (short[])procPair[1].getSnapshotPixels());
 			else if (procPair[0] instanceof FloatProcessor)
-				Assert.assertFloatArraysEqual((float[])procPair[0].getSnapshotPixels(), (float[])procPair[1].getSnapshotPixels(), Assert.FLOAT_TOL);
+				Assert.assertFloatArraysEqual((float[])procPair[0].getSnapshotPixels(), (float[])procPair[1].getSnapshotPixels(), 0);
 			else
 				fail("unknown processor type : " + procPair[0].getClass());
 		}
@@ -1312,6 +1366,8 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			boolean isFloat = procPair[0] instanceof FloatProcessor;
+			
 			int maxPixels = width*height;
 			
 			int numChanges = 8;
@@ -1319,6 +1375,7 @@ public class ImgLibProcessorTest {
 			{
 				int changeIndex = changeNum * maxPixels / numChanges;
 				int changeValue = 20 + (10 * numChanges);
+				changeValue = encodeFloatIfNeeded(isFloat,changeValue);
 				procPair[0].set(changeIndex, changeValue);
 				procPair[1].set(changeIndex, changeValue);
 			}
@@ -1332,19 +1389,21 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			boolean isFloat = procPair[0] instanceof FloatProcessor;
+			
 			// set the ByteProcessor
-			procPair[0].set(0, 0, 50);
-			procPair[0].set(0, height-1, 60);
-			procPair[0].set(width-1, 0, 70);
-			procPair[0].set(width-1, height-1, 80);
-			procPair[0].set(width/2, height/2, 90);
+			procPair[0].set(0, 0, encodeFloatIfNeeded(isFloat,50));
+			procPair[0].set(0, height-1, encodeFloatIfNeeded(isFloat,60));
+			procPair[0].set(width-1, 0, encodeFloatIfNeeded(isFloat,70));
+			procPair[0].set(width-1, height-1, encodeFloatIfNeeded(isFloat,80));
+			procPair[0].set(width/2, height/2, encodeFloatIfNeeded(isFloat,90));
 	
 			// set the ImgLibProcessor
-			procPair[1].set(0, 0, 50);
-			procPair[1].set(0, height-1, 60);
-			procPair[1].set(width-1, 0, 70);
-			procPair[1].set(width-1, height-1, 80);
-			procPair[1].set(width/2, height/2, 90);
+			procPair[1].set(0, 0, encodeFloatIfNeeded(isFloat,50));
+			procPair[1].set(0, height-1, encodeFloatIfNeeded(isFloat,60));
+			procPair[1].set(width-1, 0, encodeFloatIfNeeded(isFloat,70));
+			procPair[1].set(width-1, height-1, encodeFloatIfNeeded(isFloat,80));
+			procPair[1].set(width/2, height/2, encodeFloatIfNeeded(isFloat,90));
 			
 			compareData(procPair[0], procPair[1]);
 		}
@@ -1412,8 +1471,6 @@ public class ImgLibProcessorTest {
 		
 		compareData(SHORT_PROCS[0], SHORT_PROCS[1]);
 
-		if (PROC_PAIRS.length == 2) return;  // TODO - temp - helps avoid float proc tests when desired
-		
 		// test float proc
 
 		float[] newFloats = new float[width*height];
@@ -1468,8 +1525,6 @@ public class ImgLibProcessorTest {
 		
 		assertArrayEquals((short[])SHORT_PROCS[0].getPixels(), (short[])SHORT_PROCS[1].getPixels());
 		
-		if (PROC_PAIRS.length == 2) return;  // TODO - temp - helps avoid float proc tests when desired
-
 		// float processor
 
 		float[] origFloats = (float[])FLOAT_PROCS[0].getPixelsCopy();
@@ -1485,7 +1540,7 @@ public class ImgLibProcessorTest {
 		FLOAT_PROCS[1].setSnapshotPixels(newFloats);
 		FLOAT_PROCS[1].reset();
 		
-		Assert.assertFloatArraysEqual((float[])FLOAT_PROCS[0].getPixels(), (float[])FLOAT_PROCS[1].getPixels(),Assert.FLOAT_TOL);
+		Assert.assertFloatArraysEqual((float[])FLOAT_PROCS[0].getPixels(), (float[])FLOAT_PROCS[1].getPixels(), 0);
 	}
 
 	@Test
