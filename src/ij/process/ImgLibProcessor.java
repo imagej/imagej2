@@ -421,7 +421,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		for (int y=roiY; y<(roiY+roiHeight); y++) {
 			int i = y * width + roiX;
 			for (int x=roiX; x<(roiX+roiWidth); x++) {
-				v1 = getd(i);
+				v1 = getf(i);
 				switch(op) {
 					case INVERT:
 						v2 = max - (v1 - min);
@@ -464,7 +464,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						else // float
 						{
 							if (v1 <= 0)
-								v2 = 0f;
+								v2 = 0;
 							else
 								v2 = Math.exp(c*Math.log(v1));
 						}
@@ -479,8 +479,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						}
 						else // float
 						{
-							if (v1<=0f)
-								v2 = 0f;
+							if (v1<=0)
+								v2 = 0;
 							else
 								v2 = Math.log(v1);
 						}
@@ -502,8 +502,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 									v2 = 0;
 						break;
 					case SQRT:
-						if (v1<=0f)
-							v2 = 0f;
+						if (v1<=0)
+							v2 = 0;
 						else
 							v2 = Math.sqrt(v1);
 						break;
@@ -1001,7 +1001,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void add(int value)
 	{
-		doProcess(ADD, value);
+		doProcess(ADD, (double)value);
 	}
 	
 	@Override
@@ -1050,7 +1050,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		{
 			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) inputProc;
 
-			if (TypeManager.sameKind(this.type,imglibProc.getType()))
+			if (TypeManager.sameKind(this.type, imglibProc.getType()))
 				return (ImgLibProcessor<T>) imglibProc;
 		}
 		
@@ -1058,12 +1058,28 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//   create a processor of my type with size matching ip's dimensions
 		//   populate the pixels
 		//   return it
-
+		
 		Image<T> image = imageData.createNewImage(new int[]{ inputProc.getWidth(), inputProc.getHeight() } );
 		
 		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, (T)type, 0);  // cast required!
 		
-		newProc.setPixels(inputProc.getPixels());
+		boolean oldIntegralData = false;
+		if ((inputProc instanceof ByteProcessor) || (inputProc instanceof ShortProcessor))
+			oldIntegralData = true;
+
+		if (!oldIntegralData)
+		{
+			newProc.setPixels(inputProc.getPixels());
+		}
+		else  // funky issue where Java's signedness and IJ's unsignedness complicate setting the pixels
+		{
+			int w = newProc.getWidth();
+			int h = newProc.getHeight();
+			
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++)
+					newProc.setd( x, y, (inputProc.get(x, y) & 0xffff) );  // Must turn into int data and remove signedness
+		}
 		
 		return newProc;
 	}
@@ -1369,7 +1385,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int get(int x, int y) 
 	{	
-		int value;
+		double value;
 		
 		int[] position = Index.create(x, y, getPlanePosition());
 		
@@ -1377,11 +1393,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		cursor.setPosition( position );
 		
-		value = (int)( cursor.getType().getRealDouble() );
+		value = cursor.getType().getRealDouble();
 		
 		// do not close cursor - using cached one
+
+		if (this.isIntegral)
+			return (int) value;
 		
-		return value;
+		// else fall through to default float behavior in IJ
+		return Float.floatToIntBits((float)value);
 	}
 
 	@Override
@@ -1393,6 +1413,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return get(x, y) ;
 	}
 
+	/** This method is from Chapter 16 of "Digital Image Processing:
+	An Algorithmic Introduction Using Java" by Burger and Burge
+	(http://www.imagingbook.com/). */
+	@Override
+	public double getBicubicInterpolatedPixel(double x0, double y0, ImageProcessor ip2)
+	{
+		int u0 = (int) Math.floor(x0);	//use floor to handle negative coordinates too
+		int v0 = (int) Math.floor(y0);
+		if (u0<=0 || u0>=super.width-2 || v0<=0 || v0>=super.height-2)
+			return ip2.getBilinearInterpolatedPixel(x0, y0);
+		double q = 0;
+		for (int j = 0; j <= 3; j++)
+		{
+			int v = v0 - 1 + j;
+			double p = 0;
+			for (int i = 0; i <= 3; i++)
+			{
+				int u = u0 - 1 + i;
+				p = p + ip2.getf(u,v) * cubic(x0 - u);  // TODO - orig code uses getf(). could we transition to getd()?
+			}
+			q = q + p * cubic(y0 - v);
+		}
+		return q;
+	}
+	
 	public double getd(int x, int y)
 	{
 		int[] position = Index.create(x, y, getPlanePosition());
@@ -1764,7 +1809,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			if (this.type instanceof UnsignedByteType)
 				return crop();
 
-		double value;
 		double srcCenterX = roiX + roiWidth/2.0;
 		double srcCenterY = roiY + roiHeight/2.0;
 		double dstCenterX = dstWidth/2.0;
@@ -1783,7 +1827,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				int index = y*dstWidth;
 				for (int x=0; x<=dstWidth-1; x++) {
 					xs = (x-dstCenterX)/xScale + srcCenterX;
-					value = getBicubicInterpolatedPixel(xs, ys, this);
+					double value = getBicubicInterpolatedPixel(xs, ys, this);
 					if (this.isIntegral)
 					{
 						value += 0.5;
@@ -1811,7 +1855,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					{
 						if (xs<0.0) xs = 0.0;
 						if (xs>=xlimit) xs = xlimit2;
-						value = getInterpolatedPixel(xs, ys);
+						double value = getInterpolatedPixel(xs, ys);
 						if (this.isIntegral)
 						{
 							value += 0.5;
@@ -1824,7 +1868,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					}
 					else  // interp == NONE
 					{
-						value = getd(index1+(int)xs);
+						double value = getd(index1+(int)xs);
 						ip2.setd(index2++, value);
 					}
 				}
@@ -2027,7 +2071,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		cursor.setPosition(position);
 		
-		cursor.getType().setReal( value );
+		double dVal = value;
+
+		if (!this.isIntegral)
+			dVal = Float.intBitsToFloat(value);
+
+		cursor.getType().setReal( dVal );
 		
 		// do not close cursor - using cached one
 	}
@@ -2103,48 +2152,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	// not an override. helper method that has no side effects.
-	public void setMinAndMaxOnly(double min, double max)
-	{
-		this.min = min;
-		this.max = max;
-		
-		// TODO : do I want the this.isIntegral code from next method in here too?
-	}
-	
-	@Override
-	public void setMinAndMax(double min, double max)
-	{
-		if (min==0.0 && max==0.0)
-		{
-			resetMinAndMax();
-			return;
-		}
-	
-		this.min = min;
-		this.max = max;
-		
-		if (this.isIntegral)
-		{
-			this.min = (int) this.min;
-			this.max = (int) this.max;
-		}
-		
-		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
-		
-		resetThreshold();
-	}
-
-	@Override
-	public void resetMinAndMax()
-	{
-		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
-		
-		findMinAndMax();
-		
-		resetThreshold();
-	}
-
 	public void setd(int index, double value)
 	{
 		int width = getWidth();
@@ -2188,6 +2195,38 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void setf(int x, int y, float value)
 	{
 		setd(x, y, (double)value);
+	}
+
+	// not an override. helper method that has no side effects.
+	public void setMinAndMaxOnly(double min, double max)
+	{
+		this.min = min;
+		this.max = max;
+		
+		// TODO : do I want the this.isIntegral code from next method in here too?
+	}
+	
+	@Override
+	public void setMinAndMax(double min, double max)
+	{
+		if (min==0.0 && max==0.0)
+		{
+			resetMinAndMax();
+			return;
+		}
+	
+		this.min = min;
+		this.max = max;
+		
+		if (this.isIntegral)
+		{
+			this.min = (int) this.min;
+			this.max = (int) this.max;
+		}
+		
+		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
+		
+		resetThreshold();
 	}
 
 	@Override
@@ -2248,6 +2287,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void sqrt()
 	{
 		doProcess(SQRT, 0.0);
+	}
+
+	@Override
+	public void resetMinAndMax()
+	{
+		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
+		
+		findMinAndMax();
+		
+		resetThreshold();
 	}
 
 	@Override
