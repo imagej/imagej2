@@ -20,12 +20,16 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 import org.junit.Test;
 
 // TODO - there are a few TODOs sprinkled below
+//   also:
+//     testCreateImage() does very little testing
+//     testNoise() really untested
+
+// TODO - ImgLibProcessor matches FloatProcessor results within 0.001 tolerance. If we want to improve that we'll need to make
+//    float specific calculation code in ImgLibProcessor rather than working with getd()/setd()/getRealDouble(). Less general.
 
 public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
-
-	static boolean SKIP_THIS_ONE = true; // TODO : used to skip various tests during development to keep Hudson tests passing
 
 	static int width;
 	static int height;
@@ -162,7 +166,7 @@ public class ImgLibProcessorTest {
 		BYTE_PROCS = new ImageProcessor[]{bProc,iubProc};
 		SHORT_PROCS = new ImageProcessor[]{sProc,iusProc};
 		FLOAT_PROCS = new ImageProcessor[]{fProc,ifProc};
-		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS,FLOAT_PROCS/**/};  // TODO - enable FLOAT_PROCS as needed
+		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS,FLOAT_PROCS};
 	}
 
 	private int encodeFloatIfNeeded(boolean wantFloat, int value)
