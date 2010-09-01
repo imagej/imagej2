@@ -32,10 +32,12 @@ public class ImgLibProcessorTest {
 	static int width;
 	static int height;
 	
-	static ImgLibProcessor<UnsignedByteType> origIUBProc;
-	static ImgLibProcessor<UnsignedShortType> origIUSProc;
 	static ByteProcessor origBProc;
 	static ShortProcessor origSProc;
+	static FloatProcessor origFProc;
+	static ImgLibProcessor<UnsignedByteType> origIUBProc;
+	static ImgLibProcessor<UnsignedShortType> origIUSProc;
+	static ImgLibProcessor<FloatType> origIFProc;
 	
 	private ByteProcessor bProc;
 	private ShortProcessor sProc;
@@ -56,6 +58,8 @@ public class ImgLibProcessorTest {
 		width = 343;
 		height = 769;
 
+		// *******   BYTE Processors
+		
 		// setup BProc
 		origBProc = new ByteProcessor(width, height);
 		
@@ -82,6 +86,8 @@ public class ImgLibProcessorTest {
 		// make sure they are the same
 		compareData(origBProc, origIUBProc);
 
+		// *******   SHORT Processors
+		
 		// setup sProc
 		origSProc = new ShortProcessor(width, height);
 		
@@ -103,6 +109,36 @@ public class ImgLibProcessorTest {
 		
 		// make sure they are the same
 		compareData(origSProc, origIUSProc);
+
+		// *******   FLOAT Processors
+		
+		// setup fProc
+		origFProc = new FloatProcessor(width, height);
+		
+		// setup iusProc
+		ImageFactory<FloatType> fFactory = new ImageFactory<FloatType>(new FloatType(), new ArrayContainerFactory());
+		Image<FloatType> fImage = fFactory.createImage(new int[]{width, height});
+		origIFProc = new ImgLibProcessor<FloatType>(fImage, new FloatType(), 0);
+		
+		// set their pixels identically
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				//TODO : 16 breakages
+				// float value = (float)(Math.PI * (x/(y+1)));
+				
+				// TODO: 13 breakages
+				float value = (float)(x+y);
+				
+				origFProc.setf(x, y, value);
+				origIFProc.setf(x, y, value);
+			}
+		}
+		
+		// make sure they are the same
+		compareData(origFProc, origIFProc);
+
 	}
 	
 	// the following initialization code runs before every test
@@ -117,9 +153,13 @@ public class ImgLibProcessorTest {
 		iusProc = (ImgLibProcessor)origIUSProc.duplicate();
 		compareData(sProc, iusProc);
 		
+		fProc = (FloatProcessor)origFProc.duplicate();
+		ifProc = (ImgLibProcessor)origIFProc.duplicate();
+		compareData(sProc, iusProc);
+		
 		// TODO - this is where float processor will get added when the time is right.
-		 PROCS = new ImageProcessor[]{iubProc, iusProc};
-		 PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc}};
+		 PROCS = new ImageProcessor[]{iubProc, iusProc, ifProc};
+		 PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc},/*{fProc,ifProc}*/};
 	}
 
 	// ************* Helper tests ***********************************************
@@ -327,21 +367,18 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testCopyBits()
 	{
-		// TODO - this one is failing when comparing versus a ShortProcessor - reason unknown/undebugged - fix when know more
-		if (SKIP_THIS_ONE) return;
-		
-		byte[] bytes = new byte[256];
-		for (int b = Byte.MIN_VALUE; b <= Byte.MAX_VALUE; b++)
-			bytes[b-Byte.MIN_VALUE] = (byte) b;
-		
-		ImageProcessor data = new ByteProcessor(16, 16, bytes, null);
-		
-		for (int mode = Blitter.COPY; mode <= Blitter.COPY_ZERO_TRANSPARENT; mode++)
+		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (ImageProcessor[] procPair : PROC_PAIRS)
+			byte[] bytes = new byte[256];
+			for (int b = Byte.MIN_VALUE; b <= Byte.MAX_VALUE; b++)
+				bytes[b-Byte.MIN_VALUE] = (byte) b;
+			
+			ImageProcessor data = new ByteProcessor(16, 16, bytes, null);
+			for (int mode = Blitter.COPY; mode <= Blitter.COPY_ZERO_TRANSPARENT; mode++)
 			{
-				procPair[0].copyBits(data, 23, 19, mode);
-				procPair[1].copyBits(data, 23, 19, mode);
+				initialize();
+				procPair[0].copyBits(data, 23, 19, mode);  // TODO : was 23,19 : changed to 0,0 to simplify debugging
+				procPair[1].copyBits(data, 23, 19, mode);  // TODO : was 23,19 : changed to 0,0 to simplify debugging
 				compareData(procPair[0], procPair[1]);
 			}
 		}

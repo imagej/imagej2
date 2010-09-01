@@ -2,6 +2,7 @@ package ij.process;
 
 import ij.Prefs;
 import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
 public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperation<T>
 {
@@ -62,7 +63,7 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 			
 			/** dst=255-src (8-bits and RGB) */
 			case Blitter.COPY_INVERTED:
-				if (this.isIntegral)
+				if (sample1 instanceof UnsignedByteType)
 					sample2.setReal( this.max - sample1.getRealDouble() );
 				else
 					sample2.setReal( sample1.getRealDouble() );
@@ -108,10 +109,13 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 				{
 					if (this.isIntegral)
 						value = this.max;
-					else if (this.useDBZValue)
-						value = divideByZeroValue;
-					else
-						value = sample2.getRealDouble() / value;
+					else // float
+					{
+						if (this.useDBZValue)
+							value = divideByZeroValue;
+						else
+							value = sample2.getRealDouble() / value;  // just do the division!!! thats what IJ does.
+					}
 				}
 				else
 					value = sample2.getRealDouble() / value;
