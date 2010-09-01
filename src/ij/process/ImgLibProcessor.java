@@ -157,140 +157,80 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	//****************** Helper methods *******************************************************
 
-	private long getNumPixels(Image<T> image)
+	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
+	private double calcBilinearPixel(double x, double y)
 	{
-		return ImageUtils.getTotalSamples(image.getDimensions());
+		int xbase = (int)x;
+		int ybase = (int)y;
+		double xFraction = x - xbase;
+		double yFraction = y - ybase;
+		double lowerLeft = getd(xbase,ybase);
+		double lowerRight = getd(xbase+1,ybase);
+		double upperRight = getd(xbase+1,ybase+1);
+		double upperLeft = getd(xbase,ybase+1);
+		double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
+		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
+		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
-	private void findMinAndMax()
+	private void convolve3x3GeneralType(int[] kernel)
 	{
-		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
-
-		//get the current image data
-		int[] imageOrigin = Index.create(0, 0, getPlanePosition());
-		int[] imageSpan = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
-
-		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
+		filterGeneralType(FilterType.CONVOLVE, kernel);
+	}
+	
+	private void convolve3x3UnsignedByte(int[] kernel)
+	{
+		int p1, p2, p3,
+			p4, p5, p6,
+			p7, p8, p9;
+		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
+			k4=kernel[3], k5=kernel[4], k6=kernel[5],
+			k7=kernel[6], k8=kernel[7], k9=kernel[8];
+	
+		int scale = 0;
+		for (int i=0; i<kernel.length; i++)
+			scale += kernel[i];
+		if (scale==0) scale = 1;
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
 		
-		Operation.apply(mmOp);
-		
-		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
-		
+		byte[] pixels2 = (byte[])getPixelsCopy();
+		int offset, sum;
+		int rowOffset = width;
+		for (int y=yMin; y<=yMax; y++) {
+			offset = xMin + y * width;
+			p1 = 0;
+			p2 = pixels2[offset-rowOffset-1]&0xff;
+			p3 = pixels2[offset-rowOffset]&0xff;
+			p4 = 0;
+			p5 = pixels2[offset-1]&0xff;
+			p6 = pixels2[offset]&0xff;
+			p7 = 0;
+			p8 = pixels2[offset+rowOffset-1]&0xff;
+			p9 = pixels2[offset+rowOffset]&0xff;
+	
+			for (int x=xMin; x<=xMax; x++) {
+				p1 = p2; p2 = p3;
+				p3 = pixels2[offset-rowOffset+1]&0xff;
+				p4 = p5; p5 = p6;
+				p6 = pixels2[offset+1]&0xff;
+				p7 = p8; p8 = p9;
+				p9 = pixels2[offset+rowOffset+1]&0xff;
+	
+				sum = k1*p1 + k2*p2 + k3*p3
+					+ k4*p4 + k5*p5 + k6*p6
+					+ k7*p7 + k8*p8 + k9*p9;
+				sum /= scale;
+	
+				if(sum>255) sum= 255;
+				if(sum<0) sum= 0;
+	
+				setd(offset++, (byte)sum);
+			}
+			if (y%inc==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
 		showProgress(1.0);
-	}
-	
-	
-	// Throws an exception if the LUT length is wrong for the pixel layout type
-	private void verifyLutLengthOkay( int[] lut )
-	{
-		if ( this.type instanceof GenericByteType< ? > ) {
-			
-			if (lut.length!=256)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		}
-		else if( this.type instanceof GenericShortType< ? > ) {
-			
-			if (lut.length!=65536)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
-		}
-		else {
-			
-			throw new IllegalArgumentException("LUT NA for type " + type ); 
-		}
-	}
-	
-	// NOTE - eliminating bad cast warnings in this method by explicit casts causes Hudson tests to fail
-	
-	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
-	{
-		int w = image.getDimension(0);
-		int h = image.getDimension(1);
-		
-		if (type instanceof ByteType) {
-			Image<ByteType> im = (Image) image;
-			return ImageUtils.getPlaneBytes(im, w, h, planePos);
-		}
-		if (type instanceof UnsignedByteType) {
-			Image<UnsignedByteType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedBytes(im, w, h, planePos);
-		}
-		if (type instanceof ShortType) {
-			Image<ShortType> im = (Image) image;
-			return ImageUtils.getPlaneShorts(im, w, h, planePos );
-		}
-		if (type instanceof UnsignedShortType) {
-			Image<UnsignedShortType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedShorts(im, w, h, planePos);
-		}
-		if (type instanceof IntType) {
-			Image<IntType> im = (Image) image;
-			return ImageUtils.getPlaneInts(im, w, h, planePos);
-		}
-		if (type instanceof UnsignedIntType) {
-			Image<UnsignedIntType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedInts(im, w, h, planePos);
-		}
-		if (type instanceof LongType) {
-			Image<LongType> im = (Image) image;
-			return ImageUtils.getPlaneLongs(im, w, h, planePos);
-		}
-		if (type instanceof FloatType) {
-			Image<FloatType> im = (Image) image;
-			return ImageUtils.getPlaneFloats(im, w, h, planePos);
-		}
-		if (type instanceof DoubleType) {
-			Image<DoubleType> im = (Image) image;
-			return ImageUtils.getPlaneDoubles(im, w, h, planePos);
-		}
-		if (type instanceof LongType) {
-			Image<LongType> im = (Image) image;
-			return ImageUtils.getPlaneLongs(im, w, h, planePos);
-		}
-		return ImageUtils.getPlaneData(image, w, h, planePos);
-	}
-	
-	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
-	{
-		if (numPixels != getNumPixels(theImage))
-			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
-
-		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
-		
-		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType, isUnsigned);
-		
-		Operation.apply(setOp);
-	}
-	
-	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
-	{
-		int[] position = Index.create(0,0,planePosition);
-		
-		if (pixels instanceof byte[])
-			
-			setPlane(image, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
-		
-		else if (pixels instanceof short[])
-			
-			setPlane(image, position, pixels, PixelType.SHORT, ((short[])pixels).length);
-		
-		else if (pixels instanceof int[])
-			
-			setPlane(image, position, pixels, PixelType.INT, ((int[])pixels).length);
-		
-		else if (pixels instanceof float[])
-			
-			setPlane(image, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
-		
-		else if (pixels instanceof double[])
-			
-			setPlane(image, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
-		
-		else if (pixels instanceof long[])
-			
-			setPlane(image, position, pixels, PixelType.LONG, ((long[])pixels).length);
-		
-		else
-			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
 	}
 	
 	@Override
@@ -403,7 +343,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		applyTable(lut);
 	}
 
-	
 	private void doProcess(int op, double value)
 	{
 		if (this.type instanceof UnsignedByteType)
@@ -535,68 +474,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (resetMinMax)
 			findMinAndMax();
 	}
-	
-	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
-	private double calcBilinearPixel(double x, double y)
-	{
-		int xbase = (int)x;
-		int ybase = (int)y;
-		double xFraction = x - xbase;
-		double yFraction = y - ybase;
-		double lowerLeft = getd(xbase,ybase);
-		double lowerRight = getd(xbase+1,ybase);
-		double upperRight = getd(xbase+1,ybase+1);
-		double upperLeft = getd(xbase,ybase+1);
-		double upperAverage = upperLeft + xFraction * (upperRight - upperLeft);
-		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
-		return lowerAverage + yFraction * (upperAverage - lowerAverage);
-	}
-
-	// copied from ByteProcessor - really belongs elsewhere
-	private int findMedian(int[] values)
-	{
-		//Finds the 5th largest of 9 values
-		for (int i = 1; i <= 4; i++) {
-			int max = 0;
-			int mj = 1;
-			for (int j = 1; j <= 9; j++)
-				if (values[j] > max) {
-					max = values[j];
-					mj = j;
-				}
-			values[mj] = 0;
-		}
-		int max = 0;
-		for (int j = 1; j <= 9; j++)
-			if (values[j] > max)
-				max = values[j];
-		return max;
-	}
-
-	private int getEdgePixel(byte[] pixels2, int x, int y)
-	{
-		if (x<=0) x = 0;
-		if (x>=width) x = width-1;
-		if (y<=0) y = 0;
-		if (y>=height) y = height-1;
-		return pixels2[x+y*width]&255;
-	}
-
-	private int getEdgePixel0(byte[] pixels2, int background, int x, int y)
-	{
-		if (x<0 || x>width-1 || y<0 || y>height-1)
-			return background;
-		else
-			return pixels2[x+y*width]&255;
-	}
-
-	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y)
-	{
-		if (x<0 || x>width-1 || y<0 || y>height-1)
-			return foreground;
-		else
-			return pixels2[x+y*width]&255;
-	}
 
 	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
 	{
@@ -704,6 +581,110 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	private void filterGeneralType(FilterType type, int[] kernel)
+	{
+		double v1, v2, v3;           //input pixel values around the current pixel
+		double v4, v5, v6;
+		double v7, v8, v9;
+		double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
+		double k4=0, k5=0, k6=0;
+		double k7=0, k8=0, k9=0;
+		double scale = 0;
+		if (type==FilterType.CONVOLVE) {
+			if (kernel == null)
+				throw new IllegalArgumentException("filterGeneralType(): convolve asked for but no kernel given");
+			k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
+			k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
+			k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
+			for (int i=0; i<kernel.length; i++)
+				scale += kernel[i];
+			if (scale==0) scale = 1;
+			scale = 1/scale; //multiplication factor (multiply is faster than divide)
+		}
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
+		
+		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
+		int xEnd = roiX + roiWidth;
+		int yEnd = roiY + roiHeight;
+		for (int y=roiY; y<yEnd; y++) {
+			int p = roiX + y*width;            //points to current pixel
+			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
+			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
+			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
+			v2 = pixels2[p3];
+			v5 = pixels2[p6];
+			v8 = pixels2[p9];
+			if (roiX>0) { p3++; p6++; p9++; }
+			v3 = pixels2[p3];
+			v6 = pixels2[p6];
+			v9 = pixels2[p9];
+
+			switch (type) {
+				case BLUR_MORE:
+					for (int x=roiX; x<xEnd; x++,p++)
+					{
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
+						if (this.type instanceof GenericShortType<?>)
+						{
+							val += 4;
+							val /= 9;
+							val = (short) val;
+						}
+						else
+							val *= 0.11111111; //0.111... = 1/9
+						setd(p, val);
+					}
+					break;
+				case FIND_EDGES:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						double sum1 = (v1 + 2*v2 + v3 - v7 - 2*v8 - v9);
+						double sum2 = (v1 + 2*v4 + v7 - v3 - 2*v6 - v9);
+						double offset = 0;
+						if (this.isIntegral)
+							offset = 0.5;
+						setd(p, Math.sqrt(sum1*sum1 + sum2*sum2) + offset);
+					}
+					break;
+				case CONVOLVE:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = pixels2[p3];
+						v4 = v5; v5 = v6;
+						v6 = pixels2[p6];
+						v7 = v8; v8 = v9;
+						v9 = pixels2[p9];
+						double sum = k1*v1 + k2*v2 + k3*v3
+									+ k4*v4 + k5*v5 + k6*v6
+									+ k7*v7 + k8*v8 + k9*v9;
+						sum *= scale;
+						if (this.isIntegral)
+							sum = TypeManager.boundValueToType(this.type, sum);
+						setd(p, sum);
+					}
+					break;
+			}
+			if (y%inc==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
+		showProgress(1.0);
+	}
+	
 	private void filterUnsignedByte(FilterType type)
 	{
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
@@ -826,168 +807,187 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//showProgress(1.0);
 	}
 	
-	private void filterGeneralType(FilterType type, int[] kernel)
+	// copied from ByteProcessor - really belongs elsewhere
+	private int findMedian(int[] values)
 	{
-		double v1, v2, v3;           //input pixel values around the current pixel
-		double v4, v5, v6;
-		double v7, v8, v9;
-		double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
-		double k4=0, k5=0, k6=0;
-		double k7=0, k8=0, k9=0;
-		double scale = 0;
-		if (type==FilterType.CONVOLVE) {
-			if (kernel == null)
-				throw new IllegalArgumentException("filterGeneralType(): convolve asked for but no kernel given");
-			k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
-			k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
-			k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
-			for (int i=0; i<kernel.length; i++)
-				scale += kernel[i];
-			if (scale==0) scale = 1;
-			scale = 1/scale; //multiplication factor (multiply is faster than divide)
+		//Finds the 5th largest of 9 values
+		for (int i = 1; i <= 4; i++) {
+			int max = 0;
+			int mj = 1;
+			for (int j = 1; j <= 9; j++)
+				if (values[j] > max) {
+					max = values[j];
+					mj = j;
+				}
+			values[mj] = 0;
 		}
-		int inc = roiHeight/25;
-		if (inc<1) inc = 1;
-		
-		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
-		int xEnd = roiX + roiWidth;
-		int yEnd = roiY + roiHeight;
-		for (int y=roiY; y<yEnd; y++) {
-			int p = roiX + y*width;            //points to current pixel
-			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
-			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
-			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
-			v2 = pixels2[p3];
-			v5 = pixels2[p6];
-			v8 = pixels2[p9];
-			if (roiX>0) { p3++; p6++; p9++; }
-			v3 = pixels2[p3];
-			v6 = pixels2[p6];
-			v9 = pixels2[p9];
+		int max = 0;
+		for (int j = 1; j <= 9; j++)
+			if (values[j] > max)
+				max = values[j];
+		return max;
+	}
 
-			switch (type) {
-				case BLUR_MORE:
-					for (int x=roiX; x<xEnd; x++,p++)
-					{
-						if (x<width-1) { p3++; p6++; p9++; }
-						v1 = v2; v2 = v3;
-						v3 = pixels2[p3];
-						v4 = v5; v5 = v6;
-						v6 = pixels2[p6];
-						v7 = v8; v8 = v9;
-						v9 = pixels2[p9];
-						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
-						if (this.type instanceof GenericShortType<?>)
-						{
-							val += 4;
-							val /= 9;
-							val = (short) val;
-						}
-						else
-							val *= 0.11111111; //0.111... = 1/9
-						setd(p, val);
-					}
-					break;
-				case FIND_EDGES:
-					for (int x=roiX; x<xEnd; x++,p++) {
-						if (x<width-1) { p3++; p6++; p9++; }
-						v1 = v2; v2 = v3;
-						v3 = pixels2[p3];
-						v4 = v5; v5 = v6;
-						v6 = pixels2[p6];
-						v7 = v8; v8 = v9;
-						v9 = pixels2[p9];
-						double sum1 = (v1 + 2*v2 + v3 - v7 - 2*v8 - v9);
-						double sum2 = (v1 + 2*v4 + v7 - v3 - 2*v6 - v9);
-						double offset = 0;
-						if (this.isIntegral)
-							offset = 0.5;
-						setd(p, Math.sqrt(sum1*sum1 + sum2*sum2) + offset);
-					}
-					break;
-				case CONVOLVE:
-					for (int x=roiX; x<xEnd; x++,p++) {
-						if (x<width-1) { p3++; p6++; p9++; }
-						v1 = v2; v2 = v3;
-						v3 = pixels2[p3];
-						v4 = v5; v5 = v6;
-						v6 = pixels2[p6];
-						v7 = v8; v8 = v9;
-						v9 = pixels2[p9];
-						double sum = k1*v1 + k2*v2 + k3*v3
-									+ k4*v4 + k5*v5 + k6*v6
-									+ k7*v7 + k8*v8 + k9*v9;
-						sum *= scale;
-						if (this.isIntegral)
-							sum = TypeManager.boundValueToType(this.type, sum);
-						setd(p, sum);
-					}
-					break;
-			}
-			if (y%inc==0)
-				showProgress((double)(y-roiY)/roiHeight);
-		}
-		showProgress(1.0);
-	}
-	
-	private void convolve3x3UnsignedByte(int[] kernel)
+	private void findMinAndMax()
 	{
-		int p1, p2, p3,
-			p4, p5, p6,
-			p7, p8, p9;
-		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
-			k4=kernel[3], k5=kernel[4], k6=kernel[5],
-			k7=kernel[6], k8=kernel[7], k9=kernel[8];
-	
-		int scale = 0;
-		for (int i=0; i<kernel.length; i++)
-			scale += kernel[i];
-		if (scale==0) scale = 1;
-		int inc = roiHeight/25;
-		if (inc<1) inc = 1;
+		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
+
+		//get the current image data
+		int[] imageOrigin = Index.create(0, 0, getPlanePosition());
+		int[] imageSpan = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+
+		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
 		
-		byte[] pixels2 = (byte[])getPixelsCopy();
-		int offset, sum;
-		int rowOffset = width;
-		for (int y=yMin; y<=yMax; y++) {
-			offset = xMin + y * width;
-			p1 = 0;
-			p2 = pixels2[offset-rowOffset-1]&0xff;
-			p3 = pixels2[offset-rowOffset]&0xff;
-			p4 = 0;
-			p5 = pixels2[offset-1]&0xff;
-			p6 = pixels2[offset]&0xff;
-			p7 = 0;
-			p8 = pixels2[offset+rowOffset-1]&0xff;
-			p9 = pixels2[offset+rowOffset]&0xff;
-	
-			for (int x=xMin; x<=xMax; x++) {
-				p1 = p2; p2 = p3;
-				p3 = pixels2[offset-rowOffset+1]&0xff;
-				p4 = p5; p5 = p6;
-				p6 = pixels2[offset+1]&0xff;
-				p7 = p8; p8 = p9;
-				p9 = pixels2[offset+rowOffset+1]&0xff;
-	
-				sum = k1*p1 + k2*p2 + k3*p3
-					+ k4*p4 + k5*p5 + k6*p6
-					+ k7*p7 + k8*p8 + k9*p9;
-				sum /= scale;
-	
-				if(sum>255) sum= 255;
-				if(sum<0) sum= 0;
-	
-				setd(offset++, (byte)sum);
-			}
-			if (y%inc==0)
-				showProgress((double)(y-roiY)/roiHeight);
-		}
+		Operation.apply(mmOp);
+		
+		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
+		
 		showProgress(1.0);
 	}
 	
-	private void convolve3x3GeneralType(int[] kernel)
+	// NOTE - eliminating bad cast warnings in this method by explicit casts causes Hudson tests to fail
+	
+	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
-		filterGeneralType(FilterType.CONVOLVE, kernel);
+		int w = image.getDimension(0);
+		int h = image.getDimension(1);
+		
+		if (type instanceof ByteType) {
+			Image<ByteType> im = (Image) image;
+			return ImageUtils.getPlaneBytes(im, w, h, planePos);
+		}
+		if (type instanceof UnsignedByteType) {
+			Image<UnsignedByteType> im = (Image) image;
+			return ImageUtils.getPlaneUnsignedBytes(im, w, h, planePos);
+		}
+		if (type instanceof ShortType) {
+			Image<ShortType> im = (Image) image;
+			return ImageUtils.getPlaneShorts(im, w, h, planePos );
+		}
+		if (type instanceof UnsignedShortType) {
+			Image<UnsignedShortType> im = (Image) image;
+			return ImageUtils.getPlaneUnsignedShorts(im, w, h, planePos);
+		}
+		if (type instanceof IntType) {
+			Image<IntType> im = (Image) image;
+			return ImageUtils.getPlaneInts(im, w, h, planePos);
+		}
+		if (type instanceof UnsignedIntType) {
+			Image<UnsignedIntType> im = (Image) image;
+			return ImageUtils.getPlaneUnsignedInts(im, w, h, planePos);
+		}
+		if (type instanceof LongType) {
+			Image<LongType> im = (Image) image;
+			return ImageUtils.getPlaneLongs(im, w, h, planePos);
+		}
+		if (type instanceof FloatType) {
+			Image<FloatType> im = (Image) image;
+			return ImageUtils.getPlaneFloats(im, w, h, planePos);
+		}
+		if (type instanceof DoubleType) {
+			Image<DoubleType> im = (Image) image;
+			return ImageUtils.getPlaneDoubles(im, w, h, planePos);
+		}
+		if (type instanceof LongType) {
+			Image<LongType> im = (Image) image;
+			return ImageUtils.getPlaneLongs(im, w, h, planePos);
+		}
+		return ImageUtils.getPlaneData(image, w, h, planePos);
+	}
+	
+	private int getEdgePixel(byte[] pixels2, int x, int y)
+	{
+		if (x<=0) x = 0;
+		if (x>=width) x = width-1;
+		if (y<=0) y = 0;
+		if (y>=height) y = height-1;
+		return pixels2[x+y*width]&255;
+	}
+
+	private int getEdgePixel0(byte[] pixels2, int background, int x, int y)
+	{
+		if (x<0 || x>width-1 || y<0 || y>height-1)
+			return background;
+		else
+			return pixels2[x+y*width]&255;
+	}
+
+	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y)
+	{
+		if (x<0 || x>width-1 || y<0 || y>height-1)
+			return foreground;
+		else
+			return pixels2[x+y*width]&255;
+	}
+
+	// belongs elsewhere
+	
+	private long getNumPixels(Image<T> image)
+	{
+		return ImageUtils.getTotalSamples(image.getDimensions());
+	}
+
+	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
+	{
+		int[] position = Index.create(0,0,planePosition);
+		
+		if (pixels instanceof byte[])
+			
+			setPlane(image, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
+		
+		else if (pixels instanceof short[])
+			
+			setPlane(image, position, pixels, PixelType.SHORT, ((short[])pixels).length);
+		
+		else if (pixels instanceof int[])
+			
+			setPlane(image, position, pixels, PixelType.INT, ((int[])pixels).length);
+		
+		else if (pixels instanceof float[])
+			
+			setPlane(image, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
+		
+		else if (pixels instanceof double[])
+			
+			setPlane(image, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
+		
+		else if (pixels instanceof long[])
+			
+			setPlane(image, position, pixels, PixelType.LONG, ((long[])pixels).length);
+		
+		else
+			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
+	}
+	
+	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
+	{
+		if (numPixels != getNumPixels(theImage))
+			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
+
+		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
+		
+		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType, isUnsigned);
+		
+		Operation.apply(setOp);
+	}
+	
+	// Throws an exception if the LUT length is wrong for the pixel layout type
+	private void verifyLutLengthOkay( int[] lut )
+	{
+		if ( this.type instanceof GenericByteType< ? > ) {
+			
+			if (lut.length!=256)
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		}
+		else if( this.type instanceof GenericShortType< ? > ) {
+			
+			if (lut.length!=65536)
+				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+		}
+		else {
+			
+			throw new IllegalArgumentException("LUT NA for type " + type ); 
+		}
 	}
 	
 	//****************** public methods *******************************************************
