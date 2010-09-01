@@ -19,9 +19,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-// TODO - Right now doing all comparisons versus a ByteProcessor and ShortProcessor(partial support). Will add comparison code vs. FloatProcessor.
-
-// TODO - setPix and setSnapPix need float version
+// TODO - there are a few TODOs sprinkled below
 
 public class ImgLibProcessorTest {
 
@@ -47,7 +45,10 @@ public class ImgLibProcessorTest {
 	private ImgLibProcessor<FloatType> ifProc;
 
 	ImageProcessor[][] PROC_PAIRS;
-	ImageProcessor[] PROCS;
+	ImageProcessor[] BYTE_PROCS;
+	ImageProcessor[] SHORT_PROCS;
+	ImageProcessor[] FLOAT_PROCS;
+	ImageProcessor[] IMGLIB_PROCS;
 
 	// ************* Helper methods ***********************************************
 	
@@ -145,20 +146,23 @@ public class ImgLibProcessorTest {
 	@Before
 	public void initialize()
 	{
-		bProc = (ByteProcessor)origBProc.duplicate();
-		iubProc = (ImgLibProcessor<UnsignedByteType>)origIUBProc.duplicate();
+		bProc = (ByteProcessor) origBProc.duplicate();
+		iubProc = (ImgLibProcessor<UnsignedByteType>) origIUBProc.duplicate();
 		compareData(bProc, iubProc);
 
-		sProc = (ShortProcessor)origSProc.duplicate();
-		iusProc = (ImgLibProcessor<UnsignedShortType>)origIUSProc.duplicate();
+		sProc = (ShortProcessor) origSProc.duplicate();
+		iusProc = (ImgLibProcessor<UnsignedShortType>) origIUSProc.duplicate();
 		compareData(sProc, iusProc);
 		
-		fProc = (FloatProcessor)origFProc.duplicate();
-		ifProc = (ImgLibProcessor<FloatType>)origIFProc.duplicate();
+		fProc = (FloatProcessor) origFProc.duplicate();
+		ifProc = (ImgLibProcessor<FloatType>) origIFProc.duplicate();
 		compareData(sProc, iusProc);
 		
-		 PROCS = new ImageProcessor[]{iubProc, iusProc, ifProc};
-		 PROC_PAIRS = new ImageProcessor[][]{{bProc,iubProc},{sProc,iusProc},/*{fProc,ifProc}*/};
+		IMGLIB_PROCS = new ImageProcessor[]{iubProc, iusProc, ifProc};
+		BYTE_PROCS = new ImageProcessor[]{bProc,iubProc};
+		SHORT_PROCS = new ImageProcessor[]{sProc,iusProc};
+		FLOAT_PROCS = new ImageProcessor[]{fProc,ifProc};
+		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS/*,FLOAT_PROCS*/};  // TODO - enable FLOAT_PROCS as needed
 	}
 
 	// ************* Helper tests ***********************************************
@@ -376,8 +380,8 @@ public class ImgLibProcessorTest {
 			for (int mode = Blitter.COPY; mode <= Blitter.COPY_ZERO_TRANSPARENT; mode++)
 			{
 				initialize();
-				procPair[0].copyBits(data, 23, 19, mode);  // TODO : was 23,19 : changed to 0,0 to simplify debugging
-				procPair[1].copyBits(data, 23, 19, mode);  // TODO : was 23,19 : changed to 0,0 to simplify debugging
+				procPair[0].copyBits(data, 23, 19, mode);
+				procPair[1].copyBits(data, 23, 19, mode);
 				compareData(procPair[0], procPair[1]);
 			}
 		}
@@ -405,7 +409,7 @@ public class ImgLibProcessorTest {
 		int width = 73;
 		int height = 22;
 
-		for (ImageProcessor proc : PROCS)
+		for (ImageProcessor proc : IMGLIB_PROCS)
 		{
 			ImageProcessor newProc = proc.createProcessor(width, height);
 			
@@ -1391,10 +1395,10 @@ public class ImgLibProcessorTest {
 		for (int i = 0; i < width*height; i++)
 			newBytes[i] = (byte) ((123 + i) % 256);
 		
-		PROC_PAIRS[0][0].setPixels(newBytes);
-		PROC_PAIRS[0][1].setPixels(newBytes);
+		BYTE_PROCS[0].setPixels(newBytes);
+		BYTE_PROCS[1].setPixels(newBytes);
 		
-		compareData(PROC_PAIRS[0][0], PROC_PAIRS[0][1]);
+		compareData(BYTE_PROCS[0], BYTE_PROCS[1]);
 		
 		// test short proc
 		
@@ -1403,12 +1407,25 @@ public class ImgLibProcessorTest {
 		for (int i = 0; i < width*height; i++)
 			newShorts[i] = (short) ((123 + i) % 65536);
 		
-		PROC_PAIRS[1][0].setPixels(newShorts);
-		PROC_PAIRS[1][1].setPixels(newShorts);
+		SHORT_PROCS[0].setPixels(newShorts);
+		SHORT_PROCS[1].setPixels(newShorts);
 		
-		compareData(PROC_PAIRS[1][0], PROC_PAIRS[1][1]);
+		compareData(SHORT_PROCS[0], SHORT_PROCS[1]);
 
-		// test float proc : TODO
+		if (PROC_PAIRS.length == 2) return;  // TODO - temp - helps avoid float proc tests when desired
+		
+		// test float proc
+
+		float[] newFloats = new float[width*height];
+		
+		for (int i = 0; i < width*height; i++)
+			newFloats[i] = (float) (123 + i);
+		
+		FLOAT_PROCS[0].setPixels(newFloats);
+		FLOAT_PROCS[1].setPixels(newFloats);
+		
+		compareData(FLOAT_PROCS[0], FLOAT_PROCS[1]);
+
 	}
 
 	@Test
@@ -1419,39 +1436,56 @@ public class ImgLibProcessorTest {
 		
 		// byte processor
 
-		byte[] origBytes = (byte[])PROC_PAIRS[0][0].getPixelsCopy();
+		byte[] origBytes = (byte[])BYTE_PROCS[0].getPixelsCopy();
 		
 		byte[] newBytes = new byte [origBytes.length];
 		
 		for (int i = 0; i < newBytes.length; i++)
 			newBytes[i] = (byte) (i % 50);
 		
-		PROC_PAIRS[0][0].setSnapshotPixels(newBytes);
-		PROC_PAIRS[0][0].reset();
+		BYTE_PROCS[0].setSnapshotPixels(newBytes);
+		BYTE_PROCS[0].reset();
 
-		PROC_PAIRS[0][1].setSnapshotPixels(newBytes);
-		PROC_PAIRS[0][1].reset();
+		BYTE_PROCS[1].setSnapshotPixels(newBytes);
+		BYTE_PROCS[1].reset();
 		
-		assertArrayEquals((byte[])PROC_PAIRS[0][0].getPixels(), (byte[])PROC_PAIRS[0][1].getPixels());
+		assertArrayEquals((byte[])BYTE_PROCS[0].getPixels(), (byte[])BYTE_PROCS[1].getPixels());
 		
 		// short processor
 
-		short[] origShorts = (short[])PROC_PAIRS[1][0].getPixelsCopy();
+		short[] origShorts = (short[])SHORT_PROCS[0].getPixelsCopy();
 		
 		short[] newShorts = new short [origShorts.length];
 		
 		for (int i = 0; i < newShorts.length; i++)
 			newShorts[i] = (short) (i % 50);
 		
-		PROC_PAIRS[1][0].setSnapshotPixels(newShorts);
-		PROC_PAIRS[1][0].reset();
+		SHORT_PROCS[0].setSnapshotPixels(newShorts);
+		SHORT_PROCS[0].reset();
 
-		PROC_PAIRS[1][1].setSnapshotPixels(newShorts);
-		PROC_PAIRS[1][1].reset();
+		SHORT_PROCS[1].setSnapshotPixels(newShorts);
+		SHORT_PROCS[1].reset();
 		
-		assertArrayEquals((short[])PROC_PAIRS[1][0].getPixels(), (short[])PROC_PAIRS[1][1].getPixels());
+		assertArrayEquals((short[])SHORT_PROCS[0].getPixels(), (short[])SHORT_PROCS[1].getPixels());
 		
-		// float processor : TODO
+		if (PROC_PAIRS.length == 2) return;  // TODO - temp - helps avoid float proc tests when desired
+
+		// float processor
+
+		float[] origFloats = (float[])FLOAT_PROCS[0].getPixelsCopy();
+		
+		float[] newFloats = new float [origFloats.length];
+		
+		for (int i = 0; i < newFloats.length; i++)
+			newFloats[i] = (float) (i-633.4);
+		
+		FLOAT_PROCS[0].setSnapshotPixels(newFloats);
+		FLOAT_PROCS[0].reset();
+
+		FLOAT_PROCS[1].setSnapshotPixels(newFloats);
+		FLOAT_PROCS[1].reset();
+		
+		Assert.assertFloatArraysEqual((float[])FLOAT_PROCS[0].getPixels(), (float[])FLOAT_PROCS[1].getPixels(),Assert.FLOAT_TOL);
 	}
 
 	@Test
