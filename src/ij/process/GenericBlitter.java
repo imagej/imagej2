@@ -21,9 +21,6 @@ public class GenericBlitter<T extends RealType<T>>
 	{
 		BlitterOperation<T> blitOp = new BlitterOperation<T>(this.ip, other, xloc, yloc, mode, this.transparentColor);
 		
-		//if (mode == Blitter.DIVIDE)
-		//	System.out.println("Here is my breakpoint anchor");
-			
 		Operation.apply(blitOp);
 	}
 	
