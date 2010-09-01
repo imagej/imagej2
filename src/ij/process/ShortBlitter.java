@@ -101,7 +101,7 @@ public class ShortBlitter implements Blitter {
 						if (src==0)
 							dst = 65535;
 						else
-							dst = pixels[dstIndex]/src;
+							dst = (pixels[dstIndex]&0xffff)/src;
 						pixels[dstIndex++] = (short)dst;
 					}
 					break;
