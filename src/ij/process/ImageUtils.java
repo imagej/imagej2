@@ -73,6 +73,11 @@ public class ImageUtils {
 		return getTotalSamples(sampleSpace);
 	}
 
+	public static long getTotalSamples(Image<?> image)
+	{
+		return getTotalSamples(image.getDimensions());
+	}
+	
 	/** return an n-dimensional position array populated from a sample number */
 	public static int[] getPosition(int[] dimensions, long sampleNumber)
 	{

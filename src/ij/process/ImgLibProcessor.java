@@ -55,7 +55,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //     its use throughout the application.
 //   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume X & Y are the first 2 dimensions.
 //     This ideally means that its broken into planes in the last two dimensions. This may just be a convention we use but it may break things too.
-//     Must investigate.
+//     Must investigate. (as a workaround for now we are incrementing indexes from left to right)
 //   Rename ImgLibProcessor to GenericProcessor????
 //   Rename TypeManager to TypeUtils
 //   Rename Image<> to something else like Dataset<> or NumericDataset<>
@@ -64,12 +64,12 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //       Another possibility: just call it a Cursor. And then cursor.get() or cursor.get(int[] pos) or cursor.get(long sampleNumber) 
 //     Create ROICursors directly from an Image<T> and have that ctor setup its own LocalizableByDimCursor for you.
 //     Allow new Image<ByteType>(rows,cols). Have a default factory and a default container and have other constructors that you use in the cases
-//       where you want to specify them. Also allow new Image<T extends RealType<T>>(rows,cols,pixels).
+//       where you want to specify them. Also allow new Image<UnsignedByte>(rows,cols,pixels).
 //     Have a few static ContainerFactories that we can just refer to rather than newing them all the time. Maybe do so also for Types so that
 //       we're not always having to pass a new UnsignedByteType() but rather a static one and if a new one needed the ctor can clone.
 //     In general come up with much shorter names to make use less cumbersome.
 //     It would be good to specify axis order of a cursor's traversal : new Cursor(image,"zxtcy") and then just call cursor.get() as needed.
-//       Also could do cursor.fwd("t" or some enum T) which would iterate forward in the (here T) plane of the image skipping large groups of
+//       Also could do cursor.fwd("t" or some enum value) which would iterate forward in the (here t) plane of the image skipping large groups of
 //       samples at a time. 
 //     Put our ImageUtils class code somewhere in Imglib. Also maybe include the Index and Span classes too. Also TypeManager class.
 
@@ -86,10 +86,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	//****************** Instance variables *******************************************************
 	
 	private final Image<T> imageData;
+	private final int[] planePosition;
 
 	// TODO: How can we use generics here without breaking javac?
 	private final RealType<?> type;
-	private boolean isIntegral;
+	private final boolean isIntegral;
 	private byte[] pixels8;
 	private Snapshot<T> snapshot;
 	private ImageProperties imageProperties;
@@ -132,7 +133,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//assign the properties object for the image
 		this.imageProperties = new ImageProperties();
 		
-		this.imageProperties.setPlanePosition( thisPlanePosition );
+		//this.imageProperties.setPlanePosition( thisPlanePosition );
+		this.planePosition = thisPlanePosition.clone();
 
 		super.width = dims[0]; // TODO: Dimensional labels are safer way to find X
 		super.height = dims[1]; // TODO: Dimensional labels are safer way to find Y
@@ -352,15 +354,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 
 		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different. Also this code may fail for signed 16-bit data.
-		
-		double range = max - min;
-		double c, v1, v2;
+
+		final boolean isUnsignedShort = this.type instanceof UnsignedShortType;
+		final boolean isGenericShort = this.type instanceof GenericShortType<?>;
+		final boolean isIntegral = this.isIntegral;
+		final double range = max - min;
+		final double  c = value;
 		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
-		c = value;
-		for (int y=roiY; y<(roiY+roiHeight); y++) {
-			int i = y * width + roiX;
-			for (int x=roiX; x<(roiX+roiWidth); x++) {
-				v1 = getf(i);
+		double v1, v2;
+		
+		final int xEdge = roiX + roiWidth; 
+		final int yEdge = roiY + roiHeight;
+		for (int y=roiY; y<yEdge; y++)
+		{
+			for (int x=roiX; x<xEdge; x++)
+			{
+				v1 = getd(x,y);
+				
 				switch(op) {
 					case INVERT:
 						v2 = max - (v1 - min);
@@ -375,25 +385,25 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						v2 = v1 * c;
 						break;
 					case AND:
-						if (this.isIntegral)
+						if (isIntegral)
 							v2 = (int)v1 & (int)value;
 						else
 							v2 = v1;
 						break;
 					case OR:
-						if (this.isIntegral)
+						if (isIntegral)
 							v2 = (int)v1 | (int)value;
 						else
 							v2 = v1;
 						break;
 					case XOR:
-						if (this.isIntegral)
+						if (isIntegral)
 							v2 = (int)v1 ^ (int)value;
 						else
 							v2 = v1;
 						break;
 					case GAMMA:
-						if (this.isIntegral)
+						if (isIntegral)
 						{
 							if (range<=0.0 || v1 <= min)
 								v2 = v1;
@@ -409,7 +419,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						}
 						break;
 					case LOG:
-						if (this.isIntegral)
+						if (isIntegral)
 						{
 							if (v1<=0)
 								v2 = 0;
@@ -427,7 +437,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					case EXP:
 						// TODO - this does not match ShortProc for signed data
 						//		- also int type falls thru to float. Since IJ has no true int type don't know best behavior here. 
-						if (this.type instanceof GenericShortType<?>)
+						if (isGenericShort)
 						{
 							v2 = (int)(Math.exp(v1*(Math.log(this.max)/this.max)));
 						}
@@ -436,7 +446,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						break;
 					case SQR:
 							v2 = v1*v1;
-							if (this.type instanceof UnsignedShortType)
+							if (isUnsignedShort)
 								if (v2 > Integer.MAX_VALUE)
 									v2 = 0;
 						break;
@@ -465,12 +475,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					 	v2 = v1;
 				}
 				
-				if (this.isIntegral)
+				if (isIntegral)
 					v2 = TypeManager.boundValueToType(this.type, v2);
 				
-				setd(i++, v2);
+				setd(x, y, v2);
 			}
 		}
+		
 		if (resetMinMax)
 			findMinAndMax();
 	}
@@ -920,13 +931,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return pixels2[x+y*width]&255;
 	}
 
-	// belongs elsewhere
-	
-	private long getNumPixels(Image<T> image)
-	{
-		return ImageUtils.getTotalSamples(image.getDimensions());
-	}
-
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
 		int[] position = Index.create(0,0,planePosition);
@@ -961,7 +965,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
 	{
-		if (numPixels != getNumPixels(theImage))
+		if (numPixels != ImageUtils.getTotalSamples(theImage))
 			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
 
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
@@ -1555,9 +1559,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.type.getMinValue();
 	}
 	
-	public long getNumPixels()
+	public long getTotalSamples()
 	{
-		return getNumPixels(this.imageData);
+		return ImageUtils.getTotalSamples(this.imageData);
 	}
 	
 	@Override
@@ -1639,9 +1643,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
 	}
 
-	public int[] getPlanePosition()
+	public final int[] getPlanePosition()
 	{
-		return this.imageProperties.getPlanePosition();
+		return this.planePosition;
+		// this next line slows down all calculations by 10% !!!!!
+		// return this.imageProperties.getPlanePosition();
 	}
 	
 	@Override
@@ -2319,10 +2325,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int width = getWidth();
 		int height = getHeight();
 		
-		long size = getNumPixels(this.imageData);
+		long size = ImageUtils.getTotalSamples(this.imageData);
 		
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
-			fp = new FloatProcessor(width, height, new float[(int)size], super.cm);
+			fp = new FloatProcessor(width, height, new float[(int)size], super.cm);  // TODO : notice that we can't get more than 2 gig of floats
 		
 		int[] origin = Index.create(0, 0, getPlanePosition());
 		
