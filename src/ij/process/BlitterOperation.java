@@ -39,7 +39,7 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 		this.ip = ip;
 		this.mode = mode;
 		this.transparentValue = tranVal;
-		this.numPixels = other.getNumPixels();
+		this.numPixels = other.getTotalSamples();
 		this.numPixelsInTwentyRows = (this.numPixels * 20) / other.getHeight();
 	}
 	
