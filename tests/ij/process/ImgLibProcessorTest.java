@@ -19,7 +19,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-// TODO - there are a few TODOs sprinkled below
+// TODO - there are a few TODOs sprinkled below 
 //   also:
 //     testCreateImage() does very little testing
 //     testNoise() really untested
