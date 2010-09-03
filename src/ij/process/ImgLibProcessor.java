@@ -91,19 +91,53 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// TODO later: define a FilterOperation class that gets applied. Create various filters from it.
 	
 	//****************** Instance variables *******************************************************
-	
+
+	/** the ImgLib image that contains the plane of data this processor refers to */
 	private final Image<T> imageData;
+	
+	/** the image coordinates of the plane within the ImgLib image. Example: 5d image - this xy plane where z=1,c=2,t=3 - planePosition = {1,2,3} */
 	private final int[] planePosition;
 
+	/** the underlying ImgLib type of the image data */
 	private final RealType<?> type;
-	private final boolean isIntegral;
-	private byte[] pixels8;
-	private Snapshot<T> snapshot;
-	private double backgroundValue;
-	private double min, max;
-	private double fillColor;
-	private int binaryCount, binaryBackground;
 	
+	/** flag for determining if we are working with integral data (or float otherwise) */
+	private final boolean isIntegral;
+	
+	/** flag for determining if we are working with unsigned byte data */
+	private final boolean isUnsignedByte;
+	
+	/** flag for determining if we are working with unsigned short data */
+	private final boolean isUnsignedShort;
+	
+	/** flag for determining if we are working with float data */
+	private final boolean isFloat;
+	
+	/** the 8 bit image created in create8bitImage() - the method and this variable probably belong in base class */
+	private byte[] pixels8;
+	
+	/** the snapshot undo buffer associated with this processor */
+	private Snapshot<T> snapshot;
+	
+	/** value of background. used for various fill operations. only applies to UnsignedByte Type data. */
+	private double backgroundValue;
+	
+	/** the smallest value actually present in the image */
+	private double min;
+
+	/** the largest value actually present in the image */
+	private double max;
+	
+	/** used by some methods that fill in default values. only applies to float data */
+	private double fillColor;
+
+	/** used by erode() and dilate(). for UnsignedByteType data only. */
+	private int binaryCount;
+	
+	/** used by erode() and dilate(). for UnsignedByteType data only. */
+	private int binaryBackground;
+	
+	/** a per thread variable. a cursor used to facilitate fast access to the ImgLib image. */
 	private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
 		new ThreadLocal<LocalizableByDimCursor<T>>()
 		{
@@ -124,16 +158,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		};
 
 	//****************** Constructors *************************************************************
-	
-	public ImgLibProcessor(Image<T> img, T type, int[] thisPlanePosition)
+
+	/** constructor: takes an ImgLib image and the position of the plane within the image */
+	public ImgLibProcessor(Image<T> image, int[] thisPlanePosition)
 	{
-		final int[] dims = img.getDimensions();
+		final int[] dims = image.getDimensions();
 		
 		if (dims.length < 2)
-			throw new IllegalArgumentException("Image must be at least 2-D");
+			throw new IllegalArgumentException("Image must be at least 2-D.");
+		
+		if (dims.length != (thisPlanePosition.length+2))
+			throw new IllegalArgumentException("Image dimensions and input plane position are not compatible.");
 
-		this.imageData = img;
-		this.type = type;
+		this.imageData = image;
+		this.type = ImageUtils.getType(image);
 		
 		this.planePosition = thisPlanePosition.clone();
 
@@ -144,7 +182,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		this.isIntegral = TypeManager.isIntegralType(this.type);
 		
-		if (this.type instanceof UnsignedByteType)
+		this.isUnsignedByte = this.type instanceof UnsignedByteType;
+		
+		this.isUnsignedShort = this.type instanceof UnsignedShortType;
+		
+		this.isFloat = this.type instanceof FloatType;
+		
+		if (this.isUnsignedByte)
 			this.setBackgroundValue(255);
 
 		resetRoi();
@@ -152,9 +196,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		findMinAndMax();
 	}
 
-	public ImgLibProcessor(Image<T> img, T type, long planeNumber)
+	/** constructor: takes an ImgLib image and the integer position of the plane within the image */
+	public ImgLibProcessor(Image<T> img, long planeNumber)
 	{
-		this(img, type, ImageUtils.getPlanePosition(img.getDimensions(), planeNumber));
+		this(img, ImageUtils.getPlanePosition(img.getDimensions(), planeNumber));
 	}
 
 	
@@ -176,11 +221,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
+	/** convolve filter method that works with a 3x3 kernel and applies to any data other than UnsignedByteType */
 	private void convolve3x3GeneralType(int[] kernel)
 	{
 		filterGeneralType(FilterType.CONVOLVE, kernel);
 	}
 	
+	/** convolve filter method that works with a 3x3 kernel and only applies to UnsignedByteType data */
 	private void convolve3x3UnsignedByte(int[] kernel)
 	{
 		int p1, p2, p3,
@@ -236,6 +283,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 	
+	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
 	@Override
 	byte[] create8BitImage()
 	{
@@ -275,7 +323,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.pixels8;
 	}
 
-	private void doLutProcess(int op, double value)
+	/** for UnsignedByteType data only. handles the various Blitter operations by calculating a new lut and applying it. */
+	private void doLutOperation(int op, double value)
 	{
 		double SCALE = 255.0/Math.log(255.0);
 		int v;
@@ -346,17 +395,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		applyTable(lut);
 	}
 
-	private void doProcess(int op, double value)
+	/** for any data type other than UnsignedByteType. handles the various Blitter operations. */
+	private void doPointOperation(int op, double value)
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
-			doLutProcess(op,value);
+			doLutOperation(op,value);
 			return;
 		}
 
 		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different. Also this code may fail for signed 16-bit data.
 
-		final boolean isUnsignedShort = this.type instanceof UnsignedShortType;
+		final boolean isUnsignedShort = this.isUnsignedShort;
 		final boolean isGenericShort = this.type instanceof GenericShortType<?>;
 		final boolean isIntegral = this.isIntegral;
 		final double range = max - min;
@@ -487,6 +537,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			findMinAndMax();
 	}
 
+	/** called by filterUnsignedByte(). */
 	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
 	{
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
@@ -593,6 +644,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** applies the various filter operations to data other than UnsignedByteType */
 	private void filterGeneralType(FilterType type, int[] kernel)
 	{
 		double v1, v2, v3;           //input pixel values around the current pixel
@@ -616,7 +668,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int inc = roiHeight/25;
 		if (inc<1) inc = 1;
 		
-		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
+		final boolean isGenericShort = this.type instanceof GenericShortType<?>;
+		
+		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), this.planePosition);
 		int xEnd = roiX + roiWidth;
 		int yEnd = roiY + roiHeight;
 		for (int y=roiY; y<yEnd; y++) {
@@ -644,7 +698,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						v7 = v8; v8 = v9;
 						v9 = pixels2[p9];
 						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
-						if (this.type instanceof GenericShortType<?>)
+						if (isGenericShort)
 						{
 							val += 4;
 							val /= 9;
@@ -697,6 +751,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 	
+	/** applies the various filter operations to UnsignedByteType data*/
 	private void filterUnsignedByte(FilterType type)
 	{
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
@@ -743,7 +798,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					case MEDIAN_FILTER:
 						values[1]=p1; values[2]=p2; values[3]=p3; values[4]=p4; values[5]=p5;
 						values[6]=p6; values[7]=p7; values[8]=p8; values[9]=p9;
-						sum = findMedian(values);
+						sum = find5thOf9(values);
 						break;
 					case MIN:
 						sum = p5;
@@ -819,9 +874,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//showProgress(1.0);
 	}
 	
-	// copied from ByteProcessor - really belongs elsewhere
-	private int findMedian(int[] values)
+	/** find the median value of a list of exactly 9 values stored in a 10 element array from 1..9. copied from ByteProcessor::findMedian() */
+	private int find5thOf9(int[] values)
 	{
+		if (values.length != 10)
+			throw new IllegalArgumentException("find5thOf9(): input array length length must be 10");
+
 		//Finds the 5th largest of 9 values
 		for (int i = 1; i <= 4; i++) {
 			int max = 0;
@@ -840,12 +898,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return max;
 	}
 
+	/** find the minimum and maximum values present in this plane of the image data */
 	private void findMinAndMax()
 	{
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
 		//get the current image data
-		int[] imageOrigin = Index.create(0, 0, getPlanePosition());
+		int[] imageOrigin = Index.create(0, 0, this.planePosition);
 		int[] imageSpan = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 
 		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
@@ -858,7 +917,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 	
 	// NOTE - eliminating bad cast warnings in this method by explicit casts causes Hudson tests to fail
-	
+	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
 		int w = image.getDimension(0);
@@ -907,6 +966,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ImageUtils.getPlaneData(image, w, h, planePos);
 	}
 	
+	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns nearest edge pixel. */
 	private int getEdgePixel(byte[] pixels2, int x, int y)
 	{
 		if (x<=0) x = 0;
@@ -916,6 +976,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return pixels2[x+y*width]&255;
 	}
 
+	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns the background color. */
 	private int getEdgePixel0(byte[] pixels2, int background, int x, int y)
 	{
 		if (x<0 || x>width-1 || y<0 || y>height-1)
@@ -924,6 +985,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return pixels2[x+y*width]&255;
 	}
 
+	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns the foreground color. */
 	private int getEdgePixel1(byte[] pixels2, int foreground, int x, int y)
 	{
 		if (x<0 || x>width-1 || y<0 || y>height-1)
@@ -932,6 +994,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return pixels2[x+y*width]&255;
 	}
 
+	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
 		int[] position = Index.create(0,0,planePosition);
@@ -964,9 +1027,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
 	}
 	
+	/** sets the min and max variables associated with this processor and does nothing else! */
+	private void setMinAndMaxOnly(double min, double max)
+	{
+		this.min = min;
+		this.max = max;
+		
+		// TODO : do I want the this.isIntegral code from setMinAndMax() in here too?
+	}
+	
+	/** sets the pixels of a plane in an image. called by setImagePlanePixels(). input pixels' type info must have been determined earlier. */
 	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
 	{
-		if (numPixels != ImageUtils.getTotalSamples(theImage))
+		if (numPixels != getTotalSamples())
 			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
 
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
@@ -976,49 +1049,55 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Operation.apply(setOp);
 	}
 	
-	// Throws an exception if the LUT length is wrong for the pixel layout type
+	/** verifies that the passed in lut is compatible with the current data type. Throws an exception if the lut length is wrong
+	 *  for the pixel layout type.
+	 */
 	private void verifyLutLengthOkay( int[] lut )
 	{
-		if ( this.type instanceof GenericByteType< ? > ) {
-			
+		if ( this.type instanceof GenericByteType< ? > )
+		{
 			if (lut.length!=256)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+				throw new IllegalArgumentException("lut.length != expected length for type " + this.type );
 		}
-		else if( this.type instanceof GenericShortType< ? > ) {
-			
+		else if( this.type instanceof GenericShortType< ? > )
+		{
 			if (lut.length!=65536)
-				throw new IllegalArgumentException("lut.length != expected length for type " + type );
+				throw new IllegalArgumentException("lut.length != expected length for type " + this.type );
 		}
-		else {
-			
-			throw new IllegalArgumentException("LUT NA for type " + type ); 
+		else
+		{
+			throw new IllegalArgumentException("lut not applicable for type " + this.type ); 
 		}
 	}
 	
 	//****************** public methods *******************************************************
 
+	/** apply the ABS point operation over the current ROI area of the current plane of data */
 	@Override
 	public void abs()
 	{
-		doProcess(ABS, 0.0);
+		doPointOperation(ABS, 0.0);
 	}
 
+	/** apply the ADD point operation over the current ROI area of the current plane of data */
 	@Override
 	public void add(int value)
 	{
-		doProcess(ADD, (double)value);
+		doPointOperation(ADD, (double)value);
 	}
 	
+	/** apply the ADD point operation over the current ROI area of the current plane of data */
 	@Override
 	public void add(double value)
 	{
-		doProcess(ADD, value);
+		doPointOperation(ADD, value);
 	}
 	
+	/** apply the AND point operation over the current ROI area of the current plane of data */
 	@Override
 	public void and(int value)
 	{
-		doProcess(AND,value);
+		doPointOperation(AND,value);
 	}
 
 	@Override
@@ -1038,7 +1117,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Rectangle roi = getRoi();
 		
-		int[] index = Index.create(roi.x, roi.y, getPlanePosition());
+		int[] index = Index.create(roi.x, roi.y, this.planePosition);
 		int[] span = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 
 		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
@@ -1068,7 +1147,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Image<T> image = imageData.createNewImage(new int[]{ inputProc.getWidth(), inputProc.getHeight() } );
 		
-		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, (T)type, 0);  // cast required!
+		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, 0);
 		
 		boolean oldIntegralData = false;
 		if ((inputProc instanceof ByteProcessor) || (inputProc instanceof ShortProcessor))
@@ -1103,7 +1182,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 			convolve3x3UnsignedByte(kernel);
 		else
 			convolve3x3GeneralType(kernel);
@@ -1147,7 +1226,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public ImageProcessor createProcessor(int width, int height)
 	{
 		Image<T> image = this.imageData.createNewImage(new int[]{width,height});
-		ImageProcessor ip2 = new ImgLibProcessor<T>(image, (T)this.type, 0);  // cast required!
+		ImageProcessor ip2 = new ImgLibProcessor<T>(image, 0);
 		ip2.setColorModel(getColorModel());
 		// TODO - ByteProcessor does this conditionally. Do we mirror here?
 		ip2.setMinAndMax(getMin(), getMax());
@@ -1160,7 +1239,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{	
 		Rectangle roi = getRoi();
 
-		int[] imageOrigin = Index.create(roi.x, roi.y, getPlanePosition());
+		int[] imageOrigin = Index.create(roi.x, roi.y, this.planePosition);
 		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 		
 		int[] newImageOrigin = Index.create(2);
@@ -1170,13 +1249,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, newImage, newImageOrigin, imageSpan);
 		
-		return new ImgLibProcessor<T>(newImage, (T)this.type, 0);  // cast required!
+		return new ImgLibProcessor<T>(newImage, 0);
 	}
 	
 	@Override
 	public void dilate()
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			if (isInvertedLut())
 				filter(FilterType.MAX);
@@ -1188,7 +1267,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// not an override : mirrors code in ByteProcessor
 	public void dilate(int count, int background)
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			binaryCount = count;
 			binaryBackground = background;
@@ -1216,7 +1295,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImageProcessor proc = createProcessor(width, height);
 
-		int[] origin = Index.create(0, 0, getPlanePosition());
+		int[] origin = Index.create(0, 0, this.planePosition);
 		
 		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
 		
@@ -1230,7 +1309,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void erode()
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			if (isInvertedLut())
 				filter(FilterType.MIN);
@@ -1242,7 +1321,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	// not an override : mirrors code in ByteProcessor
 	public void erode(int count, int background)
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			binaryCount = count;
 			binaryBackground = background;
@@ -1250,18 +1329,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** apply the EXP point operation over the current ROI area of the current plane of data */
 	@Override
 	public void exp()
 	{
-		doProcess(EXP, 0.0);
+		doPointOperation(EXP, 0.0);
 	}
 	
+	/** apply the FILL point operation over the current ROI area of the current plane of data */
 	@Override
 	public void fill()
 	{
-		doProcess(FILL,0.0);
+		doPointOperation(FILL,0.0);
 	}
 
+	/** fills the current ROI area of the current plane of data with the fill color wherever the input mask is nonzero */
 	@Override
 	public void fill(ImageProcessor mask)
 	{
@@ -1270,7 +1352,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
-		Rectangle roi = getRoi();
+		final Rectangle roi = getRoi();
 
 		if (mask.getWidth()!=roi.width || mask.getHeight()!=roi.height)
 			return;
@@ -1295,15 +1377,17 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	// not an override
+	// not an override : way to phase out passing in filter numbers
+	/** run specified filter (a FilterType) on current ROI area of current plane data */
 	public void filter(FilterType type)
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 			filterUnsignedByte(type);
 		else
 			filterGeneralType(type,null);
 	}
 
+	/** run specified filter (an int) on current ROI area of current plane data */
 	@Deprecated
 	@Override
 	public void filter(int type)
@@ -1332,8 +1416,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final LocalizableByDimCursor<T> cursor2 = this.imageData.createLocalizableByDimCursor( );
 		
 		// allocate arrays that will hold position variables
-		final int[] position1 = Index.create(0, 0, getPlanePosition());
-		final int[] position2 = Index.create(0, 0, getPlanePosition());
+		final int[] position1 = Index.create(0, 0, this.planePosition);
+		final int[] position2 = Index.create(0, 0, this.planePosition);
 		
 		// calc some useful variables in regards to our region of interest.
 		Rectangle roi = getRoi();
@@ -1386,18 +1470,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		cursor2.close();
 	}
 
+	/** apply the GAMMA point operation over the current ROI area of the current plane of data */
 	@Override
 	public void gamma(double value)
 	{
-		doProcess(GAMMA, value);
+		doPointOperation(GAMMA, value);
 	}
 	
+	/** get the pixel value at x,y as an int. for float data it returns float encoded into int bits */
 	@Override
 	public int get(int x, int y) 
 	{	
 		double value;
 		
-		int[] position = Index.create(x, y, getPlanePosition());
+		int[] position = Index.create(x, y, this.planePosition);
 		
 		final LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
@@ -1414,6 +1500,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return Float.floatToIntBits((float)value);
 	}
 
+	/** get the pixel value at index as an int. for float data it returns float encoded into int bits */
 	@Override
 	public int get(int index)
 	{
@@ -1448,10 +1535,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return q;
 	}
 	
+	/** get the pixel value at x,y as a double. */
 	// not an override
 	public double getd(int x, int y)
 	{
-		int[] position = Index.create(x, y, getPlanePosition());
+		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
@@ -1464,6 +1552,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// do not close cursor - using cached one
 	}
 
+	/** get the pixel value at index as a double. */
 	// not an override
 	public double getd(int index)
 	{
@@ -1473,12 +1562,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getd(x, y);
 	}
 
+	/** get the pixel value at x,y as a float. */
 	@Override
 	public float getf(int x, int y) 
 	{
 		float value;
 		
-		int[] position = Index.create(x, y, getPlanePosition());
+		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
@@ -1491,6 +1581,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return value;
 	}
 
+	/** get the pixel value at index as a float. */
 	@Override
 	public float getf(int index)
 	{
@@ -1500,20 +1591,25 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getf(x, y) ;
 	}
 
+	/** get the current background value. always 0 if not UnsignedByte data */ 
 	@Override
 	public double getBackgroundValue()
 	{
-		return this.backgroundValue;
+		if (this.isUnsignedByte)
+			return this.backgroundValue;
+		
+		return 0.0;
 	}
 
+	/** calculate the histogram of the current ROI area of the current plane. */
 	@Override
 	public int[] getHistogram()
 	{
-		if ((type instanceof UnsignedByteType) || (type instanceof UnsignedShortType))
+		if ((this.isUnsignedByte) || (this.isUnsignedShort))
 		{
-			int[] origin = Index.create(0, 0, getPlanePosition());
+			int[] origin = Index.create(super.roiX, super.roiY, this.planePosition);
 			
-			int[] span = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+			int[] span = Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
 			
 			int lutSize = (int) (this.getMaxAllowedValue() + 1);
 	
@@ -1528,11 +1624,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 	
 	// not an override
+	/** returns the ImgLib image this processor is associated with */
 	public Image<T> getImage()
 	{
 		return this.imageData;
 	}
 	
+	/** returns an interpolated pixel value from double coordinates using current interpolation method */
 	@Override
 	public double getInterpolatedPixel(double x, double y)
 	{
@@ -1547,6 +1645,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** returns the maximum data value currently present in the image plane */
 	@Override
 	public double getMax() 
 	{
@@ -1554,11 +1653,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override
+	/** returns the theoretical maximum possible sample value for this type of processor */ 
 	public double getMaxAllowedValue() 
 	{
 		return this.type.getMaxValue();
 	}
 	
+	/** returns the maximum data value currently present in the image plane */
 	@Override
 	public double getMin() 
 	{
@@ -1566,17 +1667,20 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override
+	/** returns the theoretical minimum possible sample value for this type of processor */ 
 	public double getMinAllowedValue() 
 	{
 		return this.type.getMinValue();
 	}
 	
 	// not an override
+	/** returns the number of samples in my plane */ 
 	public long getTotalSamples()
 	{
-		return ImageUtils.getTotalSamples(this.imageData);
+		return ((long) super.width) * super.height;
 	}
 	
+	/** returns the pixel at x,y. if coords are out of bounds returns 0. */
 	@Override
 	public int getPixel(int x, int y)
 	{
@@ -1585,6 +1689,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return 0;
 	}
 
+	/** given x,y, double coordinates this returns an interpolated pixel using the current interpolations methods. unlike getInterpolatedPixel()
+	 *  which assumes you're doing some kind of interpolation, this method will return nearest neighbors when no interpolation selected. note
+	 *  that it returns as an int so float values are encoded as int bits.
+	 */
 	@Override
 	public int getPixelInterpolated(double x, double y)
 	{
@@ -1611,6 +1719,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return getPixel((int)(x+0.5), (int)(y+0.5));
 	}
 
+	/** returns the pixel value at x,y as a float. if x,y, out of bounds returns 0. */
 	@Override
 	public float getPixelValue(int x, int y)
 	{
@@ -1624,14 +1733,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return 0f;
 	}
 
+	/** returns a copy of the current plane data pixels as an array of the appropriate type */
 	@Override
 	public Object getPixels()
 	{
 		// TODO: could add a special case for single-image 8-bit array-backed data
 		// TODO: special case for new container
-		return getCopyOfPixelsFromImage(this.imageData, this.type, getPlanePosition());
+		return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
 	}
 
+	/** returns a copy of some pixels as an array of the appropriate type. depending upon super class variable "snapshotCopyMode"
+	 *  it will either copy current plane data or it will copy current snapshot data.
+	 */
 	@Override
 	public Object getPixelsCopy()
 	{
@@ -1641,30 +1754,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 			Image<T> snapStorage = this.snapshot.getStorage();
 			
-			int[] planePosOfZero = Index.create(getPlanePosition().length);  // this is correct!
+			int[] planePosOfZero = Index.create(this.planePosition.length);  // this is correct!
 			
 			return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero); 
 		}
 		else
 		{
-			return getCopyOfPixelsFromImage(this.imageData, this.type, getPlanePosition());
+			return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
 		}
 	}
 
 	// not an override
+	/** return the current plane data pixels as an array of doubles. converts types as needed. */
 	public double[] getPlaneData()
 	{
-		return ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
+		return ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), this.planePosition);
 	}
 
 	// not an override
-	public final int[] getPlanePosition()
+	/** return the plane position of this processor within its parent ImgLib image */
+	public int[] getPlanePosition()
 	{
-		return this.planePosition;
-		// this next line slows down all calculations by 10% !!!!!
-		// return this.imageProperties.getPlanePosition();
+		return this.planePosition.clone();
 	}
 	
+	/** returns a copy of the pixels in the current snapshot */
 	@Override
 	public Object getSnapshotPixels()
 	{
@@ -1673,59 +1787,68 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Image<T> snapStorage = this.snapshot.getStorage();
 		
-		int[] planePosOfZero = Index.create(getPlanePosition().length);  // this is correct!
+		int[] planePosOfZero = Index.create(this.planePosition.length);  // this is correct!
 
 		return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero);
 	}
 
 	// not an override
+	/** return the underlying ImgLib type of this processor */ 
 	public RealType<?> getType()
 	{
 		return this.type;
 	}
 	
+	/** apply the INVERT point operation over the current ROI area of the current plane of data */
 	@Override
 	public void invert()
 	{
 		if (this.isIntegral)
 			resetMinAndMax();
 		
-		doProcess(INVERT, 0.0);
+		doPointOperation(INVERT, 0.0);
 	}
 	
+	/** apply the LOG point operation over the current ROI area of the current plane of data */
 	@Override
 	public void log()
 	{
-		doProcess(LOG, 0.0);
+		doPointOperation(LOG, 0.0);
 	}
 	
+	/** apply the MAXIMUM point operation over the current ROI area of the current plane of data */
 	@Override
 	public void max(double value)
 	{
-		doProcess(MAXIMUM, value);
+		doPointOperation(MAXIMUM, value);
 	}
 
+	
+	/** run the MEDIAN_FILTER on current ROI area of current plane data. only applies to UnsignedByte data */
 	@Override
 	public void medianFilter()
 	{
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			filter(FilterType.MEDIAN_FILTER);
 		}
 	}
 
+	/** apply the MINIMUM point operation over the current ROI area of the current plane of data */
 	@Override
 	public void min(double value)
 	{
-		doProcess(MINIMUM, value);
+		doPointOperation(MINIMUM, value);
 	}
 	
+	/** apply the MULT point operation over the current ROI area of the current plane of data */
 	@Override
 	public void multiply(double value)
 	{
-		doProcess(MULT, value);
+		doPointOperation(MULT, value);
 	}
 	
+	/** add noise to the current ROI area of current plane data. */
 	@Override
 	public void noise(double range)
 	{
@@ -1753,12 +1876,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 
+	/** apply the OR point operation over the current ROI area of the current plane of data */
 	@Override
 	public void or(int value)
 	{
-		doProcess(OR,value);
+		doPointOperation(OR,value);
 	}
 	
+	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int. if x,y, out of bounds do nothing. */
 	@Override
 	public void putPixel(int x, int y, int value)
 	{
@@ -1774,6 +1899,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** set the pixel at x,y to the given double value. if integral data the value is biased by 0.5 do force rounding.
+	 *  if x,y, out of bounds do nothing.
+	 */
 	@Override
 	public void putPixelValue(int x, int y, double value)
 	{
@@ -1789,6 +1917,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** sets the current plane data to that stored in the snapshot */
 	@Override
 	public void reset()
 	{
@@ -1799,6 +1928,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** sets the current plane data to that stored in the snapshot wherever the mask is nonzero */
 	@Override
 	public void reset(ImageProcessor mask)
 	{
@@ -1815,7 +1945,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] snapOrigin = Index.create(roi.x, roi.y, new int[snapData.getNumDimensions()-2]);
 		int[] snapSpan = Span.singlePlane(roi.width, roi.height, snapData.getNumDimensions());
 
-		int[] imageOrigin = Index.create(roi.x, roi.y, getPlanePosition());
+		int[] imageOrigin = Index.create(roi.x, roi.y, this.planePosition);
 		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 
 		
@@ -1824,30 +1954,39 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Operation.apply(resetOp);
 	}
 	
+	/** create a new processor that has specified dimensions. populate it's data with interpolated pixels from this processor's data. */
 	@Override
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
 		if (roiWidth==dstWidth && roiHeight==dstHeight)
-			if (this.type instanceof UnsignedByteType)
+			if (this.isUnsignedByte)
 				return crop();
 
 		double srcCenterX = roiX + roiWidth/2.0;
 		double srcCenterY = roiY + roiHeight/2.0;
+		
 		double dstCenterX = dstWidth/2.0;
 		double dstCenterY = dstHeight/2.0;
+		
 		double xScale = (double)dstWidth/roiWidth;
 		double yScale = (double)dstHeight/roiHeight;
+		
 		if (interpolationMethod!=NONE) {
 			dstCenterX += xScale/2.0;
 			dstCenterY += yScale/2.0;
 		}
+		
 		ImgLibProcessor<?> ip2 = (ImgLibProcessor<?>)createProcessor(dstWidth, dstHeight);
+		
 		double xs, ys;
-		if (interpolationMethod==BICUBIC) {
-			for (int y=0; y<=dstHeight-1; y++) {
+		if (interpolationMethod==BICUBIC)
+		{
+			for (int y=0; y<=dstHeight-1; y++)
+			{
 				ys = (y-dstCenterY)/yScale + srcCenterY;
 				int index = y*dstWidth;
-				for (int x=0; x<=dstWidth-1; x++) {
+				for (int x=0; x<=dstWidth-1; x++)
+				{
 					xs = (x-dstCenterX)/xScale + srcCenterX;
 					double value = getBicubicInterpolatedPixel(xs, ys, this);
 					if (this.isIntegral)
@@ -1859,19 +1998,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				}
 				if (y%30==0) showProgress((double)y/dstHeight);
 			}
-		} else {  // not BICUBIC
+		}
+		else
+		{  // not BICUBIC
 			double xlimit = width-1.0, xlimit2 = width-1.001;
 			double ylimit = height-1.0, ylimit2 = height-1.001;
 			int index1, index2;
-			for (int y=0; y<=dstHeight-1; y++) {
+			for (int y=0; y<=dstHeight-1; y++)
+			{
 				ys = (y-dstCenterY)/yScale + srcCenterY;
-				if (interpolationMethod==BILINEAR) {
+				if (interpolationMethod==BILINEAR)
+				{
 					if (ys<0.0) ys = 0.0;
 					if (ys>=ylimit) ys = ylimit2;
 				}
 				index1 = width*(int)ys;
 				index2 = y*dstWidth;
-				for (int x=0; x<=dstWidth-1; x++) {
+				for (int x=0; x<=dstWidth-1; x++)
+				{
 					xs = (x-dstCenterX)/xScale + srcCenterX;
 					if (interpolationMethod==BILINEAR)
 					{
@@ -1881,10 +2025,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						if (this.isIntegral)
 						{
 							value += 0.5;
-							//value = ((byte) value) & ((byte)this.type.getMaxValue());
-							//value = (byte)(((byte) value) & (255));  // 128 goes to -128
-							//value = ((int) value) & ((int)this.type.getMaxValue());
-							value = TypeManager.boundValueToType(this.type, value);  // TODO - is this correct?????
+							value = TypeManager.boundValueToType(this.type, value);
 						}
 						ip2.setd(index2++, value);
 					}
@@ -1901,17 +2042,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ip2;
 	}
 
+	/** rotates pixels by given angle. destructive. interpolates pixel values as needed. */
 	@Override
 	public void rotate(double angle)
 	{
 		// TODO - for some reason Float and Short don't check for rotate by 0.0 and their results are different than doing nothing!!!!!
-		if ((angle%360==0) && (this.type instanceof UnsignedByteType))
+		if ((angle%360==0) && (this.isUnsignedByte))
 			return;
+		
 		Object pixels2 = getPixelsCopy();
+		
 		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
-		if (interpolationMethod==BICUBIC) {
+		
+		if (interpolationMethod==BICUBIC)
 			ip2.setBackgroundValue(getBackgroundValue());
-		}
+
 		double centerX = roiX + (roiWidth-1)/2.0;
 		double centerY = roiY + (roiHeight-1)/2.0;
 		int xMax = roiX + this.roiWidth - 1;
@@ -1930,12 +2075,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		double xlimit = width-1.0, xlimit2 = width-1.001;
 		double ylimit = height-1.0, ylimit2 = height-1.001;
 		
-		if (interpolationMethod==BICUBIC) {
-			for (int y=roiY; y<(roiY + roiHeight); y++) {
+		if (interpolationMethod==BICUBIC)
+		{
+			for (int y=roiY; y<(roiY + roiHeight); y++)
+			{
 				index = y*width + roiX;
 				tmp3 = tmp1 - y*sa + centerX;
 				tmp4 = tmp2 + y*ca + centerY;
-				for (int x=roiX; x<=xMax; x++) {
+				for (int x=roiX; x<=xMax; x++)
+				{
 					xs = x*ca + tmp3;
 					ys = x*sa + tmp4;
 					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
@@ -1948,12 +2096,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				}
 				if (y%30==0) showProgress((double)(y-roiY)/roiHeight);
 			}
-		} else {
-			for (int y=roiY; y<(roiY + roiHeight); y++) {
+		}
+		else
+		{
+			for (int y=roiY; y<(roiY + roiHeight); y++)
+			{
 				index = y*width + roiX;
 				tmp3 = tmp1 - y*sa + centerX;
 				tmp4 = tmp2 + y*ca + centerY;
-				for (int x=roiX; x<=xMax; x++) {
+				for (int x=roiX; x<=xMax; x++)
+				{
 					xs = x*ca + tmp3;
 					ys = x*sa + tmp4;
 					if ((xs>=-0.01) && (xs<dwidth) && (ys>=-0.01) && (ys<dheight))
@@ -1993,6 +2145,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 
+	/** scale an image in x and y by given factors. destructive. calculates interpolated pixels as needed */
 	@Override
 	public void scale(double xScale, double yScale)
 	{
@@ -2001,33 +2154,47 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		double xCenter = roiX + roiWidth/2.0;
 		double yCenter = roiY + roiHeight/2.0;
+		
 		int xmin, xmax, ymin, ymax;
-		if ((xScale>1.0) && (yScale>1.0)) {
+		if ((xScale>1.0) && (yScale>1.0))
+		{
 			//expand roi
 			xmin = (int)(xCenter-(xCenter-roiX)*xScale);
 			if (xmin<0) xmin = 0;
+			
 			xmax = xmin + (int)(roiWidth*xScale) - 1;
 			if (xmax>=width) xmax = width - 1;
+			
 			ymin = (int)(yCenter-(yCenter-roiY)*yScale);
 			if (ymin<0) ymin = 0;
+			
 			ymax = ymin + (int)(roiHeight*yScale) - 1;
 			if (ymax>=height) ymax = height - 1;
-		} else {
+		}
+		else
+		{
 			xmin = roiX;
 			xmax = roiX + roiWidth - 1;
 			ymin = roiY;
 			ymax = roiY + roiHeight - 1;
 		}
+		
 		Object pixels2 = getPixelsCopy();
+		
 		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
+		
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
 		int index1, index2, xsi, ysi;
 		double ys, xs;
-		if (interpolationMethod==BICUBIC) {
-			for (int y=ymin; y<=ymax; y++) {
+		
+		if (interpolationMethod==BICUBIC)
+		{
+			for (int y=ymin; y<=ymax; y++)
+			{
 				ys = (y-yCenter)/yScale + yCenter;
 				int index = y*width + xmin;
-				for (int x=xmin; x<=xmax; x++) {
+				for (int x=xmin; x<=xmax; x++)
+				{
 					xs = (x-xCenter)/xScale + xCenter;
 					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
 					if (this.isIntegral)
@@ -2039,29 +2206,34 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				}
 				if (y%30==0) showProgress((double)(y-ymin)/height);
 			}
-		} else {
+		}
+		else
+		{
 			double xlimit = width-1.0, xlimit2 = width-1.001;
 			double ylimit = height-1.0, ylimit2 = height-1.001;
-			for (int y=ymin; y<=ymax; y++) {
+			for (int y=ymin; y<=ymax; y++)
+			{
 				ys = (y-yCenter)/yScale + yCenter;
 				ysi = (int)ys;
 				if (ys<0.0) ys = 0.0;			
 				if (ys>=ylimit) ys = ylimit2;
 				index1 = y*width + xmin;
 				index2 = width*(int)ys;
-				for (int x=xmin; x<=xmax; x++) {
+				for (int x=xmin; x<=xmax; x++)
+				{
 					xs = (x-xCenter)/xScale + xCenter;
 					xsi = (int)xs;
 					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
 					{
-						if (this.type instanceof UnsignedByteType)
+						if (this.isUnsignedByte)
 							setd(index1++, this.getBackgroundValue());
 						else
 							setd(index1++, this.min);
 					}
 					else  // interpolated pixel within bounds of image
 					{
-						if (interpolationMethod==BILINEAR) {
+						if (interpolationMethod==BILINEAR)
+						{
 							if (xs<0.0) xs = 0.0;
 							if (xs>=xlimit) xs = xlimit2;
 							double value = ip2.getInterpolatedPixel(xs, ys);
@@ -2084,10 +2256,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 
+	/** set the pixel at x,y, to provided int value. if float data then value is a float encoded as an int */
 	@Override
 	public void set(int x, int y, int value) 
 	{
-		int[] position = Index.create(x, y, getPlanePosition());
+		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
@@ -2103,6 +2276,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// do not close cursor - using cached one
 	}
 
+	/** set the pixel at index to provided int value. if float data then value is a float encoded as an int */
 	@Override
 	public void set(int index, int value) 
 	{
@@ -2112,11 +2286,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		set( x, y, value) ;
 	}
 
+	/** set the current background value. only applies to UnsignedByte data */ 
 	@Override
 	public void setBackgroundValue(double value) 
 	{
 		// only set for unsigned byte type like ImageJ (maybe need to extend to integral types and check min/max pixel ranges)
-		if (this.type instanceof UnsignedByteType)
+		if (this.isUnsignedByte)
 		{
 			if (value < 0) value = 0;
 			if (value > 255) value = 255;
@@ -2125,6 +2300,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** set the current foreground value. */ 
 	@Override
 	public void setColor(Color color)
 	{
@@ -2174,18 +2350,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override
-	public void setd(int index, double value)
-	{
-		int width = getWidth();
-		int x = index % width;
-		int y = index / width;
-		setd( x, y, value);
-	}
-
-	// not an override
+	/** set the pixel at x,y to the provided double value. truncates values for integral types. */
 	public void setd(int x, int y, double value)
 	{
-		int[] position = Index.create(x, y, getPlanePosition());
+		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
 		
@@ -2205,6 +2373,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// do not close cursor - using cached one
 	}
 
+	// not an override
+	/** set the pixel at index to the provided double value. truncates values for integral types. */
+	public void setd(int index, double value)
+	{
+		int width = getWidth();
+		int x = index % width;
+		int y = index / width;
+		setd( x, y, value);
+	}
+
+	/** set the pixel at x,y to the given float value. truncates values for integral types. */
+	@Override
+	public void setf(int x, int y, float value)
+	{
+		setd(x, y, (double)value);
+	}
+
+	/** set the pixel at index to the given float value. truncates values for integral types. */
 	@Override
 	public void setf(int index, float value)
 	{
@@ -2214,21 +2400,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setf( x, y, value);
 	}
 
-	@Override
-	public void setf(int x, int y, float value)
-	{
-		setd(x, y, (double)value);
-	}
-
-	// not an override. helper method that has no side effects.
-	public void setMinAndMaxOnly(double min, double max)
-	{
-		this.min = min;
-		this.max = max;
-		
-		// TODO : do I want the this.isIntegral code from next method in here too?
-	}
-	
+	/** set min and max values to provided values. resets the threshold as needed. if passed (0,0) it will calculate actual min and max 1st. */
 	@Override
 	public void setMinAndMax(double min, double max)
 	{
@@ -2252,12 +2424,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		resetThreshold();
 	}
 
+	/** set the current image plane data to the provided pixel values */
 	@Override
 	public void setPixels(Object pixels)
 	{
-		setImagePlanePixels(this.imageData, getPlanePosition(), pixels);
+		setImagePlanePixels(this.imageData, this.planePosition, pixels);
 	}
 
+	/** set the current image plane data to the pixel values of the provided FloatProcessor. channelNumber is ignored. */
 	@Override
 	public void setPixels(int channelNumber, FloatProcessor fp)
 	{
@@ -2266,6 +2440,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setPixels(fp.getPixels());
 	}
 
+	/** sets the current snapshot pixels to the provided pixels. it copies data rather than changing snapshot reference. */
 	@Override
 	public void setSnapshotPixels(Object pixels)
 	{
@@ -2280,6 +2455,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setImagePlanePixels(snapStorage, planePosition, pixels);
 	}
 
+	/** sets the current fill/foreground value */
 	@Override
 	public void setValue(double value) 
 	{
@@ -2290,28 +2466,32 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** copy the current pixels to the snapshot array */
 	@Override
 	public void snapshot() 
 	{
-		int[] origins = Index.create(0, 0, getPlanePosition());
+		int[] origins = Index.create(0, 0, this.planePosition);
 
 		int[] spans = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 		
 		this.snapshot = new Snapshot<T>(this.imageData, origins, spans);
 	}
 
+	/** apply the SQR point operation over the current ROI area of the current plane of data */
 	@Override
 	public void sqr()
 	{
-		doProcess(SQR, 0.0);
+		doPointOperation(SQR, 0.0);
 	}
 	
+	/** apply the SQRT point operation over the current ROI area of the current plane of data */
 	@Override
 	public void sqrt()
 	{
-		doProcess(SQRT, 0.0);
+		doPointOperation(SQRT, 0.0);
 	}
 
+	/** calculates actual min and max values present and resets the threshold */
 	@Override
 	public void resetMinAndMax()
 	{
@@ -2322,32 +2502,41 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		resetThreshold();
 	}
 
+	/** makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
+	 *  only applies to integral data types.
+	 */
 	@Override
 	public void threshold(int thresholdLevel) 
 	{
 		if (!this.isIntegral)
 			return;
 
-		int[] origin = Index.create(0, 0, getPlanePosition());
+		int[] origin = Index.create(0, 0, this.planePosition);
 		int[] span = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
 		
 		ThresholdOperation<T> threshOp = new ThresholdOperation<T>(this.imageData,origin,span,thresholdLevel);
 		
 		Operation.apply(threshOp);
 	}
-	
+
+	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
 		int width = getWidth();
 		int height = getHeight();
 		
-		long size = ImageUtils.getTotalSamples(this.imageData);
+		long size = getTotalSamples();
+		
+		if (size > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("desired size of pixel array is too large");
+		
+		int allocatedSize = (int) size;
 		
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
-			fp = new FloatProcessor(width, height, new float[(int)size], super.cm);  // TODO : notice that we can't get more than 2 gig of floats
+			fp = new FloatProcessor(width, height, new float[allocatedSize], super.cm);
 		
-		int[] origin = Index.create(0, 0, getPlanePosition());
+		int[] origin = Index.create(0, 0, this.planePosition);
 		
 		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
 		
@@ -2363,9 +2552,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return fp;
 	}
 	
+	/** apply the XOR point operation over the current ROI area of the current plane of data */
 	@Override
 	public void xor(int value)
 	{
-		doProcess(XOR,value);
+		doPointOperation(XOR,value);
 	}
 }

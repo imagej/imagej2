@@ -71,7 +71,7 @@ public class ImgLibProcessorTest {
 		// setup iubProc
 		ImageFactory<UnsignedByteType> ubFactory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
 		Image<UnsignedByteType> ubImage = ubFactory.createImage(new int[]{width, height});
-		origIUBProc = new ImgLibProcessor<UnsignedByteType>(ubImage, new UnsignedByteType(), 0);
+		origIUBProc = new ImgLibProcessor<UnsignedByteType>(ubImage, 0);
 		
 		// set their pixels identically
 		for (int y = 0; y < height; y++)
@@ -99,7 +99,7 @@ public class ImgLibProcessorTest {
 		// setup iusProc
 		ImageFactory<UnsignedShortType> usFactory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), new ArrayContainerFactory());
 		Image<UnsignedShortType> usImage = usFactory.createImage(new int[]{width, height});
-		origIUSProc = new ImgLibProcessor<UnsignedShortType>(usImage, new UnsignedShortType(), 0);
+		origIUSProc = new ImgLibProcessor<UnsignedShortType>(usImage, 0);
 		
 		// set their pixels identically
 		for (int y = 0; y < height; y++)
@@ -123,7 +123,7 @@ public class ImgLibProcessorTest {
 		// setup iusProc
 		ImageFactory<FloatType> fFactory = new ImageFactory<FloatType>(new FloatType(), new ArrayContainerFactory());
 		Image<FloatType> fImage = fFactory.createImage(new int[]{width, height});
-		origIFProc = new ImgLibProcessor<FloatType>(fImage, new FloatType(), 0);
+		origIFProc = new ImgLibProcessor<FloatType>(fImage, 0);
 		
 		// set their pixels identically
 		for (int y = 0; y < height; y++)
@@ -217,7 +217,7 @@ public class ImgLibProcessorTest {
 		
 		Image<UnsignedByteType> image = factory.createImage(new int[]{width, height, 1});
 
-		ImgLibProcessor<?> proc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), new int[]{0});
+		ImgLibProcessor<?> proc = new ImgLibProcessor<UnsignedByteType>(image, new int[]{0});
 		
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());
@@ -234,7 +234,7 @@ public class ImgLibProcessorTest {
 		
 		Image<UnsignedByteType> image = factory.createImage(new int[]{width, height});
 
-		ImgLibProcessor<?> proc = new ImgLibProcessor<UnsignedByteType>(image, new UnsignedByteType(), 0);
+		ImgLibProcessor<?> proc = new ImgLibProcessor<UnsignedByteType>(image, 0);
 		
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());
