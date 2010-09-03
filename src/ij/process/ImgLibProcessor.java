@@ -1108,7 +1108,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			super.autoThreshold();
 	}
 	
-	/** does a lut substitution on current plane image data. applies only to integral data. */
+	/** does a lut substitution on current ROIO area image data. applies only to integral data. */
 	@Override
 	public void applyTable(int[] lut) 
 	{
@@ -1186,7 +1186,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setPixels(ip2.getPixels());
 	}
 
-	/** convolves the current image plane data with the provided 3x3 kernel */
+	/** convolves the current ROI area data with the provided 3x3 kernel */
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
@@ -1304,7 +1304,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/** creates a processor and sets its pixel values to this processor's current plane data */
+	/** creates a processor of the same size and sets its pixel values to this processor's current plane data */
 	@Override
 	public ImageProcessor duplicate()
 	{
@@ -1427,69 +1427,26 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/** swap the rows of an image about its central row */
+	/** swap the rows of the current ROI area about its central row */
 	@Override
 	public void flipVertical()
 	{
-		// create suitable cursors - noncached
-		final LocalizableByDimCursor<T> cursor1 = this.imageData.createLocalizableByDimCursor( );
-		final LocalizableByDimCursor<T> cursor2 = this.imageData.createLocalizableByDimCursor( );
-		
-		// allocate arrays that will hold position variables
-		final int[] position1 = Index.create(0, 0, this.planePosition);
-		final int[] position2 = Index.create(0, 0, this.planePosition);
-		
-		// calc some useful variables in regards to our region of interest.
-		Rectangle roi = getRoi();
-		final int minX = roi.x;
-		final int minY = roi.y;
-		final int maxX = minX + roi.width - 1;
-		final int maxY = minY + roi.height - 1;
-		
-		// calc half height - we will only need to swap the top half of the rows with the bottom half
-		final int halfRoiHeight = roi.height / 2;
-		
-		// the half the rows
-		for (int yoff = 0; yoff < halfRoiHeight; yoff++) {
-			
-			// calc locations of the two rows to be swapped
-			final int y1 = minY + yoff;
-			final int y2 = maxY - yoff;
-			
-			// setup y position index for cursor 1
-			position1[1] = y1;
-
-			// setup y position index for cursor 2
-			position2[1] = y2;
-
-			// for each col in this row
-			for (int x=minX; x<=maxX; x++) {
-				
-				// setup x position index for cursor 1
-				position1[0] = x;
-
-				// setup x position index for cursor 2
-				position2[0] = x;
-
-				// move to position1 and save the current value
-				cursor1.setPosition(position1);
-				final double pixVal1 = cursor1.getType().getRealDouble();
-				
-				// move to position2 and save the current value
-				cursor2.setPosition(position2);
-				final double pixVal2 = cursor2.getType().getRealDouble();
-		
-				// write the values back in swapped order
-				cursor2.getType().setReal(pixVal1);
-				cursor1.getType().setReal(pixVal2);
+		int x,y,mirrorY;
+		int halfY = this.roiHeight/2;
+		for (int yOff = 0; yOff < halfY; yOff++)
+		{
+			y = this.roiY + yOff;
+			mirrorY = this.roiY + this.roiHeight - yOff - 1;
+			for (int xOff = 0; xOff < this.roiWidth; xOff++)
+			{
+				x = this.roiX + xOff;
+				double tmp = getd(x, y);
+				setd(x, y, getd(x, mirrorY));
+				setd(x, mirrorY, tmp);
 			}
 		}
-		
-		// close the noncached cursors when done with them
-		cursor1.close();
-		cursor2.close();
 	}
-
+	
 	/** apply the GAMMA point operation over the current ROI area of the current plane of data */
 	@Override
 	public void gamma(double value)
@@ -1948,7 +1905,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/** sets the current plane data to that stored in the snapshot wherever the mask is nonzero */
+	/** sets the current ROI area data to that stored in the snapshot wherever the mask is nonzero */
 	@Override
 	public void reset(ImageProcessor mask)
 	{
@@ -1968,13 +1925,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageOrigin = Index.create(roi.x, roi.y, this.planePosition);
 		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
 
-		
 		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
 		
 		Operation.apply(resetOp);
 	}
 	
-	/** create a new processor that has specified dimensions. populate it's data with interpolated pixels from this processor's data. */
+	/** create a new processor that has specified dimensions. populate it's data with interpolated pixels from this processor's ROI area data. */
 	@Override
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
@@ -2062,7 +2018,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ip2;
 	}
 
-	/** rotates pixels by given angle. destructive. interpolates pixel values as needed. */
+	/** rotates current ROI area pixels by given angle. destructive. interpolates pixel values as needed. */
 	@Override
 	public void rotate(double angle)
 	{
@@ -2165,7 +2121,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 
-	/** scale an image in x and y by given factors. destructive. calculates interpolated pixels as needed */
+	/** scale current ROI area in x and y by given factors. destructive. calculates interpolated pixels as needed */
 	@Override
 	public void scale(double xScale, double yScale)
 	{
