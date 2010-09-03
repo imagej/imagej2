@@ -82,10 +82,10 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable
 {
-	// copied from various processors
+	/** filter numbers: copied from various processors */
 	public static final int BLUR_MORE=0, FIND_EDGES=1, MEDIAN_FILTER=2, MIN=3, MAX=4, CONVOLVE=5, ERODE=10, DILATE=11;
 
-	// safer way
+	/** filter types: to replace filter numbers */
 	public static enum FilterType {BLUR_MORE, FIND_EDGES, MEDIAN_FILTER, MIN, MAX, CONVOLVE, ERODE, DILATE};
 	
 	// TODO later: define a FilterOperation class that gets applied. Create various filters from it.
@@ -1100,6 +1100,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		doPointOperation(AND,value);
 	}
 
+	/** runs super class autoThreshold() for integral data */
 	@Override
 	public void autoThreshold()
 	{
@@ -1107,6 +1108,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			super.autoThreshold();
 	}
 	
+	/** does a lut substitution on current plane image data. applies only to integral data. */
 	@Override
 	public void applyTable(int[] lut) 
 	{
@@ -1127,6 +1129,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	// this method is kind of kludgy
 	// not an override
+	/** sometimes it is useful to work with two images of the exact same type. this method will take any ImageProcessor and return an
+	 *  ImageLibProcessor of the exact same type as itself. if the input image matches already it is simply returned. otherwise a new
+	 *  processor is created and its pixels are populated from this ImgLibProcessor.
+	 * */
 	public ImgLibProcessor<T> getImgLibProcThatMatchesMyType(ImageProcessor inputProc)
 	{
 		// if inputProc's type matches me
@@ -1170,6 +1176,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return newProc;
 	}
 	
+	/** convolves the current image plane data with the provided kernel */
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
 	{
@@ -1179,6 +1186,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setPixels(ip2.getPixels());
 	}
 
+	/** convolves the current image plane data with the provided 3x3 kernel */
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
@@ -1188,6 +1196,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			convolve3x3GeneralType(kernel);
 	}
 
+	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode */
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
@@ -1197,6 +1206,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	//TODO ask about changing name of Image to avoid conflict with java.awt
+	/** creates a java.awt.Image from super class variables */
 	@Override
 	public java.awt.Image createImage()
 	{
@@ -1222,6 +1232,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return super.img;
 	}
 
+	/** creates a new ImgLibProcessor of desired height and width. copies some state from this processor. as a side effect it creates
+	 *  a new 2D ImgLib Image that is owned by the ImgLibProcessor and is available via proc.getImage().
+	*/
 	@Override
 	public ImageProcessor createProcessor(int width, int height)
 	{
@@ -1234,6 +1247,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ip2;
 	}
 
+	/** creates an ImgLibProcessor on a new image whose size and contents match the current ROI area. */
 	@Override
 	public ImageProcessor crop()
 	{	
@@ -1252,6 +1266,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return new ImgLibProcessor<T>(newImage, 0);
 	}
 	
+	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
 	@Override
 	public void dilate()
 	{
@@ -1265,6 +1280,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override : mirrors code in ByteProcessor
+	/** does a dilate filter operation. applies to UnsignedByte data only.*/
 	public void dilate(int count, int background)
 	{
 		if (this.isUnsignedByte)
@@ -1275,6 +1291,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
 	@Override
 	public void drawPixel(int x, int y)
 	{
@@ -1287,6 +1304,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	/** creates a processor and sets its pixel values to this processor's current plane data */
 	@Override
 	public ImageProcessor duplicate()
 	{
@@ -1306,6 +1324,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return proc;
 	}
 	
+	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
 	@Override
 	public void erode()
 	{
@@ -1319,6 +1338,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override : mirrors code in ByteProcessor
+	/** does an erode filter operation. applies to UnsignedByte data only.*/
 	public void erode(int count, int background)
 	{
 		if (this.isUnsignedByte)
@@ -1535,8 +1555,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return q;
 	}
 	
-	/** get the pixel value at x,y as a double. */
 	// not an override
+	/** get the pixel value at x,y as a double. */
 	public double getd(int x, int y)
 	{
 		int[] position = Index.create(x, y, this.planePosition);
@@ -1552,8 +1572,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// do not close cursor - using cached one
 	}
 
-	/** get the pixel value at index as a double. */
 	// not an override
+	/** get the pixel value at index as a double. */
 	public double getd(int index)
 	{
 		int width = getWidth();
