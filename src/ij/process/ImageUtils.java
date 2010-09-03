@@ -10,6 +10,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.ComplexType;
+import mpicbg.imglib.type.numeric.NumericType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -76,6 +77,14 @@ public class ImageUtils {
 	public static long getTotalSamples(Image<?> image)
 	{
 		return getTotalSamples(image.getDimensions());
+	}
+	
+	public static RealType<?> getType(Image<?> image)
+	{
+		Cursor<?> cursor = image.createCursor();
+		RealType<?> type = (RealType<?>) cursor.getType();
+		cursor.close();
+		return type;
 	}
 	
 	/** return an n-dimensional position array populated from a sample number */
@@ -429,13 +438,13 @@ public class ImageUtils {
 			{
 				ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),new ArrayContainerFactory());
 				Image<UnsignedByteType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, new UnsignedByteType(), 0);
+				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
 			}
 			else
 			{
 				ImageFactory<ByteType> factory = new ImageFactory<ByteType>(new ByteType(),new ArrayContainerFactory());
 				Image<ByteType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<ByteType>(hatchedImage, new ByteType(), 0);
+				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof short[])
@@ -444,13 +453,13 @@ public class ImageUtils {
 			{
 				ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(),new ArrayContainerFactory());
 				Image<UnsignedShortType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, new UnsignedShortType(), 0);
+				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
 			}
 			else
 			{
 				ImageFactory<ShortType> factory = new ImageFactory<ShortType>(new ShortType(),new ArrayContainerFactory());
 				Image<ShortType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<ShortType>(hatchedImage, new ShortType(), 0);
+				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof int[])
@@ -459,13 +468,13 @@ public class ImageUtils {
 			{
 				ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>(new UnsignedIntType(),new ArrayContainerFactory());
 				Image<UnsignedIntType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, new UnsignedIntType(), 0);
+				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
 			}
 			else
 			{
 				ImageFactory<IntType> factory = new ImageFactory<IntType>(new IntType(),new ArrayContainerFactory());
 				Image<IntType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<IntType>(hatchedImage, new IntType(), 0);
+				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof long[])
@@ -478,20 +487,20 @@ public class ImageUtils {
 			{
 				ImageFactory<LongType> factory = new ImageFactory<LongType>(new LongType(),new ArrayContainerFactory());
 				Image<LongType> hatchedImage = factory.createImage(dimensions);
-				proc = new ImgLibProcessor<LongType>(hatchedImage, new LongType(), 0);
+				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof float[])
 		{
 			ImageFactory<FloatType> factory = new ImageFactory<FloatType>(new FloatType(),new ArrayContainerFactory());
 			Image<FloatType> hatchedImage = factory.createImage(dimensions);
-			proc = new ImgLibProcessor<FloatType>(hatchedImage, new FloatType(), 0);
+			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
 		}
 		else if (pixels instanceof double[])
 		{
 			ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>(new DoubleType(),new ArrayContainerFactory());
 			Image<DoubleType> hatchedImage = factory.createImage(dimensions);
-			proc = new ImgLibProcessor<DoubleType>(hatchedImage, new DoubleType(), 0);
+			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
 		}
 		else
 			throw new IllegalArgumentException("createProcessor(): passed unknown type of pixels - "+pixels.getClass());
@@ -522,47 +531,47 @@ public class ImageUtils {
 			
 			if (runtimeT instanceof UnsignedByteType)
 			{
-				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, new UnsignedByteType(), plane);
+				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, plane);
 			}
 				
 			if (runtimeT instanceof ByteType)
 			{
-				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, new ByteType(), plane);
+				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, plane);
 			}
 				
 			if (runtimeT instanceof UnsignedShortType)
 			{
-				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, new UnsignedShortType(), plane);
+				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, plane);
 			}
 				
 			if (runtimeT instanceof ShortType)
 			{
-				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, new ShortType(), plane);
+				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, plane);
 			}
 				
 			if (runtimeT instanceof UnsignedIntType)
 			{
-				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, new UnsignedIntType(), plane);
+				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, plane);
 			}
 				
 			if (runtimeT instanceof IntType)
 			{
-				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, new IntType(), plane);
+				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, plane);
 			}
 				
 			if (runtimeT instanceof LongType)
 			{
-				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, new LongType(), plane);
+				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, plane);
 			}
 				
 			if (runtimeT instanceof FloatType)
 			{
-				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, new FloatType(), plane);
+				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, plane);
 			}
 				
 			if (runtimeT instanceof DoubleType)
 			{
-				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, new DoubleType(), plane);
+				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, plane);
 			}
 				
 			if (processor == null)
