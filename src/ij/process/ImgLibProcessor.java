@@ -45,7 +45,14 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 // More TODO / NOTES
 //   Recently pulled a lot of code in for filters/convolve/etc. This could should be refactored to use multiple classes to implement these
-//     features. Waiting to do this once I've got all tests passing for byte/short/floats.
+//     features.
+//     Possible refactorings
+//       create a FilterType class that inherits from Operation(?) and have convolve, blur_more, find_edges, etc. inherit from it.
+//         Pass FilterAlgo to this Operation.
+//       create some kind of algorithm classes for the various doProcess type ops. They would take two samples and combine them in some way.
+//         then things like doProcess could be passed an algo and be very simplified. the various routines (like fill() for instance)
+//         could then new a FillAlgo and pass it to doProcess.
+//       turn doProcess into a Operation of some type. Maybe even modify BlitterOperation.
 //   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
 //   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
 //   Review imglib's various cursors and perhaps change which ones I'm using.
@@ -88,13 +95,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private final Image<T> imageData;
 	private final int[] planePosition;
 
-	// TODO: How can we use generics here without breaking javac?
 	private final RealType<?> type;
 	private final boolean isIntegral;
 	private byte[] pixels8;
 	private Snapshot<T> snapshot;
-	private ImageProperties imageProperties;
-	// TODO - move some of these next ones to imageProperties
+	private double backgroundValue;
 	private double min, max;
 	private double fillColor;
 	private int binaryCount, binaryBackground;
@@ -130,10 +135,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.imageData = img;
 		this.type = type;
 		
-		//assign the properties object for the image
-		this.imageProperties = new ImageProperties();
-		
-		//this.imageProperties.setPlanePosition( thisPlanePosition );
 		this.planePosition = thisPlanePosition.clone();
 
 		super.width = dims[0]; // TODO: Dimensional labels are safer way to find X
@@ -144,7 +145,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.isIntegral = TypeManager.isIntegralType(this.type);
 		
 		if (this.type instanceof UnsignedByteType)
-			this.imageProperties.setBackgroundValue(255);
+			this.setBackgroundValue(255);
 
 		resetRoi();
 		
@@ -1045,6 +1046,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Operation.apply(lutOp);
 	}
 
+	// this method is kind of kludgy
+	// not an override
 	public ImgLibProcessor<T> getImgLibProcThatMatchesMyType(ImageProcessor inputProc)
 	{
 		// if inputProc's type matches me
@@ -1182,6 +1185,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override : mirrors code in ByteProcessor
 	public void dilate(int count, int background)
 	{
 		if (this.type instanceof UnsignedByteType)
@@ -1235,6 +1239,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override : mirrors code in ByteProcessor
 	public void erode(int count, int background)
 	{
 		if (this.type instanceof UnsignedByteType)
@@ -1290,6 +1295,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override
 	public void filter(FilterType type)
 	{
 		if (this.type instanceof UnsignedByteType)
@@ -1442,6 +1448,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return q;
 	}
 	
+	// not an override
 	public double getd(int x, int y)
 	{
 		int[] position = Index.create(x, y, getPlanePosition());
@@ -1457,6 +1464,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// do not close cursor - using cached one
 	}
 
+	// not an override
 	public double getd(int index)
 	{
 		int width = getWidth();
@@ -1495,9 +1503,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getBackgroundValue()
 	{
-		return this.imageProperties.getBackgroundValue();
+		return this.backgroundValue;
 	}
 
+	@Override
 	public int[] getHistogram()
 	{
 		if ((type instanceof UnsignedByteType) || (type instanceof UnsignedShortType))
@@ -1518,6 +1527,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return null;
 	}
 	
+	// not an override
 	public Image<T> getImage()
 	{
 		return this.imageData;
@@ -1543,6 +1553,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.max;
 	}
 
+	// not an override
 	public double getMaxAllowedValue() 
 	{
 		return this.type.getMaxValue();
@@ -1554,11 +1565,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.min;
 	}
 
+	// not an override
 	public double getMinAllowedValue() 
 	{
 		return this.type.getMinValue();
 	}
 	
+	// not an override
 	public long getTotalSamples()
 	{
 		return ImageUtils.getTotalSamples(this.imageData);
@@ -1638,11 +1651,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override
 	public double[] getPlaneData()
 	{
 		return ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), getPlanePosition());
 	}
 
+	// not an override
 	public final int[] getPlanePosition()
 	{
 		return this.planePosition;
@@ -1663,6 +1678,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero);
 	}
 
+	// not an override
 	public RealType<?> getType()
 	{
 		return this.type;
@@ -2099,14 +2115,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setBackgroundValue(double value) 
 	{
-		// only set for unsigned byte type like ImageJ (maybe need to extend to integral types and check min/max pixel ranges
-		// see ImageProperties.setBackground() for some additional notes.
+		// only set for unsigned byte type like ImageJ (maybe need to extend to integral types and check min/max pixel ranges)
 		if (this.type instanceof UnsignedByteType)
 		{
 			if (value < 0) value = 0;
 			if (value > 255) value = 255;
 			value = (int) value;
-			this.imageProperties.setBackgroundValue(value);
+			this.backgroundValue = value;
 		}
 	}
 
@@ -2158,6 +2173,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override
 	public void setd(int index, double value)
 	{
 		int width = getWidth();
@@ -2166,6 +2182,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setd( x, y, value);
 	}
 
+	// not an override
 	public void setd(int x, int y, double value)
 	{
 		int[] position = Index.create(x, y, getPlanePosition());

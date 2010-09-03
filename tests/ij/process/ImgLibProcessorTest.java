@@ -19,13 +19,13 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-// TODO - there are a few TODOs sprinkled below 
+// TODO - there are a few TODOs sprinkled below
+//   note - we are only testing compatibility versus ImageJ's processors. We have no tests to verify other pixel types behave in any correct way
 //   also:
 //     testCreateImage() does very little testing
 //     testNoise() really untested
-
-// TODO - ImgLibProcessor matches FloatProcessor results within 0.001 tolerance. If we want to improve that we'll need to make
-//    float specific calculation code in ImgLibProcessor rather than working with getd()/setd()/getRealDouble(). Less general.
+//     ImgLibProcessor matches FloatProcessor results within 0.001 tolerance. If we want to improve that we'll need to make
+//       float specific calculation code in ImgLibProcessor rather than working with getd()/setd()/getRealDouble(). Less general.
 
 public class ImgLibProcessorTest {
 
