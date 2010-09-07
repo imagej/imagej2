@@ -387,6 +387,29 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	/*
+	private static void compare(ImageProcessor proc1, ImageProcessor proc2)
+	{
+		
+	}
+	
+	public static void main(String[] args)
+	{
+		ByteProcessor byteProc = new ByteProcessor(width,height,new byte[width*height],null);
+		FloatProcessor floatProc = new FloatProcessor(width,height,new float[width*height],null);
+		
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				byteProc.setf(x,y,value);
+				floatProc.setf(x,y,value);
+			}
+		}
+		compareData(byteProc,floatProc);
+	}
+	*/
+	
 	@Test
 	public void testCopyBits()
 	{
