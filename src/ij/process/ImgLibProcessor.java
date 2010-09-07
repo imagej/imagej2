@@ -1183,6 +1183,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ImageProcessor ip2 = toFloat(0,null);
 		ip2.setRoi(getRoi());
 		new ij.plugin.filter.Convolver().convolve(ip2, kernel, kernelWidth, kernelHeight);
+		/* if this code needed??????
+		if (this.type instanceof GenericByteType<?>)
+			ip2 = ip2.convertToByte(false);
+		else if (this.type instanceof GenericShortType<?>)
+			ip2 = ip2.convertToShort(false);
+		*/
 		setPixels(ip2.getPixels());
 	}
 
@@ -1190,19 +1196,89 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		if (this.isUnsignedByte)
-			convolve3x3UnsignedByte(kernel);
+		/*
+		// an attempt to get rid of a lot of special case code: tests fail when this is in place
+		float[] floatKernel = new float[9];
+		for (int i = 0; i < 9; i++)
+			floatKernel[i] = kernel[i];
+		convolve(floatKernel,3,3);
+		*/
+
+		if (this.isUnsignedByte)  // comment these couple lines out to get rid of special case code: tests fail when do so
+			convolve3x3UnsignedByte(kernel);  // in act they fail in the same way the attempt above failed
 		else
 			convolve3x3GeneralType(kernel);
+		/*
+		*/
 	}
 
-	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode */
-	@Override
-	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
+	// not an override
+	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given function */
+	public void copyBits(ImageProcessor ip, int xloc, int yloc, BinaryFunction function)
 	{
 		ImgLibProcessor<T> otherProc = getImgLibProcThatMatchesMyType(ip);
 		
-		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, mode);
+		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, function);
+	}
+	
+	
+	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode */
+	@Deprecated
+	@Override
+	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
+	{
+		BinaryFunction function;
+		switch (mode)
+		{
+			case Blitter.COPY:
+				function = new CopyInput1BinaryFunction();
+				break;
+			case Blitter.COPY_INVERTED:
+				function = new CopyInput1InvertedBinaryFunction(this.type.getMaxValue());
+				break;
+			case Blitter.COPY_TRANSPARENT:
+				function = new CopyInput1TransparentBinaryFunction(this, this.isIntegral, this.type.getMaxValue());
+				break;
+			case Blitter.ADD:
+				function = new AddBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				break;
+			case Blitter.SUBTRACT:
+				function = new SubtractBinaryFunction(this.isIntegral, this.type.getMinValue());
+				break;
+			case Blitter.MULTIPLY:
+				function = new MultiplyBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				break;
+			case Blitter.DIVIDE:
+				function = new DivideBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				break;
+			case Blitter.AVERAGE:
+				function = new AverageBinaryFunction(this.isIntegral);
+				break;
+			case Blitter.DIFFERENCE:
+				function = new DifferenceBinaryFunction();
+				break;
+			case Blitter.AND:
+				function = new AndBinaryFunction();
+				break;
+			case Blitter.OR:
+				function = new OrBinaryFunction();
+				break;
+			case Blitter.XOR:
+				function = new XorBinaryFunction();
+				break;
+			case Blitter.MIN:
+				function = new MinBinaryFunction();
+				break;
+			case Blitter.MAX:
+				function = new MaxBinaryFunction();
+				break;
+			case Blitter.COPY_ZERO_TRANSPARENT:
+				function = new CopyInput1ZeroTransparentBinaryFunction();
+				break;
+			default:
+				throw new IllegalArgumentException("copyBits(mode): unknown mode "+mode);
+		}
+		copyBits(ip,xloc,yloc,function);
 	}
 
 	//TODO ask about changing name of Image to avoid conflict with java.awt
