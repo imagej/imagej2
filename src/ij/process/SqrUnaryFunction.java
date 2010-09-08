@@ -21,6 +21,7 @@ public class SqrUnaryFunction implements UnaryFunction
 		
 		double value = current * current;
 		
+		// this needed for compatibility with old SHortProcessor
 		if (this.isUnsignedShort)
 			if (value > Integer.MAX_VALUE)
 				value = 0;
