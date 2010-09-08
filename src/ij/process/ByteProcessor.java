@@ -455,7 +455,76 @@ public class ByteProcessor extends ImageProcessor {
 		}
 	}
 
-	/** 3x3 convolution contributed by Glynne Casteel. */
+
+	// NOTE - BDZ modified ByteProcessor here to copy Wayne's 1.44g8 changes
+	public void convolve3x3(int[] kernel)
+	{
+		int v1, v2, v3;    //input pixel values around the current pixel
+		int v4, v5, v6;
+		int v7, v8, v9;
+		int scale = 0;
+		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
+			k4=kernel[3], k5=kernel[4], k6=kernel[5],
+			k7=kernel[6], k8=kernel[7], k9=kernel[8];
+
+		for (int i=0; i<kernel.length; i++)
+			scale += kernel[i];
+		if (scale==0) scale = 1;
+
+		int inc = roiHeight/25;
+		if (inc<1) inc = 1;
+
+		byte[] pixels2 = (byte[])getPixelsCopy();
+
+		int xEnd = roiX + roiWidth;
+		int yEnd = roiY + roiHeight;
+
+		for (int y=roiY; y<yEnd; y++)
+		{
+			int p  = roiX + y*width;            //points to current pixel
+			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
+			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
+			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
+			
+			v2 = pixels2[p3]&0xff;
+			v5 = pixels2[p6]&0xff;
+			v8 = pixels2[p9]&0xff;
+
+			if (roiX>0) { p3++; p6++; p9++; }
+
+			v3 = pixels2[p3]&0xff;
+			v6 = pixels2[p6]&0xff;
+			v9 = pixels2[p9]&0xff;
+
+			for (int x=roiX; x<xEnd; x++,p++)
+			{
+				if (x<width-1) { p3++; p6++; p9++; }
+				
+				v1 = v2; v2 = v3;
+				v3 = pixels2[p3]&0xff;
+				v4 = v5; v5 = v6;
+				v6 = pixels2[p6]&0xff;
+				v7 = v8; v8 = v9;
+				v9 = pixels2[p9]&0xff;
+
+				int sum = k1*v1 + k2*v2 + k3*v3
+						+ k4*v4 + k5*v5 + k6*v6
+						+ k7*v7 + k8*v8 + k9*v9;
+				sum = (sum+scale/2)/scale;   //add scale/2 to round
+				if (sum>255) sum = 255;
+				if (sum<0) sum = 0;
+				
+				pixels[p] = (byte)sum;
+			}
+
+			if (y%inc==0)
+				showProgress((double)(y-roiY)/roiHeight);
+		}
+		
+		showProgress(1.0);
+	}
+
+	/*  OLD WAY before 1.44g8
 	public void convolve3x3(int[] kernel) {
 		int p1, p2, p3,
 		    p4, p5, p6,
@@ -509,6 +578,7 @@ public class ByteProcessor extends ImageProcessor {
 		}
 		showProgress(1.0);
 	}
+	 */
 
 	/** Filters using a 3x3 neighborhood. The p1, p2, etc variables, which
 		contain the values of the pixels in the neighborhood, are arranged
@@ -554,7 +624,7 @@ public class ByteProcessor extends ImageProcessor {
 
 				switch (type) {
 					case BLUR_MORE:
-						sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+						sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9+4)/9;  // BDZ: added Wayne's changes from 1.44.unknown 
 						break;
 					case FIND_EDGES: // 3x3 Sobel filter
 	        			sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
@@ -665,7 +735,7 @@ public class ByteProcessor extends ImageProcessor {
 			}
             switch (type) {
                 case BLUR_MORE:
-                    sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+                    sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9+4)/9;  // BDZ : added Wayne's changes for 1.44.unknown
                     break;
                 case FIND_EDGES: // 3x3 Sobel filter
                     sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
