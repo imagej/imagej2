@@ -1450,7 +1450,6 @@ public class ImageProcessorTest
 		//{ System.out.println(imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid); } 
 		
 		assertEquals( expected, testResults );
-	
 	}
 	@Test
 	public void testDraw() 
