@@ -2615,7 +2615,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void sqrt()
 	{
-		SqrtUnaryFunction function = new SqrtUnaryFunction(this.isIntegral);
+		SqrtUnaryFunction function = new SqrtUnaryFunction(this.type);
 		
 		doPointOperation(function);
 	}

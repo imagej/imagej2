@@ -6,9 +6,9 @@ public class SqrtUnaryFunction implements UnaryFunction
 {
 	private boolean dataIsIntegral;
 	
-	public SqrtUnaryFunction(boolean dataIsIntegral)
+	public SqrtUnaryFunction(RealType<?> targetType)
 	{
-		this.dataIsIntegral = dataIsIntegral;
+		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
 	@Override

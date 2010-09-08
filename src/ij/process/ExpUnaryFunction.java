@@ -31,7 +31,7 @@ public class ExpUnaryFunction implements UnaryFunction
 			{
 				value = (int)(Math.exp(current*(Math.log(255)/255)));
 			}
-			else // generic short
+			else // generic short or int
 			{
 				value = (int)(Math.exp(current*(Math.log(this.max)/this.max)));
 			}

@@ -4,7 +4,6 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class GammaUnaryFunction implements UnaryFunction
 {
-	private RealType<?> targetType;
 	private double constant;
 	private double min;
 	private double max;
@@ -13,7 +12,6 @@ public class GammaUnaryFunction implements UnaryFunction
 	
 	public GammaUnaryFunction(RealType<?> targetType, double min, double max, double constant)
 	{
-		this.targetType = targetType;
 		this.min = min;
 		this.max = max;
 		this.constant = constant;
