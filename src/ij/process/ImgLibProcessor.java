@@ -202,7 +202,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this(img, ImageUtils.getPlanePosition(img.getDimensions(), planeNumber));
 	}
 
-	
 	//****************** Helper methods *******************************************************
 
 	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
@@ -221,66 +220,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
-	/** convolve filter method that works with a 3x3 kernel and applies to any data other than UnsignedByteType */
+	/** convolve filter method that works with a 3x3 kernel and applies to any data */
 	private void convolve3x3GeneralType(int[] kernel)
 	{
 		filterGeneralType(FilterType.CONVOLVE, kernel);
-	}
-	
-	/** convolve filter method that works with a 3x3 kernel and only applies to UnsignedByteType data */
-	private void convolve3x3UnsignedByte(int[] kernel)
-	{
-		int p1, p2, p3,
-			p4, p5, p6,
-			p7, p8, p9;
-		int k1=kernel[0], k2=kernel[1], k3=kernel[2],
-			k4=kernel[3], k5=kernel[4], k6=kernel[5],
-			k7=kernel[6], k8=kernel[7], k9=kernel[8];
-	
-		int scale = 0;
-		for (int i=0; i<kernel.length; i++)
-			scale += kernel[i];
-		if (scale==0) scale = 1;
-		int inc = roiHeight/25;
-		if (inc<1) inc = 1;
-		
-		byte[] pixels2 = (byte[])getPixelsCopy();
-		int offset, sum;
-		int rowOffset = width;
-		for (int y=yMin; y<=yMax; y++) {
-			offset = xMin + y * width;
-			p1 = 0;
-			p2 = pixels2[offset-rowOffset-1]&0xff;
-			p3 = pixels2[offset-rowOffset]&0xff;
-			p4 = 0;
-			p5 = pixels2[offset-1]&0xff;
-			p6 = pixels2[offset]&0xff;
-			p7 = 0;
-			p8 = pixels2[offset+rowOffset-1]&0xff;
-			p9 = pixels2[offset+rowOffset]&0xff;
-	
-			for (int x=xMin; x<=xMax; x++) {
-				p1 = p2; p2 = p3;
-				p3 = pixels2[offset-rowOffset+1]&0xff;
-				p4 = p5; p5 = p6;
-				p6 = pixels2[offset+1]&0xff;
-				p7 = p8; p8 = p9;
-				p9 = pixels2[offset+rowOffset+1]&0xff;
-	
-				sum = k1*p1 + k2*p2 + k3*p3
-					+ k4*p4 + k5*p5 + k6*p6
-					+ k7*p7 + k8*p8 + k9*p9;
-				sum /= scale;
-	
-				if(sum>255) sum= 255;
-				if(sum<0) sum= 0;
-	
-				setd(offset++, (byte)sum);
-			}
-			if (y%inc==0)
-				showProgress((double)(y-roiY)/roiHeight);
-		}
-		showProgress(1.0);
 	}
 	
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
@@ -322,224 +265,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		return this.pixels8;
 	}
-
-	/** for UnsignedByteType data only. handles the various Blitter operations by calculating a new lut and applying it. */
-	/*
-	private void doLutOperation(int op, double value)
-	{
-		double SCALE = 255.0/Math.log(255.0);
-		int v;
-		
-		int[] lut = new int[256];
-		for (int i=0; i<256; i++) {
-			switch(op) {
-				case INVERT:
-					v = 255 - i;
-					break;
-				case FILL:
-					v = fgColor;
-					break;
-				case ADD:
-					v = i + (int)value;
-					break;
-				case MULT:
-					v = (int)Math.round(i * value);
-					break;
-				case AND:
-					v = i & (int)value;
-					break;
-				case OR:
-					v = i | (int)value;
-					break;
-				case XOR:
-					v = i ^ (int)value;
-					break;
-				case GAMMA:
-					v = (int)(Math.exp(Math.log(i/255.0)*value)*255.0);
-					break;
-				case LOG:
-					if (i==0)
-						v = 0;
-					else
-						v = (int)(Math.log(i) * SCALE);
-					break;
-				case EXP:
-					v = (int)(Math.exp(i/SCALE));
-					break;
-				case SQR:
-						v = i*i;
-					break;
-				case SQRT:
-						v = (int)Math.sqrt(i);
-					break;
-				case MINIMUM:
-					if (i<value)
-						v = (int)value;
-					else
-						v = i;
-					break;
-				case MAXIMUM:
-					if (i>value)
-						v = (int)value;
-					else
-						v = i;
-					break;
-				 default:
-				 	v = i;
-			}
-			if (v < 0)
-				v = 0;
-			if (v > 255)
-				v = 255;
-			lut[i] = v;
-		}
-		applyTable(lut);
-	}
-	*/
-	
-	/** for any data type other than UnsignedByteType. handles the various Blitter operations. */
-	/*
-	private void doPointOperation(int op, double value)
-	{
-		if (this.isUnsignedByte)
-		{
-			doLutOperation(op,value);
-			return;
-		}
-
-		// TODO - this code pulled from FloatProcessor. ShortProcessor is slightly different. Also this code may fail for signed 16-bit data.
-
-		final boolean isUnsignedShort = this.isUnsignedShort;
-		final boolean isGenericShort = this.type instanceof GenericShortType<?>;
-		final boolean isIntegral = this.isIntegral;
-		final double range = max - min;
-		final double  c = value;
-		double v1, v2;
-		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
-
-		final int xEdge = roiX + roiWidth; 
-		final int yEdge = roiY + roiHeight;
-		for (int y=roiY; y<yEdge; y++)
-		{
-			for (int x=roiX; x<xEdge; x++)
-			{
-				v1 = getd(x,y);
-				
-				switch(op) {
-					case INVERT:
-						v2 = max - (v1 - min);
-						break;
-					case FILL:
-						v2 = fillColor;
-						break;
-					case ADD:
-						v2 = v1 + c;
-						break;
-					case MULT:
-						v2 = v1 * c;
-						break;
-					case AND:
-						if (isIntegral)
-							v2 = (int)v1 & (int)value;
-						else
-							v2 = v1;
-						break;
-					case OR:
-						if (isIntegral)
-							v2 = (int)v1 | (int)value;
-						else
-							v2 = v1;
-						break;
-					case XOR:
-						if (isIntegral)
-							v2 = (int)v1 ^ (int)value;
-						else
-							v2 = v1;
-						break;
-					case GAMMA:
-						if (isIntegral)
-						{
-							if (range<=0.0 || v1 <= min)
-								v2 = v1;
-							else					
-								v2 = (int)(Math.exp(value*Math.log((v1-min)/range))*range+min);
-						}
-						else // float
-						{
-							if (v1 <= 0)
-								v2 = 0;
-							else
-								v2 = Math.exp(c*Math.log(v1));
-						}
-						break;
-					case LOG:
-						if (isIntegral)
-						{
-							if (v1<=0)
-								v2 = 0;
-							else 
-								v2 = (int)(Math.log(v1)*(max/Math.log(max)));
-						}
-						else // float
-						{
-							if (v1<=0)
-								v2 = 0;
-							else
-								v2 = Math.log(v1);
-						}
-						break;
-					case EXP:
-						// TODO - this does not match ShortProc for signed data
-						//		- also int type falls thru to float. Since IJ has no true int type don't know best behavior here. 
-						if (isGenericShort)
-						{
-							v2 = (int)(Math.exp(v1*(Math.log(this.max)/this.max)));
-						}
-						else // a float or int type
-							v2 = Math.exp(v1);
-						break;
-					case SQR:
-							v2 = v1*v1;
-							if (isUnsignedShort)
-								if (v2 > Integer.MAX_VALUE)
-									v2 = 0;
-						break;
-					case SQRT:
-						if (v1<=0)
-							v2 = 0;
-						else
-							v2 = Math.sqrt(v1);
-						break;
-					case ABS:
-							v2 = Math.abs(v1);
-						break;
-					case MINIMUM:
-						if (v1<value)
-							v2 = value;
-						else
-							v2 = v1;
-						break;
-					case MAXIMUM:
-						if (v1>value)
-							v2 = value;
-						else
-							v2 = v1;
-						break;
-					 default:
-					 	v2 = v1;
-				}
-				
-				if (isIntegral)
-					v2 = TypeManager.boundValueToType(this.type, v2);
-				
-				setd(x, y, v2);
-			}
-		}
-		
-		if (resetMinMax)
-			findMinAndMax();
-	}
-	*/
 	
 	/** do a point operation to the current ROI plane using the passed in UnaryFunction */
 	private void doPointOperation(UnaryFunction function)
@@ -558,6 +283,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			findMinAndMax();
 	}
 	
+	// TODO - refactor
 	/** called by filterUnsignedByte(). */
 	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
 	{
@@ -590,7 +316,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			}
 			switch (type) {
 				case BLUR_MORE:
-					sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+					sum = p1+p2+p3+p4+p5+p6+p7+p8+p9;
+					if (this.isIntegral)
+						sum += 4;
+					sum /= 9;
 					break;
 				case FIND_EDGES: // 3x3 Sobel filter
 					sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
@@ -665,6 +394,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// TODO - refactor
 	/** applies the various filter operations to data other than UnsignedByteType */
 	private void filterGeneralType(FilterType type, int[] kernel)
 	{
@@ -688,8 +418,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		int inc = roiHeight/25;
 		if (inc<1) inc = 1;
-		
-		final boolean isGenericShort = this.type instanceof GenericShortType<?>;
 		
 		double[] pixels2 = ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), this.planePosition);
 		int xEnd = roiX + roiWidth;
@@ -719,11 +447,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						v7 = v8; v8 = v9;
 						v9 = pixels2[p9];
 						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
-						if (isGenericShort)
+						if (this.isIntegral)
 						{
 							val += 4;
 							val /= 9;
-							val = (short) val;
+							val = (short) val;  // TODO : does this need to be int. Right now this code only exercised when data is shorts
 						}
 						else
 							val *= 0.11111111; //0.111... = 1/9
@@ -772,6 +500,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 	
+	// TODO - refactor
 	/** applies the various filter operations to UnsignedByteType data*/
 	private void filterUnsignedByte(FilterType type)
 	{
@@ -808,7 +537,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 				switch (type) {
 					case BLUR_MORE:
-						sum = (p1+p2+p3+p4+p5+p6+p7+p8+p9)/9;
+						sum = p1+p2+p3+p4+p5+p6+p7+p8+p9;
+						if (this.isIntegral)
+							sum += 4;
+						sum /= 9;
 						break;
 					case FIND_EDGES: // 3x3 Sobel filter
 						sum1 = p1 + 2*p2 + p3 - p7 - 2*p8 - p9;
@@ -1234,33 +966,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ImageProcessor ip2 = toFloat(0,null);
 		ip2.setRoi(getRoi());
 		new ij.plugin.filter.Convolver().convolve(ip2, kernel, kernelWidth, kernelHeight);
-		/* if this code needed??????
-		if (this.type instanceof GenericByteType<?>)
-			ip2 = ip2.convertToByte(false);
-		else if (this.type instanceof GenericShortType<?>)
-			ip2 = ip2.convertToShort(false);
-		*/
 		setPixels(ip2.getPixels());
 	}
 
+	// TODO - refactor/replace with Wayne's latest code
 	/** convolves the current ROI area data with the provided 3x3 kernel */
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		/*
-		// an attempt to get rid of a lot of special case code: tests fail when this is in place
+		/*  Could do this but Wayne says its 3X slower than our special case way
 		float[] floatKernel = new float[9];
 		for (int i = 0; i < 9; i++)
 			floatKernel[i] = kernel[i];
 		convolve(floatKernel,3,3);
 		*/
 
-		if (this.isUnsignedByte)  // comment these couple lines out to get rid of special case code: tests fail when do so
-			convolve3x3UnsignedByte(kernel);  // in act they fail in the same way the attempt above failed
-		else
-			convolve3x3GeneralType(kernel);
-		/*
-		*/
+		// our special case way
+		convolve3x3GeneralType(kernel);
 	}
 
 	// not an override
@@ -2078,7 +1800,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Operation.apply(resetOp);
 	}
-	
+
+	// TODO - refactor
 	/** create a new processor that has specified dimensions. populate it's data with interpolated pixels from this processor's ROI area data. */
 	@Override
 	public ImageProcessor resize(int dstWidth, int dstHeight)
@@ -2167,6 +1890,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ip2;
 	}
 
+	// TODO - refactor
 	/** rotates current ROI area pixels by given angle. destructive. interpolates pixel values as needed. */
 	@Override
 	public void rotate(double angle)
@@ -2270,6 +1994,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		showProgress(1.0);
 	}
 
+	// TODO - refactor
 	/** scale current ROI area in x and y by given factors. destructive. calculates interpolated pixels as needed */
 	@Override
 	public void scale(double xScale, double yScale)
@@ -2659,7 +2384,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		long size = getTotalSamples();
 		
 		if (size > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("desired size of pixel array is too large");
+			throw new IllegalArgumentException("desired size of pixel array is too large (> "+Integer.MAX_VALUE+" entries)");
 		
 		int allocatedSize = (int) size;
 		

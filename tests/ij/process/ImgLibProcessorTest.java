@@ -380,65 +380,11 @@ public class ImgLibProcessorTest {
 		{
 			procPair[0].convolve3x3(kernel);
 			procPair[1].convolve3x3(kernel);
+			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
+			//   an earlier version of ImageJ code this test will break.
 			compareData(procPair[0], procPair[1]);
 		}
 	}
-
-	/*
-	private static void compare(ImageProcessor byteProc, ImageProcessor floatProc)
-	{
-		int w = byteProc.getWidth();
-		int h = byteProc.getHeight();
-	
-		assertEquals(w, floatProc.getWidth());
-		assertEquals(h, floatProc.getHeight());
-	
-		for (int x = 0; x < w; x++)
-		{
-			for (int y = 0; y < h; y++)
-			{
-				if (Math.abs(byteProc.getf(x, y) - floatProc.getf(x, y)) > 0.001)
-				{
-					System.out.println("processor data differs at ("+x+","+y+") : byte(" + byteProc.getf(x, y) +") float("+floatProc.getf(x, y)+")");
-					return;
-				}
-			}
-		}
-	}
-	
-	@Test
-	public void testConvolveTemporarily()
-	{
-		ByteProcessor byteProc = new ByteProcessor(width,height,new byte[width*height],null);
-		FloatProcessor floatProc = new FloatProcessor(width,height,new float[width*height],null);
-		
-		for (int x = 0; x < width; x++)
-		{
-			for (int y = 0; y < height; y++)
-			{
-				int value = (19 + (x+y)) % 256;
-				byteProc.setf(x,y,value);
-				floatProc.setf(x,y,value);
-			}
-		}
-		
-		int[][] kernel2d = new int[][] {{1,3,1}, {3,-16,3}, {1,3,1}};
-
-		int kh = kernel2d.length;
-		int kw = kernel2d[0].length;
-		
-		int[] kernel = new int[kw * kh];
-		int i = 0;
-		for (int x=0; x < kw; x++)
-			for (int y=0; y < kh; y++)
-				kernel[i++] = kernel2d[x][y];
-
-		byteProc.convolve3x3(kernel);
-		floatProc.convolve3x3(kernel);
-		
-		compare(byteProc,floatProc);
-	}
-	*/
 	
 	@Test
 	public void testCopyBits()
@@ -675,6 +621,8 @@ public class ImgLibProcessorTest {
 				initialize();
 				procPair[0].filter(filterNum);
 				procPair[1].filter(filterNum);
+				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
+				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
 				compareData(procPair[0], procPair[1]);
 			}
 		}
