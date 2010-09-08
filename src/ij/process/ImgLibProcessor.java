@@ -220,12 +220,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
-	/** convolve filter method that works with a 3x3 kernel and applies to any data */
-	private void convolve3x3GeneralType(int[] kernel)
-	{
-		filterGeneralType(FilterType.CONVOLVE, kernel);
-	}
-	
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
 	@Override
 	byte[] create8BitImage()
@@ -394,6 +388,178 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	private class Convolve3x3FilterOperation<K extends RealType<K>> extends PositionalRoiOperation<K>
+	{
+		private ImageProcessor ip;
+		private int[] kernel;
+		private double scale;
+		private double k1, k2, k3, k4, k5, k6, k7, k8, k9;
+		private double v1, v2, v3, v4, v5, v6, v7, v8, v9;
+		private long currPixel, totalPixels, updateAfterXPixels;
+		private int minX, minY, maxX, maxY;
+		private boolean dataIsIntegral;
+		
+		protected Convolve3x3FilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<?> ip, int[] kernel)
+		{
+			super(image, origin, span);
+			this.ip = ip;
+			this.kernel = kernel;
+			if (kernel == null)
+				throw new IllegalArgumentException("Convolve3x3FilterOperation() passed a null kernel");
+			if (kernel.length != 9)
+				throw new IllegalArgumentException("Convolve3x3FilterOperation() requires a 3x3 kernel - passed kernel has "+kernel.length+" entries");
+		}
+
+		@Override
+		public void beforeIteration(RealType<?> type)
+		{
+			this.dataIsIntegral = TypeManager.isIntegralType(type);
+			k1 = kernel[0]; k2 = kernel[1]; k3 = kernel[2];
+			k4 = kernel[3]; k5 = kernel[4]; k6 = kernel[5];
+			k7 = kernel[6]; k8 = kernel[7]; k9 = kernel[8];
+			scale = 0;
+			for (int i = 0; i < 9; i++)
+				scale += kernel[i];
+			if (scale == 0)
+				scale = 1;
+			int[] origin = getOrigin();
+			int[] span = getSpan();
+			minX = origin[0]; 
+			minY = origin[1];
+			maxX = minX + span[0] - 1;
+			maxY = minY + span[1] - 1;
+			currPixel = 0;
+			totalPixels = ImageUtils.getTotalSamples(span);
+			updateAfterXPixels = totalPixels / 25;
+		}
+
+		@Override
+		public void insideIteration(int[] position, RealType<?> sample)
+		{
+			initPixelVals(position, sample);
+
+			calcSampleValue(sample);
+
+			updateProgress();
+		}
+		
+		@Override
+		public void afterIteration()
+		{
+			ip.showProgress(1.0);
+		}
+
+		private void calcSampleValue(RealType<?> sample)
+		{
+			double sum = k1*v1 + k2*v2 + k3*v3
+						+ k4*v4 + k5*v5 + k6*v6
+						+ k7*v7 + k8*v8 + k9*v9;
+			
+			sum /= this.scale;
+
+			if (this.dataIsIntegral)
+			{
+				sum = Math.round(sum);
+				sum = TypeManager.boundValueToType(sample, sum);
+			}
+
+			sample.setReal(sum);
+		}
+		
+		private void updateProgress()
+		{
+			currPixel++;
+			if (currPixel % updateAfterXPixels == 0)
+				ip.showProgress( ((double)currPixel) / totalPixels );
+		}
+
+		private void initPixelVals(int[] position, RealType<?> sample)
+		{
+			// TODO : optimize later - do straightforward for now
+			
+			int x = position[0];
+			int y = position[1];
+			
+			// v1
+			if ((x > minX) && (y > minY))
+				v1 = getd(x-1,y-1);
+			else if ((x == minX) && (y > minY))
+				v1 = getd(minX,y-1);
+			else if ((y == minY) && (x > minX))
+				v1 = getd(x-1,minY);
+			else
+				v1 = getd(minX,minY);
+			
+			// v2
+			if (y > minY)
+				v2 = getd(x,y-1);
+			else
+				v2 = getd(x,minY);;
+			
+			// v3
+			if ((x < maxX) && (y > minY))
+				v3 = getd(x+1,y-1);
+			else if ((x == maxX) && (y > minY))
+				v3 = getd(maxX,y-1);
+			else if ((y == minY) && (x < maxX))
+				v3 = getd(x+1,minY);
+			else
+				v3 = getd(maxX,minY);
+			
+			// v4
+			if (x > minX)
+				v4 = getd(x-1,y);
+			else
+				v4 = getd(minX,y);
+			
+			// v5
+			v5 = sample.getRealDouble();
+			
+			// v6
+			if (x < maxX)
+				v6 = getd(x+1,y);
+			else
+				v6 = getd(maxX,y);
+			
+			// v7  todo
+			if ((x > minX) && (y < maxY))
+				v7 = getd(x-1,y+1);
+			else if ((x == minX) && (y < maxY))
+				v7 = getd(minX,y+1);
+			else if ((y == maxY) && (x > minX))
+				v7 = getd(x-1,maxY);
+			else
+				v7 = getd(minX,maxY);
+			
+			// v8
+			if (y < maxY)
+				v8 = getd(x,y+1);
+			else
+				v8 = getd(x,maxY);
+			
+			// v9
+			if ((x < maxX) && (y < maxY))
+				v9 = getd(x+1,y+1);
+			else if ((x == maxX) && (y < maxY))
+				v9 = getd(maxX,y+1);
+			else if ((y == maxY) && (x < maxX))
+				v9 = getd(x+1,maxY);
+			else
+				v9 = getd(maxX,maxY);
+			
+		}
+	}
+	
+	private class BlurFilter
+	{
+		
+	}
+	
+	private class FindEdgesFilter
+	{
+		
+	}
+	
 	// TODO - refactor
 	/** applies the various filter operations to data other than UnsignedByteType */
 	private void filterGeneralType(FilterType type, int[] kernel)
@@ -446,15 +612,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						v6 = pixels2[p6];
 						v7 = v8; v8 = v9;
 						v9 = pixels2[p9];
-						double val = v1+v2+v3+v4+v5+v6+v7+v8+v9;
+						double val = (v1+v2+v3+v4+v5+v6+v7+v8+v9)/9.0;
 						if (this.isIntegral)
 						{
-							val += 4;
-							val /= 9;
-							val = (short) val;  // TODO : does this need to be int. Right now this code only exercised when data is shorts
+							val = Math.round(val);
+							val = TypeManager.boundValueToType(this.type, val);
 						}
-						else
-							val *= 0.11111111; //0.111... = 1/9
 						setd(p, val);
 					}
 					break;
@@ -982,7 +1145,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		*/
 
 		// our special case way
-		convolve3x3GeneralType(kernel);
+		if (false)  // developing code
+		{
+			int[] origin = originOfRoi();
+			int[] span = spanOfRoiPlane();
+			Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this.imageData, origin, span, this, kernel);
+			Operation.apply(convolveOp);
+		}
+		else
+			filterGeneralType(FilterType.CONVOLVE, kernel);
 	}
 
 	// not an override

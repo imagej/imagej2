@@ -378,6 +378,7 @@ public class ImgLibProcessorTest {
 		
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			System.out.println("doing a pair");
 			procPair[0].convolve3x3(kernel);
 			procPair[1].convolve3x3(kernel);
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
@@ -609,7 +610,6 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			//System.out.println("filter(int): about to do pair");
 			// NOTE - purposely left out CONVOLVE. It is tested elsewhere and in this case a NULL kernel is passed causing a runtime exception
 			
 			int[] filterNumbers = new int[]{ImgLibProcessor.BLUR_MORE, ImgLibProcessor.FIND_EDGES, ImgLibProcessor.MEDIAN_FILTER,
@@ -617,7 +617,6 @@ public class ImgLibProcessorTest {
 			
 			for (int filterNum : filterNumbers)
 			{
-				//System.out.println("  filter number "+filterNum);
 				initialize();
 				procPair[0].filter(filterNum);
 				procPair[1].filter(filterNum);
