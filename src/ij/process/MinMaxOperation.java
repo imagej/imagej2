@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class MinMaxOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
-	double min, max;
+	private double min, max;
 	
-	MinMaxOperation(Image<T> image, int[] origin, int[] span)
+	public MinMaxOperation(Image<T> image, int[] origin, int[] span)
 	{
 		super(image,origin,span);
 	}

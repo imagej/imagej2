@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 
-		Image<T>[] images;
-		int[][] origins;
-		int[][] spans;
+		private Image<T>[] images;
+		private int[][] origins;
+		private int[][] spans;
 		
 		protected ManyCursorRoiOperation(Image<T>[] images, int[][] origins, int[][] spans)
 		{

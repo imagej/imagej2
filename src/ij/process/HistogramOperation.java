@@ -5,11 +5,11 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class HistogramOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
-	ImageProcessor mask;
-	int[] histogram;
-	int pixIndex;
+	private ImageProcessor mask;
+	private int[] histogram;
+	private int pixIndex;
 	
-	HistogramOperation(Image<T> image, int[] origin, int[] span, ImageProcessor mask, int lutSize)
+	public HistogramOperation(Image<T> image, int[] origin, int[] span, ImageProcessor mask, int lutSize)
 	{
 		super(image,origin,span);
 	

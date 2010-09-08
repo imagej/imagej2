@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class ApplyLutOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
-	int[] lut;
+	private int[] lut;
 	
-	ApplyLutOperation(Image<T> image, int[] origin, int[] span, int[] lut)
+	public ApplyLutOperation(Image<T> image, int[] origin, int[] span, int[] lut)
 	{
 		super(image,origin,span);
 	

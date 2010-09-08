@@ -5,8 +5,8 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 {
-	Image<T> image;
-	int[] origin, span;
+	private Image<T> image;
+	private int[] origin, span;
 
 	protected SingleCursorRoiOperation(Image<T> image, int[] origin, int[] span)
 	{

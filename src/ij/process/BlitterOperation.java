@@ -12,7 +12,7 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 	
 	private BinaryFunction function;
 	
-	BlitterOperation(ImgLibProcessor<T> ip, ImgLibProcessor<T> other, int xloc, int yloc, BinaryFunction function)
+	public BlitterOperation(ImgLibProcessor<T> ip, ImgLibProcessor<T> other, int xloc, int yloc, BinaryFunction function)
 	{
 		super(other.getImage(),
 				Index.create(2),

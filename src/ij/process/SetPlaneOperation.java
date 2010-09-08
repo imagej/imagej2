@@ -3,21 +3,21 @@ package ij.process;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public class SetPlaneOperation<K extends RealType<K>> extends PositionalRoiOperation<K>
+public class SetPlaneOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
 {
 	public static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 
 	// set in constructor
-	Object pixels;
-	PixelType pixType;
-	boolean isUnsigned;
+	private Object pixels;
+	private PixelType pixType;
+	private boolean isUnsigned;
 	
 	// set before iteration
-	int pixNum;
-	RealType<?> type;
-	boolean isIntegral;
+	private int pixNum;
+	private RealType<?> type;
+	private boolean isIntegral;
 	
-	SetPlaneOperation(Image<K> theImage, int[] origin, Object pixels, PixelType inputType, boolean isUnsigned)
+	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, boolean isUnsigned)
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
 		this.pixels = pixels;

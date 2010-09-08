@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 // TODO - purposely not extending Blitter as it uses ImageProcessors rather than ImgLibProcessors: rethink?
 public class GenericBlitter<T extends RealType<T>>
 {
-	ImgLibProcessor<T> ip;
+	private ImgLibProcessor<T> ip;
 	
-	GenericBlitter(ImgLibProcessor<T> ip)
+	public GenericBlitter(ImgLibProcessor<T> ip)
 	{
 		this.ip = ip;
 	}
