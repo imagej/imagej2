@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class SetFloatValuesOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
 {
-	ImageProcessor proc;
+	private ImageProcessor proc;
 	
-	SetFloatValuesOperation(Image<T> image, int[] origin, int[] span, ImageProcessor proc)
+	public SetFloatValuesOperation(Image<T> image, int[] origin, int[] span, ImageProcessor proc)
 	{
 		super(image,origin,span);
 		this.proc = proc;

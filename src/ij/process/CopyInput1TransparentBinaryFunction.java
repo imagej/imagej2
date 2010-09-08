@@ -12,7 +12,7 @@ public class CopyInput1TransparentBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double transparentColor;
 	
-	CopyInput1TransparentBinaryFunction(ImageProcessor ip, boolean isIntegral, double transparentColor)
+	public CopyInput1TransparentBinaryFunction(ImageProcessor ip, boolean isIntegral, double transparentColor)
 	{
 		this.ip = ip;
 		this.dataIsIntegral = isIntegral;

@@ -17,7 +17,7 @@ public class DivideBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double max;
 	
-	DivideBinaryFunction(boolean isIntegral, double max)
+	public DivideBinaryFunction(boolean isIntegral, double max)
 	{
 		this.dataIsIntegral = isIntegral;
 		this.max = max;

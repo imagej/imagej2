@@ -7,7 +7,7 @@ public class SubtractBinaryFunction implements BinaryFunction {
 	private boolean isIntegral;
 	private double min;
 	
-	SubtractBinaryFunction(boolean isIntegral, double min)
+	public SubtractBinaryFunction(boolean isIntegral, double min)
 	{
 		this.isIntegral = isIntegral;
 		this.min = min;

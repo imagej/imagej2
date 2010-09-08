@@ -7,7 +7,7 @@ public class MultiplyBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double max;
 	
-	MultiplyBinaryFunction(boolean isIntegral, double max)
+	public MultiplyBinaryFunction(boolean isIntegral, double max)
 	{
 		this.dataIsIntegral = isIntegral;
 		this.max = max;

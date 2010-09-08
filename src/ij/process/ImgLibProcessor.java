@@ -324,6 +324,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	/** for UnsignedByteType data only. handles the various Blitter operations by calculating a new lut and applying it. */
+	/*
 	private void doLutOperation(int op, double value)
 	{
 		double SCALE = 255.0/Math.log(255.0);
@@ -394,8 +395,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		applyTable(lut);
 	}
-
+	*/
+	
 	/** for any data type other than UnsignedByteType. handles the various Blitter operations. */
+	/*
 	private void doPointOperation(int op, double value)
 	{
 		if (this.isUnsignedByte)
@@ -411,9 +414,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		final boolean isIntegral = this.isIntegral;
 		final double range = max - min;
 		final double  c = value;
-		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
 		double v1, v2;
-		
+		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
+
 		final int xEdge = roiX + roiWidth; 
 		final int yEdge = roiY + roiHeight;
 		for (int y=roiY; y<yEdge; y++)
@@ -536,7 +539,25 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (resetMinMax)
 			findMinAndMax();
 	}
-
+	*/
+	
+	/** do a point operation to the current ROI plane using the passed in UnaryFunction */
+	private void doPointOperation(UnaryFunction function)
+	{
+		int[] origin = originOfRoi();
+		
+		int[] span = spanOfRoiPlane();
+			
+		PointOperation<T> pointOp = new PointOperation<T>(this.imageData, origin, span, function);
+		
+		Operation.apply(pointOp);
+		
+		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
+		
+		if (resetMinMax)
+			findMinAndMax();
+	}
+	
 	/** called by filterUnsignedByte(). */
 	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
 	{
@@ -904,8 +925,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
 		//get the current image data
-		int[] imageOrigin = Index.create(0, 0, this.planePosition);
-		int[] imageSpan = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+		int[] imageOrigin = originOfImage();
+		int[] imageSpan = spanOfImagePlane();
 
 		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
 		
@@ -994,6 +1015,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return pixels2[x+y*width]&255;
 	}
 
+	/** returns the coordinates of the image origin as an int[] */
+	private int[] originOfImage()
+	{
+		return Index.create(0, 0, this.planePosition);
+	}
+	
+	/** returns the coordinates of the ROI origin as an int[] */
+	private int[] originOfRoi()
+	{
+		return Index.create(super.roiX, super.roiY, this.planePosition);
+	}
+	
 	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
@@ -1049,6 +1082,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Operation.apply(setOp);
 	}
 	
+	/** returns the span of the image plane as an int[] */
+	private int[] spanOfImagePlane()
+	{
+		return Span.singlePlane(super.width, super.height, this.imageData.getNumDimensions());
+	}
+	
+	/** returns the span of the ROI plane as an int[] */
+	private int[] spanOfRoiPlane()
+	{
+		return Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
+	}
+	
 	/** verifies that the passed in lut is compatible with the current data type. Throws an exception if the lut length is wrong
 	 *  for the pixel layout type.
 	 */
@@ -1076,28 +1121,34 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void abs()
 	{
-		doPointOperation(ABS, 0.0);
+		AbsUnaryFunction function = new AbsUnaryFunction();
+		
+		doPointOperation(function);
 	}
 
 	/** apply the ADD point operation over the current ROI area of the current plane of data */
 	@Override
 	public void add(int value)
 	{
-		doPointOperation(ADD, (double)value);
+		add((double) value);
 	}
 	
 	/** apply the ADD point operation over the current ROI area of the current plane of data */
 	@Override
 	public void add(double value)
 	{
-		doPointOperation(ADD, value);
+		AddUnaryFunction func = new AddUnaryFunction(this.type, value);
+		
+		doPointOperation(func);
 	}
 	
 	/** apply the AND point operation over the current ROI area of the current plane of data */
 	@Override
 	public void and(int value)
 	{
-		doPointOperation(AND,value);
+		AndUnaryFunction func = new AndUnaryFunction(this.type, value);
+		
+		doPointOperation(func);
 	}
 
 	/** runs super class autoThreshold() for integral data */
@@ -1119,8 +1170,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		Rectangle roi = getRoi();
 		
-		int[] index = Index.create(roi.x, roi.y, this.planePosition);
-		int[] span = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
+		int[] index = originOfRoi();
+		int[] span = spanOfRoiPlane();
 
 		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
 		
@@ -1329,8 +1380,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{	
 		Rectangle roi = getRoi();
 
-		int[] imageOrigin = Index.create(roi.x, roi.y, this.planePosition);
-		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
+		int[] imageOrigin = originOfRoi();
+		int[] imageSpan = spanOfRoiPlane();
 		
 		int[] newImageOrigin = Index.create(2);
 		int[] newImageSpan = Span.singlePlane(roi.width, roi.height, 2);
@@ -1389,9 +1440,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImageProcessor proc = createProcessor(width, height);
 
-		int[] origin = Index.create(0, 0, this.planePosition);
+		int[] origin = originOfImage();
 		
-		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
+		int[] span = spanOfImagePlane();
 		
 		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, proc);
 
@@ -1429,14 +1480,22 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void exp()
 	{
-		doPointOperation(EXP, 0.0);
+		ExpUnaryFunction function = new ExpUnaryFunction(this.type, this.min, this.max);
+		
+		doPointOperation(function);
 	}
 	
 	/** apply the FILL point operation over the current ROI area of the current plane of data */
 	@Override
 	public void fill()
 	{
-		doPointOperation(FILL,0.0);
+		double fillValue = this.fillColor;
+		if (this.isIntegral)
+			fillValue = super.fgColor;
+		
+		FillUnaryFunction func = new FillUnaryFunction(fillValue);
+		
+		doPointOperation(func);
 	}
 
 	/** fills the current ROI area of the current plane of data with the fill color wherever the input mask is nonzero */
@@ -1508,14 +1567,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void flipVertical()
 	{
 		int x,y,mirrorY;
-		int halfY = this.roiHeight/2;
+		int halfY = super.roiHeight/2;
 		for (int yOff = 0; yOff < halfY; yOff++)
 		{
-			y = this.roiY + yOff;
-			mirrorY = this.roiY + this.roiHeight - yOff - 1;
-			for (int xOff = 0; xOff < this.roiWidth; xOff++)
+			y = super.roiY + yOff;
+			mirrorY = super.roiY + super.roiHeight - yOff - 1;
+			for (int xOff = 0; xOff < super.roiWidth; xOff++)
 			{
-				x = this.roiX + xOff;
+				x = super.roiX + xOff;
 				double tmp = getd(x, y);
 				setd(x, y, getd(x, mirrorY));
 				setd(x, mirrorY, tmp);
@@ -1527,7 +1586,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void gamma(double value)
 	{
-		doPointOperation(GAMMA, value);
+		GammaUnaryFunction function = new GammaUnaryFunction(this.type, this.min, this.max, value);
+		
+		doPointOperation(function);
 	}
 	
 	/** get the pixel value at x,y as an int. for float data it returns float encoded into int bits */
@@ -1660,9 +1721,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		if ((this.isUnsignedByte) || (this.isUnsignedShort))
 		{
-			int[] origin = Index.create(super.roiX, super.roiY, this.planePosition);
+			int[] origin = originOfRoi();
 			
-			int[] span = Span.singlePlane(super.roiWidth, super.roiHeight, this.imageData.getNumDimensions());
+			int[] span = spanOfRoiPlane();
 			
 			int lutSize = (int) (this.getMaxAllowedValue() + 1);
 	
@@ -1859,21 +1920,27 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.isIntegral)
 			resetMinAndMax();
 		
-		doPointOperation(INVERT, 0.0);
+		InvertUnaryFunction function = new InvertUnaryFunction(this.type, this.min, this.max);
+		
+		doPointOperation(function );
 	}
 	
 	/** apply the LOG point operation over the current ROI area of the current plane of data */
 	@Override
 	public void log()
 	{
-		doPointOperation(LOG, 0.0);
+		LogUnaryFunction function = new LogUnaryFunction(this.type, this.min, this.max);
+		
+		doPointOperation(function);
 	}
 	
 	/** apply the MAXIMUM point operation over the current ROI area of the current plane of data */
 	@Override
 	public void max(double value)
 	{
-		doPointOperation(MAXIMUM, value);
+		MaxUnaryFunction function = new MaxUnaryFunction(value);
+		
+		doPointOperation(function);
 	}
 
 	
@@ -1891,14 +1958,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void min(double value)
 	{
-		doPointOperation(MINIMUM, value);
+		MinUnaryFunction function = new MinUnaryFunction(value);
+		
+		doPointOperation(function);
 	}
 	
 	/** apply the MULT point operation over the current ROI area of the current plane of data */
 	@Override
 	public void multiply(double value)
 	{
-		doPointOperation(MULT, value);
+		MultiplyUnaryFunction function = new MultiplyUnaryFunction(this.type, value);
+		
+		doPointOperation(function);
 	}
 	
 	/** add noise to the current ROI area of current plane data. */
@@ -1933,7 +2004,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void or(int value)
 	{
-		doPointOperation(OR,value);
+		OrUnaryFunction func = new OrUnaryFunction(this.type, value);
+		
+		doPointOperation(func);
 	}
 	
 	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int. if x,y, out of bounds do nothing. */
@@ -1998,8 +2071,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] snapOrigin = Index.create(roi.x, roi.y, new int[snapData.getNumDimensions()-2]);
 		int[] snapSpan = Span.singlePlane(roi.width, roi.height, snapData.getNumDimensions());
 
-		int[] imageOrigin = Index.create(roi.x, roi.y, this.planePosition);
-		int[] imageSpan = Span.singlePlane(roi.width, roi.height, this.imageData.getNumDimensions());
+		int[] imageOrigin = originOfRoi();
+		int[] imageSpan = spanOfRoiPlane();
 
 		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
 		
@@ -2111,7 +2184,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		double centerX = roiX + (roiWidth-1)/2.0;
 		double centerY = roiY + (roiHeight-1)/2.0;
-		int xMax = roiX + this.roiWidth - 1;
+		int xMax = roiX + roiWidth - 1;
 		
 		// TODO in original ByteProcessor code here:
 		// if (!bgColorSet && isInvertedLut()) bgColor = 0;
@@ -2522,9 +2595,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void snapshot() 
 	{
-		int[] origins = Index.create(0, 0, this.planePosition);
+		int[] origins = originOfImage();
 
-		int[] spans = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+		int[] spans = spanOfImagePlane();
 		
 		this.snapshot = new Snapshot<T>(this.imageData, origins, spans);
 	}
@@ -2533,14 +2606,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void sqr()
 	{
-		doPointOperation(SQR, 0.0);
+		SqrUnaryFunction function = new SqrUnaryFunction(this.type, this.getMaxAllowedValue());
+		
+		doPointOperation(function);
 	}
 	
 	/** apply the SQRT point operation over the current ROI area of the current plane of data */
 	@Override
 	public void sqrt()
 	{
-		doPointOperation(SQRT, 0.0);
+		SqrtUnaryFunction function = new SqrtUnaryFunction(this.isIntegral);
+		
+		doPointOperation(function);
 	}
 
 	/** calculates actual min and max values present and resets the threshold */
@@ -2563,8 +2640,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		int[] origin = Index.create(0, 0, this.planePosition);
-		int[] span = Span.singlePlane(getWidth(), getHeight(), this.imageData.getNumDimensions());
+		int[] origin = originOfImage();
+		
+		int[] span = spanOfImagePlane();
 		
 		ThresholdOperation<T> threshOp = new ThresholdOperation<T>(this.imageData,origin,span,thresholdLevel);
 		
@@ -2588,9 +2666,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
 			fp = new FloatProcessor(width, height, new float[allocatedSize], super.cm);
 		
-		int[] origin = Index.create(0, 0, this.planePosition);
+		int[] origin = originOfImage();
 		
-		int[] span = Span.singlePlane(width, height, this.imageData.getNumDimensions());
+		int[] span = spanOfImagePlane();
 		
 		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, fp);
 
@@ -2608,6 +2686,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void xor(int value)
 	{
-		doPointOperation(XOR,value);
+		XorUnaryFunction func = new XorUnaryFunction(this.type, value);
+		
+		doPointOperation(func);
 	}
 }

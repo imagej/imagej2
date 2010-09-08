@@ -7,7 +7,7 @@ public class CopyInput1InvertedBinaryFunction implements BinaryFunction {
 
 	private double max;
 	
-	CopyInput1InvertedBinaryFunction(double max)
+	public CopyInput1InvertedBinaryFunction(double max)
 	{
 		this.max = max;
 	}

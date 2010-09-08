@@ -5,11 +5,11 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public abstract class PositionalRoiOperation<T extends RealType<T>>
 {
-	Image<T> image;
-	int[] origin;
-	int[] span;
+	private Image<T> image;
+	private int[] origin;
+	private int[] span;
 	
-	PositionalRoiOperation(Image<T> image, int[] origin, int[] span)
+	protected PositionalRoiOperation(Image<T> image, int[] origin, int[] span)
 	{
 		this.image = image;
 		this.origin = origin.clone();

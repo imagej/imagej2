@@ -5,9 +5,9 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class ThresholdOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
-	double threshold;
+	private double threshold;
 	
-	ThresholdOperation(Image<T> image, int[] origin, int[] span, double threshold)
+	public ThresholdOperation(Image<T> image, int[] origin, int[] span, double threshold)
 	{
 		super(image,origin,span);
 		

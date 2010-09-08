@@ -6,7 +6,7 @@ public class AverageBinaryFunction implements BinaryFunction {
 
 	private boolean dataIsIntegral;
 	
-	AverageBinaryFunction(boolean isIntegral)
+	public AverageBinaryFunction(boolean isIntegral)
 	{
 		this.dataIsIntegral = isIntegral;
 	}

@@ -31,15 +31,15 @@ public class ImgLibProcessorTest {
 
 	// ************* Instance variables ***********************************************
 
-	static int width;
-	static int height;
+	private static int width;
+	private static int height;
 	
-	static ByteProcessor origBProc;
-	static ShortProcessor origSProc;
-	static FloatProcessor origFProc;
-	static ImgLibProcessor<UnsignedByteType> origIUBProc;
-	static ImgLibProcessor<UnsignedShortType> origIUSProc;
-	static ImgLibProcessor<FloatType> origIFProc;
+	private static ByteProcessor origBProc;
+	private static ShortProcessor origSProc;
+	private static FloatProcessor origFProc;
+	private static ImgLibProcessor<UnsignedByteType> origIUBProc;
+	private static ImgLibProcessor<UnsignedShortType> origIUSProc;
+	private static ImgLibProcessor<FloatType> origIFProc;
 	
 	private ByteProcessor bProc;
 	private ShortProcessor sProc;
@@ -48,11 +48,11 @@ public class ImgLibProcessorTest {
 	private ImgLibProcessor<UnsignedShortType> iusProc;
 	private ImgLibProcessor<FloatType> ifProc;
 
-	ImageProcessor[][] PROC_PAIRS;
-	ImageProcessor[] BYTE_PROCS;
-	ImageProcessor[] SHORT_PROCS;
-	ImageProcessor[] FLOAT_PROCS;
-	ImageProcessor[] IMGLIB_PROCS;
+	private ImageProcessor[][] PROC_PAIRS;
+	private ImageProcessor[] BYTE_PROCS;
+	private ImageProcessor[] SHORT_PROCS;
+	private ImageProcessor[] FLOAT_PROCS;
+	private ImageProcessor[] IMGLIB_PROCS;
 
 	// ************* Helper methods ***********************************************
 	
@@ -248,12 +248,9 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
-			{
-				procPair[0].abs();
-				procPair[1].abs();
-				compareData(procPair[0], procPair[1]);
-			}
+			procPair[0].abs();
+			procPair[1].abs();
+			compareData(procPair[0], procPair[1]);
 		}
 	}
 
@@ -388,12 +385,29 @@ public class ImgLibProcessorTest {
 	}
 
 	/*
-	private static void compare(ImageProcessor proc1, ImageProcessor proc2)
+	private static void compare(ImageProcessor byteProc, ImageProcessor floatProc)
 	{
-		
+		int w = byteProc.getWidth();
+		int h = byteProc.getHeight();
+	
+		assertEquals(w, floatProc.getWidth());
+		assertEquals(h, floatProc.getHeight());
+	
+		for (int x = 0; x < w; x++)
+		{
+			for (int y = 0; y < h; y++)
+			{
+				if (Math.abs(byteProc.getf(x, y) - floatProc.getf(x, y)) > 0.001)
+				{
+					System.out.println("processor data differs at ("+x+","+y+") : byte(" + byteProc.getf(x, y) +") float("+floatProc.getf(x, y)+")");
+					return;
+				}
+			}
+		}
 	}
 	
-	public static void main(String[] args)
+	@Test
+	public void testConvolveTemporarily()
 	{
 		ByteProcessor byteProc = new ByteProcessor(width,height,new byte[width*height],null);
 		FloatProcessor floatProc = new FloatProcessor(width,height,new float[width*height],null);
@@ -402,11 +416,27 @@ public class ImgLibProcessorTest {
 		{
 			for (int y = 0; y < height; y++)
 			{
+				int value = (19 + (x+y)) % 256;
 				byteProc.setf(x,y,value);
 				floatProc.setf(x,y,value);
 			}
 		}
-		compareData(byteProc,floatProc);
+		
+		int[][] kernel2d = new int[][] {{1,3,1}, {3,-16,3}, {1,3,1}};
+
+		int kh = kernel2d.length;
+		int kw = kernel2d[0].length;
+		
+		int[] kernel = new int[kw * kh];
+		int i = 0;
+		for (int x=0; x < kw; x++)
+			for (int y=0; y < kh; y++)
+				kernel[i++] = kernel2d[x][y];
+
+		byteProc.convolve3x3(kernel);
+		floatProc.convolve3x3(kernel);
+		
+		compare(byteProc,floatProc);
 	}
 	*/
 	

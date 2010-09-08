@@ -7,7 +7,7 @@ public class AddBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double max;
 	
-	AddBinaryFunction(boolean isIntegral, double max)
+	public AddBinaryFunction(boolean isIntegral, double max)
 	{
 		this.dataIsIntegral = isIntegral;
 		this.max = max;

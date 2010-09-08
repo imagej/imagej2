@@ -5,10 +5,10 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class ResetUsingMaskOperation<T extends RealType<T>> extends DualCursorRoiOperation<T>
 {
-	byte[] maskPixels;
-	int pixNum;
+	private byte[] maskPixels;
+	private int pixNum;
 	
-	ResetUsingMaskOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2, ImageProcessor mask)
+	public ResetUsingMaskOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2, ImageProcessor mask)
 	{
 		super(img1,origin1,span1,img2,origin2,span2);
 		
