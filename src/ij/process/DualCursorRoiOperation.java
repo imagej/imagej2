@@ -1,5 +1,7 @@
 package ij.process;
 
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
@@ -33,5 +35,31 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	public abstract void beforeIteration(RealType<?> type1, RealType<?> type2);
 	public abstract void insideIteration(RealType<?> sample1, RealType<?> sample2);
 	public abstract void afterIteration();
+	
+	public void execute()
+	{
+		LocalizableByDimCursor<T> image1Cursor = this.img1.createLocalizableByDimCursor();
+		LocalizableByDimCursor<T> image2Cursor = this.img2.createLocalizableByDimCursor();
+
+		RegionOfInterestCursor<T> image1RoiCursor = new RegionOfInterestCursor<T>(image1Cursor, this.origin1, this.span1);
+		RegionOfInterestCursor<T> image2RoiCursor = new RegionOfInterestCursor<T>(image2Cursor, this.origin2, this.span2);
+		
+		beforeIteration(image1Cursor.getType(),image2Cursor.getType());
+		
+		while (image1RoiCursor.hasNext() && image2RoiCursor.hasNext())
+		{
+			image1RoiCursor.fwd();
+			image2RoiCursor.fwd();
+			
+			insideIteration(image1Cursor.getType(),image2Cursor.getType());
+		}
+		
+		afterIteration();
+		
+		image1RoiCursor.close();
+		image2RoiCursor.close();
+		image1Cursor.close();
+		image2Cursor.close();
+	}
 }
 

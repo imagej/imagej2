@@ -68,7 +68,7 @@ public class DualCursorRoiOperationTest {
 		assertArrayEquals(span, op.getSpan1());
 		assertArrayEquals(span, op.getSpan2());
 		
-		Operation.apply(op);
+		op.execute();
 		
 		assertTrue(op.beforeCalls == 1);
 		assertTrue(op.insideCalls == 6);

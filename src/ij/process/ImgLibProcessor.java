@@ -269,7 +269,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 		PointOperation<T> pointOp = new PointOperation<T>(this.imageData, origin, span, function);
 		
-		Operation.apply(pointOp);
+		pointOp.execute();
 		
 		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
 		
@@ -390,7 +390,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	private class Convolve3x3FilterOperation<K extends RealType<K>> extends PositionalRoiOperation<K>
 	{
-		private ImageProcessor ip;
+		private ImgLibProcessor<K> ip;
 		private int[] kernel;
 		private double scale;
 		private double k1, k2, k3, k4, k5, k6, k7, k8, k9;
@@ -399,7 +399,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		private int minX, minY, maxX, maxY;
 		private boolean dataIsIntegral;
 		
-		protected Convolve3x3FilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<?> ip, int[] kernel)
+		protected Convolve3x3FilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip, int[] kernel)
 		{
 			super(image, origin, span);
 			this.ip = ip;
@@ -482,70 +482,70 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 			// v1
 			if ((x > minX) && (y > minY))
-				v1 = getd(x-1,y-1);
+				v1 = ip.getd(x-1,y-1);
 			else if ((x == minX) && (y > minY))
-				v1 = getd(minX,y-1);
+				v1 = ip.getd(minX,y-1);
 			else if ((y == minY) && (x > minX))
-				v1 = getd(x-1,minY);
+				v1 = ip.getd(x-1,minY);
 			else
-				v1 = getd(minX,minY);
+				v1 = ip.getd(minX,minY);
 			
 			// v2
 			if (y > minY)
-				v2 = getd(x,y-1);
+				v2 = ip.getd(x,y-1);
 			else
-				v2 = getd(x,minY);;
+				v2 = ip.getd(x,minY);;
 			
 			// v3
 			if ((x < maxX) && (y > minY))
-				v3 = getd(x+1,y-1);
+				v3 = ip.getd(x+1,y-1);
 			else if ((x == maxX) && (y > minY))
-				v3 = getd(maxX,y-1);
+				v3 = ip.getd(maxX,y-1);
 			else if ((y == minY) && (x < maxX))
-				v3 = getd(x+1,minY);
+				v3 = ip.getd(x+1,minY);
 			else
-				v3 = getd(maxX,minY);
+				v3 = ip.getd(maxX,minY);
 			
 			// v4
 			if (x > minX)
-				v4 = getd(x-1,y);
+				v4 = ip.getd(x-1,y);
 			else
-				v4 = getd(minX,y);
+				v4 = ip.getd(minX,y);
 			
 			// v5
 			v5 = sample.getRealDouble();
 			
 			// v6
 			if (x < maxX)
-				v6 = getd(x+1,y);
+				v6 = ip.getd(x+1,y);
 			else
-				v6 = getd(maxX,y);
+				v6 = ip.getd(maxX,y);
 			
 			// v7  todo
 			if ((x > minX) && (y < maxY))
-				v7 = getd(x-1,y+1);
+				v7 = ip.getd(x-1,y+1);
 			else if ((x == minX) && (y < maxY))
-				v7 = getd(minX,y+1);
+				v7 = ip.getd(minX,y+1);
 			else if ((y == maxY) && (x > minX))
-				v7 = getd(x-1,maxY);
+				v7 = ip.getd(x-1,maxY);
 			else
-				v7 = getd(minX,maxY);
+				v7 = ip.getd(minX,maxY);
 			
 			// v8
 			if (y < maxY)
-				v8 = getd(x,y+1);
+				v8 = ip.getd(x,y+1);
 			else
-				v8 = getd(x,maxY);
+				v8 = ip.getd(x,maxY);
 			
 			// v9
 			if ((x < maxX) && (y < maxY))
-				v9 = getd(x+1,y+1);
+				v9 = ip.getd(x+1,y+1);
 			else if ((x == maxX) && (y < maxY))
-				v9 = getd(maxX,y+1);
+				v9 = ip.getd(maxX,y+1);
 			else if ((y == maxY) && (x < maxX))
-				v9 = getd(x+1,maxY);
+				v9 = ip.getd(x+1,maxY);
 			else
-				v9 = getd(maxX,maxY);
+				v9 = ip.getd(maxX,maxY);
 			
 		}
 	}
@@ -825,7 +825,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		MinMaxOperation<T> mmOp = new MinMaxOperation<T>(this.imageData,imageOrigin,imageSpan);
 		
-		Operation.apply(mmOp);
+		mmOp.execute();
 		
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
 		
@@ -974,7 +974,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType, isUnsigned);
 		
-		Operation.apply(setOp);
+		setOp.execute();
 	}
 	
 	/** returns the span of the image plane as an int[] */
@@ -1070,7 +1070,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
 		
-		Operation.apply(lutOp);
+		lutOp.execute();
 	}
 
 	// this method is kind of kludgy
@@ -1150,7 +1150,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			int[] origin = originOfRoi();
 			int[] span = spanOfRoiPlane();
 			Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this.imageData, origin, span, this, kernel);
-			Operation.apply(convolveOp);
+			convolveOp.execute();
 		}
 		else
 			filterGeneralType(FilterType.CONVOLVE, kernel);
@@ -1339,7 +1339,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, proc);
 
-		Operation.apply(floatOp);
+		floatOp.execute();
 		
 		return proc;
 	}
@@ -1622,7 +1622,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 			HistogramOperation<T> histOp = new HistogramOperation<T>(this.imageData,origin,span,getMask(),lutSize);
 			
-			Operation.apply(histOp);
+			histOp.execute();
 			
 			return histOp.getHistogram();
 		}
@@ -1969,7 +1969,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
 		
-		Operation.apply(resetOp);
+		resetOp.execute();
 	}
 
 	// TODO - refactor
@@ -2542,7 +2542,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ThresholdOperation<T> threshOp = new ThresholdOperation<T>(this.imageData,origin,span,thresholdLevel);
 		
-		Operation.apply(threshOp);
+		threshOp.execute();
 	}
 
 	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
@@ -2568,7 +2568,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, fp);
 
-		Operation.apply(floatOp);
+		floatOp.execute();
 		
 		fp.setRoi(getRoi());
 		fp.setMask(getMask());

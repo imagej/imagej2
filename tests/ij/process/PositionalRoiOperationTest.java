@@ -79,7 +79,7 @@ public class PositionalRoiOperationTest {
 		
 		FakePositionalOperation<ByteType> op = new FakePositionalOperation<ByteType>(proc.getImage(),origin,span);
 		
-		Operation.apply(op);
+		op.execute();
 		
 		assertTrue(op.beforeCalls == 1);
 		assertTrue(op.insideCalls == 6);

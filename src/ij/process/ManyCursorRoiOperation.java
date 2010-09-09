@@ -1,5 +1,8 @@
 package ij.process;
 
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
@@ -33,4 +36,68 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		public abstract void beforeIteration(RealType<T>[] types);
 		public abstract void insideIteration(RealType<T>[] samples);
 		public abstract void afterIteration();
+
+		private void collectSamples(RegionOfInterestCursor<T>[] cursors, RealType<T>[] samples)
+		{
+			for (int i = 0; i < cursors.length; i++)
+				samples[i] = cursors[i].getType();
+		}
+		
+		private boolean hasNext(RegionOfInterestCursor<T>[] cursors)
+		{
+			for (int i = 0; i < cursors.length; i++)
+				if (!cursors[i].hasNext())
+					return false;
+					
+			return true;
+		}
+		
+		private void fwd(RegionOfInterestCursor<T>[] cursors)
+		{
+			for (int i = 0; i < cursors.length; i++)
+				cursors[i].fwd();
+		}
+		
+		private void close(Cursor<T>[] cursors)
+		{
+			for (int i = 0; i < cursors.length; i++)
+				cursors[i].close();
+		}
+		
+		public void execute()
+		{
+			// create cursors
+			LocalizableByDimCursor<T>[] cursors = new LocalizableByDimCursor[images.length];
+			for (int i = 0; i < images.length; i++)
+				cursors[i] = images[i].createLocalizableByDimCursor();
+
+			// create roiCursors
+			RegionOfInterestCursor<T>[] roiCursors = new RegionOfInterestCursor[images.length];
+			for (int i = 0; i < images.length; i++)
+				roiCursors[i] = new RegionOfInterestCursor<T>(cursors[i], origins[i], spans[i]);
+
+			// gather type info to pass along
+			RealType<T>[] samples = new RealType[images.length];
+			collectSamples(roiCursors,samples);
+
+			// do the iteration
+			
+			beforeIteration(samples);  // pass along type info
+			
+			while (hasNext(roiCursors))
+			{
+				fwd(roiCursors);
+				
+				collectSamples(roiCursors,samples);
+				
+				insideIteration(samples);
+			}
+			
+			afterIteration();
+			
+			// close the cursors
+			
+			close(roiCursors);
+			close(cursors);
+		}
 }

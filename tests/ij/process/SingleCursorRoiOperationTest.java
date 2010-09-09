@@ -60,7 +60,7 @@ public class SingleCursorRoiOperationTest {
 		assertArrayEquals(origin, op.getOrigin());
 		assertArrayEquals(span, op.getSpan());
 		
-		Operation.apply(op);
+		op.execute();
 		
 		assertTrue(op.beforeCalls == 1);
 		assertTrue(op.insideCalls == 6);
