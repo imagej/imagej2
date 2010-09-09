@@ -376,9 +376,25 @@ public class ImgLibProcessorTest {
 			for (int y=0; y < kh; y++)
 				kernel[i++] = kernel2d[x][y];
 		
+		// straightforward test
+
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			System.out.println("doing a pair");
+			procPair[0].convolve3x3(kernel);
+			procPair[1].convolve3x3(kernel);
+			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
+			//   an earlier version of ImageJ code this test will break.
+			compareData(procPair[0], procPair[1]);
+		}
+		
+		// now test with ROI set
+		
+		initialize();
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			procPair[0].setRoi(5,6,width-10,height-15);
+			procPair[1].setRoi(5,6,width-10,height-15);
+			
 			procPair[0].convolve3x3(kernel);
 			procPair[1].convolve3x3(kernel);
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with

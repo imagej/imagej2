@@ -4,13 +4,8 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperation<T>
 {
-	private ImgLibProcessor<?> ip;
-	
-	private long numPixels;
-	private long pixelsSoFar;
-	private long numPixelsInTwentyRows;
-	
 	private BinaryFunction function;
+	private ProgressTracker tracker;
 	
 	public BlitterOperation(ImgLibProcessor<T> ip, ImgLibProcessor<T> other, int xloc, int yloc, BinaryFunction function)
 	{
@@ -20,16 +15,16 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 				ip.getImage(),
 				Index.create(xloc, yloc, ip.getPlanePosition()),
 				Span.singlePlane(other.getWidth(), other.getHeight(), ip.getImage().getNumDimensions()));
+		
 		this.function = function;
-		this.ip = ip;
-		this.numPixels = other.getTotalSamples();
-		this.numPixelsInTwentyRows = (this.numPixels * 20) / other.getHeight();
+		
+		this.tracker = new ProgressTracker(ip, other.getTotalSamples(), 20*ip.getWidth());
 	}
 	
 	@Override
 	public void beforeIteration(RealType<?> type1, RealType<?> type2)
 	{
-		this.pixelsSoFar= 0;
+		this.tracker.init();
 	}
 
 	@Override
@@ -37,15 +32,12 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 	{
 		this.function.compute(sample2, sample1, sample2);
 		
-		this.pixelsSoFar++;
-
-		if (( this.pixelsSoFar % this.numPixelsInTwentyRows) == 0) 
-			this.ip.showProgress( (double)this.pixelsSoFar / this.numPixels );
+		this.tracker.didOneMore();
 	}
 
 	@Override
 	public void afterIteration()
 	{
-		this.ip.showProgress(1.0);
+		this.tracker.done();
 	}
 }
