@@ -44,19 +44,11 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
 // More TODO / NOTES
-//   Recently pulled a lot of code in for filters/convolve/etc. This could should be refactored to use multiple classes to implement these
-//     features.
-//     Possible refactorings
-//       create a FilterType class that inherits from Operation(?) and have convolve, blur_more, find_edges, etc. inherit from it.
-//         Pass FilterAlgo to this Operation.
-//       create some kind of algorithm classes for the various doProcess type ops. They would take two samples and combine them in some way.
-//         then things like doProcess could be passed an algo and be very simplified. the various routines (like fill() for instance)
-//         could then new a FillAlgo and pass it to doProcess.
-//       turn doProcess into a Operation of some type. Maybe even modify BlitterOperation.
+//   For filters we're mirroring IJ's behavior. This means no min/max/median/erode/dilate for anything but UnsignedByteType. Change this?
 //   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
 //   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
 //   Review imglib's various cursors and perhaps change which ones I'm using.
-//   Nearly all methods below broken for ComplexType and and LongType
+//   Nearly all methods below broken for ComplexType and LongType
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
 //     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
 //     its use throughout the application.
@@ -555,13 +547,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
 	}
 	
-	// NOTE - eliminating bad cast warnings in this method by explicit casts causes Hudson tests to fail
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
 		int w = image.getDimension(0);
 		int h = image.getDimension(1);
 		
+		// NOTE - eliminating bad cast warnings in this method by explicit casts causes javac to barf and thus Hudson tests fail
+
 		if (type instanceof ByteType) {
 			Image<ByteType> im = (Image) image;
 			return ImageUtils.getPlaneBytes(im, w, h, planePos);
@@ -597,10 +590,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (type instanceof DoubleType) {
 			Image<DoubleType> im = (Image) image;
 			return ImageUtils.getPlaneDoubles(im, w, h, planePos);
-		}
-		if (type instanceof LongType) {
-			Image<LongType> im = (Image) image;
-			return ImageUtils.getPlaneLongs(im, w, h, planePos);
 		}
 		return ImageUtils.getPlaneData(image, w, h, planePos);
 	}
@@ -786,8 +775,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		verifyLutLengthOkay(lut);
 		
-		Rectangle roi = getRoi();
-		
 		int[] index = originOfRoi();
 		int[] span = spanOfRoiPlane();
 
@@ -855,7 +842,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setPixels(ip2.getPixels());
 	}
 
-	// TODO - refactor/replace with Wayne's latest code
 	/** convolves the current ROI area data with the provided 3x3 kernel */
 	@Override
 	public void convolve3x3(int[] kernel)
@@ -868,9 +854,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		*/
 
 		// our special case way
+		
 		int[] origin = originOfRoi();
 		int[] span = spanOfRoiPlane();
+		
 		Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this.imageData, origin, span, this, kernel);
+		
 		convolveOp.execute();
 	}
 
@@ -1143,6 +1132,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override : way to phase out passing in filter numbers
+	// TODO - figure out way to pass in a filter function of some sort and then we can phase out the FilterType enum too
 	/** run specified filter (a FilterType) on current ROI area of current plane data */
 	public void filter(FilterType type)
 	{
@@ -1153,16 +1143,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			int[] origin = originOfRoi();
 			int[] span = spanOfRoiPlane();
 			
-			Filter3x3Operation<T> filter;
-			
 			switch (type)
 			{
 				case BLUR_MORE:
-					filter = new BlurFilterOperation<T>(this.imageData,origin,span,this);
+					new BlurFilterOperation<T>(this.imageData,origin,span,this).execute();
 					break;
 					
 				case FIND_EDGES:
-					filter = new FindEdgesFilterOperation<T>(this.imageData,origin,span,this);
+					new FindEdgesFilterOperation<T>(this.imageData,origin,span,this).execute();
 					break;
 
 				case MEDIAN_FILTER:
@@ -1176,8 +1164,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				default:
 					throw new IllegalArgumentException("filter(FilterTye): invalid filter type specified - "+type);
 			}
-			
-			filter.execute();
 		}
 	}
 
