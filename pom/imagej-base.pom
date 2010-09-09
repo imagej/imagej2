@@ -1,0 +1,162 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>imagej</groupId>
+  <artifactId>imagej-base-pom</artifactId>
+  <packaging>pom</packaging>
+  <version>1.04</version>
+  <name>ImageJ Base POM</name>
+  <url>http://imagejdev.org/</url>
+
+  <organization>
+    <name>ImageJDev.org</name>
+    <url>http://imagejdev.org/</url>
+  </organization>
+
+  <issueManagement>
+    <system>Trac</system>
+    <url>http://dev.imagejdev.org/trac/imagej/</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Hudson</system>
+    <url>http://dev.imagejdev.org:8080/</url>
+  </ciManagement>
+
+  <mailingLists>
+    <mailingList>
+      <name>ImageJ</name>
+      <subscribe>http://rsb.info.nih.gov/ij/list.html</subscribe>
+      <unsubscribe>http://rsb.info.nih.gov/ij/list.html</unsubscribe>
+      <post>imagej@list.nih.gov</post>
+      <archive>http://list.nih.gov/archives/imagej.html</archive>
+    </mailingList>
+    <mailingList>
+      <name>ImageJX</name>
+      <subscribe>http://groups.google.com/group/imagejx</subscribe>
+      <unsubscribe>http://groups.google.com/group/imagejx</unsubscribe>
+      <post>imagejx@googlegroups.com</post>
+      <archive>http://groups.google.com/group/imagejx</archive>
+    </mailingList>
+    <mailingList>
+      <name>ImageJ-devel</name>
+      <subscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</subscribe>
+      <unsubscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</unsubscribe>
+      <post>imagej-devel@imagejdev.org</post>
+      <archive>http://imagejdev.org/pipermail/imagej-devel/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Fiji-users</name>
+      <subscribe>http://groups.google.com/group/fiji-users</subscribe>
+      <unsubscribe>http://groups.google.com/group/fiji-users</unsubscribe>
+      <post>fiji-users@googlegroups.com</post>
+      <archive>http://groups.google.com/group/fiji-users</archive>
+    </mailingList>
+    <mailingList>
+      <name>Fiji-devel</name>
+      <subscribe>http://groups.google.com/group/fiji-devel</subscribe>
+      <unsubscribe>http://groups.google.com/group/fiji-devel</unsubscribe>
+      <post>fiji-devel@googlegroups.com</post>
+      <archive>http://groups.google.com/group/fiji-devel</archive>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:svn:http://dev.imagejdev.org/svn/imagej</connection>
+    <developerConnection>scm:svn:http://dev.imagejdev.org/svn/imagej</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://dev.imagejdev.org/svn/imagej</url>
+  </scm>
+
+  <repositories>
+    <!-- NB: for loci projects -->
+    <repository>
+      <id>loci.releases</id>
+      <url>http://dev.loci.wisc.edu:8081/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>loci.snapshots</id>
+      <url>http://dev.loci.wisc.edu:8081/content/repositories/snapshots</url>
+    </repository>
+    <!-- NB: for various dependencies -->
+    <repository>
+      <id>imagej.thirdparty</id>
+      <url>http://dev.imagejdev.org:8081/content/repositories/thirdparty</url>
+    </repository>
+    <!-- NB: for netcdf-java -->
+    <repository>
+      <id>unifi.it</id>
+      <url>http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.2-beta-5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>imagej.releases</id>
+      <name>ImageJ Releases Repository</name>
+      <url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>imagej.snapshots</id>
+      <name>ImageJ Snapshots Repository</name>
+      <url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <!-- NB: Avoid platform encoding warning when copying filtered resources. -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+</project>
