@@ -3,6 +3,8 @@ package ij.process;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+// TODO - put in a ProgressTracker???
+
 public class MinMaxOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
 	private double min, max;
