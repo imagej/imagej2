@@ -16,6 +16,6 @@ public class GenericBlitter<T extends RealType<T>>
 	{
 		BlitterOperation<T> blitOp = new BlitterOperation<T>(this.ip, other, xloc, yloc, function);
 		
-		Operation.apply(blitOp);
+		blitOp.execute();
 	}
 }

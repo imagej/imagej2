@@ -1,5 +1,7 @@
 package ij.process;
 
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
@@ -24,4 +26,24 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 	public abstract void beforeIteration(RealType<?> type);
 	public abstract void insideIteration(RealType<?> sample);
 	public abstract void afterIteration();
+	
+	public void execute()
+	{
+		final LocalizableByDimCursor<T> imageCursor = this.image.createLocalizableByDimCursor();
+		final RegionOfInterestCursor<T> imageRoiCursor = new RegionOfInterestCursor<T>( imageCursor, this.origin, this.span );
+		
+		beforeIteration(imageRoiCursor.getType());
+		
+		//iterate over all the pixels, of the selected image plane
+		for (T sample : imageRoiCursor)
+		{
+			insideIteration(sample);
+		}
+		
+		afterIteration();
+		
+		imageRoiCursor.close();
+		imageCursor.close();
+	}
+	
 }

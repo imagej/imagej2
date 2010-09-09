@@ -68,7 +68,7 @@ public class ManyCursorRoiOperationTest {
 			assertArrayEquals(span, op.getSpans()[i]);
 		}
 		
-		Operation.apply(op);
+		op.execute();
 		
 		assertTrue(op.beforeCalls == 1);
 		assertTrue(op.insideCalls == 6);
