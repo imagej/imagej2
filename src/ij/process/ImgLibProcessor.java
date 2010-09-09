@@ -497,14 +497,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				
 				setd(offset++, (byte)sum); // we know its unsigned byte type so cast is correct
 			}
-			//if (y%inc==0)
-			//	showProgress((double)(y-roiY)/roiHeight);
 		}
 		if (xMin==1) filterEdge(type, pixels2, roiHeight, roiX, roiY, 0, 1);
 		if (yMin==1) filterEdge(type, pixels2, roiWidth, roiX, roiY, 1, 0);
 		if (xMax==width-2) filterEdge(type, pixels2, roiHeight, width-1, roiY, 0, 1);
 		if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
-		//showProgress(1.0);
 	}
 	
 	/** find the median value of a list of exactly 9 values stored in a 10 element array from 1..9. copied from ByteProcessor::findMedian() */
@@ -1729,6 +1726,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		
 		ImgLibProcessor<?> ip2 = (ImgLibProcessor<?>)createProcessor(dstWidth, dstHeight);
+
+		ProgressTracker tracker = new ProgressTracker(this, ((long)dstHeight)*dstWidth, 30*dstWidth);
 		
 		double xs, ys;
 		if (interpolationMethod==BICUBIC)
@@ -1747,8 +1746,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					ip2.setd(index++, value);
+					tracker.didOneMore();
 				}
-				if (y%30==0) showProgress((double)y/dstHeight);
 			}
 		}
 		else
@@ -1786,11 +1785,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						double value = getd(index1+(int)xs);
 						ip2.setd(index2++, value);
 					}
+					tracker.didOneMore();
 				}
-				if (y%30==0) showProgress((double)y/dstHeight);
 			}
 		}
-		showProgress(1.0);
+		tracker.done();
 		return ip2;
 	}
 
@@ -1828,6 +1827,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		double xlimit = width-1.0, xlimit2 = width-1.001;
 		double ylimit = height-1.0, ylimit2 = height-1.001;
 		
+		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 30*roiWidth);
+		
 		if (interpolationMethod==BICUBIC)
 		{
 			for (int y=roiY; y<(roiY + roiHeight); y++)
@@ -1846,8 +1847,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
+					tracker.didOneMore();
 				}
-				if (y%30==0) showProgress((double)(y-roiY)/roiHeight);
 			}
 		}
 		else
@@ -1890,12 +1891,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							value = this.getBackgroundValue();
 						setd(index++,value);
 					}
+					tracker.didOneMore();
 				}
-				if (y%30==0)
-					showProgress((double)(y-roiY)/roiHeight);
 			}
 		}
-		showProgress(1.0);
+		
+		tracker.done();
 	}
 
 	// TODO - refactor
@@ -1940,6 +1941,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
 		int index1, index2, xsi, ysi;
 		double ys, xs;
+
+		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 30*roiWidth);
 		
 		if (interpolationMethod==BICUBIC)
 		{
@@ -1957,8 +1960,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
+					tracker.didOneMore();
 				}
-				if (y%30==0) showProgress((double)(y-ymin)/height);
 			}
 		}
 		else
@@ -2003,11 +2006,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							setd(index1++, ip2.getd(index2+xsi));
 						}
 					}
+					tracker.didOneMore();
 				}
-				if (y%30==0) showProgress((double)(y-ymin)/height);
 			}
 		}
-		showProgress(1.0);
+
+		tracker.done();
 	}
 
 	/** set the pixel at x,y, to provided int value. if float data then value is a float encoded as an int */
