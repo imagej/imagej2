@@ -633,7 +633,20 @@ public class ImgLibProcessorTest {
 			
 			for (int filterNum : filterNumbers)
 			{
+				// regular tests
+				
 				initialize();
+				procPair[0].filter(filterNum);
+				procPair[1].filter(filterNum);
+				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
+				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
+				compareData(procPair[0], procPair[1]);
+
+				// test when ROI set
+				
+				initialize();
+				procPair[0].setRoi(12,14,width-17,height/2);
+				procPair[1].setRoi(12,14,width-17,height/2);
 				procPair[0].filter(filterNum);
 				procPair[1].filter(filterNum);
 				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect

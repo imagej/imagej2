@@ -21,6 +21,7 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 		{
 			value = Math.sqrt(sum1*sum1 + sum2*sum2) + 0.5;
 			value = Math.floor(value);
+			value = TypeManager.boundValueToType(sample, value);
 		}
 		else
 			value = Math.sqrt(sum1*sum1 + sum2*sum2);
