@@ -27,7 +27,7 @@ public class Convolve3x3FilterOperation<K extends RealType<K>> extends Filter3x3
 			this.scale = 1;
 	}
 
-	protected double calcSampleValue(double[] neighborhood)
+	protected double calcSampleValue(final double[] neighborhood)
 	{
 		double sum = k[0]*neighborhood[0] + k[1]*neighborhood[1] + k[2]*neighborhood[2]
 		             + k[3]*neighborhood[3] + k[4]*neighborhood[4] + k[5]*neighborhood[5]

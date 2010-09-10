@@ -61,7 +61,7 @@ public class ImgLibProcessorTest {
 	public static void setup()
 	{
 		width = 343;
-		height = 769;
+		height = 426;
 
 		// *******   BYTE Processors
 		

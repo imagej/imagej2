@@ -6,11 +6,11 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public abstract class Filter3x3Operation<K extends RealType<K>> extends PositionalRoiOperation<K>
 {
-	private double[] neighborhood;
-	private double[] pixelsCopy;
-	private int width;
-	private int height;
-	private ProgressTracker tracker;
+	private final double[] neighborhood;
+	private final double[] pixelsCopy;
+	private final int width;
+	private final int height;
+	private final ProgressTracker tracker;
 	
 	protected Filter3x3Operation(ImgLibProcessor<K> ip, int[] origin, int[] span)
 	{
@@ -22,12 +22,12 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		this.width = ip.getWidth();
 		this.height = ip.getHeight();
 		
-		long updateFrequency = (long)ip.getWidth() * 25;
+		long updateFrequency = (long)span[0] * 25;
 		
 		this.tracker = new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency);
 	}
 
-	public double[] getNeighborhood() { return neighborhood; }
+	public final double[] getNeighborhood() { return neighborhood; }
 	
 	@Override
 	public void beforeIteration(RealType<?> type)
@@ -36,7 +36,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	}
 
 	@Override
-	public void insideIteration(int[] position, RealType<?> sample)
+	public void insideIteration(final int[] position, RealType<?> sample)
 	{
 		calcNeighborhood(position);
 
@@ -47,7 +47,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		this.tracker.didOneMore();
 	}
 	
-	protected abstract double calcSampleValue(double[] neighborhood);
+	protected abstract double calcSampleValue(final double[] neighborhood);
 	
 	@Override
 	public void afterIteration()
@@ -55,13 +55,13 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		this.tracker.done();
 	}
 
-	private double valueOfPixelFromCopy(int x, int y)
+	private final double valueOfPixelFromCopy(final int x, final int y)
 	{
 		int index = y*this.width + x;
 		return this.pixelsCopy[index];
 	}
 	
-	private void calcNeighborhood(int[] position)
+	private void calcNeighborhood(final int[] position)
 	{
 		// TODO : optimize later - do straightforward for now
 		

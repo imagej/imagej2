@@ -14,7 +14,7 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 		this.dataType = ip.getType();
 	}
 
-	protected double calcSampleValue(double[] neighborhood)
+	protected double calcSampleValue(final double[] neighborhood)
 	{
 		double sum1 = neighborhood[0] + 2*neighborhood[1] + neighborhood[2]
 		               - neighborhood[6] - 2*neighborhood[7] - neighborhood[8]
