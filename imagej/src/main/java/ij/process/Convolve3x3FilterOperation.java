@@ -1,6 +1,5 @@
 package ij.process;
 
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 public class Convolve3x3FilterOperation<K extends RealType<K>> extends Filter3x3Operation<K>
@@ -10,9 +9,9 @@ public class Convolve3x3FilterOperation<K extends RealType<K>> extends Filter3x3
 	private double[] k;
 	private double scale;
 	
-	public Convolve3x3FilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip, int[] kernel)
+	public Convolve3x3FilterOperation(ImgLibProcessor<K> ip, int[] origin, int[] span, int[] kernel)
 	{
-		super(image, origin, span, ip);
+		super(ip, origin, span);
 
 		this.dataType = ip.getType();
 		this.dataIsIntegral = TypeManager.isIntegralType(this.dataType);
