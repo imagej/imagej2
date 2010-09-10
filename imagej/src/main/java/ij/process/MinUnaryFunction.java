@@ -11,7 +11,6 @@ public class MinUnaryFunction implements UnaryFunction
 		this.constant = constant;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double current = input.getRealDouble();

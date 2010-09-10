@@ -4,7 +4,6 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class MinBinaryFunction implements BinaryFunction {
 
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		if (input1.getRealDouble() < input2.getRealDouble())

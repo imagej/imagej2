@@ -11,7 +11,6 @@ public class FillUnaryFunction implements UnaryFunction
 		this.fillColor = fillColor;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		result.setReal( this.fillColor );

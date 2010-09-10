@@ -5,16 +5,19 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class Convolve3x3FilterOperation<K extends RealType<K>> extends Filter3x3Operation<K>
 {
+	private boolean dataIsIntegral;
+	private RealType<?> dataType;
 	private double[] k;
-	private double[] v;
 	private double scale;
 	
 	public Convolve3x3FilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip, int[] kernel)
 	{
-		super(image, origin, span, ip, new double[9]);
+		super(image, origin, span, ip);
+
+		this.dataType = ip.getType();
+		this.dataIsIntegral = TypeManager.isIntegralType(this.dataType);
 
 		this.k = new double[kernel.length];
-		this.v = getValueArray();
 		for (int i = 0; i < this.k.length; i++)
 			this.k[i] = kernel[i];
 
@@ -25,18 +28,18 @@ public class Convolve3x3FilterOperation<K extends RealType<K>> extends Filter3x3
 			this.scale = 1;
 	}
 
-	protected double calcSampleValue(RealType<?> sample)
+	protected double calcSampleValue(double[] neighborhood)
 	{
-		double sum = k[0]*v[0] + k[1]*v[1] + k[2]*v[2]
-		             + k[3]*v[3] + k[4]*v[4] + k[5]*v[5]
-		             + k[6]*v[6] + k[7]*v[7] + k[8]*v[8];
+		double sum = k[0]*neighborhood[0] + k[1]*neighborhood[1] + k[2]*neighborhood[2]
+		             + k[3]*neighborhood[3] + k[4]*neighborhood[4] + k[5]*neighborhood[5]
+		             + k[6]*neighborhood[6] + k[7]*neighborhood[7] + k[8]*neighborhood[8];
 		
 		sum /= this.scale;
 
 		if (this.dataIsIntegral)
 		{
 			sum = Math.round(sum);
-			sum = TypeManager.boundValueToType(sample, sum);
+			sum = TypeManager.boundValueToType(this.dataType, sum);
 		}
 
 		return sum;

@@ -11,7 +11,6 @@ public class SqrtUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double current = input.getRealDouble();

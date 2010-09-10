@@ -12,7 +12,6 @@ public class CopyInput1InvertedBinaryFunction implements BinaryFunction {
 		this.max = max;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		// dst=255-src (8-bits and RGB)
