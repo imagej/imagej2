@@ -19,7 +19,6 @@ public class CopyInput1TransparentBinaryFunction implements BinaryFunction {
 		this.transparentColor = transparentColor;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		if (this.dataIsIntegral)

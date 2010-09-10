@@ -13,7 +13,6 @@ public class MultiplyUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double value = input.getRealDouble() * this.constant;

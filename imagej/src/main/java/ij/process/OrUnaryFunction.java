@@ -13,7 +13,6 @@ public class OrUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double value;

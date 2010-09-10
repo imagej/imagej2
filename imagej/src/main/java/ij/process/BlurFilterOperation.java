@@ -5,19 +5,29 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class BlurFilterOperation<K extends RealType<K>> extends Filter3x3Operation<K>
 {
+	private RealType<?> dataType;
+	private boolean dataIsIntegral;
+	
 	public BlurFilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip)
 	{
-		super(image, origin, span, ip, new double[9]);
+		super(image, origin, span, ip);
+		this.dataType = ip.getType();
+		this.dataIsIntegral = TypeManager.isIntegralType(this.dataType);
 	}
 
-	public double calcSampleValue(RealType<?> sample)
+	public double calcSampleValue(double[] neighborhood)
 	{
-		double val = (v[0]+v[1]+v[2]+v[3]+v[4]+v[5]+v[6]+v[7]+v[8])/9.0;
+		double val = 0;
+		
+		for (int i = 0; i < 9; i++)
+			val += neighborhood[i];
+		
+		val /= 9;
 		
 		if (this.dataIsIntegral)
 		{
 			val = Math.round(val);
-			val = TypeManager.boundValueToType(sample, val);
+			val = TypeManager.boundValueToType(this.dataType, val);
 		}
 		
 		return val;

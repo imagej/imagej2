@@ -24,7 +24,6 @@ public class DivideBinaryFunction implements BinaryFunction {
 		this.useDBZValue = !Float.isInfinite(divideByZeroValue);
 	}
 
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		double value = input1.getRealDouble();

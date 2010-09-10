@@ -7,53 +7,48 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public abstract class Filter3x3Operation<K extends RealType<K>> extends PositionalRoiOperation<K>
 {
-	protected double[] v;
-	protected boolean dataIsIntegral;
+	private double[] neighborhood;
 	private double[] pixelsCopy;
 	private int width;
 	private int height;
 	private ProgressTracker tracker;
 	
-	protected Filter3x3Operation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip, double[] values)
+	protected Filter3x3Operation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip)
 	{
 		super(image, origin, span);
 		
-		this.v = values;
+		this.neighborhood = new double[9];
 
 		this.pixelsCopy = ip.getPlaneData();
 		this.width = ip.getWidth();
 		this.height = ip.getHeight();
 		
-		long updateFrequency = ip.getWidth() * 25;
+		long updateFrequency = (long)ip.getWidth() * 25;
 		
 		this.tracker = new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency);
-		
-		if (values.length != 9)
-			throw new IllegalArgumentException("Filter3x3Operation() - requires an input array of 9 values");
 	}
 
-	public double[] getValueArray() { return v; }
+	public double[] getNeighborhood() { return neighborhood; }
 	
 	@Override
 	public void beforeIteration(RealType<?> type)
 	{
-		this.dataIsIntegral = TypeManager.isIntegralType(type);
 		this.tracker.init();
 	}
 
 	@Override
 	public void insideIteration(int[] position, RealType<?> sample)
 	{
-		initPixelVals(position, sample);
+		calcNeighborhood(position);
 
-		double value = calcSampleValue(sample);
+		double value = calcSampleValue(this.neighborhood);
 		
 		sample.setReal(value);
 		
 		this.tracker.didOneMore();
 	}
 	
-	protected abstract double calcSampleValue(RealType<?> targetType);
+	protected abstract double calcSampleValue(double[] neighborhood);
 	
 	@Override
 	public void afterIteration()
@@ -67,79 +62,79 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		return this.pixelsCopy[index];
 	}
 	
-	private void initPixelVals(int[] position, RealType<?> sample)
+	private void calcNeighborhood(int[] position)
 	{
 		// TODO : optimize later - do straightforward for now
 		
 		int x = position[0];
 		int y = position[1];
 		
-		// v0
+		// neighborhood0
 		if ((x > 0) && (y > 0))
-			v[0] = valueOfPixelFromCopy(x-1,y-1);
+			neighborhood[0] = valueOfPixelFromCopy(x-1,y-1);
 		else if ((x == 0) && (y > 0))
-			v[0] = valueOfPixelFromCopy(0,y-1);
+			neighborhood[0] = valueOfPixelFromCopy(0,y-1);
 		else if ((y == 0) && (x > 0))
-			v[0] = valueOfPixelFromCopy(x-1,0);
+			neighborhood[0] = valueOfPixelFromCopy(x-1,0);
 		else
-			v[0] = valueOfPixelFromCopy(0,0);
+			neighborhood[0] = valueOfPixelFromCopy(0,0);
 		
 		// v1
 		if (y > 0)
-			v[1] = valueOfPixelFromCopy(x,y-1);
+			neighborhood[1] = valueOfPixelFromCopy(x,y-1);
 		else
-			v[1] = valueOfPixelFromCopy(x,0);;
+			neighborhood[1] = valueOfPixelFromCopy(x,0);;
 		
 		// v2
 		if ((x < width-1) && (y > 0))
-			v[2] = valueOfPixelFromCopy(x+1,y-1);
+			neighborhood[2] = valueOfPixelFromCopy(x+1,y-1);
 		else if ((x == width-1) && (y > 0))
-			v[2] = valueOfPixelFromCopy(width-1,y-1);
+			neighborhood[2] = valueOfPixelFromCopy(width-1,y-1);
 		else if ((y == 0) && (x < width-1))
-			v[2] = valueOfPixelFromCopy(x+1,0);
+			neighborhood[2] = valueOfPixelFromCopy(x+1,0);
 		else
-			v[2] = valueOfPixelFromCopy(width-1,0);
+			neighborhood[2] = valueOfPixelFromCopy(width-1,0);
 		
 		// v3
 		if (x > 0)
-			v[3] = valueOfPixelFromCopy(x-1,y);
+			neighborhood[3] = valueOfPixelFromCopy(x-1,y);
 		else
-			v[3] = valueOfPixelFromCopy(0,y);
+			neighborhood[3] = valueOfPixelFromCopy(0,y);
 		
 		// v4
-		v[4] = sample.getRealDouble();
+		neighborhood[4] = valueOfPixelFromCopy(x,y);
 		
 		// v5
 		if (x < width-1)
-			v[5] = valueOfPixelFromCopy(x+1,y);
+			neighborhood[5] = valueOfPixelFromCopy(x+1,y);
 		else
-			v[5] = valueOfPixelFromCopy(width-1,y);
+			neighborhood[5] = valueOfPixelFromCopy(width-1,y);
 		
 		// v6
 		if ((x > 0) && (y < height-1))
-			v[6] = valueOfPixelFromCopy(x-1,y+1);
+			neighborhood[6] = valueOfPixelFromCopy(x-1,y+1);
 		else if ((x == 0) && (y < height-1))
-			v[6] = valueOfPixelFromCopy(0,y+1);
+			neighborhood[6] = valueOfPixelFromCopy(0,y+1);
 		else if ((y == height-1) && (x > 0))
-			v[6] = valueOfPixelFromCopy(x-1,height-1);
+			neighborhood[6] = valueOfPixelFromCopy(x-1,height-1);
 		else
-			v[6] = valueOfPixelFromCopy(0,height-1);
+			neighborhood[6] = valueOfPixelFromCopy(0,height-1);
 		
 		// v7
 		if (y < height-1)
-			v[7] = valueOfPixelFromCopy(x,y+1);
+			neighborhood[7] = valueOfPixelFromCopy(x,y+1);
 		else
-			v[7] = valueOfPixelFromCopy(x,height-1);
+			neighborhood[7] = valueOfPixelFromCopy(x,height-1);
 		
 		// v8
 		if ((x < width-1) && (y < height-1))
-			v[8] = valueOfPixelFromCopy(x+1,y+1);
+			neighborhood[8] = valueOfPixelFromCopy(x+1,y+1);
 		else if ((x == width-1) && (y < height-1))
-			v[8] = valueOfPixelFromCopy(width-1,y+1);
+			neighborhood[8] = valueOfPixelFromCopy(width-1,y+1);
 		else if ((y == height-1) && (x < width-1))
-			v[8] = valueOfPixelFromCopy(x+1,height-1);
+			neighborhood[8] = valueOfPixelFromCopy(x+1,height-1);
 		else
-			v[8] = valueOfPixelFromCopy(width-1,height-1);
+			neighborhood[8] = valueOfPixelFromCopy(width-1,height-1);
 		
 	}
 }

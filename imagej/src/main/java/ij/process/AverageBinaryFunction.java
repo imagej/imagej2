@@ -11,7 +11,6 @@ public class AverageBinaryFunction implements BinaryFunction {
 		this.dataIsIntegral = isIntegral;
 	}
 
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		if (this.dataIsIntegral)

@@ -14,7 +14,6 @@ public class SqrUnaryFunction implements UnaryFunction
 		this.isUnsignedShort = targetType instanceof UnsignedShortType;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double current = input.getRealDouble();

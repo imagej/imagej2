@@ -19,7 +19,6 @@ public class GammaUnaryFunction implements UnaryFunction
 		this.range = max - min;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double current = input.getRealDouble();

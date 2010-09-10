@@ -13,7 +13,6 @@ public class SubtractBinaryFunction implements BinaryFunction {
 		this.min = min;
 	}
 
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		double value = input2.getRealDouble() - input1.getRealDouble();

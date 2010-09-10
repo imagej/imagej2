@@ -13,7 +13,6 @@ public class AddBinaryFunction implements BinaryFunction {
 		this.max = max;
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
 		// dst=dst+src

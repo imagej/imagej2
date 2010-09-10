@@ -14,7 +14,6 @@ public class InvertUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	@Override
 	public void compute(RealType<?> result, RealType<?> input)
 	{
 		double value = this.max - (input.getRealDouble() - this.min);
