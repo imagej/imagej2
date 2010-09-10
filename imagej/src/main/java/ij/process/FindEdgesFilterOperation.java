@@ -1,6 +1,5 @@
 package ij.process;
 
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Operation<K>
@@ -8,10 +7,10 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 	private boolean dataIsIntegral;
 	private RealType<?> dataType;
 	
-	public FindEdgesFilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip)
+	public FindEdgesFilterOperation(ImgLibProcessor<K> ip, int[] origin, int[] span)
 	{
-		super(image, origin, span, ip);
-		this.dataIsIntegral = TypeManager.isIntegralType(ImageUtils.getType(image));
+		super(ip, origin, span);
+		this.dataIsIntegral = TypeManager.isIntegralType(ip.getType());
 		this.dataType = ip.getType();
 	}
 
@@ -22,16 +21,15 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 		                                                                    ;
 		double sum2 = neighborhood[0] + 2*neighborhood[3] + neighborhood[6]
 		               - neighborhood[2] - 2*neighborhood[5] - neighborhood[8];
-		double value;
+		
+		double value = Math.sqrt(sum1*sum1 + sum2*sum2);
 		
 		if (this.dataIsIntegral)
 		{
-			value = Math.sqrt(sum1*sum1 + sum2*sum2) + 0.5;
+			value += 0.5;
 			value = Math.floor(value);
 			value = TypeManager.boundValueToType(this.dataType, value);
 		}
-		else
-			value = Math.sqrt(sum1*sum1 + sum2*sum2);
 
 		return value;
 	}

@@ -1,6 +1,5 @@
 package ij.process;
 
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 // TODO - this was refactored as common code. Its a bit messy. Should try to improve.
@@ -13,9 +12,9 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	private int height;
 	private ProgressTracker tracker;
 	
-	protected Filter3x3Operation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip)
+	protected Filter3x3Operation(ImgLibProcessor<K> ip, int[] origin, int[] span)
 	{
-		super(image, origin, span);
+		super(ip.getImage(), origin, span);
 		
 		this.neighborhood = new double[9];
 

@@ -259,7 +259,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				double value = i*Math.PI;
 				
@@ -275,7 +275,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].add(i);
 				procPair[1].add(i);
@@ -289,7 +289,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].and(i);
 				procPair[1].and(i);
@@ -576,7 +576,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].exp();
 				procPair[1].exp();
@@ -672,9 +672,9 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
-				double value = i*0.68;
+				double value = 2*i*0.68;
 				procPair[0].gamma(value);
 				procPair[1].gamma(value);
 				compareData(procPair[0],procPair[1]);
@@ -1045,7 +1045,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].log();
 				procPair[1].log();
@@ -1059,11 +1059,11 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				initialize();
 				
-				double value = 2.0 * i;
+				double value = 4.0 * i;
 				procPair[0].max(value);
 				procPair[1].max(value);
 				compareData(procPair[0], procPair[1]);
@@ -1087,11 +1087,11 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				initialize();
 				
-				double value = 2.0 * i;
+				double value = 4.0 * i;
 				procPair[0].min(value);
 				procPair[1].min(value);
 				compareData(procPair[0], procPair[1]);
@@ -1104,9 +1104,9 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
-				double value = i*Math.PI;
+				double value = 2*i*Math.PI;
 				procPair[0].multiply(value);
 				procPair[1].multiply(value);
 				compareData(procPair[0], procPair[1]);
@@ -1140,7 +1140,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].or(i);
 				procPair[1].or(i);
@@ -1234,7 +1234,6 @@ public class ImgLibProcessorTest {
 					new int[]{width,1},
 					new int[]{1,height},
 					new int[]{width,height},
-					new int[]{bProc.roiWidth,bProc.roiHeight},
 					new int[]{width/3,height/4},
 					new int[]{(int)(width*1.2), (int)(height*1.375)}
 				};
@@ -1262,7 +1261,7 @@ public class ImgLibProcessorTest {
 		{
 			for (int interpMethod : new int[]{ImageProcessor.NONE, ImageProcessor.BILINEAR, ImageProcessor.BICUBIC})
 			{
-				double[] rotations = new double[] {0,15,30,45,90,135,224,271,360,-36,-180,-212,-284,-360};
+				double[] rotations = new double[] {33,167,360,-75,-152,-270};  // angles picked carefully
 				
 				for (double rotation : rotations)
 				{
@@ -1294,8 +1293,7 @@ public class ImgLibProcessorTest {
 						new double[]{1,2},
 						new double[]{2,1},
 						new double[]{1.4,1.5},
-						new double[]{2.6,2.7},
-						new double[]{3.8,3.9},
+						new double[]{2.6,3.5},
 						new double[]{7.4,5.9},
 						new double[]{0.2,0.3}
 				};
@@ -1627,7 +1625,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].sqr();
 				procPair[1].sqr();
@@ -1641,7 +1639,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].sqrt();
 				procPair[1].sqrt();
@@ -1691,7 +1689,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].xor(i);
 				procPair[1].xor(i);

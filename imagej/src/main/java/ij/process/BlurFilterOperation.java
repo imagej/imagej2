@@ -1,6 +1,5 @@
 package ij.process;
 
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 public class BlurFilterOperation<K extends RealType<K>> extends Filter3x3Operation<K>
@@ -8,9 +7,9 @@ public class BlurFilterOperation<K extends RealType<K>> extends Filter3x3Operati
 	private RealType<?> dataType;
 	private boolean dataIsIntegral;
 	
-	public BlurFilterOperation(Image<K> image, int[] origin, int[] span, ImgLibProcessor<K> ip)
+	public BlurFilterOperation(ImgLibProcessor<K> ip, int[] origin, int[] span)
 	{
-		super(image, origin, span, ip);
+		super(ip, origin, span);
 		this.dataType = ip.getType();
 		this.dataIsIntegral = TypeManager.isIntegralType(this.dataType);
 	}
@@ -22,7 +21,7 @@ public class BlurFilterOperation<K extends RealType<K>> extends Filter3x3Operati
 		for (int i = 0; i < 9; i++)
 			val += neighborhood[i];
 		
-		val /= 9;
+		val /= 9.0;
 		
 		if (this.dataIsIntegral)
 		{

@@ -855,7 +855,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin = originOfRoi();
 		int[] span = spanOfRoiPlane();
 		
-		Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this.imageData, origin, span, this, kernel);
+		Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this, origin, span, kernel);
 		
 		convolveOp.execute();
 	}
@@ -1143,11 +1143,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			switch (type)
 			{
 				case BLUR_MORE:
-					new BlurFilterOperation<T>(this.imageData,origin,span,this).execute();
+					new BlurFilterOperation<T>(this,origin,span).execute();
 					break;
 					
 				case FIND_EDGES:
-					new FindEdgesFilterOperation<T>(this.imageData,origin,span,this).execute();
+					new FindEdgesFilterOperation<T>(this,origin,span).execute();
 					break;
 
 				case MEDIAN_FILTER:
