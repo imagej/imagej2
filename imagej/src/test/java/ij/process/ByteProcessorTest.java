@@ -37,7 +37,7 @@ public class ByteProcessorTest {
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	    String id = "data/head8bit.tif";
+	    String id = DataConstants.DATA_DIR + "head8bit.tif";
 
 		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
 		ImageProcessor imageProcessor = null;

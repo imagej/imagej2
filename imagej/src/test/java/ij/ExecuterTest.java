@@ -1,6 +1,9 @@
 package ij;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.awt.event.KeyEvent;
 
@@ -10,20 +13,20 @@ import org.junit.Test;
 public class ExecuterTest {
 
 	enum Behavior {RunAsAsked, RunOther, RunNothing};
-	
+
 	Executer ex;
-	
+
 	private class FakeListener implements CommandListener
 	{
 		Behavior b;
 		String otherCommand;
-		
+
 		FakeListener(Behavior b, String otherCommand)
 		{
 			this.b = b;
 			this.otherCommand = otherCommand;
 		}
-		
+
 		public String commandExecuting(String command)
 		{
 			if (b == Behavior.RunAsAsked)
@@ -43,20 +46,20 @@ public class ExecuterTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testExecuterString() {
-		
+
 		// pass in null
 		ex = new Executer(null);
 		assertNotNull(ex);
 		assertNull(Executer.getCommand());
-		
+
 		// pass in empty string
 		ex = new Executer("");
 		assertNotNull(ex);
 		assertNull(Executer.getCommand());
-		
+
 		// pass in something legit
 		ex = new Executer("VisitHookahBarn");
 		assertNotNull(ex);
@@ -70,7 +73,7 @@ public class ExecuterTest {
 
 		listener = new FakeListener(Behavior.RunNothing,null);
 		Executer.addCommandListener(listener);
-		
+
 		// pass in null
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
@@ -85,14 +88,14 @@ public class ExecuterTest {
 		assertNotNull(ex);
 		assertEquals("",Executer.getCommand());
 		assertFalse(IJ.escapePressed());
-		
+
 		// pass in something non null
 		IJ.setKeyDown(KeyEvent.VK_ESCAPE);
 		ex = new Executer("EatCheeseburger",ignored);
 		assertNotNull(ex);
 		assertEquals("EatCheeseburger",Executer.getCommand());
 		assertFalse(IJ.escapePressed());
-		
+
 		// pass in something real w/ repeat
 		IJ.setKeyDown(KeyEvent.VK_ESCAPE);
 		IJ.setKeyDown(KeyEvent.VK_SHIFT);
@@ -101,14 +104,14 @@ public class ExecuterTest {
 		assertEquals("EatCheeseburger",Executer.getCommand());
 		assertFalse(IJ.shiftKeyDown());
 		assertFalse(IJ.escapePressed());
-		
+
 		// pass in "Undo"
 		IJ.setKeyDown(KeyEvent.VK_ESCAPE);
 		ex = new Executer("Undo",ignored);
 		assertNotNull(ex);
 		assertEquals("EatCheeseburger",Executer.getCommand());
 		assertFalse(IJ.escapePressed());
-		
+
 		// pass in "Close"
 		IJ.setKeyDown(KeyEvent.VK_ESCAPE);
 		ex = new Executer("Close",ignored);
@@ -122,13 +125,13 @@ public class ExecuterTest {
 		assertNotNull(ex);
 		assertEquals("Help",Executer.getCommand());
 		assertFalse(IJ.escapePressed());
-		
+
 		// give Executer's hatched threads time to terminate
 		try {
 			Thread.sleep(1000L);
 		} catch (Exception e) {
 		}
-		
+
 		Executer.removeCommandListener(listener);
 	}
 
@@ -153,41 +156,41 @@ public class ExecuterTest {
 		//   I've tried to get run() to do things to test this method but it always complains that there is no
 		//   Window open. It requires a GUI window to be open (via WindowManager). I tried to fake it out but
 		//   Executer's multithreaded implementation gets in the way of the workaround.
-		
+
 		/*
 
-		// must init menubar and commands structures in IJ before executer::run() is invoked 
+		// must init menubar and commands structures in IJ before executer::run() is invoked
 		IJ.init();
-		
+
 		//FakeListener listener = new FakeListener(Behavior.RunOther,"Crop"); : null ptrExcep with this one
 		FakeListener listener = new FakeListener(Behavior.RunOther,"Clear");
-		
+
 		// passing a null command listener now causes a NullPtrExcept later in run()
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			Executer.addCommandListener(null);
 		}
-		
+
 		Executer.addCommandListener(listener);
 
-		ImagePlus ip = IJ.openImage("data/head8bit.tif");
+		ImagePlus ip = IJ.openImage(DataConstants.DATA_DIR + "head8bit.tif");
 
 		assertNotEquals(0,ip.getPixel(0,0));
-		
+
 		// this doesn't work - currTempImage tied to this thread. run() hatches its own thread past here
 		WindowManager.setTempCurrentImage(ip);
-		
+
 		ex = new Executer("AnyOldThing",null);  // should run the listener activated commands
-		
+
 		// give Executer's hatched threads time to terminate
 		try {
 			Thread.sleep(4000L);
 		} catch (Exception e) {
 		}
-		
+
 		// test that image got Cleared
 		assertEquals(0,ip.getPixel(0,0));
-		
+
 		Executer.removeCommandListener(listener);
 
 		 */
