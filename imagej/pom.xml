@@ -212,6 +212,8 @@
     </repository>
   </repositories>
 
+  <!-- NB: for com.sun.tools.java; for details, see:
+    http://maven.apache.org/general.html#tools-jar-dependency -->
   <profiles>
     <profile>
       <id>default-tools.jar</id>
