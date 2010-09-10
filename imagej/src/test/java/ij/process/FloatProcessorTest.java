@@ -35,7 +35,7 @@ public class FloatProcessorTest {
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	    String id = "data/head.xv";
+	    String id = DataConstants.DATA_DIR + "head.xv";
 		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
 		ImageProcessor imageProcessor = null;
 

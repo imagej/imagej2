@@ -1,8 +1,13 @@
 package ij;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import ij.process.ByteProcessor;
+import ij.process.DataConstants;
 import ij.process.ImageProcessor;
 
 import java.awt.image.ColorModel;
@@ -12,9 +17,9 @@ import org.junit.Test;
 public class VirtualStackTest {
 
 	// ******* instance vars
-	
+
 	VirtualStack vs;
-	
+
 	// ****************************  HELPERS  ***************************************************
 
 	private VirtualStack nSliceStack(int n)
@@ -28,7 +33,7 @@ public class VirtualStackTest {
 		}
 		return st;
 	}
-	
+
 	private void expectDeleteSuccess(VirtualStack v, int sliceNumber)
 	{
 		int currSize = v.getSize();
@@ -36,7 +41,7 @@ public class VirtualStackTest {
 		v.deleteSlice(sliceNumber);
 		assertEquals(currSize-1,v.getSize());
 	}
-	
+
 	private void expectDeleteFailure(VirtualStack v, int sliceNumber)
 	{
 		try {
@@ -46,16 +51,16 @@ public class VirtualStackTest {
 			assertTrue(true);
 		}
 	}
-	
+
 	private void expectStack(VirtualStack v, int[] sliceNumbers)
 	{
 		assertEquals(v.getSize(),sliceNumbers.length);
 		for (int i = 0; i < sliceNumbers.length; i++)
 			assertEquals(""+sliceNumbers[i],vs.getSliceLabel(i+1));
 	}
-	
+
 	// ****************************  TESTS  ***************************************************
-	
+
 	@Test
 	public void testVirtualStack() {
 		vs = new VirtualStack();
@@ -83,7 +88,7 @@ public class VirtualStackTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// anything else should be okay
 
 		// try ones with the same name : surprisingly works
@@ -109,7 +114,7 @@ public class VirtualStackTest {
 	}
 
 	@Test
-	public void testAddSliceStringObject() {		
+	public void testAddSliceStringObject() {
 		// add slices via this method should fail
 		vs = new VirtualStack(3,4,null,"/fred/jones/blooka");
 		assertNotNull(vs);
@@ -145,21 +150,21 @@ public class VirtualStackTest {
 		vs = nSliceStack(0);
 		expectDeleteFailure(vs,0);
 		expectDeleteFailure(vs,1);
-		
+
 		// try illegal args with a valid stack
 		vs = nSliceStack(1);
 		expectDeleteFailure(vs,0);
 		expectDeleteFailure(vs,2);
-		
+
 		// try deleting from a one stack
 		vs = nSliceStack(1);
 		expectDeleteSuccess(vs,1);
-		
+
 		// delete the first from a three stack
 		vs = nSliceStack(3);
 		expectDeleteSuccess(vs,1);
 		expectStack(vs,new int[]{2,3});
-		
+
 		// delete the middle from a three stack
 		vs = nSliceStack(3);
 		expectDeleteSuccess(vs,2);
@@ -173,17 +178,17 @@ public class VirtualStackTest {
 
 	@Test
 	public void testDeleteLastSlice() {
-		
+
 		// try on an empty stack
 		vs = nSliceStack(0);
 		vs.deleteLastSlice();
 		assertEquals(0,vs.getSize());
-		
+
 		// try on a one stack
 		vs = nSliceStack(1);
 		vs.deleteLastSlice();
 		assertEquals(0,vs.getSize());
-		
+
 		// try on an N stack
 		vs = nSliceStack(5);
 		vs.deleteLastSlice();
@@ -194,7 +199,7 @@ public class VirtualStackTest {
 	@Test
 	public void testGetPixels() {
 		// try on real data
-		vs = new VirtualStack(2,3,null,"data");
+		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
 		vs.addSlice("gray8-2x3-sub1.tif");
 		vs.addSlice("gray8-2x3-sub2.tif");
 		Object obj = vs.getPixels(1);
@@ -207,7 +212,7 @@ public class VirtualStackTest {
 	public void testSetPixels() {
 		// setPixels should have no effect
 		//   note getPixels() returns a new array of pixels with each call. So can't test object==.
-		vs = new VirtualStack(2,3,null,"data");
+		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
 		vs.addSlice("gray8-2x3-sub1.tif");
 		vs.addSlice("gray8-2x3-sub2.tif");
 		byte[] origBytes = (byte[])vs.getPixels(1);
@@ -236,10 +241,10 @@ public class VirtualStackTest {
 	@Test
 	public void testGetSliceLabel() {
 		// setup vstack
-		vs = new VirtualStack(2,3,null,"data");
+		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
 		vs.addSlice("gray8-2x3-sub1.tif");
 		vs.addSlice("gray8-2x3-sub2.tif");
-		
+
 		// make sure labels reflect structure of stack
 		assertEquals("gray8-2x3-sub1",vs.getShortSliceLabel(1));
 		assertEquals("gray8-2x3-sub2",vs.getShortSliceLabel(2));
@@ -248,16 +253,16 @@ public class VirtualStackTest {
 	@Test
 	public void testSetSliceLabel() {
 		// setSliceLabel does nothing
-		
+
 		// setup vstack
 		vs = new VirtualStack(2,3,null,"data");
 		vs.addSlice("gray8-2x3-sub1.tif");
 		vs.addSlice("gray8-2x3-sub2.tif");
-		
+
 		// try to change labels
 		vs.setSliceLabel("Flubblepop", 1);
 		vs.setSliceLabel("Sweego", 2);
-		
+
 		// test that it had no effect
 		assertEquals("gray8-2x3-sub1",vs.getShortSliceLabel(1));
 		assertEquals("gray8-2x3-sub2",vs.getShortSliceLabel(2));
@@ -266,23 +271,23 @@ public class VirtualStackTest {
 	@Test
 	public void testGetProcessor() {
 		// setup vstack
-		vs = new VirtualStack(2,3,null,"data");
+		vs = new VirtualStack(2,3,null,DataConstants.DATA_DIR);
 		vs.addSlice("gray8-2x3-sub1.tif");
 		vs.addSlice("gray8-2x3-sub2.tif");
 
 		// test that it works
 		ImageProcessor proc;
-		
+
 		// try out of bounds entries
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			// this results in an arrayindex == -1 exception
 			proc = vs.getProcessor(0);
-			
+
 			// this results in a null ptr exception
 			proc = vs.getProcessor(3);
 		}
-		
+
 		// try valid entries and test returned data
 		proc = vs.getProcessor(1);
 		assertTrue(proc instanceof ByteProcessor);
@@ -306,18 +311,18 @@ public class VirtualStackTest {
 
 	@Test
 	public void testTrim() {
-		
+
 		// try trimming a big stack over and over
 		vs = nSliceStack(104);
 		for (int i = 0; i < 25; i++)
-		
+
 		// should be unchanged
 		assertEquals(104,vs.getSize());
 	}
 
 	@Test
 	public void testSaveChanges() {
-		
+
 		// try saving changes over and over on a big stack
 		vs = nSliceStack(104);
 		for (int i = 0; i < 104; i++)
@@ -337,23 +342,23 @@ public class VirtualStackTest {
 
 	@Test
 	public void testGetFileName() {
-	
+
 		// test that each filename is equal to its original slice name
-		
+
 		vs = new VirtualStack(2,3,null,"wusgoBoof");
-		
+
 		vs.addSlice("snort");
 		vs.addSlice("snicker");
-		
+
 		assertEquals("snort",vs.getFileName(1));
 		assertEquals("snicker",vs.getFileName(2));
 	}
 
 	@Test
 	public void testSetAndGetBitDepth() {
-		
+
 		// should be able to set and get any bitdepth - they have no side effects
-		
+
 		vs = new VirtualStack();
 		vs.setBitDepth(1005);
 		assertEquals(1005,vs.getBitDepth());

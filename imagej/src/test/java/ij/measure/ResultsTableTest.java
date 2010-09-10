@@ -1,34 +1,33 @@
 package ij.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.IJInfo;
+import ij.plugin.filter.Analyzer;
+import ij.process.DataConstants;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-
-import javax.swing.JOptionPane;
-
-import ij.IJInfo;
-import ij.Assert;
-import ij.plugin.filter.Analyzer;
-import ij.process.*;
-import ij.gui.Roi;
-import ij.*;
-
 
 public class ResultsTableTest {
-	
+
 	ResultsTable r;
 
 	// this method used below to simplify methods
-	
+
 	private ResultsTable n() { return new ResultsTable(); }
-	
+
 	@Test
 	public void testConstants() {
-		
+
 		// TODO - maybe obsolete - delete later if not needed
 		assertEquals(150,ResultsTable.MAX_COLUMNS);
 
@@ -36,7 +35,7 @@ public class ResultsTableTest {
 		assertEquals(-2,ResultsTable.COLUMN_IN_USE);
 		// TODO - maybe obsolete - delete later if not needed
 		assertEquals(-3,ResultsTable.TABLE_FULL);
-		
+
 		assertEquals(0,ResultsTable.AREA);
 		assertEquals(1,ResultsTable.MEAN);
 		assertEquals(2,ResultsTable.STD_DEV);
@@ -89,13 +88,13 @@ public class ResultsTableTest {
 
 	@Test
 	public void testIncrementCounter() {
-		
+
 		// test on unmodified ResultsTable
 		r = n();
 		for (int i = 0; i < 1000; i++)
 			r.incrementCounter();
 		assertEquals(1000,r.getCounter());
-		
+
 		// test on a table with some row headings
 		r = n();
 		for (int j = 0; j < 1000; j++)
@@ -106,13 +105,13 @@ public class ResultsTableTest {
 		String[] labels = r.getRowLabels();
 		for (int i = 0; i < 1000; i++)
 			assertEquals(""+i,labels[i]);
-		
+
 		// test on a table with some column data
 		r = n();
 		r.incrementCounter();
 		for (int i = 0; i < 1000; i++)
 			r.addValue(i, i);
-		
+
 		for (int i = 0; i < 1000; i++)
 			assertEquals(i,r.getValueAsDouble(i, 0),Assert.DOUBLE_TOL);
 	}
@@ -120,19 +119,19 @@ public class ResultsTableTest {
 	@Test
 	public void testAddColumns() {
 		r = n();
-		
+
 		int startPoint = r.getMaxColumns();
 		r.incrementCounter();
 		for (int i = 0; i < 1000; i++)
 			r.addValue(i,i);
-		
+
 		assertTrue(r.getMaxColumns()>startPoint);
 		for (int i = 0; i < 1000; i++)
 		{
 			assertEquals(i,r.getValueAsDouble(i,0),Assert.DOUBLE_TOL);
 			assertEquals("---",r.getColumnHeading(i));
 		}
-		
+
 	}
 
 	@Test
@@ -145,11 +144,11 @@ public class ResultsTableTest {
 			assertEquals(i+1,r.getCounter());
 		}
 	}
-	
+
 	@Test
 	public void testAddValueIntDouble() {
 		int startMax;
-		
+
 		// try to add a value to a table whose counter == 0
 		r = n();
 		assertEquals(0,r.getCounter());
@@ -159,7 +158,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// access less than zero
 		r = n();
 		r.incrementCounter();
@@ -169,14 +168,14 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// access just beyond the end of current number of max cols - should allocate more columns
 		r = n();
 		r.incrementCounter();
 		startMax = r.getMaxColumns();
 		r.addValue(startMax+1, 9);  // should work
 		assertEquals(startMax*2,r.getMaxColumns());
-		
+
 		// access beyond the end of current number of max cols - should allocate more but still fail if too big
 		r = n();
 		r.incrementCounter();
@@ -187,13 +186,13 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try general case (column likely null but autorepaired)
 		r = n();
 		r.incrementCounter();
 		r.addValue(44,8);
 		assertEquals(8,r.getValueAsDouble(44,0),Assert.DOUBLE_TOL);
-		
+
 		// try general case in middle of table (column likely null but autorepaired)
 		r = n();
 		r.incrementCounter();
@@ -215,19 +214,19 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try a empty insertion
 		r = n();
 		r.incrementCounter();
 		r.addValue("",106);
 		assertEquals(106,r.getValue("", 0),Assert.DOUBLE_TOL);
-		
+
 		// try basic insertions into unknown column
 		r = n();
 		r.incrementCounter();
 		r.addValue("Arigula",106);
 		assertEquals(106,r.getValue("Arigula", 0),Assert.DOUBLE_TOL);
-		
+
 		// now insert a known column in same table
 		r.incrementCounter();
 		r.addValue("Arigula",19);
@@ -258,7 +257,7 @@ public class ResultsTableTest {
 
 	@Test
 	public void testAddLabelStringString() {
-		
+
 		// try with empty table
 		r = n();
 		try {
@@ -267,19 +266,19 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try null,null
 		r = n();
 		r.incrementCounter();
 		r.addLabel(null,null);
 		assertEquals(null,r.getLabel(0));
-		
+
 		// try null,empty
 		r = n();
 		r.incrementCounter();
 		r.addLabel(null,"");
 		assertEquals("",r.getLabel(0));
-		
+
 		// try null,valid
 		r = n();
 		r.incrementCounter();
@@ -333,7 +332,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try row too big
 		r = n();
 		try {
@@ -342,13 +341,13 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try row just right
 		r = n();
 		r.incrementCounter();
 		r.setLabel("RowJustRight",0);
 		assertEquals("RowJustRight",r.getLabel(0));
-		
+
 		// try multiple sets and gets
 		r = n();
 		r.incrementCounter();
@@ -380,18 +379,18 @@ public class ResultsTableTest {
 	@Test
 	public void testGetColumn() {
 		float[] results;
-		
+
 		// try on a table with no rows
-		
+
 		r = n();
-		
+
 		try {
 			results = r.getColumn(-1);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		results = r.getColumn(149);
 		assertEquals(null,results);
 
@@ -401,19 +400,19 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try on a table with one row but no data
-		
+
 		r = n();
 		r.incrementCounter();
-		
+
 		try {
 			results = r.getColumn(-1);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		results = r.getColumn(149);
 		assertEquals(null,results);
 
@@ -423,7 +422,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try on a table of one row with data
 		r = n();
 		r.incrementCounter();
@@ -444,7 +443,7 @@ public class ResultsTableTest {
 			r.setValue(i,1,i+400);
 			r.setValue(i,2,i+800);
 		}
-		
+
 		results = r.getColumn(44);
 		Assert.assertFloatArraysEqual(new float[]{44,444,844},results,Assert.FLOAT_TOL);
 }
@@ -452,18 +451,18 @@ public class ResultsTableTest {
 	@Test
 	public void testGetColumnAsDoubles() {
 		double[] results;
-		
+
 		// try on a table with no rows
-		
+
 		r = n();
-		
+
 		try {
 			results = r.getColumnAsDoubles(-1);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		results = r.getColumnAsDoubles(149);
 		assertEquals(null,results);
 
@@ -473,19 +472,19 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try on a table with one row but no data
-		
+
 		r = n();
 		r.incrementCounter();
-		
+
 		try {
 			results = r.getColumnAsDoubles(-1);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		results = r.getColumnAsDoubles(149);
 		assertEquals(null,results);
 
@@ -495,7 +494,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try on a table of one row with data
 		r = n();
 		r.incrementCounter();
@@ -516,7 +515,7 @@ public class ResultsTableTest {
 			r.setValue(i,1,i+400);
 			r.setValue(i,2,i+800);
 		}
-		
+
 		results = r.getColumnAsDoubles(44);
 		Assert.assertDoubleArraysEqual(new double[]{44,444,844},results,Assert.FLOAT_TOL);
 	}
@@ -530,7 +529,7 @@ public class ResultsTableTest {
 		assertFalse(r.columnExists(1));
 		assertFalse(r.columnExists(14));
 		assertFalse(r.columnExists(1000));
-		
+
 		// test table with some data in it
 		r = n();
 		r.incrementCounter();
@@ -549,7 +548,7 @@ public class ResultsTableTest {
 		assertEquals(ResultsTable.COLUMN_NOT_FOUND,r.getColumnIndex(null));
 		assertEquals(ResultsTable.COLUMN_NOT_FOUND,r.getColumnIndex(""));
 		assertEquals(ResultsTable.COLUMN_NOT_FOUND,r.getColumnIndex("TheZeppo"));
-		
+
 		// test when a heading is set and its the first one
 		r = n();
 		r.incrementCounter();
@@ -581,28 +580,28 @@ public class ResultsTableTest {
 
 	@Test
 	public void testGetFreeColumn() {
-		
+
 		// we find a free column in allocated space and we allocate its data
 		// test null case
 		r = n();
 		r.incrementCounter();
 		assertEquals(0,r.getFreeColumn(null));
 		//assertEquals(0.0,r.getValue(null,0),Assert.DOUBLE_TOL);
-		
+
 		// we find a free column in allocated space and we allocate its data
 		// test empty case
 		r = n();
 		r.incrementCounter();
 		assertEquals(0,r.getFreeColumn(""));
 		assertEquals(0.0,r.getValue("",0),Assert.DOUBLE_TOL);
-		
+
 		// we find a free column in allocated space and we allocate its data
 		// test a general case - one entry in list
 		r = n();
 		r.incrementCounter();
 		assertEquals(0,r.getFreeColumn("Flubb"));
 		assertEquals(0.0,r.getValue("Flubb",0),Assert.DOUBLE_TOL);
-		
+
 		// we find a column with that name already exists
 		// try to get same col name twice
 		r = n();
@@ -610,7 +609,7 @@ public class ResultsTableTest {
 		assertEquals(0,r.getFreeColumn("Flubb"));
 		assertEquals(0.0,r.getValue("Flubb",0),Assert.DOUBLE_TOL);
 		assertEquals(ResultsTable.COLUMN_IN_USE,r.getFreeColumn("Flubb"));
-		
+
 		// we find a free column in allocated space and we allocate its data
 		// try to get a second column
 		r = n();
@@ -619,7 +618,7 @@ public class ResultsTableTest {
 		assertEquals(0.0,r.getValue("Flubb",0),Assert.DOUBLE_TOL);
 		assertEquals(1,r.getFreeColumn("Grubb"));
 		assertEquals(0.0,r.getValue("Grubb",0),Assert.DOUBLE_TOL);
-		
+
 		// we find a free column in allocated space and we allocate its data
 		// try to get a second column after a failure
 		r = n();
@@ -649,7 +648,7 @@ public class ResultsTableTest {
 	@Test
 	public void testGetValueAsDouble() {
 		int maxAllocated;
-		
+
 		// untested now as broken
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
@@ -679,7 +678,7 @@ public class ResultsTableTest {
 				assertTrue(true);
 			}
 		}
-		
+
 		// col too big
 		r = n();
 		r.incrementCounter();
@@ -702,7 +701,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// col not allocated
 		r = n();
 		r.incrementCounter();
@@ -712,7 +711,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// otherwise return value
 		r = n();
 		r.incrementCounter();
@@ -751,9 +750,9 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// otherwise should be safe
-		
+
 		r = n();
 		r.incrementCounter();
 		r.addValue("ScoobySnacks",177);
@@ -783,13 +782,13 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// row labels == null -- get back null
 		r = n();
 		r.incrementCounter();
 		assertNull(r.getRowLabels());
 		assertNull(r.getLabel(0));
-		
+
 		// rowLabels[row] == null -- get back null
 		r = n();
 		r.incrementCounter();
@@ -827,7 +826,7 @@ public class ResultsTableTest {
 		r.incrementCounter();
 		r.setValue("",0,123);
 		assertEquals(123,r.getValue("", 0),Assert.DOUBLE_TOL);
-		
+
 		// valid input
 		r = n();
 		r.incrementCounter();
@@ -838,7 +837,7 @@ public class ResultsTableTest {
 	@Test
 	public void testSetValueIntIntDouble() {
 		int maxCols;
-		
+
 		// column < 0
 		r = n();
 		r.incrementCounter();
@@ -848,7 +847,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			// row < 0
@@ -856,7 +855,7 @@ public class ResultsTableTest {
 			r.incrementCounter();
 			r.setValue(0,-1,106.4);
 		}
-		
+
 		// column < maxColumns
 		r = n();
 		r.incrementCounter();
@@ -865,7 +864,7 @@ public class ResultsTableTest {
 			r.setValue(""+i,0,i);
 		r.setValue(15,0,173.3);
 		assertEquals(173.3,r.getValueAsDouble(15,0),Assert.DOUBLE_TOL);
-		
+
 		// maxColumns <= column < 2*maxColumns
 		r = n();
 		r.incrementCounter();
@@ -874,7 +873,7 @@ public class ResultsTableTest {
 			r.setValue(""+i,0,i);
 		r.setValue(maxCols+1,0,19.7);
 		assertEquals(19.7,r.getValueAsDouble(maxCols+1,0),Assert.DOUBLE_TOL);
-		
+
 		// column >= 2*maxColumns
 		r = n();
 		r.incrementCounter();
@@ -885,7 +884,7 @@ public class ResultsTableTest {
 		} catch(IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// row too big
 		r = n();
 		r.incrementCounter();
@@ -895,7 +894,7 @@ public class ResultsTableTest {
 		} catch(IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// if column is null allocate space for it
 		r = n();
 		r.incrementCounter();
@@ -903,7 +902,7 @@ public class ResultsTableTest {
 		r.setValue(0, 0, 44.4);
 		assertNotNull(r.getColumn(0));
 		assertEquals(44.4,r.getValueAsDouble(0, 0),Assert.DOUBLE_TOL);
-		
+
 		// default : set value
 		r = n();
 		r.incrementCounter();
@@ -917,7 +916,7 @@ public class ResultsTableTest {
 
 	@Test
 	public void testGetColumnHeadings() {
-		
+
 		// null rowLabels, null headings
 		r = n();
 		r.incrementCounter();
@@ -927,7 +926,7 @@ public class ResultsTableTest {
 		r.addValue(3, 4);
 		assertNull(r.getRowLabels());
 		assertEquals(" \t---\t---\t---\t---",r.getColumnHeadings());
-		
+
 		// null rowLabels, valid headings
 		r = n();
 		r.incrementCounter();
@@ -967,7 +966,7 @@ public class ResultsTableTest {
 		r = n();
 		r.incrementCounter();
 		max = r.getMaxColumns();
-		
+
 		// test -1
 		try {
 			r.getColumnHeading(-1);
@@ -982,7 +981,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// test 0..max-1
 		for (int i = 0; i < max; i++)
 			r.setValue(""+i,0,55);
@@ -993,7 +992,7 @@ public class ResultsTableTest {
 
 	@Test
 	public void testGetRowAsString() {
-		
+
 		// try row index < 0
 		r = n();
 		r.incrementCounter();
@@ -1003,7 +1002,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// try row index >= numRows
 		r = n();
 		r.incrementCounter();
@@ -1013,7 +1012,7 @@ public class ResultsTableTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// else try valid entries of row index
 		//   rowLabels null
 		r = n();
@@ -1023,7 +1022,7 @@ public class ResultsTableTest {
 		r.setValue("Loopta",0,3.333);
 		r.setValue("Zoopta",0,4.4444);
 		assertEquals("1\t1.100\t2.220\t3.333\t4.444",r.getRowAsString(0));
-		
+
 		// else try valid entries of row index
 		//   rowLabels not null
 		r = n();
@@ -1089,7 +1088,7 @@ public class ResultsTableTest {
 		// try crazy val : -1
 		r.setPrecision(-1);
 		assertEquals("1\t1.0E1",r.getRowAsString(0));
-		
+
 		// try crazy val : big num
 		r.setPrecision(808);
 		assertEquals("1\t10.000000000",r.getRowAsString(0));
@@ -1127,13 +1126,13 @@ public class ResultsTableTest {
 		assertEquals("1.798E308",ResultsTable.d2s(Double.MAX_VALUE, 5));
 		assertEquals("1.401E-45",ResultsTable.d2s(Float.MIN_VALUE, 5));
 		assertEquals("4.900E-324",ResultsTable.d2s(Double.MIN_VALUE, 5));
-		
+
 		// try negative numbers
 		assertEquals("-1.100",ResultsTable.d2s(-1.1, 3));
 		assertEquals("-25.4500",ResultsTable.d2s(-25.45, 4));
 		assertEquals("-341.65400",ResultsTable.d2s(-341.654, 5));
 		assertEquals("-4502.379900",ResultsTable.d2s(-4502.3799, 6));
-		
+
 		// try positive numbers
 		assertEquals("1",ResultsTable.d2s(1.4, 0));
 		assertEquals("1.6",ResultsTable.d2s(1.6, 1));
@@ -1141,7 +1140,7 @@ public class ResultsTableTest {
 		assertEquals("25.7",ResultsTable.d2s(25.66, 1));
 		assertEquals("188.333",ResultsTable.d2s(188.333, 3));
 		assertEquals("188.6660",ResultsTable.d2s(188.666, 4));
-		
+
 		// weird decimal places
 		assertEquals("4.50000E0",ResultsTable.d2s(4.5,-5));
 		assertEquals("4.5E0",ResultsTable.d2s(4.5,-1));
@@ -1149,7 +1148,7 @@ public class ResultsTableTest {
 		assertEquals("4.500000000",ResultsTable.d2s(4.5,9));
 		assertEquals("4.500000000",ResultsTable.d2s(4.5,10));
 		assertEquals("4.500000000",ResultsTable.d2s(4.5,1000));
-		
+
 		// try the special cases the routine tests for
 		assertEquals("0.0001000",ResultsTable.d2s(0.0001,7));
 		assertEquals("1.000E-4",ResultsTable.d2s(0.0001,3));
@@ -1164,23 +1163,23 @@ public class ResultsTableTest {
 		r.incrementCounter();
 		r.deleteRow(-1);
 		assertEquals(1,r.getCounter());
-		
+
 		// no rows to delete
 		r = n();
 		assertEquals(0,r.getCounter());
 		r.deleteRow(0);
 		assertEquals(0,r.getCounter());
-		
+
 		// trying to delete beyond end
 		r = n();
 		r.incrementCounter();
 		assertEquals(1,r.getCounter());
 		r.deleteRow(1);
 		assertEquals(1,r.getCounter());
-		
+
 		// if rowLabels not null - make sure they are rearranged correctly
 		// also test that all row data is moved up in the columns
-		
+
 		// delete row at beginning of list
 		r = n();
 		r.incrementCounter();
@@ -1198,7 +1197,7 @@ public class ResultsTableTest {
 		assertEquals(200,r.getValue("Zoops", 0),Assert.DOUBLE_TOL);
 		assertEquals(300,r.getValue("Zoops", 1),Assert.DOUBLE_TOL);
 		assertEquals(2,r.getCounter());
-		
+
 		// delete row in middle of list
 		r = n();
 		r.incrementCounter();
@@ -1216,7 +1215,7 @@ public class ResultsTableTest {
 		assertEquals(100,r.getValue("Zoops", 0),Assert.DOUBLE_TOL);
 		assertEquals(300,r.getValue("Zoops", 1),Assert.DOUBLE_TOL);
 		assertEquals(2,r.getCounter());
-		
+
 		// delete row at end of list
 		r = n();
 		r.incrementCounter();
@@ -1295,7 +1294,7 @@ public class ResultsTableTest {
 
 	/* Removed 7-20-10
 	 * because update() throws the ResultTable up on the screen and Hudson does not like this.
-	 * 
+	 *
 	@Test
 	public void testUpdate() {
 		int measurements =
@@ -1311,7 +1310,7 @@ public class ResultsTableTest {
 		r.incrementCounter();
 		for (int i = 0; i < 35; i++)
 			assertNull(r.getColumnHeading(i));
-		
+
 		r.update(measurements, ip, roi);
 
 		assertEquals(34,r.getLastColumn());
@@ -1353,21 +1352,21 @@ public class ResultsTableTest {
 		assertEquals("Solidity",r.getColumnHeading(34));
 	}
 */
-	
+
 	@Test
 	public void testOpen() {
 		// unknown file
 		try {
-			r = ResultsTable.open("data/Nonexistent.txt");
+			r = ResultsTable.open(DataConstants.DATA_DIR + "Nonexistent.txt");
 			fail();
 		} catch (IOException e) {
 			//System.out.println("Exception: "+e.getMessage());
 			assertTrue(true);
 		}
-		
+
 		// empty file
 		try {
-			r = ResultsTable.open("data/EmptyFile.txt");
+			r = ResultsTable.open(DataConstants.DATA_DIR + "EmptyFile.txt");
 			fail();
 		} catch (IOException e) {
 			//System.out.println("Exception: "+e.getMessage());
@@ -1376,18 +1375,18 @@ public class ResultsTableTest {
 
 		// not a table
 		try {
-			r = ResultsTable.open("data/BogusTable.txt");
+			r = ResultsTable.open(DataConstants.DATA_DIR + "BogusTable.txt");
 			fail();
 		} catch (IOException e) {
 			//System.out.println("Exception: "+e.getMessage());
 			assertTrue(true);
 		}
-		
+
 		// else a real table
 
 		// try a basic table
 		try {
-			r = ResultsTable.open("data/BasicTable.txt");
+			r = ResultsTable.open(DataConstants.DATA_DIR + "BasicTable.txt");
 			assertEquals(2,r.getCounter());
 			assertEquals("Jones",r.getLabel(0));
 			assertEquals(3,r.getValueAsDouble(0, 0),Assert.DOUBLE_TOL);
@@ -1409,7 +1408,7 @@ public class ResultsTableTest {
 		//   and a lower level routine gets called to load data that is gui dependent and returns null
 		//
 		//try {
-		//	r = ResultsTable.open("data/AllNumericTable.txt");
+		//	r = ResultsTable.open(DataConstants.DATA_DIR + "AllNumericTable.txt");
 		//	assertEquals("C1",r.getColumnHeading(0));
 		//	assertEquals("C2",r.getColumnHeading(1));
 		//	assertEquals("C3",r.getColumnHeading(2));
@@ -1420,13 +1419,13 @@ public class ResultsTableTest {
 	}
 
 	/* Removed 7-20-10 because hudson fails with it
-	 * 
+	 *
 	@Test
 	public void testSaveAs() {
 		// note - can only test nonGui portion
 
 		String baseFileName = System.getProperty("java.io.tmpdir") + "IJRTTjunk";
-		
+
 		// an empty table
 		r = n();
 		try {
@@ -1435,7 +1434,7 @@ public class ResultsTableTest {
 		} catch (java.io.IOException e) {
 			assertTrue(true);
 		}
-		
+
 		// a valid table
 		r = n();
 		r.incrementCounter();
@@ -1449,7 +1448,7 @@ public class ResultsTableTest {
 		} catch (java.io.IOException e) {
 			fail();
 		}
-		
+
 		// test that it saved correctly
 		try {
 			FileReader fr = new FileReader(baseFileName+".txt");
@@ -1469,7 +1468,7 @@ public class ResultsTableTest {
 		} catch (java.io.IOException e) {
 			fail();
 		}
-		
+
 		// test that it saved correctly
 		try {
 			FileReader fr = new FileReader(baseFileName+".csv");
@@ -1488,16 +1487,16 @@ public class ResultsTableTest {
 	@Test
 	public void testClone() {
 		ResultsTable c;
-		
+
 		// setup table
 		r = n();
 		r.incrementCounter();
 		r.setValue("Toes",0,77);
 		r.setValue("Fingers",0,13);
 		r.setLabel("Count", 0);
-		
+
 		c = (ResultsTable)r.clone();
-		
+
 		// see that all rows copied, all labels, headings, and values the same
 		assertNotNull(c);
 		assertEquals(r.getCounter(),c.getCounter());
@@ -1517,7 +1516,7 @@ public class ResultsTableTest {
 		r.setValue("Flower", 0, 22);
 		r.setValue("Leaf", 0, 55);
 		r.setValue("Stem", 0, 88);
-		
+
 		String str = "ctr="+r.getCounter()+", hdr="+r.getColumnHeadings();
 		assertEquals(str,r.toString());
 	}

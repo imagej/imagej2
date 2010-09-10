@@ -1,34 +1,39 @@
 package ij;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-import java.awt.BasicStroke;
-import java.awt.Image;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
-import java.util.Arrays;
-
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.Assert;
 import ij.io.FileInfo;
 import ij.io.Opener;
 import ij.measure.Calibration;
 import ij.measure.Measurements;
-import ij.process.ImageProcessor;
 import ij.process.ByteProcessor;
-import ij.process.ShortProcessor;
 import ij.process.ColorProcessor;
+import ij.process.DataConstants;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import ij.LookUpTable;
+import ij.process.ShortProcessor;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.IndexColorModel;
+import java.util.Arrays;
+
+import org.junit.Test;
 
 // note - in some places I refer to ImagePlus's protected instance var ip (via ip.ip) rather than getProcessor() (via
 //   ip.getProcessor()) as getProcessor() has some side effects. If we eliminate the ip instance var some tests will break.
@@ -38,7 +43,7 @@ public class ImagePlusTest {
 	ImagePlus ip;
 	ImageStack st;
 	ImageProcessor proc;
-	
+
 	// make sure our public constants exist and have correct values
 	@Test
 	public void testPublicConstants() {
@@ -52,7 +57,7 @@ public class ImagePlusTest {
 
 	// make sure public variables exist
 	// note - the source code mentions all of these but ip.changes are obsolete. May not need/want this test.
-	
+
 	@Test
 	public void testPublicInstanceVars() {
 		ip = new ImagePlus();
@@ -80,7 +85,7 @@ public class ImagePlusTest {
 		assertNotNull(ip);
 		assertEquals("Cousin",ip.getTitle());
 		assertNull(ip.getImage());
-		
+
 		// pass in a real image
 		Image img = new BufferedImage(50,75,BufferedImage.TYPE_USHORT_555_RGB);
 		ip = new ImagePlus("Vinny",img);
@@ -103,14 +108,14 @@ public class ImagePlusTest {
 	public void testImagePlusString() {
 		// ImagePlus(string) : the string is either a file location or a URL
 		// note: will not test URL version
-		
+
 		// try a file that should not exist
-		ip = new ImagePlus("data/hongKongFooey.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "hongKongFooey.tif");
 		assertNotNull(ip);
 		assertNull(ip.getImage());
 
 		// try a file that should exist
-		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
 		assertNotNull(ip);
 		assertNotNull(ip.getImage());
 		assertEquals(2,ip.getNDimensions());
@@ -134,7 +139,7 @@ public class ImagePlusTest {
 			ip = new ImagePlus((String)null,(ImageStack)null);
 			assertNotNull(ip);
 		}
-		
+
 		// this next text should throw an exception because the stack is empty
 		try {
 			ip = new ImagePlus("", new ImageStack());
@@ -142,7 +147,7 @@ public class ImagePlusTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		st = new ImageStack(2,3);
 		st.addSlice("Zaphod",new byte[] {1,2,3,4,5,6});
 		ip = new ImagePlus("Beeblebrox",st);
@@ -172,7 +177,7 @@ public class ImagePlusTest {
 		// should be able to unlock over and over
 		for (int i = 0; i < 20; i++)
 			ip.unlock();
-		
+
 		assertTrue(ip.lock());  // obtain lock
 		assertFalse(ip.lock());  // try to obtain a second lock
 		ip.unlock();
@@ -210,7 +215,7 @@ public class ImagePlusTest {
 	@Test
 	public void testGetChannelProcessor() {
 		// getChannelProcessor() overridden by other classes. Default should be same as getProcessor()
-		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
 		proc = ip.getProcessor();
 		assertEquals(proc,ip.getChannelProcessor());
 	}
@@ -218,7 +223,7 @@ public class ImagePlusTest {
 	@Test
 	public void testGetLuts() {
 		// getLuts() overridden by other classes. Default should be null
-		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
 		assertNull(ip.getLuts());
 	}
 
@@ -242,13 +247,13 @@ public class ImagePlusTest {
 		/* TODO - find way to test. Had to use protected var ip.img to test value. Can't just use getImage() because it
 		 *   also can set ip.img in certain cases.
 		 */
-		
+
 		ip = new ImagePlus();
 		//assertNull(ip.img);
 		ip.updateImage();
 		//assertNull(ip.img);
 
-		ip = new ImagePlus("data/head8bit.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "head8bit.tif");
 		//assertNull(ip.img);
 		ip.updateImage();
 		//assertNotNull(ip.img);
@@ -283,14 +288,14 @@ public class ImagePlusTest {
 	 * 2) when run from the command line via org.junit.runner.JUnitCore the test fails when interacting with other
 	 *    classes (probably due to the Prefs.useInvertingLut). Interaction problem happened when running tests on just
 	 *    ImagePlus and CurveFitter. There may be other classes it interacts with too.
-	 *    
+	 *
 	@Test
 	public void testShowString() {
 		proc = new ShortProcessor(4,2,new short[] {8,7,6,5,4,3,2,1},null);
 		ip = new ImagePlus("YoYoMan",proc);
 		ip.show("");
 		// nothing to test - leave in as compile and runtime test
-		
+
 		proc = new ShortProcessor(4,2,new short[] {8,7,6,5,4,3,2,1},null);
 		ip = new ImagePlus("AtomicBoy",proc);
 		ip.show("Hoofang");
@@ -307,7 +312,7 @@ public class ImagePlusTest {
 		Prefs.useInvertingLut = origInvertStatus;
 	}
     */
-	
+
 	@Test
 	public void testSetActivated() {
 		// note - setActivated sets a private var that has no getter - can't test
@@ -317,12 +322,12 @@ public class ImagePlusTest {
 	public void testGetImage() {
 
 		// TODO - find way to test - had to use protected var ip.img to successfully test this
-		
+
 		ip = new ImagePlus();
 		//assertNull(ip.img);
 		assertNull(ip.getImage());
 
-		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
 		//assertNull(ip.img);
 		assertNotNull(ip.getImage());
 	}
@@ -338,11 +343,11 @@ public class ImagePlusTest {
 			BufferedImage image = ip.getBufferedImage();
 			assertNotNull(image);
 		}
-		
+
 		// try a non composite image
-		ip = new ImagePlus("data/gray8-2x3-sub1.tif");
+		ip = new ImagePlus(DataConstants.DATA_DIR + "gray8-2x3-sub1.tif");
 		assertNotNull(ip.getBufferedImage());
-		
+
 		// try a composite image
 		proc = new ColorProcessor(1,1,new int[] {1});
 		ip = new ImagePlus("Snowball",proc);
@@ -359,7 +364,7 @@ public class ImagePlusTest {
 	@Test
 	public void testSetImage() {
 		BufferedImage b;
-		
+
 		// send in Buffered Image of TYPE_USHORT_GRAY
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
@@ -367,7 +372,7 @@ public class ImagePlusTest {
 		ip.setImage(b);
 		assertNotNull(ip.getProcessor());
 		assertTrue(ip.getProcessor() instanceof ShortProcessor);
-		
+
 		// send in Buffered Image of TYPE_BYTE_GRAY
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
@@ -375,7 +380,7 @@ public class ImagePlusTest {
 		ip.setImage(b);
 		assertNotNull(ip.getProcessor());
 		assertTrue(ip.getProcessor() instanceof ByteProcessor);
-		
+
 		// send in Buffered Image of some other type
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
@@ -414,7 +419,7 @@ public class ImagePlusTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// throws exception if passed processor has no pixels
 		ip = new ImagePlus();
 		proc = new ByteProcessor(3,5,null,new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
@@ -424,7 +429,7 @@ public class ImagePlusTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// if stack size > 1 and passed processor dims != my dims throw IllegArgExcep
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		st = new ImageStack(1,3);
@@ -442,7 +447,7 @@ public class ImagePlusTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// if stack size <= 1 then stack should be null and currSlice should be 1
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		st = new ImageStack(1,3);
@@ -454,7 +459,7 @@ public class ImagePlusTest {
 		ip.setProcessor("DoesNotMatterForThisCase",proc);
 		assertEquals(1,ip.getStackSize());
 		assertEquals(1,ip.currentSlice);
-		
+
 		//   try with null title
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		st = new ImageStack(1,3);
@@ -488,7 +493,7 @@ public class ImagePlusTest {
 		assertEquals(ImagePlus.GRAY8,ip.getType());
 		assertEquals(8,ip.getBitDepth());
 		assertEquals(1,ip.getBytesPerPixel());
-		
+
 		// try to get roi subcase to run
 		proc = new ShortProcessor(1,3,new short[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus();
@@ -508,7 +513,7 @@ public class ImagePlusTest {
 	@Test
 	public void testSetStackStringImageStack() {
 		// note - will only test non-gui capabilities of method
-		
+
 		// stack size == 0 throws illArgExc
 		ip = new ImagePlus();
 		st = new ImageStack();
@@ -518,7 +523,7 @@ public class ImagePlusTest {
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		
+
 		// not a virt stack and null imagearray (impossible) or 1st entry of imagearray is null (possible) throw illArgExc
 		ip = new ImagePlus();
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
@@ -544,11 +549,11 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSetStackImageStackIntIntInt() {
-		
+
 		// input dimensions do not match stack's size
 		st = new ImageStack(1,2,24);  // 24 slices of 1x2 images
 		ip = new ImagePlus();
-		
+
 		for (int chan = 0; chan < 9; chan++)
 			for (int slice = 0; slice < 9; slice++)
 				for (int frame = 0; frame < 9; frame++)
@@ -559,7 +564,7 @@ public class ImagePlusTest {
 						} catch (IllegalArgumentException e) {
 							assertTrue(true);
 						}
-				
+
 		// otherwise input dimensions match
 		//   .. delegates to setStack() - tested earlier
 		//   so just need to test that title did not change
@@ -579,7 +584,7 @@ public class ImagePlusTest {
 
 		// note - sets a private variable. And getFileInfo() can't act as a getter because it has a lot of side effects.
 		// As it is I can't really test this method.
-		
+
 	}
 
 	@Test
@@ -613,7 +618,7 @@ public class ImagePlusTest {
 	// Note: can't really test and relies on package visibility which could change
 	@Test
 	public void testSetColor() {
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 
 		if (IJInfo.RUN_ENHANCED_TESTS)
@@ -622,14 +627,14 @@ public class ImagePlusTest {
 			ip = new ImagePlus("MyChemicalRomance", proc);
 			ip.setColor(null);
 		}
-		
+
 		// try to set color of ImagePlus with no processor
 		//   ... should do nothing
 		ip = new ImagePlus();
 		// can't rely on as packages may change : assertNull(ip.ip);
 		ip.setColor(Color.yellow);
 		// can't do due to access: assertEquals(ip.ip.drawingColor,Color.black);
-		
+
 		// try to set color of processor when it exists
 		//   ... should set something lower -> defers to ImageProcessor.setColor() -> test there
 		ip = new ImagePlus("MyChemicalRomance", proc);
@@ -640,10 +645,10 @@ public class ImagePlusTest {
 
 	@Test
 	public void testIsProcessor() {
-		
+
 		ip = new ImagePlus();
 		assertFalse(ip.isProcessor());
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("FredFred",proc);
 		assertTrue(ip.isProcessor());
@@ -654,9 +659,9 @@ public class ImagePlusTest {
 		// no img and no proc returns null
 		ip = new ImagePlus();
 		assertNull(ip.getProcessor());
-		
+
 		// otherwise it gets into the method
-		
+
 		//   uncalibrated subcase
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("FredFred",proc);
@@ -671,21 +676,21 @@ public class ImagePlusTest {
 		assertEquals(proc,ip.getProcessor());
 		assertEquals(Line.getWidth(),proc.getLineWidth());
 		assertNotNull(proc.getCalibrationTable());
-		
+
 		// note - untested side effect - Recorder records image was updated (sets a flag to true)
 	}
 
 	@Test
 	public void testTrimProcessor() {
 		byte[] bytes = new byte[] {6,5,4};
-		
+
 		// default case - not locked and not null proc
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		proc.setSnapshotPixels(bytes);
 		ip = new ImagePlus("Hookah",proc);
 		ip.trimProcessor();
 		assertNull(proc.getSnapshotPixels());
-		
+
 		// if locked
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		proc.setSnapshotPixels(bytes);
@@ -693,7 +698,7 @@ public class ImagePlusTest {
 		ip.lock();
 		ip.trimProcessor();
 		assertEquals(bytes,proc.getSnapshotPixels());
-		
+
 		// no need to test null proc case
 	}
 
@@ -707,7 +712,7 @@ public class ImagePlusTest {
 
 	@Test
 	public void testGetMask() {
-		
+
 		// if roi is null
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("CornPalace",proc);
@@ -716,7 +721,7 @@ public class ImagePlusTest {
 		assertEquals(new Rectangle(0,1,0,1),proc.getRoi());
 		assertNull(ip.getMask());
 		assertEquals(new Rectangle(0,0,1,3),proc.getRoi());
-		
+
 		// else roi not null and rectangular roi
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		proc.setRoi(new Rectangle(0,1,0,1));
@@ -738,49 +743,49 @@ public class ImagePlusTest {
 
 	// note - ImageStatistics does not override equals() so I need to do some testing of my own
 	//   Will test a subset of fields. Will also test floats for equality - usually a no-no but desired here I think
-	
+
 	private boolean imageStatsEquals(ImageStatistics a, ImageStatistics b)
 	{
 		if (!Arrays.equals(a.histogram, b.histogram))
 			return false;
 
-		if (a.pixelCount != b.pixelCount)	
+		if (a.pixelCount != b.pixelCount)
 			return false;
 
-		if (a.mode != b.mode)	
+		if (a.mode != b.mode)
 			return false;
 
-		if (a.dmode != b.dmode)	
+		if (a.dmode != b.dmode)
 			return false;
 
-		if (a.area != b.area)	
+		if (a.area != b.area)
 			return false;
 
-		if (a.min != b.min)	
+		if (a.min != b.min)
 			return false;
 
-		if (a.max != b.max)	
+		if (a.max != b.max)
 			return false;
 
-		if (a.mean != b.mean)	
+		if (a.mean != b.mean)
 			return false;
 
-		if (a.median != b.median)	
+		if (a.median != b.median)
 			return false;
 
-		if (a.stdDev != b.stdDev)	
+		if (a.stdDev != b.stdDev)
 			return false;
 
-		if (a.skewness != b.skewness)	
+		if (a.skewness != b.skewness)
 			return false;
 
-		if (a.kurtosis != b.kurtosis)	
+		if (a.kurtosis != b.kurtosis)
 			return false;
 
-		if (a.xCentroid != b.xCentroid)	
+		if (a.xCentroid != b.xCentroid)
 			return false;
 
-		if (a.yCentroid != b.yCentroid)	
+		if (a.yCentroid != b.yCentroid)
 			return false;
 
 		if (a.xCenterOfMass != b.xCenterOfMass)
@@ -791,7 +796,7 @@ public class ImagePlusTest {
 
 		return true;
 	}
-	
+
 	@Test
 	public void testGetStatistics() {
 		ImageStatistics expected,actual;
@@ -805,7 +810,7 @@ public class ImagePlusTest {
 	@Test
 	public void testGetStatisticsInt() {
 		ImageStatistics expected,actual;
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("MySocksAreBunched",proc);
 		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,256,0.0,0.0);
@@ -816,13 +821,13 @@ public class ImagePlusTest {
 	@Test
 	public void testGetStatisticsIntInt() {
 		ImageStatistics expected,actual;
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("GaleForceWinds",proc);
 		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,0,0.0,0.0);
 		actual = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,0);
 		assertTrue(imageStatsEquals(expected,actual));
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {1,2,3},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("GaleForceWinds",proc);
 		expected = ip.getStatistics(Measurements.AREA + Measurements.MEAN + Measurements.MODE + Measurements.MIN_MAX,3,0.0,0.0);
@@ -881,18 +886,18 @@ public class ImagePlusTest {
 	public void testGetTitle() {
 		ip = new ImagePlus(null,(Image)null);
 		assertEquals("",ip.getTitle());
-		
+
 		ip = new ImagePlus("TitleToCar",(Image)null);
 		assertEquals("TitleToCar",ip.getTitle());
 	}
 
 	@Test
 	public void testGetShortTitle() {
-		
+
 		// null string input
 		ip = new ImagePlus(null,(Image)null);
 		assertEquals("",ip.getShortTitle());
-		
+
 		// no spaces or periods
 		ip = new ImagePlus("HelloWorld",(Image)null);
 		assertEquals("HelloWorld",ip.getShortTitle());
@@ -900,15 +905,15 @@ public class ImagePlusTest {
 		// only a space
 		ip = new ImagePlus(" ",(Image)null);
 		assertEquals("",ip.getShortTitle());
-		
+
 		// space at beginning
 		ip = new ImagePlus(" HelloWorld",(Image)null);
 		assertEquals("",ip.getShortTitle());
-		
+
 		// space at end
 		ip = new ImagePlus("HelloWorld ",(Image)null);
 		assertEquals("HelloWorld",ip.getShortTitle());
-		
+
 		// space in middle
 		ip = new ImagePlus("Hello World",(Image)null);
 		assertEquals("Hello",ip.getShortTitle());
@@ -924,7 +929,7 @@ public class ImagePlusTest {
 		// dot in middle
 		ip = new ImagePlus("Hello.World",(Image)null);
 		assertEquals("Hello",ip.getShortTitle());
-	
+
 		// dot in middle before space
 		ip = new ImagePlus("Hello.Fred World",(Image)null);
 		assertEquals("Hello",ip.getShortTitle());
@@ -940,11 +945,11 @@ public class ImagePlusTest {
 		if (IJInfo.RUN_GUI_TESTS)
 		{
 		}
-		
+
 		ip = new ImagePlus("TrainWreck",(Image)null);
 		ip.setTitle(null);
 		assertEquals("TrainWreck",ip.getTitle());
-		
+
 		ip = new ImagePlus("HorseAndBuggy",(Image)null);
 		ip.setTitle("MopAndBroom");
 		assertEquals("MopAndBroom",ip.getTitle());
@@ -966,7 +971,7 @@ public class ImagePlusTest {
 
 	@Test
 	public void testGetStackSize() {
-		
+
 		ip = new ImagePlus();
 		assertEquals(1,ip.getStackSize());
 
@@ -976,10 +981,10 @@ public class ImagePlusTest {
 		st.addSlice("UncleRemus", new byte[] {0,8,4,1});
 		st.addSlice("AuntRomulus", new byte[] {0,8,4,1});
 		st.addSlice("BabyAchilles", new byte[] {0,8,4,1});
-		
+
 		ip.setStack("CarribeanDreams", st);
 		assertEquals(5,ip.getStackSize());
-		
+
 		st.deleteLastSlice();
 		assertEquals(4,ip.getStackSize());
 	}
@@ -988,7 +993,7 @@ public class ImagePlusTest {
 	public void testGetImageStackSize() {
 		// note - getImageStackSize() is nearly identical to getStackSize() - one needs to be retired?
 		// same tests will suffice
-		
+
 		ip = new ImagePlus();
 		assertEquals(1,ip.getImageStackSize());
 
@@ -998,10 +1003,10 @@ public class ImagePlusTest {
 		st.addSlice("UncleRemus", new byte[] {0,8,4,1});
 		st.addSlice("AuntRomulus", new byte[] {0,8,4,1});
 		st.addSlice("BabyAchilles", new byte[] {0,8,4,1});
-		
+
 		ip.setStack("CarribeanDreams", st);
 		assertEquals(5,ip.getImageStackSize());
-		
+
 		st.deleteLastSlice();
 		assertEquals(4,ip.getImageStackSize());
 	}
@@ -1009,14 +1014,14 @@ public class ImagePlusTest {
 	// there is some gui code in the setDimensions method that is untested here
 	@Test
 	public void testSetDimensions() {
-		
+
 		// empty stack
 		ip = new ImagePlus();
 		ip.setDimensions(1,2,3);
 		assertEquals(1,ip.getNChannels());
 		assertEquals(1,ip.getNSlices());
 		assertEquals(ip.getStackSize(),ip.getNFrames());
-		
+
 		// stack but dimensions don't match
 		ip = new ImagePlus("Kerbam",(Image)null);
 		st = new ImageStack(2,2);
@@ -1028,7 +1033,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getNChannels());
 		assertEquals(ip.getStackSize(),ip.getNSlices());
 		assertEquals(1,ip.getNFrames());
-		
+
 		// stack with matching dimensions
 		ip = new ImagePlus("Kerbam",(Image)null);
 		st = new ImageStack(1,4);
@@ -1059,7 +1064,7 @@ public class ImagePlusTest {
 		ip.setDimensions(1,1,3);
 		ip.setOpenAsHyperStack(false);
 		assertFalse(ip.isHyperStack());
-		
+
 		// openAs false, nDimensions > 3
 		ip = new ImagePlus("ack phooey", (Image)null);
 		st = new ImageStack(1,4);
@@ -1071,7 +1076,7 @@ public class ImagePlusTest {
 		ip.setDimensions(1,1,4);
 		ip.setOpenAsHyperStack(false);
 		assertFalse(ip.isHyperStack());
-		
+
 		// openAs true, nDimensions <= 3
 		ip = new ImagePlus("ack phooey", (Image)null);
 		st = new ImageStack(1,4);
@@ -1082,7 +1087,7 @@ public class ImagePlusTest {
 		ip.setDimensions(1,1,3);
 		ip.setOpenAsHyperStack(true);
 		assertFalse(ip.isHyperStack());
-		
+
 		// openAs true, nDimensions > 3
 		ip = new ImagePlus("ack phooey", (Image)null);
 		st = new ImageStack(1,4);
@@ -1327,7 +1332,7 @@ public class ImagePlusTest {
 		st.addSlice("7",new byte[] {1,2,3,4,5,6});
 		st.addSlice("8",new byte[] {1,2,3,4,5,6});
 		ip.setStack("TharSheBlows", st);
-		
+
 		// dimensions do not match stack
 		ip.setDimensions(1, 1, 1);
 		assertArrayEquals(new int[] {2,3,1,8,1}, ip.getDimensions());
@@ -1475,7 +1480,7 @@ public class ImagePlusTest {
 	public void testCreateLut() {
 		LookUpTable lut;
 		byte[] tmp;
-		
+
 		// if processor is null should create a ramping all grey lut
 		ip = new ImagePlus();
 		lut = ip.createLut();
@@ -1489,7 +1494,7 @@ public class ImagePlusTest {
 		tmp = lut.getBlues();
 		for (int i = 0; i < 256; i++)
 			assertEquals((byte)i,tmp[i]);
-		
+
 		// if processor is not null should create a lut from the IndexColorModel of the processor
 		proc = new ByteProcessor(2,3,new byte[]{1,2,3,4,5,6},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("RodeoHeaven",proc);
@@ -1508,11 +1513,11 @@ public class ImagePlusTest {
 		// null imageProc and null image
 		ip = new ImagePlus("CircusHell",(Image)null);
 		assertFalse(ip.isInvertedLut());
-		
+
 		// null image proc with non null image
 		ip = new ImagePlus("CircusHell",new BufferedImage(50,75,BufferedImage.TYPE_USHORT_555_RGB));
 		assertEquals(ip.ip.isInvertedLut(),ip.isInvertedLut());
-		
+
 		// non null image
 		proc = new ByteProcessor(2,3,new byte[]{1,2,3,4,5,6},new IndexColorModel(8,1,new byte[]{1},new byte[]{2},new byte[]{3}));
 		ip = new ImagePlus("CircusHell",proc);
@@ -1532,7 +1537,7 @@ public class ImagePlusTest {
 		ip.setImage(new BufferedImage(1,1,BufferedImage.TYPE_BYTE_INDEXED, cm));
 		assertEquals(ImagePlus.COLOR_256,ip.getType());
 		assertArrayEquals(new int[] {1,2,3,0}, ip.getPixel(0,0));
-		
+
 		// GRAY8
 		proc = new ByteProcessor(1,1,new byte[] {53}, null);
 		ip = new ImagePlus("SoupySales",proc);
@@ -1556,7 +1561,7 @@ public class ImagePlusTest {
 		assertEquals(ImagePlus.COLOR_RGB,ip.getType());
 		assertArrayEquals(new int[] {0xff,0xee,0xdd,0}, ip.getPixel(0,0));
 		assertArrayEquals(new int[] {0,0,0,0},ip.getPixel(-1,-1));
-		
+
 		// GRAY32
 		int[] ints = new int[3];
 		proc = new FloatProcessor(1,3,ints);
@@ -1575,7 +1580,7 @@ public class ImagePlusTest {
 		ip.createEmptyStack();
 		assertEquals(1,ip.getImageStackSize()); // oddly a 1-element stack is what ImagePlus considers empty
 		// still equals 1 if try ip.getImageStack().getSize()
-		
+
 		// a more fleshed out one
 		proc = new ByteProcessor(1,1,new byte[] {54},null);
 		ip = new ImagePlus("HookahBarn",proc);
@@ -1612,7 +1617,7 @@ public class ImagePlusTest {
 		assertEquals(proc.getColorModel(),st.getColorModel());
 		assertEquals(proc.getRoi(),st.getRoi());
 
-		// if not stack == null 
+		// if not stack == null
 		//   do stuff and setRoi() if needed
 		proc = new ByteProcessor(1,1,new byte[] {22}, null);
 		ip = new ImagePlus("CareBearStation",proc);
@@ -1652,7 +1657,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getCurrentSlice());
 		ip.setCurrentSlice(6);
 		assertEquals(5,ip.getCurrentSlice());
-		
+
 		// try in bounds descending
 		ip.setCurrentSlice(5);
 		assertEquals(5,ip.getCurrentSlice());
@@ -1735,7 +1740,7 @@ public class ImagePlusTest {
 		st.addSlice("Lumbago8",new byte[] {1,2,3});
 		ip.setStack("JiffyPop",st);
 		ip.setDimensions(2, 2, 2);
-		
+
 		// out of bounds
 		ip.setPosition(0,0,0);
 		assertEquals(1,ip.getChannel());
@@ -1759,7 +1764,7 @@ public class ImagePlusTest {
 		assertEquals(2,ip.getChannel());
 		assertEquals(2,ip.getSlice());
 		assertEquals(2,ip.getFrame());
-		
+
 		// start
 		ip.setPosition(1,1,1);
 		assertEquals(1,ip.getChannel());
@@ -1792,7 +1797,7 @@ public class ImagePlusTest {
 		st.addSlice("Lumbago8",new byte[] {1,2,3});
 		ip.setStack("JiffyPop",st);
 		ip.setDimensions(2, 2, 2);
-		
+
 		assertEquals(1,ip.getStackIndex(1,1,1));
 		assertEquals(2,ip.getStackIndex(2,1,1));
 		assertEquals(3,ip.getStackIndex(1,2,1));
@@ -1805,9 +1810,9 @@ public class ImagePlusTest {
 
 	@Test
 	public void testResetStack() {
-		
+
 		// note - I just can't find a path through the code that can test the side effects ...
-		
+
 		/*
 		ImageProcessor proc1, proc2;
 
@@ -1815,7 +1820,7 @@ public class ImagePlusTest {
 		proc1.setMinAndMax(1,1);
 		proc2 = new ByteProcessor(1,3,new byte[] {2,2,2},null);
 		proc2.setMinAndMax(2,2);
-		
+
 		st = new ImageStack(1,3);
 		st.addSlice("Potato1",proc1);
 		st.addSlice("Potato2",proc2);
@@ -1832,13 +1837,13 @@ public class ImagePlusTest {
 		assertEquals(1,st.getProcessor(1).getMax(),Assert.DOUBLE_TOL);
 		assertEquals(2,st.getProcessor(2).getMin(),Assert.DOUBLE_TOL);
 		assertEquals(2,st.getProcessor(2).getMax(),Assert.DOUBLE_TOL);
-		
+
 		// if not slice 1 nothing should happen
 		ip.setCurrentSlice(2);
 		ip.resetStack();
 		assertEquals(2.0,ip.ip.getMin(),Assert.DOUBLE_TOL);
 		assertEquals(2.0,ip.ip.getMax(),Assert.DOUBLE_TOL);
-		
+
 		// otherwise min and max should get set to ip #2's values
 		ip.setCurrentSlice(1);
 		ip.resetStack();
@@ -1861,7 +1866,7 @@ public class ImagePlusTest {
 		st.addSlice("Lumbago8",new byte[] {1,2,3});
 		ip.setStack("JiffyPop",st);
 		ip.setDimensions(2, 2, 2);
-		
+
 		ip.setPosition(1);
 		assertEquals(1,ip.getStackIndex(ip.getChannel(),ip.getSlice(),ip.getFrame()));
 
@@ -1894,7 +1899,7 @@ public class ImagePlusTest {
 		ip = new ImagePlus();
 		ip.setSlice(1234567890);  // this should be safe
 		assertEquals(1,ip.getCurrentSlice());
-		
+
 		// stack exists but asking for currentSlice and we have a processor - should do immediate return
 		proc = new ColorProcessor(2,1,new int[] {2,1});
 		ip = new ImagePlus("Zoot",proc);
@@ -1905,7 +1910,7 @@ public class ImagePlusTest {
 		ip.setCurrentSlice(2);
 		ip.setSlice(2);
 		assertEquals(2,ip.getCurrentSlice());
-		
+
 		// stack size in allowed range and not current slice : case we already have a processor
 		proc = new ColorProcessor(2,1,new int[] {2,1});
 		ip = new ImagePlus("Zoot",proc);
@@ -1954,19 +1959,19 @@ public class ImagePlusTest {
 	public void testSetRoiRoiBoolean() {
 
 		Roi roi;
-		
+
 		// note - will pass false for updateDisplay flag for now
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {7,5,3},null);
 		ip = new ImagePlus("TeenyBluehouse",proc);
 		roi = new Roi(0,0,1,3);
 		ip.setRoi(roi);
 		assertEquals(roi,ip.getRoi());
-		
+
 		// pass null - should killroi()
 		ip.setRoi(null,false);
 		assertNull(ip.getRoi());
-		
+
 		// all zeros - should eventually killroi()
 		//Roi orig = ip.getRoi();
 		//roi = new Roi(0,0,0,0);
@@ -1986,10 +1991,10 @@ public class ImagePlusTest {
 	@Test
 	public void testSetRoiIntIntIntInt() {
 		Roi roi;
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {7,5,3},null);
 		ip = new ImagePlus("SuperDude's Ranch",proc);
-		
+
 		// test bad input all zeroes
 		roi = new Roi(0,0,0,0);
 		ip.setRoi(0,0,0,0);
@@ -1999,7 +2004,7 @@ public class ImagePlusTest {
 		roi = new Roi(8,8,8,8);
 		ip.setRoi(8,8,8,8);
 		assertEquals(roi,ip.getRoi());
-		
+
 		// test good input
 		roi = new Roi(0,0,1,1);
 		ip.setRoi(0,0,1,1);
@@ -2010,16 +2015,16 @@ public class ImagePlusTest {
 	public void testSetRoiRectangle() {
 		Roi roi;
 		Rectangle rect;
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {7,5,3},null);
 		ip = new ImagePlus("SuperDude's Ranch",proc);
-		
+
 		// all zeroes
 		rect = new Rectangle(0,0,0,0);
 		roi = new Roi(0,0,0,0);
 		ip.setRoi(rect);
 		assertEquals(roi,ip.getRoi());
-		
+
 		// out of bounds by width and height
 		rect = new Rectangle(0,0,4,4);
 		roi = new Roi(0,0,4,4);
@@ -2043,10 +2048,10 @@ public class ImagePlusTest {
 	public void testCreateNewRoi() {
 
 		// note - can't fully test this method as it depends on GUI vars and state and can draw too
-		
+
 		proc = new ByteProcessor(1,3,new byte[] {7,5,3},null);
 		ip = new ImagePlus("America's Hardware Store",proc);
-		
+
 		// this is the best that can be done ...
 		ip.createNewRoi(5,10);
 		assertNotNull(ip.getRoi());
@@ -2065,7 +2070,7 @@ public class ImagePlusTest {
 
 	@Test
 	public void testSaveAndRestoreRoi() {
-		// note - can't test gui portions of these methods. Just test that save and restore actually make changes. 
+		// note - can't test gui portions of these methods. Just test that save and restore actually make changes.
 		Roi one,two;
 		proc = new ByteProcessor(1,3,new byte[] {7,5,3},null);
 		ip = new ImagePlus("Jiffy Snap LLC",proc);
@@ -2092,9 +2097,9 @@ public class ImagePlusTest {
 		//   the existence of a IJ instance to update its progress bar. we don't have an IJ and if I create one all subsequent
 		//   tests are affected. For now I have modified FileOpener::revertToSaved to not access IJ.getInstance().getProgressBar().
 		//   I have asked Wayne to look at this.
-		
+
 		// note - not testing revert to file stored at a URL.
-		
+
 		// simple test - stacked item should not revert
 		//proc = new ByteProcessor(1,2,new byte[] {1,2},null);
 		//ip = new ImagePlus("Zowblooie",proc);
@@ -2111,7 +2116,7 @@ public class ImagePlusTest {
 		ip.revert();
 		proc = ip.getProcessor();
 		assertEquals(99,proc.getPixel(0, 0));
-		
+
 		// simple test - a ImagePlus that did not come from a file should not revert
 		proc = new ByteProcessor(1,2,new byte[] {1,2},null);
 		ip = new ImagePlus("Zowblooie",proc);
@@ -2123,7 +2128,7 @@ public class ImagePlusTest {
 		assertEquals(99,proc.getPixel(0, 0));
 
 		// should revert - a simple test
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
 		proc.set(0,0,99);
@@ -2134,7 +2139,7 @@ public class ImagePlusTest {
 
 		// should revert but Roi should not be not reverted
 		Roi roi = new Roi(0,0,1,1);
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
 		assertNull(ip.getRoi());
@@ -2145,9 +2150,9 @@ public class ImagePlusTest {
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
 		assertEquals(roi,ip.getRoi()); // roi should survive the revert() call
-		
+
 		// should revert and changes flag should be correctly updated
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		assertFalse(ip.changes);
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
@@ -2158,9 +2163,9 @@ public class ImagePlusTest {
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
 		assertFalse(ip.changes);
-		
+
 		// test that properties(FHT) deleted
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		ip.setProperty("FHT","Fanny Arbuckle");
 		ip.setTitle("FFT of my toes");
 		proc = ip.getProcessor();
@@ -2172,9 +2177,9 @@ public class ImagePlusTest {
 		assertEquals(6,proc.getPixel(0, 0));
 		assertNull(ip.getProperty("FHT"));
 		assertEquals(" my toes",ip.getTitle());
-		
+
 		// test that trimProcessor() ran
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		proc = ip.getProcessor();
 		assertNull(proc.getSnapshotPixels());
 		proc.snapshot();
@@ -2182,11 +2187,11 @@ public class ImagePlusTest {
 		ip.revert();
 		proc = ip.getProcessor();
 		assertNull(proc.getSnapshotPixels());
-		
+
 		// test that LUT was inverted if needed
 		boolean origInvertStatus = Prefs.useInvertingLut;
 		Prefs.useInvertingLut = true;
-		ip = new Opener().openTiff("data/", "head8bit.tif");
+		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");
 		proc = ip.getProcessor();
 		assertFalse(proc.isInvertedLut());
 		assertEquals(6,proc.get(0, 0));
@@ -2205,7 +2210,7 @@ public class ImagePlusTest {
 		byte[] expLutChan = new byte[256];
 		for (int i = 0; i < 256; i++)
 			expLutChan[i] = (byte)i;
-		
+
 		// 8 bit gray with calibration
 		cal = new Calibration();
 		cal.frameInterval = 4.0;
@@ -2391,11 +2396,11 @@ public class ImagePlusTest {
 	}
 
 	// again I find I could use an equals() method for a class - in this case FileInfo
-	
+
 	private void areEquals(FileInfo a, FileInfo b)
 	{
 		// will test a subset for now
-		
+
 		assertEquals(a.width,b.width);
 		assertEquals(a.height,b.height);
 		assertEquals(a.nImages,b.nImages);
@@ -2416,11 +2421,11 @@ public class ImagePlusTest {
 		assertArrayEquals(a.greens,b.greens);
 		assertArrayEquals(a.blues,b.blues);
 	}
-	
+
 	@Test
 	public void testGetOriginalFileInfo() {
 		FileInfo orig;
-		
+
 		orig = new FileInfo();
 		proc = new ByteProcessor(1,2,new byte[] {1,2},null);
 		ip = new ImagePlus("TheRedBalloon",proc);
@@ -2437,11 +2442,11 @@ public class ImagePlusTest {
 		ip = new ImagePlus();
 
 		// only the flags input to imageUpdate() has an effect on its return value
-		assertFalse(ip.imageUpdate(null, ImagePlus.ERROR, -1, -1, -1, -1));
+		assertFalse(ip.imageUpdate(null, ImageObserver.ERROR, -1, -1, -1, -1));
 			// note - the previous call also sets a private variable (that cannot be tested) errorLoadingImage to true
-		assertFalse(ip.imageUpdate(null, ImagePlus.ALLBITS, 0, 0, 0, 0));
-		assertFalse(ip.imageUpdate(null, ImagePlus.FRAMEBITS, 1, 1, 1, 1));
-		assertFalse(ip.imageUpdate(null, ImagePlus.ABORT, 100, -100, 100, -100));
+		assertFalse(ip.imageUpdate(null, ImageObserver.ALLBITS, 0, 0, 0, 0));
+		assertFalse(ip.imageUpdate(null, ImageObserver.FRAMEBITS, 1, 1, 1, 1));
+		assertFalse(ip.imageUpdate(null, ImageObserver.ABORT, 100, -100, 100, -100));
 		assertTrue(ip.imageUpdate(null, 0, 3, 3, 3, 3));
 	}
 
@@ -2461,7 +2466,7 @@ public class ImagePlusTest {
 		ip.setRoi(0,0,1,1);
 		assertNotNull(ip.getProcessor());
 		assertNotNull(ip.getRoi());
-		
+
 		// do nothing if ignoreFlush
 		ip.setIgnoreFlush(true);
 		ip.flush();
@@ -2476,7 +2481,7 @@ public class ImagePlusTest {
 		assertNotNull(ip.getProcessor());
 		assertNotNull(ip.getStack());
 		assertNotNull(ip.getRoi());
-		
+
 		// do stuff if unlocked
 		ip.unlock();
 		ip.flush();
@@ -2496,7 +2501,7 @@ public class ImagePlusTest {
 
 		Calibration cal;
 		ImagePlus newOne;
-		
+
 		// try Byte type with unique calib
 		proc = new ByteProcessor(1,2,new byte[]{1,2},null);
 		ip = new ImagePlus("GrapeVine",proc);
@@ -2506,7 +2511,7 @@ public class ImagePlusTest {
 		newOne = ip.createImagePlus();
 		assertTrue(ip.getCalibration().isSameAs(newOne.getCalibration()));
 		assertEquals(ip.getType(),newOne.getType());
-		
+
 		// try Short type with unique calib
 		proc = new ShortProcessor(1,2,new short[]{1,2},null);
 		ip = new ImagePlus("GrapeVine",proc);
@@ -2516,7 +2521,7 @@ public class ImagePlusTest {
 		newOne = ip.createImagePlus();
 		assertTrue(ip.getCalibration().isSameAs(newOne.getCalibration()));
 		assertEquals(ip.getType(),newOne.getType());
-		
+
 		// try Float type with unique calib
 		proc = new FloatProcessor(1,2,new float[]{1,2},null);
 		ip = new ImagePlus("GrapeVine",proc);
@@ -2526,7 +2531,7 @@ public class ImagePlusTest {
 		newOne = ip.createImagePlus();
 		assertTrue(ip.getCalibration().isSameAs(newOne.getCalibration()));
 		assertEquals(ip.getType(),newOne.getType());
-		
+
 		// try Color type with unique calib
 		proc = new ColorProcessor(1,2,new int[]{1,2});
 		ip = new ImagePlus("GrapeVine",proc);
@@ -2540,10 +2545,10 @@ public class ImagePlusTest {
 
 	@Test
 	public void testCreateHyperStack() {
-		
+
 		ImagePlus result;
 		Calibration cal;
-		
+
 		// try 8 bit case
 		proc = new ByteProcessor(2,3,new byte[] {1,2,3,4,5,6},null);
 		ip = new ImagePlus("BaseIP",proc);
@@ -2556,7 +2561,7 @@ public class ImagePlusTest {
 		assertArrayEquals(new int[] {2,3,2,3,4},result.getDimensions());
 		assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
-		
+
 		// try 16 bit case
 		proc = new ShortProcessor(2,3,new short[] {1,2,3,4,5,6},null);
 		ip = new ImagePlus("BaseIP",proc);
@@ -2597,7 +2602,7 @@ public class ImagePlusTest {
 		assertArrayEquals(new int[] {2,2,2,3,4},result.getDimensions());
 		assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
-		
+
 		// should fail on any other case
 		try {
 			result = ip.createHyperStack("SuperWhats", 2, 3, 4, 11);
@@ -2612,7 +2617,7 @@ public class ImagePlusTest {
 	public void testCopyScale() {
 		Calibration cal,cal2,save;
 		ImagePlus ip2;
-		
+
 		// save state of global calib
 		ip = new ImagePlus();
 		save = ip.getGlobalCalibration();
@@ -2625,7 +2630,7 @@ public class ImagePlusTest {
 		ip.setCalibration(cal);
 		ip.copyScale(null);
 		assertTrue(ip.getCalibration().isSameAs(cal));
-		
+
 		// passing a valid ImagePlus should copy its calib func
 		ip = new ImagePlus();
 		cal = new Calibration();
@@ -2646,7 +2651,7 @@ public class ImagePlusTest {
 		ip.setCalibration(cal);
 		ip.copyScale(null);
 		assertTrue(ip.getCalibration().isSameAs(ip.getGlobalCalibration()));
-		
+
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
 	}
@@ -2668,17 +2673,17 @@ public class ImagePlusTest {
 	@Test
 	public void testGetCalibration() {
 		Calibration save,cal;
-		
+
 		// save state of global calib
 		ip = new ImagePlus();
 		save = ip.getGlobalCalibration();
 		ip.setGlobalCalibration(null);
-		
+
 		// after default ctor() calib should be null, get Calib should make a default one
 		cal = new Calibration();
 		ip = new ImagePlus();
 		assertTrue(ip.getCalibration().isSameAs(cal));
-		
+
 		// if calib not null return it
 		ip = new ImagePlus();
 		cal = new Calibration();
@@ -2692,7 +2697,7 @@ public class ImagePlusTest {
 		ip.setGlobalCalibration(cal);
 		ip = new ImagePlus();
 		assertTrue(ip.getGlobalCalibration().isSameAs(ip.getCalibration()));
-		
+
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
 	}
@@ -2700,7 +2705,7 @@ public class ImagePlusTest {
 	@Test
 	public void testSetCalibration() {
 		Calibration cal;
-		
+
 		// set to null
 		ip = new ImagePlus();
 		cal = new Calibration();
@@ -2721,21 +2726,21 @@ public class ImagePlusTest {
 	@Test
 	public void testSetAndGetGlobalCalibration() {
 		Calibration save,cal;
-		
+
 		// save state of global calib
 		ip = new ImagePlus();
 		save = ip.getGlobalCalibration();
-		
+
 		// test setting to null
 		ip.setGlobalCalibration(null);
 		assertNull(ip.getGlobalCalibration());
-		
+
 		// after default ctor() calib should be null, get Calib should make a default one
 		ip = new ImagePlus();
 		cal = new Calibration();
 		ip.setGlobalCalibration(cal);
 		assertTrue(ip.getGlobalCalibration().isSameAs(cal));
-				
+
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
 		assertEquals(ip.getGlobalCalibration(),save);
@@ -2744,17 +2749,17 @@ public class ImagePlusTest {
 	@Test
 	public void testGetLocalCalibration() {
 		Calibration save,cal;
-		
+
 		// save state of global calib
 		ip = new ImagePlus();
 		save = ip.getGlobalCalibration();
 		ip.setGlobalCalibration(null);
-		
+
 		// after default ctor() calib should be null, get Calib should make a default one
 		ip = new ImagePlus();
 		cal = new Calibration();
 		assertTrue(ip.getLocalCalibration().isSameAs(cal));
-		
+
 		// if calib not null return it
 		ip = new ImagePlus();
 		cal = new Calibration();
@@ -2769,7 +2774,7 @@ public class ImagePlusTest {
 		ip.setCalibration(cal);
 		ip.setGlobalCalibration(new Calibration());
 		assertTrue(ip.getLocalCalibration().isSameAs(cal));
-		
+
 		// restore state of global calib so we don't mess up other tests
 		ip.setGlobalCalibration(save);
 	}
@@ -2786,11 +2791,11 @@ public class ImagePlusTest {
 
 	@Test
 	public void testGetLocationAsString() {
-		
+
 		//ImagePlus ip2;
 		Calibration cal;
 		String str;
-		
+
 		// if properties FHT
 
 		//    cal unscaled
@@ -2801,7 +2806,7 @@ public class ImagePlusTest {
 		ip.setProperty("FHT","ForThisCodeAnythingWillDo");
 		str = ip.getLocationAsString(220, 150);
 		assertEquals("r=0.02 p/c (265), theta= 325.29",str.substring(0, str.length()-1));  // ignore degree symbol - hudson dislikes
-		
+
 		//    cal scaled
 		proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
 		ip = new ImagePlus("Superman",proc);
@@ -2819,7 +2824,7 @@ public class ImagePlusTest {
 		//    single image
 		ip = new ImagePlus();
 		assertEquals(" x=5, y=3",ip.getLocationAsString(5, 3));
-		
+
 		//    stack
 		//proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
 		//ip = new ImagePlus("Superman",proc);
@@ -2835,17 +2840,17 @@ public class ImagePlusTest {
 		assertEquals(" x=5, y=3, z=1",ip.getLocationAsString(5, 3));
 		ip.setCurrentSlice(3);
 		assertEquals(" x=5, y=3, z=2",ip.getLocationAsString(5, 3));
-		
+
 		//    hyperstack
 		//      note - can't test - only changes hyperstack currently being displayed
-		
+
 		// Test alt key up cases
 		IJ.setKeyUp(KeyEvent.VK_ALT);
-		
+
 		//    single image
 		ip = new ImagePlus();
 		assertEquals(" x=20, y=35",ip.getLocationAsString(20, 35));
-		
+
 		//    stack
 		//proc = new FloatProcessor(4,2,new float[] {8,7,6,5,4,3,2,1},null);
 		//ip = new ImagePlus("Superman",proc);
@@ -2866,7 +2871,7 @@ public class ImagePlusTest {
 		assertEquals(" x=80, y=105, z=2",ip.getLocationAsString(20, 35));
 		ip.setCurrentSlice(3);
 		assertEquals(" x=80, y=105, z=4",ip.getLocationAsString(20, 35));
-		
+
 		//    hyperstack
 		//      note - can't test - only changes hyperstack currently being displayed
 	}
@@ -2875,7 +2880,7 @@ public class ImagePlusTest {
 	public void testCopy() {
 		// reset state to keep from getting messed up by other tests
 		ImagePlus.resetClipboard();
-		
+
 		// cut == true, roi null
 		proc = new ColorProcessor(2,3,new int[] {1,2,3,4,5,6});
 		ip = new ImagePlus("Copier",proc);
@@ -2885,7 +2890,7 @@ public class ImagePlusTest {
 		ip.copy(true);
 		assertNotNull(ImagePlus.getClipboard());
 		assertNotNull(proc.getSnapshotPixels());
-		
+
 		// cut == true, roi not an area
 		proc = new ColorProcessor(2,3,new int[] {1,2,3,4,5,6});
 		ip = new ImagePlus("Copier",proc);
@@ -2943,7 +2948,7 @@ public class ImagePlusTest {
 		ip.copy(false);
 		assertNotNull(ImagePlus.getClipboard());
 		assertNull(proc.getSnapshotPixels());
-		
+
 		// reset state to keep from messing up other tests
 		ImagePlus.resetClipboard();
 	}
@@ -2952,7 +2957,7 @@ public class ImagePlusTest {
 	public void testPaste() {
 		// reset state to keep from getting messed up by other tests
 		ImagePlus.resetClipboard();
-		
+
 		// paste when nothing in clipboard
 		ImagePlus.resetClipboard();
 		proc = new ByteProcessor(2,3,new byte[] {1,2,3,4,5,6},null);
@@ -2963,7 +2968,7 @@ public class ImagePlusTest {
 		ip.paste();
 		assertFalse(ip.changes);
 		assertNull(ip.getRoi());
-		
+
 		// paste with valid data (part of image)
 		ImagePlus.resetClipboard();
 		proc = new ByteProcessor(2,3,new byte[] {1,2,3,4,5,6},null);
@@ -3028,17 +3033,17 @@ public class ImagePlusTest {
 	private class FakeListener implements ImageListener
 	{
 		public boolean opened, closed, updated;
-		
+
 		public FakeListener() {}
 		public void imageOpened(ImagePlus imp)  {opened = true;}
 		public void imageClosed(ImagePlus imp)  {closed = true;}
 		public void imageUpdated(ImagePlus imp) {updated = true;}
 	}
-	
+
 	@Test
 	public void testAddImageListener() {
 		FakeListener lst;
-		
+
 		ip = new ImagePlus();
 		lst = new FakeListener();
 		ImagePlus.addImageListener(lst);
@@ -3046,7 +3051,7 @@ public class ImagePlusTest {
 		assertFalse(lst.opened);
 		assertTrue(lst.closed);
 		assertFalse(lst.updated);
-		
+
 		ip = new ImagePlus();
 		lst = new FakeListener();
 		ImagePlus.addImageListener(lst);
@@ -3067,7 +3072,7 @@ public class ImagePlusTest {
 	@Test
 	public void testRemoveImageListener() {
 		FakeListener lst;
-		
+
 		ip = new ImagePlus();
 		lst = new FakeListener();
 		ImagePlus.addImageListener(lst);
@@ -3076,7 +3081,7 @@ public class ImagePlusTest {
 		assertFalse(lst.opened);
 		assertFalse(lst.closed);
 		assertFalse(lst.updated);
-		
+
 		ip = new ImagePlus();
 		lst = new FakeListener();
 		ImagePlus.addImageListener(lst);
@@ -3117,47 +3122,47 @@ public class ImagePlusTest {
 	@Test
 	public void testIsComposite() {
 		CompositeImage c;
-		
+
 		// not a composite image
 		ip = new ImagePlus();
 		assertFalse(ip.isComposite());
-		
+
 		// composite image
 		proc = new ColorProcessor(3,2,new int[] {6,5,4,3,2,1});
 		ip = new ImagePlus("NoHoldsBarred",proc);
 		c = new CompositeImage(ip);
 		assertTrue(c.isComposite());
-		
+
 		// note - as far as I can tell the NChannels() test in isComposite() is always true - no subcase to test
 	}
 
 	@Test
 	public void testSetDisplayRangeDoubleDouble() {
-		
+
 		// in the case ip's ImageProcessor is null we should be able to set the range but there is no way to test it.
 		// the input range is ignored.
 		ip = new ImagePlus();
 		ip.setDisplayRange(4,22);
-		
+
 		// pass in a legit ImagePlus
 		proc = new ByteProcessor(3,1,new byte[] {1,4,7},null);
 		ip = new ImagePlus("Jellybeans",proc);
-		
+
 		// illegal values
 		ip.setDisplayRange(-1,-1);
 		assertEquals(-1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(-1,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
-		
+
 		// zero values
 		ip.setDisplayRange(0,0);
 		assertEquals(0,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(0,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
-		
+
 		// min > max
 		ip.setDisplayRange(1000,999);
 		assertEquals(0,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(0,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
-		
+
 		// legal values - notice how Double.Max converted to Integer.Max
 		ip.setDisplayRange(77000,Double.MAX_VALUE);
 		assertEquals(77000,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
@@ -3182,7 +3187,7 @@ public class ImagePlusTest {
 		ip.setDisplayRange(1,7,904);
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
-		
+
 		// color processor : 1 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3190,7 +3195,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {170,187,255,0},ip.getPixel(0,0));
-		
+
 		// color processor : 2 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3198,7 +3203,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {170,255,204,0},ip.getPixel(0,0));
-		
+
 		// color processor : 3 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3206,7 +3211,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {170,255,255,0},ip.getPixel(0,0));
-		
+
 		// color processor : 4 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3214,7 +3219,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {255,187,204,0},ip.getPixel(0,0));
-		
+
 		// color processor : 5 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3222,7 +3227,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {255,187,255,0},ip.getPixel(0,0));
-		
+
 		// color processor : 6 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3230,7 +3235,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getDisplayRangeMin(),Assert.DOUBLE_TOL);
 		assertEquals(7,ip.getDisplayRangeMax(),Assert.DOUBLE_TOL);
 		assertArrayEquals(new int[] {255,255,204,0},ip.getPixel(0,0));
-		
+
 		// color processor : 7 channel
 		proc = new ColorProcessor(1,1,new int[] {0xaabbcc});
 		ip = new ImagePlus("GumbyShoes",proc);
@@ -3255,7 +3260,7 @@ public class ImagePlusTest {
 	@Test
 	public void testUpdatePosition() {
 		ip = new ImagePlus();
-		
+
 		ip.updatePosition(-1,-2,-3);
 		assertEquals(-1,ip.getChannel());
 		assertEquals(-2,ip.getSlice());
@@ -3275,10 +3280,10 @@ public class ImagePlusTest {
 	@Test
 	public void testFlatten() {
 		ImagePlus ip2;
-		
+
 		proc = new ByteProcessor(3,2,new byte[] {4,3,6,5,8,7},null);
 		ip = new ImagePlus("Zoobooks",proc);
-		
+
 		ip2 = ip.flatten();
 		assertTrue(ip2.getProcessor() instanceof ColorProcessor);
 		assertEquals("Flat_Zoobooks",ip2.getTitle());
@@ -3287,7 +3292,7 @@ public class ImagePlusTest {
 	@Test
 	public void testSetAndGetOverlayOverlay() {
 		Overlay o;
-		
+
 		// image canvas is null
 		ip = new ImagePlus();
 		assertNull(ip.getOverlay());
@@ -3305,7 +3310,7 @@ public class ImagePlusTest {
 		Overlay ov;
 		BasicStroke stroke;
 		Roi roi;
-		
+
 		// shape is null case
 		proc = new ColorProcessor(1,1,new int[] {1});
 		ip = new ImagePlus("FannyMae",proc);
@@ -3314,7 +3319,7 @@ public class ImagePlusTest {
 		assertNotNull(ip.getOverlay());
 		ip.setOverlay((Shape)null,Color.BLUE, stroke);
 		assertNull(ip.getOverlay());
-		
+
 		// shape is not null case
 		proc = new ColorProcessor(1,1,new int[] {1});
 		ip = new ImagePlus("FannyMae",proc);
@@ -3327,12 +3332,12 @@ public class ImagePlusTest {
 		assertEquals(Color.RED,roi.getStrokeColor());
 		assertEquals(stroke,roi.getStroke());
 	}
-	
+
 	@Test
 	public void testSetOverlayRoiColorIntColor() {
 		Roi roi;
 		Overlay ov;
-		
+
 		if (IJInfo.RUN_ENHANCED_TESTS)
 		{
 			// roi is null case
@@ -3342,7 +3347,7 @@ public class ImagePlusTest {
 			ip.setOverlay(null,Color.YELLOW,14,Color.CYAN);
 			assertNull(ip.getOverlay());
 		}
-		
+
 		// roi is legit
 		roi = new Roi(new Rectangle(0,0,4,5));
 		proc = new ColorProcessor(1,1,new int[] {1});
@@ -3380,13 +3385,13 @@ public class ImagePlusTest {
 	@Test
 	public void testToString() {
 		String str;
-		
+
 		// basic ImagePlus
 		proc = new ByteProcessor(2,1,new byte[] {2,1}, null);
 		ip = new ImagePlus("Arckle",proc);
 		str = "imp["+ip.getTitle()+" " + ip.width + "x" + ip.height + "x" + ip.getStackSize() + "]";
 		assertEquals(str,ip.toString());
-		
+
 		// a stacked ImagePlus
 		//proc = new ByteProcessor(2,1,new byte[] {2,1}, null);
 		//ip = new ImagePlus("Arckle",proc);

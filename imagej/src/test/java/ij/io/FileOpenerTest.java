@@ -1,21 +1,32 @@
 package ij.io;
 
-import ij.*;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import ij.Assert;
+import ij.CompositeImage;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.DataConstants;
+import ij.process.FloatProcessor;
+import ij.process.ShortProcessor;
 
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
-import ij.process.*;
+import org.junit.Test;
 
 public class FileOpenerTest {
-	
+
 	FileOpener fo;
 
 	@Test
@@ -23,12 +34,12 @@ public class FileOpenerTest {
 		// define one on a null file
 		FileOpener opener = new FileOpener(null);
 		assertNotNull(opener);
-		
+
 		// define one on a default file info object
 		FileInfo info = new FileInfo();
 		opener = new FileOpener(info);
 		assertNotNull(opener);
-		
+
 		// define one on a modified FileInfo
 		info.fileName = "miniTiled.tif";
 		info.fileType = FileInfo.GRAY8;
@@ -40,7 +51,7 @@ public class FileOpenerTest {
 	@Test
 	public void testOpen() {
 	}
-	
+
 	// note - only testing false case - true means display results which we can't test
 	@Test
 	public void testOpenBoolean() {
@@ -48,10 +59,10 @@ public class FileOpenerTest {
 		ImagePlus ip;
 
 		// test for a non existent file
-		
+
 		// ideally open() would pass back the exception for an unknown file. As it is something lower catches the
 		// exception, prints a stack trace, and does nothing
-		
+
 		info = new FileInfo();
 		info.fileName = "SuperPuppy.tif";
 		info.fileType = FileInfo.GRAY8;
@@ -67,7 +78,7 @@ public class FileOpenerTest {
 		info.fileType = FileInfo.GRAY8;
 		info.height = 2;
 		info.width = 3;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		fo = new FileOpener(info);
 		ip = fo.open(false);
 		assertNotNull(ip);
@@ -83,7 +94,7 @@ public class FileOpenerTest {
 		info.fileType = FileInfo.GRAY16_UNSIGNED;
 		info.height = 2;
 		info.width = 3;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		fo = new FileOpener(info);
 		ip = fo.open(false);
 		assertNotNull(ip);
@@ -99,7 +110,7 @@ public class FileOpenerTest {
 		info.fileType = FileInfo.GRAY32_FLOAT;
 		info.height = 2;
 		info.width = 3;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		fo = new FileOpener(info);
 		ip = fo.open(false);
 		assertNotNull(ip);
@@ -115,7 +126,7 @@ public class FileOpenerTest {
 		info.fileType = FileInfo.RGB;
 		info.height = 2;
 		info.width = 3;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		fo = new FileOpener(info);
 		ip = fo.open(false);
 		assertNotNull(ip);
@@ -131,7 +142,7 @@ public class FileOpenerTest {
 		info.fileType = FileInfo.RGB48_PLANAR;
 		info.height = 256;
 		info.width = 38;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		info.info = "Yuletide Greetings";
 		info.sliceLabels = new String[] {"Carrots"};
 		fo = new FileOpener(info);
@@ -154,7 +165,7 @@ public class FileOpenerTest {
 		assertTrue(ip instanceof CompositeImage);
 		assertEquals("Yuletide Greetings",ip.getProperty("Info"));
 		assertEquals("Carrots",ip.getProperty("Label"));
-		
+
 		// try to open an image stack
 		info = new FileInfo();
 		info.fileName = "gray8-2x3-sub1.tif";
@@ -162,7 +173,7 @@ public class FileOpenerTest {
 		info.nImages = 2;
 		info.height = 2;
 		info.width = 3;
-		info.directory = "data/";
+		info.directory = DataConstants.DATA_DIR;
 		fo = new FileOpener(info);
 		ip = fo.open(false);
 		assertNotNull(ip);
@@ -191,7 +202,7 @@ public class FileOpenerTest {
 			assertEquals(i,cm.getGreen(i));
 			assertEquals(i,cm.getBlue(i));
 		}
-		
+
 		// test a COLOR8 file with no attached lut data
 		fi = new FileInfo();
 		fi.fileType = FileInfo.COLOR8;
@@ -229,9 +240,9 @@ public class FileOpenerTest {
 	public void testCreateInputStream() {
 		FileInfo fi;
 		InputStream istr;
-		
+
 		// note - won't test URL subcase
-		
+
 		// fi.inputStream != null
 		fi = new FileInfo();
 		fi.inputStream = new ByteArrayInputStream(new byte[] {1,2,3,4,5,6});
@@ -244,15 +255,15 @@ public class FileOpenerTest {
 		} catch (Exception e) {
 			fail();
 		}
-		
+
 		// fi.inputStream != null and gzip
 		fi = new FileInfo();
 		fi.height = 2;
 		fi.width = 3;
-		fi.directory = "data/";
+		fi.directory = DataConstants.DATA_DIR;
 		fi.fileName = "fake.gz";
 		try {
-			fi.inputStream = new FileInputStream("data/fake.gz");
+			fi.inputStream = new FileInputStream(DataConstants.DATA_DIR + "fake.gz");
 			fo = new FileOpener(fi);
 			istr = fo.createInputStream(fi);
 			assertNotNull(istr);
@@ -276,7 +287,7 @@ public class FileOpenerTest {
 		} catch (Exception e) {
 			fail();
 		}
-		
+
 		// fi.inputStream == null -> try to open file
 		//   file is null
 		//     can't get File to be null -- even on null input - this test may be impossible
@@ -294,7 +305,7 @@ public class FileOpenerTest {
 			System.out.println(e.getMessage());
 			fail();
 		}
-		
+
 		// fi.inputStream == null -> try to open file
 		//   can't validateFileInfo(file,fi)
 		fi = new FileInfo();
@@ -313,24 +324,24 @@ public class FileOpenerTest {
 	public void testDecodeDescriptionString() {
 		FileInfo fi;
 		Properties p;
-		
+
 		// fi.decription == null
 		fi = new FileInfo();
 		fo = new FileOpener(fi);
 		assertNull(fo.decodeDescriptionString(fi));
-		
+
 		// fi.decription len < 7
 		fi = new FileInfo();
 		fi.description = "123456";
 		fo = new FileOpener(fi);
 		assertNull(fo.decodeDescriptionString(fi));
-		
+
 		// fi.decription not start with ImageJ
 		fi = new FileInfo();
 		fi.description = "NotImageJ";
 		fo = new FileOpener(fi);
 		assertNull(fo.decodeDescriptionString(fi));
-		
+
 		// otherwise from here on out descrip must start with ImageJ
 		fi = new FileInfo();
 		fi.description = "ImageJ=1.43n1\nc0=0\nc1=1\nc2=2\nc3=3\nc4=4\nunit=millidevs\ncf=13\nvunit=peeps\nimages=704\nspacing=-48.5";
@@ -367,7 +378,7 @@ public class FileOpenerTest {
 		FileOpener.setShowConflictMessage(false);
 	}
 
-	
+
 	// In method below
 	//   open image
 	//   save orig info
@@ -381,9 +392,9 @@ public class FileOpenerTest {
 		FileInfo fi;
 		ImagePlus ip;
 		int origPix,newPix;
-	
+
 		fi = new FileInfo();
-		fi.directory = "data/";
+		fi.directory = DataConstants.DATA_DIR;
 		fi.fileName = fname;
 		fi.fileFormat = format;
 		fi.nImages = nImages;
@@ -391,7 +402,7 @@ public class FileOpenerTest {
 		fi.width = width;
 		fo = new FileOpener(fi);
 		//ip = fo.open(false);
-		ip = new Opener().openImage("data/",fname);
+		ip = new Opener().openImage(DataConstants.DATA_DIR,fname);
 		assertNotNull(ip);
 		origPix = ip.getProcessor().getPixel(0,0);
 		ip.getProcessor().set(0,0,origPix+1);
@@ -409,9 +420,9 @@ public class FileOpenerTest {
 		FileInfo fi;
 		ImagePlus ip;
 		int origPix,newPix;
-	
+
 		fi = new FileInfo();
-		fi.directory = "data/";
+		fi.directory = DataConstants.DATA_DIR;
 		fi.fileName = fname;
 		fi.fileFormat = format;
 		fi.nImages = 1;
@@ -419,7 +430,7 @@ public class FileOpenerTest {
 		fi.width = width;
 		fo = new FileOpener(fi);
 		ip = fo.open(false);
-		//ip = new Opener().openImage("data/",fname);
+		//ip = new Opener().openImage(DataHelper.DATA_DIR,fname);
 		assertNotNull(ip);
 		origPix = ip.getProcessor().getPixel(0,0);
 		ip.getProcessor().set(0,0,origPix+1);
@@ -431,15 +442,15 @@ public class FileOpenerTest {
 		fo.revertToSaved(ip);
 		assertEquals(origPix,ip.getProcessor().getPixel(0,0));
 	}
-	
+
 	private void expectFailureReadPixelsCase(String fname, int format, int nImages, int height, int width)
 	{
 		FileInfo fi;
 		ImagePlus ip;
 		int origPix,newPix;
-	
+
 		fi = new FileInfo();
-		fi.directory = "data/";
+		fi.directory = DataConstants.DATA_DIR;
 		fi.fileName = fname;
 		fi.fileFormat = format;
 		fi.nImages = nImages;
@@ -447,7 +458,7 @@ public class FileOpenerTest {
 		fi.width = width;
 		fo = new FileOpener(fi);
 		ip = fo.open(false);
-		//ip = new Opener().openImage("data/",fname);
+		//ip = new Opener().openImage(DataHelper.DATA_DIR,fname);
 		assertNotNull(ip);
 		origPix = ip.getProcessor().getPixel(0,0);
 		ip.getProcessor().set(0,0,origPix+1);
@@ -459,10 +470,10 @@ public class FileOpenerTest {
 		fo.revertToSaved(ip);
 		assertFalse(origPix == ip.getProcessor().getPixel(0,0));
 	}
-	
+
 	@Test
 	public void testRevertToSaved() {
-		
+
 		// various file formats - supported ones
 		expectSuccess("blobs.gif",FileInfo.GIF_OR_JPG,1,254,256);
 		expectSuccess("Cell_Colony.jpg",FileInfo.GIF_OR_JPG,1,408,406);
@@ -472,7 +483,7 @@ public class FileOpenerTest {
 		expectSuccess("gray16.zip",FileInfo.ZIP_ARCHIVE,1,154,284);
 		expectSuccess("lena-std.png",FileInfo.IMAGEIO,1,154,284);
 		expectSuccess("01.dcm",FileInfo.DICOM,1,426,640);
-		
+
 		// unlike other formats tifs fall through to readPixels()
 		expectSuccessReadPixelsCase("head8bit.tif",FileInfo.TIFF,228,256);
 

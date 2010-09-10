@@ -1,22 +1,16 @@
 package ij.process;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,23 +28,23 @@ public class ShortProcessorTest {
 		@BeforeClass
 		public static void runBeforeClass() throws IOException
 		{
-		    String id = "data/CardioShort.raw";
+		    String id = DataConstants.DATA_DIR + "CardioShort.raw";
 		    width = 1000;
 		    height = 1000;
-		    
+
 		    rawByte = new byte[width*height*2];
 		    FileInputStream file = new FileInputStream(id);
 			file.read(rawByte);
 			imageShortData  = byteArrayToIntArray(rawByte);
 	    }
-		
+
 
 		/**
 		 * Converts a byte[] to an int[]; assumes native byte ordering; assumes short
-		 * @param b - Byte[] 
+		 * @param b - Byte[]
 		 * @return
 		 */
-		private static short[] byteArrayToIntArray(byte[] b ) 
+		private static short[] byteArrayToIntArray(byte[] b )
 		{
 			int shortSize = b.length/2;
 
@@ -92,14 +86,14 @@ public class ShortProcessorTest {
 		 */
 	private void showImageProcessor( ImageProcessor imageProcessor, String title, int displayTime )
 	{
-		if (title == null) title = ""; 
+		if (title == null) title = "";
 		if (displayTime <= 0 ) displayTime = 3000;
 		{
 			ColorProcessorTest.displayGraphicsInNewJFrame( imageProcessor.getBufferedImage(), title, displayTime);
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param ip imageProcessor
 	 * @param expected String of expected results unique to the reference image
@@ -109,70 +103,70 @@ public class ShortProcessorTest {
 		ImageStatistics imageStatistics = ImageStatistics.getStatistics( ip, 0xFFFFFFFF, null );
 		imageStatistics.getCentroid( ip );
 		String testResults = imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid;
-		
-		//{ System.out.println(imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid); } 
-		
+
+		//{ System.out.println(imageStatistics + " " + imageStatistics.xCenterOfMass + " " + imageStatistics.yCenterOfMass + " " + imageStatistics.xCentroid + " " + imageStatistics.yCentroid); }
+
 		assertEquals( expected, testResults );
-	
+
 	}
 
-		
+
 	@Test
-	public void testSetColorColor() 
+	public void testSetColorColor()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-	
+
 		Color refColor = Color.BLUE;
-		
+
 		testShortProcessor.setColor(refColor);
 		Color testColor = testShortProcessor.drawingColor;
-		
+
 		//Display image
 		//showImageProcessor( testShortProcessor, "SetColor", 3000 );
-		
+
 		//check results
 		assertEquals( testColor, testColor );
 	}
 
 	@Test
-	public void testSetValue() 
+	public void testSetValue()
 	{
 		int refColor = 255;
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setValue(refColor);
 		int testFGColor = testShortProcessor.fgColor;
-		
+
 		//check results
 		assertEquals( refColor, testFGColor );
 	}
 
 	@Test
-	public void testSetBackgroundValue() 
+	public void testSetBackgroundValue()
 	{
 		int refBackgroundColor = 0;
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setBackgroundValue(refBackgroundColor);
 		int testBGColor = (int)testShortProcessor.getBackgroundValue();
-		
+
 		//check results
 		assertEquals( refBackgroundColor, testBGColor );
 	}
 
 	@Test
-	public void testGetBackgroundValue() 
+	public void testGetBackgroundValue()
 	{
 		int refBackgroundColor = 0;
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-	
+
 		testShortProcessor.setBackgroundValue(refBackgroundColor);
 		int testBGColor = (int)testShortProcessor.getBackgroundValue();
-		
+
 		//check results
 		assertEquals( refBackgroundColor, testBGColor );
 	}
 
 	@Test
-	public void testGetMin() 
+	public void testGetMin()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		double testMin = testShortProcessor.getMin();
@@ -180,7 +174,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetMax() 
+	public void testGetMax()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		double testMax = testShortProcessor.getMax();
@@ -188,12 +182,12 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetMinAndMax() 
+	public void testSetMinAndMax()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setMinAndMax(50.0, 150.0);
 		short[] testShortArray = (short[]) testShortProcessor.getPixels();
-		
+
 		for(int i = 0; i < testShortArray.length; i++)
 		{
 			assertEquals( 0, testShortArray[i], Short.MAX_VALUE );
@@ -201,7 +195,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testResetMinAndMax() 
+	public void testResetMinAndMax()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.resetMinAndMax();
@@ -210,29 +204,29 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetThreshold() 
+	public void testSetThreshold()
 	{
 		//RED_LUT, BLACK_AND_WHITE_LUT, OVER_UNDER_LUT or NO_LUT_UPDATE
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		
+
 		testShortProcessor.setThreshold( 12, 200, ImageProcessor.RED_LUT );
 		testImageStats( testShortProcessor, "stats[count=226379, mean=73.13617429178501, min=12.0, max=200.0] 493.700509661043 426.8716212502478 500.0 500.0");
-		
+
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setThreshold( 12, 200, ImageProcessor.BLACK_AND_WHITE_LUT );
 		testImageStats( testShortProcessor, "stats[count=226379, mean=73.13617429178501, min=12.0, max=200.0] 493.700509661043 426.8716212502478 500.0 500.0");
-		
+
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setThreshold( 128, 130, ImageProcessor.OVER_UNDER_LUT );
 		testImageStats( testShortProcessor, "stats[count=1499, mean=128.98132088058705, min=128.0, max=130.0] 500.5312501616298 330.78860108718703 500.0 500.0");
-		
+
 		testShortProcessor= new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setThreshold( 12, 200, ImageProcessor.NO_LUT_UPDATE );
 		testImageStats( testShortProcessor, "stats[count=226379, mean=73.13617429178501, min=12.0, max=200.0] 493.700509661043 426.8716212502478 500.0 500.0");
 	}
 
 	@Test
-	public void testFlipVertical() 
+	public void testFlipVertical()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipVertical();
@@ -240,7 +234,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testFill() 
+	public void testFill()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipVertical();
@@ -248,7 +242,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testFillImageProcessor() 
+	public void testFillImageProcessor()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipVertical();
@@ -256,17 +250,17 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetPixels() 
+	public void testGetPixels()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] actual = (short[]) refShortProcessor.getPixels();
-		
+
 		assertArrayEquals( getRefImageArray(), actual);
-		
+
 	}
 
 	@Test
-	public void testGetPixelsCopy() 
+	public void testGetPixelsCopy()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] actual = (short[]) refShortProcessor.getPixelsCopy();
@@ -274,12 +268,12 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetPixelIntInt() 
+	public void testGetPixelIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] actual = new short[ width*height ];
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -287,12 +281,12 @@ public class ShortProcessorTest {
 				actual[i*width+j] = (short) refShortProcessor.getPixel( j, i );
 			}
 		}
-		
+
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testGetIntInt() 
+	public void testGetIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] actual = new short[ width*height ];
@@ -308,7 +302,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetInt() 
+	public void testGetInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] actual = new short[ width*height ];
@@ -322,12 +316,12 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetIntIntInt() 
+	public void testSetIntIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -335,32 +329,32 @@ public class ShortProcessorTest {
 				refShortProcessor.set( j, i, reference[ i*width+j ] );
 			}
 		}
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testSetIntInt() 
+	public void testSetIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
-		
+
 		for( int j = 0; j < height*width; j++ )
 		{
 			refShortProcessor.set( j, reference[j] );
 		}
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testGetfIntInt() 
+	public void testGetfIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -372,11 +366,11 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetfInt() 
+	public void testGetfInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
-		
+
 		for( int j = 0; j < height*width; j++ )
 		{
 			float actual = refShortProcessor.getf( j );
@@ -385,11 +379,11 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetfIntIntFloat() 
+	public void testSetfIntIntFloat()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -397,33 +391,33 @@ public class ShortProcessorTest {
 				refShortProcessor.setf( j, i, reference[ i*width+j ] );
 			}
 		}
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testSetfIntFloat() 
+	public void testSetfIntFloat()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
-		
+
 		for( int j = 0; j < height*width; j++ )
 		{
 			refShortProcessor.setf( j, reference[ j ] );
 		}
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testGetInterpolatedPixel() 
+	public void testGetInterpolatedPixel()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
 		short[] actual = new short[ width*height ];
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -435,29 +429,29 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetPixelInterpolated() 
+	public void testGetPixelInterpolated()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
 		short[] actual = new short[ width*height ];
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
 			{
-				actual[i*width+j] = (short) (int) refShortProcessor.getPixelInterpolated(j,i);
+				actual[i*width+j] = (short) refShortProcessor.getPixelInterpolated(j,i);
 			}
 		}
 		testImageStats( refShortProcessor, "stats[count=1000000, mean=0.0, min=0.0, max=0.0] NaN NaN 500.0 500.0");
-	
+
 	}
 
 	@Test
-	public void testPutPixelIntIntInt() 
+	public void testPutPixelIntIntInt()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -465,18 +459,18 @@ public class ShortProcessorTest {
 				refShortProcessor.putPixel( j, i, reference[ i*width+j ] );
 			}
 		}
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testGetPixelValue() 
+	public void testGetPixelValue()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
 		short[] actual = new short[ width*height ];
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -489,11 +483,11 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testPutPixelValue() 
+	public void testPutPixelValue()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -507,11 +501,11 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testDrawPixel() 
+	public void testDrawPixel()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
-		
+
 		for( int i = 0; i < height; i++ )
 		{
 			for( int j = 0; j < width; j++ )
@@ -526,45 +520,45 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetPixelsObject() 
+	public void testSetPixelsObject()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
 		refShortProcessor.setPixels( reference );
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
 
 	@Test
-	public void testCopyBits() 
+	public void testCopyBits()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		refShortProcessor.copyBits( testShortProcessor, 0, 0, Blitter.COPY );
-		
+
 		short[] actual = (short[]) refShortProcessor.getPixels();
 		assertArrayEquals( reference, actual );
 	}
-	
+
 	@Test
-	public void testApplyTable() 
+	public void testApplyTable()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		
+
 		int[] rampLut = new int[65536];
 		for(int i = 0; i < rampLut.length; i++)
 		{
 			rampLut[i]=0xFFFFFFFF;
 		}
-		
+
 		refShortProcessor.applyTable( rampLut );
 		testImageStats( refShortProcessor, "stats[count=1000000, mean=65535.0, min=65535.0, max=65535.0] 500.0 500.0 500.0 500.0");
 	}
 
 	@Test
-	public void testInvert() 
+	public void testInvert()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.invert();
@@ -572,7 +566,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testAddInt() 
+	public void testAddInt()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.add( 19 );
@@ -581,7 +575,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testAddDouble() 
+	public void testAddDouble()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.add( 19.99 );
@@ -590,7 +584,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testMultiply() 
+	public void testMultiply()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.multiply( 19.99 );
@@ -599,7 +593,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testAnd() 
+	public void testAnd()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.and( 19 );
@@ -608,7 +602,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testOr() 
+	public void testOr()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.or( 19 );
@@ -617,7 +611,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testXor() 
+	public void testXor()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.xor( 19 );
@@ -626,7 +620,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGamma() 
+	public void testGamma()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.gamma(19.99);
@@ -635,7 +629,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testLog() 
+	public void testLog()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.log();
@@ -644,7 +638,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testExp() 
+	public void testExp()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.exp();
@@ -653,7 +647,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSqr() 
+	public void testSqr()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.sqr();
@@ -662,7 +656,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSqrt() 
+	public void testSqrt()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.sqrt();
@@ -671,7 +665,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testAbs() 
+	public void testAbs()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.abs();
@@ -680,52 +674,52 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testMin() 
+	public void testMin()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.min( 19.9 );
-		
+
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=31.493966, min=19.0, max=255.0] 500.1173057086554 466.83324215184587 500.0 500.0");
 	}
 
 	@Test
-	public void testMax() 
+	public void testMax()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.max( 199.9 );
-		
+
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.806114, min=0.0, max=199.0] 497.49234641631017 423.52412455371893 500.0 500.0");
 	}
 
 	@Test
-	public void testCreateImage() 
+	public void testCreateImage()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		Image ij = testShortProcessor.createImage();
-		
+
 		Image refImage = testShortProcessor.createBufferedImage();
-		
+
 		assertEquals( ij.equals(refImage), true  );
-		
+
 	}
 
 	@Test
-	public void testGetBufferedImage() 
+	public void testGetBufferedImage()
 	{
 		//TODO: this throws exception....
 	}
-	
+
 	@Test
-	public void testCreateProcessor() 
+	public void testCreateProcessor()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		ShortProcessor testShortProcessor = (ShortProcessor) refShortProcessor.createProcessor( width, height );
-		
+
 		assertEquals( refShortProcessor.width, testShortProcessor.width );
 	}
 
 	@Test
-	public void testSnapshot() 
+	public void testSnapshot()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
@@ -736,7 +730,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testReset() 
+	public void testReset()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
@@ -752,16 +746,16 @@ public class ShortProcessorTest {
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		refShortProcessor.fill();
 		byte[] imageMask = new byte[width*height];
-		
+
 		for(int i = 0; i <imageMask.length; i++)
 			if(i%2==0) imageMask[i] = (byte) 0xff;
 		ImageProcessor mask = new ByteProcessor(width, height, imageMask, refShortProcessor.getColorModel() );
 		refShortProcessor.reset( mask );
-		
+
 	}
 
 	@Test
-	public void testSetSnapshotPixels() 
+	public void testSetSnapshotPixels()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
 		short[] reference = getRefImageArray();
@@ -771,7 +765,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetSnapshotPixels() 
+	public void testGetSnapshotPixels()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		short[] reference = getRefImageArray();
@@ -783,7 +777,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testConvolve3x3() 
+	public void testConvolve3x3()
 	{
 		 final int[] kernel = {-1,-1,-1,-1,8,-1,-1,-1,-1};
 		 ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
@@ -792,40 +786,40 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testFilter() 
+	public void testFilter()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testShortProcessor.filter( ImageProcessor.BLUR_MORE ); 
+		testShortProcessor.filter( ImageProcessor.BLUR_MORE );
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.849997, min=0.0, max=236.0] 498.299781982157 422.7096992658218 500.0 500.0");
-		
+
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testShortProcessor.filter( ImageProcessor.FIND_EDGES ); 
+		testShortProcessor.filter( ImageProcessor.FIND_EDGES );
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.356223, min=0.0, max=1124.0] 565.893116797197 374.7871367674554 500.0 500.0");
-		
+
 		//TODO throws exception
 		//testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		//testShortProcessor.filter( ImageProcessor.CONVOLVE ); 
+		//testShortProcessor.filter( ImageProcessor.CONVOLVE );
 		//testImageStats( testShortProcessor, "stats[count=1000000, mean=13.042211, min=0.0, max=680.0] 558.3728342149963 376.2391702219815 500.0 500.0");
 	}
 
 	@Test
-	public void testMedianFilter() 
+	public void testMedianFilter()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.medianFilter();
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
-		
+
 	}
 
 	@Test
-	public void testNoise() 
+	public void testNoise()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.noise( 19.99 );
 	}
 
 	@Test
-	public void testCrop() 
+	public void testCrop()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.setRoi( new Rectangle( 0, 0, width, height ) );
@@ -834,15 +828,15 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testThreshold() 
+	public void testThreshold()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.threshold( 19 );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=56.791305, min=0.0, max=255.0] 491.34025934956065 437.96728720179965 500.0 500.0");	
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=56.791305, min=0.0, max=255.0] 491.34025934956065 437.96728720179965 500.0 500.0");
 	}
 
 	@Test
-	public void testDuplicate() 
+	public void testDuplicate()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		ImageProcessor testIP = testShortProcessor.duplicate();
@@ -850,7 +844,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testScale() 
+	public void testScale()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.scale( 0.5, 0.5 );
@@ -858,7 +852,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testResizeIntInt() 
+	public void testResizeIntInt()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.resize( 5, 5 );
@@ -874,15 +868,15 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetHistogram() 
+	public void testGetHistogram()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 	    int[] histogram = testShortProcessor.getHistogram();
-	    
+
 	    //convert the int array to bytes
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream( histogram.length * 4 );
 	    for(int i : histogram ) baos.write(i);
-	    
+
 	    //get sha1 of histogram array
 	    byte[] results = FloatProcessorTest.getSHA1DigestFromByteArray( baos.toByteArray() );
 			byte[] reference = {
@@ -893,7 +887,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testErode() 
+	public void testErode()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.erode();
@@ -902,7 +896,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testDilate() 
+	public void testDilate()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.dilate();
@@ -911,7 +905,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testConvolve() 
+	public void testConvolve()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 	    float[] kernel = {-1,-1,-1,-1,8,-1,-1,-1,-1};
@@ -920,7 +914,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testToFloat() 
+	public void testToFloat()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		FloatProcessor testFloatProcessor = testShortProcessor.toFloat( 0, null );
@@ -928,26 +922,26 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testSetPixelsIntFloatProcessor() 
+	public void testSetPixelsIntFloatProcessor()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipVertical();
 		FloatProcessor refFloatProcessor = new FloatProcessor ( testShortProcessor.getFloatArray()  );
 
 		testShortProcessor.setPixels( 0, refFloatProcessor);
-		
+
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 577.2848704081933 500.0 500.0" );
 	}
 
 	@Test
-	public void testMaxValue() 
+	public void testMaxValue()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		assertEquals( 65535.0, testShortProcessor.maxValue(), 0.0 );
 	}
 
 	@Test
-	public void testCreate8BitImage() 
+	public void testCreate8BitImage()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.flipHorizontal();
@@ -961,17 +955,17 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testShortProcessorIntIntShortArrayColorModel() 
+	public void testShortProcessorIntIntShortArrayColorModel()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");	
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
 	}
 
 	@Test
-	public void testShortProcessorIntInt() 
+	public void testShortProcessorIntInt()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");	
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
 	}
 
 	@Test
@@ -979,33 +973,33 @@ public class ShortProcessorTest {
 	{
 		BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_USHORT_GRAY );
 		ShortProcessor testShortProcessor = new ShortProcessor( bi );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=0.0, min=0.0, max=0.0] NaN NaN 500.0 500.0");	
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=0.0, min=0.0, max=0.0] NaN NaN 500.0 500.0");
 	}
 
 	@Test
-	public void testInit() 
+	public void testInit()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height );
 		testShortProcessor.init(width, height, getRefImageArray(), null);
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");		
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
 	}
 
 	@Test
-	public void testShortProcessorIntIntShortArrayColorModelBoolean() 
+	public void testShortProcessorIntIntShortArrayColorModelBoolean()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null, true);
-		testImageStats( refShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");	
+		testImageStats( refShortProcessor, "stats[count=1000000, mean=16.850448, min=0.0, max=255.0] 498.3031433941697 422.7151295918067 500.0 500.0");
 	}
 
 	@Test
-	public void testShortProcessorIntIntBoolean() 
+	public void testShortProcessorIntIntBoolean()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, true );
-		testImageStats( refShortProcessor, "stats[count=1000000, mean=0.0, min=0.0, max=0.0] NaN NaN 500.0 500.0");	
+		testImageStats( refShortProcessor, "stats[count=1000000, mean=0.0, min=0.0, max=0.0] NaN NaN 500.0 500.0");
 	}
 
 	@Test
-	public void testFindMinAndMax() 
+	public void testFindMinAndMax()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, true );
 		refShortProcessor.findMinAndMax();
@@ -1015,7 +1009,7 @@ public class ShortProcessorTest {
 
 	//TODO:throws Exception
 	@Test
-	public void testCreateBufferedImage() 
+	public void testCreateBufferedImage()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		//Image bi = refShortProcessor.createBufferedImage();
@@ -1033,7 +1027,7 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testGetRow2() 
+	public void testGetRow2()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		int[] data = new int[width*height];
@@ -1044,7 +1038,7 @@ public class ShortProcessorTest {
 
 	//TODO: this contains an error
 	@Test
-	public void testPutColumn2() 
+	public void testPutColumn2()
 	{
 		//ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		//int[] data = new int[width*height];
@@ -1054,39 +1048,39 @@ public class ShortProcessorTest {
 	}
 
 	@Test
-	public void testFilter3x3() 
+	public void testFilter3x3()
 	{
 		int[] kernel = {-1,-1,-1,-1, 8,-1,-1,-1,-1};
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testShortProcessor.filter3x3( ImageProcessor.BLUR_MORE, kernel ); 
+		testShortProcessor.filter3x3( ImageProcessor.BLUR_MORE, kernel );
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.849997, min=0.0, max=236.0] 498.299781982157 422.7096992658218 500.0 500.0");
-		
-		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testShortProcessor.filter3x3( ImageProcessor.FIND_EDGES, kernel  ); 
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.356223, min=0.0, max=1124.0] 565.893116797197 374.7871367674554 500.0 500.0");
-		
 
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
-		testShortProcessor.filter3x3( ImageProcessor.CONVOLVE, kernel  ); 
+		testShortProcessor.filter3x3( ImageProcessor.FIND_EDGES, kernel  );
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.356223, min=0.0, max=1124.0] 565.893116797197 374.7871367674554 500.0 500.0");
+
+
+		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
+		testShortProcessor.filter3x3( ImageProcessor.CONVOLVE, kernel  );
 		testImageStats( testShortProcessor, "stats[count=1000000, mean=3.365756, min=0.0, max=1253.0] 607.6431886328064 372.68363155261403 500.0 500.0");
-	
+
 	}
 
 	@Test
-	public void testGetHistogramImageProcessor() 
+	public void testGetHistogramImageProcessor()
 	{
 		ShortProcessor testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		byte[] imageMask = new byte[width*height];
-		
+
 		for(int i = 0; i <imageMask.length; i++)
 			if(i%2==0) imageMask[i] = (byte) 0xff;
 		ImageProcessor mask = new ByteProcessor(width, height, imageMask, testShortProcessor.getColorModel() );
 		int[] histogram = testShortProcessor.getHistogram( mask );
-		
+
 	    //convert the int array to bytes
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream( histogram.length * 4 );
 	    for(int i : histogram ) baos.write(i);
-	    
+
 	    //get sha1 of histogram array
 	    byte[] results = FloatProcessorTest.getSHA1DigestFromByteArray( baos.toByteArray() );
 			byte[] reference = {
