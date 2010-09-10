@@ -265,7 +265,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
 		
-		if (resetMinMax)
+		if (resetMinMax)  // TODO : maybe need to always findMinAndMax()
 			findMinAndMax();
 	}
 	
@@ -394,7 +394,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 		int offset, sum1, sum2=0, sum=0;
-		int[] values = new int[10];
+		int[] values = new int[9];
 		int rowOffset = width;
 		int count;
 		int binaryForeground = 255 - binaryBackground;
@@ -429,8 +429,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						if (sum> 255) sum = 255;
 						break;
 					case MEDIAN_FILTER:
-						values[1]=p1; values[2]=p2; values[3]=p3; values[4]=p4; values[5]=p5;
-						values[6]=p6; values[7]=p7; values[8]=p8; values[9]=p9;
+						values[0]=p1; values[1]=p2; values[2]=p3; values[3]=p4; values[4]=p5;
+						values[5]=p6; values[6]=p7; values[7]=p8; values[8]=p9;
 						sum = find5thOf9(values);
 						break;
 					case MIN:
@@ -504,17 +504,17 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (yMax==height-2) filterEdge(type, pixels2, roiWidth, roiX, height-1, 1, 0);
 	}
 	
-	/** find the median value of a list of exactly 9 values stored in a 10 element array from 1..9. copied from ByteProcessor::findMedian() */
+	/** find the median value of a list of exactly 9 values. adapted from ByteProcessor::findMedian() */
 	private int find5thOf9(int[] values)
 	{
-		if (values.length != 10)
-			throw new IllegalArgumentException("find5thOf9(): input array length length must be 10");
+		if (values.length != 9)
+			throw new IllegalArgumentException("find5thOf9(): input array length length must be 9");
 
 		//Finds the 5th largest of 9 values
-		for (int i = 1; i <= 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			int max = 0;
-			int mj = 1;
-			for (int j = 1; j <= 9; j++)
+			int mj = 0;
+			for (int j = 0; j < 9; j++)
 				if (values[j] > max) {
 					max = values[j];
 					mj = j;
@@ -522,7 +522,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			values[mj] = 0;
 		}
 		int max = 0;
-		for (int j = 1; j <= 9; j++)
+		for (int j = 0; j < 9; j++)
 			if (values[j] > max)
 				max = values[j];
 		return max;
