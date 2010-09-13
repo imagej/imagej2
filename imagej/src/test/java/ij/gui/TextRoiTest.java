@@ -208,31 +208,48 @@ public class TextRoiTest {
 		assertEquals(font2,t.getCurrentFont());
 	}
 
-	@Test
-	public void testGetMacroCode() {
-		// save static values to avoid side effects later
-		String savedFontName = TextRoi.getFont();
-		int savedSize = TextRoi.getSize();
-		int savedStyle = TextRoi.getStyle();
+    @Test
+    public void testGetMacroCode() {
+        // save static values to avoid side effects later
+        String savedFontName = TextRoi.getFont();
+        int savedSize = TextRoi.getSize();
+        int savedStyle = TextRoi.getStyle();
 
-		ImageProcessor proc = new ShortProcessor(104,77,new short[104*77],null);
-		Font font = new Font("Goudaland",44,15);
-		t = new TextRoi(0,1500,"Glaphound",font);
-		TextRoi.setFont("Hork",64,Font.BOLD+Font.ITALIC,false);
-		assertEquals("setFont(\"Hork\", 64, \"plain\");\nmakeText(\"Glaphound\", 0, 1515);\n//drawString(\"Glaphound\", 0, 1515);\n",
-				t.getMacroCode(proc));
-		assertEquals("makeText(\"Glaphound\", 0, 1515);\n//drawString(\"Glaphound\", 0, 1515);\n",
-				t.getMacroCode(proc));
-		TextRoi.setFont("Glook",32,Font.PLAIN,true);
-		assertEquals("setFont(\"Glook\", 32, \" antialiased\");\nmakeText(\"Glaphound\", 0, 1515);\n//drawString(\"Glaphound\", 0, 1515);\n",
-				t.getMacroCode(proc));
-		assertEquals("makeText(\"Glaphound\", 0, 1515);\n//drawString(\"Glaphound\", 0, 1515);\n",
-				t.getMacroCode(proc));
+        ImageProcessor proc = new ShortProcessor(104,77,new short[104*77],null);
+        Font font = new Font("Goudaland",44,15);
+        t = new TextRoi(0,1500,"Glaphound",font);
+        TextRoi.setFont("Hork",64,Font.BOLD+Font.ITALIC,false);
+        
+        // this next test broken apart since font metrics change for diff platforms
+        String tmp = t.getMacroCode(proc);
+        assertTrue(tmp.indexOf("setFont(\"Hork\", 64, \"plain\");\nmakeText(\"Glaphound\", 0, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Glaphound\", 0, ") == 59);
+        assertTrue(tmp.indexOf(");\n",60)==95);
 
-		// restore so we don't mess up other tests
-		TextRoi.setFont(savedFontName,savedSize,savedStyle);
-	}
+        // this next test broken apart since font metrics change for diff platforms
+        tmp = t.getMacroCode(proc);
+        assertTrue(tmp.indexOf("makeText(\"Glaphound\", 0, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Glaphound\", 0, ") == 29);
+        assertTrue(tmp.indexOf(");\n",30)==65);
+        
+        TextRoi.setFont("Glook",32,Font.PLAIN,true);
 
+        // this next test broken apart since font metrics change for diff platforms
+        tmp = t.getMacroCode(proc);
+        assertTrue(tmp.indexOf("setFont(\"Glook\", 32, \" antialiased\");\nmakeText(\"Glaphound\", 0, ")==0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Glaphound\", 0, ")==67);
+        assertTrue(tmp.indexOf(");\n",68) == 103);
+        
+        // this next test broken apart since font metrics change for diff platforms
+        tmp = t.getMacroCode(proc);
+        assertTrue(tmp.indexOf("makeText(\"Glaphound\", 0, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Glaphound\", 0, ") == 29);
+        assertTrue(tmp.indexOf(");\n",30)==65);
+
+        // restore so we don't mess up other tests
+        TextRoi.setFont(savedFontName,savedSize,savedStyle);
+    }
+    
 	@Test
 	public void testGetText() {
 		t = new TextRoi(10000,0,"");
@@ -245,16 +262,25 @@ public class TextRoiTest {
 		assertEquals("Weekend\nweather\n\n",t.getText());
 	}
 
-	@Test
-	public void testRecordSetFont() {
-		t = new TextRoi(-1,19,"Klezmer");
-		assertEquals("setFont(\"SansSerif\", 18, \" antialiased\");\nmakeText(\"Klezmer\", -1, 34);\n//drawString(\"Klezmer\", -1, 34);\n",
-				t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null)));
-		assertEquals("makeText(\"Klezmer\", -1, 34);\n//drawString(\"Klezmer\", -1, 34);\n",
-				t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null)));
-		TextRoi.recordSetFont();
-		assertEquals("setFont(\"SansSerif\", 18, \" antialiased\");\nmakeText(\"Klezmer\", -1, 34);\n//drawString(\"Klezmer\", -1, 34);\n",
-				t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null)));
-	}
-
+    @Test
+    public void testRecordSetFont() {
+        t = new TextRoi(-1,19,"Klezmer");
+        
+        String tmp = t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null));
+        assertTrue(tmp.indexOf("setFont(\"SansSerif\", 18, \" antialiased\");\nmakeText(\"Klezmer\", -1, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Klezmer\", -1, ") == 68);
+        assertTrue(tmp.indexOf(");\n",69) == 101);
+        
+        tmp = t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null));
+        assertTrue(tmp.indexOf("makeText(\"Klezmer\", -1, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Klezmer\", -1, ") == 26);
+        assertTrue(tmp.indexOf(");\n",27) == 59);
+        
+        TextRoi.recordSetFont();
+        
+        tmp = t.getMacroCode(new ByteProcessor(2,2,new byte[2*2],null));
+        assertTrue(tmp.indexOf("setFont(\"SansSerif\", 18, \" antialiased\");\nmakeText(\"Klezmer\", -1, ") == 0);
+        assertTrue(tmp.indexOf(");\n//drawString(\"Klezmer\", -1, ") == 68);
+        assertTrue(tmp.indexOf(");\n",69) == 101);
+    }
 }

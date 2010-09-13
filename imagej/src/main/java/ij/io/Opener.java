@@ -231,9 +231,11 @@ public class Opener {
 	public ImagePlus openImage(String directory, String name) {
 		ImagePlus imp;
 		FileOpener.setSilentMode(silentMode);
-		if (directory.length()>0 && !directory.endsWith(Prefs.separator))
-			directory += Prefs.separator;
-		String path = directory+name;
+		//if (directory.length()>0 && !directory.endsWith(Prefs.separator))
+		//	directory += Prefs.separator;
+        if (directory.length()>0)
+            if (!directory.endsWith("/") && !directory.endsWith("\\"))
+                directory += Prefs.separator;		String path = directory+name;
 		fileType = getFileType(path);
 		if (IJ.debugMode)
 			IJ.log("openImage: \""+types[fileType]+"\", "+path);
