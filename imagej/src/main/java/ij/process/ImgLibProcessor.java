@@ -1,6 +1,7 @@
 package ij.process;
 
 import ij.Prefs;
+import ij.gui.Roi;
 import ij.process.SetPlaneOperation.PixelType;
 
 import java.awt.Color;
@@ -252,23 +253,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.pixels8;
 	}
 	
-	/** do a point operation to the current ROI plane using the passed in UnaryFunction */
-	private void doPointOperation(UnaryFunction function)
-	{
-		int[] origin = originOfRoi();
-		
-		int[] span = spanOfRoiPlane();
-			
-		PointOperation<T> pointOp = new PointOperation<T>(this.imageData, origin, span, function);
-		
-		pointOp.execute();
-		
-		boolean resetMinMax = super.roiWidth==super.width && super.roiHeight==super.height;
-		
-		if (resetMinMax)  // TODO : maybe need to always findMinAndMax()
-			findMinAndMax();
-	}
-	
 	// TODO - refactor
 	/** called by filterUnsignedByte(). */
 	private void filterEdge(FilterType type, byte[] pixels2, int n, int x, int y, int xinc, int yinc)
@@ -385,8 +369,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private void filterUnsignedByte(FilterType type)
 	{
 		int p1, p2, p3, p4, p5, p6, p7, p8, p9;
-		int inc = roiHeight/25;
-		if (inc<1) inc = 1;
 		
 		byte[] pixels2 = (byte[])getPixelsCopy();
 		if (width==1) {
@@ -1014,6 +996,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	// not an override
+	/** do a point operation to the current ROI plane using the passed in UnaryFunction */
+	public void doPointOperation(UnaryFunction function)
+	{
+		int[] origin = originOfRoi();
+		
+		int[] span = spanOfRoiPlane();
+			
+		PointOperation<T> pointOp = new PointOperation<T>(this.imageData, origin, span, function);
+		
+		pointOp.execute();
+		
+		findMinAndMax();
+	}
+	
 	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
 	@Override
 	public void drawPixel(int x, int y)
@@ -1094,6 +1091,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		doPointOperation(func);
 	}
 
+	// TODO - could refactor as some sort of operation between two datasets. Would need to make a dataset from mask. Slower than orig impl.
 	/** fills the current ROI area of the current plane of data with the fill color wherever the input mask is nonzero */
 	@Override
 	public void fill(ImageProcessor mask)
@@ -1103,33 +1101,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
-		final Rectangle roi = getRoi();
-
-		if (mask.getWidth()!=roi.width || mask.getHeight()!=roi.height)
-			return;
+		int[] origin = originOfRoi();
 		
-		byte[] mpixels = (byte[])mask.getPixels();
+		int[] span = spanOfRoiPlane();
 		
-		int width = getWidth();
+		byte[] byteMask = (byte[]) mask.getPixels();
 		
-		for (int y=roi.y, my=0; y<(roi.y+roi.height); y++, my++) {
-			int i = y * width + roi.x;
-			int mi = my * roi.width;
-			for (int x=roi.x; x<(roi.x+roi.width); x++) {
-				if (mpixels[mi++]!=0)
-				{
-					if (this.isIntegral)
-						setf(i, super.fgColor);
-					else
-						setd(i, this.fillColor);
-				}
-				i++;
-			}
-		}
+		double color = this.fillColor;
+		if (this.isIntegral)
+			color = super.fgColor;
+		
+		MaskedFillOperation<T> fillOp = new MaskedFillOperation<T>(this.imageData, origin, span, byteMask, color);
+		
+		fillOp.execute();
 	}
 
 	// not an override : way to phase out passing in filter numbers
 	// TODO - figure out way to pass in a filter function of some sort and then we can phase out the FilterType enum too
+	// TODO - refactor
 	/** run specified filter (a FilterType) on current ROI area of current plane data */
 	public void filter(FilterType type)
 	{
@@ -1188,15 +1177,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void flipVertical()
 	{
+		Rectangle roi = getRoi();
 		int x,y,mirrorY;
-		int halfY = super.roiHeight/2;
+		int halfY = roi.height/2;
 		for (int yOff = 0; yOff < halfY; yOff++)
 		{
-			y = super.roiY + yOff;
-			mirrorY = super.roiY + super.roiHeight - yOff - 1;
-			for (int xOff = 0; xOff < super.roiWidth; xOff++)
+			y = roi.y + yOff;
+			mirrorY = roi.y + roi.height - yOff - 1;
+			for (int xOff = 0; xOff < roi.width; xOff++)
 			{
-				x = super.roiX + xOff;
+				x = roi.x + xOff;
 				double tmp = getd(x, y);
 				setd(x, y, getd(x, mirrorY));
 				setd(x, mirrorY, tmp);
@@ -1598,29 +1588,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void noise(double range)
 	{
-		ProgressTracker tracker = new ProgressTracker(this, roiWidth*roiHeight, 20*roiWidth);
+		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.type, range);
 		
-		Random rnd=new Random();
-		double v, ran;
-		boolean inRange;
-		for (int y=roiY; y<(roiY+roiHeight); y++) {
-			for (int x=roiX; x<(roiX+roiWidth); x++) {
-				inRange = false;
-				do {
-					ran = Math.round(rnd.nextGaussian()*range);
-					v = getd(x, y) + ran;
-					inRange = TypeManager.validValue(this.type, v);
-					if (inRange)
-					{
-						if (this.isIntegral)
-							v = TypeManager.boundValueToType(this.type, v);
-						setd(x, y, v);
-					}
-				} while (!inRange);
-				tracker.didOneMore();
-			}
-		}
-		tracker.done();
+		doPointOperation(function);
 	}
 
 	/** apply the OR point operation over the current ROI area of the current plane of data */

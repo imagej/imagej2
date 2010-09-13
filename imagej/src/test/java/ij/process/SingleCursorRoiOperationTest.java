@@ -21,14 +21,14 @@ public class SingleCursorRoiOperationTest {
 		}
 
 		@Override
-		public void beforeIteration(RealType<?> type) {
+		public void beforeIteration(RealType<T> type) {
 			assertTrue(insideCalls == 0);
 			assertTrue(afterCalls == 0);
 			beforeCalls++;
 		}
 
 		@Override
-		public void insideIteration(RealType<?> sample) {
+		public void insideIteration(RealType<T> sample) {
 			assertTrue(beforeCalls == 1);
 			assertTrue(afterCalls == 0);
 			insideCalls++;

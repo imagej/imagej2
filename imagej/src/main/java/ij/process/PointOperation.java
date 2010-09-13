@@ -14,12 +14,12 @@ public class PointOperation<T extends RealType<T>> extends SingleCursorRoiOperat
 	}
 
 	@Override
-	public void beforeIteration(RealType<?> type)
+	public void beforeIteration(RealType<T> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(RealType<?> sample)
+	public void insideIteration(RealType<T> sample)
 	{
 		this.function.compute(sample, sample);
 	}
@@ -29,4 +29,3 @@ public class PointOperation<T extends RealType<T>> extends SingleCursorRoiOperat
 	{
 	}
 }
-

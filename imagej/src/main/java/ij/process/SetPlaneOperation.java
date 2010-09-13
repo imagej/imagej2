@@ -26,14 +26,14 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalRoiOpera
 	}
 	
 	@Override
-	public void beforeIteration(RealType<?> type) {
+	public void beforeIteration(RealType<T> type) {
 		this.pixNum = 0;
 		this.type = type;
 		this.isIntegral = TypeManager.isIntegralType(type);
 	}
 
 	@Override
-	public void insideIteration(int[] position, RealType<?> sample) {
+	public void insideIteration(int[] position, RealType<T> sample) {
 
 		double inputPixValue = getPixValue(pixels, pixType, isUnsigned, this.pixNum++);
 		

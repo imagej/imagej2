@@ -15,11 +15,11 @@ public class ApplyLutOperation<T extends RealType<T>> extends SingleCursorRoiOpe
 	}
 	
 	@Override
-	public void beforeIteration(RealType<?> type) {
+	public void beforeIteration(RealType<T> type) {
 	}
 
 	@Override
-	public void insideIteration(RealType<?> sample) {
+	public void insideIteration(RealType<T> sample) {
 		int value = this.lut[(int)sample.getRealDouble()];
 		sample.setReal(value);
 	}

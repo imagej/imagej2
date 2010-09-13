@@ -24,14 +24,14 @@ public class DualCursorRoiOperationTest {
 		}
 
 		@Override
-		public void beforeIteration(RealType<?> type1, RealType<?> type2) {
+		public void beforeIteration(RealType<T> type) {
 			assertTrue(insideCalls == 0);
 			assertTrue(afterCalls == 0);
 			beforeCalls++;
 		}
 
 		@Override
-		public void insideIteration(RealType<?> sample1, RealType<?> sample2) {
+		public void insideIteration(RealType<T> sample1, RealType<T> sample2) {
 			assertTrue(beforeCalls == 1);
 			assertTrue(afterCalls == 0);
 			insideCalls++;

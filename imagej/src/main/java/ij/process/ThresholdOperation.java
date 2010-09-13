@@ -15,13 +15,13 @@ public class ThresholdOperation<T extends RealType<T>> extends SingleCursorRoiOp
 	}
 	
 	@Override
-	public void beforeIteration(RealType<?> type)
+	public void beforeIteration(RealType<T> type)
 	{
 		this.threshold = TypeManager.boundValueToType(type, this.threshold);
 	}
 	
 	@Override
-	public void insideIteration(RealType<?> sample)
+	public void insideIteration(RealType<T> sample)
 	{
 		if (sample.getRealDouble() <= this.threshold)
 			sample.setReal(0);

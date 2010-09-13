@@ -33,7 +33,7 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		public int[][] getOrigins() { return origins; }
 		public int[][] getSpans() { return spans; }
 
-		public abstract void beforeIteration(RealType<T>[] types);
+		public abstract void beforeIteration(RealType<T> type);
 		public abstract void insideIteration(RealType<T>[] samples);
 		public abstract void afterIteration();
 
@@ -82,7 +82,7 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 
 			// do the iteration
 			
-			beforeIteration(samples);  // pass along type info
+			beforeIteration(cursors[0].getType());  // pass along type info
 			
 			while (hasNext(roiCursors))
 			{
