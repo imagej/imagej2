@@ -26,7 +26,7 @@ public class PositionalRoiOperationTest {
 		}
 		
 		@Override
-		public void beforeIteration(RealType<?> type)
+		public void beforeIteration(RealType<T> type)
 		{
 			assertTrue(insideCalls == 0);
 			assertTrue(afterCalls == 0);
@@ -34,7 +34,7 @@ public class PositionalRoiOperationTest {
 		}
 
 		@Override
-		public void insideIteration(int[] position, RealType<?> sample)
+		public void insideIteration(int[] position, RealType<T> sample)
 		{
 			assertTrue(beforeCalls == 1);
 			assertTrue(afterCalls == 0);

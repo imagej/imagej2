@@ -30,13 +30,13 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	public final double[] getNeighborhood() { return neighborhood; }
 	
 	@Override
-	public void beforeIteration(RealType<?> type)
+	public void beforeIteration(RealType<K> type)
 	{
 		this.tracker.init();
 	}
 
 	@Override
-	public void insideIteration(final int[] position, RealType<?> sample)
+	public void insideIteration(final int[] position, RealType<K> sample)
 	{
 		calcNeighborhood(position);
 

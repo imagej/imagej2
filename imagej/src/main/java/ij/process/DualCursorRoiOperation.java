@@ -32,8 +32,8 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin2() { return origin2; }
 	public int[] getSpan2()   { return span2; }
 
-	public abstract void beforeIteration(RealType<?> type1, RealType<?> type2);
-	public abstract void insideIteration(RealType<?> sample1, RealType<?> sample2);
+	public abstract void beforeIteration(RealType<T> type);
+	public abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);
 	public abstract void afterIteration();
 	
 	public void execute()
@@ -44,7 +44,7 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 		RegionOfInterestCursor<T> image1RoiCursor = new RegionOfInterestCursor<T>(image1Cursor, this.origin1, this.span1);
 		RegionOfInterestCursor<T> image2RoiCursor = new RegionOfInterestCursor<T>(image2Cursor, this.origin2, this.span2);
 		
-		beforeIteration(image1Cursor.getType(),image2Cursor.getType());
+		beforeIteration(image1Cursor.getType());
 		
 		while (image1RoiCursor.hasNext() && image2RoiCursor.hasNext())
 		{

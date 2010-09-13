@@ -22,13 +22,13 @@ public class BlitterOperation<T extends RealType<T>> extends DualCursorRoiOperat
 	}
 	
 	@Override
-	public void beforeIteration(RealType<?> type1, RealType<?> type2)
+	public void beforeIteration(RealType<T> type)
 	{
 		this.tracker.init();
 	}
 
 	@Override
-	public void insideIteration(RealType<?> sample1, RealType<?> sample2)
+	public void insideIteration(RealType<T> sample1, RealType<T> sample2)
 	{
 		this.function.compute(sample2, sample1, sample2);
 		

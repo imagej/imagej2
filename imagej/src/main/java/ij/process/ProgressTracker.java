@@ -7,11 +7,13 @@ public class ProgressTracker
 	
 	public ProgressTracker(ImageProcessor proc, long numOperations, long updateFrequency)
 	{
-		if (updateFrequency < 1)
-			updateFrequency = 1;
-		
-		if (updateFrequency > numOperations)
-			updateFrequency = numOperations;
+		if ((updateFrequency < 1) || (updateFrequency > numOperations))
+		{
+			if (numOperations < 4)
+				updateFrequency = 1;
+			else
+				updateFrequency = numOperations / 4;
+		}
 		
 		this.proc = proc;
 		this.numOperations = numOperations;

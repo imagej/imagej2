@@ -14,11 +14,11 @@ public class SetFloatValuesOperation<T extends RealType<T>> extends PositionalRo
 	}
 
 	@Override
-	public void beforeIteration(RealType<?> type) {
+	public void beforeIteration(RealType<T> type) {
 	}
 
 	@Override
-	public void insideIteration(int[] position, RealType<?> sample) {
+	public void insideIteration(int[] position, RealType<T> sample) {
 		float floatVal = sample.getRealFloat();
 		this.proc.setf(position[0], position[1], floatVal);
 	}

@@ -24,12 +24,12 @@ public class HistogramOperation<T extends RealType<T>> extends SingleCursorRoiOp
 	}
 	
 	@Override
-	public void beforeIteration(RealType<?> type) {
+	public void beforeIteration(RealType<T> type) {
 		this.pixIndex = 0;
 	}
 
 	@Override
-	public void insideIteration(RealType<?> sample) {
+	public void insideIteration(RealType<T> sample) {
 		if ((this.mask == null) || (this.mask.get(pixIndex) > 0))
 			this.histogram[(int)sample.getRealDouble()]++;
 		pixIndex++;

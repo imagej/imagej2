@@ -18,14 +18,14 @@ public class MinMaxOperation<T extends RealType<T>> extends SingleCursorRoiOpera
 	public double getMin() { return this.min; }
 	
 	@Override
-	public void beforeIteration(RealType<?> type)
+	public void beforeIteration(RealType<T> type)
 	{
 		this.min = type.getMaxValue();
 		this.max = type.getMinValue();
 	}
 	
 	@Override
-	public void insideIteration(RealType<?> sample)
+	public void insideIteration(RealType<T> sample)
 	{
 		double value = sample.getRealDouble();
 		

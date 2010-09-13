@@ -23,8 +23,8 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin() { return origin; }
 	public int[] getSpan() { return span; }
 
-	public abstract void beforeIteration(RealType<?> type);
-	public abstract void insideIteration(RealType<?> sample);
+	public abstract void beforeIteration(RealType<T> type);
+	public abstract void insideIteration(RealType<T> sample);
 	public abstract void afterIteration();
 	
 	public void execute()

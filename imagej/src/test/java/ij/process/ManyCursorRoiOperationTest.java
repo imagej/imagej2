@@ -23,7 +23,7 @@ public class ManyCursorRoiOperationTest {
 		}
 
 		@Override
-		public void beforeIteration(RealType<T>[] types) {
+		public void beforeIteration(RealType<T> type) {
 			assertTrue(insideCalls == 0);
 			assertTrue(afterCalls == 0);
 			beforeCalls++;
