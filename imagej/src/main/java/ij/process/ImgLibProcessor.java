@@ -1008,7 +1008,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		pointOp.execute();
 		
-		findMinAndMax();
+		findMinAndMax();  // TODO - this was conditional before in the other processors but was probably broken
 	}
 	
 	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
@@ -1122,34 +1122,50 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** run specified filter (a FilterType) on current ROI area of current plane data */
 	public void filter(FilterType type)
 	{
-		if (this.isUnsignedByte)
-			filterUnsignedByte(type);
-		else
+		int[] origin = originOfRoi();
+		int[] span = spanOfRoiPlane();
+		
+		switch (type)
 		{
-			int[] origin = originOfRoi();
-			int[] span = spanOfRoiPlane();
-			
-			switch (type)
-			{
-				case BLUR_MORE:
-					new BlurFilterOperation<T>(this,origin,span).execute();
-					break;
-					
-				case FIND_EDGES:
+			case BLUR_MORE:
+				new BlurFilterOperation<T>(this,origin,span).execute();
+				break;
+				
+			case FIND_EDGES:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				else
 					new FindEdgesFilterOperation<T>(this,origin,span).execute();
-					break;
+				break;
 
-				case MEDIAN_FILTER:
-				case MIN:
-				case MAX:
-				case ERODE:
-				case DILATE:
-					// do nothing for these filters when not unsigned byte
-					return;
-					
-				default:
-					throw new IllegalArgumentException("filter(FilterTye): invalid filter type specified - "+type);
-			}
+			case MEDIAN_FILTER:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				break;
+				
+			case MIN:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				break;
+				
+			case MAX:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				break;
+				
+			case ERODE:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				break;
+				
+			case DILATE:
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				break;
+				
+				
+			default:
+				throw new IllegalArgumentException("filter(FilterTye): invalid filter type specified - "+type);
 		}
 	}
 
@@ -1677,6 +1693,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
+		// TODO - for some reason Float and Short don't check for crop() only and their results are different than doing crop!!!
 		if (roiWidth==dstWidth && roiHeight==dstHeight)
 			if (this.isUnsignedByte)
 				return crop();
