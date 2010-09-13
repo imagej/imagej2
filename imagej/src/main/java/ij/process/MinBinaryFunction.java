@@ -6,10 +6,13 @@ public class MinBinaryFunction implements BinaryFunction {
 
 	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
 	{
-		if (input1.getRealDouble() < input2.getRealDouble())
-			result.setReal( input1.getRealDouble() );
+		double val1 = input1.getRealDouble();
+		double val2 = input2.getRealDouble();
+		
+		if (val1 < val2)
+			result.setReal( val1 );
 		else
-			result.setReal( input2.getRealDouble() );
+			result.setReal( val2 );
 	}
 
 }
