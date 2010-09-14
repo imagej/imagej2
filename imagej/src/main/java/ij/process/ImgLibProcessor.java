@@ -966,7 +966,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Image<T> newImage = this.imageData.createNewImage(newImageSpan);
 		
-		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, newImage, newImageOrigin, imageSpan);
+		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, newImage, newImageOrigin, newImageSpan);
 		
 		return new ImgLibProcessor<T>(newImage, 0);
 	}
@@ -1118,7 +1118,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	// not an override : way to phase out passing in filter numbers
 	// TODO - figure out way to pass in a filter function of some sort and then we can phase out the FilterType enum too
-	// TODO - refactor
 	/** run specified filter (a FilterType) on current ROI area of current plane data */
 	public void filter(FilterType type)
 	{
@@ -1132,9 +1131,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				break;
 				
 			case FIND_EDGES:
-				if (this.isUnsignedByte)
-					filterUnsignedByte(type);  // TODO refactor here
-				else
+				//if (this.isUnsignedByte)
+				//	filterUnsignedByte(type);  // TODO refactor here
+				//else
 					new FindEdgesFilterOperation<T>(this,origin,span).execute();
 				break;
 

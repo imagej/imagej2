@@ -26,7 +26,7 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 		
 		if (this.dataIsIntegral)
 		{
-			value += 0.5;
+			//value += 0.5;  // TODO - this is what ShortProc does but not ByteProc - asking Wayne about 
 			value = Math.floor(value);
 			value = TypeManager.boundValueToType(this.dataType, value);
 		}

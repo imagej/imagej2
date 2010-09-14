@@ -88,14 +88,14 @@ public class Snapshot<T extends RealType<T>>
 		this.storage = factory.createImage(this.span);
 			
 		// copy the data
-		ImageUtils.copyFromImageToImage( image, this.origin, this.storage, Index.create(image.getDimensions().length), this.span );
+		ImageUtils.copyFromImageToImage( image, this.origin, this.span, this.storage, Index.create(image.getDimensions().length), this.span );
 	}
 
 	/** paste snapshot data into an image */
 	public void pasteIntoImage(Image<T> image)
 	{
 		// copy from the snapshot to the image
-		ImageUtils.copyFromImageToImage(this.storage, Index.create(image.getDimensions().length), image, this.origin, this.span );
+		ImageUtils.copyFromImageToImage(this.storage, Index.create(image.getDimensions().length), this.span, image, this.origin, this.span );
 	}
 	
 	/** encode a snapshot as a String */
