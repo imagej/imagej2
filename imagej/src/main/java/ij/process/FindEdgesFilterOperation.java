@@ -34,4 +34,3 @@ public class FindEdgesFilterOperation<K extends RealType<K>> extends Filter3x3Op
 		return value;
 	}
 }
-
