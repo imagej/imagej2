@@ -1131,9 +1131,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				break;
 				
 			case FIND_EDGES:
-				//if (this.isUnsignedByte)
-				//	filterUnsignedByte(type);  // TODO refactor here
-				//else
+				if (this.isUnsignedByte)
+					filterUnsignedByte(type);  // TODO refactor here
+				else
 					new FindEdgesFilterOperation<T>(this,origin,span).execute();
 				break;
 
