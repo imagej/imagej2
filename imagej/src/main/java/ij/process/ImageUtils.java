@@ -386,44 +386,15 @@ public class ImageUtils {
 	}
 	
 
-	// TODO - does this need to separate spans? Such as copy when we opy a 5d span with 3 of them set to 1 to a 2d image?
+	// TODO - does this need to separate spans? Such as copy when we copy a 5d span with 3 of them set to 1 to a 2d image?
 	/** copies data from one image to another given origins and dimensional spans */
-	public static <K extends ComplexType<K>>
-		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, Image<K> dstImage, int[] dstOrigin, int[] span)
+	public static <K extends RealType<K>>
+		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, int[] srcSpan,
+									Image<K> dstImage, int[] dstOrigin, int[] dstSpan)
 	{
-		// COPY DATA FROM SOURCE IMAGE TO DEST IMAGE:
+		ImageCopier<K> copier = new ImageCopier<K>(srcImage, srcOrigin, srcSpan, dstImage, dstOrigin, dstSpan);
 		
-		verifyDimensions(srcImage.getDimensions(), srcOrigin, span);
-		verifyDimensions(dstImage.getDimensions(), dstOrigin, span);
-		
-		// create cursors
-		final LocalizableByDimCursor<K> srcCursor = srcImage.createLocalizableByDimCursor();
-		final LocalizableByDimCursor<K> dstCursor = dstImage.createLocalizableByDimCursor();
-		final RegionOfInterestCursor<K> srcROICursor = new RegionOfInterestCursor<K>( srcCursor, srcOrigin, span );
-		final RegionOfInterestCursor<K> dstROICursor = new RegionOfInterestCursor<K>( dstCursor, dstOrigin, span );
-			
-		//iterate over the target data...
-		while( srcROICursor.hasNext() && dstROICursor.hasNext() )
-		{
-			//point cursors to current value
-			srcROICursor.fwd();
-			dstROICursor.fwd();
-			
-			//get the source value
-			double real = srcROICursor.getType().getPowerDouble();
-			double image = srcROICursor.getType().getPhaseDouble();
-			
-			//System.out.println("Source values are " + real + " and " + complex );
-		
-			//set the destination value
-			dstROICursor.getType().setComplexNumber(real, image);
-		}
-		
-		//close the open cursors
-		srcROICursor.close( );
-		dstROICursor.close( );    	
-		srcCursor.close( );
-		dstCursor.close( );
+		copier.execute();
 	}
 	
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
