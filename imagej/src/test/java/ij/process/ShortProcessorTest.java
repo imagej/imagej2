@@ -794,7 +794,7 @@ public class ShortProcessorTest {
 
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.filter( ImageProcessor.FIND_EDGES );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.356223, min=0.0, max=1124.0] 565.893116797197 374.7871367674554 500.0 500.0");
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.260558, min=0.0, max=1124.0] 566.2793151993923 374.4035295098729 500.0 500.0");
 
 		//TODO throws exception
 		//testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
@@ -1057,7 +1057,7 @@ public class ShortProcessorTest {
 
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
 		testShortProcessor.filter3x3( ImageProcessor.FIND_EDGES, kernel  );
-		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.356223, min=0.0, max=1124.0] 565.893116797197 374.7871367674554 500.0 500.0");
+		testImageStats( testShortProcessor, "stats[count=1000000, mean=16.260558, min=0.0, max=1124.0] 566.2793151993923 374.4035295098729 500.0 500.0");
 
 
 		testShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
