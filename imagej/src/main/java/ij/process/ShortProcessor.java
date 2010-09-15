@@ -635,7 +635,7 @@ public class ShortProcessor extends ImageProcessor {
                     v9 = pixels2[p9]&0xffff;
                     double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
                     double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
-                    double result = Math.sqrt(sum1*sum1 + sum2*sum2)+0.5;
+                    double result = Math.sqrt(sum1*sum1 + sum2*sum2);  // Wayne removed addition of 0.5 in 1.44g15
                     if (result>65535.0) result = 65535.0;
                     pixels[p] = (short)result;
                 }
