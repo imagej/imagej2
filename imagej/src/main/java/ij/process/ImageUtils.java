@@ -98,7 +98,8 @@ public class ImageUtils {
 		long totalSamples = getTotalSamples(dimensions);
 		
 		if ((sampleNumber < 0) || (sampleNumber >= totalSamples))
-			throw new IllegalArgumentException("getPosition() passed a sample number out of range");
+			throw new IllegalArgumentException("getPosition(): passed a sample number out of range: "+sampleNumber+
+												" is outside range [0,"+totalSamples+")");
 		
 		int[] position = new int[numDims];
 		
