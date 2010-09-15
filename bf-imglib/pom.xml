@@ -7,13 +7,13 @@
   <parent>
     <groupId>imagej</groupId>
     <artifactId>imagej-base-pom</artifactId>
-    <version>1.04</version>
+    <version>1.05</version>
   </parent>
 
   <groupId>imagej</groupId>
   <artifactId>bf-imglib</artifactId>
-  <packaging>jar</packaging>
   <version>2.0-SNAPSHOT</version>
+
   <name>Bio-Formats support for ImgLib</name>
   <description>A package that generates ImgLib Image objects using the Bio-Formats library.</description>
   <url>http://imagejdev.org/</url>
