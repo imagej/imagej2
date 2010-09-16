@@ -1,14 +1,12 @@
 package ij.process;
 
 import ij.Prefs;
-import ij.gui.Roi;
 import ij.process.SetPlaneOperation.PixelType;
 
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
-import java.util.Random;
 
 import loci.common.DataTools;
 
