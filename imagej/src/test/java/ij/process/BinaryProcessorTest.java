@@ -2,6 +2,7 @@ package ij.process;
 
 import static org.junit.Assert.assertEquals;
 
+
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
