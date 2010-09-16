@@ -1037,9 +1037,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		int[] span = spanOfImagePlane();
 		
-		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, proc);
+		ImgLibProcessor<T> imgLibProc = (ImgLibProcessor<T>) proc;
 
-		floatOp.execute();
+		ImageUtils.copyFromImageToImage(this.imageData,origin,span,imgLibProc.getImage(),origin,span);
 		
 		return proc;
 	}
@@ -2188,6 +2188,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setSnapshotPixels(Object pixels)
 	{
+		if (pixels == null)
+		{
+			this.snapshot = null;
+			return;
+		}
+		
 		// must create snapshot data structures if they don't exist. we'll overwrite it's data soon.
 		if (this.snapshot == null)
 			snapshot();
