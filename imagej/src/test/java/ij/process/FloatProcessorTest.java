@@ -2,6 +2,7 @@ package ij.process;
 
 import static org.junit.Assert.assertEquals;
 
+
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Toolkit;

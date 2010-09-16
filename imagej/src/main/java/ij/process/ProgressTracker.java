@@ -1,5 +1,6 @@
 package ij.process;
 
+
 public class ProgressTracker
 {
 	private long numOperations, operationsSoFar, updateFrequency;
