@@ -69,8 +69,7 @@ public class Image5DWindow extends StackWindow implements KeyListener {
         dimensions = i5d.getDimensions();
 
 		// Remove all components and then add them with the Image5DLayout layoutmanager.
-		remove(sliceSelector);
-		remove(ic);
+		removeAll();
 
 		setLayout(new Image5DLayout(ic));
         
