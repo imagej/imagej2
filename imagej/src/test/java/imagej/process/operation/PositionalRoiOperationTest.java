@@ -2,8 +2,8 @@ package imagej.process.operation;
 
 
 import static org.junit.Assert.*;
-import ij.process.ImgLibProcessor;
 import imagej.process.ImageUtils;
+import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
 import imagej.process.operation.PositionalRoiOperation;
 

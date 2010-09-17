@@ -1,8 +1,8 @@
 package imagej.process.operation;
 
-import ij.process.ImgLibProcessor;
-import ij.process.ProgressTracker;
 import imagej.process.ImageUtils;
+import imagej.process.ImgLibProcessor;
+import imagej.process.ProgressTracker;
 import mpicbg.imglib.type.numeric.RealType;
 
 // TODO - this was refactored as common code. Its a bit messy. Should try to improve.

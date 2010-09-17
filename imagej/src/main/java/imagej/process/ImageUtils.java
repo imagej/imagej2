@@ -3,7 +3,6 @@ package imagej.process;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import ij.process.ImgLibProcessor;
 import imagej.process.operation.ImageCopierOperation;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
