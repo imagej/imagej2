@@ -4,7 +4,7 @@ import imagej.process.ImageUtils;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public class MaskedFillOperation<K extends RealType<K>> extends PositionalRoiOperation<K>
+public class MaskedFillOperation<K extends RealType<K>> extends PositionalSingleCursorRoiOperation<K>
 {
 	private byte[] mask;
 	private double fillColor;
@@ -29,7 +29,7 @@ public class MaskedFillOperation<K extends RealType<K>> extends PositionalRoiOpe
 	@Override
 	public void insideIteration(int[] position, RealType<K> sample)
 	{
-		int maskPos = calcMaskPosition(position[0], position[1]);
+		int maskPos = calcMaskPosition(position[0], position[1], this.origin, this.span);
 		
 		if (this.mask[maskPos] != 0)
 			sample.setReal(this.fillColor);
@@ -40,7 +40,7 @@ public class MaskedFillOperation<K extends RealType<K>> extends PositionalRoiOpe
 	{
 	}
 	
-	private int calcMaskPosition(int x, int y)
+	private int calcMaskPosition(int x, int y, int[] origin, int[] span)
 	{
 		int val = 0;
 		val += (y - origin[1]) * span[0];

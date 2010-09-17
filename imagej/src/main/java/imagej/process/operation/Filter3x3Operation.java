@@ -7,7 +7,7 @@ import mpicbg.imglib.type.numeric.RealType;
 
 // TODO - this was refactored as common code. Its a bit messy. Should try to improve.
 
-public abstract class Filter3x3Operation<K extends RealType<K>> extends PositionalRoiOperation<K>
+public abstract class Filter3x3Operation<K extends RealType<K>> extends PositionalSingleCursorRoiOperation<K>
 {
 	private final double[] neighborhood;
 	private final double[] pixelsCopy;
