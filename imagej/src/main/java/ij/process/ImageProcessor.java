@@ -98,7 +98,7 @@ public abstract class ImageProcessor extends Object {
 		fgColor = color;
 	}
 	
-	protected int getFgColor()
+	public int getFgColor()
 	{
 		return fgColor;
 	}
@@ -106,6 +106,11 @@ public abstract class ImageProcessor extends Object {
 	protected boolean getSnapshotCopyMode()
 	{
 		return snapshotCopyMode;
+	}
+	
+	public Color getDrawingColor()
+	{
+		return drawingColor;
 	}
 	
 	public void showProgress(double percentDone) {
