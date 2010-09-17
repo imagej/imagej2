@@ -3,6 +3,8 @@ package imagej.process.operation;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+// TODO - this method could use a copy function rather than inline but maybe this way is faster
+
 public class ImageCopierOperation<K extends RealType<K>> extends DualCursorRoiOperation<K>
 {
 	public ImageCopierOperation(Image<K> img1, int[] origin1, int[] span1,
@@ -19,13 +21,8 @@ public class ImageCopierOperation<K extends RealType<K>> extends DualCursorRoiOp
 	@Override
 	public void insideIteration(RealType<K> sample1, RealType<K> sample2)
 	{
-		double real = sample1.getPowerDouble();
-		double image = sample1.getPhaseDouble();
-		
-		//System.out.println("Source values are " + real + " and " + complex );
-	
-		//set the destination value
-		sample2.setComplexNumber(real, image);
+		double val = sample1.getRealDouble();
+		sample2.setReal(val);
 	}
 
 	@Override
@@ -34,4 +31,3 @@ public class ImageCopierOperation<K extends RealType<K>> extends DualCursorRoiOp
 	}
 	
 }
-
