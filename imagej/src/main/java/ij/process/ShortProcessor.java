@@ -105,7 +105,7 @@ public class ShortProcessor extends ImageProcessor {
 	}
 	
 	// create 8-bit image by linearly scaling from 16-bits to 8-bits
-	byte[] create8BitImage() {
+	protected byte[] create8BitImage() {
 		int size = width*height;
 		if (pixels8==null)
 			pixels8 = new byte[size];

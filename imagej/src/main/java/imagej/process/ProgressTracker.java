@@ -1,4 +1,6 @@
-package ij.process;
+package imagej.process;
+
+import ij.process.ImageProcessor;
 
 
 public class ProgressTracker

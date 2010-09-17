@@ -1303,7 +1303,7 @@ public class ByteProcessor extends ImageProcessor {
 		return true;
 	}
 	
-	byte[] create8BitImage() {
+	protected byte[] create8BitImage() {
 		return pixels;
 	}
 
