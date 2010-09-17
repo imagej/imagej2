@@ -16,7 +16,7 @@
 
   <name>Image5D</name>
   <description>The Image5D plugins extend image stacks to 5 dimensions: x, y, channel (color), slice (z), frame (t).</description>
-  <url>http://imagejdev.org/</url>
+  <url>http://imagejdev.org/image5d</url>
   <inceptionYear>2005</inceptionYear>
 
   <licenses>
