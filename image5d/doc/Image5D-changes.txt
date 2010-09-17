@@ -1,7 +1,7 @@
 changes in Image5D 1.2.1:
 - Fix problem with Z slider.
 - Image5D is now hosted on ImageJDev.org:
-    * http://imagejdev.org/image5d
+    * http://imagejdev.org/plugins/image5d
 
 released version 1.2.1: 20100917
 
