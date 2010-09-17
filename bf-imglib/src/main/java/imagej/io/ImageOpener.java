@@ -76,14 +76,14 @@ public class ImageOpener {
     final T type = makeType(pixelType);
 
     // TEMP - make suffix out of dimension types, until imglib supports them
-    final String suffix = toString(dimTypes);
+    final String name = encodeName(id, dimTypes);
 
     // create image object
     final ContainerFactory containerFactory = new ArrayContainerFactory();
     final ImageFactory<T> imageFactory =
       new ImageFactory<T>(type, containerFactory);
     final Image<T> img =
-      imageFactory.createImage(dimLengths, id + " " + suffix);
+      imageFactory.createImage(dimLengths, name);
 
     // TODO - create better container types; either:
     // 1) an array container type using one byte array per plane
@@ -148,6 +148,15 @@ public class ImageOpener {
         type = null;
     }
     return (T) type;
+  }
+
+  /** Converts the given image name back to a list of dimensional axis types. */
+  public String[] decodeName(String name) {
+    final int lBracket = name.lastIndexOf("[");
+    if (lBracket < 0) return new String[0];
+    final int rBracket = name.lastIndexOf("]");
+    if (rBracket <= lBracket) return new String[0];
+    return name.substring(lBracket + 1, rBracket).split(" ");
   }
 
   // -- Helper methods --
@@ -273,19 +282,22 @@ public class ImageOpener {
     }
   }
 
-  /** Compiles the given array of strings into a single string. */
-  private String toString(String[] array) {
-    final StringBuilder sb = new StringBuilder();
+  /**
+   * Creates a name for the image based on the input source
+   * and dimensional axis types.
+   */
+  private String encodeName(String id, String[] dimTypes) {
+    final StringBuilder sb = new StringBuilder(id);
     boolean first = true;
-    for (String s : array) {
+    for (String dimType : dimTypes) {
       if (first) {
-        sb.append("[");
+        sb.append(" [");
         first = false;
       }
       else sb.append(" ");
-      sb.append(s);
+      sb.append(dimType);
     }
-    sb.append("]");
+    if (!first) sb.append("]");
     return sb.toString();
   }
 
