@@ -93,7 +93,22 @@ public abstract class ImageProcessor extends Object {
 	protected static IndexColorModel defaultColorModel;
 
 		
-	protected void showProgress(double percentDone) {
+	protected void setFgColor(int color)
+	{
+		fgColor = color;
+	}
+	
+	protected int getFgColor()
+	{
+		return fgColor;
+	}
+	
+	protected boolean getSnapshotCopyMode()
+	{
+		return snapshotCopyMode;
+	}
+	
+	public void showProgress(double percentDone) {
 		if (progressBar!=null)
         	progressBar.show(percentDone);
 	}
@@ -1582,7 +1597,7 @@ public abstract class ImageProcessor extends Object {
 		return q;
 	}
 	
-	final double getBilinearInterpolatedPixel(double x, double y) {
+	public final double getBilinearInterpolatedPixel(double x, double y) {
 		if (x>=-1 && x<width && y>=-1 && y<height) {
 			int method = interpolationMethod;
 			interpolationMethod = BILINEAR;
@@ -1594,7 +1609,7 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	static final double a = 0.5; // Catmull-Rom interpolation
-	final double cubic(double x) {
+	public final double cubic(double x) {
 		if (x < 0.0) x = -x;
 		double z = 0.0;
 		if (x < 1.0) 
@@ -2111,7 +2126,7 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	// method and variables used by updateComposite()
-	byte[]  create8BitImage() {return null;}
+	protected byte[]  create8BitImage() {return null;}
 	private byte[] bytes;
 	private int[] reds, greens, blues;
 

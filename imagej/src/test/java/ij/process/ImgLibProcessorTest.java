@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import ij.Assert;
+import imagej.process.ImgLibProcessor;
 
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;

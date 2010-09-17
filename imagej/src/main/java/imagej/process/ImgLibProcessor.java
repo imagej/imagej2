@@ -1,12 +1,11 @@
-package ij.process;
+package imagej.process;
 
 import ij.Prefs;
-import imagej.process.GenericBlitter;
-import imagej.process.ImageUtils;
-import imagej.process.Index;
-import imagej.process.Snapshot;
-import imagej.process.Span;
-import imagej.process.TypeManager;
+import ij.process.Blitter;
+import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import imagej.process.function.AbsUnaryFunction;
 import imagej.process.function.AddBinaryFunction;
 import imagej.process.function.AddNoiseUnaryFunction;
@@ -264,7 +263,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
 	@Override
-	byte[] create8BitImage()
+	protected byte[] create8BitImage()
 	{
 		// TODO: use imageData.getDisplay().get8Bit* methods
 		Object pixels = getPixels();
@@ -1067,7 +1066,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (x>=super.clipXMin && x<=super.clipXMax && y>=super.clipYMin && y<=super.clipYMax)
 		{
 			if (this.isIntegral)
-				putPixel(x, y, fgColor);
+				putPixel(x, y, getFgColor());
 			else
 				putPixel(x, y, Float.floatToIntBits((float)fillColor));
 		}
@@ -1133,7 +1132,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		double fillValue = this.fillColor;
 		if (this.isIntegral)
-			fillValue = super.fgColor;
+			fillValue = getFgColor();
 		
 		FillUnaryFunction func = new FillUnaryFunction(fillValue);
 		
@@ -1158,7 +1157,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		double color = this.fillColor;
 		if (this.isIntegral)
-			color = super.fgColor;
+			color = getFgColor();
 		
 		MaskedFillOperation<T> fillOp = new MaskedFillOperation<T>(this.imageData, origin, span, byteMask, color);
 		
@@ -1538,9 +1537,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixelsCopy()
 	{
-		if (this.snapshot!=null && super.snapshotCopyMode)
+		if (this.snapshot!=null && getSnapshotCopyMode())
 		{
-			super.snapshotCopyMode = false;
+			setSnapshotCopyMode(false);
 			
 			Image<T> snapStorage = this.snapshot.getStorage();
 			
@@ -2102,7 +2101,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.type instanceof GenericByteType<?>) {
 
 			super.drawingColor = color;
-			super.fgColor = bestIndex;
+			setFgColor(bestIndex);
 		}
 		else { // not a Byte type
 
@@ -2135,7 +2134,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				double value = (min + (max-min)*(bestIndex/255.0));
 				
 				if (this.isIntegral)
-					super.fgColor = (int)value;
+					setFgColor((int)value);
 				else
 					this.fillColor = value;
 			}
@@ -2261,7 +2260,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.fillColor = value;
 		if (this.isIntegral)
 		{
-			super.fgColor = (int) TypeManager.boundValueToType(this.type, this.fillColor);
+			setFgColor((int) TypeManager.boundValueToType(this.type, this.fillColor));
 		}
 	}
 
