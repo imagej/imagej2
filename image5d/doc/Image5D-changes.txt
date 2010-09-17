@@ -127,8 +127,10 @@ changes in Image5D 1.2.0:
 - Fixed a bug causing that the Image5D returned by the "Stack to Image5D" plugin was not the current image.
 started version 1.2.0: 20070130
 finished version 1.2.0: 20070812
- 
+
 
 changes in Image5D 1.2.1:
-- TODO
+- Fix problem with Z slider.
+- Image5D source code is now available in ImageJDev.org SVN repository:
+		http://dev.imagejdev.org/svn/imagej/trunk/image5d/
 released version 1.2.1: 20100917
