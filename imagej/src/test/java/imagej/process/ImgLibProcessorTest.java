@@ -1,4 +1,4 @@
-package ij.process;
+package imagej.process;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import ij.Assert;
+import ij.process.Blitter;
+import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import imagej.process.ImgLibProcessor;
 
 import mpicbg.imglib.container.array.ArrayContainerFactory;
@@ -1343,8 +1348,8 @@ public class ImgLibProcessorTest {
 				procPair[0].setColor(color);
 				procPair[1].setColor(color);
 				
-				assertEquals(procPair[0].drawingColor, procPair[1].drawingColor);
-				assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+				assertEquals(procPair[0].getDrawingColor(), procPair[1].getDrawingColor());
+				assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
 				// TODO : for float types what about .fillColor??? since private don't worry about it? Or find some test that teases it out.
 			}
 		}
@@ -1582,19 +1587,19 @@ public class ImgLibProcessorTest {
 		{
 			procPair[0].setValue(0);
 			procPair[1].setValue(0);
-			assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+			assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
 	
 			procPair[0].setValue(-1);
 			procPair[1].setValue(-1);
-			assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+			assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
 	
 			procPair[0].setValue(1);
 			procPair[1].setValue(1);
-			assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+			assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
 	
 			procPair[0].setValue(14.2);
 			procPair[1].setValue(14.2);
-			assertEquals(procPair[0].fgColor, procPair[1].fgColor);
+			assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
 		}
 	}
 
