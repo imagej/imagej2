@@ -1,8 +1,8 @@
 package imagej.process.operation;
 
-import ij.process.ImgLibProcessor;
-import ij.process.ProgressTracker;
+import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
+import imagej.process.ProgressTracker;
 import imagej.process.Span;
 import imagej.process.function.BinaryFunction;
 import mpicbg.imglib.type.numeric.RealType;

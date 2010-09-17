@@ -1,6 +1,5 @@
 package imagej.process;
 
-import ij.process.ImgLibProcessor;
 import imagej.process.function.BinaryFunction;
 import imagej.process.operation.BlitterOperation;
 import mpicbg.imglib.type.numeric.RealType;

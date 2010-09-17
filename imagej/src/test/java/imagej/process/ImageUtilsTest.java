@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import ij.process.ImgLibProcessor;
 import imagej.process.ImageUtils;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;

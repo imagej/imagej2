@@ -1,6 +1,6 @@
 package imagej.process.operation;
 
-import ij.process.ImgLibProcessor;
+import imagej.process.ImgLibProcessor;
 import imagej.process.TypeManager;
 import mpicbg.imglib.type.numeric.RealType;
 
