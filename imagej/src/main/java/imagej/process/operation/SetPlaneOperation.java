@@ -5,7 +5,7 @@ import imagej.process.TypeManager;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public class SetPlaneOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
+public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
 	public static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
 

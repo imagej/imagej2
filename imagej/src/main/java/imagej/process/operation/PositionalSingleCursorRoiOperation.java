@@ -6,13 +6,13 @@ import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public abstract class PositionalRoiOperation<T extends RealType<T>>
+public abstract class PositionalSingleCursorRoiOperation<T extends RealType<T>>
 {
 	private Image<T> image;
 	private int[] origin;
 	private int[] span;
 	
-	protected PositionalRoiOperation(Image<T> image, int[] origin, int[] span)
+	protected PositionalSingleCursorRoiOperation(Image<T> image, int[] origin, int[] span)
 	{
 		this.image = image;
 		this.origin = origin.clone();

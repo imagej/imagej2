@@ -4,7 +4,7 @@ import ij.process.ImageProcessor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-public class SetFloatValuesOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
+public class SetFloatValuesOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
 	private ImageProcessor proc;
 	

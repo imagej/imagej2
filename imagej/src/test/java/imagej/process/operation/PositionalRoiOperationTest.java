@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
-import imagej.process.operation.PositionalRoiOperation;
+import imagej.process.operation.PositionalSingleCursorRoiOperation;
 
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -17,7 +17,7 @@ public class PositionalRoiOperationTest {
 
 	// ***** fake support classes  ****************************************************************************************
 	
-	private class FakePositionalOperation<T extends RealType<T>> extends PositionalRoiOperation<T>
+	private class FakePositionalOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 	{
 		public int beforeCalls = 0;
 		public int insideCalls = 0;
