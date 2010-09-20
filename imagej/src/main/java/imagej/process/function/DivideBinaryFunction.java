@@ -1,7 +1,8 @@
 package imagej.process.function;
 
-import ij.Prefs;
 import mpicbg.imglib.type.numeric.RealType;
+import ij.Prefs;
+import imagej.process.TypeManager;
 
 public class DivideBinaryFunction implements BinaryFunction {
 
@@ -17,17 +18,18 @@ public class DivideBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double max;
 	
-	public DivideBinaryFunction(boolean isIntegral, double max)
+	public DivideBinaryFunction(RealType<?> targetType)
 	{
-		this.dataIsIntegral = isIntegral;
-		this.max = max;
+		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
+		this.max = targetType.getMaxValue();
 		this.useDBZValue = !Float.isInfinite(divideByZeroValue);
 	}
 
-	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
+	public double compute(double input1, double input2)
 	{
-		double value = input1.getRealDouble();
-		if (value == 0)
+		double value;
+		double denom = input2;
+		if (denom == 0)
 		{
 			if (this.dataIsIntegral)
 				value = this.max;
@@ -36,14 +38,16 @@ public class DivideBinaryFunction implements BinaryFunction {
 				if (this.useDBZValue)
 					value = divideByZeroValue;
 				else
-					value = input2.getRealDouble() / value;  // just do the division!!! thats what IJ does.
+					value = input1 / denom;  // just do the division!!! thats what IJ does.
 			}
 		}
 		else
-			value = input2.getRealDouble() / value;
+			value = input1 / denom;
+		
 		if (this.dataIsIntegral)
 			value = Math.floor(value);
-		result.setReal( value );
+		
+		return value;
 	}
 
 }

@@ -14,10 +14,10 @@ import imagej.process.function.AndBinaryFunction;
 import imagej.process.function.AndUnaryFunction;
 import imagej.process.function.AverageBinaryFunction;
 import imagej.process.function.BinaryFunction;
-import imagej.process.function.CopyInput1BinaryFunction;
-import imagej.process.function.CopyInput1InvertedBinaryFunction;
-import imagej.process.function.CopyInput1TransparentBinaryFunction;
-import imagej.process.function.CopyInput1ZeroTransparentBinaryFunction;
+import imagej.process.function.CopyInput2BinaryFunction;
+import imagej.process.function.CopyInput2InvertedBinaryFunction;
+import imagej.process.function.CopyInput2TransparentBinaryFunction;
+import imagej.process.function.CopyInput2ZeroTransparentBinaryFunction;
 import imagej.process.function.DifferenceBinaryFunction;
 import imagej.process.function.DivideBinaryFunction;
 import imagej.process.function.ExpUnaryFunction;
@@ -36,21 +36,22 @@ import imagej.process.function.OrUnaryFunction;
 import imagej.process.function.SqrUnaryFunction;
 import imagej.process.function.SqrtUnaryFunction;
 import imagej.process.function.SubtractBinaryFunction;
+import imagej.process.function.ThresholdUnaryFunction;
 import imagej.process.function.UnaryFunction;
 import imagej.process.function.XorBinaryFunction;
 import imagej.process.function.XorUnaryFunction;
 import imagej.process.operation.ApplyLutOperation;
+import imagej.process.operation.BinaryTransformOperation;
 import imagej.process.operation.BlurFilterOperation;
 import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MaskedFillOperation;
 import imagej.process.operation.MinMaxOperation;
-import imagej.process.operation.PointOperation;
+import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.SetFloatValuesOperation;
 import imagej.process.operation.SetPlaneOperation;
-import imagej.process.operation.ThresholdOperation;
 import imagej.process.operation.SetPlaneOperation.PixelType;
 
 import java.awt.Color;
@@ -128,8 +129,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** filter types: to replace filter numbers */
 	public static enum FilterType {BLUR_MORE, FIND_EDGES, MEDIAN_FILTER, MIN, MAX, CONVOLVE, ERODE, DILATE};
-	
-	// TODO later: define a FilterOperation class that gets applied. Create various filters from it.
 	
 	//****************** Instance variables *******************************************************
 
@@ -780,6 +779,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void and(int value)
 	{
+		if (!this.isIntegral)
+			return;
+		
 		AndUnaryFunction func = new AndUnaryFunction(this.type, value);
 		
 		doPointOperation(func);
@@ -915,28 +917,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		switch (mode)
 		{
 			case Blitter.COPY:
-				function = new CopyInput1BinaryFunction();
+				function = new CopyInput2BinaryFunction();
 				break;
 			case Blitter.COPY_INVERTED:
-				function = new CopyInput1InvertedBinaryFunction(this.type.getMaxValue());
+				function = new CopyInput2InvertedBinaryFunction(this.type);
 				break;
 			case Blitter.COPY_TRANSPARENT:
-				function = new CopyInput1TransparentBinaryFunction(this, this.isIntegral, this.type.getMaxValue());
+				function = new CopyInput2TransparentBinaryFunction(this.type, this);
+				break;
+			case Blitter.COPY_ZERO_TRANSPARENT:
+				function = new CopyInput2ZeroTransparentBinaryFunction();
 				break;
 			case Blitter.ADD:
-				function = new AddBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				function = new AddBinaryFunction(this.type);
 				break;
 			case Blitter.SUBTRACT:
-				function = new SubtractBinaryFunction(this.isIntegral, this.type.getMinValue());
+				function = new SubtractBinaryFunction(this.type);
 				break;
 			case Blitter.MULTIPLY:
-				function = new MultiplyBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				function = new MultiplyBinaryFunction(this.type);
 				break;
 			case Blitter.DIVIDE:
-				function = new DivideBinaryFunction(this.isIntegral, this.type.getMaxValue());
+				function = new DivideBinaryFunction(this.type);
 				break;
 			case Blitter.AVERAGE:
-				function = new AverageBinaryFunction(this.isIntegral);
+				function = new AverageBinaryFunction(this.type);
 				break;
 			case Blitter.DIFFERENCE:
 				function = new DifferenceBinaryFunction();
@@ -955,9 +960,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				break;
 			case Blitter.MAX:
 				function = new MaxBinaryFunction();
-				break;
-			case Blitter.COPY_ZERO_TRANSPARENT:
-				function = new CopyInput1ZeroTransparentBinaryFunction();
 				break;
 			default:
 				throw new IllegalArgumentException("copyBits(mode): unknown mode "+mode);
@@ -1052,6 +1054,27 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	// not an override
+	/** do a binary operation to the current ROI plane using the passed in BinaryFunction and reference ImgLibProcessor */
+	public void doBinaryOperation(ImgLibProcessor<T> other, BinaryFunction function)
+	{
+		Rectangle otherRoi = other.getRoi();
+		
+		Image<T> image1 = this.imageData;
+		int[] origin1 = originOfRoi();
+		int[] span1 = spanOfRoiPlane();
+		
+		Image<T> image2 = other.getImage();
+		int[] origin2 = Index.create(otherRoi.x, otherRoi.y, other.getPlanePosition());
+		int[] span2 = Span.singlePlane(otherRoi.width, otherRoi.height, image2.getNumDimensions());
+		
+		BinaryTransformOperation<T> transform = new BinaryTransformOperation<T>(image1,origin1,span1,image2,origin2,span2,function);
+		
+		transform.execute();
+		
+		findMinAndMax();
+	}
+	
+	// not an override
 	/** do a point operation to the current ROI plane using the passed in UnaryFunction */
 	public void doPointOperation(UnaryFunction function)
 	{
@@ -1059,7 +1082,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		int[] span = spanOfRoiPlane();
 			
-		PointOperation<T> pointOp = new PointOperation<T>(this.imageData, origin, span, function);
+		UnaryTransformOperation<T> pointOp = new UnaryTransformOperation<T>(this.imageData, origin, span, function);
 		
 		pointOp.execute();
 		
@@ -1128,7 +1151,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void exp()
 	{
-		ExpUnaryFunction function = new ExpUnaryFunction(this.type, this.min, this.max);
+		ExpUnaryFunction function = new ExpUnaryFunction(this.type, this.max);
 		
 		doPointOperation(function);
 	}
@@ -1611,7 +1634,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void log()
 	{
-		LogUnaryFunction function = new LogUnaryFunction(this.type, this.min, this.max);
+		LogUnaryFunction function = new LogUnaryFunction(this.type, this.max);
 		
 		doPointOperation(function);
 	}
@@ -1667,6 +1690,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void or(int value)
 	{
+		if (!this.isIntegral)
+			return;
+		
 		OrUnaryFunction func = new OrUnaryFunction(this.type, value);
 		
 		doPointOperation(func);
@@ -1748,8 +1774,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
 		// TODO - for some reason Float and Short don't check for crop() only and their results are different than doing crop!!!
-		if (roiWidth==dstWidth && roiHeight==dstHeight)
-			if (this.isUnsignedByte)
+		if (this.isUnsignedByte)
+			if (roiWidth==dstWidth && roiHeight==dstHeight)
 				return crop();
 
 		double srcCenterX = roiX + roiWidth/2.0;
@@ -1787,7 +1813,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					ip2.setd(index++, value);
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -1826,7 +1852,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						double value = getd(index1+(int)xs);
 						ip2.setd(index2++, value);
 					}
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -1888,7 +1914,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -1932,7 +1958,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							value = this.getBackgroundValue();
 						setd(index++,value);
 					}
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -2001,7 +2027,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -2047,7 +2073,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							setd(index1++, ip2.getd(index2+xsi));
 						}
 					}
-					tracker.didOneMore();
+					tracker.update();
 				}
 			}
 		}
@@ -2289,7 +2315,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void sqr()
 	{
-		SqrUnaryFunction function = new SqrUnaryFunction(this.type, this.getMaxAllowedValue());
+		SqrUnaryFunction function = new SqrUnaryFunction(this.type);
 		
 		doPointOperation(function);
 	}
@@ -2323,13 +2349,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		int[] origin = originOfImage();
+		thresholdLevel = (int) TypeManager.boundValueToType(this.type, thresholdLevel);
 		
-		int[] span = spanOfImagePlane();
+		ThresholdUnaryFunction function = new ThresholdUnaryFunction(thresholdLevel);
 		
-		ThresholdOperation<T> threshOp = new ThresholdOperation<T>(this.imageData,origin,span,thresholdLevel);
-		
-		threshOp.execute();
+		doPointOperation(function);
 	}
 
 	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
@@ -2369,8 +2393,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void xor(int value)
 	{
+		if (!this.isIntegral)
+			return;
+		
 		XorUnaryFunction func = new XorUnaryFunction(this.type, value);
 		
 		doPointOperation(func);
 	}
+	
 }

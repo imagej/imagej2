@@ -1,7 +1,5 @@
 package imagej.process.function;
 
-import mpicbg.imglib.type.numeric.RealType;
-
 public class MinUnaryFunction implements UnaryFunction
 {
 	private double constant;
@@ -11,17 +9,15 @@ public class MinUnaryFunction implements UnaryFunction
 		this.constant = constant;
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double current = input.getRealDouble();
-		
 		double value;
-		if (current < this.constant)
+		if (input < this.constant)
 			value = this.constant;
 		else
-			value = current;
+			value = input;
 	
-		result.setReal( value );
+		return value;
 	}
 }
 

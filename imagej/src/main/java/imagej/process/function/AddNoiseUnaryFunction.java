@@ -22,19 +22,17 @@ public class AddNoiseUnaryFunction implements UnaryFunction
 		rnd.setSeed(System.currentTimeMillis());  // TODO - this line not present in original code (by design???)
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double currVal = input.getRealDouble();
-		double newVal, ran;
+		double result, ran;
 		boolean inRange = false;
 		do {
 			ran = rnd.nextGaussian() * range;
 			if (this.dataIsIntegral)
 				ran = Math.round(ran);
-			newVal = currVal + ran;
-			inRange = TypeManager.validValue(this.type, newVal);
-			if (inRange)
-				result.setReal(newVal);
+			result = input + ran;
+			inRange = TypeManager.validValue(this.type, result);
 		} while (!inRange);
+		return result;
 	}
 }

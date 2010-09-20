@@ -1,22 +1,23 @@
 package imagej.process.function;
 
 import mpicbg.imglib.type.numeric.RealType;
+import imagej.process.TypeManager;
 
 public class AverageBinaryFunction implements BinaryFunction {
 
 	private boolean dataIsIntegral;
 	
-	public AverageBinaryFunction(boolean isIntegral)
+	public AverageBinaryFunction(RealType<?> targetType)
 	{
-		this.dataIsIntegral = isIntegral;
+		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 
-	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
+	public double compute(double input1, double input2)
 	{
 		if (this.dataIsIntegral)
-			result.setReal( ((int)input1.getRealDouble() + (int)input2.getRealDouble()) / 2 );
+			return ( ((int)input1 + (int)input2) / 2 );
 		else
-			result.setReal( (input1.getRealDouble() + input2.getRealDouble()) / 2.0 );
+			return ( (input1 + input2) / 2.0 );
 	}
 
 }

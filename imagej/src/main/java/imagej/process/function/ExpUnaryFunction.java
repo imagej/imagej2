@@ -6,22 +6,22 @@ import mpicbg.imglib.type.numeric.integer.GenericByteType;
 
 public class ExpUnaryFunction implements UnaryFunction
 {
-	private boolean isGenericByte;
-	private double min;
+	private RealType<?> targetType;
 	private double max;
+	private boolean isGenericByte;
 	private boolean dataIsIntegral;
 	
-	public ExpUnaryFunction(RealType<?> targetType, double min, double max)
+	public ExpUnaryFunction(RealType<?> targetType, double max)
 	{
-		this.isGenericByte = targetType instanceof GenericByteType<?>;
-		this.min = min;
+		this.targetType = targetType;
 		this.max = max;
+		this.isGenericByte = targetType instanceof GenericByteType<?>;
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double current = input.getRealDouble();
+		double current = input;
 		
 		double value;
 		
@@ -38,14 +38,14 @@ public class ExpUnaryFunction implements UnaryFunction
 			
 			value = Math.floor(value);
 			
-			value = TypeManager.boundValueToType(result, value);
+			value = TypeManager.boundValueToType(targetType, value);
 		}
 		else // float
 		{
 			value = Math.exp(current);
 		}
 		
-		result.setReal( value );
+		return value;
 	}
 }
 

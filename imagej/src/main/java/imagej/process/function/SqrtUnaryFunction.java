@@ -12,20 +12,18 @@ public class SqrtUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double current = input.getRealDouble();
-		
 		double value;
-		if (current < 0)
+		if (input < 0)
 			value = 0;
 		else
-			value = Math.sqrt(current);
+			value = Math.sqrt(input);
 	
 		if (this.dataIsIntegral)
 			value = (int) value;
 		
-		result.setReal( value );
+		return value;
 	}
 }
 

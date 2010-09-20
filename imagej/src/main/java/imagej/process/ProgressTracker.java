@@ -3,7 +3,7 @@ package imagej.process;
 import ij.process.ImageProcessor;
 
 
-public class ProgressTracker
+public class ProgressTracker implements Observer
 {
 	private long numOperations, operationsSoFar, updateFrequency;
 	private ImageProcessor proc;
@@ -30,7 +30,7 @@ public class ProgressTracker
 		this.operationsSoFar = 0;
 	}
 	
-	public void didOneMore()
+	public void update()
 	{
 		this.operationsSoFar++;
 		if ((this.operationsSoFar % this.updateFrequency) == 0)

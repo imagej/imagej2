@@ -16,9 +16,9 @@ public class AddUnaryFunction implements UnaryFunction
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double value = input.getRealDouble() + this.constant;
+		double value = input + this.constant;
 		
 		if (this.dataIsIntegral)
 		{
@@ -26,8 +26,6 @@ public class AddUnaryFunction implements UnaryFunction
 			value = TypeManager.boundValueToType(this.targetType, value);
 		}
 		
-		result.setReal( value );
+		return value;
 	}
 }
-
-
