@@ -42,6 +42,18 @@ public class PlugInFunctions extends ParameterHandler {
             }
         }
     }
+    
+    public static void runInteractively(Runnable plugin, String dialogName) {
+        if (!showDialog(plugin, dialogName)) {
+            return;
+        }
+        plugin.run();
+        for (ImagePlus image : PlugInFunctions.getOutputImages(plugin)) {
+            if (image != null) {
+                image.show();
+            }
+        }
+	}
 
     public static void listParamaters(Runnable plugin) {
         System.out.println("Parameters Listing: type,  label  =  value");
@@ -135,14 +147,25 @@ public class PlugInFunctions extends ParameterHandler {
     }
 
     public static boolean showDialog(Runnable plugin) {
-        // TODO: Should plugin have a getName() method, defaulting to the class name?
         GenericDialog dialog = new GenericDialog("Parameters");
-        createInputDialogFromParameters(plugin, dialog);
+        return showDialog( dialog, plugin);
+    }
+    
+
+    public static boolean showDialog(Runnable plugin, String dialogName) {
+        GenericDialog dialog = new GenericDialog(dialogName);
+        return showDialog( dialog, plugin);
+    }
+    
+    private static boolean showDialog(GenericDialog dialog, Runnable plugin)
+    {
+    	createInputDialogFromParameters(plugin, dialog);
         dialog.showDialog();
         if (dialog.wasCanceled()) {
             return false;
         }
         setInputParameterValues(plugin, dialog);
+        
         return true;
     }
 
@@ -217,7 +240,10 @@ public class PlugInFunctions extends ParameterHandler {
                     field.set(plugin, (boolean) dialog.getNextBoolean());
                 } else if (field.getType() == ImagePlus.class) {
                     //((ImagePlus) field.get(plugin)).show();
-                } else {
+                } else if (field.getType().isArray() )
+                {
+                //TODO:Add arrays?
+                }else {
                     System.out.println("skipped  " + field.getName());
                     //throw new RuntimeException("TODO!");
                 }
@@ -226,6 +252,8 @@ public class PlugInFunctions extends ParameterHandler {
             }
         }
     }
+
+	
 }
 
   
