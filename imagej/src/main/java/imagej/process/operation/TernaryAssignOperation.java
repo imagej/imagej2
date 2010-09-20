@@ -14,7 +14,7 @@ public class TernaryAssignOperation<T extends RealType<T>> extends ManyCursorRoi
 			Image<T> image3, int[] origin3, int[] span3,
 			BinaryFunction function)
 	{
-		// warning unaviodable - can't create Image<T>[]
+		// NOTE - compiler warning unavoidable - can't pass Image<T>[]
 		super(new Image[]{image1,image2,image3}, new int[][]{origin1,origin2,origin3}, new int[][]{span1,span2,span3});
 		computer = new BinaryComputation(function);
 	}
