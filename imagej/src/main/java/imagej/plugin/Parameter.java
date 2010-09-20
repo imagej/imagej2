@@ -1,4 +1,4 @@
-package ijx.plugin.parameterized;
+package imagej.plugin;
 
 
 import java.lang.annotation.ElementType;
