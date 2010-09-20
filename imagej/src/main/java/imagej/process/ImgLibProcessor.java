@@ -851,9 +851,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			int w = newProc.getWidth();
 			int h = newProc.getHeight();
 			
+			int value;
 			for (int x = 0; x < w; x++)
+			{
 				for (int y = 0; y < h; y++)
-					newProc.setd( x, y, (inputProc.get(x, y) & 0xffff) );  // Must turn into int data and remove signedness
+				{
+					// Must turn into int data and remove signedness
+					value = inputProc.get(x, y) & 0xffff;
+					newProc.setd(x, y, value);
+				}
+			}
 		}
 		
 		return newProc;
@@ -2220,6 +2227,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setPixels(Object pixels)
 	{
+		if (pixels == null)  // sometimes IJ calls with null to try and free up memory
+			return;
+
 		setImagePlanePixels(this.imageData, this.planePosition, pixels);
 	}
 
