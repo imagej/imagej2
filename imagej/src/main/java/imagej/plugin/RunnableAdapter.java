@@ -51,6 +51,7 @@ of a Runnable.
 public class RunnableAdapter extends AbstractPlugIn {
 
     Runnable plugin;
+    String name = "Parameters";
 
     public RunnableAdapter(Runnable plugin) {
         this.plugin = plugin;
@@ -62,6 +63,10 @@ public class RunnableAdapter extends AbstractPlugIn {
 
     public void runInteractively() {
         PlugInFunctions.runInteractively(plugin);
+    }
+    
+    public void runInteractively(String dialogName) {
+        PlugInFunctions.runInteractively(plugin, dialogName);
     }
 
     public Map<String, Object> run(Object... parameters)

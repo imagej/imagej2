@@ -98,6 +98,7 @@ public class Example_PlugIn extends AbstractPlugIn {
         } catch (InvocationTargetException ex) {
             Logger.getLogger(Example_PlugIn.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //event dispach thread
         runOffEDT(args);  // interactively
         //runOnEDT(args);
         //runAsFuture(args);
@@ -168,7 +169,6 @@ public class Example_PlugIn extends AbstractPlugIn {
         } else {
             System.out.println("outputMap = null");
         }
-
     }
 
     private static void runAsFutureOnEdt(final String[] args) {
