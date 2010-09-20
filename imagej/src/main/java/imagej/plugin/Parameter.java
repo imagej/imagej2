@@ -15,12 +15,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Parameter {
     // attributes...
-    
     /**
-     *
      * @return  label to display in input widget
      */
-    String label() default "";        //
+    String label() default "";   
+    
     /**
      * number of digits to right of decimal point
      * @return
@@ -32,33 +31,29 @@ public @interface Parameter {
      * @return
      */
     int columns() default 6;
+    
     /**
-     * 
      * @return a string displayed to the right of the field
      */
     String units() default "";
+    
     /**
-     *
      * @return widget to use for input
      */
-    
     String widget() default "";
+    
     /**
-     *
      * @return is this parameter required (i.e. no default
      */
     boolean required() default false;
 
     /**
      * Defines a key to use for saving the value to Prefs...
-     *
-     * @return
      */
     String persist() default "";
 
     /**
-     *
-     * @return
+     * Defines if the Parameter is an output
      */
     boolean output() default false;
 }
