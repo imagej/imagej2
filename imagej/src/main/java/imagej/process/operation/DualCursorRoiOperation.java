@@ -27,6 +27,9 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 		
 		ImageUtils.verifyDimensions(img1.getDimensions(), origin1, span1);
 		ImageUtils.verifyDimensions(img2.getDimensions(), origin2, span2);
+		
+		if (ImageUtils.getTotalSamples(span1) != ImageUtils.getTotalSamples(span2))
+			throw new IllegalArgumentException("DualCursorRoiOperation(): span sizes differ");
 	}
 	
 	public Image<T> getImage1()   { return img1; }
@@ -37,7 +40,7 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin2() { return origin2; }
 	public int[] getSpan2()   { return span2; }
 
-	public void setObserver(Observer o) { observer = o; }
+	public void addObserver(Observer o) { observer = o; }
 	
 	public abstract void beforeIteration(RealType<T> type);
 	public abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);

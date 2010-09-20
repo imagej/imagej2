@@ -32,7 +32,7 @@ public abstract class PositionalSingleCursorRoiOperation<T extends RealType<T>>
 	public abstract void insideIteration(int[] position, RealType<T> sample);
 	public abstract void afterIteration();
 	
-	public void setObserver(Observer o) { this.observer = o; }
+	public void addObserver(Observer o) { this.observer = o; }
 	
 	public void execute()
 	{

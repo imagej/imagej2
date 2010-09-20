@@ -26,7 +26,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		
 		long updateFrequency = (long)span[0] * 25;
 		
-		setObserver(new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency));
+		addObserver(new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency));
 	}
 
 	public final double[] getNeighborhood() { return neighborhood; }
