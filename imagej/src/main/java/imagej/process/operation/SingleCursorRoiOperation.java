@@ -28,7 +28,7 @@ public abstract class SingleCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin() { return origin; }
 	public int[] getSpan() { return span; }
 	
-	public void setObserver(Observer o) { this.observer = o; }
+	public void addObserver(Observer o) { this.observer = o; }
 
 	public abstract void beforeIteration(RealType<T> type);
 	public abstract void insideIteration(RealType<T> sample);
