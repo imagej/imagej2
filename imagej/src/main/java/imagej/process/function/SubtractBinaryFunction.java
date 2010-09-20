@@ -1,24 +1,27 @@
 package imagej.process.function;
 
 import mpicbg.imglib.type.numeric.RealType;
+import imagej.process.TypeManager;
 
 public class SubtractBinaryFunction implements BinaryFunction {
 
 	private boolean isIntegral;
 	private double min;
 	
-	public SubtractBinaryFunction(boolean isIntegral, double min)
+	public SubtractBinaryFunction(RealType<?> targetType)
 	{
-		this.isIntegral = isIntegral;
-		this.min = min;
+		this.isIntegral = TypeManager.isIntegralType(targetType);
+		this.min = targetType.getMinValue();
 	}
 
-	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
+	public double compute(double input1, double input2)
 	{
-		double value = input2.getRealDouble() - input1.getRealDouble();
+		double value = input1 - input2;
+		
 		if ((this.isIntegral) && (value < this.min))
 			value = this.min;
-		result.setReal( value );
+		
+		return value;
 	}
 
 }

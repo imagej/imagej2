@@ -1,6 +1,7 @@
 package imagej.process.operation;
 
 import imagej.process.ImageUtils;
+import imagej.process.Observer;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
@@ -10,7 +11,8 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 {
 	private Image<T> img1, img2;
 	private int[] origin1, span1, origin2, span2;
-
+	private Observer observer;
+	
 	protected DualCursorRoiOperation(Image<T> img1, int[] origin1, int[] span1, Image<T> img2, int[] origin2, int[] span2)
 	{
 		this.img1 = img1;
@@ -20,6 +22,8 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 		this.img2 = img2;
 		this.origin2 = origin2.clone();
 		this.span2 = span2.clone();
+	
+		this.observer = null;
 		
 		ImageUtils.verifyDimensions(img1.getDimensions(), origin1, span1);
 		ImageUtils.verifyDimensions(img2.getDimensions(), origin2, span2);
@@ -33,18 +37,23 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin2() { return origin2; }
 	public int[] getSpan2()   { return span2; }
 
+	public void setObserver(Observer o) { observer = o; }
+	
 	public abstract void beforeIteration(RealType<T> type);
 	public abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);
 	public abstract void afterIteration();
 	
 	public void execute()
 	{
+		if (this.observer != null)
+			observer.init();
+		
 		LocalizableByDimCursor<T> image1Cursor = this.img1.createLocalizableByDimCursor();
 		LocalizableByDimCursor<T> image2Cursor = this.img2.createLocalizableByDimCursor();
 
 		RegionOfInterestCursor<T> image1RoiCursor = new RegionOfInterestCursor<T>(image1Cursor, this.origin1, this.span1);
 		RegionOfInterestCursor<T> image2RoiCursor = new RegionOfInterestCursor<T>(image2Cursor, this.origin2, this.span2);
-		
+	
 		beforeIteration(image1Cursor.getType());
 		
 		while (image1RoiCursor.hasNext() && image2RoiCursor.hasNext())
@@ -53,6 +62,9 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 			image2RoiCursor.fwd();
 			
 			insideIteration(image1Cursor.getType(),image2Cursor.getType());
+
+			if (this.observer != null)
+				observer.update();
 		}
 		
 		afterIteration();
@@ -61,6 +73,9 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 		image2RoiCursor.close();
 		image1Cursor.close();
 		image2Cursor.close();
+
+		if (this.observer != null)
+			observer.done();
 	}
 }
 

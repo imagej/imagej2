@@ -1,6 +1,7 @@
 package imagej.process.operation;
 
 import imagej.process.ImageUtils;
+import imagej.process.Observer;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
@@ -12,6 +13,7 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		private Image<T>[] images;
 		private int[][] origins;
 		private int[][] spans;
+		private Observer observer;
 		
 		protected ManyCursorRoiOperation(Image<T>[] images, int[][] origins, int[][] spans)
 		{
@@ -21,7 +23,8 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 			this.images = images;
 			this.origins = origins.clone();
 			this.spans = spans.clone();
-
+			this.observer = null;
+			
 			for (int i = 0; i < this.images.length; i++)
 				ImageUtils.verifyDimensions(this.images[i].getDimensions(), this.origins[i], this.spans[i]);
 			
@@ -34,6 +37,8 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		public int[][] getOrigins() { return origins; }
 		public int[][] getSpans() { return spans; }
 
+		public void setObserver(Observer o) { this.observer = o; }
+		
 		public abstract void beforeIteration(RealType<T> type);
 		public abstract void insideIteration(RealType<T>[] samples);
 		public abstract void afterIteration();
@@ -67,6 +72,9 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		
 		public void execute()
 		{
+			if (this.observer != null)
+				observer.init();
+
 			// create cursors
 			LocalizableByDimCursor<T>[] cursors = new LocalizableByDimCursor[images.length];
 			for (int i = 0; i < images.length; i++)
@@ -82,9 +90,9 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 			collectSamples(roiCursors,samples);
 
 			// do the iteration
-			
+	
 			beforeIteration(cursors[0].getType());  // pass along type info
-			
+
 			while (hasNext(roiCursors))
 			{
 				fwd(roiCursors);
@@ -92,13 +100,19 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 				collectSamples(roiCursors,samples);
 				
 				insideIteration(samples);
+
+				if (this.observer != null)
+					observer.update();
 			}
 			
 			afterIteration();
-			
+
 			// close the cursors
 			
 			close(roiCursors);
 			close(cursors);
+			
+			if (this.observer != null)
+				observer.done();
 		}
 }

@@ -1,12 +1,10 @@
 package imagej.process.function;
 
-import mpicbg.imglib.type.numeric.RealType;
-
 public class XorBinaryFunction implements BinaryFunction {
 
-	public void compute(RealType<?> result, RealType<?> input1, RealType<?> input2)
+	public double compute(double input1, double input2)
 	{
-		result.setReal( ((int)input1.getRealDouble()) ^ ((int)(input2.getRealDouble())) );
+		return ( ((int)input1) ^ ((int)input2) );
 	}
 
 }

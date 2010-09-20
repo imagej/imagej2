@@ -5,29 +5,22 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class XorUnaryFunction implements UnaryFunction
 {
-	private boolean dataIsIntegral;
+	private RealType<?> targetType;
 	private double constant;
 	
 	public XorUnaryFunction(RealType<?> targetType, double constant)
 	{
+		this.targetType = targetType;
 		this.constant = constant;
-		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		double value;
-		
-		if (this.dataIsIntegral)
-		{
-			value = ((int)input.getRealDouble()) ^ ((int)constant);
+		double value = ((int)input) ^ ((int)constant);
 			
-			value = TypeManager.boundValueToType(result, value);
-		}
-		else
-			value = input.getRealDouble();
+		value = TypeManager.boundValueToType(this.targetType, value);
 		
-		result.setReal( value );
+		return value;
 	}
 }
 

@@ -13,7 +13,6 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	private final double[] pixelsCopy;
 	private final int width;
 	private final int height;
-	private final ProgressTracker tracker;
 	
 	protected Filter3x3Operation(ImgLibProcessor<K> ip, int[] origin, int[] span)
 	{
@@ -27,7 +26,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		
 		long updateFrequency = (long)span[0] * 25;
 		
-		this.tracker = new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency);
+		setObserver(new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency));
 	}
 
 	public final double[] getNeighborhood() { return neighborhood; }
@@ -35,7 +34,6 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	@Override
 	public void beforeIteration(RealType<K> type)
 	{
-		this.tracker.init();
 	}
 
 	@Override
@@ -46,8 +44,6 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		double value = calcSampleValue(this.neighborhood);
 		
 		sample.setReal(value);
-		
-		this.tracker.didOneMore();
 	}
 	
 	protected abstract double calcSampleValue(final double[] neighborhood);
@@ -55,7 +51,6 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	@Override
 	public void afterIteration()
 	{
-		this.tracker.done();
 	}
 
 	private final double valueOfPixelFromCopy(final int x, final int y)

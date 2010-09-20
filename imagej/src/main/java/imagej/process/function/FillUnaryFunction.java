@@ -1,7 +1,5 @@
 package imagej.process.function;
 
-import mpicbg.imglib.type.numeric.RealType;
-
 public class FillUnaryFunction implements UnaryFunction
 {
 	private double fillColor;
@@ -11,8 +9,8 @@ public class FillUnaryFunction implements UnaryFunction
 		this.fillColor = fillColor;
 	}
 	
-	public void compute(RealType<?> result, RealType<?> input)
+	public double compute(double input)
 	{
-		result.setReal( this.fillColor );
+		return this.fillColor;
 	}
 }
