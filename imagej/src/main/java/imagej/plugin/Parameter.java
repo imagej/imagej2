@@ -51,7 +51,12 @@ public @interface Parameter {
      * Defines a key to use for saving the value to Prefs...
      */
     String persist() default "";
-
+    
+    /**
+     * Defines the list of possible values for constrained parameter
+     */
+    String[] choices() default {""};
+    
     /**
      * Defines if the Parameter is an output
      */
