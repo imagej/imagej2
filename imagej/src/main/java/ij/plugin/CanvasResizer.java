@@ -7,6 +7,7 @@ import imagej.plugin.AbstractPlugIn;
 import imagej.plugin.Parameter;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /** This plugin implements the Image/Adjust/Canvas Size command.
 	It changes the canvas size of an image or stack without resizing the image.
@@ -15,26 +16,27 @@ import java.awt.*;
 */
 public class CanvasResizer extends AbstractPlugIn 
 {
+	
+	String[] positionTypes = {"Top-Left", "Top-Center", "Top-Right", 
+		"Center-Left", "Center", "Center-Right",
+		"Bottom-Left", "Bottom-Center", "Bottom-Right" };
+	
 	@Parameter( label = "Zero Fill", persist = "resizer.zero" )
     public boolean zeroFill = false;
     @Parameter( label = "Width", digits = 0 )
     public int width = 0;    
     @Parameter( label = "Height", digits = 0 )
     public int height = 0;
-    @Parameter(label = "Position" )
-    public String[] sPositions = {
+    @Parameter(label = "Position", choices = {
 			"Top-Left", "Top-Center", "Top-Right", 
 			"Center-Left", "Center", "Center-Right",
 			"Bottom-Left", "Bottom-Center", "Bottom-Right"
-		};
+		} )
+    public String sPositions = "Center";
     
     private int wOld;
     private int hOld;
     private boolean fIsStack;
-    /*{"Top-Left", "Top-Center", "Top-Right", 
-			"Center-Left", "Center", "Center-Right",
-			"Bottom-Left", "Bottom-Center", "Bottom-Right"};*/
-
     
     public CanvasResizer() {
     	fIsStack = false;
@@ -47,16 +49,16 @@ public class CanvasResizer extends AbstractPlugIn
 		ImageStack stackOld = imp.getStack();
 		if ((stackOld != null) && (stackOld.getSize() > 1))
 			fIsStack = true;
-
-			
+		
 		String strTitle = fIsStack ? "Resize Stack Canvas" : "Resize Image Canvas";
 		
 	}
 
+    
 	public void run() {
 		
 		//TODO:temp.
-		int iPos = 4;
+		int iPos = 0;
 
 		ImagePlus imp = IJ.getImage();
 		ImageStack stackOld = imp.getStack();
@@ -67,7 +69,13 @@ public class CanvasResizer extends AbstractPlugIn
 		int yC = (height - hOld)/2;	// offset for centered
 		int yB = (height - hOld);		// offset for bottom
 		
-		switch(iPos) {
+		ArrayList<String> arrayList = new ArrayList<String>();
+		for( String string : positionTypes )
+		{
+			arrayList.add(string);
+		}
+		
+		switch( arrayList.indexOf(sPositions) ) {
 		case 0:	// TL
 			xOff=0;	yOff=0; break;
 		case 1:	// TC
@@ -114,7 +122,7 @@ public class CanvasResizer extends AbstractPlugIn
 		for (int i=1; i<=nFrames; i++) {
 			IJ.showProgress((double)i/nFrames);
 			ipNew = ipOld.createProcessor(wNew, hNew);
-			if (zeroFill)
+			if ( zeroFill )
 				ipNew.setValue(0.0);
 			else 
 				ipNew.setColor(colorBack);
