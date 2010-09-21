@@ -3,6 +3,9 @@ import ij.*;
 import ij.plugin.filter.*;
 import ij.process.*;
 import ij.gui.*;
+import imagej.plugin.AbstractPlugIn;
+import imagej.plugin.Parameter;
+
 import java.awt.*;
 
 /** This plugin implements the Image/Adjust/Canvas Size command.
@@ -10,48 +13,59 @@ import java.awt.*;
 	The border is filled with the current background color.
 	@author Jeffrey Kuhn (jkuhn at ccwf.cc.utexas.edu)
 */
-public class CanvasResizer implements PlugIn {
-	boolean zeroFill = Prefs.get("resizer.zero", false);
+public class CanvasResizer extends AbstractPlugIn 
+{
+	@Parameter( label = "Zero Fill", persist = "resizer.zero" )
+    public boolean zeroFill = false;
+    @Parameter( label = "Width", digits = 0 )
+    public int width = 0;    
+    @Parameter( label = "Height", digits = 0 )
+    public int height = 0;
+    @Parameter(label = "Position" )
+    public String[] sPositions = {
+			"Top-Left", "Top-Center", "Top-Right", 
+			"Center-Left", "Center", "Center-Right",
+			"Bottom-Left", "Bottom-Center", "Bottom-Right"
+		};
+    
+    private int wOld;
+    private int hOld;
+    private boolean fIsStack;
+    /*{"Top-Left", "Top-Center", "Top-Right", 
+			"Center-Left", "Center", "Center-Right",
+			"Bottom-Left", "Bottom-Center", "Bottom-Right"};*/
 
-	public void run(String arg) {
-		int wOld, hOld, wNew, hNew;
-		boolean fIsStack = false;
-
+    
+    public CanvasResizer() {
+    	fIsStack = false;
+    	
 		ImagePlus imp = IJ.getImage();
-		wOld = imp.getWidth();
-		hOld = imp.getHeight();
+		
+		width = wOld = imp.getWidth();
+		height = hOld = imp.getHeight();
 
 		ImageStack stackOld = imp.getStack();
 		if ((stackOld != null) && (stackOld.getSize() > 1))
 			fIsStack = true;
 
-		String[] sPositions = {
-			"Top-Left", "Top-Center", "Top-Right", 
-			"Center-Left", "Center", "Center-Right",
-			"Bottom-Left", "Bottom-Center", "Bottom-Right"
-		};
 			
 		String strTitle = fIsStack ? "Resize Stack Canvas" : "Resize Image Canvas";
-		GenericDialog gd = new GenericDialog(strTitle);
-		gd.addNumericField("Width:", wOld, 0, 5, "pixels");
-		gd.addNumericField("Height:", hOld, 0, 5, "pixels");
-		gd.addChoice("Position:", sPositions, sPositions[4]);
-		gd.addCheckbox("Zero Fill", zeroFill);
-		gd.showDialog();
-		if (gd.wasCanceled())
-			return;
-			
-		wNew = (int)gd.getNextNumber();
-		hNew = (int)gd.getNextNumber();
-		int iPos = gd.getNextChoiceIndex();
-		zeroFill = gd.getNextBoolean();
-		Prefs.set("resizer.zero", zeroFill);
+		
+	}
+
+	public void run() {
+		
+		//TODO:temp.
+		int iPos = 4;
+
+		ImagePlus imp = IJ.getImage();
+		ImageStack stackOld = imp.getStack();
 		
 		int xOff, yOff;
-		int xC = (wNew - wOld)/2;	// offset for centered
-		int xR = (wNew - wOld);		// offset for right
-		int yC = (hNew - hOld)/2;	// offset for centered
-		int yB = (hNew - hOld);		// offset for bottom
+		int xC = (width - wOld)/2;	// offset for centered
+		int xR = (width - wOld);		// offset for right
+		int yC = (height - hOld)/2;	// offset for centered
+		int yB = (height - hOld);		// offset for bottom
 		
 		switch(iPos) {
 		case 0:	// TL
@@ -77,12 +91,12 @@ public class CanvasResizer implements PlugIn {
 		}
 		
 		if (fIsStack) {
-			ImageStack stackNew = expandStack(stackOld, wNew, hNew, xOff, yOff);
+			ImageStack stackNew = expandStack(stackOld, width, height, xOff, yOff);
 			imp.setStack(null, stackNew);
 		} else {
 			if (!IJ.macroRunning())
 				Undo.setup(Undo.COMPOUND_FILTER, imp);
-			ImageProcessor newIP = expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff);
+			ImageProcessor newIP = expandImage(imp.getProcessor(), width, height, xOff, yOff);
 			imp.setProcessor(null, newIP);
 			if (!IJ.macroRunning())
 				Undo.setup(Undo.COMPOUND_FILTER_DONE, imp);
@@ -121,6 +135,8 @@ public class CanvasResizer implements PlugIn {
 		ipNew.insert(ipOld, xOff, yOff);
 		return ipNew;
 	}
+
+	
 
 }
 
