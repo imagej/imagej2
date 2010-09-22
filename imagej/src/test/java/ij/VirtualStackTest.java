@@ -378,9 +378,13 @@ public class VirtualStackTest {
 	@Test
 	public void testMemUsage()
 	{
+		int numSlices = 30000;
 		long memoryBefore = Runtime.getRuntime().freeMemory();
 		vs = new VirtualStack(12000,20000,null,"/data/tmp.gif");
+		for (int i = 0; i < numSlices; i++)
+			vs.addSlice("p"+i);
 		long memoryAfter = Runtime.getRuntime().freeMemory();
-		assertTrue((memoryBefore - memoryAfter) < 2048);
+		//System.out.println(memoryBefore+" "+memoryAfter);
+		assertTrue((memoryBefore - memoryAfter) < (numSlices * 512L));
 	}
 }
