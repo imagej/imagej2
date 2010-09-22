@@ -144,6 +144,17 @@ public class VirtualStackTest {
 	}
 
 	@Test
+	public void testAddSliceStringBooleanObject() {
+		// add slices via this method should fail
+		vs = new VirtualStack(3,4,null,"/fred/jones/blooka");
+		assertNotNull(vs);
+		assertEquals(0,vs.getSize());
+		vs.addSlice("zorp",true,new byte[12]);
+		vs.addSlice("porp",false,new byte[12]);
+		assertEquals(0,vs.getSize());
+	}
+
+	@Test
 	public void testDeleteSlice() {
 
 		// try on empty VirtualStack
@@ -362,5 +373,14 @@ public class VirtualStackTest {
 		vs = new VirtualStack();
 		vs.setBitDepth(1005);
 		assertEquals(1005,vs.getBitDepth());
+	}
+	
+	@Test
+	public void testMemUsage()
+	{
+		long memoryBefore = Runtime.getRuntime().freeMemory();
+		vs = new VirtualStack(12000,20000,null,"/data/tmp.gif");
+		long memoryAfter = Runtime.getRuntime().freeMemory();
+		assertTrue((memoryBefore - memoryAfter) < 2048);
 	}
 }
