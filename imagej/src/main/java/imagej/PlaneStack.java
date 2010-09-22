@@ -145,32 +145,32 @@ public class PlaneStack<T extends RealType<T>>
 	
 	private void insertUnsignedPlane(int atPosition, byte[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new UnsignedByteType(), DataType.UBYTE);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), DataType.UBYTE);
 	}
 	
 	private void insertSignedPlane(int atPosition, byte[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new ByteType(), DataType.BYTE);
+		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), DataType.BYTE);
 	}
 	
 	private void insertUnsignedPlane(int atPosition, short[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new UnsignedShortType(), DataType.USHORT);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), DataType.USHORT);
 	}
 	
 	private void insertSignedPlane(int atPosition, short[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new ShortType(), DataType.SHORT);
+		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), DataType.SHORT);
 	}
 	
 	private void insertUnsignedPlane(int atPosition, int[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new UnsignedIntType(), DataType.UINT);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), DataType.UINT);
 	}
 	
 	private void insertSignedPlane(int atPosition, int[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new IntType(), DataType.INT);
+		insertPlane(atPosition, data, data.length, (RealType) new IntType(), DataType.INT);
 	}
 	
 	private void insertUnsignedPlane(int atPosition, long[] data)
@@ -180,17 +180,17 @@ public class PlaneStack<T extends RealType<T>>
 	
 	private void insertSignedPlane(int atPosition, long[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new LongType(), DataType.LONG);
+		insertPlane(atPosition, data, data.length, (RealType) new LongType(), DataType.LONG);
 	}
 	
 	private void insertPlane(int atPosition, float[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new FloatType(), DataType.FLOAT);
+		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), DataType.FLOAT);
 	}
 	
 	private void insertPlane(int atPosition, double[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType<T>) new DoubleType(), DataType.DOUBLE);
+		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), DataType.DOUBLE);
 	}
 
 	//****************** public interface 
