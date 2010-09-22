@@ -51,6 +51,18 @@ public class PlaneStack<T extends RealType<T>>
 		return image;
 	}
 
+	private void copyPlanesFromTo(int numPlanes, Image<T> srcImage, int srcPlane, Image<T> dstImage, int dstPlane)
+	{
+		if (numPlanes < 1)
+			return;
+		
+		int[] srcOrigin = Index.create(new int[]{0, 0, srcPlane});
+		int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
+		int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
+		
+		ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
+	}
+	
 	// NOTE - assumes atPosition has already been checked for validity
 	private void copyDataBeforePosition(Image<T> origData, Image<T> newData, int atPosition)
 	{
@@ -132,10 +144,10 @@ public class PlaneStack<T extends RealType<T>>
 			
 			Image<T> newStack = ImageUtils.createImage(desiredType, this.factory, newDims);
 
-			copyDataBeforePosition(this.stack, newStack, atPosition);
-			copyDataAtPosition(newPlane, newStack, atPosition);
-			copyDataAfterPosition(this.stack, newStack, atPosition);
-
+			copyPlanesFromTo(atPosition, this.stack, 0, newStack, 0);
+			copyPlanesFromTo(1, newPlane, 0, newStack, atPosition);
+			copyPlanesFromTo(getEndPosition()-atPosition, this.stack, atPosition, newStack, atPosition+1);
+			
 			this.stack = newStack;
 
 			// OTHER WAY
@@ -315,30 +327,8 @@ public class PlaneStack<T extends RealType<T>>
 		// create a new image one plane smaller than existing
 		Image<T> newImage = ImageUtils.createImage((RealType<T>)this.type, this.stack.getContainerFactory(), newDims);
 		
-		int[] srcOrigin, srcSpan, dstOrigin, dstSpan;
-
-		// TODO refactor and modify/use copyFrom() routines that are above.
-		
-		// copy planes from slices before the slice number
-		if (planeNumber > 0)
-		{
-			srcOrigin = Index.create(3);
-			srcSpan = Span.create(new int[]{this.planeWidth, this.planeHeight, planeNumber});
-			dstOrigin = srcOrigin.clone();
-			dstSpan = srcSpan.clone();
-			ImageUtils.copyFromImageToImage(this.stack, srcOrigin, srcSpan, newImage, dstOrigin, dstSpan);
-		}
-		
-		// copy planes from slices after the slice number
-		int totalPlanes = endPosition;
-		if (planeNumber < totalPlanes-1)
-		{
-			srcOrigin = Index.create(new int[]{0, 0, planeNumber+1});
-			srcSpan = Span.create(new int[]{this.planeWidth, this.planeHeight, totalPlanes-1-planeNumber});
-			dstOrigin = Index.create(new int[]{0, 0, planeNumber});
-			dstSpan = srcSpan.clone();
-			ImageUtils.copyFromImageToImage(this.stack, srcOrigin, srcSpan, newImage, dstOrigin, dstSpan);
-		}
+		copyPlanesFromTo(planeNumber, this.stack, 0, newImage, 0);
+		copyPlanesFromTo(getEndPosition()-planeNumber-1, this.stack, planeNumber+1, newImage, planeNumber);
 		
 		this.stack = newImage;
 	}
