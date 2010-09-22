@@ -4,15 +4,13 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.process.operation.ImageCopierOperation;
+import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.Type;
-import mpicbg.imglib.type.numeric.ComplexType;
-import mpicbg.imglib.type.numeric.NumericType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -576,5 +574,11 @@ public class ImageUtils {
 		imp.setDimensions(channels, slices, frames);
 		
 		return imp;
+	}
+	
+	public static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
+	{
+		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
+		return factory.createImage(dimensions);
 	}
 }

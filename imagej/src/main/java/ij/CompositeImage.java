@@ -354,7 +354,7 @@ public class CompositeImage extends ImagePlus {
 		byte[] r = new byte[size];
 		byte[] g = new byte[size];
 		byte[] b = new byte[size];
-		((ColorProcessor)ip).getRGB(r, g, b);
+		ColorProcessor.getRGB(w, h, (int[])ip.getPixels(), r, g, b);
 		ImageStack stack = new ImageStack(w, h);
 		stack.addSlice("Red", r);	
 		stack.addSlice("Green", g);	

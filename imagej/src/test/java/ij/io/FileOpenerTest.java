@@ -152,7 +152,8 @@ public class FileOpenerTest {
 		assertEquals(2,ip.getBytesPerPixel());
 		assertEquals(256,ip.getHeight());
 		assertEquals(38,ip.getWidth());
-		assertTrue(ip.getProcessor() instanceof ShortProcessor);
+		// no longer true with ImgLib integration
+		//assertTrue(ip.getProcessor() instanceof ShortProcessor);
 		assertNotNull(ip.getStack());
 		assertEquals("Red",ip.getStack().getSliceLabel(1));
 		assertEquals("Green",ip.getStack().getSliceLabel(2));
