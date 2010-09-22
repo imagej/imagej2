@@ -7,40 +7,38 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
-	public static enum PixelType {BYTE,SHORT,INT,FLOAT,DOUBLE,LONG};
+	public static enum DataType {BYTE,UBYTE,SHORT,USHORT,INT,UINT,LONG,ULONG,FLOAT,DOUBLE};
 
 	// set in constructor
-	private PixelType pixType;
-	private PixelReader reader;
+	private DataReader reader;
 	
 	// set before iteration
 	private int pixNum;
 	private boolean isIntegral;
 	
-	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, boolean isUnsigned)
+	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, DataType inputType)
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
-		this.pixType = inputType;
 		
-		switch (pixType)
+		switch (inputType)
 		{
 			case BYTE:
-				if (isUnsigned)
-					this.reader = new UnsignedByteReader(pixels);
-				else
-					this.reader = new ByteReader(pixels);
+				this.reader = new ByteReader(pixels);
+				break;
+			case UBYTE:
+				this.reader = new UnsignedByteReader(pixels);
 				break;
 			case SHORT:
-				if (isUnsigned)
-					this.reader = new UnsignedShortReader(pixels);
-				else
-					this.reader = new ShortReader(pixels);
+				this.reader = new ShortReader(pixels);
+				break;
+			case USHORT:
+				this.reader = new UnsignedShortReader(pixels);
 				break;
 			case INT:
-				if (isUnsigned)
-					this.reader = new UnsignedIntReader(pixels);
-				else
-					this.reader = new IntReader(pixels);
+				this.reader = new IntReader(pixels);
+				break;
+			case UINT:
+				this.reader = new UnsignedIntReader(pixels);
 				break;
 			case LONG:
 				this.reader = new LongReader(pixels);
@@ -51,8 +49,8 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 			case DOUBLE:
 				this.reader = new DoubleReader(pixels);
 				break;
-			default:
-				throw new IllegalArgumentException("unknown pixel type");
+			default:  // note ULONG falls through to here by design
+				throw new IllegalArgumentException("SetPlaneOperation(): unsupported data type - "+inputType);
 		}
 		
 	}
@@ -81,12 +79,12 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 	}
 	
-	private interface PixelReader
+	private interface DataReader
 	{
 		double getValue(int i);
 	}
 	
-	private class ByteReader implements PixelReader
+	private class ByteReader implements DataReader
 	{
 		byte[] pixels;
 		
@@ -95,7 +93,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i) { return pixels[i]; }
 	}
 	
-	private class UnsignedByteReader implements PixelReader
+	private class UnsignedByteReader implements DataReader
 	{
 		byte[] pixels;
 		
@@ -110,7 +108,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		}
 	}
 	
-	private class ShortReader implements PixelReader
+	private class ShortReader implements DataReader
 	{
 		short[] pixels;
 		
@@ -119,7 +117,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i) { return pixels[i]; }
 	}
 	
-	private class UnsignedShortReader implements PixelReader
+	private class UnsignedShortReader implements DataReader
 	{
 		short[] pixels;
 		
@@ -134,7 +132,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		}
 	}
 	
-	private class IntReader implements PixelReader
+	private class IntReader implements DataReader
 	{
 		int[] pixels;
 		
@@ -143,7 +141,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i) { return pixels[i]; }
 	}
 	
-	private class UnsignedIntReader implements PixelReader
+	private class UnsignedIntReader implements DataReader
 	{
 		int[] pixels;
 		
@@ -158,7 +156,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		}
 	}
 	
-	private class LongReader implements PixelReader
+	private class LongReader implements DataReader
 	{
 		long[] pixels;
 		
@@ -167,7 +165,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i) { return pixels[i]; }
 	}
 	
-	private class FloatReader implements PixelReader
+	private class FloatReader implements DataReader
 	{
 		float[] pixels;
 		
@@ -176,7 +174,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i) { return pixels[i]; }
 	}
 	
-	private class DoubleReader implements PixelReader
+	private class DoubleReader implements DataReader
 	{
 		double[] pixels;
 		

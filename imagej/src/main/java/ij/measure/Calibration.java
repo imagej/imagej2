@@ -215,7 +215,7 @@ public class Calibration implements Cloneable {
  		cTable = null;
  	}
 
- 	/** Disables the density calibation if the specified image has a differenent bit depth. */
+ 	/** Disables the density calibation if the specified image has a different bit depth. */
  	public void setImage(ImagePlus imp) {
  		if (imp==null)
  			return;
@@ -229,6 +229,7 @@ public class Calibration implements Cloneable {
 			disableDensityCalibration();
 			if (type==ImagePlus.GRAY32) valueUnit = saveUnit;
 		}
+ 		//System.out.println("bit depth("+this+"): before "+bitDepth+" after "+newBitDepth);
  		bitDepth = newBitDepth;
  	}
  	

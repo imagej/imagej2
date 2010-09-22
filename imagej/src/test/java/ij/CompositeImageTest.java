@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ij.io.FileInfo;
 import ij.measure.Calibration;
+import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.DataConstants;
 import ij.process.ImageProcessor;
@@ -134,7 +135,9 @@ public class CompositeImageTest {
 	@Before
 	public void setUp() throws Exception {
 		st = new ImageStack(2,2);
-		st.addSlice("Fred", new ColorProcessor(2,2));
+		st.addSlice("Fred", new ByteProcessor(2,2,new byte[]{1,2,3,4},null));
+		st.addSlice("Blane", new ByteProcessor(2,2,new byte[]{4,6,7,8},null));
+		st.addSlice("Joe", new ByteProcessor(2,2,new byte[]{9,10,11,12},null));
 		ip = new ImagePlus("Jones",st);
 		ci = new CompositeImage(ip);
 	}
@@ -154,8 +157,10 @@ public class CompositeImageTest {
 		// the default case calls the general case whihc is tested in the next method
 		// only need to test that the constructor succeeded in making a COLOR image
 
-		proc = new ColorProcessor(20, 25);
-		ip = new ImagePlus("MyIp",proc);
+		st = new ImageStack(2,2);
+		st.addSlice("Fred", new ByteProcessor(2,2));
+		st.addSlice("Blane", new ByteProcessor(2,2));
+		ip = new ImagePlus("MyIp",st);
 		ci = new CompositeImage(ip);
 		assertNotNull(ci);
 		assertEquals(CompositeImage.COLOR,ci.getMode());
@@ -166,8 +171,11 @@ public class CompositeImageTest {
 
 		// test that mode gets set correctly
 
-		proc = new ColorProcessor(20, 25);
-		ip = new ImagePlus("MyIp",proc);
+		st = new ImageStack(20,25);
+		st.addSlice("Fred", new ByteProcessor(20,25));
+		st.addSlice("Blane", new ByteProcessor(20,25));
+		st.addSlice("Garver", new ByteProcessor(20,25));
+		ip = new ImagePlus("MyIp",st);
 
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE-1); // illegal value
 		assertNotNull(ci);
@@ -199,11 +207,12 @@ public class CompositeImageTest {
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
+		// TODO : might need to remove ColorProcessor specific tests when integrating ImgLibProcessor
+		
 		//  if rgb and stack size != 1 should throw excep
 		try {
 			st = new ImageStack(4,4);
 			st.addSlice("Zap",new ColorProcessor(4,4));
-			st.addSlice("Dos",new ColorProcessor(4,4));
 			ip = new ImagePlus("Buffy",st);
 			ci = new CompositeImage(ip,CompositeImage.COLOR);
 			fail();
@@ -214,6 +223,8 @@ public class CompositeImageTest {
 		//  if rgb and stack size == 1 should be okay
 		st = new ImageStack(4,4);
 		st.addSlice("Zap",new ColorProcessor(4,4));
+		st.addSlice("Dos",new ColorProcessor(4,4));
+		st.addSlice("Tres",new ColorProcessor(4,4));
 		ip = new ImagePlus("Willow",st);
 		ci = new CompositeImage(ip,CompositeImage.COLOR);
 		assertNotNull(ci);
@@ -469,8 +480,10 @@ public class CompositeImageTest {
 		//   note - this case is logically impossible (see constructor) - can't test
 
 		// out of synch with internal cip tracking
-		proc = new ColorProcessor(2,2,new int[] {1,2,3,4});
-		ip = new ImagePlus("Fred",proc);
+		st = new ImageStack(2,2);
+		st.addSlice("zooch", new ByteProcessor(2,2));
+		st.addSlice("pooch", new ByteProcessor(2,2));
+		ip = new ImagePlus("Fred",st);
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
 		assertNull(ci.cip);
 		ci.updateImage();
@@ -498,8 +511,10 @@ public class CompositeImageTest {
 		//   nothing testable
 
 		// single channel and nchannels <= 3
-		proc = new ColorProcessor(2,2);
-		ip = new ImagePlus("PlusSize",proc);
+		st = new ImageStack(2,2);
+		st.addSlice("zooch", new ByteProcessor(2,2));
+		st.addSlice("pooch", new ByteProcessor(2,2));
+		ip = new ImagePlus("Fred",st);
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
 		ci.reset(); // populate stuff used by getProcessor(i)
 		assertEquals(0,ci.getProcessor(1).get(0,0));
@@ -510,8 +525,10 @@ public class CompositeImageTest {
 		assertNotNull(ci.img);
 
 		// not a single channel (and sync true)
-		proc = new ColorProcessor(2,2);
-		ip = new ImagePlus("PlusSize",proc);
+		st = new ImageStack(2,2);
+		st.addSlice("zooch", new ByteProcessor(2,2));
+		st.addSlice("pooch", new ByteProcessor(2,2));
+		ip = new ImagePlus("Fred",st);
 		ci = new CompositeImage(ip,CompositeImage.COMPOSITE);
 		ci.reset(); // populate stuff used by getProcessor(i)
 		assertEquals(0,ci.getProcessor(1).get(0,0));
@@ -759,8 +776,11 @@ public class CompositeImageTest {
 	public void testSetLuts() {
 		LUT[] ciLuts;
 
-		proc = new ColorProcessor(2,2);
-		ip = new ImagePlus("Zorba",proc);
+		st = new ImageStack(2,2);
+		st.addSlice("zooch", new ByteProcessor(2,2));
+		st.addSlice("pooch", new ByteProcessor(2,2));
+		st.addSlice("booch", new ByteProcessor(2,2));
+		ip = new ImagePlus("Zorba",st);
 		ci = new CompositeImage(ip);
 
 		ciLuts = lutCollection(new int[] {4,1,44});
@@ -781,7 +801,7 @@ public class CompositeImageTest {
 		ImagePlus cip;
 
 		// try with non composite image
-		cip = new ImagePlus("ZappyDo",new ColorProcessor(3,2));
+		cip = new ImagePlus("ZappyDo",new ByteProcessor(3,2));
 		ci.setLuts(ciLuts);
 		ci.copyLuts(cip);
 		laterLuts = ci.getLuts();
@@ -1041,7 +1061,10 @@ public class CompositeImageTest {
 
 		LUT lut = lut(74);
 
-		ip = new ImagePlus("Fred",new ColorProcessor(4,4));
+		st = new ImageStack(4,4);
+		st.addSlice("blub", new ByteProcessor(4,4));
+		st.addSlice("scub", new ByteProcessor(4,4));
+		ip = new ImagePlus("Fred",st);
 
 		//  customLut true and color == GRAYSCALE
 		ci = new CompositeImage(ip,CompositeImage.GRAYSCALE);

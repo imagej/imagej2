@@ -1,18 +1,35 @@
 package ij;
-import java.awt.*;
-import java.awt.image.*;
-import java.net.URL;
-import java.util.*;
+
 import ij.process.*;
 import ij.io.*;
 import ij.gui.*;
 import ij.measure.*;
-import ij.plugin.filter.Analyzer;
-import ij.util.Tools;
 import ij.macro.Interpreter;
 import ij.plugin.frame.ContrastAdjuster;
 import ij.plugin.frame.Recorder;
-import ij.plugin.Converter;
+import imagej.process.ImgLibProcessor;
+
+import java.awt.BasicStroke;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ImageObserver;
+import java.awt.image.PixelGrabber;
+import java.util.*;
+import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.GenericByteType;
+import mpicbg.imglib.type.numeric.integer.GenericIntType;
+import mpicbg.imglib.type.numeric.integer.GenericShortType;
+import mpicbg.imglib.type.numeric.integer.IntType;
+import mpicbg.imglib.type.numeric.integer.LongType;
+import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.real.DoubleType;
+import mpicbg.imglib.type.numeric.real.FloatType;
 
 /**
 This is an extended image class that supports 8-bit, 16-bit,
@@ -40,6 +57,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 	
 	/** 32-bit RGB color */
 	public static final int COLOR_RGB = 4;
+
+	/** OTHER pixel layout */
+	public static final int IMGLIB = 5;
 	
 	/** True if any changes have been made to this image. */
 	public boolean changes;
@@ -53,7 +73,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	/** Obsolete. Use GetCalibration(). */
 	public boolean sCalibrated;
 
-	protected Image img;
+	protected java.awt.Image img;
 	protected ImageProcessor ip;
 	protected ImageWindow win;
 	protected Roi roi;
@@ -93,6 +113,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 	private ImageCanvas flatteningCanvas;
 	private Overlay overlay;
 
+	// TODO - make this settable for an ImagePlus (in constructor?). Until then limited to ArrayContainers.
+	private RealType<?> imgLibType = null;
+	
     /** Constructs an uninitialized ImagePlus. */
     public ImagePlus() {
     	ID = --currentID;
@@ -102,7 +125,7 @@ public class ImagePlus implements ImageObserver, Measurements {
     /** Constructs an ImagePlus from an Image or BufferedImage. The first 
 		argument will be used as the title of the window that displays the image.
 		Throws an IllegalStateException if an error occurs while loading the image. */
-    public ImagePlus(String title, Image img) {
+    public ImagePlus(String title, java.awt.Image img) {
 		this.title = title;
     	ID = --currentID;
 		if (img!=null)
@@ -185,7 +208,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		if (IJ.debugMode) IJ.log(title + ": unlock");
 	}
 		
-	private void waitForImage(Image img) {
+	private void waitForImage(java.awt.Image img) {
 		if (comp==null) {
 			comp = IJ.getInstance();
 			if (comp==null)
@@ -406,7 +429,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 		
 	/** Returns this image as a AWT image. */
-	public Image getImage() {
+	public java.awt.Image getImage() {
 		if (img==null && ip!=null)
 			img = ip.createImage();
 		return img;
@@ -428,7 +451,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	/** Replaces the image, if any, with the one specified. 
 		Throws an IllegalStateException if an error occurs 
 		while loading the image. */
-	public void setImage(Image img) {
+	public void setImage(java.awt.Image img) {
 		if (img instanceof BufferedImage) {
 			BufferedImage bi = (BufferedImage)img;
 			if (bi.getType()==BufferedImage.TYPE_USHORT_GRAY) {
@@ -501,13 +524,33 @@ public class ImagePlus implements ImageObserver, Measurements {
 		if (dimensionsChanged) roi = null;
 		int type;
 		if (ip instanceof ByteProcessor)
+		{
 			type = GRAY8;
+			imgLibType = null;
+		}
 		else if (ip instanceof ColorProcessor)
+		{
 			type = COLOR_RGB;
+			imgLibType = null;
+		}
 		else if (ip instanceof ShortProcessor)
+		{
 			type = GRAY16;
-		else
+			imgLibType = null;
+		}
+		else if (ip instanceof FloatProcessor)
+		{
 			type = GRAY32;
+			imgLibType = null;
+		}
+		else if (ip instanceof ImgLibProcessor)
+		{
+			type = IMGLIB;
+			imgLibType = ((ImgLibProcessor<?>)ip).getType();
+		}
+		else
+			throw new IllegalArgumentException("unknown processor type : "+ip.getClass());
+		
 		if (width==0)
 			imageType = type;
 		else
@@ -931,33 +974,86 @@ public class ImagePlus implements ImageObserver, Measurements {
 		ImagePlus.GRAY32, ImagePlus.COLOR_256 or ImagePlus.COLOR_RGB).
 		@see #getBitDepth
 	*/
+	@Deprecated
     public int getType() {
     	return imageType;
     }
 
-    /** Returns the bit depth, 8, 16, 24 (RGB) or 32. RGB images actually use 32 bits per pixel. */
-    public int getBitDepth() {
-    	int bitDepth = 0;
+	public RealType<?> getImgLibType()
+	{
+		return this.imgLibType;
+	}
+	
+    /** Returns the bit depth, 8, 16, 24 (RGB), 32, or 64. RGB images actually use 32 bits per pixel. */
+    public int getBitDepth()
+    {
+    	/*
     	switch (imageType) {
 	    	case GRAY8: case COLOR_256: bitDepth=8; break;
 	    	case GRAY16: bitDepth=16; break;
 	    	case GRAY32: bitDepth=32; break;
 	    	case COLOR_RGB: bitDepth=24; break;
     	}
+    	*/
+    	
+    	int bitDepth = 0;
+    	
+    	switch (imageType)
+    	{
+    		case GRAY8:
+    		case COLOR_256:
+    			bitDepth=8;
+    			break;
+    		case GRAY16:
+    			bitDepth=16;
+    			break;
+    		case GRAY32:
+    			bitDepth=32;
+    			break;
+    		case COLOR_RGB:
+    			bitDepth=24;
+    			break;
+    		case IMGLIB:
+    	    	if (imgLibType instanceof GenericByteType<?>)
+    	    		bitDepth = 8;
+    	    	else if (imgLibType instanceof GenericShortType<?>)
+    	    		bitDepth = 16;
+    	    	else if (imgLibType instanceof GenericIntType<?>)
+    	    		bitDepth = 32;
+    	    	else if (imgLibType instanceof LongType)
+    	    		bitDepth = 64;
+    	    	else if (imgLibType instanceof FloatType)
+    	    		bitDepth = 32;
+    	    	else if (imgLibType instanceof DoubleType)
+    	    		bitDepth = 64;
+    			break;
+    		default:
+    			bitDepth = 0;
+    			break;
+    	}
+    	
     	return bitDepth;
     }
     
     /** Returns the number of bytes per pixel. */
-    public int getBytesPerPixel() {
+    public int getBytesPerPixel()
+    {
+    	// old IJ returns 4 bytes for 24-bit values. a quirk we mirror here
+		if (imageType == COLOR_RGB)
+			return 4;
+    	
+    	return getBitDepth() / 8;
+    	/*
     	switch (imageType) {
 	    	case GRAY16: return 2;
 	    	case GRAY32: case COLOR_RGB: return 4;
 	    	default: return 1;
     	}
+    	*/
 	}
 
     protected void setType(int type) {
-    	if ((type<0) || (type>COLOR_RGB))
+    	if ((type<0) || (type>IMGLIB))
     		return;
     	int previousType = imageType;
     	imageType = type;
@@ -1526,9 +1622,11 @@ public class ImagePlus implements ImageObserver, Measurements {
      		fi.coefficients = cal.getCoefficients();
     		fi.valueUnit = cal.getValueUnit();
 		}
+    	
+    	LookUpTable lut;
     	switch (imageType) {
 	    	case GRAY8: case COLOR_256:
-    			LookUpTable lut = createLut();
+    			lut = createLut();
     			if (imageType==COLOR_256 || !lut.isGrayscale())
     				fi.fileType = FileInfo.COLOR8;
     			else
@@ -1540,17 +1638,54 @@ public class ImagePlus implements ImageObserver, Measurements {
 				break;
 	    	case GRAY16:
 	    		if (compositeImage && fi.nImages==3)
-					fi.fileType = fi.RGB48;
+					fi.fileType = FileInfo.RGB48;
 				else
-					fi.fileType = fi.GRAY16_UNSIGNED;
+					fi.fileType = FileInfo.GRAY16_UNSIGNED;
 				break;
 	    	case GRAY32:
-				fi.fileType = fi.GRAY32_FLOAT;
+				fi.fileType = FileInfo.GRAY32_FLOAT;
 				break;
 	    	case COLOR_RGB:
-				fi.fileType = fi.RGB;
+				fi.fileType = FileInfo.RGB;
 				break;
+	    	case IMGLIB:
+	    		if (imgLibType instanceof GenericByteType<?>)
+	    		{
+	    			lut = createLut();
+	    			if (lut.isGrayscale())
+	    				fi.fileType = FileInfo.GRAY8;
+	    			else
+	    				fi.fileType = FileInfo.COLOR8;
+					fi.lutSize = lut.getMapSize();
+					fi.reds = lut.getReds();
+					fi.greens = lut.getGreens();
+					fi.blues = lut.getBlues();
+	    		}
+	    		else if (imgLibType instanceof GenericShortType<?>)
+	    		{
+		    		if (compositeImage && fi.nImages==3)
+						fi.fileType = FileInfo.RGB48;
+					else if (imgLibType instanceof ShortType)
+						fi.fileType = FileInfo.GRAY16_SIGNED;
+					else
+						fi.fileType = FileInfo.GRAY16_UNSIGNED;
+	    		}
+	    		else if (imgLibType instanceof GenericIntType<?>)
+	    		{
+	    			if (imgLibType instanceof IntType)
+						fi.fileType = FileInfo.GRAY32_SIGNED;
+	    			else
+						fi.fileType = FileInfo.GRAY32_UNSIGNED;
+	    		}
+	    		else if (imgLibType instanceof LongType)
+					fi.fileType = FileInfo.GRAY64_SIGNED;
+	    		else if (imgLibType instanceof FloatType)
+	    			fi.fileType = FileInfo.GRAY32_FLOAT;
+	    		else if (imgLibType instanceof DoubleType)
+	    			fi.fileType = FileInfo.GRAY64_FLOAT;
+	    		break;
 			default:
+				break;
     	}
     	return fi;
     }
@@ -1572,7 +1707,7 @@ public class ImagePlus implements ImageObserver, Measurements {
     }
 
     /** Used by ImagePlus to monitor loading of images. */
-    public boolean imageUpdate(Image img, int flags, int x, int y, int w, int h) {
+    public boolean imageUpdate(java.awt.Image img, int flags, int x, int y, int w, int h) {
     	imageUpdateY = y;
     	imageUpdateW = w;
 		if ((flags & ERROR) != 0) {
@@ -1628,6 +1763,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	public ImagePlus createHyperStack(String title, int channels, int slices, int frames, int bitDepth) {
 		int size = channels*slices*frames;
 		ImageStack stack2 = new ImageStack(width, height, size); // create empty stack
+		/* OLD
 		ImageProcessor ip2 = null;
 		switch (bitDepth) {
 			case 8: ip2 = new ByteProcessor(width, height); break;
@@ -1636,9 +1772,40 @@ public class ImagePlus implements ImageObserver, Measurements {
 			case 32: ip2 = new FloatProcessor(width, height); break;
 			default: throw new IllegalArgumentException("Invalid bit depth");
 		}
-		stack2.setPixels(ip2.getPixels(), 1); // can't create ImagePlus will null 1st image
+		*/
+		/* NEW - has problem - needs to create the image data which violates what this method says it does
+		*/
+		switch (bitDepth)
+		{
+			case 8:
+				for (int i = 0; i < size; i++)
+					stack2.addSlice("<unlabled>", true, new byte[width*height]);  // unsigned byte
+				break;
+			case 16:
+				for (int i = 0; i < size; i++)
+					stack2.addSlice("<unlabled>", true, new short[width*height]);  // unsigned short
+				break;
+			case 24:
+				for (int i = 0; i < size; i++)
+					stack2.addSlice("<unlabled>", true, new int[width*height]);  // unsigned int
+				break;
+			case 32:
+				for (int i = 0; i < size; i++)
+					stack2.addSlice("<unlabled>", false, new float[width*height]);  // float
+				break;
+			case 64:
+				for (int i = 0; i < size; i++)
+					stack2.addSlice("<unlabled>", false, new double[width*height]);  // double
+				break;
+			default:
+				throw new IllegalArgumentException("ImagePlus::createHyperStack(): invalid bit depth ("+bitDepth+")");
+		}
+		//OLD stack2.setPixels(ip2.getPixels(), 1); // can't create ImagePlus will null 1st image
+
 		ImagePlus imp2 = new ImagePlus(title, stack2);
-		stack2.setPixels(null, 1);
+		//OLD stack2.setPixels(null, 1);
+		// NEW
+		//stack2.deleteLastSlice();
 		imp2.setDimensions(channels, slices, frames);
 		imp2.setCalibration(getCalibration());
 		imp2.setOpenAsHyperStack(true);
@@ -1797,7 +1964,11 @@ public class ImagePlus implements ImageObserver, Measurements {
     			return(", value=" + Float.intBitsToFloat(v[0]));
 			case COLOR_RGB:
     			return(", value=" + v[0] + "," + v[1] + "," + v[2]);
-    		default: return("");
+			case IMGLIB:
+				double val = ((ImgLibProcessor<?>)ip).getd(x,y);
+    			return(", value=" + val);
+    		default:
+    			return("");
 		}
     }
     

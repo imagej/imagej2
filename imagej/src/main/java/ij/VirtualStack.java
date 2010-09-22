@@ -14,7 +14,7 @@ public class VirtualStack extends ImageStack {
 	private int bitDepth;
 	
 	/** Default constructor. */
-	public VirtualStack() { }
+	public VirtualStack() { super(0,0); }
 
 	/** Creates a new, empty virtual stack. */
 	public VirtualStack(int width, int height, ColorModel cm, String path) {

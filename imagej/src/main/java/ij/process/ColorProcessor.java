@@ -448,7 +448,12 @@ public class ColorProcessor extends ImageProcessor {
 	}
 
 	/** Returns the red, green and blue planes as 3 byte arrays. */
-	public void getRGB(byte[] R, byte[] G, byte[] B) {
+	public void getRGB(byte[] R, byte[] G, byte[] B)
+	{
+		ColorProcessor.getRGB(width, height, pixels, R, G, B);
+	}
+	
+	public static void getRGB(int width, int height, int[] pixels, byte[] R, byte[] G, byte[] B) {
 		int c, r, g, b;
 		for (int i=0; i < width*height; i++) {
 			c = pixels[i];
@@ -592,7 +597,7 @@ public class ColorProcessor extends ImageProcessor {
 		byte[] R = new byte[width*height];
 		byte[] G = new byte[width*height];
 		byte[] B = new byte[width*height];
-		getRGB(R, G, B);
+		ColorProcessor.getRGB(width, height, this.pixels, R, G, B);
 		Rectangle roi = new Rectangle(roiX, roiY, roiWidth, roiHeight);
 		
 		ByteProcessor r = new ByteProcessor(width, height, R, null);
@@ -1194,7 +1199,7 @@ public class ColorProcessor extends ImageProcessor {
 		byte[] r = new byte[size];
 		byte[] g = new byte[size];
 		byte[] b = new byte[size];
-		getRGB(r,g,b);
+		ColorProcessor.getRGB(width,height,pixels,r,g,b);
 		ImageProcessor rip = new ByteProcessor(width, height, r, null);
 		ImageProcessor gip = new ByteProcessor(width, height, g, null);
 		ImageProcessor bip = new ByteProcessor(width, height, b, null);

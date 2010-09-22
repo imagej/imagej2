@@ -52,7 +52,7 @@ import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.SetFloatValuesOperation;
 import imagej.process.operation.SetPlaneOperation;
-import imagej.process.operation.SetPlaneOperation.PixelType;
+import imagej.process.operation.SetPlaneOperation.DataType;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -560,6 +560,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** find the minimum and maximum values present in this plane of the image data */
 	private void findMinAndMax()
 	{
+		// TODO - kludgy but similar to ByteProcessor
+		if (this.isUnsignedByte)
+		{
+			setMinAndMax(0,255);
+			return;
+		}
+		
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
 		//get the current image data
@@ -665,30 +672,41 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		int[] position = Index.create(0,0,planePosition);
 		
+		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
+		
 		if (pixels instanceof byte[])
-			
-			setPlane(image, position, pixels, PixelType.BYTE, ((byte[])pixels).length);
-		
+		{
+			if (isUnsigned)
+				setPlane(image, position, pixels, DataType.UBYTE, ((byte[])pixels).length);
+			else
+				setPlane(image, position, pixels, DataType.BYTE, ((byte[])pixels).length);
+		}
 		else if (pixels instanceof short[])
-			
-			setPlane(image, position, pixels, PixelType.SHORT, ((short[])pixels).length);
-		
+		{	
+			if (isUnsigned)
+				setPlane(image, position, pixels, DataType.USHORT, ((short[])pixels).length);
+			else
+				setPlane(image, position, pixels, DataType.SHORT, ((short[])pixels).length);
+		}
 		else if (pixels instanceof int[])
-			
-			setPlane(image, position, pixels, PixelType.INT, ((int[])pixels).length);
-		
+		{	
+			if (isUnsigned)
+				setPlane(image, position, pixels, DataType.UINT, ((int[])pixels).length);
+			else
+				setPlane(image, position, pixels, DataType.INT, ((int[])pixels).length);
+		}
 		else if (pixels instanceof float[])
-			
-			setPlane(image, position, pixels, PixelType.FLOAT, ((float[])pixels).length);
-		
+		{	
+			setPlane(image, position, pixels, DataType.FLOAT, ((float[])pixels).length);
+		}
 		else if (pixels instanceof double[])
-			
-			setPlane(image, position, pixels, PixelType.DOUBLE, ((double[])pixels).length);
-		
+		{	
+			setPlane(image, position, pixels, DataType.DOUBLE, ((double[])pixels).length);
+		}
 		else if (pixels instanceof long[])
-			
-			setPlane(image, position, pixels, PixelType.LONG, ((long[])pixels).length);
-		
+		{	
+			setPlane(image, position, pixels, DataType.LONG, ((long[])pixels).length);
+		}
 		else
 			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
 	}
@@ -703,14 +721,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 	
 	/** sets the pixels of a plane in an image. called by setImagePlanePixels(). input pixels' type info must have been determined earlier. */
-	private void setPlane(Image<T> theImage, int[] origin, Object pixels, PixelType inputType, long numPixels)
+	private void setPlane(Image<T> theImage, int[] origin, Object pixels, DataType inputType, long numPixels)
 	{
 		if (numPixels != getTotalSamples())
 			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
 
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
 		
-		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType, isUnsigned);
+		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType);
 		
 		setOp.execute();
 	}
@@ -1464,7 +1482,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/** returns the maximum data value currently present in the image plane */
+	/** returns the maximum data value currently present in the image plane (except when UnsignedByteType) */
 	@Override
 	public double getMax() 
 	{
@@ -1478,7 +1496,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.type.getMaxValue();
 	}
 	
-	/** returns the maximum data value currently present in the image plane */
+	/** returns the minimum data value currently present in the image plane (except when UnsignedByteType) */
 	@Override
 	public double getMin() 
 	{
@@ -2336,7 +2354,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
 		
 		findMinAndMax();
-		
 		resetThreshold();
 	}
 

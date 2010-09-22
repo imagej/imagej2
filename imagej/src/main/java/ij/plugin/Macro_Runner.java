@@ -147,11 +147,11 @@ public class Macro_Runner implements PlugIn {
 	public String runMacroFromIJJar(String name, String arg) {
 		ImageJ ij = IJ.getInstance();
 		//if (ij==null) return null;
-		Class c = ij!=null?ij.getClass():(new ImageStack()).getClass();
+		Class c = ij != null ? ImageJ.class : ImageStack.class;
 		name = name.substring(7);
 		String macro = null;
         try {
-			InputStream is = c .getResourceAsStream("/macros/"+name+".txt");
+			InputStream is = c.getResourceAsStream("/macros/"+name+".txt");
 			//IJ.log(is+"  "+("/macros/"+name+".txt"));
 			if (is==null)
 				return runMacroFile(name, arg);
