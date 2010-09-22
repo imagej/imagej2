@@ -50,8 +50,12 @@ public class VirtualStack extends ImageStack {
 	public void addSlice(String sliceLabel, ImageProcessor ip) {
 	}
 	
-	/** Does noting. */
+	/** Does nothing. */
 	public void addSlice(String sliceLabel, ImageProcessor ip, int n) {
+	}
+	
+	/** Does nothing. */
+	public void addSlice(String sliceLabel, boolean unsigned, Object pixels) {
 	}
 
 	/** Deletes the specified slice, were 1<=n<=nslices. */

@@ -42,18 +42,25 @@ public class ImageStack {
 	private PlaneStack<?> stack;
 	private ArrayList<String> labels;
 	private ContainerFactory factory;
-	
-	/** Creates a new, empty image stack. */
-	public ImageStack(int width, int height, ColorModel cm)
+
+	public ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)
 	{
 		this.width = width;
 		this.height = height;
 		this.cm = cm;
-		this.factory = new ArrayContainerFactory();  // TODO - need to pass factory in to ctor
+		this.factory = factory;
 		this.stack = null;
 		this.labels = new ArrayList<String>();
 	}
+	
+	@Deprecated
+	/** Creates a new, empty image stack. */
+	public ImageStack(int width, int height, ColorModel cm)
+	{
+		this(width,height,cm,new ArrayContainerFactory());  // TODO - old use will only do array containers!!!!
+	}
 
+	@Deprecated
 	/** Creates a new, empty image stack. */
 	public ImageStack(int width, int height)
 	{
@@ -66,9 +73,8 @@ public class ImageStack {
 	{
 		// TODO - this method may only be called in Macro_Runner and I've changed the call there from
 		//   "new ImageStack().getClass()" to "ImageStack.class". Might be able to phase out this method.
-		//   But right now the ImageStackTest class relies on it totally. So hold off for now.
 		
-		//throw new IllegalArgumentException("this method is no longer supported");
+		//throw new OperationNotSupportedException("this method is no longer supported");
 		
 		this.stack = null;
 		this.labels = new ArrayList<String>();
