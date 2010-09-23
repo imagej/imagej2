@@ -1,6 +1,7 @@
 package imagej;
 
-import java.util.ArrayList;
+// OTHER WAY
+//import java.util.ArrayList;
 
 import imagej.process.ImageUtils;
 import imagej.process.Index;
