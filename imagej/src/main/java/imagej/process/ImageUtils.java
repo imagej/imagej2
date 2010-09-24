@@ -187,10 +187,12 @@ public class ImageUtils {
 	}
 
 	/**
-	 * Gets the plane at the given position from the specified image.
+	 * Gets the plane at the given position from the specified image,
+	 * by reference if possible.
 	 *
+	 * @param <T> Type of image.
 	 * @param im Image from which to extract the plane.
-	 * @param planePos Index
+	 * @param planePos Dimension position of the plane in question.
 	 */
 	public static <T extends RealType<T>> Object getPlane(Image<T> im, int[] planePos) {
 		// obtain dimensional lengths
@@ -210,6 +212,38 @@ public class ImageUtils {
 		final int no = Index.positionToRaster(lengths, planePos);
 		return planarAccess.getPlane(no);
 	}
+
+	/**
+	 * Sets the plane at the given position for the specified image,
+	 * by reference if possible.
+	 *
+	 * @param <T> Type of image.
+	 * @param im Image from which to extract the plane.
+	 * @param planePos Dimension position of the plane in question.
+	 * @param plane The plane data to assign.
+	 * @throws ClassCastException if the plane is incompatible with the image.
+	 * @throws RuntimeException if the plane cannot be set by reference.
+	 */
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static <T extends RealType<T>> void setPlane(Image<T> im, int[] planePos, Object plane) {
+			// obtain dimensional lengths
+			final int[] dims = im.getDimensions();
+			if (dims.length < 2) {
+				throw new IllegalArgumentException("Too few dimensions: " + dims.length);
+			}
+
+			final PlanarAccess planarAccess = getPlanarAccess(im);
+			if (planarAccess == null) {
+				// TODO
+				throw new RuntimeException("Unimplemented");
+			}
+
+			// TODO: Add utility method for this to Index class.
+			final int[] lengths = new int[dims.length - 2];
+			for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
+			final int no = Index.positionToRaster(lengths, planePos);
+			planarAccess.setPlane(no, plane);
+		}
 
 	public static byte[] getPlaneBytes(Image<ByteType> im, int w, int h, int[] planePos)
 	{
