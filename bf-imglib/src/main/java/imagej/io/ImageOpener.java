@@ -3,23 +3,23 @@
 //
 
 /*
- Bio-Formats support for ImgLib.
- Copyright (C) 2010, UW-Madison LOCI
+Bio-Formats support for ImgLib.
+Copyright (C) 2010, UW-Madison LOCI
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 package imagej.io;
 
@@ -33,8 +33,11 @@ import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
-import mpicbg.imglib.container.ContainerFactory;
+import mpicbg.imglib.container.Container;
+import mpicbg.imglib.container.array.Array;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.basictypecontainer.DataAccess;
+import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
@@ -61,7 +64,7 @@ public class ImageOpener {
 
   /** Reads in an imglib Image from the given source (e.g., file on disk). */
   public <T extends RealType<T>> Image<T> openImage(String id)
-  throws FormatException, IOException
+    throws FormatException, IOException
   {
     IFormatReader r = null;
     r = new ChannelSeparator();
@@ -79,7 +82,8 @@ public class ImageOpener {
     final String name = encodeName(id, dimTypes);
 
     // create image object
-    final ContainerFactory containerFactory = new ArrayContainerFactory();
+    final ArrayContainerFactory containerFactory = new ArrayContainerFactory();
+    containerFactory.setPlanar(true);
     final ImageFactory<T> imageFactory =
       new ImageFactory<T>(type, containerFactory);
     final Image<T> img =
@@ -98,19 +102,41 @@ public class ImageOpener {
     //   primitive arrays (e.g., virtual stacks in ImageJ)
     // #4 is useful for efficient memory use
 
-    // the solution below is general and works regardless of container,
-    // but at the expense of performance both now and later
+    // get container
+    final PlanarAccess<?> planarAccess = getPlanarAccess(img);
 
     // populate planes
-    final LocalizableByDimCursor<T> cursor = img.createLocalizableByDimCursor();
-    final int planeCount = r.getImageCount();
-    byte[] plane = null;
-    for (int no=0; no<planeCount; no++) {
-      if (plane == null) plane = r.openBytes(no);
-      else r.openBytes(no, plane);
-      populatePlane(r, no, plane, cursor);
+    if (planarAccess == null) {
+      // use cursor to populate planes
+
+      // NB: This solution is general and works regardless of container,
+      // but at the expense of performance both now and later.
+
+      final LocalizableByDimCursor<T> cursor =
+        img.createLocalizableByDimCursor();
+      final int planeCount = r.getImageCount();
+      byte[] plane = null;
+      for (int no = 0; no < planeCount; no++) {
+        if (plane == null) plane = r.openBytes(no);
+        else r.openBytes(no, plane);
+        populatePlane(r, no, plane, cursor);
+      }
+      cursor.close();
     }
-    cursor.close();
+    else {
+      // populate the container values directly
+
+      // NB: This solution uses the #2 container type mentioned above.
+
+      final int planeCount = r.getImageCount();
+      byte[] plane = null;
+      for (int no=0; no<planeCount; no++) {
+        if (plane == null) plane = r.openBytes(no);
+        else r.openBytes(no, plane);
+        populatePlane(r, no, plane, planarAccess);
+      }
+    }
+    r.close();
 
     return img;
   }
@@ -157,6 +183,21 @@ public class ImageOpener {
     final int rBracket = name.lastIndexOf("]");
     if (rBracket <= lBracket) return new String[0];
     return name.substring(lBracket + 1, rBracket).split(" ");
+  }
+
+  @SuppressWarnings("unchecked")
+  public PlanarAccess getPlanarAccess(Image img) {
+    PlanarAccess planarAccess = null;
+    final Container container = img.getContainer();
+    if (container instanceof Array) {
+      final Array array = (Array) container;
+      final DataAccess dataAccess = array.update(null);
+      if (dataAccess instanceof PlanarAccess) {
+        // NB: This is the #2 container type mentioned above.
+        planarAccess = (PlanarAccess) dataAccess;
+      }
+    }
+    return planarAccess;
   }
 
   // -- Helper methods --
@@ -301,6 +342,18 @@ public class ImageOpener {
     return sb.toString();
   }
 
+  @SuppressWarnings("unchecked")
+  private void populatePlane(IFormatReader r,
+    int no, byte[] plane, PlanarAccess planarAccess)
+  {
+    final int pixelType = r.getPixelType();
+    final int bpp = FormatTools.getBytesPerPixel(pixelType);
+    final boolean fp = FormatTools.isFloatingPoint(pixelType);
+    final boolean little = r.isLittleEndian();
+    final Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+    planarAccess.setPlane(no, planeArray);
+  }
+
   private <T extends RealType<T>> void populatePlane(IFormatReader r,
     int no, byte[] plane, LocalizableByDimCursor<T> cursor)
   {
@@ -316,9 +369,7 @@ public class ImageOpener {
       for (int x=0; x<sizeX; x++) {
         final int index = sizeY * x + y;
         final double value = decodeWord(plane, index, pixelType, little);
-        // need method to get N-dimensional position from reader
-        // call getZCTCoords, then decode sub-C dims
-        // set imglib cursor position to match, and assign decoded value
+        // TODO - need IFormatReader method to get N-dimensional position
         getPosition(r, no, pos);
         pos[0] = x;
         pos[1] = y;
