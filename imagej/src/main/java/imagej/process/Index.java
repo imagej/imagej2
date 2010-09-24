@@ -1,7 +1,11 @@
 package imagej.process;
 
-public class Index {
-	
+public final class Index {
+
+	private Index() {
+	  // NB: Prevent instantiation of utility class.
+	}
+
 	/** create an index array of length numDims initialized to zeroes */
 	public static int[] create(int numDims)
 	{
@@ -101,5 +105,67 @@ public class Index {
 		}		
 	}
 	*/
-}
 
+	/**
+	 * Computes a unique 1-D index corresponding to the given multidimensional
+	 * position.
+	 * 
+	 * @param lengths the maximum value for each positional dimension
+	 * @param pos position along each dimensional axis
+	 * @return rasterized index value
+	 */
+	public static int positionToRaster(int[] lengths, int[] pos) {
+		int offset = 1;
+		int raster = 0;
+		for (int i = 0; i < pos.length; i++) {
+			raster += offset * pos[i];
+			offset *= lengths[i];
+		}
+		return raster;
+	}
+
+	/**
+	 * Computes a unique N-D position corresponding to the given rasterized index
+	 * value.
+	 * 
+	 * @param lengths the maximum value at each positional dimension
+	 * @param raster rasterized index value
+	 * @return position along each dimensional axis
+	 */
+	public static int[] rasterToPosition(int[] lengths, int raster) {
+		return rasterToPosition(lengths, raster, new int[lengths.length]);
+	}
+
+	/**
+	 * Computes a unique N-D position corresponding to the given rasterized index
+	 * value.
+	 * 
+	 * @param lengths the maximum value at each positional dimension
+	 * @param raster rasterized index value
+	 * @param pos preallocated position array to populate with the result
+	 * @return position along each dimensional axis
+	 */
+	public static int[] rasterToPosition(int[] lengths, int raster, int[] pos) {
+		int offset = 1;
+		for (int i = 0; i < pos.length; i++) {
+			int offset1 = offset * lengths[i];
+			int q = i < pos.length - 1 ? raster % offset1 : raster;
+			pos[i] = q / offset;
+			raster -= q;
+			offset = offset1;
+		}
+		return pos;
+	}
+
+	/**
+	 * Computes the number of raster values for a positional array with the given
+	 * lengths.
+	 */
+	public static int getRasterLength(int[] lengths) {
+		int len = 1;
+		for (int i = 0; i < lengths.length; i++)
+			len *= lengths[i];
+		return len;
+	}
+
+}
