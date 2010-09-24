@@ -56,12 +56,14 @@
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
+    <!-- CTR: HACK: scope conflicts with bf-imglib dependency on bio-formats
     <dependency>
       <groupId>loci</groupId>
       <artifactId>bio-formats</artifactId>
       <version>5.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>loci</groupId>
       <artifactId>loci_plugins</artifactId>
