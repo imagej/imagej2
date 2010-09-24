@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import ij.Prefs;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -180,13 +181,13 @@ public class PlugInFunctions extends ParameterHandler {
 	}
 
 	/**
-	 * @returns a list of choices 
+	 * @returns a list of choices
 	 */
 	public static String[] getChoices(Field field)
 	{
 		Parameter parameter = field.getAnnotation(Parameter.class);
 		String[] c = null;
-		if (parameter != null )  
+		if (parameter != null )
 		{
 			c = parameter.choices();
 		}
@@ -248,10 +249,10 @@ public class PlugInFunctions extends ParameterHandler {
 			try {
 				Class<?> type = field.getType();
 				Object value;
-				
+
 				if (type == String.class) {
 					String initValue = (String) field.get(plugin);
-					if (!getPersist( field ).isEmpty() ) {
+					if (!getPersist( field ).equals("") ) {
 						initValue = Prefs.get( getPersist(field), initValue );
 					}
 
@@ -269,7 +270,7 @@ public class PlugInFunctions extends ParameterHandler {
 				} else if (isIntType(type)) {
 					// integer / float ?
 					Number initValue = (Number) field.get(plugin);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						initValue = Prefs.get(getPersist(field), initValue.doubleValue());
 					}
 					if (dialog != null) {
@@ -281,7 +282,7 @@ public class PlugInFunctions extends ParameterHandler {
 				} else if (isRealType(type)) {
 					// integer / float ?
 					Number initValue = (Number) field.get(plugin);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						initValue = Prefs.get(getPersist(field), initValue.doubleValue());
 					}
 					if (dialog != null) {
@@ -292,7 +293,7 @@ public class PlugInFunctions extends ParameterHandler {
 
 				} else if (isBooleanType(type)) {
 					boolean initValue = (Boolean) field.get(plugin);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						initValue = Prefs.getBoolean(getPersist(field), initValue);
 					}
 					if (dialog != null) {
@@ -337,7 +338,7 @@ public class PlugInFunctions extends ParameterHandler {
 				Class<?> type = field.getType();
 				if (type == String.class || type == char.class || type == Character.class) {
 					//if there was a dialog
-					
+
 					String s = null;
 					if ( getChoices(field)[0].length() == 0 ) {
 						s = dialog.getNextString();
@@ -346,44 +347,44 @@ public class PlugInFunctions extends ParameterHandler {
 						s = dialog.getNextChoice();
 					}
 					field.set(plugin, s);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), s);
-					}					
+					}
 				} else if (type == int.class || type == Integer.class) {
 					int n = (int) dialog.getNextNumber();
 					field.set(plugin, n);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), n);
 					}
 				} else if (type == short.class || type == Short.class) {
 					short n = (short) dialog.getNextNumber();
 					field.set(plugin, n);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), n);
 					}
 				} else if (type == long.class || type == Long.class) {
 					long n = (long) dialog.getNextNumber();
 					field.set(plugin, n);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), n);
 					}
 				} else if (type == float.class || type == Float.class) {
 					float n = (float) dialog.getNextNumber();
 					field.set(plugin, n);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), n);
 					}
 				} else if (type == double.class || type == Double.class) {
-					double n = (double) dialog.getNextNumber();
+					double n = dialog.getNextNumber();
 					field.set(plugin, n);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), n);
 					}
 
 				} else if (isBooleanType(type)) {
 					boolean b = dialog.getNextBoolean();
 					field.set(plugin, b);
-					if (!getPersist(field).isEmpty()) {
+					if (!getPersist(field).equals("")) {
 						Prefs.set(getPersist(field), b);
 					}
 				} else if (type == ImagePlus.class) {
