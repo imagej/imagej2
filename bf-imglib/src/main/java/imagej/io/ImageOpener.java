@@ -19,7 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 package imagej.io;
 
@@ -64,7 +64,7 @@ public class ImageOpener {
 
   /** Reads in an imglib Image from the given source (e.g., file on disk). */
   public <T extends RealType<T>> Image<T> openImage(String id)
-    throws FormatException, IOException
+  throws FormatException, IOException
   {
     IFormatReader r = null;
     r = new ChannelSeparator();
@@ -141,6 +141,23 @@ public class ImageOpener {
     return img;
   }
 
+  // TODO: eliminate getPlanarAccess in favor of ImageUtils method elsewhere.
+
+  /** Obtains planar access instance backing the given image, if any. */
+  public static PlanarAccess<?> getPlanarAccess(Image<?> im) {
+    PlanarAccess<?> planarAccess = null;
+    Container<?> container = im.getContainer();
+    if (container instanceof Array) {
+      Array<?, ?> array = (Array<?, ?>) container;
+      final DataAccess dataAccess = array.update(null);
+      if (dataAccess instanceof PlanarAccess) {
+        // NB: This is the #2 container type mentioned above.
+        planarAccess = (PlanarAccess<?>) dataAccess;
+      }
+    }
+    return planarAccess;
+  }
+
   /** Converts Bio-Formats pixel type to imglib Type object. */
   @SuppressWarnings("unchecked")
   public <T extends RealType<T>> T makeType(int pixelType) {
@@ -183,21 +200,6 @@ public class ImageOpener {
     final int rBracket = name.lastIndexOf("]");
     if (rBracket <= lBracket) return new String[0];
     return name.substring(lBracket + 1, rBracket).split(" ");
-  }
-
-  @SuppressWarnings("unchecked")
-  public PlanarAccess getPlanarAccess(Image img) {
-    PlanarAccess planarAccess = null;
-    final Container container = img.getContainer();
-    if (container instanceof Array) {
-      final Array array = (Array) container;
-      final DataAccess dataAccess = array.update(null);
-      if (dataAccess instanceof PlanarAccess) {
-        // NB: This is the #2 container type mentioned above.
-        planarAccess = (PlanarAccess) dataAccess;
-      }
-    }
-    return planarAccess;
   }
 
   // -- Helper methods --
@@ -342,7 +344,7 @@ public class ImageOpener {
     return sb.toString();
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private void populatePlane(IFormatReader r,
     int no, byte[] plane, PlanarAccess planarAccess)
   {
