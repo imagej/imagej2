@@ -4,8 +4,12 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.process.operation.ImageCopierOperation;
+import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
+import mpicbg.imglib.container.array.Array;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.basictypecontainer.DataAccess;
+import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
@@ -26,6 +30,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   Notice that copyFromImageToImage() could create a CopyOperation and apply it. This requires breaking Operations out of
 //     ImgLibProcessor first.
 //   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when we can call ImagePlus::setDimensions(int[] dims)
+//   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
 public class ImageUtils {
 	
@@ -165,6 +170,46 @@ public class ImageUtils {
 		}
 		
 	// TODO: Can we extract these arrays without case logic? Seems difficult...
+
+	/** Obtains planar access instance backing the given image, if any. */
+	public static PlanarAccess<?> getPlanarAccess(Image<?> im) {
+		PlanarAccess<?> planarAccess = null;
+		Container<?> container = im.getContainer();
+		if (container instanceof Array) {
+			Array<?, ?> array = (Array<?, ?>) container;
+			final DataAccess dataAccess = array.update(null);
+			if (dataAccess instanceof PlanarAccess) {
+				// NB: This is the #2 container type mentioned above.
+				planarAccess = (PlanarAccess<?>) dataAccess;
+			}
+		}
+		return planarAccess;
+	}
+
+	/**
+	 * Gets the plane at the given position from the specified image.
+	 *
+	 * @param im Image from which to extract the plane.
+	 * @param planePos Index
+	 */
+	public static <T extends RealType<T>> Object getPlane(Image<T> im, int[] planePos) {
+		// obtain dimensional lengths
+		final int[] dims = im.getDimensions();
+		if (dims.length < 2) {
+			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
+		}
+
+		final PlanarAccess<?> planarAccess = getPlanarAccess(im);
+		if (planarAccess == null) {
+			return getPlane(im, dims[0], dims[1], planePos);
+		}
+
+		// TODO: Add utility method for this to Index class.
+		final int[] lengths = new int[dims.length - 2];
+		for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
+		final int no = Index.positionToRaster(lengths, planePos);
+		return planarAccess.getPlane(no);
+	}
 
 	public static byte[] getPlaneBytes(Image<ByteType> im, int w, int h, int[] planePos)
 	{
