@@ -2,6 +2,7 @@ package imagej.process.operation;
 
 import imagej.process.ImageUtils;
 import imagej.process.Observer;
+import imagej.selection.SelectionFunction;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
@@ -14,6 +15,7 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		private int[][] origins;
 		private int[][] spans;
 		private Observer observer;
+		private SelectionFunction[] selectors;
 		
 		protected ManyCursorRoiOperation(Image<T>[] images, int[][] origins, int[][] spans)
 		{
@@ -23,7 +25,9 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 			this.images = images;
 			this.origins = origins.clone();
 			this.spans = spans.clone();
+			
 			this.observer = null;
+			this.selectors = new SelectionFunction[images.length];
 			
 			for (int i = 0; i < this.images.length; i++)
 				ImageUtils.verifyDimensions(this.images[i].getDimensions(), this.origins[i], this.spans[i]);
@@ -39,11 +43,20 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		public int[][] getSpans() { return spans; }
 
 		public void addObserver(Observer o) { this.observer = o; }
+		public void setSelectionFunctions(SelectionFunction[] funcs) { this.selectors = funcs; }
 		
 		public abstract void beforeIteration(RealType<T> type);
 		public abstract void insideIteration(RealType<T>[] samples);
 		public abstract void afterIteration();
 
+		private boolean selected(RealType<T>[] samples)
+		{
+			for (int i = 0; i < samples.length; i++)
+				if ((this.selectors[i] != null) && !(this.selectors[i].include(null, samples[i].getRealDouble())))
+					return false;
+			return true;
+		}
+		
 		private void collectSamples(RegionOfInterestCursor<T>[] cursors, RealType<T>[] samples)
 		{
 			for (int i = 0; i < cursors.length; i++)
@@ -99,8 +112,9 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 				fwd(roiCursors);
 				
 				collectSamples(roiCursors,samples);
-				
-				insideIteration(samples);
+			
+				if (selected(samples))
+					insideIteration(samples);
 
 				if (this.observer != null)
 					observer.update();

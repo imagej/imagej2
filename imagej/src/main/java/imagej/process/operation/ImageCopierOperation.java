@@ -1,33 +1,14 @@
 package imagej.process.operation;
 
+import imagej.process.function.CopyUnaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-// TODO - this method could use a copy function rather than inline but maybe this way is faster
-
-public class ImageCopierOperation<K extends RealType<K>> extends DualCursorRoiOperation<K>
+public class ImageCopierOperation<K extends RealType<K>> extends BinaryAssignOperation<K>
 {
-	public ImageCopierOperation(Image<K> img1, int[] origin1, int[] span1,
-				Image<K> img2, int[] origin2, int[] span2)
+	public ImageCopierOperation(Image<K> srcImg, int[] srcOrigin, int[] srcSpan,
+				Image<K> dstImg, int[] dstOrigin, int[] dstSpan)
 	{
-		super(img1, origin1, span1, img2, origin2, span2);
+		super(dstImg, dstOrigin, dstSpan, srcImg, srcOrigin, srcSpan, new CopyUnaryFunction());
 	}
-
-	@Override
-	public void beforeIteration(RealType<K> type)
-	{
-	}
-
-	@Override
-	public void insideIteration(RealType<K> sample1, RealType<K> sample2)
-	{
-		double val = sample1.getRealDouble();
-		sample2.setReal(val);
-	}
-
-	@Override
-	public void afterIteration()
-	{
-	}
-	
 }

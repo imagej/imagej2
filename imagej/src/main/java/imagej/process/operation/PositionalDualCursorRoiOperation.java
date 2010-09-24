@@ -3,6 +3,7 @@ package imagej.process.operation;
 import imagej.process.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Observer;
+import imagej.selection.SelectionFunction;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -13,6 +14,7 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 	private int[] origin1, origin2;
 	private int[] span1, span2;
 	private Observer observer;
+	private SelectionFunction selector1, selector2;
 	
 	protected PositionalDualCursorRoiOperation(Image<T> image1, int[] origin1, int[] span1, Image<T> image2, int[] origin2, int[] span2)
 	{
@@ -25,6 +27,8 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 		this.span2 = span2.clone();
 	
 		this.observer = null;
+		this.selector1 = null;
+		this.selector2 = null;
 		
 		ImageUtils.verifyDimensions(image1.getDimensions(), origin1, span1);
 		ImageUtils.verifyDimensions(image2.getDimensions(), origin2, span2);
@@ -42,6 +46,12 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 	public int[] getSpan2() { return span2; }
 	
 	public void addObserver(Observer o) { this.observer = o; }
+	public void setSelectionFunctions(SelectionFunction f1, SelectionFunction f2)
+	{
+		this.selector1 = f1;
+		this.selector2 = f2;
+	}
+	
 	
 	public abstract void beforeIteration(RealType<T> type);
 	public abstract void insideIteration(int[] position1, RealType<T> sample1, int[] position2, RealType<T> sample2);
@@ -67,15 +77,24 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 		{
 			cursor1.setPosition(position1);
 			cursor2.setPosition(position2);
+
+			RealType<T> sample1 = cursor1.getType();
+			RealType<T> sample2 = cursor2.getType();
 			
-			// could clone these but may take longer and cause a lot of object creation/destruction
-			for (int i = 0; i < position1.length; i++)
-				position1Copy[i] = position1[i];
-			for (int i = 0; i < position2.length; i++)
-				position2Copy[i] = position2[i];
-			
-			// send them a copy of position so that users can manipulate without messing us up
-			insideIteration(position1Copy, cursor1.getType(), position2Copy, cursor2.getType());
+			if ((this.selector1 == null) || (this.selector1.include(position1, sample1.getRealDouble())))
+			{
+				if ((this.selector2 == null) || (this.selector2.include(position2, sample2.getRealDouble())))
+				{
+					// could clone these but may take longer and cause a lot of object creation/destruction
+					for (int i = 0; i < position1.length; i++)
+						position1Copy[i] = position1[i];
+					for (int i = 0; i < position2.length; i++)
+						position2Copy[i] = position2[i];
+					
+					// send them a copy of position so that users can manipulate without messing us up
+					insideIteration(position1Copy, sample1, position2Copy, sample2);
+				}
+			}
 			
 			if (this.observer != null)
 				observer.update();
