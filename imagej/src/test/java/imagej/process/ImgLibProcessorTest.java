@@ -391,6 +391,7 @@ public class ImgLibProcessorTest {
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
 			//   an earlier version of ImageJ code this test will break.
 			compareData(procPair[0], procPair[1]);
+			compareMinAndMax(procPair[0], procPair[1]);
 		}
 		
 		// now test with ROI set
@@ -406,6 +407,7 @@ public class ImgLibProcessorTest {
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
 			//   an earlier version of ImageJ code this test will break.
 			compareData(procPair[0], procPair[1]);
+			compareMinAndMax(procPair[0], procPair[1]);
 		}
 	}
 	
