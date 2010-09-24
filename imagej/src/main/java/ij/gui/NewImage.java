@@ -1,12 +1,23 @@
 package ij.gui;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import java.awt.event.*;
 import java.util.*;
+
+import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.ByteType;
+import mpicbg.imglib.type.numeric.integer.IntType;
+import mpicbg.imglib.type.numeric.integer.LongType;
+import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import mpicbg.imglib.type.numeric.real.DoubleType;
+import mpicbg.imglib.type.numeric.real.FloatType;
+
 import ij.*;
 import ij.process.*;
+import imagej.process.ImageUtils;
 
 /** New image dialog box plus several static utility methods for creating images.*/
 public class NewImage {
@@ -28,9 +39,13 @@ public class NewImage {
     private static int slices = Prefs.getInt(SLICES, 1);
     private static int type = Prefs.getInt(TYPE, GRAY8);
     private static int fillWith = Prefs.getInt(FILL, OLD_FILL_WHITE);
-    private static String[] types = {"8-bit", "16-bit", "32-bit", "RGB"};
     private static String[] fill = {"White", "Black", "Ramp"};
-    
+
+    private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
+	private static String[] sampleNames = new String[] {"8-bit signed", "8-bit unsigned", "16-bit signed", "16-bit unsigned",
+			"24-bit RGB", "32-bit signed", "32-bit unsigned", "32-bit float", "64-bit signed", "64-bit float"};
+	private static RealType<?> imgLibType;
+	
 	
     public NewImage() {
     	openImage();
@@ -251,7 +266,26 @@ public class NewImage {
 		return imp;
 	}
 
-	public static void open(String title, int width, int height, int nSlices, int type, int options) {
+	static void imgLibOpen(String title, int width, int height, int nSlices, int type, int options)
+	{
+		long startTime = System.currentTimeMillis();
+		int[] dimensions = new int[]{width, height, nSlices};
+		Image<?> image = ImageUtils.createImage(imgLibType, new ArrayContainerFactory(), dimensions);
+		ImagePlus imp = ImageUtils.createImagePlus(image);
+		if (imp!=null) {
+			WindowManager.checkForDuplicateName = true;          
+			imp.show();
+			IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
+		}
+	}
+	
+	public static void open(String title, int width, int height, int nSlices, int type, int options)
+	{
+		if (!Prefs.get("IJ_1.4_Compatible", false))
+		{
+			imgLibOpen(title, width, height, nSlices, type, options);
+			return;
+		}
 		int bitDepth = 8;
 		if (type==GRAY16) bitDepth = 16;
 		else if (type==GRAY32) bitDepth = 32;
@@ -277,14 +311,22 @@ public class NewImage {
 		return imp;
 	}
 	
-	boolean showDialog() {
+	boolean showDialog()
+	{
+		if (Prefs.get("IJ_1.4_Compatible", false))
+			return compatibleShowDialog();
+		else
+			return currentShowDialog();
+	}
+	
+	boolean compatibleShowDialog() {
 		if (type<GRAY8|| type>RGB)
 			type = GRAY8;
 		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
 			fillWith = OLD_FILL_WHITE;
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
-		gd.addChoice("Type:", types, types[type]);
+		gd.addChoice("Type:", oldTypes, oldTypes[type]);
 		gd.addChoice("Fill With:", fill, fill[fillWith]);
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
 		gd.addNumericField("Height:", height, 0, 5, "pixels");
@@ -309,11 +351,97 @@ public class NewImage {
 		return true;
 	}
 
+	boolean currentShowDialog()
+	{
+		if (type<GRAY8 || type>ImagePlus.IMGLIB)
+		{
+			type = ImagePlus.IMGLIB;
+			imgLibType = new UnsignedByteType();
+		}
+		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
+			fillWith = OLD_FILL_WHITE;
+		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
+		gd.addStringField("Name:", name, 12);
+		
+		gd.addChoice("Type:", sampleNames, sampleNames[0]);
+		gd.addChoice("Fill With:", fill, fill[fillWith]);
+		gd.addNumericField("Width:", width, 0, 5, "pixels");
+		gd.addNumericField("Height:", height, 0, 5, "pixels");
+		gd.addNumericField("Slices:", slices, 0, 5, "");
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return false;
+		name = gd.getNextString();
+
+		String sampleType = gd.getNextChoice();
+		
+		int desiredType = -1;
+		for (int i = 0; i < sampleNames.length; i++)
+			if (sampleType.equals(sampleNames[i]))
+				desiredType = i;
+		switch (desiredType)
+		{
+			case 0:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new ByteType();
+				break;
+			case 1:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new UnsignedByteType();
+				break;
+			case 2:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new ShortType();
+				break;
+			case 3:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new UnsignedShortType();
+				break;
+			case 4:
+				type = ImagePlus.COLOR_RGB;
+				imgLibType = null;
+				break;
+			case 5:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new IntType();
+				break;
+			case 6:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new UnsignedIntType();
+				break;
+			case 7:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new FloatType();
+				break;
+			case 8:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new LongType();
+				break;
+			case 9:
+				type = ImagePlus.IMGLIB;
+				imgLibType = new DoubleType();
+				break;
+			default:
+				throw new IllegalArgumentException("unknown sample type chosen "+sampleType);
+		}
+		fillWith = gd.getNextChoiceIndex();
+		width = (int)gd.getNextNumber();
+		height = (int)gd.getNextNumber();
+		slices = (int)gd.getNextNumber();
+		return true;
+	}
+
 	void openImage() {
 		if (!showDialog())
 			return;
-		try {open(name, width, height, slices, type, fillWith);}
-		catch(OutOfMemoryError e) {IJ.outOfMemory("New Image...");}
+		try
+		{
+			open(name, width, height, slices, type, fillWith);
+		}
+		catch(OutOfMemoryError e)
+		{
+			IJ.outOfMemory("New Image...");
+		}
 	}
 	
 	/** Called when ImageJ quits. */
