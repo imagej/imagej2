@@ -971,10 +971,10 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 
 	/** Returns the current image type (ImagePlus.GRAY8, ImagePlus.GRAY16,
-		ImagePlus.GRAY32, ImagePlus.COLOR_256 or ImagePlus.COLOR_RGB).
+		ImagePlus.GRAY32, ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, or ImagePlus.IMGLIB).
+		For IMGLIB images call getImgLibType() to determine actual type.
 		@see #getBitDepth
 	*/
-	@Deprecated
     public int getType() {
     	return imageType;
     }
@@ -1110,6 +1110,9 @@ public class ImagePlus implements ImageObserver, Measurements {
     
 	private int[] pvalue = new int[4];
 
+	// TODO - this method not sufficient to represent 64-bit data!!!! Must address. Maybe return upper and lower value
+	//   in the first two ints.
+	
 	/**
 	Returns the pixel value at (x,y) as a 4 element array. Grayscale values
 	are retuned in the first element. RGB values are returned in the first
