@@ -9,10 +9,12 @@ import ij.plugin.SimpleCommands;
 import ij.text.TextWindow;
 import ij.util.Java2;
 import ij.measure.ResultsTable;
+import imagej.io.ImageOpener;
+import imagej.process.ImageUtils;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.net.URL;
 import java.net.*;
 import java.util.Hashtable;
 import java.util.zip.*;
@@ -21,6 +23,9 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
+
+import loci.formats.FormatException;
+import mpicbg.imglib.type.numeric.RealType;
 
 /** Opens tiff (and tiff stacks), dicom, fits, pgm, jpeg, bmp or
 	gif images, and look-up tables, using a file open dialog or a path.
@@ -239,6 +244,9 @@ public class Opener {
 		fileType = getFileType(path);
 		if (IJ.debugMode)
 			IJ.log("openImage: \""+types[fileType]+"\", "+path);
+		// CTR 2010-09-24: First cut at using bf-imglib image opener.
+		// Commented out for now because it causes several tests to fail.
+		//return openImglibImage(path);
 		switch (fileType) {
 			case TIFF:
 				imp = openTiff(directory, name);
@@ -288,7 +296,24 @@ public class Opener {
 				return null;
 		}
 	}
-	
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private ImagePlus openImglibImage(String path) {
+		final ImageOpener imageOpener = new ImageOpener();
+		try {
+			final mpicbg.imglib.image.Image<? extends RealType> img =
+				imageOpener.openImage(path);
+			return ImageUtils.createImagePlus(img);
+		}
+		catch (FormatException e) {
+			IJ.handleException(e);
+		}
+		catch (IOException e) {
+			IJ.handleException(e);
+		}
+		return null;
+	}
+
 	/** Attempts to open the specified file as a tiff, bmp, dicom, fits,
 		pgm, gif or jpeg. Displays a file open dialog if 'path' is null or
 		an empty string. Returns an ImagePlus object if successful. */
@@ -853,6 +878,7 @@ public class Opener {
 	'magic numbers' and the file name extension.
 	 */
 	public int getFileType(String path) {
+		// TODO: Use Bio-Formats for file type identification.
 		if (openUsingPlugins && !path.endsWith(".txt") &&  !path.endsWith(".java"))
 			return UNKNOWN;
 		File file = new File(path);
