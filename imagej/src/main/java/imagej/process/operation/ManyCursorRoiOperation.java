@@ -43,7 +43,13 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		public int[][] getSpans() { return spans; }
 
 		public void addObserver(Observer o) { this.observer = o; }
-		public void setSelectionFunctions(SelectionFunction[] funcs) { this.selectors = funcs; }
+		public void setSelectionFunctions(SelectionFunction[] funcs)
+		{
+			this.selectors = funcs;
+			if (funcs != null)
+				if (funcs.length != images.length)
+					throw new IllegalArgumentException("incorrect number of selectors provided");
+		}
 		
 		public abstract void beforeIteration(RealType<T> type);
 		public abstract void insideIteration(RealType<T>[] samples);
@@ -51,9 +57,13 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 
 		private boolean selected(RealType<T>[] samples)
 		{
+			if (this.selectors == null)
+				return true;
+			
 			for (int i = 0; i < samples.length; i++)
 				if ((this.selectors[i] != null) && !(this.selectors[i].include(null, samples[i].getRealDouble())))
 					return false;
+			
 			return true;
 		}
 		

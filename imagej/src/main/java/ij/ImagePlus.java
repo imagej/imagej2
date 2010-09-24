@@ -22,12 +22,16 @@ import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.util.*;
 import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.GenericByteType;
 import mpicbg.imglib.type.numeric.integer.GenericIntType;
 import mpicbg.imglib.type.numeric.integer.GenericShortType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
@@ -1115,9 +1119,13 @@ public class ImagePlus implements ImageObserver, Measurements {
 	
 	/**
 	Returns the pixel value at (x,y) as a 4 element array. Grayscale values
-	are retuned in the first element. RGB values are returned in the first
+	are returned in the first element. RGB values are returned in the first
 	3 elements. For indexed color images, the RGB values are returned in the
-	first 3 three elements and the index (0-255) is returned in the last.
+	first 3 three elements and the index (0-255) is returned in the last. For
+	64-bit types the low 32 bits are returned in the first element and the
+	high 32 bits are returned in the second element. For floating point types
+	the returned integers hold the encoding (Float.floatToIntBits() or
+	Double.doubleToLongBits().
 	*/
 	public int[] getPixel(int x, int y) {
 		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
@@ -1162,6 +1170,42 @@ public class ImagePlus implements ImageObserver, Measurements {
 				break;
 			case GRAY16: case GRAY32:
 				if (ip!=null) pvalue[0] = ip.getPixel(x, y);
+				break;
+			case IMGLIB:
+				if (ip != null)
+				{
+					if (imgLibType == null) 
+						throw new IllegalArgumentException("can't figure out pixel type");
+					
+					if ((imgLibType instanceof ByteType) || (imgLibType instanceof UnsignedByteType))
+					{
+						pvalue[0] = ip.get(x, y);
+						pvalue[3] = pvalue[0];
+					}
+					else if ((imgLibType instanceof ShortType) ||
+							(imgLibType instanceof UnsignedShortType) ||
+							(imgLibType instanceof IntType) ||
+							(imgLibType instanceof UnsignedIntType) ||
+							(imgLibType instanceof FloatType)
+							)
+					{
+						pvalue[0] = ip.get(x, y);
+					}
+					else if ((imgLibType instanceof DoubleType))
+					{
+						double value = ((ImgLibProcessor<?>)ip).getd(x, y);
+						long encoding = Double.doubleToLongBits(value);
+						pvalue[0] = (int)(encoding & 0xffffffff);
+						pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
+					}
+					else if ((imgLibType instanceof LongType))
+					{
+						double value = ((ImgLibProcessor<?>)ip).getd(x, y);
+						long encoding = (long)value;                             // TODO - precision loss possible here
+						pvalue[0] = (int)(encoding & 0xffffffff);
+						pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
+					}
+				}
 				break;
 		}
 		return pvalue;
@@ -1969,7 +2013,7 @@ public class ImagePlus implements ImageObserver, Measurements {
     			return(", value=" + v[0] + "," + v[1] + "," + v[2]);
 			case IMGLIB:
 				double val = ((ImgLibProcessor<?>)ip).getd(x,y);
-    			return(", value=" + val);
+    			return(", value=" + IJ.d2s(val));
     		default:
     			return("");
 		}
