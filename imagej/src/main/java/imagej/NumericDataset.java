@@ -1,9 +1,6 @@
 package imagej;
 
 import imagej.process.ImageUtils;
-import imagej.process.function.UnaryComputation;
-import imagej.process.function.UnaryFunction;
-import imagej.process.operation.PositionalSingleCursorRoiOperation;
 import imagej.selection.*;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.image.Image;

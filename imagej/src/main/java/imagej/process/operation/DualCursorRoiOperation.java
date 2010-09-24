@@ -45,6 +45,11 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	public int[] getSpan2()   { return span2; }
 
 	public void addObserver(Observer o) { observer = o; }
+	public void setSelectionFunctions(SelectionFunction f1, SelectionFunction f2)
+	{
+		selector1 = f1;
+		selector2 = f2;
+	}
 	
 	public abstract void beforeIteration(RealType<T> type);
 	public abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);
