@@ -4,7 +4,6 @@ import ij.process.*;
 import imagej.PlaneStack;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
-import imagej.process.Index;
 import imagej.process.TypeManager;
 
 import java.awt.image.ColorModel;
@@ -43,25 +42,36 @@ public class ImageStack {
 	private ArrayList<String> labels;
 	private ContainerFactory factory;
 
+	/**
+	* Creates a new, empty image stack given width, height, ColorModel, and ContainerFactory. If ContainerFactory is null
+	* all planes of ImageStack will be created inside ArrayContainers.
+	*/
 	public ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)
 	{
 		this.width = width;
 		this.height = height;
 		this.cm = cm;
-		this.factory = factory;
+		if (factory == null)
+			this.factory = new ArrayContainerFactory();  // TODO - or PlanarAccess structure???
+		else
+			this.factory = factory;
 		this.stack = null;
 		this.labels = new ArrayList<String>();
 	}
 	
-	@Deprecated
-	/** Creates a new, empty image stack. */
+	/**
+	* Creates a new, empty image stack given width, height, and ColorModel.
+	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
+	*/
 	public ImageStack(int width, int height, ColorModel cm)
 	{
-		this(width,height,cm,new ArrayContainerFactory());  // TODO - old use will only do array containers!!!!
+		this(width,height,cm,null);
 	}
 
-	@Deprecated
-	/** Creates a new, empty image stack. */
+	/**
+	* Creates a new, empty image stack given width, and height.
+	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
+	*/
 	public ImageStack(int width, int height)
 	{
 		this(width, height, null);
@@ -81,8 +91,10 @@ public class ImageStack {
 	}
 	*/
 	
-	@Deprecated
-	/** Creates a new image stack with a capacity of 'size'. */
+	/**
+	* Creates a new image stack given width and height of planes. Does NOT preallocate stack to given size parameter.
+	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
+	*/
 	public ImageStack(int width, int height, int size)
 	{
 		this(width,height);  // ignore size. this method is no longer needed
@@ -173,14 +185,17 @@ public class ImageStack {
 		stack.deletePlane(sliceNumber);
 	}
 	
-	@Deprecated
+	/**
+	* Add a plane of data to the ImageStack.
+	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
+	*/
 	public void addSlice(String sliceLabel, Object pixels)
 	{
 		addSlice(sliceLabel,true,pixels); // TODO - always true keeps us from supporting signed integral pixel types
 	}
 	
-	/** Adds an image in the form of a pixel array to the end of the stack. */
-	public void addSlice(String sliceLabel, boolean unsigned, Object pixels)
+	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
+	public void addSlice(String sliceLabel, boolean dataIsUnsigned, Object pixels)
 	{
 		if (pixels==null) 
 			throw new IllegalArgumentException("'pixels' is null!");
@@ -192,11 +207,13 @@ public class ImageStack {
 		if (stack != null)
 			atPlaneNumber = stack.getEndPosition();
 		
-		addSliceToImage(atPlaneNumber, sliceLabel, unsigned, pixels);
+		addSliceToImage(atPlaneNumber, sliceLabel, dataIsUnsigned, pixels);
 	}
 	
-	@Deprecated
-	/** Obsolete. Short images are always unsigned. */
+	/**
+	* Obsolete. Short images are always unsigned.
+	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
+	*/
 	public void addUnsignedShortSlice(String sliceLabel, Object pixels)
 	{
 		addSlice(sliceLabel, pixels);
