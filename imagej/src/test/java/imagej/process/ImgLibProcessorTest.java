@@ -627,6 +627,15 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	private void compareMinAndMax(ImageProcessor proc1, ImageProcessor proc2)
+	{
+		double baselineMin = proc1.getMin();
+		double baselineMax = proc1.getMax();
+		
+		assertEquals(baselineMin, proc2.getMin(), Assert.DOUBLE_TOL);
+		assertEquals(baselineMax, proc2.getMax(), Assert.DOUBLE_TOL);
+	}
+	
 	@Test
 	public void testFilterInt()
 	{
@@ -647,6 +656,7 @@ public class ImgLibProcessorTest {
 				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
 				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
 				compareData(procPair[0], procPair[1]);
+				compareMinAndMax(procPair[0], procPair[1]);
 
 				// test when ROI set
 				
@@ -658,6 +668,7 @@ public class ImgLibProcessorTest {
 				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
 				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
 				compareData(procPair[0], procPair[1]);
+				compareMinAndMax(procPair[0], procPair[1]);
 			}
 		}
 	}

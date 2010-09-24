@@ -6,6 +6,8 @@ import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+// TODO - this got in the repository by accident. Could delete but could also expand it and use it.
+
 public class NumericDataset
 {
 	private RealType<?> type;

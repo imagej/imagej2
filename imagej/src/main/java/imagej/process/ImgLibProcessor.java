@@ -6,6 +6,7 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
+
 import imagej.process.function.AbsUnaryFunction;
 import imagej.process.function.AddBinaryFunction;
 import imagej.process.function.AddNoiseUnaryFunction;
@@ -917,6 +918,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this, origin, span, kernel);
 		
 		convolveOp.execute();
+
+		// TODO - do we need to findMinAndMax()??? ij procs do not do this but probably should
+		//findMinAndMax();
 	}
 
 	// not an override
@@ -1298,6 +1302,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			default:
 				throw new IllegalArgumentException("filter(FilterTye): invalid filter type specified - "+type);
 		}
+		
+		// TODO - do we need to findMinAndMax()??? ij procs do not do this but probably should
+		//findMinAndMax();
 	}
 
 	/** run specified filter (an int) on current ROI area of current plane data */
