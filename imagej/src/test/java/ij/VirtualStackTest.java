@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import ij.process.ByteProcessor;
 import ij.process.DataConstants;
 import ij.process.ImageProcessor;
+import imagej.process.ImgLibProcessor;
 
 import java.awt.image.ColorModel;
 
@@ -301,13 +302,13 @@ public class VirtualStackTest {
 
 		// try valid entries and test returned data
 		proc = vs.getProcessor(1);
-		assertTrue(proc instanceof ByteProcessor);
+		assertTrue(proc instanceof ImgLibProcessor);
 		assertEquals(2,proc.getWidth());
 		assertEquals(3,proc.getHeight());
 		assertArrayEquals(new byte[]{0,40,0,40,120,-96},(byte[])proc.getPixels());
 
 		proc = vs.getProcessor(2);
-		assertTrue(proc instanceof ByteProcessor);
+		assertTrue(proc instanceof ImgLibProcessor);
 		assertEquals(2,proc.getWidth());
 		assertEquals(3,proc.getHeight());
 		assertArrayEquals(new byte[]{0,40,0,40,120,-96},(byte[])proc.getPixels());
