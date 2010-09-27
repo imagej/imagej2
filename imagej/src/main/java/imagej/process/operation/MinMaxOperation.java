@@ -23,7 +23,9 @@ public class MinMaxOperation<T extends RealType<T>> extends SingleCursorRoiOpera
 	{
 		this.min = type.getMaxValue();
 		this.max = type.getMinValue();
-		if (type instanceof FloatType)
+		// CTR: HACK: Workaround for compiler issue with instanceof and generics.
+		//if (type instanceof FloatType)
+		if (FloatType.class.isAssignableFrom(type.getClass()))
 		{
 			this.posInfinity = Float.POSITIVE_INFINITY;
 			this.negInfinity = Float.NEGATIVE_INFINITY;
