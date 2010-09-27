@@ -1,7 +1,10 @@
 package imagej.process;
 
+import java.io.File;
+
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 import imagej.process.operation.ImageCopierOperation;
 import mpicbg.imglib.container.Container;
@@ -564,6 +567,11 @@ public class ImageUtils {
 
 	public static ImagePlus createImagePlus(final Image<?> img)
 	{
+		return createImagePlus(img, null);
+	}
+
+	public static ImagePlus createImagePlus(final Image<?> img, final String id)
+	{
 		Cursor<?> cursor = img.createCursor();
 		
 		Type<?> runtimeT = cursor.getType();
@@ -630,9 +638,21 @@ public class ImageUtils {
 			
 			stack.addSlice(""+plane, processor);
 		}
-		
-		ImagePlus imp = new ImagePlus(img.getName(), stack);
-		
+		final ImagePlus imp = new ImagePlus(img.getName(), stack);
+		if (id != null) {
+			final FileInfo fi = new FileInfo();
+			fi.width = dimensions[0];
+			fi.height = dimensions[1];
+			final File file = new File(id);
+			if (file.exists()) {
+				fi.fileName = file.getName();
+				fi.directory = file.getParent();
+				imp.setTitle(fi.fileName);
+			}
+			else fi.url = id;
+			imp.setFileInfo(fi);
+		}
+
 		// let ImageJ know what dimension we have
 		
 		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
