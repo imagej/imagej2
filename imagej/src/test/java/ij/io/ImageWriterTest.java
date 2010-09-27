@@ -45,7 +45,6 @@ public class ImageWriterTest {
 	private byte[] writeData(FileInfo fi, boolean expectIOException)
 	{
 		try {
-
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			ImageWriter writer = new ImageWriter(fi);
 			writer.write(stream);
@@ -55,9 +54,7 @@ public class ImageWriterTest {
 			if (expectIOException)
 				assertTrue(true);
 			else
-				fail(e.getMessage());
-		} catch(Exception e){
-			fail(e.getMessage());
+				throw new RuntimeException(e);
 		}
 		return null;
 	}
