@@ -21,19 +21,17 @@ public class ExpUnaryFunction implements UnaryFunction
 	
 	public double compute(double input)
 	{
-		double current = input;
-		
 		double value;
 		
 		if (this.dataIsIntegral)
 		{
 			if (this.isGenericByte)
 			{
-				value = (int)(Math.exp(current*(Math.log(255)/255)));
+				value = (int)(Math.exp(input*(Math.log(255)/255)));
 			}
 			else // generic short or int
 			{
-				value = (int)(Math.exp(current*(Math.log(this.max)/this.max)));
+				value = (int)(Math.exp(input*(Math.log(this.max)/this.max)));
 			}
 			
 			value = Math.floor(value);
@@ -42,7 +40,7 @@ public class ExpUnaryFunction implements UnaryFunction
 		}
 		else // float
 		{
-			value = Math.exp(current);
+			value = Math.exp(input);
 		}
 		
 		return value;

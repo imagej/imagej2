@@ -179,7 +179,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	
 	/** used by erode() and dilate(). for UnsignedByteType data only. */
 	private int binaryBackground;
+
+	/** used by snapshot() and reset(). not applicable to UnsignedByteType data. */
+	private double snapshotMin;
 	
+	/** used by snapshot() and reset(). not applicable to UnsignedByteType data. */
+	private double snapshotMax;
+
 	/** a per thread variable. a cursor used to facilitate fast access to the ImgLib image. */
 	private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
 		new ThreadLocal<LocalizableByDimCursor<T>>()
@@ -729,8 +735,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (numPixels != getTotalSamples())
 			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
 
-		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
-		
 		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType);
 		
 		setOp.execute();
@@ -831,6 +835,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
 		
 		lutOp.execute();
+		
+		if (this.isUnsignedShort)
+			findMinAndMax();
 	}
 
 	// this method is kind of kludgy
@@ -1028,7 +1035,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ImageProcessor ip2 = new ImgLibProcessor<T>(image, 0);
 		ip2.setColorModel(getColorModel());
 		// TODO - ByteProcessor does this conditionally. Do we mirror here?
-		ip2.setMinAndMax(getMin(), getMax());
+		if (!(this.isUnsignedByte && (super.baseCM == null)))
+			ip2.setMinAndMax(getMin(), getMax());
 		ip2.setInterpolationMethod(super.interpolationMethod);
 		return ip2;
 	}
@@ -1037,6 +1045,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public ImageProcessor crop()
 	{	
+		int[] imageOrigin = originOfRoi();
+		int[] imageSpan = spanOfRoiPlane();
+		
+		int[] newImageOrigin = Index.create(2);
+		int[] newImageSpan = Span.singlePlane(imageSpan[0], imageSpan[1], 2);
+
+		ImgLibProcessor<T> ip2 = (ImgLibProcessor<T>) createProcessor(imageSpan[0], imageSpan[1]);
+		
+		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, ip2.getImage(), newImageOrigin, newImageSpan);
+
+		return ip2;
+		
+		/*
 		Rectangle roi = getRoi();
 
 		int[] imageOrigin = originOfRoi();
@@ -1049,7 +1070,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, newImage, newImageOrigin, newImageSpan);
 		
-		return new ImgLibProcessor<T>(newImage, 0);
+		ImageProcessor newProc = new ImgLibProcessor<T>(newImage, 0);
+		
+		return newProc;
+		*/
+		
 	}
 	
 	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
@@ -1098,7 +1123,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		transform.execute();
 		
-		findMinAndMax();
+		//findMinAndMax();
 	}
 	
 	// not an override
@@ -1115,7 +1140,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		pointOp.execute();
 		
-		findMinAndMax();  // TODO - this was conditional before in the other processors but was probably broken
+		if ((span[0] == getWidth()) &&
+				(span[1] == getHeight()) &&
+				!(function instanceof imagej.process.function.FillUnaryFunction))
+			findMinAndMax();
 	}
 	
 	// not an override
@@ -1143,7 +1171,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		transform.execute();
 		
-		findMinAndMax();
+		//findMinAndMax();
 	}
 	
 	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
@@ -1798,10 +1826,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void reset()
 	{
 		if (this.snapshot!=null)
-		{
 			this.snapshot.pasteIntoImage(this.imageData);
-			findMinAndMax();
-		}
 	}
 
 	/** sets the current ROI area data to that stored in the snapshot wherever the mask is nonzero */
@@ -1827,6 +1852,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
 		
 		resetOp.execute();
+		
+		if (!this.isUnsignedByte)
+		{
+			this.min = this.snapshotMin;
+			this.max = this.snapshotMax;
+		}
 	}
 
 	// TODO - refactor
@@ -2290,7 +2321,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setMinAndMax(double min, double max)
 	{
-		if (min==0.0 && max==0.0)
+		if ((min==0.0 && max==0.0) && (!this.isUnsignedByte))
 		{
 			resetMinAndMax();
 			return;
@@ -2314,10 +2345,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void setPixels(Object pixels)
 	{
-		if (pixels == null)  // sometimes IJ calls with null to try and free up memory
-			return;
+		if (pixels != null)
+			setImagePlanePixels(this.imageData, this.planePosition, pixels);
 
-		setImagePlanePixels(this.imageData, this.planePosition, pixels);
+		super.resetPixels(pixels);
+		
+		if (pixels==null)  // free up memory
+		{
+			this.snapshot = null;
+			this.pixels8 = null;
+		}
 	}
 
 	/** set the current image plane data to the pixel values of the provided FloatProcessor. channelNumber is ignored. */
@@ -2327,6 +2364,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// like ByteProcessor ignore channel number
 
 		setPixels(fp.getPixels());
+		setMinAndMax(fp.getMin(), fp.getMax());
 	}
 
 	/** sets the current snapshot pixels to the provided pixels. it copies data rather than changing snapshot reference. */
@@ -2370,6 +2408,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] spans = spanOfImagePlane();
 		
 		this.snapshot = new Snapshot<T>(this.imageData, origins, spans);
+		
+		this.snapshotMin = this.min;
+		this.snapshotMax = this.max;
 	}
 
 	/** apply the SQR point operation over the current ROI area of the current plane of data */
@@ -2443,7 +2484,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		fp.setRoi(getRoi());
 		fp.setMask(getMask());
-		fp.setMinAndMax(this.min, this.max);
+		if ((this.isFloat) && (this.min == 0) && (this.max == 0))
+			; // do nothing : otherwise a resetMinAndMax triggered which is not what we want
+		else
+			fp.setMinAndMax(this.min, this.max);
 		fp.setThreshold(getMinThreshold(), getMaxThreshold(), ImageProcessor.NO_LUT_UPDATE);
 
 		return fp;

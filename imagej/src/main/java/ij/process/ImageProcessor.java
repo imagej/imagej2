@@ -1878,7 +1878,7 @@ public abstract class ImageProcessor extends Object {
 		source = null;
 	}
 	
-	void resetPixels(Object pixels) {
+	protected void resetPixels(Object pixels) {
 		if (pixels==null) {
 			if (img!=null) {
 				img.flush();
