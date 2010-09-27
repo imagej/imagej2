@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 package imagej.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,9 @@ public class ImageOpener {
     final T type = makeType(pixelType);
 
     // TEMP - make suffix out of dimension types, until imglib supports them
-    final String name = encodeName(id, dimTypes);
+    final File idFile = new File(id);
+    String name = idFile.exists() ? idFile.getName() : id;
+    name = encodeName(name, dimTypes);
 
     // create image object
     final ArrayContainerFactory containerFactory = new ArrayContainerFactory();
@@ -194,12 +197,18 @@ public class ImageOpener {
   }
 
   /** Converts the given image name back to a list of dimensional axis types. */
-  public String[] decodeName(String name) {
-    final int lBracket = name.lastIndexOf("[");
+  public String decodeName(String name) {
+    final int lBracket = name.lastIndexOf(" [");
+    return name.substring(0, lBracket);
+  }
+
+  /** Converts the given image name back to a list of dimensional axis types. */
+  public String[] decodeTypes(String name) {
+    final int lBracket = name.lastIndexOf(" [");
     if (lBracket < 0) return new String[0];
     final int rBracket = name.lastIndexOf("]");
-    if (rBracket <= lBracket) return new String[0];
-    return name.substring(lBracket + 1, rBracket).split(" ");
+    if (rBracket < lBracket) return new String[0];
+    return name.substring(lBracket + 2, rBracket).split(" ");
   }
 
   // -- Helper methods --
