@@ -166,7 +166,7 @@ public class ImgLibProcessorTest {
 		
 		fProc = (FloatProcessor) origFProc.duplicate();
 		ifProc = (ImgLibProcessor<FloatType>) origIFProc.duplicate();
-		compareData(sProc, iusProc);
+		compareData(fProc, ifProc);
 		
 		IMGLIB_PROCS = new ImageProcessor[]{iubProc, iusProc, ifProc};
 		BYTE_PROCS = new ImageProcessor[]{bProc,iubProc};
@@ -205,10 +205,15 @@ public class ImgLibProcessorTest {
 		{
 			for (int y = 0; y < h; y++)
 			{
-				if (Math.abs(baselineProc.getf(x, y) - testedProc.getf(x, y)) > 0.001) // TODO - everything passes if TOL == 0.001
+				// TODO - everything passes if TOL == 0.001. SOme differences exist for Float processors as we do our calcs
+				//   in double and IJ does them in float
+				if (Math.abs(baselineProc.getf(x, y) - testedProc.getf(x, y)) > 0.001)
 					fail("processor data differs at ("+x+","+y+") : ij(" + baselineProc.getf(x, y) +") imglib("+testedProc.getf(x, y)+")");
 			}
 		}
+		
+		assertEquals(baselineProc.getMin(), testedProc.getMin(), Assert.DOUBLE_TOL);
+		assertEquals(baselineProc.getMax(), testedProc.getMax(), Assert.DOUBLE_TOL);
 	}
 
 	// ************* Constructor tests ***********************************************
@@ -391,7 +396,6 @@ public class ImgLibProcessorTest {
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
 			//   an earlier version of ImageJ code this test will break.
 			compareData(procPair[0], procPair[1]);
-			compareMinAndMax(procPair[0], procPair[1]);
 		}
 		
 		// now test with ROI set
@@ -407,7 +411,6 @@ public class ImgLibProcessorTest {
 			// NOTE - Wayne changed convolve3x3() in 1.44g8 and we mirrored those changes in our distribution. If we merge our tests with
 			//   an earlier version of ImageJ code this test will break.
 			compareData(procPair[0], procPair[1]);
-			compareMinAndMax(procPair[0], procPair[1]);
 		}
 	}
 	
@@ -584,6 +587,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			initialize();
 			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].exp();
@@ -629,15 +633,6 @@ public class ImgLibProcessorTest {
 		}
 	}
 
-	private void compareMinAndMax(ImageProcessor proc1, ImageProcessor proc2)
-	{
-		double baselineMin = proc1.getMin();
-		double baselineMax = proc1.getMax();
-		
-		assertEquals(baselineMin, proc2.getMin(), Assert.DOUBLE_TOL);
-		assertEquals(baselineMax, proc2.getMax(), Assert.DOUBLE_TOL);
-	}
-	
 	@Test
 	public void testFilterInt()
 	{
@@ -658,7 +653,6 @@ public class ImgLibProcessorTest {
 				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
 				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
 				compareData(procPair[0], procPair[1]);
-				compareMinAndMax(procPair[0], procPair[1]);
 
 				// test when ROI set
 				
@@ -670,7 +664,6 @@ public class ImgLibProcessorTest {
 				// NOTE - Wayne changed filter(BLUR_MORE) for ByteProcessor shortly before 1.44g8. We've modified our distribution to reflect
 				//   these changes. If we merge our tests with an earlier version of ImageJ code this test will break.
 				compareData(procPair[0], procPair[1]);
-				compareMinAndMax(procPair[0], procPair[1]);
 			}
 		}
 	}
@@ -1631,7 +1624,7 @@ public class ImgLibProcessorTest {
 			}
 			
 			compareData(procPair[0], procPair[1]);
-			
+
 			procPair[0].reset();
 			procPair[1].reset();
 			
@@ -1644,6 +1637,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			initialize();
 			for (int i = 0; i < 6; i++)
 			{
 				procPair[0].sqr();
@@ -1690,7 +1684,6 @@ public class ImgLibProcessorTest {
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
 			FloatProcessor bFloat, iFloat;
-			
 			bFloat = procPair[0].toFloat(0, null);
 			iFloat = procPair[1].toFloat(0, null);
 			
