@@ -17,6 +17,7 @@ import ij.process.LUT;
 
 import java.awt.Color;
 import java.awt.image.IndexColorModel;
+import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -305,7 +306,9 @@ public class CompositeImageTest {
 		assertNotNull(ci);
 		FileInfo fi = ci.getOriginalFileInfo();
 		assertNotNull(fi);
-		assertEquals(DataConstants.DATA_DIR,fi.directory);
+		final File expectedDir = new File(DataConstants.DATA_DIR);
+		final File actualDir = new File(fi.directory);
+		assertEquals(expectedDir.getAbsolutePath(), actualDir.getAbsolutePath());
 		assertEquals("embryos.bmp",fi.fileName);
 		// can't test that ci's displayRanges have been set to original fileInfo's - no method for access
 		assertArrayEquals(ip.getFileInfo().channelLuts,fi.channelLuts);

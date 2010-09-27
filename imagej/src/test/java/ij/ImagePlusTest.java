@@ -125,7 +125,7 @@ public class ImagePlusTest {
 		assertEquals(1,ip.getStackSize());
 		assertEquals(1,ip.getNFrames());
 		assertEquals(1,ip.getNChannels());
-		assertEquals(ImagePlus.GRAY8,ip.getType());
+		assertEquals(ImagePlus.IMGLIB,ip.getType());
 		assertEquals(8,ip.getBitDepth());
 		assertEquals(1,ip.getBytesPerPixel());
 		assertEquals("gray8-2x3-sub1.tif",ip.getTitle());
