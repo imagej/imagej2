@@ -128,6 +128,29 @@ public class ImageUtils {
 		
 		return position;
 	}
+	
+	public static long getPlaneNumber(int[] dimensions, int[] indexValue)
+	{
+		if (indexValue.length != dimensions.length)
+			throw new IllegalArgumentException("index arrays have incompatible lengths");
+		
+		long planeNum = 0;
+		
+		int numDims = dimensions.length;
+		
+		for (int dim = 0; dim < numDims; dim++)
+		{
+			int thisIndexVal = indexValue[dim];
+			
+			long multiplier = 1;
+			for (int j = dim+1; j < numDims; j++)
+				multiplier *= dimensions[j];
+			
+			planeNum += thisIndexVal * multiplier;
+		}
+		
+		return planeNum;
+	}
 
 	public static int[] getPlanePosition(int[] dimensions, long planeNumber)
 	{
@@ -153,6 +176,7 @@ public class ImageUtils {
 		return getPosition(subDimensions,planeNumber);
 	}
 
+	@SuppressWarnings({"rawtypes"})
 	public static double[] getPlaneData(Image<? extends RealType> image, int w, int h, int[] planePos) {
 		  // TODO - use LocalizablePlaneCursor
 			// example in ImageJVirtualStack.extractSliceFloat
@@ -229,24 +253,24 @@ public class ImageUtils {
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static <T extends RealType<T>> void setPlane(Image<T> im, int[] planePos, Object plane) {
-			// obtain dimensional lengths
-			final int[] dims = im.getDimensions();
-			if (dims.length < 2) {
-				throw new IllegalArgumentException("Too few dimensions: " + dims.length);
-			}
-
-			final PlanarAccess planarAccess = getPlanarAccess(im);
-			if (planarAccess == null) {
-				// TODO
-				throw new RuntimeException("Unimplemented");
-			}
-
-			// TODO: Add utility method for this to Index class.
-			final int[] lengths = new int[dims.length - 2];
-			for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
-			final int no = Index.positionToRaster(lengths, planePos);
-			planarAccess.setPlane(no, plane);
+		// obtain dimensional lengths
+		final int[] dims = im.getDimensions();
+		if (dims.length < 2) {
+			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
 		}
+
+		final PlanarAccess planarAccess = getPlanarAccess(im);
+		if (planarAccess == null) {
+			// TODO
+			throw new RuntimeException("Unimplemented");
+		}
+
+		// TODO: Add utility method for this to Index class.
+		final int[] lengths = new int[dims.length - 2];
+		for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
+		final int no = Index.positionToRaster(lengths, planePos);
+		planarAccess.setPlane(no, plane);
+	}
 
 	public static byte[] getPlaneBytes(Image<ByteType> im, int w, int h, int[] planePos)
 	{
@@ -401,6 +425,7 @@ public class ImageUtils {
 		return data;
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	public static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
 	{
 		Cursor<? extends RealType<?>> cursor = im.createCursor();
@@ -482,6 +507,9 @@ public class ImageUtils {
 	
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
 	{
+		ArrayContainerFactory containerFactory = new ArrayContainerFactory();
+		containerFactory.setPlanar(true);
+		
 		ImgLibProcessor<?> proc = null;
 		
 		int[] dimensions = new int[]{width, height, 1};
@@ -490,13 +518,13 @@ public class ImageUtils {
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),new ArrayContainerFactory());
+				ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),containerFactory);
 				Image<UnsignedByteType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<ByteType> factory = new ImageFactory<ByteType>(new ByteType(),new ArrayContainerFactory());
+				ImageFactory<ByteType> factory = new ImageFactory<ByteType>(new ByteType(),containerFactory);
 				Image<ByteType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
 			}
@@ -505,13 +533,13 @@ public class ImageUtils {
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(),new ArrayContainerFactory());
+				ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(),containerFactory);
 				Image<UnsignedShortType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<ShortType> factory = new ImageFactory<ShortType>(new ShortType(),new ArrayContainerFactory());
+				ImageFactory<ShortType> factory = new ImageFactory<ShortType>(new ShortType(),containerFactory);
 				Image<ShortType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
 			}
@@ -520,13 +548,13 @@ public class ImageUtils {
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>(new UnsignedIntType(),new ArrayContainerFactory());
+				ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>(new UnsignedIntType(),containerFactory);
 				Image<UnsignedIntType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<IntType> factory = new ImageFactory<IntType>(new IntType(),new ArrayContainerFactory());
+				ImageFactory<IntType> factory = new ImageFactory<IntType>(new IntType(),containerFactory);
 				Image<IntType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
 			}
@@ -539,20 +567,20 @@ public class ImageUtils {
 			}
 			else
 			{
-				ImageFactory<LongType> factory = new ImageFactory<LongType>(new LongType(),new ArrayContainerFactory());
+				ImageFactory<LongType> factory = new ImageFactory<LongType>(new LongType(),containerFactory);
 				Image<LongType> hatchedImage = factory.createImage(dimensions);
 				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof float[])
 		{
-			ImageFactory<FloatType> factory = new ImageFactory<FloatType>(new FloatType(),new ArrayContainerFactory());
+			ImageFactory<FloatType> factory = new ImageFactory<FloatType>(new FloatType(),containerFactory);
 			Image<FloatType> hatchedImage = factory.createImage(dimensions);
 			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
 		}
 		else if (pixels instanceof double[])
 		{
-			ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>(new DoubleType(),new ArrayContainerFactory());
+			ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>(new DoubleType(),containerFactory);
 			Image<DoubleType> hatchedImage = factory.createImage(dimensions);
 			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
 		}
@@ -570,6 +598,7 @@ public class ImageUtils {
 		return createImagePlus(img, null);
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
 		Cursor<?> cursor = img.createCursor();
@@ -582,7 +611,7 @@ public class ImageUtils {
 		
 		long numPlanes = ImageUtils.getTotalPlanes(dimensions);
 
-		ImageStack stack = new ImageStack(img.getDimension(0), img.getDimension(1));
+		ImageStack stack = new ImageStack(dimensions[0], dimensions[1]);
 		
 		for (long plane = 0; plane < numPlanes; plane++)
 		{
@@ -593,47 +622,47 @@ public class ImageUtils {
 				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, plane);
 			}
 				
-			if (runtimeT instanceof ByteType)
+			else if (runtimeT instanceof ByteType)
 			{
 				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, plane);
 			}
 				
-			if (runtimeT instanceof UnsignedShortType)
+			else if (runtimeT instanceof UnsignedShortType)
 			{
 				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, plane);
 			}
 				
-			if (runtimeT instanceof ShortType)
+			else if (runtimeT instanceof ShortType)
 			{
 				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, plane);
 			}
 				
-			if (runtimeT instanceof UnsignedIntType)
+			else if (runtimeT instanceof UnsignedIntType)
 			{
 				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, plane);
 			}
 				
-			if (runtimeT instanceof IntType)
+			else if (runtimeT instanceof IntType)
 			{
 				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, plane);
 			}
 				
-			if (runtimeT instanceof LongType)
+			else if (runtimeT instanceof LongType)
 			{
 				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, plane);
 			}
 				
-			if (runtimeT instanceof FloatType)
+			else if (runtimeT instanceof FloatType)
 			{
 				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, plane);
 			}
 				
-			if (runtimeT instanceof DoubleType)
+			else if (runtimeT instanceof DoubleType)
 			{
 				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, plane);
 			}
 				
-			if (processor == null)
+			else
 				throw new IllegalArgumentException("createImagePlus(): unknown processor type requested - "+runtimeT.getClass());
 			
 			stack.addSlice(""+plane, processor);
@@ -675,6 +704,7 @@ public class ImageUtils {
 		return imp;
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	public static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
 	{
 		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);

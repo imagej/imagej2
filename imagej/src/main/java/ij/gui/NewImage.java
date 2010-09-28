@@ -266,11 +266,13 @@ public class NewImage {
 		return imp;
 	}
 
-	static void imgLibOpen(String title, int width, int height, int nSlices, int type, int options)
+	static void imglibCreate(String title, int width, int height, int nSlices, int type, int options)
 	{
 		long startTime = System.currentTimeMillis();
 		int[] dimensions = new int[]{width, height, nSlices};
-		Image<?> image = ImageUtils.createImage(imgLibType, new ArrayContainerFactory(), dimensions);
+		ArrayContainerFactory factory = new ArrayContainerFactory();
+		factory.setPlanar(true);
+		Image<?> image = ImageUtils.createImage(imgLibType, factory, dimensions);
 		ImagePlus imp = ImageUtils.createImagePlus(image);
 		if (imp!=null) {
 			WindowManager.checkForDuplicateName = true;          
@@ -283,8 +285,12 @@ public class NewImage {
 	{
 		if (!Prefs.get("IJ_1.4_Compatible", false))
 		{
-			imgLibOpen(title, width, height, nSlices, type, options);
-			return;
+			if (type == ImagePlus.IMGLIB)
+			{
+				imglibCreate(title, width, height, nSlices, type, options);
+				return;
+			}
+			// else fall through to old IJ code
 		}
 		int bitDepth = 8;
 		if (type==GRAY16) bitDepth = 16;
