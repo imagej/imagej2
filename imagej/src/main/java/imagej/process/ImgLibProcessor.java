@@ -7,6 +7,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
+import imagej.io.ImageOpener;
 import imagej.process.function.AbsUnaryFunction;
 import imagej.process.function.AddBinaryFunction;
 import imagej.process.function.AddNoiseUnaryFunction;
@@ -64,6 +65,7 @@ import java.awt.image.MemoryImageSource;
 
 import loci.common.DataTools;
 
+import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -679,6 +681,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
+		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
+		
+		if (planar != null)
+		{
+			ImageUtils.setPlane(image, planePosition, pixels);
+			return;
+		}
+		
+		System.out.println("setPixels() - nonoptimal container type - can only return a copy of pixels");
+		
 		int[] position = Index.create(0,0,planePosition);
 		
 		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
@@ -900,10 +912,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
 	{
-		ImageProcessor ip2 = toFloat(0,null);
-		ip2.setRoi(getRoi());
-		new ij.plugin.filter.Convolver().convolve(ip2, kernel, kernelWidth, kernelHeight);
-		setPixels(ip2.getPixels());
+		FloatProcessor fp = toFloat(0,null);
+		
+		fp.setRoi(getRoi());
+		
+		new ij.plugin.filter.Convolver().convolve(fp, kernel, kernelWidth, kernelHeight);
+		
+		double min = this.min;
+		double max = this.max;
+		
+		setPixelsFromFloatProc(fp);
+		
+		if ((min != 0) && (max != 0))  // IJ will recalc min/max in this case which is not desired
+			setMinAndMax(min,max);
 	}
 
 	/** convolves the current ROI area data with the provided 3x3 kernel */
@@ -925,9 +946,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		Convolve3x3FilterOperation<T> convolveOp = new Convolve3x3FilterOperation<T>(this, origin, span, kernel);
 		
 		convolveOp.execute();
-
-		// TODO - do we need to findMinAndMax()??? ij procs do not do this but probably should
-		//findMinAndMax();
 	}
 
 	// not an override
@@ -1122,8 +1140,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		transform.setSelectionFunctions(selector1, selector2);
 
 		transform.execute();
-		
-		//findMinAndMax();
 	}
 	
 	// not an override
@@ -1170,8 +1186,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		transform.setSelectionFunctions(selectors);
 		
 		transform.execute();
-		
-		//findMinAndMax();
 	}
 	
 	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
@@ -1330,9 +1344,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			default:
 				throw new IllegalArgumentException("filter(FilterTye): invalid filter type specified - "+type);
 		}
-		
-		// TODO - do we need to findMinAndMax()??? ij procs do not do this but probably should
-		//findMinAndMax();
 	}
 
 	/** run specified filter (an int) on current ROI area of current plane data */
@@ -1645,9 +1656,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-		// TODO: could add a special case for single-image 8-bit array-backed data
-		// TODO: special case for new container
-		return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
+	    final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
+
+	    if (planarAccess == null)
+	    {
+	    	System.out.println("getPixels() - nonoptimal container type - can only return a copy of pixels");
+	    	return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
+	    }
+	    else  // we have the special planar container in place
+	    {
+	    	int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
+	    	long planeNumber = ImageUtils.getPlaneNumber(planeDimsMaxes, this.planePosition);
+	    	if (planeNumber >= Integer.MAX_VALUE)
+	    		throw new IllegalArgumentException("too many planes");
+	    	return planarAccess.getPlane((int)planeNumber);
+	    }
 	}
 
 	/** returns a copy of some pixels as an array of the appropriate type. depending upon super class variable "snapshotCopyMode"
@@ -2357,13 +2380,37 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
+	private void setPixelsFromFloatProc(FloatProcessor fp)
+	{
+		int height = fp.getHeight();
+		int width = fp.getWidth();
+		
+		if ((height != getHeight()) || (width != getWidth()))
+			throw new IllegalArgumentException("setPixels(int,FloatProcessor): float processor has incompatible dimensions");
+		
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				double newValue = fp.getf(x,y);
+				
+				if (this.isIntegral)
+				{
+					newValue = Math.round(newValue);
+					newValue = TypeManager.boundValueToType(this.type, newValue);
+				}
+				setd(x,y,newValue);
+			}
+		}
+	}
+	
 	/** set the current image plane data to the pixel values of the provided FloatProcessor. channelNumber is ignored. */
 	@Override
 	public void setPixels(int channelNumber, FloatProcessor fp)
 	{
 		// like ByteProcessor ignore channel number
-
-		setPixels(fp.getPixels());
+		//OLD WAY setPixels(fp.getPixels());
+		setPixelsFromFloatProc(fp);
 		setMinAndMax(fp.getMin(), fp.getMax());
 	}
 

@@ -16,6 +16,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.process.ImgLibProcessor;
 
+import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
@@ -66,6 +67,9 @@ public class ImgLibProcessorTest {
 	@BeforeClass
 	public static void setup()
 	{
+		ArrayContainerFactory factory = new ArrayContainerFactory();
+		factory.setPlanar(true);
+		
 		width = 343;
 		height = 426;
 
@@ -75,7 +79,7 @@ public class ImgLibProcessorTest {
 		origBProc = new ByteProcessor(width, height);
 		
 		// setup iubProc
-		ImageFactory<UnsignedByteType> ubFactory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
+		ImageFactory<UnsignedByteType> ubFactory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), factory);
 		Image<UnsignedByteType> ubImage = ubFactory.createImage(new int[]{width, height});
 		origIUBProc = new ImgLibProcessor<UnsignedByteType>(ubImage, 0);
 		
@@ -103,7 +107,7 @@ public class ImgLibProcessorTest {
 		origSProc = new ShortProcessor(width, height);
 		
 		// setup iusProc
-		ImageFactory<UnsignedShortType> usFactory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), new ArrayContainerFactory());
+		ImageFactory<UnsignedShortType> usFactory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), factory);
 		Image<UnsignedShortType> usImage = usFactory.createImage(new int[]{width, height});
 		origIUSProc = new ImgLibProcessor<UnsignedShortType>(usImage, 0);
 		
@@ -127,7 +131,7 @@ public class ImgLibProcessorTest {
 		origFProc = new FloatProcessor(width, height);
 		
 		// setup iusProc
-		ImageFactory<FloatType> fFactory = new ImageFactory<FloatType>(new FloatType(), new ArrayContainerFactory());
+		ImageFactory<FloatType> fFactory = new ImageFactory<FloatType>(new FloatType(), factory);
 		Image<FloatType> fImage = fFactory.createImage(new int[]{width, height});
 		origIFProc = new ImgLibProcessor<FloatType>(fImage, 0);
 		
