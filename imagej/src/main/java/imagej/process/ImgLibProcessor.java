@@ -741,6 +741,32 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		// TODO : do I want the this.isIntegral code from setMinAndMax() in here too?
 	}
+
+	/** sets the pixels of the image from provided FloatProcessor's pixel values */
+	private void setPixelsFromFloatProc(FloatProcessor fp)
+	{
+		int height = fp.getHeight();
+		int width = fp.getWidth();
+		
+		if ((height != getHeight()) || (width != getWidth()))
+			throw new IllegalArgumentException("setPixels(int,FloatProcessor): float processor has incompatible dimensions");
+		
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				double newValue = fp.getf(x,y);
+				
+				if (this.isIntegral)
+				{
+					newValue = Math.round(newValue);
+					newValue = TypeManager.boundValueToType(this.type, newValue);
+				}
+				
+				setd(x,y,newValue);
+			}
+		}
+	}
 	
 	/** sets the pixels of a plane in an image. called by setImagePlanePixels(). input pixels' type info must have been determined earlier. */
 	private void setPlane(Image<T> theImage, int[] origin, Object pixels, DataType inputType, long numPixels)
@@ -2384,30 +2410,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	private void setPixelsFromFloatProc(FloatProcessor fp)
-	{
-		int height = fp.getHeight();
-		int width = fp.getWidth();
-		
-		if ((height != getHeight()) || (width != getWidth()))
-			throw new IllegalArgumentException("setPixels(int,FloatProcessor): float processor has incompatible dimensions");
-		
-		for (int x = 0; x < width; x++)
-		{
-			for (int y = 0; y < height; y++)
-			{
-				double newValue = fp.getf(x,y);
-				
-				if (this.isIntegral)
-				{
-					newValue = Math.round(newValue);
-					newValue = TypeManager.boundValueToType(this.type, newValue);
-				}
-				setd(x,y,newValue);
-			}
-		}
-	}
-	
 	/** set the current image plane data to the pixel values of the provided FloatProcessor. channelNumber is ignored. */
 	@Override
 	public void setPixels(int channelNumber, FloatProcessor fp)
