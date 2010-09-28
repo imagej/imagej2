@@ -17,7 +17,6 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -30,8 +29,6 @@ import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 // TODO
-//   Notice that copyFromImageToImage() could create a CopyOperation and apply it. This requires breaking Operations out of
-//     ImgLibProcessor first.
 //   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when we can call ImagePlus::setDimensions(int[] dims)
 //   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
@@ -428,11 +425,7 @@ public class ImageUtils {
 	@SuppressWarnings({"unchecked"})
 	public static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
 	{
-		Cursor<? extends RealType<?>> cursor = im.createCursor();
-
-		RealType<?> type = cursor.getType();
-
-		cursor.close();
+		RealType<?> type = getType(im);
 
 		if (type instanceof ByteType)
 			return getPlaneBytes((Image<ByteType>)im,w,h,planePos);
@@ -494,7 +487,6 @@ public class ImageUtils {
 	}
 	
 
-	// TODO - does this need to separate spans? Such as copy when we copy a 5d span with 3 of them set to 1 to a 2d image?
 	/** copies data from one image to another given origins and dimensional spans */
 	public static <K extends RealType<K>>
 		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, int[] srcSpan,
@@ -601,11 +593,7 @@ public class ImageUtils {
 	@SuppressWarnings({"unchecked"})
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
-		Cursor<?> cursor = img.createCursor();
-		
-		Type<?> runtimeT = cursor.getType();
-		
-		cursor.close();
+		RealType<?> runtimeT = getType(img);
 		
 		int[] dimensions = img.getDimensions();
 		
