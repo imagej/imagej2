@@ -589,8 +589,6 @@ public class ByteProcessorTest {
         {
 			for(int x = 0; x<width; x++)
 			{
-				int reference = y*width + x;
-
 				//get the set value (converted back to an int)
 				byteProcessor.putPixelValue( x, y, refValue );
 

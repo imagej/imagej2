@@ -52,7 +52,11 @@ public class ImageStack {
 		this.height = height;
 		this.cm = cm;
 		if (factory == null)
-			this.factory = new ArrayContainerFactory();  // TODO - or PlanarAccess structure???
+		{
+			ArrayContainerFactory f = new ArrayContainerFactory();
+			f.setPlanar(true);
+			this.factory = f;
+		}
 		else
 			this.factory = factory;
 		this.stack = null;

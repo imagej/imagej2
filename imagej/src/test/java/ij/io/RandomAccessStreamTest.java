@@ -6,14 +6,10 @@ import ij.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 
 import org.junit.Test;
-
-import ucar.ma2.Array;
 
 public class RandomAccessStreamTest {
 
@@ -163,7 +159,7 @@ public class RandomAccessStreamTest {
 		
 		// try to read again - should throw an exception
 		try {
-			short s = stream.readShort();
+			stream.readShort();
 			fail();
 		} catch (Exception e) {
 			assertTrue(true);

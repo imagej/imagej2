@@ -54,6 +54,7 @@ public class DualCursorRoiOperationTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testAllMethods()
 	{
 		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, false);

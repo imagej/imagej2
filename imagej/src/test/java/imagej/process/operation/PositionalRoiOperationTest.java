@@ -73,6 +73,7 @@ public class PositionalRoiOperationTest {
 	// ***** tests  ****************************************************************************************
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testApplyPositionalOperation()
 	{
 		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, false);

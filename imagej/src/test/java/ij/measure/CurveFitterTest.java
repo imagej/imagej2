@@ -19,7 +19,7 @@ public class CurveFitterTest {
 	double[] xs,ys;
 
 	// helper method : add noise to smooth data
-
+/*
 	private static double[] makeNoisy(double[] d, int percent)
 	{
 		if ((percent < 0) || (percent > 100))
@@ -48,7 +48,8 @@ public class CurveFitterTest {
 		
 		return output;
 	}
-	
+*/
+
 	// helper method : get a y value from input x data. taken from imagej source code in CurveFitter
 
 	private static double getYValue(int func, double x, double[] coeffs)
@@ -129,12 +130,15 @@ public class CurveFitterTest {
 		return yValues;
 	}
 	
+	/*
 	// helper method : get noisy data
 	
 	private static double[] getNoisyYValues(int func, double[] xValues, double[] coeffs, int percent)
 	{
 		return makeNoisy(getYValues(func,xValues,coeffs),percent);
 	}
+	
+	 */
 	
 	@Test
 	public void testConstants() {
@@ -677,11 +681,10 @@ public class CurveFitterTest {
 	@Test
 	public void testGetIterations() {
 		// simply a getter - nothing to test - put in place code for compile time check
-		int tmp;
 		xs = new double[] {1,2,3,4,5,6,7};
 		ys = new double[] {4,6,8,10,12,14};
 		cf = new CurveFitter(xs,ys);
-		tmp = cf.getIterations();
+		cf.getIterations();
 	}
 
 	@Test

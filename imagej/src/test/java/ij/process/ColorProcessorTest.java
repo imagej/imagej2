@@ -660,7 +660,7 @@ public class ColorProcessorTest {
 				float testValue =  testColorProcessor.getPixelValue( x, y ) ;
 				int refValue = testColorProcessor.getPixel(x, y);
 				int[] refARGB = getARGB( refValue );
-				double[] refWeights = testColorProcessor.getWeightingFactors();
+				double[] refWeights = ColorProcessor.getWeightingFactors();
 
 				float refFLOAT = (float) ( refARGB[1] * refWeights[0] + refARGB[2] * refWeights[1] + refARGB[3] * refWeights[2] );
 
@@ -1017,7 +1017,7 @@ public class ColorProcessorTest {
 	public void testScale()
 	{
 		ColorProcessor testColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		testColorProcessor.setInterpolationMethod(testColorProcessor.BICUBIC);
+		testColorProcessor.setInterpolationMethod(ImageProcessor.BICUBIC);
 		testColorProcessor.scale(5.0, 5.0);
 		//displayGraphicsInNewJFrame(testColorProcessor.getBufferedImage(), "Bicubic 5x", 300);
 

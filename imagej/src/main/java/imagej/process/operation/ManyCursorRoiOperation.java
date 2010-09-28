@@ -94,6 +94,7 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 				cursors[i].close();
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void execute()
 		{
 			if (this.observer != null)

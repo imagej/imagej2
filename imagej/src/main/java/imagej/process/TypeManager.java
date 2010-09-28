@@ -35,7 +35,7 @@ public class TypeManager {
 	 * to the corresponding max and min values respective to the
 	 * underlying type.
 	 */
-	public static double boundValueToType(RealType type, double inputValue)
+	public static double boundValueToType(RealType<?> type, double inputValue)
 	{
 		if (isIntegralType(type))
 		{

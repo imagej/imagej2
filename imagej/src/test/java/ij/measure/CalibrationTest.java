@@ -107,7 +107,7 @@ public class CalibrationTest {
 
 		// do put in some code to make sure this constructor exists in any refactor
 		ImagePlus imp = new ImagePlus();
-		Calibration c = new Calibration(imp);
+		new Calibration(imp);
 	}
 
 	@Test
@@ -876,7 +876,7 @@ public class CalibrationTest {
 		
 		// pass a value unit
 		c = new Calibration();
-		String tmp = c.getValueUnit();
+		c.getValueUnit();
 		c.setCTable(cTable,"nonplussed");
 		assertEquals(cTable,c.getCTable());
 		assertEquals(Calibration.CUSTOM, c.getFunction());
