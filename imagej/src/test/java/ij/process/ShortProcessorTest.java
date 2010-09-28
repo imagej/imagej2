@@ -79,12 +79,13 @@ public class ShortProcessorTest {
 			return imageShortData.clone();
 		}
 
-		/**
-		 * Displays an image using the getBufferedImage method of the respective image Processor object
-		 * @param imageProcessor - the image processor to display
-		 * @param title - Optional - Title to display
-		 * @param displayTime - Optional - the number of seconds to display
-		 */
+/*
+		//
+		// Displays an image using the getBufferedImage method of the respective image Processor object
+		// @param imageProcessor - the image processor to display
+		// @param title - Optional - Title to display
+		// @param displayTime - Optional - the number of seconds to display
+		//
 	private void showImageProcessor( ImageProcessor imageProcessor, String title, int displayTime )
 	{
 		if (title == null) title = "";
@@ -94,7 +95,7 @@ public class ShortProcessorTest {
 		}
 
 	}
-
+*/
 	/**
 	 * @param ip imageProcessor
 	 * @param expected String of expected results unique to the reference image
@@ -416,7 +417,7 @@ public class ShortProcessorTest {
 	public void testGetInterpolatedPixel()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
-		short[] reference = getRefImageArray();
+		getRefImageArray();
 		short[] actual = new short[ width*height ];
 
 		for( int i = 0; i < height; i++ )
@@ -433,7 +434,7 @@ public class ShortProcessorTest {
 	public void testGetPixelInterpolated()
 	{
 		ShortProcessor refShortProcessor = new ShortProcessor( width, height );
-		short[] reference = getRefImageArray();
+		getRefImageArray();
 		short[] actual = new short[ width*height ];
 
 		for( int i = 0; i < height; i++ )
@@ -1012,7 +1013,7 @@ public class ShortProcessorTest {
 	@Test
 	public void testCreateBufferedImage()
 	{
-		ShortProcessor refShortProcessor = new ShortProcessor( width, height, getRefImageArray(), null );
+		new ShortProcessor( width, height, getRefImageArray(), null );
 		//Image bi = refShortProcessor.createBufferedImage();
 		//assertEquals( true, bi.getHeight(null)==bi.getWidth(null) );
 	}

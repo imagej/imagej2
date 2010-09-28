@@ -9,6 +9,7 @@ public class TernaryAssignOperation<T extends RealType<T>> extends ManyCursorRoi
 {
 	private BinaryComputation computer;
 	
+	@SuppressWarnings("unchecked")
 	public TernaryAssignOperation(Image<T> image1, int[] origin1, int[] span1,
 			Image<T> image2, int[] origin2, int[] span2,
 			Image<T> image3, int[] origin3, int[] span3,

@@ -591,6 +591,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
@@ -854,6 +855,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	// this method is kind of kludgy
 	// not an override
+	@SuppressWarnings({"unchecked"})
 	/** sometimes it is useful to work with two images of the exact same type. this method will take any ImageProcessor and return an
 	 *  ImageLibProcessor of the exact same type as itself. if the input image matches already it is simply returned. otherwise a new
 	 *  processor is created and its pixels are populated from this ImgLibProcessor.
@@ -1061,6 +1063,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** creates an ImgLibProcessor on a new image whose size and contents match the current ROI area. */
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public ImageProcessor crop()
 	{	
 		int[] imageOrigin = originOfRoi();
@@ -1203,6 +1206,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** creates a processor of the same size and sets its pixel values to this processor's current plane data */
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public ImageProcessor duplicate()
 	{
 		int width = getWidth();

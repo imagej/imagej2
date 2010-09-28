@@ -16,7 +16,6 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.process.ImgLibProcessor;
 
-import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
@@ -158,6 +157,7 @@ public class ImgLibProcessorTest {
 	
 	// the following initialization code runs before every test
 	@Before
+	@SuppressWarnings({"unchecked"})
 	public void initialize()
 	{
 		bProc = (ByteProcessor) origBProc.duplicate();

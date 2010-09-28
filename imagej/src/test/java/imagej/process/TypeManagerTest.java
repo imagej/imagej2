@@ -50,7 +50,7 @@ public class TypeManagerTest {
 	@Test
 	public void testBoundIntValueToType() {
 		
-		RealType type;
+		RealType<?> type;
 		
 		type = new ByteType();
 		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
