@@ -4,6 +4,7 @@ import ij.process.*;
 import imagej.PlaneStack;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
+import imagej.process.Index;
 import imagej.process.TypeManager;
 
 import java.awt.image.ColorModel;
@@ -421,7 +422,7 @@ public class ImageStack {
 		// otherwise if here stack should be non null
 		// ONE WAY
 		Image<?> image = stack.getStorage();
-		ip = new ImgLibProcessor(image, ImageUtils.getPlanePosition(image.getDimensions(), n-1));
+		ip = new ImgLibProcessor(image, Index.getPlanePosition(image.getDimensions(), n-1));
 		// OTHER WAY
 		//Image<?> image = stack.getStorage(n-1);
 		//ip = new ImgLibProcessor(image, Index.create(1));

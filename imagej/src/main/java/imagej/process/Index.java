@@ -168,4 +168,71 @@ public final class Index {
 		return len;
 	}
 
+	public static long getSampleNumber(int[] dimensions, int[] indexValue)
+	{
+		// NEW WAY
+		return Index.positionToRaster(dimensions, indexValue);
+		
+		/*
+		if (indexValue.length != dimensions.length)
+			throw new IllegalArgumentException("index arrays have incompatible lengths");
+		
+		long planeNum = 0;
+		
+		int numDims = dimensions.length;
+		
+		for (int dim = 0; dim < numDims; dim++)
+		{
+			int thisIndexVal = indexValue[dim];
+			
+			long multiplier = 1;
+			for (int j = dim+1; j < numDims; j++)
+				multiplier *= dimensions[j];
+			
+			planeNum += thisIndexVal * multiplier;
+		}
+		
+		return planeNum;
+		*/
+	}
+
+	public static int[] getPlanePosition(int[] dimensions, long planeNumber)
+	{
+		// NEW
+		if ((planeNumber < 0) || (planeNumber >= ImageUtils.getTotalPlanes(dimensions)))
+			throw new IllegalArgumentException("invalid plane number given");
+		// end NEW
+		
+		int numDims = dimensions.length;
+		
+		if (numDims < 2)
+			throw new IllegalArgumentException("getPlanePosition() requires at least a 2-D image");
+		
+		if (numDims == 2)
+		{
+			if (planeNumber != 0)
+				throw new IllegalArgumentException("getPlanePosition() 2-D image can only have 1 plane");
+			
+			return new int[]{};  // TODO - this is a little scary to do. might need to throw exception and have other places fix the fact
+								//    that we have a rows x cols x 1 image
+		}
+			
+		// NEW WAY
+		int[] planeDim = new int[dimensions.length-2];
+		for (int i = 0; i < planeDim.length; i++)
+			planeDim[i] = dimensions[i+2];
+		int[] position = new int[planeDim.length];
+		Index.rasterToPosition(planeDim, (int)planeNumber, position);
+		return position;
+
+		/* OLD WAY
+		int[] subDimensions = new int[numDims - 2];
+		
+		for (int i = 0; i < subDimensions.length; i++)
+			subDimensions[i] = dimensions[i+2];
+		
+		return getPosition(subDimensions,planeNumber);
+		*/
+	}
+
 }

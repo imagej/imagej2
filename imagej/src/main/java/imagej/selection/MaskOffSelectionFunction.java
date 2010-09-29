@@ -1,6 +1,7 @@
 package imagej.selection;
 
 import imagej.process.ImageUtils;
+import imagej.process.Index;
 
 public class MaskOffSelectionFunction implements SelectionFunction
 {
@@ -36,7 +37,9 @@ public class MaskOffSelectionFunction implements SelectionFunction
 		for (int i = 0; i < this.maskSpan.length; i++)
 			this.relativePosition[i] = position[i] - this.maskOrigin[i];
 		
-		long sampleNumber = getSampleNumber(this.maskSpan, this.relativePosition);
+		//GOOD long sampleNumber = this.getSampleNumber(this.maskSpan, this.relativePosition);
+		//BAD long sampleNumber = ImageUtils.getSampleNumber(this.maskSpan, this.relativePosition);
+		long sampleNumber = Index.positionToRaster(this.maskSpan, this.relativePosition);
 		
 		if (sampleNumber > Integer.MAX_VALUE)
 			return this.mask.length;
