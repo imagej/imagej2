@@ -22,4 +22,5 @@ interface PlanarNumericDataset
   void doOperation(Object operation);  // TODO - change from Object to Operation once its defined
   void setAxisOfInterest(int axisNumber);  // hints at how to organize storage for next set of operations
   Image<?> createPlane(int axisNumber);  // TODO - change from Image<?> to something else if necessary
+  void setPlane(int axisNumber, int planeNumber, Object plane);  // TODO - make plane something other than Object
 }

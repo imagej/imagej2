@@ -627,8 +627,8 @@ public class ImgLibProcessorTest {
 		
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			procPair[0].setColor(19);
-			procPair[1].setColor(19);
+			procPair[0].setColor(114);
+			procPair[1].setColor(114);
 			
 			procPair[0].fill(byteMask);
 			procPair[1].fill(byteMask);

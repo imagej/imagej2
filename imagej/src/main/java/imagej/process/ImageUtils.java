@@ -126,7 +126,7 @@ public class ImageUtils {
 		return position;
 	}
 	
-	public static long getPlaneNumber(int[] dimensions, int[] indexValue)
+	public static long getSampleNumber(int[] dimensions, int[] indexValue)
 	{
 		if (indexValue.length != dimensions.length)
 			throw new IllegalArgumentException("index arrays have incompatible lengths");
