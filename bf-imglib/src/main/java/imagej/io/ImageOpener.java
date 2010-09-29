@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import loci.common.DataTools;
+import loci.common.StatusEvent;
+import loci.common.StatusListener;
+import loci.common.StatusReporter;
 import loci.formats.ChannelFiller;
 import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
@@ -61,12 +64,20 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * <a href="http://dev.imagejdev.org/svn/java/trunk/projects/bf-imglib/src/main/java/imagej/io/ReadImage.java">SVN</a></dd>
  * </dl>
  */
-public class ImageOpener {
+public class ImageOpener implements StatusReporter {
+
+	// -- Fields --
+
+	private List<StatusListener> listeners = new ArrayList<StatusListener>();
+
+	// -- ImageOpener methods --
 
   /** Reads in an imglib Image from the given source (e.g., file on disk). */
   public <T extends RealType<T>> Image<T> openImage(String id)
   throws FormatException, IOException
   {
+  	notifyListeners(new StatusEvent("Initializing " + id));
+
     IFormatReader r = null;
     r = new ChannelSeparator();
     r = new ChannelFiller(r);
@@ -109,6 +120,8 @@ public class ImageOpener {
     final PlanarAccess<?> planarAccess = getPlanarAccess(img);
 
     // populate planes
+    final long startTime = System.currentTimeMillis();
+    final int planeCount = r.getImageCount();
     if (planarAccess == null) {
       // use cursor to populate planes
 
@@ -117,9 +130,10 @@ public class ImageOpener {
 
       final LocalizableByDimCursor<T> cursor =
         img.createLocalizableByDimCursor();
-      final int planeCount = r.getImageCount();
       byte[] plane = null;
       for (int no = 0; no < planeCount; no++) {
+        notifyListeners(new StatusEvent(no, planeCount,
+          "Reading plane " + (no + 1) + "/" + planeCount));
         if (plane == null) plane = r.openBytes(no);
         else r.openBytes(no, plane);
         populatePlane(r, no, plane, cursor);
@@ -131,15 +145,20 @@ public class ImageOpener {
 
       // NB: This solution uses the #2 container type mentioned above.
 
-      final int planeCount = r.getImageCount();
-      byte[] plane = null;
+    	byte[] plane = null;
       for (int no=0; no<planeCount; no++) {
+        notifyListeners(new StatusEvent(no, planeCount,
+          "Reading plane " + (no + 1) + "/" + planeCount));
         if (plane == null) plane = r.openBytes(no);
         else r.openBytes(no, plane);
         populatePlane(r, no, plane, planarAccess);
       }
     }
     r.close();
+    final long endTime = System.currentTimeMillis();
+    final float time = (endTime - startTime) / 1000f;
+    notifyListeners(new StatusEvent(planeCount, planeCount,
+      id + ": read " + planeCount + " planes in " + time + "s"));
 
     return img;
   }
@@ -210,6 +229,29 @@ public class ImageOpener {
     if (rBracket < lBracket) return new String[0];
     return name.substring(lBracket + 2, rBracket).split(" ");
   }
+
+  // -- StatusReporter methods --
+
+  /** Adds a listener to those informed when progress occurs. */
+  public void addStatusListener(StatusListener l) {
+  	synchronized (listeners) {
+  		listeners.add(l);
+  	}
+  }
+
+  /** Removes a listener from those informed when progress occurs. */
+  public void removeStatusListener(StatusListener l) {
+  	synchronized (listeners) {
+  		listeners.remove(l);
+  	}
+  }
+
+  /** Notifies registered listeners of progress. */
+	public void notifyListeners(StatusEvent e) {
+		synchronized (listeners) {
+			for (StatusListener l : listeners) l.statusUpdated(e);
+		}
+	}
 
   // -- Helper methods --
 
