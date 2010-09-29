@@ -56,6 +56,8 @@ import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.SetFloatValuesOperation;
 import imagej.process.operation.SetPlaneOperation;
 import imagej.process.operation.SetPlaneOperation.DataType;
+import imagej.process.operation.UnaryTransformPositionalOperation;
+import imagej.selection.MaskOnSelectionFunction;
 import imagej.selection.SelectionFunction;
 
 import java.awt.Color;
@@ -1321,6 +1323,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		MaskedFillOperation<T> fillOp = new MaskedFillOperation<T>(this.imageData, origin, span, byteMask, color);
 		
 		fillOp.execute();
+		
+		/* version that uses a selection function to filter pixels
+		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
+		UnaryTransformPositionalOperation<T> xform =
+			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunc);
+		SelectionFunction selector = new MaskOnSelectionFunction(origin, span, byteMask);
+		xform.setSelectionFunction(selector);
+		xform.execute();
+		*/
 	}
 
 	// not an override : way to phase out passing in filter numbers
@@ -1696,7 +1707,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	    else  // we have the special planar container in place
 	    {
 	    	int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
-	    	long planeNumber = ImageUtils.getPlaneNumber(planeDimsMaxes, this.planePosition);
+	    	long planeNumber = ImageUtils.getSampleNumber(planeDimsMaxes, this.planePosition);
 	    	if (planeNumber >= Integer.MAX_VALUE)
 	    		throw new IllegalArgumentException("too many planes");
 	    	return planarAccess.getPlane((int)planeNumber);
