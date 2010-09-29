@@ -1319,19 +1319,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		double color = this.fillColor;
 		if (this.isIntegral)
 			color = getFgColor();
-		
+
+		/* version that has own Operation defined
 		MaskedFillOperation<T> fillOp = new MaskedFillOperation<T>(this.imageData, origin, span, byteMask, color);
-		
 		fillOp.execute();
+		*/
 		
 		/* version that uses a selection function to filter pixels
+		*/
 		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
+
 		UnaryTransformPositionalOperation<T> xform =
 			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunc);
+
 		SelectionFunction selector = new MaskOnSelectionFunction(origin, span, byteMask);
+
 		xform.setSelectionFunction(selector);
+
 		xform.execute();
-		*/
 	}
 
 	// not an override : way to phase out passing in filter numbers
