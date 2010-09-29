@@ -24,6 +24,8 @@ import javax.swing.filechooser.*;
 import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
 
+import loci.common.StatusEvent;
+import loci.common.StatusListener;
 import loci.formats.FormatException;
 import mpicbg.imglib.type.numeric.RealType;
 
@@ -301,9 +303,18 @@ public class Opener {
 	private ImagePlus openImglibImage(String path) {
 		final ImageOpener imageOpener = new ImageOpener();
 		try {
+			imageOpener.addStatusListener(new StatusListener() {
+				public void statusUpdated(StatusEvent e) {
+					final String message = e.getStatusMessage();
+					final int value = e.getProgressValue();
+					final int maximum = e.getProgressMaximum();
+					if (value >= 0 && maximum >= 0) IJ.showProgress(value, maximum);
+					IJ.showStatus(message);
+				}
+			});
 			final mpicbg.imglib.image.Image<? extends RealType> img =
 				imageOpener.openImage(path);
-			return ImageUtils.createImagePlus(img);
+			return ImageUtils.createImagePlus(img, path);
 		}
 		catch (FormatException e) {
 			IJ.handleException(e);
