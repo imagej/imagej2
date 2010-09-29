@@ -302,21 +302,14 @@ public class IndexTest {
 
 		dimensions = new int[]{50,60,2,2};
 		getPlanePositionShouldFail(dimensions, -1);
-		// NEW WAY
 		assertArrayEquals(new int[]{0,0}, Index.getPlanePosition(dimensions, 0));
 		assertArrayEquals(new int[]{1,0}, Index.getPlanePosition(dimensions, 1));
 		assertArrayEquals(new int[]{0,1}, Index.getPlanePosition(dimensions, 2));
 		assertArrayEquals(new int[]{1,1}, Index.getPlanePosition(dimensions, 3));
-		// OLD WAY
-		//assertArrayEquals(new int[]{0,0}, Index.getPlanePosition(dimensions, 0));
-		//assertArrayEquals(new int[]{0,1}, Index.getPlanePosition(dimensions, 1));
-		//assertArrayEquals(new int[]{1,0}, Index.getPlanePosition(dimensions, 2));
-		//assertArrayEquals(new int[]{1,1}, Index.getPlanePosition(dimensions, 3));
 		getPlanePositionShouldFail(dimensions, 4);
 
 		dimensions = new int[]{50,60,2,2,2};
 		getPlanePositionShouldFail(dimensions, -1);
-		// NEW WAY
 		assertArrayEquals(new int[]{0,0,0}, Index.getPlanePosition(dimensions, 0));
 		assertArrayEquals(new int[]{1,0,0}, Index.getPlanePosition(dimensions, 1));
 		assertArrayEquals(new int[]{0,1,0}, Index.getPlanePosition(dimensions, 2));
@@ -325,15 +318,6 @@ public class IndexTest {
 		assertArrayEquals(new int[]{1,0,1}, Index.getPlanePosition(dimensions, 5));
 		assertArrayEquals(new int[]{0,1,1}, Index.getPlanePosition(dimensions, 6));
 		assertArrayEquals(new int[]{1,1,1}, Index.getPlanePosition(dimensions, 7));
-		// OLD WAY
-		//assertArrayEquals(new int[]{0,0,0}, Index.getPlanePosition(dimensions, 0));
-		//assertArrayEquals(new int[]{0,0,1}, Index.getPlanePosition(dimensions, 1));
-		//assertArrayEquals(new int[]{0,1,0}, Index.getPlanePosition(dimensions, 2));
-		//assertArrayEquals(new int[]{0,1,1}, Index.getPlanePosition(dimensions, 3));
-		//assertArrayEquals(new int[]{1,0,0}, Index.getPlanePosition(dimensions, 4));
-		//assertArrayEquals(new int[]{1,0,1}, Index.getPlanePosition(dimensions, 5));
-		//assertArrayEquals(new int[]{1,1,0}, Index.getPlanePosition(dimensions, 6));
-		//assertArrayEquals(new int[]{1,1,1}, Index.getPlanePosition(dimensions, 7));
 		getPlanePositionShouldFail(dimensions, 8);
 	}
 	

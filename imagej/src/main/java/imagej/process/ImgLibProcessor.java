@@ -2434,8 +2434,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void setPixels(int channelNumber, FloatProcessor fp)
 	{
 		// like ByteProcessor ignore channel number
-		//OLD WAY setPixels(fp.getPixels());
+
 		setPixelsFromFloatProc(fp);
+		
 		setMinAndMax(fp.getMin(), fp.getMax());
 	}
 
