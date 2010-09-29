@@ -252,7 +252,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** constructor: takes an ImgLib image and the integer position of the plane within the image */
 	public ImgLibProcessor(Image<T> img, long planeNumber)
 	{
-		this(img, ImageUtils.getPlanePosition(img.getDimensions(), planeNumber));
+		this(img, Index.getPlanePosition(img.getDimensions(), planeNumber));
 	}
 
 	//****************** Helper methods *******************************************************
@@ -1325,7 +1325,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		fillOp.execute();
 		*/
 		
-		/* version that uses a selection function to filter pixels
+		/* version that uses a selection function to filter pixels to only apply to those where mask bit is on
 		*/
 		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
 
@@ -1712,7 +1712,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	    else  // we have the special planar container in place
 	    {
 	    	int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
-	    	long planeNumber = ImageUtils.getSampleNumber(planeDimsMaxes, this.planePosition);
+	    	long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
 	    	if (planeNumber >= Integer.MAX_VALUE)
 	    		throw new IllegalArgumentException("too many planes");
 	    	return planarAccess.getPlane((int)planeNumber);

@@ -261,4 +261,80 @@ public class IndexTest {
 		assertTrue(Index.isValid(position,origin,span));
 		shouldFailIncrement(position,origin,span);
 	}
+
+	private void getPlanePositionShouldFail(int[] dimensions, int index)
+	{
+		try {
+			Index.getPlanePosition(dimensions, index);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testGetPlanePosition() {
+		
+		int[] dimensions;
+		
+		dimensions = new int[]{};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+		
+		dimensions = new int[]{50};
+		getPlanePositionShouldFail(dimensions, -1);
+		getPlanePositionShouldFail(dimensions, 0);
+		getPlanePositionShouldFail(dimensions, 1);
+
+		// TODO - the middle case is unintuitive. Its up to the user to specify a MxNx1 image for a single plane
+		dimensions = new int[]{50,60};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{}, Index.getPlanePosition(dimensions, 0));
+		getPlanePositionShouldFail(dimensions, 1);
+
+		dimensions = new int[]{50,60,3};
+		getPlanePositionShouldFail(dimensions, -1);
+		assertArrayEquals(new int[]{0}, Index.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{1}, Index.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{2}, Index.getPlanePosition(dimensions, 2));
+		getPlanePositionShouldFail(dimensions, 3);
+
+		dimensions = new int[]{50,60,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		// NEW WAY
+		assertArrayEquals(new int[]{0,0}, Index.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{1,0}, Index.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1}, Index.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,1}, Index.getPlanePosition(dimensions, 3));
+		// OLD WAY
+		//assertArrayEquals(new int[]{0,0}, Index.getPlanePosition(dimensions, 0));
+		//assertArrayEquals(new int[]{0,1}, Index.getPlanePosition(dimensions, 1));
+		//assertArrayEquals(new int[]{1,0}, Index.getPlanePosition(dimensions, 2));
+		//assertArrayEquals(new int[]{1,1}, Index.getPlanePosition(dimensions, 3));
+		getPlanePositionShouldFail(dimensions, 4);
+
+		dimensions = new int[]{50,60,2,2,2};
+		getPlanePositionShouldFail(dimensions, -1);
+		// NEW WAY
+		assertArrayEquals(new int[]{0,0,0}, Index.getPlanePosition(dimensions, 0));
+		assertArrayEquals(new int[]{1,0,0}, Index.getPlanePosition(dimensions, 1));
+		assertArrayEquals(new int[]{0,1,0}, Index.getPlanePosition(dimensions, 2));
+		assertArrayEquals(new int[]{1,1,0}, Index.getPlanePosition(dimensions, 3));
+		assertArrayEquals(new int[]{0,0,1}, Index.getPlanePosition(dimensions, 4));
+		assertArrayEquals(new int[]{1,0,1}, Index.getPlanePosition(dimensions, 5));
+		assertArrayEquals(new int[]{0,1,1}, Index.getPlanePosition(dimensions, 6));
+		assertArrayEquals(new int[]{1,1,1}, Index.getPlanePosition(dimensions, 7));
+		// OLD WAY
+		//assertArrayEquals(new int[]{0,0,0}, Index.getPlanePosition(dimensions, 0));
+		//assertArrayEquals(new int[]{0,0,1}, Index.getPlanePosition(dimensions, 1));
+		//assertArrayEquals(new int[]{0,1,0}, Index.getPlanePosition(dimensions, 2));
+		//assertArrayEquals(new int[]{0,1,1}, Index.getPlanePosition(dimensions, 3));
+		//assertArrayEquals(new int[]{1,0,0}, Index.getPlanePosition(dimensions, 4));
+		//assertArrayEquals(new int[]{1,0,1}, Index.getPlanePosition(dimensions, 5));
+		//assertArrayEquals(new int[]{1,1,0}, Index.getPlanePosition(dimensions, 6));
+		//assertArrayEquals(new int[]{1,1,1}, Index.getPlanePosition(dimensions, 7));
+		getPlanePositionShouldFail(dimensions, 8);
+	}
+	
 }
