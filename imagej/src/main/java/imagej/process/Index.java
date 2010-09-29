@@ -37,7 +37,8 @@ public final class Index {
 		
 		return values;
 	}
-	
+
+	/** tells whether a position array is within the bounds specified via origin and span arrays */
 	public static boolean isValid(int[] position, int[] origin, int[] span)
 	{
 		for (int i = 0; i < position.length; i++)
@@ -170,13 +171,15 @@ public final class Index {
 		return len;
 	}
 
-	public static long getSampleNumber(int[] dimensions, int[] indexValue)
+	/** returns the sample number of an index into a data set of specified dimensions */
+	public static long getSampleNumber(int[] dimensions, int[] index)
 	{
 		// TODO - make positionToRaster return a long
 		
-		return Index.positionToRaster(dimensions, indexValue);
+		return Index.positionToRaster(dimensions, index);
 	}
 
+	/** returns the sample index of a plane number within a data set of specified dimensions */
 	public static int[] getPlanePosition(int[] dimensions, long planeNumber)
 	{
 		if ((planeNumber < 0) || (planeNumber >= ImageUtils.getTotalPlanes(dimensions)))
@@ -192,8 +195,10 @@ public final class Index {
 			if (planeNumber != 0)
 				throw new IllegalArgumentException("getPlanePosition() 2-D image can only have 1 plane");
 			
-			return new int[]{};  // TODO - this is a little scary to do. might need to throw exception and have other places fix the fact
-								//    that we have a rows x cols x 1 image
+			// TODO - this next step is a little scary to do. might need to throw exception and have other places fix the fact
+			//    that we have a rows x cols x 1 image
+			
+			return new int[]{};
 		}
 			
 		int[] planeDim = new int[dimensions.length-2];
