@@ -1922,6 +1922,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			this.min = this.snapshotMin;
 			this.max = this.snapshotMax;
 		}
+		
+		// TODO : replace resetOp with a BinaryAssignPositionalOperation (need to define) like refactor of MaskedFillOperation
+		//   call elsewhere in this file. Use a selector function (MaskOnSlectionFunction) to filter which samples are acted on.
 	}
 
 	// TODO - refactor
