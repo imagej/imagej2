@@ -16,7 +16,7 @@ import ij.io.*;
 import ij.plugin.*;
 
 public class Open_Image5D implements PlugIn {
-    // 0x004c5554 (“LUT”) for channel lookup tables 
+    // 0x004c5554 (LUT) for channel lookup tables 
     // Structure: int type (1 for 768 byte RGB LUT)
     //              int channel number (channel, whose LUT this entry is, starting from 1)
     //              768 bytes: LUT for R, G, B in ascending order
