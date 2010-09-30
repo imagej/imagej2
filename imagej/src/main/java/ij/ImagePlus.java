@@ -64,7 +64,10 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	/** OTHER pixel layout */
 	public static final int IMGLIB = 5;
-	
+
+	/** enumeration of supported sample types */
+	public enum SampleType {BYTE, UBYTE, SHORT, USHORT, INT, UINT, LONG, FLOAT, DOUBLE};
+
 	/** True if any changes have been made to this image. */
 	public boolean changes;
 	
@@ -119,6 +122,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	// TODO - make this settable for an ImagePlus (in constructor?). Until then limited to ArrayContainers.
 	private RealType<?> imgLibType = null;
+	private SampleType sampleType;
 	
     /** Constructs an uninitialized ImagePlus. */
     public ImagePlus() {
@@ -172,6 +176,11 @@ public class ImagePlus implements ImageObserver, Measurements {
     public ImagePlus(String title, ImageStack stack) {
     	setStack(title, stack);
     	ID = --currentID;
+    }
+    
+    public SampleType getSampleType()
+    {
+    	return sampleType;
     }
     
 	/** Locks the image so other threads can test to see if it
@@ -513,6 +522,34 @@ public class ImagePlus implements ImageObserver, Measurements {
 		}
 		setProcessor2(title, ip, null);
 	}
+
+	private SampleType getSampleType(RealType<?> imglib)
+	{
+		SampleType sampleType;
+		
+		if (imglib instanceof ByteType)
+			sampleType = SampleType.BYTE; 
+		else if (imglib instanceof UnsignedByteType)
+			sampleType = SampleType.UBYTE; 
+		else if (imglib instanceof ShortType)
+			sampleType = SampleType.SHORT; 
+		else if (imglib instanceof UnsignedShortType)
+			sampleType = SampleType.USHORT; 
+		else if (imglib instanceof IntType)
+			sampleType = SampleType.INT; 
+		else if (imglib instanceof UnsignedIntType)
+			sampleType = SampleType.UINT; 
+		else if (imglib instanceof LongType)
+			sampleType = SampleType.LONG; 
+		else if (imglib instanceof FloatType)
+			sampleType = SampleType.FLOAT; 
+		else if (imglib instanceof DoubleType)
+			sampleType = SampleType.DOUBLE; 
+		else
+			throw new IllegalArgumentException("uknown Imglib type : "+imglib);
+		
+		return sampleType;
+	}
 	
 	void setProcessor2(String title, ImageProcessor ip, ImageStack newStack) {
 		if (title!=null) setTitle(title);
@@ -531,26 +568,31 @@ public class ImagePlus implements ImageObserver, Measurements {
 		{
 			type = GRAY8;
 			imgLibType = null;
+			sampleType = SampleType.UBYTE; 
 		}
 		else if (ip instanceof ColorProcessor)
 		{
 			type = COLOR_RGB;
 			imgLibType = null;
+			sampleType = SampleType.UINT; 
 		}
 		else if (ip instanceof ShortProcessor)
 		{
 			type = GRAY16;
 			imgLibType = null;
+			sampleType = SampleType.USHORT; 
 		}
 		else if (ip instanceof FloatProcessor)
 		{
 			type = GRAY32;
 			imgLibType = null;
+			sampleType = SampleType.FLOAT; 
 		}
 		else if (ip instanceof ImgLibProcessor)
 		{
 			type = IMGLIB;
 			imgLibType = ((ImgLibProcessor<?>)ip).getType();
+			sampleType = getSampleType(imgLibType);
 		}
 		else
 			throw new IllegalArgumentException("unknown processor type : "+ip.getClass());

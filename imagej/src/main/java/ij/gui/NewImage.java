@@ -16,6 +16,7 @@ import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 import ij.*;
+import ij.ImagePlus.SampleType;
 import ij.process.*;
 import imagej.process.ImageUtils;
 
@@ -42,11 +43,9 @@ public class NewImage {
     private static String[] fill = {"White", "Black", "Ramp"};
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
-	private static String[] sampleNames = new String[] {"8-bit signed", "8-bit unsigned", "16-bit signed", "16-bit unsigned",
-			"24-bit RGB", "32-bit signed", "32-bit unsigned", "32-bit float", "64-bit signed", "64-bit float"};
 	private static RealType<?> imgLibType;
 	
-	
+
     public NewImage() {
     	openImage();
     }
@@ -357,15 +356,37 @@ public class NewImage {
 		return true;
 	}
 
+	// TODO find a way to do this statically
+	private String[] getSampleNames()
+	{
+		String[] sampleNames = new String[SampleType.values().length];
+		
+		sampleNames[SampleType.BYTE.ordinal()] = "8-bit signed";
+		sampleNames[SampleType.UBYTE.ordinal()] = "8-bit unsigned";
+		sampleNames[SampleType.SHORT.ordinal()] = "16-bit signed";
+		sampleNames[SampleType.USHORT.ordinal()] = "16-bit unsigned";
+		sampleNames[SampleType.INT.ordinal()] = "32-bit signed";
+		sampleNames[SampleType.UINT.ordinal()] = "32-bit unsigned";
+		sampleNames[SampleType.LONG.ordinal()] = "64-bit signed";
+		sampleNames[SampleType.FLOAT.ordinal()] = "32-bit float";
+		sampleNames[SampleType.DOUBLE.ordinal()] = "64-bit float";
+		
+		return sampleNames;
+	}
+	
 	boolean currentShowDialog()
 	{
+		String[] sampleNames = getSampleNames();
+		
 		if (type<GRAY8 || type>ImagePlus.IMGLIB)
 		{
 			type = ImagePlus.IMGLIB;
 			imgLibType = new UnsignedByteType();
 		}
+		
 		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
 			fillWith = OLD_FILL_WHITE;
+		
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
 		
@@ -381,55 +402,47 @@ public class NewImage {
 
 		String sampleType = gd.getNextChoice();
 		
-		int desiredType = -1;
-		for (int i = 0; i < sampleNames.length; i++)
-			if (sampleType.equals(sampleNames[i]))
-				desiredType = i;
-		switch (desiredType)
+		if (sampleType.equals(sampleNames[SampleType.BYTE.ordinal()]))
 		{
-			case 0:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new ByteType();
-				break;
-			case 1:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new UnsignedByteType();
-				break;
-			case 2:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new ShortType();
-				break;
-			case 3:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new UnsignedShortType();
-				break;
-			case 4:
-				type = ImagePlus.COLOR_RGB;
-				imgLibType = null;
-				break;
-			case 5:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new IntType();
-				break;
-			case 6:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new UnsignedIntType();
-				break;
-			case 7:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new FloatType();
-				break;
-			case 8:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new LongType();
-				break;
-			case 9:
-				type = ImagePlus.IMGLIB;
-				imgLibType = new DoubleType();
-				break;
-			default:
-				throw new IllegalArgumentException("unknown sample type chosen "+sampleType);
+			imgLibType = new ByteType();
 		}
+		else if (sampleType.equals(sampleNames[SampleType.UBYTE.ordinal()]))
+		{
+			imgLibType = new UnsignedByteType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.SHORT.ordinal()]))
+		{
+			imgLibType = new ShortType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.USHORT.ordinal()]))
+		{
+			imgLibType = new UnsignedShortType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.INT.ordinal()]))
+		{
+			imgLibType = new IntType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.UINT.ordinal()]))
+		{
+			imgLibType = new UnsignedIntType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.FLOAT.ordinal()]))
+		{
+			imgLibType = new FloatType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.LONG.ordinal()]))
+		{
+			imgLibType = new LongType();
+		}
+		else if (sampleType.equals(sampleNames[SampleType.DOUBLE.ordinal()]))
+		{
+			imgLibType = new DoubleType();
+		}
+		else
+			throw new IllegalArgumentException("unknown sample type chosen "+sampleType);
+		
+		type = ImagePlus.IMGLIB;
+		
 		fillWith = gd.getNextChoiceIndex();
 		width = (int)gd.getNextNumber();
 		height = (int)gd.getNextNumber();
