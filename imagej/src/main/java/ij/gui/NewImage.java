@@ -6,6 +6,7 @@ import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
+import mpicbg.imglib.type.numeric.integer.GenericByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
@@ -19,6 +20,8 @@ import ij.*;
 import ij.ImagePlus.SampleType;
 import ij.process.*;
 import imagej.process.ImageUtils;
+import imagej.process.ImgLibProcessor;
+import imagej.process.TypeManager;
 
 /** New image dialog box plus several static utility methods for creating images.*/
 public class NewImage {
@@ -33,6 +36,7 @@ public class NewImage {
 	static final String WIDTH = "new.width";
 	static final String HEIGHT = "new.height";
 	static final String SLICES = "new.slices";
+	static final String SAMPLE_TYPE = "new.sampleType";
 
     private static String name = Prefs.getString(NAME, "Untitled");
     private static int width = Prefs.getInt(WIDTH, 400);
@@ -44,12 +48,67 @@ public class NewImage {
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
 	private static RealType<?> imgLibType;
-	
+	private static SampleType sampleType = sampleTypeFromString(Prefs.getString(SAMPLE_TYPE,SampleType.UBYTE.toString()));
 
     public NewImage() {
     	openImage();
     }
     
+	private static SampleType sampleTypeFromString(String type)
+	{
+		/* NEW WAY - doesn't seem to always work
+		*/
+		
+		SampleType sampleType =  Enum.valueOf(SampleType.class, type);
+		
+		//System.out.println(" returning "+sampleType);
+		
+		return sampleType;
+		
+		/*  OLD WAY that works (except maybe once???)
+
+		SampleType sampleType = SampleType.UBYTE;
+		
+		if (type.equals(SampleType.BYTE.toString()))
+			
+			sampleType = SampleType.BYTE;
+		
+		else if (type.equals(SampleType.UBYTE.toString()))
+			
+			sampleType = SampleType.UBYTE;
+		
+		else if (type.equals(SampleType.SHORT.toString()))
+			
+			sampleType = SampleType.SHORT;
+		
+		else if (type.equals(SampleType.USHORT.toString()))
+			
+			sampleType = SampleType.USHORT;
+		
+		else if (type.equals(SampleType.INT.toString()))
+			
+			sampleType = SampleType.INT;
+		
+		else if (type.equals(SampleType.UINT.toString()))
+			
+			sampleType = SampleType.UINT;
+		
+		else if (type.equals(SampleType.LONG.toString()))
+			
+			sampleType = SampleType.LONG;
+		
+		else if (type.equals(SampleType.FLOAT.toString()))
+			
+			sampleType = SampleType.FLOAT;
+		
+		else if (type.equals(SampleType.DOUBLE.toString()))
+			
+			sampleType = SampleType.DOUBLE;
+		
+		return sampleType;
+		*/
+	}
+
 	static boolean createStack(ImagePlus imp, ImageProcessor ip, int nSlices, int type, int options) {
 		int fill = getFill(options);
 		int width = imp.getWidth();
@@ -265,15 +324,96 @@ public class NewImage {
 		return imp;
 	}
 
-	static void imglibCreate(String title, int width, int height, int nSlices, int type, int options)
+	private static void rampedFill(ImagePlus imp)
+	{
+		int width = imp.getWidth();
+		int height = imp.getHeight();
+		
+		double[] ramp = new double[width];
+		
+		RealType<?> type = imp.getImgLibType();
+		if (TypeManager.isIntegralType(type))
+		{
+			double min = type.getMinValue();
+			double max = type.getMaxValue();
+			for (int x = 0; x < width; x++)
+			{
+				double relSize = ((double)x)/(width-1); 
+				ramp[x] = min + (relSize*(max-min));
+			}
+		}
+		else  // floating type data
+		{
+			for (int x = 0; x < width; x++)
+				ramp[x] = ((double)x) / (width-1); 
+		}
+		int planeCount = imp.getNSlices();
+		for (int plane = 0; plane < planeCount; plane++)
+		{
+			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getStack().getProcessor(plane+1);
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					proc.setd(x, y, ramp[x]);
+		}
+	}
+	
+	private static void whiteFill(ImagePlus imp)
+	{
+		if (imp.getImgLibType() instanceof GenericByteType<?>)
+		{
+			// fill with max
+			int width = imp.getWidth();
+			int height = imp.getHeight();
+
+			double max = imp.getImgLibType().getMaxValue();
+
+			int planeCount = imp.getNSlices();
+			for (int plane = 0; plane < planeCount; plane++)
+			{
+				ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getStack().getProcessor(plane+1);
+				for (int y = 0; y < height; y++)
+					for (int x = 0; x < width; x++)
+						proc.setd(x, y, max);
+			}
+		}
+		else  // non byte type
+		{
+			// invert lut
+			ImageProcessor proc = imp.getProcessor();
+			proc.invertLut();
+		}
+	}
+	
+	private static void imglibCreate(String title, int width, int height, int nSlices, int type, int options)
 	{
 		long startTime = System.currentTimeMillis();
+		
 		int[] dimensions = new int[]{width, height, nSlices};
+		
 		ArrayContainerFactory factory = new ArrayContainerFactory();
 		factory.setPlanar(true);
+		
 		Image<?> image = ImageUtils.createImage(imgLibType, factory, dimensions);
+		
 		ImagePlus imp = ImageUtils.createImagePlus(image);
-		if (imp!=null) {
+		
+		if (imp!=null)
+		{
+			int fillType = getFill(options);
+			
+			if (fillType == FILL_RAMP)
+				rampedFill(imp);
+			else if (fillType == FILL_WHITE)
+				whiteFill(imp);
+			else
+				; // do nothing - FILL_BLACK should work by default
+			
+			if ( ! TypeManager.isIntegralType(imgLibType))
+				imp.getProcessor().setMinAndMax(0, 1);
+			else
+				imp.getProcessor().setMinAndMax(imgLibType.getMinValue(), imgLibType.getMaxValue());
+				
+			
 			WindowManager.checkForDuplicateName = true;          
 			imp.show();
 			IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
@@ -367,14 +507,19 @@ public class NewImage {
 		sampleNames[SampleType.USHORT.ordinal()] = "16-bit unsigned";
 		sampleNames[SampleType.INT.ordinal()] = "32-bit signed";
 		sampleNames[SampleType.UINT.ordinal()] = "32-bit unsigned";
-		sampleNames[SampleType.LONG.ordinal()] = "64-bit signed";
 		sampleNames[SampleType.FLOAT.ordinal()] = "32-bit float";
 		sampleNames[SampleType.DOUBLE.ordinal()] = "64-bit float";
+		sampleNames[SampleType.LONG.ordinal()] = "64-bit signed";
 		
 		return sampleNames;
 	}
 	
-	boolean currentShowDialog()
+	private boolean typeNameMatches(String typeString, String[] sampleNames, SampleType sampleType)
+	{
+		return typeString.equals(sampleNames[sampleType.ordinal()]);
+	}
+	
+	private boolean currentShowDialog()
 	{
 		String[] sampleNames = getSampleNames();
 		
@@ -390,7 +535,7 @@ public class NewImage {
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
 		
-		gd.addChoice("Type:", sampleNames, sampleNames[0]);
+		gd.addChoice("Type:", sampleNames, sampleNames[sampleType.ordinal()]);
 		gd.addChoice("Fill With:", fill, fill[fillWith]);
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
 		gd.addNumericField("Height:", height, 0, 5, "pixels");
@@ -400,46 +545,55 @@ public class NewImage {
 			return false;
 		name = gd.getNextString();
 
-		String sampleType = gd.getNextChoice();
+		String typeName = gd.getNextChoice();
 		
-		if (sampleType.equals(sampleNames[SampleType.BYTE.ordinal()]))
+		if (typeNameMatches(typeName,sampleNames,SampleType.BYTE))
 		{
 			imgLibType = new ByteType();
+			sampleType = SampleType.BYTE;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.UBYTE.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.UBYTE))
 		{
 			imgLibType = new UnsignedByteType();
+			sampleType = SampleType.UBYTE;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.SHORT.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.SHORT))
 		{
 			imgLibType = new ShortType();
+			sampleType = SampleType.SHORT;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.USHORT.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.USHORT))
 		{
 			imgLibType = new UnsignedShortType();
+			sampleType = SampleType.USHORT;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.INT.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.INT))
 		{
 			imgLibType = new IntType();
+			sampleType = SampleType.INT;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.UINT.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.UINT))
 		{
 			imgLibType = new UnsignedIntType();
+			sampleType = SampleType.UINT;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.FLOAT.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.FLOAT))
 		{
 			imgLibType = new FloatType();
+			sampleType = SampleType.FLOAT;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.LONG.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.LONG))
 		{
 			imgLibType = new LongType();
+			sampleType = SampleType.LONG;
 		}
-		else if (sampleType.equals(sampleNames[SampleType.DOUBLE.ordinal()]))
+		else if (typeNameMatches(typeName,sampleNames,SampleType.DOUBLE))
 		{
 			imgLibType = new DoubleType();
+			sampleType = SampleType.DOUBLE;
 		}
 		else
-			throw new IllegalArgumentException("unknown sample type chosen "+sampleType);
+			throw new IllegalArgumentException("unknown sample type chosen "+typeName);
 		
 		type = ImagePlus.IMGLIB;
 		
@@ -471,6 +625,7 @@ public class NewImage {
 		prefs.put(WIDTH, Integer.toString(width));
 		prefs.put(HEIGHT, Integer.toString(height));
 		prefs.put(SLICES, Integer.toString(slices));
+		prefs.put(SAMPLE_TYPE, sampleType.toString());
 	}
 
 }
