@@ -47,7 +47,9 @@ public class Menus {
 	private static Menus instance;
 	private static MenuBar mbar;
 	private static CheckboxMenuItem gray8Item,gray16Item,gray32Item,
-			color256Item,colorRGBItem,RGBStackItem,HSBStackItem;
+			color256Item,colorRGBItem,RGBStackItem,HSBStackItem,
+			typeByteItem, typeUbyteItem, typeShortItem, typeUshortItem,
+			typeIntItem, typeUintItem, typeLongItem, typeFloatItem, typeDoubleItem;
 	private static PopupMenu popup;
 
 	private static ImageJ ij;
@@ -134,15 +136,25 @@ public class Menus {
 		
 		Menu image = getMenu("Image");
 		Menu imageType = getMenu("Image>Type");
-			gray8Item = addCheckboxItem(imageType, "8-bit", "ij.plugin.Converter(\"8-bit\")");
-			gray16Item = addCheckboxItem(imageType, "16-bit", "ij.plugin.Converter(\"16-bit\")");
-			gray32Item = addCheckboxItem(imageType, "32-bit", "ij.plugin.Converter(\"32-bit\")");
-			color256Item = addCheckboxItem(imageType, "8-bit Color", "ij.plugin.Converter(\"8-bit Color\")");
-			colorRGBItem = addCheckboxItem(imageType, "RGB Color", "ij.plugin.Converter(\"RGB Color\")");
-			imageType.add(new MenuItem("-"));
-			RGBStackItem = addCheckboxItem(imageType, "RGB Stack", "ij.plugin.Converter(\"RGB Stack\")");
-			HSBStackItem = addCheckboxItem(imageType, "HSB Stack", "ij.plugin.Converter(\"HSB Stack\")");
-			image.add(imageType);
+		typeByteItem =  addCheckboxItem(imageType, "8-bit signed", "");
+		typeUbyteItem =  addCheckboxItem(imageType, "8-bit unsigned", "");
+		typeShortItem =  addCheckboxItem(imageType, "16-bit signed", "");
+		typeUshortItem =  addCheckboxItem(imageType, "16-bit unsigned", "");
+		typeIntItem =  addCheckboxItem(imageType, "32-bit signed", "");
+		typeUintItem =  addCheckboxItem(imageType, "32-bit unsigned", "");
+		typeFloatItem =  addCheckboxItem(imageType, "32-bit float", "");
+		typeLongItem =  addCheckboxItem(imageType, "64-bit signed", "");
+		typeDoubleItem =  addCheckboxItem(imageType, "64-bit float", "");
+		imageType.add(new MenuItem("-"));
+		gray8Item = addCheckboxItem(imageType, "Legacy 8-bit", "ij.plugin.Converter(\"8-bit\")");
+		gray16Item = addCheckboxItem(imageType, "Legacy 16-bit", "ij.plugin.Converter(\"16-bit\")");
+		gray32Item = addCheckboxItem(imageType, "Legacy 32-bit", "ij.plugin.Converter(\"32-bit\")");
+		color256Item = addCheckboxItem(imageType, "Legacy 8-bit Color", "ij.plugin.Converter(\"8-bit Color\")");
+		colorRGBItem = addCheckboxItem(imageType, "Legacy RGB Color", "ij.plugin.Converter(\"RGB Color\")");
+		imageType.add(new MenuItem("-"));
+		RGBStackItem = addCheckboxItem(imageType, "RGB Stack", "ij.plugin.Converter(\"RGB Stack\")");
+		HSBStackItem = addCheckboxItem(imageType, "HSB Stack", "ij.plugin.Converter(\"HSB Stack\")");
+		image.add(imageType);
 			
 		image.addSeparator();
 		getMenu("Image>Adjust", true);
@@ -1020,6 +1032,15 @@ public class Menus {
 		colorRGBItem.setState(false);
 		RGBStackItem.setState(false);
 		HSBStackItem.setState(false);
+		typeByteItem.setState(false);
+		typeUbyteItem.setState(false);
+		typeShortItem.setState(false);
+		typeUshortItem.setState(false);
+		typeIntItem.setState(false);
+		typeUintItem.setState(false);
+		typeLongItem.setState(false);
+		typeFloatItem.setState(false);
+		typeDoubleItem.setState(false);
 		ImagePlus imp = WindowManager.getCurrentImage();
 		if (imp==null)
 			return;
@@ -1036,27 +1057,49 @@ public class Menus {
 				imp.setType(ImagePlus.COLOR_256);
 			}
 		}
-    	switch (type) {
-    		case ImagePlus.GRAY8:
+		switch (type)
+		{
+			case ImagePlus.GRAY8:
 				gray8Item.setState(true);
 				break;
-     		case ImagePlus.GRAY16:
+			case ImagePlus.GRAY16:
 				gray16Item.setState(true);
 				break;
-     		case ImagePlus.GRAY32:
+			case ImagePlus.GRAY32:
 				gray32Item.setState(true);
 				break;
-   			case ImagePlus.COLOR_256:
+			case ImagePlus.COLOR_256:
 				color256Item.setState(true);
 				break;
-    		case ImagePlus.COLOR_RGB:
+			case ImagePlus.COLOR_RGB:
 				colorRGBItem.setState(true);
 				break;
-    		case RGB_STACK:
+			case RGB_STACK:
 				RGBStackItem.setState(true);
 				break;
-    		case HSB_STACK:
+			case HSB_STACK:
 				HSBStackItem.setState(true);
+				break;
+			case ImagePlus.IMGLIB:
+				ImagePlus.SampleType theType = imp.getSampleType();
+				if (theType == ImagePlus.SampleType.BYTE)
+					typeByteItem.setState(true);
+				else if (theType == ImagePlus.SampleType.UBYTE)
+					typeUbyteItem.setState(true);
+				else if (theType == ImagePlus.SampleType.SHORT)
+					typeShortItem.setState(true);
+				else if (theType == ImagePlus.SampleType.USHORT)
+					typeUshortItem.setState(true);
+				else if (theType == ImagePlus.SampleType.INT)
+					typeIntItem.setState(true);
+				else if (theType == ImagePlus.SampleType.UINT)
+					typeUintItem.setState(true);
+				else if (theType == ImagePlus.SampleType.LONG)
+					typeLongItem.setState(true);
+				else if (theType == ImagePlus.SampleType.FLOAT)
+					typeFloatItem.setState(true);
+				else if (theType == ImagePlus.SampleType.DOUBLE)
+					typeDoubleItem.setState(true);
 				break;
 		}
 		

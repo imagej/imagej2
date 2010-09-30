@@ -415,8 +415,7 @@ public class ImageUtilsTest {
 		int[] dimensions = new int[]{3,4,5,6,7};
 		
 		ArrayContainerFactory contFact = new ArrayContainerFactory();
-		// TODO CTR see me - this causes this test to fail:
-		//contFact.setPlanar(true);
+		contFact.setPlanar(true);
 		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), contFact);
 		Image<UnsignedShortType> image = factory.createImage(dimensions);
 		// TODO : set pixel data to something
