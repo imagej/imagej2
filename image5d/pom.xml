@@ -106,4 +106,20 @@
     </repository>
   </repositories>
 
+  <!-- NB: Workaround for javadoc bug when classes in the default package
+    access classes from non-default packages. See:
+    http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <use>false</use>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
 </project>
