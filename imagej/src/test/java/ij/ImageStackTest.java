@@ -255,7 +255,7 @@ public class ImageStackTest {
 		is.addSlice("Gosh darn", (Object)c);
 		is.deleteSlice(1);
 		assertEquals(2,is.getSize());
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(b,is.getPixels(1));
 		//assertEquals(c,is.getPixels(2));
 		assertArrayEquals(b,(byte[])is.getPixels(1));
@@ -268,7 +268,7 @@ public class ImageStackTest {
 		is.addSlice("Gosh darn", (Object)c);
 		is.deleteSlice(3);
 		assertEquals(2,is.getSize());
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(a,is.getPixels(1));
 		//assertEquals(b,is.getPixels(2));
 		assertArrayEquals(a,(byte[])is.getPixels(1));
@@ -281,7 +281,7 @@ public class ImageStackTest {
 		is.addSlice("Gosh darn", (Object)c);
 		is.deleteSlice(2);
 		assertEquals(2,is.getSize());
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(a,is.getPixels(1));
 		//assertEquals(c,is.getPixels(2));
 		assertArrayEquals(a,(byte[])is.getPixels(1));
@@ -424,7 +424,7 @@ public class ImageStackTest {
 		}
 		
 		// otherwise we should get the nth stack entry
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(a,is.getPixels(1));
 		//assertEquals(b,is.getPixels(2));
 		//assertEquals(c,is.getPixels(3));
@@ -473,25 +473,25 @@ public class ImageStackTest {
 		// otherwise we should set the nth stack entry
 		byte[] tmp = new byte[] {1,1,1,1};
 		is.setPixels(tmp,1);
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(tmp,is.getPixels(1));
 		assertArrayEquals(tmp,(byte[])is.getPixels(1));
 		
 		tmp = new byte[] {2,2,2,2};
 		is.setPixels(tmp,2);
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(tmp,is.getPixels(2));
 		assertArrayEquals(tmp,(byte[])is.getPixels(2));
 		
 		tmp = new byte[] {3,3,3,3};
 		is.setPixels(tmp,3);
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(tmp,is.getPixels(3));
 		assertArrayEquals(tmp,(byte[])is.getPixels(3));
 		
 		tmp = new byte[] {4,4,4,4};
 		is.setPixels(tmp,4);
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(tmp,is.getPixels(4));
 		assertArrayEquals(tmp,(byte[])is.getPixels(4));
 	}
@@ -667,7 +667,7 @@ public class ImageStackTest {
 		pixels = new byte[] {1,2,3,4};
 		is.addSlice("a", pixels);
 		ip = is.getProcessor(1); 
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(pixels,ip.getPixels());
 		assertArrayEquals((byte[])pixels,(byte[])ip.getPixels());
 		
@@ -676,7 +676,7 @@ public class ImageStackTest {
 		pixels = new short[] {1,2,3,4};
 		is.addSlice("a",pixels);
 		ip = is.getProcessor(1); 
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(pixels,ip.getPixels());
 		assertArrayEquals((short[])pixels,(short[])ip.getPixels());
 
@@ -685,7 +685,7 @@ public class ImageStackTest {
 		pixels = new int[] {1,2,3,4};
 		is.addSlice("a",pixels);
 		ip = is.getProcessor(1); 
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(pixels,ip.getPixels());
 		assertArrayEquals((int[])pixels,(int[])ip.getPixels());
 
@@ -694,7 +694,7 @@ public class ImageStackTest {
 		pixels = new float[] {1,2,3,4};
 		is.addSlice("a",pixels);
 		ip = is.getProcessor(1); 
-		// TODO: these commented out tests should be reestablished when imglib container references working
+		// TODO: these commented out tests should be reenabled when imglib container references working
 		//assertEquals(pixels,ip.getPixels());
 		Assert.assertFloatArraysEqual((float[])pixels,(float[])ip.getPixels(),0.0001f);
 		
