@@ -208,12 +208,11 @@ public class CompositeImageTest {
 		assertArrayEquals(new int[] {20,25,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
-		// TODO : might need to remove ColorProcessor specific tests when integrating ImgLibProcessor
-		
 		//  if rgb and stack size != 1 should throw excep
 		try {
 			st = new ImageStack(4,4);
 			st.addSlice("Zap",new ColorProcessor(4,4));
+			st.addSlice("Frap",new ColorProcessor(4,4));
 			ip = new ImagePlus("Buffy",st);
 			ci = new CompositeImage(ip,CompositeImage.COLOR);
 			fail();
@@ -224,12 +223,10 @@ public class CompositeImageTest {
 		//  if rgb and stack size == 1 should be okay
 		st = new ImageStack(4,4);
 		st.addSlice("Zap",new ColorProcessor(4,4));
-		st.addSlice("Dos",new ColorProcessor(4,4));
-		st.addSlice("Tres",new ColorProcessor(4,4));
 		ip = new ImagePlus("Willow",st);
 		ci = new CompositeImage(ip,CompositeImage.COLOR);
 		assertNotNull(ci);
-		assertEquals(3,ci.getStackSize());
+		assertEquals(3,ci.getStackSize());  // TODO - why is it 3 and not 1????
 		assertArrayEquals(new int[] {4,4,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
