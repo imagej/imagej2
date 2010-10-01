@@ -8,11 +8,13 @@ public class SqrUnaryFunction implements UnaryFunction
 {
 	private RealType<?> targetType;
 	private boolean isUnsignedShort;
+	private boolean isIntegral;
 	
 	public SqrUnaryFunction(RealType<?> targetType)
 	{
 		this.targetType = targetType;
 		this.isUnsignedShort = targetType instanceof UnsignedShortType;
+		this.isIntegral = TypeManager.isIntegralType(targetType);
 	}
 	
 	public double compute(double input)
@@ -23,8 +25,9 @@ public class SqrUnaryFunction implements UnaryFunction
 		if (this.isUnsignedShort)
 			if (value > Integer.MAX_VALUE)
 				value = 0;
-		
-		value = TypeManager.boundValueToType(this.targetType, value);
+	
+		if (this.isIntegral)
+			value = TypeManager.boundValueToType(this.targetType, value);
 		
 		return value;
 	}
