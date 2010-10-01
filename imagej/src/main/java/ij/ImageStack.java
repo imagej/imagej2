@@ -39,10 +39,12 @@ public class ImageStack {
 	private double max;
 	private float[] cTable;
 	
+	private enum OrigProcType {BYTE,SHORT,FLOAT,COLOR,IMGLIB};
 	private PlaneStack<?> stack;
 	private ArrayList<String> labels;
 	private ContainerFactory factory;
-
+	private OrigProcType origProc;
+	
 	/**
 	* Creates a new, empty image stack given width, height, ColorModel, and ContainerFactory. If ContainerFactory is null
 	* all planes of ImageStack will be created inside ArrayContainers.
@@ -62,6 +64,7 @@ public class ImageStack {
 			this.factory = factory;
 		this.stack = null;
 		this.labels = new ArrayList<String>();
+		this.origProc = OrigProcType.IMGLIB;
 	}
 	
 	/**
@@ -223,22 +226,46 @@ public class ImageStack {
 	{
 		addSlice(sliceLabel, pixels);
 	}
+
+	private boolean processorIsUnsigned(ImageProcessor ip)
+	{
+		boolean unsigned = false;
+		
+		if ((ip instanceof ByteProcessor) || (ip instanceof ShortProcessor) || (ip instanceof ColorProcessor))
+			unsigned = true;
+		
+		if (ip instanceof ImgLibProcessor<?>)
+			unsigned = TypeManager.isUnsignedType(((ImgLibProcessor<?>) ip).getType());
+		
+		return unsigned;
+	}
 	
 	/** Adds the image in 'ip' to the end of the stack. */
 	public void addSlice(String sliceLabel, ImageProcessor ip)
 	{
 		if (ip.getWidth()!=width || ip.getHeight()!=height)
 			throw new IllegalArgumentException("Dimensions do not match");
-		if (numSlices()==0) {
+		
+		if (numSlices() == 0)
+		{
+			if (ip instanceof ByteProcessor)
+				this.origProc = OrigProcType.BYTE;
+			else if (ip instanceof ShortProcessor)
+				this.origProc = OrigProcType.SHORT;
+			else if (ip instanceof FloatProcessor)
+				this.origProc = OrigProcType.FLOAT;
+			else if (ip instanceof ColorProcessor)
+				this.origProc = OrigProcType.COLOR;
+			else
+				this.origProc = OrigProcType.IMGLIB;
+
 			cm = ip.getColorModel();
 			min = ip.getMin();
 			max = ip.getMax();
 		}
-		boolean unsigned = false;
-		if ((ip instanceof ByteProcessor) || (ip instanceof ShortProcessor))
-			unsigned = true;
-		if (ip instanceof ImgLibProcessor<?>)
-			unsigned = TypeManager.isUnsignedType(((ImgLibProcessor<?>) ip).getType());
+		
+		boolean unsigned = processorIsUnsigned(ip);
+		
 		addSlice(sliceLabel, unsigned, ip.getPixels());
 	}
 	
@@ -249,11 +276,7 @@ public class ImageStack {
 		if (n<0 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		boolean unsigned = false;
-		if ((ip instanceof ByteProcessor) || (ip instanceof ShortProcessor))
-			unsigned = true;
-		if (ip instanceof ImgLibProcessor<?>)
-			unsigned = TypeManager.isUnsignedType(((ImgLibProcessor<?>) ip).getType());
+		boolean unsigned = processorIsUnsigned(ip);
 
 		addSliceToImage(n,sliceLabel,unsigned,ip.getPixels());
 	}
@@ -420,47 +443,40 @@ public class ImageStack {
 		if (numSlices()==0)
 			return null;
 		// otherwise if here stack should be non null
-		// ONE WAY
 		Image<?> image = stack.getStorage();
-		ip = new ImgLibProcessor(image, Index.getPlanePosition(image.getDimensions(), n-1));
-		// OTHER WAY
-		//Image<?> image = stack.getStorage(n-1);
-		//ip = new ImgLibProcessor(image, Index.create(1));
-		if (min != Double.MAX_VALUE)
-			ip.setMinAndMax(min, max);
-		if (cTable!=null)
-			ip.setCalibrationTable(cTable);
-		return ip;
-	}
-	
-	/*  original
-	public ImageProcessor getProcessor(int n) {
-		ImageProcessor ip;
-		if (n<1 || n>nSlices)
-			throw new IllegalArgumentException(outOfRange+n);
-		if (nSlices==0)
-			return null;
-		if (stack[0]==null)
-			throw new IllegalArgumentException("Pixel array is null");
-		if (stack[0] instanceof byte[])
-			ip = new ByteProcessor(width, height, null, cm);
-		else if (stack[0] instanceof short[])
-			ip = new ShortProcessor(width, height, null, cm);
-		else if (stack[0] instanceof int[])
-			ip = new ColorProcessor(width, height, null);
-		else if (stack[0] instanceof float[])
-			ip = new FloatProcessor(width, height, null, cm);		
-		else
-			throw new IllegalArgumentException("Unknown stack type");
-		ip.setPixels(stack[n-1]);
+		ImgLibProcessor<?> proc = new ImgLibProcessor(image, Index.getPlanePosition(image.getDimensions(), n-1));
+		if (this.origProc == OrigProcType.IMGLIB)
+		{
+			ip = proc;
+		}
+		else  // stack created originally from an older style processor
+		{
+			switch (this.origProc)
+			{
+				case BYTE:
+					ip = new ByteProcessor(width, height, null, cm);
+					break;
+				case SHORT:
+					ip = new ShortProcessor(width, height, null, cm);
+					break;
+				case FLOAT:
+					ip = new FloatProcessor(width, height, null, cm);
+					break;
+				case COLOR:
+					ip = new ColorProcessor(width, height, null);
+					break;
+				default:
+					throw new IllegalArgumentException("unknown processor type "+this.origProc);
+			}
+			ip.setPixels(proc.getPixels());
+		}
 		if (min!=Double.MAX_VALUE && ip!=null && !(ip instanceof ColorProcessor))
 			ip.setMinAndMax(min, max);
 		if (cTable!=null)
 			ip.setCalibrationTable(cTable);
 		return ip;
 	}
-	*/
-
+	
 	/** Assigns a new color model to this stack. */
 	public void setColorModel(ColorModel cm)
 	{
@@ -478,10 +494,7 @@ public class ImageStack {
 	{
 		Image<?> image = null;
 		if (stack != null)
-			// ONE WAY
 			image = stack.getStorage();
-			//OTHER WAY
-			//image = stack.getStorage(0);
 		
     	if ((image != null) && (numSlices()==3) && (ImageUtils.getType(image) instanceof UnsignedByteType))
     	{

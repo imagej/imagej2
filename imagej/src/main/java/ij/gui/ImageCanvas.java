@@ -11,6 +11,8 @@ import ij.plugin.frame.RoiManager;
 import ij.macro.*;
 import ij.*;
 import ij.util.*;
+import imagej.process.ImgLibProcessor;
+
 import java.awt.event.*;
 import java.util.*;
 import java.awt.geom.*;
@@ -802,35 +804,53 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	protected void setDrawingColor(int ox, int oy, boolean setBackground) {
 		//IJ.write("setDrawingColor: "+setBackground+this);
 		int type = imp.getType();
-		int[] v = imp.getPixel(ox, oy);
-		switch (type) {
-			case ImagePlus.GRAY8: {
-				if (setBackground)
-					setBackgroundColor(getColor(v[0]));
-				else
-					setForegroundColor(getColor(v[0]));
-				break;
-			}
-			case ImagePlus.GRAY16: case ImagePlus.GRAY32: {
-				double min = imp.getProcessor().getMin();
-				double max = imp.getProcessor().getMax();
-				double value = (type==ImagePlus.GRAY32)?Float.intBitsToFloat(v[0]):v[0];
-				int index = (int)(255.0*((value-min)/(max-min)));
-				if (index<0) index = 0;
-				if (index>255) index = 255;
-				if (setBackground)
-					setBackgroundColor(getColor(index));
-				else
-					setForegroundColor(getColor(index));
-				break;
-			}
-			case ImagePlus.COLOR_RGB: case ImagePlus.COLOR_256: {
-				Color c = new Color(v[0], v[1], v[2]);
-				if (setBackground)
-					setBackgroundColor(c);
-				else
-					setForegroundColor(c);
-				break;
+		if (type == ImagePlus.IMGLIB)
+		{
+			ImgLibProcessor<?> ip = (ImgLibProcessor<?>)imp.getProcessor();
+			double min = ip.getMin();
+			double max = ip.getMax();
+			double value = ip.getd(ox,oy);
+			int index = (int)(255.0*((value-min)/(max-min)));
+			if (index<0) index = 0;
+			if (index>255) index = 255;
+			if (setBackground)
+				setBackgroundColor(getColor(index));
+			else
+				setForegroundColor(getColor(index));
+		}
+		else
+		{
+			int[] v = imp.getPixel(ox, oy);
+			switch (type) {
+				case ImagePlus.GRAY8: {
+					if (setBackground)
+						setBackgroundColor(getColor(v[0]));
+					else
+						setForegroundColor(getColor(v[0]));
+					break;
+				}
+				case ImagePlus.GRAY16: case ImagePlus.GRAY32: {
+					ImageProcessor ip = imp.getProcessor(); 
+					double min = ip.getMin();
+					double max = ip.getMax();
+					double value = (type==ImagePlus.GRAY32)?Float.intBitsToFloat(v[0]):v[0];
+					int index = (int)(255.0*((value-min)/(max-min)));
+					if (index<0) index = 0;
+					if (index>255) index = 255;
+					if (setBackground)
+						setBackgroundColor(getColor(index));
+					else
+						setForegroundColor(getColor(index));
+					break;
+				}
+				case ImagePlus.COLOR_RGB: case ImagePlus.COLOR_256: {
+					Color c = new Color(v[0], v[1], v[2]);
+					if (setBackground)
+						setBackgroundColor(c);
+					else
+						setForegroundColor(c);
+					break;
+				}
 			}
 		}
 		Color c;
