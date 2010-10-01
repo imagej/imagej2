@@ -7,8 +7,9 @@ import ij.measure.*;
 import ij.macro.Interpreter;
 import ij.plugin.frame.ContrastAdjuster;
 import ij.plugin.frame.Recorder;
+import imagej.SampleManager;
 import imagej.process.ImgLibProcessor;
-
+import imagej.SampleInfo;
 import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -64,9 +65,6 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	/** OTHER pixel layout */
 	public static final int IMGLIB = 5;
-
-	/** enumeration of supported sample types */
-	public enum SampleType {BYTE, UBYTE, SHORT, USHORT, INT, UINT, FLOAT, LONG, DOUBLE};
 
 	/** True if any changes have been made to this image. */
 	public boolean changes;
@@ -176,55 +174,36 @@ public class ImagePlus implements ImageObserver, Measurements {
     	ID = --currentID;
     }
     
-	private SampleType getSampleType(RealType<?> imglib)
+	private SampleInfo.SampleType getSampleType(RealType<?> imglib)
 	{
-		SampleType sampleType;
-		
-		if (imglib instanceof ByteType)
-			sampleType = SampleType.BYTE; 
-		else if (imglib instanceof UnsignedByteType)
-			sampleType = SampleType.UBYTE; 
-		else if (imglib instanceof ShortType)
-			sampleType = SampleType.SHORT; 
-		else if (imglib instanceof UnsignedShortType)
-			sampleType = SampleType.USHORT; 
-		else if (imglib instanceof IntType)
-			sampleType = SampleType.INT; 
-		else if (imglib instanceof UnsignedIntType)
-			sampleType = SampleType.UINT; 
-		else if (imglib instanceof LongType)
-			sampleType = SampleType.LONG; 
-		else if (imglib instanceof FloatType)
-			sampleType = SampleType.FLOAT; 
-		else if (imglib instanceof DoubleType)
-			sampleType = SampleType.DOUBLE; 
-		else
-			throw new IllegalArgumentException("unknown Imglib type : "+imglib);
-		
-		return sampleType;
+		return SampleManager.getSampleType(imglib);
 	}
 	
-    public SampleType getSampleType()
+    public SampleInfo.SampleType getSampleType()
     {
     	if (imageType == IMGLIB)
     		
-    		return getSampleType(imgLibType);
+    		return SampleManager.getSampleType(imgLibType);
     	
     	else if ((imageType == GRAY8) || (imageType == COLOR_256))
     		
-    		return SampleType.UBYTE;
+    		return SampleInfo.SampleType.UBYTE;
     	
     	else if (imageType == GRAY16)
     		
-    		return SampleType.USHORT;
+    		return SampleInfo.SampleType.USHORT;
     	
     	else if (imageType == COLOR_RGB)
     		
-    		return SampleType.UINT;
+    		return SampleInfo.SampleType.UINT;
     	
-    	else  // GRAY32
+    	else if (imageType == GRAY32)
     		
-    		return SampleType.FLOAT;
+    		return SampleInfo.SampleType.FLOAT;
+    	
+    	else
+    		
+    		throw new IllegalArgumentException("unknown image type "+imageType);
     }
     
 	/** Locks the image so other threads can test to see if it

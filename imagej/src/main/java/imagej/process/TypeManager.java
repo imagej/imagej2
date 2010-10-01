@@ -37,11 +37,11 @@ public class TypeManager {
 	 */
 	public static double boundValueToType(RealType<?> type, double inputValue)
 	{
-		if (isIntegralType(type))
-		{
+		//if (isIntegralType(type))
+		//{
 			if (inputValue < type.getMinValue() ) inputValue = type.getMinValue();
 			if (inputValue > type.getMaxValue() ) inputValue = type.getMaxValue();
-		}
+		//}
 
 		return inputValue;
 	}

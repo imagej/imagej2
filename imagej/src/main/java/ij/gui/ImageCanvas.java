@@ -801,7 +801,8 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		return new Color(cm.getRGB(index));
 	}
 	
-	protected void setDrawingColor(int ox, int oy, boolean setBackground) {
+	private Color findColor(ImageProcessor proc, int ox, int oy)
+	{
 		//IJ.write("setDrawingColor: "+setBackground+this);
 		int type = imp.getType();
 		if (type == ImagePlus.IMGLIB)
@@ -813,23 +814,18 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 			int index = (int)(255.0*((value-min)/(max-min)));
 			if (index<0) index = 0;
 			if (index>255) index = 255;
-			if (setBackground)
-				setBackgroundColor(getColor(index));
-			else
-				setForegroundColor(getColor(index));
+			return getColor(index);
 		}
-		else
+		else // old image types
 		{
 			int[] v = imp.getPixel(ox, oy);
-			switch (type) {
-				case ImagePlus.GRAY8: {
-					if (setBackground)
-						setBackgroundColor(getColor(v[0]));
-					else
-						setForegroundColor(getColor(v[0]));
-					break;
-				}
-				case ImagePlus.GRAY16: case ImagePlus.GRAY32: {
+			switch (type)
+			{
+				case ImagePlus.GRAY8:
+					return getColor(v[0]);
+					
+				case ImagePlus.GRAY16:
+				case ImagePlus.GRAY32:
 					ImageProcessor ip = imp.getProcessor(); 
 					double min = ip.getMin();
 					double max = ip.getMax();
@@ -837,26 +833,28 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 					int index = (int)(255.0*((value-min)/(max-min)));
 					if (index<0) index = 0;
 					if (index>255) index = 255;
-					if (setBackground)
-						setBackgroundColor(getColor(index));
-					else
-						setForegroundColor(getColor(index));
-					break;
-				}
-				case ImagePlus.COLOR_RGB: case ImagePlus.COLOR_256: {
-					Color c = new Color(v[0], v[1], v[2]);
-					if (setBackground)
-						setBackgroundColor(c);
-					else
-						setForegroundColor(c);
-					break;
-				}
+					return getColor(index);
+
+				case ImagePlus.COLOR_RGB:
+				case ImagePlus.COLOR_256:
+					return new Color(v[0], v[1], v[2]);
+					
+				default:
+					throw new IllegalArgumentException("findColor(): unknown image type ("+type+")");
 			}
 		}
-		Color c;
+	}
+	
+	protected void setDrawingColor(int ox, int oy, boolean setBackground) {
+		Color c = findColor(imp.getProcessor(), ox, oy);
 		if (setBackground)
+		{
+			setBackgroundColor(c);
 			c = Toolbar.getBackgroundColor();
-		else {
+		}
+		else
+		{
+			setForegroundColor(c);
 			c = Toolbar.getForegroundColor();
 			imp.setColor(c);
 		}

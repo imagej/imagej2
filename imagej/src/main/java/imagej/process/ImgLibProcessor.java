@@ -798,6 +798,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	 */
 	private void verifyLutLengthOkay( int[] lut )
 	{
+		if (lut == null)
+			throw new IllegalArgumentException("lut is null");
+		
 		if ( this.type instanceof GenericByteType< ? > )
 		{
 			if (lut.length!=256)

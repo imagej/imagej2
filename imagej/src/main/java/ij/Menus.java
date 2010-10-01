@@ -3,6 +3,7 @@ import ij.process.*;
 import ij.util.*;
 import ij.gui.ImageWindow;
 import ij.plugin.MacroInstaller;
+import imagej.SampleInfo;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -1081,24 +1082,24 @@ public class Menus {
 				HSBStackItem.setState(true);
 				break;
 			case ImagePlus.IMGLIB:
-				ImagePlus.SampleType theType = imp.getSampleType();
-				if (theType == ImagePlus.SampleType.BYTE)
+				SampleInfo.SampleType theType = imp.getSampleType();
+				if (theType == SampleInfo.SampleType.BYTE)
 					typeByteItem.setState(true);
-				else if (theType == ImagePlus.SampleType.UBYTE)
+				else if (theType == SampleInfo.SampleType.UBYTE)
 					typeUbyteItem.setState(true);
-				else if (theType == ImagePlus.SampleType.SHORT)
+				else if (theType == SampleInfo.SampleType.SHORT)
 					typeShortItem.setState(true);
-				else if (theType == ImagePlus.SampleType.USHORT)
+				else if (theType == SampleInfo.SampleType.USHORT)
 					typeUshortItem.setState(true);
-				else if (theType == ImagePlus.SampleType.INT)
+				else if (theType == SampleInfo.SampleType.INT)
 					typeIntItem.setState(true);
-				else if (theType == ImagePlus.SampleType.UINT)
+				else if (theType == SampleInfo.SampleType.UINT)
 					typeUintItem.setState(true);
-				else if (theType == ImagePlus.SampleType.LONG)
+				else if (theType == SampleInfo.SampleType.LONG)
 					typeLongItem.setState(true);
-				else if (theType == ImagePlus.SampleType.FLOAT)
+				else if (theType == SampleInfo.SampleType.FLOAT)
 					typeFloatItem.setState(true);
-				else if (theType == ImagePlus.SampleType.DOUBLE)
+				else if (theType == SampleInfo.SampleType.DOUBLE)
 					typeDoubleItem.setState(true);
 				break;
 		}

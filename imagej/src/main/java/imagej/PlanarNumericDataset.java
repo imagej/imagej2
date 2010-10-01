@@ -1,26 +1,17 @@
 package imagej;
 
 import mpicbg.imglib.container.array.Array;
-
-interface SampleInfo
-{
-	enum SampleType {BYTE, UBYTE, SHORT, USHORT, INT, UINT, LONG, FLOAT, DOUBLE};
-	
-	SampleType getValueType(); // type of each value
-	int getNumValues();  // values per sample (a Complex could be two values of DOUBLE data)
-	int getNumBitsPerValue();  // bits per value
-	int getNumBits();  // bits in a complete sample
-	// note that we can compose sample types bigger than 64 bit ints via multiple values per sample
-}
+import imagej.SampleInfo;
 
 interface PlanarNumericDataset 
 {
 	SampleInfo getSampleInfo();
 	int[] getDimensions();
 	long getTotalSamples();
-	double getSample(int[] index, Array<?,?> dest);  // TODO change dest to correct thing when we know
-	void getSamples(int[] index, int axisNumber, int numSamples, Array<?,?> dest);
-	void doOperation(Object operation);  // TODO - change from Object to Operation once its defined
+	void getSample(int[] index, Array<?,?> dest);  // TODO change dest to correct thing when we know
+	void getSamples(int[] index, int axisNumber, Array<?,?> dest, int numSamples);
+	void setSample(int[] index, Array<?,?> src);  // TODO change src to correct thing when we know
+	void setSamples(int[] index, int axisNumber, Array<?,?> src, int numSamples);
 	long getPlaneCount(int axisNumber);
 	void addAxis();
 	void insertAxis(int axisNumber);
@@ -33,7 +24,9 @@ interface PlanarNumericDataset
 	void setPlane(int axisNumber, int planeNumber, Object plane);  // TODO - make plane something other than Object
 }
 
+/*
 interface Operation
 {
 	void apply(PlanarNumericDataset ds);
 }
+*/

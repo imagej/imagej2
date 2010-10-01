@@ -11,6 +11,7 @@ public class LogUnaryFunction implements UnaryFunction
 	
 	public LogUnaryFunction(RealType<?> targetType, double max)
 	{
+		this.targetType = targetType;
 		this.max = max;
 		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
 	}

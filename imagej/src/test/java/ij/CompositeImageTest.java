@@ -226,7 +226,7 @@ public class CompositeImageTest {
 		ip = new ImagePlus("Willow",st);
 		ci = new CompositeImage(ip,CompositeImage.COLOR);
 		assertNotNull(ci);
-		assertEquals(3,ci.getStackSize());  // TODO - why is it 3 and not 1????
+		assertEquals(3,ci.getStackSize());  // though this looks wrong it is correct
 		assertArrayEquals(new int[] {4,4,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
