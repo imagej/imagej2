@@ -174,38 +174,6 @@ public class ImagePlus implements ImageObserver, Measurements {
     	ID = --currentID;
     }
     
-	private SampleInfo.SampleType getSampleType(RealType<?> imglib)
-	{
-		return SampleManager.getSampleType(imglib);
-	}
-	
-    public SampleInfo.SampleType getSampleType()
-    {
-    	if (imageType == IMGLIB)
-    		
-    		return SampleManager.getSampleType(imgLibType);
-    	
-    	else if ((imageType == GRAY8) || (imageType == COLOR_256))
-    		
-    		return SampleInfo.SampleType.UBYTE;
-    	
-    	else if (imageType == GRAY16)
-    		
-    		return SampleInfo.SampleType.USHORT;
-    	
-    	else if (imageType == COLOR_RGB)
-    		
-    		return SampleInfo.SampleType.UINT;
-    	
-    	else if (imageType == GRAY32)
-    		
-    		return SampleInfo.SampleType.FLOAT;
-    	
-    	else
-    		
-    		throw new IllegalArgumentException("unknown image type "+imageType);
-    }
-    
 	/** Locks the image so other threads can test to see if it
 		is in use. Returns true if the image was successfully locked.
 		Beeps, displays a message in the status bar, and returns
@@ -1008,30 +976,15 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	/** Returns the current image type (ImagePlus.GRAY8, ImagePlus.GRAY16,
 		ImagePlus.GRAY32, ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, or ImagePlus.IMGLIB).
-		For IMGLIB images call getImgLibType() to determine actual type.
 		@see #getBitDepth
 	*/
     public int getType() {
     	return imageType;
     }
 
-	public RealType<?> getImgLibType()
-	{
-		return this.imgLibType;
-	}
-	
     /** Returns the bit depth, 8, 16, 24 (RGB), 32, or 64. RGB images actually use 32 bits per pixel. */
     public int getBitDepth()
     {
-    	/*
-    	switch (imageType) {
-	    	case GRAY8: case COLOR_256: bitDepth=8; break;
-	    	case GRAY16: bitDepth=16; break;
-	    	case GRAY32: bitDepth=32; break;
-	    	case COLOR_RGB: bitDepth=24; break;
-    	}
-    	*/
-    	
     	int bitDepth = 0;
     	
     	switch (imageType)
@@ -1050,18 +1003,8 @@ public class ImagePlus implements ImageObserver, Measurements {
     			bitDepth=24;
     			break;
     		case IMGLIB:
-    	    	if (imgLibType instanceof GenericByteType<?>)
-    	    		bitDepth = 8;
-    	    	else if (imgLibType instanceof GenericShortType<?>)
-    	    		bitDepth = 16;
-    	    	else if (imgLibType instanceof GenericIntType<?>)
-    	    		bitDepth = 32;
-    	    	else if (imgLibType instanceof LongType)
-    	    		bitDepth = 64;
-    	    	else if (imgLibType instanceof FloatType)
-    	    		bitDepth = 32;
-    	    	else if (imgLibType instanceof DoubleType)
-    	    		bitDepth = 64;
+    			SampleInfo.ValueType valueType = SampleManager.getValueType(imgLibType);
+    			bitDepth = SampleManager.getSampleInfo(valueType).getNumBits();
     			break;
     		default:
     			bitDepth = 0;
@@ -1079,13 +1022,6 @@ public class ImagePlus implements ImageObserver, Measurements {
 			return 4;
     	
     	return getBitDepth() / 8;
-    	/*
-    	switch (imageType) {
-	    	case GRAY16: return 2;
-	    	case GRAY32: case COLOR_RGB: return 4;
-	    	default: return 1;
-    	}
-    	*/
 	}
 
     protected void setType(int type) {
@@ -1209,30 +1145,37 @@ public class ImagePlus implements ImageObserver, Measurements {
 					if (imgLibType == null) 
 						throw new IllegalArgumentException("can't figure out pixel type");
 					
+					ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+					double value;
 					if ((imgLibType instanceof ByteType) || (imgLibType instanceof UnsignedByteType))
 					{
-						pvalue[0] = ip.get(x, y);
-						pvalue[3] = pvalue[0];
+						value = proc.getd(x,y);
+						pvalue[0] = (int) value;
+						pvalue[3] = (int) (value - imgLibType.getMinValue());
+						// TODO - prev line was pval[3] = pval[0]
 					}
 					else if ((imgLibType instanceof ShortType) ||
 							(imgLibType instanceof UnsignedShortType) ||
 							(imgLibType instanceof IntType) ||
-							(imgLibType instanceof UnsignedIntType) ||
-							(imgLibType instanceof FloatType)
+							(imgLibType instanceof UnsignedIntType)
 							)
+					{
+						pvalue[0] = (int)(proc.getd(x, y)); // TODO - was ip.get(x,y)
+					}
+					else if (imgLibType instanceof FloatType)
 					{
 						pvalue[0] = ip.get(x, y);
 					}
 					else if ((imgLibType instanceof DoubleType))
 					{
-						double value = ((ImgLibProcessor<?>)ip).getd(x, y);
+						value = proc.getd(x, y);
 						long encoding = Double.doubleToLongBits(value);
 						pvalue[0] = (int)(encoding & 0xffffffff);
 						pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
 					}
 					else if ((imgLibType instanceof LongType))
 					{
-						double value = ((ImgLibProcessor<?>)ip).getd(x, y);
+						value = proc.getd(x, y);
 						long encoding = (long)value;                             // TODO - precision loss possible here
 						pvalue[0] = (int)(encoding & 0xffffffff);
 						pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
@@ -1241,50 +1184,6 @@ public class ImagePlus implements ImageObserver, Measurements {
 				break;
 		}
 		return pvalue;
-/* old way that I changed to get tests working before Wayne fixed the problem above.
-		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
-		if (img == null)
-			return pvalue;
-		switch (imageType) {
-			case GRAY8: case COLOR_256:
-				int index;
-				if (ip!=null)
-					index = ip.getPixel(x, y);
-				else {
-					byte[] pixels8;
-					PixelGrabber pg = new PixelGrabber(img,x,y,1,1,false);
-					try {pg.grabPixels();}
-					catch (InterruptedException e){return pvalue;};
-					pixels8 = (byte[])(pg.getPixels());
-					index = pixels8!=null?pixels8[0]&0xff:0;
-				}
-				if (imageType!=COLOR_256) {
-					pvalue[0] = index;
-					return pvalue;
-				}
-				pvalue[3] = index;
-				// fall through to get rgb values
-			case COLOR_RGB:
-				int[] pixels32 = new int[1];
-				// BDZ removed next line: I think Wayne removed next line after I reported the problem
-				// if (win==null) break;
-				PixelGrabber pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
-				try {pg.grabPixels();}
-				catch (InterruptedException e){return pvalue;};
-				int c = pixels32[0];
-				int r = (c&0xff0000)>>16;
-				int g = (c&0xff00)>>8;
-				int b = c&0xff;
-				pvalue[0] = r;
-				pvalue[1] = g;
-				pvalue[2] = b;
-				break;
-			case GRAY16: case GRAY32:
-				if (ip!=null) pvalue[0] = ip.getPixel(x, y);
-				break;
-		}
-		return pvalue;
-*/
 	}
     
 	/** Returns an empty image stack that has the same

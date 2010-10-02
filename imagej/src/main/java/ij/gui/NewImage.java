@@ -40,66 +40,18 @@ public class NewImage {
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
 	private static RealType<?> imgLibType;
-	private static SampleInfo.SampleType sampleType =
-		sampleTypeFromString(Prefs.getString(SAMPLE_TYPE,SampleInfo.SampleType.UBYTE.toString()));
+	private static SampleInfo.ValueType sampleType =
+		sampleTypeFromString(Prefs.getString(SAMPLE_TYPE,SampleInfo.ValueType.UBYTE.toString()));
 
     public NewImage() {
     	openImage();
     }
     
-	private static SampleInfo.SampleType sampleTypeFromString(String type)
+	private static SampleInfo.ValueType sampleTypeFromString(String type)
 	{
-		/* NEW WAY - doesn't seem to always work
-		*/
-		
-		SampleInfo.SampleType sampleType =  Enum.valueOf(SampleInfo.SampleType.class, type);
-		
-		//System.out.println(" returning "+sampleType);
+		SampleInfo.ValueType sampleType =  Enum.valueOf(SampleInfo.ValueType.class, type);
 		
 		return sampleType;
-		
-		/*  OLD WAY that works (except maybe once???)
-
-		SampleType sampleType = SampleType.UBYTE;
-		
-		if (type.equals(SampleType.BYTE.toString()))
-			
-			sampleType = SampleType.BYTE;
-		
-		else if (type.equals(SampleType.UBYTE.toString()))
-			
-			sampleType = SampleType.UBYTE;
-		
-		else if (type.equals(SampleType.SHORT.toString()))
-			
-			sampleType = SampleType.SHORT;
-		
-		else if (type.equals(SampleType.USHORT.toString()))
-			
-			sampleType = SampleType.USHORT;
-		
-		else if (type.equals(SampleType.INT.toString()))
-			
-			sampleType = SampleType.INT;
-		
-		else if (type.equals(SampleType.UINT.toString()))
-			
-			sampleType = SampleType.UINT;
-		
-		else if (type.equals(SampleType.LONG.toString()))
-			
-			sampleType = SampleType.LONG;
-		
-		else if (type.equals(SampleType.FLOAT.toString()))
-			
-			sampleType = SampleType.FLOAT;
-		
-		else if (type.equals(SampleType.DOUBLE.toString()))
-			
-			sampleType = SampleType.DOUBLE;
-		
-		return sampleType;
-		*/
 	}
 
 	static boolean createStack(ImagePlus imp, ImageProcessor ip, int nSlices, int type, int options) {
@@ -324,12 +276,14 @@ public class NewImage {
 		
 		double[] ramp = new double[width];
 		
-		RealType<?> type = imp.getImgLibType();
+		SampleInfo.ValueType type = SampleManager.getValueType(imp);
+		SampleInfo info = SampleManager.getSampleInfo(type);
 		
-		if (TypeManager.isIntegralType(type))
+		if (info.isIntegral())
 		{
-			double min = type.getMinValue();
-			double max = type.getMaxValue();
+			RealType<?> realType = SampleManager.getRealType(type);
+			double min = realType.getMinValue();
+			double max = realType.getMaxValue();
 			for (int x = 0; x < width; x++)
 			{
 				double relSize = ((double)x)/(width-1); 
@@ -353,15 +307,17 @@ public class NewImage {
 	
 	private static void whiteFill(ImagePlus imp)
 	{
-		RealType<?> type = imp.getImgLibType();
+		SampleInfo.ValueType type = SampleManager.getValueType(imp);
 		
-		if (type instanceof GenericByteType<?>)
+		if ((type == SampleInfo.ValueType.BYTE) || (type == SampleInfo.ValueType.UBYTE))
 		{
+			RealType<?> realType = SampleManager.getRealType(type);
+
 			// fill with max
 			int width = imp.getWidth();
 			int height = imp.getHeight();
 
-			double max = type.getMaxValue();
+			double max = realType.getMaxValue();
 
 			int planeCount = imp.getNSlices();
 			for (int plane = 0; plane < planeCount; plane++)
@@ -492,27 +448,27 @@ public class NewImage {
 		return true;
 	}
 
+	private String getSampleName(SampleInfo.ValueType type)
+	{
+		return SampleManager.getSampleInfo(type).getName();
+	}
+	
 	// TODO find a way to do this statically
 	private String[] getSampleNames()
 	{
-		String[] sampleNames = new String[SampleInfo.SampleType.values().length];
+		String[] sampleNames = new String[SampleInfo.ValueType.values().length];
 		
-		sampleNames[0] = SampleManager.getSampleInfo(SampleInfo.SampleType.BYTE).getName();
-		sampleNames[1] = SampleManager.getSampleInfo(SampleInfo.SampleType.UBYTE).getName();
-		sampleNames[2] = SampleManager.getSampleInfo(SampleInfo.SampleType.SHORT).getName();
-		sampleNames[3] = SampleManager.getSampleInfo(SampleInfo.SampleType.USHORT).getName();
-		sampleNames[4] = SampleManager.getSampleInfo(SampleInfo.SampleType.INT).getName();
-		sampleNames[5] = SampleManager.getSampleInfo(SampleInfo.SampleType.UINT).getName();
-		sampleNames[6] = SampleManager.getSampleInfo(SampleInfo.SampleType.FLOAT).getName();
-		sampleNames[7] = SampleManager.getSampleInfo(SampleInfo.SampleType.LONG).getName();
-		sampleNames[8] = SampleManager.getSampleInfo(SampleInfo.SampleType.DOUBLE).getName();
+		sampleNames[0] = getSampleName(SampleInfo.ValueType.BYTE);
+		sampleNames[1] = getSampleName(SampleInfo.ValueType.UBYTE);
+		sampleNames[2] = getSampleName(SampleInfo.ValueType.SHORT);
+		sampleNames[3] = getSampleName(SampleInfo.ValueType.USHORT);
+		sampleNames[4] = getSampleName(SampleInfo.ValueType.INT);
+		sampleNames[5] = getSampleName(SampleInfo.ValueType.UINT);
+		sampleNames[6] = getSampleName(SampleInfo.ValueType.FLOAT);
+		sampleNames[7] = getSampleName(SampleInfo.ValueType.LONG);
+		sampleNames[8] = getSampleName(SampleInfo.ValueType.DOUBLE);
 		
 		return sampleNames;
-	}
-	
-	private boolean typeNameMatches(String typeString, SampleInfo.SampleType sampleType)
-	{
-		return typeString.equals(SampleManager.getSampleInfo(sampleType).getName());
 	}
 	
 	private boolean currentShowDialog()
@@ -542,16 +498,15 @@ public class NewImage {
 
 		String typeName = gd.getNextChoice();
 		
-		for (SampleInfo.SampleType type : SampleInfo.SampleType.values())
-		{
-			if (typeNameMatches(typeName,type))
-				imgLibType = SampleManager.getRealType(type);
-		}
+		SampleInfo info = SampleManager.findSampleInfo(typeName);
 		
-		if (imgLibType == null)
+		if (info == null)
 			throw new IllegalArgumentException("unknown sample type chosen "+typeName);
+
+		// TODO: this works for now until we break mapping of value types to sample types
+		imgLibType = SampleManager.getRealType(info.getValueType());
 		
-		sampleType = SampleManager.getSampleType(imgLibType);
+		sampleType = info.getValueType();
 		
 		type = ImagePlus.IMGLIB;
 		

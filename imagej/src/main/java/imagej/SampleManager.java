@@ -1,6 +1,13 @@
 package imagej;
 
-import imagej.SampleInfo.SampleType;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+import imagej.SampleInfo.ValueType;
+import imagej.process.ImgLibProcessor;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -16,188 +23,300 @@ public class SampleManager {
 
 	static SampleInfo[] sampleInfoArray;
 
+	@SuppressWarnings("rawtypes")
 	static RealType[] realTypeArray;
 	
 	static
 	{
-		sampleInfoArray = new SampleInfo[SampleType.values().length];
+		sampleInfoArray = new SampleInfo[ValueType.values().length];
 		
-		sampleInfoArray[SampleType.BYTE.ordinal()] = new Sample8BitSigned();
-		sampleInfoArray[SampleType.UBYTE.ordinal()] = new Sample8BitUnsigned();
-		sampleInfoArray[SampleType.SHORT.ordinal()] = new Sample16BitSigned();
-		sampleInfoArray[SampleType.USHORT.ordinal()] = new Sample16BitUnsigned();
-		sampleInfoArray[SampleType.INT.ordinal()] = new Sample32BitSigned();
-		sampleInfoArray[SampleType.UINT.ordinal()] = new Sample32BitUnsigned();
-		sampleInfoArray[SampleType.FLOAT.ordinal()] = new Sample32BitFloat();
-		sampleInfoArray[SampleType.LONG.ordinal()] = new Sample64BitSigned();
-		sampleInfoArray[SampleType.DOUBLE.ordinal()] = new Sample64BitFloat();
+		sampleInfoArray[ValueType.BYTE.ordinal()] = new Sample8BitSigned();
+		sampleInfoArray[ValueType.UBYTE.ordinal()] = new Sample8BitUnsigned();
+		sampleInfoArray[ValueType.SHORT.ordinal()] = new Sample16BitSigned();
+		sampleInfoArray[ValueType.USHORT.ordinal()] = new Sample16BitUnsigned();
+		sampleInfoArray[ValueType.INT.ordinal()] = new Sample32BitSigned();
+		sampleInfoArray[ValueType.UINT.ordinal()] = new Sample32BitUnsigned();
+		sampleInfoArray[ValueType.FLOAT.ordinal()] = new Sample32BitFloat();
+		sampleInfoArray[ValueType.LONG.ordinal()] = new Sample64BitSigned();
+		sampleInfoArray[ValueType.DOUBLE.ordinal()] = new Sample64BitFloat();
 		
-		realTypeArray = new RealType[SampleType.values().length];
+		realTypeArray = new RealType[ValueType.values().length];
 
-		realTypeArray[SampleType.BYTE.ordinal()] = new ByteType();
-		realTypeArray[SampleType.UBYTE.ordinal()] = new UnsignedByteType();
-		realTypeArray[SampleType.SHORT.ordinal()] = new ShortType();
-		realTypeArray[SampleType.USHORT.ordinal()] = new UnsignedShortType();
-		realTypeArray[SampleType.INT.ordinal()] = new IntType();
-		realTypeArray[SampleType.UINT.ordinal()] = new UnsignedIntType();
-		realTypeArray[SampleType.FLOAT.ordinal()] = new FloatType();
-		realTypeArray[SampleType.LONG.ordinal()] = new LongType();
-		realTypeArray[SampleType.DOUBLE.ordinal()] = new DoubleType();
+		realTypeArray[ValueType.BYTE.ordinal()] = new ByteType();
+		realTypeArray[ValueType.UBYTE.ordinal()] = new UnsignedByteType();
+		realTypeArray[ValueType.SHORT.ordinal()] = new ShortType();
+		realTypeArray[ValueType.USHORT.ordinal()] = new UnsignedShortType();
+		realTypeArray[ValueType.INT.ordinal()] = new IntType();
+		realTypeArray[ValueType.UINT.ordinal()] = new UnsignedIntType();
+		realTypeArray[ValueType.FLOAT.ordinal()] = new FloatType();
+		realTypeArray[ValueType.LONG.ordinal()] = new LongType();
+		realTypeArray[ValueType.DOUBLE.ordinal()] = new DoubleType();
 	}
 	
 	private SampleManager() {}
 	
-	public static SampleType getSampleType(RealType<?> imglib)
+	public static ValueType getValueType(RealType<?> imglib)
 	{
-		SampleType sampleType;
+		ValueType valueType;
 		
 		if (imglib instanceof ByteType)
-			sampleType = SampleType.BYTE; 
+			valueType = ValueType.BYTE; 
 		else if (imglib instanceof UnsignedByteType)
-			sampleType = SampleType.UBYTE; 
+			valueType = ValueType.UBYTE; 
 		else if (imglib instanceof ShortType)
-			sampleType = SampleType.SHORT; 
+			valueType = ValueType.SHORT; 
 		else if (imglib instanceof UnsignedShortType)
-			sampleType = SampleType.USHORT; 
+			valueType = ValueType.USHORT; 
 		else if (imglib instanceof IntType)
-			sampleType = SampleType.INT; 
+			valueType = ValueType.INT; 
 		else if (imglib instanceof UnsignedIntType)
-			sampleType = SampleType.UINT; 
+			valueType = ValueType.UINT; 
 		else if (imglib instanceof LongType)
-			sampleType = SampleType.LONG; 
+			valueType = ValueType.LONG; 
 		else if (imglib instanceof FloatType)
-			sampleType = SampleType.FLOAT; 
+			valueType = ValueType.FLOAT; 
 		else if (imglib instanceof DoubleType)
-			sampleType = SampleType.DOUBLE; 
+			valueType = ValueType.DOUBLE; 
 		else
 			throw new IllegalArgumentException("unknown Imglib type : "+imglib);
 		
-		return sampleType;
+		return valueType;
 	}
 	
-	public static RealType<?> getRealType(SampleType type)
+	public static RealType<?> getRealType(ValueType type)
 	{
 		return realTypeArray[type.ordinal()];
 	}
 	
-	public static SampleInfo getSampleInfo(SampleType type)
+	public static SampleInfo getSampleInfo(ValueType type)
 	{
 		return sampleInfoArray[type.ordinal()];
 	}
 	
+	public static ValueType getValueType(ImagePlus imp)
+	{
+		return getValueType(imp.getProcessor());
+	}
+	
+	public static ValueType getValueType(ImageProcessor proc)
+	{
+		if (proc instanceof ImgLibProcessor<?>)
+			return getValueType(((ImgLibProcessor<?>)proc).getType());
+
+		if (proc instanceof ByteProcessor)
+			return ValueType.UBYTE;
+
+		if (proc instanceof ShortProcessor)
+			return ValueType.USHORT;
+
+		if (proc instanceof FloatProcessor)
+			return ValueType.FLOAT;
+		
+		if (proc instanceof ColorProcessor)
+			return ValueType.UINT;
+		
+		throw new IllegalArgumentException("unknown processor type");
+	}
+	
+	public static SampleInfo findSampleInfo(String name)
+	{
+		for (SampleInfo s : sampleInfoArray)
+			if (name.equals(s.getName()))
+				return s;
+		
+		return null;
+	}
+	
+	private static int calcNumBits(SampleInfo s)
+	{
+		return s.getNumValues() * s.getNumBitsPerValue();
+	}
+	
 	private static class Sample8BitSigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.BYTE; }
+		public ValueType getValueType() { return ValueType.BYTE; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 8; }
 
-		public int getNumBits() { return 8; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "8-bit signed"; }
 	}
 	
 	private static class Sample8BitUnsigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.UBYTE; }
+		public ValueType getValueType() { return ValueType.UBYTE; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 8; }
 
-		public int getNumBits() { return 8; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return false; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "8-bit unsigned"; }
 	}
 	
 	private static class Sample16BitSigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.SHORT; }
+		public ValueType getValueType() { return ValueType.SHORT; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 16; }
 
-		public int getNumBits() { return 16; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "16-bit signed"; }
 	}
 	
 	private static class Sample16BitUnsigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.USHORT; }
+		public ValueType getValueType() { return ValueType.USHORT; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 16; }
 
-		public int getNumBits() { return 16; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return false; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "16-bit unsigned"; }
 	}
 	
 	private static class Sample32BitSigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.INT; }
+		public ValueType getValueType() { return ValueType.INT; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 32; }
 
-		public int getNumBits() { return 32; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "32-bit signed"; }
 	}
 	
 	private static class Sample32BitUnsigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.UINT; }
+		public ValueType getValueType() { return ValueType.UINT; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 32; }
 
-		public int getNumBits() { return 32; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return false; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "32-bit unsigned"; }
 	}
 	
 	private static class Sample32BitFloat implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.FLOAT; }
+		public ValueType getValueType() { return ValueType.FLOAT; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 32; }
 
-		public int getNumBits() { return 32; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return false; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "32-bit float"; }
 	}
 	
 	private static class Sample64BitSigned implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.LONG; }
+		public ValueType getValueType() { return ValueType.LONG; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 64; }
 
-		public int getNumBits() { return 64; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "64-bit signed"; }
 	}
 	
 	private static class Sample64BitFloat implements SampleInfo
 	{
-		public SampleType getValueType() { return SampleType.DOUBLE; }
+		public ValueType getValueType() { return ValueType.DOUBLE; }
 
 		public int getNumValues() { return 1; }
 
 		public int getNumBitsPerValue() { return 64; }
 
-		public int getNumBits() { return 64; }
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return true; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return false; }
+		
+		public boolean isFloat() { return !isIntegral(); }
 
 		public String getName() { return "64-bit float"; }
 	}
