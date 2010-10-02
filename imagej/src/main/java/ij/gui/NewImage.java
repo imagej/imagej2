@@ -40,9 +40,16 @@ public class NewImage {
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
 	private static RealType<?> imgLibType;
-	private static SampleInfo.ValueType sampleType =
-		sampleTypeFromString(Prefs.getString(SAMPLE_TYPE,SampleInfo.ValueType.UBYTE.toString()));
+	private static SampleInfo sampleType;
 
+	static
+	{
+		String name= Prefs.getString(SAMPLE_TYPE);
+		sampleType = SampleManager.findSampleInfo(name);
+		if (sampleType == null)
+			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
+	}
+	
     public NewImage() {
     	openImage();
     }
@@ -486,7 +493,7 @@ public class NewImage {
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
 		
-		gd.addChoice("Type:", sampleNames, sampleNames[sampleType.ordinal()]);
+		gd.addChoice("Type:", sampleNames, sampleType.getName());
 		gd.addChoice("Fill With:", fill, fill[fillWith]);
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
 		gd.addNumericField("Height:", height, 0, 5, "pixels");
@@ -506,7 +513,7 @@ public class NewImage {
 		// TODO: this works for now until we break mapping of value types to sample types
 		imgLibType = SampleManager.getRealType(info.getValueType());
 		
-		sampleType = info.getValueType();
+		sampleType = info;
 		
 		type = ImagePlus.IMGLIB;
 		
@@ -538,7 +545,6 @@ public class NewImage {
 		prefs.put(WIDTH, Integer.toString(width));
 		prefs.put(HEIGHT, Integer.toString(height));
 		prefs.put(SLICES, Integer.toString(slices));
-		prefs.put(SAMPLE_TYPE, sampleType.toString());
+		prefs.put(SAMPLE_TYPE, sampleType.getName());
 	}
-
 }
