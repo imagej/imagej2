@@ -120,6 +120,9 @@ public class SampleManager {
 	
 	public static SampleInfo findSampleInfo(String name)
 	{
+		if (name == null)
+			return null;
+		
 		for (SampleInfo s : sampleInfoArray)
 			if (name.equals(s.getName()))
 				return s;
