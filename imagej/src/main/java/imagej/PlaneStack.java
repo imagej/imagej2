@@ -1,8 +1,5 @@
 package imagej;
 
-// OTHER WAY
-//import java.util.ArrayList;
-
 import imagej.process.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Span;
@@ -26,10 +23,7 @@ public class PlaneStack<T extends RealType<T>>
 {
 	//****************** instance variables
 	
-	// ONE WAY
 	private Image<T> stack;
-	// OTHER WAY
-	//private ArrayList<Image<T>> stack;
 	private int planeWidth;
 	private int planeHeight;
 	private ContainerFactory factory;
@@ -64,44 +58,6 @@ public class PlaneStack<T extends RealType<T>>
 		ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
 	}
 	
-	// NOTE - assumes atPosition has already been checked for validity
-	private void copyDataBeforePosition(Image<T> origData, Image<T> newData, int atPosition)
-	{
-		if (atPosition == 0)  // nothing to copy
-			return;
-		
-		int[] srcOrigin = Index.create(3);
-		int[] dstOrigin = Index.create(3);
-		int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, atPosition});
-		
-		ImageUtils.copyFromImageToImage(origData, srcOrigin, span, newData, dstOrigin, span);
-	}
-	
-	// NOTE - assumes atPosition has already been checked for validity
-	private void copyDataAtPosition(Image<T> planeData, Image<T> newData, int atPosition)
-	{
-		int[] srcOrigin = Index.create(3);
-		int[] dstOrigin = Index.create(0,0,new int[]{atPosition});
-		int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, 1});
-		
-		ImageUtils.copyFromImageToImage(planeData, srcOrigin, span, newData, dstOrigin, span);
-	}
-	
-	// NOTE - assumes atPosition has already been checked for validity
-	private void copyDataAfterPosition(Image<T> origData, Image<T> newData, int atPosition)
-	{
-		int remainingPlanes = origData.getDimension(2) - atPosition; 
-			
-		if (remainingPlanes <= 0)
-			return;
-		
-		int[] srcOrigin = Index.create(0,0,new int[]{atPosition});
-		int[] dstOrigin = Index.create(0,0,new int[]{atPosition+1});
-		int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, remainingPlanes});
-		
-		ImageUtils.copyFromImageToImage(origData, srcOrigin, span, newData, dstOrigin, span);
-	}
-
 	private void insertPlane(int atPosition, Object data, int dataLen, RealType<T> desiredType, DataType dType)
 	{
 		if (dataLen != this.planeWidth*this.planeHeight)
@@ -121,26 +77,16 @@ public class PlaneStack<T extends RealType<T>>
 		
 		if (this.stack == null)
 		{
-			// ONE WAY
 			this.stack = newPlane;
-			/* OTHER WAY
-			this.stack = new ArrayList<Image<T>>();
-			this.stack.add(newPlane);
-			*/
 		}
 		else  // we already have some entries in stack
 		{
 			// need to type check against existing planes
-			// ONE WAY
 			RealType<?> myType = ImageUtils.getType(this.stack);
-			// OTHER WAY
-			// RealType<?> myType = ImageUtils.getType(this.stack.get(0));
 			
 			if ( ! (TypeManager.sameKind(desiredType, myType)) )
 				throw new IllegalArgumentException("insertPlane(): type clash - " + myType + " & " + desiredType);
 
-			/*  ONE WAY
-			*/
 			int[] newDims = new int[]{this.planeWidth, this.planeHeight, this.getEndPosition()+1};
 			
 			Image<T> newStack = ImageUtils.createImage(desiredType, this.factory, newDims);
@@ -150,37 +96,40 @@ public class PlaneStack<T extends RealType<T>>
 			copyPlanesFromTo(getEndPosition()-atPosition, this.stack, atPosition, newStack, atPosition+1);
 			
 			this.stack = newStack;
-
-			// OTHER WAY
-			// this.stack.add(atPosition, newPlane);
 		}
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, byte[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), DataType.UBYTE);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, byte[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), DataType.BYTE);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, short[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), DataType.USHORT);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, short[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), DataType.SHORT);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, int[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), DataType.UINT);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, int[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new IntType(), DataType.INT);
@@ -191,16 +140,19 @@ public class PlaneStack<T extends RealType<T>>
 		throw new IllegalArgumentException("PlaneStack::insertUnsignedPlane(long[]): unsigned long data not supported");
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, long[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new LongType(), DataType.LONG);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertPlane(int atPosition, float[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), DataType.FLOAT);
 	}
 	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertPlane(int atPosition, double[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), DataType.DOUBLE);
@@ -217,31 +169,17 @@ public class PlaneStack<T extends RealType<T>>
 		this.type = null;
 	}
 
-	// ONE WAY
 	public Image<T> getStorage()
 	{
 		return this.stack;
 	}
-	
-	/* OTHER WAY
-	public Image<T> getStorage(int i)
-	{
-		if (this.stack == null)
-			return null;
-		
-		return this.stack.get(i);
-	}
-	*/
 	
 	public long getNumPlanes()
 	{
 		if (this.stack == null)
 			return 0;
 		
-		//ONE WAY
 		return ImageUtils.getTotalPlanes(getStorage().getDimensions());
-		// OTHER WAY
-		//return this.stack.size();
 	}
 
 	public int getEndPosition()
@@ -302,6 +240,7 @@ public class PlaneStack<T extends RealType<T>>
 		insertPlane(getEndPosition(), unsigned, data);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void deletePlane(int planeNumber)  // since multidim an int could be too small but can't avoid
 	{
 		if (this.stack == null)
@@ -311,12 +250,6 @@ public class PlaneStack<T extends RealType<T>>
 		if ((planeNumber < 0) || (planeNumber >= endPosition))
 			throw new IllegalArgumentException("PlaneStack::deletePlane() - planeNumber out of bounds - "+planeNumber+" outside [0,"+endPosition+")");
 
-		/* ONE WAY
-		this.stack.remove(planeNumber);
-		*/
-
-		/* OTHER WAY
-		*/
 		int[] newDims = new int[]{this.planeWidth, this.planeHeight, this.stack.getDimension(2)-1};
 		
 		if (newDims[2] == 0)

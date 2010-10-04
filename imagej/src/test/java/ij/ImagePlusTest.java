@@ -2369,9 +2369,10 @@ public class ImagePlusTest {
 		assertEquals(0,fi.calibrationFunction);
 		assertNull(fi.coefficients);
 		assertNull(fi.valueUnit);
-		//TODO blocked out temporarily - reenable when ImageStack hatching old style processors as needed
+		//TODO blocked out temporarily - this test can no longer pass with internal type tracking as its done now
+		//  My construction example is a little weird and I think if it wasn't supported that would be fine.
 		//assertEquals(FileInfo.RGB,fi.fileType);
-		//assertEquals(0,fi.lutSize);
+		assertEquals(0,fi.lutSize);
 		assertNull(fi.reds);
 		assertNull(fi.greens);
 		assertNull(fi.blues);

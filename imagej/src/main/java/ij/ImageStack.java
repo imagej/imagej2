@@ -366,12 +366,12 @@ public class ImageStack {
 
 		int planes = (int)stack.getNumPlanes();
 		
-		Object[] copyOfPixelsFromAllSlices = new Object[planes];
+		Object[] pixelsFromAllSlices = new Object[planes];
 		
-		for (int i = 1; i <= planes; i++)
-			copyOfPixelsFromAllSlices[i-1] = getProcessor(i).getPixels();
+		for (int i = 0; i < planes; i++)
+			pixelsFromAllSlices[i] = getProcessor(i+1).getPixels();
 		
-		return copyOfPixelsFromAllSlices;
+		return pixelsFromAllSlices;
 	}
 	
 	/** Returns the number of slices in this stack. */
