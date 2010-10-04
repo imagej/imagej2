@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>imagej</groupId>
+    <artifactId>imagej-base-pom</artifactId>
+    <version>1.05</version>
+  </parent>
+
+  <groupId>imagej</groupId>
+  <artifactId>ij-visad</artifactId>
+  <version>2.0-SNAPSHOT</version>
+
+  <name>VisAD plugin for ImageJ</name>
+  <description>A package for displaying ImageJ images using VisAD in a freeform way.</description>
+  <url>http://imagejdev.org/</url>
+  <inceptionYear>2010</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>GPL</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <!-- imagej -->
+    <dependency>
+      <groupId>imagej</groupId>
+      <artifactId>ij</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- fiji -->
+    <dependency>
+      <groupId>mpicbg</groupId>
+      <artifactId>imglib</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- 3rd party -->
+    <dependency>
+      <groupId>visad</groupId>
+      <artifactId>visad-lite</artifactId>
+      <version>2.0.20070828</version>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <packageName>imagej.visad</packageName>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/deps.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <id>curtis</id>
+      <name>Curtis Rueden</name>
+      <email>ctrueden@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/curtis-rueden</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
+      </properties>
+    </developer>
+  </developers>
+
+  <repositories>
+    <!-- NB: for imagej-base-pom -->
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
+</project>
