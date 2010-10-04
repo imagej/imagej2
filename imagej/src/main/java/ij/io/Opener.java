@@ -236,7 +236,7 @@ public class Opener {
 		Modified by Gregory Jefferis to call HandleExtraFileTypes plugin if 
 		the file type is unrecognised. */
 	public ImagePlus openImage(String directory, String name) {
-		ImagePlus imp;
+//		ImagePlus imp;
 		FileOpener.setSilentMode(silentMode);
 		//if (directory.length()>0 && !directory.endsWith(Prefs.separator))
 		//	directory += Prefs.separator;
@@ -247,56 +247,55 @@ public class Opener {
 		if (IJ.debugMode)
 			IJ.log("openImage: \""+types[fileType]+"\", "+path);
 		// CTR 2010-09-24: First cut at using bf-imglib image opener.
-		// Commented out for now because it causes several tests to fail.
-		//return openImglibImage(path);
-		switch (fileType) {
-			case TIFF:
-				imp = openTiff(directory, name);
-				return imp;
-			case DICOM:
-				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
-				if (imp.getWidth()!=0) return imp; else return null;
-			case TIFF_AND_DICOM:
-				// "hybrid" files created by GE-Senographe 2000 D */
-				imp = openTiff(directory,name);
-				ImagePlus imp2 = (ImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
-				if (imp!=null)				
-					imp.setProperty("Info",imp2.getProperty("Info"));
-				return imp;
-			case FITS:
-				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.FITS_Reader", path);
-				if (imp.getWidth()!=0) return imp; else return null;
-			case PGM:
-				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.PGM_Reader", path);
-				if (imp.getWidth()!=0) {
-					if (imp.getStackSize()==3 && imp.getBitDepth()==16)
-						imp = new CompositeImage(imp, CompositeImage.COMPOSITE);
-					return imp;
-				} else
-					return null;
-			case JPEG: case GIF:
-				imp = openJpegOrGif(directory, name);
-				if (imp!=null&&imp.getWidth()!=0) return imp; else return null;
-			case PNG: 
-				imp = openUsingImageIO(directory+name);
-				if (imp!=null&&imp.getWidth()!=0) return imp; else return null;
-			case BMP:
-				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.BMP_Reader", path);
-				if (imp.getWidth()!=0) return imp; else return null;
-			case ZIP:
-				return openZip(path);
-			case AVI:
-				AVI_Reader reader = (AVI_Reader)IJ.runPlugIn("ij.plugin.AVI_Reader", path);
-				return reader.getImagePlus();
-			case UNKNOWN: case TEXT:
-				// Call HandleExtraFileTypes plugin to see if it can handle unknown format
-				int[] wrap = new int[] {fileType};
-				imp = openWithHandleExtraFileTypes(path, wrap);
-				fileType = wrap[0];
-				return imp;
-			default:
-				return null;
-		}
+		return openImglibImage(path);
+//		switch (fileType) {
+//			case TIFF:
+//				imp = openTiff(directory, name);
+//				return imp;
+//			case DICOM:
+//				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
+//				if (imp.getWidth()!=0) return imp; else return null;
+//			case TIFF_AND_DICOM:
+//				// "hybrid" files created by GE-Senographe 2000 D */
+//				imp = openTiff(directory,name);
+//				ImagePlus imp2 = (ImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
+//				if (imp!=null)				
+//					imp.setProperty("Info",imp2.getProperty("Info"));
+//				return imp;
+//			case FITS:
+//				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.FITS_Reader", path);
+//				if (imp.getWidth()!=0) return imp; else return null;
+//			case PGM:
+//				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.PGM_Reader", path);
+//				if (imp.getWidth()!=0) {
+//					if (imp.getStackSize()==3 && imp.getBitDepth()==16)
+//						imp = new CompositeImage(imp, CompositeImage.COMPOSITE);
+//					return imp;
+//				} else
+//					return null;
+//			case JPEG: case GIF:
+//				imp = openJpegOrGif(directory, name);
+//				if (imp!=null&&imp.getWidth()!=0) return imp; else return null;
+//			case PNG: 
+//				imp = openUsingImageIO(directory+name);
+//				if (imp!=null&&imp.getWidth()!=0) return imp; else return null;
+//			case BMP:
+//				imp = (ImagePlus)IJ.runPlugIn("ij.plugin.BMP_Reader", path);
+//				if (imp.getWidth()!=0) return imp; else return null;
+//			case ZIP:
+//				return openZip(path);
+//			case AVI:
+//				AVI_Reader reader = (AVI_Reader)IJ.runPlugIn("ij.plugin.AVI_Reader", path);
+//				return reader.getImagePlus();
+//			case UNKNOWN: case TEXT:
+//				// Call HandleExtraFileTypes plugin to see if it can handle unknown format
+//				int[] wrap = new int[] {fileType};
+//				imp = openWithHandleExtraFileTypes(path, wrap);
+//				fileType = wrap[0];
+//				return imp;
+//			default:
+//				return null;
+//		}
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
