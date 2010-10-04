@@ -772,6 +772,23 @@ public class ImageStackTest {
 		assertFalse(is.isVirtual());
 	}
 
+	@Test
+	public void testReset()
+	{
+		is = new ImageStack(2,2);
+		is.addSlice("scorch", new byte[]{1,2,3,4});
+		is.addSlice("horch", new byte[]{1,2,3,4});
+		is.addSlice("torch", new byte[]{1,2,3,4});
+		is.addSlice("lorch", new byte[]{1,2,3,4});
+		assertEquals(4,is.getSize());
+		
+		is.reset();
+		
+		assertEquals(0,is.getSize());
+		assertNull(is.getSliceLabels());
+	}
+
+	
 	// NOTE: I don't know if I need to enforce the same trim algo or not ...
 	// For now assume I do ...
 
