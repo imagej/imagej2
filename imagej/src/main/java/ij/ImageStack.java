@@ -99,6 +99,17 @@ public class ImageStack {
 	}
 	*/
 	
+	// TODO - NEW - needed to support ImagePlus::flush()
+	//   Note that its side effect of deleting all existing slice labels is not the same as IJ. Since IJ had few constraints
+	//   lots of behavior is possible. We must document that ImagePlus::flush() will reinit the stack and labels are lost.
+	//   The other possibility is to not allow flush() to do anything to the ImageStack.
+	/** Empties the stack discarding all slice data, removing all label info, and freeing up memory. */
+	public void reset()
+	{
+		this.stack = null;
+		this.labels = new ArrayList<String>();
+	}
+	
 	/**
 	* Creates a new image stack given width and height of planes. Does NOT preallocate stack to given size parameter.
 	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
