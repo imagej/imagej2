@@ -277,6 +277,28 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	protected byte[] create8BitImage()
 	{
+		int width = getWidth();
+		int height = getHeight();
+
+		int totSamples = width * height;
+		
+		this.pixels8 = new byte[totSamples];
+		
+		double max = this.type.getMaxValue();
+		double min = this.type.getMinValue();
+		
+		for (int i = 0; i < totSamples; i++)
+		{
+			double value = getd(i);
+			double relPos = (value - min) / (max - min);
+			int byteVal = (int)(255 * relPos);
+			if (byteVal < 0) byteVal = 0;
+			if (byteVal > 255) byteVal = 255;
+			this.pixels8[i] = (byte) byteVal;
+		}
+		
+		return this.pixels8;
+		/*
 		// TODO: use imageData.getDisplay().get8Bit* methods
 		Object pixels = getPixels();
 
@@ -311,6 +333,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 
 		return this.pixels8;
+		*/
 	}
 	
 	// TODO - refactor
