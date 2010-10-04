@@ -1705,11 +1705,12 @@ public class ImagePlus implements ImageObserver, Measurements {
 		if (roi!=null) roi.setImage(null);
 		roi = null;
 		if (stack!=null) {
-			Object[] arrays = stack.getImageArray();
-			if (arrays!=null) {
-				for (int i=0; i<arrays.length; i++)
-					arrays[i] = null;
-			}
+			stack.reset();
+			//Object[] arrays = stack.getImageArray();
+			//if (arrays!=null) {
+			//	for (int i=0; i<arrays.length; i++)
+			//		arrays[i] = null;
+			//}
 		}
 		stack = null;
 		img = null;
