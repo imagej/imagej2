@@ -21,7 +21,7 @@ public class SqrtUnaryFunction implements UnaryFunction
 			value = Math.sqrt(input);
 	
 		if (this.dataIsIntegral)
-			value = (int) value;
+			value = (long) value;
 		
 		return value;
 	}
