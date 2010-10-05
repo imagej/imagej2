@@ -5,7 +5,6 @@ import java.util.*;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.GenericByteType;
 
 import ij.*;
 import ij.process.*;
@@ -286,8 +285,10 @@ public class NewImage {
 		SampleInfo.ValueType type = SampleManager.getValueType(imp);
 		SampleInfo info = SampleManager.getSampleInfo(type);
 		
+		// integral data
 		if (info.isIntegral())
 		{
+			// create a ramp from min possible pixel value to max possible pixel value
 			RealType<?> realType = SampleManager.getRealType(type);
 			double min = realType.getMinValue();
 			double max = realType.getMaxValue();
@@ -299,9 +300,12 @@ public class NewImage {
 		}
 		else  // floating type data
 		{
+			// create a ramp between 0 and 1
 			for (int x = 0; x < width; x++)
 				ramp[x] = ((double)x) / (width-1); 
 		}
+		
+		// set each plane's pixels to the ramp values
 		int planeCount = imp.getNSlices();
 		for (int plane = 0; plane < planeCount; plane++)
 		{
@@ -367,11 +371,20 @@ public class NewImage {
 			else
 				; // do nothing - FILL_BLACK should work by default
 			
+			double min, max;
+			
 			if ( ! TypeManager.isIntegralType(imgLibType))
-				imp.getProcessor().setMinAndMax(0, 1);
+			{
+				min = 0;
+				max = 1;
+			}
 			else
-				imp.getProcessor().setMinAndMax(imgLibType.getMinValue(), imgLibType.getMaxValue());
-				
+			{
+				min = imgLibType.getMinValue();
+				max = imgLibType.getMaxValue();
+			}
+
+			imp.getProcessor().setMinAndMax(min, max);
 			
 			WindowManager.checkForDuplicateName = true;          
 			imp.show();

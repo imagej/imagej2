@@ -31,7 +31,7 @@ public class ExpUnaryFunction implements UnaryFunction
 			}
 			else // generic short or int
 			{
-				value = (int)(Math.exp(input*(Math.log(this.max)/this.max)));
+				value = (long)(Math.exp(input*(Math.log(this.max)/this.max)));
 			}
 			
 			value = Math.floor(value);

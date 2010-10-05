@@ -25,7 +25,7 @@ public class LogUnaryFunction implements UnaryFunction
 			if (input <= 0)
 				value = 0;
 			else 
-				value = (int)(Math.log(input)*(this.max/Math.log(this.max)));
+				value = (long)(Math.log(input)*(this.max/Math.log(this.max)));
 			
 			value = TypeManager.boundValueToType(this.targetType, value);
 		}

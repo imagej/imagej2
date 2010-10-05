@@ -49,7 +49,6 @@ import imagej.process.operation.BlurFilterOperation;
 import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.HistogramOperation;
-import imagej.process.operation.MaskedFillOperation;
 import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
@@ -65,8 +64,6 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
-
-import loci.common.DataTools;
 
 import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -88,10 +85,6 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // Image may change to Img to avoid name conflict with java.awt.Image.
 //
 // TODO
-// 1. Add a new container that uses array-backed data of the proper primitive
-//    type, plane by plane.
-// 2. Then we can return the data with getPixels by reference in that case
-//    (and use the current cursor approach in other cases).
 //
 // For create8BitImage, we can call imageData.getDisplay().get8Bit* to extract
 // displayable image data as bytes [was LocalizableByPlaneCursor relevant here
@@ -103,10 +96,9 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 // More TODO / NOTES
 //   For filters we're mirroring IJ's behavior. This means no min/max/median/erode/dilate for anything but UnsignedByteType. Change this?
-//   Make sure that resetMinAndMax() and/or findMinAndMax() are called at appropriate times. Maybe base class does this for us?
 //   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
 //   Review imglib's various cursors and perhaps change which ones I'm using.
-//   Nearly all methods below broken for ComplexType and LongType
+//   Nearly all methods below broken for ComplexType
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
 //     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
 //     its use throughout the application.
@@ -284,9 +276,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int totSamples = width * height;
 		
 		this.pixels8 = new byte[totSamples];
-		
-		double max = this.type.getMaxValue();
-		double min = this.type.getMinValue();
 		
 		for (int i = 0; i < totSamples; i++)
 		{
@@ -2048,7 +2037,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
 					if (this.isIntegral)
 					{
-						value = (int) (value+0.5);
+						value = (long) (value+0.5);
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
@@ -2077,7 +2066,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							double value = ip2.getInterpolatedPixel(xs, ys);
 							if (this.isIntegral)
 							{
-								value = (int) (value+0.5);
+								value = (long) (value+0.5);
 								value = TypeManager.boundValueToType(this.type, value);
 							}
 							setd(index++, value);
@@ -2161,7 +2150,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 					double value = getBicubicInterpolatedPixel(xs, ys, ip2);
 					if (this.isIntegral)
 					{
-						value = (int) (value+0.5);
+						value = (long) (value+0.5);
 						value = TypeManager.boundValueToType(this.type, value);
 					}
 					setd(index++,value);
@@ -2201,7 +2190,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 							double value = ip2.getInterpolatedPixel(xs, ys);
 							if (this.isIntegral)
 							{
-								value = (int) (value+0.5);
+								value = (long) (value+0.5);
 								value = TypeManager.boundValueToType(this.type, value);
 							}
 							setd(index1++, value);
@@ -2329,7 +2318,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		//   I need to detect beforehand and do my truncation if an integer type.
 		
 		if (this.isIntegral)
-			value = (double)Math.floor(value);
+			value = Math.floor(value);
 		
 		pixRef.setReal( value ); 
 
@@ -2378,8 +2367,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		if (this.isIntegral)
 		{
-			this.min = (int) this.min;
-			this.max = (int) this.max;
+			this.min = (long) this.min;
+			this.max = (long) this.max;
 		}
 		
 		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
@@ -2488,8 +2477,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		resetThreshold();
 	}
 
-	/** makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
-	 *  only applies to integral data types.
+	/** Makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
+	 *  Only applies to integral data types. Long data outside Integer ranges will not work correctly.
+	 * @deprecated Use {@link #threshold(double thresholdLevel)} instead.
 	 */
 	@Override
 	public void threshold(int thresholdLevel) 
@@ -2498,6 +2488,17 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 
 		thresholdLevel = (int) TypeManager.boundValueToType(this.type, thresholdLevel);
+		
+		threshold((double)thresholdLevel);
+	}
+
+	// not an override
+	/** Makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
+	 *  Works with all data types but works at double precision so precision loss possible with long data.
+	 */
+	public void threshold(double thresholdLevel) 
+	{
+		thresholdLevel = TypeManager.boundValueToType(this.type, thresholdLevel);
 		
 		ThresholdUnaryFunction function = new ThresholdUnaryFunction(thresholdLevel);
 		

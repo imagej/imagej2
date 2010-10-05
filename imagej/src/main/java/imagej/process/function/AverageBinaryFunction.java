@@ -15,7 +15,7 @@ public class AverageBinaryFunction implements BinaryFunction {
 	public double compute(double input1, double input2)
 	{
 		if (this.dataIsIntegral)
-			return ( ((int)input1 + (int)input2) / 2 );
+			return ( ((long)input1 + (long)input2) / 2 );
 		else
 			return ( (input1 + input2) / 2.0 );
 	}

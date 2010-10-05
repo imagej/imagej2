@@ -29,7 +29,7 @@ public class GammaUnaryFunction implements UnaryFunction
 			if (this.range<=0.0 || input <= this.min)
 				value = input;
 			else					
-				value = (int)(Math.exp(this.constant*Math.log((input-this.min)/this.range))*this.range+this.min);
+				value = (long)(Math.exp(this.constant*Math.log((input-this.min)/this.range))*this.range+this.min);
 			
 			value = TypeManager.boundValueToType(targetType, value);
 		}
