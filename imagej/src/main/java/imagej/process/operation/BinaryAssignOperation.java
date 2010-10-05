@@ -9,7 +9,7 @@ public class BinaryAssignOperation<T extends RealType<T>> extends DualCursorRoiO
 {
 	private UnaryComputation computer;
 	
-	protected BinaryAssignOperation(Image<T> img1, int[] origin1, int[] span1,
+	public BinaryAssignOperation(Image<T> img1, int[] origin1, int[] span1,
 									Image<T> img2, int[] origin2, int[] span2,
 									UnaryFunction function)
 	{
