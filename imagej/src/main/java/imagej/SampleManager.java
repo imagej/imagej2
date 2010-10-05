@@ -19,13 +19,17 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
+/** SampleManager manages the information related to all supported types in ImageJ */
 public class SampleManager {
 
+	/** the internal list of imagej type sample data info */
 	static SampleInfo[] sampleInfoArray;
 
 	@SuppressWarnings("rawtypes")
+	/** the internal list of imglib type data info */
 	static RealType[] realTypeArray;
 	
+	/** initialize the type lists */
 	static
 	{
 		sampleInfoArray = new SampleInfo[ValueType.values().length];
@@ -53,8 +57,13 @@ public class SampleManager {
 		realTypeArray[ValueType.DOUBLE.ordinal()] = new DoubleType();
 	}
 	
+	/** make this class noninstantiable */
 	private SampleManager() {}
 	
+
+	/** get the ValueType (BYTE,SHOURT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
+	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample ValueType.
+	 */
 	public static ValueType getValueType(RealType<?> imglib)
 	{
 		ValueType valueType;
@@ -83,21 +92,25 @@ public class SampleManager {
 		return valueType;
 	}
 	
+	/** get an imglib type from a IJ ValueType */
 	public static RealType<?> getRealType(ValueType type)
 	{
 		return realTypeArray[type.ordinal()];
 	}
 	
+	/** get a SampleInfo associated with a ValueType */
 	public static SampleInfo getSampleInfo(ValueType type)
 	{
 		return sampleInfoArray[type.ordinal()];
 	}
-	
+
+	/** get the ValueType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
 	public static ValueType getValueType(ImagePlus imp)
 	{
 		return getValueType(imp.getProcessor());
 	}
 	
+	/** get the ValueType associated with an ImageProcessor */
 	public static ValueType getValueType(ImageProcessor proc)
 	{
 		if (proc instanceof ImgLibProcessor<?>)
@@ -118,6 +131,7 @@ public class SampleManager {
 		throw new IllegalArgumentException("unknown processor type");
 	}
 	
+	/** get the SampleInfo assocaited with a SampleInfo name. Returns null if not found. */
 	public static SampleInfo findSampleInfo(String name)
 	{
 		if (name == null)
@@ -130,11 +144,15 @@ public class SampleManager {
 		return null;
 	}
 	
+	// *************** Private helpers follow **********************************************************
+	
+	/** helper function - return the total number of bits in a sample described by a SampleInfo object */
 	private static int calcNumBits(SampleInfo s)
 	{
 		return s.getNumValues() * s.getNumBitsPerValue();
 	}
-	
+
+	/** SampleInfo that describes IJ's 8 bit signed type */
 	private static class Sample8BitSigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.BYTE; }
@@ -156,6 +174,7 @@ public class SampleManager {
 		public String getName() { return "8-bit signed"; }
 	}
 	
+	/** SampleInfo that describes IJ's 8 bit unsigned type */
 	private static class Sample8BitUnsigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.UBYTE; }
@@ -177,6 +196,7 @@ public class SampleManager {
 		public String getName() { return "8-bit unsigned"; }
 	}
 	
+	/** SampleInfo that describes IJ's 16 bit signed type */
 	private static class Sample16BitSigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.SHORT; }
@@ -198,6 +218,7 @@ public class SampleManager {
 		public String getName() { return "16-bit signed"; }
 	}
 	
+	/** SampleInfo that describes IJ's 16 bit unsigned type */
 	private static class Sample16BitUnsigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.USHORT; }
@@ -219,6 +240,7 @@ public class SampleManager {
 		public String getName() { return "16-bit unsigned"; }
 	}
 	
+	/** SampleInfo that describes IJ's 32 bit signed type */
 	private static class Sample32BitSigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.INT; }
@@ -240,6 +262,7 @@ public class SampleManager {
 		public String getName() { return "32-bit signed"; }
 	}
 	
+	/** SampleInfo that describes IJ's 32 bit unsigned type */
 	private static class Sample32BitUnsigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.UINT; }
@@ -261,6 +284,7 @@ public class SampleManager {
 		public String getName() { return "32-bit unsigned"; }
 	}
 	
+	/** SampleInfo that describes IJ's 32 bit float type */
 	private static class Sample32BitFloat implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.FLOAT; }
@@ -282,6 +306,7 @@ public class SampleManager {
 		public String getName() { return "32-bit float"; }
 	}
 	
+	/** SampleInfo that describes IJ's 64 bit signed type */
 	private static class Sample64BitSigned implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.LONG; }
@@ -303,6 +328,7 @@ public class SampleManager {
 		public String getName() { return "64-bit signed"; }
 	}
 	
+	/** SampleInfo that describes IJ's 64 bit float type */
 	private static class Sample64BitFloat implements SampleInfo
 	{
 		public ValueType getValueType() { return ValueType.DOUBLE; }
