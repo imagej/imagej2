@@ -10,6 +10,8 @@ import ij.io.*;
 import ij.measure.*;
 import ij.plugin.frame.*;
 import ij.macro.Interpreter;
+import imagej.SampleInfo;
+import imagej.SampleManager;
 
 /** A frame for displaying images. */
 public class ImageWindow extends Frame implements FocusListener, WindowListener, WindowStateListener, MouseWheelListener {
@@ -297,6 +299,12 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 	    	case ImagePlus.COLOR_RGB:
 	    		s += "RGB";
 				size *= 4.0;
+	    		break;
+	    	case ImagePlus.IMGLIB:
+	    		SampleInfo.ValueType valType = SampleManager.getValueType(imp);
+	    		SampleInfo info = SampleManager.getSampleInfo(valType);
+	    		s += info.getName();
+	    		size *= (info.getNumBits()) / 8.0;
 	    		break;
     	}
     	if (imp.isInvertedLut())
