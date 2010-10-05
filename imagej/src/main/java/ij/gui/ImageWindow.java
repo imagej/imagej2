@@ -283,6 +283,11 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
 		double size = ((double)imp.getWidth()*imp.getHeight()*imp.getStackSize())/1024.0;
+		SampleInfo.ValueType valType = SampleManager.getValueType(imp);
+		SampleInfo info = SampleManager.getSampleInfo(valType);
+		s += info.getName();
+		size *= (info.getNumBits()) / 8.0;
+		/*
     	switch (type) {
 	    	case ImagePlus.GRAY8:
 	    	case ImagePlus.COLOR_256:
@@ -301,12 +306,13 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 				size *= 4.0;
 	    		break;
 	    	case ImagePlus.IMGLIB:
-	    		SampleInfo.ValueType valType = SampleManager.getValueType(imp);
-	    		SampleInfo info = SampleManager.getSampleInfo(valType);
-	    		s += info.getName();
-	    		size *= (info.getNumBits()) / 8.0;
+				SampleInfo.ValueType valType = SampleManager.getValueType(imp);
+				SampleInfo info = SampleManager.getSampleInfo(valType);
+				s += info.getName();
+				size *= (info.getNumBits()) / 8.0;
 	    		break;
     	}
+    	*/
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
    		String s2=null, s3=null;
