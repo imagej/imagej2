@@ -1,12 +1,14 @@
 package ij.plugin.frame;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
+
+import mpicbg.imglib.type.numeric.integer.GenericByteType;
 import ij.*;
-import ij.plugin.*;
 import ij.process.*;
 import ij.gui.*;
 import ij.measure.*;
+import imagej.process.ImgLibProcessor;
+import imagej.process.TypeManager;
 
 /** This plugin implements the Brightness/Contrast, Window/level and
 	Color Balance commands, all in the Image/Adjust sub-menu. It 
@@ -324,13 +326,16 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		double max2 = imp.getDisplayRangeMax();
 		if (imp.getType()==ImagePlus.COLOR_RGB)
 			{min2=0.0; max2=255.0;}
-		if ((ip instanceof ShortProcessor) || (ip instanceof FloatProcessor)) {
+		if (ip instanceof ByteProcessor)
+		{
+			defaultMin = 0;
+			defaultMax = 255;
+		}
+		else  // FloatProc, ShortProc, ColorProc, or ImgLibProc
+		{
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
-		} else {
-			defaultMin = 0;
-			defaultMax = 255;
 		}
 		setMinAndMax(imp, min2, max2);
 		min = imp.getDisplayRangeMin();
@@ -534,7 +539,7 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	void reset(ImagePlus imp, ImageProcessor ip) {
  		if (RGBImage)
 			ip.reset();
-		if ((ip instanceof ShortProcessor) || (ip instanceof FloatProcessor)) {
+		if ((ip instanceof ShortProcessor) || (ip instanceof FloatProcessor) || (ip instanceof ImgLibProcessor)) {
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
@@ -689,12 +694,14 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	}
 
 	void setThreshold(ImageProcessor ip) {
-		if (!(ip instanceof ByteProcessor))
-			return;
-		if (((ByteProcessor)ip).isInvertedLut())
-			ip.setThreshold(max, 255, ImageProcessor.NO_LUT_UPDATE);
-		else
-			ip.setThreshold(0, max, ImageProcessor.NO_LUT_UPDATE);
+		if ((ip instanceof ByteProcessor) ||
+				((ip instanceof ImgLibProcessor) && (((ImgLibProcessor<?>)ip).getType() instanceof GenericByteType<?>)))
+		{
+			if (ip.isInvertedLut())
+				ip.setThreshold(max, 255, ImageProcessor.NO_LUT_UPDATE);
+			else
+				ip.setThreshold(0, max, ImageProcessor.NO_LUT_UPDATE);
+		}
 	}
 
 	void autoAdjust(ImagePlus imp, ImageProcessor ip) {
@@ -756,7 +763,15 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		int digits = (ip instanceof FloatProcessor)||cal.calibrated()?2:0;
+		boolean valuesFloat = false;
+		if (ip instanceof FloatProcessor)
+			valuesFloat = true;
+		else if ((ip instanceof ImgLibProcessor) &&
+				(TypeManager.isIntegralType( ((ImgLibProcessor<?>)ip).getType() )))
+			valuesFloat = true;
+		else if (cal.calibrated())
+			valuesFloat = true;
+		int digits =  valuesFloat ? 2 : 0;
 		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		int channels = imp.getNChannels();
@@ -812,7 +827,15 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		int digits = (ip instanceof FloatProcessor)||cal.calibrated()?2:0;
+		boolean valuesFloat = false;
+		if (ip instanceof FloatProcessor)
+			valuesFloat = true;
+		else if ((ip instanceof ImgLibProcessor) &&
+				(TypeManager.isIntegralType( ((ImgLibProcessor<?>)ip).getType() )))
+			valuesFloat = true;
+		else if (cal.calibrated())
+			valuesFloat = true;
+		int digits =  valuesFloat ? 2 : 0;
 		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		//IJ.log("setWindowLevel: "+min+" "+max);

@@ -9,7 +9,7 @@ package imagej;
 public interface SampleInfo
 {
 	/** ValueType represents the underlying types that a sample is built upon. */
-	enum ValueType {BYTE, UBYTE, SHORT, USHORT, INT, UINT, LONG, FLOAT, DOUBLE};  // TODO - what about BIT?
+	enum ValueType {BIT, BYTE, UBYTE, SHORT, USHORT, INT, UINT, LONG, FLOAT, DOUBLE};
 
 	/** returns the underlying ValueType for this sample's values. */
 	ValueType getValueType();

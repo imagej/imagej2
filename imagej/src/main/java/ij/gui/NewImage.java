@@ -44,8 +44,14 @@ public class NewImage {
 	static
 	{
 		String name= Prefs.getString(SAMPLE_TYPE);
+		
 		sampleType = SampleManager.findSampleInfo(name);
+		
 		if (sampleType == null)
+			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
+		
+		// TODO - temporary kludge until IJ supports 1-bit images
+		if (sampleType.getNumBits() < 8)
 			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
 	}
 	
@@ -53,13 +59,6 @@ public class NewImage {
     	openImage();
     }
     
-	private static SampleInfo.ValueType sampleTypeFromString(String type)
-	{
-		SampleInfo.ValueType sampleType =  Enum.valueOf(SampleInfo.ValueType.class, type);
-		
-		return sampleType;
-	}
-
 	static boolean createStack(ImagePlus imp, ImageProcessor ip, int nSlices, int type, int options) {
 		int fill = getFill(options);
 		int width = imp.getWidth();
@@ -476,8 +475,9 @@ public class NewImage {
 	// TODO find a way to do this statically
 	private String[] getSampleNames()
 	{
-		String[] sampleNames = new String[SampleInfo.ValueType.values().length];
-		
+		String[] sampleNames = new String[9];
+
+		// TODO - expand to support BIT images when the time comes
 		sampleNames[0] = getSampleName(SampleInfo.ValueType.BYTE);
 		sampleNames[1] = getSampleName(SampleInfo.ValueType.UBYTE);
 		sampleNames[2] = getSampleName(SampleInfo.ValueType.SHORT);
@@ -502,10 +502,9 @@ public class NewImage {
 		
 		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
 			fillWith = OLD_FILL_WHITE;
-		
+
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
-		
 		gd.addChoice("Type:", sampleNames, sampleType.getName());
 		gd.addChoice("Fill With:", fill, fill[fillWith]);
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
