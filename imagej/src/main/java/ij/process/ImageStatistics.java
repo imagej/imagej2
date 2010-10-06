@@ -1,5 +1,9 @@
 package ij.process;
 import ij.measure.*;
+
+import imagej.process.GenericStatistics;
+import imagej.process.ImgLibProcessor;
+
 import java.awt.*;
 
 /** Statistics, including the histogram, of an image or selection. */
@@ -50,7 +54,6 @@ public class ImageStatistics implements Measurements
 	
 	EllipseFitter ef;
 
-	
 	public static ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal) {
 		if (ip instanceof ByteProcessor)
 			return new ByteStatistics(ip, mOptions, cal);
@@ -58,8 +61,12 @@ public class ImageStatistics implements Measurements
 			return new ShortStatistics(ip, mOptions, cal);
 		else if (ip instanceof ColorProcessor)
 			return new ColorStatistics(ip, mOptions, cal);
-		else
+		else if (ip instanceof FloatProcessor)
 			return new FloatStatistics(ip, mOptions, cal);
+		else if (ip instanceof ImgLibProcessor)
+			return new GenericStatistics((ImgLibProcessor<?>)ip, mOptions, cal);
+		else
+			throw new IllegalArgumentException("unsupported processor type "+ip.getClass());
 	}
 
 	void getRawMinAndMax(int minThreshold, int maxThreshold) {
@@ -99,7 +106,7 @@ public class ImageStatistics implements Measurements
 		histMax = 255.0;
 	}
 	
-	void calculateStdDev(int n, double sum, double sum2) {
+	protected void calculateStdDev(int n, double sum, double sum2) {
 		//ij.IJ.write("calculateStdDev: "+n+" "+sum+" "+sum2);
 		if (n>0) {
 			stdDev = (n*sum2-sum*sum)/n;
@@ -112,7 +119,7 @@ public class ImageStatistics implements Measurements
 			stdDev = 0.0;
 	}
 		
-	void setup(ImageProcessor ip, Calibration cal) {
+	protected void setup(ImageProcessor ip, Calibration cal) {
 		width = ip.getWidth();
 		height = ip.getHeight();
 		this.cal = cal;
@@ -166,7 +173,7 @@ public class ImageStatistics implements Measurements
 		}
 	}
 	
-	void fitEllipse(ImageProcessor ip) {
+	protected void fitEllipse(ImageProcessor ip) {
 		if (ef==null)
 			ef = new EllipseFitter();
 		ef.fit(ip, this);
@@ -189,7 +196,7 @@ public class ImageStatistics implements Measurements
 			ef.drawEllipse(ip);
 	}
 	
-	void calculateMedian(int[] hist, int first, int last, Calibration cal) {
+	protected void calculateMedian(int[] hist, int first, int last, Calibration cal) {
 		//ij.IJ.log("calculateMedian: "+first+"  "+last+"  "+hist.length+"  "+pixelCount);
 		double sum = 0;
 		int i = first-1;

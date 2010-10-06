@@ -287,32 +287,6 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		SampleInfo info = SampleManager.getSampleInfo(valType);
 		s += info.getName();
 		size *= (info.getNumBits()) / 8.0;
-		/*
-    	switch (type) {
-	    	case ImagePlus.GRAY8:
-	    	case ImagePlus.COLOR_256:
-	    		s += "8-bit";
-	    		break;
-	    	case ImagePlus.GRAY16:
-	    		s += "16-bit";
-				size *= 2.0;
-	    		break;
-	    	case ImagePlus.GRAY32:
-	    		s += "32-bit";
-				size *= 4.0;
-	    		break;
-	    	case ImagePlus.COLOR_RGB:
-	    		s += "RGB";
-				size *= 4.0;
-	    		break;
-	    	case ImagePlus.IMGLIB:
-				SampleInfo.ValueType valType = SampleManager.getValueType(imp);
-				SampleInfo info = SampleManager.getSampleInfo(valType);
-				s += info.getName();
-				size *= (info.getNumBits()) / 8.0;
-	    		break;
-    	}
-    	*/
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
    		String s2=null, s3=null;

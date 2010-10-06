@@ -8,6 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.process.ImgLibProcessor;
+import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -34,6 +35,7 @@ public class SampleManager {
 	{
 		sampleInfoArray = new SampleInfo[ValueType.values().length];
 		
+		sampleInfoArray[ValueType.BIT.ordinal()] = new Sample1BitUnsigned();
 		sampleInfoArray[ValueType.BYTE.ordinal()] = new Sample8BitSigned();
 		sampleInfoArray[ValueType.UBYTE.ordinal()] = new Sample8BitUnsigned();
 		sampleInfoArray[ValueType.SHORT.ordinal()] = new Sample16BitSigned();
@@ -46,6 +48,7 @@ public class SampleManager {
 		
 		realTypeArray = new RealType[ValueType.values().length];
 
+		realTypeArray[ValueType.BIT.ordinal()] = new BitType();
 		realTypeArray[ValueType.BYTE.ordinal()] = new ByteType();
 		realTypeArray[ValueType.UBYTE.ordinal()] = new UnsignedByteType();
 		realTypeArray[ValueType.SHORT.ordinal()] = new ShortType();
@@ -66,30 +69,13 @@ public class SampleManager {
 	 */
 	public static ValueType getValueType(RealType<?> imglib)
 	{
-		ValueType valueType;
+		for (ValueType vType : ValueType.values())
+		{
+			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
+				return vType;
+		}
 		
-		if (imglib instanceof ByteType)
-			valueType = ValueType.BYTE; 
-		else if (imglib instanceof UnsignedByteType)
-			valueType = ValueType.UBYTE; 
-		else if (imglib instanceof ShortType)
-			valueType = ValueType.SHORT; 
-		else if (imglib instanceof UnsignedShortType)
-			valueType = ValueType.USHORT; 
-		else if (imglib instanceof IntType)
-			valueType = ValueType.INT; 
-		else if (imglib instanceof UnsignedIntType)
-			valueType = ValueType.UINT; 
-		else if (imglib instanceof LongType)
-			valueType = ValueType.LONG; 
-		else if (imglib instanceof FloatType)
-			valueType = ValueType.FLOAT; 
-		else if (imglib instanceof DoubleType)
-			valueType = ValueType.DOUBLE; 
-		else
-			throw new IllegalArgumentException("unknown Imglib type : "+imglib);
-		
-		return valueType;
+		throw new IllegalArgumentException("unknown Imglib type : "+imglib.getClass());
 	}
 	
 	/** get an imglib type from a IJ ValueType */
@@ -152,6 +138,28 @@ public class SampleManager {
 		return s.getNumValues() * s.getNumBitsPerValue();
 	}
 
+	/** SampleInfo that describes a 1 bit unsigned type */
+	private static class Sample1BitUnsigned implements SampleInfo
+	{
+		public ValueType getValueType() { return ValueType.BIT; }
+
+		public int getNumValues() { return 1; }
+
+		public int getNumBitsPerValue() { return 1; }
+
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return false; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
+
+		public String getName() { return "1-bit unsigned"; }
+	}
+	
 	/** SampleInfo that describes IJ's 8 bit signed type */
 	private static class Sample8BitSigned implements SampleInfo
 	{

@@ -1190,18 +1190,10 @@ public class Menus {
 	static synchronized void addWindowMenuItem(ImagePlus imp) {
 		//IJ.log("addWindowMenuItem: "+imp);
 		if (ij==null) return;
+		SampleInfo.ValueType type = SampleManager.getValueType(imp);
+		double bytesPerSample = SampleManager.getSampleInfo(type).getNumBits() / 8.0;
+		int size = (int)(bytesPerSample*imp.getWidth()*imp.getHeight()*imp.getStackSize()/1024);
 		String name = imp.getTitle();
-		int size = (imp.getWidth()*imp.getHeight()*imp.getStackSize())/1024;
-		switch (imp.getType()) {
-			case ImagePlus.GRAY32: case ImagePlus.COLOR_RGB: // 32-bit
-				size *=4;
-				break;
-			case ImagePlus.GRAY16:  // 16-bit
-				size *= 2;
-				break;
-			default: // 8-bit
-				;
-		}
 		CheckboxMenuItem item = new CheckboxMenuItem(name + " " + size + "K");
 		window.add(item);
 		item.addItemListener(ij);

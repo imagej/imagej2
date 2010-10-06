@@ -1990,15 +1990,11 @@ public class ImagePlus implements ImageObserver, Measurements {
 			Undo.setup(Undo.FILTER, this);
 			updateAndDraw();
 		}
-		int bytesPerPixel = 1;
-		switch (clipboard.getType()) {
-			case ImagePlus.GRAY16: bytesPerPixel = 2; break;
-			case ImagePlus.GRAY32: case ImagePlus.COLOR_RGB: bytesPerPixel = 4;
-		}
-		//Roi roi3 = clipboard.getRoi();
-		//IJ.log("copy: "+clipboard +" "+ "roi3="+(roi3!=null?""+roi3:""));
+		SampleInfo.ValueType type = SampleManager.getValueType(clipboard);
+		double bytesPerPixel = SampleManager.getSampleInfo(type).getNumBits() / 8.0;
+		int kBytes = (int)(bytesPerPixel*clipboard.getWidth()*clipboard.getHeight()/1024);
 		if (!batchMode) 
-			IJ.showStatus(msg + ": " + (clipboard.getWidth()*clipboard.getHeight()*bytesPerPixel)/1024 + "k");
+			IJ.showStatus(msg + ": " + kBytes + "k");
     }
                 
 
