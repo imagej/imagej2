@@ -67,6 +67,13 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  */
 public class ImageOpener implements StatusReporter {
 
+	// -- Constants --
+
+	public static final String X = "X";
+	public static final String Y = "Y";
+	public static final String Z = "Z";
+	public static final String TIME = "Time";
+
 	// -- Fields --
 
 	private List<StatusListener> listeners = new ArrayList<StatusListener>();
@@ -184,7 +191,7 @@ public class ImageOpener implements StatusReporter {
 
   /** Converts Bio-Formats pixel type to imglib Type object. */
   @SuppressWarnings("unchecked")
-  public <T extends RealType<T>> T makeType(int pixelType) {
+  public static <T extends RealType<T>> T makeType(int pixelType) {
     final RealType<?> type;
     switch (pixelType) {
       case FormatTools.UINT8:
@@ -218,13 +225,13 @@ public class ImageOpener implements StatusReporter {
   }
 
   /** Converts the given image name back to a list of dimensional axis types. */
-  public String decodeName(String name) {
+  public static String decodeName(String name) {
     final int lBracket = name.lastIndexOf(" [");
     return name.substring(0, lBracket);
   }
 
   /** Converts the given image name back to a list of dimensional axis types. */
-  public String[] decodeTypes(String name) {
+  public static String[] decodeTypes(String name) {
     final int lBracket = name.lastIndexOf(" [");
     if (lBracket < 0) return new String[0];
     final int rBracket = name.lastIndexOf("]");
@@ -272,16 +279,16 @@ public class ImageOpener implements StatusReporter {
     for (char dim : dimOrder.toCharArray()) {
       switch (dim) {
         case 'X':
-          if (sizeX > 1) dimTypes.add("X");
+          if (sizeX > 1) dimTypes.add(X);
           break;
         case 'Y':
-          if (sizeY > 1) dimTypes.add("Y");
+          if (sizeY > 1) dimTypes.add(Y);
           break;
         case 'Z':
-          if (sizeZ > 1) dimTypes.add("Z");
+          if (sizeZ > 1) dimTypes.add(Z);
           break;
         case 'T':
-          if (sizeT > 1) dimTypes.add("Time");
+          if (sizeT > 1) dimTypes.add(TIME);
           break;
         case 'C':
           for (int c=0; c<cDimTypes.length; c++) {
