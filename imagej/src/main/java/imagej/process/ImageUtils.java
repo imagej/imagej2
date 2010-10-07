@@ -6,7 +6,9 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
+import imagej.io.ImageOpener;
 import imagej.process.operation.ImageCopierOperation;
+import loci.formats.FormatTools;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.Array;
@@ -512,14 +514,24 @@ public class ImageUtils {
 	@SuppressWarnings({"unchecked"})
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
-		RealType<?> runtimeT = getType(img);
-		
-		int[] dimensions = img.getDimensions();
-		
-		long numPlanes = ImageUtils.getTotalPlanes(dimensions);
+		// parse dimensional lengths from type names
+		final String imgName = img.getName();
+		final int[] dimensions = img.getDimensions();
+		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
+		int sizeX = 1, sizeY = 1, sizeZ = 1, sizeC = 1, sizeT = 1;
+		for (int i = 0; i < dimTypes.length; i++) {
+			if (ImageOpener.X.equals(dimTypes[i])) sizeX *= dimensions[i];
+			else if (ImageOpener.Y.equals(dimTypes[i])) sizeY *= dimensions[i];
+			else if (FormatTools.CHANNEL.equals(dimTypes[i])) sizeC *= dimensions[i];
+			else if (ImageOpener.Z.equals(dimTypes[i])) sizeZ *= dimensions[i];
+			else if (ImageOpener.TIME.equals(dimTypes[i])) sizeT *= dimensions[i];
+		}
+		final long numPlanes = ImageUtils.getTotalPlanes(dimensions);
 
-		ImageStack stack = new ImageStack(dimensions[0], dimensions[1]);
-		
+		RealType<?> runtimeT = getType(img);
+
+		ImageStack stack = new ImageStack(sizeX, sizeY);
+
 		for (long plane = 0; plane < numPlanes; plane++)
 		{
 			ImageProcessor processor = null;
@@ -577,8 +589,8 @@ public class ImageUtils {
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
 		if (id != null) {
 			final FileInfo fi = new FileInfo();
-			fi.width = dimensions[0];
-			fi.height = dimensions[1];
+			fi.width = sizeX;
+			fi.height = sizeY;
 			final File file = new File(id);
 			if (file.exists()) {
 				fi.fileName = file.getName();
@@ -589,25 +601,9 @@ public class ImageUtils {
 			imp.setFileInfo(fi);
 		}
 
-		// let ImageJ know what dimension we have
-		
-		// TODO - next calc only works for images with 5 or fewer dimensions and requires default ordering of xyzct
-		//          Need to be able to say imp.setDimensions(int[] dims);
-		
-		int slices = 1;
-		if (dimensions.length > 2)
-			slices = dimensions[2];
-		
-		int channels = 1;
-		if (dimensions.length > 3)
-			channels = dimensions[3];
+		// let ImageJ know what dimensions we have
+		imp.setDimensions(sizeC, sizeZ, sizeT);
 
-		int frames = 1;
-		if (dimensions.length > 4)
-			frames = dimensions[4];
-
-		imp.setDimensions(channels, slices, frames);
-		
 		return imp;
 	}
 	
