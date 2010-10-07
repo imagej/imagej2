@@ -61,7 +61,8 @@ public class PlaneStack<T extends RealType<T>>
 	private void insertPlane(int atPosition, Object data, int dataLen, RealType<T> desiredType, DataType dType)
 	{
 		if (dataLen != this.planeWidth*this.planeHeight)
-			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack");
+			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack - expected "+
+					dataLen+" samples but got "+(this.planeWidth*this.planeHeight)+" samples");
 		
 		long numPlanesNow = 0;
 		if (this.stack != null)

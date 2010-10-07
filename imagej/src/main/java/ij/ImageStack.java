@@ -267,8 +267,10 @@ public class ImageStack {
 				this.origProc = OrigProcType.FLOAT;
 			else if (ip instanceof ColorProcessor)
 				this.origProc = OrigProcType.COLOR;
-			else
+			else if (ip instanceof ImgLibProcessor)
 				this.origProc = OrigProcType.IMGLIB;
+			else
+				throw new IllegalStateException();
 
 			cm = ip.getColorModel();
 			min = ip.getMin();
