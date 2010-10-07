@@ -37,6 +37,7 @@ import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
+import loci.formats.ImageReader;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.array.Array;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
@@ -79,8 +80,9 @@ public class ImageOpener implements StatusReporter {
   	notifyListeners(new StatusEvent("Initializing " + id));
 
     IFormatReader r = null;
-    r = new ChannelSeparator();
+    r = new ImageReader();
     r = new ChannelFiller(r);
+    r = new ChannelSeparator(r);
     r.setId(id);
 
     final String[] dimTypes = getDimTypes(r);
