@@ -13,12 +13,19 @@ import imagej.SampleManager;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.TypeManager;
+import imagej.process.function.FillUnaryFunction;
+
+// TODO
+//   - figure out getFill(options) and expand to use my new stuff too
+//   - get imglibCreate to use  a passed in type of some sort
+//   - get memory checking working in all cases
+//   - make createImage(...) call imglibcreate if desired and pull out code from open() to be reused 
 
 /** New image dialog box plus several static utility methods for creating images.*/
 public class NewImage {
 
 	public static final int GRAY8=0, GRAY16=1, GRAY32=2, RGB=3;
-	public static final int FILL_BLACK=1, FILL_RAMP=2, FILL_WHITE=4, CHECK_AVAILABLE_MEMORY=8;
+	public static final int FILL_BLACK=1, FILL_RAMP=2, FILL_WHITE=4, CHECK_AVAILABLE_MEMORY=8, FILL_ZERO = 16;
 	private static final int OLD_FILL_WHITE=0;
 	
     static final String NAME = "new.name";
@@ -35,15 +42,16 @@ public class NewImage {
     private static int slices = Prefs.getInt(SLICES, 1);
     private static int type = Prefs.getInt(TYPE, GRAY8);
     private static int fillWith = Prefs.getInt(FILL, OLD_FILL_WHITE);
-    private static String[] fill = {"White", "Black", "Ramp"};
+    private static String[] fill = {"White", "Black", "Ramp", "Zero"};
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
 	private static RealType<?> imgLibType;
 	private static SampleInfo sampleType;
+	private static String[] sampleNames;
 
 	static
 	{
-		String name= Prefs.getString(SAMPLE_TYPE);
+		String name = Prefs.getString(SAMPLE_TYPE);
 		
 		sampleType = SampleManager.findSampleInfo(name);
 		
@@ -55,10 +63,31 @@ public class NewImage {
 			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
 	}
 	
+	static
+	{
+		sampleNames = new String[9];
+
+		// TODO - expand to support BIT images when the time comes
+		sampleNames[0] = getSampleName(SampleInfo.ValueType.BYTE);
+		sampleNames[1] = getSampleName(SampleInfo.ValueType.UBYTE);
+		sampleNames[2] = getSampleName(SampleInfo.ValueType.SHORT);
+		sampleNames[3] = getSampleName(SampleInfo.ValueType.USHORT);
+		sampleNames[4] = getSampleName(SampleInfo.ValueType.INT);
+		sampleNames[5] = getSampleName(SampleInfo.ValueType.UINT);
+		sampleNames[6] = getSampleName(SampleInfo.ValueType.FLOAT);
+		sampleNames[7] = getSampleName(SampleInfo.ValueType.LONG);
+		sampleNames[8] = getSampleName(SampleInfo.ValueType.DOUBLE);
+	}
+		
     public NewImage() {
     	openImage();
     }
     
+	private static String getSampleName(SampleInfo.ValueType type)
+	{
+		return SampleManager.getSampleInfo(type).getName();
+	}
+	
 	static boolean createStack(ImagePlus imp, ImageProcessor ip, int nSlices, int type, int options) {
 		int fill = getFill(options);
 		int width = imp.getWidth();
@@ -315,41 +344,76 @@ public class NewImage {
 		}
 	}
 	
+	private static void fill(ImagePlus imp, double value)
+	{
+		FillUnaryFunction fillFunc = new FillUnaryFunction(value);
+		int planeCount = imp.getNSlices();
+		for (int plane = 0; plane < planeCount; plane++)
+		{
+			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getStack().getProcessor(plane+1);
+			proc.transform(fillFunc, null);
+		}
+	}
+	
 	private static void whiteFill(ImagePlus imp)
 	{
 		SampleInfo.ValueType type = SampleManager.getValueType(imp);
 		
-		if ((type == SampleInfo.ValueType.BYTE) || (type == SampleInfo.ValueType.UBYTE))
+		SampleInfo info = SampleManager.getSampleInfo(type);
+		
+		if (info.isIntegral())
 		{
-			RealType<?> realType = SampleManager.getRealType(type);
-
 			// fill with max
-			int width = imp.getWidth();
-			int height = imp.getHeight();
+			double max = SampleManager.getRealType(type).getMaxValue();
 
-			double max = realType.getMaxValue();
-
-			int planeCount = imp.getNSlices();
-			for (int plane = 0; plane < planeCount; plane++)
-			{
-				ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getStack().getProcessor(plane+1);
-				for (int y = 0; y < height; y++)
-					for (int x = 0; x < width; x++)
-						proc.setd(x, y, max);
-			}
+			fill(imp,max);
 		}
-		else  // non byte type
+		else  // floating type
 		{
-			// invert lut
-			ImageProcessor proc = imp.getProcessor();
-			proc.invertLut();
+			fill(imp,1.0);
 		}
 	}
 	
-	private static void imglibCreate(String title, int width, int height, int nSlices, int type, int options)
+	private static void blackFill(ImagePlus imp)
 	{
-		long startTime = System.currentTimeMillis();
+		SampleInfo.ValueType type = SampleManager.getValueType(imp);
 		
+		SampleInfo info = SampleManager.getSampleInfo(type);
+		
+		if (info.isIntegral())
+		{
+			// fill with min
+			double min = SampleManager.getRealType(type).getMinValue();
+
+			fill(imp, min);
+		}
+		else  // floating type
+		{
+			fill(imp,0);
+		}
+	}
+	
+	private static void zeroFill(ImagePlus imp)
+	{
+		fill(imp, 0);
+	}
+
+	private static int getFillType(int fillWith)
+	{
+		if (fillWith == 0)
+			return FILL_WHITE;
+		else if (fillWith == 1)
+			return FILL_BLACK;
+		else if (fillWith == 2)
+			return FILL_RAMP;
+		else if (fillWith == 3)
+			return FILL_ZERO;
+		else
+			throw new IllegalArgumentException("unknown fill index "+fillWith);
+	}
+	
+	private static ImagePlus imglibCreate(String title, int width, int height, int nSlices, int type, int options)
+	{
 		int[] dimensions = new int[]{width, height, nSlices};
 		
 		ArrayContainerFactory factory = new ArrayContainerFactory();
@@ -359,62 +423,73 @@ public class NewImage {
 		
 		ImagePlus imp = ImageUtils.createImagePlus(image);
 		
-		if (imp!=null)
+		if (imp != null)
 		{
-			int fillType = getFill(options);
-			
-			if (fillType == FILL_RAMP)
-				rampedFill(imp);
-			else if (fillType == FILL_WHITE)
-				whiteFill(imp);
-			else
-				; // do nothing - FILL_BLACK should work by default
+			switch (getFillType(fillWith))
+			{
+				case FILL_RAMP:
+					rampedFill(imp);
+					break;
+					
+				case FILL_WHITE:
+					whiteFill(imp);
+					break;
+					
+				case FILL_BLACK:
+					blackFill(imp);
+					break;
+					
+				default:
+					zeroFill(imp);
+					break;
+			}
 			
 			double min, max;
 			
-			if ( ! TypeManager.isIntegralType(imgLibType))
+			if ( ! TypeManager.isIntegralType(imgLibType))  // float type
 			{
 				min = 0;
 				max = 1;
 			}
-			else
+			else  // integral type
 			{
 				min = imgLibType.getMinValue();
 				max = imgLibType.getMaxValue();
 			}
 
 			imp.getProcessor().setMinAndMax(min, max);
-			
-			WindowManager.checkForDuplicateName = true;          
-			imp.show();
-			IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
 		}
+		
+		return imp;
 	}
 	
 	public static void open(String title, int width, int height, int nSlices, int type, int options)
 	{
-		if (!Prefs.get("IJ_1.4_Compatible", false))
-		{
-			if (type == ImagePlus.IMGLIB)
-			{
-				imglibCreate(title, width, height, nSlices, type, options);
-				return;
-			}
-			// else fall through to old IJ code
-		}
-		int bitDepth = 8;
-		if (type==GRAY16) bitDepth = 16;
-		else if (type==GRAY32) bitDepth = 32;
-		else if (type==RGB) bitDepth = 24;
 		long startTime = System.currentTimeMillis();
-		ImagePlus imp = createImage(title, width, height, nSlices, bitDepth, options);
-		if (imp!=null) {
+		ImagePlus imp;
+		if (!Prefs.get("IJ_1.4_Compatible", false) && (type == ImagePlus.IMGLIB))
+		{
+			imp = imglibCreate(title, width, height, nSlices, type, options);
+		}
+		else  // fall through to old IJ code
+		{
+			int bitDepth = 8;
+			if (type==GRAY16) bitDepth = 16;
+			else if (type==GRAY32) bitDepth = 32;
+			else if (type==RGB) bitDepth = 24;
+			imp = createImage(title, width, height, nSlices, bitDepth, options);
+		}
+		if (imp!=null)
+		{
 			WindowManager.checkForDuplicateName = true;          
 			imp.show();
 			IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
 		}
 	}
 
+	/** @deprecated
+	 *  Use {@link #NewImage.cretaeImage(String title, int width, int height, int nSlices, ValueType pixType, )} instead.
+	 */
 	public static ImagePlus createImage(String title, int width, int height, int nSlices, int bitDepth, int options) {
 		ImagePlus imp = null;
 		switch (bitDepth) {
@@ -467,40 +542,14 @@ public class NewImage {
 		return true;
 	}
 
-	private String getSampleName(SampleInfo.ValueType type)
-	{
-		return SampleManager.getSampleInfo(type).getName();
-	}
-	
-	// TODO find a way to do this statically
-	private String[] getSampleNames()
-	{
-		String[] sampleNames = new String[9];
-
-		// TODO - expand to support BIT images when the time comes
-		sampleNames[0] = getSampleName(SampleInfo.ValueType.BYTE);
-		sampleNames[1] = getSampleName(SampleInfo.ValueType.UBYTE);
-		sampleNames[2] = getSampleName(SampleInfo.ValueType.SHORT);
-		sampleNames[3] = getSampleName(SampleInfo.ValueType.USHORT);
-		sampleNames[4] = getSampleName(SampleInfo.ValueType.INT);
-		sampleNames[5] = getSampleName(SampleInfo.ValueType.UINT);
-		sampleNames[6] = getSampleName(SampleInfo.ValueType.FLOAT);
-		sampleNames[7] = getSampleName(SampleInfo.ValueType.LONG);
-		sampleNames[8] = getSampleName(SampleInfo.ValueType.DOUBLE);
-		
-		return sampleNames;
-	}
-	
 	private boolean currentShowDialog()
 	{
-		String[] sampleNames = getSampleNames();
-		
 		if (type<GRAY8 || type>ImagePlus.IMGLIB)
 			throw new IllegalArgumentException("unknown image type "+type);
 		
 		imgLibType = null;
 		
-		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
+		if (fillWith<0||fillWith>3)
 			fillWith = OLD_FILL_WHITE;
 
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
@@ -510,9 +559,12 @@ public class NewImage {
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
 		gd.addNumericField("Height:", height, 0, 5, "pixels");
 		gd.addNumericField("Slices:", slices, 0, 5, "");
+		
 		gd.showDialog();
+		
 		if (gd.wasCanceled())
 			return false;
+		
 		name = gd.getNextString();
 
 		String typeName = gd.getNextChoice();
@@ -533,6 +585,7 @@ public class NewImage {
 		width = (int)gd.getNextNumber();
 		height = (int)gd.getNextNumber();
 		slices = (int)gd.getNextNumber();
+
 		return true;
 	}
 
