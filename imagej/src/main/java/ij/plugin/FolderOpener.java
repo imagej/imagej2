@@ -385,7 +385,6 @@ class FolderOpenerDialog extends GenericDialog {
 		int width = imp.getWidth();
 		int height = imp.getHeight();
 		int depth = imp.getStackSize();
-		int bytesPerPixel = 1;
  		int n = getNumber(numberField.elementAt(0));
 		int start = getNumber(numberField.elementAt(1));
 		int inc = getNumber(numberField.elementAt(2));
@@ -416,13 +415,7 @@ class FolderOpenerDialog extends GenericDialog {
 			}
 			if (n2<n) n = n2;
  		}
-		switch (imp.getType()) {
-			case ImagePlus.GRAY16:
-				bytesPerPixel=2;break;
-			case ImagePlus.COLOR_RGB:
-			case ImagePlus.GRAY32:
-				bytesPerPixel=4; break;
-		}
+		int bytesPerPixel = imp.getBytesPerPixel();
 		if (eightBits)
 			bytesPerPixel = 1;
 		if (rgb)

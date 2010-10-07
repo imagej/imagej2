@@ -50,14 +50,7 @@ public class ListVirtualStack extends VirtualStack implements PlugIn {
 	}
 	
 	boolean showDialog(ImagePlus imp) {
-		double bytesPerPixel = 1;
-		switch (imp.getType()) {
-			case ImagePlus.GRAY16:
-				bytesPerPixel=2; break;
-			case ImagePlus.COLOR_RGB:
-			case ImagePlus.GRAY32:
-				bytesPerPixel=4; break;
-		}
+		double bytesPerPixel = imp.getBytesPerPixel();
 		double size = (imageWidth*imageHeight*bytesPerPixel)/(1024.0*1024.0);
 		int digits = size*getSize()<10.0?1:0;
 		String size1 = IJ.d2s(size*getSize(), digits)+" MB";

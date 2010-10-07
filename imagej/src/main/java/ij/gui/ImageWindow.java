@@ -286,7 +286,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		SampleInfo.ValueType valType = SampleManager.getValueType(imp);
 		SampleInfo info = SampleManager.getSampleInfo(valType);
 		s += info.getName();
-		size *= (info.getNumBits()) / 8.0;
+		size *= imp.getBytesPerPixel();
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
    		String s2=null, s3=null;

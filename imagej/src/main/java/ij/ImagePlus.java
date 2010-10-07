@@ -1990,8 +1990,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 			Undo.setup(Undo.FILTER, this);
 			updateAndDraw();
 		}
-		SampleInfo.ValueType type = SampleManager.getValueType(clipboard);
-		double bytesPerPixel = SampleManager.getSampleInfo(type).getNumBits() / 8.0;
+		double bytesPerPixel = clipboard.getBytesPerPixel();
 		int kBytes = (int)(bytesPerPixel*clipboard.getWidth()*clipboard.getHeight()/1024);
 		if (!batchMode) 
 			IJ.showStatus(msg + ": " + kBytes + "k");

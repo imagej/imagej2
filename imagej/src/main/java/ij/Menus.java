@@ -1190,8 +1190,7 @@ public class Menus {
 	static synchronized void addWindowMenuItem(ImagePlus imp) {
 		//IJ.log("addWindowMenuItem: "+imp);
 		if (ij==null) return;
-		SampleInfo.ValueType type = SampleManager.getValueType(imp);
-		double bytesPerSample = SampleManager.getSampleInfo(type).getNumBits() / 8.0;
+		double bytesPerSample = imp.getBytesPerPixel();
 		int size = (int)(bytesPerSample*imp.getWidth()*imp.getHeight()*imp.getStackSize()/1024);
 		String name = imp.getTitle();
 		CheckboxMenuItem item = new CheckboxMenuItem(name + " " + size + "K");
