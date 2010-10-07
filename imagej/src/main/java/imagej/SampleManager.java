@@ -21,14 +21,19 @@ import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 /** SampleManager manages the information related to all supported types in ImageJ */
-public class SampleManager {
+public class SampleManager
+{
 
+	//***** private members **********************************************/
+	
 	/** the internal list of imagej type sample data info */
-	static SampleInfo[] sampleInfoArray;
+	private static SampleInfo[] sampleInfoArray;
 
 	@SuppressWarnings("rawtypes")
 	/** the internal list of imglib type data info */
-	static RealType[] realTypeArray;
+	private static RealType[] realTypeArray;
+	
+	//***** static initialization **********************************************/
 	
 	/** initialize the type lists */
 	static
@@ -60,23 +65,12 @@ public class SampleManager {
 		realTypeArray[ValueType.DOUBLE.ordinal()] = new DoubleType();
 	}
 	
-	/** make this class noninstantiable */
-	private SampleManager() {}
+	//***** constructor **********************************************/
 	
+	/** make this class uninstantiable */
+	private SampleManager() {}
 
-	/** get the ValueType (BYTE,SHOURT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
-	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample ValueType.
-	 */
-	public static ValueType getValueType(RealType<?> imglib)
-	{
-		for (ValueType vType : ValueType.values())
-		{
-			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
-				return vType;
-		}
-		
-		throw new IllegalArgumentException("unknown Imglib type : "+imglib.getClass());
-	}
+	//***** public interface **********************************************/
 	
 	/** get an imglib type from a IJ ValueType */
 	public static RealType<?> getRealType(ValueType type)
@@ -90,12 +84,19 @@ public class SampleManager {
 		return sampleInfoArray[type.ordinal()];
 	}
 
-	/** get the ValueType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
-	public static ValueType getValueType(ImagePlus imp)
+	/** get the ValueType (BYTE,SHORT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
+	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample ValueType.
+	 */
+	public static ValueType getValueType(RealType<?> imglib)
 	{
-		return getValueType(imp.getProcessor());
+		for (ValueType vType : ValueType.values())
+		{
+			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
+				return vType;
+		}
+		
+		throw new IllegalArgumentException("unknown Imglib type : "+imglib.getClass());
 	}
-	
 	/** get the ValueType associated with an ImageProcessor */
 	public static ValueType getValueType(ImageProcessor proc)
 	{
@@ -117,7 +118,14 @@ public class SampleManager {
 		throw new IllegalArgumentException("unknown processor type");
 	}
 	
-	/** get the SampleInfo assocaited with a SampleInfo name. Returns null if not found. */
+	
+	/** get the ValueType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
+	public static ValueType getValueType(ImagePlus imp)
+	{
+		return getValueType(imp.getProcessor());
+	}
+	
+	/** get the SampleInfo associated with a SampleInfo name. Returns null if not found. */
 	public static SampleInfo findSampleInfo(String name)
 	{
 		if (name == null)
@@ -129,7 +137,7 @@ public class SampleManager {
 		
 		return null;
 	}
-	
+
 	// *************** Private helpers follow **********************************************************
 	
 	/** helper function - return the total number of bits in a sample described by a SampleInfo object */

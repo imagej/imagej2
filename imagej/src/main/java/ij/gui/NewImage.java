@@ -125,9 +125,7 @@ public class NewImage
 		int fill = getFill(options);
 		int width = imp.getWidth();
 		int height = imp.getHeight();
-		long bytesPerPixel = 1;
-		if (type==GRAY16) bytesPerPixel = 2;
-		else if (type==GRAY32||type==RGB) bytesPerPixel = 4;
+		long bytesPerPixel = imp.getBytesPerPixel();
 		long size = (long)width*height*nSlices*bytesPerPixel;
 		String size2 = size/(1024*1024)+"MB ("+width+"x"+height+"x"+nSlices+")";
 		if ((options&CHECK_AVAILABLE_MEMORY)!=0) {
