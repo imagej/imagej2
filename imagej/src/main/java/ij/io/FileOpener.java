@@ -49,94 +49,13 @@ public class FileOpener {
 	public void open() {
 		open(true);
 	}
-	
+
 	/** Opens the image. Displays it if 'show' is
 	true. Returns an ImagePlus object if successful. */
 	public ImagePlus open(boolean show) {
-		ImagePlus imp=null;
-		Object pixels;
-		// BDZ commented out unused(?) reference 
-		// ProgressBar pb=null;
-	    ImageProcessor ip;
-		
-		ColorModel cm = createColorModel(fi);
-		if (fi.nImages>1)
-			{return openStack(cm, show);}
-		switch (fi.fileType) {
-			case FileInfo.GRAY8:
-			case FileInfo.COLOR8:
-			case FileInfo.BITMAP:
-				pixels = readPixels(fi);
-				if (pixels==null) return null;
-				ip = new ByteProcessor(width, height, (byte[])pixels, cm);
-    			imp = new ImagePlus(fi.fileName, ip);
-				break;
-			case FileInfo.GRAY16_SIGNED:
-			case FileInfo.GRAY16_UNSIGNED:
-			case FileInfo.GRAY12_UNSIGNED:
-				pixels = readPixels(fi);
-				if (pixels==null) return null;
-	    		ip = new ShortProcessor(width, height, (short[])pixels, cm);
-       			imp = new ImagePlus(fi.fileName, ip);
-				break;
-			case FileInfo.GRAY32_INT:
-			case FileInfo.GRAY32_UNSIGNED:
-			case FileInfo.GRAY32_FLOAT:
-			case FileInfo.GRAY24_UNSIGNED:
-			case FileInfo.GRAY64_FLOAT:
-				pixels = readPixels(fi);
-				if (pixels==null) return null;
-	    		ip = new FloatProcessor(width, height, (float[])pixels, cm);
-       			imp = new ImagePlus(fi.fileName, ip);
-				break;
-			case FileInfo.RGB:
-			case FileInfo.BGR:
-			case FileInfo.ARGB:
-			case FileInfo.ABGR:
-			case FileInfo.BARG:
-			case FileInfo.RGB_PLANAR:
-				pixels = readPixels(fi);
-				if (pixels==null) return null;
-	    		ip = new ColorProcessor(width, height, (int[])pixels);
-        		imp = new ImagePlus(fi.fileName, ip);
-				break;
-			case FileInfo.RGB48:
-			case FileInfo.RGB48_PLANAR:
-				boolean planar = fi.fileType==FileInfo.RGB48_PLANAR;
-				Object[] pixelArray = (Object[])readPixels(fi);
-				if (pixelArray==null) return null;
-				ImageStack stack = new ImageStack(width, height);
-				stack.addSlice("Red", pixelArray[0]);
-				stack.addSlice("Green", pixelArray[1]);
-				stack.addSlice("Blue", pixelArray[2]);
-        		imp = new ImagePlus(fi.fileName, stack);
-        		imp.setDimensions(3, 1, 1);
-        		if (planar)
-        			imp.getProcessor().resetMinAndMax();
-				imp.setFileInfo(fi);
-				int mode = CompositeImage.COMPOSITE;
-				if (fi.description!=null) {
-					if (fi.description.indexOf("mode=color")!=-1)
-					mode = CompositeImage.COLOR;
-					else if (fi.description.indexOf("mode=gray")!=-1)
-					mode = CompositeImage.GRAYSCALE;
-				}
-        		imp = new CompositeImage(imp, mode);
-        		if (!planar && fi.displayRanges==null) {
-        			for (int c=1; c<=3; c++) {
-        				imp.setPosition(c, 1, 1);
-        				imp.setDisplayRange(minValue, maxValue);
-        			}
-       				imp.setPosition(1, 1, 1);
-        		}
-				break;
-		}
-		imp.setFileInfo(fi);
-		setCalibration(imp);
-		if (fi.info!=null)
-			imp.setProperty("Info", fi.info);
-		if (fi.sliceLabels!=null&&fi.sliceLabels.length==1&&fi.sliceLabels[0]!=null)
-			imp.setProperty("Label", fi.sliceLabels[0]);
+		// CTR TODO - verify that this approach is sufficient
+		ImagePlus imp = null;
+		imp = new Opener().openImage(fi.directory, fi.fileName);
 		if (show) imp.show();
 		return imp;
 	}
