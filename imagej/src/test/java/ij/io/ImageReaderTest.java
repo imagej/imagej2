@@ -238,7 +238,9 @@ public class ImageReaderTest {
 		assertNull(rdr.readPixels("ashdjjfj"));
 		
 		// stream that can't be opened
-		assertNull(rdr.readPixels("http://fred.joe.john.edu/zoobat/ironman/guppy.tiff"));
+		Object guppy = rdr.readPixels("http://fred.joe.john.edu/zoobat/ironman/guppy.tiff");
+		assertTrue(guppy == null ||
+			(guppy instanceof byte[] && ((byte[]) guppy).length == 0));
 
 		// another stream that can't be opened
 		assertNull(rdr.readPixels("http://www.yahoo.com/ooglywooglygugglychoogly.tiff"));
