@@ -519,12 +519,22 @@ public class ImageUtils {
 		final int[] dimensions = img.getDimensions();
 		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
 		int sizeX = 1, sizeY = 1, sizeZ = 1, sizeC = 1, sizeT = 1;
-		for (int i = 0; i < dimTypes.length; i++) {
-			if (ImageOpener.X.equals(dimTypes[i])) sizeX *= dimensions[i];
-			else if (ImageOpener.Y.equals(dimTypes[i])) sizeY *= dimensions[i];
-			else if (FormatTools.CHANNEL.equals(dimTypes[i])) sizeC *= dimensions[i];
-			else if (ImageOpener.Z.equals(dimTypes[i])) sizeZ *= dimensions[i];
-			else if (ImageOpener.TIME.equals(dimTypes[i])) sizeT *= dimensions[i];
+		if (dimTypes.length == dimensions.length) {
+			for (int i = 0; i < dimTypes.length; i++) {
+				if (ImageOpener.X.equals(dimTypes[i])) sizeX *= dimensions[i];
+				else if (ImageOpener.Y.equals(dimTypes[i])) sizeY *= dimensions[i];
+				else if (FormatTools.CHANNEL.equals(dimTypes[i])) sizeC *= dimensions[i];
+				else if (ImageOpener.Z.equals(dimTypes[i])) sizeZ *= dimensions[i];
+				else if (ImageOpener.TIME.equals(dimTypes[i])) sizeT *= dimensions[i];
+			}
+		}
+		else {
+			// assume default ordering of XYCZT
+			if (dimensions.length > 0) sizeX = dimensions[0];
+			if (dimensions.length > 1) sizeY = dimensions[1];
+			if (dimensions.length > 2) sizeC = dimensions[2];
+			if (dimensions.length > 3) sizeZ = dimensions[3];
+			if (dimensions.length > 4) sizeT = dimensions[4];
 		}
 		final long numPlanes = ImageUtils.getTotalPlanes(dimensions);
 
