@@ -1024,9 +1024,42 @@ public class ImagePlus implements ImageObserver, Measurements {
     	return getBitDepth() / 8;
 	}
 
-    protected void setType(int type) {
+    protected void setType(int type)
+    {
     	if ((type<0) || (type>IMGLIB))
     		return;
+
+    	if ((type == IMGLIB) && (imageType != IMGLIB))
+    	{
+    		switch (imageType)
+    		{
+	    		case GRAY8:
+	    		case COLOR_256:
+	    			imgLibType = SampleManager.getRealType(SampleInfo.ValueType.UBYTE);
+	    			break;
+	    			
+	    		case GRAY16:
+	    			imgLibType = SampleManager.getRealType(SampleInfo.ValueType.USHORT);
+	    			break;
+	    			
+	    		case GRAY32:
+	    			imgLibType = SampleManager.getRealType(SampleInfo.ValueType.FLOAT);
+	    			break;
+	    			
+	    		case COLOR_RGB:
+	    			imgLibType = SampleManager.getRealType(SampleInfo.ValueType.UINT);
+	    			break;
+	    		
+	    		default:
+	    			throw new IllegalStateException();
+    		}
+    	}
+    	
+    	if ((type != IMGLIB) && (imageType == IMGLIB))
+    	{
+    		imgLibType = null;
+    	}
+    	
     	int previousType = imageType;
     	imageType = type;
 		if (imageType!=previousType) {
