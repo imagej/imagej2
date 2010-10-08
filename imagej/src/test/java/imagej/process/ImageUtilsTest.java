@@ -421,8 +421,8 @@ public class ImageUtilsTest {
 		// TODO : set pixel data to something
 		ImagePlus imp = ImageUtils.createImagePlus(image);
 		
-		int slices   = image.getDimension(2);
-		int channels = image.getDimension(3);
+		int channels = image.getDimension(2);
+		int slices   = image.getDimension(3);
 		int frames   = image.getDimension(4);
 		
 		assertEquals(frames, imp.getNFrames());
