@@ -279,9 +279,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		this.pixels8 = new byte[totSamples];
 		
+		//int nonZero = 0;
 		for (int i = 0; i < totSamples; i++)
 		{
 			double value = getd(i);
+			//if (value != 0)
+			//	nonZero++;
 			double relPos = (value - min) / (max - min);
 			int byteVal = (int)Math.round(255 * relPos);
 			if (byteVal < 0) byteVal = 0;
@@ -1112,7 +1115,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public ImageProcessor createProcessor(int width, int height)
 	{
-		Image<T> image = this.imageData.createNewImage(new int[]{width,height});
+		int numDims = this.imageData.getNumDimensions(); 
+		int[] newDims = new int[numDims];
+		newDims[0] = width;
+		newDims[1] = height;
+		for (int i = 2; i < numDims; i++)
+			newDims[i] = 1;
+			
+		Image<T> image = this.imageData.createNewImage(newDims);
 		ImageProcessor ip2 = new ImgLibProcessor<T>(image, 0);
 		ip2.setColorModel(getColorModel());
 		// TODO - ByteProcessor does this conditionally. Do we mirror here?
@@ -1294,14 +1304,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		*/
 		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
 
-		UnaryTransformPositionalOperation<T> xform =
+		UnaryTransformPositionalOperation<T> transform =
 			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunc);
 
 		SelectionFunction selector = new MaskOnSelectionFunction(origin, span, byteMask);
 
-		xform.setSelectionFunction(selector);
+		transform.setSelectionFunction(selector);
 
-		xform.execute();
+		transform.execute();
 	}
 
 	// not an override : way to phase out passing in filter numbers
@@ -1809,6 +1819,17 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		transform(function, null);
 	}
 
+	// not an override
+	/** debugging method to be removed when no longer necessary */
+	public boolean nonzero()
+	{
+		int totalPixels = (int)ImageUtils.getTotalSamples(this.imageData);
+		for (int i = 0; i < totalPixels; i++)
+			if (getd(i) != 0)
+				return true;
+		return false;
+	}
+	
 	/** apply the OR point operation over the current ROI area of the current plane of data */
 	@Override
 	public void or(int value)
@@ -2214,20 +2235,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void set(int x, int y, int value) 
 	{
-		int[] position = Index.create(x, y, this.planePosition);
-		
-		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
-		
-		cursor.setPosition(position);
-		
 		double dVal = value;
 
 		if (!this.isIntegral)
 			dVal = Float.intBitsToFloat(value);
 
-		cursor.getType().setReal( dVal );
-		
-		// do not close cursor - using cached one
+		setd(x, y, dVal);
 	}
 
 	/** set the pixel at index to provided int value. if float data then value is a float encoded as an int */
@@ -2307,6 +2320,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** set the pixel at x,y to the provided double value. truncates values for integral types. */
 	public void setd(int x, int y, double value)
 	{
+		//System.out.println(System.currentTimeMillis()+" fg value=" + super.drawingColor+" fill value="+this.fillColor+" background="+this.backgroundValue);
+		
 		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();

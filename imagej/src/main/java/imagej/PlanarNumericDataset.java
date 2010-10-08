@@ -2,8 +2,11 @@ package imagej;
 
 import mpicbg.imglib.container.array.Array;
 import imagej.SampleInfo;
+import imagej.process.function.BinaryFunction;
+import imagej.process.function.NAryFunction;
+import imagej.process.function.UnaryFunction;
 
-interface PlanarNumericDataset 
+interface NumericDataset
 {
 	SampleInfo getSampleInfo();
 	int[] getDimensions();
@@ -12,6 +15,13 @@ interface PlanarNumericDataset
 	void getSamples(int[] index, int axisNumber, Array<?,?> dest, int numSamples);
 	void setSample(int[] index, Array<?,?> src);  // TODO change src to correct thing when we know
 	void setSamples(int[] index, int axisNumber, Array<?,?> src, int numSamples);
+	void transform(UnaryFunction func);
+	void transform(BinaryFunction func, NumericDataset other);
+	void transform(NAryFunction func, NumericDataset[] others);
+}
+
+interface PlanarNumericDataset extends NumericDataset 
+{
 	long getPlaneCount(int axisNumber);
 	void addAxis();
 	void insertAxis(int axisNumber);
@@ -22,11 +32,12 @@ interface PlanarNumericDataset
 	void setAxisOfInterest(int axisNumber);  // hints at how to organize storage for next set of operations : may not belong here
 	int[] subregionDimensions(int axisNumber);
 	void setPlane(int axisNumber, int planeNumber, Object plane);  // TODO - make plane something other than Object
+	void transform(int axisNumber, int plane, UnaryFunction func);
+	void transform(int axisNumber, int plane, BinaryFunction func, NumericDataset other);
+	void transform(int axisNumber, int plane, NAryFunction func, NumericDataset[] others);
 }
 
-/*
 interface Operation
 {
 	void apply(PlanarNumericDataset ds);
 }
-*/

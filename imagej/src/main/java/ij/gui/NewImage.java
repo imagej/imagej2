@@ -45,7 +45,6 @@ public class NewImage
     private static String[] fill = {"White", "Black", "Ramp", "Zero"};
 
     private static String[] oldTypes = {"8-bit", "16-bit", "32-bit", "RGB"};
-	private static RealType<?> imgLibType;
 	private static SampleInfo sampleType;
 	private static String[] sampleNames;
 
@@ -194,8 +193,6 @@ public class NewImage
 		if (type<GRAY8 || type>ImagePlus.IMGLIB)
 			throw new IllegalArgumentException("unknown image type "+type);
 		
-		imgLibType = null;
-		
 		if ((fillWith < 0) || (fillWith >= fill.length))
 			fillWith = 0;
 
@@ -221,9 +218,6 @@ public class NewImage
 		if (info == null)
 			throw new IllegalArgumentException("unknown sample type chosen "+typeName);
 
-		// TODO: this works for now until we break mapping of value types to sample types
-		imgLibType = SampleManager.getRealType(info.getValueType());
-		
 		sampleType = info;
 		
 		type = ImagePlus.IMGLIB;
@@ -239,10 +233,11 @@ public class NewImage
 	private static void fill(ImagePlus imp, double value)
 	{
 		FillUnaryFunction fillFunc = new FillUnaryFunction(value);
-		int planeCount = imp.getNSlices();
+		ImageStack stack = imp.getStack();
+		int planeCount = stack.getSize();
 		for (int plane = 0; plane < planeCount; plane++)
 		{
-			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getStack().getProcessor(plane+1);
+			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)stack.getProcessor(plane+1);
 			proc.transform(fillFunc, null);
 		}
 	}

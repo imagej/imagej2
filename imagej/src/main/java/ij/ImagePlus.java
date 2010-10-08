@@ -1355,6 +1355,19 @@ public class ImagePlus implements ImageObserver, Measurements {
 		setPosition(c, z, t);
 	}
 			
+	public int nonzeroPlanes(ImageStack stack)
+	{
+		int nonzeroCount = 0;
+		for (int i = 0; i < stack.getSize(); i++)
+		{
+			ImgLibProcessor<?> proc = (ImgLibProcessor<?>) stack.getProcessor(i+1);
+			
+			if (proc.nonzero())
+				nonzeroCount++;
+		}
+		return nonzeroCount;
+	}
+	
 	/** Displays the specified stack image, where 1<=n<=stackSize.
 		Does nothing if this image is not a stack. */
 	public synchronized void setSlice(int n) {
