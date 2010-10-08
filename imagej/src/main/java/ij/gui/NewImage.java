@@ -25,6 +25,9 @@ public class NewImage
 	public static final int GRAY8=0, GRAY16=1, GRAY32=2, RGB=3;
 	public static final int FILL_BLACK=1, FILL_RAMP=2, FILL_WHITE=4, CHECK_AVAILABLE_MEMORY=8, FILL_ZERO = 16;
 	private static final int OLD_FILL_WHITE=0;
+
+	// developer convenience: test old style compatibility without needing to set a preference
+	private static final boolean TEST_OLD_WAY = false;
 	
 	//***************** static members  ******************************************************
 	
@@ -91,7 +94,7 @@ public class NewImage
 	private boolean compatibleShowDialog() {
 		if (type<GRAY8|| type>RGB)
 			type = GRAY8;
-		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_RAMP)
+		if (fillWith<OLD_FILL_WHITE||fillWith>FILL_ZERO)
 			fillWith = OLD_FILL_WHITE;
 		GenericDialog gd = new GenericDialog("New Image...", IJ.getInstance());
 		gd.addStringField("Name:", name, 12);
@@ -106,13 +109,25 @@ public class NewImage
 		name = gd.getNextString();
 		String s = gd.getNextChoice();
 		if (s.startsWith("8"))
+		{
 			type = GRAY8;
+			sampleType = SampleManager.getSampleInfo(ValueType.UBYTE);
+		}
 		else if (s.startsWith("16"))
+		{
 			type = GRAY16;
+			sampleType = SampleManager.getSampleInfo(ValueType.USHORT);
+		}
 		else if (s.endsWith("RGB") || s.endsWith("rgb"))
+		{
 			type = RGB;
+			sampleType = SampleManager.getSampleInfo(ValueType.UINT);
+		}
 		else
+		{
 			type = GRAY32;
+			sampleType = SampleManager.getSampleInfo(ValueType.FLOAT);
+		}
 		fillWith = gd.getNextChoiceIndex();
 		width = (int)gd.getNextNumber();
 		height = (int)gd.getNextNumber();
@@ -445,7 +460,7 @@ public class NewImage
 
 	private boolean showDialog()
 	{
-		if (Prefs.get("IJ_1.4_Compatible", false))
+		if ((TEST_OLD_WAY) || (Prefs.get("IJ_1.4_Compatible", false)))
 			return compatibleShowDialog();
 		else
 			return currentShowDialog();
@@ -477,8 +492,9 @@ public class NewImage
 	{
 		ImagePlus imp = null;
 		
-		if (Prefs.get("IJ_1.4_Compatible", false))  // old data/processors desired
+		if ((TEST_OLD_WAY) || (Prefs.get("IJ_1.4_Compatible", false)))
 		{
+			// old data/processors desired
 			switch (type)
 			{
 				case UBYTE:
@@ -514,7 +530,7 @@ public class NewImage
 				for (int i=0; i<width*height; i++)
 					pixels[i] = (byte)255;
 				break;
-			case FILL_BLACK:
+			case FILL_BLACK: case FILL_ZERO:
 				break;
 			case FILL_RAMP:
 				byte[] ramp = new byte[width];
@@ -546,7 +562,7 @@ public class NewImage
 		int fill = getFill(options);
 		float[] pixels = new float[width*height];
 		switch (fill) {
-			case FILL_WHITE: case FILL_BLACK:
+			case FILL_WHITE: case FILL_BLACK: case FILL_ZERO:
 				break;
 			case FILL_RAMP:
 				float[] ramp = new float[width];
@@ -602,6 +618,8 @@ public class NewImage
 						pixels[offset++] = ramp[x];
 				}
 				break;
+			case FILL_ZERO:
+				break;
 		}
 		ImageProcessor ip = new ColorProcessor(width, height, pixels);
 		ImagePlus imp = createImagePlus();
@@ -621,7 +639,7 @@ public class NewImage
 		int fill = getFill(options);
 		short[] pixels = new short[width*height];
 		switch (fill) {
-			case FILL_WHITE: case FILL_BLACK:
+			case FILL_WHITE: case FILL_BLACK: case FILL_ZERO:
 				break;
 			case FILL_RAMP:
 				short[] ramp = new short[width];
