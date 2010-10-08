@@ -385,11 +385,11 @@ public class ImageUtils {
 	{
 		// span dims should match origin dims
 		if (origin.length != span.length)
-			throw new IllegalArgumentException("verifyDimensions() : origin and span arrays are of differing sizes");
+			throw new IllegalArgumentException("verifyDimensions() : origin (dim="+origin.length+") and span (dim="+span.length+") arrays are of differing sizes");
 
 		// origin/span dimensions should match image dimensions
 		if (origin.length != imageDimensions.length)
-			throw new IllegalArgumentException("verifyDimensions() : origin/span different size than input image");
+			throw new IllegalArgumentException("verifyDimensions() : origin/span (dim="+origin.length+") different size than input image (dim="+imageDimensions.length+")");
 		
 		// make sure origin in a valid range : within bounds of source image
 		for (int i = 0; i < origin.length; i++)
