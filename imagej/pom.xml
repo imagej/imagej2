@@ -64,12 +64,6 @@
       <scope>test</scope>
     </dependency>
     -->
-    <dependency>
-      <groupId>loci</groupId>
-      <artifactId>loci_plugins</artifactId>
-      <version>5.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

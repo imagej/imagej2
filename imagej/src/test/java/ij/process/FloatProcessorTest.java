@@ -1,7 +1,8 @@
 package ij.process;
 
 import static org.junit.Assert.assertEquals;
-
+import ij.ImagePlus;
+import ij.io.Opener;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -14,9 +15,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-
-import loci.formats.FormatException;
-import loci.plugins.util.ImageProcessorReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,35 +34,11 @@ public class FloatProcessorTest {
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	    String id = DataConstants.DATA_DIR + "head.xv";
-		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
-		ImageProcessor imageProcessor = null;
-
-		try {
-			imageProcessorReader.setId(id);
-		} catch (FormatException e) {
-
-			e.printStackTrace();
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-
-		try {
-			imageProcessor = imageProcessorReader.openProcessors(0)[0];
-		} catch (FormatException e) {
-
-			e.printStackTrace();
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-
-		imageFloatData = imageProcessor.getFloatArray();
-		combined = new float[2][imageProcessor.width*imageFloatData[0].length];
+	  String id = DataConstants.DATA_DIR + "head.xv";
+	  ImagePlus imp = new Opener().openImage(id);
+	  imageFloatData = imp.getProcessor().getFloatArray();
+		combined = new float[2][imp.getWidth() * imp.getHeight()];
 	}
-
-
 
 	@AfterClass
 	public static void runAfterClass()

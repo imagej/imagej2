@@ -2,6 +2,8 @@ package ij.process;
 
 import static org.junit.Assert.assertEquals;
 import ij.Assert;
+import ij.ImagePlus;
+import ij.io.Opener;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -14,63 +16,33 @@ import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
-import java.io.IOException;
 import java.util.Random;
-
-import loci.formats.FormatException;
-import loci.plugins.util.ImageProcessorReader;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ByteProcessorTest {
 
+  private static int width;
+  private static int height;
+  private static byte[] imageByteData;
+  private static ColorModel cm;
 
-    private static int width;
-    private static int height;
-    private static byte[] imageByteData;
-    private static ColorModel cm;
-
-    /*
-     * Open an known image for internal testing...
-     */
+  /*
+   * Open an known image for internal testing...
+   */
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	    String id = DataConstants.DATA_DIR + "head8bit.tif";
+	  String id = DataConstants.DATA_DIR + "head8bit.tif";
+	  ImagePlus imp = new Opener().openImage(id);
+    width = imp.getWidth();
+    height = imp.getHeight();
+	  imageByteData = (byte[]) imp.getProcessor().getPixels();
 
-		ImageProcessorReader imageProcessorReader = new ImageProcessorReader();
-		ImageProcessor imageProcessor = null;
-
-        try {
-            imageProcessorReader.setId(id);
-        } catch (FormatException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        try {
-            imageProcessor = imageProcessorReader.openProcessors(0)[0];
-        } catch (FormatException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        width = imageProcessor.getWidth();
-        height = imageProcessor.getHeight();
-        imageByteData = new byte[width*height];
-
-        try {
-            imageProcessorReader.openBytes( 0, imageByteData );
-        } catch (FormatException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        //assign the color model
-        cm = imageProcessor.getColorModel();
-    }
+	  //assign the color model
+	  cm = imp.getProcessor().getColorModel();
+	}
 
 	public byte[] getImageByteData()
 	{
