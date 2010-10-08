@@ -412,7 +412,13 @@ public class ImageOpener implements StatusReporter {
     final int bpp = FormatTools.getBytesPerPixel(pixelType);
     final boolean fp = FormatTools.isFloatingPoint(pixelType);
     final boolean little = r.isLittleEndian();
-    final Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+    Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+    if (planeArray == plane) {
+      // array was returned by reference; make a copy
+      final byte[] planeCopy = new byte[plane.length];
+      System.arraycopy(plane, 0, planeCopy, 0, plane.length);
+      planeArray = planeCopy;
+    }
     planarAccess.setPlane(no, planeArray);
   }
 
