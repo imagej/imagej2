@@ -11,6 +11,10 @@ public class NAryComputation
 	{
 		this.function = function;
 		this.inputDoubles = new double[numSamples];
+		
+		if (numSamples != function.getValueCount())
+			throw new IllegalArgumentException("NAry function parameter count ("+function.getValueCount()+
+					") does not match number of input values ("+numSamples+")");
 	}
 	
 	public void compute(RealType<?> result, RealType<?>[] inputs)

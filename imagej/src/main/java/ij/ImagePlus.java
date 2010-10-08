@@ -2033,10 +2033,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 	 /** Inserts the contents of the internal clipboard into the active image. If there
 	 is a selection the same size as the image on the clipboard, the image is inserted 
 	 into that selection, otherwise the selection is inserted into the center of the image.*/
-	 public void paste() {
+	 public void paste()
+	 {
 		if (clipboard==null) return;
-		int cType = clipboard.getType();
-		int iType = getType();
 		
         int w = clipboard.getWidth();
         int h = clipboard.getHeight();
@@ -2045,11 +2044,13 @@ public class ImagePlus implements ImageObserver, Measurements {
 		Roi roi = getRoi();
 		if (roi!=null)
 			r = roi.getBounds();
+		
 		if (w==width && h==height && (r==null||w!=r.width||h!=r.height)) {
 			setRoi(0, 0, width, height);
 			roi = getRoi();
 			r = roi.getBounds();
 		}
+		
 		if (r==null || (r!=null && (w!=r.width || h!=r.height))) {
 			// create a new roi centered on visible part of image
 			ImageCanvas ic = null;
@@ -2066,6 +2067,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 				setRoi(xCenter-w/2, yCenter-h/2, w, h);
 			roi = getRoi();
 		} 
+		
 		if (IJ.isMacro()) {
 			//non-interactive paste
 			int pasteMode = Roi.getCurrentPasteMode();
@@ -2081,6 +2083,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 			roi.startPaste(clipboard);
 			Undo.setup(Undo.PASTE, this);
 		}
+		
 		changes = true;
     }
 

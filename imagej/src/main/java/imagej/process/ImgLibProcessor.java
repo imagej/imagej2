@@ -33,6 +33,7 @@ import imagej.process.function.MinBinaryFunction;
 import imagej.process.function.MinUnaryFunction;
 import imagej.process.function.MultiplyBinaryFunction;
 import imagej.process.function.MultiplyUnaryFunction;
+import imagej.process.function.NAryFunction;
 import imagej.process.function.OrBinaryFunction;
 import imagej.process.function.OrUnaryFunction;
 import imagej.process.function.SqrUnaryFunction;
@@ -50,6 +51,7 @@ import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MinMaxOperation;
+import imagej.process.operation.NAryTransformOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
@@ -2585,6 +2587,46 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				(span[1] == getHeight()) &&
 				!(function instanceof imagej.process.function.FillUnaryFunction))
 			findMinAndMax();
+	}
+	
+	// not an override
+	/** Apply a given NAryFunction (that takes N parameters) over the current ROI area of the current plane of data.
+	 *  Transforms its own ROI plane using its own data and the data of N-1 other processors. Each processor's Roi
+	 *  bounds are compatible with this processor's roi. Accepts N selector functions.
+	 */
+	public void transform(ImgLibProcessor<T> others[], NAryFunction function, SelectionFunction[] selectors)
+	{
+		@SuppressWarnings("unchecked")
+		Image<T>[] images = new Image[others.length+1];
+		int[][] origins = new int[others.length+1][];
+		int[][] spans = new int[others.length+1][];
+		
+		images[0] = this.imageData;
+		origins[0] = originOfRoi();
+		spans[0] = spanOfRoiPlane();
+		
+		for (int i = 1; i <= others.length; i++)
+		{
+			Rectangle bounds = others[i].getRoi();
+			
+			ImgLibProcessor<T> processor = others[i];
+			
+			Image<T> image = processor.getImage();
+			
+			int[] origin = Index.create(bounds.x, bounds.y, processor.getPlanePosition());
+			
+			int[] span = Span.singlePlane(processor.getWidth(), processor.getHeight(), image.getNumDimensions());
+			
+			images[i] = image;
+			origins[i] = origin;
+			spans[i] = span;
+		}
+		
+		NAryTransformOperation<T> transform = new NAryTransformOperation<T>(images, origins, spans, function);
+		
+		transform.setSelectionFunctions(selectors);
+
+		transform.execute();
 	}
 	
 	/** apply the XOR point operation over the current ROI area of the current plane of data */

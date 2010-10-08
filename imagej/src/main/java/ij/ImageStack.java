@@ -255,7 +255,7 @@ public class ImageStack {
 	public void addSlice(String sliceLabel, ImageProcessor ip)
 	{
 		if (ip.getWidth()!=width || ip.getHeight()!=height)
-			throw new IllegalArgumentException("Dimensions do not match");
+			throw new IllegalArgumentException("Processor dimensions ("+ip.getWidth()+","+ip.getHeight()+") do not match stack dimensions ("+width+","+height+")");
 		
 		if (numSlices() == 0)
 		{
