@@ -508,7 +508,7 @@ public class ImagePlus implements ImageObserver, Measurements {
         if (stackSize>1 && (ip.getWidth()!=width || ip.getHeight()!=height))
             throw new IllegalArgumentException("ip wrong size");
 		if (stackSize<=1) {
-			stack = null;
+			stack = null;  // TODO - is this a killer for ImgLibProc integration ???
 			setCurrentSlice(1);
 		}
 		setProcessor2(title, ip, null);

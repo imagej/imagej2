@@ -275,20 +275,18 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 				s = label + "; ";
 			}
 		}
-    	int type = imp.getType();
     	Calibration cal = imp.getCalibration();
     	if (cal.scaled()) {
     		s += IJ.d2s(imp.getWidth()*cal.pixelWidth,2) + "x" + IJ.d2s(imp.getHeight()*cal.pixelHeight,2)
  			+ " " + cal.getUnits() + " (" + imp.getWidth() + "x" + imp.getHeight() + "); ";
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
-		double size = ((double)imp.getWidth()*imp.getHeight()*imp.getStackSize())/1024.0;
 		SampleInfo.ValueType valType = SampleManager.getValueType(imp);
-		SampleInfo info = SampleManager.getSampleInfo(valType);
-		s += info.getName();
-		size *= imp.getBytesPerPixel();
+		s += SampleManager.getSampleInfo(valType).getName();
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
+		double size = ((double)imp.getWidth()*imp.getHeight()*imp.getStackSize())/1024.0;
+		size *= imp.getBytesPerPixel();
    		String s2=null, s3=null;
     	if (size<1024.0)
     		{s2=IJ.d2s(size,0); s3="K";}
