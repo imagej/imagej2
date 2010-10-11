@@ -395,7 +395,7 @@ public class NewImage
 	
 	private static ImagePlus imglibCreate(String title, int width, int height, int nSlices, RealType<?> type, int options)
 	{
-		int[] dimensions = new int[]{width, height, nSlices};
+		int[] dimensions = new int[]{width, height, 1, nSlices};
 		
 		ArrayContainerFactory factory = new ArrayContainerFactory();
 		factory.setPlanar(true);
