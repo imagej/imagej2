@@ -478,7 +478,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		width = newWidth;
 		height = newHeight;
 		ip = null;
-		stack = null;
+		stack = null;  // TODO - will this break ImageStack/PlaneStack/ImgLibProc integration?
 		LookUpTable lut = new LookUpTable(img);
 		int type;
 		if (lut.getMapSize() > 0) {
@@ -508,7 +508,7 @@ public class ImagePlus implements ImageObserver, Measurements {
         if (stackSize>1 && (ip.getWidth()!=width || ip.getHeight()!=height))
             throw new IllegalArgumentException("ip wrong size");
 		if (stackSize<=1) {
-			stack = null;  // TODO - is this a killer for ImgLibProc integration ???
+			stack = null;  // TODO - will this break ImageStack/PlaneStack/ImgLibProc integration?
 			setCurrentSlice(1);
 		}
 		setProcessor2(title, ip, null);
@@ -591,7 +591,7 @@ public class ImagePlus implements ImageObserver, Measurements {
     	setProcessor2(title, ip, stack);
 		if (win==null) return;
 		boolean invalidDimensions = isDisplayedHyperStack() && !((StackWindow)win).validDimensions();
-		if (stackSize==1 && win instanceof StackWindow)
+		if (stackSize==1 && win instanceof StackWindow)  // TODO - will this break ImageStack/PlaneStack/ImgLibProc integration?
 			win = new ImageWindow(this, getCanvas());   // replaces this window
 		else if (dimensionsChanged && !stackSizeChanged)
 			win.updateImage(this);
@@ -854,7 +854,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	/** If this is a stack, returns the number of slices, else returns 1. */
 	public int getStackSize() {
 		if (stack==null)
-			return 1;
+			return 1;  // TODO - needs to change now for Imglib integration?
 		else {
 			int slices = stack.getSize();
 			//if (compositeImage) slices /= nChannels;
@@ -866,7 +866,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	/** If this is a stack, returns the actual number of images in the stack, else returns 1. */
 	public int getImageStackSize() {
 		if (stack==null)
-			return 1;
+			return 1;  // TODO - needs to change now for Imglib integration?
 		else {
 			int slices = stack.getSize();
 			if (slices==0) slices = 1;
@@ -1297,8 +1297,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 
 	public void killStack() {
-		stack = null;
-		trimProcessor();
+		stack = null;  // TODO - this could kill all access to Imglib integrated data. is this method designed to leave a single processor
+		trimProcessor();  //  around or to leave none around? If one then we should resize the stack, not kill it.
 	}
 	
 	public void setPosition(int channel, int slice, int frame) {
@@ -1355,6 +1355,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		setPosition(c, z, t);
 	}
 			
+	/** debugging method - reports how many planes have nonzero data. remove later */
 	public int nonzeroPlanes(ImageStack stack)
 	{
 		int nonzeroCount = 0;
@@ -1571,6 +1572,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		boolean isFileInfo = fi!=null && fi.fileFormat!=FileInfo.UNKNOWN;
 		if (!(isFileInfo || url!=null))
 			return;
+		// TODO - this next test can never be true as first part already impossible. Is the rest of the test an important case or not? 
 		if (getStackSize()>1 && (fi==null||fi.fileFormat!=FileInfo.TIFF||fi.compression!=FileInfo.COMPRESSION_NONE))
 			return;
 		if (ij!=null && changes && isFileInfo && !Interpreter.isBatchMode() && !IJ.isMacro() && !IJ.altKeyDown()) {
@@ -1783,7 +1785,10 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 	
 			
- 	/** Returns a new hyperstack with this image's attributes
+	// TODO - ideally we would call a helper method that creates an imglib image of dims {x,y,c,z,t} rathert than our stack.addSlice
+	//   apporach below. See if we can pull from NewImage and make common to here, there, and possibly ImageStack.
+
+	/** Returns a new hyperstack with this image's attributes
 		(e.g., width, height, spatial scale), but no image data. */
 	public ImagePlus createHyperStack(String title, int channels, int slices, int frames, int bitDepth) {
 		int size = channels*slices*frames;
