@@ -1569,7 +1569,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		if (getStackSize()>1) // can't revert stacks
 			return;
 		FileInfo fi = getOriginalFileInfo();
-		boolean isFileInfo = fi!=null && fi.fileFormat!=FileInfo.UNKNOWN;
+		boolean isFileInfo = fi!=null;
 		if (!(isFileInfo || url!=null))
 			return;
 		// TODO - this next test can never be true as first part already impossible. Is the rest of the test an important case or not? 
