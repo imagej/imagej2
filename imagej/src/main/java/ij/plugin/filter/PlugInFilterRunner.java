@@ -6,6 +6,10 @@ import ij.plugin.filter.PlugInFilter.*;
 import ij.plugin.filter.*;
 import ij.measure.Calibration;
 import ij.macro.Interpreter;
+import imagej.SampleInfo;
+import imagej.SampleInfo.ValueType;
+import imagej.SampleManager;
+
 import java.awt.*;
 import java.util.Hashtable;
 
@@ -284,6 +288,24 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                     if ((flags&PlugInFilter.DOES_RGB)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
+                case ImagePlus.IMGLIB:
+                	// TODO - enhance so we have a flag called DOES_IMGLIB and then run if possible
+                	boolean compatibleType = false;
+                	SampleInfo.ValueType vType = SampleManager.getValueType(imp);
+                	if ((vType == ValueType.UBYTE) && ((flags&PlugInFilter.DOES_8G)!=0))
+                		compatibleType = true;
+                	else if ((vType == ValueType.USHORT) && ((flags&PlugInFilter.DOES_16)!=0))
+                		compatibleType = true;
+                	else if ((vType == ValueType.FLOAT) && ((flags&PlugInFilter.DOES_32)!=0))
+                		compatibleType = true;
+                	if (!compatibleType)
+                	{
+	                	wrongType(flags, cmd);
+	                	return false;
+                	}
+                	break;
+                default:
+                	throw new IllegalStateException();
             }
             if ((flags&PlugInFilter.ROI_REQUIRED)!=0 && imp.getRoi()==null)
             {IJ.error(cmd, "This command requires a selection"); return false;}
