@@ -277,7 +277,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		int totSamples = width * height;
 		
-		this.pixels8 = new byte[totSamples];
+		if (this.pixels8 == null)
+			this.pixels8 = new byte[totSamples];
 		
 		//int nonZero = 0;
 		for (int i = 0; i < totSamples; i++)
@@ -786,12 +787,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if ( this.type instanceof GenericByteType< ? > )
 		{
 			if (lut.length!=256)
-				throw new IllegalArgumentException("lut.length != expected length for type " + this.type );
+				throw new IllegalArgumentException("lut.length != expected length for type " + this.type.getClass() );
 		}
 		else if( this.type instanceof GenericShortType< ? > )
 		{
 			if (lut.length!=65536)
-				throw new IllegalArgumentException("lut.length != expected length for type " + this.type );
+				throw new IllegalArgumentException("lut.length != expected length for type " + this.type.getClass() );
 		}
 		else
 		{
@@ -897,7 +898,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			super.autoThreshold();
 	}
 	
-	/** does a lut substitution on current ROIO area image data. applies only to integral data. */
+	/** does a lut substitution on current ROI area image data. applies only to integral data. */
 	@Override
 	public void applyTable(int[] lut) 
 	{
