@@ -7,7 +7,7 @@
 
   <groupId>imagej</groupId>
   <artifactId>imagej-base-pom</artifactId>
-  <version>1.06</version>
+  <version>1.07</version>
   <packaging>pom</packaging>
 
   <name>ImageJ Base POM</name>
@@ -159,7 +159,7 @@
     <repository>
       <id>netbeans</id>
       <name>Repository for hosting NetBeans API artifacts</name>
-      <url>http://bits.netbeans.org/maven2/</url>
+      <url>http://bits.netbeans.org/maven2</url>
     </repository>
   </repositories>
 
