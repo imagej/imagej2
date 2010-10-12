@@ -7,7 +7,7 @@
 
   <groupId>imagej</groupId>
   <artifactId>imagej-base-pom</artifactId>
-  <version>1.05</version>
+  <version>1.06</version>
   <packaging>pom</packaging>
 
   <name>ImageJ Base POM</name>
@@ -154,6 +154,12 @@
     <repository>
       <id>unifi.it</id>
       <url>http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos</url>
+    </repository>
+    <!-- NB: for netbeans -->
+    <repository>
+      <id>netbeans</id>
+      <name>Repository for hosting NetBeans API artifacts</name>
+      <url>http://bits.netbeans.org/maven2/</url>
     </repository>
   </repositories>
 
