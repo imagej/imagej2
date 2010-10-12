@@ -3,6 +3,10 @@ import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.macro.*;
+import imagej.SampleInfo;
+import imagej.SampleManager;
+import imagej.process.ImgLibProcessor;
+
 import java.awt.*;
 
 /** This plugin implements ImageJ's Process/Math submenu. */
@@ -151,15 +155,45 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		}
 
 	 	if (arg.equals("reciprocal")) {
-			if (!isFloat(ip)) return;
-			float[] pixels = (float[])ip.getPixels();
-			for (int i=0; i<ip.getWidth()*ip.getHeight(); i++) {
-				if (pixels[i]==0f)
-					pixels[i] = Float.NaN;
-				else
-					pixels[i] = 1f/pixels[i];
+	 		
+			if (!isFloat(ip))
+				return;
+			
+			int w = ip.getWidth();
+			int h = ip.getHeight();
+			
+			if (ip instanceof FloatProcessor)
+			{
+				float[] pixels = (float[])ip.getPixels();
+				int totPix = w*h;
+				for (int i=0; i<totPix; i++)
+				{
+					if (pixels[i]==0f)
+						pixels[i] = Float.NaN;
+					else
+						pixels[i] = 1f/pixels[i];
+				}
 			}
+			else if (ip instanceof ImgLibProcessor)
+			{
+				ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+				for (int x = 0; x < w; x++)
+				{
+					for (int y = 0; y < h; y++)
+					{
+						double value = proc.getd(x,y); 
+						if (value == 0)
+							proc.setd(x, y, Double.NaN);
+						else
+							proc.setd(x, y, 1.0/value);
+					}
+				}
+			}
+			else
+				throw new IllegalStateException();
+			
 			ip.resetMinAndMax();
+			
 			return;
 		}
 		
@@ -190,13 +224,15 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		return gd!=null && gd.getPreviewCheckbox().getState();
 	}
  
- 	boolean isFloat(ImageProcessor ip) {
-		if (!(ip instanceof FloatProcessor)) {
-			IJ.error("32-bit float image required");
-			canceled = true;
-			return false;
-		} else
-			return true;
+ 	private boolean isFloat(ImageProcessor ip) {
+		SampleInfo.ValueType vType = SampleManager.getValueType(ip);
+		
+		if ((vType == SampleInfo.ValueType.FLOAT) || (vType == SampleInfo.ValueType.DOUBLE))
+ 			return true;
+ 		
+		IJ.error("floating point image required");
+		canceled = true;
+		return false;
 	}
 	
 	void getValue (String title, String prompt, double defaultValue, int digits) {
