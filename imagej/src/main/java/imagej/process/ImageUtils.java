@@ -34,7 +34,10 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when we can call ImagePlus::setDimensions(int[] dims)
 //   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
-public class ImageUtils {
+public class ImageUtils
+{
+	
+	// ***************** public methods  **************************************************
 	
 	public static int[] getDimsBeyondXY(int[] fullDims)
 	{
@@ -190,196 +193,6 @@ public class ImageUtils {
 		planarAccess.setPlane(no, plane);
 	}
 
-	public static byte[] getPlaneBytes(Image<ByteType> im, int w, int h, int[] planePos)
-	{
-		final byte[] data = new byte[w * h];
-		final LocalizableByDimCursor<ByteType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static byte[] getPlaneUnsignedBytes(Image<UnsignedByteType> im, int w, int h, int[] planePos)
-	{
-		final byte[] data = new byte[w * h];
-		final LocalizableByDimCursor<UnsignedByteType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = (byte) cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static short[] getPlaneShorts(Image<ShortType> im, int w, int h, int[] planePos)
-	{
-		final short[] data = new short[w * h];
-		final LocalizableByDimCursor<ShortType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static short[] getPlaneUnsignedShorts(Image<UnsignedShortType> im, int w, int h, int[] planePos)
-	{
-		final short[] data = new short[w * h];
-		final LocalizableByDimCursor<UnsignedShortType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = (short) cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static int[] getPlaneInts(Image<IntType> im, int w, int h, int[] planePos)
-	{
-		final int[] data = new int[w * h];
-		final LocalizableByDimCursor<IntType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static int[] getPlaneUnsignedInts(Image<UnsignedIntType> im, int w, int h, int[] planePos)
-	{
-		final int[] data = new int[w * h];
-		final LocalizableByDimCursor<UnsignedIntType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = (int) cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static long[] getPlaneLongs(Image<LongType> im, int w, int h, int[] planePos)
-	{
-		final long[] data = new long[w * h];
-		final LocalizableByDimCursor<LongType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static float[] getPlaneFloats(Image<FloatType> im, int w, int h, int[] planePos)
-	{
-		final float[] data = new float[w * h];
-		final LocalizableByDimCursor<FloatType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-
-	public static double[] getPlaneDoubles(Image<DoubleType> im, int w, int h, int[] planePos)
-	{
-		final double[] data = new double[w * h];
-		final LocalizableByDimCursor<DoubleType> cursor = im.createLocalizableByDimCursor();
-		final int[] pos = Index.create(0,0,planePos);
-		int index = 0;
-		for (int y=0; y<h; y++) {
-			pos[1] = y;
-			for (int x=0; x<w; x++) {
-				pos[0] = x;
-				cursor.setPosition(pos);
-				data[index++] = cursor.getType().get();
-			}
-		}
-		return data;
-	}
-	
-	@SuppressWarnings({"unchecked"})
-	public static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
-	{
-		RealType<?> type = getType(im);
-
-		if (type instanceof ByteType)
-			return getPlaneBytes((Image<ByteType>)im,w,h,planePos);
-
-		if (type instanceof UnsignedByteType)
-			return getPlaneUnsignedBytes((Image<UnsignedByteType>)im,w,h,planePos);
-
-		if (type instanceof ShortType)
-			return getPlaneShorts((Image<ShortType>)im,w,h,planePos);
-
-		if (type instanceof UnsignedShortType)
-			return getPlaneUnsignedShorts((Image<UnsignedShortType>)im,w,h,planePos);
-
-		if (type instanceof IntType)
-			return getPlaneInts((Image<IntType>)im,w,h,planePos);
-
-		if (type instanceof UnsignedIntType)
-			return getPlaneUnsignedInts((Image<UnsignedIntType>)im,w,h,planePos);
-
-		if (type instanceof LongType)
-			return getPlaneLongs((Image<LongType>)im,w,h,planePos);
-
-		if (type instanceof FloatType)
-			return getPlaneFloats((Image<FloatType>)im,w,h,planePos);
-
-		if (type instanceof DoubleType)
-			return getPlaneDoubles((Image<DoubleType>)im,w,h,planePos);
-
-		// TODO - longs and complex types
-
-		throw new IllegalArgumentException("getPlane(): unsupported type - "+type.getClass());
-	}
-	
 	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
 	public static void verifyDimensions(int[] imageDimensions, int[] origin, int[] span)
 	{
@@ -622,5 +435,198 @@ public class ImageUtils {
 	{
 		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
 		return factory.createImage(dimensions);
+	}
+
+
+	// ***************** private methods  **************************************************
+	
+	private static byte[] getPlaneBytes(Image<ByteType> im, int w, int h, int[] planePos)
+	{
+		final byte[] data = new byte[w * h];
+		final LocalizableByDimCursor<ByteType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static byte[] getPlaneUnsignedBytes(Image<UnsignedByteType> im, int w, int h, int[] planePos)
+	{
+		final byte[] data = new byte[w * h];
+		final LocalizableByDimCursor<UnsignedByteType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = (byte) cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static short[] getPlaneShorts(Image<ShortType> im, int w, int h, int[] planePos)
+	{
+		final short[] data = new short[w * h];
+		final LocalizableByDimCursor<ShortType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static short[] getPlaneUnsignedShorts(Image<UnsignedShortType> im, int w, int h, int[] planePos)
+	{
+		final short[] data = new short[w * h];
+		final LocalizableByDimCursor<UnsignedShortType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = (short) cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static int[] getPlaneInts(Image<IntType> im, int w, int h, int[] planePos)
+	{
+		final int[] data = new int[w * h];
+		final LocalizableByDimCursor<IntType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static int[] getPlaneUnsignedInts(Image<UnsignedIntType> im, int w, int h, int[] planePos)
+	{
+		final int[] data = new int[w * h];
+		final LocalizableByDimCursor<UnsignedIntType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = (int) cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static long[] getPlaneLongs(Image<LongType> im, int w, int h, int[] planePos)
+	{
+		final long[] data = new long[w * h];
+		final LocalizableByDimCursor<LongType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static float[] getPlaneFloats(Image<FloatType> im, int w, int h, int[] planePos)
+	{
+		final float[] data = new float[w * h];
+		final LocalizableByDimCursor<FloatType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+
+	private static double[] getPlaneDoubles(Image<DoubleType> im, int w, int h, int[] planePos)
+	{
+		final double[] data = new double[w * h];
+		final LocalizableByDimCursor<DoubleType> cursor = im.createLocalizableByDimCursor();
+		final int[] pos = Index.create(0,0,planePos);
+		int index = 0;
+		for (int y=0; y<h; y++) {
+			pos[1] = y;
+			for (int x=0; x<w; x++) {
+				pos[0] = x;
+				cursor.setPosition(pos);
+				data[index++] = cursor.getType().get();
+			}
+		}
+		return data;
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	private static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
+	{
+		RealType<?> type = getType(im);
+
+		if (type instanceof ByteType)
+			return getPlaneBytes((Image<ByteType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedByteType)
+			return getPlaneUnsignedBytes((Image<UnsignedByteType>)im,w,h,planePos);
+
+		if (type instanceof ShortType)
+			return getPlaneShorts((Image<ShortType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedShortType)
+			return getPlaneUnsignedShorts((Image<UnsignedShortType>)im,w,h,planePos);
+
+		if (type instanceof IntType)
+			return getPlaneInts((Image<IntType>)im,w,h,planePos);
+
+		if (type instanceof UnsignedIntType)
+			return getPlaneUnsignedInts((Image<UnsignedIntType>)im,w,h,planePos);
+
+		if (type instanceof LongType)
+			return getPlaneLongs((Image<LongType>)im,w,h,planePos);
+
+		if (type instanceof FloatType)
+			return getPlaneFloats((Image<FloatType>)im,w,h,planePos);
+
+		if (type instanceof DoubleType)
+			return getPlaneDoubles((Image<DoubleType>)im,w,h,planePos);
+
+		// TODO - longs and complex types
+
+		throw new IllegalArgumentException("getPlane(): unsupported type - "+type.getClass());
 	}
 }

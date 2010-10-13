@@ -7,6 +7,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
+import imagej.SampleManager;
 import imagej.io.ImageOpener;
 import imagej.process.function.AbsUnaryFunction;
 import imagej.process.function.AddBinaryFunction;
@@ -52,6 +53,7 @@ import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.NAryTransformOperation;
+import imagej.process.operation.PlaneConvertOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
@@ -580,6 +582,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
+		/*
 		int w = image.getDimension(0);
 		int h = image.getDimension(1);
 		
@@ -622,6 +625,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return ImageUtils.getPlaneDoubles(im, w, h, planePos);
 		}
 		return ImageUtils.getPlaneData(image, w, h, planePos);
+		*/
+		
+		return PlaneConvertOperation.getPlaneAs(image, planePos, SampleManager.getValueType(type));
 	}
 	
 	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns nearest edge pixel. */
