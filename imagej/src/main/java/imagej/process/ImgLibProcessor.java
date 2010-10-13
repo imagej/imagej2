@@ -73,16 +73,10 @@ import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.GenericByteType;
 import mpicbg.imglib.type.numeric.integer.GenericShortType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.LongType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 // NOTES
@@ -578,55 +572,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
 	}
 	
-	@SuppressWarnings({"rawtypes","unchecked"})
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
-		/*
-		int w = image.getDimension(0);
-		int h = image.getDimension(1);
-		
-		// NOTE - eliminating bad cast warnings in this method by explicit casts causes javac to barf and thus Hudson tests fail
-
-		if (type instanceof ByteType) {
-			Image<ByteType> im = (Image) image;
-			return ImageUtils.getPlaneBytes(im, w, h, planePos);
-		}
-		if (type instanceof UnsignedByteType) {
-			Image<UnsignedByteType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedBytes(im, w, h, planePos);
-		}
-		if (type instanceof ShortType) {
-			Image<ShortType> im = (Image) image;
-			return ImageUtils.getPlaneShorts(im, w, h, planePos );
-		}
-		if (type instanceof UnsignedShortType) {
-			Image<UnsignedShortType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedShorts(im, w, h, planePos);
-		}
-		if (type instanceof IntType) {
-			Image<IntType> im = (Image) image;
-			return ImageUtils.getPlaneInts(im, w, h, planePos);
-		}
-		if (type instanceof UnsignedIntType) {
-			Image<UnsignedIntType> im = (Image) image;
-			return ImageUtils.getPlaneUnsignedInts(im, w, h, planePos);
-		}
-		if (type instanceof LongType) {
-			Image<LongType> im = (Image) image;
-			return ImageUtils.getPlaneLongs(im, w, h, planePos);
-		}
-		if (type instanceof FloatType) {
-			Image<FloatType> im = (Image) image;
-			return ImageUtils.getPlaneFloats(im, w, h, planePos);
-		}
-		if (type instanceof DoubleType) {
-			Image<DoubleType> im = (Image) image;
-			return ImageUtils.getPlaneDoubles(im, w, h, planePos);
-		}
-		return ImageUtils.getPlaneData(image, w, h, planePos);
-		*/
-		
 		return GetPlaneOperation.getPlaneAs(image, planePos, SampleManager.getValueType(type));
 	}
 	
