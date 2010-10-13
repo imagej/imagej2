@@ -1,16 +1,17 @@
 package ij.process;
 import java.awt.*;
 import java.awt.image.*;
-import ij.*;
-import ij.gui.*;
-import ij.measure.*;
+import imagej.SampleInfo;
+import imagej.SampleManager;
+import imagej.process.ImageUtils;
+import imagej.process.ImgLibProcessor;
 
 /** This class converts an ImageProcessor to another data type. */
 public class TypeConverter {
 
-	private static final int BYTE=0, SHORT=1, FLOAT=2, RGB=3;
+	private enum ConvertTo {BYTE, SHORT, FLOAT, RGB, IMGLIB};
 	private ImageProcessor ip;
-	private int type;
+	private ConvertTo type;
 	boolean doScaling = true;
 	int width, height;
 
@@ -18,17 +19,36 @@ public class TypeConverter {
 		this.ip = ip;
 		this.doScaling = doScaling;
 		if (ip instanceof ByteProcessor)
-			type = BYTE;
+			type = ConvertTo.BYTE;
 		else if (ip instanceof ShortProcessor)
-			type = SHORT;
+			type = ConvertTo.SHORT;
 		else if (ip instanceof FloatProcessor)
-			type = FLOAT;
+			type = ConvertTo.FLOAT;
+		else if (ip instanceof ColorProcessor)
+			type = ConvertTo.RGB;
+		else if (ip instanceof ImgLibProcessor)
+			type = ConvertTo.IMGLIB;
 		else
-			type = RGB;
+			throw new IllegalStateException();
+		
 		width = ip.getWidth();
 		height = ip.getHeight();
 	}
 
+	/** Creates an ImgLibProcessor with its own image data matching the size and type of an input processor */
+	public ImgLibProcessor<?> convertToImgLibType(ImageProcessor ip)
+	{
+		Object pixels = ip.getPixels();
+		
+		SampleInfo.ValueType vType = SampleManager.getValueType(ip);
+		
+		boolean unsigned = SampleManager.getSampleInfo(vType).isUnsigned();
+		
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, pixels, unsigned);
+		
+		return proc;
+	}
+	
 	/** Converts processor to a ByteProcessor. */
 	public ImageProcessor convertToByte() {
 		switch (type) {
@@ -40,6 +60,8 @@ public class TypeConverter {
 				return convertFloatToByte();
 			case RGB:
 				return convertRGBToByte();
+			case IMGLIB:
+				return convertImgLibToByte();
 			default:
 				return null;
 		}
@@ -94,7 +116,6 @@ public class TypeConverter {
 		int c, r, g, b;
 		int[] pixels32;
 		byte[] pixels8;
-		Image img8;
 		
 		//get RGB pixels
 		pixels32 = (int[])ip.getPixels();
@@ -114,6 +135,37 @@ public class TypeConverter {
 		return new ByteProcessor(width, height, pixels8, null);
 	}
 	
+	/** creates a ByteProcessor from a ImgLibProcessor */
+	ByteProcessor convertImgLibToByte()
+	{
+		int totPix = width * height;
+		
+		byte[] bytes = new byte[totPix];
+		
+		ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+		
+		for (int i = 0; i < totPix; i++)
+		{
+			double value = proc.getd(i);
+			byte theByte;
+			if (doScaling)
+			{
+				double min = ip.getMin();
+				double max = ip.getMax();
+				double newValue = Math.round(255*(value-min)/(max-min));
+				if (newValue < 0) newValue = 0;
+				if (newValue > 255) newValue = 255;
+				theByte = (byte) newValue;
+			}
+			else
+				theByte = (byte) value;
+			
+			bytes[i] = theByte;
+		}
+		
+		return new ByteProcessor(width, height, bytes, ip.getColorModel());
+	}
+	
 	/** Converts processor to a ShortProcessor. */
 	public ImageProcessor convertToShort() {
 		switch (type) {
@@ -126,6 +178,8 @@ public class TypeConverter {
 			case RGB:
 				ip = convertRGBToByte();
 				return convertByteToShort();
+			case IMGLIB:
+				return convertImgLibToShort();
 			default:
 				return null;
 		}
@@ -141,7 +195,7 @@ public class TypeConverter {
 		}
 		byte[] pixels8 = (byte[])ip.getPixels();
 		short[] pixels16 = new short[width * height];
-		for (int i=0,j=0; i<width*height; i++)
+		for (int i=0; i<width*height; i++)
 			pixels16[i] = (short)(pixels8[i]&0xff);
 	    return new ShortProcessor(width, height, pixels16, ip.getColorModel());
 	}
@@ -158,7 +212,7 @@ public class TypeConverter {
 		else
 			scale = 65535.0/(max-min);
 		double value;
-		for (int i=0,j=0; i<width*height; i++) {
+		for (int i=0; i<width*height; i++) {
 			if (doScaling)
 				value = (pixels32[i]-min)*scale;
 			else
@@ -170,6 +224,37 @@ public class TypeConverter {
 	    return new ShortProcessor(width, height, pixels16, ip.getColorModel());
 	}
 
+	/** creates a ShortProcessor from an ImgLibProcessor */
+	ShortProcessor convertImgLibToShort()
+	{
+		int totPix = width * height;
+		
+		short[] shorts = new short[totPix];
+		
+		ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+		
+		for (int i = 0; i < totPix; i++)
+		{
+			double value = proc.getd(i);
+			short theShort;
+			if (doScaling)
+			{
+				double min = ip.getMin();
+				double max = ip.getMax();
+				double newValue = Math.round(255*(value-min)/(max-min));
+				if (newValue < 0) newValue = 0;
+				if (newValue > 65535) newValue = 65535;
+				theShort = (short) newValue;
+			}
+			else
+				theShort = (short) value;
+			
+			shorts[i] = theShort;
+		}
+		
+		return new ShortProcessor(width, height, shorts, ip.getColorModel());
+	}
+	
 	/** Converts processor to a FloatProcessor. */
 	public ImageProcessor convertToFloat(float[] ctable) {
 		switch (type) {
@@ -182,6 +267,8 @@ public class TypeConverter {
 			case RGB:
 				ip = convertRGBToByte();
 				return convertByteToFloat(null);
+			case IMGLIB:
+				return convertImgLibToFloat();
 			default:
 				return null;
 		}
@@ -200,7 +287,6 @@ public class TypeConverter {
 		}
 		byte[] pixels8 = (byte[])ip.getPixels();
 		float[] pixels32 = new float[width*height];
-		int value;
 		if (cTable!=null && cTable.length==256) {
 			for (int i=0; i<width*height; i++)
 				pixels32[i] = cTable[pixels8[i]&255];
@@ -219,7 +305,6 @@ public class TypeConverter {
 	FloatProcessor convertShortToFloat(float[] cTable) {
 		short[] pixels16 = (short[])ip.getPixels();
 		float[] pixels32 = new float[width*height];
-		int value;
 		if (cTable!=null && cTable.length==65536)
 			for (int i=0; i<width*height; i++)
 				pixels32[i] = cTable[pixels16[i]&0xffff];
@@ -230,9 +315,26 @@ public class TypeConverter {
 	    return new FloatProcessor(width, height, pixels32, cm);
 	}
 	
+	/** Creates an ImgLibProcessor from a FloatProcessor */
+	FloatProcessor convertImgLibToFloat()
+	{
+		int totPix = width * height;
+		
+		float[] floats = new float[width*height];
+		
+		ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+		
+		for (int i = 0; i < totPix; i++)
+		{
+			floats[i] = proc.getf(i);
+		}
+		
+	    return new FloatProcessor(width, height, floats, ip.getColorModel());
+	}
+	
 	/** Converts processor to a ColorProcessor. */
 	public ImageProcessor convertToRGB() {
-		if (type==RGB)
+		if (type==ConvertTo.RGB)
 			return ip;
 		else {
 			ImageProcessor ip2 = ip.convertToByte(doScaling);
