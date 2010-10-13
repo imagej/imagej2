@@ -224,14 +224,17 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		return gd!=null && gd.getPreviewCheckbox().getState();
 	}
  
- 	private boolean isFloat(ImageProcessor ip) {
+ 	private boolean isFloat(ImageProcessor ip)
+ 	{
 		SampleInfo.ValueType vType = SampleManager.getValueType(ip);
 		
-		if ((vType == SampleInfo.ValueType.FLOAT) || (vType == SampleInfo.ValueType.DOUBLE))
+		if (SampleManager.getSampleInfo(vType).isFloat())
  			return true;
  		
 		IJ.error("floating point image required");
+		
 		canceled = true;
+		
 		return false;
 	}
 	
