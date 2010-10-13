@@ -1614,13 +1614,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.type.getMinValue();
 	}
 	
-	// not an override
-	/** returns the number of samples in my plane */ 
-	public long getTotalSamples()
-	{
-		return ((long) super.width) * super.height;
-	}
-	
 	/** returns the pixel at x,y. if coords are out of bounds returns 0. */
 	@Override
 	public int getPixel(int x, int y)
@@ -1745,6 +1738,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getCopyOfPixelsFromImage(snapStorage, this.type, planePosOfZero);
 	}
 
+	// not an override
+	/** returns the number of samples in my plane */ 
+	public long getTotalSamples()
+	{
+		return ((long) super.width) * super.height;
+	}
+	
 	// not an override
 	/** return the underlying ImgLib type of this processor */ 
 	public RealType<?> getType()

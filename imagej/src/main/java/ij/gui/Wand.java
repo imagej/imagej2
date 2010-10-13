@@ -1,6 +1,9 @@
 package ij.gui;
 import ij.*;
 import ij.process.*;
+import imagej.process.ImageUtils;
+import imagej.process.ImgLibProcessor;
+
 import java.awt.*;
 
 /** This class implements ImageJ's wand (tracing) tool.
@@ -40,6 +43,7 @@ public class Wand {
     private int[] cpixels;
     private short[] spixels;
     private float[] fpixels;
+    private double[] dpixels;
     private int width, height;
     private float lowerThreshold, upperThreshold;
     private int xmin;                   //of selection created
@@ -58,6 +62,8 @@ public class Wand {
             spixels = (short[])ip.getPixels();
         else if (ip instanceof FloatProcessor)
             fpixels = (float[])ip.getPixels();
+        else if (ip instanceof ImgLibProcessor)
+            dpixels = ((ImgLibProcessor<?>)ip).getPlaneData();
         width = ip.getWidth();
         height = ip.getHeight();
     }
@@ -302,12 +308,14 @@ public class Wand {
     private float getPixel(int x, int y) {
         if (x<0 || x>=width || y<0 || y>=height)
             return Float.NaN;
-        if (bpixels!=null)
+        if (bpixels != null)
             return bpixels[y*width + x] & 0xff;
-        else if (spixels!=null)
+        else if (spixels != null)
             return spixels[y*width + x] & 0xffff;
-        else if (fpixels!=null)
+        else if (fpixels != null)
             return fpixels[y*width + x];
+        else if (dpixels != null)
+            return (float)dpixels[y*width + x];
         else if (exactPixelValue)   //RGB for exact match
             return cpixels[y*width + x] & 0xffffff; //don't care for upper byte
         else                      //gray value of RGB

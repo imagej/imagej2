@@ -8,10 +8,11 @@ import ij.process.*;
 import ij.measure.*;
 import ij.text.*;
 import ij.plugin.filter.Analyzer;
-import ij.plugin.frame.Recorder;
 import ij.plugin.frame.RoiManager;
 import ij.macro.Interpreter;
 import ij.util.Tools;
+import imagej.process.GenericStatistics;
+import imagej.process.ImgLibProcessor;
 
 /** Implements ImageJ's Analyze Particles command.
 	<p>
@@ -72,7 +73,8 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 
 	static final String OPTIONS = "ap.options";
 	
-	static final int BYTE=0, SHORT=1, FLOAT=2, RGB=3;
+	private enum ImageType {BYTE, SHORT, FLOAT, RGB, IMGLIB};
+	
 	static final double DEFAULT_MIN_SIZE = 0.0;
 	static final double DEFAULT_MAX_SIZE = Double.POSITIVE_INFINITY;
 	
@@ -101,9 +103,7 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	private int options;
 	private int measurements;
 	private Calibration calibration;
-	private String arg;
 	private double fillColor;
-	private boolean thresholdingLUT;
 	private ImageProcessor drawIP;
 	private int width,height;
 	private boolean canceled;
@@ -114,7 +114,7 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	private int totalCount;
 	private TextWindow tw;
 	private Wand wand;
-	private int imageType, imageType2;
+	private ImageType imageType, imageType2;
 	private boolean roiNeedsImage;
 	private int minX, maxX, minY, maxY;
 	private ImagePlus redirectImp;
@@ -151,8 +151,8 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 			this.rt = new ResultsTable();
 		this.minSize = minSize;
 		this.maxSize = maxSize;
-		this.minCircularity = minCirc;
-		this.maxCircularity = maxCirc;
+		ParticleAnalyzer.minCircularity = minCirc;
+		ParticleAnalyzer.maxCircularity = maxCirc;
 		slice = 1;
 		if ((options&SHOW_ROI_MASKS)!=0)
 			showChoice = ROI_MASKS;
@@ -179,7 +179,7 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	}
 	
 	public int setup(String arg, ImagePlus imp) {
-		this.arg = arg;
+		// this.arg = arg;
 		this.imp = imp;
 		IJ.register(ParticleAnalyzer.class);
 		if (imp==null)
@@ -468,7 +468,6 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		int offset;
 		double value;
 		int inc = Math.max(r.height/25, 1);
-		int mi = 0;
 		ImageWindow win = imp.getWindow();
 		if (win!=null)
 			win.running = true;
@@ -493,9 +492,11 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 			for (int x=r.x; x<(r.x+r.width); x++) {
 				if (pixels!=null)
 					value = pixels[offset+x]&255;
-				else if (imageType==SHORT)
+				else if (imageType==ImageType.SHORT)
 					value = ip.getPixel(x, y);
-				else
+				else if (imageType == ImageType.IMGLIB)
+					value = ((ImgLibProcessor<?>)ip).getd(x,y);
+				else // FLOAT or RGB at this point
 					value = ip.getPixelValue(x, y);
 				if (value>=level1 && value<=level2)
 					analyzeParticle(x,y,imp,ip);
@@ -544,7 +545,6 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		for (int i=start; i<areas.length; i++)
 			sum += areas[i];
 		int places = Analyzer.getPrecision();
-		Calibration cal = imp.getCalibration();
 		String total = "\t"+ResultsTable.d2s(sum,places);
 		String average = "\t"+ResultsTable.d2s(sum/particleCount,places);
 		String fraction = "\t"+ResultsTable.d2s(sum*100.0/totalArea,1);
@@ -599,12 +599,9 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		float[] c = column>=0?rt.getColumn(column):null;
 		if (c!=null) {
 			ImageProcessor ip = new FloatProcessor(c.length, 1, c, null);
-			if (ip==null) return line;
 			ip.setRoi(start, 0, ip.getWidth()-start, 1);
 			ip = ip.crop();
 			ImageStatistics stats = new FloatStatistics(ip);
-			if (stats==null)
-				return line;
 			line += n(stats.mean);
 		} else
 			line += "-\t";
@@ -631,7 +628,7 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 				double replaceColor = level1-1.0;
 				if (replaceColor<0.0 || replaceColor==fillColor) {
 					replaceColor = level2+1.0;
-					int maxColor = imageType==BYTE?255:65535;
+					int maxColor = imageType==ImageType.BYTE?255:65535;  // TODO - is this still correct after IMGLIB???
 					if (replaceColor>maxColor || replaceColor==fillColor) {
 						IJ.error("Particle Analyzer", "Unable to remove edge particles");
 						return false;
@@ -669,16 +666,19 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		double t1 = ip.getMinThreshold();
 		double t2 = ip.getMaxThreshold();
 		boolean invertedLut = imp.isInvertedLut();
-		boolean byteImage = ip instanceof ByteProcessor;
 		if (ip instanceof ShortProcessor)
-			imageType = SHORT;
+			imageType = ImageType.SHORT;
 		else if (ip instanceof FloatProcessor)
-			imageType = FLOAT;
+			imageType = ImageType.FLOAT;
+		else if (ip instanceof ByteProcessor)
+			imageType = ImageType.BYTE;
+		else if (ip instanceof ImgLibProcessor)
+			imageType = ImageType.IMGLIB;
 		else
-			imageType = BYTE;
+			throw new IllegalStateException();
 		if (t1==ImageProcessor.NO_THRESHOLD) {
 			ImageStatistics stats = imp.getStatistics();
-			if (imageType!=BYTE || (stats.histogram[0]+stats.histogram[255]!=stats.pixelCount)) {
+			if (imageType!=ImageType.BYTE || (stats.histogram[0]+stats.histogram[255]!=stats.pixelCount)) {
 				IJ.error("Particle Analyzer",
 					"A thresholded image or 8-bit binary image is\n"
 					+"required. Threshold levels can be set using\n"
@@ -695,34 +695,46 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 				level2 = 0;
 				fillColor = 192;
 			}
-		} else {
+		}
+		else
+		{
 			level1 = t1;
 			level2 = t2;
-			if (imageType==BYTE) {
+			if (imageType==ImageType.BYTE)
+			{
 				if (level1>0)
 					fillColor = 0;
 				else if (level2<255)
 					fillColor = 255;
-			} else if (imageType==SHORT) {
+			}
+			else if (imageType==ImageType.SHORT)
+			{
 				if (level1>0)
 					fillColor = 0;
 				else if (level2<65535)
 					fillColor = 65535;
-			} else if (imageType==FLOAT)
-					fillColor = -Float.MAX_VALUE;
+			}
+			else if (imageType==ImageType.FLOAT)
+				fillColor = -Float.MAX_VALUE;
+			else if (imageType==ImageType.IMGLIB)
+				fillColor = ((ImgLibProcessor<?>)ip).getType().getMinValue();
 			else
 				return false;
 		}
 		imageType2 = imageType;
 		if (redirectIP!=null) {
 			if (redirectIP instanceof ShortProcessor)
-				imageType2 = SHORT;
+				imageType2 = ImageType.SHORT;
 			else if (redirectIP instanceof FloatProcessor)
-				imageType2 = FLOAT;
+				imageType2 = ImageType.FLOAT;
+			else if (redirectIP instanceof ByteProcessor)
+				imageType2 = ImageType.BYTE;
 			else if (redirectIP instanceof ColorProcessor)
-				imageType2 = RGB;
+				imageType2 = ImageType.RGB;
+			else if (redirectIP instanceof ImgLibProcessor)
+				imageType2 = ImageType.IMGLIB;
 			else
-				imageType2 = BYTE;
+				throw new IllegalStateException();
 		}
 		return true;
 	}
@@ -798,6 +810,8 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 				return new FloatStatistics(ip, mOptions, cal);
 			case RGB:
 				return new ColorStatistics(ip, mOptions, cal);
+			case IMGLIB:
+				return new GenericStatistics((ImgLibProcessor<?>)ip, mOptions, cal);
 			default:
 				return null;
 		}
