@@ -1,11 +1,11 @@
 package imagej;
 
+import imagej.SampleInfo.ValueType;
 import imagej.process.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Span;
 import imagej.process.TypeManager;
 import imagej.process.operation.SetPlaneOperation;
-import imagej.process.operation.SetPlaneOperation.DataType;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -31,7 +31,7 @@ public class PlaneStack<T extends RealType<T>>
 	
 	//****************** private interface
 	
-	private Image<T> createPlane(RealType<T> type, ContainerFactory cFact, Object data, DataType dType)
+	private Image<T> createPlane(RealType<T> type, ContainerFactory cFact, Object data, ValueType dType)
 	{
 		int[] dimensions = new int[]{planeWidth, planeHeight, 1};
 		
@@ -58,7 +58,7 @@ public class PlaneStack<T extends RealType<T>>
 		ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
 	}
 	
-	private void insertPlane(int atPosition, Object data, int dataLen, RealType<T> desiredType, DataType dType)
+	private void insertPlane(int atPosition, Object data, int dataLen, RealType<T> desiredType, ValueType dType)
 	{
 		if (dataLen != this.planeWidth*this.planeHeight)
 			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack - expected "+
@@ -103,37 +103,37 @@ public class PlaneStack<T extends RealType<T>>
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, byte[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), DataType.UBYTE);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), ValueType.UBYTE);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, byte[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), DataType.BYTE);
+		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), ValueType.BYTE);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, short[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), DataType.USHORT);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), ValueType.USHORT);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, short[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), DataType.SHORT);
+		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), ValueType.SHORT);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertUnsignedPlane(int atPosition, int[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), DataType.UINT);
+		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), ValueType.UINT);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, int[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new IntType(), DataType.INT);
+		insertPlane(atPosition, data, data.length, (RealType) new IntType(), ValueType.INT);
 	}
 	
 	private void insertUnsignedPlane(int atPosition, long[] data)
@@ -144,19 +144,19 @@ public class PlaneStack<T extends RealType<T>>
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertSignedPlane(int atPosition, long[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new LongType(), DataType.LONG);
+		insertPlane(atPosition, data, data.length, (RealType) new LongType(), ValueType.LONG);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertPlane(int atPosition, float[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), DataType.FLOAT);
+		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), ValueType.FLOAT);
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
 	private void insertPlane(int atPosition, double[] data)
 	{
-		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), DataType.DOUBLE);
+		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), ValueType.DOUBLE);
 	}
 
 	//****************** public interface 
