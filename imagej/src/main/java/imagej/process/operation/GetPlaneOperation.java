@@ -7,7 +7,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 
-public class PlaneConvertOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
+public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
 	// *********** instance variables ******************************************************
 	
@@ -23,7 +23,7 @@ public class PlaneConvertOperation<T extends RealType<T>> extends PositionalSing
 
 	// ************ public interface - private declarations later **************************
 	
-	public PlaneConvertOperation(Image<T> image, int[] origin, int[] span, SampleInfo.ValueType asType)
+	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, SampleInfo.ValueType asType)
 	{
 		super(image, origin, span);
 		this.span = span;
@@ -110,7 +110,7 @@ public class PlaneConvertOperation<T extends RealType<T>> extends PositionalSing
 		
 		int[] span = Span.singlePlane(img.getDimension(0), img.getDimension(1), img.getNumDimensions());
 		
-		PlaneConvertOperation<T> operation = new PlaneConvertOperation<T>(img, origin, span, asType);
+		GetPlaneOperation<T> operation = new GetPlaneOperation<T>(img, origin, span, asType);
 	
 		operation.execute();
 		

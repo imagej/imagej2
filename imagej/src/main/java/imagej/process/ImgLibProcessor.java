@@ -54,7 +54,7 @@ import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.NAryTransformOperation;
-import imagej.process.operation.PlaneConvertOperation;
+import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
@@ -627,7 +627,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return ImageUtils.getPlaneData(image, w, h, planePos);
 		*/
 		
-		return PlaneConvertOperation.getPlaneAs(image, planePos, SampleManager.getValueType(type));
+		return GetPlaneOperation.getPlaneAs(image, planePos, SampleManager.getValueType(type));
 	}
 	
 	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns nearest edge pixel. */

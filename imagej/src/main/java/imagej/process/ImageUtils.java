@@ -6,7 +6,9 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
+import imagej.SampleInfo.ValueType;
 import imagej.io.ImageOpener;
+import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.ImageCopierOperation;
 import loci.formats.FormatTools;
 import mpicbg.imglib.container.Container;
@@ -151,7 +153,7 @@ public class ImageUtils
 
 		final PlanarAccess<?> planarAccess = getPlanarAccess(im);
 		if (planarAccess == null) {
-			return getPlane(im, dims[0], dims[1], planePos);
+			return getPlaneCopy(im, planePos);
 		}
 
 		// TODO: Add utility method for this to Index class.
@@ -594,39 +596,37 @@ public class ImageUtils
 	}
 	
 	@SuppressWarnings({"unchecked"})
-	private static Object getPlane(Image<? extends RealType<?>> im, int w, int h, int[] planePos)
+	private static Object getPlaneCopy(Image<? extends RealType<?>> im, int[] planePos)
 	{
 		RealType<?> type = getType(im);
 
 		if (type instanceof ByteType)
-			return getPlaneBytes((Image<ByteType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, ValueType.BYTE);
 
 		if (type instanceof UnsignedByteType)
-			return getPlaneUnsignedBytes((Image<UnsignedByteType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, ValueType.UBYTE);
 
 		if (type instanceof ShortType)
-			return getPlaneShorts((Image<ShortType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, ValueType.SHORT);
 
 		if (type instanceof UnsignedShortType)
-			return getPlaneUnsignedShorts((Image<UnsignedShortType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)im, planePos, ValueType.USHORT);
 
 		if (type instanceof IntType)
-			return getPlaneInts((Image<IntType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<IntType>)im, planePos, ValueType.INT);
 
 		if (type instanceof UnsignedIntType)
-			return getPlaneUnsignedInts((Image<UnsignedIntType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)im, planePos, ValueType.UINT);
 
 		if (type instanceof LongType)
-			return getPlaneLongs((Image<LongType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<LongType>)im, planePos, ValueType.LONG);
 
 		if (type instanceof FloatType)
-			return getPlaneFloats((Image<FloatType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<FloatType>)im, planePos, ValueType.FLOAT);
 
 		if (type instanceof DoubleType)
-			return getPlaneDoubles((Image<DoubleType>)im,w,h,planePos);
+			return GetPlaneOperation.getPlaneAs((Image<DoubleType>)im, planePos, ValueType.DOUBLE);
 
-		// TODO - longs and complex types
-
-		throw new IllegalArgumentException("getPlane(): unsupported type - "+type.getClass());
+		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+type.getClass());
 	}
 }
