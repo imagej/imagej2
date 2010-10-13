@@ -1,5 +1,6 @@
 package imagej.process.operation;
 
+import imagej.SampleInfo.ValueType;
 import imagej.process.Span;
 import imagej.process.TypeManager;
 import mpicbg.imglib.image.Image;
@@ -7,8 +8,8 @@ import mpicbg.imglib.type.numeric.RealType;
 
 public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
-	public static enum DataType {BYTE,UBYTE,SHORT,USHORT,INT,UINT,LONG,ULONG,FLOAT,DOUBLE};
-
+	// **************** instance variables ********************************************
+	
 	// set in constructor
 	private DataReader reader;
 	
@@ -16,7 +17,9 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	private int pixNum;
 	private boolean isIntegral;
 	
-	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, DataType inputType)
+	// **************** public interface ********************************************
+
+	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, ValueType inputType)
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
 		
@@ -79,6 +82,8 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 	}
 	
+	// **************** private code ********************************************
+	
 	private interface DataReader
 	{
 		double getValue(int i);
@@ -86,7 +91,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class ByteReader implements DataReader
 	{
-		byte[] pixels;
+		private byte[] pixels;
 		
 		ByteReader(Object pixels) { this.pixels = (byte[]) pixels; }
 		
@@ -95,7 +100,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class UnsignedByteReader implements DataReader
 	{
-		byte[] pixels;
+		private byte[] pixels;
 		
 		UnsignedByteReader(Object pixels) { this.pixels = (byte[]) pixels; }
 		
@@ -110,7 +115,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class ShortReader implements DataReader
 	{
-		short[] pixels;
+		private short[] pixels;
 		
 		ShortReader(Object pixels) { this.pixels = (short[]) pixels; }
 		
@@ -119,7 +124,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class UnsignedShortReader implements DataReader
 	{
-		short[] pixels;
+		private short[] pixels;
 		
 		UnsignedShortReader(Object pixels) { this.pixels = (short[]) pixels; }
 		
@@ -134,7 +139,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class IntReader implements DataReader
 	{
-		int[] pixels;
+		private int[] pixels;
 		
 		IntReader(Object pixels) { this.pixels = (int[]) pixels; }
 		
@@ -143,7 +148,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class UnsignedIntReader implements DataReader
 	{
-		int[] pixels;
+		private int[] pixels;
 		
 		UnsignedIntReader(Object pixels) { this.pixels = (int[]) pixels; }
 		
@@ -158,7 +163,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class LongReader implements DataReader
 	{
-		long[] pixels;
+		private long[] pixels;
 		
 		LongReader(Object pixels) { this.pixels = (long[]) pixels; }
 		
@@ -167,7 +172,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class FloatReader implements DataReader
 	{
-		float[] pixels;
+		private float[] pixels;
 		
 		FloatReader(Object pixels) { this.pixels = (float[]) pixels; }
 		
@@ -176,7 +181,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	private class DoubleReader implements DataReader
 	{
-		double[] pixels;
+		private double[] pixels;
 		
 		DoubleReader(Object pixels) { this.pixels = (double[]) pixels; }
 		
