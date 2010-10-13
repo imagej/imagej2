@@ -2274,45 +2274,31 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		int bestIndex = getBestIndex(color);
 		
-		if (this.type instanceof GenericByteType<?>) {
-
+		if (this.isUnsignedByte)
+		{
 			super.drawingColor = color;
 			setFgColor(bestIndex);
 		}
-		else { // not a Byte type
-
+		else // not a Byte type
+		{
 			double min = getMin();
 			double max = getMax();
 			
-			if ((bestIndex>0) && (min == 0) && (max == 0)) {
+			if ((bestIndex>0) && (min == 0) && (max == 0))
+			{
+				setValue(bestIndex);
 				
-				if (this.isIntegral)
-					setValue(bestIndex);
-				else  // floating type
-					this.fillColor = bestIndex;
-				
-				setMinAndMax(0,255);
+				setMinAndMax(0,255);  // this is what ShortProcessor does
 			}
-			else if ((bestIndex == 0) && (min > 0) && ((color.getRGB()&0xffffff) == 0)) {
-				
-				if (!this.isIntegral)
-					this.fillColor = 0;
-				else { // integral data that is not byte
-					
-					if (TypeManager.isUnsignedType(this.type))  // TODO - this logic is different than original code. Test!
-						setValue(0.0);
-					else
-						setValue(this.type.getMaxValue());
-				}
+			else if ((bestIndex == 0) && (min > 0) && ((color.getRGB()&0xffffff) == 0))
+			{
+				setValue(0);
 			}
-			else {
-				
+			else
+			{
 				double value = (min + (max-min)*(bestIndex/255.0));
-				
-				if (this.isIntegral)
-					setFgColor((int)value);
-				else
-					this.fillColor = value;
+
+				setValue(value);
 			}
 		}
 	}
