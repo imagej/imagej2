@@ -4,7 +4,8 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
-// TODO - put in a ProgressTracker???
+// NOTE - could move this Operation to a Query. I did so originally but since queries use a Positional iterator
+//   total runtime for ImgLibProcessorTest increased by 12%. For speed optimization leave as an Operation.
 
 public class MinMaxOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
