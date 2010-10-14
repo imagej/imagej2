@@ -27,6 +27,7 @@ import imagej.process.function.DivideBinaryFunction;
 import imagej.process.function.ExpUnaryFunction;
 import imagej.process.function.FillUnaryFunction;
 import imagej.process.function.GammaUnaryFunction;
+import imagej.process.function.IntegralSubstitutionUnaryFunction;
 import imagej.process.function.InvertUnaryFunction;
 import imagej.process.function.LogUnaryFunction;
 import imagej.process.function.MaxBinaryFunction;
@@ -45,7 +46,6 @@ import imagej.process.function.ThresholdUnaryFunction;
 import imagej.process.function.UnaryFunction;
 import imagej.process.function.XorBinaryFunction;
 import imagej.process.function.XorUnaryFunction;
-import imagej.process.operation.ApplyLutOperation;
 import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.BinaryTransformOperation;
 import imagej.process.operation.BlurFilterOperation;
@@ -58,7 +58,6 @@ import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
-import imagej.process.operation.SetFloatValuesOperation;
 import imagej.process.operation.SetPlaneOperation;
 import imagej.process.operation.UnaryTransformPositionalOperation;
 import imagej.selection.MaskOnSelectionFunction;
@@ -861,13 +860,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		verifyLutLengthOkay(lut);
 		
-		int[] index = originOfRoi();
-		int[] span = spanOfRoiPlane();
+		IntegralSubstitutionUnaryFunction substFunc =
+			new IntegralSubstitutionUnaryFunction((int)this.type.getMinValue(), lut);
+		
+		transform(substFunc, null);
 
-		ApplyLutOperation<T> lutOp = new ApplyLutOperation<T>(this.imageData,index,span,lut);
-		
-		lutOp.execute();
-		
 		if (this.isUnsignedShort)
 			findMinAndMax();
 	}
@@ -2467,27 +2464,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
+		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, ValueType.FLOAT);
+		
 		int width = getWidth();
 		int height = getHeight();
 		
-		long size = getTotalSamples();
-		
-		if (size > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("desired size of pixel array is too large (> "+Integer.MAX_VALUE+" entries)");
-		
-		int allocatedSize = (int) size;
-		
 		if (fp == null || fp.getWidth()!=width || fp.getHeight()!=height)
-			fp = new FloatProcessor(width, height, new float[allocatedSize], super.cm);
-		
-		int[] origin = originOfImage();
-		
-		int[] span = spanOfImagePlane();
-		
-		SetFloatValuesOperation<T> floatOp = new SetFloatValuesOperation<T>(this.imageData, origin, span, fp);
+			fp = new FloatProcessor(width, height, null, super.cm);
 
-		floatOp.execute();
-		
+		fp.setPixels(pixelValues);
+
 		fp.setRoi(getRoi());
 		fp.setMask(getMask());
 		if ((this.isFloat) && (this.min == 0) && (this.max == 0))
