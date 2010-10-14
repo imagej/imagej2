@@ -326,91 +326,15 @@ public class ImageUtils
 		return createImagePlus(img, null);
 	}
 
-	@SuppressWarnings({"unchecked"})
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
-		// parse dimensional lengths from type names
-		final String imgName = img.getName();
-		final int[] dimensions = img.getDimensions();
-		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
-		int sizeX = 1, sizeY = 1, sizeZ = 1, sizeC = 1, sizeT = 1;
-		if (dimTypes.length == dimensions.length) {
-			for (int i = 0; i < dimTypes.length; i++) {
-				if (ImageOpener.X.equals(dimTypes[i])) sizeX *= dimensions[i];
-				else if (ImageOpener.Y.equals(dimTypes[i])) sizeY *= dimensions[i];
-				else if (FormatTools.CHANNEL.equals(dimTypes[i])) sizeC *= dimensions[i];
-				else if (ImageOpener.Z.equals(dimTypes[i])) sizeZ *= dimensions[i];
-				else if (ImageOpener.TIME.equals(dimTypes[i])) sizeT *= dimensions[i];
-			}
-		}
-		else {
-			// assume default ordering of XYCZT
-			if (dimensions.length > 0) sizeX = dimensions[0];
-			if (dimensions.length > 1) sizeY = dimensions[1];
-			if (dimensions.length > 2) sizeC = dimensions[2];
-			if (dimensions.length > 3) sizeZ = dimensions[3];
-			if (dimensions.length > 4) sizeT = dimensions[4];
-		}
-		final long numPlanes = ImageUtils.getTotalPlanes(dimensions);
+		final int sizeX = getWidth(img);
+		final int sizeY = getHeight(img);
+		final int sizeC = getNChannels(img);
+		final int sizeZ = getNSlices(img);
+		final int sizeT = getNFrames(img);
 
-		RealType<?> runtimeT = getType(img);
-
-		ImageStack stack = new ImageStack(sizeX, sizeY);
-
-		for (long plane = 0; plane < numPlanes; plane++)
-		{
-			ImageProcessor processor = null;
-			
-			if (runtimeT instanceof UnsignedByteType)
-			{
-				processor = new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof ByteType)
-			{
-				processor = new ImgLibProcessor<ByteType>((Image<ByteType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof UnsignedShortType)
-			{
-				processor = new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof ShortType)
-			{
-				processor = new ImgLibProcessor<ShortType>((Image<ShortType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof UnsignedIntType)
-			{
-				processor = new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof IntType)
-			{
-				processor = new ImgLibProcessor<IntType>((Image<IntType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof LongType)
-			{
-				processor = new ImgLibProcessor<LongType>((Image<LongType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof FloatType)
-			{
-				processor = new ImgLibProcessor<FloatType>((Image<FloatType>)img, plane);
-			}
-				
-			else if (runtimeT instanceof DoubleType)
-			{
-				processor = new ImgLibProcessor<DoubleType>((Image<DoubleType>)img, plane);
-			}
-				
-			else
-				throw new IllegalArgumentException("createImagePlus(): unknown processor type requested - "+runtimeT.getClass());
-			
-			stack.addSlice(""+plane, processor);
-		}
+		final ImageStack stack = new ImageStack(img);
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
 		if (id != null) {
 			final FileInfo fi = new FileInfo();
@@ -439,7 +363,26 @@ public class ImageUtils
 		return factory.createImage(dimensions);
 	}
 
+	public static int getWidth(final Image<?> img) {
+		return getDimSize(img, ImageOpener.X, 0);
+	}
 
+	public static int getHeight(final Image<?> img) {
+		return getDimSize(img, ImageOpener.Y, 1);
+	}
+
+	public static int getNChannels(final Image<?> img) {
+		return getDimSize(img, ImageOpener.Z, 2);
+	}
+
+	public static int getNSlices(final Image<?> img) {
+		return getDimSize(img, FormatTools.CHANNEL, 3);
+	}
+
+	public static int getNFrames(final Image<?> img) {
+		return getDimSize(img, ImageOpener.TIME, 4);
+	}
+	
 	// ***************** private methods  **************************************************
 	
 	@SuppressWarnings({"unchecked"})
@@ -476,4 +419,22 @@ public class ImageUtils
 
 		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+type.getClass());
 	}
+
+	private static int getDimSize(final Image<?> img, final String dimType, final int defaultIndex) {
+		final String imgName = img.getName();
+		final int[] dimensions = img.getDimensions();
+		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
+		int size = 1;
+		if (dimTypes.length == dimensions.length) {
+			for (int i = 0; i < dimTypes.length; i++) {
+				if (dimType.equals(dimTypes[i])) size *= dimensions[i];
+			}
+		}
+		else {
+			// assume default ordering
+			if (dimensions.length > defaultIndex) size = dimensions[defaultIndex];
+		}
+		return size;
+	}
+
 }
