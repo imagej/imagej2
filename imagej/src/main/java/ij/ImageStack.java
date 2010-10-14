@@ -1,14 +1,18 @@
 package ij;
 
-import ij.process.*;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import imagej.PlaneStack;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
 import imagej.process.TypeManager;
 
-import java.awt.image.ColorModel;
 import java.awt.Rectangle;
+import java.awt.image.ColorModel;
 import java.util.ArrayList;
 
 import mpicbg.imglib.container.ContainerFactory;
@@ -54,19 +58,12 @@ public class ImageStack {
 		this.width = width;
 		this.height = height;
 		this.cm = cm;
-		if (factory == null)
-		{
-			ArrayContainerFactory f = new ArrayContainerFactory();
-			f.setPlanar(true);
-			this.factory = f;
-		}
-		else
-			this.factory = factory;
+		this.factory = factory == null ? createDefaultFactory() : factory;
 		this.stack = null;
 		this.labels = new ArrayList<String>();
 		this.origProc = OrigProcType.IMGLIB;
 	}
-	
+
 	/**
 	* Creates a new, empty image stack given width, height, and ColorModel.
 	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
@@ -117,6 +114,34 @@ public class ImageStack {
 	public ImageStack(int width, int height, int size)
 	{
 		this(width,height);  // ignore size. this method is no longer needed
+	}
+
+	public ImageStack(Image<?> image) {
+		this(image, null);
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public ImageStack(Image<?> image, ContainerFactory factory) {
+		this.width = ImageUtils.getWidth(image);
+		this.height = ImageUtils.getHeight(image);
+
+		this.stack = new PlaneStack(image);
+
+		// use very simple labels, for now
+		this.labels = new ArrayList<String>();
+		final int[] dimensions = image.getDimensions();
+		final long numPlanes = ImageUtils.getTotalPlanes(dimensions);
+		for (int i = 0; i < numPlanes; i++) labels.add("" + i);
+
+		this.factory = factory == null ? createDefaultFactory() : factory;
+		this.origProc = OrigProcType.IMGLIB;
+	}
+
+	private ContainerFactory createDefaultFactory()
+	{
+		ArrayContainerFactory f = new ArrayContainerFactory();
+		f.setPlanar(true);
+		return f;
 	}
 
 	private int numSlices()
