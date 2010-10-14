@@ -8,8 +8,9 @@ import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.io.ImageOpener;
+import imagej.process.function.CopyUnaryFunction;
+import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.GetPlaneOperation;
-import imagej.process.operation.ImageCopierOperation;
 import loci.formats.FormatTools;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
@@ -228,8 +229,11 @@ public class ImageUtils
 		void copyFromImageToImage(Image<K> srcImage, int[] srcOrigin, int[] srcSpan,
 									Image<K> dstImage, int[] dstOrigin, int[] dstSpan)
 	{
-		ImageCopierOperation<K> copier = new ImageCopierOperation<K>(srcImage, srcOrigin, srcSpan, dstImage, dstOrigin, dstSpan);
+		CopyUnaryFunction copyFunc = new CopyUnaryFunction();
 		
+		BinaryAssignOperation<K> copier =
+			new BinaryAssignOperation<K>(dstImage, dstOrigin, dstSpan, srcImage, srcOrigin, srcSpan, copyFunc);
+
 		copier.execute();
 	}
 	
