@@ -51,15 +51,16 @@ import imagej.process.operation.BinaryTransformOperation;
 import imagej.process.operation.BlurFilterOperation;
 import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
-import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.NAryTransformOperation;
 import imagej.process.operation.GetPlaneOperation;
+import imagej.process.operation.QueryOperation;
 import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.SetPlaneOperation;
 import imagej.process.operation.UnaryTransformPositionalOperation;
+import imagej.process.query.HistogramQuery;
 import imagej.selection.MaskOnSelectionFunction;
 import imagej.selection.SelectionFunction;
 
@@ -1478,11 +1479,18 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			
 			int lutSize = (int) (this.getMaxAllowedValue() + 1);
 	
-			HistogramOperation<T> histOp = new HistogramOperation<T>(this.imageData,origin,span,getMask(),lutSize);
+			HistogramQuery query = new HistogramQuery(lutSize);
 			
-			histOp.execute();
+			QueryOperation<T> queryOp = new QueryOperation<T>(this.imageData, origin, span, query);
+
+			byte[] byteMask = getMaskArray();
+
+			if (byteMask != null)
+				queryOp.setSelectionFunction(new MaskOnSelectionFunction(origin, span, byteMask));
 			
-			return histOp.getHistogram();
+			queryOp.execute();
+			
+			return query.getHistogram();
 		}
 		
 		return null;
