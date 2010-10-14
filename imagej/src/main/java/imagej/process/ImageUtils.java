@@ -392,7 +392,11 @@ public class ImageUtils
 	public static int getNFrames(final Image<?> img) {
 		return getDimSize(img, ImageOpener.TIME, 4);
 	}
-	
+
+	public static int getDimSize(final Image<?> img, final String dimType) {
+		return getDimSize(img, dimType, -1);
+	}
+
 	// ***************** private methods  **************************************************
 	
 	@SuppressWarnings({"unchecked"})
@@ -442,7 +446,9 @@ public class ImageUtils
 		}
 		else {
 			// assume default ordering
-			if (dimensions.length > defaultIndex) size = dimensions[defaultIndex];
+			if (defaultIndex >= 0 && defaultIndex < dimensions.length) {
+				size = dimensions[defaultIndex];
+			}
 		}
 		return size;
 	}
