@@ -136,6 +136,8 @@ public class FileOpenerTest {
 		assertEquals(2,ip.getHeight());
 		assertEquals(3,ip.getWidth());
 		assertEquals(3,ip.getNChannels());
+		assertEquals(1,ip.getNSlices());
+		assertEquals(1,ip.getNFrames());
 		assertTrue(ip.getProcessor() instanceof ImgLibProcessor);
 		assertTrue(SampleManager.getValueType(ip) == SampleInfo.ValueType.UBYTE);
 
