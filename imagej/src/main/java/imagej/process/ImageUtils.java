@@ -338,6 +338,12 @@ public class ImageUtils
 		final int sizeZ = getNSlices(img);
 		final int sizeT = getNFrames(img);
 
+		
+
+		final String imgName = img.getName();
+		final int[] dimensions = img.getDimensions();
+		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
+
 		final ImageStack stack = new ImageStack(img);
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
 		if (id != null) {
@@ -376,11 +382,11 @@ public class ImageUtils
 	}
 
 	public static int getNChannels(final Image<?> img) {
-		return getDimSize(img, ImageOpener.Z, 2);
+		return getDimSize(img, FormatTools.CHANNEL, 2);
 	}
 
 	public static int getNSlices(final Image<?> img) {
-		return getDimSize(img, FormatTools.CHANNEL, 3);
+		return getDimSize(img, ImageOpener.Z, 3);
 	}
 
 	public static int getNFrames(final Image<?> img) {
