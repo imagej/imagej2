@@ -55,9 +55,9 @@ import imagej.process.operation.HistogramOperation;
 import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.NAryTransformOperation;
 import imagej.process.operation.GetPlaneOperation;
+import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
-import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.SetPlaneOperation;
 import imagej.process.operation.UnaryTransformPositionalOperation;
 import imagej.selection.MaskOnSelectionFunction;
@@ -1830,7 +1830,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageSpan = spanOfRoiPlane();
 
 		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
-		
+
 		resetOp.execute();
 		
 		if (!this.isUnsignedByte)
@@ -1839,8 +1839,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			this.max = this.snapshotMax;
 		}
 		
-		// TODO : replace resetOp with a BinaryAssignPositionalOperation (need to define) like refactor of MaskedFillOperation
-		//   call elsewhere in this file. Use a selector function (MaskOnSlectionFunction) to filter which samples are acted on.
+		// TODO : replace resetOp with a BinaryAssignPositionalOperation (need to define) that uses MaskOnSelectionFunction as a
+		//   selection function to filter which samples are acted on. And pass CopyUnaryFunction as the operation to do.
 	}
 
 	// TODO - refactor
