@@ -1,6 +1,10 @@
 package imagej.process.operation;
 
+// TODO - phase me out as an operation. Should instead do a PositionalBinaryAssignOperation (not yet created)
+//  and pass it a CopyUnaryFunction and a MaskOnSelectionFunction selector.
+
 import ij.process.ImageProcessor;
+
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
