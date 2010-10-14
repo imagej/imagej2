@@ -44,7 +44,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 				
 			case UBYTE:
 				this.outputPlane = new byte[planeSize];
-				this.planeWriter = new UByteWriter((byte[])this.outputPlane);
+				this.planeWriter = new UnsignedByteWriter((byte[])this.outputPlane);
 				break;
 		
 			case SHORT:
@@ -54,7 +54,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 			case USHORT:
 				this.outputPlane = new short[planeSize];
-				this.planeWriter = new UShortWriter((short[])this.outputPlane);
+				this.planeWriter = new UnsignedShortWriter((short[])this.outputPlane);
 				break;
 		
 			case INT:
@@ -64,7 +64,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 			case UINT:
 				this.outputPlane = new int[planeSize];
-				this.planeWriter = new UIntWriter((int[])this.outputPlane);
+				this.planeWriter = new UnsignedIntWriter((int[])this.outputPlane);
 				break;
 		
 			case LONG:
@@ -122,7 +122,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class ByteWriter implements DataWriter
 	{
-		byte[] bytes;
+		private byte[] bytes;
 		
 		public ByteWriter(byte[] bytes)
 		{
@@ -142,11 +142,11 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 	}
 
-	private class UByteWriter implements DataWriter
+	private class UnsignedByteWriter implements DataWriter
 	{
-		byte[] bytes;
+		private byte[] bytes;
 		
-		public UByteWriter(byte[] bytes)
+		public UnsignedByteWriter(byte[] bytes)
 		{
 			this.bytes = bytes;
 		}
@@ -166,7 +166,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class ShortWriter implements DataWriter
 	{
-		short[] shorts;
+		private short[] shorts;
 		
 		public ShortWriter(short[] shorts)
 		{
@@ -186,11 +186,11 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 	}
 
-	private class UShortWriter implements DataWriter
+	private class UnsignedShortWriter implements DataWriter
 	{
-		short[] shorts;
+		private short[] shorts;
 		
-		public UShortWriter(short[] shorts)
+		public UnsignedShortWriter(short[] shorts)
 		{
 			this.shorts = shorts;
 		}
@@ -210,7 +210,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class IntWriter implements DataWriter
 	{
-		int[] ints;
+		private int[] ints;
 		
 		public IntWriter(int[] ints)
 		{
@@ -230,11 +230,11 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 	}
 
-	private class UIntWriter implements DataWriter
+	private class UnsignedIntWriter implements DataWriter
 	{
-		int[] ints;
+		private int[] ints;
 		
-		public UIntWriter(int[] ints)
+		public UnsignedIntWriter(int[] ints)
 		{
 			this.ints = ints;
 		}
@@ -254,7 +254,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class LongWriter implements DataWriter
 	{
-		long[] longs;
+		private long[] longs;
 		
 		public LongWriter(long[] longs)
 		{
@@ -276,7 +276,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class FloatWriter implements DataWriter
 	{
-		float[] floats;
+		private float[] floats;
 		
 		public FloatWriter(float[] floats)
 		{
@@ -292,7 +292,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 
 	private class DoubleWriter implements DataWriter
 	{
-		double[] doubles;
+		private double[] doubles;
 		
 		public DoubleWriter(double[] doubles)
 		{
