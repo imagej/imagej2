@@ -851,7 +851,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			super.autoThreshold();
 	}
 	
-	/** does a lut substitution on current ROI area image data. applies only to integral data. */
+	/** Does a lut substitution on current ROI area image data. Applies only to integral data. Note that given table
+	 *  should be of the correct size for the pixel type. It should be constructed in such a fashion that the minimum
+	 *  pixel value maps to the first table entry and the maximum pixel value to the last. This allows signed integral
+	 *  types to have lookup tables also.
+	 */
 	@Override
 	public void applyTable(int[] lut) 
 	{
@@ -926,10 +930,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return newProc;
 	}
 	
-	/** convolves the current image plane data with the provided kernel */
+	/**  Convolves the current image plane data with the provided kernel. */
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
 	{
+		// general convolve method for simplicity
+		
 		FloatProcessor fp = toFloat(0,null);
 		
 		fp.setRoi(getRoi());
@@ -945,18 +951,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			setMinAndMax(min,max);
 	}
 
-	/** convolves the current ROI area data with the provided 3x3 kernel */
+	/** Convolves the current ROI area data with the provided 3x3 kernel. Faster than general convolve(). */
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		/*  Could do this but Wayne says its 3X slower than his special case way
-		float[] floatKernel = new float[9];
-		for (int i = 0; i < 9; i++)
-			floatKernel[i] = kernel[i];
-		convolve(floatKernel,3,3);
-		*/
-
-		// our special case way
+		// our special case method for speed
 		
 		int[] origin = originOfRoi();
 		int[] span = spanOfRoiPlane();
@@ -1100,25 +1099,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, ip2.getImage(), newImageOrigin, newImageSpan);
 
 		return ip2;
-		
-		/*
-		Rectangle roi = getRoi();
-
-		int[] imageOrigin = originOfRoi();
-		int[] imageSpan = spanOfRoiPlane();
-		
-		int[] newImageOrigin = Index.create(2);
-		int[] newImageSpan = Span.singlePlane(roi.width, roi.height, 2);
-
-		Image<T> newImage = this.imageData.createNewImage(newImageSpan);
-		
-		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, newImage, newImageOrigin, newImageSpan);
-		
-		ImageProcessor newProc = new ImgLibProcessor<T>(newImage, 0);
-		
-		return newProc;
-		*/
-		
 	}
 	
 	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
@@ -1247,13 +1227,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.isIntegral)
 			color = getFgColor();
 
-		/* version that has own Operation defined
-		MaskedFillOperation<T> fillOp = new MaskedFillOperation<T>(this.imageData, origin, span, byteMask, color);
-		fillOp.execute();
-		*/
-		
-		/* version that uses a selection function to filter pixels to only apply to those where mask bit is on
-		*/
 		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
 
 		UnaryTransformPositionalOperation<T> transform =
