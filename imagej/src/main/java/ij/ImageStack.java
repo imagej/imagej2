@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -562,6 +563,10 @@ public class ImageStack {
 	public boolean isVirtual()
 	{
 		return false;
+	}
+
+	public Image<?> getStorage() {
+		return stack == null ? null : stack.getStorage();
 	}
 
 	/** Frees memory by deleting a few slices from the end of the stack. */
