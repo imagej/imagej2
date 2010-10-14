@@ -243,7 +243,7 @@ public class ImageReaderTest {
 			(guppy instanceof byte[] && ((byte[]) guppy).length == 0));
 
 		// another stream that can't be opened
-		assertNull(rdr.readPixels("http://www.yahoo.com/ooglywooglygugglychoogly.tiff"));
+		assertNull(rdr.readPixels("http://www.google.com/ooglywooglygugglychoogly.tiff"));
 		
 		// not testing positive case:
 		//   - underlying code simply sets up a stream and calls readPixels() on it. We've thoroughly tested this above.
