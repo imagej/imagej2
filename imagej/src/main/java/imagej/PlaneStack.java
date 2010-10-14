@@ -161,6 +161,14 @@ public class PlaneStack<T extends RealType<T>>
 
 	//****************** public interface 
 	
+	public PlaneStack(Image<T> stack) {
+		this.stack = stack;
+		this.planeWidth = ImageUtils.getWidth(stack);
+		this.planeHeight = ImageUtils.getHeight(stack);
+		this.factory = null;
+		this.type = ImageUtils.getType(stack);
+	}
+	
 	public PlaneStack(int width, int height, ContainerFactory factory)
 	{
 		this.stack = null;
