@@ -10,6 +10,11 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 {
 	// **************** instance variables ********************************************
 	
+	private interface DataReader
+	{
+		double getValue(int index);
+	}
+	
 	// set in constructor
 	private DataReader reader;
 	
@@ -26,31 +31,31 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		switch (inputType)
 		{
 			case BYTE:
-				this.reader = new ByteReader(pixels);
+				this.reader = new ByteReader((byte[])pixels);
 				break;
 			case UBYTE:
-				this.reader = new UnsignedByteReader(pixels);
+				this.reader = new UnsignedByteReader((byte[])pixels);
 				break;
 			case SHORT:
-				this.reader = new ShortReader(pixels);
+				this.reader = new ShortReader((short[])pixels);
 				break;
 			case USHORT:
-				this.reader = new UnsignedShortReader(pixels);
+				this.reader = new UnsignedShortReader((short[])pixels);
 				break;
 			case INT:
-				this.reader = new IntReader(pixels);
+				this.reader = new IntReader((int[])pixels);
 				break;
 			case UINT:
-				this.reader = new UnsignedIntReader(pixels);
+				this.reader = new UnsignedIntReader((int[])pixels);
 				break;
 			case LONG:
-				this.reader = new LongReader(pixels);
+				this.reader = new LongReader((long[])pixels);
 				break;
 			case FLOAT:
-				this.reader = new FloatReader(pixels);
+				this.reader = new FloatReader((float[])pixels);
 				break;
 			case DOUBLE:
-				this.reader = new DoubleReader(pixels);
+				this.reader = new DoubleReader((double[])pixels);
 				break;
 			default:  // note ULONG falls through to here by design
 				throw new IllegalArgumentException("SetPlaneOperation(): unsupported data type - "+inputType);
@@ -84,25 +89,29 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	// **************** private code ********************************************
 	
-	private interface DataReader
-	{
-		double getValue(int i);
-	}
-	
 	private class ByteReader implements DataReader
 	{
 		private byte[] pixels;
 		
-		ByteReader(Object pixels) { this.pixels = (byte[]) pixels; }
+		public ByteReader(byte[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 	
 	private class UnsignedByteReader implements DataReader
 	{
 		private byte[] pixels;
 		
-		UnsignedByteReader(Object pixels) { this.pixels = (byte[]) pixels; }
+		public UnsignedByteReader(byte[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
 		public double getValue(int i)
 		{
@@ -117,16 +126,25 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		private short[] pixels;
 		
-		ShortReader(Object pixels) { this.pixels = (short[]) pixels; }
+		public ShortReader(short[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 	
 	private class UnsignedShortReader implements DataReader
 	{
 		private short[] pixels;
 		
-		UnsignedShortReader(Object pixels) { this.pixels = (short[]) pixels; }
+		public UnsignedShortReader(short[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
 		public double getValue(int i)
 		{
@@ -141,16 +159,25 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		private int[] pixels;
 		
-		IntReader(Object pixels) { this.pixels = (int[]) pixels; }
+		public IntReader(int[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 	
 	private class UnsignedIntReader implements DataReader
 	{
 		private int[] pixels;
 		
-		UnsignedIntReader(Object pixels) { this.pixels = (int[]) pixels; }
+		public UnsignedIntReader(int[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
 		public double getValue(int i)
 		{
@@ -165,27 +192,45 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		private long[] pixels;
 		
-		LongReader(Object pixels) { this.pixels = (long[]) pixels; }
+		public LongReader(long[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 	
 	private class FloatReader implements DataReader
 	{
 		private float[] pixels;
 		
-		FloatReader(Object pixels) { this.pixels = (float[]) pixels; }
+		public FloatReader(float[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 	
 	private class DoubleReader implements DataReader
 	{
 		private double[] pixels;
 		
-		DoubleReader(Object pixels) { this.pixels = (double[]) pixels; }
+		public DoubleReader(double[] pixels)
+		{
+			this.pixels = pixels;
+		}
 		
-		public double getValue(int i) { return pixels[i]; }
+		public double getValue(int i)
+		{
+			return pixels[i];
+		}
 	}
 }
 
