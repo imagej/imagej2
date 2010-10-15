@@ -14,7 +14,7 @@ import imagej.SampleManager;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.TypeManager;
-import imagej.process.function.FillUnaryFunction;
+import imagej.process.function.unary.FillUnaryFunction;
 
 /** New image dialog box plus several static utility methods for creating images.*/
 public class NewImage

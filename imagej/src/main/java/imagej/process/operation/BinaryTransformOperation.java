@@ -2,8 +2,8 @@ package imagej.process.operation;
 
 // TODO - add a ProgressTracker???
 
-import imagej.process.function.BinaryComputation;
-import imagej.process.function.BinaryFunction;
+import imagej.process.function.binary.BinaryComputation;
+import imagej.process.function.binary.BinaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
