@@ -677,8 +677,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		this.min = min;
 		this.max = max;
-		
-		// TODO : do I want the this.isIntegral code from setMinAndMax() in here too?
 	}
 
 	/** sets the pixels of the image from provided FloatProcessor's pixel values */
@@ -975,8 +973,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		new GenericBlitter<T>(this).copyBits(otherProc, xloc, yloc, function);
 	}
 	
-	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode */
-	@Deprecated
+	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode.
+	 * @deprecated use {@link ImgLibprocessor::copyBits(ImageProcessor ip, int xloc, int yloc, BinaryFunction function)}
+	 * instead. */
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
@@ -1133,10 +1132,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		if (x>=super.clipXMin && x<=super.clipXMax && y>=super.clipYMin && y<=super.clipYMax)
 		{
-			if (this.isIntegral)
-				putPixel(x, y, getFgColor());
-			else
-				putPixel(x, y, Float.floatToIntBits((float)fillColor));
+			setd(x,y,this.fillColor);
 		}
 	}
 
@@ -1199,11 +1195,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void fill()
 	{
-		double fillValue = this.fillColor;
-		if (this.isIntegral)
-			fillValue = getFgColor();
-		
-		FillUnaryFunction func = new FillUnaryFunction(fillValue);
+		FillUnaryFunction func = new FillUnaryFunction(this.fillColor);
 		
 		transform(func, null);
 	}
@@ -1224,11 +1216,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		byte[] byteMask = (byte[]) mask.getPixels();
 		
-		double color = this.fillColor;
-		if (this.isIntegral)
-			color = getFgColor();
-
-		FillUnaryFunction fillFunc = new FillUnaryFunction(color);
+		FillUnaryFunction fillFunc = new FillUnaryFunction(this.fillColor);
 
 		UnaryTransformPositionalOperation<T> transform =
 			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunc);
@@ -1293,8 +1281,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 	}
 
-	/** run specified filter (an int) on current ROI area of current plane data */
-	@Deprecated
+	/** run specified filter (an int) on current ROI area of current plane data.
+	 * @deprecated use {@link ImgLibProcessor::filter(FilterType type)} instead. */
 	@Override
 	public void filter(int type)
 	{
@@ -1775,7 +1763,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		transform(func, null);
 	}
 	
-	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int. if x,y, out of bounds do nothing. */
+	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int.
+	 *  if x,y, out of bounds do nothing.
+	 *  @deprecated use {@link ImgLibProcessor::putPixelValue(int x, int y, double value)} instead. */
 	@Override
 	public void putPixel(int x, int y, int value)
 	{
@@ -1783,6 +1773,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		{
 			if (this.isIntegral)
 			{
+				// can't use setd() effectively here since input value is already an int - breaks UINT and LONG
+				
 				value = (int)TypeManager.boundValueToType(this.type, value);
 				set(x, y, value);
 			}
@@ -1800,12 +1792,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (x>=0 && x<getWidth() && y>=0 && y<getHeight())
 		{
 			if (this.isIntegral)
-			{
-				value = TypeManager.boundValueToType(this.type, value);
-				set(x, y, (int)(value+0.5));
-			}
-			else
-				setd(x, y, value);
+				value = Math.round(value);
+
+			setd(x, y, value);
 		}
 	}
 
@@ -2239,8 +2228,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** set the pixel at x,y to the provided double value. truncates values for integral types. */
 	public void setd(int x, int y, double value)
 	{
-		//System.out.println(System.currentTimeMillis()+" fg value=" + super.drawingColor+" fill value="+this.fillColor+" background="+this.backgroundValue);
-		
 		int[] position = Index.create(x, y, this.planePosition);
 		
 		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
@@ -2365,7 +2352,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void setValue(double value) 
 	{
 		this.fillColor = value;
-		if (this.isIntegral)
+		
+		// Issue - super.fgColor can't be set for UINT & LONG data types. Must rely on fillColor for all work. Problem?
+		//   Could change signature of setFgColor() to take a double and change ImageProcessor so that fgColor is a
+		//   double. That probably would work. Would work seamlessly with code. But plugins might need a recompile
+		//   if they themselves call setFgColor().
+		
+		if ((this.isIntegral) && (this.type.getMaxValue() <= Integer.MAX_VALUE))
 		{
 			setFgColor((int) TypeManager.boundValueToType(this.type, this.fillColor));
 		}
@@ -2415,7 +2408,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** Makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
 	 *  Only applies to integral data types. Long data outside Integer ranges will not work correctly.
-	 * @deprecated Use {@link #threshold(double thresholdLevel)} instead.
+	 * @deprecated Use {@link ImgLibProcessor::threshold(double thresholdLevel)} instead.
 	 */
 	@Override
 	public void threshold(int thresholdLevel) 

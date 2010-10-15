@@ -1,14 +1,14 @@
 package imagej.process.operation;
 
-import imagej.process.query.Gatherer;
+import imagej.process.query.InfoCollector;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 public class QueryOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
-	private Gatherer gatherer;
+	private InfoCollector gatherer;
 	
-	public QueryOperation(Image<T> image, int[] origin, int[] span, Gatherer gatherer)
+	public QueryOperation(Image<T> image, int[] origin, int[] span, InfoCollector gatherer)
 	{
 		super(image, origin, span);
 		this.gatherer = gatherer;

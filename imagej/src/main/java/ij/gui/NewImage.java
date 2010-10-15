@@ -38,6 +38,7 @@ public class NewImage
 	static final String HEIGHT = "new.height";
 	static final String SLICES = "new.slices";
 	static final String SAMPLE_TYPE = "new.sampleType";
+	static final String VERSION_1_4_COMPATIBILITY = "new.compatible.version_1_4";
 
     private static String name = Prefs.getString(NAME, "Untitled");
     private static int width = Prefs.getInt(WIDTH, 400);
@@ -252,7 +253,13 @@ public class NewImage
 		int planeCount = stack.getSize();
 		for (int plane = 0; plane < planeCount; plane++)
 		{
+			// WORKS
 			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)stack.getProcessor(plane+1);
+			
+			// ALSO now works. Used to be a problem.
+			//imp.setPosition(plane+1);
+			//ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getProcessor();
+			
 			proc.transform(fillFunc, null);
 		}
 	}
@@ -393,7 +400,7 @@ public class NewImage
 		return SampleManager.getSampleInfo(type).getName();
 	}
 	
-	private static ImagePlus imglibCreate(String title, int width, int height, int nSlices, RealType<?> type, int options)
+	private static ImagePlus createImagePlus(String title, int width, int height, int nSlices, RealType<?> type, int options)
 	{
 		int[] dimensions = new int[]{width, height, 1, nSlices};
 		
@@ -460,7 +467,7 @@ public class NewImage
 
 	private boolean showDialog()
 	{
-		if ((TEST_OLD_WAY) || (Prefs.get("IJ_1.4_Compatible", false)))
+		if ((TEST_OLD_WAY) || (Prefs.get(VERSION_1_4_COMPATIBILITY, false)))
 			return compatibleShowDialog();
 		else
 			return currentShowDialog();
@@ -492,7 +499,7 @@ public class NewImage
 	{
 		ImagePlus imp = null;
 		
-		if ((TEST_OLD_WAY) || (Prefs.get("IJ_1.4_Compatible", false)))
+		if ((TEST_OLD_WAY) || (Prefs.get(VERSION_1_4_COMPATIBILITY, false)))
 		{
 			// old data/processors desired
 			switch (type)
@@ -512,7 +519,7 @@ public class NewImage
 		else // new data/processors desired
 		{
 			RealType<?> rType = SampleManager.getRealType(type);
-			imp = imglibCreate(title, width, height, nSlices, rType, options);
+			imp = createImagePlus(title, width, height, nSlices, rType, options);
 		}
 		
 		return imp;

@@ -1,6 +1,6 @@
 package imagej.process.query;
 
-public class HistogramQuery implements Gatherer
+public class HistogramQuery implements InfoCollector
 {
 	private int[] histogram;
 	
