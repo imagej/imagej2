@@ -10,42 +10,42 @@ import ij.process.ShortProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.SampleManager;
 import imagej.io.ImageOpener;
-import imagej.process.function.AbsUnaryFunction;
-import imagej.process.function.AddBinaryFunction;
-import imagej.process.function.AddNoiseUnaryFunction;
-import imagej.process.function.AddUnaryFunction;
-import imagej.process.function.AndBinaryFunction;
-import imagej.process.function.AndUnaryFunction;
-import imagej.process.function.AverageBinaryFunction;
-import imagej.process.function.BinaryFunction;
-import imagej.process.function.CopyInput2BinaryFunction;
-import imagej.process.function.CopyInput2InvertedBinaryFunction;
-import imagej.process.function.CopyInput2TransparentBinaryFunction;
-import imagej.process.function.CopyInput2ZeroTransparentBinaryFunction;
-import imagej.process.function.DifferenceBinaryFunction;
-import imagej.process.function.DivideBinaryFunction;
-import imagej.process.function.ExpUnaryFunction;
-import imagej.process.function.FillUnaryFunction;
-import imagej.process.function.GammaUnaryFunction;
-import imagej.process.function.IntegralSubstitutionUnaryFunction;
-import imagej.process.function.InvertUnaryFunction;
-import imagej.process.function.LogUnaryFunction;
-import imagej.process.function.MaxBinaryFunction;
-import imagej.process.function.MaxUnaryFunction;
-import imagej.process.function.MinBinaryFunction;
-import imagej.process.function.MinUnaryFunction;
-import imagej.process.function.MultiplyBinaryFunction;
-import imagej.process.function.MultiplyUnaryFunction;
-import imagej.process.function.NAryFunction;
-import imagej.process.function.OrBinaryFunction;
-import imagej.process.function.OrUnaryFunction;
-import imagej.process.function.SqrUnaryFunction;
-import imagej.process.function.SqrtUnaryFunction;
-import imagej.process.function.SubtractBinaryFunction;
-import imagej.process.function.ThresholdUnaryFunction;
-import imagej.process.function.UnaryFunction;
-import imagej.process.function.XorBinaryFunction;
-import imagej.process.function.XorUnaryFunction;
+import imagej.process.function.binary.AddBinaryFunction;
+import imagej.process.function.binary.AndBinaryFunction;
+import imagej.process.function.binary.AverageBinaryFunction;
+import imagej.process.function.binary.BinaryFunction;
+import imagej.process.function.binary.CopyInput2BinaryFunction;
+import imagej.process.function.binary.CopyInput2InvertedBinaryFunction;
+import imagej.process.function.binary.CopyInput2TransparentBinaryFunction;
+import imagej.process.function.binary.CopyInput2ZeroTransparentBinaryFunction;
+import imagej.process.function.binary.DifferenceBinaryFunction;
+import imagej.process.function.binary.DivideBinaryFunction;
+import imagej.process.function.binary.MaxBinaryFunction;
+import imagej.process.function.binary.MinBinaryFunction;
+import imagej.process.function.binary.MultiplyBinaryFunction;
+import imagej.process.function.binary.OrBinaryFunction;
+import imagej.process.function.binary.SubtractBinaryFunction;
+import imagej.process.function.binary.XorBinaryFunction;
+import imagej.process.function.nary.NAryFunction;
+import imagej.process.function.unary.AbsUnaryFunction;
+import imagej.process.function.unary.AddNoiseUnaryFunction;
+import imagej.process.function.unary.AddUnaryFunction;
+import imagej.process.function.unary.AndUnaryFunction;
+import imagej.process.function.unary.ExpUnaryFunction;
+import imagej.process.function.unary.FillUnaryFunction;
+import imagej.process.function.unary.GammaUnaryFunction;
+import imagej.process.function.unary.IntegralSubstitutionUnaryFunction;
+import imagej.process.function.unary.InvertUnaryFunction;
+import imagej.process.function.unary.LogUnaryFunction;
+import imagej.process.function.unary.MaxUnaryFunction;
+import imagej.process.function.unary.MinUnaryFunction;
+import imagej.process.function.unary.MultiplyUnaryFunction;
+import imagej.process.function.unary.OrUnaryFunction;
+import imagej.process.function.unary.SqrUnaryFunction;
+import imagej.process.function.unary.SqrtUnaryFunction;
+import imagej.process.function.unary.ThresholdUnaryFunction;
+import imagej.process.function.unary.UnaryFunction;
+import imagej.process.function.unary.XorUnaryFunction;
 import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.BinaryTransformOperation;
 import imagej.process.operation.BlurFilterOperation;
@@ -2436,7 +2436,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		thresholdLevel = TypeManager.boundValueToType(this.type, thresholdLevel);
 		
-		ThresholdUnaryFunction function = new ThresholdUnaryFunction(thresholdLevel);
+		ThresholdUnaryFunction function = new ThresholdUnaryFunction(thresholdLevel, 0, 255);
 		
 		transform(function, null);
 	}
@@ -2508,7 +2508,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		if ((span[0] == getWidth()) &&
 				(span[1] == getHeight()) &&
-				!(function instanceof imagej.process.function.FillUnaryFunction))
+				!(function instanceof imagej.process.function.unary.FillUnaryFunction))
 			findMinAndMax();
 	}
 	

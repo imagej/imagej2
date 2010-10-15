@@ -1,6 +1,6 @@
 package imagej.process;
 
-import imagej.process.function.BinaryFunction;
+import imagej.process.function.binary.BinaryFunction;
 import imagej.process.operation.BinaryTransformOperation;
 import mpicbg.imglib.type.numeric.RealType;
 

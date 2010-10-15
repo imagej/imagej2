@@ -8,7 +8,7 @@ import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.io.ImageOpener;
-import imagej.process.function.CopyUnaryFunction;
+import imagej.process.function.unary.CopyUnaryFunction;
 import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.GetPlaneOperation;
 import loci.formats.FormatTools;

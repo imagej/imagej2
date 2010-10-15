@@ -2,9 +2,9 @@ package imagej;
 
 import mpicbg.imglib.container.array.Array;
 import imagej.SampleInfo;
-import imagej.process.function.BinaryFunction;
-import imagej.process.function.NAryFunction;
-import imagej.process.function.UnaryFunction;
+import imagej.process.function.binary.BinaryFunction;
+import imagej.process.function.nary.NAryFunction;
+import imagej.process.function.unary.UnaryFunction;
 
 interface NumericDataset
 {

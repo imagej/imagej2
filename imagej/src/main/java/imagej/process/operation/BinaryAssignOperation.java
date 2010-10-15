@@ -1,7 +1,7 @@
 package imagej.process.operation;
 
-import imagej.process.function.UnaryComputation;
-import imagej.process.function.UnaryFunction;
+import imagej.process.function.unary.UnaryComputation;
+import imagej.process.function.unary.UnaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 

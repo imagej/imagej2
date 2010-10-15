@@ -1,7 +1,7 @@
 package imagej.process.operation;
 
-import imagej.process.function.NAryComputation;
-import imagej.process.function.NAryFunction;
+import imagej.process.function.nary.NAryComputation;
+import imagej.process.function.nary.NAryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
