@@ -10,6 +10,7 @@ import ij.text.TextWindow;
 import ij.util.Java2;
 import ij.measure.ResultsTable;
 import imagej.io.ImageOpener;
+import imagej.plugin.AutoPluginInvoker;
 import imagej.process.ImageUtils;
 
 import java.awt.*;
@@ -146,8 +147,9 @@ public class Opener {
 			WindowManager.checkForDuplicateName = true;
 			if (isRGB48)
 				openRGB48(imp);
-			else
+			else if (!(new AutoPluginInvoker()).matchPlugin(imp)) {
 				imp.show(IJ.d2s((System.currentTimeMillis()-start)/1000.0,3)+" seconds");
+                        }
 		} else {
 			switch (fileType) {
 				case LUT:
