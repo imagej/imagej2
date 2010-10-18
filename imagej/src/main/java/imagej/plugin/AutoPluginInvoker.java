@@ -26,6 +26,7 @@ package imagej.plugin;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.ImageWindow;
 import ij.gui.NonBlockingGenericDialog;
@@ -157,7 +158,9 @@ public class AutoPluginInvoker {
                     }
 
                     // run the plugin
+                    WindowManager.setTempCurrentImage(imp);
                     new PlugInFilterRunner(instance, "", "");
+                    WindowManager.setTempCurrentImage(null);
 ;
                     handled = true;
                 }
