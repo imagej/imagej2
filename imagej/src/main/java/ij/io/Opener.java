@@ -147,7 +147,8 @@ public class Opener {
 			WindowManager.checkForDuplicateName = true;
 			if (isRGB48)
 				openRGB48(imp);
-			else if (!(new AutoPluginInvoker()).matchPlugin(imp)) {
+                        // if not a macro, check if this plugin should run automatically
+			else if (IJ.isMacro() || !(new AutoPluginInvoker()).matchPlugin(imp)) {
 				imp.show(IJ.d2s((System.currentTimeMillis()-start)/1000.0,3)+" seconds");
                         }
 		} else {
