@@ -7,7 +7,7 @@
   <parent>
     <groupId>imagej</groupId>
     <artifactId>imagej-base-pom</artifactId>
-    <version>1.07</version>
+    <version>1.08</version>
   </parent>
 
   <groupId>imagej</groupId>
@@ -49,6 +49,13 @@
       <version>5.0-SNAPSHOT</version>
     </dependency>
 
+    <!-- 3rd party -->
+    <dependency>
+      <groupId>net.java.sezpoz</groupId>
+      <artifactId>sezpoz</artifactId>
+      <version>1.7</version>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>junit</groupId>
@@ -64,11 +71,6 @@
       <scope>test</scope>
     </dependency>
     -->
-    <dependency>
-      <groupId>net.java.sezpoz</groupId>
-      <artifactId>sezpoz</artifactId>
-      <version>1.7</version>
-    </dependency>
   </dependencies>
 
   <build>
