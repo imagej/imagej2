@@ -64,6 +64,11 @@
       <scope>test</scope>
     </dependency>
     -->
+    <dependency>
+      <groupId>net.java.sezpoz</groupId>
+      <artifactId>sezpoz</artifactId>
+      <version>1.7</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -239,3 +244,7 @@
   </profiles>
 
 </project>
+
+
+
+
