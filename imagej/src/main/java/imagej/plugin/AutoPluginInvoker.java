@@ -158,9 +158,10 @@ public class AutoPluginInvoker {
                     }
 
                     // run the plugin
+                    ImagePlus temp = WindowManager.getTempCurrentImage();
                     WindowManager.setTempCurrentImage(imp);
                     new PlugInFilterRunner(instance, "", "");
-                    WindowManager.setTempCurrentImage(null);
+                    WindowManager.setTempCurrentImage(temp);
 ;
                     handled = true;
                 }
