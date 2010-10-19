@@ -362,6 +362,7 @@ public class ImageUtils
 
 		// let ImageJ know what dimensions we have
 		imp.setDimensions(sizeC, sizeZ, sizeT);
+		imp.setOpenAsHyperStack(true);
 
 		return imp;
 	}
