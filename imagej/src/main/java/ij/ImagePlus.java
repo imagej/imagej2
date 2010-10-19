@@ -9,6 +9,7 @@ import ij.plugin.frame.ContrastAdjuster;
 import ij.plugin.frame.Recorder;
 import imagej.SampleManager;
 import imagej.process.ImgLibProcessor;
+import imagej.process.TypeManager;
 import imagej.SampleInfo;
 import java.awt.BasicStroke;
 import java.awt.Canvas;
@@ -22,6 +23,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.util.*;
+
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.GenericByteType;
@@ -657,11 +659,47 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 	
 	void setupProcessor() {
-		if (imageType==COLOR_RGB) {
+		if (imageType==COLOR_RGB)
+		{
 			if (ip == null || ip instanceof ByteProcessor)
 				ip = new ColorProcessor(getImage());
-		} else if (ip==null || (ip instanceof ColorProcessor))
+		}
+		else if (ip==null || (ip instanceof ColorProcessor))
+		{
 			ip = new ByteProcessor(getImage());
+		}
+		else if (ip instanceof ImgLibProcessor)  // BDZ added
+		{
+			// ONE WAY - fails though on a couple ImagePlusTest methods (infinite stack blowup possible)
+			//ip = getImageStack().getProcessor(currentSlice);
+			
+			/*
+
+			// another very broken way
+
+			//ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+			
+			//Image<?> image = proc.getImage();
+			
+			//int[] imageDimensions = image.getDimensions();
+			
+			//int[] planeDimensions = new int[imageDimensions.length - 2];
+			
+			//for (int i = 0; i < planeDimensions.length; i++)
+			//	planeDimensions[i] = imageDimensions[i+2];
+
+			//if (planeDimensions.length < 3)
+			//	System.out.println("planeDimensions.length = "+planeDimensions.length);
+			
+			//if ((this.position[0] != planeDimensions[0]) ||
+			//		(this.position[1] != planeDimensions[1]) ||
+			//		(this.position[2] != planeDimensions[2]))
+			//	ip = new ImgLibProcessor(image, planeDimensions);
+			// note this construction might be slow since it does findMinAndMax(). Maybe force setSlice(n) to use the
+			//   ImageStack.getProcessor() rather than holding onto processors from before and calling setPixels()
+
+			 */
+		}
 		if (roi!=null && roi.isArea())
 			ip.setRoi(roi.getBounds());
 		else
@@ -1382,12 +1420,16 @@ public class ImagePlus implements ImageObserver, Measurements {
 				roi.endPaste();
 			if (isProcessor())
 				stack.setPixels(ip.getPixels(),currentSlice);
+			// BDZ - original order
 			ip = getProcessor();
 			setCurrentSlice(n);
+			// BDZ - imglib processor order
+			//setCurrentSlice(n);
+			//ip = getProcessor();
 			Object pixels = stack.getPixels(currentSlice);
 			if (ip!=null && pixels!=null) {
 				ip.setSnapshotPixels(null);
-				ip.setPixels(pixels);
+				ip.setPixels(pixels);  // BDZ - right here old ImgLibProc pointing at planePos 0 gets slice X's pixels
 			} else
 				ip = stack.getProcessor(n);
 			if (win!=null && win instanceof StackWindow)
@@ -1995,8 +2037,12 @@ public class ImagePlus implements ImageObserver, Measurements {
 			case COLOR_RGB:
     			return(", value=" + v[0] + "," + v[1] + "," + v[2]);
 			case IMGLIB:
-				double val = ((ImgLibProcessor<?>)ip).getd(x,y);
-    			return(", value=" + IJ.d2s(val));
+				ImgLibProcessor<?> proc = (ImgLibProcessor<?>) ip;
+				double val = proc.getd(x,y);
+				if (TypeManager.isIntegralType(proc.getType()))
+	    			return(", value=" + (long)val);
+				else
+					return(", value=" + IJ.d2s(val));
     		default:
     			return("");
 		}
