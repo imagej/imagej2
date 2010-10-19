@@ -91,7 +91,7 @@ public class AutoPluginInvoker {
      */
    public boolean matchPlugin(ImagePlus imp) {
         boolean handled = false;
-       
+   
         // Get imglib Image from ImagePlus
         Image<?> image = null;
         ImageStack stack = imp.getStack();
@@ -107,7 +107,7 @@ public class AutoPluginInvoker {
 
             // look for matches
             for (final IndexItem<Dimensions, IAutoPlugin> item :
-                    Index.load(Dimensions.class, IAutoPlugin.class)) {
+                    Index.load(Dimensions.class, IAutoPlugin.class, IJ.getClassLoader())) {
 
                 // extract set of required and optional dimension names from annotation
                 Set<String> requiredSet = getSet(item.annotation().required());
