@@ -2199,6 +2199,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		{
 			super.drawingColor = color;
 			setFgColor(bestIndex);
+			setValue(bestIndex);
 		}
 		else // not a Byte type
 		{
@@ -2556,5 +2557,33 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		
 		transform(func, null);
 	}
+
+	/*
+	@Override
+	public boolean equals(Object o)
+	{
+		// if not another ImgLibProcessor can't be equal
+		if (!(o instanceof ImgLibProcessor))
+			return false;
+		
+		ImgLibProcessor<?> other = (ImgLibProcessor<?>) o;
+
+		// if referring to different Image then different
+		if (getImage() != other.getImage())
+			return false;
 	
+		// if referring to different plane positions in Image then different
+		if (this.planePosition.length != other.planePosition.length)
+			return false;
+		for (int i = 0; i < planePosition.length; i++)
+			if (this.planePosition[i] != other.planePosition[i])
+				return false;
+
+		// not going to test anything else
+		//   min, max, snapshot, etc.
+		
+		// otherwise we treat them as the same
+		return true;
+	}
+	*/
 }
