@@ -5,7 +5,6 @@ import java.io.File;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
-import ij.process.ImageProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.io.ImageOpener;
 import imagej.process.function.unary.CopyUnaryFunction;
@@ -34,14 +33,17 @@ import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 // TODO
-//   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when we can call ImagePlus::setDimensions(int[] dims)
+//   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when
+//     we can call ImagePlus::setDimensions(int[] dims) 
 //   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
+/** this class designed to hold functionality that could be migrated to imglib */
 public class ImageUtils
 {
 	
 	// ***************** public methods  **************************************************
 	
+	/** gets the last n-2 dimensions of a n-dimensional int array. */
 	public static int[] getDimsBeyondXY(int[] fullDims)
 	{
 		if (fullDims.length < 2)
@@ -55,6 +57,7 @@ public class ImageUtils
 		return extraDims;
 	}
 	
+	/** returns, as a long, the total number of samples present in an image of given dimensions */
 	public static long getTotalSamples(int[] dimensions)
 	{
 		int numDims = dimensions.length;
@@ -69,7 +72,10 @@ public class ImageUtils
 		
 		return totalSamples;
 	}
-	
+
+	/** returns the number of planes present in an image of given dimensions. assumes the planes lie
+	 *  in the 1st two dimensions
+	 */
 	public static long getTotalPlanes(int[] dimensions)
 	{
 		int numDims = dimensions.length;
@@ -87,11 +93,15 @@ public class ImageUtils
 		return getTotalSamples(sampleSpace);
 	}
 
+	/** returns the total number of samples in an imglib image. Notice its of long type unlike
+		imglib's image.getNumPixels()
+	*/
 	public static long getTotalSamples(Image<?> image)
 	{
 		return getTotalSamples(image.getDimensions());
 	}
 	
+	/** gets the imglib type of an imglib image */
 	public static RealType<?> getType(Image<?> image)
 	{
 		Cursor<?> cursor = image.createCursor();
@@ -100,6 +110,14 @@ public class ImageUtils
 		return type;
 	}
 	
+	/** copies a plane of data of specified size from an imglib image to an output array of doubles
+	 * 
+	 * @param image - the image we want to pull the data from
+	 * @param w - the desired width
+	 * @param h - the desire height
+	 * @param planePos - the position of the plane within the imglib image
+	 * @return the sample data as an array of doubles
+	 */
 	@SuppressWarnings({"rawtypes"})
 	public static double[] getPlaneData(Image<? extends RealType> image, int w, int h, int[] planePos) {
 		  // TODO - use LocalizablePlaneCursor
@@ -237,6 +255,14 @@ public class ImageUtils
 		copier.execute();
 	}
 	
+	/** creates an ImgLibProcessor populated with given pixel data. Note that this method creates an imglib Image<?>
+	 * that contains the pixel data and only the returned ImgLibProcessor has access to this Image<?>.
+	 *  
+	 * @param width - desired width of image
+	 * @param height - desired height of image
+	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
+	 * @param unsigned - boolean flag specifying whether input data is unsigned or signed
+	 */
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
 	{
 		ArrayContainerFactory containerFactory = new ArrayContainerFactory();
@@ -325,11 +351,16 @@ public class ImageUtils
 	}
 	
 
+	/** creates an ImagePlus from an imglib Image<?> */
 	public static ImagePlus createImagePlus(final Image<?> img)
 	{
 		return createImagePlus(img, null);
 	}
 
+	/** creates an ImagePlus from an imglib Image<?> and a string.
+	 * @param img - the imglib Image<?> that will back the ImagePlus
+	 * @param id - a string representing either a filename or a URL (used to populate the ImagePlus' FileInfo 
+	 */
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
 		final int sizeX = getWidth(img);
@@ -338,25 +369,24 @@ public class ImageUtils
 		final int sizeZ = getNSlices(img);
 		final int sizeT = getNFrames(img);
 
-		
-
-		final String imgName = img.getName();
-		final int[] dimensions = img.getDimensions();
-		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
-
 		final ImageStack stack = new ImageStack(img);
+		
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
-		if (id != null) {
+		
+		if (id != null)
+		{
 			final FileInfo fi = new FileInfo();
 			fi.width = sizeX;
 			fi.height = sizeY;
 			final File file = new File(id);
-			if (file.exists()) {
+			if (file.exists())
+			{
 				fi.fileName = file.getName();
 				fi.directory = file.getParent();
 				imp.setTitle(fi.fileName);
 			}
-			else fi.url = id;
+			else
+				fi.url = id;
 			imp.setFileInfo(fi);
 		}
 
@@ -399,7 +429,13 @@ public class ImageUtils
 	}
 
 	// ***************** private methods  **************************************************
-	
+
+	/**
+	 * get a plane of data from an imglib image
+	 * @param im - the imglib image we will be pulling plane from
+	 * @param planePos - the position of the plane within the image
+	 * @return an array of primitive type matching the imglib image's type 
+	 */
 	@SuppressWarnings({"unchecked"})
 	private static Object getPlaneCopy(Image<? extends RealType<?>> im, int[] planePos)
 	{
