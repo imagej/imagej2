@@ -7,6 +7,7 @@ import imagej.process.Span;
 import imagej.process.TypeManager;
 import imagej.process.operation.SetPlaneOperation;
 import mpicbg.imglib.container.ContainerFactory;
+import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -42,24 +43,52 @@ public class PlaneStack<T extends RealType<T>>
 		
 		Image<T> image = ImageUtils.createImage(type, cFact, dimensions);
 		
-		SetPlaneOperation<T> planeOp = new SetPlaneOperation<T>(image, Index.create(3), data, dType);
+		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
 		
-		planeOp.execute();
+		if (planar != null)
+		{
+			int[] planePosition = Index.create(1);
+			
+			ImageUtils.setPlane(image, planePosition, data);
+		}
+		else
+		{
+			SetPlaneOperation<T> planeOp = new SetPlaneOperation<T>(image, Index.create(3), data, dType);
+		
+			planeOp.execute();
+		}
 		
 		return image;
 	}
 
+	@SuppressWarnings({"unchecked","rawtypes"})
 	/** copies a given number of consecutive planes from a source image to a destination image */
 	private void copyPlanesFromTo(int numPlanes, Image<T> srcImage, int srcPlane, Image<T> dstImage, int dstPlane)
 	{
 		if (numPlanes < 1)
 			return;
 		
-		int[] srcOrigin = Index.create(new int[]{0, 0, srcPlane});
-		int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
-		int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
+		PlanarAccess srcImagePlanarAccess = ImageUtils.getPlanarAccess(srcImage); 
+		PlanarAccess dstImagePlanarAccess = ImageUtils.getPlanarAccess(dstImage);
 		
-		ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
+		// if both datasets are planar
+		if ((srcImagePlanarAccess != null) && (dstImagePlanarAccess != null))
+		{
+			// simply copy pixel references
+			for (int i = 0; i < numPlanes; i++)
+			{
+				Object plane = srcImagePlanarAccess.getPlane(srcPlane+i);
+				dstImagePlanarAccess.setPlane(dstPlane+i, plane);
+			}
+		}
+		else // can't just copy pixel references
+		{
+			int[] srcOrigin = Index.create(new int[]{0, 0, srcPlane});
+			int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
+			int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
+			
+			ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
+		}
 	}
 	
 	/**
