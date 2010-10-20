@@ -1718,17 +1718,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		transform(function, null);
 	}
 
-	// not an override
-	/** debugging method to be removed when no longer necessary */
-	public boolean nonzero()
-	{
-		int totalPixels = (int)ImageUtils.getTotalSamples(this.imageData);
-		for (int i = 0; i < totalPixels; i++)
-			if (getd(i) != 0)
-				return true;
-		return false;
-	}
-	
 	/** apply the OR point operation over the current ROI area of the current plane of data */
 	@Override
 	public void or(int value)
