@@ -53,6 +53,7 @@ public final class Index {
 		return true;
 	}
 	
+	/** increment a position index within a range bounded via origin and spans. Increments indices from left to right */
 	// incrementing from left to right : not textbook but hacky way to get ImgLibProcessor::duplicate() working 
 	public static void increment(int[] position, int[] origin, int[] span)
 	{

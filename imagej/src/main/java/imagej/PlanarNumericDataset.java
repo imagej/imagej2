@@ -6,6 +6,8 @@ import imagej.process.function.binary.BinaryFunction;
 import imagej.process.function.nary.NAryFunction;
 import imagej.process.function.unary.UnaryFunction;
 
+// TODO - these classes not yet in use. They document things that would be good to support in a dataset
+
 interface NumericDataset
 {
 	SampleInfo getSampleInfo();
@@ -39,5 +41,5 @@ interface PlanarNumericDataset extends NumericDataset
 
 interface Operation
 {
-	void apply(PlanarNumericDataset ds);
+	void apply(NumericDataset ds);
 }

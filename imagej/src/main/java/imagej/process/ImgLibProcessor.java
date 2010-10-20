@@ -1335,18 +1335,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int get(int x, int y) 
 	{	
-		double value;
+		double value = getd(x, y);;
 		
-		int[] position = Index.create(x, y, this.planePosition);
-		
-		final LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
-		
-		cursor.setPosition( position );
-		
-		value = cursor.getType().getRealDouble();
-		
-		// do not close cursor - using cached one
-
 		if (this.isIntegral)
 			return (int) value;
 		
@@ -1420,19 +1410,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public float getf(int x, int y) 
 	{
-		float value;
-		
-		int[] position = Index.create(x, y, this.planePosition);
-		
-		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
-		
-		cursor.setPosition(position);
-		
-		value =  ( float ) cursor.getType().getRealDouble();
-		
-		// do not close cursor - using cached one
-		
-		return value;
+		return (float)getd(x, y);
 	}
 
 	/** get the pixel value at index as a float. */

@@ -1,7 +1,10 @@
 package imagej.process;
 
+/** Span is a helper class that supports getting ranges within n-dimensional data sets. */
 public class Span {
 		
+	private Span() {}  // uninstantiable
+	
 	/** create a span array of length numDims initialized to zeroes */
 	public static int[] create(int numDims)
 	{
@@ -14,7 +17,7 @@ public class Span {
 		return initialValues.clone();
 	}
 	
-	/** create a span array that encompasses one plane of dimension width X height and all other dimensions at 1 */
+	/** create a span array that encompasses one plane of dimension width by height and all other dimensions at 1 */
 	public static int[] singlePlane(int width, int height, int totalDims)
 	{
 		if (width < 1)
@@ -37,6 +40,7 @@ public class Span {
 		return values;
 	}
 	
+	/** create a span array that encompasses the whole range of a set of dimensions */
 	public static int[] wholeRange(int[] dimensions)
 	{
 		return dimensions.clone();

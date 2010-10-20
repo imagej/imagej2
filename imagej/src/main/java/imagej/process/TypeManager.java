@@ -15,7 +15,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class TypeManager {
 
 	// TODO is there a better way? ask.
-	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can
+	/** returns true if given imglib type is an unsigned type */
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
 			(t instanceof UnsignedByteType) ||
@@ -26,6 +27,7 @@ public class TypeManager {
 
 	// TODO is there a better way? ask.
 	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
+	/** returns true if given imglib type is an integer type */
 	public static boolean isIntegralType(RealType<?> t) {
 		return (t instanceof IntegerType<?>);
 	}
@@ -46,6 +48,7 @@ public class TypeManager {
 		return inputValue;
 	}
 
+	/** returns true if two imglib types are strictly compatible */
 	public static boolean sameKind(RealType<?> type1, RealType<?> type2)
 	{
 		if ((type1 instanceof ByteType) && (type2 instanceof ByteType))
@@ -78,6 +81,7 @@ public class TypeManager {
 		return false;
 	}
 	
+	/** returns true if a value is within the valid range defined for an imglib type */
 	public static boolean validValue(RealType<?> type, double value)
 	{
 		return (value >= type.getMinValue()) && (value <= type.getMaxValue());
