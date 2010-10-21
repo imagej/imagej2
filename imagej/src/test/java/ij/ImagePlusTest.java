@@ -2574,6 +2574,7 @@ public class ImagePlusTest {
 		assertEquals("SuperBytes",result.getTitle());
 		assertEquals(24,result.getStackSize());
 		assertArrayEquals(new int[] {2,3,2,3,4},result.getDimensions());
+		assertEquals(8,result.getBitDepth());
 		assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
 
@@ -2589,6 +2590,7 @@ public class ImagePlusTest {
 		//TODO reenable - when we figure out what this should do in this case
 		//assertNull(result.getStack().getPixels(1));
 		assertArrayEquals(new int[] {2,3,2,3,4},result.getDimensions());
+		assertEquals(16,result.getBitDepth());
 		assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
 
@@ -2604,7 +2606,14 @@ public class ImagePlusTest {
 		//TODO reenable - when we figure out what this should do in this case
 		//assertNull(result.getStack().getPixels(1));
 		assertArrayEquals(new int[] {1,4,1,4,4},result.getDimensions());
-		// TODO reenable when hatching legacy processors as needed in ImageStack
+		// TODO reenable when possible (if ever)
+		// Problem - createHyperStack() makes an ImageStack of a given size and given
+		//   bitDepth. But 24 bit is a problem to support as imglib only supports
+		//   8/16/32/64. So createHyperStack() translates 24 bit requests into 32 bit
+		//   int as it was stored previously in IJ. But reported bitDepth is 32. This
+		//   makes changes in the calibration and also getBitDepth(). Not sure how we
+		//   should handle this.
+		//assertEquals(24,result.getBitDepth());
 		//assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
 
@@ -2618,6 +2627,7 @@ public class ImagePlusTest {
 		assertEquals("SuperFloats",result.getTitle());
 		assertEquals(24,result.getStackSize());
 		assertArrayEquals(new int[] {2,2,2,3,4},result.getDimensions());
+		assertEquals(32,result.getBitDepth());
 		assertTrue(ip.getCalibration().isSameAs(result.getCalibration()));
 		assertTrue(result.getOpenAsHyperStack());
 
