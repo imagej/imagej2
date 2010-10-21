@@ -7,13 +7,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 import imagej.process.ImageUtils;
+import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
+import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -26,11 +30,22 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Test;
 
-// TODO - write test for copyFromImageToImage()
-
 public class ImageUtilsTest {
 	
+	// *************  instance vars ********************************************
+	
 	int width = 224, height = 403;
+
+	// *************  private helpers ********************************************
+
+	private Image<? extends RealType<?>> makeImage(RealType<?> type, int[] dimensions)
+	{
+		ArrayContainerFactory cFact = new ArrayContainerFactory();
+
+		cFact.setPlanar(true);
+		
+		return ImageUtils.createImage(type, cFact, dimensions);
+	}
 	
 	private void getDimsBeyondXYShouldFail(int[] dims)
 	{
@@ -41,6 +56,24 @@ public class ImageUtilsTest {
 			assertTrue(true);
 		}
 	}
+	
+	private void verifyDims(boolean shouldFail, int[] dims, int[] origin, int[] span)
+	{
+		try {
+			ImageUtils.verifyDimensions(dims, origin, span);
+			if (shouldFail)
+				fail();
+			else
+				assertTrue(true);
+		} catch (IllegalArgumentException e) {
+			if (shouldFail)
+				assertTrue(true);
+			else
+				fail();
+		}
+	}
+
+	// *************  public tests ********************************************
 	
 	@Test
 	public void testGetDimsBeyondXY() {
@@ -77,15 +110,239 @@ public class ImageUtilsTest {
 	}
 
 	@Test
+	public void testGetTotalSamplesImage()
+	{
+		int[][] dimensions =
+			new int[][]{
+				new int[]{1},
+				new int[]{2,3},
+				new int[]{3,4,5},
+				new int[]{4,5,6,7},
+				new int[]{5,6,7,8,9}
+				// TODO - causes imglib exception because size > ArrayContainer max size. Can't find a bigger container.
+				//,new int[]{Short.MAX_VALUE,Short.MAX_VALUE,5}
+				};
+
+		long[] sampleCounts =
+			new long[]{
+				1,
+				6,
+				60,
+				840,
+				15120
+				// TODO - see above TODO
+				//,5368381445L
+				};
+		
+		for (int i = 0; i < dimensions.length; i++)
+		{
+			Image<?> image = makeImage(new UnsignedByteType(), dimensions[i]);
+			
+			assertEquals(sampleCounts[i], ImageUtils.getTotalSamples(image));
+		}
+	}
+	
+	@Test
+	public void testGetType()
+	{
+		int[] dimensions = new int[]{3,5};
+		
+		Image<?> image;
+		
+		image = makeImage(new UnsignedByteType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof UnsignedByteType);
+		
+		image = makeImage(new ShortType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof ShortType);
+		
+		image = makeImage(new UnsignedIntType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof UnsignedIntType);
+		
+		image = makeImage(new DoubleType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof DoubleType);
+		
+		image = makeImage(new LongType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof LongType);
+	}
+	
+	@Test
+	public void testGetPlaneData()
+	{
+		int[] dimensions = new int[]{2,3};
+		Image<? extends RealType<?>> image = makeImage(new UnsignedByteType(), dimensions);
+		LocalizableByDimCursor<UnsignedByteType> cursor = ((Image<UnsignedByteType>)image).createLocalizableByDimCursor();
+		cursor.setPosition(new int[]{0,0});
+		cursor.getType().set(1);
+		cursor.setPosition(new int[]{1,0});
+		cursor.getType().set(2);
+		cursor.setPosition(new int[]{0,1});
+		cursor.getType().set(3);
+		cursor.setPosition(new int[]{1,1});
+		cursor.getType().set(4);
+		cursor.setPosition(new int[]{0,2});
+		cursor.getType().set(5);
+		cursor.setPosition(new int[]{1,2});
+		cursor.getType().set(6);
+		
+		double[] data = ImageUtils.getPlaneData(image, 2, 3, new int[]{});
+		
+		assertEquals(1,data[0],0);
+		assertEquals(2,data[1],0);
+		assertEquals(3,data[2],0);
+		assertEquals(4,data[3],0);
+		assertEquals(5,data[4],0);
+		assertEquals(6,data[5],0);
+	}
+	
+	@Test
+	public void testGetPlanarAccess()
+	{
+		ArrayContainerFactory factory = new ArrayContainerFactory();
+		
+		Image<?> testImage;
+		PlanarAccess<?> access;
+		
+		testImage = ImageUtils.createImage(new UnsignedByteType(), factory, new int[]{1,2});
+		access = ImageUtils.getPlanarAccess(testImage);
+		assertTrue(access == null);
+		
+		factory.setPlanar(true);
+		
+		testImage = ImageUtils.createImage(new UnsignedByteType(), factory, new int[]{1,2});
+		access = ImageUtils.getPlanarAccess(testImage);
+		assertTrue(access != null);
+	}
+	
+	@Test
+	public void testSetAndGetPlane()
+	{
+		Image<ShortType> image = (Image<ShortType>) makeImage(new ShortType(), new int[]{2,3,4});
+		
+		short[] ones = new short[]{1,1,1,1,1,1};
+		short[] twos =  new short[]{2,2,2,2,2,2};
+		short[] threes = new short[]{3,3,3,3,3,3};
+		short[] fours = new short[]{4,4,4,4,4,4};
+		
+		ImageUtils.setPlane(image, new int[]{0}, ones);
+		ImageUtils.setPlane(image, new int[]{1}, twos);
+		ImageUtils.setPlane(image, new int[]{2}, threes);
+		ImageUtils.setPlane(image, new int[]{3}, fours);
+
+		assertArrayEquals(ones, (short[])ImageUtils.getPlane(image, new int[]{0}));
+		assertArrayEquals(twos, (short[])ImageUtils.getPlane(image, new int[]{1}));
+		assertArrayEquals(threes, (short[])ImageUtils.getPlane(image, new int[]{2}));
+		assertArrayEquals(fours, (short[])ImageUtils.getPlane(image, new int[]{3}));
+	}
+	
+	@Test
+	public void testVerifyDimensions()
+	{
+		final boolean FAIL = true;
+		
+		// origin len != span len
+		verifyDims(FAIL, new int[]{1}, new int[]{0}, new int[]{1,1});
+
+		// origin len != dim len
+		verifyDims(FAIL, new int[]{1}, new int[]{0,0}, new int[]{1,1});
+		
+		// dim len != span len
+		verifyDims(FAIL, new int[]{1,2}, new int[]{0,0}, new int[]{1});
+
+		// origin outside image in some dim
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,0,-1}, new int[]{1,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,0,3}, new int[]{1,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,-1,0}, new int[]{1,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,2,0}, new int[]{1,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{-1,0,0}, new int[]{1,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{1,0,0}, new int[]{1,1,1});
+		
+		// span <= 0 in some dim
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,0,-1}, new int[]{0,1,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,0,3}, new int[]{1,0,1});
+		verifyDims(FAIL, new int[]{1,2,3}, new int[]{0,-1,0}, new int[]{1,1,0});
+		
+		// origin + span outside image in some dim
+		verifyDims(FAIL, new int[]{1}, new int[]{0}, new int[]{2});
+		verifyDims(FAIL, new int[]{2,2}, new int[]{0,1}, new int[]{2,2});
+		verifyDims(FAIL, new int[]{2,2}, new int[]{1,0}, new int[]{2,2});
+		
+		// all other cases should succeed
+		
+		final boolean SUCCEED = false;
+		
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,0}, new int[]{2,2});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,0}, new int[]{1,1});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,0}, new int[]{1,2});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,0}, new int[]{2,1});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{1,0}, new int[]{1,1});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{1,0}, new int[]{1,2});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,1}, new int[]{1,1});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{0,1}, new int[]{2,1});
+		verifyDims(SUCCEED, new int[]{2,2}, new int[]{1,1}, new int[]{1,1});
+	}
+	
+	private void print(String name, int[] values)
+	{
+		System.out.print(name+" = ");
+		for (int value : values)
+			System.out.print(","+value);
+		System.out.println();
+	}
+	
+	@Test
 	public void testCopyFromImageToImage()
 	{
-		// TODO
-		//ImageUtils.copyFromImageToImage(sourceImage, destinationImage, sourceDimensionOrigins, destinationDimensionOrigins, dimensionSpans);
+		int[] ones = new int[]{1,1,1,1,1,1};
+		int[] twos = new int[]{2,2,2,2,2,2};
+		int[] threes = new int[]{3,3,3,3,3,3};
+		int[] fours = new int[]{4,4,4,4,4,4};
+		
+		int[] sevens = new int[]{7,7,7,7,7,7};
+		int[] eights = new int[]{8,8,8,8,8,8};
+		
+		Image<IntType> srcImage = (Image<IntType>) makeImage(new IntType(), new int[]{2,3,2});
+		
+		ImageUtils.setPlane(srcImage, new int[]{0}, sevens);
+		ImageUtils.setPlane(srcImage, new int[]{1}, eights);
+		
+		assertTrue(sevens == ImageUtils.getPlane(srcImage, new int[]{0}));
+		assertTrue(eights == ImageUtils.getPlane(srcImage, new int[]{1}));
+
+		Image<IntType> dstImage = (Image<IntType>) makeImage(new IntType(), new int[]{2,3,4});
+		
+		ImageUtils.setPlane(dstImage, new int[]{0}, ones);
+		ImageUtils.setPlane(dstImage, new int[]{1}, twos);
+		ImageUtils.setPlane(dstImage, new int[]{2}, threes);
+		ImageUtils.setPlane(dstImage, new int[]{3}, fours);
+
+		assertTrue(ones == ImageUtils.getPlane(dstImage, new int[]{0}));
+		assertTrue(twos == ImageUtils.getPlane(dstImage, new int[]{1}));
+		assertTrue(threes == ImageUtils.getPlane(dstImage, new int[]{2}));
+		assertTrue(fours == ImageUtils.getPlane(dstImage, new int[]{3}));
+
+		ImageUtils.copyFromImageToImage(srcImage, new int[]{0,0,0}, new int[]{2,3,2},
+										dstImage, new int[]{0,0,2}, new int[]{2,3,2});
+		
+		assertTrue(ones == ImageUtils.getPlane(dstImage, new int[]{0}));
+		assertTrue(twos == ImageUtils.getPlane(dstImage, new int[]{1}));
+		assertTrue(threes == ImageUtils.getPlane(dstImage, new int[]{2}));
+		assertTrue(fours == ImageUtils.getPlane(dstImage, new int[]{3}));
+
+		Object srcPlane, dstPlane;
+
+		srcPlane = ImageUtils.getPlane(srcImage, new int[]{0});
+		dstPlane = ImageUtils.getPlane(dstImage, new int[]{2});
+		assertTrue(dstPlane != srcPlane);
+		assertArrayEquals(sevens, (int[])dstPlane);
+
+		srcPlane = ImageUtils.getPlane(srcImage, new int[]{1});
+		dstPlane = ImageUtils.getPlane(dstImage, new int[]{3});
+		assertTrue(dstPlane != srcPlane);
+		assertArrayEquals(eights, (int[])dstPlane);
 	}
 
-	// constructor 3
 	@Test
-	public void testCreate()
+	public void testCreateProcessor()
 	{
 		int width= 3, height = 5;
 		
@@ -104,11 +361,10 @@ public class ImageUtilsTest {
 	{
 		int[] dimensions = new int[]{3,4,5,6,7};
 		
-		ArrayContainerFactory contFact = new ArrayContainerFactory();
-		contFact.setPlanar(true);
-		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(), contFact);
-		Image<UnsignedShortType> image = factory.createImage(dimensions);
+		Image<UnsignedShortType> image = (Image<UnsignedShortType>) makeImage(new UnsignedShortType(), dimensions);
+
 		// TODO : set pixel data to something
+		
 		ImagePlus imp = ImageUtils.createImagePlus(image);
 		
 		int channels = image.getDimension(2);
@@ -124,326 +380,81 @@ public class ImageUtilsTest {
 		for (int i = 0; i < totalPlanes; i++)
 		{
 			ImageProcessor proc = stack.getProcessor(i+1); 
-			//TODO : enable this when IJ does not screw up the processors
-			//  it turns out that ImageStack.addSlice(processor) just copies the pixels of the processor. Later getProcessor() calls to
-			//  the ImagePlus creates a processor on the pixel data and since its a short[] here we get back a ShortProcessor.
-			//assertTrue(proc instanceof ImgLibProcessor);
+			assertTrue(proc instanceof ImgLibProcessor);
 			assertEquals(image.getDimension(0), proc.getWidth());
 			assertEquals(image.getDimension(1), proc.getHeight());
 		}
 	}
 
-
-	/* some methods now private and will not test
-
 	@Test
-	public void testGetPlaneBytes() {
+	public void testCreateImagePlusWithString()
+	{
+		int[] dimensions = new int[]{3,4,5,6,7};
 		
-		ImageFactory<ByteType> factory = new ImageFactory<ByteType>( new ByteType(), new ArrayContainerFactory() );
+		Image<UnsignedShortType> image = (Image<UnsignedShortType>) makeImage(new UnsignedShortType(), dimensions);
 
-		Image<ByteType> image = factory.createImage(new int[]{width,height});
+		// TODO : set pixel data to something
 		
-		Cursor<ByteType> genCursor = image.createCursor();
+		ImagePlus imp = ImageUtils.createImagePlus(image, "gadzooks");
 		
-		int i = 0;
-		for (ByteType value : genCursor) {
-			value.set( (byte) (255 - (i%256)) );
-			i++;
+		int channels = image.getDimension(2);
+		int slices   = image.getDimension(3);
+		int frames   = image.getDimension(4);
+		
+		assertEquals(frames, imp.getNFrames());
+		assertEquals(channels, imp.getNChannels());
+		assertEquals(slices, imp.getNSlices());
+
+		ImageStack stack = imp.getStack();
+		int totalPlanes = slices * channels * frames;
+		for (int i = 0; i < totalPlanes; i++)
+		{
+			ImageProcessor proc = stack.getProcessor(i+1); 
+			assertTrue(proc instanceof ImgLibProcessor);
+			assertEquals(image.getDimension(0), proc.getWidth());
+			assertEquals(image.getDimension(1), proc.getHeight());
 		}
 		
-		byte[] pixels = ImageUtils.getPlaneBytes(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<ByteType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
+		FileInfo fi = imp.getOriginalFileInfo();
+		assertEquals("gadzooks",fi.url);
 	}
-
+	
 	@Test
-	public void testGetPlaneUnsignedBytes() {
+	public void testCreateImage()
+	{
+		Image<?> image;
 		
-		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>( new UnsignedByteType(), new ArrayContainerFactory() );
-
-		Image<UnsignedByteType> image = factory.createImage(new int[]{width,height});
+		image = makeImage(new UnsignedIntType(), new int[]{1});
+		assertTrue(ImageUtils.getType(image) instanceof UnsignedIntType);
+		assertEquals(1,image.getDimension(0));
 		
-		Cursor<UnsignedByteType> genCursor = image.createCursor();
+		image = makeImage(new FloatType(), new int[]{6,4});
+		assertTrue(ImageUtils.getType(image) instanceof FloatType);
+		assertEquals(6,image.getDimension(0));
+		assertEquals(4,image.getDimension(1));
 		
-		int i = 0;
-		for (UnsignedByteType value : genCursor) {
-			value.set( (byte) (255 - (i%256)) );
-			i++;
-		}
-		
-		byte[] pixels = ImageUtils.getPlaneUnsignedBytes(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<UnsignedByteType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals((byte)cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
+		image = makeImage(new LongType(), new int[]{6,4,2});
+		assertTrue(ImageUtils.getType(image) instanceof LongType);
+		assertEquals(6,image.getDimension(0));
+		assertEquals(4,image.getDimension(1));
+		assertEquals(2,image.getDimension(2));
 	}
-
+	
 	@Test
-	public void testGetPlaneShorts() {
+	public void testGetVariousDims()
+	{
+		Image<?> image;
 		
-		ImageFactory<ShortType> factory = new ImageFactory<ShortType>( new ShortType(), new ArrayContainerFactory() );
-
-		Image<ShortType> image = factory.createImage(new int[]{width,height});
+		image = makeImage(new UnsignedIntType(), new int[]{1,2,3,4,5,6,7});
 		
-		Cursor<ShortType> genCursor = image.createCursor();
+		// we'll just test the default order
+		assertEquals(1,ImageUtils.getWidth(image));
+		assertEquals(2,ImageUtils.getHeight(image));
+		assertEquals(3,ImageUtils.getNChannels(image));
+		assertEquals(4,ImageUtils.getNSlices(image));
+		assertEquals(5,ImageUtils.getNFrames(image));
 		
-		int i = 0;
-		for (ShortType value : genCursor) {
-			value.set( (short) (65535 - (i%65536)) );
-			i++;
-		}
-		
-		short[] pixels = ImageUtils.getPlaneShorts(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<ShortType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
+		// could create an image with different dim ordering and then test them but not sure how to do this
+		//   outside of loading data via BioFormats/FileOpener
 	}
-
-	@Test
-	public void testGetPlaneUnsignedShorts() {
-		
-		ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>( new UnsignedShortType(), new ArrayContainerFactory() );
-
-		Image<UnsignedShortType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<UnsignedShortType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (UnsignedShortType value : genCursor) {
-			value.set( (short) (65535 - (i%65536)) );
-			i++;
-		}
-		
-		short[] pixels = ImageUtils.getPlaneUnsignedShorts(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<UnsignedShortType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals((short)cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneInts() {
-		
-		ImageFactory<IntType> factory = new ImageFactory<IntType>( new IntType(), new ArrayContainerFactory() );
-
-		Image<IntType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<IntType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (IntType value : genCursor) {
-			value.set( (int) (1234567 - (i%1234568)) );
-			i++;
-		}
-		
-		int[] pixels = ImageUtils.getPlaneInts(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<IntType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneUnsignedInts() {
-		
-		ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>( new UnsignedIntType(), new ArrayContainerFactory() );
-
-		Image<UnsignedIntType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<UnsignedIntType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (UnsignedIntType value : genCursor) {
-			value.set( (int) (1234567 - (i%1234568)) );
-			i++;
-		}
-		
-		int[] pixels = ImageUtils.getPlaneUnsignedInts(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<UnsignedIntType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneLongs() {
-		
-		ImageFactory<LongType> factory = new ImageFactory<LongType>( new LongType(), new ArrayContainerFactory() );
-
-		Image<LongType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<LongType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (LongType value : genCursor) {
-			value.set( (long) (1234567 - (i%1234568)) );
-			i++;
-		}
-		
-		long[] pixels = ImageUtils.getPlaneLongs(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<LongType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum]);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneFloats() {
-		
-		ImageFactory<FloatType> factory = new ImageFactory<FloatType>( new FloatType(), new ArrayContainerFactory() );
-
-		Image<FloatType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<FloatType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (FloatType value : genCursor) {
-			value.set( i+103030.689f );
-			i++;
-		}
-		
-		float[] pixels = ImageUtils.getPlaneFloats(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<FloatType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneDoubles() {
-
-		ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>( new DoubleType(), new ArrayContainerFactory() );
-
-		Image<DoubleType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<DoubleType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (DoubleType value : genCursor) {
-			value.set( i+103030.689 );
-			i++;
-		}
-		
-		double[] pixels = ImageUtils.getPlaneDoubles(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<DoubleType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
-	    		pNum++;
-	    	}
-	    }
-	}
-
-	@Test
-	public void testGetPlaneData() {
-
-		ImageFactory<IntType> factory = new ImageFactory<IntType>( new IntType(), new ArrayContainerFactory() );
-
-		Image<IntType> image = factory.createImage(new int[]{width,height});
-		
-		Cursor<IntType> genCursor = image.createCursor();
-		
-		int i = 0;
-		for (IntType value : genCursor) {
-			value.set( i );
-			i++;
-		}
-		
-		double[] pixels = ImageUtils.getPlaneData(image, width, height, new int[0]);
-
-		LocalizableByDimCursor<IntType> cursor = image.createLocalizableByDimCursor();
-		int pNum = 0;
-		int[] position = new int[2];
-	    for (int y = 0; y < height; y++) {
-	    	for (int x = 0; x < width; x++) {
-	    		position[0] = x;
-	    		position[1] = y;
-	    		cursor.setPosition(position);
-	    		assertEquals(cursor.getType().get(),pixels[pNum],0);
-	    		pNum++;
-	    	}
-	    }
-	}
-	 */
 }
