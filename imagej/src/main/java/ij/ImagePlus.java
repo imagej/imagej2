@@ -8,6 +8,7 @@ import ij.macro.Interpreter;
 import ij.plugin.frame.ContrastAdjuster;
 import ij.plugin.frame.Recorder;
 import imagej.SampleManager;
+import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.TypeManager;
 import imagej.SampleInfo;
@@ -24,6 +25,9 @@ import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.util.*;
 
+import mpicbg.imglib.container.ContainerFactory;
+import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.GenericByteType;
@@ -1813,57 +1817,42 @@ public class ImagePlus implements ImageObserver, Measurements {
 	}
 	
 			
-	// TODO - ideally we would call a helper method that creates an imglib image of dims {x,y,c,z,t} rathert than our stack.addSlice
-	//   apporach below. See if we can pull from NewImage and make common to here, there, and possibly ImageStack.
-
-	/** Returns a new hyperstack with this image's attributes
-		(e.g., width, height, spatial scale), but no image data. */
+	/* TODO - has problem - needs to create the image data which violates what this method says it does.
+	 *   another problem - 24 bit type not really supported by imglib. Use 32 bit but therefore not truly
+	 *   compatible with IJ 1.4. getBitDepth() will return 32 when passed in 24.
+	 */
+	/** Returns a new hyperstack with this image's attributes (e.g., width, height, spatial scale), but no image data. */
 	public ImagePlus createHyperStack(String title, int channels, int slices, int frames, int bitDepth) {
-		int size = channels*slices*frames;
-		ImageStack stack2 = new ImageStack(width, height, size); // create empty stack
-		/* OLD
-		ImageProcessor ip2 = null;
-		switch (bitDepth) {
-			case 8: ip2 = new ByteProcessor(width, height); break;
-			case 16: ip2 = new ShortProcessor(width, height); break;
-			case 24: ip2 = new ColorProcessor(width, height); break;
-			case 32: ip2 = new FloatProcessor(width, height); break;
-			default: throw new IllegalArgumentException("Invalid bit depth");
-		}
-		*/
-		/* NEW - has problem - needs to create the image data which violates what this method says it does
-		*/
+		ArrayContainerFactory arrayFactory = new ArrayContainerFactory();
+		arrayFactory.setPlanar(true);
+		ContainerFactory factory = arrayFactory;
+		if (this.stack != null)
+			if (this.stack.getStorage() != null)
+				factory = this.stack.getStorage().getContainerFactory();
+		int[] newDimensions = new int[]{width,height,channels,slices,frames};
+		Image<?> newImage;
 		switch (bitDepth)
 		{
 			case 8:
-				for (int i = 0; i < size; i++)
-					stack2.addSlice("<unlabled>", true, new byte[width*height]);  // unsigned byte
+				newImage = ImageUtils.createImage(new UnsignedByteType(), factory, newDimensions);
 				break;
 			case 16:
-				for (int i = 0; i < size; i++)
-					stack2.addSlice("<unlabled>", true, new short[width*height]);  // unsigned short
+				newImage = ImageUtils.createImage(new UnsignedShortType(), factory, newDimensions);
 				break;
 			case 24:
-				for (int i = 0; i < size; i++)
-					stack2.addSlice("<unlabled>", true, new int[width*height]);  // unsigned int
+				newImage = ImageUtils.createImage(new UnsignedIntType(), factory, newDimensions);
 				break;
 			case 32:
-				for (int i = 0; i < size; i++)
-					stack2.addSlice("<unlabled>", false, new float[width*height]);  // float
+				newImage = ImageUtils.createImage(new FloatType(), factory, newDimensions);
 				break;
 			case 64:
-				for (int i = 0; i < size; i++)
-					stack2.addSlice("<unlabled>", false, new double[width*height]);  // double
+				newImage = ImageUtils.createImage(new DoubleType(), factory, newDimensions);
 				break;
 			default:
 				throw new IllegalArgumentException("ImagePlus::createHyperStack(): invalid bit depth ("+bitDepth+")");
 		}
-		//OLD stack2.setPixels(ip2.getPixels(), 1); // can't create ImagePlus will null 1st image
-
+		ImageStack stack2 = new ImageStack(newImage);
 		ImagePlus imp2 = new ImagePlus(title, stack2);
-		//OLD stack2.setPixels(null, 1);
-		// NEW
-		//stack2.deleteLastSlice();
 		imp2.setDimensions(channels, slices, frames);
 		imp2.setCalibration(getCalibration());
 		imp2.setOpenAsHyperStack(true);
