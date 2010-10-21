@@ -276,14 +276,12 @@ public class ImageUtils
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(),containerFactory);
-				Image<UnsignedByteType> hatchedImage = factory.createImage(dimensions);
+				Image<UnsignedByteType> hatchedImage = createImage(new UnsignedByteType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<ByteType> factory = new ImageFactory<ByteType>(new ByteType(),containerFactory);
-				Image<ByteType> hatchedImage = factory.createImage(dimensions);
+				Image<ByteType> hatchedImage = createImage(new ByteType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
 			}
 		}
@@ -291,14 +289,12 @@ public class ImageUtils
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedShortType> factory = new ImageFactory<UnsignedShortType>(new UnsignedShortType(),containerFactory);
-				Image<UnsignedShortType> hatchedImage = factory.createImage(dimensions);
+				Image<UnsignedShortType> hatchedImage = createImage(new UnsignedShortType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<ShortType> factory = new ImageFactory<ShortType>(new ShortType(),containerFactory);
-				Image<ShortType> hatchedImage = factory.createImage(dimensions);
+				Image<ShortType> hatchedImage = createImage(new ShortType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
 			}
 		}
@@ -306,14 +302,12 @@ public class ImageUtils
 		{
 			if (unsigned)
 			{
-				ImageFactory<UnsignedIntType> factory = new ImageFactory<UnsignedIntType>(new UnsignedIntType(),containerFactory);
-				Image<UnsignedIntType> hatchedImage = factory.createImage(dimensions);
+				Image<UnsignedIntType> hatchedImage = createImage(new UnsignedIntType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
 			}
 			else
 			{
-				ImageFactory<IntType> factory = new ImageFactory<IntType>(new IntType(),containerFactory);
-				Image<IntType> hatchedImage = factory.createImage(dimensions);
+				Image<IntType> hatchedImage = createImage(new IntType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
 			}
 		}
@@ -325,21 +319,18 @@ public class ImageUtils
 			}
 			else
 			{
-				ImageFactory<LongType> factory = new ImageFactory<LongType>(new LongType(),containerFactory);
-				Image<LongType> hatchedImage = factory.createImage(dimensions);
+				Image<LongType> hatchedImage = createImage(new LongType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
 			}
 		}
 		else if (pixels instanceof float[])
 		{
-			ImageFactory<FloatType> factory = new ImageFactory<FloatType>(new FloatType(),containerFactory);
-			Image<FloatType> hatchedImage = factory.createImage(dimensions);
+			Image<FloatType> hatchedImage = createImage(new FloatType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
 		}
 		else if (pixels instanceof double[])
 		{
-			ImageFactory<DoubleType> factory = new ImageFactory<DoubleType>(new DoubleType(),containerFactory);
-			Image<DoubleType> hatchedImage = factory.createImage(dimensions);
+			Image<DoubleType> hatchedImage = createImage(new DoubleType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
 		}
 		else
