@@ -7,6 +7,11 @@ import imagej.process.function.unary.UnaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+/** UnaryTransformOperation tranforms the values in a dataset using the result of applying a UnaryFunction
+ *  computation that uses the values in the dataset. The computation takes a sample value from the dataset
+ *  and returns a value as defined by the given UnaryFunction. The Negate() function would be an example
+ *  of a UnaryFunction that returns the result of multiplying -1 * its input value.
+ * */
 public class UnaryTransformOperation<T extends RealType<T>> extends SingleCursorRoiOperation<T>
 {
 	private UnaryComputation computer;

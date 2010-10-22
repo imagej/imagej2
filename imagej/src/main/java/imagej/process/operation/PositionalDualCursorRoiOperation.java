@@ -8,14 +8,42 @@ import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+
+/**
+ * PositionalDualCursorRoiOperation is the prototypical positional operation that can be done between two Images. It
+ * is the base class for any operation that manipulates samples within two Images (using information about their position
+ * in their respective Images). However, the implementor of this abstract interface can create any additional reference
+ * data it needs to decide how to transform values in the Images if desired.
+ * 
+ * This operation works on a user defined N dimensional region of the images. It can be constrained to only
+ * apply to sample values that are filtered via user specified SelectionFunctions. It will update an Observer
+ * as the iteration takes place if one is attached to this operation.  
+ *
+ * Implementors of the abstract interface define beforeIteration(), insideIteration(), and afterIteration()
+ * methods.
+ * 
+ * Note that Positional cursor operations are slower than their nonpositional counterparts
+ * (i.e. SingleCursorRoiOperation vs. PositionalSingleCursorRoiOperation.
+ */
+
 public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 {
+	/** the Images to operate upon */
 	private Image<T> image1, image2;
+
+	/** the origins of the N dimensional regions within the Images that the operation will apply to */
 	private int[] origin1, origin2;
+
+	/** the ranges of the N dimensional regions within the Images that the operation will apply to */
 	private int[] span1, span2;
+
+	/** an Observer that is interested in our progress through the iteration */
 	private Observer observer;
+
+	/** SelectionFunctions that filter which of the samples are of interest */
 	private SelectionFunction selector1, selector2;
 	
+	/** constructor that takes two Image and region definitions */
 	protected PositionalDualCursorRoiOperation(Image<T> image1, int[] origin1, int[] span1, Image<T> image2, int[] origin2, int[] span2)
 	{
 		this.image1 = image1;
@@ -45,18 +73,29 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 	public int[] getOrigin2() { return origin2; }
 	public int[] getSpan2() { return span2; }
 	
+	/** allows (one) Observer to watch the iteration as it takes place. The Observer is updated every time a
+	 * sample is loaded (and not just when insideIteration() is invoked).
+	 * */
 	public void addObserver(Observer o) { this.observer = o; }
+
+	/** allows user to specify which subset of samples will be passed on to insideIteration(). Note that it is
+	 * more performant to pass null as a selection function rather than one that accepts all samples. */
 	public void setSelectionFunctions(SelectionFunction f1, SelectionFunction f2)
 	{
 		this.selector1 = f1;
 		this.selector2 = f2;
 	}
 	
-	
+	/** abstract - implemented by subclass */
 	public abstract void beforeIteration(RealType<T> type);
+
+	/** abstract - implemented by subclass */
 	public abstract void insideIteration(int[] position1, RealType<T> sample1, int[] position2, RealType<T> sample2);
+
+	/** abstract - implemented by subclass */
 	public abstract void afterIteration();
 	
+	/** runs the operation. does the iteration and calls subclass methods as appropriate */
 	public void execute()
 	{
 		if (this.observer != null)
