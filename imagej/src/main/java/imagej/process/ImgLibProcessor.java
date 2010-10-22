@@ -873,63 +873,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			findMinAndMax();
 	}
 
-	// this method is kind of kludgy
-	// not an override
-	@SuppressWarnings({"unchecked"})
-	/** sometimes it is useful to work with two images of the exact same type. this method will take any ImageProcessor and return an
-	 *  ImageLibProcessor of the exact same type as itself. if the input image matches already it is simply returned. otherwise a new
-	 *  processor is created and its pixels are populated from this ImgLibProcessor.
-	 * */
-	public ImgLibProcessor<T> getImgLibProcThatMatchesMyType(ImageProcessor inputProc)
-	{
-		// if inputProc's type matches me
-		//   just return inputProc
-		
-		if (inputProc instanceof ImgLibProcessor<?>)
-		{
-			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) inputProc;
-
-			if (TypeManager.sameKind(this.type, imglibProc.getType()))
-				return (ImgLibProcessor<T>) imglibProc;
-		}
-		
-		// otherwise
-		//   create a processor of my type with size matching ip's dimensions
-		//   populate the pixels
-		//   return it
-		
-		Image<T> image = imageData.createNewImage(new int[]{ inputProc.getWidth(), inputProc.getHeight() } );
-		
-		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, 0);
-		
-		boolean oldIntegralData = false;
-		if ((inputProc instanceof ByteProcessor) || (inputProc instanceof ShortProcessor))
-			oldIntegralData = true;
-
-		if (!oldIntegralData)
-		{
-			newProc.setPixels(inputProc.getPixels());
-		}
-		else  // funky issue where Java's signedness and IJ's unsignedness complicate setting the pixels
-		{
-			int w = newProc.getWidth();
-			int h = newProc.getHeight();
-			
-			int value;
-			for (int x = 0; x < w; x++)
-			{
-				for (int y = 0; y < h; y++)
-				{
-					// Must turn into int data and remove signedness
-					value = inputProc.get(x, y) & 0xffff;
-					newProc.setd(x, y, value);
-				}
-			}
-		}
-		
-		return newProc;
-	}
-	
 	/**  Convolves the current image plane data with the provided kernel. */
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
@@ -1468,6 +1411,63 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public Image<T> getImage()
 	{
 		return this.imageData;
+	}
+	
+	// this method is kind of kludgy
+	// not an override
+	@SuppressWarnings({"unchecked"})
+	/** sometimes it is useful to work with two images of the exact same type. this method will take any ImageProcessor and return an
+	 *  ImageLibProcessor of the exact same type as itself. if the input image matches already it is simply returned. otherwise a new
+	 *  processor is created and its pixels are populated from this ImgLibProcessor.
+	 * */
+	public ImgLibProcessor<T> getImgLibProcThatMatchesMyType(ImageProcessor inputProc)
+	{
+		// if inputProc's type matches me
+		//   just return inputProc
+		
+		if (inputProc instanceof ImgLibProcessor<?>)
+		{
+			ImgLibProcessor<?> imglibProc = (ImgLibProcessor<?>) inputProc;
+
+			if (TypeManager.sameKind(this.type, imglibProc.getType()))
+				return (ImgLibProcessor<T>) imglibProc;
+		}
+		
+		// otherwise
+		//   create a processor of my type with size matching ip's dimensions
+		//   populate the pixels
+		//   return it
+		
+		Image<T> image = imageData.createNewImage(new int[]{ inputProc.getWidth(), inputProc.getHeight() } );
+		
+		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, 0);
+		
+		boolean oldIntegralData = false;
+		if ((inputProc instanceof ByteProcessor) || (inputProc instanceof ShortProcessor))
+			oldIntegralData = true;
+
+		if (!oldIntegralData)
+		{
+			newProc.setPixels(inputProc.getPixels());
+		}
+		else  // funky issue where Java's signedness and IJ's unsignedness complicate setting the pixels
+		{
+			int w = newProc.getWidth();
+			int h = newProc.getHeight();
+			
+			int value;
+			for (int x = 0; x < w; x++)
+			{
+				for (int y = 0; y < h; y++)
+				{
+					// Must turn into int data and remove signedness
+					value = inputProc.get(x, y) & 0xffff;
+					newProc.setd(x, y, value);
+				}
+			}
+		}
+		
+		return newProc;
 	}
 	
 	/** returns an interpolated pixel value from double coordinates using current interpolation method */
