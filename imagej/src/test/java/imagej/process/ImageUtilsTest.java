@@ -281,14 +281,6 @@ public class ImageUtilsTest {
 		verifyDims(SUCCEED, new int[]{2,2}, new int[]{1,1}, new int[]{1,1});
 	}
 	
-	private void print(String name, int[] values)
-	{
-		System.out.print(name+" = ");
-		for (int value : values)
-			System.out.print(","+value);
-		System.out.println();
-	}
-	
 	@Test
 	public void testCopyFromImageToImage()
 	{

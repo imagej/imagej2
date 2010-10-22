@@ -336,6 +336,24 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testAssignFrom2Images()
+	{
+		// TODO : implement me
+	}
+	
+	@Test
+	public void testAssignFrom1Image()
+	{
+		// TODO : implement me
+	}
+	
+	@Test
+	public void testAutoThreshold()
+	{
+		// TODO : implement me
+	}
+	
+	@Test
 	public void testConvolve()
 	{
 		// predetermined, balanced kernel
@@ -438,6 +456,12 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testCopyBitsFunctionalInterface()
+	{
+		// TODO - implement
+	}
+	
 	@Test
 	public void testCreateImage()
 	{
@@ -673,6 +697,12 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testFilterEnum()
+	{
+		// TODO - implement
+	}
+	
+	@Test
 	public void testFlipVertical()
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -713,6 +743,18 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testGetdXY()
+	{
+		// TODO - implement
+	}
+	
+	@Test
+	public void testGetdInt()
+	{
+		// TODO - implement
+	}
+	
 	@Test
 	public void testGetfInt()
 	{
@@ -768,6 +810,19 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testGetImage()
+	{
+		// TODO - implement
+	}
+	
+	@Test
+	public void testGetImgLibProcThatMatchesMyType()
+	{
+		// TODO : implement me
+	}
+	
+	
 	@Test
 	public void testGetInt()
 	{
@@ -875,6 +930,12 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testGetMaxAllowedValue()
+	{
+		// TODO - implement
+	}
+	
+	@Test
 	public void testGetMin()
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -886,6 +947,12 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testGetMinAllowedValue()
+	{
+		// TODO - implement
+	}
+	
 	@Test
 	public void testGetPixelInterpolated()
 	{
@@ -1024,6 +1091,12 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testGetPlanePosition()
+	{
+		// TODO - implement
+	}
+	
+	@Test
 	public void testGetSnapshotPixels() 
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -1045,6 +1118,18 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testGetTotalSamples()
+	{
+		// TODO - implement
+	}
+	
+	@Test
+	public void testGetType()
+	{
+		// TODO - implement
+	}
+	
 	@Test
 	public void testInvert()
 	{
@@ -1366,6 +1451,18 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testSetdXY()
+	{
+		// TODO - implement
+	}
+	
+	@Test
+	public void testSetdInt()
+	{
+		// TODO - implement
+	}
+	
+	@Test
 	public void testSetfIntFloat()
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -1683,6 +1780,12 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testThresholdDouble()
+	{
+		// TODO - implement
+	}
+	
+	@Test
 	public void testToFloat()
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -1700,6 +1803,18 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@Test
+	public void testTransformMyself()
+	{
+		// TODO - implement
+	}
+	
+	@Test
+	public void testTransformMyselfUsingOtherDataset()
+	{
+		// TODO - implement
+	}
+	
 	@Test
 	public void testXorInt()
 	{
