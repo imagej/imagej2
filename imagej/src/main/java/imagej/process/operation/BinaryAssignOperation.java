@@ -5,6 +5,11 @@ import imagej.process.function.unary.UnaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+/** BinaryAssignOperation assigns to a destination dataset the result of applying a UnaryFunction computation
+ * to a source dataset. The computation takes a single sample value from the source dataset and returns a
+ * value as defined by the given UnaryFunction. the Sqr() function would be an example of a UnaryFunction that
+ * returns the square of its input value.
+ * */
 public class BinaryAssignOperation<T extends RealType<T>> extends DualCursorRoiOperation<T>
 {
 	private UnaryComputation computer;

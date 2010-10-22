@@ -15,7 +15,6 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class TypeManager {
 
 	// TODO is there a better way? ask.
-	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can
 	/** returns true if given imglib type is an unsigned type */
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
@@ -26,7 +25,6 @@ public class TypeManager {
 	}
 
 	// TODO is there a better way? ask.
-	//   Note - needed to go from type T to type RealType as our Hudson wouldn't build even though Eclipse can 
 	/** returns true if given imglib type is an integer type */
 	public static boolean isIntegralType(RealType<?> t) {
 		return (t instanceof IntegerType<?>);
@@ -39,11 +37,9 @@ public class TypeManager {
 	 */
 	public static double boundValueToType(RealType<?> type, double inputValue)
 	{
-		//if (isIntegralType(type))
-		//{
-			if (inputValue < type.getMinValue() ) inputValue = type.getMinValue();
-			if (inputValue > type.getMaxValue() ) inputValue = type.getMaxValue();
-		//}
+		if (inputValue < type.getMinValue() ) inputValue = type.getMinValue();
+		
+		if (inputValue > type.getMaxValue() ) inputValue = type.getMaxValue();
 
 		return inputValue;
 	}
@@ -51,6 +47,12 @@ public class TypeManager {
 	/** returns true if two imglib types are strictly compatible */
 	public static boolean sameKind(RealType<?> type1, RealType<?> type2)
 	{
+		// NOTE
+		//   Would like to do this but disallowed;
+		//     type1 instanceof type2 && type2 instanceof type1
+		//   There maybe a way to do it but I'm not sure how at the moment.
+		//   Unfortunately this means every time we add a type to ImageJ we need to edit this method.
+		
 		if ((type1 instanceof ByteType) && (type2 instanceof ByteType))
 		 	return true;
 		
