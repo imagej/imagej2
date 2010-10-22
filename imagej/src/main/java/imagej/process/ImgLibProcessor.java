@@ -48,6 +48,7 @@ import imagej.process.function.unary.UnaryFunction;
 import imagej.process.function.unary.XorUnaryFunction;
 import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.BinaryTransformOperation;
+import imagej.process.operation.BinaryTransformPositionalOperation;
 import imagej.process.operation.BlurFilterOperation;
 import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
@@ -55,12 +56,12 @@ import imagej.process.operation.MinMaxOperation;
 import imagej.process.operation.NAryTransformOperation;
 import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.QueryOperation;
-import imagej.process.operation.ResetUsingMaskOperation;
 import imagej.process.operation.TernaryAssignOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.SetPlaneOperation;
 import imagej.process.operation.UnaryTransformPositionalOperation;
 import imagej.process.query.HistogramQuery;
+import imagej.selection.MaskOffSelectionFunction;
 import imagej.selection.MaskOnSelectionFunction;
 import imagej.selection.SelectionFunction;
 
@@ -1793,7 +1794,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageOrigin = originOfRoi();
 		int[] imageSpan = spanOfRoiPlane();
 
-		ResetUsingMaskOperation<T> resetOp = new ResetUsingMaskOperation<T>(snapData,snapOrigin,snapSpan,this.imageData,imageOrigin,imageSpan,mask);
+		CopyInput2BinaryFunction copyFunc = new CopyInput2BinaryFunction();
+		
+		BinaryTransformPositionalOperation<T> resetOp =
+			new BinaryTransformPositionalOperation<T>(this.imageData, imageOrigin, imageSpan,
+														snapData, snapOrigin, snapSpan, copyFunc);
+		
+		MaskOffSelectionFunction maskOff = new MaskOffSelectionFunction(imageOrigin, imageSpan, (byte[])mask.getPixels());
+		
+		resetOp.setSelectionFunctions(maskOff, null);
 
 		resetOp.execute();
 		
@@ -1802,9 +1811,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			this.min = this.snapshotMin;
 			this.max = this.snapshotMax;
 		}
-		
-		// TODO : replace resetOp with a BinaryAssignPositionalOperation (need to define) that uses MaskOnSelectionFunction as a
-		//   selection function to filter which samples are acted on. And pass CopyUnaryFunction as the operation to do.
 	}
 
 	// TODO - refactor

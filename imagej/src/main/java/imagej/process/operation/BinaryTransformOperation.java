@@ -7,7 +7,7 @@ import imagej.process.function.binary.BinaryFunction;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-/** BinaryTransformOperation tranforms the values in a destination dataset using the result of applying a BinaryFunction
+/** BinaryTransformOperation transforms the values in a destination dataset using the result of applying a BinaryFunction
  *  computation that uses the values in both the source and destination datasets. The computation takes a two sample
  *  values from the datasets and returns a value as defined by the given BinaryFunction. The Add() function would be an
  *  example of a BinaryFunction that returns the addition of its two input values.
