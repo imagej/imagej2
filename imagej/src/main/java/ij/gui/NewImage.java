@@ -1,20 +1,28 @@
 package ij.gui;
 
-import java.util.*;
-
-import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-
-import ij.*;
-import ij.process.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.Prefs;
+import ij.WindowManager;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import imagej.SampleInfo;
-import imagej.SampleInfo.ValueType;
 import imagej.SampleManager;
+import imagej.SampleInfo.ValueType;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.TypeManager;
 import imagej.process.function.unary.FillUnaryFunction;
+
+import java.util.Properties;
+
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
 
 /** New image dialog box plus several static utility methods for creating images.*/
 public class NewImage
@@ -28,9 +36,9 @@ public class NewImage
 
 	// developer convenience: test old style compatibility without needing to set a preference
 	private static final boolean TEST_OLD_WAY = false;
-	
+
 	//***************** static members  ******************************************************
-	
+
     static final String NAME = "new.name";
     static final String TYPE = "new.type";
     static final String FILL = "new.fill";
@@ -57,17 +65,17 @@ public class NewImage
 	static
 	{
 		String name = Prefs.getString(SAMPLE_TYPE);
-		
+
 		sampleType = SampleManager.findSampleInfo(name);
-		
+
 		if (sampleType == null)
 			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
-		
+
 		// TODO - temporary kludge until IJ supports 1-bit images
 		if (sampleType.getNumBits() < 8)
 			sampleType = SampleManager.getSampleInfo(SampleInfo.ValueType.UBYTE);
 	}
-	
+
 	static
 	{
 		sampleNames = new String[9];
@@ -85,11 +93,11 @@ public class NewImage
 	}
 
 	//***************** constructor ******************************************************
-	
+
     public NewImage() {
     	openImage();
     }
-    
+
 	//***************** private interface  ******************************************************
 
 	private boolean compatibleShowDialog() {
@@ -155,8 +163,8 @@ public class NewImage
 				if (size>available) {
 					IJ.error("Insufficient Memory", "There is not enough free memory to allocate a \n"
 					+ size2+" stack.\n \n"
-					+ "Memory available: "+available/(1024*1024)+"MB\n"		
-					+ "Memory in use: "+IJ.freeMemory()+"\n \n"	
+					+ "Memory available: "+available/(1024*1024)+"MB\n"
+					+ "Memory in use: "+IJ.freeMemory()+"\n \n"
 					+ "More information can be found in the \"Memory\"\n"
 					+ "sections of the ImageJ installation notes at\n"
 					+ "\""+IJ.URL+"/docs/install/\".");
@@ -203,12 +211,12 @@ public class NewImage
 		//else
 		return new ImagePlus();
 	}
-	
+
 	private boolean currentShowDialog()
 	{
 		if (type<GRAY8 || type>ImagePlus.IMGLIB)
 			throw new IllegalArgumentException("unknown image type "+type);
-		
+
 		if ((fillWith < 0) || (fillWith >= fill.length))
 			fillWith = 0;
 
@@ -219,25 +227,25 @@ public class NewImage
 		gd.addNumericField("Width:", width, 0, 5, "pixels");
 		gd.addNumericField("Height:", height, 0, 5, "pixels");
 		gd.addNumericField("Slices:", slices, 0, 5, "");
-		
+
 		gd.showDialog();
-		
+
 		if (gd.wasCanceled())
 			return false;
-		
+
 		name = gd.getNextString();
 
 		String typeName = gd.getNextChoice();
-		
+
 		SampleInfo info = SampleManager.findSampleInfo(typeName);
-		
+
 		if (info == null)
 			throw new IllegalArgumentException("unknown sample type chosen "+typeName);
 
 		sampleType = info;
-		
+
 		type = ImagePlus.IMGLIB;
-		
+
 		fillWith = gd.getNextChoiceIndex();
 		width = (int)gd.getNextNumber();
 		height = (int)gd.getNextNumber();
@@ -255,21 +263,21 @@ public class NewImage
 		{
 			// WORKS
 			ImgLibProcessor<?> proc = (ImgLibProcessor<?>)stack.getProcessor(plane+1);
-			
+
 			// ALSO now works. Used to be a problem.
 			//imp.setPosition(plane+1);
 			//ImgLibProcessor<?> proc = (ImgLibProcessor<?>)imp.getProcessor();
-			
+
 			proc.transform(fillFunc, null);
 		}
 	}
-	
+
 	private static void fillBlack(ImagePlus imp)
 	{
 		SampleInfo.ValueType type = SampleManager.getValueType(imp);
-		
+
 		SampleInfo info = SampleManager.getSampleInfo(type);
-		
+
 		if (info.isIntegral())
 		{
 			// fill with min
@@ -282,17 +290,17 @@ public class NewImage
 			fill(imp,0);
 		}
 	}
-	
+
 	private static void fillRamp(ImagePlus imp)
 	{
 		int width = imp.getWidth();
 		int height = imp.getHeight();
-		
+
 		double[] ramp = new double[width];
-		
+
 		SampleInfo.ValueType type = SampleManager.getValueType(imp);
 		SampleInfo info = SampleManager.getSampleInfo(type);
-		
+
 		// integral data
 		if (info.isIntegral())
 		{
@@ -302,7 +310,7 @@ public class NewImage
 			double max = realType.getMaxValue();
 			for (int x = 0; x < width; x++)
 			{
-				double relSize = ((double)x)/(width-1); 
+				double relSize = ((double)x)/(width-1);
 				ramp[x] = min + (relSize*(max-min));
 			}
 		}
@@ -310,9 +318,9 @@ public class NewImage
 		{
 			// create a ramp between 0 and 1
 			for (int x = 0; x < width; x++)
-				ramp[x] = ((double)x) / (width-1); 
+				ramp[x] = ((double)x) / (width-1);
 		}
-		
+
 		// set each plane's pixels to the ramp values
 		int planeCount = imp.getNSlices();
 		for (int plane = 0; plane < planeCount; plane++)
@@ -323,13 +331,13 @@ public class NewImage
 					proc.setd(x, y, ramp[x]);
 		}
 	}
-	
+
 	private static void fillWhite(ImagePlus imp)
 	{
 		SampleInfo.ValueType type = SampleManager.getValueType(imp);
-		
+
 		SampleInfo info = SampleManager.getSampleInfo(type);
-		
+
 		if (info.isIntegral())
 		{
 			// fill with max
@@ -342,7 +350,7 @@ public class NewImage
 			fill(imp,1.0);
 		}
 	}
-	
+
 	private static void fillZero(ImagePlus imp)
 	{
 		fill(imp, 0);
@@ -382,16 +390,16 @@ public class NewImage
 
 		if (numPresent > 1)
 			return FILL_ZERO;
-		
+
 		if (white)
 			return FILL_WHITE;
-		
+
 		if (black)
 			return FILL_BLACK;
-		
+
 		if (ramp)
 			return FILL_RAMP;
-		
+
 		return FILL_ZERO;
 	}
 
@@ -399,18 +407,17 @@ public class NewImage
 	{
 		return SampleManager.getSampleInfo(type).getName();
 	}
-	
+
 	private static ImagePlus createImagePlus(String title, int width, int height, int nSlices, RealType<?> type, int options)
 	{
 		int[] dimensions = new int[]{width, height, 1, nSlices};
-		
-		ArrayContainerFactory factory = new ArrayContainerFactory();
-		factory.setPlanar(true);
-		
+
+		PlanarContainerFactory factory = new PlanarContainerFactory();
+
 		Image<?> image = ImageUtils.createImage(type, factory, dimensions);
-		
+
 		ImagePlus imp = ImageUtils.createImagePlus(image);
-		
+
 		if (imp != null)
 		{
 			switch (getFill(options))
@@ -418,22 +425,22 @@ public class NewImage
 				case FILL_RAMP:
 					fillRamp(imp);
 					break;
-					
+
 				case FILL_WHITE:
 					fillWhite(imp);
 					break;
-					
+
 				case FILL_BLACK:
 					fillBlack(imp);
 					break;
-					
+
 				default:
 					fillZero(imp);
 					break;
 			}
-			
+
 			double min, max;
-			
+
 			if ( ! TypeManager.isIntegralType(type))  // float type
 			{
 				min = 0;
@@ -447,10 +454,10 @@ public class NewImage
 
 			imp.getProcessor().setMinAndMax(min, max);
 		}
-		
+
 		return imp;
 	}
-	
+
 	private void openImage() {
 		if (!showDialog())
 			return;
@@ -472,14 +479,15 @@ public class NewImage
 		else
 			return currentShowDialog();
 	}
-	
+
     //***************** public interface ******************************************************
-    
+
 	/** create an ImagePlus of specified dimensions backed by old style processors.
 	 * @deprecated Use {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type,
 	 * int options)} instead.
 	 */
-	public static ImagePlus createImage(String title, int width, int height, int nSlices, int bitDepth, int options)
+	@Deprecated
+  public static ImagePlus createImage(String title, int width, int height, int nSlices, int bitDepth, int options)
 	{
 		ImagePlus imp = null;
 		switch (bitDepth) {
@@ -491,14 +499,14 @@ public class NewImage
 		}
 		return imp;
 	}
-	
+
 	/** create an ImagePlus of specified type and dimensions. Depending upon the existence of the compatibility preference
-	 *  may return 1.4 compatible data and processors. Otherwise returns an imglib aware ImagePlus. 
+	 *  may return 1.4 compatible data and processors. Otherwise returns an imglib aware ImagePlus.
 	 */
 	public static ImagePlus createImage(String title, int width, int height, int nSlices, ValueType type, int options)
 	{
 		ImagePlus imp = null;
-		
+
 		if ((TEST_OLD_WAY) || (Prefs.get(VERSION_1_4_COMPATIBILITY, false)))
 		{
 			// old data/processors desired
@@ -521,15 +529,16 @@ public class NewImage
 			RealType<?> rType = SampleManager.getRealType(type);
 			imp = createImagePlus(title, width, height, nSlices, rType, options);
 		}
-		
+
 		return imp;
 	}
-	
+
 	/** create an old style byte image with given dimensions
 	 * @deprecated Use
 	 *  {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type, int options)}
 	*/
-	public static ImagePlus createByteImage(String title, int width, int height, int slices, int options) {
+	@Deprecated
+  public static ImagePlus createByteImage(String title, int width, int height, int slices, int options) {
 		int fill = getFill(options);
 		byte[] pixels = new byte[width*height];
 		switch (fill) {
@@ -565,7 +574,8 @@ public class NewImage
 	 * @deprecated Use
 	 *  {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type, int options)}
 	*/
-	public static ImagePlus createFloatImage(String title, int width, int height, int slices, int options) {
+	@Deprecated
+  public static ImagePlus createFloatImage(String title, int width, int height, int slices, int options) {
 		int fill = getFill(options);
 		float[] pixels = new float[width*height];
 		switch (fill) {
@@ -600,7 +610,8 @@ public class NewImage
 	 * @deprecated Use
 	 *  {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type, int options)}
 	*/
-	public static ImagePlus createRGBImage(String title, int width, int height, int slices, int options) {
+	@Deprecated
+  public static ImagePlus createRGBImage(String title, int width, int height, int slices, int options) {
 		int fill = getFill(options);
 		int[] pixels = new int[width*height];
 		switch (fill) {
@@ -642,7 +653,8 @@ public class NewImage
 	 * @deprecated Use
 	 *  {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type, int options)}
 	*/
-	public static ImagePlus createShortImage(String title, int width, int height, int slices, int options) {
+	@Deprecated
+  public static ImagePlus createShortImage(String title, int width, int height, int slices, int options) {
 		int fill = getFill(options);
 		short[] pixels = new short[width*height];
 		switch (fill) {
@@ -676,7 +688,8 @@ public class NewImage
 	/** @deprecated Obsolete. Use
 	 *  {@link #NewImage.createImage(String title, int width, int height, int nSlices, ValueType type, int options)}
 	*/
-	public static ImagePlus createUnsignedShortImage(String title, int width, int height, int slices, int options) {
+	@Deprecated
+  public static ImagePlus createUnsignedShortImage(String title, int width, int height, int slices, int options) {
 		return createShortImage(title, width, height, slices, options);
 	}
 
@@ -684,10 +697,11 @@ public class NewImage
 	 * @deprecated Use {@link #NewImage.open(String title, int width, int height, int nSlices, ValueType type,
 	 * int options)} instead.
 	 */
-	public static void open(String title, int width, int height, int nSlices, int type, int options)
+	@Deprecated
+  public static void open(String title, int width, int height, int nSlices, int type, int options)
 	{
 		ValueType vType = ValueType.UBYTE;
-		
+
 		switch (type)
 		{
 			case GRAY8:
@@ -706,7 +720,7 @@ public class NewImage
 				// do nothing but accept default valueType set above
 				break;
 		}
-		
+
 		open(title, width, height, nSlices, vType, options);
 	}
 
@@ -717,12 +731,12 @@ public class NewImage
 		ImagePlus imp = createImage(title, width, height, nSlices, type, options);
 		if (imp!=null)
 		{
-			WindowManager.checkForDuplicateName = true;          
+			WindowManager.checkForDuplicateName = true;
 			imp.show();
 			IJ.showStatus(IJ.d2s(((System.currentTimeMillis()-startTime)/1000.0),2)+" seconds");
 		}
 	}
-	
+
 	/** Called when ImageJ quits. */
 	public static void savePreferences(Properties prefs) {
 		prefs.put(NAME, name);

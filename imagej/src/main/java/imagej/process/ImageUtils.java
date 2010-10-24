@@ -1,7 +1,5 @@
 package imagej.process;
 
-import java.io.File;
-
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
@@ -10,13 +8,14 @@ import imagej.io.ImageOpener;
 import imagej.process.function.unary.CopyUnaryFunction;
 import imagej.process.operation.BinaryAssignOperation;
 import imagej.process.operation.GetPlaneOperation;
+
+import java.io.File;
+
 import loci.formats.FormatTools;
-import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.ContainerFactory;
-import mpicbg.imglib.container.array.Array;
-import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.container.basictypecontainer.DataAccess;
-import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
@@ -34,42 +33,42 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 // TODO
 //   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when
-//     we can call ImagePlus::setDimensions(int[] dims) 
+//     we can call ImagePlus::setDimensions(int[] dims)
 //   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
 /** this class designed to hold functionality that could be migrated to imglib */
 public class ImageUtils
 {
-	
+
 	// ***************** public methods  **************************************************
-	
+
 	/** gets the last n-2 dimensions of a n-dimensional int array. */
 	public static int[] getDimsBeyondXY(int[] fullDims)
 	{
 		if (fullDims.length < 2)
 			throw new IllegalArgumentException("Image must be at least 2-D");
-		
+
 		int[] extraDims = new int[fullDims.length-2];
-		
+
 		for (int i = 0; i < extraDims.length; i++)
 			extraDims[i] = fullDims[i+2];
-		
+
 		return extraDims;
 	}
-	
+
 	/** returns, as a long, the total number of samples present in an image of given dimensions */
 	public static long getTotalSamples(int[] dimensions)
 	{
 		int numDims = dimensions.length;
-		
+
 		if (numDims == 0)
 			return 0;
-		
+
 		long totalSamples = 1;
-		
+
 		for (int i = 0; i < numDims; i++)
 			totalSamples *= dimensions[i];
-		
+
 		return totalSamples;
 	}
 
@@ -79,17 +78,17 @@ public class ImageUtils
 	public static long getTotalPlanes(int[] dimensions)
 	{
 		int numDims = dimensions.length;
-		
+
 		if (numDims < 2)
 			return 0;
-	
+
 		if (numDims == 2)
 			return 1;
-		
+
 		// else numDims > 2
-		
+
 		int[] sampleSpace = getDimsBeyondXY(dimensions);
-		
+
 		return getTotalSamples(sampleSpace);
 	}
 
@@ -100,7 +99,7 @@ public class ImageUtils
 	{
 		return getTotalSamples(image.getDimensions());
 	}
-	
+
 	/** gets the imglib type of an imglib image */
 	public static RealType<?> getType(Image<?> image)
 	{
@@ -109,9 +108,9 @@ public class ImageUtils
 		cursor.close();
 		return type;
 	}
-	
+
 	/** copies a plane of data of specified size from an imglib image to an output array of doubles
-	 * 
+	 *
 	 * @param image - the image we want to pull the data from
 	 * @param w - the desired width
 	 * @param h - the desire height
@@ -137,25 +136,16 @@ public class ImageUtils
 			}
 			return data;
 		}
-		
+
 	// TODO: Can we extract these arrays without case logic? Seems difficult...
 
-	/** Obtains planar access instance backing the given image, if any. */
-	public static PlanarAccess<?> getPlanarAccess(Image<?> im) {
-		PlanarAccess<?> planarAccess = null;
-		Container<?> container = im.getContainer();
-		if (container instanceof Array) {
-			Array<?, ?> array = (Array<?, ?>) container;
-			final DataAccess dataAccess = array.update(null);
-			if (dataAccess instanceof PlanarAccess) {
-				// NB: This is the #2 container type mentioned above.
-				planarAccess = (PlanarAccess<?>) dataAccess;
-			}
-		}
-		return planarAccess;
-	}
+  /** Obtains planar access instance backing the given image, if any. */
+  public static PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(Image<?> im) {
+    // TODO: Move ImageOpener.getPlanarAccess somewhere more suitable.
+    return ImageOpener.getPlanarAccess(im);
+  }
 
-	/**
+  /**
 	 * Gets the plane at the given position from the specified image,
 	 * by reference if possible.
 	 *
@@ -170,7 +160,7 @@ public class ImageUtils
 			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
 		}
 
-		final PlanarAccess<?> planarAccess = getPlanarAccess(im);
+		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageUtils.getPlanarAccess(im);
 		if (planarAccess == null) {
 			return getPlaneCopy(im, planePos);
 		}
@@ -179,7 +169,7 @@ public class ImageUtils
 		final int[] lengths = new int[dims.length - 2];
 		for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
 		final int no = Index.positionToRaster(lengths, planePos);
-		return planarAccess.getPlane(no);
+		return planarAccess.getPlane(no).getCurrentStorageArray();
 	}
 
 	/**
@@ -201,7 +191,7 @@ public class ImageUtils
 			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
 		}
 
-		final PlanarAccess planarAccess = getPlanarAccess(im);
+		final PlanarAccess planarAccess = ImageUtils.getPlanarAccess(im);
 		if (planarAccess == null) {
 			// TODO
 			throw new RuntimeException("Unimplemented");
@@ -211,7 +201,8 @@ public class ImageUtils
 		final int[] lengths = new int[dims.length - 2];
 		for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
 		final int no = Index.positionToRaster(lengths, planePos);
-		planarAccess.setPlane(no, plane);
+		// TODO: move ImageOpener.makeArray somewhere more suitable.
+		planarAccess.setPlane(no, ImageOpener.makeArray(plane));
 	}
 
 	/** throws an exception if the combination of origins and spans is outside an image's dimensions */
@@ -224,7 +215,7 @@ public class ImageUtils
 		// origin/span dimensions should match image dimensions
 		if (origin.length != imageDimensions.length)
 			throw new IllegalArgumentException("verifyDimensions() : origin/span (dim="+origin.length+") different size than input image (dim="+imageDimensions.length+")");
-		
+
 		// make sure origin in a valid range : within bounds of source image
 		for (int i = 0; i < origin.length; i++)
 			if ((origin[i] < 0) || (origin[i] >= imageDimensions[i]))
@@ -240,7 +231,7 @@ public class ImageUtils
 			if ( (origin[i] + span[i]) > imageDimensions[i] )
 				throw new IllegalArgumentException("verifyDimensions() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
-	
+
 
 	/** copies data from one image to another given origins and dimensional spans */
 	public static <K extends RealType<K>>
@@ -248,16 +239,16 @@ public class ImageUtils
 									Image<K> dstImage, int[] dstOrigin, int[] dstSpan)
 	{
 		CopyUnaryFunction copyFunc = new CopyUnaryFunction();
-		
+
 		BinaryAssignOperation<K> copier =
 			new BinaryAssignOperation<K>(dstImage, dstOrigin, dstSpan, srcImage, srcOrigin, srcSpan, copyFunc);
 
 		copier.execute();
 	}
-	
+
 	/** creates an ImgLibProcessor populated with given pixel data. Note that this method creates an imglib Image<?>
 	 * that contains the pixel data and only the returned ImgLibProcessor has access to this Image<?>.
-	 *  
+	 *
 	 * @param width - desired width of image
 	 * @param height - desired height of image
 	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
@@ -265,13 +256,12 @@ public class ImageUtils
 	 */
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
 	{
-		ArrayContainerFactory containerFactory = new ArrayContainerFactory();
-		containerFactory.setPlanar(true);
-		
+		PlanarContainerFactory containerFactory = new PlanarContainerFactory();
+
 		ImgLibProcessor<?> proc = null;
-		
+
 		int[] dimensions = new int[]{width, height, 1};
-		
+
 		if (pixels instanceof byte[])
 		{
 			if (unsigned)
@@ -335,12 +325,12 @@ public class ImageUtils
 		}
 		else
 			throw new IllegalArgumentException("createProcessor(): passed unknown type of pixels - "+pixels.getClass());
-		
+
 		proc.setPixels(pixels);
-		
+
 		return proc;
 	}
-	
+
 
 	/** creates an ImagePlus from an imglib Image<?> */
 	public static ImagePlus createImagePlus(final Image<?> img)
@@ -350,7 +340,7 @@ public class ImageUtils
 
 	/** creates an ImagePlus from an imglib Image<?> and a string.
 	 * @param img - the imglib Image<?> that will back the ImagePlus
-	 * @param id - a string representing either a filename or a URL (used to populate the ImagePlus' FileInfo 
+	 * @param id - a string representing either a filename or a URL (used to populate the ImagePlus' FileInfo
 	 */
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
@@ -361,9 +351,9 @@ public class ImageUtils
 		final int sizeT = getNFrames(img);
 
 		final ImageStack stack = new ImageStack(img);
-		
+
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
-		
+
 		if (id != null)
 		{
 			final FileInfo fi = new FileInfo();
@@ -387,7 +377,7 @@ public class ImageUtils
 
 		return imp;
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	public static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
 	{
@@ -425,7 +415,7 @@ public class ImageUtils
 	 * get a plane of data from an imglib image
 	 * @param im - the imglib image we will be pulling plane from
 	 * @param planePos - the position of the plane within the image
-	 * @return an array of primitive type matching the imglib image's type 
+	 * @return an array of primitive type matching the imglib image's type
 	 */
 	@SuppressWarnings({"unchecked"})
 	private static Object getPlaneCopy(Image<? extends RealType<?>> im, int[] planePos)

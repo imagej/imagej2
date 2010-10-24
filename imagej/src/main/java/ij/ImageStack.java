@@ -16,9 +16,8 @@ import java.awt.image.ColorModel;
 import java.util.ArrayList;
 
 import mpicbg.imglib.container.ContainerFactory;
-import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -43,13 +42,13 @@ public class ImageStack {
 	private double min=Double.MAX_VALUE;
 	private double max;
 	private float[] cTable;
-	
+
 	private enum OrigProcType {BYTE,SHORT,FLOAT,COLOR,IMGLIB};
 	private PlaneStack<?> stack;
 	private ArrayList<String> labels;
 	private ContainerFactory factory;
 	private OrigProcType origProc;
-	
+
 	/**
 	* Creates a new, empty image stack given width, height, ColorModel, and ContainerFactory. If ContainerFactory is null
 	* all planes of ImageStack will be created inside ArrayContainers.
@@ -69,7 +68,8 @@ public class ImageStack {
 	* Creates a new, empty image stack given width, height, and ColorModel.
 	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
 	*/
-	public ImageStack(int width, int height, ColorModel cm)
+	@Deprecated
+  public ImageStack(int width, int height, ColorModel cm)
 	{
 		this(width,height,cm,null);
 	}
@@ -78,25 +78,26 @@ public class ImageStack {
 	* Creates a new, empty image stack given width, and height.
 	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
 	*/
-	public ImageStack(int width, int height)
+	@Deprecated
+  public ImageStack(int width, int height)
 	{
 		this(width, height, null);
 	}
-	
+
 	/*
 	// Default constructor.
 	public ImageStack()
 	{
 		// TODO - this method may only be called in Macro_Runner and I've changed the call there from
 		//   "new ImageStack().getClass()" to "ImageStack.class". Might be able to phase out this method.
-		
+
 		//throw new OperationNotSupportedException("this method is no longer supported");
-		
+
 		this.stack = null;
 		this.labels = new ArrayList<String>();
 	}
 	*/
-	
+
 	// TODO - NEW - needed to support ImagePlus::flush()
 	//   Note that its side effect of deleting all existing slice labels is not the same as IJ. Since IJ had few constraints
 	//   lots of behavior is possible. We must document that ImagePlus::flush() will reinit the stack and labels are lost.
@@ -107,12 +108,13 @@ public class ImageStack {
 		this.stack = null;
 		this.labels = new ArrayList<String>();
 	}
-	
+
 	/**
 	* Creates a new image stack given width and height of planes. Does NOT preallocate stack to given size parameter.
 	* @deprecated Use {@link #ImageStack(int width, int height, ColorModel cm, ContainerFactory factory)} instead.
 	*/
-	public ImageStack(int width, int height, int size)
+	@Deprecated
+  public ImageStack(int width, int height, int size)
 	{
 		this(width,height);  // ignore size. this method is no longer needed
 	}
@@ -140,8 +142,7 @@ public class ImageStack {
 
 	private ContainerFactory createDefaultFactory()
 	{
-		ArrayContainerFactory f = new ArrayContainerFactory();
-		f.setPlanar(true);
+		PlanarContainerFactory f = new PlanarContainerFactory();
 		return f;
 	}
 
@@ -149,7 +150,7 @@ public class ImageStack {
 	{
 		return labels.size();
 	}
-	
+
 	private void initStack(boolean unsigned, Object data)
 	{
 		if (data instanceof byte[])
@@ -191,18 +192,18 @@ public class ImageStack {
 		else
 			throw new IllegalArgumentException("ImageStack::initStack(): unknown data type "+data.getClass());
 	}
-	
+
 	private void addSliceToImage(int atDepth, String label, boolean unsigned, Object pixels)
 	{
 		// ADD PLANE
-		
+
 		if (stack == null)
 			initStack(unsigned,pixels);
-		
+
 		stack.insertPlane(atDepth, unsigned, pixels);
-		
+
 		// UPDATE LABELS
-		
+
 		labels.add(atDepth,label);
 	}
 
@@ -210,9 +211,9 @@ public class ImageStack {
 	{
 		if (stack == null)
 			return;
-		
+
 		long numSlices = stack.getNumPlanes();
-		
+
 		// 1 plane
 		if (numSlices <= 1)  // a one plane image
 		{
@@ -220,46 +221,48 @@ public class ImageStack {
 			labels.remove(0);
 			return;
 		}
-		
+
 		// 2 or more planes
-		
+
 		// remove the label associated with the sliceNumber
 		labels.remove(sliceNumber);
 
 		// and then create a smaller image and copy relevant data to it
 		stack.deletePlane(sliceNumber);
 	}
-	
+
 	/**
 	* Add a plane of data to the ImageStack.
 	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
 	*/
-	public void addSlice(String sliceLabel, Object pixels)
+	@Deprecated
+  public void addSlice(String sliceLabel, Object pixels)
 	{
 		addSlice(sliceLabel,true,pixels); // TODO - always true keeps us from supporting signed integral pixel types
 	}
-	
+
 	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
 	public void addSlice(String sliceLabel, boolean dataIsUnsigned, Object pixels)
 	{
-		if (pixels==null) 
+		if (pixels==null)
 			throw new IllegalArgumentException("'pixels' is null!");
 
-		if (!pixels.getClass().isArray()) 
+		if (!pixels.getClass().isArray())
 			throw new IllegalArgumentException("'pixels' is not an array");
 
 		int atPlaneNumber = 0;
 		if (stack != null)
 			atPlaneNumber = stack.getEndPosition();
-		
+
 		addSliceToImage(atPlaneNumber, sliceLabel, dataIsUnsigned, pixels);
 	}
-	
+
 	/**
 	* Obsolete. Short images are always unsigned.
 	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
 	*/
-	public void addUnsignedShortSlice(String sliceLabel, Object pixels)
+	@Deprecated
+  public void addUnsignedShortSlice(String sliceLabel, Object pixels)
 	{
 		addSlice(sliceLabel, pixels);
 	}
@@ -267,22 +270,22 @@ public class ImageStack {
 	private boolean processorIsUnsigned(ImageProcessor ip)
 	{
 		boolean unsigned = false;
-		
+
 		if ((ip instanceof ByteProcessor) || (ip instanceof ShortProcessor) || (ip instanceof ColorProcessor))
 			unsigned = true;
-		
+
 		if (ip instanceof ImgLibProcessor<?>)
 			unsigned = TypeManager.isUnsignedType(((ImgLibProcessor<?>) ip).getType());
-		
+
 		return unsigned;
 	}
-	
+
 	/** Adds the image in 'ip' to the end of the stack. */
 	public void addSlice(String sliceLabel, ImageProcessor ip)
 	{
 		if (ip.getWidth()!=width || ip.getHeight()!=height)
 			throw new IllegalArgumentException("Processor dimensions ("+ip.getWidth()+","+ip.getHeight()+") do not match stack dimensions ("+width+","+height+")");
-		
+
 		if (numSlices() == 0)
 		{
 			if (ip instanceof ByteProcessor)
@@ -302,12 +305,12 @@ public class ImageStack {
 			min = ip.getMin();
 			max = ip.getMax();
 		}
-		
+
 		boolean unsigned = processorIsUnsigned(ip);
-		
+
 		addSlice(sliceLabel, unsigned, ip.getPixels());
 	}
-	
+
 	/** Adds the image in 'ip' to the stack following slice 'n'. Adds
 		the slice to the beginning of the stack if 'n' is zero. */
 	public void addSlice(String sliceLabel, ImageProcessor ip, int n)
@@ -319,16 +322,16 @@ public class ImageStack {
 
 		addSliceToImage(n,sliceLabel,unsigned,ip.getPixels());
 	}
-	
+
 	/** Deletes the specified slice, were 1<=n<=nslices. */
 	public void deleteSlice(int n)
 	{
 		if (n<1 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
-		
+
 		deleteSliceFromImage(n-1);
 	}
-	
+
 	/** Deletes the last slice in the stack. */
 	public void deleteLastSlice()
 	{
@@ -339,7 +342,7 @@ public class ImageStack {
 				deleteSlice(endPos);
 		}
 	}
-	
+
     public int getWidth()
     {
     	return width;
@@ -349,12 +352,12 @@ public class ImageStack {
     {
     	return height;
     }
-    
+
 	public void setRoi(Rectangle roi)
 	{
 		this.roi = roi;
 	}
-	
+
 	public Rectangle getRoi()
 	{
 		if (roi==null)
@@ -362,7 +365,7 @@ public class ImageStack {
 		else
 			return(roi);
 	}
-	
+
 	/** Updates this stack so its attributes, such as min, max,
 		calibration table and color model, are the same as 'ip'. */
 	public void update(ImageProcessor ip)
@@ -374,7 +377,7 @@ public class ImageStack {
 			cm = ip.getColorModel();
 		}
 	}
-	
+
 	/** Returns the pixel array for the specified slice, were 1<=n<=nslices. */
 	public Object getPixels(int n)
 	{
@@ -382,7 +385,7 @@ public class ImageStack {
 			throw new IllegalArgumentException(outOfRange+n);
 		return getProcessor(n).getPixels();
 	}
-	
+
 	/** Assigns a pixel array to the specified slice,
 		were 1<=n<=nslices. */
 	public void setPixels(Object pixels, int n)
@@ -393,7 +396,7 @@ public class ImageStack {
 			throw new IllegalArgumentException("pixel reference is null!");
 		getProcessor(n).setPixels(pixels);
 	}
-	
+
 	/** Returns the stack as an array of 1D pixel arrays. Note
 		that the size of the returned array may be greater than
 		the number of slices currently in the stack, with
@@ -404,21 +407,21 @@ public class ImageStack {
 			return null;
 
 		int planes = (int)stack.getNumPlanes();
-		
+
 		Object[] pixelsFromAllSlices = new Object[planes];
-		
+
 		for (int i = 0; i < planes; i++)
 			pixelsFromAllSlices[i] = getProcessor(i+1).getPixels();
-		
+
 		return pixelsFromAllSlices;
 	}
-	
+
 	/** Returns the number of slices in this stack. */
 	public int getSize()
 	{
 		if (stack == null)
 			return 0;
-		
+
 		return stack.getEndPosition();
 	}
 
@@ -433,7 +436,7 @@ public class ImageStack {
 		else
 			return labels.toArray(new String[]{});
 	}
-	
+
 	/** Returns the label of the specified slice, were 1<=n<=nslices.
 		Returns null if the slice does not have a label. For DICOM
 		and FITS stacks, labels may contain header information. */
@@ -443,8 +446,8 @@ public class ImageStack {
 			throw new IllegalArgumentException(outOfRange+n);
 		return labels.get(n-1);
 	}
-	
-	/** Returns a shortened version (up to the first 60 characters or first newline and 
+
+	/** Returns a shortened version (up to the first 60 characters or first newline and
 		suffix removed) of the label of the specified slice.
 		Returns null if the slice does not have a label. */
 	public String getShortSliceLabel(int n)
@@ -470,7 +473,7 @@ public class ImageStack {
 			throw new IllegalArgumentException(outOfRange+n);
 		this.labels.set(n-1,label);
 	}
-	
+
 	/** Returns an ImageProcessor for the specified slice,
 		were 1<=n<=nslices. Returns null if the stack is empty.
 	*/
@@ -515,50 +518,50 @@ public class ImageStack {
 			ip.setCalibrationTable(cTable);
 		return ip;
 	}
-	
+
 	/** Assigns a new color model to this stack. */
 	public void setColorModel(ColorModel cm)
 	{
 		this.cm = cm;
 	}
-	
+
 	/** Returns this stack's color model. May return null. */
 	public ColorModel getColorModel()
 	{
 		return cm;
 	}
-	
+
 	/** Returns true if this is a 3-slice RGB stack. */
 	public boolean isRGB()
 	{
 		Image<?> image = null;
 		if (stack != null)
 			image = stack.getStorage();
-		
+
     	if ((image != null) && (numSlices()==3) && (ImageUtils.getType(image) instanceof UnsignedByteType))
     	{
     		String firstLabel = getSliceLabel(1);
-    		if (firstLabel!=null && firstLabel.equals("Red"))	
+    		if (firstLabel!=null && firstLabel.equals("Red"))
     			return true;
     	}
-    	
+
 		return false;
 	}
-	
+
 	/** Returns true if this is a 3-slice HSB stack. */
 	public boolean isHSB()
 	{
     	if (numSlices()==3)
     	{
     		String firstLabel = getSliceLabel(1);
-    		if (firstLabel!=null && firstLabel.equals("Hue"))	
+    		if (firstLabel!=null && firstLabel.equals("Hue"))
     			return true;
     	}
-		
+
     	return false;
 	}
 
-	/** Returns true if this is a virtual (disk resident) stack. 
+	/** Returns true if this is a virtual (disk resident) stack.
 		This method is overridden by the VirtualStack subclass. */
 	public boolean isVirtual()
 	{
@@ -579,10 +582,11 @@ public class ImageStack {
 		}
 	}
 
-	public String toString()
+	@Override
+  public String toString()
 	{
 		String v = isVirtual()?"(V)":"";
 		return ("stack["+getWidth()+"x"+getHeight()+"x"+getSize()+v+"]");
 	}
-		
+
 }

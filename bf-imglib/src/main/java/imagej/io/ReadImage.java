@@ -44,7 +44,7 @@ public class ReadImage {
   {
     final ImageOpener imageOpener = new ImageOpener();
     args = new String[] {//TEMP
-      "/Users/curtis/data/Spindle_Green_d3d.dv",//TEMP
+//      "/Users/curtis/data/Spindle_Green_d3d.dv",//TEMP
       "/Users/curtis/data/mitosis-test.ipw",//TEMP
       "/Users/curtis/data/test_greys.lif",//TEMP
       "/Users/curtis/data/slice1_810nm_40x_z1_pcc100_scanin_20s_01.sdt"//TEMP

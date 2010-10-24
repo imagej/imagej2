@@ -39,10 +39,16 @@ import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import mpicbg.imglib.container.Container;
-import mpicbg.imglib.container.array.Array;
-import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.container.basictypecontainer.DataAccess;
-import mpicbg.imglib.container.basictypecontainer.array.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ByteArray;
+import mpicbg.imglib.container.basictypecontainer.array.CharArray;
+import mpicbg.imglib.container.basictypecontainer.array.DoubleArray;
+import mpicbg.imglib.container.basictypecontainer.array.FloatArray;
+import mpicbg.imglib.container.basictypecontainer.array.IntArray;
+import mpicbg.imglib.container.basictypecontainer.array.LongArray;
+import mpicbg.imglib.container.basictypecontainer.array.ShortArray;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
@@ -105,8 +111,7 @@ public class ImageOpener implements StatusReporter {
     name = encodeName(name, dimTypes);
 
     // create image object
-    final ArrayContainerFactory containerFactory = new ArrayContainerFactory();
-    containerFactory.setPlanar(true);
+    final PlanarContainerFactory containerFactory = new PlanarContainerFactory();
     final ImageFactory<T> imageFactory =
       new ImageFactory<T>(type, containerFactory);
     final Image<T> img =
@@ -175,16 +180,12 @@ public class ImageOpener implements StatusReporter {
   // TODO: eliminate getPlanarAccess in favor of ImageUtils method elsewhere.
 
   /** Obtains planar access instance backing the given image, if any. */
-  public static PlanarAccess<?> getPlanarAccess(Image<?> im) {
-    PlanarAccess<?> planarAccess = null;
-    Container<?> container = im.getContainer();
-    if (container instanceof Array) {
-      Array<?, ?> array = (Array<?, ?>) container;
-      final DataAccess dataAccess = array.update(null);
-      if (dataAccess instanceof PlanarAccess) {
-        // NB: This is the #2 container type mentioned above.
-        planarAccess = (PlanarAccess<?>) dataAccess;
-      }
+  @SuppressWarnings("unchecked")
+  public static PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(Image<?> im) {
+    PlanarAccess<ArrayDataAccess<?>> planarAccess = null;
+    final Container<?> container = im.getContainer();
+    if (container instanceof PlanarAccess<?>) {
+      planarAccess = (PlanarAccess<ArrayDataAccess<?>>) container;
     }
     return planarAccess;
   }
@@ -222,6 +223,34 @@ public class ImageOpener implements StatusReporter {
         type = null;
     }
     return (T) type;
+  }
+
+  /** Wraps raw primitive array in imglib Array object. */
+  public static ArrayDataAccess<?> makeArray(Object array) {
+    final ArrayDataAccess<?> access;
+    if (array instanceof byte[]) {
+      access = new ByteArray((byte[]) array);
+    }
+    else if (array instanceof char[]) {
+      access = new CharArray((char[]) array);
+    }
+    else if (array instanceof double[]) {
+      access = new DoubleArray((double[]) array);
+    }
+    else if (array instanceof int[]) {
+      access = new IntArray((int[]) array);
+    }
+    else if (array instanceof float[]) {
+      access = new FloatArray((float[]) array);
+    }
+    else if (array instanceof short[]) {
+      access = new ShortArray((short[]) array);
+    }
+    else if (array instanceof long[]) {
+      access = new LongArray((long[]) array);
+    }
+    else access = null;
+    return access;
   }
 
   /** Converts the given image name back to a list of dimensional axis types. */
@@ -419,7 +448,7 @@ public class ImageOpener implements StatusReporter {
       System.arraycopy(plane, 0, planeCopy, 0, plane.length);
       planeArray = planeCopy;
     }
-    planarAccess.setPlane(no, planeArray);
+    planarAccess.setPlane(no, makeArray(planeArray));
   }
 
   private <T extends RealType<T>> void populatePlane(IFormatReader r,
