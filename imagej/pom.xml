@@ -7,7 +7,7 @@
   <parent>
     <groupId>imagej</groupId>
     <artifactId>imagej-base-pom</artifactId>
-    <version>1.08</version>
+    <version>1.09</version>
   </parent>
 
   <groupId>imagej</groupId>
@@ -260,7 +260,3 @@
   </profiles>
 
 </project>
-
-
-
-
