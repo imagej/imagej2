@@ -1,27 +1,34 @@
 package imagej.process;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import ij.Assert;
 import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
+import imagej.process.ImgLibProcessor.FilterType;
+import imagej.process.function.binary.AddBinaryFunction;
+import imagej.process.function.binary.BinaryFunction;
+import imagej.process.function.binary.SubtractBinaryFunction;
+import imagej.process.function.nary.AverageNAryFunction;
+import imagej.process.function.nary.NAryFunction;
+import imagej.process.function.unary.SqrUnaryFunction;
+import imagej.process.function.unary.UnaryFunction;
 
 import java.awt.Color;
 import java.util.Random;
 
 import mpicbg.imglib.container.array.ArrayContainerFactory;
-import mpicbg.imglib.container.planar.PlanarContainerFactory;
+//CTR PUT ME BACK import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
+import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.IntType;
+import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 import org.junit.Before;
@@ -29,12 +36,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 // TODO - there are a few TODOs sprinkled below
-//   note - we are only testing compatibility versus ImageJ's processors. We have no tests to verify other pixel types behave in any correct way
+//   note - we are only testing compatibility versus ImageJ's processors. We have no tests to verify other
+//          pixel types behave in any correct way
 //   also:
 //     testCreateImage() does very little testing
 //     testNoise() really untested
-//     ImgLibProcessor matches FloatProcessor results within 0.001 tolerance. If we want to improve that we'll need to make
-//       float specific calculation code in ImgLibProcessor rather than working with getd()/setd()/getRealDouble(). Less general.
+//     ImgLibProcessor matches FloatProcessor results within 0.001 tolerance. If we want to improve that
+//       we'll need to make float specific calculation code in ImgLibProcessor rather than working with
+//       getd()/setd()/getRealDouble(). Less general.
 
 public class ImgLibProcessorTest {
 
@@ -69,7 +78,8 @@ public class ImgLibProcessorTest {
 	@BeforeClass
 	public static void setup()
 	{
-		PlanarContainerFactory factory = new PlanarContainerFactory();
+		//CTR PUT ME BACK PlanarContainerFactory factory = new PlanarContainerFactory();
+		ArrayContainerFactory factory = new ArrayContainerFactory();
 
 		width = 343;
 		height = 426;
@@ -141,12 +151,7 @@ public class ImgLibProcessorTest {
 		{
 			for (int x = 0; x < width; x++)
 			{
-				// TODO : more breakages
 				float value = (float)( (Math.PI * x) / (y+1) );
-
-				// TODO: fewer breakages
-				//float value = (float)(x+y);
-
 				origFProc.setf(x, y, value);
 				origIFProc.setf(x, y, value);
 			}
@@ -211,8 +216,8 @@ public class ImgLibProcessorTest {
 		{
 			for (int y = 0; y < h; y++)
 			{
-				// TODO - everything passes if TOL == 0.001. SOme differences exist for Float processors as we do our calcs
-				//   in double and IJ does them in float
+				// TODO - everything passes if TOL == 0.001. Some differences exist for Float processors as we do
+				//   our calcs in double and IJ does them in float
 				if (Math.abs(baselineProc.getf(x, y) - testedProc.getf(x, y)) > 0.001)
 					fail("processor data differs at ("+x+","+y+") : ij(" + baselineProc.getf(x, y) +") imglib("+testedProc.getf(x, y)+")");
 			}
@@ -337,22 +342,58 @@ public class ImgLibProcessorTest {
 		compareData(sProc, iusProc);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testAssignFrom2Images()
 	{
-		// TODO : implement me
+		ImgLibProcessor<UnsignedByteType> ip1 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, true);
+		ImgLibProcessor<UnsignedByteType> ip2 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, true);
+		ImgLibProcessor<UnsignedByteType> ip3 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{9,8,7,6,5,4,3,2,1}, true);
+		
+		BinaryFunction function = new AddBinaryFunction(new UnsignedByteType());
+		ip1.assign(ip2, ip3, function, null, null, null);
+		
+		for (int i = 0; i < 9; i++)
+			assertEquals(10,ip1.get(i));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testAssignFrom1Image()
 	{
-		// TODO : implement me
+		ImgLibProcessor<UnsignedByteType> ip1 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, true);
+		ImgLibProcessor<UnsignedByteType> ip2 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, true);
+		
+		UnaryFunction function = new SqrUnaryFunction(new UnsignedByteType());
+		ip1.assign(ip2, function, null, null);
+		
+		for (int i = 0; i < 9; i++)
+			assertEquals((i+1)*(i+1),ip1.get(i));
 	}
 
 	@Test
 	public void testAutoThreshold()
 	{
-		// TODO : implement me
+		ImgLibProcessor<?> ip1;
+		
+		// changes for unsigned byte type
+		ip1 = ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, true);
+		ip1.autoThreshold();
+		for (int i = 0; i < 4; i++)
+			assertEquals(0, ip1.getf(i), 0);
+		for (int i = 4; i < 9; i++)
+			assertEquals(255, ip1.getf(i), 0);
+
+		// no change for a type that is not unsigned byte
+		ip1 = ImageUtils.createProcessor(3, 3, new float[]{1,2,3,4,5,6,7,8,9}, false);
+		ip1.autoThreshold();
+		for (int i = 0; i < 9; i++)
+			assertEquals(i+1, ip1.getf(i), 0);
 	}
 
 	@Test
@@ -458,10 +499,20 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testCopyBitsFunctionalInterface()
 	{
-		// TODO - implement
+		ImgLibProcessor<UnsignedByteType> ip1 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, true);
+		ImgLibProcessor<UnsignedByteType> ip2 =
+			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, true);
+
+		BinaryFunction function = new AddBinaryFunction(new UnsignedByteType());
+		ip1.copyBits(ip2, 0, 0, function);
+		
+		for (int i = 0; i < 9; i++)
+			assertEquals(8+i,ip1.get(i));
 	}
 
 	@Test
@@ -698,10 +749,36 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testFilterEnum()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> ip1;
+
+		// should work for unsigned byte type
+		
+		ip1 = (ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, true);
+		ip1.filter(FilterType.MIN);
+		for (int i = 0; i < 4; i++)
+			assertEquals(1, ip1.get(i));
+		
+		ip1 = (ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, true);
+		ip1.filter(FilterType.MAX);
+		for (int i = 0; i < 4; i++)
+			assertEquals(4, ip1.get(i));
+		
+
+		// should do nothing for other types
+		
+		ip1 = (ImgLibProcessor<IntType>) ImageUtils.createProcessor(2, 2, new int[]{1,2,3,4}, false);
+		ip1.filter(FilterType.MIN);
+		for (int i = 0; i < 4; i++)
+			assertEquals(i+1, ip1.get(i));
+		
+		ip1 = (ImgLibProcessor<FloatType>) ImageUtils.createProcessor(2, 2, new float[]{1,2,3,4}, false);
+		ip1.filter(FilterType.MAX);
+		for (int i = 0; i < 4; i++)
+			assertEquals(i+1, ip1.getf(i), 0);
 	}
 
 	@Test
@@ -743,18 +820,6 @@ public class ImgLibProcessorTest {
 				assertEquals(procPair[0].getBackgroundValue(), procPair[1].getBackgroundValue(), 0.0);
 			}
 		}
-	}
-
-	@Test
-	public void testGetdXY()
-	{
-		// TODO - implement
-	}
-
-	@Test
-	public void testGetdInt()
-	{
-		// TODO - implement
 	}
 
 	@Test
@@ -812,16 +877,40 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetImage()
 	{
-		// TODO - implement
+		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		
+		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		
+		assertTrue(proc.getImage().equals(image));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetImgLibProcThatMatchesMyType()
 	{
-		// TODO : implement me
+		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		
+		ImgLibProcessor<?> proc1 = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		
+		ImgLibProcessor<?> proc2 = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 1);
+
+		ImgLibProcessor<?> proc3 = ImageUtils.createProcessor(1, 2, new int[]{1,2}, true);
+		
+		ImgLibProcessor<?> result;
+		
+		result = proc1.getImgLibProcThatMatchesMyType(proc2);
+		
+		assertTrue(result.equals(proc2));
+		assertSame(proc1.getType().getClass(), result.getType().getClass());
+		
+		result = proc1.getImgLibProcThatMatchesMyType(proc3);
+
+		assertFalse(result.equals(proc3));
+		assertSame(proc1.getType().getClass(), result.getType().getClass());
 	}
 
 
@@ -934,7 +1023,34 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetMaxAllowedValue()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc;
+		
+		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, false);
+		assertEquals(Byte.MAX_VALUE, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, true);
+		assertEquals(255, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, false);
+		assertEquals(Short.MAX_VALUE, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, true);
+		assertEquals(65535, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, false);
+		assertEquals(Integer.MAX_VALUE, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, true);
+		assertEquals((1L<<32)-1, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new float[]{1}, false);
+		assertEquals(Float.MAX_VALUE, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new double[]{1}, false);
+		assertEquals(Double.MAX_VALUE, proc.getMaxAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new long[]{1}, false);
+		assertEquals(Long.MAX_VALUE, proc.getMaxAllowedValue(),0);
 	}
 
 	@Test
@@ -952,7 +1068,34 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetMinAllowedValue()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc;
+		
+		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, false);
+		assertEquals(Byte.MIN_VALUE, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, true);
+		assertEquals(0, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, false);
+		assertEquals(Short.MIN_VALUE, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, true);
+		assertEquals(0, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, false);
+		assertEquals(Integer.MIN_VALUE, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, true);
+		assertEquals(0, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new float[]{1}, false);
+		assertEquals(-Float.MAX_VALUE, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new double[]{1}, false);
+		assertEquals(-Double.MAX_VALUE, proc.getMinAllowedValue(),0);
+		
+		proc = ImageUtils.createProcessor(1, 1, new long[]{1}, false);
+		assertEquals(Long.MIN_VALUE, proc.getMinAllowedValue(),0);
 	}
 
 	@Test
@@ -1092,10 +1235,22 @@ public class ImgLibProcessorTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetPlanePosition()
 	{
-		// TODO - implement
+		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		
+		ImgLibProcessor<?> proc;
+		
+		proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		assertArrayEquals(new int[]{0}, proc.getPlanePosition());
+		
+		proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 1);
+		assertArrayEquals(new int[]{1}, proc.getPlanePosition());
+		
+		proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 2);
+		assertArrayEquals(new int[]{2}, proc.getPlanePosition());
 	}
 
 	@Test
@@ -1123,13 +1278,23 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetTotalSamples()
 	{
-		// TODO - implement
+		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{5,2,4});
+		
+		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		
+		assertEquals(10, proc.getTotalSamples()); 
 	}
 
 	@Test
 	public void testGetType()
 	{
-		// TODO - implement
+		RealType<?> type = new DoubleType();
+		
+		Image<?> image = ImageUtils.createImage(type, new ArrayContainerFactory(), new int[]{5,2,4});
+		
+		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		
+		assertEquals(type.getClass(), proc.getType().getClass());
 	}
 
 	@Test
@@ -1221,7 +1386,8 @@ public class ImgLibProcessorTest {
 	public void testNoise()
 	{
 		// NOTE/TODO - can't test this one for equality: they utilize random number generators with no seed set.
-		//   Must think of some way to test. The noise() routine is small and looks correct. Still would rather test somehow.
+		//   Must think of some way to test. The noise() routine is small and looks correct. Still would rather
+		//   test somehow.
 
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
@@ -1447,21 +1613,40 @@ public class ImgLibProcessorTest {
 
 				assertEquals(procPair[0].getDrawingColor(), procPair[1].getDrawingColor());
 				assertEquals(procPair[0].getFgColor(), procPair[1].getFgColor());
-				// TODO : for float types what about .fillColor??? since private don't worry about it? Or find some test that teases it out.
+				// TODO : for float types what about .fillColor??? since private don't worry about it?
+				//   Or find some test that teases it out.
 			}
 		}
 	}
 
 	@Test
-	public void testSetdXY()
+	public void testSetdAndGetdXY()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, true);
+		
+		proc.setd(0, 0, 14);
+		assertEquals(14, proc.getd(0,0), 0);
+		proc.setd(0, 1, 19);
+		assertEquals(19, proc.getd(0,1), 0);
+		proc.setd(1, 0, 24);
+		assertEquals(24, proc.getd(1,0), 0);
+		proc.setd(1, 1, 29);
+		assertEquals(29, proc.getd(1,1), 0);
 	}
 
 	@Test
-	public void testSetdInt()
+	public void testSetdAndGetdInt()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, true);
+		
+		proc.setd(0, 14);
+		assertEquals(14, proc.getd(0), 0);
+		proc.setd(1, 19);
+		assertEquals(19, proc.getd(1), 0);
+		proc.setd(2, 24);
+		assertEquals(24, proc.getd(2), 0);
+		proc.setd(3, 29);
+		assertEquals(29, proc.getd(3), 0);
 	}
 
 	@Test
@@ -1784,7 +1969,14 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testThresholdDouble()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new double[]{1.2,1.4,1.6,1.8}, false);
+		
+		proc.threshold(1.5);
+		
+		assertEquals(0, proc.getd(0), 0);
+		assertEquals(0, proc.getd(1), 0);
+		assertEquals(255, proc.getd(2), 0);
+		assertEquals(255, proc.getd(3), 0);
 	}
 
 	@Test
@@ -1808,15 +2000,54 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testTransformMyself()
 	{
-		// TODO - implement
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, false);
+		
+		UnaryFunction function = new SqrUnaryFunction(new ShortType());
+
+		proc.transform(function, null);
+		
+		for (int i = 0; i < 4; i++)
+			assertEquals((i+1)*(i+1), proc.getd(i), 0);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testTransformMyselfUsingOtherDataset()
 	{
-		// TODO - implement
+		ImgLibProcessor<ShortType> proc1 =
+			(ImgLibProcessor<ShortType> )ImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, false);
+
+		ImgLibProcessor<ShortType> proc2 =
+			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{5,6,7,8}, false);
+		
+		BinaryFunction function = new SubtractBinaryFunction(new ShortType());
+		
+		proc1.transform(proc2, function, null, null);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testTransformMyselfUsingOtherDatasets()
+	{
+		ImgLibProcessor<ShortType> proc1 =
+			(ImgLibProcessor<ShortType> )ImageUtils.createProcessor(2, 2, new short[]{3,6,9,12}, false);
+
+		ImgLibProcessor<ShortType> proc2 =
+			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{6,9,12,15}, false);
+		
+		ImgLibProcessor<ShortType> proc3 =
+			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{9,12,15,18}, false);
+
+		NAryFunction function = new AverageNAryFunction(3);
+		
+		proc1.transform(new ImgLibProcessor[]{proc2, proc3}, function, null);
+		
+		assertEquals(6, proc1.get(0));
+		assertEquals(9, proc1.get(1));
+		assertEquals(12, proc1.get(2));
+		assertEquals(15, proc1.get(3));
+	}
+	
 	@Test
 	public void testXorInt()
 	{
