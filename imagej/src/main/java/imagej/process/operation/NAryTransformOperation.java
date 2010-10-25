@@ -20,16 +20,16 @@ public class NAryTransformOperation<T extends RealType<T>> extends ManyCursorRoi
 	}
 
 	@Override
-	public void beforeIteration(RealType<T> type) {
+	protected void beforeIteration(RealType<T> type) {
 	}
 
 	@Override
-	public void insideIteration(RealType<T>[] samples) {
+	protected void insideIteration(RealType<T>[] samples) {
 		this.computer.compute(samples[0], samples);
 	}
 
 	@Override
-	public void afterIteration() {
+	protected void afterIteration() {
 	}
 
 }

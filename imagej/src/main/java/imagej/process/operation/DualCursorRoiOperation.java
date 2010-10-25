@@ -80,13 +80,13 @@ public abstract class DualCursorRoiOperation<T extends RealType<T>>
 	}
 	
 	/** abstract - implemented by subclass */
-	public abstract void beforeIteration(RealType<T> type);
+	protected abstract void beforeIteration(RealType<T> type);
 
 	/** abstract - implemented by subclass */
-	public abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);
+	protected abstract void insideIteration(RealType<T> sample1, RealType<T> sample2);
 
 	/** abstract - implemented by subclass */
-	public abstract void afterIteration();
+	protected abstract void afterIteration();
 	
 	/** runs the operation. does the iteration and calls subclass methods as appropriate */
 	public void execute()

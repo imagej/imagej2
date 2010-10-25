@@ -69,13 +69,13 @@ public abstract class PositionalSingleCursorRoiOperation<T extends RealType<T>>
 	public void setSelectionFunction(SelectionFunction f) { this.selector = f; }
 	
 	/** abstract - implemented by subclass */
-	public abstract void beforeIteration(RealType<T> type);
+	protected abstract void beforeIteration(RealType<T> type);
 
 	/** abstract - implemented by subclass */
-	public abstract void insideIteration(int[] position, RealType<T> sample);
+	protected abstract void insideIteration(int[] position, RealType<T> sample);
 
 	/** abstract - implemented by subclass */
-	public abstract void afterIteration();
+	protected abstract void afterIteration();
 	
 	/** runs the operation. does the iteration and calls subclass methods as appropriate */
 	public void execute()

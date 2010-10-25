@@ -23,18 +23,18 @@ public class UnaryTransformPositionalOperation<T extends RealType<T>> extends Po
 	}
 	
 	@Override
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(int[] position, RealType<T> sample)
+	protected void insideIteration(int[] position, RealType<T> sample)
 	{
 		this.computer.compute(sample, sample);
 	}
 
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 

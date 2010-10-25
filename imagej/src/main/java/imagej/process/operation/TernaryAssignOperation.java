@@ -26,16 +26,16 @@ public class TernaryAssignOperation<T extends RealType<T>> extends ManyCursorRoi
 	}
 
 	@Override
-	public void beforeIteration(RealType<T> type) {
+	protected void beforeIteration(RealType<T> type) {
 	}
 
 	@Override
-	public void insideIteration(RealType<T>[] samples) {
+	protected void insideIteration(RealType<T>[] samples) {
 		this.computer.compute(samples[0], samples[1], samples[2]);
 	}
 
 	@Override
-	public void afterIteration() {
+	protected void afterIteration() {
 	}
 
 }
