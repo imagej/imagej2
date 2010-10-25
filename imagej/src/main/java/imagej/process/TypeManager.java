@@ -44,46 +44,16 @@ public class TypeManager {
 		return inputValue;
 	}
 
-	/** returns true if two imglib types are strictly compatible */
-	public static boolean sameKind(RealType<?> type1, RealType<?> type2)
-	{
-		// NOTE
-		//   Would like to do this but disallowed;
-		//     type1 instanceof type2 && type2 instanceof type1
-		//   There maybe a way to do it but I'm not sure how at the moment.
-		//   Unfortunately this means every time we add a type to ImageJ we need to edit this method.
-		
-		if ((type1 instanceof ByteType) && (type2 instanceof ByteType))
-		 	return true;
-		
-		else if ((type1 instanceof UnsignedByteType) && (type2 instanceof UnsignedByteType))
-		 	return true;
-		
-		else if ((type1 instanceof ShortType) && (type2 instanceof ShortType))
-			return true;
-		
-		else if ((type1 instanceof UnsignedShortType) && (type2 instanceof UnsignedShortType))
-			return true;
-		
-		else if ((type1 instanceof IntType) && (type2 instanceof IntType))
-			return true;
-		
-		else if ((type1 instanceof UnsignedIntType) && (type2 instanceof UnsignedIntType))
-			return true;
-		
-		else if ((type1 instanceof LongType) && (type2 instanceof LongType))
-			return true;
-		
-		else if ((type1 instanceof FloatType) && (type2 instanceof FloatType))
-			return true;
-		
-		else if ((type1 instanceof DoubleType) && (type2 instanceof DoubleType))
-			return true;
-		
-		return false;
-	}
-	
-	/** returns true if a value is within the valid range defined for an imglib type */
+    /** returns true if two imglib types are strictly compatible */
+    public static boolean sameKind(RealType<?> type1, RealType<?> type2)
+    {
+        Class<?> type1Class = type1.getClass();
+        Class<?> type2Class = type2.getClass();
+        
+        return type1Class.equals(type2Class);
+    }
+
+    /** returns true if a value is within the valid range defined for an imglib type */
 	public static boolean validValue(RealType<?> type, double value)
 	{
 		return (value >= type.getMinValue()) && (value <= type.getMaxValue());
