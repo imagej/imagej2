@@ -8,7 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.SampleManager;
 import imagej.SampleInfo.ValueType;
-import imagej.io.ImageOpener;
+// CTR PUT ME BACK import imagej.io.ImageOpener;
 import imagej.process.function.binary.AddBinaryFunction;
 import imagej.process.function.binary.AndBinaryFunction;
 import imagej.process.function.binary.AverageBinaryFunction;
@@ -1571,7 +1571,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-	    final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
+	    /* CTR PUT ME BACK final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData); */
+
+		final PlanarAccess<?> planarAccess = null;
 
 	    if (planarAccess == null)
 	    {
@@ -2500,9 +2502,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		for (int i = 1; i <= others.length; i++)
 		{
-			Rectangle bounds = others[i].getRoi();
+			Rectangle bounds = others[i-1].getRoi();
 
-			ImgLibProcessor<T> processor = others[i];
+			ImgLibProcessor<T> processor = others[i-1];
 
 			Image<T> image = processor.getImage();
 

@@ -40,8 +40,8 @@ public class GenericBlitter<T extends RealType<T>>
 					Index.create(xloc, yloc, ip.getPlanePosition()),
 					Span.singlePlane(other.getWidth(), other.getHeight(), ip.getImage().getNumDimensions()),
 					other.getImage(),
-					Index.create(2),
-					Span.singlePlane(other.getWidth(), other.getHeight(), 2),
+					Index.create(other.getImage().getDimensions().length),
+					Span.singlePlane(other.getWidth(), other.getHeight(), other.getImage().getDimensions().length),
 					function);
 		
 		blitterOp.addObserver(new ProgressTracker(ip, other.getTotalSamples(), 20L*ip.getWidth()));
