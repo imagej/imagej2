@@ -4,17 +4,24 @@ package imagej.process.query;
  *  attach a SelectionFunction to the QueryOperation before executing it. */
 public class HistogramQuery implements InfoCollector
 {
+	/** the limit below which any value will be counted in the first bin */
+	private double minValue;
+	
+	/** the limit above which any value will be counted in the last bin */
+	private double maxValue;
+	
 	/** the actual histogram data */
 	private int[] histogram;
 	
-	/** constructs this collector based upon the range of values it expects to see in the query. Note that binning
-	 * is not directly supported here. Enhance as needed. */ 
-	public HistogramQuery(int numValuesPossible)
+	/** constructs this collector based upon the range of values it expects to see in the query. */ 
+	public HistogramQuery(int numBins, double minValue, double maxValue)
 	{
-		this.histogram = new int[numValuesPossible];
+		this.histogram = new int[numBins];
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 	}
 	
-	/** nothing to intialize */
+	/** nothing to initialize */
 	public void init()
 	{
 	}
@@ -22,7 +29,9 @@ public class HistogramQuery implements InfoCollector
 	/** updates the histogram for this position/sample combo */
 	public void collectInfo(int[] position, double value)
 	{
-		this.histogram[(int)value]++;
+		int binNumber = calcBinNumber(value);
+		
+		this.histogram[binNumber]++;
 	}
 
 	/** nothing to complete */
@@ -34,5 +43,18 @@ public class HistogramQuery implements InfoCollector
 	public int[] getHistogram()
 	{
 		return this.histogram;
+	}
+	
+	private int calcBinNumber(double value)
+	{
+		if (value < this.minValue)
+			value = this.minValue;
+		
+		if (value > this.maxValue)
+			value = this.maxValue;
+		
+		double relativePosition = (value - this.minValue) / (this.maxValue - this.minValue);
+		
+		return (int) (relativePosition * (this.histogram.length-1)); // TODO: round value first???
 	}
 }

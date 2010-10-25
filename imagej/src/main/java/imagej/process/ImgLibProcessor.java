@@ -1388,9 +1388,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 			int[] span = spanOfRoiPlane();
 
-			int lutSize = (int) (this.getMaxAllowedValue() + 1);
+			double maxValue = this.getMaxAllowedValue();
+			
+			double minValue = this.getMinAllowedValue();
+			
+			int lutSize = (int) (maxValue + 1);
 
-			HistogramQuery query = new HistogramQuery(lutSize);
+			HistogramQuery query = new HistogramQuery(lutSize, minValue, maxValue);
 
 			QueryOperation<T> queryOp = new QueryOperation<T>(this.imageData, origin, span, query);
 
