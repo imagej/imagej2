@@ -16,7 +16,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		void setValue(int index, double value);
 	}
 	
-	private int[] span;
+	private int originX, originY, spanX, spanY;
 	private SampleInfo.ValueType asType;
 	private Object outputPlane;
 	private DataWriter planeWriter;
@@ -26,14 +26,17 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, SampleInfo.ValueType asType)
 	{
 		super(image, origin, span);
-		this.span = span;
+		this.originX = origin[0];
+		this.originY = origin[1];
+		this.spanX = span[0];
+		this.spanY = span[1];
 		this.asType = asType;
 	}
 
 	@Override
 	public void beforeIteration(RealType<T> type)
 	{
-		int planeSize = span[0] * span[1];
+		int planeSize = this.spanX * this.spanY;
 		
 		switch (this.asType)
 		{
@@ -90,7 +93,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	@Override
 	public void insideIteration(int[] position, RealType<T> sample)
 	{
-		int index = position[1]*span[0] + position[0]; 
+		int index = (position[1] - this.originY) * this.spanX + (position[0] - this.originX); 
 		planeWriter.setValue(index, sample.getRealDouble());
 	}
 
