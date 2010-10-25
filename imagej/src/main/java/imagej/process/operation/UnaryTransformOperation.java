@@ -23,18 +23,18 @@ public class UnaryTransformOperation<T extends RealType<T>> extends SingleCursor
 	}
 
 	@Override
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(RealType<T> sample)
+	protected void insideIteration(RealType<T> sample)
 	{
 		this.computer.compute(sample, sample);
 	}
 	
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 }

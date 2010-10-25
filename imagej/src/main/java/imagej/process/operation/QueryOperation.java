@@ -24,21 +24,21 @@ public class QueryOperation<T extends RealType<T>> extends PositionalSingleCurso
 
 	@Override
 	/** lets the InfoCollector know we're about to start the query */
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 		this.gatherer.init();
 	}
 
 	@Override
 	/** gives the InfoCollector information about the current sample */
-	public void insideIteration(int[] position, RealType<T> sample)
+	protected void insideIteration(int[] position, RealType<T> sample)
 	{
 		this.gatherer.collectInfo(position, sample.getRealDouble());
 	}
 
 	@Override
 	/** lets the InfoCollector know we're done with the query */
-	public void afterIteration()
+	protected void afterIteration()
 	{
 		this.gatherer.done();
 	}

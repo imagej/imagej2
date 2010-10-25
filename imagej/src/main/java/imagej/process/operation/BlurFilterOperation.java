@@ -16,7 +16,7 @@ public class BlurFilterOperation<K extends RealType<K>> extends Filter3x3Operati
 		this.dataIsIntegral = TypeManager.isIntegralType(this.dataType);
 	}
 
-	public double calcSampleValue(final double[] neighborhood)
+	protected double calcSampleValue(final double[] neighborhood)
 	{
 		double val = 0;
 		

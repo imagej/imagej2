@@ -82,13 +82,13 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 	}
 	
 	/** abstract - implemented by subclass */
-	public abstract void beforeIteration(RealType<T> type);
+	protected abstract void beforeIteration(RealType<T> type);
 
 	/** abstract - implemented by subclass */
-	public abstract void insideIteration(RealType<T>[] samples);
+	protected abstract void insideIteration(RealType<T>[] samples);
 
 	/** abstract - implemented by subclass */
-	public abstract void afterIteration();
+	protected abstract void afterIteration();
 
 	/** private helper - determine if current samples are of interest */
 	private boolean selected(RealType<T>[] samples)

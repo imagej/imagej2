@@ -64,14 +64,14 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	}
 	
 	@Override
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 		this.pixNum = 0;
 		this.isIntegral = TypeManager.isIntegralType(type);
 	}
 
 	@Override
-	public void insideIteration(int[] position, RealType<T> sample)
+	protected void insideIteration(int[] position, RealType<T> sample)
 	{
 
 		double pixelValue = reader.getValue(this.pixNum++);
@@ -83,7 +83,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	}
 
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 	

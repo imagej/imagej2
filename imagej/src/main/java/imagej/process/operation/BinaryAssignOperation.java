@@ -23,18 +23,18 @@ public class BinaryAssignOperation<T extends RealType<T>> extends DualCursorRoiO
 	}
 
 	@Override
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(RealType<T> sample1, RealType<T> sample2)
+	protected void insideIteration(RealType<T> sample1, RealType<T> sample2)
 	{
 		this.computer.compute(sample1, sample2);
 	}
 
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 

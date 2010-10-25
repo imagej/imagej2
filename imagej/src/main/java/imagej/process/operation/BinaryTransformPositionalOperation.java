@@ -25,18 +25,18 @@ public class BinaryTransformPositionalOperation<T extends RealType<T>> extends P
 	}
 
 	@Override
-	public void beforeIteration(RealType<T> type)
+	protected void beforeIteration(RealType<T> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(int[] position1, RealType<T> sample1, int[] position2, RealType<T> sample2)
+	protected void insideIteration(int[] position1, RealType<T> sample1, int[] position2, RealType<T> sample2)
 	{
 		this.computer.compute(sample1, sample1, sample2);
 	}
 	
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 

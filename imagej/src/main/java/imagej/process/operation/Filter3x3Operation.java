@@ -29,15 +29,15 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		addObserver(new ProgressTracker(ip, ImageUtils.getTotalSamples(span), updateFrequency));
 	}
 
-	public final double[] getNeighborhood() { return neighborhood; }
+	protected final double[] getNeighborhood() { return neighborhood; }
 	
 	@Override
-	public void beforeIteration(RealType<K> type)
+	protected void beforeIteration(RealType<K> type)
 	{
 	}
 
 	@Override
-	public void insideIteration(final int[] position, RealType<K> sample)
+	protected void insideIteration(final int[] position, RealType<K> sample)
 	{
 		calcNeighborhood(position);
 
@@ -49,7 +49,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 	protected abstract double calcSampleValue(final double[] neighborhood);
 	
 	@Override
-	public void afterIteration()
+	protected void afterIteration()
 	{
 	}
 
