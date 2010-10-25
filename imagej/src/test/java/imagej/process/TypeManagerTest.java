@@ -142,44 +142,49 @@ public class TypeManagerTest {
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, Byte.MAX_VALUE));
 		assertTrue(TypeManager.validValue(type, Byte.MIN_VALUE));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, Byte.MAX_VALUE+1));
+		assertFalse(TypeManager.validValue(type, Byte.MIN_VALUE-1));
 		
 		type = new UnsignedByteType();
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, 255));
 		assertTrue(TypeManager.validValue(type, 0));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, 256));
+		assertFalse(TypeManager.validValue(type, -1));
 
 		type = new ShortType();
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, Short.MAX_VALUE));
 		assertTrue(TypeManager.validValue(type, Short.MIN_VALUE));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, Short.MAX_VALUE+1));
+		assertFalse(TypeManager.validValue(type, Short.MIN_VALUE-1));
 		
 		type = new UnsignedShortType();
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, 65535));
 		assertTrue(TypeManager.validValue(type, 0));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, 65536));
+		assertFalse(TypeManager.validValue(type, -1));
 		
 		type = new IntType();
 		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, Integer.MAX_VALUE));
 		assertTrue(TypeManager.validValue(type, Integer.MIN_VALUE));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, Integer.MAX_VALUE+1.0));
+		assertFalse(TypeManager.validValue(type, Integer.MIN_VALUE-1.0));
 		
 		type = new UnsignedIntType();
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, (1L<<32)-1));
 		assertTrue(TypeManager.validValue(type, 0));
-		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, Math.pow(2, 32)+1));
+		assertFalse(TypeManager.validValue(type, -1));
+		
+		type = new DoubleType();
+		assertTrue(TypeManager.validValue(type, 0));
+		assertTrue(TypeManager.validValue(type, Double.MAX_VALUE));
+		assertTrue(TypeManager.validValue(type, -Double.MAX_VALUE));
 		
 		type = new FloatType();
 		assertTrue(TypeManager.validValue(type, 0));
@@ -188,11 +193,6 @@ public class TypeManagerTest {
 		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
 		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
 
-		type = new DoubleType();
-		assertTrue(TypeManager.validValue(type, 0));
-		assertTrue(TypeManager.validValue(type, Double.MAX_VALUE));
-		assertTrue(TypeManager.validValue(type, -Double.MAX_VALUE));
-		
 		type = new LongType();
 		assertTrue(TypeManager.validValue(type, 0));
 		assertTrue(TypeManager.validValue(type, Long.MAX_VALUE));
