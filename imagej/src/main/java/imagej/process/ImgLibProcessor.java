@@ -8,7 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.SampleManager;
 import imagej.SampleInfo.ValueType;
-// CTR PUT ME BACK import imagej.io.ImageOpener;
+import imagej.io.ImageOpener;
 import imagej.process.function.binary.AddBinaryFunction;
 import imagej.process.function.binary.AndBinaryFunction;
 import imagej.process.function.binary.AverageBinaryFunction;
@@ -1571,23 +1571,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-	    /* CTR PUT ME BACK final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData); */
+		final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
 
-		final PlanarAccess<?> planarAccess = null;
-
-	    if (planarAccess == null)
-	    {
-	    	System.out.println("getPixels() - nonoptimal container type - can only return a copy of pixels");
-	    	return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
-	    }
-	    else  // we have the special planar container in place
-	    {
-	    	int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
-	    	long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
-	    	if (planeNumber >= Integer.MAX_VALUE)
-	    		throw new IllegalArgumentException("too many planes");
-	    	return planarAccess.getPlane((int)planeNumber);
-	    }
+		if (planarAccess == null)
+		{
+			System.out.println("getPixels() - nonoptimal container type - can only return a copy of pixels");
+			return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
+		}
+		else  // we have the special planar container in place
+		{
+			int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
+			long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
+			if (planeNumber >= Integer.MAX_VALUE)
+				throw new IllegalArgumentException("too many planes");
+			return planarAccess.getPlane((int)planeNumber);
+		}
 	}
 
 	/** returns a copy of some pixels as an array of the appropriate type. depending upon super class variable "snapshotCopyMode"

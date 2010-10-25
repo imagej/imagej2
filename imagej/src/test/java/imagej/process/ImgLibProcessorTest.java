@@ -20,7 +20,7 @@ import java.awt.Color;
 import java.util.Random;
 
 import mpicbg.imglib.container.array.ArrayContainerFactory;
-//CTR PUT ME BACK import mpicbg.imglib.container.planar.PlanarContainerFactory;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
@@ -78,8 +78,7 @@ public class ImgLibProcessorTest {
 	@BeforeClass
 	public static void setup()
 	{
-		//CTR PUT ME BACK PlanarContainerFactory factory = new PlanarContainerFactory();
-		ArrayContainerFactory factory = new ArrayContainerFactory();
+		PlanarContainerFactory factory = new PlanarContainerFactory();
 
 		width = 343;
 		height = 426;
