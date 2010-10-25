@@ -55,6 +55,6 @@ public class HistogramQuery implements InfoCollector
 		
 		double relativePosition = (value - this.minValue) / (this.maxValue - this.minValue);
 		
-		return (int) (relativePosition * (this.histogram.length-1)); // TODO: round value first???
+		return (int) Math.round(relativePosition * (this.histogram.length-1));
 	}
 }
