@@ -5,6 +5,7 @@ import imagej.process.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Span;
 import imagej.process.TypeManager;
+import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.SetPlaneOperation;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
@@ -217,7 +218,7 @@ public class PlaneStack<T extends RealType<T>>
 		this.stack = stack;
 		this.planeWidth = ImageUtils.getWidth(stack);
 		this.planeHeight = ImageUtils.getHeight(stack);
-		this.factory = null;  // TODO - CTR code - ask what he wants to do. causes problems with adding slices to stacks
+		this.factory = stack.getContainerFactory();
 		this.type = ImageUtils.getType(stack);
 	}
 
@@ -225,6 +226,10 @@ public class PlaneStack<T extends RealType<T>>
 	 * Note that the backing type is not set until the first slice is added to the PlaneStack. */
 	public PlaneStack(int width, int height, ContainerFactory factory)
 	{
+		if ((height <= 0) || (width <= 0))
+			throw new IllegalArgumentException("PlaneStack constructor: width("+width+") and height("+
+					height+") must both be greater than zero.");
+		
 		this.stack = null;
 		this.planeWidth = width;
 		this.planeHeight = height;
@@ -346,5 +351,28 @@ public class PlaneStack<T extends RealType<T>>
 		copyPlanesFromTo(getEndPosition()-planeNumber-1, this.stack, planeNumber+1, newImage, planeNumber);
 
 		this.stack = newImage;
+	}
+	
+	public Object getPlane(int planeNumber)
+	{
+		int planes = this.stack.getDimension(2);
+		
+		if ((planeNumber < 0) || (planeNumber >= planes))
+			throw new IllegalArgumentException("PlaneStack: index ("+planeNumber+") out of bounds (0-"+planes+")");
+		
+		PlanarAccess<ArrayDataAccess<?>> planar = ImageUtils.getPlanarAccess(this.stack);
+
+		if (planar != null)
+		{
+			return planar.getPlane(planeNumber);
+		}
+		else  // can't get data directly
+		{
+			int[] planePosition = new int[]{planeNumber};
+			
+			ValueType asType = SampleManager.getValueType(ImageUtils.getType(this.stack));
+
+			return GetPlaneOperation.getPlaneAs(this.stack, planePosition, asType);
+		}
 	}
 }
