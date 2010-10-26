@@ -70,6 +70,7 @@ import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
 
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -1575,21 +1576,19 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-		final PlanarAccess<?> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
+		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
 
 		if (planarAccess == null)
 		{
 			System.out.println("getPixels() - nonoptimal container type - can only return a copy of pixels");
 			return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
 		}
-		else  // we have the special planar container in place
-		{
-			int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
-			long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
-			if (planeNumber >= Integer.MAX_VALUE)
-				throw new IllegalArgumentException("too many planes");
-			return planarAccess.getPlane((int)planeNumber);
-		}
+		// we have the special planar container in place
+		int[] planeDimsMaxes = ImageUtils.getDimsBeyondXY(this.imageData.getDimensions());
+		long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
+		if (planeNumber >= Integer.MAX_VALUE)
+			throw new IllegalArgumentException("too many planes");
+		return planarAccess.getPlane((int)planeNumber).getCurrentStorageArray();
 	}
 
 	/** returns a copy of some pixels as an array of the appropriate type. depending upon super class variable "snapshotCopyMode"
