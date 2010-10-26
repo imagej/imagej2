@@ -94,7 +94,8 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	protected void insideIteration(int[] position, RealType<T> sample)
 	{
 		int index = (position[1] - this.originY) * this.spanX + (position[0] - this.originX); 
-		planeWriter.setValue(index, sample.getRealDouble());
+		
+		this.planeWriter.setValue(index, sample.getRealDouble());
 	}
 
 	@Override

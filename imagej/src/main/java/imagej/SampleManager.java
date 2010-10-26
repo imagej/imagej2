@@ -14,6 +14,7 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -50,6 +51,7 @@ public class SampleManager
 		sampleInfoArray[ValueType.FLOAT.ordinal()] = new Sample32BitFloat();
 		sampleInfoArray[ValueType.LONG.ordinal()] = new Sample64BitSigned();
 		sampleInfoArray[ValueType.DOUBLE.ordinal()] = new Sample64BitFloat();
+		sampleInfoArray[ValueType.UINT12.ordinal()] = new Sample12BitUnsigned();
 		
 		realTypeArray = new RealType[ValueType.values().length];
 
@@ -63,6 +65,7 @@ public class SampleManager
 		realTypeArray[ValueType.FLOAT.ordinal()] = new FloatType();
 		realTypeArray[ValueType.LONG.ordinal()] = new LongType();
 		realTypeArray[ValueType.DOUBLE.ordinal()] = new DoubleType();
+		realTypeArray[ValueType.UINT12.ordinal()] = new Unsigned12BitType();
 	}
 	
 	//***** constructor **********************************************/
@@ -365,4 +368,27 @@ public class SampleManager
 
 		public String getName() { return "64-bit float"; }
 	}
+
+	/** SampleInfo that describes IJ's 12 bit unsigned type */
+	private static class Sample12BitUnsigned implements SampleInfo
+	{
+		public ValueType getValueType() { return ValueType.UINT12; }
+
+		public int getNumValues() { return 1; }
+
+		public int getNumBitsPerValue() { return 12; }
+
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isSigned() { return false; }
+		
+		public boolean isUnsigned() { return !isSigned(); }
+		
+		public boolean isIntegral() { return true; }
+		
+		public boolean isFloat() { return !isIntegral(); }
+
+		public String getName() { return "12-bit unsigned"; }
+	}
+	
 }
