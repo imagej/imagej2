@@ -352,7 +352,8 @@ public class PlaneStack<T extends RealType<T>>
 
 		this.stack = newImage;
 	}
-	
+
+	/** gets a plane from a PlaneStack. returns a reference if possible */
 	public Object getPlane(int planeNumber)
 	{
 		int planes = this.stack.getDimension(2);
