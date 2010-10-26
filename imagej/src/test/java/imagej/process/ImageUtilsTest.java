@@ -198,10 +198,6 @@ public class ImageUtilsTest {
 
 		testImage = ImageUtils.createImage(new UnsignedByteType(), factory, new int[]{1,2});
 		access = ImageUtils.getPlanarAccess(testImage);
-		assertTrue(access == null);
-
-		testImage = ImageUtils.createImage(new UnsignedByteType(), factory, new int[]{1,2});
-		access = ImageUtils.getPlanarAccess(testImage);
 		assertTrue(access != null);
 	}
 
