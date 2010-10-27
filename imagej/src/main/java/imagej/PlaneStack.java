@@ -39,6 +39,7 @@ public class PlaneStack
 
 	//****************** private interface
 
+	@SuppressWarnings("unchecked")
 	/** creates a single plane Imglib image using passed in data. */
 	private Image<?> createPlane(RealType<?> type, ContainerFactory cFact, Object data, ValueType dType)
 	{
@@ -198,42 +199,42 @@ public class PlaneStack
 	}
 
 	/** a helper method to insert unsigned byte plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertUnsignedPlane(int atPosition, byte[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), ValueType.UBYTE);
 	}
 
 	/** a helper method to insert signed byte plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertSignedPlane(int atPosition, byte[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), ValueType.BYTE);
 	}
 
 	/** a helper method to insert unsigned short plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertUnsignedPlane(int atPosition, short[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), ValueType.USHORT);
 	}
 
 	/** a helper method to insert signed short plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertSignedPlane(int atPosition, short[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), ValueType.SHORT);
 	}
 
 	/** a helper method to insert unsigned int plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertUnsignedPlane(int atPosition, int[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), ValueType.UINT);
 	}
 
 	/** a helper method to insert signed int plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertSignedPlane(int atPosition, int[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new IntType(), ValueType.INT);
@@ -246,21 +247,21 @@ public class PlaneStack
 	}
 
 	/** a helper method to insert signed long plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertSignedPlane(int atPosition, long[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new LongType(), ValueType.LONG);
 	}
 
 	/** a helper method to insert float plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertPlane(int atPosition, float[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), ValueType.FLOAT);
 	}
 
 	/** a helper method to insert double plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	private void insertPlane(int atPosition, double[] data)
 	{
 		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), ValueType.DOUBLE);
@@ -381,7 +382,6 @@ public class PlaneStack
 	 * deletes a plane from a PlaneStack
 	 * @param planeNumber - the index of the plane to delete
 	 */
-	@SuppressWarnings("unchecked")
 	public void deletePlane(int planeNumber)  // since multidim an int could be too small but can't avoid
 	{
 		if (this.stack == null)
@@ -408,6 +408,7 @@ public class PlaneStack
 		this.stack = newImage;
 	}
 
+	@SuppressWarnings("unchecked")
 	/** gets a plane from a PlaneStack. returns a reference if possible */
 	public Object getPlane(int planeNumber)
 	{
