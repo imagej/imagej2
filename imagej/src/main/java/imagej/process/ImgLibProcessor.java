@@ -277,17 +277,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.pixels8 == null)
 			this.pixels8 = new byte[totSamples];
 
-		//int nonZero = 0;
 		for (int i = 0; i < totSamples; i++)
 		{
 			double value = getd(i);
-			//if (value != 0)
-			//	nonZero++;
 			double relPos = (value - min) / (max - min);
-			int byteVal = (int)Math.round(255 * relPos);
-			if (byteVal < 0) byteVal = 0;
-			if (byteVal > 255) byteVal = 255;
-			this.pixels8[i] = (byte) byteVal;
+			if (relPos < 0) relPos = 0;
+			if (relPos > 1) relPos = 1;
+			this.pixels8[i] = (byte) Math.round(255 * relPos);
 		}
 
 		return this.pixels8;
