@@ -280,6 +280,9 @@ public class FileInfoTest {
 		fInfo.fileType = FileInfo.GRAY24_UNSIGNED;
 		assertEquals(4,fInfo.getBytesPerPixel());
 		
+		fInfo.fileType = FileInfo.GRAY12_UNSIGNED;
+		assertEquals(2,fInfo.getBytesPerPixel());
+
 		fInfo.fileType = 99999;
 		assertEquals(0,fInfo.getBytesPerPixel());
 
