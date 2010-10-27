@@ -9,6 +9,7 @@ import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
+import mpicbg.imglib.type.numeric.real.FloatType;
 
 
 public class PlaneStackTest {
@@ -16,10 +17,10 @@ public class PlaneStackTest {
 	@Test
 	public void testPlaneStackImage()
 	{
-		Image<UnsignedByteType> image =
+		Image<?> image =
 			ImageUtils.createImage(new UnsignedByteType(), new ArrayContainerFactory(), new int[]{2,3,4});
 		
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(image);
+		PlaneStack stack = new PlaneStack(image);
 		
 		assertNotNull(stack);
 		assertEquals(4, stack.getNumPlanes());
@@ -28,23 +29,23 @@ public class PlaneStackTest {
 	@Test
 	public void testPlaneStackIntIntFactory()
 	{
-		PlaneStack<UnsignedIntType> stack;
+		PlaneStack stack;
 
 		try {
-			stack = new PlaneStack<UnsignedIntType>(-1,-1,new ArrayContainerFactory());
+			stack = new PlaneStack(-1,-1,new ArrayContainerFactory());
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 
 		try {
-			stack = new PlaneStack<UnsignedIntType>(0,0,new ArrayContainerFactory());
+			stack = new PlaneStack(0,0,new ArrayContainerFactory());
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 
-		stack = new PlaneStack<UnsignedIntType>(1,5,new ArrayContainerFactory());
+		stack = new PlaneStack(1,5,new ArrayContainerFactory());
 		assertNotNull(stack);
 		assertEquals(0, stack.getNumPlanes());
 	}
@@ -55,7 +56,7 @@ public class PlaneStackTest {
 		Image<UnsignedByteType> image =
 			ImageUtils.createImage(new UnsignedByteType(), new ArrayContainerFactory(), new int[]{2,3,4});
 		
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(image);
+		PlaneStack stack = new PlaneStack(image);
 		
 		assertSame(image, stack.getStorage());
 	}
@@ -66,7 +67,7 @@ public class PlaneStackTest {
 		Image<UnsignedByteType> image =
 			ImageUtils.createImage(new UnsignedByteType(), new ArrayContainerFactory(), new int[]{2,3,4});
 		
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(image);
+		PlaneStack stack = new PlaneStack(image);
 		
 		assertEquals(4, stack.getNumPlanes());
 	}
@@ -77,7 +78,7 @@ public class PlaneStackTest {
 		Image<UnsignedByteType> image =
 			ImageUtils.createImage(new UnsignedByteType(), new ArrayContainerFactory(), new int[]{2,3,4});
 		
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(image);
+		PlaneStack stack = new PlaneStack(image);
 		
 		assertEquals(4, stack.getEndPosition());
 		
@@ -89,7 +90,7 @@ public class PlaneStackTest {
 	@Test
 	public void testInsertPlane()
 	{
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(2,3,new ArrayContainerFactory());
+		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
 		
 		stack.addPlane(true, new byte[]{1,1,1,1,1,1});
 		stack.addPlane(true, new byte[]{2,2,2,2,2,2});
@@ -146,7 +147,7 @@ public class PlaneStackTest {
 		Image<UnsignedByteType> image =
 			ImageUtils.createImage(new UnsignedByteType(), new ArrayContainerFactory(), new int[]{2,3,4});
 		
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(image);
+		PlaneStack stack = new PlaneStack(image);
 		
 		assertEquals(4, stack.getEndPosition());
 
@@ -170,9 +171,9 @@ public class PlaneStackTest {
 	@Test
 	public void testDeletePlane()
 	{
-		PlaneStack<UnsignedByteType> stack;
+		PlaneStack stack;
 		
-		stack = new PlaneStack<UnsignedByteType>(2,3,new ArrayContainerFactory());
+		stack = new PlaneStack(2,3,new ArrayContainerFactory());
 
 		// try to delete from an empty stack
 		try {
@@ -227,7 +228,7 @@ public class PlaneStackTest {
 	@Test
 	public void testGetPlane()
 	{
-		PlaneStack<UnsignedByteType> stack = new PlaneStack<UnsignedByteType>(2,3,new ArrayContainerFactory());
+		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
 		
 		stack.addPlane(true, new byte[]{1,1,1,1,1,1});
 		stack.addPlane(true, new byte[]{2,2,2,2,2,2});
@@ -257,6 +258,21 @@ public class PlaneStackTest {
 
 		try {
 			data = (byte[]) stack.getPlane(4);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testAddTwoPlanesOfDifferentType()
+	{
+		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
+		
+		stack.insertPlane(0, true, new float[]{1,2,3,4,5,6});
+		
+		try {
+			stack.insertPlane(0, true, new byte[]{1,2,3,4,5,6});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);

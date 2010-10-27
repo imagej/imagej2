@@ -16,6 +16,7 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -26,24 +27,24 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * PlaneStack is the class where Imglib images are actually stored in ImageJ. Used by ImageStack as the backing
  * data store to ImagePlus.
  */
-public class PlaneStack<T extends RealType<T>>
+public class PlaneStack
 {
 	//****************** instance variables
 
-	private Image<T> stack;
+	private Image<?> stack;
+	private RealType<?> type;
 	private int planeWidth;
 	private int planeHeight;
 	private ContainerFactory factory;
-	private RealType<?> type;
 
 	//****************** private interface
 
 	/** creates a single plane Imglib image using passed in data. */
-	private Image<T> createPlane(RealType<T> type, ContainerFactory cFact, Object data, ValueType dType)
+	private Image<?> createPlane(RealType<?> type, ContainerFactory cFact, Object data, ValueType dType)
 	{
 		int[] dimensions = new int[]{planeWidth, planeHeight, 1};
 
-		Image<T> image = ImageUtils.createImage(type, cFact, dimensions);
+		Image<?> image = ImageUtils.createImage(type, cFact, dimensions);
 
 		PlanarAccess<ArrayDataAccess<?>> planar = ImageUtils.getPlanarAccess(image);
 
@@ -55,7 +56,30 @@ public class PlaneStack<T extends RealType<T>>
 		}
 		else
 		{
-			SetPlaneOperation<T> planeOp = new SetPlaneOperation<T>(image, Index.create(3), data, dType);
+			SetPlaneOperation<?> planeOp;
+			
+			if (type instanceof ByteType)
+				planeOp = new SetPlaneOperation<ByteType>((Image<ByteType>)image, Index.create(3), data, dType);
+			else if (type instanceof UnsignedByteType)
+				planeOp = new SetPlaneOperation<UnsignedByteType>((Image<UnsignedByteType>)image, Index.create(3), data, dType);
+			else if (type instanceof Unsigned12BitType)
+				planeOp = new SetPlaneOperation<Unsigned12BitType>((Image<Unsigned12BitType>)image, Index.create(3), data, dType);
+			else if (type instanceof ShortType)
+				planeOp = new SetPlaneOperation<ShortType>((Image<ShortType>)image, Index.create(3), data, dType);
+			else if (type instanceof UnsignedShortType)
+				planeOp = new SetPlaneOperation<UnsignedShortType>((Image<UnsignedShortType>)image, Index.create(3), data, dType);
+			else if (type instanceof IntType)
+				planeOp = new SetPlaneOperation<IntType>((Image<IntType>)image, Index.create(3), data, dType);
+			else if (type instanceof UnsignedIntType)
+				planeOp = new SetPlaneOperation<UnsignedIntType>((Image<UnsignedIntType>)image, Index.create(3), data, dType);
+			else if (type instanceof LongType)
+				planeOp = new SetPlaneOperation<LongType>((Image<LongType>)image, Index.create(3), data, dType);
+			else if (type instanceof FloatType)
+				planeOp = new SetPlaneOperation<FloatType>((Image<FloatType>)image, Index.create(3), data, dType);
+			else if (type instanceof DoubleType)
+				planeOp = new SetPlaneOperation<DoubleType>((Image<DoubleType>)image, Index.create(3), data, dType);
+			else
+				throw new IllegalStateException();
 
 			planeOp.execute();
 		}
@@ -65,7 +89,7 @@ public class PlaneStack<T extends RealType<T>>
 
 	@SuppressWarnings({"unchecked","rawtypes"})
 	/** copies a given number of consecutive planes from a source image to a destination image */
-	private void copyPlanesFromTo(int numPlanes, Image<T> srcImage, int srcPlane, Image<T> dstImage, int dstPlane)
+	private void copyPlanesFromTo(int numPlanes, Image<?> srcImage, int srcPlane, Image<?> dstImage, int dstPlane)
 	{
 		if (numPlanes < 1)
 			return;
@@ -89,7 +113,38 @@ public class PlaneStack<T extends RealType<T>>
 			int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
 			int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
 
-			ImageUtils.copyFromImageToImage(srcImage, srcOrigin, span, dstImage, dstOrigin, span);
+			if (type instanceof ByteType)
+				ImageUtils.copyFromImageToImage((Image<ByteType>)srcImage, srcOrigin, span,
+												(Image<ByteType>)dstImage, dstOrigin, span);
+			else if (type instanceof UnsignedByteType)
+				ImageUtils.copyFromImageToImage((Image<UnsignedByteType>)srcImage, srcOrigin, span,
+												(Image<UnsignedByteType>)dstImage, dstOrigin, span);
+			else if (type instanceof Unsigned12BitType)
+				ImageUtils.copyFromImageToImage((Image<Unsigned12BitType>)srcImage, srcOrigin, span,
+												(Image<Unsigned12BitType>)dstImage, dstOrigin, span);
+			else if (type instanceof ShortType)
+				ImageUtils.copyFromImageToImage((Image<ShortType>)srcImage, srcOrigin, span,
+												(Image<ShortType>)dstImage, dstOrigin, span);
+			else if (type instanceof UnsignedShortType)
+				ImageUtils.copyFromImageToImage((Image<UnsignedShortType>)srcImage, srcOrigin, span,
+												(Image<UnsignedShortType>)dstImage, dstOrigin, span);
+			else if (type instanceof IntType)
+				ImageUtils.copyFromImageToImage((Image<IntType>)srcImage, srcOrigin, span,
+												(Image<IntType>)dstImage, dstOrigin, span);
+			else if (type instanceof UnsignedIntType)
+				ImageUtils.copyFromImageToImage((Image<UnsignedIntType>)srcImage, srcOrigin, span,
+												(Image<UnsignedIntType>)dstImage, dstOrigin, span);
+			else if (type instanceof LongType)
+				ImageUtils.copyFromImageToImage((Image<LongType>)srcImage, srcOrigin, span,
+												(Image<LongType>)dstImage, dstOrigin, span);
+			else if (type instanceof FloatType)
+				ImageUtils.copyFromImageToImage((Image<FloatType>)srcImage, srcOrigin, span,
+												(Image<FloatType>)dstImage, dstOrigin, span);
+			else if (type instanceof DoubleType)
+				ImageUtils.copyFromImageToImage((Image<DoubleType>)srcImage, srcOrigin, span,
+												(Image<DoubleType>)dstImage, dstOrigin, span);
+			else
+				throw new IllegalStateException();
 		}
 	}
 
@@ -103,7 +158,7 @@ public class PlaneStack<T extends RealType<T>>
 	 * @param desiredType - the imglib type we desire the plane to be of
 	 * @param dType - the ValueType of the input data
 	 */
-	private void insertPlane(int atPosition, Object data, int dataLen, RealType<T> desiredType, ValueType dType)
+	private void insertPlane(int atPosition, Object data, int dataLen, RealType<?> desiredType, ValueType dType)
 	{
 		if (dataLen != this.planeWidth*this.planeHeight)
 			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack - expected "+
@@ -117,7 +172,7 @@ public class PlaneStack<T extends RealType<T>>
 		if (atPosition > numPlanesNow+1)
 			throw new IllegalArgumentException("insertPlane(): insertion point too large");
 
-		Image<T> newPlane = createPlane(desiredType, this.factory, data, dType);
+		Image<?> newPlane = createPlane(desiredType, this.factory, data, dType);
 
 		if (this.stack == null)
 		{
@@ -132,7 +187,7 @@ public class PlaneStack<T extends RealType<T>>
 
 			int[] newDims = new int[]{this.planeWidth, this.planeHeight, this.getEndPosition()+1};
 
-			Image<T> newStack = ImageUtils.createImage(desiredType, this.factory, newDims);
+			Image<?> newStack = ImageUtils.createImage(desiredType, this.factory, newDims);
 
 			copyPlanesFromTo(atPosition, this.stack, 0, newStack, 0);
 			copyPlanesFromTo(1, newPlane, 0, newStack, atPosition);
@@ -214,12 +269,12 @@ public class PlaneStack<T extends RealType<T>>
 	//****************** public interface
 
 	/** constructor - create a PlaneStack directly from an Imglib image */
-	public PlaneStack(Image<T> stack) {
+	public PlaneStack(Image<?> stack) {
 		this.stack = stack;
+		this.type = ImageUtils.getType(stack);
 		this.planeWidth = ImageUtils.getWidth(stack);
 		this.planeHeight = ImageUtils.getHeight(stack);
 		this.factory = stack.getContainerFactory();
-		this.type = ImageUtils.getType(stack);
 	}
 
 	/** constructor - create an empty PlaneStack given (x,y) dimensions and a factory for creating an Imglib image.
@@ -231,14 +286,14 @@ public class PlaneStack<T extends RealType<T>>
 					height+") must both be greater than zero.");
 		
 		this.stack = null;
+		this.type = null;
 		this.planeWidth = width;
 		this.planeHeight = height;
 		this.factory = factory;
-		this.type = null;
 	}
 
 	/** returns the backing Imglib image */
-	public Image<T> getStorage()
+	public Image<?> getStorage()
 	{
 		return this.stack;
 	}
@@ -345,7 +400,7 @@ public class PlaneStack<T extends RealType<T>>
 		}
 
 		// create a new image one plane smaller than existing
-		Image<T> newImage = ImageUtils.createImage((RealType<T>)this.type, this.factory, newDims);
+		Image<?> newImage = ImageUtils.createImage(this.type, this.factory, newDims);
 
 		copyPlanesFromTo(planeNumber, this.stack, 0, newImage, 0);
 		copyPlanesFromTo(getEndPosition()-planeNumber-1, this.stack, planeNumber+1, newImage, planeNumber);
@@ -373,7 +428,28 @@ public class PlaneStack<T extends RealType<T>>
 			
 			ValueType asType = SampleManager.getValueType(ImageUtils.getType(this.stack));
 
-			return GetPlaneOperation.getPlaneAs(this.stack, planePosition, asType);
+			if (type instanceof ByteType)
+				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
+			else if (type instanceof UnsignedByteType)
+				return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)this.stack, planePosition, asType);
+			else if (type instanceof Unsigned12BitType)
+				return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)this.stack, planePosition, asType);
+			else if (type instanceof ShortType)
+				return GetPlaneOperation.getPlaneAs((Image<ShortType>)this.stack, planePosition, asType);
+			else if (type instanceof UnsignedShortType)
+				return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)this.stack, planePosition, asType);
+			else if (type instanceof IntType)
+				return GetPlaneOperation.getPlaneAs((Image<IntType>)this.stack, planePosition, asType);
+			else if (type instanceof UnsignedIntType)
+				return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)this.stack, planePosition, asType);
+			else if (type instanceof LongType)
+				return GetPlaneOperation.getPlaneAs((Image<LongType>)this.stack, planePosition, asType);
+			else if (type instanceof FloatType)
+				return GetPlaneOperation.getPlaneAs((Image<FloatType>)this.stack, planePosition, asType);
+			else if (type instanceof DoubleType)
+				return GetPlaneOperation.getPlaneAs((Image<DoubleType>)this.stack, planePosition, asType);
+			else
+				throw new IllegalStateException();
 		}
 	}
 }

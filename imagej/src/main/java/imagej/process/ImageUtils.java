@@ -184,7 +184,7 @@ public class ImageUtils
 	 * @throws RuntimeException if the plane cannot be set by reference.
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static <T extends RealType<T>> void setPlane(Image<T> im, int[] planePos, Object plane) {
+	public static void setPlane(Image<?> im, int[] planePos, Object plane) {
 		// obtain dimensional lengths
 		final int[] dims = im.getDimensions();
 		if (dims.length < 2) {
