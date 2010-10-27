@@ -78,18 +78,18 @@ public class NewImage
 
 	static
 	{
-		sampleNames = new String[9];
-
-		// TODO - expand to support BIT images when the time comes
-		sampleNames[0] = getSampleName(SampleInfo.ValueType.BYTE);
-		sampleNames[1] = getSampleName(SampleInfo.ValueType.UBYTE);
-		sampleNames[2] = getSampleName(SampleInfo.ValueType.SHORT);
-		sampleNames[3] = getSampleName(SampleInfo.ValueType.USHORT);
-		sampleNames[4] = getSampleName(SampleInfo.ValueType.INT);
-		sampleNames[5] = getSampleName(SampleInfo.ValueType.UINT);
-		sampleNames[6] = getSampleName(SampleInfo.ValueType.FLOAT);
-		sampleNames[7] = getSampleName(SampleInfo.ValueType.LONG);
-		sampleNames[8] = getSampleName(SampleInfo.ValueType.DOUBLE);
+		sampleNames = new String[]{
+			getSampleName(SampleInfo.ValueType.BYTE),
+			getSampleName(SampleInfo.ValueType.UBYTE),
+			getSampleName(SampleInfo.ValueType.UINT12),
+			getSampleName(SampleInfo.ValueType.SHORT),
+			getSampleName(SampleInfo.ValueType.USHORT),
+			getSampleName(SampleInfo.ValueType.INT),
+			getSampleName(SampleInfo.ValueType.UINT),
+			getSampleName(SampleInfo.ValueType.FLOAT),
+			getSampleName(SampleInfo.ValueType.LONG),
+			getSampleName(SampleInfo.ValueType.DOUBLE)
+		};
 	}
 
 	//***************** constructor ******************************************************

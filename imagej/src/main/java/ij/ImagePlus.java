@@ -61,6 +61,7 @@ import mpicbg.imglib.type.numeric.integer.GenericShortType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -1257,7 +1258,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 					else if ((imgLibType instanceof ShortType) ||
 							(imgLibType instanceof UnsignedShortType) ||
 							(imgLibType instanceof IntType) ||
-							(imgLibType instanceof UnsignedIntType)
+							(imgLibType instanceof UnsignedIntType) ||
+							(imgLibType instanceof Unsigned12BitType)
 							)
 					{
 						pvalue[0] = (int)(proc.getd(x, y)); // TODO - was ip.get(x,y)
@@ -1732,7 +1734,11 @@ public class ImagePlus implements ImageObserver, Measurements {
 				fi.fileType = FileInfo.RGB;
 				break;
 	    	case IMGLIB:
-	    		if (imgLibType instanceof GenericByteType<?>)
+	    		if (imgLibType instanceof Unsigned12BitType)
+	    		{
+	    			fi.fileType = FileInfo.GRAY12_UNSIGNED;
+	    		}
+	    		else if (imgLibType instanceof GenericByteType<?>)
 	    		{
 	    			lut = createLut();
 	    			if (lut.isGrayscale())
@@ -1859,6 +1865,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 		{
 			case 8:
 				newImage = ImageUtils.createImage(new UnsignedByteType(), factory, newDimensions);
+				break;
+			case 12:
+				newImage = ImageUtils.createImage(new Unsigned12BitType(), factory, newDimensions);
 				break;
 			case 16:
 				newImage = ImageUtils.createImage(new UnsignedShortType(), factory, newDimensions);
