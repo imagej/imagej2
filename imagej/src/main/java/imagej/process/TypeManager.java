@@ -2,15 +2,10 @@ package imagej.process;
 
 import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.ByteType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.LongType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
-import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class TypeManager {
 
@@ -19,6 +14,7 @@ public class TypeManager {
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
 			(t instanceof UnsignedByteType) ||
+			(t instanceof Unsigned12BitType) ||
 			(t instanceof UnsignedIntType) ||
 			(t instanceof UnsignedShortType)
 		);
