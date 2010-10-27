@@ -18,15 +18,7 @@ import java.util.ArrayList;
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.ByteType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.LongType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
-import mpicbg.imglib.type.numeric.real.FloatType;
 
 /**
 This class represents an expandable array of images.
@@ -44,7 +36,7 @@ public class ImageStack {
 	private float[] cTable;
 
 	private enum OrigProcType {BYTE,SHORT,FLOAT,COLOR,IMGLIB};
-	private PlaneStack<?> stack;
+	private PlaneStack stack;
 	private ArrayList<String> labels;
 	private ContainerFactory factory;
 	private OrigProcType origProc;
@@ -151,54 +143,12 @@ public class ImageStack {
 		return labels.size();
 	}
 
-	private void initStack(boolean unsigned, Object data)
-	{
-		if (data instanceof byte[])
-		{
-			if (unsigned)
-				stack = new PlaneStack<UnsignedByteType>(this.width, this.height, this.factory);
-			else
-				stack = new PlaneStack<ByteType>(this.width, this.height, this.factory);
-		}
-		else if (data instanceof short[])
-		{
-			if (unsigned)
-				stack = new PlaneStack<UnsignedShortType>(this.width, this.height, this.factory);
-			else
-				stack = new PlaneStack<ShortType>(this.width, this.height, this.factory);
-		}
-		else if (data instanceof int[])
-		{
-			if (unsigned)
-				stack = new PlaneStack<UnsignedIntType>(this.width, this.height, this.factory);
-			else
-				stack = new PlaneStack<IntType>(this.width, this.height, this.factory);
-		}
-		else if (data instanceof long[])
-		{
-			if (unsigned)
-				throw new IllegalArgumentException("ImageStack::initStack(): unsigned long data type not supported");
-			else
-				stack = new PlaneStack<LongType>(this.width, this.height, this.factory);
-		}
-		else if (data instanceof float[])
-		{
-			stack = new PlaneStack<FloatType>(this.width, this.height, this.factory);
-		}
-		else if (data instanceof double[])
-		{
-			stack = new PlaneStack<DoubleType>(this.width, this.height, this.factory);
-		}
-		else
-			throw new IllegalArgumentException("ImageStack::initStack(): unknown data type "+data.getClass());
-	}
-
 	private void addSliceToImage(int atDepth, String label, boolean unsigned, Object pixels)
 	{
 		// ADD PLANE
 
 		if (stack == null)
-			initStack(unsigned,pixels);
+			stack = new PlaneStack(this.width, this.height, this.factory);;
 
 		stack.insertPlane(atDepth, unsigned, pixels);
 
