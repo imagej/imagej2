@@ -45,18 +45,17 @@ import imagej.process.function.unary.SqrtUnaryFunction;
 import imagej.process.function.unary.ThresholdUnaryFunction;
 import imagej.process.function.unary.UnaryFunction;
 import imagej.process.function.unary.XorUnaryFunction;
-import imagej.process.operation.BinaryAssignOperation;
-import imagej.process.operation.BinaryTransformOperation;
+import imagej.process.operation.BinaryAssignPositionalOperation;
 import imagej.process.operation.BinaryTransformPositionalOperation;
 import imagej.process.operation.BlurFilterOperation;
 import imagej.process.operation.Convolve3x3FilterOperation;
 import imagej.process.operation.FindEdgesFilterOperation;
 import imagej.process.operation.GetPlaneOperation;
 import imagej.process.operation.MinMaxOperation;
-import imagej.process.operation.NAryTransformOperation;
+import imagej.process.operation.NAryTransformPositionalOperation;
 import imagej.process.operation.QueryOperation;
 import imagej.process.operation.SetPlaneOperation;
-import imagej.process.operation.TernaryAssignOperation;
+import imagej.process.operation.TernaryAssignPositionalOperation;
 import imagej.process.operation.UnaryTransformOperation;
 import imagej.process.operation.UnaryTransformPositionalOperation;
 import imagej.process.query.HistogramQuery;
@@ -603,6 +602,23 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return pixels2[x+y*width]&255;
 	}
 
+	/** internal, fastest transform */
+	private void nonPositionalTransform(UnaryFunction function)
+	{
+		int[] origin = originOfRoi();
+
+		int[] span = spanOfRoiPlane();
+
+		UnaryTransformOperation<T> pointOp = new UnaryTransformOperation<T>(this.imageData, origin, span, function);
+
+		pointOp.execute();
+
+		if ((span[0] == getWidth()) &&
+				(span[1] == getHeight()) &&
+				!(function instanceof imagej.process.function.unary.FillUnaryFunction))
+			findMinAndMax();
+	}
+	
 	/** returns the coordinates of the image origin as an int[] */
 	private int[] originOfImage()
 	{
@@ -757,7 +773,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		AbsUnaryFunction function = new AbsUnaryFunction();
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the ADD point operation over the current ROI area of the current plane of data */
@@ -773,7 +789,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		AddUnaryFunction func = new AddUnaryFunction(this.type, value);
 
-		transform(func, null);
+		nonPositionalTransform(func);
 	}
 
 	/** apply the AND point operation over the current ROI area of the current plane of data */
@@ -785,7 +801,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		AndUnaryFunction func = new AndUnaryFunction(this.type, value);
 
-		transform(func, null);
+		nonPositionalTransform(func);
 	}
 
 	// not an override
@@ -809,7 +825,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin2 = Index.create(other2Roi.x, other2Roi.y, other2.getPlanePosition());
 		int[] span2 = Span.singlePlane(other2Roi.width, other2Roi.height, image2.getNumDimensions());
 
-		TernaryAssignOperation<T> transform = new TernaryAssignOperation<T>(image0,origin0,span0,image1,origin1,span1,image2,origin2,span2,function);
+		TernaryAssignPositionalOperation<T> transform = new TernaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,image2,origin2,span2,function);
 
 		transform.setSelectionFunctions(new SelectionFunction[]{selector0, selector1, selector2});
 
@@ -832,7 +848,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin1 = Index.create(otherRoi.x, otherRoi.y, other.getPlanePosition());
 		int[] span1 = Span.singlePlane(otherRoi.width, otherRoi.height, image1.getNumDimensions());
 
-		BinaryAssignOperation<T> transform = new BinaryAssignOperation<T>(image0,origin0,span0,image1,origin1,span1,function);
+		BinaryAssignPositionalOperation<T> transform = new BinaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,function);
 
 		transform.setSelectionFunctions(selector1, selector2);
 
@@ -863,7 +879,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		IntegralSubstitutionUnaryFunction substFunc =
 			new IntegralSubstitutionUnaryFunction((int)this.type.getMinValue(), lut);
 
-		transform(substFunc, null);
+		nonPositionalTransform(substFunc);
 
 		if (this.isUnsignedShort)
 			findMinAndMax();
@@ -1129,7 +1145,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		ExpUnaryFunction function = new ExpUnaryFunction(this.type, this.max);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the FILL point operation over the current ROI area of the current plane of data */
@@ -1138,7 +1154,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		FillUnaryFunction func = new FillUnaryFunction(this.fillColor);
 
-		transform(func, null);
+		nonPositionalTransform(func);
 	}
 
 	// TODO - could refactor as some sort of operation between two datasets. Would need to make a dataset from mask. Slower than orig impl.
@@ -1270,7 +1286,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		GammaUnaryFunction function = new GammaUnaryFunction(this.type, this.min, this.max, value);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** get the pixel value at x,y as an int. for float data it returns float encoded into int bits */
@@ -1660,7 +1676,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		InvertUnaryFunction function = new InvertUnaryFunction(this.type, this.min, this.max);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the LOG point operation over the current ROI area of the current plane of data */
@@ -1669,7 +1685,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		LogUnaryFunction function = new LogUnaryFunction(this.type, this.max);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the MAXIMUM point operation over the current ROI area of the current plane of data */
@@ -1678,7 +1694,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		MaxUnaryFunction function = new MaxUnaryFunction(value);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 
@@ -1698,7 +1714,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		MinUnaryFunction function = new MinUnaryFunction(value);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the MULT point operation over the current ROI area of the current plane of data */
@@ -1707,7 +1723,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		MultiplyUnaryFunction function = new MultiplyUnaryFunction(this.type, value);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** add noise to the current ROI area of current plane data. */
@@ -1716,7 +1732,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.type, range);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the OR point operation over the current ROI area of the current plane of data */
@@ -1728,7 +1744,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		OrUnaryFunction func = new OrUnaryFunction(this.type, value);
 
-		transform(func, null);
+		nonPositionalTransform(func);
 	}
 
 	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int.
@@ -2359,7 +2375,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		SqrUnaryFunction function = new SqrUnaryFunction(this.type);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the SQRT point operation over the current ROI area of the current plane of data */
@@ -2368,7 +2384,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	{
 		SqrtUnaryFunction function = new SqrtUnaryFunction(this.type);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** calculates actual min and max values present and resets the threshold */
@@ -2407,7 +2423,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ThresholdUnaryFunction function = new ThresholdUnaryFunction(thresholdLevel, 0, 255);
 
-		transform(function, null);
+		nonPositionalTransform(function);
 	}
 
 	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
@@ -2452,7 +2468,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin2 = Index.create(otherRoi.x, otherRoi.y, other.getPlanePosition());
 		int[] span2 = Span.singlePlane(otherRoi.width, otherRoi.height, image2.getNumDimensions());
 
-		BinaryTransformOperation<T> transform = new BinaryTransformOperation<T>(image1,origin1,span1,image2,origin2,span2,function);
+		BinaryTransformPositionalOperation<T> transform = new BinaryTransformPositionalOperation<T>(image1,origin1,span1,image2,origin2,span2,function);
 
 		transform.setSelectionFunctions(selector1, selector2);
 
@@ -2469,7 +2485,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		int[] span = spanOfRoiPlane();
 
-		UnaryTransformOperation<T> pointOp = new UnaryTransformOperation<T>(this.imageData, origin, span, function);
+		UnaryTransformPositionalOperation<T> pointOp = new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, function);
 
 		pointOp.setSelectionFunction(selector);
 
@@ -2514,7 +2530,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			spans[i] = span;
 		}
 
-		NAryTransformOperation<T> transform = new NAryTransformOperation<T>(images, origins, spans, function);
+		NAryTransformPositionalOperation<T> transform = new NAryTransformPositionalOperation<T>(images, origins, spans, function);
 
 		transform.setSelectionFunctions(selectors);
 
@@ -2530,7 +2546,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		XorUnaryFunction func = new XorUnaryFunction(this.type, value);
 
-		transform(func, null);
+		nonPositionalTransform(func);
 	}
 
 	/*
