@@ -153,7 +153,6 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 
 		// gather type info to pass along
 		RealType<T>[] samples = new RealType[images.length];
-		collectSamples(roiCursors,samples);
 
 		// do the iteration
 
