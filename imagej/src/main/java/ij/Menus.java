@@ -48,7 +48,7 @@ public class Menus {
 	private static MenuBar mbar;
 	private static CheckboxMenuItem gray8Item,gray16Item,gray32Item,
 			color256Item,colorRGBItem,RGBStackItem,HSBStackItem,
-			typeByteItem, typeUbyteItem, typeShortItem, typeUshortItem,
+			typeByteItem, typeUbyteItem, typeUint12Item, typeShortItem, typeUshortItem,
 			typeIntItem, typeUintItem, typeLongItem, typeFloatItem, typeDoubleItem;
 	private static PopupMenu popup;
 
@@ -138,6 +138,7 @@ public class Menus {
 		Menu imageType = getMenu("Image>Type");
 		typeByteItem =  addCheckboxItem(imageType, "8-bit signed", "");
 		typeUbyteItem =  addCheckboxItem(imageType, "8-bit unsigned", "");
+		typeUint12Item =  addCheckboxItem(imageType, "12-bit unsigned", "");
 		typeShortItem =  addCheckboxItem(imageType, "16-bit signed", "");
 		typeUshortItem =  addCheckboxItem(imageType, "16-bit unsigned", "");
 		typeIntItem =  addCheckboxItem(imageType, "32-bit signed", "");
@@ -1034,6 +1035,7 @@ public class Menus {
 		HSBStackItem.setState(false);
 		typeByteItem.setState(false);
 		typeUbyteItem.setState(false);
+		typeUint12Item.setState(false);
 		typeShortItem.setState(false);
 		typeUshortItem.setState(false);
 		typeIntItem.setState(false);
@@ -1086,6 +1088,8 @@ public class Menus {
 					typeByteItem.setState(true);
 				else if (theType == SampleInfo.ValueType.UBYTE)
 					typeUbyteItem.setState(true);
+				else if (theType == SampleInfo.ValueType.UINT12)
+					typeUint12Item.setState(true);
 				else if (theType == SampleInfo.ValueType.SHORT)
 					typeShortItem.setState(true);
 				else if (theType == SampleInfo.ValueType.USHORT)

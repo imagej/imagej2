@@ -6,10 +6,11 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.PlaneStack;
+import imagej.SampleInfo.ValueType;
+import imagej.SampleManager;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
-import imagej.process.TypeManager;
 
 import java.awt.Rectangle;
 import java.awt.image.ColorModel;
@@ -115,7 +116,6 @@ public class ImageStack {
 		this(image, null);
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ImageStack(Image<?> image, ContainerFactory factory) {
 		this.width = ImageUtils.getWidth(image);
 		this.height = ImageUtils.getHeight(image);
@@ -143,14 +143,14 @@ public class ImageStack {
 		return labels.size();
 	}
 
-	private void addSliceToImage(int atDepth, String label, boolean unsigned, Object pixels)
+	private void addSliceToImage(int atDepth, String label, ValueType type, Object pixels)
 	{
 		// ADD PLANE
 
 		if (stack == null)
 			stack = new PlaneStack(this.width, this.height, this.factory);;
 
-		stack.insertPlane(atDepth, unsigned, pixels);
+		stack.insertPlane(atDepth, type, pixels);
 
 		// UPDATE LABELS
 
@@ -183,16 +183,32 @@ public class ImageStack {
 
 	/**
 	* Add a plane of data to the ImageStack.
-	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
+	* @deprecated Use {@link #addSlice(String sliceLabel, ValueType type, Object pixels)} instead.
 	*/
 	@Deprecated
-  public void addSlice(String sliceLabel, Object pixels)
+	public void addSlice(String sliceLabel, Object pixels)
 	{
-		addSlice(sliceLabel,true,pixels); // TODO - always true keeps us from supporting signed integral pixel types
+		if (pixels == null)
+			throw new IllegalArgumentException("null pixels");
+		
+		ValueType type;
+		
+		if (pixels instanceof byte[])
+			type = ValueType.UBYTE;
+		else if (pixels instanceof short[])
+			type = ValueType.USHORT;
+		else if (pixels instanceof int[])
+			type = ValueType.UINT;
+		else if (pixels instanceof float[])
+			type = ValueType.FLOAT;
+		else
+			throw new IllegalArgumentException("obsolete version of addSlice() passed nonlegacy input pixel array of type "+pixels.getClass());
+		
+		addSlice(sliceLabel,type,pixels);
 	}
 
 	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
-	public void addSlice(String sliceLabel, boolean dataIsUnsigned, Object pixels)
+	public void addSlice(String sliceLabel, ValueType type, Object pixels)
 	{
 		if (pixels==null)
 			throw new IllegalArgumentException("'pixels' is null!");
@@ -204,7 +220,7 @@ public class ImageStack {
 		if (stack != null)
 			atPlaneNumber = stack.getEndPosition();
 
-		addSliceToImage(atPlaneNumber, sliceLabel, dataIsUnsigned, pixels);
+		addSliceToImage(atPlaneNumber, sliceLabel, type, pixels);
 	}
 
 	/**
@@ -212,22 +228,9 @@ public class ImageStack {
 	* @deprecated Use {@link #addSlice(String sliceLabel, boolean unsigned, Object pixels)} instead.
 	*/
 	@Deprecated
-  public void addUnsignedShortSlice(String sliceLabel, Object pixels)
+	public void addUnsignedShortSlice(String sliceLabel, Object pixels)
 	{
 		addSlice(sliceLabel, pixels);
-	}
-
-	private boolean processorIsUnsigned(ImageProcessor ip)
-	{
-		boolean unsigned = false;
-
-		if ((ip instanceof ByteProcessor) || (ip instanceof ShortProcessor) || (ip instanceof ColorProcessor))
-			unsigned = true;
-
-		if (ip instanceof ImgLibProcessor<?>)
-			unsigned = TypeManager.isUnsignedType(((ImgLibProcessor<?>) ip).getType());
-
-		return unsigned;
 	}
 
 	/** Adds the image in 'ip' to the end of the stack. */
@@ -256,9 +259,7 @@ public class ImageStack {
 			max = ip.getMax();
 		}
 
-		boolean unsigned = processorIsUnsigned(ip);
-
-		addSlice(sliceLabel, unsigned, ip.getPixels());
+		addSlice(sliceLabel, SampleManager.getValueType(ip), ip.getPixels());
 	}
 
 	/** Adds the image in 'ip' to the stack following slice 'n'. Adds
@@ -268,9 +269,7 @@ public class ImageStack {
 		if (n<0 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		boolean unsigned = processorIsUnsigned(ip);
-
-		addSliceToImage(n,sliceLabel,unsigned,ip.getPixels());
+		addSliceToImage(n,sliceLabel,SampleManager.getValueType(ip),ip.getPixels());
 	}
 
 	/** Deletes the specified slice, were 1<=n<=nslices. */
@@ -533,7 +532,7 @@ public class ImageStack {
 	}
 
 	@Override
-  public String toString()
+	public String toString()
 	{
 		String v = isVirtual()?"(V)":"";
 		return ("stack["+getWidth()+"x"+getHeight()+"x"+getSize()+v+"]");

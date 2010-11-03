@@ -1,6 +1,7 @@
 package imagej;
 
 import static org.junit.Assert.*;
+import imagej.SampleInfo.ValueType;
 import imagej.process.ImageUtils;
 
 import org.junit.Test;
@@ -82,7 +83,7 @@ public class PlaneStackTest {
 		
 		assertEquals(4, stack.getEndPosition());
 		
-		stack.addPlane(true, new byte[6]);
+		stack.addPlane(ValueType.UBYTE, new byte[6]);
 		
 		assertEquals(5, stack.getEndPosition());
 	}
@@ -92,14 +93,14 @@ public class PlaneStackTest {
 	{
 		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
 		
-		stack.addPlane(true, new byte[]{1,1,1,1,1,1});
-		stack.addPlane(true, new byte[]{2,2,2,2,2,2});
-		stack.addPlane(true, new byte[]{3,3,3,3,3,3});
-		stack.addPlane(true, new byte[]{4,4,4,4,4,4});
+		stack.addPlane(ValueType.BYTE, new byte[]{1,1,1,1,1,1});
+		stack.addPlane(ValueType.BYTE, new byte[]{2,2,2,2,2,2});
+		stack.addPlane(ValueType.BYTE, new byte[]{3,3,3,3,3,3});
+		stack.addPlane(ValueType.BYTE, new byte[]{4,4,4,4,4,4});
 
 		// insert before beginning
 		try {
-			stack.insertPlane(-1, true, new byte[]{6,6,6,6,6,6});
+			stack.insertPlane(-1, ValueType.BYTE, new byte[]{6,6,6,6,6,6});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
@@ -107,14 +108,14 @@ public class PlaneStackTest {
 		
 		// insert after end+1
 		try {
-			stack.insertPlane(5, true, new byte[]{6,6,6,6,6,6});
+			stack.insertPlane(5, ValueType.BYTE, new byte[]{6,6,6,6,6,6});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 		
 		// insert at front
-		stack.insertPlane(0, true, new byte[]{6,6,6,6,6,6});
+		stack.insertPlane(0, ValueType.BYTE, new byte[]{6,6,6,6,6,6});
 		assertEquals(6,((byte[])stack.getPlane(0))[0]);
 		assertEquals(1,((byte[])stack.getPlane(1))[0]);
 		assertEquals(2,((byte[])stack.getPlane(2))[0]);
@@ -122,7 +123,7 @@ public class PlaneStackTest {
 		assertEquals(4,((byte[])stack.getPlane(4))[0]);
 		
 		// insert in middle
-		stack.insertPlane(3, true, new byte[]{7,7,7,7,7,7});
+		stack.insertPlane(3, ValueType.BYTE, new byte[]{7,7,7,7,7,7});
 		assertEquals(6,((byte[])stack.getPlane(0))[0]);
 		assertEquals(1,((byte[])stack.getPlane(1))[0]);
 		assertEquals(2,((byte[])stack.getPlane(2))[0]);
@@ -131,7 +132,7 @@ public class PlaneStackTest {
 		assertEquals(4,((byte[])stack.getPlane(5))[0]);
 
 		// insert at end
-		stack.insertPlane(6, true, new byte[]{8,8,8,8,8,8});
+		stack.insertPlane(6, ValueType.BYTE, new byte[]{8,8,8,8,8,8});
 		assertEquals(6,((byte[])stack.getPlane(0))[0]);
 		assertEquals(1,((byte[])stack.getPlane(1))[0]);
 		assertEquals(2,((byte[])stack.getPlane(2))[0]);
@@ -158,7 +159,7 @@ public class PlaneStackTest {
 			for (int k = 0; k < bytes.length; k++)
 				bytes[k] = (byte) (i+1);
 			
-			stack.addPlane(true, bytes);
+			stack.addPlane(ValueType.UBYTE, bytes);
 
 			assertEquals(4+i+1, stack.getEndPosition());
 			
@@ -184,10 +185,10 @@ public class PlaneStackTest {
 		}
 		
 		// now populate
-		stack.addPlane(true, new byte[]{1,1,1,1,1,1});
-		stack.addPlane(true, new byte[]{2,2,2,2,2,2});
-		stack.addPlane(true, new byte[]{3,3,3,3,3,3});
-		stack.addPlane(true, new byte[]{4,4,4,4,4,4});
+		stack.addPlane(ValueType.BYTE, new byte[]{1,1,1,1,1,1});
+		stack.addPlane(ValueType.BYTE, new byte[]{2,2,2,2,2,2});
+		stack.addPlane(ValueType.BYTE, new byte[]{3,3,3,3,3,3});
+		stack.addPlane(ValueType.BYTE, new byte[]{4,4,4,4,4,4});
 		
 		// illegal argument : before beginning of stack
 		try {
@@ -230,10 +231,10 @@ public class PlaneStackTest {
 	{
 		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
 		
-		stack.addPlane(true, new byte[]{1,1,1,1,1,1});
-		stack.addPlane(true, new byte[]{2,2,2,2,2,2});
-		stack.addPlane(true, new byte[]{3,3,3,3,3,3});
-		stack.addPlane(true, new byte[]{4,4,4,4,4,4});
+		stack.addPlane(ValueType.BYTE, new byte[]{1,1,1,1,1,1});
+		stack.addPlane(ValueType.BYTE, new byte[]{2,2,2,2,2,2});
+		stack.addPlane(ValueType.BYTE, new byte[]{3,3,3,3,3,3});
+		stack.addPlane(ValueType.BYTE, new byte[]{4,4,4,4,4,4});
 		
 		byte[] data;
 
@@ -269,10 +270,10 @@ public class PlaneStackTest {
 	{
 		PlaneStack stack = new PlaneStack(2,3,new ArrayContainerFactory());
 		
-		stack.insertPlane(0, true, new float[]{1,2,3,4,5,6});
+		stack.insertPlane(0, ValueType.FLOAT, new float[]{1,2,3,4,5,6});
 		
 		try {
-			stack.insertPlane(0, true, new byte[]{1,2,3,4,5,6});
+			stack.insertPlane(0, ValueType.BYTE, new byte[]{1,2,3,4,5,6});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);

@@ -52,6 +52,8 @@ public class ImgLibProcessorTest {
 	private static int width;
 	private static int height;
 
+	private PlanarContainerFactory factory = new PlanarContainerFactory();
+
 	private static ByteProcessor origBProc;
 	private static ShortProcessor origSProc;
 	private static FloatProcessor origFProc;
@@ -78,11 +80,11 @@ public class ImgLibProcessorTest {
 	@BeforeClass
 	public static void setup()
 	{
-		PlanarContainerFactory factory = new PlanarContainerFactory();
-
 		width = 343;
 		height = 426;
 
+		PlanarContainerFactory factory = new PlanarContainerFactory();
+		
 		// *******   BYTE Processors
 
 		// setup BProc
@@ -234,7 +236,7 @@ public class ImgLibProcessorTest {
 	{
 		int width = 3, height = 5;
 
-		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
+		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), this.factory);
 
 		Image<UnsignedByteType> image = factory.createImage(new int[]{width, height, 1});
 
@@ -251,7 +253,7 @@ public class ImgLibProcessorTest {
 	{
 		int width = 3, height = 5;
 
-		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), new ArrayContainerFactory());
+		ImageFactory<UnsignedByteType> factory = new ImageFactory<UnsignedByteType>(new UnsignedByteType(), this.factory);
 
 		Image<UnsignedByteType> image = factory.createImage(new int[]{width, height});
 
@@ -880,7 +882,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetImage()
 	{
-		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		
@@ -891,7 +893,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetImgLibProcThatMatchesMyType()
 	{
-		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc1 = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		
@@ -1238,7 +1240,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPlanePosition()
 	{
-		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc;
 		
@@ -1277,7 +1279,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetTotalSamples()
 	{
-		Image<?> image = ImageUtils.createImage(new DoubleType(), new ArrayContainerFactory(), new int[]{5,2,4});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{5,2,4});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		
@@ -1289,7 +1291,7 @@ public class ImgLibProcessorTest {
 	{
 		RealType<?> type = new DoubleType();
 		
-		Image<?> image = ImageUtils.createImage(type, new ArrayContainerFactory(), new int[]{5,2,4});
+		Image<?> image = ImageUtils.createImage(type, this.factory, new int[]{5,2,4});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		

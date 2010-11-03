@@ -141,6 +141,57 @@ public class SampleManager
 		return null;
 	}
 
+	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
+	public static void verifyTypeCompatibility(Object pixels, ValueType inputType)
+	{
+		switch (inputType)
+		{
+			case BYTE:
+			case UBYTE:
+				if (pixels instanceof byte[])
+					return;
+				break;
+				
+			case SHORT:
+			case USHORT:
+				if (pixels instanceof short[])
+					return;
+				break;
+				
+			case INT:
+			case UINT:
+				if (pixels instanceof int[])
+					return;
+				break;
+				
+			case LONG:
+				if (pixels instanceof long[])
+					return;
+				break;
+				
+			case FLOAT:
+				if (pixels instanceof float[])
+					return;
+				break;
+				
+			case DOUBLE:
+				if (pixels instanceof double[])
+					return;
+				break;
+				
+			case UINT12:
+				if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
+					return;                   //   encoded 32 bits at a time within an int array
+				break;
+				
+			default:
+				break;
+		}
+		
+		throw new IllegalArgumentException("unsupported pixel/type combination: expectedType ("+inputType+
+												") and pixel Object type ("+pixels.getClass().toString()+")");
+	}
+	
 	// *************** Private helpers follow **********************************************************
 	
 	/** helper function - return the total number of bits in a sample described by a SampleInfo object */

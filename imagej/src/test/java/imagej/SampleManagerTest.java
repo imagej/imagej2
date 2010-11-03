@@ -10,7 +10,7 @@ import imagej.SampleInfo.ValueType;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 
-import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
@@ -203,7 +203,7 @@ public class SampleManagerTest {
 		assertEquals(ValueType.UINT, SampleManager.getValueType(cProc));
 
 		Image<UnsignedShortType> image =
-			ImageUtils.createImage(new UnsignedShortType(), new ArrayContainerFactory(), new int[]{6,4,2});
+			ImageUtils.createImage(new UnsignedShortType(), new PlanarContainerFactory(), new int[]{6,4,2});
 		
 		ImgLibProcessor<?> iProc = new ImgLibProcessor<UnsignedShortType>(image, 0);
 		
@@ -232,7 +232,7 @@ public class SampleManagerTest {
 		assertEquals(ValueType.UINT, SampleManager.getValueType(imp));
 
 		Image<FloatType> image =
-			ImageUtils.createImage(new FloatType(), new ArrayContainerFactory(), new int[]{6,4,2});
+			ImageUtils.createImage(new FloatType(), new PlanarContainerFactory(), new int[]{6,4,2});
 		ImgLibProcessor<?> iProc = new ImgLibProcessor<FloatType>(image, 0);
 		imp = new ImagePlus("zacko", iProc);
 		assertEquals(ValueType.FLOAT, SampleManager.getValueType(imp));
@@ -256,4 +256,51 @@ public class SampleManagerTest {
 		assertEquals(SampleManager.getSampleInfo(ValueType.LONG), SampleManager.findSampleInfo("64-bit signed"));
 	}
 
+	private void compatible(ValueType type, Object data)
+	{
+		try {
+			SampleManager.verifyTypeCompatibility(data, type);
+			assertTrue(true);
+		} catch (IllegalArgumentException e) {
+			fail();
+		}
+	}
+	
+	private void incompatible(ValueType type, Object data)
+	{
+		try {
+			SampleManager.verifyTypeCompatibility(data, type);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testTypeCompatiblility()
+	{
+		// valid values
+		compatible(ValueType.BYTE, new byte[0]);
+		compatible(ValueType.UBYTE, new byte[0]);
+		compatible(ValueType.SHORT, new short[0]);
+		compatible(ValueType.USHORT, new short[0]);
+		compatible(ValueType.INT, new int[0]);
+		compatible(ValueType.UINT, new int[0]);
+		compatible(ValueType.LONG, new long[0]);
+		compatible(ValueType.FLOAT, new float[0]);
+		compatible(ValueType.DOUBLE, new double[0]);
+		compatible(ValueType.UINT12, new int[0]);
+		
+		// some failure values
+		incompatible(ValueType.BYTE, "A String");
+		incompatible(ValueType.UBYTE, new short[0]);
+		incompatible(ValueType.SHORT, new int[0]);
+		incompatible(ValueType.USHORT, new long[0]);
+		incompatible(ValueType.INT, new double[0]);
+		incompatible(ValueType.UINT, new float[0]);
+		incompatible(ValueType.LONG, new byte[0]);
+		incompatible(ValueType.FLOAT, new double[0]);
+		incompatible(ValueType.DOUBLE, new float[0]);
+		incompatible(ValueType.UINT12, new short[0]);
+	}
 }

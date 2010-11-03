@@ -37,9 +37,8 @@ public class SetPlaneOperationTest {
 		
 		// try something type unsafe
 		try {
-			inputPlane = new int[]{0,9,8,7,6,5};
-			planeOp = new SetPlaneOperation<IntType>(image, origin, inputPlane, ValueType.SHORT);
-			planeOp.execute();
+			short[] badPlane = new short[]{0,9,8,7,6,5};
+			planeOp = new SetPlaneOperation<IntType>(image, origin, badPlane, ValueType.INT);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
