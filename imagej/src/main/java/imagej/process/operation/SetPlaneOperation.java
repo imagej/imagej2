@@ -19,7 +19,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	private DataReader reader;
 	
 	// set before iteration
-	private int pixNum;
+	private int currPix;
 	private boolean isIntegral;
 	
 	// **************** public interface ********************************************
@@ -27,6 +27,8 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, ValueType inputType)
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
+		
+		verifyTypeCompatibility(pixels, inputType);
 		
 		switch (inputType)
 		{
@@ -57,6 +59,9 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 			case DOUBLE:
 				this.reader = new DoubleReader((double[])pixels);
 				break;
+			case UINT12:
+				this.reader = new UnsignedTwelveBitReader((int[])pixels);
+				break;
 			default:  // note ULONG falls through to here by design
 				throw new IllegalArgumentException("SetPlaneOperation(): unsupported data type - "+inputType);
 		}
@@ -66,7 +71,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	@Override
 	protected void beforeIteration(RealType<T> type)
 	{
-		this.pixNum = 0;
+		this.currPix = 0;
 		this.isIntegral = TypeManager.isIntegralType(type);
 	}
 
@@ -74,7 +79,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	protected void insideIteration(int[] position, RealType<T> sample)
 	{
 
-		double pixelValue = reader.getValue(this.pixNum++);
+		double pixelValue = reader.getValue(this.currPix++);
 		
 		if (this.isIntegral)
 			pixelValue = TypeManager.boundValueToType(sample, pixelValue);
@@ -88,6 +93,56 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	}
 	
 	// **************** private code ********************************************
+	
+	private void verifyTypeCompatibility(Object pixels, ValueType inputType)
+	{
+		switch (inputType)
+		{
+		case BYTE:
+		case UBYTE:
+			if (pixels instanceof byte[])
+				return;
+			break;
+			
+		case SHORT:
+		case USHORT:
+			if (pixels instanceof short[])
+				return;
+			break;
+			
+		case INT:
+		case UINT:
+			if (pixels instanceof int[])
+				return;
+			break;
+			
+		case LONG:
+			if (pixels instanceof long[])
+				return;
+			break;
+			
+		case FLOAT:
+			if (pixels instanceof float[])
+				return;
+			break;
+			
+		case DOUBLE:
+			if (pixels instanceof double[])
+				return;
+			break;
+			
+		case UINT12:
+			if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
+				return;                   //   encoded 32 bits at a time within an int array
+			break;
+			
+		default:
+			break;
+		}
+		
+		throw new IllegalArgumentException("unsupported pixel/type combination: expectedType ("+inputType+
+												") and pixel Object type ("+pixels.getClass().toString()+")");
+	}
 	
 	private class ByteReader implements DataReader
 	{
@@ -230,6 +285,88 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		public double getValue(int i)
 		{
 			return pixels[i];
+		}
+	}
+
+	private class UnsignedTwelveBitReader implements DataReader
+	{
+		private int[] ints;
+		
+		public UnsignedTwelveBitReader(int[] ints)
+		{
+			this.ints = ints;
+		}
+		
+		public double getValue(int index)
+		{
+			// divide pixels into buckets of nibbles. each bucket is 96 bits (three 32 bit ints = eight 12 bit ints)
+			int bucketNumber = index / 8;
+			
+			int intIndexOfBucketStart = bucketNumber * 3;
+			
+			int indexOfFirstNibble = index % 8;
+			
+			int nibble1, nibble2, nibble3;
+			
+			switch (indexOfFirstNibble)
+			
+			{
+				case 0:
+					nibble1 = getNibble(intIndexOfBucketStart,   0);
+					nibble2 = getNibble(intIndexOfBucketStart,   1);
+					nibble3 = getNibble(intIndexOfBucketStart,   2);
+					break;
+				case 1:
+					nibble1 = getNibble(intIndexOfBucketStart,   3);
+					nibble2 = getNibble(intIndexOfBucketStart,   4);
+					nibble3 = getNibble(intIndexOfBucketStart,   5);
+					break;
+				case 2:
+					nibble1 = getNibble(intIndexOfBucketStart,   6);
+					nibble2 = getNibble(intIndexOfBucketStart,   7);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 0);
+					break;
+				case 3:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 1);
+					nibble2 = getNibble(intIndexOfBucketStart+1, 2);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 3);
+					break;
+				case 4:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 4);
+					nibble2 = getNibble(intIndexOfBucketStart+1, 5);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 6);
+					break;
+				case 5:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 7);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 0);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 1);
+					break;
+				case 6:
+					nibble1 = getNibble(intIndexOfBucketStart+2, 2);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 3);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 4);
+					break;
+				case 7:
+					nibble1 = getNibble(intIndexOfBucketStart+2, 5);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 6);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 7);
+					break;
+				default:
+					throw new IllegalStateException();
+			}
+			
+			return (nibble3 << 8) + (nibble2 << 4) + (nibble1 << 0);
+		}
+		
+		private int getNibble(int intNumber, int nibbleNumber)
+		{
+			int currValue = this.ints[intNumber];
+			
+			int alignedMask = 15 << (4 * nibbleNumber);
+
+			int shiftedValue = currValue & alignedMask;
+			
+			return shiftedValue >> (4 * nibbleNumber);
 		}
 	}
 }
