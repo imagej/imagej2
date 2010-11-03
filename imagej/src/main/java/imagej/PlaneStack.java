@@ -32,7 +32,7 @@ public class PlaneStack
 	//****************** instance variables
 
 	private Image<?> stack;
-	private RealType<?> type;
+	private RealType<?> imgLibType;
 	private int planeWidth;
 	private int planeHeight;
 	private ContainerFactory factory;
@@ -41,11 +41,11 @@ public class PlaneStack
 
 	@SuppressWarnings("unchecked")
 	/** creates a single plane Imglib image using passed in data. */
-	private Image<?> createPlane(RealType<?> type, ContainerFactory cFact, Object data, ValueType dType)
+	private Image<?> createPlane(RealType<?> imgLibType, ContainerFactory cFact, Object data)
 	{
 		int[] dimensions = new int[]{planeWidth, planeHeight, 1};
 
-		Image<?> image = ImageUtils.createImage(type, cFact, dimensions);
+		Image<?> image = ImageUtils.createImage(imgLibType, cFact, dimensions);
 
 		PlanarAccess<ArrayDataAccess<?>> planar = ImageUtils.getPlanarAccess(image);
 
@@ -57,28 +57,30 @@ public class PlaneStack
 		}
 		else
 		{
+			ValueType ijType = SampleManager.getValueType(imgLibType);
+			
 			SetPlaneOperation<?> planeOp;
 			
-			if (type instanceof ByteType)
-				planeOp = new SetPlaneOperation<ByteType>((Image<ByteType>)image, Index.create(3), data, dType);
-			else if (type instanceof UnsignedByteType)
-				planeOp = new SetPlaneOperation<UnsignedByteType>((Image<UnsignedByteType>)image, Index.create(3), data, dType);
-			else if (type instanceof Unsigned12BitType)
-				planeOp = new SetPlaneOperation<Unsigned12BitType>((Image<Unsigned12BitType>)image, Index.create(3), data, dType);
-			else if (type instanceof ShortType)
-				planeOp = new SetPlaneOperation<ShortType>((Image<ShortType>)image, Index.create(3), data, dType);
-			else if (type instanceof UnsignedShortType)
-				planeOp = new SetPlaneOperation<UnsignedShortType>((Image<UnsignedShortType>)image, Index.create(3), data, dType);
-			else if (type instanceof IntType)
-				planeOp = new SetPlaneOperation<IntType>((Image<IntType>)image, Index.create(3), data, dType);
-			else if (type instanceof UnsignedIntType)
-				planeOp = new SetPlaneOperation<UnsignedIntType>((Image<UnsignedIntType>)image, Index.create(3), data, dType);
-			else if (type instanceof LongType)
-				planeOp = new SetPlaneOperation<LongType>((Image<LongType>)image, Index.create(3), data, dType);
-			else if (type instanceof FloatType)
-				planeOp = new SetPlaneOperation<FloatType>((Image<FloatType>)image, Index.create(3), data, dType);
-			else if (type instanceof DoubleType)
-				planeOp = new SetPlaneOperation<DoubleType>((Image<DoubleType>)image, Index.create(3), data, dType);
+			if (imgLibType instanceof ByteType)
+				planeOp = new SetPlaneOperation<ByteType>((Image<ByteType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof UnsignedByteType)
+				planeOp = new SetPlaneOperation<UnsignedByteType>((Image<UnsignedByteType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof Unsigned12BitType)
+				planeOp = new SetPlaneOperation<Unsigned12BitType>((Image<Unsigned12BitType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof ShortType)
+				planeOp = new SetPlaneOperation<ShortType>((Image<ShortType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof UnsignedShortType)
+				planeOp = new SetPlaneOperation<UnsignedShortType>((Image<UnsignedShortType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof IntType)
+				planeOp = new SetPlaneOperation<IntType>((Image<IntType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof UnsignedIntType)
+				planeOp = new SetPlaneOperation<UnsignedIntType>((Image<UnsignedIntType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof LongType)
+				planeOp = new SetPlaneOperation<LongType>((Image<LongType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof FloatType)
+				planeOp = new SetPlaneOperation<FloatType>((Image<FloatType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof DoubleType)
+				planeOp = new SetPlaneOperation<DoubleType>((Image<DoubleType>)image, Index.create(3), data, ijType);
 			else
 				throw new IllegalStateException();
 
@@ -114,34 +116,34 @@ public class PlaneStack
 			int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
 			int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
 
-			if (type instanceof ByteType)
+			if (this.imgLibType instanceof ByteType)
 				ImageUtils.copyFromImageToImage((Image<ByteType>)srcImage, srcOrigin, span,
 												(Image<ByteType>)dstImage, dstOrigin, span);
-			else if (type instanceof UnsignedByteType)
+			else if (this.imgLibType instanceof UnsignedByteType)
 				ImageUtils.copyFromImageToImage((Image<UnsignedByteType>)srcImage, srcOrigin, span,
 												(Image<UnsignedByteType>)dstImage, dstOrigin, span);
-			else if (type instanceof Unsigned12BitType)
+			else if (this.imgLibType instanceof Unsigned12BitType)
 				ImageUtils.copyFromImageToImage((Image<Unsigned12BitType>)srcImage, srcOrigin, span,
 												(Image<Unsigned12BitType>)dstImage, dstOrigin, span);
-			else if (type instanceof ShortType)
+			else if (this.imgLibType instanceof ShortType)
 				ImageUtils.copyFromImageToImage((Image<ShortType>)srcImage, srcOrigin, span,
 												(Image<ShortType>)dstImage, dstOrigin, span);
-			else if (type instanceof UnsignedShortType)
+			else if (this.imgLibType instanceof UnsignedShortType)
 				ImageUtils.copyFromImageToImage((Image<UnsignedShortType>)srcImage, srcOrigin, span,
 												(Image<UnsignedShortType>)dstImage, dstOrigin, span);
-			else if (type instanceof IntType)
+			else if (this.imgLibType instanceof IntType)
 				ImageUtils.copyFromImageToImage((Image<IntType>)srcImage, srcOrigin, span,
 												(Image<IntType>)dstImage, dstOrigin, span);
-			else if (type instanceof UnsignedIntType)
+			else if (this.imgLibType instanceof UnsignedIntType)
 				ImageUtils.copyFromImageToImage((Image<UnsignedIntType>)srcImage, srcOrigin, span,
 												(Image<UnsignedIntType>)dstImage, dstOrigin, span);
-			else if (type instanceof LongType)
+			else if (this.imgLibType instanceof LongType)
 				ImageUtils.copyFromImageToImage((Image<LongType>)srcImage, srcOrigin, span,
 												(Image<LongType>)dstImage, dstOrigin, span);
-			else if (type instanceof FloatType)
+			else if (this.imgLibType instanceof FloatType)
 				ImageUtils.copyFromImageToImage((Image<FloatType>)srcImage, srcOrigin, span,
 												(Image<FloatType>)dstImage, dstOrigin, span);
-			else if (type instanceof DoubleType)
+			else if (this.imgLibType instanceof DoubleType)
 				ImageUtils.copyFromImageToImage((Image<DoubleType>)srcImage, srcOrigin, span,
 												(Image<DoubleType>)dstImage, dstOrigin, span);
 			else
@@ -159,7 +161,7 @@ public class PlaneStack
 	 * @param desiredType - the imglib type we desire the plane to be of
 	 * @param dType - the ValueType of the input data
 	 */
-	private void insertPlane(int atPosition, Object data, int dataLen, RealType<?> desiredType, ValueType dType)
+	private void insertPlane(int atPosition, Object data, int dataLen, ValueType dType)
 	{
 		if (dataLen != this.planeWidth*this.planeHeight)
 			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack - expected "+
@@ -173,18 +175,20 @@ public class PlaneStack
 		if (atPosition > numPlanesNow+1)
 			throw new IllegalArgumentException("insertPlane(): insertion point too large");
 
-		Image<?> newPlane = createPlane(desiredType, this.factory, data, dType);
+		RealType<?> desiredType = SampleManager.getRealType(dType);
+		
+		Image<?> newPlane = createPlane(desiredType, this.factory, data);
 
 		if (this.stack == null)
 		{
 			this.stack = newPlane;
-			this.type = desiredType;
+			this.imgLibType = desiredType;
 		}
 		else  // we already have some entries in stack
 		{
 			// need to type check against existing planes
-			if ( ! (TypeManager.sameKind(desiredType, this.type)) )
-				throw new IllegalArgumentException("insertPlane(): type clash - " + this.type + " & " + desiredType);
+			if ( ! (TypeManager.sameKind(desiredType, this.imgLibType)) )
+				throw new IllegalArgumentException("insertPlane(): type clash - " + this.imgLibType + " & " + desiredType);
 
 			int[] newDims = new int[]{this.planeWidth, this.planeHeight, this.getEndPosition()+1};
 
@@ -198,81 +202,13 @@ public class PlaneStack
 		}
 	}
 
-	/** a helper method to insert unsigned byte plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertUnsignedPlane(int atPosition, byte[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedByteType(), ValueType.UBYTE);
-	}
-
-	/** a helper method to insert signed byte plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertSignedPlane(int atPosition, byte[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new ByteType(), ValueType.BYTE);
-	}
-
-	/** a helper method to insert unsigned short plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertUnsignedPlane(int atPosition, short[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedShortType(), ValueType.USHORT);
-	}
-
-	/** a helper method to insert signed short plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertSignedPlane(int atPosition, short[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new ShortType(), ValueType.SHORT);
-	}
-
-	/** a helper method to insert unsigned int plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertUnsignedPlane(int atPosition, int[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new UnsignedIntType(), ValueType.UINT);
-	}
-
-	/** a helper method to insert signed int plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertSignedPlane(int atPosition, int[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new IntType(), ValueType.INT);
-	}
-
-	/** a helper method to insert unsigned long plane data into a PlaneStack */
-	private void insertUnsignedPlane(int atPosition, long[] data)
-	{
-		throw new IllegalArgumentException("PlaneStack::insertUnsignedPlane(long[]): unsigned long data not supported");
-	}
-
-	/** a helper method to insert signed long plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertSignedPlane(int atPosition, long[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new LongType(), ValueType.LONG);
-	}
-
-	/** a helper method to insert float plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertPlane(int atPosition, float[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new FloatType(), ValueType.FLOAT);
-	}
-
-	/** a helper method to insert double plane data into a PlaneStack */
-	@SuppressWarnings({"rawtypes"})
-	private void insertPlane(int atPosition, double[] data)
-	{
-		insertPlane(atPosition, data, data.length, (RealType) new DoubleType(), ValueType.DOUBLE);
-	}
 
 	//****************** public interface
 
 	/** constructor - create a PlaneStack directly from an Imglib image */
 	public PlaneStack(Image<?> stack) {
 		this.stack = stack;
-		this.type = ImageUtils.getType(stack);
+		this.imgLibType = ImageUtils.getType(stack);
 		this.planeWidth = ImageUtils.getWidth(stack);
 		this.planeHeight = ImageUtils.getHeight(stack);
 		this.factory = stack.getContainerFactory();
@@ -287,7 +223,7 @@ public class PlaneStack
 					height+") must both be greater than zero.");
 		
 		this.stack = null;
-		this.type = null;
+		this.imgLibType = null;
 		this.planeWidth = width;
 		this.planeHeight = height;
 		this.factory = factory;
@@ -323,49 +259,50 @@ public class PlaneStack
 	/**
 	 * inserts a plane into the PlaneStack
 	 * @param atPosition - the position within the stack where the plane should be inserted. other planes moved to make way
-	 * @param unsigned - a boolean specifying whether input data is signed or unsigned
+	 * @param type - the type of the input data
 	 * @param data - an array of values representing the plane
 	 */
-	public void insertPlane(int atPosition, boolean unsigned, Object data)
+	public void insertPlane(int atPosition, ValueType type, Object data)
 	{
-		if (data instanceof byte[])
+		SampleManager.verifyTypeCompatibility(data, type);
+		
+		int dataLen;
+		
+		switch (type)
 		{
-			if (unsigned)
-				insertUnsignedPlane(atPosition,(byte[])data);
-			else
-				insertSignedPlane(atPosition,(byte[])data);
+		case BYTE:
+		case UBYTE:
+			dataLen = ((byte[])data).length;
+			break;
+
+		case SHORT:
+		case USHORT:
+			dataLen = ((short[])data).length;
+			break;
+
+		case UINT12:
+		case INT:
+		case UINT:
+			dataLen = ((int[])data).length;
+			break;
+			
+		case LONG:
+			dataLen = ((long[])data).length;
+			break;
+			
+		case FLOAT:
+			dataLen = ((float[])data).length;
+			break;
+			
+		case DOUBLE:
+			dataLen = ((double[])data).length;
+			break;
+			
+		default:
+			throw new IllegalArgumentException("PlaneStack::insertPlane(position,type,data): unsupported data type passed in - "+data.getClass());
 		}
-		else if (data instanceof short[])
-		{
-			if (unsigned)
-				insertUnsignedPlane(atPosition,(short[])data);
-			else
-				insertSignedPlane(atPosition,(short[])data);
-		}
-		else if (data instanceof int[])
-		{
-			if (unsigned)
-				insertUnsignedPlane(atPosition,(int[])data);
-			else
-				insertSignedPlane(atPosition,(int[])data);
-		}
-		else if (data instanceof long[])
-		{
-			if (unsigned)
-				insertUnsignedPlane(atPosition,(long[])data);
-			else
-				insertSignedPlane(atPosition,(long[])data);
-		}
-		else if (data instanceof float[])
-		{
-			insertPlane(atPosition,(float[])data);
-		}
-		else if (data instanceof double[])
-		{
-			insertPlane(atPosition,(double[])data);
-		}
-		else
-			throw new IllegalArgumentException("PlaneStack::insertPlane(Object): unknown data type passed in - "+data.getClass());
+		
+		insertPlane(atPosition, data, dataLen, type);
 	}
 
 	/**
@@ -373,9 +310,9 @@ public class PlaneStack
 	 * @param unsigned - a boolean specifying whether input data is signed or unsigned
 	 * @param data - an array of values representing the plane
 	 */
-	public void addPlane(boolean unsigned, Object data)
+	public void addPlane(ValueType type, Object data)
 	{
-		insertPlane(getEndPosition(), unsigned, data);
+		insertPlane(getEndPosition(), type, data);
 	}
 
 	/**
@@ -400,7 +337,7 @@ public class PlaneStack
 		}
 
 		// create a new image one plane smaller than existing
-		Image<?> newImage = ImageUtils.createImage(this.type, this.factory, newDims);
+		Image<?> newImage = ImageUtils.createImage(this.imgLibType, this.factory, newDims);
 
 		copyPlanesFromTo(planeNumber, this.stack, 0, newImage, 0);
 		copyPlanesFromTo(getEndPosition()-planeNumber-1, this.stack, planeNumber+1, newImage, planeNumber);
@@ -429,25 +366,25 @@ public class PlaneStack
 			
 			ValueType asType = SampleManager.getValueType(ImageUtils.getType(this.stack));
 
-			if (type instanceof ByteType)
+			if (this.imgLibType instanceof ByteType)
 				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
-			else if (type instanceof UnsignedByteType)
+			else if (this.imgLibType instanceof UnsignedByteType)
 				return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)this.stack, planePosition, asType);
-			else if (type instanceof Unsigned12BitType)
+			else if (this.imgLibType instanceof Unsigned12BitType)
 				return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)this.stack, planePosition, asType);
-			else if (type instanceof ShortType)
+			else if (this.imgLibType instanceof ShortType)
 				return GetPlaneOperation.getPlaneAs((Image<ShortType>)this.stack, planePosition, asType);
-			else if (type instanceof UnsignedShortType)
+			else if (this.imgLibType instanceof UnsignedShortType)
 				return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)this.stack, planePosition, asType);
-			else if (type instanceof IntType)
+			else if (this.imgLibType instanceof IntType)
 				return GetPlaneOperation.getPlaneAs((Image<IntType>)this.stack, planePosition, asType);
-			else if (type instanceof UnsignedIntType)
+			else if (this.imgLibType instanceof UnsignedIntType)
 				return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)this.stack, planePosition, asType);
-			else if (type instanceof LongType)
+			else if (this.imgLibType instanceof LongType)
 				return GetPlaneOperation.getPlaneAs((Image<LongType>)this.stack, planePosition, asType);
-			else if (type instanceof FloatType)
+			else if (this.imgLibType instanceof FloatType)
 				return GetPlaneOperation.getPlaneAs((Image<FloatType>)this.stack, planePosition, asType);
-			else if (type instanceof DoubleType)
+			else if (this.imgLibType instanceof DoubleType)
 				return GetPlaneOperation.getPlaneAs((Image<DoubleType>)this.stack, planePosition, asType);
 			else
 				throw new IllegalStateException();

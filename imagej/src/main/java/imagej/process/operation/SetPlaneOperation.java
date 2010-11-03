@@ -1,6 +1,7 @@
 package imagej.process.operation;
 
 import imagej.SampleInfo.ValueType;
+import imagej.SampleManager;
 import imagej.process.Span;
 import imagej.process.TypeManager;
 import mpicbg.imglib.image.Image;
@@ -28,7 +29,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
 		
-		verifyTypeCompatibility(pixels, inputType);
+		SampleManager.verifyTypeCompatibility(pixels, inputType);
 		
 		switch (inputType)
 		{
@@ -93,56 +94,6 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	}
 	
 	// **************** private code ********************************************
-	
-	private void verifyTypeCompatibility(Object pixels, ValueType inputType)
-	{
-		switch (inputType)
-		{
-		case BYTE:
-		case UBYTE:
-			if (pixels instanceof byte[])
-				return;
-			break;
-			
-		case SHORT:
-		case USHORT:
-			if (pixels instanceof short[])
-				return;
-			break;
-			
-		case INT:
-		case UINT:
-			if (pixels instanceof int[])
-				return;
-			break;
-			
-		case LONG:
-			if (pixels instanceof long[])
-				return;
-			break;
-			
-		case FLOAT:
-			if (pixels instanceof float[])
-				return;
-			break;
-			
-		case DOUBLE:
-			if (pixels instanceof double[])
-				return;
-			break;
-			
-		case UINT12:
-			if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
-				return;                   //   encoded 32 bits at a time within an int array
-			break;
-			
-		default:
-			break;
-		}
-		
-		throw new IllegalArgumentException("unsupported pixel/type combination: expectedType ("+inputType+
-												") and pixel Object type ("+pixels.getClass().toString()+")");
-	}
 	
 	private class ByteReader implements DataReader
 	{

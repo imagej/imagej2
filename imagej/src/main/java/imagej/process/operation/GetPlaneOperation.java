@@ -92,7 +92,6 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 					totalInts++;
 				this.outputPlane = new int[(int)totalInts];
 				this.planeWriter = new UnsignedTwelveBitWriter((int[])this.outputPlane);
-				System.out.println("allocating "+totalInts+" integers");
 				break;
 		
 			default:
