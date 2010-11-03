@@ -151,6 +151,24 @@ public class PlaneStack
 		}
 	}
 
+	// this method should move when we have a better idea where it belongs
+	private int expectedArraySize(ValueType type)
+	{
+		int numPixels = this.planeHeight * this.planeWidth;
+		
+		if (type != ValueType.UINT12)
+			return numPixels;
+
+		int totalBits = 12 * numPixels;
+		
+		int totalInts = totalBits / 32;
+		
+		if ((totalBits % 32) != 0)
+			totalInts++;
+		
+		return totalInts;
+	}
+	
 	/**
 	 * inserts a plane into the PlaneStack. Since Imglib images are immutable it does this by creating a new stack
 	 * and copying all the old data appropriately. The new plane's contents are provided. Note that callers of this
@@ -163,9 +181,11 @@ public class PlaneStack
 	 */
 	private void insertPlane(int atPosition, Object data, int dataLen, ValueType dType)
 	{
-		if (dataLen != this.planeWidth*this.planeHeight)
-			throw new IllegalArgumentException("insertPlane(): input data does not match XY dimensions of stack - expected "+
-					dataLen+" samples but got "+(this.planeWidth*this.planeHeight)+" samples");
+		int expectedSize = expectedArraySize(dType);
+		
+		if (dataLen != expectedSize)
+			throw new IllegalArgumentException("insertPlane(): input data does not match dimensions of stack - given "+
+													dataLen+" samples but expected "+expectedSize+" samples");
 
 		long numPlanesNow = getNumPlanes();
 
@@ -270,36 +290,36 @@ public class PlaneStack
 		
 		switch (type)
 		{
-		case BYTE:
-		case UBYTE:
-			dataLen = ((byte[])data).length;
-			break;
-
-		case SHORT:
-		case USHORT:
-			dataLen = ((short[])data).length;
-			break;
-
-		case UINT12:
-		case INT:
-		case UINT:
-			dataLen = ((int[])data).length;
-			break;
-			
-		case LONG:
-			dataLen = ((long[])data).length;
-			break;
-			
-		case FLOAT:
-			dataLen = ((float[])data).length;
-			break;
-			
-		case DOUBLE:
-			dataLen = ((double[])data).length;
-			break;
-			
-		default:
-			throw new IllegalArgumentException("PlaneStack::insertPlane(position,type,data): unsupported data type passed in - "+data.getClass());
+			case BYTE:
+			case UBYTE:
+				dataLen = ((byte[])data).length;
+				break;
+	
+			case SHORT:
+			case USHORT:
+				dataLen = ((short[])data).length;
+				break;
+	
+			case UINT12:
+			case INT:
+			case UINT:
+				dataLen = ((int[])data).length;
+				break;
+				
+			case LONG:
+				dataLen = ((long[])data).length;
+				break;
+				
+			case FLOAT:
+				dataLen = ((float[])data).length;
+				break;
+				
+			case DOUBLE:
+				dataLen = ((double[])data).length;
+				break;
+				
+			default:
+				throw new IllegalArgumentException("PlaneStack::insertPlane(position,type,data): unsupported data type passed in - "+data.getClass());
 		}
 		
 		insertPlane(atPosition, data, dataLen, type);

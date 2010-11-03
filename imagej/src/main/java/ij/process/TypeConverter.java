@@ -42,9 +42,7 @@ public class TypeConverter {
 		
 		SampleInfo.ValueType vType = SampleManager.getValueType(ip);
 		
-		boolean unsigned = SampleManager.getSampleInfo(vType).isUnsigned();
-		
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, pixels, unsigned);
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, pixels, vType);
 		
 		return proc;
 	}

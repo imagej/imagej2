@@ -148,7 +148,7 @@ public class ImageStack {
 		// ADD PLANE
 
 		if (stack == null)
-			stack = new PlaneStack(this.width, this.height, this.factory);;
+			stack = new PlaneStack(this.width, this.height, this.factory);
 
 		stack.insertPlane(atDepth, type, pixels);
 
@@ -188,9 +188,12 @@ public class ImageStack {
 	@Deprecated
 	public void addSlice(String sliceLabel, Object pixels)
 	{
-		if (pixels == null)
-			throw new IllegalArgumentException("null pixels");
-		
+		if (pixels==null)
+			throw new IllegalArgumentException("'pixels' is null!");
+
+		if (!pixels.getClass().isArray())
+			throw new IllegalArgumentException("'pixels' is not an array");
+
 		ValueType type;
 		
 		if (pixels instanceof byte[])
@@ -204,7 +207,7 @@ public class ImageStack {
 		else
 			throw new IllegalArgumentException("obsolete version of addSlice() passed nonlegacy input pixel array of type "+pixels.getClass());
 		
-		addSlice(sliceLabel,type,pixels);
+		addSlice(sliceLabel, type, pixels);
 	}
 
 	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
@@ -269,7 +272,7 @@ public class ImageStack {
 		if (n<0 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		addSliceToImage(n,sliceLabel,SampleManager.getValueType(ip),ip.getPixels());
+		addSliceToImage(n, sliceLabel, SampleManager.getValueType(ip), ip.getPixels());
 	}
 
 	/** Deletes the specified slice, were 1<=n<=nslices. */
@@ -393,6 +396,7 @@ public class ImageStack {
 	{
 		if (n<1 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
+		
 		return labels.get(n-1);
 	}
 
@@ -420,6 +424,7 @@ public class ImageStack {
 	{
 		if (n<1 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
+		
 		this.labels.set(n-1,label);
 	}
 

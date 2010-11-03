@@ -9,6 +9,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
+import imagej.SampleInfo.ValueType;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
@@ -328,7 +329,7 @@ public class ImageUtilsTest {
 
 		byte[] bytes = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, bytes, true);
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, bytes, ValueType.BYTE);
 
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());

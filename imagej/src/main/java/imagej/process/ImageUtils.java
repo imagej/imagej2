@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
 import imagej.SampleInfo.ValueType;
+import imagej.SampleManager;
 import imagej.io.ImageOpener;
 import imagej.process.function.unary.CopyUnaryFunction;
 import imagej.process.operation.BinaryAssignOperation;
@@ -25,6 +26,7 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -252,79 +254,93 @@ public class ImageUtils
 	 * @param width - desired width of image
 	 * @param height - desired height of image
 	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
-	 * @param unsigned - boolean flag specifying whether input data is unsigned or signed
+	 * @param type - the IJ value type of the input data (BYTE, USHORT, etc.)
 	 */
-	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, boolean unsigned)
+	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, ValueType type)
 	{
+		SampleManager.verifyTypeCompatibility(pixels, type);
+		
 		PlanarContainerFactory containerFactory = new PlanarContainerFactory();
 
 		ImgLibProcessor<?> proc = null;
 
 		int[] dimensions = new int[]{width, height, 1};
 
-		if (pixels instanceof byte[])
+		switch (type)
 		{
-			if (unsigned)
-			{
-				Image<UnsignedByteType> hatchedImage = createImage(new UnsignedByteType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
-			}
-			else
+			case BYTE:
 			{
 				Image<ByteType> hatchedImage = createImage(new ByteType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
 			}
-		}
-		else if (pixels instanceof short[])
-		{
-			if (unsigned)
+			break;
+			
+			case UBYTE:
 			{
-				Image<UnsignedShortType> hatchedImage = createImage(new UnsignedShortType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
+				Image<UnsignedByteType> hatchedImage = createImage(new UnsignedByteType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
 			}
-			else
+			break;
+			
+			case UINT12:
+			{
+				Image<Unsigned12BitType> hatchedImage = createImage(new Unsigned12BitType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<Unsigned12BitType>(hatchedImage, 0);
+			}
+			break;
+			
+			case SHORT:
 			{
 				Image<ShortType> hatchedImage = createImage(new ShortType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
 			}
-		}
-		else if (pixels instanceof int[])
-		{
-			if (unsigned)
+			break;
+			
+			case USHORT:
 			{
-				Image<UnsignedIntType> hatchedImage = createImage(new UnsignedIntType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
+				Image<UnsignedShortType> hatchedImage = createImage(new UnsignedShortType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
 			}
-			else
+			break;
+			
+			case INT:
 			{
 				Image<IntType> hatchedImage = createImage(new IntType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
 			}
-		}
-		else if (pixels instanceof long[])
-		{
-			if (unsigned)
+			break;
+			
+			case UINT:
 			{
-				throw new IllegalArgumentException("createProcessor(): unsigned long is not a supported pixel type");
+				Image<UnsignedIntType> hatchedImage = createImage(new UnsignedIntType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
 			}
-			else
+			break;
+			
+			case LONG:
 			{
 				Image<LongType> hatchedImage = createImage(new LongType(), containerFactory, dimensions);
 				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
 			}
+			break;
+			
+			case FLOAT:
+			{
+				Image<FloatType> hatchedImage = createImage(new FloatType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
+			}
+			break;
+			
+			case DOUBLE:
+			{
+				Image<DoubleType> hatchedImage = createImage(new DoubleType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
+			}
+			break;
+			
+			default:
+				throw new IllegalArgumentException("unsupprted type specified "+type);
 		}
-		else if (pixels instanceof float[])
-		{
-			Image<FloatType> hatchedImage = createImage(new FloatType(), containerFactory, dimensions);
-			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
-		}
-		else if (pixels instanceof double[])
-		{
-			Image<DoubleType> hatchedImage = createImage(new DoubleType(), containerFactory, dimensions);
-			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
-		}
-		else
-			throw new IllegalArgumentException("createProcessor(): passed unknown type of pixels - "+pixels.getClass());
 
 		proc.setPixels(pixels);
 
@@ -428,6 +444,9 @@ public class ImageUtils
 		if (type instanceof UnsignedByteType)
 			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, ValueType.UBYTE);
 
+		if (type instanceof Unsigned12BitType)
+			return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)im, planePos, ValueType.UINT12);
+
 		if (type instanceof ShortType)
 			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, ValueType.SHORT);
 
@@ -452,7 +471,8 @@ public class ImageUtils
 		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+type.getClass());
 	}
 
-	private static int getDimSize(final Image<?> img, final String dimType, final int defaultIndex) {
+	private static int getDimSize(final Image<?> img, final String dimType, final int defaultIndex)
+	{
 		final String imgName = img.getName();
 		final int[] dimensions = img.getDimensions();
 		final String[] dimTypes = ImageOpener.decodeTypes(imgName);
