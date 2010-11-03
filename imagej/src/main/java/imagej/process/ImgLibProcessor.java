@@ -1933,7 +1933,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Object pixels2 = getPixelsCopy();
 
-		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
+		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, SampleManager.getValueType(this));
 
 		if (interpolationMethod==BICUBIC)
 			ip2.setBackgroundValue(getBackgroundValue());
@@ -2065,7 +2065,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Object pixels2 = getPixelsCopy();
 
-		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, TypeManager.isUnsignedType(this.type));
+		ImgLibProcessor<?> ip2 = ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, SampleManager.getValueType(this));
 
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
 		int index1, index2, xsi, ysi;

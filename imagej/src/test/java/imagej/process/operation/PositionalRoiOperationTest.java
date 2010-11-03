@@ -2,6 +2,7 @@ package imagej.process.operation;
 
 
 import static org.junit.Assert.*;
+import imagej.SampleInfo.*;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.Index;
@@ -76,7 +77,7 @@ public class PositionalRoiOperationTest {
 	@SuppressWarnings("unchecked")
 	public void testApplyPositionalOperation()
 	{
-		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, false);
+		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, ValueType.BYTE);
 		
 		int[] origin = new int[]{0,0,0};
 

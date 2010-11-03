@@ -3,6 +3,7 @@ package imagej.process.operation;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import imagej.SampleInfo.*;
 import imagej.process.ImageUtils;
 import imagej.process.ImgLibProcessor;
 import imagej.process.operation.DualCursorRoiOperation;
@@ -57,7 +58,7 @@ public class DualCursorRoiOperationTest {
 	@SuppressWarnings("unchecked")
 	public void testAllMethods()
 	{
-		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, false);
+		ImgLibProcessor<ByteType> proc = (ImgLibProcessor<ByteType>) ImageUtils.createProcessor(2, 3, new byte[]{1,2,3,4,5,6}, ValueType.BYTE);
 		
 		int[] origin = new int[]{0,0,0};
 
