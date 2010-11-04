@@ -11,36 +11,36 @@ import mpicbg.imglib.type.numeric.RealType;
 public class QueryOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
 	/** the InfoCollector that defines the query */
-	private InfoCollector gatherer;
+	private InfoCollector infoCollector;
 	
 	/** construct a QueryOperation from an image, a region definition within it, and an InfoCollector.
 	 * It is the InfoCollector's job to record observations about the data.
 	 */  
-	public QueryOperation(Image<T> image, int[] origin, int[] span, InfoCollector gatherer)
+	public QueryOperation(Image<T> image, int[] origin, int[] span, InfoCollector infoCollector)
 	{
 		super(image, origin, span);
-		this.gatherer = gatherer;
+		this.infoCollector = infoCollector;
 	}
 
 	@Override
 	/** lets the InfoCollector know we're about to start the query */
 	protected void beforeIteration(RealType<T> type)
 	{
-		this.gatherer.init();
+		this.infoCollector.init();
 	}
 
 	@Override
 	/** gives the InfoCollector information about the current sample */
 	protected void insideIteration(int[] position, RealType<T> sample)
 	{
-		this.gatherer.collectInfo(position, sample.getRealDouble());
+		this.infoCollector.collectInfo(position, sample.getRealDouble());
 	}
 
 	@Override
 	/** lets the InfoCollector know we're done with the query */
 	protected void afterIteration()
 	{
-		this.gatherer.done();
+		this.infoCollector.done();
 	}
 
 }
