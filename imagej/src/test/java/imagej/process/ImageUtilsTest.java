@@ -19,6 +19,7 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -158,6 +159,9 @@ public class ImageUtilsTest {
 
 		image = makeImage(new LongType(), dimensions);
 		assertTrue(ImageUtils.getType(image) instanceof LongType);
+		
+		image = makeImage(new Unsigned12BitType(), dimensions);
+		assertTrue(ImageUtils.getType(image) instanceof Unsigned12BitType);
 	}
 
 	@Test
@@ -327,14 +331,14 @@ public class ImageUtilsTest {
 	{
 		int width= 3, height = 5;
 
-		byte[] bytes = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+		long[] longs = new long[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, bytes, ValueType.BYTE);
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, longs, ValueType.LONG);
 
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());
 		assertEquals(height, proc.getHeight());
-		assertArrayEquals(bytes,(byte[])proc.getPixels());
+		assertArrayEquals(longs,(long[])proc.getPixels());
 	}
 
 	@Test
@@ -419,6 +423,12 @@ public class ImageUtilsTest {
 		assertEquals(6,image.getDimension(0));
 		assertEquals(4,image.getDimension(1));
 		assertEquals(2,image.getDimension(2));
+
+		image = makeImage(new Unsigned12BitType(), new int[]{3,1,7});
+		assertTrue(ImageUtils.getType(image) instanceof Unsigned12BitType);
+		assertEquals(3,image.getDimension(0));
+		assertEquals(1,image.getDimension(1));
+		assertEquals(7,image.getDimension(2));
 	}
 
 	@Test
