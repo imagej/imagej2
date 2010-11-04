@@ -16,7 +16,7 @@ public class AndUnaryFunction implements UnaryFunction
 	
 	public double compute(double input)
 	{
-		double value = ((int)input) & ((int)constant);
+		double value = ((long)input) & ((long)constant);
 			
 		value = TypeManager.boundValueToType(targetType, value);
 
