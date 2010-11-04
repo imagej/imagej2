@@ -139,6 +139,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** the underlying ImgLib type of the image data */
 	private final RealType<?> type;
 
+	/** the underlying ImgLib type of the image data */
+	private final ValueType ijType;
+
 	/** flag for determining if we are working with integral data (or float otherwise) */
 	private final boolean isIntegral;
 
@@ -216,6 +219,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		this.imageData = image;
 		this.type = ImageUtils.getType(image);
+		this.ijType = SampleManager.getValueType(this.type);
 
 		this.planePosition = thisPlanePosition.clone();
 
@@ -646,43 +650,48 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		int[] position = Index.create(0,0,planePosition);
 
-		boolean isUnsigned = TypeManager.isUnsignedType(this.type);
+		int numPixels = 0;
 
 		if (pixels instanceof byte[])
 		{
-			if (isUnsigned)
-				setPlane(image, position, pixels, ValueType.UBYTE, ((byte[])pixels).length);
-			else
-				setPlane(image, position, pixels, ValueType.BYTE, ((byte[])pixels).length);
+			numPixels = ((byte[]) pixels).length;
 		}
 		else if (pixels instanceof short[])
 		{
-			if (isUnsigned)
-				setPlane(image, position, pixels, ValueType.USHORT, ((short[])pixels).length);
-			else
-				setPlane(image, position, pixels, ValueType.SHORT, ((short[])pixels).length);
+			numPixels = ((short[]) pixels).length;
 		}
 		else if (pixels instanceof int[])
 		{
-			if (isUnsigned)
-				setPlane(image, position, pixels, ValueType.UINT, ((int[])pixels).length);
-			else
-				setPlane(image, position, pixels, ValueType.INT, ((int[])pixels).length);
+			numPixels = ((int[]) pixels).length;
+			
+			if (this.ijType == ValueType.UINT12)
+			{
+				int numInts = numPixels;
+				long expectedNumPixels = ((long)getWidth()) * getHeight();
+				long expectedTotalBits = 12 * expectedNumPixels;
+				long expectedEncodedInts = expectedTotalBits / 32;
+				if ((expectedTotalBits % 32) != 0)
+					expectedEncodedInts++;
+				if (expectedEncodedInts == numInts)
+					numPixels = (int)expectedNumPixels;
+			}
 		}
 		else if (pixels instanceof float[])
 		{
-			setPlane(image, position, pixels, ValueType.FLOAT, ((float[])pixels).length);
+			numPixels = ((float[]) pixels).length;
 		}
 		else if (pixels instanceof double[])
 		{
-			setPlane(image, position, pixels, ValueType.DOUBLE, ((double[])pixels).length);
+			numPixels = ((double[]) pixels).length;
 		}
 		else if (pixels instanceof long[])
 		{
-			setPlane(image, position, pixels, ValueType.LONG, ((long[])pixels).length);
+			numPixels = ((long[]) pixels).length;
 		}
 		else
 			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
+
+		setPlane(image, position, pixels, this.ijType, numPixels);
 	}
 
 	/** sets the min and max variables associated with this processor and does nothing else! */
