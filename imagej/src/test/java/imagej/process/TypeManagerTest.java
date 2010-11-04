@@ -8,6 +8,7 @@ import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
 import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
@@ -31,6 +32,7 @@ public class TypeManagerTest {
 		assertTrue(TypeManager.isUnsignedType(new UnsignedByteType()));
 		assertTrue(TypeManager.isUnsignedType(new UnsignedShortType()));
 		assertTrue(TypeManager.isUnsignedType(new UnsignedIntType()));
+		assertTrue(TypeManager.isUnsignedType(new Unsigned12BitType()));
 	}
 
 	@Test
@@ -42,6 +44,7 @@ public class TypeManagerTest {
 		assertTrue(TypeManager.isIntegralType(new UnsignedByteType()));
 		assertTrue(TypeManager.isIntegralType(new UnsignedShortType()));
 		assertTrue(TypeManager.isIntegralType(new UnsignedIntType()));
+		assertTrue(TypeManager.isIntegralType(new Unsigned12BitType()));
 
 		assertFalse(TypeManager.isIntegralType(new FloatType()));
 		assertFalse(TypeManager.isIntegralType(new DoubleType()));
@@ -96,6 +99,11 @@ public class TypeManagerTest {
 		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
 		assertEquals(Long.MIN_VALUE,TypeManager.boundValueToType(type, -Double.MAX_VALUE),0);
 		assertEquals(Long.MAX_VALUE,TypeManager.boundValueToType(type, Double.MAX_VALUE),0);
+		
+		type = new Unsigned12BitType();
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(0,TypeManager.boundValueToType(type, -Double.MAX_VALUE),0);
+		assertEquals(4095,TypeManager.boundValueToType(type, Double.MAX_VALUE),0);
 	}
 	
 	@Test
@@ -130,6 +138,9 @@ public class TypeManagerTest {
 		assertFalse(TypeManager.sameKind(type1,type2));
 		
 		type2 = new LongType();
+		assertFalse(TypeManager.sameKind(type1,type2));
+		
+		type2 = new Unsigned12BitType();
 		assertFalse(TypeManager.sameKind(type1,type2));
 	}
 
@@ -199,6 +210,14 @@ public class TypeManagerTest {
 		assertTrue(TypeManager.validValue(type, Long.MIN_VALUE));
 		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
 		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+
+		type = new Unsigned12BitType();
+		assertTrue(TypeManager.validValue(type, 0));
+		assertTrue(TypeManager.validValue(type, 4095));
+		assertFalse(TypeManager.validValue(type, -1));
+		assertFalse(TypeManager.validValue(type, 4096));
+		assertFalse(TypeManager.validValue(type, -Double.MAX_VALUE));
+		assertFalse(TypeManager.validValue(type, Double.MAX_VALUE));
 	}
 	
 }
