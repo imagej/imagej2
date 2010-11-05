@@ -1,8 +1,6 @@
 package imagej.process.function.binary;
 
-import mpicbg.imglib.type.numeric.RealType;
 import ij.Prefs;
-import imagej.process.TypeManager;
 
 public class DivideBinaryFunction implements BinaryFunction {
 
@@ -18,10 +16,10 @@ public class DivideBinaryFunction implements BinaryFunction {
 	private boolean dataIsIntegral;
 	private double max;
 	
-	public DivideBinaryFunction(RealType<?> targetType)
+	public DivideBinaryFunction(boolean isIntegral, double maxValue)
 	{
-		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
-		this.max = targetType.getMaxValue();
+		this.dataIsIntegral = isIntegral;
+		this.max = maxValue;
 		this.useDBZValue = !Float.isInfinite(divideByZeroValue);
 	}
 
