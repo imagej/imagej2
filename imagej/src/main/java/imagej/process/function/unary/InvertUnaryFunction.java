@@ -1,29 +1,24 @@
 package imagej.process.function.unary;
 
-import imagej.process.TypeManager;
-import mpicbg.imglib.type.numeric.RealType;
+import imagej.Utils;
 
 public class InvertUnaryFunction implements UnaryFunction
 {
-	private RealType<?> targetType;
-	private double min, max;
-	private boolean dataIsIntegral;
+	private double rangeMin, rangeMax;
+	private double currMin, currMax;
 	
-	public InvertUnaryFunction(RealType<?> targetType, double min, double max)
+	public InvertUnaryFunction(double rangeMin, double rangeMax, double currMin, double currMax)
 	{
-		this.targetType = targetType;
-		this.min = min;
-		this.max = max;
-		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
+		this.rangeMin = rangeMin;
+		this.rangeMax = rangeMax;
+		this.currMin = currMin;
+		this.currMax = currMax;
 	}
 	
 	public double compute(double input)
 	{
-		double value = this.max - (input - this.min);
-		
-		if (this.dataIsIntegral)
-			value = TypeManager.boundValueToType(targetType, value);
-		
-		return value;
+		double value = this.currMax - (input - this.currMin);
+
+		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
 	}
 }

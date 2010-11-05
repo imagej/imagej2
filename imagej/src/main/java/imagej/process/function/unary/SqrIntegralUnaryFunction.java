@@ -2,24 +2,21 @@ package imagej.process.function.unary;
 
 import imagej.Utils;
 
-public class XorUnaryFunction implements UnaryFunction
+public class SqrIntegralUnaryFunction implements UnaryFunction
 {
 	private double rangeMin;
 	private double rangeMax;
-	private double constant;
-	
-	public XorUnaryFunction(double rangeMin, double rangeMax, double constant)
+
+	public SqrIntegralUnaryFunction(double rangeMin, double rangeMax)
 	{
 		this.rangeMin = rangeMin;
 		this.rangeMax = rangeMax;
-		this.constant = constant;
 	}
 	
 	public double compute(double input)
 	{
-		double value = ((long)input) ^ ((long)constant);
-			
+		double value = input * input;
+		
 		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
 	}
 }
-

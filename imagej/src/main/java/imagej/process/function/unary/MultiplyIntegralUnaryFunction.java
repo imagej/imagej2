@@ -2,13 +2,13 @@ package imagej.process.function.unary;
 
 import imagej.Utils;
 
-public class XorUnaryFunction implements UnaryFunction
+public class MultiplyIntegralUnaryFunction implements UnaryFunction
 {
 	private double rangeMin;
 	private double rangeMax;
 	private double constant;
 	
-	public XorUnaryFunction(double rangeMin, double rangeMax, double constant)
+	public MultiplyIntegralUnaryFunction(double rangeMin, double rangeMax, double constant)
 	{
 		this.rangeMin = rangeMin;
 		this.rangeMax = rangeMax;
@@ -17,9 +17,10 @@ public class XorUnaryFunction implements UnaryFunction
 	
 	public double compute(double input)
 	{
-		double value = ((long)input) ^ ((long)constant);
-			
+		double value = input * this.constant;
+		
+		value = Math.floor(value);
+
 		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
 	}
 }
-

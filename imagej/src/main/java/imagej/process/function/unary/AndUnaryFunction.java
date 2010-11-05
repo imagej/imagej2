@@ -1,26 +1,26 @@
 package imagej.process.function.unary;
 
-import imagej.process.TypeManager;
-import mpicbg.imglib.type.numeric.RealType;
+import imagej.Utils;
+
 
 public class AndUnaryFunction implements UnaryFunction
 {
-	private RealType<?> targetType;
+	private double min;
+	private double max;
 	private double constant;
 	
-	public AndUnaryFunction(RealType<?> targetType, double constant)
+	public AndUnaryFunction(double min, double max, double constant)
 	{
-		this.targetType = targetType;
+		this.min = min;
+		this.max = max;
 		this.constant = constant;
 	}
 	
 	public double compute(double input)
 	{
-		double value = ((long)input) & ((long)constant);
-			
-		value = TypeManager.boundValueToType(targetType, value);
-
-		return value;
+		double value = ((long)input) & ((long)this.constant);
+		
+		return Utils.boundToRange(this.min, this.max, value);
 	}
 }
 
