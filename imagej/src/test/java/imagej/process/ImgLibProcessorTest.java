@@ -9,9 +9,9 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.SampleInfo.ValueType;
 import imagej.process.ImgLibProcessor.FilterType;
-import imagej.process.function.binary.AddBinaryFunction;
+import imagej.process.function.binary.AddIntegralBinaryFunction;
 import imagej.process.function.binary.BinaryFunction;
-import imagej.process.function.binary.SubtractBinaryFunction;
+import imagej.process.function.binary.SubtractIntegralBinaryFunction;
 import imagej.process.function.nary.AverageNAryFunction;
 import imagej.process.function.nary.NAryFunction;
 import imagej.process.function.unary.SqrUnaryFunction;
@@ -354,7 +354,7 @@ public class ImgLibProcessorTest {
 		ImgLibProcessor<UnsignedByteType> ip3 =
 			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{9,8,7,6,5,4,3,2,1}, ValueType.UBYTE);
 		
-		BinaryFunction function = new AddBinaryFunction(new UnsignedByteType());
+		BinaryFunction function = new AddIntegralBinaryFunction(255);
 		ip1.assign(ip2, ip3, function, null, null, null);
 		
 		for (int i = 0; i < 9; i++)
@@ -509,7 +509,7 @@ public class ImgLibProcessorTest {
 		ImgLibProcessor<UnsignedByteType> ip2 =
 			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, ValueType.UBYTE);
 
-		BinaryFunction function = new AddBinaryFunction(new UnsignedByteType());
+		BinaryFunction function = new AddIntegralBinaryFunction(255);
 		ip1.copyBits(ip2, 0, 0, function);
 		
 		for (int i = 0; i < 9; i++)
@@ -1285,9 +1285,9 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetTotalSamples()
 	{
-		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{5,2,4});
+		Image<DoubleType> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{5,2,4});
 		
-		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>(image, 0);
 		
 		assertEquals(10, proc.getTotalSamples()); 
 	}
@@ -1295,11 +1295,11 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetType()
 	{
-		RealType<?> type = new DoubleType();
+		RealType<DoubleType> type = new DoubleType();
 		
-		Image<?> image = ImageUtils.createImage(type, this.factory, new int[]{5,2,4});
+		Image<DoubleType> image = ImageUtils.createImage(type, this.factory, new int[]{5,2,4});
 		
-		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
+		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>(image, 0);
 		
 		assertEquals(type.getClass(), proc.getType().getClass());
 	}
@@ -2027,7 +2027,7 @@ public class ImgLibProcessorTest {
 		ImgLibProcessor<ShortType> proc2 =
 			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{5,6,7,8}, ValueType.SHORT);
 		
-		BinaryFunction function = new SubtractBinaryFunction(new ShortType());
+		BinaryFunction function = new SubtractIntegralBinaryFunction(Short.MIN_VALUE);
 		
 		proc1.transform(proc2, function, null, null);
 	}

@@ -9,9 +9,11 @@ import ij.process.ShortProcessor;
 import imagej.SampleManager;
 import imagej.SampleInfo.ValueType;
 import imagej.io.ImageOpener;
-import imagej.process.function.binary.AddBinaryFunction;
+import imagej.process.function.binary.AddFloatBinaryFunction;
+import imagej.process.function.binary.AddIntegralBinaryFunction;
 import imagej.process.function.binary.AndBinaryFunction;
-import imagej.process.function.binary.AverageBinaryFunction;
+import imagej.process.function.binary.AverageFloatBinaryFunction;
+import imagej.process.function.binary.AverageIntegralBinaryFunction;
 import imagej.process.function.binary.BinaryFunction;
 import imagej.process.function.binary.CopyInput2BinaryFunction;
 import imagej.process.function.binary.CopyInput2InvertedBinaryFunction;
@@ -21,9 +23,11 @@ import imagej.process.function.binary.DifferenceBinaryFunction;
 import imagej.process.function.binary.DivideBinaryFunction;
 import imagej.process.function.binary.MaxBinaryFunction;
 import imagej.process.function.binary.MinBinaryFunction;
-import imagej.process.function.binary.MultiplyBinaryFunction;
+import imagej.process.function.binary.MultiplyFloatBinaryFunction;
+import imagej.process.function.binary.MultiplyIntegralBinaryFunction;
 import imagej.process.function.binary.OrBinaryFunction;
-import imagej.process.function.binary.SubtractBinaryFunction;
+import imagej.process.function.binary.SubtractFloatBinaryFunction;
+import imagej.process.function.binary.SubtractIntegralBinaryFunction;
 import imagej.process.function.binary.XorBinaryFunction;
 import imagej.process.function.nary.NAryFunction;
 import imagej.process.function.unary.AbsUnaryFunction;
@@ -945,6 +949,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
   @Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
+		double maxValue = this.type.getMaxValue();
+		double minValue = this.type.getMinValue();
+		
 		BinaryFunction function;
 		switch (mode)
 		{
@@ -952,28 +959,40 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				function = new CopyInput2BinaryFunction();
 				break;
 			case Blitter.COPY_INVERTED:
-				function = new CopyInput2InvertedBinaryFunction(this.type);
+				function = new CopyInput2InvertedBinaryFunction(maxValue, this.isUnsignedByte);
 				break;
 			case Blitter.COPY_TRANSPARENT:
-				function = new CopyInput2TransparentBinaryFunction(this.type, this);
+				function = new CopyInput2TransparentBinaryFunction(this.isIntegral, maxValue, this);
 				break;
 			case Blitter.COPY_ZERO_TRANSPARENT:
 				function = new CopyInput2ZeroTransparentBinaryFunction();
 				break;
 			case Blitter.ADD:
-				function = new AddBinaryFunction(this.type);
+				if (this.isIntegral)
+					function = new AddIntegralBinaryFunction(maxValue);
+				else
+					function = new AddFloatBinaryFunction();
 				break;
 			case Blitter.SUBTRACT:
-				function = new SubtractBinaryFunction(this.type);
+				if (this.isIntegral)
+					function = new SubtractIntegralBinaryFunction(minValue);
+				else
+					function = new SubtractFloatBinaryFunction();
 				break;
 			case Blitter.MULTIPLY:
-				function = new MultiplyBinaryFunction(this.type);
+				if (this.isIntegral)
+					function = new MultiplyIntegralBinaryFunction(maxValue);
+				else
+					function = new MultiplyFloatBinaryFunction();
 				break;
 			case Blitter.DIVIDE:
-				function = new DivideBinaryFunction(this.type);
+				function = new DivideBinaryFunction(this.isIntegral, maxValue);
 				break;
 			case Blitter.AVERAGE:
-				function = new AverageBinaryFunction(this.type);
+				if (this.isIntegral)
+					function = new AverageIntegralBinaryFunction();
+				else
+					function = new AverageFloatBinaryFunction();
 				break;
 			case Blitter.DIFFERENCE:
 				function = new DifferenceBinaryFunction();
