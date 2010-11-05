@@ -14,7 +14,7 @@ import imagej.process.function.binary.BinaryFunction;
 import imagej.process.function.binary.SubtractIntegralBinaryFunction;
 import imagej.process.function.nary.AverageNAryFunction;
 import imagej.process.function.nary.NAryFunction;
-import imagej.process.function.unary.SqrUnaryFunction;
+import imagej.process.function.unary.SqrIntegralUnaryFunction;
 import imagej.process.function.unary.UnaryFunction;
 
 import java.awt.Color;
@@ -370,7 +370,7 @@ public class ImgLibProcessorTest {
 		ImgLibProcessor<UnsignedByteType> ip2 =
 			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, ValueType.UBYTE);
 		
-		UnaryFunction function = new SqrUnaryFunction(new UnsignedByteType());
+		UnaryFunction function = new SqrIntegralUnaryFunction(0, 255);
 		ip1.assign(ip2, function, null, null);
 		
 		for (int i = 0; i < 9; i++)
@@ -2009,7 +2009,7 @@ public class ImgLibProcessorTest {
 	{
 		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, ValueType.SHORT);
 		
-		UnaryFunction function = new SqrUnaryFunction(new ShortType());
+		UnaryFunction function = new SqrIntegralUnaryFunction(Short.MIN_VALUE, Short.MAX_VALUE);
 
 		proc.transform(function, null);
 		

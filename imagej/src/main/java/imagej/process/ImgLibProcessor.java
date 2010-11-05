@@ -32,19 +32,26 @@ import imagej.process.function.binary.XorBinaryFunction;
 import imagej.process.function.nary.NAryFunction;
 import imagej.process.function.unary.AbsUnaryFunction;
 import imagej.process.function.unary.AddNoiseUnaryFunction;
-import imagej.process.function.unary.AddUnaryFunction;
+import imagej.process.function.unary.AddFloatUnaryFunction;
+import imagej.process.function.unary.AddIntegralUnaryFunction;
 import imagej.process.function.unary.AndUnaryFunction;
-import imagej.process.function.unary.ExpUnaryFunction;
+import imagej.process.function.unary.ExpFloatUnaryFunction;
+import imagej.process.function.unary.ExpIntegralUnaryFunction;
 import imagej.process.function.unary.FillUnaryFunction;
-import imagej.process.function.unary.GammaUnaryFunction;
+import imagej.process.function.unary.GammaFloatUnaryFunction;
+import imagej.process.function.unary.GammaIntegralUnaryFunction;
 import imagej.process.function.unary.IntegralSubstitutionUnaryFunction;
 import imagej.process.function.unary.InvertUnaryFunction;
-import imagej.process.function.unary.LogUnaryFunction;
+import imagej.process.function.unary.LogFloatUnaryFunction;
+import imagej.process.function.unary.LogIntegralUnaryFunction;
 import imagej.process.function.unary.MaxUnaryFunction;
 import imagej.process.function.unary.MinUnaryFunction;
-import imagej.process.function.unary.MultiplyUnaryFunction;
+import imagej.process.function.unary.MultiplyFloatUnaryFunction;
+import imagej.process.function.unary.MultiplyIntegralUnaryFunction;
 import imagej.process.function.unary.OrUnaryFunction;
-import imagej.process.function.unary.SqrUnaryFunction;
+import imagej.process.function.unary.SqrFloatUnaryFunction;
+import imagej.process.function.unary.SqrIntegralUnaryFunction;
+import imagej.process.function.unary.SqrUshortUnaryFunction;
 import imagej.process.function.unary.SqrtUnaryFunction;
 import imagej.process.function.unary.ThresholdUnaryFunction;
 import imagej.process.function.unary.UnaryFunction;
@@ -173,6 +180,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** the largest value actually present in the image */
 	private double max;
 
+	/** the smallest value allowed in the image */
+	private double rangeMin;
+
+	/** the largest value allowed in the image */
+	private double rangeMax;
+
 	/** used by some methods that fill in default values. only applies to float data */
 	private double fillColor;
 
@@ -243,6 +256,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.isUnsignedByte)
 			this.setBackgroundValue(255);
 
+		this.rangeMin = this.type.getMinValue();
+		this.rangeMax = this.type.getMaxValue();
+		
 		resetRoi();
 
 		findMinAndMax();
@@ -800,9 +816,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void add(double value)
 	{
-		AddUnaryFunction func = new AddUnaryFunction(this.type, value);
+		UnaryFunction function;
+		
+		if (this.isIntegral)
+			function = new AddIntegralUnaryFunction(this.rangeMin, this.rangeMax, value);
+		else
+			function = new AddFloatUnaryFunction(value);
 
-		nonPositionalTransform(func);
+		nonPositionalTransform(function);
 	}
 
 	/** apply the AND point operation over the current ROI area of the current plane of data */
@@ -812,9 +833,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		AndUnaryFunction func = new AndUnaryFunction(this.type, value);
+		AndUnaryFunction function = new AndUnaryFunction(this.rangeMin, this.rangeMax, value);
 
-		nonPositionalTransform(func);
+		nonPositionalTransform(function);
 	}
 
 	// not an override
@@ -889,10 +910,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		verifyLutLengthOkay(lut);
 
-		IntegralSubstitutionUnaryFunction substFunc =
+		IntegralSubstitutionUnaryFunction substFunction =
 			new IntegralSubstitutionUnaryFunction((int)this.type.getMinValue(), lut);
 
-		nonPositionalTransform(substFunc);
+		nonPositionalTransform(substFunction);
 
 		if (this.isUnsignedShort)
 			findMinAndMax();
@@ -1171,7 +1192,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void exp()
 	{
-		ExpUnaryFunction function = new ExpUnaryFunction(this.type, this.max);
+		UnaryFunction function;
+		
+		if (this.isIntegral)
+			function = new ExpIntegralUnaryFunction(this.isUnsignedByte, this.rangeMin, this.rangeMax, this.max);
+		else
+			function = new ExpFloatUnaryFunction();
 
 		nonPositionalTransform(function);
 	}
@@ -1180,9 +1206,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void fill()
 	{
-		FillUnaryFunction func = new FillUnaryFunction(this.fillColor);
+		FillUnaryFunction function = new FillUnaryFunction(this.fillColor);
 
-		nonPositionalTransform(func);
+		nonPositionalTransform(function);
 	}
 
 	// TODO - could refactor as some sort of operation between two datasets. Would need to make a dataset from mask. Slower than orig impl.
@@ -1201,10 +1227,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		byte[] byteMask = (byte[]) mask.getPixels();
 
-		FillUnaryFunction fillFunc = new FillUnaryFunction(this.fillColor);
+		FillUnaryFunction fillFunction = new FillUnaryFunction(this.fillColor);
 
 		UnaryTransformPositionalOperation<T> transform =
-			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunc);
+			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, fillFunction);
 
 		SelectionFunction selector = new MaskOnSelectionFunction(origin, span, byteMask);
 
@@ -1312,7 +1338,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void gamma(double value)
 	{
-		GammaUnaryFunction function = new GammaUnaryFunction(this.type, this.min, this.max, value);
+		UnaryFunction function;
+		
+		if (this.isIntegral)
+			function = new GammaIntegralUnaryFunction(this.rangeMin, this.rangeMax, this.min, this.max, value);
+		else
+			function = new GammaFloatUnaryFunction(value);
 
 		nonPositionalTransform(function);
 	}
@@ -1429,9 +1460,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 			int[] span = spanOfRoiPlane();
 
-			double maxValue = this.getMaxAllowedValue();
+			double maxValue = this.rangeMax;
 			
-			double minValue = this.getMinAllowedValue();
+			double minValue = this.rangeMin;
 			
 			int lutSize = (int) (maxValue + 1);
 
@@ -1542,7 +1573,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** returns the theoretical maximum possible sample value for this type of processor */
 	public double getMaxAllowedValue()
 	{
-		return this.type.getMaxValue();
+		return this.rangeMax;
 	}
 
 	/** returns the minimum data value currently present in the image plane (except when UnsignedByteType) */
@@ -1556,7 +1587,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** returns the theoretical minimum possible sample value for this type of processor */
 	public double getMinAllowedValue()
 	{
-		return this.type.getMinValue();
+		return this.rangeMin;
 	}
 
 	/** returns the pixel at x,y. if coords are out of bounds returns 0. */
@@ -1702,7 +1733,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (this.isIntegral)
 			resetMinAndMax();
 
-		InvertUnaryFunction function = new InvertUnaryFunction(this.type, this.min, this.max);
+		InvertUnaryFunction function = new InvertUnaryFunction(this.rangeMin, this.rangeMax, this.min, this.max);
 
 		nonPositionalTransform(function);
 	}
@@ -1711,7 +1742,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void log()
 	{
-		LogUnaryFunction function = new LogUnaryFunction(this.type, this.max);
+		UnaryFunction function;
+		
+		if (this.isIntegral)
+			function = new LogIntegralUnaryFunction(this.rangeMin, this.rangeMax, this.max);
+		else
+			function = new LogFloatUnaryFunction();
 
 		nonPositionalTransform(function);
 	}
@@ -1749,7 +1785,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void multiply(double value)
 	{
-		MultiplyUnaryFunction function = new MultiplyUnaryFunction(this.type, value);
+		UnaryFunction function;
+		
+		if (this.isIntegral)
+			function = new MultiplyIntegralUnaryFunction(this.rangeMin, this.rangeMax, value);
+		else
+			function = new MultiplyFloatUnaryFunction(value);
 
 		nonPositionalTransform(function);
 	}
@@ -1758,7 +1799,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void noise(double range)
 	{
-		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.type, range);
+		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.isIntegral, this.rangeMin, this.rangeMax, range);
 
 		nonPositionalTransform(function);
 	}
@@ -1770,9 +1811,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		OrUnaryFunction func = new OrUnaryFunction(this.type, value);
+		OrUnaryFunction function = new OrUnaryFunction(this.rangeMin, this.rangeMax, value);
 
-		nonPositionalTransform(func);
+		nonPositionalTransform(function);
 	}
 
 	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int.
@@ -1839,11 +1880,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] imageOrigin = originOfRoi();
 		int[] imageSpan = spanOfRoiPlane();
 
-		CopyInput2BinaryFunction copyFunc = new CopyInput2BinaryFunction();
+		CopyInput2BinaryFunction copyFunction = new CopyInput2BinaryFunction();
 
 		BinaryTransformPositionalOperation<T> resetOp =
 			new BinaryTransformPositionalOperation<T>(this.imageData, imageOrigin, imageSpan,
-														snapData, snapOrigin, snapSpan, copyFunc);
+														snapData, snapOrigin, snapSpan, copyFunction);
 
 		MaskOffSelectionFunction maskOff = new MaskOffSelectionFunction(imageOrigin, imageSpan, (byte[])mask.getPixels());
 
@@ -2401,7 +2442,14 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void sqr()
 	{
-		SqrUnaryFunction function = new SqrUnaryFunction(this.type);
+		UnaryFunction function;
+		
+		if (this.isUnsignedShort)
+			function = new SqrUshortUnaryFunction(this.rangeMin, this.rangeMax);
+		else if (this.isIntegral)
+			function = new SqrIntegralUnaryFunction(this.rangeMin, this.rangeMax);
+		else
+			function = new SqrFloatUnaryFunction();
 
 		nonPositionalTransform(function);
 	}
@@ -2410,7 +2458,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void sqrt()
 	{
-		SqrtUnaryFunction function = new SqrtUnaryFunction(this.type);
+		SqrtUnaryFunction function = new SqrtUnaryFunction(this.isIntegral);
 
 		nonPositionalTransform(function);
 	}
@@ -2572,9 +2620,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		if (!this.isIntegral)
 			return;
 
-		XorUnaryFunction func = new XorUnaryFunction(this.type, value);
+		XorUnaryFunction function = new XorUnaryFunction(this.rangeMin, this.rangeMax, value);
 
-		nonPositionalTransform(func);
+		nonPositionalTransform(function);
 	}
 
 	/*

@@ -1,15 +1,12 @@
 package imagej.process.function.unary;
 
-import imagej.process.TypeManager;
-import mpicbg.imglib.type.numeric.RealType;
-
 public class SqrtUnaryFunction implements UnaryFunction
 {
 	private boolean dataIsIntegral;
 	
-	public SqrtUnaryFunction(RealType<?> targetType)
+	public SqrtUnaryFunction(boolean isIntegral)
 	{
-		this.dataIsIntegral = TypeManager.isIntegralType(targetType);
+		this.dataIsIntegral = isIntegral;
 	}
 	
 	public double compute(double input)
