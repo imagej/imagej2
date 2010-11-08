@@ -28,39 +28,14 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
-import ij.gui.ImageWindow;
-import ij.gui.NonBlockingGenericDialog;
-import ij.gui.Roi;
 import ij.plugin.filter.PlugInFilterRunner;
-import ij.plugin.frame.RoiManager;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 
-import imagej.io.ImageOpener;
-
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
-//import mpicbg.imglib.Type;
-import mpicbg.imglib.type.numeric.RealType;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
