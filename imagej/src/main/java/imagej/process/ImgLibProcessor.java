@@ -104,32 +104,16 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 // plane-by-plane; this way the container knows the optimal way to traverse.
 
 // More TODO / NOTES
-//   For filters we're mirroring IJ's behavior. This means no min/max/median/erode/dilate for anything but UnsignedByteType. Change this?
-//   I have not yet mirrored ImageJ's signed 16 bit hacks. Will need to test Image<ShortType> and see if things work versus an ImagePlus.
-//   Review imglib's various cursors and perhaps change which ones I'm using.
+//   For filters we're mirroring IJ's behavior. This means no min/max/median/erode/dilate for anything but
+//     UnsignedByteType. Change this?
+//   Review imglib's various cursors and perhaps change which ones are being used.
 //   Nearly all methods below broken for ComplexType
 //   All methods below assume x and y first two dimensions and that the Image<T> consists of XY planes
-//     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a setDimensions(int[] dimension) and integrate
-//     its use throughout the application.
-//   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume X & Y are the first 2 dimensions.
-//     This ideally means that its broken into planes in the last two dimensions. This may just be a convention we use but it may break things too.
-//     Must investigate. (as a workaround for now we are incrementing indexes from left to right)
-//   Rename ImgLibProcessor to GenericProcessor????
-//   Rename TypeManager to TypeUtils
-//   Rename Image<> to something else like Dataset<> or NumericDataset<>
-//   Improvements to ImgLib
-//     Rename LocalizableByDimCursor to PositionCursor. Be able to say posCursor.setPosition(int[] pos) and posCursor.setPosition(long sampIndex).
-//       Another possibility: just call it a Cursor. And then cursor.get() or cursor.get(int[] pos) or cursor.get(long sampleNumber)
-//     Create ROICursors directly from an Image<T> and have that ctor setup its own LocalizableByDimCursor for you.
-//     Allow new Image<ByteType>(rows,cols). Have a default factory and a default container and have other constructors that you use in the cases
-//       where you want to specify them. Also allow new Image<UnsignedByte>(rows,cols,pixels).
-//     Have a few static ContainerFactories that we can just refer to rather than newing them all the time. Maybe do so also for Types so that
-//       we're not always having to pass a new UnsignedByteType() but rather a static one and if a new one needed the ctor can clone.
-//     In general come up with much shorter names to make use less cumbersome.
-//     It would be good to specify axis order of a cursor's traversal : new Cursor(image,"zxtcy") and then just call cursor.get() as needed.
-//       Also could do cursor.fwd("t" or some enum value) which would iterate forward in the (here t) plane of the image skipping large groups of
-//       samples at a time.
-//     Put our ImageUtils class code somewhere in Imglib. Also maybe include the Index and Span classes too. Also TypeManager class.
+//     In createImagePlus we rely on image to be 5d or less. We should modify ImageJ to have a
+//       setDimensions(int[] dimension) and integrate its use throughout the application.
+//   Just realized the constructor that takes plane number may not make a ton of sense as implemented. We assume
+//     X & Y are the first 2 dimensions. However indexing ideally would count the dimensions from right to left.
+//     As a workaround for now we are incrementing indexes from left to right
 
 public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor implements java.lang.Cloneable
 {
@@ -859,7 +843,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin2 = Index.create(other2Roi.x, other2Roi.y, other2.getPlanePosition());
 		int[] span2 = Span.singlePlane(other2Roi.width, other2Roi.height, image2.getNumDimensions());
 
-		TernaryAssignPositionalOperation<T> transform = new TernaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,image2,origin2,span2,function);
+		TernaryAssignPositionalOperation<T> transform =
+			new TernaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,image2,origin2,span2,function);
 
 		transform.setSelectionFunctions(new SelectionFunction[]{selector0, selector1, selector2});
 
@@ -882,7 +867,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin1 = Index.create(otherRoi.x, otherRoi.y, other.getPlanePosition());
 		int[] span1 = Span.singlePlane(otherRoi.width, otherRoi.height, image1.getNumDimensions());
 
-		BinaryAssignPositionalOperation<T> transform = new BinaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,function);
+		BinaryAssignPositionalOperation<T> transform =
+			new BinaryAssignPositionalOperation<T>(image0,origin0,span0,image1,origin1,span1,function);
 
 		transform.setSelectionFunctions(selector1, selector2);
 
@@ -2544,7 +2530,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int[] origin2 = Index.create(otherRoi.x, otherRoi.y, other.getPlanePosition());
 		int[] span2 = Span.singlePlane(otherRoi.width, otherRoi.height, image2.getNumDimensions());
 
-		BinaryTransformPositionalOperation<T> transform = new BinaryTransformPositionalOperation<T>(image1,origin1,span1,image2,origin2,span2,function);
+		BinaryTransformPositionalOperation<T> transform =
+			new BinaryTransformPositionalOperation<T>(image1,origin1,span1,image2,origin2,span2,function);
 
 		transform.setSelectionFunctions(selector1, selector2);
 
@@ -2561,7 +2548,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		int[] span = spanOfRoiPlane();
 
-		UnaryTransformPositionalOperation<T> pointOp = new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, function);
+		UnaryTransformPositionalOperation<T> pointOp =
+			new UnaryTransformPositionalOperation<T>(this.imageData, origin, span, function);
 
 		pointOp.setSelectionFunction(selector);
 
@@ -2606,7 +2594,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			spans[i] = span;
 		}
 
-		NAryTransformPositionalOperation<T> transform = new NAryTransformPositionalOperation<T>(images, origins, spans, function);
+		NAryTransformPositionalOperation<T> transform =
+			new NAryTransformPositionalOperation<T>(images, origins, spans, function);
 
 		transform.setSelectionFunctions(selectors);
 
