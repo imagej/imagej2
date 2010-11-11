@@ -197,6 +197,7 @@ public class FileInfo implements Cloneable {
 				return 6;
 				
 			case GRAY64_FLOAT:
+			case GRAY64_SIGNED:
 				
 				return 8;
 				
@@ -228,11 +229,14 @@ public class FileInfo implements Cloneable {
     private String getType() {
     	switch (fileType) {
 			case GRAY8: return "byte";
+			case GRAY12_UNSIGNED: return "uint12";
 			case GRAY16_SIGNED: return "short";
 			case GRAY16_UNSIGNED: return "ushort";
 			case GRAY32_INT: return "int";
 			case GRAY32_UNSIGNED: return "uint";
 			case GRAY32_FLOAT: return "float";
+			case GRAY64_FLOAT: return "double";
+			case GRAY64_SIGNED: return "long";
 			case COLOR8: return "byte+lut";
 			case RGB: return "RGB";
 			case RGB_PLANAR: return "RGB(p)";
@@ -242,9 +246,7 @@ public class FileInfo implements Cloneable {
 			case ABGR: return "ABGR";
 			case BGR: return "BGR";
 			case BARG: return "BARG";
-			case GRAY64_FLOAT: return "double";
 			case RGB48_PLANAR: return "RGB48(p)";
-			case GRAY12_UNSIGNED: return "uint12";
 			default: return "";
     	}
     }
