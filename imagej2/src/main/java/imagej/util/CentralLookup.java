@@ -17,8 +17,10 @@ import org.openide.util.lookup.InstanceContent;
  */
 
 /*
+ * IjX: GBH: 
  *  Add this to classes that need to access CentralLookup
  *      private final CentralLookup centralLookup = CentralLookup.getDefault();
+ *
  *  See ij.event.EventBus for other usages...
  *
  */
