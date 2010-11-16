@@ -15,7 +15,7 @@
   <version>2.0-SNAPSHOT</version>
 
   <name>ImageJ</name>
-  <description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
+  <description>Basic skeleton for ImageJ2 project.</description>
   <url>http://imagejdev.org/</url>
   <inceptionYear>1997</inceptionYear>
 
