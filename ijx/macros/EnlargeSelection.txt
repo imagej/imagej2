@@ -1,0 +1,136 @@
+// This macro expands or shrinks a selection by 
+// a specified distance. if the distance is zero,
+// it will attempt to convert a composite selection 
+// into a polygon selection.
+
+  arg = getArgument();
+  usePixels = false;
+  if (indexOf(arg, "pixels")!=-1)
+      usePixels = true;
+  pixels = parseFloat(arg);
+  if (isNaN(pixels)) pixels = 15;
+  saveSettings();
+  getPixelSize(unit, pixelWidth, pixelHeight);
+  scaled = !startsWith(unit, "pixel");
+  n = pixels;
+  if (usePixels)
+      unit = "pixels";
+  else
+      n = pixels*pixelWidth;
+  decimalPlaces = 0;
+  if (floor(n)!=n) decimalPlaces = 2;
+  Dialog.create("Enlarge Selection");
+  Dialog.addNumber("Enlarge by", n, decimalPlaces, 4, unit);
+  if (scaled) {
+      Dialog.setInsets(0, 20, 0);
+      Dialog.addCheckbox("Pixel Units", usePixels);
+  }
+  Dialog.setInsets(10, 0, 0);
+  Dialog.addMessage("Enter negative number to shrink");
+  Dialog.show();
+  n = Dialog.getNumber();
+  if (scaled)
+      usePixels = Dialog.getCheckbox();
+  if (usePixels)
+      pixels = n;
+  else
+      pixels = n/pixelWidth;
+  if (n==0)
+      convertToPolygon();
+  else 
+      enlarge(pixels);
+  restoreSettings();
+  str = toString(pixels);
+  if (usePixels)
+      str = str + " pixels";
+  return str; 
+
+  function enlarge(n) {
+       if (selectionType==0 || selectionType==1) {
+           enlargeRectOrOval(n);
+           return;
+       }
+       if (isOpen("Mask")) {
+           selectImage("Mask");
+           close();
+       }
+       if (n<0) {
+           shrink(-n);
+           return;
+       }
+       if (pixels > 255) 
+           exit("Cannot enlarge by more than 255 pixels"); 
+       id = getImageID(); 
+       setBatchMode(true); 
+       run("Options...", "iterations=1 count=1"); 
+       run("Create Mask"); 
+       run("Invert"); 
+       run("Distance Map"); 
+       setThreshold(0, n);
+       run("Create Selection");
+       close(); 
+       selectImage(id); 
+       run("Restore Selection"); 
+   }
+
+   // Convert composite selection to polygon selection
+   function convertToPolygon() {
+       if (selectionType!=9) return;
+       id = getImageID(); 
+       getSelectionBounds(xbase, ybase, width, height);
+       width = getWidth;
+       height = getHeight;
+       setBatchMode(true); 
+       run("Create Mask"); 
+       for (i=0;i<10000; i++) { 
+           x = xbase + width*random(); 
+           y = ybase + height*random();
+           v = getPixel(x,y);
+           if (v>0) {
+              doWand(x, y); 
+              close(); 
+              selectImage(id); 
+              run("Restore Selection");
+              return; 
+           } 
+       } 
+       close(); 
+       exit("Unable to convert to polygon selection"); 
+   }
+
+   function enlargeRectOrOval(n) {
+       getBoundingRect(x, y, width, height);
+       x -= n;
+       y -= n;
+       width = width + 2*n;
+       height = height + 2*n;
+       if (width>0 && height>0) {
+           if (selectionType==0)
+               makeRectangle(x, y, width, height);
+           else
+               makeOval(x, y, width, height);
+       }
+   }
+
+   function shrink(n) { 
+       if (pixels>255) 
+           exit("Cannot shrink by more than 255 pixels"); 
+       id = getImageID(); 
+       setBatchMode(true); 
+       width = getWidth();
+       height = getHeight();
+       getBoundingRect(xbase, ybase, roiWidth, roiHeight);
+       touchingEdge = xbase<=0||ybase<=0||xbase+roiWidth>=width||ybase+roiHeight>=height;
+       run("Options...", "iterations=1 count=1"); 
+       run("Create Mask");
+       if (touchingEdge)
+           run("Canvas Size...", "width="+width+2+" height="+height+2+" position=Center zero");
+       run("Distance Map");
+       if (touchingEdge)
+           run("Canvas Size...", "width="+width+" height="+height+" position=Center zero");
+       setThreshold(n+1, 255);
+       run("Create Selection");
+       close(); 
+       selectImage(id); 
+       run("Restore Selection"); 
+   } 
