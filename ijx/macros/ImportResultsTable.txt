@@ -1,0 +1,56 @@
+// This macro imports a saved ImageJ results table,
+// or any tab or comma-separated data file.
+
+  lineseparator = "\n";
+  cellseparator = ",\t";
+
+  // copies the whole table to an array of lines
+  lines=split(File.openAsString(""), lineseparator);
+  if (lines.length==0) return;
+  path = File.directory + File.name;
+
+  // get the columns headers
+  labels=split(lines[0], cellseparator);
+  if (labels.length==1)
+     exit("This is not a tab or comma delimited text file.");
+  if (labels[0]==" ")
+     k=1; // it is an ImageJ Results table, skip first column
+  else
+     k=0; // it is not a Results table, load all columns
+
+  // is this a Results table?
+  if (k==1 || lines.length<2)
+     {importResults(); exit;}
+  items = split(lines[1]);
+  nonNumeric = false;
+  for (i=0; i<items.length; i++)
+     if (isNaN(parseFloat(items[i]))) nonNumeric=true;
+  if (nonNumeric)
+      importTable();
+  else
+      importResults();
+  exit;
+
+  function importResults() {
+      for (j=k; j<labels.length; j++)
+        setResult(labels[j],0,0);
+     run("Clear Results");
+     if (k==1)
+         call("ij.plugin.filter.Analyzer.setDefaultHeadings");
+     for (i=1; i<lines.length; i++) {
+        items=split(lines[i], cellseparator);
+        for (j=k; j<items.length; j++)
+           setResult(labels[j],i-1,items[j]);
+     }
+     updateResults();
+  }
+ 
+  function importTable() {
+      name = "["+File.name+"]";
+      if (!isOpen(File.name))
+          run("New... ", "name="+name+" type=Table");
+      f = name;
+      print(f, "\\Headings:"+lines[0]);
+      for (i=1; i<lines.length; i++)
+         print(f, lines[i]);
+  }
