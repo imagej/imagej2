@@ -14,7 +14,7 @@
   <artifactId>ij2-imglib</artifactId>
   <version>2.0-SNAPSHOT</version>
 
-  <name>ImageJ 1.0 Bridge</name>
+  <name>ImageJ 2.0 Imglib</name>
   <description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
   <url>http://imagejdev.org/</url>
   <inceptionYear>1997</inceptionYear>
