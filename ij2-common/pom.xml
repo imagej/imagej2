@@ -1,0 +1,244 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>imagej</groupId>
+    <artifactId>imagej-base-pom</artifactId>
+    <version>1.09</version>
+  </parent>
+
+  <groupId>imagej</groupId>
+  <artifactId>ij2-common</artifactId>
+  <version>2.0-SNAPSHOT</version>
+
+  <name>ImageJ 1.0 Bridge</name>
+  <description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
+  <url>http://imagejdev.org/</url>
+  <inceptionYear>1997</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://dev.imagejdev.org/svn/imagej/trunk/imagej/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <!-- imagej -->
+
+
+
+    <!-- fiji -->
+
+    <!-- loci -->
+
+    <!-- 3rd party -->
+
+    <!-- test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- CTR: HACK: scope conflicts with bf-imglib dependency on bio-formats
+    <dependency>
+      <groupId>loci</groupId>
+      <artifactId>bio-formats</artifactId>
+      <version>5.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    -->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>ij.ImageJ</mainClass>
+              <packageName>ij</packageName>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/deps.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifest>
+              <mainClass>ij.ImageJ</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <id>wsr</id>
+      <name>Wayne Rasband</name>
+      <email>wsr@nih.gov</email>
+      <url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
+      <organization>NIH</organization>
+      <organizationUrl>http://rsb.info.nih.gov/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+    <developer>
+      <id>curtis</id>
+      <name>Curtis Rueden</name>
+      <email>ctrueden@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/curtis-rueden</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>dscho</id>
+      <name>Johannes Schindelin</name>
+      <email>Johannes.Schindelin@gmx.de</email>
+      <url>http://loci.wisc.edu/people/johannes-schindelin</url>
+      <organization>MPI-CBG at Dresden</organization>
+      <organizationUrl>http://mpi-cbg.de/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+      <properties>
+        <picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>acardona</id>
+      <name>Albert Cardona</name>
+      <email>acardona@ini.phys.ethz.ch</email>
+      <url>http://albert.rierol.net/</url>
+      <organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
+      <organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/Cardona_pic1.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>aivar</id>
+      <name>Aivar Grislis</name>
+      <email>grislis@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/aivar-grislis</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>bdezonia</id>
+      <name>Barry DeZonia</name>
+      <email>bdezonia@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/barry-dezonia</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/Barry_DeZonia.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>gharris</id>
+      <name>Grant Harris</name>
+      <email>gharris@mbl.edu</email>
+      <url>http://loci.wisc.edu/people/grant-harris</url>
+      <organization>MBL at Woods Hole</organization>
+      <organizationUrl>http://www.mbl.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-5</timezone>
+      <properties>
+        <picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>rlentz</id>
+      <name>Rick Lentz</name>
+      <email>rwlentz@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/rick-lentz</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
+      </properties>
+    </developer>
+  </developers>
+
+  <repositories>
+    <!-- NB: for imagej-base-pom -->
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
+  <!-- NB: for com.sun.tools.java; for details, see:
+    http://maven.apache.org/general.html#tools-jar-dependency -->
+  <profiles>
+    <profile>
+      <id>default-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.4.2</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+</project>
