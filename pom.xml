@@ -21,7 +21,6 @@
   <modules>
     <module>bf-imglib</module>
     <module>image5d</module>
-    <module>imagej</module>
     <module>ij1-bridge</module>
     <module>_ij1-patches</module>
     <module>ij2-imglib</module>
