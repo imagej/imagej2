@@ -9,7 +9,6 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.ShortProcessor;
 
-import imagej.io.ImageOpener;
 import imagej2.SampleManager;
 import imagej2.SampleInfo.ValueType;
 import imagej2.Utils;
@@ -1651,7 +1650,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageOpener.getPlanarAccess(this.imageData);
+		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageUtils.getPlanarAccess(this.imageData);
 
 		if (planarAccess == null)
 		{
