@@ -1,7 +1,7 @@
 package imagej2.imglib.process;
 
+import imagej2.UserType;
 import imagej2.Utils;
-import imagej2.SampleInfo.ValueType;
 import imagej2.function.unary.CopyUnaryFunction;
 import imagej2.imglib.process.operation.BinaryAssignOperation;
 import imagej2.imglib.process.operation.GetPlaneOperation;
@@ -22,6 +22,7 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
+import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -33,11 +34,6 @@ import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
-
-// TODO
-//   createImagePlus() calls imp.setDimensions(z,c,t). But we may have other dims too. Change when
-//     we can call ImagePlus::setDimensions(int[] dims)
-//   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
 /** this class designed to hold functionality that could be migrated to imglib */
 public class ImageUtils
@@ -208,157 +204,6 @@ public class ImageUtils
 		copier.execute();
 	}
 
-	/** creates an ImgLibProcessor populated with given pixel data. Note that this method creates an imglib Image<?>
-	 * that contains the pixel data and only the returned ImgLibProcessor has access to this Image<?>.
-	 *
-	 * @param width - desired width of image
-	 * @param height - desired height of image
-	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
-	 * @param type - the IJ value type of the input data (BYTE, USHORT, etc.)
-	 */
-/* TODO - relocate to ij1-bridge
-	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, ValueType type)
-	{
-		SampleManager.verifyTypeCompatibility(pixels, type);
-		
-		PlanarContainerFactory containerFactory = new PlanarContainerFactory();
-
-		ImgLibProcessor<?> proc = null;
-
-		int[] dimensions = new int[]{width, height, 1};
-
-		switch (type)
-		{
-			case BYTE:
-			{
-				Image<ByteType> hatchedImage = createImage(new ByteType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UBYTE:
-			{
-				Image<UnsignedByteType> hatchedImage = createImage(new UnsignedByteType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UINT12:
-			{
-				Image<Unsigned12BitType> hatchedImage = createImage(new Unsigned12BitType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<Unsigned12BitType>(hatchedImage, 0);
-			}
-			break;
-			
-			case SHORT:
-			{
-				Image<ShortType> hatchedImage = createImage(new ShortType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
-			}
-			break;
-			
-			case USHORT:
-			{
-				Image<UnsignedShortType> hatchedImage = createImage(new UnsignedShortType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
-			}
-			break;
-			
-			case INT:
-			{
-				Image<IntType> hatchedImage = createImage(new IntType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UINT:
-			{
-				Image<UnsignedIntType> hatchedImage = createImage(new UnsignedIntType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
-			}
-			break;
-			
-			case LONG:
-			{
-				Image<LongType> hatchedImage = createImage(new LongType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
-			}
-			break;
-			
-			case FLOAT:
-			{
-				Image<FloatType> hatchedImage = createImage(new FloatType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
-			}
-			break;
-			
-			case DOUBLE:
-			{
-				Image<DoubleType> hatchedImage = createImage(new DoubleType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
-			}
-			break;
-			
-			default:
-				throw new IllegalArgumentException("unsupprted type specified "+type);
-		}
-
-		proc.setPixels(pixels);
-
-		return proc;
-	}
-*/
-
-	/** creates an ImagePlus from an imglib Image<?> */
-/* TODO - relocate to ij1-bridge
-	public static ImagePlus createImagePlus(final Image<?> img)
-	{
-		return createImagePlus(img, null);
-	}
-*/
-	
-	/** creates an ImagePlus from an imglib Image<?> and a string.
-	 * @param img - the imglib Image<?> that will back the ImagePlus
-	 * @param id - a string representing either a filename or a URL (used to populate the ImagePlus' FileInfo
-	 */
-/* TODO - relocate to ij1-bridge
-	public static ImagePlus createImagePlus(final Image<?> img, final String id)
-	{
-		final int sizeX = getWidth(img);
-		final int sizeY = getHeight(img);
-		final int sizeC = getNChannels(img);
-		final int sizeZ = getNSlices(img);
-		final int sizeT = getNFrames(img);
-
-		final ImgLibImageStack stack = new ImgLibImageStack(img);
-
-		final ImagePlus imp = new ImagePlus(img.getName(), stack);
-
-		if (id != null)
-		{
-			final FileInfo fi = new FileInfo();
-			fi.width = sizeX;
-			fi.height = sizeY;
-			final File file = new File(id);
-			if (file.exists())
-			{
-				fi.fileName = file.getName();
-				fi.directory = file.getParent();
-				imp.setTitle(fi.fileName);
-			}
-			else
-				fi.url = id;
-			imp.setFileInfo(fi);
-		}
-
-		// let ImageJ know what dimensions we have
-		imp.setDimensions(sizeC, sizeZ, sizeT);
-		imp.setOpenAsHyperStack(true);
-
-		return imp;
-	}
-*/
-	
 	@SuppressWarnings({"unchecked"})
 	public static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
 	{
@@ -403,35 +248,38 @@ public class ImageUtils
 	{
 		RealType<?> type = getType(im);
 
+		if (type instanceof BitType)
+			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, UserType.BIT);
+
 		if (type instanceof ByteType)
-			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, ValueType.BYTE);
+			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, UserType.BYTE);
 
 		if (type instanceof UnsignedByteType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, ValueType.UBYTE);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, UserType.UBYTE);
 
 		if (type instanceof Unsigned12BitType)
-			return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)im, planePos, ValueType.UINT12);
+			return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)im, planePos, UserType.UINT12);
 
 		if (type instanceof ShortType)
-			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, ValueType.SHORT);
+			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, UserType.SHORT);
 
 		if (type instanceof UnsignedShortType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)im, planePos, ValueType.USHORT);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)im, planePos, UserType.USHORT);
 
 		if (type instanceof IntType)
-			return GetPlaneOperation.getPlaneAs((Image<IntType>)im, planePos, ValueType.INT);
+			return GetPlaneOperation.getPlaneAs((Image<IntType>)im, planePos, UserType.INT);
 
 		if (type instanceof UnsignedIntType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)im, planePos, ValueType.UINT);
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)im, planePos, UserType.UINT);
 
 		if (type instanceof LongType)
-			return GetPlaneOperation.getPlaneAs((Image<LongType>)im, planePos, ValueType.LONG);
+			return GetPlaneOperation.getPlaneAs((Image<LongType>)im, planePos, UserType.LONG);
 
 		if (type instanceof FloatType)
-			return GetPlaneOperation.getPlaneAs((Image<FloatType>)im, planePos, ValueType.FLOAT);
+			return GetPlaneOperation.getPlaneAs((Image<FloatType>)im, planePos, UserType.FLOAT);
 
 		if (type instanceof DoubleType)
-			return GetPlaneOperation.getPlaneAs((Image<DoubleType>)im, planePos, ValueType.DOUBLE);
+			return GetPlaneOperation.getPlaneAs((Image<DoubleType>)im, planePos, UserType.DOUBLE);
 
 		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+type.getClass());
 	}

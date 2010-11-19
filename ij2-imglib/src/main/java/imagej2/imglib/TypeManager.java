@@ -1,6 +1,6 @@
 package imagej2.imglib;
 
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -26,33 +26,33 @@ public class TypeManager {
 	/** initialize the type lists */
 	static
 	{
-		realTypeArray = new RealType[ValueType.values().length];
+		realTypeArray = new RealType[UserType.values().length];
 
-		realTypeArray[ValueType.BIT.ordinal()] = new BitType();
-		realTypeArray[ValueType.BYTE.ordinal()] = new ByteType();
-		realTypeArray[ValueType.UBYTE.ordinal()] = new UnsignedByteType();
-		realTypeArray[ValueType.SHORT.ordinal()] = new ShortType();
-		realTypeArray[ValueType.USHORT.ordinal()] = new UnsignedShortType();
-		realTypeArray[ValueType.INT.ordinal()] = new IntType();
-		realTypeArray[ValueType.UINT.ordinal()] = new UnsignedIntType();
-		realTypeArray[ValueType.FLOAT.ordinal()] = new FloatType();
-		realTypeArray[ValueType.LONG.ordinal()] = new LongType();
-		realTypeArray[ValueType.DOUBLE.ordinal()] = new DoubleType();
-		realTypeArray[ValueType.UINT12.ordinal()] = new Unsigned12BitType();
+		realTypeArray[UserType.BIT.ordinal()] = new BitType();
+		realTypeArray[UserType.BYTE.ordinal()] = new ByteType();
+		realTypeArray[UserType.UBYTE.ordinal()] = new UnsignedByteType();
+		realTypeArray[UserType.UINT12.ordinal()] = new Unsigned12BitType();
+		realTypeArray[UserType.SHORT.ordinal()] = new ShortType();
+		realTypeArray[UserType.USHORT.ordinal()] = new UnsignedShortType();
+		realTypeArray[UserType.INT.ordinal()] = new IntType();
+		realTypeArray[UserType.UINT.ordinal()] = new UnsignedIntType();
+		realTypeArray[UserType.FLOAT.ordinal()] = new FloatType();
+		realTypeArray[UserType.LONG.ordinal()] = new LongType();
+		realTypeArray[UserType.DOUBLE.ordinal()] = new DoubleType();
 	}
 
-	/** get an imglib type from a IJ ValueType */
-	public static RealType<?> getRealType(ValueType type)
+	/** get an imglib type from a IJ UserType */
+	public static RealType<?> getRealType(UserType type)
 	{
 		return realTypeArray[type.ordinal()];
 	}
 
-	/** get the ValueType (BYTE,SHORT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
-	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample ValueType.
+	/** get the UserType (BYTE,SHORT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
+	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample UserType.
 	 */
-	public static ValueType getValueType(RealType<?> imglib)
+	public static UserType getUserType(RealType<?> imglib)
 	{
-		for (ValueType vType : ValueType.values())
+		for (UserType vType : UserType.values())
 		{
 			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
 				return vType;
@@ -61,21 +61,23 @@ public class TypeManager {
 		throw new IllegalArgumentException("unknown Imglib type : "+imglib.getClass());
 	}
 	
+	/*
 	// TODO is there a better way? ask.
 	/** returns true if given imglib type is an unsigned type */
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
-			(t instanceof UnsignedByteType) ||
+			(t instanceof BitType) ||
+			(t instanceof UnsignedByteType) ||      // note that this method could getUserType(realtype) and then get SampleInfo and return isUnsigned()
 			(t instanceof Unsigned12BitType) ||
-			(t instanceof UnsignedIntType) ||
-			(t instanceof UnsignedShortType)
+			(t instanceof UnsignedShortType) ||
+			(t instanceof UnsignedIntType)
 		);
 	}
 
 	// TODO is there a better way? ask.
 	/** returns true if given imglib type is an integer type */
 	public static boolean isIntegralType(RealType<?> t) {
-		return (t instanceof IntegerType<?>);
+		return ((t instanceof IntegerType<?>) || (t instanceof BitType));
 	}
 	
 	/**
