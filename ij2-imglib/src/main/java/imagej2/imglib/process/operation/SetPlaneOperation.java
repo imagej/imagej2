@@ -42,6 +42,9 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 			case UBYTE:
 				this.reader = new UnsignedByteReader((byte[])pixels);
 				break;
+			case UINT12:
+				this.reader = new UnsignedTwelveBitReader((int[])pixels);
+				break;
 			case SHORT:
 				this.reader = new ShortReader((short[])pixels);
 				break;
@@ -62,9 +65,6 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 				break;
 			case DOUBLE:
 				this.reader = new DoubleReader((double[])pixels);
-				break;
-			case UINT12:
-				this.reader = new UnsignedTwelveBitReader((int[])pixels);
 				break;
 			default:  // note ULONG falls through to here by design
 				throw new IllegalArgumentException("SetPlaneOperation(): unsupported data type - "+inputType);
