@@ -217,7 +217,7 @@ public class TypeConverter {
 			{
 				double min = ip.getMin();
 				double max = ip.getMax();
-				double newValue = Math.round(255*(value-min)/(max-min));
+				double newValue = Math.round(65535*(value-min)/(max-min));
 				if (newValue < 0) newValue = 0;
 				if (newValue > 65535) newValue = 65535;
 				theShort = (short) newValue;
