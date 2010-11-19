@@ -161,24 +161,6 @@ public class PlaneStack
 		}
 	}
 
-	// this method should move when we have a better idea where it belongs
-	private int expectedArraySize(UserType type)
-	{
-		int numPixels = this.planeHeight * this.planeWidth;
-		
-		if (type != UserType.UINT12)
-			return numPixels;
-
-		int totalBits = 12 * numPixels;
-		
-		int totalInts = totalBits / 32;
-		
-		if ((totalBits % 32) != 0)
-			totalInts++;
-		
-		return totalInts;
-	}
-	
 	/**
 	 * inserts a plane into the PlaneStack. Since Imglib images are immutable it does this by creating a new stack
 	 * and copying all the old data appropriately. The new plane's contents are provided. Note that callers of this

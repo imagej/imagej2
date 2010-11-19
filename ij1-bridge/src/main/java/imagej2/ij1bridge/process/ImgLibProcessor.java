@@ -690,6 +690,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
+		SampleManager.verifyTypeCompatibility(pixels, this.ijType);
+		
 		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
 
 		if (planar != null)
