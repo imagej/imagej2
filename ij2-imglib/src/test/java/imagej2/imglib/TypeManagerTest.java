@@ -3,8 +3,7 @@ package imagej2.imglib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej2.SampleInfo;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.imglib.TypeManager;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -27,33 +26,33 @@ public class TypeManagerTest {
 	@Test
 	public void testGetRealType()
 	{
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.BIT) instanceof BitType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.BYTE) instanceof ByteType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.UBYTE) instanceof UnsignedByteType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.UINT12) instanceof Unsigned12BitType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.SHORT) instanceof ShortType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.USHORT) instanceof UnsignedShortType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.INT) instanceof IntType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.UINT) instanceof UnsignedIntType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.FLOAT) instanceof FloatType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.DOUBLE) instanceof DoubleType);
-		assertTrue(TypeManager.getRealType(SampleInfo.ValueType.LONG) instanceof LongType);
+		assertTrue(TypeManager.getRealType(UserType.BIT) instanceof BitType);
+		assertTrue(TypeManager.getRealType(UserType.BYTE) instanceof ByteType);
+		assertTrue(TypeManager.getRealType(UserType.UBYTE) instanceof UnsignedByteType);
+		assertTrue(TypeManager.getRealType(UserType.UINT12) instanceof Unsigned12BitType);
+		assertTrue(TypeManager.getRealType(UserType.SHORT) instanceof ShortType);
+		assertTrue(TypeManager.getRealType(UserType.USHORT) instanceof UnsignedShortType);
+		assertTrue(TypeManager.getRealType(UserType.INT) instanceof IntType);
+		assertTrue(TypeManager.getRealType(UserType.UINT) instanceof UnsignedIntType);
+		assertTrue(TypeManager.getRealType(UserType.FLOAT) instanceof FloatType);
+		assertTrue(TypeManager.getRealType(UserType.LONG) instanceof LongType);
+		assertTrue(TypeManager.getRealType(UserType.DOUBLE) instanceof DoubleType);
 	}
 
 	@Test
-	public void testGetValueTypeRealType()
+	public void testGetUserTypeRealType()
 	{
-		assertEquals(ValueType.BIT, TypeManager.getValueType(new BitType()));
-		assertEquals(ValueType.BYTE, TypeManager.getValueType(new ByteType()));
-		assertEquals(ValueType.UBYTE, TypeManager.getValueType(new UnsignedByteType()));
-		assertEquals(ValueType.UINT12, TypeManager.getValueType(new Unsigned12BitType()));
-		assertEquals(ValueType.SHORT, TypeManager.getValueType(new ShortType()));
-		assertEquals(ValueType.USHORT, TypeManager.getValueType(new UnsignedShortType()));
-		assertEquals(ValueType.INT, TypeManager.getValueType(new IntType()));
-		assertEquals(ValueType.UINT, TypeManager.getValueType(new UnsignedIntType()));
-		assertEquals(ValueType.FLOAT, TypeManager.getValueType(new FloatType()));
-		assertEquals(ValueType.DOUBLE, TypeManager.getValueType(new DoubleType()));
-		assertEquals(ValueType.LONG, TypeManager.getValueType(new LongType()));
+		assertEquals(UserType.BIT, TypeManager.getUserType(new BitType()));
+		assertEquals(UserType.BYTE, TypeManager.getUserType(new ByteType()));
+		assertEquals(UserType.UBYTE, TypeManager.getUserType(new UnsignedByteType()));
+		assertEquals(UserType.UINT12, TypeManager.getUserType(new Unsigned12BitType()));
+		assertEquals(UserType.SHORT, TypeManager.getUserType(new ShortType()));
+		assertEquals(UserType.USHORT, TypeManager.getUserType(new UnsignedShortType()));
+		assertEquals(UserType.INT, TypeManager.getUserType(new IntType()));
+		assertEquals(UserType.UINT, TypeManager.getUserType(new UnsignedIntType()));
+		assertEquals(UserType.FLOAT, TypeManager.getUserType(new FloatType()));
+		assertEquals(UserType.LONG, TypeManager.getUserType(new LongType()));
+		assertEquals(UserType.DOUBLE, TypeManager.getUserType(new DoubleType()));
 	}
 	@Test
 	public void testIsUnsignedType() {
@@ -65,6 +64,7 @@ public class TypeManagerTest {
 		assertFalse(TypeManager.isUnsignedType(new FloatType()));
 		assertFalse(TypeManager.isUnsignedType(new DoubleType()));
 		
+		assertTrue(TypeManager.isUnsignedType(new BitType()));
 		assertTrue(TypeManager.isUnsignedType(new UnsignedByteType()));
 		assertTrue(TypeManager.isUnsignedType(new UnsignedShortType()));
 		assertTrue(TypeManager.isUnsignedType(new UnsignedIntType()));
@@ -73,6 +73,7 @@ public class TypeManagerTest {
 
 	@Test
 	public void testIsIntegralType() {
+		assertTrue(TypeManager.isIntegralType(new BitType()));
 		assertTrue(TypeManager.isIntegralType(new ByteType()));
 		assertTrue(TypeManager.isIntegralType(new ShortType()));
 		assertTrue(TypeManager.isIntegralType(new IntType()));
@@ -90,6 +91,11 @@ public class TypeManagerTest {
 	public void testBoundValueToType()
 	{
 		RealType<?> type;
+		
+		type = new BitType();
+		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
+		assertEquals(0,TypeManager.boundValueToType(type, -Double.MAX_VALUE),0);
+		assertEquals(1,TypeManager.boundValueToType(type, Double.MAX_VALUE),0);
 		
 		type = new ByteType();
 		assertEquals(0,TypeManager.boundValueToType(type, 0),0);
@@ -147,10 +153,13 @@ public class TypeManagerTest {
 	{
 		RealType<?> type1, type2;
 
-		type1 = new ByteType();
+		type1 = new BitType();
+		
+		type2 = new BitType();
+		assertTrue(TypeManager.sameKind(type1,type2));
 		
 		type2 = new ByteType();
-		assertTrue(TypeManager.sameKind(type1,type2));
+		assertFalse(TypeManager.sameKind(type1,type2));
 		
 		type2 = new UnsignedByteType();
 		assertFalse(TypeManager.sameKind(type1,type2));
@@ -184,6 +193,12 @@ public class TypeManagerTest {
 	public void testValidValue()
 	{
 		RealType<?> type;
+		
+		type = new BitType();
+		assertTrue(TypeManager.validValue(type, 0));
+		assertTrue(TypeManager.validValue(type, 1));
+		assertFalse(TypeManager.validValue(type, -1));
+		assertFalse(TypeManager.validValue(type, 2));
 		
 		type = new ByteType();
 		assertTrue(TypeManager.validValue(type, 0));

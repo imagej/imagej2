@@ -1,7 +1,7 @@
 package imagej2.imglib.process.operation;
 
 import static org.junit.Assert.*;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.imglib.process.ImageUtils;
 import imagej2.imglib.process.operation.GetPlaneOperation;
 import imagej2.process.Index;
@@ -54,7 +54,7 @@ public class GetPlaneOperationTest
 		
 		span = Span.singlePlane(1, 2, 3);
 		origin = Index.create(0,0,new int[]{0});
-		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, ValueType.SHORT);
+		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, UserType.SHORT);
 		oper.execute();
 		plane = oper.getOutputPlane();
 
@@ -66,7 +66,7 @@ public class GetPlaneOperationTest
 		
 		span = Span.singlePlane(1, 2, 3);
 		origin = Index.create(0,0,new int[]{1});
-		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, ValueType.SHORT);
+		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, UserType.SHORT);
 		oper.execute();
 		plane = oper.getOutputPlane();
 
@@ -78,7 +78,7 @@ public class GetPlaneOperationTest
 		
 		span = Span.singlePlane(1, 2, 3);
 		origin = Index.create(0,0,new int[]{2});
-		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, ValueType.SHORT);
+		oper = new GetPlaneOperation<UnsignedByteType>(image, origin, span, UserType.SHORT);
 		oper.execute();
 		plane = oper.getOutputPlane();
 
@@ -98,7 +98,7 @@ public class GetPlaneOperationTest
 		
 		int[] span = Span.singlePlane(1, 2, 3);
 		
-		GetPlaneOperation<IntType> oper = new GetPlaneOperation<IntType>(image, origin, span, ValueType.SHORT);
+		GetPlaneOperation<IntType> oper = new GetPlaneOperation<IntType>(image, origin, span, UserType.SHORT);
 		
 		oper.execute();
 		
@@ -150,7 +150,7 @@ public class GetPlaneOperationTest
 
 		int[] imglibPlane = (int[]) ImageUtils.getPlanarAccess(image).getPlane(0).getCurrentStorageArray();
 		
-		Object myPlane = GetPlaneOperation.getPlaneAs(image, new int[]{0}, ValueType.UINT12);
+		Object myPlane = GetPlaneOperation.getPlaneAs(image, new int[]{0}, UserType.UINT12);
 		
 		assertNotNull(myPlane);
 		assertTrue(myPlane instanceof int[]);

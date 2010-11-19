@@ -1,7 +1,7 @@
 package imagej2.imglib.process.operation;
 
 import imagej2.SampleManager;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.imglib.TypeManager;
 import imagej2.process.Span;
 import mpicbg.imglib.image.Image;
@@ -25,7 +25,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	// **************** public interface ********************************************
 
-	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, ValueType inputType)
+	public SetPlaneOperation(Image<T> theImage, int[] origin, Object pixels, UserType inputType)
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
 		
@@ -33,6 +33,9 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 		switch (inputType)
 		{
+			case BIT:
+				this.reader = new BitReader((int[])pixels);
+				break;
 			case BYTE:
 				this.reader = new ByteReader((byte[])pixels);
 				break;
@@ -95,6 +98,37 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	
 	// **************** private code ********************************************
 	
+	private class BitReader implements DataReader
+	{
+		private int[] ints;
+		
+		public BitReader(int[] ints)
+		{
+			this.ints = ints;
+		}
+		
+		public double getValue(int index)
+		{
+			int intNumber = index / 32;
+			
+			int bitNumber = index % 32;
+
+			return getBit(intNumber, bitNumber);
+		}
+
+		private int getBit(int intNumber, int bitNumber)
+		{
+			int currValue = this.ints[intNumber];
+			
+			int alignedMask = 1 << (bitNumber);
+			
+			if ((currValue & alignedMask) > 0)
+				return 1;
+			else
+				return 0;
+		}
+	}
+	
 	private class ByteReader implements DataReader
 	{
 		private byte[] pixels;
@@ -128,6 +162,88 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		}
 	}
 	
+	private class UnsignedTwelveBitReader implements DataReader
+	{
+		private int[] ints;
+		
+		public UnsignedTwelveBitReader(int[] ints)
+		{
+			this.ints = ints;
+		}
+		
+		public double getValue(int index)
+		{
+			// divide pixels into buckets of nibbles. each bucket is 96 bits (three 32 bit ints = eight 12 bit ints)
+			int bucketNumber = index / 8;
+			
+			int intIndexOfBucketStart = bucketNumber * 3;
+			
+			int indexOfFirstNibble = index % 8;
+			
+			int nibble1, nibble2, nibble3;
+			
+			switch (indexOfFirstNibble)
+			
+			{
+				case 0:
+					nibble1 = getNibble(intIndexOfBucketStart,   0);
+					nibble2 = getNibble(intIndexOfBucketStart,   1);
+					nibble3 = getNibble(intIndexOfBucketStart,   2);
+					break;
+				case 1:
+					nibble1 = getNibble(intIndexOfBucketStart,   3);
+					nibble2 = getNibble(intIndexOfBucketStart,   4);
+					nibble3 = getNibble(intIndexOfBucketStart,   5);
+					break;
+				case 2:
+					nibble1 = getNibble(intIndexOfBucketStart,   6);
+					nibble2 = getNibble(intIndexOfBucketStart,   7);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 0);
+					break;
+				case 3:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 1);
+					nibble2 = getNibble(intIndexOfBucketStart+1, 2);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 3);
+					break;
+				case 4:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 4);
+					nibble2 = getNibble(intIndexOfBucketStart+1, 5);
+					nibble3 = getNibble(intIndexOfBucketStart+1, 6);
+					break;
+				case 5:
+					nibble1 = getNibble(intIndexOfBucketStart+1, 7);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 0);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 1);
+					break;
+				case 6:
+					nibble1 = getNibble(intIndexOfBucketStart+2, 2);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 3);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 4);
+					break;
+				case 7:
+					nibble1 = getNibble(intIndexOfBucketStart+2, 5);
+					nibble2 = getNibble(intIndexOfBucketStart+2, 6);
+					nibble3 = getNibble(intIndexOfBucketStart+2, 7);
+					break;
+				default:
+					throw new IllegalStateException();
+			}
+			
+			return (nibble3 << 8) + (nibble2 << 4) + (nibble1 << 0);
+		}
+		
+		private int getNibble(int intNumber, int nibbleNumber)
+		{
+			int currValue = this.ints[intNumber];
+			
+			int alignedMask = 15 << (4 * nibbleNumber);
+
+			int shiftedValue = currValue & alignedMask;
+			
+			return shiftedValue >> (4 * nibbleNumber);
+		}
+	}
+
 	private class ShortReader implements DataReader
 	{
 		private short[] pixels;
@@ -239,86 +355,5 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		}
 	}
 
-	private class UnsignedTwelveBitReader implements DataReader
-	{
-		private int[] ints;
-		
-		public UnsignedTwelveBitReader(int[] ints)
-		{
-			this.ints = ints;
-		}
-		
-		public double getValue(int index)
-		{
-			// divide pixels into buckets of nibbles. each bucket is 96 bits (three 32 bit ints = eight 12 bit ints)
-			int bucketNumber = index / 8;
-			
-			int intIndexOfBucketStart = bucketNumber * 3;
-			
-			int indexOfFirstNibble = index % 8;
-			
-			int nibble1, nibble2, nibble3;
-			
-			switch (indexOfFirstNibble)
-			
-			{
-				case 0:
-					nibble1 = getNibble(intIndexOfBucketStart,   0);
-					nibble2 = getNibble(intIndexOfBucketStart,   1);
-					nibble3 = getNibble(intIndexOfBucketStart,   2);
-					break;
-				case 1:
-					nibble1 = getNibble(intIndexOfBucketStart,   3);
-					nibble2 = getNibble(intIndexOfBucketStart,   4);
-					nibble3 = getNibble(intIndexOfBucketStart,   5);
-					break;
-				case 2:
-					nibble1 = getNibble(intIndexOfBucketStart,   6);
-					nibble2 = getNibble(intIndexOfBucketStart,   7);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 0);
-					break;
-				case 3:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 1);
-					nibble2 = getNibble(intIndexOfBucketStart+1, 2);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 3);
-					break;
-				case 4:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 4);
-					nibble2 = getNibble(intIndexOfBucketStart+1, 5);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 6);
-					break;
-				case 5:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 7);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 0);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 1);
-					break;
-				case 6:
-					nibble1 = getNibble(intIndexOfBucketStart+2, 2);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 3);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 4);
-					break;
-				case 7:
-					nibble1 = getNibble(intIndexOfBucketStart+2, 5);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 6);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 7);
-					break;
-				default:
-					throw new IllegalStateException();
-			}
-			
-			return (nibble3 << 8) + (nibble2 << 4) + (nibble1 << 0);
-		}
-		
-		private int getNibble(int intNumber, int nibbleNumber)
-		{
-			int currValue = this.ints[intNumber];
-			
-			int alignedMask = 15 << (4 * nibbleNumber);
-
-			int shiftedValue = currValue & alignedMask;
-			
-			return shiftedValue >> (4 * nibbleNumber);
-		}
-	}
 }
 
