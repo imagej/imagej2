@@ -3,11 +3,9 @@ package imagej2.ij1bridge.process;
 import ij.Prefs;
 import ij.measure.Calibration;
 import ij.process.Blitter;
-import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import ij.process.ShortProcessor;
 
 import imagej2.DataEncoding;
 import imagej2.SampleManager;
@@ -1518,28 +1516,17 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ImgLibProcessor<T> newProc = new ImgLibProcessor<T>(image, 0);
 
-		boolean oldIntegralData = false;
-		if ((inputProc instanceof ByteProcessor) || (inputProc instanceof ShortProcessor))
-			oldIntegralData = true;
+		int w = newProc.getWidth();
+		int h = newProc.getHeight();
 
-		if (!oldIntegralData)
+		double value;
+		for (int x = 0; x < w; x++)
 		{
-			newProc.setPixels(inputProc.getPixels());
-		}
-		else  // funky issue where Java's signedness and IJ's unsignedness complicate setting the pixels
-		{
-			int w = newProc.getWidth();
-			int h = newProc.getHeight();
-
-			int value;
-			for (int x = 0; x < w; x++)
+			for (int y = 0; y < h; y++)
 			{
-				for (int y = 0; y < h; y++)
-				{
-					// Must turn into int data and remove signedness
-					value = inputProc.get(x, y) & 0xffff;
-					newProc.setd(x, y, value);
-				}
+				// Must turn into int data and remove signedness
+				value = inputProc.getd(x, y);
+				newProc.setd(x, y, value);
 			}
 		}
 
