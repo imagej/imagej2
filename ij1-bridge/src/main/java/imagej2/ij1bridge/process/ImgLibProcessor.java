@@ -1524,7 +1524,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		{
 			for (int y = 0; y < h; y++)
 			{
-				// Must turn into int data and remove signedness
 				value = inputProc.getd(x, y);
 				newProc.setd(x, y, value);
 			}
