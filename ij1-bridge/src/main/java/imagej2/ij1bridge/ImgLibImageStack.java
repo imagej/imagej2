@@ -7,7 +7,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej2.ij1bridge.SampleManager;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.Utils;
 import imagej2.imglib.process.ImageUtils;
 import imagej2.ij1bridge.process.ImgLibProcessor;
@@ -154,7 +154,7 @@ public class ImgLibImageStack extends ImageStack
 		return labels.size();
 	}
 
-	private void addSliceToImage(int atDepth, String label, ValueType type, Object pixels)
+	private void addSliceToImage(int atDepth, String label, UserType type, Object pixels)
 	{
 		// ADD PLANE
 
@@ -194,7 +194,7 @@ public class ImgLibImageStack extends ImageStack
 
 	/**
 	* Add a plane of data to the ImageStack.
-	* @deprecated Use {@link #addSlice(String sliceLabel, ValueType type, Object pixels)} instead.
+	* @deprecated Use {@link #addSlice(String sliceLabel, UserType type, Object pixels)} instead.
 	*/
 	@Deprecated
 	public void addSlice(String sliceLabel, Object pixels)
@@ -205,16 +205,16 @@ public class ImgLibImageStack extends ImageStack
 		if (!pixels.getClass().isArray())
 			throw new IllegalArgumentException("'pixels' is not an array");
 
-		ValueType type;
+		UserType type;
 		
 		if (pixels instanceof byte[])
-			type = ValueType.UBYTE;
+			type = UserType.UBYTE;
 		else if (pixels instanceof short[])
-			type = ValueType.USHORT;
+			type = UserType.USHORT;
 		else if (pixels instanceof int[])
-			type = ValueType.UINT;
+			type = UserType.UINT;
 		else if (pixels instanceof float[])
-			type = ValueType.FLOAT;
+			type = UserType.FLOAT;
 		else
 			throw new IllegalArgumentException("obsolete version of addSlice() passed nonlegacy input pixel array of type "+pixels.getClass());
 		
@@ -222,7 +222,7 @@ public class ImgLibImageStack extends ImageStack
 	}
 
 	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
-	public void addSlice(String sliceLabel, ValueType type, Object pixels)
+	public void addSlice(String sliceLabel, UserType type, Object pixels)
 	{
 		if (pixels==null)
 			throw new IllegalArgumentException("'pixels' is null!");
@@ -273,7 +273,7 @@ public class ImgLibImageStack extends ImageStack
 			max = ip.getMax();
 		}
 
-		addSlice(sliceLabel, SampleManager.getValueType(ip), ip.getPixels());
+		addSlice(sliceLabel, SampleManager.getUserType(ip), ip.getPixels());
 	}
 
 	/** Adds the image in 'ip' to the stack following slice 'n'. Adds
@@ -283,7 +283,7 @@ public class ImgLibImageStack extends ImageStack
 		if (n<0 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		addSliceToImage(n, sliceLabel, SampleManager.getValueType(ip), ip.getPixels());
+		addSliceToImage(n, sliceLabel, SampleManager.getUserType(ip), ip.getPixels());
 	}
 
 	/** Deletes the specified slice, were 1<=n<=nslices. */

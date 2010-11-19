@@ -9,8 +9,9 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.ShortProcessor;
 
+import imagej2.DataEncoding;
 import imagej2.SampleManager;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.Utils;
 import imagej2.function.BinaryFunction;
 import imagej2.function.NAryFunction;
@@ -62,6 +63,7 @@ import imagej2.function.unary.XorUnaryFunction;
 import imagej2.ij1bridge.process.operation.BlurFilterOperation;
 import imagej2.ij1bridge.process.operation.Convolve3x3FilterOperation;
 import imagej2.ij1bridge.process.operation.FindEdgesFilterOperation;
+import imagej2.imglib.EncodingManager;
 import imagej2.imglib.TypeManager;
 import imagej2.imglib.process.ImageUtils;
 import imagej2.imglib.process.Snapshot;
@@ -152,7 +154,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private final RealType<?> type;
 
 	/** the underlying ImgLib type of the image data */
-	private final ValueType ijType;
+	private final UserType ijType;
 
 	/** flag for determining if we are working with integral data (or float otherwise) */
 	private final boolean isIntegral;
@@ -237,7 +239,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		this.imageData = image;
 		this.type = ImageUtils.getType(image);
-		this.ijType = TypeManager.getValueType(this.type);
+		this.ijType = TypeManager.getUserType(this.type);
 
 		this.planePosition = thisPlanePosition.clone();
 
@@ -289,6 +291,37 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
+	/** calculates the number of elements in a primitive array. throws an exception if the passed in object is not a primitive array */
+	private int calcNumElements(Object pixels)
+	{
+		if (pixels instanceof byte[])
+		{
+			return ((byte[]) pixels).length;
+		}
+		else if (pixels instanceof short[])
+		{
+			return ((short[]) pixels).length;
+		}
+		else if (pixels instanceof int[])
+		{
+			return ((int[]) pixels).length;
+		}
+		else if (pixels instanceof float[])
+		{
+			return ((float[]) pixels).length;
+		}
+		else if (pixels instanceof double[])
+		{
+			return ((double[]) pixels).length;
+		}
+		else if (pixels instanceof long[])
+		{
+			return ((long[]) pixels).length;
+		}
+		else
+			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
+	}
+	
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
 	@Override
 	protected byte[] create8BitImage()
@@ -596,7 +629,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
-		return GetPlaneOperation.getPlaneAs(image, planePos, TypeManager.getValueType(type));
+		return GetPlaneOperation.getPlaneAs(image, planePos, TypeManager.getUserType(type));
 	}
 
 	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns nearest edge pixel. */
@@ -669,50 +702,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		System.out.println("setPixels() - nonoptimal container type - can only return a copy of pixels");
 
+		int numStorageUnits = calcNumElements(pixels);
+
+		DataEncoding encoding = EncodingManager.getEncoding(this.ijType);
+		
+		int minPixelsEncodable = EncodingManager.calcMaxPixelsStorable(encoding, numStorageUnits-1) + 1;
+
+		int maxPixelsEncodable = EncodingManager.calcMaxPixelsStorable(encoding,numStorageUnits);
+
+		long totalSamples = getTotalSamples();
+		
+		if ((totalSamples < minPixelsEncodable) || (totalSamples > maxPixelsEncodable))
+			throw new IllegalArgumentException("setPlane() error: input plane shape is not compatible with input image planes");
+		
 		int[] position = Index.create(0,0,planePosition);
 
-		int numPixels = 0;
+		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(image, position, pixels, this.ijType);
 
-		if (pixels instanceof byte[])
-		{
-			numPixels = ((byte[]) pixels).length;
-		}
-		else if (pixels instanceof short[])
-		{
-			numPixels = ((short[]) pixels).length;
-		}
-		else if (pixels instanceof int[])
-		{
-			numPixels = ((int[]) pixels).length;
-			
-			if (this.ijType == ValueType.UINT12)
-			{
-				int numInts = numPixels;
-				long expectedNumPixels = ((long)getWidth()) * getHeight();
-				long expectedTotalBits = 12 * expectedNumPixels;
-				long expectedEncodedInts = expectedTotalBits / 32;
-				if ((expectedTotalBits % 32) != 0)
-					expectedEncodedInts++;
-				if (expectedEncodedInts == numInts)
-					numPixels = (int)expectedNumPixels;
-			}
-		}
-		else if (pixels instanceof float[])
-		{
-			numPixels = ((float[]) pixels).length;
-		}
-		else if (pixels instanceof double[])
-		{
-			numPixels = ((double[]) pixels).length;
-		}
-		else if (pixels instanceof long[])
-		{
-			numPixels = ((long[]) pixels).length;
-		}
-		else
-			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
-
-		setPlane(image, position, pixels, this.ijType, numPixels);
+		setOp.execute();
 	}
 
 	/** sets the min and max variables associated with this processor and does nothing else! */
@@ -746,17 +753,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				setd(x,y,newValue);
 			}
 		}
-	}
-
-	/** sets the pixels of a plane in an image. called by setImagePlanePixels(). input pixels' type info must have been determined earlier. */
-	private void setPlane(Image<T> theImage, int[] origin, Object pixels, ValueType inputType, long numPixels)
-	{
-		if (numPixels != getTotalSamples())
-			throw new IllegalArgumentException("setPlane() error: input image does not have same dimensions as passed in pixels");
-
-		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(theImage, origin, pixels, inputType);
-
-		setOp.execute();
 	}
 
 	/** returns the span of the image plane as an int[] */
@@ -2509,7 +2505,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
-		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, ValueType.FLOAT);
+		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, UserType.FLOAT);
 
 		int width = getWidth();
 		int height = getHeight();
