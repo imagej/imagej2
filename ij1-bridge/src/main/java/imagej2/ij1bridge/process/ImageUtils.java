@@ -3,13 +3,14 @@ package imagej2.ij1bridge.process;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import imagej2.SampleManager;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.ij1bridge.ImgLibImageStack;
 
 import java.io.File;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -41,7 +42,7 @@ public class ImageUtils
 	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
 	 * @param type - the IJ value type of the input data (BYTE, USHORT, etc.)
 	 */
-	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, ValueType type)
+	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, UserType type)
 	{
 		SampleManager.verifyTypeCompatibility(pixels, type);
 		
@@ -53,6 +54,12 @@ public class ImageUtils
 
 		switch (type)
 		{
+			case BIT:
+			{
+				Image<BitType> hatchedImage = imagej2.imglib.process.ImageUtils.createImage(new BitType(), containerFactory, dimensions);
+				proc = new ImgLibProcessor<BitType>(hatchedImage, 0);
+			}
+			break;
 			case BYTE:
 			{
 				Image<ByteType> hatchedImage = imagej2.imglib.process.ImageUtils.createImage(new ByteType(), containerFactory, dimensions);

@@ -6,7 +6,7 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.ij1bridge.process.ImgLibProcessor;
 import imagej2.imglib.TypeManager;
 
@@ -20,32 +20,32 @@ public class SampleManager
 
 	//***** public interface **********************************************/
 	
-	/** get the ValueType associated with an ImageProcessor */
-	public static ValueType getValueType(ImageProcessor proc)
+	/** get the UserType associated with an ImageProcessor */
+	public static UserType getUserType(ImageProcessor proc)
 	{
 		if (proc instanceof ImgLibProcessor<?>)
-			return TypeManager.getValueType(((ImgLibProcessor<?>)proc).getType());
+			return TypeManager.getUserType(((ImgLibProcessor<?>)proc).getType());
 
 		if (proc instanceof ByteProcessor)
-			return ValueType.UBYTE;
+			return UserType.UBYTE;
 
 		if (proc instanceof ShortProcessor)
-			return ValueType.USHORT;
+			return UserType.USHORT;
 
 		if (proc instanceof FloatProcessor)
-			return ValueType.FLOAT;
+			return UserType.FLOAT;
 		
 		if (proc instanceof ColorProcessor)
-			return ValueType.UINT;
+			return UserType.UINT;
 		
 		throw new IllegalArgumentException("unknown processor type");
 	}
 	
 	
-	/** get the ValueType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
-	public static ValueType getValueType(ImagePlus imp)
+	/** get the UserType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
+	public static UserType getUserType(ImagePlus imp)
 	{
-		return getValueType(imp.getProcessor());
+		return getUserType(imp.getProcessor());
 	}
 	
 }

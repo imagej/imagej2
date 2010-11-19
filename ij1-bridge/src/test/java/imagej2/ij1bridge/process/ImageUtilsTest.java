@@ -10,7 +10,7 @@ import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 
-import imagej2.SampleInfo.ValueType;
+import imagej2.UserType;
 import imagej2.ij1bridge.process.ImgLibProcessor;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
@@ -44,7 +44,7 @@ public class ImageUtilsTest {
 
 		long[] longs = new long[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, longs, ValueType.LONG);
+		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, longs, UserType.LONG);
 
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());
