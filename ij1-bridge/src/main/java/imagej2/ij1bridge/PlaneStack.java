@@ -66,7 +66,9 @@ public class PlaneStack
 			
 			SetPlaneOperation<?> planeOp;
 			
-			if (imgLibType instanceof ByteType)
+			if (imgLibType instanceof BitType)
+				planeOp = new SetPlaneOperation<BitType>((Image<BitType>)image, Index.create(3), data, ijType);
+			else if (imgLibType instanceof ByteType)
 				planeOp = new SetPlaneOperation<ByteType>((Image<ByteType>)image, Index.create(3), data, ijType);
 			else if (imgLibType instanceof UnsignedByteType)
 				planeOp = new SetPlaneOperation<UnsignedByteType>((Image<UnsignedByteType>)image, Index.create(3), data, ijType);
@@ -121,7 +123,10 @@ public class PlaneStack
 			int[] dstOrigin = Index.create(new int[]{0, 0, dstPlane});
 			int[] span = Span.create(new int[]{this.planeWidth, this.planeHeight, numPlanes});
 
-			if (this.imgLibType instanceof ByteType)
+			if (this.imgLibType instanceof BitType)
+				ImageUtils.copyFromImageToImage((Image<BitType>)srcImage, srcOrigin, span,
+												(Image<BitType>)dstImage, dstOrigin, span);
+			else if (this.imgLibType instanceof ByteType)
 				ImageUtils.copyFromImageToImage((Image<ByteType>)srcImage, srcOrigin, span,
 												(Image<ByteType>)dstImage, dstOrigin, span);
 			else if (this.imgLibType instanceof UnsignedByteType)
@@ -395,7 +400,7 @@ public class PlaneStack
 			UserType asType = TypeManager.getUserType(ImageUtils.getType(this.stack));
 
 			if (this.imgLibType instanceof BitType)
-				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
+				return GetPlaneOperation.getPlaneAs((Image<BitType>)this.stack, planePosition, asType);
 			else if (this.imgLibType instanceof ByteType)
 				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
 			else if (this.imgLibType instanceof UnsignedByteType)
