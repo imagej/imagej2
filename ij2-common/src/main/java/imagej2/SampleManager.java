@@ -60,12 +60,22 @@ public class SampleManager
 	{
 		switch (inputType)
 		{
+			case BIT:
+				if (pixels instanceof int[])  // unintuitive. I think this is how Imglib handles BIT data: a huge list of bits
+					return;                   //   encoded 32 bits at a time within an int array
+				break;
+			
 			case BYTE:
 			case UBYTE:
 				if (pixels instanceof byte[])
 					return;
 				break;
 				
+			case UINT12:
+				if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
+					return;                   //   encoded 32 bits at a time within an int array
+				break;
+			
 			case SHORT:
 			case USHORT:
 				if (pixels instanceof short[])
@@ -93,16 +103,6 @@ public class SampleManager
 					return;
 				break;
 	
-			case UINT12:
-				if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
-					return;                   //   encoded 32 bits at a time within an int array
-				break;
-			
-			case BIT:
-				if (pixels instanceof int[])  // unintuitive. I think this is how Imglib handles BIT data: a huge list of bits
-					return;                   //   encoded 32 bits at a time within an int array
-				break;
-				
 			default:
 				break;
 		}
