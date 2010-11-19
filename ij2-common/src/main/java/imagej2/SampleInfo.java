@@ -8,11 +8,8 @@ package imagej2;
  */
 public interface SampleInfo
 {
-	/** ValueType represents the underlying types that a sample is built upon. */
-	enum ValueType {BIT, BYTE, UBYTE, UINT12, SHORT, USHORT, INT, UINT, FLOAT, LONG, DOUBLE};
-
 	/** returns the underlying ValueType for this sample's values. */
-	ValueType getValueType();
+	UserType getUserType();
 	
 	/** returns the number of values in the sample */
 	int getNumValues();
@@ -24,14 +21,8 @@ public interface SampleInfo
 	 *  Does not simply any storage layout. */
 	int getNumBits();
 	
-	/** returns true if sample is considered a signed numeric value */
-	boolean isSigned();
-
 	/** returns true if sample is considered an unsigned numeric value */
 	boolean isUnsigned();
-	
-	/** returns true if sample is considered an integral numeric value */
-	boolean isIntegral();
 	
 	/** returns true if sample is considered a floating point numeric value */
 	boolean isFloat();

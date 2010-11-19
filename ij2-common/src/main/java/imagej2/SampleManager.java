@@ -1,7 +1,5 @@
 package imagej2;
 
-import imagej2.SampleInfo.ValueType;
-
 /** SampleManager manages the information related to all supported types in ImageJ */
 public class SampleManager
 {
@@ -16,19 +14,19 @@ public class SampleManager
 	/** initialize the type lists */
 	static
 	{
-		sampleInfoArray = new SampleInfo[ValueType.values().length];
+		sampleInfoArray = new SampleInfo[UserType.values().length];
 		
-		sampleInfoArray[ValueType.BIT.ordinal()] = new Sample1BitUnsigned();
-		sampleInfoArray[ValueType.BYTE.ordinal()] = new Sample8BitSigned();
-		sampleInfoArray[ValueType.UBYTE.ordinal()] = new Sample8BitUnsigned();
-		sampleInfoArray[ValueType.UINT12.ordinal()] = new Sample12BitUnsigned();
-		sampleInfoArray[ValueType.SHORT.ordinal()] = new Sample16BitSigned();
-		sampleInfoArray[ValueType.USHORT.ordinal()] = new Sample16BitUnsigned();
-		sampleInfoArray[ValueType.INT.ordinal()] = new Sample32BitSigned();
-		sampleInfoArray[ValueType.UINT.ordinal()] = new Sample32BitUnsigned();
-		sampleInfoArray[ValueType.FLOAT.ordinal()] = new Sample32BitFloat();
-		sampleInfoArray[ValueType.LONG.ordinal()] = new Sample64BitSigned();
-		sampleInfoArray[ValueType.DOUBLE.ordinal()] = new Sample64BitFloat();
+		sampleInfoArray[UserType.BIT.ordinal()] = new Sample1BitUnsigned();
+		sampleInfoArray[UserType.BYTE.ordinal()] = new Sample8BitSigned();
+		sampleInfoArray[UserType.UBYTE.ordinal()] = new Sample8BitUnsigned();
+		sampleInfoArray[UserType.UINT12.ordinal()] = new Sample12BitUnsigned();
+		sampleInfoArray[UserType.SHORT.ordinal()] = new Sample16BitSigned();
+		sampleInfoArray[UserType.USHORT.ordinal()] = new Sample16BitUnsigned();
+		sampleInfoArray[UserType.INT.ordinal()] = new Sample32BitSigned();
+		sampleInfoArray[UserType.UINT.ordinal()] = new Sample32BitUnsigned();
+		sampleInfoArray[UserType.FLOAT.ordinal()] = new Sample32BitFloat();
+		sampleInfoArray[UserType.LONG.ordinal()] = new Sample64BitSigned();
+		sampleInfoArray[UserType.DOUBLE.ordinal()] = new Sample64BitFloat();
 	}
 	
 	//***** constructor **********************************************/
@@ -38,8 +36,8 @@ public class SampleManager
 
 	//***** public interface **********************************************/
 	
-	/** get a SampleInfo associated with a ValueType */
-	public static SampleInfo getSampleInfo(ValueType type)
+	/** get a SampleInfo associated with a UserType */
+	public static SampleInfo getSampleInfo(UserType type)
 	{
 		return sampleInfoArray[type.ordinal()];
 	}
@@ -58,7 +56,7 @@ public class SampleManager
 	}
 
 	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
-	public static void verifyTypeCompatibility(Object pixels, ValueType inputType)
+	public static void verifyTypeCompatibility(Object pixels, UserType inputType)
 	{
 		switch (inputType)
 		{
@@ -94,9 +92,14 @@ public class SampleManager
 				if (pixels instanceof double[])
 					return;
 				break;
-				
+	
 			case UINT12:
 				if (pixels instanceof int[])  // unintuitive but this is how Imglib handles UINT12 data: a huge list of bits
+					return;                   //   encoded 32 bits at a time within an int array
+				break;
+			
+			case BIT:
+				if (pixels instanceof int[])  // unintuitive. I think this is how Imglib handles BIT data: a huge list of bits
 					return;                   //   encoded 32 bits at a time within an int array
 				break;
 				
@@ -119,7 +122,7 @@ public class SampleManager
 	/** SampleInfo that describes a 1 bit unsigned type */
 	private static class Sample1BitUnsigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.BIT; }
+		public UserType getUserType() { return UserType.BIT; }
 
 		public int getNumValues() { return 1; }
 
@@ -127,13 +130,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return false; }
+		public boolean isUnsigned() { return true; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "1-bit unsigned"; }
 	}
@@ -141,7 +140,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit signed type */
 	private static class Sample8BitSigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.BYTE; }
+		public UserType getUserType() { return UserType.BYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -149,13 +148,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "8-bit signed"; }
 	}
@@ -163,7 +158,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit unsigned type */
 	private static class Sample8BitUnsigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.UBYTE; }
+		public UserType getUserType() { return UserType.UBYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -171,13 +166,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return false; }
+		public boolean isUnsigned() { return true; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "8-bit unsigned"; }
 	}
@@ -185,7 +176,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit signed type */
 	private static class Sample16BitSigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.SHORT; }
+		public UserType getUserType() { return UserType.SHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -193,13 +184,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "16-bit signed"; }
 	}
@@ -207,7 +194,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit unsigned type */
 	private static class Sample16BitUnsigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.USHORT; }
+		public UserType getUserType() { return UserType.USHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -215,13 +202,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return false; }
+		public boolean isUnsigned() { return true; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "16-bit unsigned"; }
 	}
@@ -229,7 +212,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit signed type */
 	private static class Sample32BitSigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.INT; }
+		public UserType getUserType() { return UserType.INT; }
 
 		public int getNumValues() { return 1; }
 
@@ -237,13 +220,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "32-bit signed"; }
 	}
@@ -251,7 +230,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit unsigned type */
 	private static class Sample32BitUnsigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.UINT; }
+		public UserType getUserType() { return UserType.UINT; }
 
 		public int getNumValues() { return 1; }
 
@@ -259,13 +238,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return false; }
+		public boolean isUnsigned() { return true; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "32-bit unsigned"; }
 	}
@@ -273,7 +248,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit float type */
 	private static class Sample32BitFloat implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.FLOAT; }
+		public UserType getUserType() { return UserType.FLOAT; }
 
 		public int getNumValues() { return 1; }
 
@@ -281,13 +256,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return false; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return true; }
 
 		public String getName() { return "32-bit float"; }
 	}
@@ -295,7 +266,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit signed type */
 	private static class Sample64BitSigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.LONG; }
+		public UserType getUserType() { return UserType.LONG; }
 
 		public int getNumValues() { return 1; }
 
@@ -303,13 +274,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "64-bit signed"; }
 	}
@@ -317,7 +284,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit float type */
 	private static class Sample64BitFloat implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.DOUBLE; }
+		public UserType getUserType() { return UserType.DOUBLE; }
 
 		public int getNumValues() { return 1; }
 
@@ -325,13 +292,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return true; }
+		public boolean isUnsigned() { return false; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return false; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return true; }
 
 		public String getName() { return "64-bit float"; }
 	}
@@ -339,7 +302,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 12 bit unsigned type */
 	private static class Sample12BitUnsigned implements SampleInfo
 	{
-		public ValueType getValueType() { return ValueType.UINT12; }
+		public UserType getUserType() { return UserType.UINT12; }
 
 		public int getNumValues() { return 1; }
 
@@ -347,13 +310,9 @@ public class SampleManager
 
 		public int getNumBits() { return calcNumBits(this); }
 
-		public boolean isSigned() { return false; }
+		public boolean isUnsigned() { return true; }
 		
-		public boolean isUnsigned() { return !isSigned(); }
-		
-		public boolean isIntegral() { return true; }
-		
-		public boolean isFloat() { return !isIntegral(); }
+		public boolean isFloat() { return false; }
 
 		public String getName() { return "12-bit unsigned"; }
 	}
