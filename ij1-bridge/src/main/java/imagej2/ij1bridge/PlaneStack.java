@@ -14,6 +14,7 @@ import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
@@ -305,7 +306,8 @@ public class PlaneStack
 			case USHORT:
 				dataLen = ((short[])data).length;
 				break;
-	
+
+			case BIT:
 			case UINT12:
 			case INT:
 			case UINT:
@@ -392,7 +394,9 @@ public class PlaneStack
 			
 			UserType asType = TypeManager.getUserType(ImageUtils.getType(this.stack));
 
-			if (this.imgLibType instanceof ByteType)
+			if (this.imgLibType instanceof BitType)
+				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
+			else if (this.imgLibType instanceof ByteType)
 				return GetPlaneOperation.getPlaneAs((Image<ByteType>)this.stack, planePosition, asType);
 			else if (this.imgLibType instanceof UnsignedByteType)
 				return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)this.stack, planePosition, asType);
