@@ -173,6 +173,24 @@ public class SampleManager
 		public String getName() { return "8-bit unsigned"; }
 	}
 	
+	/** SampleInfo that describes IJ's 12 bit unsigned type */
+	private static class Sample12BitUnsigned implements SampleInfo
+	{
+		public UserType getUserType() { return UserType.UINT12; }
+
+		public int getNumValues() { return 1; }
+
+		public int getNumBitsPerValue() { return 12; }
+
+		public int getNumBits() { return calcNumBits(this); }
+
+		public boolean isUnsigned() { return true; }
+		
+		public boolean isFloat() { return false; }
+
+		public String getName() { return "12-bit unsigned"; }
+	}
+	
 	/** SampleInfo that describes IJ's 16 bit signed type */
 	private static class Sample16BitSigned implements SampleInfo
 	{
@@ -298,23 +316,4 @@ public class SampleManager
 
 		public String getName() { return "64-bit float"; }
 	}
-
-	/** SampleInfo that describes IJ's 12 bit unsigned type */
-	private static class Sample12BitUnsigned implements SampleInfo
-	{
-		public UserType getUserType() { return UserType.UINT12; }
-
-		public int getNumValues() { return 1; }
-
-		public int getNumBitsPerValue() { return 12; }
-
-		public int getNumBits() { return calcNumBits(this); }
-
-		public boolean isUnsigned() { return true; }
-		
-		public boolean isFloat() { return false; }
-
-		public String getName() { return "12-bit unsigned"; }
-	}
-	
 }
