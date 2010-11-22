@@ -22,8 +22,11 @@ import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
+
 /**
 This class represents an expandable array of images.
+This class likely going away. Was original IJ1 extension to support ImgLib data.
+Replaced by BridgeStack
 @see ImagePlus
 */
 
