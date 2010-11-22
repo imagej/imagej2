@@ -34,6 +34,18 @@ public class PluginEntry {
 		this.label = label;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(pluginClass);
+		sb.append(" [menu = ");
+		for (String menuItem : parentMenu) {
+			sb.append(menuItem);
+			sb.append(" > ");
+		}
+		sb.append(label);
+		sb.append("]");
+		return sb.toString();
+	}
 	
 }
