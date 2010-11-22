@@ -5,7 +5,6 @@ import java.awt.image.ColorModel;
 import java.util.ArrayList;
 
 import ij.ImageStack;
-import ij.PlanarDataset;
 import ij.process.ImageProcessor;
 
 // TODO - for performance could use planeRef's size/cache methods rather than querying dataset all the time
@@ -71,7 +70,7 @@ public class BridgeStack extends ImageStack
 				(ip.getHeight()!=this.dataset.getPlaneHeight()))
 			throw new IllegalArgumentException("Dimensions do not match");
 		
-		if (this.dataset.getPlaneCount()==0)  // TODO - this may be impossible for imglib (it hates dimensions of size 0)
+		if (this.dataset.getPlaneCount() == 0)  // TODO - note this code will never evaluate to true for imglib datasets as imglib constituted 11-20-10
 		{
 			this.cm = ip.getColorModel();
 			
@@ -286,8 +285,29 @@ public class BridgeStack extends ImageStack
 		
 		if (this.dataset.getPrimitiveArray(n-1) == null)                // TODO - impossible????
 			throw new IllegalArgumentException("Pixel array is null");
+
+		ImageProcessor ip = null;
+		/*
+		ImageProcessor ip;  problem - what if we want one processor per plane and return it over and over. here we are hatching new all the time.
+		switch (this.dataset.getSampleInfo().getUserType())
+		{
+		case BIT:
+		case BYTE:
+		case UBYTE:
+		case UINT12:
+		case SHORT:
+		case USHORT:
+		case INT:
+		case UINT:
+		case FLOAT:
+		case LONG:
+		case DOUBLE:
+		default:
+			throw new IllegalStateException("Unknown sample type "+this.dataset.getSampleInfo().getUserType());	
+		}
+		*/
 		
-		ImageProcessor ip = this.dataset.getProcessor(n-1);
+		//ImageProcessor ip = this.dataset.getProcessor(n-1);
 		
 		if ((this.min != Double.MAX_VALUE) && (ip!=null))
 			ip.setMinAndMax(this.min, this.max);

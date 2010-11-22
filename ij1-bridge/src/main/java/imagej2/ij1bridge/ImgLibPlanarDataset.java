@@ -1,14 +1,19 @@
 package imagej2.ij1bridge;
 
-import ij.PlanarDataset;
-import ij.process.ImageProcessor;
+import imagej2.SampleInfo;
+import imagej2.SampleManager;
+import imagej2.UserType;
 import imagej2.Utils;
-import imagej2.ij1bridge.process.ImgLibProcessor;
+import imagej2.imglib.TypeManager;
 import imagej2.imglib.process.ImageUtils;
 import imagej2.process.Index;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
+
+// NOTE
+//   this must live in the bridge because it references ImgLibProcessor (which lives in the bridge).
 
 //TODO
 // thinking about how to order the planes so that IJ is going to be able to do something understandable to the data
@@ -108,7 +113,16 @@ public class ImgLibPlanarDataset implements PlanarDataset
 	{
 		throw new UnsupportedOperationException("unimplemented");
 	}
-
+	
+	@Override
+	public SampleInfo getSampleInfo()
+	{
+		RealType<?> imageType = ImageUtils.getType(this.image);
+		UserType userType = TypeManager.getUserType(imageType);
+		return SampleManager.getSampleInfo(userType);
+	}
+	
+/*
 	@Override
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public ImageProcessor getProcessor(int planeNumber)
@@ -116,4 +130,5 @@ public class ImgLibPlanarDataset implements PlanarDataset
 		// TODO - may need to specify type here. Try to query underlying image and test and then hardcode types if needed.
 		return new ImgLibProcessor(this.image, planeNumber);
 	}
+*/
 }
