@@ -12,6 +12,7 @@ public interface PlanarDataset
 	int getPlaneHeight();
 	int getPlaneCount();
 	Object getPrimitiveArray(int planeNumber);
+	void setPrimitiveArray(int planeNumber, Object planeDataReference);
 	String getPlaneLabel(int planeNumber);
 	void setPlaneLabel(int planeNumber, String label);
 	void insertPlaneAt(int planeNumber, Object plane);  // grow the dataset. put new plane at planeNumber index moving other planes as needed
