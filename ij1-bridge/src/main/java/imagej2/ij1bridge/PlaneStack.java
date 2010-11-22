@@ -29,8 +29,8 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 import imagej2.imglib.process.ImageUtils;
 
 /**
- * PlaneStack is the class where Imglib images are actually stored in ImageJ. Used by ImageStack as the backing
- * data store to ImagePlus.
+ * PlaneStack is the class where Imglib images are actually stored in ImageJ. Used by ImgLibImageStack as the backing
+ * data store to ImagePlus. Should go away as we  phase out ImgLibImageStack.
  */
 public class PlaneStack
 {
