@@ -1,6 +1,6 @@
 package ijx.plugin.parameterized;
 
-import ij.ImagePlus;
+import ijx.ImagePlus;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;

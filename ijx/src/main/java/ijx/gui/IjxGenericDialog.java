@@ -1,8 +1,9 @@
 package ijx.gui;
 
-import ij.gui.*;
+import ijx.gui.dialog.DialogListener;
+
 import ijx.plugin.filter.IjxPlugInFilterRunner;
-import ij.plugin.filter.PlugInFilterRunner;
+import ijx.plugin.api.PlugInFilterRunner;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Graphics;

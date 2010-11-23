@@ -5,18 +5,26 @@
  */
 package ijx.app;
 
+import ijx.Macro;
+import ijx.Prefs;
+import ijx.RecentOpener;
+import ijx.MenusAWT;
+import ijx.WindowManager;
+import ijx.ImageJApplet;
+import ijx.IJ;
+import ijx.Executer;
 import ijx.IjxMenus;
 import ij.*;
-import ij.gui.GenericDialog;
+import ijx.gui.dialog.GenericDialog;
 import ijx.gui.IjxWindow;
-import ij.gui.Roi;
-import ij.gui.TextRoi;
-import ij.macro.Interpreter;
-import ij.plugin.MacroInstaller;
-import ij.plugin.filter.PlugInFilterRunner;
-import ij.plugin.frame.ContrastAdjuster;
-import ij.plugin.frame.ThresholdAdjuster;
-import ij.text.TextWindow;
+import ijx.roi.Roi;
+import ijx.roi.TextRoi;
+import ijx.macro.Interpreter;
+import ijx.plugin.MacroInstaller;
+import ijx.plugin.api.PlugInFilterRunner;
+import ijx.plugin.frame.ContrastAdjuster;
+import ijx.plugin.frame.ThresholdAdjuster;
+import ijx.text.TextWindow;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.IjxTopComponent;

@@ -1,11 +1,14 @@
 package ijx;
 
-import ij.*;
-import ij.gui.*;
-import ij.io.*;
+import ijx.plugin.frame.Recorder;
+import ijx.plugin.api.PlugInFrame;
+import ijx.gui.NewImage;
+import ijx.gui.dialog.GenericDialog;
+import ijx.io.FileSaver;
+
 import ij.plugin.frame.*;
-import ij.text.TextWindow;
-import ij.macro.Interpreter;
+import ijx.text.TextWindow;
+import ijx.macro.Interpreter;
 import ijx.app.IjxApplication;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxWindow;

@@ -1,6 +1,6 @@
 package ijx;
 
-import ij.process.ImageProcessor;
+import ijx.process.ImageProcessor;
 import java.awt.Rectangle;
 import java.awt.image.ColorModel;
 

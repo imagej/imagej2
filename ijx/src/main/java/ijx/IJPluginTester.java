@@ -1,10 +1,9 @@
 package ijx;
 
 
-import ij.IJ;
-import ij.plugin.PlugIn;
-import ij.plugin.filter.PlugInFilter;
-import ij.plugin.filter.PlugInFilterRunner;
+import ijx.plugin.api.PlugIn;
+import ijx.plugin.api.PlugInFilter;
+import ijx.plugin.api.PlugInFilterRunner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;

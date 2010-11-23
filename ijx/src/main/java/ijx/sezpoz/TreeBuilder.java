@@ -1,14 +1,14 @@
 package ijx.sezpoz;
 
-import ij.IJ;
+import ijx.IJ;
 import ijx.IjxMenus;
-import ij.Menus;
-import ij.MenusAWT;
-import ij.gui.GUI;
-import ij.plugin.ControlPanel;
-import ij.plugin.PlugIn;
-import ij.util.Java2;
-import ij.util.StringSorter;
+import ijx.Menus;
+import ijx.MenusAWT;
+import ijx.gui.GUI;
+import ijx.plugin.ControlPanel;
+import ijx.plugin.api.PlugIn;
+import ijx.util.Java2;
+import ijx.util.StringSorter;
 import ijx.CentralLookup;
 import implementation.swing.MenusSwing;
 import ijx.app.IjxApplication;

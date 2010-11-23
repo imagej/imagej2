@@ -4,7 +4,7 @@
  */
 package ijx.app;
 
-import ij.ImageJApplet;
+import ijx.ImageJApplet;
 import ijx.IjxImagePlus;
 import java.awt.Image;
 import java.awt.event.ActionEvent;

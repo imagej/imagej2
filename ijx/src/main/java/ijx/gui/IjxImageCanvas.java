@@ -1,7 +1,6 @@
 package ijx.gui;
 
-import ij.gui.Overlay;
-import ij.gui.Roi;
+import ijx.roi.Roi;
 import ijx.IjxImagePlus;
 import java.awt.BasicStroke;
 import java.awt.Color;

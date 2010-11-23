@@ -1,12 +1,12 @@
 package implementation.mdi;
 
 import implementation.swing.*;
-import ij.CompositeImage;
-import ij.ImageJApplet;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.gui.IjxToolbar;
-import ij.process.ImageProcessor;
+import ijx.CompositeImage;
+import ijx.ImageJApplet;
+import ijx.ImagePlus;
+import ijx.ImageStack;
+import ijx.gui.IjxToolbar;
+import ijx.process.ImageProcessor;
 import ijx.CentralLookup;
 import ijx.IjxFactory;
 import ijx.IjxImagePlus;

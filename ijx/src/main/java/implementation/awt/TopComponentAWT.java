@@ -4,13 +4,13 @@
  */
 package implementation.awt;
 
-import ij.IJ;
-import ij.Prefs;
-import ij.Undo;
-import ij.WindowManager;
-import ij.gui.IjxToolbar;
+import ijx.IJ;
+import ijx.Prefs;
+import ijx.Undo;
+import ijx.WindowManager;
+import ijx.gui.IjxToolbar;
 import ijx.app.IjxApplication;
-import ij.gui.ProgressBar;
+import ijx.gui.ProgressBar;
 import ijx.CentralLookup;
 import ijx.IjxTopComponent;
 import ijx.app.KeyboardHandler;
@@ -45,7 +45,7 @@ import javax.swing.ImageIcon;
  */
 public class TopComponentAWT //extends Frame
         implements IjxTopComponent {
-    private ij.gui.IjxToolbar toolbar;
+    private ijx.gui.IjxToolbar toolbar;
 
     private StatusLineAWT statusLine;
     private Panel statusBar;

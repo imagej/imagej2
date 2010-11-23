@@ -1,7 +1,7 @@
 package ijx.plugin.parameterized;
 
 
-import ij.IJ;
+import ijx.IJ;
 /*
  * @author Johannes Schindelin johannes.schindelin at imagejdev.org
  */

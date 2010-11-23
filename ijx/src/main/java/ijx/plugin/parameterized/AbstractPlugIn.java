@@ -2,7 +2,7 @@ package ijx.plugin.parameterized;
 
 
 
-import ij.plugin.PlugIn;
+import ijx.plugin.api.PlugIn;
 
 import java.util.HashMap;
 import java.util.Map;

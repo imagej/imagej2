@@ -1,8 +1,9 @@
+import ijx.plugin.api.PlugIn;
+import ijx.io.Opener;
+import ijx.IJ;
+import ijx.Executer;
 import ij.plugin.*;
-import ij.*;
-import ij.io.*;
 import com.apple.eawt.*;
-import ijx.ImageJX;
 import java.util.Vector;
 
 /**	This Mac specific plugin handles the "About" and "Quit" items in the Apple menu and opens

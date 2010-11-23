@@ -1,5 +1,7 @@
 package implementation.mdi;
 
+import ijx.WindowManager;
+import ijx.IJ;
 import ijx.plugin.frame.IjxPluginFrame;
 import java.awt.*;
 import java.awt.event.*;

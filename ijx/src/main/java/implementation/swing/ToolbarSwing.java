@@ -1,18 +1,23 @@
 package implementation.swing;
 
+import ijx.Menus;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.IJ;
+import ijx.IJEventListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import ij.*;
-import ij.gui.GenericDialog;
-import ij.gui.IjxToolbar;
-import ij.gui.Roi;
-import ij.gui.TextRoi;
-import ij.plugin.frame.Recorder; 
-import ij.plugin.frame.Editor; 
-import ij.plugin.MacroInstaller;
-import ij.macro.Program;
+import ijx.gui.dialog.GenericDialog;
+import ijx.gui.IjxToolbar;
+import ijx.roi.Roi;
+import ijx.roi.TextRoi;
+import ijx.plugin.frame.Recorder;
+import ijx.plugin.frame.Editor;
+import ijx.plugin.MacroInstaller;
+import ijx.macro.Program;
 import ijx.IjxImagePlus;
 import ijx.gui.IjxImageCanvas;
 

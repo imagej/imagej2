@@ -1,7 +1,8 @@
 package ijx.gui;
 
-import ij.plugin.MacroInstaller;
+import ijx.plugin.MacroInstaller;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
@@ -9,40 +10,40 @@ import java.awt.event.MouseMotionListener;
 
 /**
  *
- * @author GBH
+ * @author GBH <imagejdev.org>
  */
 public interface IjxToolbar extends ActionListener, ItemListener, MouseListener, MouseMotionListener {
-
-    public static final int RECTANGLE = 0;
-    public static final int OVAL = 1;
-    public static final int POLYGON = 2;
-    public static final int FREEROI = 3;
-    public static final int LINE = 4;
-    public static final int POLYLINE = 5;
-    public static final int FREELINE = 6;
-    public static final int POINT = 7, CROSSHAIR = 7;
-    public static final int WAND = 8;
-    public static final int TEXT = 9;
-    public static final int SPARE1 = 10;
-    public static final int MAGNIFIER = 11;
-    public static final int HAND = 12;
-    public static final int DROPPER = 13;
-    public static final int ANGLE = 14;
-    public static final int SPARE2 = 15;
-    public static final int SPARE3 = 16;
-    public static final int SPARE4 = 17;
-    public static final int SPARE5 = 18;
-    public static final int SPARE6 = 19;
-    public static final int SPARE7 = 20;
-    public static final int SPARE8 = 21;
-    public static final int SPARE9 = 22;
-    public static final int DOUBLE_CLICK_THRESHOLD = 650;
-    static final int NUM_TOOLS = 23;
-    static final int NUM_BUTTONS = 21;
-    static final int SIZE = 26;
-    static final int OFFSET = 5;
-    static final String BRUSH_SIZE = "toolbar.brush.size";
-    static final String ARC_SIZE = "toolbar.arc.size";
+    int NUM_TOOLS = 23;
+    int NUM_BUTTONS = 21;
+    int SIZE = 26;
+    int OFFSET = 5;
+    String BRUSH_SIZE = "toolbar.brush.size";
+    String ARC_SIZE = "toolbar.arc.size";
+    int ANGLE = 14;
+    int CROSSHAIR = 7;
+    int DOUBLE_CLICK_THRESHOLD = 650;
+    int DROPPER = 13;
+    int FREELINE = 6;
+    int FREEROI = 3;
+    int HAND = 12;
+    int LINE = 4;
+    int MAGNIFIER = 11;
+    int OVAL = 1;
+    int POINT = 7;
+    int POLYGON = 2;
+    int POLYLINE = 5;
+    int RECTANGLE = 0;
+    int SPARE1 = 10;
+    int SPARE2 = 15;
+    int SPARE3 = 16;
+    int SPARE4 = 17;
+    int SPARE5 = 18;
+    int SPARE6 = 19;
+    int SPARE7 = 20;
+    int SPARE8 = 21;
+    int SPARE9 = 22;
+    int TEXT = 9;
+    int WAND = 8;
 
     /**
      * Used by the MacroInstaller class to install macro tools.
@@ -57,20 +58,78 @@ public interface IjxToolbar extends ActionListener, ItemListener, MouseListener,
      */
     int addTool(String toolTip);
 
+    Color getBackgroundColor();
+
+    /**
+     * Returns the size of the brush tool, or 0 if the brush tool is not enabled.
+     */
+    int getBrushSize();
+
+    int getButtonSize();
+
+    /**
+     * @deprecated
+     * replaced by getForegroundColor()
+     */
+     Color getColor();
+
+    Color getForegroundColor();
+
+    Dimension getMinimumSize();
+
+    /**
+     * Returns 'true' if the multi-point tool is enabled.
+     */
+    boolean getMultiPointMode();
+
+    Dimension getPreferredSize();
+
+    /**
+     * Returns the rounded rectangle arc size, or 0 if the rounded rectangle tool is not enabled.
+     */
+    int getRoundRectArcSize();
+
+    /**
+     * Returns the ID of the current tool (Toolbar.RECTANGLE,
+     * Toolbar.OVAL, etc.).
+     */
+    int getToolId();
+
     /**
      * Returns the ID of the tool whose name (the description displayed in the status bar)
      * starts with the specified string, or -1 if the tool is not found.
      */
     int getToolId(String name);
 
+    String getToolName();
+
     void restorePreviousTool();
 
+    void runMacroTool(int id);
+
+    void setBackgroundColor(Color c);
+
     /**
-     * Obsolete. Use setForegroundColor().
+     * Set the size of the brush tool, which must be greater than 4.
      */
-    void setColor(Color c);
+    void setBrushSize(int size);
+
+    /**
+     * @deprecated
+     * replaced by setForegroundColor()
+     */
+     void setColor(Color c);
+
+    void setForegroundColor(Color c);
+
+    /**
+     * Sets the rounded rectangle arc size (pixels).
+     */
+    void setRoundRectArcSize(int size);
 
     boolean setTool(String name);
 
     void setTool(int tool);
+    
+    void repaint();
 }

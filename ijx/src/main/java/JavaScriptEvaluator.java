@@ -1,6 +1,8 @@
+import ijx.plugin.api.PlugIn;
+import ijx.IJ;
 import ij.plugin.*;
 import ij.*;
-import ij.plugin.frame.Editor;
+import ijx.plugin.frame.Editor;
 import javax.script.*;
 
 /** Implements the macro editor's Macros/Evaluate JavaScript command 

@@ -1,9 +1,9 @@
 package ijx.plugin.parameterized;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.NewImage;
-import ij.plugin.Duplicator;
+import ijx.IJ;
+import ijx.ImagePlus;
+import ijx.gui.NewImage;
+import ijx.plugin.Duplicator;
 import ijx.IjxImagePlus;
 import ijx.ImageJX;
 import java.lang.reflect.InvocationTargetException;

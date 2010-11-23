@@ -35,28 +35,24 @@
  */
 package ijx.gui;
 
-import ij.IJ;
+import ijx.IJ;
 import ijx.IjxMenus;
-import ij.MenusAWT;
-import ij.Prefs;
-import ij.gui.IjxToolbar;
-import ij.gui.ImageCanvasHelper;
-import ij.gui.ImageRoi;
-import ij.gui.Overlay;
-import ij.gui.PointRoi;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
-import ij.gui.RoiBrush;
-import ij.gui.ShapeRoi;
-import ij.gui.TextRoi;
-import ij.gui.Toolbar;
-import ij.macro.Interpreter;
-import ij.macro.MacroRunner;
-import ij.plugin.WandToolOptions;
-import ij.plugin.frame.Recorder;
-import ij.plugin.frame.RoiManager;
-import ij.util.Java2;
-import ij.util.Tools;
+import ijx.MenusAWT;
+import ijx.Prefs;
+import ijx.roi.ImageRoi;
+import ijx.roi.PointRoi;
+import ijx.roi.PolygonRoi;
+import ijx.roi.Roi;
+import ijx.roi.RoiBrush;
+import ijx.roi.ShapeRoi;
+import ijx.roi.TextRoi;
+import ijx.macro.Interpreter;
+import ijx.macro.MacroRunner;
+import ijx.plugin.WandToolOptions;
+import ijx.plugin.frame.Recorder;
+import ijx.roi.RoiManager;
+import ijx.util.Java2;
+import ijx.util.Tools;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.app.IjxApplication;
@@ -1257,7 +1253,7 @@ public class AbstractImageCanvas
                 // this needs to run on a separate thread, at least on OS X
                 // "update2" does not clone the ROI so the "Show All"
                 // outline moves as the user moves the RO.
-                new ij.macro.MacroRunner("roiManager('select', " + i + "); roiManager('update2');");
+                new ijx.macro.MacroRunner("roiManager('select', " + i + "); roiManager('update2');");
                 return true;
             }
         }

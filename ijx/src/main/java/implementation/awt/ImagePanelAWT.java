@@ -1,11 +1,11 @@
 package implementation.awt;
 
 import implementation.swing.*;
-import ij.IJ;
-import ij.Prefs;
-import ij.gui.Overlay;
-import ij.gui.Roi;
-import ij.util.Java2;
+import ijx.IJ;
+import ijx.Prefs;
+import ijx.gui.Overlay;
+import ijx.roi.Roi;
+import ijx.util.Java2;
 import ijx.IjxImagePlus;
 import ijx.gui.AbstractImageCanvas;
 import ijx.gui.IjxImageDisplayPanel;

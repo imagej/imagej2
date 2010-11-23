@@ -1,6 +1,6 @@
 package ijx.plugin.extension;
 
-import ij.plugin.PlugIn;
+import ijx.plugin.api.PlugIn;
 import javax.swing.Action;
 
 /**
