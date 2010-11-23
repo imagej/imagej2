@@ -1,7 +1,7 @@
 package ijx.plugin.readwrite;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 import ijx.plugin.api.PlugIn;
 import ijx.io.FileSaver;
 import ijx.IjxImagePlus;

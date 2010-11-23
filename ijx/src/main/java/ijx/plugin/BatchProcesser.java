@@ -7,7 +7,7 @@ import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.ImageStack;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.io.OpenDialog;

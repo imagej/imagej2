@@ -16,7 +16,7 @@ import ijx.IJ;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
-import ij.plugin.*;
+
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

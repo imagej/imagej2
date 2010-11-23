@@ -4,9 +4,9 @@ package ijx.plugin.parameterized;
 import ijx.plugin.api.PlugIn;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 import ijx.measure.Calibration;
-import ij.plugin.*;
+
 import ijx.IjxImagePlus;
 
 public class Tubeness extends AbstractPlugIn implements PlugIn {

@@ -7,7 +7,7 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*;
+
 import ijx.plugin.CompositeConverter;
 
 
@@ -209,6 +209,6 @@ public class HyperStackConverter implements PlugIn {
     }
 
     void newHyperStack() {
-        IJ.runMacroFile("ij.jar:HyperStackMaker", "");
+        IJ.runMacroFile("ijx.jar:HyperStackMaker", "");
     }
 }

@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-import ij.*;
+
 
 
 import ijx.util.StringSorter;

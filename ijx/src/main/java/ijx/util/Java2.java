@@ -1,5 +1,5 @@
 package ijx.util;
-import ij.*;
+
 import ijx.Prefs;
 import java.awt.*;
 import javax.swing.*;

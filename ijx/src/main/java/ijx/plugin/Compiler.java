@@ -30,7 +30,7 @@ public class Compiler implements PlugIn, FilenameFilter {
     private static ActionListener callWithArg(final String commandKey, final String arg) {
         return new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                IJ.runUserPlugIn(commandKey, "ij.plugin.Compiler", arg, false);
+                IJ.runUserPlugIn(commandKey, "ijx.plugin.Compiler", arg, false);
             }
         };
     }
@@ -57,7 +57,7 @@ public class Compiler implements PlugIn, FilenameFilter {
 
     void edit() {
         if (open("", "Open macro or plugin")) {
-            Editor ed = (Editor) IJ.runPlugIn("ij.plugin.frame.Editor", "");
+            Editor ed = (Editor) IJ.runPlugIn("ijx.plugin.frame.Editor", "");
             if (ed != null) {
                 ed.open(dir, name);
             }
@@ -202,7 +202,7 @@ public class Compiler implements PlugIn, FilenameFilter {
 
     void showErrors(String s) {
         if (errors == null || !errors.isVisible()) {
-            errors = (Editor) IJ.runPlugIn("ij.plugin.frame.Editor", "");
+            errors = (Editor) IJ.runPlugIn("ijx.plugin.frame.Editor", "");
             errors.setFont(new Font("Monospaced", Font.PLAIN, 12));
         }
         if (errors != null) {
@@ -315,7 +315,7 @@ class PlugInExecuter implements Runnable {
     public void run() {
         try {
             IJ.resetEscape();
-            IJ.runPlugIn("ij.plugin.ClassChecker", "");
+            IJ.runPlugIn("ijx.plugin.ClassChecker", "");
             IjxApplication ij = IJ.getInstance();
             if (ij != null) {
                 ij.runUserPlugIn(plugin, plugin, "", true);

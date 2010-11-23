@@ -21,7 +21,7 @@ import ijx.WindowManager;
 import ijx.IJ;
 import java.awt.*;
 import java.util.Properties;
-import ij.*;
+
 
 
 

@@ -2,7 +2,7 @@ package ijx.plugin.filter;
 import ijx.process.ImageProcessor;
 import ijx.plugin.api.PlugInFilter;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 /** Implements the Plugins/Utilities/Run Benchmark command. 

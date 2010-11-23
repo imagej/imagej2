@@ -5,7 +5,7 @@ import ijx.util.Tools;
 import ijx.WindowManager;
 import ijx.IJ;
 import java.awt.*;
-import ij.*;
+
 
 import ijx.macro.Interpreter;
 import ijx.IjxImagePlus;

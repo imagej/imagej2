@@ -4,7 +4,7 @@ import ijx.process.ImageProcessor;
 import ijx.process.ByteProcessor;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.macro.Interpreter;

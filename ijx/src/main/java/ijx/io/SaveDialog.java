@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
-import ij.*;
+
 import ijx.plugin.frame.Recorder;
 import ijx.util.Java2;
 import ijx.macro.Interpreter;

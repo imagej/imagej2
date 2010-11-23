@@ -1,5 +1,5 @@
 package ijx.process;
-import ij.*;
+
 import ijx.gui.Toolbar;
 import java.awt.Rectangle;
 

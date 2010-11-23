@@ -2,9 +2,9 @@ package ijx.macro;
 import ijx.plugin.frame.Editor;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
-import ij.plugin.*;
-import ij.plugin.frame.*;
+
+
+
 import ijx.gui.IjxWindow;
 import java.awt.*;
 import java.awt.event.*;

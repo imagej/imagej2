@@ -1,5 +1,5 @@
 package ijx.measure;
-import ij.*;
+
 import ijx.plugin.filter.Analyzer;
 import ijx.IjxImagePlus;
 

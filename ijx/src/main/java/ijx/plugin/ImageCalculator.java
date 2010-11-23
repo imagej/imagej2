@@ -10,10 +10,10 @@ import ijx.Undo;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*;
 
 
-import ij.plugin.filter.*;
+
+
 import ijx.measure.Calibration;
 import ijx.plugin.frame.Recorder;
 import ijx.IjxImagePlus;

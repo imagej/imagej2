@@ -267,7 +267,7 @@ public class FileOpener {
 				
 		if (fi.fileFormat==fi.DICOM) {
 			// restore DICOM
-			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
+			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.DICOM", path);
 			if (imp2!=null)
 				imp.setProcessor(null, imp2.getProcessor());
 			if (fi.fileType==FileInfo.GRAY16_UNSIGNED || fi.fileType==FileInfo.GRAY32_FLOAT)
@@ -277,7 +277,7 @@ public class FileOpener {
 
 		if (fi.fileFormat==fi.BMP) {
 			// restore BMP
-			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ij.plugin.BMP_Reader", path);
+			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.BMP_Reader", path);
 			if (imp2!=null)
 				imp.setProcessor(null, imp2.getProcessor());
 	    	return;
@@ -285,7 +285,7 @@ public class FileOpener {
 
 		if (fi.fileFormat==fi.PGM) {
 			// restore PGM
-			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ij.plugin.PGM_Reader", path);
+			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.PGM_Reader", path);
 			if (imp2!=null)
 				imp.setProcessor(null, imp2.getProcessor());
 	    	return;
@@ -293,7 +293,7 @@ public class FileOpener {
 
 		if (fi.fileFormat==fi.FITS) {
 			// restore FITS
-			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ij.plugin.FITS_Reader", path);
+			IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.FITS_Reader", path);
 			if (imp2!=null)
 				imp.setProcessor(null, imp2.getProcessor());
 			return;

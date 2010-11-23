@@ -1,10 +1,10 @@
-import ij.plugin.*;
+
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.image.*;
 import java.io.*;
 import java.lang.reflect.*;
-import ij.*;
+
 
 	
 /** This plugin uses QuickTime for Java to open PICT images on the Mac system 

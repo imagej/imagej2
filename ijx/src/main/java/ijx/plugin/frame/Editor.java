@@ -344,7 +344,7 @@ public class Editor extends PlugInFrame implements ActionListener, ItemListener,
 			saveAs();
 		if (path!=null) {
 			save();
-			IJ.runPlugIn("ij.plugin.Compiler", path);
+			IJ.runPlugIn("ijx.plugin.Compiler", path);
 		}
 	}
 	

@@ -2,7 +2,7 @@ package ijx.plugin;
 import ijx.plugin.api.PlugIn;
 import ijx.IJ;
 import java.awt.*;
-import ij.*;
+
 
 /**ImageJ plugin for measuring the speed of various Java operations.*/
 public class Timer implements PlugIn {

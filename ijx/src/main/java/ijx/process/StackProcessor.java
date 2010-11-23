@@ -1,6 +1,6 @@
 package ijx.process;
 import ijx.IJ;
-import ij.*;
+
 import ijx.macro.Interpreter;
 import ijx.IjxImageStack;
 

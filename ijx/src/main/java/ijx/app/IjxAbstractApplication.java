@@ -14,7 +14,7 @@ import ijx.ImageJApplet;
 import ijx.IJ;
 import ijx.Executer;
 import ijx.IjxMenus;
-import ij.*;
+
 import ijx.gui.dialog.GenericDialog;
 import ijx.gui.IjxWindow;
 import ijx.roi.Roi;
@@ -141,7 +141,7 @@ public class IjxAbstractApplication implements IjxApplication {
 //				IJ.runPlugIn("QuitHandler", ""); 
 //		} 
 //		if (applet==null)
-//			IJ.runPlugIn("ij.plugin.DragAndDrop", "");
+//			IJ.runPlugIn("ijx.plugin.DragAndDrop", "");
 //		m.installStartupMacroSet();
 //		String str = m.nMacros==1?" macro)":" macros)";
 //		String java = "Java "+System.getProperty("java.version");
@@ -353,7 +353,7 @@ public class IjxAbstractApplication implements IjxApplication {
                 } else if (arg.startsWith("-run") && i + 1 < nArgs) {
                     cmd = "run " + args[i + 1];
                     args[i + 1] = null;
-                } else if (arg.indexOf("ij.ImageJ") == -1 && !arg.startsWith("-")) {
+                } else if (arg.indexOf("ijx.ImageJ") == -1 && !arg.startsWith("-")) {
                     cmd = "open " + arg;
                 }
 

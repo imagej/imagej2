@@ -10,7 +10,7 @@ import ijx.CompositeImage;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
-import ij.*;
+
 
 
 import ijx.util.Tools;

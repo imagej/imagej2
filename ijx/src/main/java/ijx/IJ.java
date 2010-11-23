@@ -39,9 +39,9 @@ import ijx.IjxImagePlus;
 
 
 import ijx.text.*;
-import ij.io.*;
-import ij.plugin.*;
-import ij.plugin.filter.*;
+
+
+
 import ijx.util.Tools;
 import ijx.plugin.frame.Recorder;
 import ijx.macro.Interpreter;
@@ -245,7 +245,7 @@ public class IJ {
         }
         // Load using custom classloader if this is a user
         // plugin and we are not running as an applet
-        if (!className.startsWith("ij.")) {
+        if (!className.startsWith("ijx.")) {
             return runUserPlugIn(commandName, className, arg, false);
         }
         Object thePlugIn = null;
@@ -280,7 +280,7 @@ public class IJ {
     public static Object runUserPlugIn(String commandName, String className, String arg, boolean createNewLoader) {
         if (applet == null && checkForDuplicatePlugins) {
             // check for duplicate classes and jars in the plugins folder
-            IJ.runPlugIn("ij.plugin.ClassChecker", "");
+            IJ.runPlugIn("ijx.plugin.ClassChecker", "");
             checkForDuplicatePlugins = false;
         }
         if (createNewLoader) {

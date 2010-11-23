@@ -7,11 +7,11 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.Macro;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.plugin.Macro_Runner;
-import ij.plugin.frame.*;
+
 import ijx.util.Tools;
 import ijx.text.*;
 import ijx.measure.ResultsTable;

@@ -11,7 +11,7 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.Macro;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.util.Tools;

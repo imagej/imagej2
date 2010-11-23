@@ -5,7 +5,7 @@ import ijx.process.LUT;
 import ijx.gui.dialog.GenericDialog;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*;
+
 
 
 import ijx.measure.Calibration;

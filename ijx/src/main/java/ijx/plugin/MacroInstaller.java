@@ -18,7 +18,7 @@ import java.io.*;
 import java.awt.event.*;
 
 import ijx.macro.MacroConstants;
-import ij.plugin.frame.*;
+
 import ijx.CentralLookup;
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 import java.util.*;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 import javax.swing.JMenu;

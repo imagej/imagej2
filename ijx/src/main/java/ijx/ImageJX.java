@@ -8,7 +8,7 @@ import ijx.util.Tools;
 import ijx.gui.IjxToolbar;
 import java.awt.*;
 import java.io.*;
-import ij.util.*;
+
 import ijx.app.IjxAbstractApplication;
 import ijx.app.IjxApplication;
 import ijx.app.KeyboardHandler;
@@ -171,7 +171,7 @@ public class ImageJX extends IjxAbstractApplication {
         }
         if (applet == null) {
             // @todo ?? Should this be a PlugIn ??
-            IJ.runPlugIn("ij.plugin.DragAndDrop", "");
+            IJ.runPlugIn("ijx.plugin.DragAndDrop", "");
         }
         // @todo re-enable
         //m.installStartupMacroSet();
@@ -283,7 +283,7 @@ public class ImageJX extends IjxAbstractApplication {
             } else if (macros == 0 && (arg.endsWith(".ijm") || arg.endsWith(".txt"))) {
                 IJ.runMacroFile(arg);
                 macros++;
-            } else if (arg.indexOf("ij.ImageJ") == -1) {
+            } else if (arg.indexOf("ijx.ImageJ") == -1) {
                 File file = new File(arg);
                 IJ.open(file.getAbsolutePath());
             }
@@ -629,7 +629,7 @@ public class ImageJX extends IjxAbstractApplication {
 //			} else if (macros==0 && (arg.endsWith(".ijm") || arg.endsWith(".txt"))) {
 //				IJ.runMacroFile(arg);
 //				macros++;
-//			} else if (arg.indexOf("ij.ImageJ")==-1) {
+//			} else if (arg.indexOf("ijx.ImageJ")==-1) {
 //				File file = new File(arg);
 //				IJ.open(file.getAbsolutePath());
 //			}
@@ -665,7 +665,7 @@ public class ImageJX extends IjxAbstractApplication {
 //				} else if (arg.startsWith("-run") && i+1<nArgs) {
 //					cmd = "run " + args[i+1];
 //					args[i+1] = null;
-//				} else if (arg.indexOf("ij.ImageJ")==-1 && !arg.startsWith("-"))
+//				} else if (arg.indexOf("ijx.ImageJ")==-1 && !arg.startsWith("-"))
 //					cmd = "open " + arg;
 //				if (cmd!=null) {
 //					sendArgument(cmd);

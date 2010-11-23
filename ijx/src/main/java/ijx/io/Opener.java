@@ -10,10 +10,10 @@ import ijx.WindowManager;
 import ijx.IJ;
 import ijx.LookUpTable;
 import ijx.CompositeImage;
-import ij.*;
 
 
-import ij.plugin.frame.*;
+
+
 import ijx.plugin.readwrite.DICOM;
 import ijx.plugin.readwrite.AVI_Reader;
 import ijx.text.TextWindow;
@@ -159,12 +159,12 @@ public class Opener {
 		} else {
 			switch (fileType) {
 				case LUT:
-					imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.LutLoader", path);
+					imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.LutLoader", path);
 					if (imp.getWidth()!=0)
 						imp.show();
 					break;
 				case ROI:
-					IJ.runPlugIn("ij.plugin.RoiReader", path);
+					IJ.runPlugIn("ijx.plugin.RoiReader", path);
 					break;
 				case JAVA_OR_TEXT: case TEXT:
 					if (IJ.altKeyDown()) { // open in TextWindow if alt key down
@@ -183,7 +183,7 @@ public class Opener {
 							maxSize = 60000;
 					}
 					if (size<maxSize) {
-						Editor ed = (Editor)IJ.runPlugIn("ij.plugin.frame.Editor", "");
+						Editor ed = (Editor)IJ.runPlugIn("ijx.plugin.frame.Editor", "");
 						if (ed!=null) ed.open(getDir(path), getName(path));
 					} else
 						new TextWindow(path,400,450);
@@ -259,20 +259,20 @@ public class Opener {
 				imp = openTiff(directory, name);
 				return imp;
 			case DICOM:
-				imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
+				imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.DICOM", path);
 				if (imp.getWidth()!=0) return imp; else return null;
 			case TIFF_AND_DICOM:
 				// "hybrid" files created by GE-Senographe 2000 D */
 				imp = openTiff(directory,name);
-				IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path);
+				IjxImagePlus imp2 = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.DICOM", path);
 				if (imp!=null)				
 					imp.setProperty("Info",imp2.getProperty("Info"));
 				return imp;
 			case FITS:
-				imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.FITS_Reader", path);
+				imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.FITS_Reader", path);
 				if (imp.getWidth()!=0) return imp; else return null;
 			case PGM:
-				imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.PGM_Reader", path);
+				imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.PGM_Reader", path);
 				if (imp.getWidth()!=0) {
 					if (imp.getStackSize()==3 && imp.getBitDepth()==16)
 						imp = new CompositeImage(imp, CompositeImage.COMPOSITE);
@@ -286,12 +286,12 @@ public class Opener {
 				imp = openUsingImageIO(directory+name);
 				if (imp!=null&&imp.getWidth()!=0) return imp; else return null;
 			case BMP:
-				imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.BMP_Reader", path);
+				imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.BMP_Reader", path);
 				if (imp.getWidth()!=0) return imp; else return null;
 			case ZIP:
 				return openZip(path);
 			case AVI:
-				AVI_Reader reader = (AVI_Reader)IJ.runPlugIn("ij.plugin.AVI_Reader", path);
+				AVI_Reader reader = (AVI_Reader)IJ.runPlugIn("ijx.plugin.AVI_Reader", path);
 				return reader.getImagePlus();
 			case UNKNOWN: case TEXT:
 				// Call HandleExtraFileTypes plugin to see if it can handle unknown format
@@ -367,7 +367,7 @@ public class Opener {
 			else if (lurl.endsWith(".jpg") || lurl.endsWith(".gif"))
 				imp = openJpegOrGifUsingURL(name, u);
 			else if (lurl.endsWith(".dcm") || lurl.endsWith(".ima")) {
-				imp = (IjxImagePlus)IJ.runPlugIn("ij.plugin.DICOM", url);
+				imp = (IjxImagePlus)IJ.runPlugIn("ijx.plugin.DICOM", url);
 				if (imp!=null && imp.getWidth()==0) imp = null;
 			} else if (lurl.endsWith(".png"))
 				imp = openPngUsingURL(name, u);

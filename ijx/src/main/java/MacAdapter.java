@@ -2,7 +2,7 @@ import ijx.plugin.api.PlugIn;
 import ijx.io.Opener;
 import ijx.IJ;
 import ijx.Executer;
-import ij.plugin.*;
+
 import com.apple.eawt.*;
 import java.util.Vector;
 

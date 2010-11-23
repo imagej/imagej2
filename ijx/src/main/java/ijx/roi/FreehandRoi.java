@@ -2,7 +2,7 @@ package ijx.roi;
 
 import java.awt.*;
 import java.awt.image.*;
-import ij.*;
+
 import ijx.gui.IjxToolbar;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;

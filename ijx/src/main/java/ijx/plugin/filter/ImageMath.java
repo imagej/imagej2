@@ -128,7 +128,7 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
     private static ActionListener callWithArg(final String commandKey, final String arg) {
         return new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                IJ.runUserPlugIn(commandKey, "ij.plugin.filter.ImageMath", arg, false);
+                IJ.runUserPlugIn(commandKey, "ijx.plugin.filter.ImageMath", arg, false);
             }
         };
     }

@@ -1,6 +1,6 @@
 package ijx.plugin.filter;
 import ijx.IjxImagePlus;
-import ij.*;
+
 
 
 /** ImageJ plugins that process an image may implement this interface.

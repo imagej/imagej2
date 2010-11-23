@@ -4,7 +4,7 @@ import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 import java.awt.*;
 import ijx.IjxImagePlus;

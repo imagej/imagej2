@@ -3,7 +3,7 @@ import ijx.WindowManager;
 import ijx.IJ;
 import java.awt.*;
 import java.awt.event.*;
-import ij.plugin.*;
+
 import ijx.plugin.frame.Recorder;
 import ijx.app.IjxApplication;
 import ijx.plugin.frame.IjxPluginFrame;

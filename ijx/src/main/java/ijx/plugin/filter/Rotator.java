@@ -9,7 +9,7 @@ import ijx.roi.Roi;
 import ijx.Undo;
 import ijx.Macro;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.CentralLookup;

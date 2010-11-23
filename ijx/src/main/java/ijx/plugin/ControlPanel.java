@@ -16,7 +16,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
-import ij.*;
+
 
 import ijx.CentralLookup;
 import ijx.IjxTopComponent;

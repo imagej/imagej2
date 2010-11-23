@@ -5,7 +5,7 @@ import ijx.plugin.api.ExtendedPlugInFilter;
 import ijx.gui.dialog.DialogListener;
 import ijx.gui.dialog.GenericDialog;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

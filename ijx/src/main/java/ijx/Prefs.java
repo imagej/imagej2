@@ -11,10 +11,10 @@ import java.util.*;
 import java.net.URL;
 import java.awt.*;
 import java.applet.Applet;
-import ij.io.*;
+
 import ijx.util.Tools;
 
-import ij.plugin.filter.*;
+
 import ijx.plugin.Animator;
 import ijx.process.FloatBlitter;
 import ijx.process.ColorProcessor;

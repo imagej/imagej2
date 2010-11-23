@@ -2,7 +2,7 @@ package ijx.io;
 import ijx.VirtualStack;
 import ijx.IJ;
 import java.io.*;
-import ij.*;  //??
+  //??
 import ijx.process.ImageProcessor;
 
 /** Writes a raw image described by a FileInfo object to an OutputStream. */

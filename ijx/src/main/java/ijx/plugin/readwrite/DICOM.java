@@ -19,7 +19,7 @@ import ijx.IjxImagePlus;
 	displays a file open dialog and opens and displays the 
 	image selected by the user. If 'arg' is a path, it opens the 
 	specified image and the calling routine can display it using
-	"((IjxImagePlus)IJ.runPlugIn("ij.plugin.DICOM", path)).show()".
+	"((IjxImagePlus)IJ.runPlugIn("ijx.plugin.DICOM", path)).show()".
 	*/
 
 /* RAK (Richard Kirk, rak@cre.canon.co.uk) changes 14/7/99

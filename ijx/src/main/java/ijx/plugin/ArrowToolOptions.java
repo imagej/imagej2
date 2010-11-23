@@ -9,7 +9,7 @@ import ijx.roi.Roi;
 import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;

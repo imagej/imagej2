@@ -10,7 +10,7 @@ import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
 import java.util.*;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

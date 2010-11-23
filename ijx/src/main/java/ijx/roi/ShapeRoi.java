@@ -7,7 +7,7 @@ import java.awt.image.*;
 import java.awt.geom.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
-import ij.*;
+
 import ijx.gui.IjxToolbar;
 
 

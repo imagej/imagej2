@@ -1,7 +1,7 @@
 package ijx.stack;
 import ijx.plugin.api.PlugIn;
 import ijx.IJ;
-import ij.*;
+
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 

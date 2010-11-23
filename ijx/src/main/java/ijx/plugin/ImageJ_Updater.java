@@ -6,7 +6,7 @@ import ijx.Menus;
 import ijx.Prefs;
 import ijx.IJ;
 import ijx.IjxMenus;
-import ij.*;
+
 
 import ijx.CentralLookup;
 import java.io.*;
@@ -86,7 +86,7 @@ public class ImageJ_Updater implements PlugIn {
             }
         }
         byte[] jar = getJar(urls[choice]);
-        //file.renameTo(new File(file.getParent()+File.separator+"ij.bak"));
+        //file.renameTo(new File(file.getParent()+File.separator+"ijx.bak"));
         if (version().compareTo("1.37v") >= 0) {
             Prefs.savePreferences();
         }
@@ -161,7 +161,7 @@ public class ImageJ_Updater implements PlugIn {
             URL url = new URL(address);
             URLConnection uc = url.openConnection();
             int len = uc.getContentLength();
-            String name = address.endsWith("ij/ij.jar") ? "daily build" : "ij.jar";
+            String name = address.endsWith("ij/ij.jar") ? "daily build" : "ijx.jar";
             IJ.showStatus("Downloading ij.jar (" + IJ.d2s((double) len / 1048576, 1) + "MB)");
             InputStream in = uc.getInputStream();
             data = new byte[len];

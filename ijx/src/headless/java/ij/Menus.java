@@ -1,8 +1,8 @@
 package ij;
 
-import ij.util.*;
 
-import ij.plugin.MacroInstaller;
+
+
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -88,70 +88,70 @@ public class Menus {
 		error = null;
 		pluginsTable = new Hashtable();
 
-		addPlugInItem("Open...", "ij.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
-		addPlugInItem("Open Next", "ij.plugin.NextImageOpener", KeyEvent.VK_O, true);
-		addPlugInItem("Close", "ij.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
-		addPlugInItem("Save", "ij.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
-		addPlugInItem("Revert", "ij.plugin.Commands(\"revert\")", KeyEvent.VK_R,  false);
-		addPlugInItem("Page Setup...", "ij.plugin.filter.Printer(\"setup\")", 0, false);
-		addPlugInItem("Print...", "ij.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
-		addPlugInItem("Quit", "ij.plugin.Commands(\"quit\")", 0, false);
+		addPlugInItem("Open...", "ijx.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
+		addPlugInItem("Open Next", "ijx.plugin.NextImageOpener", KeyEvent.VK_O, true);
+		addPlugInItem("Close", "ijx.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
+		addPlugInItem("Save", "ijx.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
+		addPlugInItem("Revert", "ijx.plugin.Commands(\"revert\")", KeyEvent.VK_R,  false);
+		addPlugInItem("Page Setup...", "ijx.plugin.filter.Printer(\"setup\")", 0, false);
+		addPlugInItem("Print...", "ijx.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
+		addPlugInItem("Quit", "ijx.plugin.Commands(\"quit\")", 0, false);
 		
-		addPlugInItem("Undo", "ij.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
-		addPlugInItem("Cut", "ij.plugin.Clipboard(\"cut\")", KeyEvent.VK_X, false);
-		addPlugInItem("Copy", "ij.plugin.Clipboard(\"copy\")", KeyEvent.VK_C, false);
-		addPlugInItem("Copy to System", "ij.plugin.Clipboard(\"scopy\")", 0, false);
-		addPlugInItem("Paste", "ij.plugin.Clipboard(\"paste\")", KeyEvent.VK_V, false);
-		addPlugInItem("Paste Control...", "ij.plugin.frame.PasteController", 0, false);
-		addPlugInItem("Clear", "ij.plugin.filter.Filler(\"clear\")", 0, false);
-		addPlugInItem("Clear Outside", "ij.plugin.filter.Filler(\"outside\")", 0, false);
-		addPlugInItem("Fill", "ij.plugin.filter.Filler(\"fill\")", KeyEvent.VK_F, false);
-		addPlugInItem("Draw", "ij.plugin.filter.Filler(\"draw\")", KeyEvent.VK_D, false);
-		addPlugInItem("Invert", "ij.plugin.filter.Filters(\"invert\")", KeyEvent.VK_I, true);
+		addPlugInItem("Undo", "ijx.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
+		addPlugInItem("Cut", "ijx.plugin.Clipboard(\"cut\")", KeyEvent.VK_X, false);
+		addPlugInItem("Copy", "ijx.plugin.Clipboard(\"copy\")", KeyEvent.VK_C, false);
+		addPlugInItem("Copy to System", "ijx.plugin.Clipboard(\"scopy\")", 0, false);
+		addPlugInItem("Paste", "ijx.plugin.Clipboard(\"paste\")", KeyEvent.VK_V, false);
+		addPlugInItem("Paste Control...", "ijx.plugin.frame.PasteController", 0, false);
+		addPlugInItem("Clear", "ijx.plugin.filter.Filler(\"clear\")", 0, false);
+		addPlugInItem("Clear Outside", "ijx.plugin.filter.Filler(\"outside\")", 0, false);
+		addPlugInItem("Fill", "ijx.plugin.filter.Filler(\"fill\")", KeyEvent.VK_F, false);
+		addPlugInItem("Draw", "ijx.plugin.filter.Filler(\"draw\")", KeyEvent.VK_D, false);
+		addPlugInItem("Invert", "ijx.plugin.filter.Filters(\"invert\")", KeyEvent.VK_I, true);
 		
-		addCheckboxItem("8-bit", "ij.plugin.Converter(\"8-bit\")");
-		addCheckboxItem("16-bit", "ij.plugin.Converter(\"16-bit\")");
-		addCheckboxItem("32-bit", "ij.plugin.Converter(\"32-bit\")");
-		addCheckboxItem("8-bit Color", "ij.plugin.Converter(\"8-bit Color\")");
-		addCheckboxItem("RGB Color", "ij.plugin.Converter(\"RGB Color\")");
-		addCheckboxItem("RGB Stack", "ij.plugin.Converter(\"RGB Stack\")");
-		addCheckboxItem("HSB Stack", "ij.plugin.Converter(\"HSB Stack\")");
+		addCheckboxItem("8-bit", "ijx.plugin.Converter(\"8-bit\")");
+		addCheckboxItem("16-bit", "ijx.plugin.Converter(\"16-bit\")");
+		addCheckboxItem("32-bit", "ijx.plugin.Converter(\"32-bit\")");
+		addCheckboxItem("8-bit Color", "ijx.plugin.Converter(\"8-bit Color\")");
+		addCheckboxItem("RGB Color", "ijx.plugin.Converter(\"RGB Color\")");
+		addCheckboxItem("RGB Stack", "ijx.plugin.Converter(\"RGB Stack\")");
+		addCheckboxItem("HSB Stack", "ijx.plugin.Converter(\"HSB Stack\")");
 			
-		addPlugInItem("Show Info...", "ij.plugin.filter.Info", KeyEvent.VK_I, false);
-		addPlugInItem("Properties...", "ij.plugin.filter.ImageProperties", KeyEvent.VK_P, true);
-		addPlugInItem("Crop", "ij.plugin.filter.Resizer(\"crop\")", KeyEvent.VK_X, true);
-		addPlugInItem("Duplicate...", "ij.plugin.filter.Duplicater", KeyEvent.VK_D, true);
-		addPlugInItem("Rename...", "ij.plugin.SimpleCommands(\"rename\")", 0, false);
-		addPlugInItem("Scale...", "ij.plugin.Scaler", KeyEvent.VK_E, false);
+		addPlugInItem("Show Info...", "ijx.plugin.filter.Info", KeyEvent.VK_I, false);
+		addPlugInItem("Properties...", "ijx.plugin.filter.ImageProperties", KeyEvent.VK_P, true);
+		addPlugInItem("Crop", "ijx.plugin.filter.Resizer(\"crop\")", KeyEvent.VK_X, true);
+		addPlugInItem("Duplicate...", "ijx.plugin.filter.Duplicater", KeyEvent.VK_D, true);
+		addPlugInItem("Rename...", "ijx.plugin.SimpleCommands(\"rename\")", 0, false);
+		addPlugInItem("Scale...", "ijx.plugin.Scaler", KeyEvent.VK_E, false);
 		
-		addPlugInItem("Smooth", "ij.plugin.filter.Filters(\"smooth\")", KeyEvent.VK_S, true);
-		addPlugInItem("Sharpen", "ij.plugin.filter.Filters(\"sharpen\")", 0, false);
-		addPlugInItem("Find Edges", "ij.plugin.filter.Filters(\"edge\")", 0, false);
-		addPlugInItem("Enhance Contrast", "ij.plugin.ContrastEnhancer", 0, false);
-		addPlugInItem("Image Calculator...", "ij.plugin.ImageCalculator", 0, false);
-		addPlugInItem("Subtract Background...", "ij.plugin.filter.BackgroundSubtracter", 0, false);
+		addPlugInItem("Smooth", "ijx.plugin.filter.Filters(\"smooth\")", KeyEvent.VK_S, true);
+		addPlugInItem("Sharpen", "ijx.plugin.filter.Filters(\"sharpen\")", 0, false);
+		addPlugInItem("Find Edges", "ijx.plugin.filter.Filters(\"edge\")", 0, false);
+		addPlugInItem("Enhance Contrast", "ijx.plugin.ContrastEnhancer", 0, false);
+		addPlugInItem("Image Calculator...", "ijx.plugin.ImageCalculator", 0, false);
+		addPlugInItem("Subtract Background...", "ijx.plugin.filter.BackgroundSubtracter", 0, false);
 		
-		addPlugInItem("Measure", "ij.plugin.filter.Analyzer", KeyEvent.VK_M, false);
-		addPlugInItem("Analyze Particles...", "ij.plugin.filter.ParticleAnalyzer", 0, false);
-		addPlugInItem("Summarize", "ij.plugin.filter.Analyzer(\"sum\")", 0, false);
-		addPlugInItem("Distribution...", "ij.plugin.Distribution", 0, false);
-		addPlugInItem("Label", "ij.plugin.filter.Filler(\"label\")", 0, false);
-		addPlugInItem("Clear Results", "ij.plugin.filter.Analyzer(\"clear\")", 0, false);
-		addPlugInItem("Set Measurements...", "ij.plugin.filter.Analyzer(\"set\")", 0, false);
-		addPlugInItem("Set Scale...", "ij.plugin.filter.ScaleDialog", 0, false);
-		addPlugInItem("Calibrate...", "ij.plugin.filter.Calibrator", 0, false);
-		addPlugInItem("Histogram", "ij.plugin.Histogram", KeyEvent.VK_H, false);
-		addPlugInItem("Plot Profile", "ij.plugin.filter.Profiler(\"plot\")", KeyEvent.VK_K, false);
-		addPlugInItem("Surface Plot...", "ij.plugin.SurfacePlotter", 0, false);
+		addPlugInItem("Measure", "ijx.plugin.filter.Analyzer", KeyEvent.VK_M, false);
+		addPlugInItem("Analyze Particles...", "ijx.plugin.filter.ParticleAnalyzer", 0, false);
+		addPlugInItem("Summarize", "ijx.plugin.filter.Analyzer(\"sum\")", 0, false);
+		addPlugInItem("Distribution...", "ijx.plugin.Distribution", 0, false);
+		addPlugInItem("Label", "ijx.plugin.filter.Filler(\"label\")", 0, false);
+		addPlugInItem("Clear Results", "ijx.plugin.filter.Analyzer(\"clear\")", 0, false);
+		addPlugInItem("Set Measurements...", "ijx.plugin.filter.Analyzer(\"set\")", 0, false);
+		addPlugInItem("Set Scale...", "ijx.plugin.filter.ScaleDialog", 0, false);
+		addPlugInItem("Calibrate...", "ijx.plugin.filter.Calibrator", 0, false);
+		addPlugInItem("Histogram", "ijx.plugin.Histogram", KeyEvent.VK_H, false);
+		addPlugInItem("Plot Profile", "ijx.plugin.filter.Profiler(\"plot\")", KeyEvent.VK_K, false);
+		addPlugInItem("Surface Plot...", "ijx.plugin.SurfacePlotter", 0, false);
 
-		addPlugInItem("Show All", "ij.plugin.WindowOrganizer(\"show\")", KeyEvent.VK_F, true);
-		addPlugInItem("Put Behind [tab]", "ij.plugin.Commands(\"tab\")", 0, false);
-		addPlugInItem("Cascade", "ij.plugin.WindowOrganizer(\"cascade\")", 0, false);
-		addPlugInItem("Tile", "ij.plugin.WindowOrganizer(\"tile\")", 0, false);
+		addPlugInItem("Show All", "ijx.plugin.WindowOrganizer(\"show\")", KeyEvent.VK_F, true);
+		addPlugInItem("Put Behind [tab]", "ijx.plugin.Commands(\"tab\")", 0, false);
+		addPlugInItem("Cascade", "ijx.plugin.WindowOrganizer(\"cascade\")", 0, false);
+		addPlugInItem("Tile", "ijx.plugin.WindowOrganizer(\"tile\")", 0, false);
 
-		addPlugInItem("ImageJA Web Site...", "ij.plugin.BrowserLauncher", 0, false);
-		addPlugInItem("Online Docs...", "ij.plugin.BrowserLauncher(\"online\")", 0, false);
-		addPlugInItem("About ImageJA...", "ij.plugin.AboutBoxJA", 0, false);
+		addPlugInItem("ImageJA Web Site...", "ijx.plugin.BrowserLauncher", 0, false);
+		addPlugInItem("Online Docs...", "ijx.plugin.BrowserLauncher(\"online\")", 0, false);
+		addPlugInItem("About ImageJA...", "ijx.plugin.AboutBoxJA", 0, false);
 				
 		addSubMenu("New");
 		addSubMenu("Open Samples");
@@ -289,7 +289,7 @@ public class Menus {
 			String prefsValue = value;
 			value = value.substring(2,value.length()); //remove menu code and coma
 			className = value.substring(value.lastIndexOf(',')+1,value.length());
-			boolean found = className.startsWith("ij.");
+			boolean found = className.startsWith("ijx.");
 			if (!found && plugins!=null) { // does this plugin exist?
 				if (plugins2==null)
 					plugins2 = getStrippedPlugins(plugins);
@@ -346,7 +346,7 @@ public class Menus {
 		if (pluginsTable.get(command)!=null) // duplicate command?
 			command = command + " Macro";
 		String path = (dir!=null?dir+File.separator:"") + name;
-		pluginsTable.put(command, "ij.plugin.Macro_Runner(\""+path+"\")");
+		pluginsTable.put(command, "ijx.plugin.Macro_Runner(\""+path+"\")");
 		nMacros++;
 	}
 
@@ -976,7 +976,7 @@ public class Menus {
 				if (index!=-1)
 					docBase = docBase.substring(0, index+1);
 			}
-			IJ.runPlugIn("ij.plugin.URLOpener", docBase+"StartupMacros.txt");
+			IJ.runPlugIn("ijx.plugin.URLOpener", docBase+"StartupMacros.txt");
 			return;
 		}
 		if (macrosPath==null) {

@@ -1,6 +1,6 @@
 package ijx.gui;
 import java.awt.*;
-import ij.*;
+
 import ijx.gui.IjxImageCanvas;
 
 /** This is a custom layout manager that supports resizing of zoomed

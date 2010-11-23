@@ -11,11 +11,11 @@ import ijx.WindowManager;
 import ijx.IJ;
 import ijx.gui.IjxImageWindow;
 import ijx.IjxImagePlus;
-import ij.*;
+
 
  
 import ijx.plugin.filter.IjxPlugInFilter.*;
-import ij.plugin.filter.*;
+
 import ijx.measure.Calibration;
 import ijx.macro.Interpreter;
 import ijx.plugin.api.ExtendedPlugInFilter;

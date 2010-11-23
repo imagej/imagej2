@@ -8,7 +8,7 @@ import ijx.gui.NewImage;
 import ijx.gui.dialog.GenericDialog;
 import ijx.roi.Roi;
 import ijx.IJ;
-import ij.*;
+
 import ijx.plugin.filter.RGBStackSplitter;
 
 

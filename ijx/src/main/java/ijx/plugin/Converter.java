@@ -11,7 +11,7 @@ import ijx.Menus;
 import ijx.Macro;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

@@ -2215,7 +2215,7 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	/** Sets the upper Over/Under threshold color. Can be called from a macro,
-		e.g., call("ij.process.ImageProcessor.setOverColor", 0,255,255). */
+		e.g., call("ijx.process.ImageProcessor.setOverColor", 0,255,255). */
 	public static void setOverColor(int red, int green, int blue) {
 		overRed=red; overGreen=green; overBlue=blue;
 	}

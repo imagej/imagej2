@@ -6,7 +6,7 @@ import ijx.gui.NewImage;
 import ijx.gui.dialog.GenericDialog;
 import ijx.io.FileSaver;
 
-import ij.plugin.frame.*;
+
 import ijx.text.TextWindow;
 import ijx.macro.Interpreter;
 import ijx.app.IjxApplication;
@@ -196,14 +196,14 @@ public class FileWindowCommands {
 
 
     /* from Menus:
-    addPlugInItem(file, "Open...", "ij.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
-    addPlugInItem(file, "Close", "ij.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
-    addPlugInItem(file, "Close All", "ij.plugin.Commands(\"close-all\")", 0, false);
-    addPlugInItem(file, "Save", "ij.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
-    addPlugInItem(file, "Revert", "ij.plugin.Commands(\"revert\")", KeyEvent.VK_R, false);
-    addPlugInItem(window, "Put Behind [tab]", "ij.plugin.Commands(\"tab\")", 0, false);
-    addPlugInItem(file, "Quit", "ij.plugin.Commands(\"quit\")", 0, false);
-    addPlugInItem(edit, "Undo", "ij.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
+    addPlugInItem(file, "Open...", "ijx.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
+    addPlugInItem(file, "Close", "ijx.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
+    addPlugInItem(file, "Close All", "ijx.plugin.Commands(\"close-all\")", 0, false);
+    addPlugInItem(file, "Save", "ijx.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
+    addPlugInItem(file, "Revert", "ijx.plugin.Commands(\"revert\")", KeyEvent.VK_R, false);
+    addPlugInItem(window, "Put Behind [tab]", "ijx.plugin.Commands(\"tab\")", 0, false);
+    addPlugInItem(file, "Quit", "ijx.plugin.Commands(\"quit\")", 0, false);
+    addPlugInItem(edit, "Undo", "ijx.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
      * from IJ_Props:
     new01="Image...[n]",ij.plugin.Commands("new")
     macros04="Startup Macros...",ij.plugin.Commands("startup")

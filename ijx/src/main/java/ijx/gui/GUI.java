@@ -1,7 +1,7 @@
 package ijx.gui;
 import ijx.IJ;
 import java.awt.*;
-import ij.*;
+
 import ijx.CentralLookup;
 import ijx.IjxTopComponent;
 import javax.swing.JInternalFrame;

@@ -4,7 +4,7 @@ import ijx.process.ImageProcessor;
 import ijx.gui.dialog.GenericDialog;
 import ijx.roi.Roi;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

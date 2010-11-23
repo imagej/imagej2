@@ -8,10 +8,10 @@ import ijx.process.ShortProcessor;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*; 
+ 
 import ijx.gui.dialog.GenericDialog;
 
-import ij.plugin.filter.*; 
+ 
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 import java.lang.*; 

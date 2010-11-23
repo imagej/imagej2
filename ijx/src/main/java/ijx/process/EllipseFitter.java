@@ -1,8 +1,8 @@
 package ijx.process;
-import ij.*;
+
 
 import java.awt.*;
-import ij.plugin.filter.*;
+
 
 /*
 Best-fitting ellipse routines by:

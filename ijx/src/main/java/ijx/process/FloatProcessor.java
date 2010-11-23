@@ -966,7 +966,7 @@ public class FloatProcessor extends ImageProcessor {
 	/** Performs a convolution operation using the specified kernel. */
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight) {
 		snapshot();
-		new ij.plugin.filter.Convolver().convolve(this, kernel, kernelWidth, kernelHeight);
+		new ijx.plugin.filter.Convolver().convolve(this, kernel, kernelWidth, kernelHeight);
 	}
 
 	/** Not implemented. */

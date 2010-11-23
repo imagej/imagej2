@@ -5,7 +5,7 @@ import ijx.IJ;
 import ijx.plugin.frame.IjxPluginFrame;
 import java.awt.*;
 import java.awt.event.*;
-import ij.*;
+
 import ijx.plugin.frame.IjxPluginFrame;
 import javax.swing.ImageIcon;
 

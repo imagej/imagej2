@@ -4,7 +4,7 @@ import ijx.process.ImageProcessor;
 import ijx.process.ByteProcessor;
 import java.awt.*;
 import java.awt.image.*;
-import ij.*;
+
 import ijx.gui.Wand;
 
 import ijx.measure.Calibration;

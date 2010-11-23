@@ -3,7 +3,7 @@ import ijx.process.ImageProcessor;
 import ijx.process.StackProcessor;
 import ijx.plugin.api.PlugInFilter;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.measure.Calibration;
 import ijx.IjxImagePlus;

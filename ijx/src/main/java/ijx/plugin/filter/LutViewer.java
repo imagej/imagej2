@@ -4,7 +4,7 @@ import ijx.plugin.api.PlugInFilter;
 import ijx.gui.ImageWindow;
 import ijx.IJ;
 import ijx.LookUpTable;
-import ij.*;
+
 
 
 import ijx.text.*;

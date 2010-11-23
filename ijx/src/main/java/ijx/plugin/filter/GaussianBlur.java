@@ -7,7 +7,7 @@ import ijx.plugin.api.PlugInFilterRunner;
 import ijx.plugin.api.ExtendedPlugInFilter;
 import ijx.Macro;
 import ijx.IJ;
-import ij.*;
+
 import ijx.gui.dialog.GenericDialog;
 import ijx.gui.dialog.DialogListener;
 
