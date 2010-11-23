@@ -276,7 +276,7 @@ public class BridgeStack extends ImageStack
 	
 	@Override
 	/** Returns an ImageProcessor for the specified slice,
-		were 1<=n<=nslices. Returns null if the stack is empty.
+		where 1<=n<=nslices. Returns null if the stack is empty.
 	*/
 	public ImageProcessor getProcessor(int n)
 	{
