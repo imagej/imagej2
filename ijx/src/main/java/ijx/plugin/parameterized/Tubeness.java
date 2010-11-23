@@ -1,8 +1,11 @@
 
 package ijx.plugin.parameterized;
 
+import ijx.plugin.api.PlugIn;
+import ijx.WindowManager;
+import ijx.IJ;
 import ij.*;
-import ij.measure.Calibration;
+import ijx.measure.Calibration;
 import ij.plugin.*;
 import ijx.IjxImagePlus;
 

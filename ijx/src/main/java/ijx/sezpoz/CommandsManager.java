@@ -4,7 +4,7 @@
  */
 package ijx.sezpoz;
 
-import ij.plugin.PlugIn;
+import ijx.plugin.api.PlugIn;
 import ijx.action.AbstractActionExt;
 import ijx.action.ActionContainerFactory;
 import ijx.action.ActionFactoryIjx;

@@ -21,4 +21,14 @@ public class ListenerAdapter<T> implements LookupListener {
             eventBusListener.notify(null);
         }
     }
+
+    /* Regarding threading...
+     *
+     * void resultChanged(LookupEvent ev) -- A change in lookup occured.
+     Please note that this method should never block since it might be called
+     from lookup implementation internal threads. If you block here you are
+     in risk that the thread you wait for might in turn to wait for the
+     lookup internal thread to finish its work.
+     *
+     */
 }

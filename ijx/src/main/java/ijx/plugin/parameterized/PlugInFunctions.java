@@ -1,10 +1,10 @@
 package ijx.plugin.parameterized;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.Prefs;
-import ij.WindowManager;
-import ij.gui.GenericDialog;
+import ijx.IJ;
+import ijx.ImagePlus;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.gui.dialog.GenericDialog;
 import ijx.IjxImagePlus;
 import java.lang.reflect.Field;
 import java.util.HashMap;

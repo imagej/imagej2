@@ -1,17 +1,10 @@
 package ijx;
 
-import ij.Command;
-import ij.CommandListener;
-import ij.CommandListenerPlus;
-import ij.IJ;
-import ij.Macro;
-import ij.Menus;
-import ij.WindowManager;
-import ij.util.Tools;
-import ij.text.TextWindow;
-import ij.plugin.MacroInstaller;
-import ij.plugin.frame.Recorder;
-import ij.io.OpenDialog;
+import ijx.util.Tools;
+import ijx.text.TextWindow;
+import ijx.plugin.MacroInstaller;
+import ijx.plugin.frame.Recorder;
+import ijx.io.OpenDialog;
 import java.io.*;
 import java.util.*;
 import java.awt.event.KeyEvent;

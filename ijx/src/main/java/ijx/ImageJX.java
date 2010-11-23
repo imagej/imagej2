@@ -4,11 +4,8 @@
  */
 package ijx;
 
-import ij.IJ;
-import ij.ImageJApplet;
-import ij.Prefs;
-import ij.SocketListener;
-import ij.gui.IjxToolbar;
+import ijx.util.Tools;
+import ijx.gui.IjxToolbar;
 import java.awt.*;
 import java.io.*;
 import ij.util.*;

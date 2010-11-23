@@ -44,7 +44,7 @@ import net.java.sezpoz.Indexable;
 
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
-@Indexable(type = ij.plugin.PlugIn.class)
+@Indexable(type = ijx.plugin.api.PlugIn.class)
 public @interface Importer {
 
     String commandKey();

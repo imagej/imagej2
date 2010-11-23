@@ -44,7 +44,7 @@ import net.java.sezpoz.Indexable;
 
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
-@Indexable(type = ij.plugin.filter.PlugInFilter.class)
+@Indexable(type = ijx.plugin.api.PlugInFilter.class)
 public @interface PluginFilterItem {
 
     String commandKey();

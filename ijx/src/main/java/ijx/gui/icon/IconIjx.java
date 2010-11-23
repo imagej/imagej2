@@ -1,7 +1,7 @@
 package ijx.gui.icon;
 
-import ij.Prefs;
-import ij.gui.Roi;
+import ijx.Prefs;
+import ijx.roi.Roi;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

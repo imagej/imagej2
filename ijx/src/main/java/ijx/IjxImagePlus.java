@@ -1,14 +1,13 @@
 package ijx;
 
-import ij.LookUpTable;
-import ij.gui.Overlay;
-import ij.gui.Roi;
-import ij.io.FileInfo;
-import ij.measure.Calibration;
-import ij.measure.Measurements;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
-import ij.process.LUT;
+import ijx.gui.Overlay;
+import ijx.roi.Roi;
+import ijx.io.FileInfo;
+import ijx.measure.Calibration;
+import ijx.measure.Measurements;
+import ijx.process.ImageProcessor;
+import ijx.process.ImageStatistics;
+import ijx.process.LUT;
 import ijx.gui.IjxImageCanvas;
 import ijx.gui.IjxImageWindow;
 import java.awt.BasicStroke;

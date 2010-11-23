@@ -35,22 +35,17 @@
  */
 package ijx.gui;
 
-import ij.CompositeImage;
-import ij.IJ;
-import ij.ImageJApplet;
-import ij.Menus;
-import ij.Prefs;
-import ij.WindowManager;
-import ij.gui.GUI;
-import ij.gui.HistogramWindow;
-import ij.gui.ImageCanvas;
-import ij.gui.ImageCanvasHelper;
-import ij.gui.ImageLayout;
-import ij.gui.YesNoCancelDialog;
-import ij.io.FileSaver;
-import ij.macro.Interpreter;
-import ij.measure.Calibration;
-import ij.plugin.frame.Channels;
+import ijx.CompositeImage;
+import ijx.IJ;
+import ijx.ImageJApplet;
+import ijx.Menus;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.gui.dialog.YesNoCancelDialog;
+import ijx.io.FileSaver;
+import ijx.macro.Interpreter;
+import ijx.measure.Calibration;
+import ijx.plugin.frame.Channels;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

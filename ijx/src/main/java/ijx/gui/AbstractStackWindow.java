@@ -1,12 +1,10 @@
 package ijx.gui;
 
-import ij.gui.*;
+import ijx.IJ;
 import ijx.IjxImagePlus;
-import ij.*;
 import ijx.IjxImageStack;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.JInternalFrame;
 
 /** This class is an extended IjxImageWindow used to display image stacks. */
 public class AbstractStackWindow extends AbstractImageWindow implements IjxStackWindow {

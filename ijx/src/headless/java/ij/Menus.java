@@ -1,7 +1,7 @@
 package ij;
-import ij.process.*;
+
 import ij.util.*;
-import ij.gui.IjxImageWindow;
+
 import ij.plugin.MacroInstaller;
 import java.awt.*;
 import java.awt.image.*;

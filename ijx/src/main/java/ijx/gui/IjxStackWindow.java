@@ -1,6 +1,5 @@
 package ijx.gui;
 
-import ij.gui.ScrollbarWithLabel;
 import ijx.IjxImagePlus;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentListener;

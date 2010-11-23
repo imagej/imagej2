@@ -1,10 +1,10 @@
 package implementation.swing;
 
-import ij.IJ;
-import ij.Prefs;
-import ij.Undo;
-import ij.WindowManager;
-import ij.gui.IjxToolbar;
+import ijx.IJ;
+import ijx.Prefs;
+import ijx.Undo;
+import ijx.WindowManager;
+import ijx.gui.IjxToolbar;
 import ijx.app.IjxApplication;
 import ijx.CentralLookup;
 import ijx.IjxTopComponent;
@@ -41,7 +41,7 @@ import javax.swing.JToolBar;
  */
 public class TopComponentSwing //extends Frame
         implements IjxTopComponent {
-    private ij.gui.IjxToolbar toolbar;
+    private ijx.gui.IjxToolbar toolbar;
     private StatusLineSwing statusLine;
     private JPanel statusBar;
     private IjxProgressBar progressBar;

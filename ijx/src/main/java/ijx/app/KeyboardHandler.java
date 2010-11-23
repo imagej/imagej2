@@ -35,13 +35,13 @@
  */
 package ijx.app;
 
-import ij.IJ;
-import ij.Menus;
-import ij.Prefs;
-import ij.WindowManager;
-import ij.gui.Roi;
-import ij.gui.TextRoi;
-import ij.plugin.MacroInstaller;
+import ijx.IJ;
+import ijx.Menus;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.roi.Roi;
+import ijx.roi.TextRoi;
+import ijx.plugin.MacroInstaller;
 import ijx.IjxImagePlus;
 import java.awt.Event;
 import java.awt.event.KeyEvent;

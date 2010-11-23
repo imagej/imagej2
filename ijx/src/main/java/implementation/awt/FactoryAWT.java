@@ -4,8 +4,8 @@
  */
 package implementation.awt;
 
-import ij.CompositeImage;
-import ij.ImageJApplet;
+import ijx.CompositeImage;
+import ijx.ImageJApplet;
 import ijx.IjxFactory;
 import ijx.IjxImageStack;
 import ijx.IjxImagePlus;
@@ -19,19 +19,19 @@ import ijx.gui.IjxImageCanvas;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxProgressBar;
 import ijx.gui.IjxWindow;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.MenusAWT;
-import ij.gui.ProgressBar;
+import ijx.ImagePlus;
+import ijx.ImageStack;
+import ijx.MenusAWT;
+import ijx.gui.ProgressBar;
 import ijx.gui.MenuBuilder;
 import ijx.plugin.frame.IjxPluginFrame;
-import ij.plugin.frame.PlugInFrame;
-import ij.process.ImageProcessor;
+import ijx.plugin.api.PlugInFrame;
+import ijx.process.ImageProcessor;
 import ijx.gui.AbstractImageCanvas;
 import ijx.gui.AbstractImageWindow;
 import ijx.gui.AbstractStackWindow;
-import ij.gui.IjxToolbar;
-import ij.gui.Toolbar;
+import ijx.gui.IjxToolbar;
+import ijx.gui.Toolbar;
 import ijx.sezpoz.ActionIjx;
 import java.awt.Canvas;
 import java.awt.Container;

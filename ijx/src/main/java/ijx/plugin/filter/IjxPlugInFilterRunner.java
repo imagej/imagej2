@@ -1,14 +1,24 @@
 package ijx.plugin.filter;
+import ijx.process.ImageProcessor;
+import ijx.process.FloatProcessor;
+import ijx.gui.dialog.DialogListener;
+import ijx.gui.dialog.GenericDialog;
+import ijx.roi.Line;
+import ijx.roi.Roi;
+import ijx.Undo;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.IJ;
 import ijx.gui.IjxImageWindow;
 import ijx.IjxImagePlus;
 import ij.*;
-import ij.process.*;
-import ij.gui.*; 
+
+ 
 import ijx.plugin.filter.IjxPlugInFilter.*;
 import ij.plugin.filter.*;
-import ij.measure.Calibration;
-import ij.macro.Interpreter;
-import ij.plugin.filter.ExtendedPlugInFilter;
+import ijx.measure.Calibration;
+import ijx.macro.Interpreter;
+import ijx.plugin.api.ExtendedPlugInFilter;
 import ijx.IjxImageStack;
 import java.awt.*;
 import java.util.Hashtable;

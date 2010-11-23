@@ -6,7 +6,7 @@ package ijx.plugin;
 
 import ijx.ExecuterIjx;
 import ijx.sezpoz.ActionIjx;
-import ij.plugin.PlugIn;
+import ijx.plugin.api.PlugIn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

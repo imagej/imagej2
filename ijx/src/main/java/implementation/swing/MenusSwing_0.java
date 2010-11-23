@@ -1,11 +1,14 @@
 package implementation.swing;
 
-import ij.*;
+import ijx.process.ImageProcessor;
+import ijx.util.StringSorter;
+import ijx.Prefs;
+import ijx.WindowManager;
+import ijx.IJ;
 import ijx.app.IjxApplication;
-import ij.process.*;
-import ij.util.*;
+
 import ijx.gui.IjxWindow;
-import ij.plugin.MacroInstaller;
+import ijx.plugin.MacroInstaller;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 import ijx.IjxMenus;

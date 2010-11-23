@@ -1,10 +1,10 @@
 package implementation.swing;
-import ij.gui.*;
+
 import ijx.IjxTopComponent;
 import ijx.app.IjxApplication;
 import ijx.gui.IjxProgressBar;
-import ij.IJ;
-import ij.macro.Interpreter;
+import ijx.IJ;
+import ijx.macro.Interpreter;
 import java.awt.*;
 import java.awt.image.*;
 import javax.swing.JProgressBar;

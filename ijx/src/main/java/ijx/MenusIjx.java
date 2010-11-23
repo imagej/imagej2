@@ -1,25 +1,18 @@
 package ijx;
 
-import ij.*;
+import ijx.process.ImageProcessor;
+import ijx.util.StringSorter;
 import ijx.app.IjxApplication;
-import ijx.IjxTopComponent;
-import ijx.IjxImagePlus;
-import ij.process.*;
-import ij.util.*;
+
 import ijx.gui.IjxWindow;
-import ij.plugin.MacroInstaller;
-import ijx.IjxImageStack;
-import java.awt.image.*;
+import ijx.plugin.MacroInstaller;
 import java.util.*;
 import java.io.*;
 import java.applet.Applet;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.*;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;

@@ -5,7 +5,7 @@ import java.awt.image.*;
 import java.io.*;
 import java.lang.reflect.*;
 import ij.*;
-import ij.process.*;
+
 	
 /** This plugin uses QuickTime for Java to open PICT images on the Mac system 
      clipboard. Only needed on Macs running 32-bit Java and OS X 10.5 and earlier. */
