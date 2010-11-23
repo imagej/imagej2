@@ -1,10 +1,9 @@
 package ijx.gui.dialog;
-import ij.*;
 import java.awt.AWTEvent;
 
 /**
 * PlugIns or PlugInFilters that want to listen to changes in a GenericDialog
-* without adding listeners for each dialog field should implementthis method.
+* without adding listeners for each dialog field should implement this method.
 * The dialogItemChanged method of a PlugIn or PlugInFilter can and should read
 * the various dialog items by the appropriate GenericDialog methods like
 * getNextNumber (items that are not read in the dialogItemChanged method will

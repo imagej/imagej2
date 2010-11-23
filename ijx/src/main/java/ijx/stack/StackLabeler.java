@@ -12,7 +12,7 @@ import ijx.roi.TextRoi;
 import ijx.Macro;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.util.Tools;

@@ -6,7 +6,7 @@ import ijx.gui.Toolbar;
 import ijx.Prefs;
 import ijx.IJ;
 
-import ij.plugin.frame.*;
+
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.measure.Calibration;

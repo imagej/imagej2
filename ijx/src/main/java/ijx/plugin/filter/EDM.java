@@ -8,7 +8,7 @@ import ijx.plugin.api.PlugInFilterRunner;
 import ijx.plugin.api.ExtendedPlugInFilter;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

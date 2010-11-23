@@ -4,7 +4,7 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.Macro;
 import ijx.IJ;
 import java.awt.*;
-import ij.*;
+
 
 import ijx.plugin.frame.Editor;
 import ijx.text.TextWindow;
@@ -102,14 +102,14 @@ public class NewPlugin implements PlugIn {
 			name = SaveDialog.setExtension(name, ".java");
 		String className = pluginName.substring(0, pluginName.length()-5);
 		String text = "";
-		text += "import ij.*;\n";
+		text += "\n";
 		text += "\n";
 		text += "\n";
 		text += "import java.awt.*;\n";
 		switch (type) {
 			case PLUGIN:
-				text += "import ij.plugin.*;\n";
-				text += "import ij.plugin.frame.*;\n";
+				text += "\n";
+				text += "\n";
 				text += "\n";
 				text += "public class "+className+" implements PlugIn {\n";
 				text += "\n";
@@ -121,7 +121,7 @@ public class NewPlugin implements PlugIn {
 				text += "\t}\n";
 				break;
 			case PLUGIN_FILTER:
-				text += "import ij.plugin.filter.*;\n";
+				text += "\n";
 				text += "\n";
 				text += "public class "+className+" implements PlugInFilter {\n";
 				text += "\tImagePlus imp;\n";
@@ -140,7 +140,7 @@ public class NewPlugin implements PlugIn {
 				text += "\t}\n";
 				break;
 			case PLUGIN_FRAME:
-				text += "import ij.plugin.frame.*;\n";
+				text += "\n";
 				text += "\n";
 				text += "public class "+className+" extends PlugInFrame {\n";
 				text += "\n";
@@ -166,7 +166,7 @@ public class NewPlugin implements PlugIn {
 		if (IJ.runFijiEditor(pluginName, text))
 			return;
 
-		ed = (Editor)IJ.runPlugIn("ij.plugin.frame.Editor", "");
+		ed = (Editor)IJ.runPlugIn("ijx.plugin.frame.Editor", "");
 		if (ed==null) return;
 		ed.create(pluginName, text);
 	}

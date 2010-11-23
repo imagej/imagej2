@@ -11,7 +11,6 @@ import ijx.Macro;
 import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
 
 
 import ijx.plugin.api.PlugInFilter.*;

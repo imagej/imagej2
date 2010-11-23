@@ -9,7 +9,7 @@ import ijx.IJ;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.image.*;
-import ij.*;
+
 
 
 import ijx.plugin.frame.Editor;

@@ -12,7 +12,7 @@ import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
 import java.awt.*;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

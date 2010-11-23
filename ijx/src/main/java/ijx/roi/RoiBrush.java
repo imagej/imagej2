@@ -1,7 +1,7 @@
 package ijx.roi;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 import ijx.gui.IjxToolbar;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;

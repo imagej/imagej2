@@ -6,7 +6,7 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.roi.Roi;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 import ijx.gui.IjxImageCanvas;

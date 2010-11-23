@@ -1,7 +1,7 @@
 package ijx.io;
 import ijx.IJ;
 import ijx.IjxMenus;
-import ij.*;
+
 
 import ijx.CentralLookup;
 import java.io.*;

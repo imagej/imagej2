@@ -8,8 +8,8 @@ import ijx.WindowManager;
 import ijx.IJ;
 import java.awt.*;
 import java.awt.event.*;
-import ij.*;
-import ij.plugin.*;
+
+
 
 
 import ijx.IjxImagePlus;

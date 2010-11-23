@@ -127,7 +127,7 @@ public class OtherInstance {
 				} else if (arg.startsWith("-run") && i+1<args.length) {
 					cmd = "run " + args[i+1];
 					args[i+1] = null;
-				} else if (arg.indexOf("ij.ImageJ")==-1 && !arg.startsWith("-"))
+				} else if (arg.indexOf("ijx.ImageJ")==-1 && !arg.startsWith("-"))
 					cmd = "open " + arg;
 				if (cmd!=null)
 					instance.sendArgument(cmd);

@@ -6,10 +6,10 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.roi.Roi;
 import ijx.Prefs;
 import ijx.WindowManager;
-import ij.*;
 
 
-import ij.plugin.filter.*;
+
+
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import java.awt.*;

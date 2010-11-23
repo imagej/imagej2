@@ -1,7 +1,7 @@
 package ijx.gui.dialog;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 import ijx.gui.GUI;
 import ijx.gui.MultiLineLabel;
 import ijx.gui.IjxWindow;

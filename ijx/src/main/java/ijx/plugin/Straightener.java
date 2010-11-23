@@ -12,7 +12,7 @@ import ijx.roi.PolygonRoi;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*;
+
 
 
 import ijx.measure.Calibration;

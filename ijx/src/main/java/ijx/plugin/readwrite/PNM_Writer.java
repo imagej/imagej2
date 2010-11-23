@@ -11,7 +11,7 @@ package ijx.plugin.readwrite;
 import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.IJ;
-import ij.*;
+
 import ijx.plugin.api.PlugIn;
 
 import ijx.io.SaveDialog;

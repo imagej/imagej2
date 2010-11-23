@@ -11,7 +11,7 @@ import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
 
-import ij.plugin.frame.*;
+
 import ijx.text.TextWindow;
 import ijx.macro.Interpreter;
 import ijx.IjxImagePlus;

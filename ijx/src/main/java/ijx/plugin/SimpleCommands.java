@@ -3,7 +3,7 @@ import ijx.plugin.api.PlugIn;
 import ijx.gui.dialog.GenericDialog;
 import ijx.Undo;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.io.Opener;
 import ijx.IjxImagePlus;
@@ -77,7 +77,7 @@ public class SimpleCommands implements PlugIn {
 	}
 		
 	void search() {
-		searchArg = IJ.runMacroFile("ij.jar:Search", searchArg);
+		searchArg = IJ.runMacroFile("ijx.jar:Search", searchArg);
 	}
 		
 	void installation() {
@@ -88,7 +88,7 @@ public class SimpleCommands implements PlugIn {
 			url += "windows.html";
 		else if (IJ.isLinux())
 			url += "linux.html";
-		IJ.runPlugIn("ij.plugin.BrowserLauncher", url);
+		IJ.runPlugIn("ijx.plugin.BrowserLauncher", url);
 	}
 	
 	void aboutPluginsHelp() {

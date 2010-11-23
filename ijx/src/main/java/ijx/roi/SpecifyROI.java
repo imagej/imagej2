@@ -7,7 +7,7 @@ import ijx.roi.OvalRoi;
 import ijx.IJ;
 import java.awt.*;
 import java.util.*;
-import ij.*;
+
 
 import ijx.measure.Calibration;
 import ijx.IjxImagePlus;

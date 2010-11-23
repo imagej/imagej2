@@ -147,7 +147,7 @@ public class AbstractImageWindow //extends Frame
         this.setTitle(imp.getTitle());
         IjxImageWindow previousWindow = imp.getWindow();
         {
-            if (Prefs.blackCanvas && getClass().getName().equals("ij.gui.IjxImageWindow")) {
+            if (Prefs.blackCanvas && getClass().getName().equals("ijx.gui.IjxImageWindow")) {
                 displayWindow.setForeground(Color.white);
                 displayWindow.setBackground(Color.black);
             } else {

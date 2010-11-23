@@ -16,7 +16,7 @@ import ijx.IJ;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import ij.plugin.*;
+
 
 
 import ijx.IjxImagePlus;
@@ -516,7 +516,7 @@ public class Recorder extends PlugInFrame implements PlugIn, ActionListener, Ima
 		}
 		if (IJ.runFijiEditor(name, text))
 			return;
-		Editor ed = (Editor)IJ.runPlugIn("ij.plugin.frame.Editor", "");
+		Editor ed = (Editor)IJ.runPlugIn("ijx.plugin.frame.Editor", "");
 		if (ed==null)
 			return;
 		ed.createMacro(name, text);
@@ -542,7 +542,7 @@ public class Recorder extends PlugInFrame implements PlugIn, ActionListener, Ima
 		}
 		String text2 = new String(sb);
 		text2 = text2.replaceAll("print", "IJ.log");
-		NewPlugin np = (NewPlugin)IJ.runPlugIn("ij.plugin.NewPlugin", "name:" + name + "\n" + text2);
+		NewPlugin np = (NewPlugin)IJ.runPlugIn("ijx.plugin.NewPlugin", "name:" + name + "\n" + text2);
 	}
 
 	/** Temporarily disables path recording. */

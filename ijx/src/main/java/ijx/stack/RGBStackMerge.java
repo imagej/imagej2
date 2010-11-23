@@ -8,7 +8,7 @@ import ijx.Macro;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.CompositeImage;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

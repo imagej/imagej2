@@ -16,7 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
-import ij.plugin.*;
+
 
 
 import ijx.IjxImagePlus;

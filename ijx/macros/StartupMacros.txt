@@ -21,8 +21,8 @@
 
 // Global variables
 var pencilWidth=1,  eraserWidth=10, leftClick=16, alt=8;
-var brushWidth = 10; //call("ij.Prefs.get", "startup.brush", "10");
-var floodType =  "8-connected"; //call("ij.Prefs.get", "startup.flood", "8-connected");
+var brushWidth = 10; //call("ijx.Prefs.get", "startup.brush", "10");
+var floodType =  "8-connected"; //call("ijx.Prefs.get", "startup.flood", "8-connected");
 
 // The macro named "AutoRunAndHide" runs when ImageJ starts
 // and the file containing it is not displayed when ImageJ opens it.
@@ -31,7 +31,7 @@ var floodType =  "8-connected"; //call("ij.Prefs.get", "startup.flood", "8-conne
 
 function UseHEFT {
 	requires("1.38f");
-	state = call("ij.io.Opener.getOpenUsingPlugins");
+	state = call("ijx.io.Opener.getOpenUsingPlugins");
 	if (state=="false") {
 		setOption("OpenUsingPlugins", true);
 		showStatus("TRUE (images opened by HandleExtraFileTypes)");
@@ -213,7 +213,7 @@ macro 'Pencil Tool Options...' {
 // Runs when the user double-clicks on the paint brush tool icon
 macro 'Paintbrush Tool Options...' {
 	brushWidth = getNumber("Brush Width (pixels):", brushWidth);
-	call("ij.Prefs.set", "startup.brush", brushWidth);
+	call("ijx.Prefs.set", "startup.brush", brushWidth);
 }
 
 // Runs when the user double-clicks on the flood fill tool icon
@@ -222,7 +222,7 @@ macro 'Flood Fill Tool Options...' {
 	Dialog.addChoice("Flood Type:", newArray("4-connected", "8-connected"), floodType);
 	Dialog.show();
 	floodType = Dialog.getChoice();
-	call("ij.Prefs.set", "startup.flood", floodType);
+	call("ijx.Prefs.set", "startup.flood", floodType);
 }
 
 macro "Set Drawing Color..."{
@@ -247,7 +247,7 @@ macro "About Startup Macros..." {
 }
 
 macro "Save As JPEG... [j]" {
-	quality = call("ij.plugin.JpegWriter.getQuality");
+	quality = call("ijx.plugin.JpegWriter.getQuality");
 	quality = getNumber("JPEG quality (0-100):", quality);
 	run("Input/Output...", "jpeg="+quality);
 	saveAs("Jpeg");

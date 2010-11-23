@@ -1,5 +1,5 @@
 package ijx.plugin.filter;
-//import ij.plugin.filter.PlugInFilter;
+//
 import ijx.process.ImageProcessor;
 import ijx.process.ImageStatistics;
 import ijx.process.ByteProcessor;

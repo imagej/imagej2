@@ -13,7 +13,7 @@ import ijx.CompositeImage;
 import java.io.*;
 import java.net.URL;
 
-import ij.plugin.frame.*;
+
 import ijx.IjxImagePlus;
 
 /** Opens TIFFs, ZIP compressed TIFFs, DICOMs, GIFs and JPEGs using a URL. 
@@ -68,9 +68,9 @@ public class URLOpener implements PlugIn {
 		if (url.indexOf("://")==-1)
 			url = "http://" + url;
 		if (url.endsWith("/"))
-			IJ.runPlugIn("ij.plugin.BrowserLauncher", url.substring(0, url.length()-1));
+			IJ.runPlugIn("ijx.plugin.BrowserLauncher", url.substring(0, url.length()-1));
 		else if (url.endsWith(".html") || url.endsWith(".htm") ||  url.indexOf(".html#")>0 || noExtension(url))
-			IJ.runPlugIn("ij.plugin.BrowserLauncher", url);
+			IJ.runPlugIn("ijx.plugin.BrowserLauncher", url);
 		else if (url.endsWith(".txt")||url.endsWith(".ijm")||url.endsWith(".js")||url.endsWith(".java"))
 			openTextFile(url, false);
 		else if (url.endsWith(".jar")||url.endsWith(".class"))

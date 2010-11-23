@@ -4,7 +4,7 @@ import ijx.plugin.api.PlugIn;
 import ijx.Menus;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 import ijx.text.*;
 import ijx.io.OpenDialog;
 import ijx.sezpoz.ActionIjx;
@@ -22,7 +22,7 @@ public class JavaProperties implements PlugIn {
                commandKey = "utils.properties")
     public static class ActionToInvoke implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            IJ.runUserPlugIn("utils.properties", "ij.plugin.JavaProperties", null, false);
+            IJ.runUserPlugIn("utils.properties", "ijx.plugin.JavaProperties", null, false);
         }
     }
 

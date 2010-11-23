@@ -1,6 +1,6 @@
 package ijx.roi;
 import ijx.IJ;
-import ij.*;
+
 import ijx.gui.dialog.GenericDialog;
 import ijx.plugin.Colors;
 import java.awt.*;

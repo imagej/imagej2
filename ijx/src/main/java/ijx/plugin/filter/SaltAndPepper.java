@@ -4,7 +4,7 @@ import ijx.plugin.api.PlugInFilter;
 import ijx.IJ;
 import java.awt.*;
 import java.util.*;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 

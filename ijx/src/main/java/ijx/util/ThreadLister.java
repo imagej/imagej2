@@ -2,7 +2,7 @@ package ijx.util;
 import ijx.plugin.api.PlugIn;
 import ijx.IJ;
 import java.io.*;
-import ij.*;
+
 import ijx.text.*;
 
 /**

@@ -6,7 +6,7 @@ import ijx.process.ImageStatistics;
 import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 import ijx.plugin.filter.Analyzer;
 import ijx.text.*;
 

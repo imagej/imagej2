@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
-import ij.*;
+
 import ijx.gui.dialog.GenericDialog;
 import ijx.gui.IjxToolbar;
 import ijx.roi.Roi;
@@ -1154,7 +1154,7 @@ public class ToolbarSwing extends JToolBar implements MouseListener,
 					if (current==LINE && arrowMode) {
 						IJ.doCommand("Arrow Tool...");
 					} else
-						IJ.runPlugIn("ij.plugin.frame.LineWidthAdjuster", "");
+						IJ.runPlugIn("ijx.plugin.frame.LineWidthAdjuster", "");
 					break;
 				case POINT:
 					if (multiPointMode) {

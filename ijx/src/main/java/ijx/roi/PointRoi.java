@@ -5,7 +5,7 @@ import ijx.process.ByteProcessor;
 import ijx.Prefs;
 import ijx.IJ;
 import java.awt.*;
-import ij.*;
+
 import ijx.gui.IjxToolbar;
 
 import ijx.plugin.filter.Analyzer;

@@ -36,7 +36,7 @@
         setResult(labels[j],0,0);
      run("Clear Results");
      if (k==1)
-         call("ij.plugin.filter.Analyzer.setDefaultHeadings");
+         call("ijx.plugin.filter.Analyzer.setDefaultHeadings");
      for (i=1; i<lines.length; i++) {
         items=split(lines[i], cellseparator);
         for (j=k; j<items.length; j++)

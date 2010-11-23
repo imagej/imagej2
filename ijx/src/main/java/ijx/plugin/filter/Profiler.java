@@ -6,7 +6,7 @@ import ijx.gui.PlotWindow;
 import ijx.gui.dialog.GenericDialog;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

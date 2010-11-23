@@ -9,8 +9,8 @@ import ijx.IJ;
 import java.awt.*;
 import java.awt.event.*;
 
-import ij.*;
-import ij.plugin.*;
+
+
 
 
 /** Displays a window that allows the user to set the font, size and style. */

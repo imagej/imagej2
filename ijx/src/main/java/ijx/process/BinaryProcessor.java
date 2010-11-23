@@ -1,5 +1,5 @@
 package ijx.process;
-//import ij.*;
+//
 import java.awt.*;
 
 /** This class processes binary images. */

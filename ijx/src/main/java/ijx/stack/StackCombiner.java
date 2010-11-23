@@ -5,7 +5,7 @@ import ijx.gui.IjxToolbar;
 import ijx.gui.dialog.GenericDialog;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.CentralLookup;

@@ -9,8 +9,8 @@ import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.IJEventListener;
-import ij.*;
-import ij.plugin.*;
+
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;

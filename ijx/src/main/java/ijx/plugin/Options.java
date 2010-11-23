@@ -66,7 +66,7 @@ public class Options implements PlugIn {
     private static ActionListener callWithArg(final String commandKey, final String arg) {
         return new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                IJ.runPlugIn(commandKey, "ij.plugin.Options", arg);
+                IJ.runPlugIn(commandKey, "ijx.plugin.Options", arg);
             }
         };
     }

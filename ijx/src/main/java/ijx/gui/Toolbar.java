@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
-import ij.*;
+
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.frame.Editor;
 import ijx.plugin.MacroInstaller;
@@ -898,7 +898,7 @@ public class Toolbar extends Canvas implements IjxToolbar {
 					if (current==LINE && arrowMode) {
 						IJ.doCommand("Arrow Tool...");
 					} else
-						IJ.runPlugIn("ij.plugin.frame.LineWidthAdjuster", "");
+						IJ.runPlugIn("ijx.plugin.frame.LineWidthAdjuster", "");
 					break;
 				case POINT:
 					if (multiPointMode) {

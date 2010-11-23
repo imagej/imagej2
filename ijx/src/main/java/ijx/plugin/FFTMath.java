@@ -5,7 +5,7 @@ import ijx.process.FHT;
 import ijx.gui.dialog.GenericDialog;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.IjxImagePlus;

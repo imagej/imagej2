@@ -818,7 +818,7 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 			updateScrollBars(null, false);
 			if (RGBImage) doMasking(imp, ip);
 			if (propagate)
-				IJ.runMacroFile("ij.jar:PropagateMinAndMax");
+				IJ.runMacroFile("ijx.jar:PropagateMinAndMax");
 			if (allChannels) {
 				int channel = imp.getChannel();
 				for (int c=1; c<=channels; c++) {
@@ -843,7 +843,7 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 				if (Recorder.scriptMode())
 					Recorder.recordCall("IjxImagePlus.setDefault16bitRange("+range2+");");
 				else
-					Recorder.recordString("call(\"ij.IjxImagePlus.setDefault16bitRange\", "+range2+");\n");
+					Recorder.recordString("call(\"ijx.IjxImagePlus.setDefault16bitRange\", "+range2+");\n");
 
 			}
 		}
@@ -902,7 +902,7 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 			updateScrollBars(null, false);
 			if (RGBImage) doMasking(imp, ip);
 			if (propagate)
-				IJ.runMacroFile("ij.jar:PropagateMinAndMax");
+				IJ.runMacroFile("ijx.jar:PropagateMinAndMax");
 			if (Recorder.record) {
 				if (imp.getBitDepth()==32)
 					Recorder.record("setMinAndMax", min, max);

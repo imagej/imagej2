@@ -99,76 +99,76 @@ public class MenusIjx {
 
         JMenu file = new JMenu("File");
         addSubMenu(file, "New");
-        addPlugInItem(file, "Open...", "ij.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
-        addPlugInItem(file, "Open Next", "ij.plugin.NextImageOpener", KeyEvent.VK_O, true);
+        addPlugInItem(file, "Open...", "ijx.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
+        addPlugInItem(file, "Open Next", "ijx.plugin.NextImageOpener", KeyEvent.VK_O, true);
         addSubMenu(file, "Open Samples");
         addOpenRecentSubMenu(file);
         importMenu = addSubMenu(file, "Import");
         file.addSeparator();
-        addPlugInItem(file, "Close", "ij.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
-        addPlugInItem(file, "Save", "ij.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
+        addPlugInItem(file, "Close", "ijx.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
+        addPlugInItem(file, "Save", "ijx.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
         saveAsMenu = addSubMenu(file, "Save As");
-        addPlugInItem(file, "Revert", "ij.plugin.Commands(\"revert\")", KeyEvent.VK_R, false);
+        addPlugInItem(file, "Revert", "ijx.plugin.Commands(\"revert\")", KeyEvent.VK_R, false);
         file.addSeparator();
-        addPlugInItem(file, "Page Setup...", "ij.plugin.filter.Printer(\"setup\")", 0, false);
-        addPlugInItem(file, "Print...", "ij.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
+        addPlugInItem(file, "Page Setup...", "ijx.plugin.filter.Printer(\"setup\")", 0, false);
+        addPlugInItem(file, "Print...", "ijx.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
         file.addSeparator();
-        addPlugInItem(file, "Quit", "ij.plugin.Commands(\"quit\")", 0, false);
+        addPlugInItem(file, "Quit", "ijx.plugin.Commands(\"quit\")", 0, false);
 
         JMenu edit = new JMenu("Edit");
-        addPlugInItem(edit, "Undo", "ij.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
+        addPlugInItem(edit, "Undo", "ijx.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
         edit.addSeparator();
-        addPlugInItem(edit, "Cut", "ij.plugin.Clipboard(\"cut\")", KeyEvent.VK_X, false);
-        addPlugInItem(edit, "Copy", "ij.plugin.Clipboard(\"copy\")", KeyEvent.VK_C, false);
-        addPlugInItem(edit, "Copy to System", "ij.plugin.Clipboard(\"scopy\")", 0, false);
-        addPlugInItem(edit, "Paste", "ij.plugin.Clipboard(\"paste\")", KeyEvent.VK_V, false);
-        addPlugInItem(edit, "Paste Control...", "ij.plugin.frame.PasteController", 0, false);
+        addPlugInItem(edit, "Cut", "ijx.plugin.Clipboard(\"cut\")", KeyEvent.VK_X, false);
+        addPlugInItem(edit, "Copy", "ijx.plugin.Clipboard(\"copy\")", KeyEvent.VK_C, false);
+        addPlugInItem(edit, "Copy to System", "ijx.plugin.Clipboard(\"scopy\")", 0, false);
+        addPlugInItem(edit, "Paste", "ijx.plugin.Clipboard(\"paste\")", KeyEvent.VK_V, false);
+        addPlugInItem(edit, "Paste Control...", "ijx.plugin.frame.PasteController", 0, false);
         edit.addSeparator();
-        addPlugInItem(edit, "Clear", "ij.plugin.filter.Filler(\"clear\")", 0, false);
-        addPlugInItem(edit, "Clear Outside", "ij.plugin.filter.Filler(\"outside\")", 0, false);
-        addPlugInItem(edit, "Fill", "ij.plugin.filter.Filler(\"fill\")", KeyEvent.VK_F, false);
-        addPlugInItem(edit, "Draw", "ij.plugin.filter.Filler(\"draw\")", KeyEvent.VK_D, false);
-        addPlugInItem(edit, "Invert", "ij.plugin.filter.Filters(\"invert\")", KeyEvent.VK_I, true);
+        addPlugInItem(edit, "Clear", "ijx.plugin.filter.Filler(\"clear\")", 0, false);
+        addPlugInItem(edit, "Clear Outside", "ijx.plugin.filter.Filler(\"outside\")", 0, false);
+        addPlugInItem(edit, "Fill", "ijx.plugin.filter.Filler(\"fill\")", KeyEvent.VK_F, false);
+        addPlugInItem(edit, "Draw", "ijx.plugin.filter.Filler(\"draw\")", KeyEvent.VK_D, false);
+        addPlugInItem(edit, "Invert", "ijx.plugin.filter.Filters(\"invert\")", KeyEvent.VK_I, true);
         edit.addSeparator();
         addSubMenu(edit, "Selection");
         optionsMenu = addSubMenu(edit, "Options");
 
         JMenu image = new JMenu("Image");
         JMenu imageType = new JMenu("Type");
-        gray8Item = addCheckboxItem(imageType, "8-bit", "ij.plugin.Converter(\"8-bit\")");
-        gray16Item = addCheckboxItem(imageType, "16-bit", "ij.plugin.Converter(\"16-bit\")");
-        gray32Item = addCheckboxItem(imageType, "32-bit", "ij.plugin.Converter(\"32-bit\")");
-        color256Item = addCheckboxItem(imageType, "8-bit Color", "ij.plugin.Converter(\"8-bit Color\")");
-        colorRGBItem = addCheckboxItem(imageType, "RGB Color", "ij.plugin.Converter(\"RGB Color\")");
+        gray8Item = addCheckboxItem(imageType, "8-bit", "ijx.plugin.Converter(\"8-bit\")");
+        gray16Item = addCheckboxItem(imageType, "16-bit", "ijx.plugin.Converter(\"16-bit\")");
+        gray32Item = addCheckboxItem(imageType, "32-bit", "ijx.plugin.Converter(\"32-bit\")");
+        color256Item = addCheckboxItem(imageType, "8-bit Color", "ijx.plugin.Converter(\"8-bit Color\")");
+        colorRGBItem = addCheckboxItem(imageType, "RGB Color", "ijx.plugin.Converter(\"RGB Color\")");
         imageType.add(new JMenuItem("-"));
-        RGBStackItem = addCheckboxItem(imageType, "RGB Stack", "ij.plugin.Converter(\"RGB Stack\")");
-        HSBStackItem = addCheckboxItem(imageType, "HSB Stack", "ij.plugin.Converter(\"HSB Stack\")");
+        RGBStackItem = addCheckboxItem(imageType, "RGB Stack", "ijx.plugin.Converter(\"RGB Stack\")");
+        HSBStackItem = addCheckboxItem(imageType, "HSB Stack", "ijx.plugin.Converter(\"HSB Stack\")");
         image.add(imageType);
 
         image.addSeparator();
         addSubMenu(image, "Adjust");
-        addPlugInItem(image, "Show Info...", "ij.plugin.filter.Info", KeyEvent.VK_I, false);
-        addPlugInItem(image, "Properties...", "ij.plugin.filter.ImageProperties", KeyEvent.VK_P, true);
+        addPlugInItem(image, "Show Info...", "ijx.plugin.filter.Info", KeyEvent.VK_I, false);
+        addPlugInItem(image, "Properties...", "ijx.plugin.filter.ImageProperties", KeyEvent.VK_P, true);
         //addSubMenu(image, "Benchmarks");
         addSubMenu(image, "Color");
         addSubMenu(image, "Stacks");
         addSubMenu(image, "Hyperstacks");
         image.addSeparator();
-        addPlugInItem(image, "Crop", "ij.plugin.filter.Resizer(\"crop\")", KeyEvent.VK_X, true);
-        addPlugInItem(image, "Duplicate...", "ij.plugin.filter.Duplicater", KeyEvent.VK_D, true);
-        addPlugInItem(image, "Rename...", "ij.plugin.SimpleCommands(\"rename\")", 0, false);
-        addPlugInItem(image, "Scale...", "ij.plugin.Scaler", KeyEvent.VK_E, false);
-        addPlugInItem(image, "Translate...", "ij.plugin.filter.Translator", 0, false);
+        addPlugInItem(image, "Crop", "ijx.plugin.filter.Resizer(\"crop\")", KeyEvent.VK_X, true);
+        addPlugInItem(image, "Duplicate...", "ijx.plugin.filter.Duplicater", KeyEvent.VK_D, true);
+        addPlugInItem(image, "Rename...", "ijx.plugin.SimpleCommands(\"rename\")", 0, false);
+        addPlugInItem(image, "Scale...", "ijx.plugin.Scaler", KeyEvent.VK_E, false);
+        addPlugInItem(image, "Translate...", "ijx.plugin.filter.Translator", 0, false);
         addSubMenu(image, "Rotate");
         addSubMenu(image, "Zoom");
         image.addSeparator();
         addSubMenu(image, "Lookup Tables");
 
         JMenu process = new JMenu("Process");
-        addPlugInItem(process, "Smooth", "ij.plugin.filter.Filters(\"smooth\")", KeyEvent.VK_S, true);
-        addPlugInItem(process, "Sharpen", "ij.plugin.filter.Filters(\"sharpen\")", 0, false);
-        addPlugInItem(process, "Find Edges", "ij.plugin.filter.Filters(\"edge\")", 0, false);
-        addPlugInItem(process, "Enhance Contrast", "ij.plugin.ContrastEnhancer", 0, false);
+        addPlugInItem(process, "Smooth", "ijx.plugin.filter.Filters(\"smooth\")", KeyEvent.VK_S, true);
+        addPlugInItem(process, "Sharpen", "ijx.plugin.filter.Filters(\"sharpen\")", 0, false);
+        addPlugInItem(process, "Find Edges", "ijx.plugin.filter.Filters(\"edge\")", 0, false);
+        addPlugInItem(process, "Enhance Contrast", "ijx.plugin.ContrastEnhancer", 0, false);
         addSubMenu(process, "Noise");
         addSubMenu(process, "Shadows");
         addSubMenu(process, "Binary");
@@ -176,52 +176,52 @@ public class MenusIjx {
         addSubMenu(process, "FFT");
         filtersMenu = addSubMenu(process, "Filters");
         process.addSeparator();
-        addPlugInItem(process, "Image Calculator...", "ij.plugin.ImageCalculator", 0, false);
-        addPlugInItem(process, "Subtract Background...", "ij.plugin.filter.BackgroundSubtracter", 0, false);
+        addPlugInItem(process, "Image Calculator...", "ijx.plugin.ImageCalculator", 0, false);
+        addPlugInItem(process, "Subtract Background...", "ijx.plugin.filter.BackgroundSubtracter", 0, false);
         addItem(process, "Repeat Command", KeyEvent.VK_R, true);
 
         JMenu analyze = new JMenu("Analyze");
-        addPlugInItem(analyze, "Measure", "ij.plugin.filter.Analyzer", KeyEvent.VK_M, false);
-        addPlugInItem(analyze, "Analyze Particles...", "ij.plugin.filter.ParticleAnalyzer", 0, false);
-        addPlugInItem(analyze, "Summarize", "ij.plugin.filter.Analyzer(\"sum\")", 0, false);
-        addPlugInItem(analyze, "Distribution...", "ij.plugin.Distribution", 0, false);
-        addPlugInItem(analyze, "Label", "ij.plugin.filter.Filler(\"label\")", 0, false);
-        addPlugInItem(analyze, "Clear Results", "ij.plugin.filter.Analyzer(\"clear\")", 0, false);
-        addPlugInItem(analyze, "Set Measurements...", "ij.plugin.filter.Analyzer(\"set\")", 0, false);
+        addPlugInItem(analyze, "Measure", "ijx.plugin.filter.Analyzer", KeyEvent.VK_M, false);
+        addPlugInItem(analyze, "Analyze Particles...", "ijx.plugin.filter.ParticleAnalyzer", 0, false);
+        addPlugInItem(analyze, "Summarize", "ijx.plugin.filter.Analyzer(\"sum\")", 0, false);
+        addPlugInItem(analyze, "Distribution...", "ijx.plugin.Distribution", 0, false);
+        addPlugInItem(analyze, "Label", "ijx.plugin.filter.Filler(\"label\")", 0, false);
+        addPlugInItem(analyze, "Clear Results", "ijx.plugin.filter.Analyzer(\"clear\")", 0, false);
+        addPlugInItem(analyze, "Set Measurements...", "ijx.plugin.filter.Analyzer(\"set\")", 0, false);
         analyze.addSeparator();
-        addPlugInItem(analyze, "Set Scale...", "ij.plugin.filter.ScaleDialog", 0, false);
-        addPlugInItem(analyze, "Calibrate...", "ij.plugin.filter.Calibrator", 0, false);
-        addPlugInItem(analyze, "Histogram", "ij.plugin.Histogram", KeyEvent.VK_H, false);
-        addPlugInItem(analyze, "Plot Profile", "ij.plugin.filter.Profiler(\"plot\")", KeyEvent.VK_K, false);
-        addPlugInItem(analyze, "Surface Plot...", "ij.plugin.SurfacePlotter", 0, false);
+        addPlugInItem(analyze, "Set Scale...", "ijx.plugin.filter.ScaleDialog", 0, false);
+        addPlugInItem(analyze, "Calibrate...", "ijx.plugin.filter.Calibrator", 0, false);
+        addPlugInItem(analyze, "Histogram", "ijx.plugin.Histogram", KeyEvent.VK_H, false);
+        addPlugInItem(analyze, "Plot Profile", "ijx.plugin.filter.Profiler(\"plot\")", KeyEvent.VK_K, false);
+        addPlugInItem(analyze, "Surface Plot...", "ijx.plugin.SurfacePlotter", 0, false);
         addSubMenu(analyze, "Gels");
         toolsMenu = addSubMenu(analyze, "Tools");
 
         window = new JMenu("Window");
-        addPlugInItem(window, "Show All", "ij.plugin.WindowOrganizer(\"show\")", KeyEvent.VK_F, true);
-        addPlugInItem(window, "Put Behind [tab]", "ij.plugin.Commands(\"tab\")", 0, false);
-        addPlugInItem(window, "Cascade", "ij.plugin.WindowOrganizer(\"cascade\")", 0, false);
-        addPlugInItem(window, "Tile", "ij.plugin.WindowOrganizer(\"tile\")", 0, false);
+        addPlugInItem(window, "Show All", "ijx.plugin.WindowOrganizer(\"show\")", KeyEvent.VK_F, true);
+        addPlugInItem(window, "Put Behind [tab]", "ijx.plugin.Commands(\"tab\")", 0, false);
+        addPlugInItem(window, "Cascade", "ijx.plugin.WindowOrganizer(\"cascade\")", 0, false);
+        addPlugInItem(window, "Tile", "ijx.plugin.WindowOrganizer(\"tile\")", 0, false);
         window.addSeparator();
 
         JMenu help = new JMenu("Help");
-        addPlugInItem(help, "ImageJ Website...", "ij.plugin.BrowserLauncher", 0, false);
-        addPlugInItem(help, "ImageJ News...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/notes.html\")", 0, false);
-        addPlugInItem(help, "Documentation...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/docs\")", 0, false);
-        addPlugInItem(help, "Installation...", "ij.plugin.SimpleCommands(\"install\")", 0, false);
-        addPlugInItem(help, "Search Website...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/search.html\")", 0, false);
-        addPlugInItem(help, "List Archives...", "ij.plugin.BrowserLauncher(\"https://list.nih.gov/archives/imagej.html\")", 0, false);
+        addPlugInItem(help, "ImageJ Website...", "ijx.plugin.BrowserLauncher", 0, false);
+        addPlugInItem(help, "ImageJ News...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/notes.html\")", 0, false);
+        addPlugInItem(help, "Documentation...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/docs\")", 0, false);
+        addPlugInItem(help, "Installation...", "ijx.plugin.SimpleCommands(\"install\")", 0, false);
+        addPlugInItem(help, "Search Website...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/search.html\")", 0, false);
+        addPlugInItem(help, "List Archives...", "ijx.plugin.BrowserLauncher(\"https://list.nih.gov/archives/imagej.html\")", 0, false);
         help.addSeparator();
-        addPlugInItem(help, "Resources...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/developer/index.html\")", 0, false);
-        addPlugInItem(help, "Plugins...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/plugins\")", 0, false);
-        addPlugInItem(help, "Macros...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/macros/\")", 0, false);
-        addPlugInItem(help, "Macro Functions...", "ij.plugin.BrowserLauncher(\"" + IJ.URL + "/developer/macro/functions.html\")", 0, false);
+        addPlugInItem(help, "Resources...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/developer/index.html\")", 0, false);
+        addPlugInItem(help, "Plugins...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/plugins\")", 0, false);
+        addPlugInItem(help, "Macros...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/macros/\")", 0, false);
+        addPlugInItem(help, "Macro Functions...", "ijx.plugin.BrowserLauncher(\"" + IJ.URL + "/developer/macro/functions.html\")", 0, false);
         help.addSeparator();
-        addPlugInItem(help, "Update ImageJ...", "ij.plugin.ImageJ_Updater", 0, false);
-        addPlugInItem(help, "Update Menus", "ij.plugin.ImageJ_Updater(\"menus\")", 0, false);
+        addPlugInItem(help, "Update ImageJ...", "ijx.plugin.ImageJ_Updater", 0, false);
+        addPlugInItem(help, "Update Menus", "ijx.plugin.ImageJ_Updater(\"menus\")", 0, false);
         help.addSeparator();
         aboutMenu = addSubMenu(help, "About Plugins");
-        addPlugInItem(help, "About ImageJ...", "ij.plugin.AboutBox", 0, false);
+        addPlugInItem(help, "About ImageJ...", "ijx.plugin.AboutBox", 0, false);
 
         addPluginsMenu();
         if (applet == null) {
@@ -489,7 +489,7 @@ public class MenusIjx {
             String prefsValue = value;
             value = value.substring(2, value.length()); //remove menu code and coma
             className = value.substring(value.lastIndexOf(',') + 1, value.length());
-            boolean found = className.startsWith("ij.");
+            boolean found = className.startsWith("ijx.");
             if (!found && plugins != null) { // does this plugin exist?
                 if (plugins2 == null) {
                     plugins2 = getStrippedPlugins(plugins);
@@ -990,7 +990,7 @@ public class MenusIjx {
         addOrdered(menu, item);
         item.addActionListener(ijApp);
         String path = (dir != null ? dir + File.separator : "") + name;
-        pluginsTable.put(command, "ij.plugin.Macro_Runner(\"" + path + "\")");
+        pluginsTable.put(command, "ijx.plugin.Macro_Runner(\"" + path + "\")");
         nMacros++;
     }
 
@@ -1003,7 +1003,7 @@ public class MenusIjx {
                     docBase = docBase.substring(0, index + 1);
                 }
             }
-            IJ.runPlugIn("ij.plugin.URLOpener", docBase + "StartupMacros.txt");
+            IJ.runPlugIn("ijx.plugin.URLOpener", docBase + "StartupMacros.txt");
             return;
         }
         if (macrosPath == null) {

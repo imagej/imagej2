@@ -2,7 +2,7 @@ package ijx.io;
 import ijx.Macro;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.plugin.frame.Recorder;
 import ijx.util.Java2;

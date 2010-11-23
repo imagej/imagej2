@@ -2,7 +2,7 @@ package ijx.plugin;
 import ijx.plugin.api.PlugIn;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 import ijx.gui.IjxImageCanvas;

@@ -8,7 +8,7 @@ import ijx.CompositeImage;
 import ijx.IjxImagePlus;
 import java.io.*;
 import java.util.zip.*;
-import ij.*;
+
 
 import ijx.measure.Calibration;
 import ijx.plugin.filter.Analyzer;
@@ -277,7 +277,7 @@ public class FileSaver {
 		false if the image is not 8-bits or there is an I/O error. */
 	public boolean saveAsGif(String path) {
 		if (!okForGif(imp)) return false;
-		IJ.runPlugIn(imp, "ij.plugin.GifWriter", path);
+		IJ.runPlugIn(imp, "ijx.plugin.GifWriter", path);
 		updateImp(fi, FileInfo.GIF_OR_JPG);
 		return true;
 	}
@@ -324,7 +324,7 @@ public class FileSaver {
 
 	/** Save the image in BMP format using the specified path. */
 	public boolean saveAsBmp(String path) {
-		IJ.runPlugIn(imp, "ij.plugin.BMP_Writer", path);
+		IJ.runPlugIn(imp, "ijx.plugin.BMP_Writer", path);
 		updateImp(fi, FileInfo.BMP);
 		return true;
 	}
@@ -347,7 +347,7 @@ public class FileSaver {
 		and RGB images in PPM (portable pixmap) format,
 		using the specified path. */
 	public boolean saveAsPgm(String path) {
-		IJ.runPlugIn(imp, "ij.plugin.PNM_Writer", path);
+		IJ.runPlugIn(imp, "ijx.plugin.PNM_Writer", path);
 		updateImp(fi, FileInfo.PGM);
 		return true;
 	}
@@ -364,7 +364,7 @@ public class FileSaver {
 
 	/** Save the image in PNG format using the specified path. */
 	public boolean saveAsPng(String path) {
-		IJ.runPlugIn(imp, "ij.plugin.PNG_Writer", path);
+		IJ.runPlugIn(imp, "ijx.plugin.PNG_Writer", path);
 		updateImp(fi, FileInfo.IMAGEIO);
 		return true;
 	}
@@ -383,7 +383,7 @@ public class FileSaver {
 	/** Save the image in FITS format using the specified path. */
 	public boolean saveAsFits(String path) {
 		if (!okForFits(imp)) return false;
-		IJ.runPlugIn(imp, "ij.plugin.FITS_Writer", path);
+		IJ.runPlugIn(imp, "ijx.plugin.FITS_Writer", path);
 		updateImp(fi, FileInfo.FITS);
 		return true;
 	}

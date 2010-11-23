@@ -11,7 +11,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.awt.datatransfer.*;
 import java.util.*;
-import ij.*;
+
 
 import ijx.text.TextWindow;
 import ijx.plugin.filter.Analyzer;

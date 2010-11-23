@@ -41,10 +41,10 @@ import java.io.*;
 import java.util.*;
 import java.awt.List;
 import java.util.zip.*;
-import ij.*;
 
 
-import ij.plugin.filter.*;
+
+
 import ijx.plugin.Colors;
 import ijx.plugin.frame.Recorder;
 import ijx.CentralLookup;
@@ -1417,7 +1417,7 @@ public class RoiManager extends PlugInFrame implements ActionListener, ItemListe
     }
 
     void addParticles() {
-        String err = IJ.runMacroFile("ij.jar:AddParticles", null);
+        String err = IJ.runMacroFile("ijx.jar:AddParticles", null);
         if (err != null && err.length() > 0) {
             error(err);
         }
@@ -1675,7 +1675,7 @@ public class RoiManager extends PlugInFrame implements ActionListener, ItemListe
 
     /** Returns the name of the ROI with the specified index.
     Can be called from a macro using
-    <pre>call("ij.plugin.frame.RoiManager.getName", index)</pre>
+    <pre>call("ijx.plugin.frame.RoiManager.getName", index)</pre>
     Returns "null" if the Roi Manager is not open or index is
     out of range.
      */

@@ -4,7 +4,7 @@ import ijx.roi.Line;
 import ijx.roi.ShapeRoi;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.IjxImagePlus;
 import java.awt.*;

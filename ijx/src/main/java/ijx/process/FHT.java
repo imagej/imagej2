@@ -1,6 +1,6 @@
 package ijx.process;
 import ijx.IJ;
-import ij.*;
+
 import ijx.plugin.FFT;
 import ijx.plugin.ContrastEnhancer;
 import ijx.IjxImagePlus;

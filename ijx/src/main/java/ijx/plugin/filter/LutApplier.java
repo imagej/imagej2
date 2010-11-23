@@ -5,7 +5,7 @@ import ijx.plugin.api.PlugInFilter;
 import ijx.Undo;
 import ijx.WindowManager;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.plugin.frame.ContrastAdjuster;
 import ijx.IjxImagePlus;
@@ -35,7 +35,7 @@ public class LutApplier implements PlugInFilter {
 	void apply(IjxImagePlus imp, ImageProcessor ip) {
         if (ip.getMinThreshold()!=ImageProcessor.NO_THRESHOLD) {
             imp.unlock();
-			IJ.runPlugIn("ij.plugin.Thresholder", "skip");
+			IJ.runPlugIn("ijx.plugin.Thresholder", "skip");
             return;
         }
 		min = (int)ip.getMin();

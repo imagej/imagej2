@@ -12,7 +12,7 @@ import ijx.measure.Calibration;
 import ijx.WindowManager;
 import ijx.IJ;
 import ijx.LookUpTable;
-import ij.plugin.filter.*;
+
 
 
 import java.awt.*;

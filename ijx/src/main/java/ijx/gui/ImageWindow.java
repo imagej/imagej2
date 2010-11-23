@@ -10,7 +10,7 @@ import ijx.ImageJApplet;
 import ijx.CompositeImage;
 import java.awt.*;
 import java.awt.event.*;
-import ij.plugin.frame.*;
+
 import ijx.macro.Interpreter;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
@@ -66,7 +66,7 @@ public class ImageWindow extends Frame
 
     public ImageWindow(IjxImagePlus imp, IjxImageCanvas ic) {
         super(imp.getTitle());
-        if (Prefs.blackCanvas && getClass().getName().equals("ij.gui.IjxImageWindow")) {
+        if (Prefs.blackCanvas && getClass().getName().equals("ijx.gui.IjxImageWindow")) {
             setForeground(Color.white);
             setBackground(Color.black);
         } else {

@@ -3,7 +3,7 @@ import ijx.plugin.api.PlugIn;
 import ijx.gui.dialog.GenericDialog;
 import ijx.Prefs;
 import ijx.IJ;
-import ij.*;
+
 
 import ijx.util.Tools;
 import java.util.*;

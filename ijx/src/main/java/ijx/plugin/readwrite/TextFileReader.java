@@ -3,9 +3,9 @@ package ijx.plugin.readwrite;
 //import java.awt.*;
 //import java.awt.image.*;
 //import java.io.*;
-import ij.*;
+
 import ijx.plugin.api.PlugIn;
-//import ij.io.*;
+//
 //
 
 

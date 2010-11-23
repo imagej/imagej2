@@ -5,7 +5,7 @@ import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.process.LUT;
 
-import ij.plugin.frame.*;
+
 import ijx.plugin.filter.RGBStackSplitter;
 import ijx.io.FileInfo;
 import ijx.IjxImagePlus;

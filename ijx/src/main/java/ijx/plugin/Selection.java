@@ -19,7 +19,7 @@ import ijx.WindowManager;
 import ijx.IJ;
 
 
-import ij.plugin.frame.*;
+
 import ijx.macro.Interpreter;
 import ijx.plugin.filter.GaussianBlur;
 import ijx.plugin.filter.ThresholdToSelection;
@@ -95,14 +95,14 @@ public class Selection implements PlugIn, Measurements {
 		if (arg.equals("rotate")) {
 			double d = Tools.parseDouble(angle);
 			if (Double.isNaN(d)) angle = "15";
-			String value = IJ.runMacroFile("ij.jar:RotateSelection", angle);
+			String value = IJ.runMacroFile("ijx.jar:RotateSelection", angle);
 			if (value!=null) angle = value;    	
 		} else if (arg.equals("enlarge")) {
-			String value = IJ.runMacroFile("ij.jar:EnlargeSelection", enlarge); 
+			String value = IJ.runMacroFile("ijx.jar:EnlargeSelection", enlarge); 
 			if (value!=null) enlarge = value; 
 			Roi.previousRoi = roi;
 		} else if (arg.equals("band")) {
-			String value = IJ.runMacroFile("ij.jar:MakeSelectionBand", bandSize); 
+			String value = IJ.runMacroFile("ijx.jar:MakeSelectionBand", bandSize); 
 			if (value!=null) bandSize = value;    	
 			Roi.previousRoi = roi;
 		}
@@ -317,7 +317,7 @@ public class Selection implements PlugIn, Measurements {
 	void createSelectionFromMask(IjxImagePlus imp) {
 		ImageProcessor ip = imp.getProcessor();
 		if (ip.getMinThreshold()!=ImageProcessor.NO_THRESHOLD) {
-			IJ.runPlugIn("ij.plugin.filter.ThresholdToSelection", "");
+			IJ.runPlugIn("ijx.plugin.filter.ThresholdToSelection", "");
 			return;
 		}
 		if (!ip.isBinary()) {
@@ -331,7 +331,7 @@ public class Selection implements PlugIn, Measurements {
 		}
 		int threshold = ip.isInvertedLut()?255:0;
 		ip.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
-		IJ.runPlugIn("ij.plugin.filter.ThresholdToSelection", "");
+		IJ.runPlugIn("ijx.plugin.filter.ThresholdToSelection", "");
 	}
 
 	void invert(IjxImagePlus imp) {

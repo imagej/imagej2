@@ -22,10 +22,10 @@ import ijx.CompositeImage;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import ij.plugin.*;
 
 
-import ij.plugin.filter.*;
+
+
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.app.IjxApplication;

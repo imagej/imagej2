@@ -4,7 +4,7 @@
   if (is("applet"))
       prefs = split(defaults);
   else
-      prefs = split(call("ij.Prefs.get", "hyperstack.new", defaults));
+      prefs = split(call("ijx.Prefs.get", "hyperstack.new", defaults));
   if(prefs.length<8) prefs = split(defaults);
   type = prefs[0];
   mode = prefs[1];
@@ -85,7 +85,7 @@
   if (!batch) setBatchMode(false);
   prefs = type+" "+mode+" "+width+" "+height+" "+c+" "+z+" "+t+" "+label;
   if (!is("applet"))
-      call("ij.Prefs.set", "hyperstack.new", prefs);
+      call("ijx.Prefs.set", "hyperstack.new", prefs);
   exit;
 
 

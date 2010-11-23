@@ -46,7 +46,7 @@ public class Hotkeys implements PlugIn {
 		}
 		if (shortcut.length()>1)
 			shortcut = shortcut.replace('f','F');
-		String plugin = "ij.plugin.Hotkeys("+"\""+command+"\")";
+		String plugin = "ijx.plugin.Hotkeys("+"\""+command+"\")";
         IjxMenus m = CentralLookup.getDefault().lookup(IjxMenus.class);
 		int err = m.installPlugin(plugin,IjxMenus.SHORTCUTS_MENU,"*"+command,shortcut,IJ.getInstance());
 		switch (err) {
@@ -118,7 +118,7 @@ public class Hotkeys implements PlugIn {
 				v.addElement(cmd);
 			else {
 				String plugin = (String)commandTable.get(cmd);
-				if (plugin.indexOf("_")>=0 && !plugin.startsWith("ij."))
+				if (plugin.indexOf("_")>=0 && !plugin.startsWith("ijx."))
 					v.addElement(cmd);
  			}
 		}

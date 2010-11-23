@@ -31,7 +31,7 @@ public class Macro_Runner implements PlugIn {
 				runMacroFile(directory+name, null);
 		} else if (name.startsWith("JAR:"))
 			runMacroFromJar(name.substring(4), null);
-		else if (name.startsWith("ij.jar:"))
+		else if (name.startsWith("ijx.jar:"))
 			runMacroFromIJJar(name, null);
 		else {
 			path = Menus.getPlugInsPath() + name;
@@ -44,7 +44,7 @@ public class Macro_Runner implements PlugIn {
     	<code>name</code> is a full path. ".txt"  is
     	added if <code>name</code> does not have an extension. */
 	public String runMacroFile(String name, String arg) {
-		if (name.startsWith("ij.jar:"))
+		if (name.startsWith("ijx.jar:"))
 			return runMacroFromIJJar(name, arg);
         if (name.indexOf(".")==-1) name = name + ".txt";
 		String name2 = name;

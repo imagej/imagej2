@@ -166,9 +166,9 @@ public class AbstractStackWindow extends AbstractImageWindow implements IjxStack
             int rotation = event.getWheelRotation();
             if (hyperStack) {
                 if (rotation > 0) {
-                    IJ.runPlugIn("ij.plugin.Animator", "next");
+                    IJ.runPlugIn("ijx.plugin.Animator", "next");
                 } else if (rotation < 0) {
-                    IJ.runPlugIn("ij.plugin.Animator", "previous");
+                    IJ.runPlugIn("ijx.plugin.Animator", "previous");
                 }
             } else {
                 int slice = imp.getCurrentSlice() + rotation;

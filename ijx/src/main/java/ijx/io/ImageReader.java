@@ -2,7 +2,7 @@ package ijx.io;
 import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.IJ;
-import ij.*;
+
 
 import java.io.*;
 import java.net.*;

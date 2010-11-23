@@ -13,7 +13,7 @@ import ijx.io.SaveDialog;
 import ijx.Undo;
 import ijx.Macro;
 import ijx.IJ;
-import ij.*;
+
 
 
 import ijx.plugin.readwrite.TextReader;

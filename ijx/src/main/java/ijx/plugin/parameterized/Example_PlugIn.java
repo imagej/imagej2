@@ -81,7 +81,7 @@ public class Example_PlugIn extends AbstractPlugIn {
 //            impOut = impIn.createImagePlus();
 //            impOut.updateAndDraw();
 
-            IJ.runPlugIn("ij.plugin.LutLoader", "fire");
+            IJ.runPlugIn("ijx.plugin.LutLoader", "fire");
         }
         PlugInFunctions.listParamaters(this);
         //============================================================

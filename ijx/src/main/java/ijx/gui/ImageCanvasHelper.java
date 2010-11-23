@@ -4,7 +4,7 @@ import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.gui.IjxImageCanvas;
 import ijx.IjxImagePlus;
-import ij.*;
+
 import java.awt.Color;
 
 /**
