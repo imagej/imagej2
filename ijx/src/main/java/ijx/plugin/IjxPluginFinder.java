@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.openide.util.lookup.ServiceProvider;
 
-import imagej2.plugin.PluginEntry;
-import imagej2.plugin.PluginFinder;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginFinder;
 
 @ServiceProvider(service=PluginFinder.class)
 public class IjxPluginFinder implements PluginFinder {
