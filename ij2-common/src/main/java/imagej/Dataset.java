@@ -20,6 +20,6 @@ public interface Dataset
 	void addSubset(int axis, int position, Dataset ds);  // ImageStack.addSlice()
 	
 	// ********* primitive access support
-	Object getPrimitiveAccess();  // can return null
-	void releasePrimitiveAccess();
+	Object getDirectAccess();  // can return null
+	void releaseDirectAccess();
 }
