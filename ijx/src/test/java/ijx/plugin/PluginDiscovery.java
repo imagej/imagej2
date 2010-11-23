@@ -1,7 +1,7 @@
 package ijx.plugin;
 
-import imagej2.plugin.PluginEntry;
-import imagej2.plugin.PluginFinder;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginFinder;
 
 import java.util.ArrayList;
 import java.util.Collection;
