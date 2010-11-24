@@ -54,13 +54,10 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.RenderedImage;
 import java.awt.image.VolatileImage;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedImageAdapter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -587,21 +584,6 @@ public class GraphicsUtilities {
             g.dispose();
             return image;
         }
-    }
-
-        public ImageIcon getAsImageIcon(RenderedImage image) {
-        assert image != null;
-        BufferedImage buffered = getAsBufferedImage(image);
-        ImageIcon result = new ImageIcon(buffered);
-
-        return result;
-    }
-            public BufferedImage getAsBufferedImage(RenderedImage image) {
-        assert image != null;
-        PlanarImage planar = new RenderedImageAdapter(image);
-        BufferedImage result = planar.getAsBufferedImage();
-
-        return result;
     }
 
 /*
