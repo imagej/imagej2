@@ -25,6 +25,7 @@
     <module>_ij1-patches</module>
     <module>ij2-imglib</module>
     <module>ij2-common</module>
+    <module>ijx</module>
   </modules>
 
   <repositories>
