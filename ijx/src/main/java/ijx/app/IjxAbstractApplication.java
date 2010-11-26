@@ -28,8 +28,9 @@ import ijx.text.TextWindow;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.IjxTopComponent;
-import implementation.swing.MenusSwing;
 import ijx.gui.IjxImageWindow;
+import ijx.implementation.swing.MenusSwing;
+
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.GraphicsConfiguration;
