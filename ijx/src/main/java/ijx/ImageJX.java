@@ -6,6 +6,11 @@ package ijx;
 
 import ijx.util.Tools;
 import ijx.gui.IjxToolbar;
+import ijx.implementation.awt.FactoryAWT;
+import ijx.implementation.mdi.FactoryMDI;
+import ijx.implementation.mdi.TopComponentMDI;
+import ijx.implementation.swing.FactorySwing;
+
 import java.awt.*;
 import java.io.*;
 
@@ -16,10 +21,6 @@ import ijx.etc.StartupDialog;
 import ijx.event.ApplicationEvent;
 import ijx.event.EventBus;
 import ijx.exec.SwingUtilities;
-import implementation.awt.FactoryAWT;
-import implementation.mdi.FactoryMDI;
-import implementation.mdi.TopComponentMDI;
-import implementation.swing.FactorySwing;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
