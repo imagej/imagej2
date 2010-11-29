@@ -1,6 +1,6 @@
 package imagej.imglib.process.operation;
 
-import imagej.SampleManager;
+import imagej.EncodingManager;
 import imagej.UserType;
 import imagej.imglib.TypeManager;
 import imagej.process.Span;
@@ -29,7 +29,7 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		super(theImage, origin, Span.singlePlane(theImage.getDimension(0), theImage.getDimension(1), theImage.getNumDimensions()));
 		
-		SampleManager.verifyTypeCompatibility(pixels, inputType);
+		EncodingManager.verifyTypeCompatibility(pixels, inputType);
 		
 		switch (inputType)
 		{

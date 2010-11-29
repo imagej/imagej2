@@ -1,8 +1,8 @@
 package imagej.imglib.process.operation;
 
 import imagej.DataEncoding;
+import imagej.EncodingManager;
 import imagej.UserType;
-import imagej.imglib.EncodingManager;
 import imagej.process.Index;
 import imagej.process.Span;
 import mpicbg.imglib.image.Image;
