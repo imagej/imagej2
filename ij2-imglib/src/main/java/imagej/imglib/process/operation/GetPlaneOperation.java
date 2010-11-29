@@ -61,6 +61,11 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 				this.planeWriter = new UnsignedByteWriter((byte[])this.outputPlane);
 				break;
 		
+			case UINT12:
+				this.outputPlane = new int[storageRequired];
+				this.planeWriter = new UnsignedTwelveBitWriter((int[])this.outputPlane);
+				break;
+		
 			case SHORT:
 				this.outputPlane = new short[storageRequired];
 				this.planeWriter = new ShortWriter((short[])this.outputPlane);
@@ -81,24 +86,19 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 				this.planeWriter = new UnsignedIntWriter((int[])this.outputPlane);
 				break;
 		
-			case LONG:
-				this.outputPlane = new long[storageRequired];
-				this.planeWriter = new LongWriter((long[])this.outputPlane);
-				break;
-		
 			case FLOAT:
 				this.outputPlane = new float[storageRequired];
 				this.planeWriter = new FloatWriter((float[])this.outputPlane);
 				break;
 		
+			case LONG:
+				this.outputPlane = new long[storageRequired];
+				this.planeWriter = new LongWriter((long[])this.outputPlane);
+				break;
+		
 			case DOUBLE:
 				this.outputPlane = new double[storageRequired];
 				this.planeWriter = new DoubleWriter((double[])this.outputPlane);
-				break;
-		
-			case UINT12:
-				this.outputPlane = new int[storageRequired];
-				this.planeWriter = new UnsignedTwelveBitWriter((int[])this.outputPlane);
 				break;
 		
 			default:

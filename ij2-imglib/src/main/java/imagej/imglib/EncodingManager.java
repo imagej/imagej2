@@ -12,7 +12,7 @@ public class EncodingManager {
 
 	// ***** public interface  ************************************************/
 
-	/** lookup the DataEncoding assocated with the given user type */
+	/** lookup the DataEncoding associated with the given user type */
 	public static DataEncoding getEncoding(UserType userType)
 	{
 		return encodingArray[userType.ordinal()];
@@ -24,10 +24,60 @@ public class EncodingManager {
 		return (int) Math.ceil(encoding.getNumTypesPerValue() * numPixels);
 	}
 	
-	/** returns the macimum number of pixels a number of storage units can contain using a specified encoding */
+	/** returns the maximum number of pixels a number of storage units can contain using a specified encoding */
 	public static int calcMaxPixelsStorable(DataEncoding encoding, int numStorageUnits)
 	{
 		return (int) Math.floor(numStorageUnits / encoding.getNumTypesPerValue());
+	}
+	
+	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
+	public static void verifyTypeCompatibility(Object pixels, DataEncoding encoding)
+	{
+		switch (encoding.getBackingType())
+		{
+			case INT8:
+			case UINT8:
+				if (pixels instanceof byte[])
+					return;
+				break;
+			
+			case INT16:
+			case UINT16:
+				if (pixels instanceof short[])
+					return;
+				break;
+				
+			case INT32:
+			case UINT32:
+				if (pixels instanceof int[])
+					return;
+				break;
+			
+			case FLOAT32:
+				if (pixels instanceof float[])
+					return;
+				break;
+				
+			case INT64:
+				if (pixels instanceof long[])
+					return;
+				break;
+				
+			case FLOAT64:
+				if (pixels instanceof double[])
+					return;
+				break;
+				
+			default:
+				throw new IllegalArgumentException("unsupported type/pixel combination: expectedType ("+encoding.getBackingType()+
+														") and passed pixel Object type ("+pixels.getClass().toString()+")");
+		}
+	}
+	
+	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
+	public static void verifyTypeCompatibility(Object pixels, UserType userType)
+	{
+		verifyTypeCompatibility(pixels, getEncoding(userType));
 	}
 	
 	//***** static initialization **********************************************/
@@ -126,19 +176,19 @@ public class EncodingManager {
 		public double getNumTypesPerValue() { return 1.0; }
 	}
 	
-	private static class LongEncoding implements DataEncoding
+	private static class FloatEncoding implements DataEncoding
 	{
 		@Override
-		public StorageType getBackingType() { return StorageType.INT64; }
+		public StorageType getBackingType() { return StorageType.FLOAT32; }
 
 		@Override
 		public double getNumTypesPerValue() { return 1.0; }
 	}
 	
-	private static class FloatEncoding implements DataEncoding
+	private static class LongEncoding implements DataEncoding
 	{
 		@Override
-		public StorageType getBackingType() { return StorageType.FLOAT32; }
+		public StorageType getBackingType() { return StorageType.INT64; }
 
 		@Override
 		public double getNumTypesPerValue() { return 1.0; }

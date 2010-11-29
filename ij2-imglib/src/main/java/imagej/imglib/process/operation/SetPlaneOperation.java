@@ -57,11 +57,11 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 			case UINT:
 				this.reader = new UnsignedIntReader((int[])pixels);
 				break;
-			case LONG:
-				this.reader = new LongReader((long[])pixels);
-				break;
 			case FLOAT:
 				this.reader = new FloatReader((float[])pixels);
+				break;
+			case LONG:
+				this.reader = new LongReader((long[])pixels);
 				break;
 			case DOUBLE:
 				this.reader = new DoubleReader((double[])pixels);
