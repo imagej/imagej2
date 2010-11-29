@@ -1,6 +1,7 @@
 package imagej.imglib;
 
 import imagej.UserType;
+import imagej.Utils;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -87,11 +88,7 @@ public class TypeManager {
 	 */
 	public static double boundValueToType(RealType<?> type, double inputValue)
 	{
-		if (inputValue < type.getMinValue() ) inputValue = type.getMinValue();
-		
-		if (inputValue > type.getMaxValue() ) inputValue = type.getMaxValue();
-
-		return inputValue;
+		return Utils.boundToRange(type.getMinValue(), type.getMaxValue(), inputValue);
 	}
 
     /** returns true if two imglib types are strictly compatible */
@@ -106,6 +103,6 @@ public class TypeManager {
     /** returns true if a value is within the valid range defined for an imglib type */
 	public static boolean validValue(RealType<?> type, double value)
 	{
-		return (value >= type.getMinValue()) && (value <= type.getMaxValue());
+		return Utils.insideRange(type.getMinValue(), type.getMaxValue(), value);
 	}
 }
