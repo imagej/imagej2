@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 import ij.ImageStack;
 import ij.process.ImageProcessor;
+import imagej.Dataset;
+import imagej.Utils;
+import imagej.process.Index;
 
 // TODO - for performance could use planeRef's size/cache methods rather than querying dataset all the time
 
@@ -13,9 +16,12 @@ import ij.process.ImageProcessor;
 public class BridgeStack extends ImageStack
 {
 	// **** base interface instance variables
-	private PlanarDataset dataset;
+	private Dataset dataset;
 	private ArrayList<Object> planeRefs;
-
+	private int[] subDimensions;
+	private int[] planeDims;
+	private ProcessorFactory processorFactory;
+	
 	// *** compatibility instance variables
 	private final String outOfRange = "stack index out of range: ";
 	private double min = Double.MAX_VALUE;
@@ -26,19 +32,45 @@ public class BridgeStack extends ImageStack
 
 	// ********* constructor ******************************************************
 	
-	public BridgeStack(PlanarDataset ds)
+	public BridgeStack(Dataset ds, ProcessorFactory procFac)
 	{
 		this.dataset = ds;
 		
+		this.processorFactory = procFac;
+		
 		this.planeRefs = new ArrayList<Object>();
 		
-		int numPlanes = ds.getPlaneCount();
+		if (ds.getMetaData().getDirectAccessDimensionCount() != 2)
+			throw new IllegalArgumentException("can't make a BridgeStack on a dataset unless it is organized by plane");
+
+		int[] dimensions = ds.getDimensions();
+		
+		int numPlanes = (int) Utils.getTotalPlanes(dimensions);
+		
+		if (numPlanes <= 0)
+			throw new IllegalArgumentException("can't make a BridgeStack on a dataset that has 0 planes");
+		
+		// TODO - do we want a PlaneDataset interface that enables direct access? Simplify things? Or no difference?
+		
+		this.planeDims = new int[2];
+		this.planeDims[0] = dimensions[0];
+		this.planeDims[1] = dimensions[1];
+		
+		this.subDimensions = new int[dimensions.length-2];
+		for (int i = 0; i < subDimensions.length; i++)
+			this.subDimensions[i] = dimensions[i+2];
+		
+		int[] origin = Index.create(dimensions.length-2);
+		
+		int[] position = Index.create(dimensions.length-2);
 		
 		for (int i = 0; i < numPlanes; i++)
 		{
-			Object planeRef = ds.getPrimitiveArray(i);
+			Object planeRef = ds.getSubset(position, this.planeDims).getData();
 			
 			this.planeRefs.add(planeRef);
+			
+			Index.increment(position, origin, this.planeDims);
 		}
 	}
 	
@@ -46,31 +78,37 @@ public class BridgeStack extends ImageStack
 
 	private void insertSlice(int index, String sliceLabel, Object pixels)
 	{
-		this.dataset.insertPlaneAt(index, pixels);  // TODO - make sure this creates a new plane with default label
+		int axis = 2;
 		
-		this.dataset.setPlaneLabel(index, sliceLabel);  // update the label
+		Dataset newSubset = this.dataset.createSubset(axis, index);
 		
+		newSubset.setData(pixels);
+		
+		setSliceLabel(sliceLabel, index+1);
+
 		this.planeRefs.add(index, pixels);  // update our cache
 	}
 	
 	// ********* public interface ******************************************************
 	
+	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
 	@Override
 	public void addSlice(String sliceLabel, Object pixels)
 	{
-		int end = this.dataset.getPlaneCount();
+		int end = this.planeRefs.size();
 		
 		insertSlice(end, sliceLabel, pixels);
 	}
 
+	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
 	@Override
 	public void addSlice(String sliceLabel, ImageProcessor ip)
 	{
-		if ((ip.getWidth() != this.dataset.getPlaneWidth()) ||
-				(ip.getHeight()!=this.dataset.getPlaneHeight()))
+		if ((ip.getWidth() != getWidth()) ||
+				(ip.getHeight() != getHeight()))
 			throw new IllegalArgumentException("Dimensions do not match");
 		
-		if (this.dataset.getPlaneCount() == 0)  // TODO - note this code will never evaluate to true for imglib datasets as imglib constituted 11-20-10
+		if (this.planeRefs.size() == 0)  // TODO - note this code will never evaluate to true for imglib datasets as imglib constituted 11-20-10
 		{
 			this.cm = ip.getColorModel();
 			
@@ -82,36 +120,39 @@ public class BridgeStack extends ImageStack
 		addSlice(sliceLabel, ip.getPixels());
 	}
 	
+	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
 	@Override
 	public void addSlice(String sliceLabel, ImageProcessor ip, int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
 		insertSlice(n, sliceLabel, ip);
 	}
 
+	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
 	@Override
 	public void deleteSlice(int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
-		this.dataset.deletePlaneAt(n-1);
+		this.dataset.destroySubset(2, n-1);
 		
 		this.planeRefs.remove(n-1);
 	}
 	
+	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
 	@Override
 	public void deleteLastSlice()
 	{
-		int numPlanes = this.dataset.getPlaneCount();
+		int numPlanes = this.planeRefs.size();
 		
 		if (numPlanes > 0)  // TODO - imglib forces this to be true!!! should fail on deleting last plane. address with imglib people.
 		{
 			int lastPlane = numPlanes - 1;
 			
-			this.dataset.deletePlaneAt(lastPlane);
+			this.dataset.destroySubset(2, lastPlane);
 			
 			this.planeRefs.remove(lastPlane);
 		}
@@ -120,13 +161,13 @@ public class BridgeStack extends ImageStack
 	@Override
 	public int getWidth()
 	{
-		return this.dataset.getPlaneWidth();
+		return this.planeDims[0];
     }
 
 	@Override
     public int getHeight()
 	{
-		return this.dataset.getPlaneHeight();
+		return this.planeDims[1];
     }
     
 	@Override
@@ -165,7 +206,7 @@ public class BridgeStack extends ImageStack
 	/** Returns the pixel array for the specified slice, were 1<=n<=nslices. */
 	public Object getPixels(int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
 		return this.planeRefs.get(n-1);
@@ -176,10 +217,12 @@ public class BridgeStack extends ImageStack
 		were 1<=n<=nslices. */
 	public void setPixels(Object pixels, int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		this.dataset.setPrimitiveArray(n-1, pixels);
+		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		
+		this.dataset.getSubset(planePos, this.planeDims).setData(pixels);
 		
 		this.planeRefs.set(n-1, pixels);
 	}
@@ -198,7 +241,7 @@ public class BridgeStack extends ImageStack
 	/** Returns the number of slices in this stack. */
 	public int getSize()
 	{
-		return this.dataset.getPlaneCount();
+		return this.planeRefs.size();
 	}
 
 	@Override
@@ -206,16 +249,20 @@ public class BridgeStack extends ImageStack
 		if the stack is empty.  */
 	public String[] getSliceLabels()
 	{
-		if (this.dataset.getPlaneCount() == 0)
+		if (this.planeRefs.size() == 0)
 			return null;
 
 		// NOTE - we will return a COPY of the labels. Users should access them readonly.
 		// TODO - document.
 		
-		String[] labels = new String[this.dataset.getPlaneCount()];
+		String[] labels = new String[this.planeRefs.size()];
 		
 		for (int i = 0; i < labels.length; i++)
-			labels[i] = this.dataset.getPlaneLabel(i);
+		{
+			int[] planePos = Index.getPlanePosition(this.subDimensions, i);
+			
+			labels[i] = this.dataset.getSubset(planePos, this.planeDims).getMetaData().getLabel();
+		}
 		
 		return labels;
 	}
@@ -226,10 +273,12 @@ public class BridgeStack extends ImageStack
 		and FITS stacks, labels may contain header information. */
 	public String getSliceLabel(int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		return this.dataset.getPlaneLabel(n-1);
+		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		
+		return this.dataset.getSubset(planePos, this.planeDims).getMetaData().getLabel();
 	}
 	
 	@Override
@@ -268,46 +317,28 @@ public class BridgeStack extends ImageStack
 	/** Sets the label of the specified slice, were 1<=n<=nslices. */
 	public void setSliceLabel(String label, int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
+
+		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
 		
-		this.dataset.setPlaneLabel(n-1, label);
+		this.dataset.getSubset(planePos, this.planeDims).getMetaData().setLabel(label);
 	}
-	
+
 	@Override
 	/** Returns an ImageProcessor for the specified slice,
 		where 1<=n<=nslices. Returns null if the stack is empty.
 	*/
 	public ImageProcessor getProcessor(int n)
 	{
-		if (n<1 || n>this.dataset.getPlaneCount())
+		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
-		if (this.dataset.getPrimitiveArray(n-1) == null)                // TODO - impossible????
-			throw new IllegalArgumentException("Pixel array is null");
-
-		ImageProcessor ip = null;
-		/*
-		ImageProcessor ip;  problem - what if we want one processor per plane and return it over and over. here we are hatching new all the time.
-		switch (this.dataset.getSampleInfo().getUserType())
-		{
-		case BIT:
-		case BYTE:
-		case UBYTE:
-		case UINT12:
-		case SHORT:
-		case USHORT:
-		case INT:
-		case UINT:
-		case FLOAT:
-		case LONG:
-		case DOUBLE:
-		default:
-			throw new IllegalStateException("Unknown sample type "+this.dataset.getSampleInfo().getUserType());	
-		}
-		*/
+		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
 		
-		//ImageProcessor ip = this.dataset.getProcessor(n-1);
+		ImageProcessor ip = processorFactory.makeProcessor(planePos);
+		
+		// TODO : problem - what if we want one processor per plane and return it over and over. here we are hatching new all the time.
 		
 		if ((this.min != Double.MAX_VALUE) && (ip!=null))
 			ip.setMinAndMax(this.min, this.max);
@@ -336,8 +367,8 @@ public class BridgeStack extends ImageStack
 	/** Returns true if this is a 3-slice RGB stack. */
 	public boolean isRGB()
 	{
-    	if ((this.dataset.getPlaneCount()==3) &&
-    			(this.dataset.getPrimitiveArray(0) instanceof byte[]) &&
+    	if ((this.planeRefs.size()==3) &&
+    			(this.planeRefs.get(0) instanceof byte[]) &&
     			(getSliceLabel(1)!=null) &&
     			(getSliceLabel(1).equals("Red")))	
 			return true;
@@ -349,7 +380,7 @@ public class BridgeStack extends ImageStack
 	/** Returns true if this is a 3-slice HSB stack. */
 	public boolean isHSB()
 	{
-    	if ((this.dataset.getPlaneCount()==3) &&
+    	if ((this.planeRefs.size()==3) &&
     			(getSliceLabel(1)!=null) &&
     			(getSliceLabel(1).equals("Hue")))	
 			return true;
@@ -369,7 +400,7 @@ public class BridgeStack extends ImageStack
 	/** Frees memory by deleting a few slices from the end of the stack. */
 	public void trim()
 	{
-		int n = (int)Math.round(Math.log(this.dataset.getPlaneCount())+1.0);
+		int n = (int)Math.round(Math.log(this.planeRefs.size())+1.0);
 		
 		for (int i=0; i<n; i++)
 		{

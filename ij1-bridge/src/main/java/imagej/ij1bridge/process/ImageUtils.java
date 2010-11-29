@@ -2,7 +2,7 @@ package imagej.ij1bridge.process;
 
 import ij.ImagePlus;
 import ij.io.FileInfo;
-import imagej.SampleManager;
+import imagej.EncodingManager;
 import imagej.UserType;
 import imagej.ij1bridge.ImgLibImageStack;
 
@@ -44,7 +44,7 @@ public class ImageUtils
 	 */
 	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, UserType type)
 	{
-		SampleManager.verifyTypeCompatibility(pixels, type);
+		EncodingManager.verifyTypeCompatibility(pixels, type);
 		
 		PlanarContainerFactory containerFactory = new PlanarContainerFactory();
 

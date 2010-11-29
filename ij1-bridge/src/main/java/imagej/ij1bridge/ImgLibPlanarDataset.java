@@ -13,6 +13,8 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
 // NOTE
+//   becoming obsolete due to Dataset definition rather than PlanarDataset
+
 //   this must live in the bridge because it references ImgLibProcessor (which lives in the bridge).
 
 //TODO
