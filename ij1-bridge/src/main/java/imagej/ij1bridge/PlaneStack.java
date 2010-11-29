@@ -1,10 +1,11 @@
 package imagej.ij1bridge;
 
+import java.lang.reflect.Array;
+
 import imagej.DataEncoding;
-import imagej.SampleManager;
+import imagej.EncodingManager;
 import imagej.UserType;
 import imagej.Utils;
-import imagej.imglib.EncodingManager;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import imagej.imglib.process.operation.GetPlaneOperation;
@@ -278,45 +279,10 @@ public class PlaneStack
 	 */
 	public void insertPlane(int atPosition, UserType type, Object data)
 	{
-		SampleManager.verifyTypeCompatibility(data, type);
+		EncodingManager.verifyTypeCompatibility(data, type);
 		
-		int dataLen;
-		
-		switch (type)
-		{
-			case BYTE:
-			case UBYTE:
-				dataLen = ((byte[])data).length;
-				break;
-	
-			case SHORT:
-			case USHORT:
-				dataLen = ((short[])data).length;
-				break;
+		int dataLen = Array.getLength(data);
 
-			case BIT:
-			case UINT12:
-			case INT:
-			case UINT:
-				dataLen = ((int[])data).length;
-				break;
-				
-			case LONG:
-				dataLen = ((long[])data).length;
-				break;
-				
-			case FLOAT:
-				dataLen = ((float[])data).length;
-				break;
-				
-			case DOUBLE:
-				dataLen = ((double[])data).length;
-				break;
-				
-			default:
-				throw new IllegalArgumentException("PlaneStack::insertPlane(position,type,data): unsupported data type passed in - "+data.getClass());
-		}
-		
 		insertPlane(atPosition, data, dataLen, type);
 	}
 

@@ -8,6 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 import imagej.DataEncoding;
+import imagej.EncodingManager;
 import imagej.SampleManager;
 import imagej.UserType;
 import imagej.Utils;
@@ -61,7 +62,6 @@ import imagej.function.unary.XorUnaryFunction;
 import imagej.ij1bridge.process.operation.BlurFilterOperation;
 import imagej.ij1bridge.process.operation.Convolve3x3FilterOperation;
 import imagej.ij1bridge.process.operation.FindEdgesFilterOperation;
-import imagej.imglib.EncodingManager;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import imagej.imglib.process.Snapshot;
@@ -86,6 +86,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
+import java.lang.reflect.Array;
 
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
@@ -289,37 +290,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
-	/** calculates the number of elements in a primitive array. throws an exception if the passed in object is not a primitive array */
-	private int calcNumElements(Object pixels)
-	{
-		if (pixels instanceof byte[])
-		{
-			return ((byte[]) pixels).length;
-		}
-		else if (pixels instanceof short[])
-		{
-			return ((short[]) pixels).length;
-		}
-		else if (pixels instanceof int[])
-		{
-			return ((int[]) pixels).length;
-		}
-		else if (pixels instanceof float[])
-		{
-			return ((float[]) pixels).length;
-		}
-		else if (pixels instanceof double[])
-		{
-			return ((double[]) pixels).length;
-		}
-		else if (pixels instanceof long[])
-		{
-			return ((long[]) pixels).length;
-		}
-		else
-			throw new IllegalArgumentException("setImagePlanePixels(): unknown object passed as pixels - "+ pixels.getClass());
-	}
-	
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
 	@Override
 	protected byte[] create8BitImage()
@@ -690,7 +660,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
-		SampleManager.verifyTypeCompatibility(pixels, this.ijType);
+		EncodingManager.verifyTypeCompatibility(pixels, this.ijType);
 		
 		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
 
@@ -702,7 +672,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		System.out.println("setPixels() - nonoptimal container type - can only return a copy of pixels");
 
-		int numStorageUnits = calcNumElements(pixels);
+		int numStorageUnits = Array.getLength(pixels);
 
 		DataEncoding encoding = EncodingManager.getEncoding(this.ijType);
 		
