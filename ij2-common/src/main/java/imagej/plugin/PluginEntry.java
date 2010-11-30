@@ -51,7 +51,17 @@ public class PluginEntry {
 		stripArgsFromClass();
 	}
 	
-
+	/**
+	 * Used to represent IJ1 plugin meta information
+	 * @param pluginClass - full class name
+	 * @param label - the menu label in IJ 1.43u
+	 */
+	public PluginEntry(String pluginClass, String label) {
+		this.pluginClass = pluginClass;
+		this.parentMenu = "";
+		this.label = label;
+		stripArgsFromClass();
+	}
 	// Strips the String between the "" which is what IJ uses
 	// as arguments.
 	private void stripArgsFromClass()
@@ -61,8 +71,7 @@ public class PluginEntry {
 			int firstInstance = this.pluginClass.indexOf('\"');
 			int secondInstance = this.pluginClass.indexOf('\"', firstInstance + 1);
 			this.args = this.pluginClass.substring(firstInstance + 1, secondInstance);
-			System.out.println("The args are " + this.args + " for string " + this.pluginClass + " at index " + firstInstance + " " + secondInstance);
-			
+			//System.out.println("The args are " + this.args + " for string " + this.pluginClass + " at index " + firstInstance + " " + secondInstance);
 			this.pluginClass = this.pluginClass.replace('\"' + this.args + '\"', "");
 		}
 	}
