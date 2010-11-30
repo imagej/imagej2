@@ -46,9 +46,7 @@ public abstract class IjxPluginFinder {
       // TODO -- add real implementation here
       //
       String pluginClass = "ijx.plugin.FooBar";
-      ArrayList<String> parentMenu = new ArrayList<String>();
-      parentMenu.add("Plugins");
-      parentMenu.add("Foo");
+      String parentMenu = "Foo";
       String label = "Bar";
       PluginEntry entry = new PluginEntry(pluginClass, parentMenu, label);
       plugins.add(entry);
