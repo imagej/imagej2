@@ -14,7 +14,7 @@ import java.io.*;
         displays a file open dialog and opens and displays the 
         selected file. If 'arg' is a path, it opens the 
         specified file and the calling routine can display it using
-        "((IjxImagePlus)IJ.runPlugIn("ijx.plugin.BMP_Reader", path)).show()".
+        "((IjxImagePlus)IJ.runPlugIn("ijx.plugin.readwrite.BMP_Reader", path)).show()".
         */
 public class BMP_Reader extends ImagePlus implements PlugIn {
 

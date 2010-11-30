@@ -172,7 +172,7 @@ public class ImageJX extends IjxAbstractApplication {
         }
         if (applet == null) {
             // @todo ?? Should this be a PlugIn ??
-            IJ.runPlugIn("ijx.plugin.DragAndDrop", "");
+            IJ.runPlugIn("ijx.core.DragAndDrop", "");
         }
         // @todo re-enable
         //m.installStartupMacroSet();

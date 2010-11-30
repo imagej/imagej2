@@ -142,7 +142,7 @@ public class IjxAbstractApplication implements IjxApplication {
 //				IJ.runPlugIn("QuitHandler", ""); 
 //		} 
 //		if (applet==null)
-//			IJ.runPlugIn("ijx.plugin.DragAndDrop", "");
+//			IJ.runPlugIn("ijx.core.DragAndDrop", "");
 //		m.installStartupMacroSet();
 //		String str = m.nMacros==1?" macro)":" macros)";
 //		String java = "Java "+System.getProperty("java.version");
@@ -355,6 +355,7 @@ public class IjxAbstractApplication implements IjxApplication {
                     cmd = "run " + args[i + 1];
                     args[i + 1] = null;
                 } else if (arg.indexOf("ijx.ImageJ") == -1 && !arg.startsWith("-")) {
+                  //@todo: ????
                     cmd = "open " + arg;
                 }
 

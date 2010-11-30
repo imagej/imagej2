@@ -99,29 +99,29 @@ public class MenusIjx {
 
         JMenu file = new JMenu("File");
         addSubMenu(file, "New");
-        addPlugInItem(file, "Open...", "ijx.plugin.Commands(\"open\")", KeyEvent.VK_O, false);
+        addPlugInItem(file, "Open...", "ijx.core.Commands(\"open\")", KeyEvent.VK_O, false);
         addPlugInItem(file, "Open Next", "ijx.plugin.NextImageOpener", KeyEvent.VK_O, true);
         addSubMenu(file, "Open Samples");
         addOpenRecentSubMenu(file);
         importMenu = addSubMenu(file, "Import");
         file.addSeparator();
-        addPlugInItem(file, "Close", "ijx.plugin.Commands(\"close\")", KeyEvent.VK_W, false);
-        addPlugInItem(file, "Save", "ijx.plugin.Commands(\"save\")", KeyEvent.VK_S, false);
+        addPlugInItem(file, "Close", "ijx.core.Commands(\"close\")", KeyEvent.VK_W, false);
+        addPlugInItem(file, "Save", "ijx.core.Commands(\"save\")", KeyEvent.VK_S, false);
         saveAsMenu = addSubMenu(file, "Save As");
-        addPlugInItem(file, "Revert", "ijx.plugin.Commands(\"revert\")", KeyEvent.VK_R, false);
+        addPlugInItem(file, "Revert", "ijx.core.Commands(\"revert\")", KeyEvent.VK_R, false);
         file.addSeparator();
         addPlugInItem(file, "Page Setup...", "ijx.plugin.filter.Printer(\"setup\")", 0, false);
         addPlugInItem(file, "Print...", "ijx.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
         file.addSeparator();
-        addPlugInItem(file, "Quit", "ijx.plugin.Commands(\"quit\")", 0, false);
+        addPlugInItem(file, "Quit", "ijx.core.Commands(\"quit\")", 0, false);
 
         JMenu edit = new JMenu("Edit");
-        addPlugInItem(edit, "Undo", "ijx.plugin.Commands(\"undo\")", KeyEvent.VK_Z, false);
+        addPlugInItem(edit, "Undo", "ijx.core.Commands(\"undo\")", KeyEvent.VK_Z, false);
         edit.addSeparator();
-        addPlugInItem(edit, "Cut", "ijx.plugin.Clipboard(\"cut\")", KeyEvent.VK_X, false);
-        addPlugInItem(edit, "Copy", "ijx.plugin.Clipboard(\"copy\")", KeyEvent.VK_C, false);
-        addPlugInItem(edit, "Copy to System", "ijx.plugin.Clipboard(\"scopy\")", 0, false);
-        addPlugInItem(edit, "Paste", "ijx.plugin.Clipboard(\"paste\")", KeyEvent.VK_V, false);
+        addPlugInItem(edit, "Cut", "ijx.core.Clipboard(\"cut\")", KeyEvent.VK_X, false);
+        addPlugInItem(edit, "Copy", "ijx.core.Clipboard(\"copy\")", KeyEvent.VK_C, false);
+        addPlugInItem(edit, "Copy to System", "ijx.core.Clipboard(\"scopy\")", 0, false);
+        addPlugInItem(edit, "Paste", "ijx.core.Clipboard(\"paste\")", KeyEvent.VK_V, false);
         addPlugInItem(edit, "Paste Control...", "ijx.plugin.frame.PasteController", 0, false);
         edit.addSeparator();
         addPlugInItem(edit, "Clear", "ijx.plugin.filter.Filler(\"clear\")", 0, false);
@@ -199,7 +199,7 @@ public class MenusIjx {
 
         window = new JMenu("Window");
         addPlugInItem(window, "Show All", "ijx.plugin.WindowOrganizer(\"show\")", KeyEvent.VK_F, true);
-        addPlugInItem(window, "Put Behind [tab]", "ijx.plugin.Commands(\"tab\")", 0, false);
+        addPlugInItem(window, "Put Behind [tab]", "ijx.core.Commands(\"tab\")", 0, false);
         addPlugInItem(window, "Cascade", "ijx.plugin.WindowOrganizer(\"cascade\")", 0, false);
         addPlugInItem(window, "Tile", "ijx.plugin.WindowOrganizer(\"tile\")", 0, false);
         window.addSeparator();

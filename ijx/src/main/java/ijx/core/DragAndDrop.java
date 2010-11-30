@@ -1,4 +1,4 @@
-package ijx.plugin;
+package ijx.core;
 import ijx.stack.FileInfoVirtualStack;
 import ijx.plugin.api.PlugIn;
 import ijx.gui.IjxToolbar;

@@ -43,5 +43,16 @@ public class CodeSnippets {
         };
     }
 
+     * For Lookup
+     * 
+     * CentralLookup
+     * 
+    IjxToolbar toolbar = ((IjxToolbar) CentralLookup.getDefault().lookup(IjxToolbar.class));
+    KeyboardHandler keyHandler  = CentralLookup.getDefault().lookup(KeyboardHandler.class);
+     *
+     * ============================
+     *
+     * ============================
+     *
      */
 }
