@@ -96,7 +96,7 @@ public class PluginAdapterUtils {
 		{
 			//get the parent menu
 			String valueAtKey = keyValueLabelMap.get( pluginEntry.getLabel() );
-			
+	 		
 			//trim the full path by removing the label
 			int lastIndex = valueAtKey.lastIndexOf(" > " + pluginEntry.getLabel());
 			String trimmedResult = valueAtKey.substring(0, lastIndex);		
