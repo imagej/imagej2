@@ -5,8 +5,10 @@ import java.util.List;
 public class PluginEntry {
 
 	private String pluginClass;
-	private List<String> parentMenu;
+	private String parentMenu;
 	private String label;
+	private String args;
+	private String menu;
 	
 	public void setPluginClass(String pluginClass) {
 		this.pluginClass = pluginClass;
@@ -14,10 +16,10 @@ public class PluginEntry {
 	public String getPluginClass() {
 		return pluginClass;
 	}
-	public void setParentMenu(List<String> parentMenu) {
+	public void setParentMenu( String parentMenu ) {
 		this.parentMenu = parentMenu;
 	}
-	public List<String> getParentMenu() {
+	public String getParentMenu() {
 		return parentMenu;
 	}
 	public void setLabel(String label) {
@@ -26,23 +28,50 @@ public class PluginEntry {
 	public String getLabel() {
 		return label;
 	}
+	public void setArgs(String args) {
+		this.args = args;
+	}
+	public String getArgs() {
+		return args;
+	}
 	
-	public PluginEntry( String pluginClass, List<String> parentMenu, String label)
+	public void setMenu(String menu) {
+		this.menu = menu;
+	}
+	public String getMenu() {
+		return menu;
+	}
+	
+	public PluginEntry( String pluginClass, String parentMenu, String label )
 	{
 		this.pluginClass = pluginClass;
 		this.parentMenu = parentMenu;
 		this.label = label;
+		stripArgsFromClass();
 	}
 	
+
+	// Strips the String between the "" which is what IJ uses
+	// as arguments.
+	private void stripArgsFromClass()
+	{
+		if(this.pluginClass.contains("\""))
+		{
+			int firstInstance = this.pluginClass.indexOf('\"');
+			int secondInstance = this.pluginClass.indexOf('\"', firstInstance + 1);
+			this.args = this.pluginClass.substring(firstInstance + 1, secondInstance);
+			System.out.println("The args are " + this.args + " for string " + this.pluginClass + " at index " + firstInstance + " " + secondInstance);
+			
+			this.pluginClass = this.pluginClass.replace('\"' + this.args + '\"', "");
+		}
+	}
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(pluginClass);
 		sb.append(" [menu = ");
-		for (String menuItem : parentMenu) {
-			sb.append(menuItem);
-			sb.append(" > ");
-		}
+		sb.append(parentMenu);
+		sb.append(" > ");		
 		sb.append(label);
 		sb.append("]");
 		return sb.toString();

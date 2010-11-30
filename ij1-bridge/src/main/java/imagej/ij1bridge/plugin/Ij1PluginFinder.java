@@ -25,11 +25,12 @@ public class Ij1PluginFinder implements PluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
 			final String pluginClass = commands.get(key).toString();
-			final List<String> parentMenu = new ArrayList<String>();
-			// TODO -- populate with actual menu location
-			parentMenu.add("Plugins");
 			final String label = key.toString();
-			final PluginEntry pluginEntry = new PluginEntry(pluginClass, parentMenu, label);
+			final PluginEntry pluginEntry = new PluginEntry(  pluginClass, null, label );
+			
+			//try to find the menu hierarchy
+			PluginAdapterUtils plugInAdapterUtils = new PluginAdapterUtils(IJ.getInstance());
+			plugInAdapterUtils.getIJ1PluginMenuPath(pluginEntry);
 			plugins.add(pluginEntry);
 		}
 	}
@@ -40,12 +41,13 @@ public class Ij1PluginFinder implements PluginFinder {
 	 */
 	public static void main(String[] args) {
 		System.setProperty("plugins.dir", "/Applications/Science/ImageJ/plugins");//TEMP
-		System.out.println("Finding plugins...");
-		List<PluginEntry> plugins = new ArrayList<PluginEntry>();
+
+		ArrayList<PluginEntry> plugins = new ArrayList<PluginEntry>();
 		new Ij1PluginFinder().findPlugins(plugins);
+	
 		System.out.println("Discovered plugins:");
 		for (PluginEntry plugin : plugins) {
-			System.out.println("\t" + plugin);
+			System.out.println("\t" + plugin + " args are: " + plugin.getArgs() + " is activated my menu label " + plugin.getLabel() + " and parent menu is " + plugin.getParentMenu() );
 		}
 		System.exit(0);
 	}
