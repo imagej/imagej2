@@ -26,7 +26,7 @@ public class Ij1PluginFinder implements PluginFinder {
 		for (final Object key : commands.keySet()) {
 			final String pluginClass = commands.get(key).toString();
 			final String label = key.toString();
-			final PluginEntry pluginEntry = new PluginEntry(  pluginClass, null, label );
+			final PluginEntry pluginEntry = new PluginEntry(  pluginClass, label );
 			
 			//try to find the menu hierarchy
 			PluginAdapterUtils plugInAdapterUtils = new PluginAdapterUtils(IJ.getInstance());
