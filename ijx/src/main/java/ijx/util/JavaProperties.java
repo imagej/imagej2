@@ -22,7 +22,7 @@ public class JavaProperties implements PlugIn {
                commandKey = "utils.properties")
     public static class ActionToInvoke implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            IJ.runUserPlugIn("utils.properties", "ijx.plugin.JavaProperties", null, false);
+            IJ.runUserPlugIn("utils.properties", "ijx.util.JavaProperties", null, false);
         }
     }
 

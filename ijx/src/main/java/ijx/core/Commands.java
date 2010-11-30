@@ -1,4 +1,4 @@
-package ijx.plugin;
+package ijx.core;
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.api.PlugIn;
 import ijx.plugin.api.PlugInFrame;

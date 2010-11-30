@@ -164,7 +164,7 @@ public class ExecuterIjx implements Runnable {
             if (cmd.isConsumed()) {
                 return; // last chance to interrupt
             }
-            if (IJ.shiftKeyDown() && cmd.className.startsWith("ijx.plugin.Macro_Runner") && !Menus.getShortcuts().contains("*" + cmd)) {
+            if (IJ.shiftKeyDown() && cmd.className.startsWith("ijx.macro.Macro_Runner") && !Menus.getShortcuts().contains("*" + cmd)) {
                 IJ.open(IJ.getDirectory("plugins") + cmd.arg);
             } else {
                 cmd.plugin = IJ.runPlugIn(cmd.command, cmd.className, cmd.arg);

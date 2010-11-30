@@ -1,4 +1,4 @@
-package ijx.plugin;
+package ijx.core;
 
 import ijx.plugin.api.PlugIn;
 import ijx.process.ImageProcessor;
@@ -66,7 +66,7 @@ public class Options implements PlugIn {
     private static ActionListener callWithArg(final String commandKey, final String arg) {
         return new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                IJ.runPlugIn(commandKey, "ijx.plugin.Options", arg);
+                IJ.runPlugIn(commandKey, "ijx.core.Options", arg);
             }
         };
     }
