@@ -16,7 +16,8 @@ public class PluginEntry {
 	public String getPluginClass() {
 		return pluginClass;
 	}
-	public void setParentMenu( String parentMenu ) {
+	public void setParentMenu( String parentMenu ) 
+	{
 		this.parentMenu = parentMenu;
 	}
 	public String getParentMenu() {

@@ -85,9 +85,8 @@ public class PluginAdapterUtils {
 	}
 
 
-	
 	/**
-	 * Given a PlugInEntry and an ImageJ instance lookup the menu structure
+	 * Given a PlugInEntry and an ImageJ instance, lookup the menu structure
 	 * and assign the value to the PlugInEntry
 	 */
 	public void getIJ1PluginMenuPath( PluginEntry pluginEntry )
