@@ -39,6 +39,8 @@ public class Ij1PluginFinder implements PluginFinder {
 	 * Tests the IJ1 plugin discovery mechanism,
 	 * printing a list of all discovered plugins.
 	 */
+	/*
+	 * TODO: MOVE TO TEST
 	public static void main(String[] args) {
 		System.setProperty("plugins.dir", "/Applications/Science/ImageJ/plugins");//TEMP
 
@@ -51,5 +53,6 @@ public class Ij1PluginFinder implements PluginFinder {
 		}
 		System.exit(0);
 	}
+	*/
 
 }

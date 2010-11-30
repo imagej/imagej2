@@ -109,6 +109,9 @@ public class PluginAdapterUtils {
 	/**
 	 * @param args
 	 */
+	
+	/*
+	 * TODO: MOVE TO TEST
 	public static void main(String[] args) {
 		// Print IJ menu Hierarchy
 		new ImageJ();
@@ -116,6 +119,6 @@ public class PluginAdapterUtils {
 		
 		//print values
 		printHashMap( keyValues );
-	}
+	} */
 
 }
