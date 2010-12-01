@@ -13,25 +13,32 @@ public class PluginEntry {
 	public void setPluginClass(String pluginClass) {
 		this.pluginClass = pluginClass;
 	}
+	
 	public String getPluginClass() {
 		return pluginClass;
 	}
+	
 	public void setParentMenu( String parentMenu ) 
 	{
 		this.parentMenu = parentMenu;
 	}
+	
 	public String getParentMenu() {
 		return parentMenu;
 	}
+	
 	public void setLabel(String label) {
 		this.label = label;
 	}
+	
 	public String getLabel() {
 		return label;
 	}
+	
 	public void setArgs(String args) {
 		this.args = args;
 	}
+	
 	public String getArgs() {
 		return args;
 	}
@@ -39,6 +46,7 @@ public class PluginEntry {
 	public void setMenu(String menu) {
 		this.menu = menu;
 	}
+	
 	public String getMenu() {
 		return menu;
 	}
