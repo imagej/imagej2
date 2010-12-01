@@ -3,6 +3,18 @@ package imagej.imglib.process.operation;
 import imagej.EncodingManager;
 import imagej.UserType;
 import imagej.imglib.TypeManager;
+import imagej.primitive.BitReader;
+import imagej.primitive.ByteReader;
+import imagej.primitive.DataReader;
+import imagej.primitive.DoubleReader;
+import imagej.primitive.FloatReader;
+import imagej.primitive.IntReader;
+import imagej.primitive.LongReader;
+import imagej.primitive.ShortReader;
+import imagej.primitive.UnsignedByteReader;
+import imagej.primitive.UnsignedIntReader;
+import imagej.primitive.UnsignedShortReader;
+import imagej.primitive.UnsignedTwelveBitReader;
 import imagej.process.Span;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -10,11 +22,6 @@ import mpicbg.imglib.type.numeric.RealType;
 public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCursorRoiOperation<T>
 {
 	// **************** instance variables ********************************************
-	
-	private interface DataReader
-	{
-		double getValue(int index);
-	}
 	
 	// set in constructor
 	private DataReader reader;
@@ -34,40 +41,40 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		switch (inputType)
 		{
 			case BIT:
-				this.reader = new BitReader((int[])pixels);
+				this.reader = new BitReader(pixels);
 				break;
 			case BYTE:
-				this.reader = new ByteReader((byte[])pixels);
+				this.reader = new ByteReader(pixels);
 				break;
 			case UBYTE:
-				this.reader = new UnsignedByteReader((byte[])pixels);
+				this.reader = new UnsignedByteReader(pixels);
 				break;
 			case UINT12:
-				this.reader = new UnsignedTwelveBitReader((int[])pixels);
+				this.reader = new UnsignedTwelveBitReader(pixels);
 				break;
 			case SHORT:
-				this.reader = new ShortReader((short[])pixels);
+				this.reader = new ShortReader(pixels);
 				break;
 			case USHORT:
-				this.reader = new UnsignedShortReader((short[])pixels);
+				this.reader = new UnsignedShortReader(pixels);
 				break;
 			case INT:
-				this.reader = new IntReader((int[])pixels);
+				this.reader = new IntReader(pixels);
 				break;
 			case UINT:
-				this.reader = new UnsignedIntReader((int[])pixels);
+				this.reader = new UnsignedIntReader(pixels);
 				break;
 			case FLOAT:
-				this.reader = new FloatReader((float[])pixels);
+				this.reader = new FloatReader(pixels);
 				break;
 			case LONG:
-				this.reader = new LongReader((long[])pixels);
+				this.reader = new LongReader(pixels);
 				break;
 			case DOUBLE:
-				this.reader = new DoubleReader((double[])pixels);
+				this.reader = new DoubleReader(pixels);
 				break;
-			default:  // note ULONG falls through to here by design
-				throw new IllegalArgumentException("SetPlaneOperation(): unsupported data type - "+inputType);
+			default:
+				throw new IllegalStateException("SetPlaneOperation(): unsupported data type - "+inputType);
 		}
 		
 	}
@@ -95,265 +102,5 @@ public class SetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	protected void afterIteration()
 	{
 	}
-	
-	// **************** private code ********************************************
-	
-	private class BitReader implements DataReader
-	{
-		private int[] ints;
-		
-		public BitReader(int[] ints)
-		{
-			this.ints = ints;
-		}
-		
-		public double getValue(int index)
-		{
-			int intNumber = index / 32;
-			
-			int bitNumber = index % 32;
-
-			return getBit(intNumber, bitNumber);
-		}
-
-		private int getBit(int intNumber, int bitNumber)
-		{
-			int currValue = this.ints[intNumber];
-			
-			int alignedMask = 1 << (bitNumber);
-			
-			if ((currValue & alignedMask) > 0)
-				return 1;
-			else
-				return 0;
-		}
-	}
-	
-	private class ByteReader implements DataReader
-	{
-		private byte[] pixels;
-		
-		public ByteReader(byte[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-	
-	private class UnsignedByteReader implements DataReader
-	{
-		private byte[] pixels;
-		
-		public UnsignedByteReader(byte[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			double pixel = pixels[i];
-			if (pixel < 0)
-				pixel = 256.0 + pixel;
-			return pixel;
-		}
-	}
-	
-	private class UnsignedTwelveBitReader implements DataReader
-	{
-		private int[] ints;
-		
-		public UnsignedTwelveBitReader(int[] ints)
-		{
-			this.ints = ints;
-		}
-		
-		public double getValue(int index)
-		{
-			// divide pixels into buckets of nibbles. each bucket is 96 bits (three 32 bit ints = eight 12 bit ints)
-			int bucketNumber = index / 8;
-			
-			int intIndexOfBucketStart = bucketNumber * 3;
-			
-			int indexOfFirstNibble = index % 8;
-			
-			int nibble1, nibble2, nibble3;
-			
-			switch (indexOfFirstNibble)
-			
-			{
-				case 0:
-					nibble1 = getNibble(intIndexOfBucketStart,   0);
-					nibble2 = getNibble(intIndexOfBucketStart,   1);
-					nibble3 = getNibble(intIndexOfBucketStart,   2);
-					break;
-				case 1:
-					nibble1 = getNibble(intIndexOfBucketStart,   3);
-					nibble2 = getNibble(intIndexOfBucketStart,   4);
-					nibble3 = getNibble(intIndexOfBucketStart,   5);
-					break;
-				case 2:
-					nibble1 = getNibble(intIndexOfBucketStart,   6);
-					nibble2 = getNibble(intIndexOfBucketStart,   7);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 0);
-					break;
-				case 3:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 1);
-					nibble2 = getNibble(intIndexOfBucketStart+1, 2);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 3);
-					break;
-				case 4:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 4);
-					nibble2 = getNibble(intIndexOfBucketStart+1, 5);
-					nibble3 = getNibble(intIndexOfBucketStart+1, 6);
-					break;
-				case 5:
-					nibble1 = getNibble(intIndexOfBucketStart+1, 7);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 0);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 1);
-					break;
-				case 6:
-					nibble1 = getNibble(intIndexOfBucketStart+2, 2);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 3);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 4);
-					break;
-				case 7:
-					nibble1 = getNibble(intIndexOfBucketStart+2, 5);
-					nibble2 = getNibble(intIndexOfBucketStart+2, 6);
-					nibble3 = getNibble(intIndexOfBucketStart+2, 7);
-					break;
-				default:
-					throw new IllegalStateException();
-			}
-			
-			return (nibble3 << 8) + (nibble2 << 4) + (nibble1 << 0);
-		}
-		
-		private int getNibble(int intNumber, int nibbleNumber)
-		{
-			int currValue = this.ints[intNumber];
-			
-			int alignedMask = 15 << (4 * nibbleNumber);
-
-			int shiftedValue = currValue & alignedMask;
-			
-			return shiftedValue >> (4 * nibbleNumber);
-		}
-	}
-
-	private class ShortReader implements DataReader
-	{
-		private short[] pixels;
-		
-		public ShortReader(short[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-	
-	private class UnsignedShortReader implements DataReader
-	{
-		private short[] pixels;
-		
-		public UnsignedShortReader(short[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			double pixel = pixels[i];
-			if (pixel < 0)
-				pixel = 65536.0 + pixel;
-			return pixel;
-		}
-	}
-	
-	private class IntReader implements DataReader
-	{
-		private int[] pixels;
-		
-		public IntReader(int[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-	
-	private class UnsignedIntReader implements DataReader
-	{
-		private int[] pixels;
-		
-		public UnsignedIntReader(int[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			double pixel = pixels[i];
-			if (pixel < 0)
-				pixel = 4294967296.0 + pixel;
-			return pixel;
-		}
-	}
-	
-	private class LongReader implements DataReader
-	{
-		private long[] pixels;
-		
-		public LongReader(long[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-	
-	private class FloatReader implements DataReader
-	{
-		private float[] pixels;
-		
-		public FloatReader(float[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-	
-	private class DoubleReader implements DataReader
-	{
-		private double[] pixels;
-		
-		public DoubleReader(double[] pixels)
-		{
-			this.pixels = pixels;
-		}
-		
-		public double getValue(int i)
-		{
-			return pixels[i];
-		}
-	}
-
 }
 
