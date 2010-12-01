@@ -1,7 +1,9 @@
 package imagej;
 
+/** general purpose methods */
 public class Utils
 {
+	/** returns a value bounded to a specified range */
 	public static double boundToRange(double min, double max, double value)
 	{
 		if (value < min)
@@ -13,6 +15,7 @@ public class Utils
 		return value;
 	}
 	
+	/** returns true if given value is insize range defiined by min and max */
 	public static boolean insideRange(double min, double max, double value)
 	{
 		if (value < min)

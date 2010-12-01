@@ -1,11 +1,31 @@
 package imagej;
 
-
-public class EncodingManager {
+public class EncodingManager
+{
 
 	// ***** members  ************************************************/
 	
 	private static DataEncoding[] encodingArray;
+
+	//***** static initialization **********************************************/
+	
+	/** initialize the type lists */
+	static
+	{
+		encodingArray = new DataEncoding[UserType.values().length];
+
+		encodingArray[UserType.BIT.ordinal()] = new BitEncoding();
+		encodingArray[UserType.BYTE.ordinal()] = new ByteEncoding();
+		encodingArray[UserType.UBYTE.ordinal()] = new UnsignedByteEncoding();
+		encodingArray[UserType.UINT12.ordinal()] = new Unsigned12BitEncoding();
+		encodingArray[UserType.SHORT.ordinal()] = new ShortEncoding();
+		encodingArray[UserType.USHORT.ordinal()] = new UnsignedShortEncoding();
+		encodingArray[UserType.INT.ordinal()] = new IntEncoding();
+		encodingArray[UserType.UINT.ordinal()] = new UnsignedIntEncoding();
+		encodingArray[UserType.FLOAT.ordinal()] = new FloatEncoding();
+		encodingArray[UserType.LONG.ordinal()] = new LongEncoding();
+		encodingArray[UserType.DOUBLE.ordinal()] = new DoubleEncoding();
+	}
 
 	// ***** public interface  ************************************************/
 
@@ -28,9 +48,9 @@ public class EncodingManager {
 	}
 	
 	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
-	public static void verifyTypeCompatibility(Object pixels, DataEncoding encoding)
+	public static void verifyTypeCompatibility(Object pixels, StorageType storageType)
 	{
-		switch (encoding.getBackingType())
+		switch (storageType)
 		{
 			case INT8:
 			case UINT8:
@@ -69,34 +89,49 @@ public class EncodingManager {
 				break;
 		}
 
-		throw new IllegalArgumentException("unsupported type/pixel combination: expectedType ("+encoding.getBackingType()+
+		throw new IllegalArgumentException("unsupported type/pixel combination: expectedType ("+storageType+
 				") and passed pixel Object type ("+pixels.getClass().toString()+")");
 	}
 	
 	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
 	public static void verifyTypeCompatibility(Object pixels, UserType userType)
 	{
-		verifyTypeCompatibility(pixels, getEncoding(userType));
+		verifyTypeCompatibility(pixels, getEncoding(userType).getBackingType());
+	}
+
+	/** allocates and returns an array of specified StorageType and number of elements */
+	public static Object allocateCompatibleArray(StorageType backingType, int numElements)
+	{
+		switch (backingType)
+		{
+			case INT8:
+			case UINT8:
+				return new byte[numElements];
+			case INT16:
+			case UINT16:
+				return new short[numElements];
+			case INT32:
+			case UINT32:
+				return new int[numElements];
+			case FLOAT32:
+				return new float[numElements];
+			case INT64:
+				return new long[numElements];
+			case FLOAT64:
+				return new double[numElements];
+			default:
+				throw new IllegalStateException("unknown storage type : "+backingType);
+		}
 	}
 	
-	//***** static initialization **********************************************/
-	
-	/** initialize the type lists */
-	static
+	/** allocates and returns an array of specified UserType and number of elements */
+	public static Object allocateCompatibleArray(UserType type, int numElements)
 	{
-		encodingArray = new DataEncoding[UserType.values().length];
-
-		encodingArray[UserType.BIT.ordinal()] = new BitEncoding();
-		encodingArray[UserType.BYTE.ordinal()] = new ByteEncoding();
-		encodingArray[UserType.UBYTE.ordinal()] = new UnsignedByteEncoding();
-		encodingArray[UserType.UINT12.ordinal()] = new Unsigned12BitEncoding();
-		encodingArray[UserType.SHORT.ordinal()] = new ShortEncoding();
-		encodingArray[UserType.USHORT.ordinal()] = new UnsignedShortEncoding();
-		encodingArray[UserType.INT.ordinal()] = new IntEncoding();
-		encodingArray[UserType.UINT.ordinal()] = new UnsignedIntEncoding();
-		encodingArray[UserType.FLOAT.ordinal()] = new FloatEncoding();
-		encodingArray[UserType.LONG.ordinal()] = new LongEncoding();
-		encodingArray[UserType.DOUBLE.ordinal()] = new DoubleEncoding();
+		DataEncoding encoding = getEncoding(type);
+		
+		int storageUnitsNeeded = calcStorageUnitsRequired(encoding, numElements);
+		
+		return allocateCompatibleArray(encoding.getBackingType(), storageUnitsNeeded);
 	}
 
 	// ***** private support  ************************************************/

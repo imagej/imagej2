@@ -36,7 +36,7 @@ public class EncodingManagerTest
 	private void compatible(DataEncoding encoding, Object data)
 	{
 		try {
-			EncodingManager.verifyTypeCompatibility(data, encoding);
+			EncodingManager.verifyTypeCompatibility(data, encoding.getBackingType());
 			assertTrue(true);
 		} catch (IllegalArgumentException e) {
 			fail();
@@ -46,7 +46,7 @@ public class EncodingManagerTest
 	private void incompatible(DataEncoding encoding, Object data)
 	{
 		try {
-			EncodingManager.verifyTypeCompatibility(data, encoding);
+			EncodingManager.verifyTypeCompatibility(data, encoding.getBackingType());
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
