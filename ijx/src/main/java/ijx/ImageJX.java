@@ -77,9 +77,12 @@ Example: -run "About ImageJ..."
 </pre>
 @author Wayne Rasband (wsr@nih.gov)
  */
+
+/*
+ * GBH, ImageJX...
+ *
+ */
 public class ImageJX extends IjxAbstractApplication {
-    /** SansSerif, 12-point, plain font. */
-    static String guiMode = null;
 
     /** Creates a new ImageJ frame that runs as an application. */
     public ImageJX() {
@@ -98,7 +101,6 @@ public class ImageJX extends IjxAbstractApplication {
         //super("ImageJ");
         // Mac OSX
         System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-
 
         embedded = applet == null && mode == EMBEDDED;
         this.applet = applet;
@@ -193,61 +195,40 @@ public class ImageJX extends IjxAbstractApplication {
             javax.swing.JOptionPane.showMessageDialog(null, "ImageJ " + VERSION + " requires Java 1.4.1 or later.");
             System.exit(0);
         }
-        boolean noGUI = false;
-        int mode = STANDALONE;
+
         arguments = args;
+        processCommandLineArgs(arguments);
         int nArgs = args != null ? args.length : 0;
-        for (int i = 0; i < nArgs; i++) {
-            String arg = args[i];
-            if (arg == null) {
-                continue;
-            }
-            //IJ.log(i+"  "+arg);
-            if (args[i].startsWith("-")) {
-                if (args[i].startsWith("-batch")) {
-                    noGUI = true;
-                } else if (args[i].startsWith("-ijpath") && i + 1 < nArgs) {
-                    Prefs.setHomeDir(args[i + 1]);
-                    args[i + 1] = null;
-                } else if (args[i].startsWith("-port")) {
-                    int delta = (int) Tools.parseDouble(args[i].substring(5, args[i].length()), 0.0);
-                    if (delta == 0) {
-                        mode = EMBEDDED;
-                    } else if (delta > 0 && DEFAULT_PORT + delta < 65536) {
-                        port = DEFAULT_PORT + delta;
-                    }
-                }
-            }
-        }
         // If ImageJ is already running then isRunning()
         // will pass the arguments to it using sockets.
         if (nArgs > 0 && !noGUI && (mode == STANDALONE) && isRunning(args)) {
             return;
         }
-        //guiMode = "SDI (Swing)";
-        if (true) { //isSelectModeDialog()
-            try { // For Demo / Testing, Dialog to select GUI mode.
-                java.awt.EventQueue.invokeAndWait(new Runnable() {
-                    public void run() {
-                        StartupDialog dialog = new StartupDialog(new javax.swing.JFrame(), "ImageJX Startup", true);
-                        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                            public void windowClosing(java.awt.event.WindowEvent e) {
-                                System.exit(0);
-                            }
-                        });
-                        dialog.setVisible(true);
-                        int ret = dialog.getReturnStatus();
-                        guiMode = dialog.getMode();
-                    }
-                });
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ImageJX.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(ImageJX.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            guiMode = "AWT";
-        }
+
+        guiMode = "SDI (Swing)";
+//        if (true) { //isSelectModeDialog()
+//            try { // For Demo / Testing, Dialog to select GUI mode.
+//                java.awt.EventQueue.invokeAndWait(new Runnable() {
+//                    public void run() {
+//                        StartupDialog dialog = new StartupDialog(new javax.swing.JFrame(), "ImageJX Startup", true);
+//                        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//                            public void windowClosing(java.awt.event.WindowEvent e) {
+//                                System.exit(0);
+//                            }
+//                        });
+//                        dialog.setVisible(true);
+//                        int ret = dialog.getReturnStatus();
+//                        guiMode = dialog.getMode();
+//                    }
+//                });
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(ImageJX.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (InvocationTargetException ex) {
+//                Logger.getLogger(ImageJX.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        } else {
+//            guiMode = "AWT";
+//        }
 
         IjxApplication ij = IJ.getInstance();
         if (!noGUI && (ij == null || (ij != null && !IJ.getTopComponentFrame().isShowing()))) {
@@ -293,6 +274,32 @@ public class ImageJX extends IjxAbstractApplication {
             System.exit(0);
         }
     }
+
+  private static void processCommandLineArgs(String[] args) {
+     int nArgs = args != null ? args.length : 0;
+        for (int i = 0; i < nArgs; i++) {
+            String arg = args[i];
+            if (arg == null) {
+                continue;
+            }
+            //IJ.log(i+"  "+arg);
+            if (args[i].startsWith("-")) {
+                if (args[i].startsWith("-batch")) {
+                    noGUI = true;
+                } else if (args[i].startsWith("-ijpath") && i + 1 < nArgs) {
+                    Prefs.setHomeDir(args[i + 1]);
+                    args[i + 1] = null;
+                } else if (args[i].startsWith("-port")) {
+                    int delta = (int) Tools.parseDouble(args[i].substring(5, args[i].length()), 0.0);
+                    if (delta == 0) {
+                        mode = EMBEDDED;
+                    } else if (delta > 0 && DEFAULT_PORT + delta < 65536) {
+                        port = DEFAULT_PORT + delta;
+                    }
+                }
+            }
+        }
+  }
 
     private static void setupUI() {
         try {

@@ -573,8 +573,12 @@ public class JXEditorPane extends JEditorPane implements /*Searchable,*/ Targeta
 //      JXList list = new JXList(true);
 //      list.setModel(createListModel(actionNames));
         JFrame frame = new JFrame();
-        //JXFrame frame = wrapWithScrollingInFrame(editor, list, "Looking at swingx editor default and styled actions (show in editor <--> list)");
         frame.getContentPane().add(toolbar, BorderLayout.WEST);
+        frame.getContentPane().add(BorderLayout.CENTER, new JScrollPane(editor));
+        frame.pack();
+        frame.setLocation(0,0);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
 }

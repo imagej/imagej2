@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.menu;
 
 import java.awt.Component;
 import java.awt.Font;

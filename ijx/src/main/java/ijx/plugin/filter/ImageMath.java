@@ -44,7 +44,9 @@ math17="NaN Background",ij.plugin.filter.ImageMath("nan")
 math18="Abs",ij.plugin.filter.ImageMath("abs")
 math19="Macro...",ij.plugin.filter.ImageMath("macro")
  */
+
 /** This plugin implements ImageJ's Process/Math submenu. */
+
 public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 
     //== MenuItems =========================================================

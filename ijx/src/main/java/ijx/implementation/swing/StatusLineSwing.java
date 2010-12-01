@@ -4,28 +4,32 @@ import ijx.event.EventBus;
 import ijx.event.EventBusListener;
 import ijx.event.StatusMessage;
 import ijx.exec.SwingUtilities;
+import ijx.gui.StaticSwingUtils;
 import javax.swing.JLabel;
 
 /**
- *  StatusBar that recieves and displays StatusMessages
- * @author GBH
- */
+ *  StatusBar that receives and displays StatusMessages using EventBus
+ * @author GBH, Nov 2010
 
-// @todo -- Does this need to be done on the EDT?
+ */
 public final class StatusLineSwing extends JLabel {
 
-    // Senders do this:    EventBus.getDefault().publish(new StatusMessage("Status Message"));
+  // Senders do this:    EventBus.getDefault().publish(new StatusMessage("Status Message"));
+  //
+  public StatusLineSwing() {
+    EventBus.getDefault().subscribe(StatusMessage.class, listener);
+  }
+  private final EventBusListener<StatusMessage> listener = new EventBusListener<StatusMessage>() {
 
-    public StatusLineSwing() {
-        EventBus.getDefault().subscribe(StatusMessage.class, listener);
-    }
-    private final EventBusListener<StatusMessage> listener = new EventBusListener<StatusMessage>() {
-        @Override
-        public void notify(final StatusMessage msg) {
-            System.out.println("In StatusLineSwing, isEDT? " + SwingUtilities.isEventDispatchThread());
-            if (msg != null) {
-                StatusLineSwing.this.setText(msg.getMessage());
-            }
+    @Override
+    public void notify(final StatusMessage msg) {
+      StaticSwingUtils.dispatchToEDT(new Runnable() {
+        public void run() {
+          if (msg != null) {
+            StatusLineSwing.this.setText(msg.getMessage());
+          }
         }
-    };
+      });
+    }
+  };
 }

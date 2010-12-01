@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.menu;
 
 import java.awt.Container;
 import javax.swing.Action;

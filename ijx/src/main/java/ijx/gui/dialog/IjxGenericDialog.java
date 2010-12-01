@@ -1,5 +1,6 @@
-package ijx.gui;
+package ijx.gui.dialog;
 
+import ijx.gui.dialog.IjxDialog;
 import ijx.gui.dialog.DialogListener;
 
 import ijx.plugin.filter.IjxPlugInFilterRunner;

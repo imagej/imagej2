@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.dialog;
 
 /**
  * IjxDialog: interface for a generalized Dialog in ImageJ

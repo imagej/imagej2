@@ -1,16 +1,16 @@
 package ijx;
 
-import ijx.gui.IjxGenericDialog;
+import ijx.gui.dialog.IjxGenericDialog;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxWindow;
-import ijx.gui.IjxDialog;
+import ijx.gui.dialog.IjxDialog;
 import ijx.gui.IjxImageCanvas;
 import ijx.plugin.frame.IjxPluginFrame;
 import ijx.process.ImageProcessor;
 import ijx.app.IjxApplication;
 import ijx.gui.IjxProgressBar;
 import ijx.gui.IjxToolbar;
-import ijx.gui.MenuBuilder;
+import ijx.gui.menu.MenuBuilder;
 import ijx.sezpoz.ActionIjx;
 import java.awt.Image;
 import java.awt.image.ColorModel;

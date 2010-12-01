@@ -16,5 +16,4 @@ public class StatusMessage {
         return message;
     }
 
-
 }
