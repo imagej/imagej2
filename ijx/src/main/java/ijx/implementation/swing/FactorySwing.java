@@ -16,13 +16,13 @@ import ijx.app.IjxApplication;
 import ijx.gui.AbstractImageCanvas;
 import ijx.gui.AbstractImageWindow;
 import ijx.gui.AbstractStackWindow;
-import ijx.gui.IjxDialog;
-import ijx.gui.IjxGenericDialog;
+import ijx.gui.dialog.IjxDialog;
+import ijx.gui.dialog.IjxGenericDialog;
 import ijx.gui.IjxImageCanvas;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxProgressBar;
 import ijx.gui.IjxWindow;
-import ijx.gui.MenuBuilder;
+import ijx.gui.menu.MenuBuilder;
 import ijx.plugin.frame.IjxPluginFrame;
 import ijx.sezpoz.ActionIjx;
 import java.awt.Container;
@@ -151,10 +151,7 @@ public class FactorySwing implements IjxFactory {
         return new WindowSwing();
     }
 
-    public IjxGenericDialog newGenericDialog() {
-        throw new UnsupportedOperationException("Not supported yet."); // @todo
-    }
-
+   
     public IjxPluginFrame newPluginFrame(String title) {
         return (IjxPluginFrame) new PlugInFrameSwing(title);
     }
@@ -162,4 +159,9 @@ public class FactorySwing implements IjxFactory {
     public IjxDialog newDialog() {
         return null;
     }
+
+     public IjxGenericDialog newGenericDialog() {
+        throw new UnsupportedOperationException("Not supported yet."); // @todo
+    }
+
 }

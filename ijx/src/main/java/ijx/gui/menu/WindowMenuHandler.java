@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.menu;
 
 import ijx.event.ApplicationEvent;
 import ijx.event.EventBus;

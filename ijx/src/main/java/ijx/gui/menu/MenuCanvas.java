@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.menu;
 
 /*
  * This implements a canvas which draws a menu

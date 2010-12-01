@@ -1,16 +1,16 @@
 package ijx;
+
 import ijx.plugin.frame.ContrastAdjuster;
 import ijx.plugin.frame.Channels;
 import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.process.LUT;
-
-
 import ijx.plugin.filter.RGBStackSplitter;
 import ijx.io.FileInfo;
-import ijx.IjxImagePlus;
-import ijx.IjxImageStack;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.*;
 
 public class CompositeImage extends ImagePlus {

@@ -16,7 +16,6 @@ import ijx.plugin.ScreenGrabber;
 import ijx.plugin.api.PlugInFilterRunner;
 import ijx.util.Tools;
 import ijx.IjxImagePlus;
-import ijx.gui.IjxGenericDialog;
 
 
 /**

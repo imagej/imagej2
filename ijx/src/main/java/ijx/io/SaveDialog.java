@@ -5,14 +5,13 @@ import ijx.IJ;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
 import ijx.plugin.frame.Recorder;
 import ijx.util.Java2;
 import ijx.macro.Interpreter;
 
-/** This class displays a dialog window from 
-	which the user can save a file. */ 
+/** This class displays a dialog window from which the user can save a file. */
+
 public class SaveDialog {
 
 	private String dir;

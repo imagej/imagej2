@@ -1,4 +1,4 @@
-package ijx.gui;
+package ijx.gui.menu;
 
 import java.util.ArrayList;
 import java.util.Iterator;

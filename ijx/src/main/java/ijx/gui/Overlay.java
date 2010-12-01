@@ -1,9 +1,9 @@
 package ijx.gui;
 import ijx.roi.Roi;
-import java.awt.*;
 import java.util.Vector;
 
 import ijx.process.ImageProcessor;
+import java.awt.Color;
 
 /** An Overlay is a list of Rois that can be drawn non-destructively on an Image. */
 public class Overlay {

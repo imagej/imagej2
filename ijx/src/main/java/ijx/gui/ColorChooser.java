@@ -6,7 +6,11 @@ import java.util.Vector;
 import java.awt.event.*;
 
 
- /** Displays a dialog that allows the user to select a color using three sliders. */
+
+/** Displays a dialog that allows the user to select a color using three sliders. */
+
+// @todo: replace with color chooser from JHotDraw...
+
 public class ColorChooser implements TextListener, AdjustmentListener {
     Vector colors, sliders;
     ColorPanel panel;

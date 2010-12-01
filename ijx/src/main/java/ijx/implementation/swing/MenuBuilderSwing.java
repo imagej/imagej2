@@ -1,6 +1,6 @@
 package ijx.implementation.swing;
 
-import ijx.gui.MenuBuilder;
+import ijx.gui.menu.MenuBuilder;
 import ijx.sezpoz.ActionIjx;
 import java.awt.Container;
 import java.awt.event.ActionListener;

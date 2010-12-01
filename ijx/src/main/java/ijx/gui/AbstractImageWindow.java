@@ -81,7 +81,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 /** Window for displaying images.
-/* Using composition rather than inhertance...
+ * Using composition rather than inheritance...
  * The component, displayWindow, acts as the window and is set when this class is constructed
  * GBH, Sept 2010
  */
@@ -165,8 +165,8 @@ public class AbstractImageWindow //extends Frame
         }
         // Add the canvas to the window
         displayWindow.add(ic.getCanvas());
-        //displayWindow.setLayout(new ImageLayout(ic)); //  <<============
-        displayWindow.setLayout(new BorderLayout()); //  <<============
+        displayWindow.setLayout(new ImageLayout(ic)); //  <<============
+        //displayWindow.setLayout(new BorderLayout()); //  <<============
         //
         ((IjxImageDisplayWindow) displayWindow).setDrawingDelegate(this);
         //

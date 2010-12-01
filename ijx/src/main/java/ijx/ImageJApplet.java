@@ -2,7 +2,7 @@ package ijx;
 
 
 import ijx.gui.ImageCanvas;
-import ijx.gui.MenuCanvas;
+import ijx.gui.menu.MenuCanvas;
 import ijx.gui.ScrollbarWithLabel;
 
 import ijx.io.PluginClassLoader;
