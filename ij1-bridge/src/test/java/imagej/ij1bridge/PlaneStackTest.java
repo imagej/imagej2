@@ -1,4 +1,4 @@
-package imagej.ij1bridge.plugin;
+package imagej.ij1bridge;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
