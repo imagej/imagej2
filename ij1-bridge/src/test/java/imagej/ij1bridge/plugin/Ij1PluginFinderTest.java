@@ -1,4 +1,4 @@
-package imagej.ij1bridge;
+package imagej.ij1bridge.plugin;
 
 import imagej.ij1bridge.plugin.Ij1PluginFinder;
 import imagej.plugin.PluginEntry;
