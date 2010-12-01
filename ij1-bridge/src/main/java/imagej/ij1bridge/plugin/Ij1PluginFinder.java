@@ -6,7 +6,6 @@ import ij.Menus;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -30,29 +29,10 @@ public class Ij1PluginFinder implements PluginFinder {
 			
 			//try to find the menu hierarchy
 			PluginAdapterUtils plugInAdapterUtils = new PluginAdapterUtils(IJ.getInstance());
-			plugInAdapterUtils.getIJ1PluginMenuPath(pluginEntry);
+			plugInAdapterUtils.setIJPluginParentMenu(pluginEntry);
 			plugins.add(pluginEntry);
 		}
 	}
 
-	/**
-	 * Tests the IJ1 plugin discovery mechanism,
-	 * printing a list of all discovered plugins.
-	 */
-	/*
-	 * TODO: MOVE TO TEST
-	public static void main(String[] args) {
-		System.setProperty("plugins.dir", "/Applications/Science/ImageJ/plugins");//TEMP
-
-		ArrayList<PluginEntry> plugins = new ArrayList<PluginEntry>();
-		new Ij1PluginFinder().findPlugins(plugins);
-	
-		System.out.println("Discovered plugins:");
-		for (PluginEntry plugin : plugins) {
-			System.out.println("\t" + plugin + " args are: " + plugin.getArgs() + " is activated my menu label " + plugin.getLabel() + " and parent menu is " + plugin.getParentMenu() );
-		}
-		System.exit(0);
-	}
-	*/
 
 }

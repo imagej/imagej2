@@ -48,7 +48,7 @@ public class PluginAdapterUtils {
 	}
 	
 	/*
-	 * Pass null for second argument unless you want to replace the current
+	 * Private method: Pass null for second argument unless you want to replace the current
 	 * parent label.
 	 */
 	private static void getMenuLabel(Menu menu, HashMap<String, String> keyValueLabelMap, String parentStringLabel) {
@@ -86,10 +86,9 @@ public class PluginAdapterUtils {
 
 
 	/**
-	 * Given a PlugInEntry and an ImageJ instance, lookup the menu structure
-	 * and assign the value to the PlugInEntry
+	 * Find the menu structure for a PlugInEntry object
 	 */
-	public void getIJ1PluginMenuPath( PluginEntry pluginEntry )
+	public void setIJPluginParentMenu( PluginEntry pluginEntry )
 	{
 		if ( keyValueLabelMap.containsKey( pluginEntry.getLabel() ))
 		{
@@ -105,19 +104,5 @@ public class PluginAdapterUtils {
 		} 
 	}
 
-	/**
-	 * @param args
-	 */
 	
-	/*
-	 * TODO: MOVE TO TEST
-	public static void main(String[] args) {
-		// Print IJ menu Hierarchy
-		new ImageJ();
-		HashMap<String, String> keyValues = PluginAdapterUtils.getIJMenusHashMap(IJ.getInstance());
-		
-		//print values
-		printHashMap( keyValues );
-	} */
-
 }
