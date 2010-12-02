@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import imagej.Dataset;
 import imagej.Utils;
+import imagej.dataset.Dataset;
 import imagej.process.Index;
 
 // TODO - for performance could use planeRef's size/cache methods rather than querying dataset all the time
@@ -66,7 +66,7 @@ public class BridgeStack extends ImageStack
 		
 		for (int i = 0; i < numPlanes; i++)
 		{
-			Object planeRef = ds.getSubset(position, this.planeDims).getData();
+			Object planeRef = ds.getSubset(position).getData();
 			
 			this.planeRefs.add(planeRef);
 			
@@ -78,9 +78,7 @@ public class BridgeStack extends ImageStack
 
 	private void insertSlice(int index, String sliceLabel, Object pixels)
 	{
-		int axis = 2;
-		
-		Dataset newSubset = this.dataset.createSubset(axis, index);
+		Dataset newSubset = this.dataset.insertNewSubset(index);
 		
 		newSubset.setData(pixels);
 		
@@ -137,7 +135,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
-		this.dataset.destroySubset(2, n-1);
+		this.dataset.removeSubset(n-1);
 		
 		this.planeRefs.remove(n-1);
 	}
@@ -152,7 +150,7 @@ public class BridgeStack extends ImageStack
 		{
 			int lastPlane = numPlanes - 1;
 			
-			this.dataset.destroySubset(2, lastPlane);
+			this.dataset.removeSubset(lastPlane);
 			
 			this.planeRefs.remove(lastPlane);
 		}
@@ -222,7 +220,7 @@ public class BridgeStack extends ImageStack
 
 		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
 		
-		this.dataset.getSubset(planePos, this.planeDims).setData(pixels);
+		this.dataset.getSubset(planePos).setData(pixels);
 		
 		this.planeRefs.set(n-1, pixels);
 	}
@@ -261,7 +259,7 @@ public class BridgeStack extends ImageStack
 		{
 			int[] planePos = Index.getPlanePosition(this.subDimensions, i);
 			
-			labels[i] = this.dataset.getSubset(planePos, this.planeDims).getMetaData().getLabel();
+			labels[i] = this.dataset.getSubset(planePos).getMetaData().getLabel();
 		}
 		
 		return labels;
@@ -278,7 +276,7 @@ public class BridgeStack extends ImageStack
 
 		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
 		
-		return this.dataset.getSubset(planePos, this.planeDims).getMetaData().getLabel();
+		return this.dataset.getSubset(planePos).getMetaData().getLabel();
 	}
 	
 	@Override
@@ -322,7 +320,7 @@ public class BridgeStack extends ImageStack
 
 		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
 		
-		this.dataset.getSubset(planePos, this.planeDims).getMetaData().setLabel(label);
+		this.dataset.getSubset(planePos).getMetaData().setLabel(label);
 	}
 
 	@Override

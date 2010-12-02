@@ -1,167 +1,230 @@
 package imagej.ij1bridge;
 
-import java.lang.reflect.Array;
-
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.container.array.ArrayContainerFactory;
+import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
-import imagej.DataEncoding;
-import imagej.Dataset;
-import imagej.EncodingManager;
 import imagej.MetaData;
-import imagej.SampleInfo;
 import imagej.UserType;
-import imagej.Utils;
+import imagej.dataset.Dataset;
+import imagej.dataset.PlanarDatasetFactory;
+import imagej.dataset.RecursiveDataset;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
-import imagej.SampleManager;
+import imagej.process.Index;
 
-public class ImgLibDataset<T extends RealType<T>> implements Dataset
+public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveDataset
 {
 	//************ instance variables ********************************************************
-	
-	private Image<T> image;
-	private MetaData metadata;
+	private Dataset dataset;
+	private Image<?> shadowImage;
 	private UserType userType;
-	private SampleInfo sampleInfo;
-	
-	/** a per thread variable. a cursor used to facilitate fast access to the ImgLib image. */
-	private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
-		new ThreadLocal<LocalizableByDimCursor<T>>()
-		{
-			@Override
-			protected LocalizableByDimCursor<T> initialValue() {
-				return image.createLocalizableByDimCursor();
-			}
+	private RealType<?> realType;
+	private ArrayContainerFactory planarFactory;
 
-			@Override
-			protected void finalize() throws Throwable {
-				try {
-					cachedCursor.get().close();
-					//System.out.println("closing cursor at "+System.nanoTime());
-				} finally {
-					super.finalize();
-				}
-			}
-		};
+	// TODO
+	// In ij1-bridge create an ImgLibAwareDataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
+	// Also overrides the add/remove subset calls to set an invalid flag. Then user should always call its method called getImage() that returns
+	// a cached Image and cached Image recreated and populated with correct primitive access when invalid. User should not cache image from the
+	// getImage() call.
 	
 	//************ constructor ********************************************************
 		
 	public ImgLibDataset(Image<T> image)
 	{
-		this.image = image;
+		this.shadowImage = image;
 		
-		RealType<?> iType = ImageUtils.getType(this.image);
-
-		this.userType = TypeManager.getUserType(iType);
-
-		this.sampleInfo = SampleManager.getSampleInfo(this.userType);
+		this.planarFactory = new ArrayContainerFactory();
 		
-		this.metadata = new MetaData();
-		this.metadata.setLabel(image.getName());
-		//this.metadata.setAxisLabels(axisLabels);
+		this.planarFactory.setOptimizedContainerUse(true);
+		
+		this.realType = ImageUtils.getType(image);
+
+		this.userType = TypeManager.getUserType(realType);
+		
+		int[] dimensions = image.getDimensions();
+		
+		this.dataset = new PlanarDatasetFactory().createDataset(this.userType, dimensions);
+		
+		int subDimensionLength = dimensions.length-2;
+	
+		int[] position = Index.create(subDimensionLength);
+		
+		int[] origin = Index.create(subDimensionLength);
+
+		int[] span = new int[subDimensionLength];
+		for (int i = 0; i < subDimensionLength; i++)
+			span[i] = dimensions[i];
+		
+		PlanarAccess<ArrayDataAccess<?>> access = ImageUtils.getPlanarAccess(this.shadowImage);
+		
+		int planeNum = 0;
+		
+		while (Index.isValid(position, origin, span))
+		{
+			Dataset plane = this.dataset.getSubset(position);
+			ArrayDataAccess<?> arrayAccess = access.getPlane(planeNum++);
+			plane.setData(arrayAccess.getCurrentStorageArray());
+			Index.increment(position, origin, span);
+		}
+		
+		// TODO - have a factory that takes a list of planerefs and builds a dataset without allocating data unnecessarily
 	}
+
+	// TODO - insert/remove subset change the dimensions of the outer Dataset. Must track.
 	
 	//************ public interface ********************************************************
-	
-	@Override
-	public MetaData getMetaData()
-	{
-		return this.metadata;
-	}
 
 	@Override
 	public int[] getDimensions()
 	{
-		return image.getDimensions();
+		return this.dataset.getDimensions();
 	}
 
 	@Override
-	public SampleInfo getSampleInfo()
+	public UserType getType()
 	{
-		return this.sampleInfo;
+		return this.dataset.getType();
 	}
 
 	@Override
-	public DataEncoding getEncoding()
+	public MetaData getMetaData()
 	{
-		return EncodingManager.getEncoding(this.userType);
-	}
-
-	@Override
-	public double getDouble(int[] index)
-	{
-		cachedCursor.get().setPosition(index);
-		return cachedCursor.get().getType().getRealDouble();
-	}
-
-	@Override
-	public void setDouble(int[] index, double value)
-	{
-		cachedCursor.get().setPosition(index);
-		cachedCursor.get().getType().setReal(value);
-	}
-
-	@Override
-	public Dataset getSubset(int[] position, int[] spans)
-	{
-		return null;
-	}
-
-	/** remove the N-1 dimensional subset located at given position along given axis from the underlying dataset */
-	@Override
-	public Dataset destroySubset(int axis, int position)
-	{
-		return null;
-	}
-
-	/** create an N-1 dimensional subset at given position along given axis within the underlying dataset */
-	@Override
-	public Dataset createSubset(int axis, int position)
-	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setData(Object data)
+	public void setMetaData(MetaData metadata)
 	{
-		int[] currDimensions = getDimensions();
-		
-		if (this.metadata.getDirectAccessDimensionCount() == currDimensions.length)
-		{
-			EncodingManager.verifyTypeCompatibility(data, this.userType);
-			
-			int subsetElementCount = (int) Utils.getTotalSamples(currDimensions);
-			
-			// check that size is correct too using encoding info
-			long storageRequired = EncodingManager.calcStorageUnitsRequired(getEncoding(), subsetElementCount);
-			
-			int storageProvided = Array.getLength(data);
-			
-			if (storageProvided != storageRequired)
-				throw new IllegalArgumentException("given data array is of length " + storageProvided +
-						" and expected an array of length " + storageRequired);
-			
-			//set the plane here
-		}
-		
-		throw new IllegalArgumentException("cannot set data for a multidimensional dataset given just an input plane");
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean isComposite()
+	{
+		return this.dataset.isComposite();
+	}
+
+	@Override
+	public Dataset getParent()
+	{
+		return this.dataset.getParent();
+	}
+
+	@Override
+	public void setParent(Dataset dataset)
+	{
+		this.dataset.setParent(dataset);
 	}
 
 	@Override
 	public Object getData()
 	{
-		if (this.metadata.getDirectAccessDimensionCount() == getDimensions().length)
-		{
-		}
-
-		throw new IllegalArgumentException("cannot get data for a multidimensional dataset asking for just a plane");
+		return this.dataset.getData();
 	}
 
 	@Override
-	public void releaseData()
+	public void setData(Object data)
 	{
-		// nothing to do
+		this.dataset.setData(data);
 	}
 
+	@Override
+	public Dataset insertNewSubset(int position)
+	{
+		this.shadowImage = null;
+		return this.dataset.insertNewSubset(position);
+	}
+
+	@Override
+	public Dataset removeSubset(int position)
+	{
+		this.shadowImage = null;
+		return this.dataset.removeSubset(position);
+	}
+
+	@Override
+	public Dataset getSubset(int position)
+	{
+		return this.dataset.getSubset(position);
+	}
+
+	@Override
+	public Dataset getSubset(int[] index)
+	{
+		return this.dataset.getSubset(index);
+	}
+
+	@Override
+	public double getDouble(int[] position)
+	{
+		return this.dataset.getDouble(position);
+	}
+
+	@Override
+	public void setDouble(int[] position, double value)
+	{
+		this.dataset.setDouble(position, value);
+	}
+
+	@Override
+	public double getDouble(int[] index, int axis)
+	{
+		RecursiveDataset ds = (RecursiveDataset) this.dataset;
+		
+		return ds.getDouble(index, axis);
+	}
+
+	@Override
+	public void setDouble(int[] index, int axis, double value)
+	{
+		RecursiveDataset ds = (RecursiveDataset) this.dataset;
+		
+		ds.setDouble(index, axis, value);
+	}
+
+	@Override
+	public Dataset getSubset(int[] partialIndex, int axis)
+	{
+		RecursiveDataset ds = (RecursiveDataset) this.dataset;
+		
+		return ds.getSubset(partialIndex, axis);
+	}
+
+	public Image<?> getImage()
+	{
+		if (this.shadowImage == null)
+		{
+			int[] dimensions = this.dataset.getDimensions();
+			
+			this.shadowImage = ImageUtils.createImage(this.realType, this.planarFactory, dimensions);
+
+			int subDimensionLength = dimensions.length-2;
+			
+			int[] position = Index.create(subDimensionLength);
+			
+			int[] origin = Index.create(subDimensionLength);
+
+			int[] span = new int[subDimensionLength];
+			for (int i = 0; i < subDimensionLength; i++)
+				span[i] = dimensions[i];
+			
+			PlanarAccess<ArrayDataAccess<?>> access = ImageUtils.getPlanarAccess(this.shadowImage);
+
+			int planeNum = 0;
+			
+			while (Index.isValid(position, origin, span))
+			{
+				Dataset plane = this.dataset.getSubset(position);
+				Object array = plane.getData();
+				access.setPlane(planeNum, ImageUtils.makeArray(array));
+				Index.increment(position, origin, span);
+			}
+			
+		}
+		
+		return this.shadowImage;
+	}
 }
