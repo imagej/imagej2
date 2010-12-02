@@ -1,5 +1,28 @@
-package imagej;
+package imagej.dataset;
 
+import imagej.MetaData;
+import imagej.UserType;
+
+public interface Dataset
+{
+	int[] getDimensions();
+	UserType getType();
+	MetaData getMetaData();
+	void setMetaData(MetaData metadata);
+	boolean isComposite();
+	Dataset getParent();
+	void setParent(Dataset dataset);
+	Object getData();
+	void setData(Object data);
+	Dataset insertNewSubset(int position);
+	Dataset removeSubset(int position);
+	Dataset getSubset(int position);
+	Dataset getSubset(int[] index);
+	double getDouble(int[] position);
+	void setDouble(int[] position, double value);
+}
+
+/* ORIGINAL PARTIAL HACK - keep for a while to glean any necessary info
 public interface Dataset
 {
 	// ********* info query ops
@@ -26,6 +49,7 @@ public interface Dataset
 	Object getData();  // can return null
 	void releaseData();  // might be required for certain implementations (buffered/paging/locking type structures)
 }
+*/
 
 /*
  * some thoughts

@@ -1,4 +1,4 @@
-package imagej;
+package imagej.dataset;
 
 import imagej.SampleInfo;
 
