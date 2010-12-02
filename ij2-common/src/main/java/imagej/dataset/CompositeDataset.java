@@ -5,6 +5,8 @@ import imagej.UserType;
 
 import java.util.ArrayList;
 
+//TODO - must decide if indexing subsets right to left or left to right
+
 public class CompositeDataset implements Dataset, RecursiveDataset
 {
 	private Dataset parent;
@@ -102,7 +104,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		
 		subsetDimensions[position] = 1;
 		
-		Dataset ds = new DatasetFactory().createDataset(this.type, subsetDimensions);
+		Dataset ds = new PlanarDatasetFactory().createDataset(this.type, subsetDimensions);
 		
 		ds.setParent(this);
 		
