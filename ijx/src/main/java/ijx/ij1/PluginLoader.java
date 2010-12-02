@@ -267,24 +267,22 @@ public class PluginLoader {
 
   /** Install a plugin located in a JAR file. */
   void installJarPlugin(String jar, String s) {
-    addSorted = false;
-    Menu menu;
     if (s.startsWith("Plugins>")) {
       int firstComma = s.indexOf(',');
       if (firstComma == -1 || firstComma <= 8) {
-        menu = null;
+       // menu = null;
       } else {
         String name = s.substring(8, firstComma);
-        menu = getPluginsSubmenu(name);
+     //   menu = getPluginsSubmenu(name);
       }
     } else if (s.startsWith("\"") || s.startsWith("Plugins")) {
-      String name = getSubmenuName(jar);
-      if (name != null) {
-        menu = getPluginsSubmenu(name);
-      } else {
-        menu = pluginsMenu;
-      }
-      addSorted = true;
+//      String name = getSubmenuName(jar);
+//      if (name != null) {
+//       menu = getPluginsSubmenu(name);
+//      } else {
+//        menu = pluginsMenu;
+//      }
+//      addSorted = true;
     } else {
       int firstQuote = s.indexOf('"');
       String name = firstQuote < 0 ? s
@@ -297,18 +295,18 @@ public class PluginLoader {
       {
         name = "Help>About Plugins";
       }
-      menu = getMenu(name);
+      //menu = getMenu(name);
     }
     int firstQuote = s.indexOf('"');
     if (firstQuote == -1) {
       return;
     }
     s = s.substring(firstQuote, s.length()); // remove menu
-    if (menu != null) {
-      addPluginSeparatorIfNeeded(menu);
-      addPluginItem(menu, s);
-      addSorted = false;
-    }
+//    if (menu != null) {
+//      addPluginSeparatorIfNeeded(menu);
+//      addPluginItem(menu, s);
+//      addSorted = false;
+//    }
     String menuEntry = s;
     if (s.startsWith("\"")) {
       int quote = s.indexOf('"', 1);
