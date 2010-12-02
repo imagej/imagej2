@@ -110,6 +110,8 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		
 		this.subsets.add(position, ds);
 		
+		this.dimensions[0]++;
+		
 		return ds;
 	}
 
@@ -123,6 +125,8 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		
 		ds.setParent(null);
 		
+		this.dimensions[0]--;
+
 		return ds;
 	}
 
