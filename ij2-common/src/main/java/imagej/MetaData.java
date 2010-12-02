@@ -1,5 +1,8 @@
 package imagej;
 
+// NOTES - this is a class that is really a placeholder. Need to flesh out exactly what metadata we want to handle. As is all of this
+//   functionality can change.
+
 public class MetaData
 {
 	private String[] axisLabels;

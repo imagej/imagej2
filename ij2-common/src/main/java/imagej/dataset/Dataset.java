@@ -3,22 +3,52 @@ package imagej.dataset;
 import imagej.MetaData;
 import imagej.UserType;
 
+/** the basic interface to data supported in ImageJ */
 public interface Dataset
 {
+	/** the dimensions of the dataset */
 	int[] getDimensions();
+	
+	/** the user type of the dataset (BYTE, DOUBLE, UINT12, BIT, etc.) */
 	UserType getType();
+	
+	/** get the metadata associated with the dataset */
 	MetaData getMetaData();
+
+	/** set the metadata associated with the dataset */
 	void setMetaData(MetaData metadata);
+	
+	/** returns true if this dataset composed of other datasets - may go away */
 	boolean isComposite();
+	
+	/** returns the Dataset that owns this Dataset. The outermost Dataset has no parent. Somtimes useful information */
 	Dataset getParent();
+	
+	/** sets this Dataset's parent field to the Dataset that owns this Dataset. Can set to null for outermost dataset. Generally do not use. */
 	void setParent(Dataset dataset);
+
+	/** gets the primitive backing array of this Dataset's data when possible. throws exception otherwise */
 	Object getData();
+
+	/** sets the primitive backing array for this Dataset's data when possible. throws exception otherwise */
 	void setData(Object data);
+	
+	/** makes a new subset within this Dataset. Only valid when doing so on Datasets that have no parent (i.e. the outermost Dataset) */
 	Dataset insertNewSubset(int position);
+
+	/** removes a subset within this Dataset. Only valid when doing so on Datasets that have no parent (i.e. the outermost Dataset) */
 	Dataset removeSubset(int position);
+
+	/** gets a subset one level below me. the position along my axis is specified to distinguish which subset to get */
 	Dataset getSubset(int position);
+	
+	/** gets a subset multiple levels below me.  */
 	Dataset getSubset(int[] index);
+	
+	/** get the data at the specified position as a double */
 	double getDouble(int[] position);
+	
+	/** set the data at the specified position to a double value */
 	void setDouble(int[] position, double value);
 }
 
@@ -52,7 +82,7 @@ public interface Dataset
 */
 
 /*
- * some thoughts
+ * some thoughts that were from original hack but may be useful for later iterations
  *   could have a hint in metadata on how to access Dataset so that you have primitive access if desired
  *     would need to say "i'm organized in two dimensional subunits in the X & Y dimensions".
  *     maybe just specify number of dims of organization and have dimension order labels already stored in order.

@@ -2,7 +2,8 @@ package imagej.dataset;
 
 import imagej.SampleInfo;
 
-// TODO - these classes not yet in use. They document things that would be good to support in a dataset
+// TODO - these classes not yet in use. They document things that would be good to support in a dataset. Make sure that our final Dataset
+//   implementation can support such operations. Then remove these interfaces and notes from the project.
 
 /*
 
