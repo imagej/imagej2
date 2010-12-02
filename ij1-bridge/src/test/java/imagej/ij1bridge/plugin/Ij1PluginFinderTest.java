@@ -13,7 +13,9 @@ public class Ij1PluginFinderTest {
  * Test to see that at least one PluginEntry was added to the list.
  */
 	//TODO: Removed comments once headless operation is enabled on Hudson
-
+	@Test
+	public void hudsonTestHelperTODOREMOVE(){}
+	
 //	@Test
 //	public void testIj1PluginFinder()
 //	{

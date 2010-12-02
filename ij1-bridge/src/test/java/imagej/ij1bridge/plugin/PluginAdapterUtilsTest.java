@@ -12,6 +12,8 @@ import org.junit.Test;
 public class PluginAdapterUtilsTest {
 	
 	//TODO: Removed comments once headless operation is enabled on Hudson
+	@Test
+	public void hudsonTestHelperTODOREMOVE(){}
 	
 //	@Test
 //	public void assignParentMenuNameToPluginEntryTest()
