@@ -23,10 +23,10 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	private RealType<?> realType;
 	private ArrayContainerFactory planarFactory;
 
-	// TODO
-	// In ij1-bridge create an ImgLibAwareDataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
+	// Notes
+	// This is an ImgLib aware Dataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
 	// Also overrides the add/remove subset calls to set an invalid flag. Then user should always call its method called getImage() that returns
-	// a cached Image and cached Image recreated and populated with correct primitive access when invalid. User should not cache image from the
+	// a cached Image and cached Image is recreated and populated with correct primitive access when invalid. User should not cache image from the
 	// getImage() call.
 	
 	//************ constructor ********************************************************
@@ -72,8 +72,6 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 		// TODO - have a factory that takes a list of planerefs and builds a dataset without allocating data unnecessarily
 	}
 
-	// TODO - insert/remove subset change the dimensions of the outer Dataset. Must track.
-	
 	//************ public interface ********************************************************
 
 	@Override
