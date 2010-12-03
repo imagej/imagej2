@@ -130,6 +130,12 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	}
 
 	@Override
+	public void releaseData()
+	{
+		this.dataset.releaseData();
+	}
+
+	@Override
 	public Dataset insertNewSubset(int position)
 	{
 		this.shadowImage = null;
