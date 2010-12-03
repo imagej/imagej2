@@ -37,7 +37,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 		int[] origin = Index.create(dimensions.length);
 		int[] span = dimensions;
 
-		// TODO - there are certainly faster ways of doing this. do this way for now
+		// TODO - there are should be faster ways of doing this. do this way for now
 		
 		while (Index.isValid(position, origin, span))
 		{
@@ -61,7 +61,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 		{
 			int[] subDimension = new int[dimensions.length-i];
 			for (int j = 0; j < subDimension.length; j++)
-				subDimension[j] = dimensions[j+i];
+				subDimension[j] = dimensions[j];
 			dimensionList[i] = subDimension;
 		}
 		
@@ -83,11 +83,12 @@ public class PlanarDatasetFactory implements DatasetFactory
 		}
 		else  // make a composite dataset
 		{
-			ArrayList<Dataset> subsets = new ArrayList<Dataset>(currDims[0]);
-			for (int i = 0; i < currDims[0]; i++)
+			int thisAxisSize = currDims[currDims.length-1];
+			ArrayList<Dataset> subsets = new ArrayList<Dataset>(thisAxisSize);
+			for (int i = 0; i < thisAxisSize; i++)
 			{
 				Dataset subset = makeDataset(type, dimensionList, level+1);
-				subsets.add(subset);
+				subsets.add(i, subset);
 			}
 			return new CompositeDataset(type, currDims, subsets);
 		}
