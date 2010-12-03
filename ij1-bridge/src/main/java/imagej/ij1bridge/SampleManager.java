@@ -6,7 +6,7 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
 
@@ -21,29 +21,29 @@ public class SampleManager
 	//***** public interface **********************************************/
 	
 	/** get the UserType associated with an ImageProcessor */
-	public static UserType getUserType(ImageProcessor proc)
+	public static DataType getUserType(ImageProcessor proc)
 	{
 		if (proc instanceof ImgLibProcessor<?>)
 			return TypeManager.getUserType(((ImgLibProcessor<?>)proc).getType());
 
 		if (proc instanceof ByteProcessor)
-			return UserType.UBYTE;
+			return DataType.UBYTE;
 
 		if (proc instanceof ShortProcessor)
-			return UserType.USHORT;
+			return DataType.USHORT;
 
 		if (proc instanceof FloatProcessor)
-			return UserType.FLOAT;
+			return DataType.FLOAT;
 		
 		if (proc instanceof ColorProcessor)
-			return UserType.UINT;
+			return DataType.UINT;
 		
 		throw new IllegalArgumentException("unknown processor type");
 	}
 	
 	
 	/** get the UserType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
-	public static UserType getUserType(ImagePlus imp)
+	public static DataType getUserType(ImagePlus imp)
 	{
 		return getUserType(imp.getProcessor());
 	}

@@ -1,7 +1,7 @@
 package imagej.ij1bridge;
 
 import ij.process.ImageProcessor;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
@@ -22,7 +22,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class ImgLibProcessorFactory implements ProcessorFactory
 {
 	private Image<?> image;
-	private UserType type;
+	private DataType type;
 	
 	public ImgLibProcessorFactory(Image<?> image)
 	{

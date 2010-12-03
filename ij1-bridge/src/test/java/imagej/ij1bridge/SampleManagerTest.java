@@ -6,7 +6,7 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.ij1bridge.SampleManager;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.process.ImageUtils;
@@ -24,23 +24,23 @@ public class SampleManagerTest {
 	public void testGetUserTypeImageProcessor()
 	{
 		ByteProcessor bProc = new ByteProcessor(1, 1, new byte[1], null);
-		assertEquals(UserType.UBYTE, SampleManager.getUserType(bProc));
+		assertEquals(DataType.UBYTE, SampleManager.getUserType(bProc));
 		
 		ShortProcessor sProc = new ShortProcessor(1, 1, new short[1], null);
-		assertEquals(UserType.USHORT, SampleManager.getUserType(sProc));
+		assertEquals(DataType.USHORT, SampleManager.getUserType(sProc));
 
 		FloatProcessor fProc = new FloatProcessor(1, 1, new float[1], null);
-		assertEquals(UserType.FLOAT, SampleManager.getUserType(fProc));
+		assertEquals(DataType.FLOAT, SampleManager.getUserType(fProc));
 
 		ColorProcessor cProc = new ColorProcessor(1, 1, new int[1]);
-		assertEquals(UserType.UINT, SampleManager.getUserType(cProc));
+		assertEquals(DataType.UINT, SampleManager.getUserType(cProc));
 
 		Image<DoubleType> image =
 			ImageUtils.createImage(new DoubleType(), new PlanarContainerFactory(), new int[]{6,4,2});
 		
 		ImgLibProcessor<?> iProc = new ImgLibProcessor<DoubleType>(image, 0);
 		
-		assertEquals(UserType.DOUBLE, SampleManager.getUserType(iProc));
+		assertEquals(DataType.DOUBLE, SampleManager.getUserType(iProc));
 	}
 
 	@Test
@@ -50,24 +50,24 @@ public class SampleManagerTest {
 		
 		ByteProcessor bProc = new ByteProcessor(1, 1, new byte[1], null);
 		imp = new ImagePlus("zacko", bProc);
-		assertEquals(UserType.UBYTE, SampleManager.getUserType(imp));
+		assertEquals(DataType.UBYTE, SampleManager.getUserType(imp));
 		
 		ShortProcessor sProc = new ShortProcessor(1, 1, new short[1], null);
 		imp = new ImagePlus("zacko", sProc);
-		assertEquals(UserType.USHORT, SampleManager.getUserType(imp));
+		assertEquals(DataType.USHORT, SampleManager.getUserType(imp));
 
 		FloatProcessor fProc = new FloatProcessor(1, 1, new float[1], null);
 		imp = new ImagePlus("zacko", fProc);
-		assertEquals(UserType.FLOAT, SampleManager.getUserType(imp));
+		assertEquals(DataType.FLOAT, SampleManager.getUserType(imp));
 
 		ColorProcessor cProc = new ColorProcessor(1, 1, new int[1]);
 		imp = new ImagePlus("zacko", cProc);
-		assertEquals(UserType.UINT, SampleManager.getUserType(imp));
+		assertEquals(DataType.UINT, SampleManager.getUserType(imp));
 
 		Image<Unsigned12BitType> image =
 			ImageUtils.createImage(new Unsigned12BitType(), new PlanarContainerFactory(), new int[]{6,4,2});
 		ImgLibProcessor<?> iProc = new ImgLibProcessor<Unsigned12BitType>(image, 0);
 		imp = new ImagePlus("zacko", iProc);
-		assertEquals(UserType.UINT12, SampleManager.getUserType(imp));
+		assertEquals(DataType.UINT12, SampleManager.getUserType(imp));
 	}
 }
