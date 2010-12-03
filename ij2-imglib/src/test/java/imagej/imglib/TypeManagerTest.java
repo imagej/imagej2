@@ -3,7 +3,7 @@ package imagej.imglib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.imglib.TypeManager;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -26,33 +26,33 @@ public class TypeManagerTest {
 	@Test
 	public void testGetRealType()
 	{
-		assertTrue(TypeManager.getRealType(UserType.BIT) instanceof BitType);
-		assertTrue(TypeManager.getRealType(UserType.BYTE) instanceof ByteType);
-		assertTrue(TypeManager.getRealType(UserType.UBYTE) instanceof UnsignedByteType);
-		assertTrue(TypeManager.getRealType(UserType.UINT12) instanceof Unsigned12BitType);
-		assertTrue(TypeManager.getRealType(UserType.SHORT) instanceof ShortType);
-		assertTrue(TypeManager.getRealType(UserType.USHORT) instanceof UnsignedShortType);
-		assertTrue(TypeManager.getRealType(UserType.INT) instanceof IntType);
-		assertTrue(TypeManager.getRealType(UserType.UINT) instanceof UnsignedIntType);
-		assertTrue(TypeManager.getRealType(UserType.FLOAT) instanceof FloatType);
-		assertTrue(TypeManager.getRealType(UserType.LONG) instanceof LongType);
-		assertTrue(TypeManager.getRealType(UserType.DOUBLE) instanceof DoubleType);
+		assertTrue(TypeManager.getRealType(DataType.BIT) instanceof BitType);
+		assertTrue(TypeManager.getRealType(DataType.BYTE) instanceof ByteType);
+		assertTrue(TypeManager.getRealType(DataType.UBYTE) instanceof UnsignedByteType);
+		assertTrue(TypeManager.getRealType(DataType.UINT12) instanceof Unsigned12BitType);
+		assertTrue(TypeManager.getRealType(DataType.SHORT) instanceof ShortType);
+		assertTrue(TypeManager.getRealType(DataType.USHORT) instanceof UnsignedShortType);
+		assertTrue(TypeManager.getRealType(DataType.INT) instanceof IntType);
+		assertTrue(TypeManager.getRealType(DataType.UINT) instanceof UnsignedIntType);
+		assertTrue(TypeManager.getRealType(DataType.FLOAT) instanceof FloatType);
+		assertTrue(TypeManager.getRealType(DataType.LONG) instanceof LongType);
+		assertTrue(TypeManager.getRealType(DataType.DOUBLE) instanceof DoubleType);
 	}
 
 	@Test
 	public void testGetUserTypeRealType()
 	{
-		assertEquals(UserType.BIT, TypeManager.getUserType(new BitType()));
-		assertEquals(UserType.BYTE, TypeManager.getUserType(new ByteType()));
-		assertEquals(UserType.UBYTE, TypeManager.getUserType(new UnsignedByteType()));
-		assertEquals(UserType.UINT12, TypeManager.getUserType(new Unsigned12BitType()));
-		assertEquals(UserType.SHORT, TypeManager.getUserType(new ShortType()));
-		assertEquals(UserType.USHORT, TypeManager.getUserType(new UnsignedShortType()));
-		assertEquals(UserType.INT, TypeManager.getUserType(new IntType()));
-		assertEquals(UserType.UINT, TypeManager.getUserType(new UnsignedIntType()));
-		assertEquals(UserType.FLOAT, TypeManager.getUserType(new FloatType()));
-		assertEquals(UserType.LONG, TypeManager.getUserType(new LongType()));
-		assertEquals(UserType.DOUBLE, TypeManager.getUserType(new DoubleType()));
+		assertEquals(DataType.BIT, TypeManager.getUserType(new BitType()));
+		assertEquals(DataType.BYTE, TypeManager.getUserType(new ByteType()));
+		assertEquals(DataType.UBYTE, TypeManager.getUserType(new UnsignedByteType()));
+		assertEquals(DataType.UINT12, TypeManager.getUserType(new Unsigned12BitType()));
+		assertEquals(DataType.SHORT, TypeManager.getUserType(new ShortType()));
+		assertEquals(DataType.USHORT, TypeManager.getUserType(new UnsignedShortType()));
+		assertEquals(DataType.INT, TypeManager.getUserType(new IntType()));
+		assertEquals(DataType.UINT, TypeManager.getUserType(new UnsignedIntType()));
+		assertEquals(DataType.FLOAT, TypeManager.getUserType(new FloatType()));
+		assertEquals(DataType.LONG, TypeManager.getUserType(new LongType()));
+		assertEquals(DataType.DOUBLE, TypeManager.getUserType(new DoubleType()));
 	}
 	@Test
 	public void testIsUnsignedType() {

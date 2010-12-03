@@ -1,6 +1,6 @@
 package imagej.imglib;
 
-import imagej.UserType;
+import imagej.DataType;
 import imagej.Utils;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.IntegerType;
@@ -27,23 +27,23 @@ public class TypeManager {
 	/** initialize the type lists */
 	static
 	{
-		realTypeArray = new RealType[UserType.values().length];
+		realTypeArray = new RealType[DataType.values().length];
 
-		realTypeArray[UserType.BIT.ordinal()] = new BitType();
-		realTypeArray[UserType.BYTE.ordinal()] = new ByteType();
-		realTypeArray[UserType.UBYTE.ordinal()] = new UnsignedByteType();
-		realTypeArray[UserType.UINT12.ordinal()] = new Unsigned12BitType();
-		realTypeArray[UserType.SHORT.ordinal()] = new ShortType();
-		realTypeArray[UserType.USHORT.ordinal()] = new UnsignedShortType();
-		realTypeArray[UserType.INT.ordinal()] = new IntType();
-		realTypeArray[UserType.UINT.ordinal()] = new UnsignedIntType();
-		realTypeArray[UserType.FLOAT.ordinal()] = new FloatType();
-		realTypeArray[UserType.LONG.ordinal()] = new LongType();
-		realTypeArray[UserType.DOUBLE.ordinal()] = new DoubleType();
+		realTypeArray[DataType.BIT.ordinal()] = new BitType();
+		realTypeArray[DataType.BYTE.ordinal()] = new ByteType();
+		realTypeArray[DataType.UBYTE.ordinal()] = new UnsignedByteType();
+		realTypeArray[DataType.UINT12.ordinal()] = new Unsigned12BitType();
+		realTypeArray[DataType.SHORT.ordinal()] = new ShortType();
+		realTypeArray[DataType.USHORT.ordinal()] = new UnsignedShortType();
+		realTypeArray[DataType.INT.ordinal()] = new IntType();
+		realTypeArray[DataType.UINT.ordinal()] = new UnsignedIntType();
+		realTypeArray[DataType.FLOAT.ordinal()] = new FloatType();
+		realTypeArray[DataType.LONG.ordinal()] = new LongType();
+		realTypeArray[DataType.DOUBLE.ordinal()] = new DoubleType();
 	}
 
 	/** get an imglib type from a IJ UserType */
-	public static RealType<?> getRealType(UserType type)
+	public static RealType<?> getRealType(DataType type)
 	{
 		return realTypeArray[type.ordinal()];
 	}
@@ -51,9 +51,9 @@ public class TypeManager {
 	/** get the UserType (BYTE,SHORT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
 	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample UserType.
 	 */
-	public static UserType getUserType(RealType<?> imglib)
+	public static DataType getUserType(RealType<?> imglib)
 	{
-		for (UserType vType : UserType.values())
+		for (DataType vType : DataType.values())
 		{
 			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
 				return vType;

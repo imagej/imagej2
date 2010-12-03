@@ -2,7 +2,7 @@ package imagej.imglib.process.operation;
 
 import static org.junit.Assert.*;
 
-import imagej.UserType;
+import imagej.DataType;
 import imagej.imglib.process.ImageUtils;
 import imagej.imglib.process.operation.SetPlaneOperation;
 import imagej.process.Index;
@@ -31,7 +31,7 @@ public class SetPlaneOperationTest {
 		
 		// try a valid set operation
 		inputPlane = new int[]{0,9,8,7,6,5};
-		planeOp = new SetPlaneOperation<IntType>(image, origin, inputPlane, UserType.INT);
+		planeOp = new SetPlaneOperation<IntType>(image, origin, inputPlane, DataType.INT);
 		planeOp.execute();
 		imglibPlane = (int[]) ImageUtils.getPlanarAccess(image).getPlane(0).getCurrentStorageArray();
 		assertArrayEquals(inputPlane, imglibPlane);
@@ -39,7 +39,7 @@ public class SetPlaneOperationTest {
 		// try something type unsafe
 		try {
 			short[] badPlane = new short[]{0,9,8,7,6,5};
-			planeOp = new SetPlaneOperation<IntType>(image, origin, badPlane, UserType.INT);
+			planeOp = new SetPlaneOperation<IntType>(image, origin, badPlane, DataType.INT);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);

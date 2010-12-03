@@ -1,7 +1,7 @@
 package imagej.imglib.process.operation;
 
 import imagej.EncodingManager;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.primitive.BitWriter;
 import imagej.primitive.ByteWriter;
 import imagej.primitive.DataWriter;
@@ -25,13 +25,13 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	// *********** instance variables ******************************************************
 	
 	private int originX, originY, spanX, spanY;
-	private UserType asType;
+	private DataType asType;
 	private Object outputPlane;
 	private DataWriter planeWriter;
 
 	// ************ public interface - private declarations later **************************
 	
-	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, UserType asType)
+	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, DataType asType)
 	{
 		super(image, origin, span);
 		this.originX = origin[0];
@@ -117,7 +117,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		return this.outputPlane;
 	}
 
-	public static <T extends RealType<T>> Object getPlaneAs(Image<T> img, int[] planePos, UserType asType)
+	public static <T extends RealType<T>> Object getPlaneAs(Image<T> img, int[] planePos, DataType asType)
 	{
 		int[] origin = Index.create(0,0,planePos);
 		
