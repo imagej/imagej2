@@ -84,8 +84,8 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public Object getData()
 	{
-		// TODO - return null?
-		throw new IllegalArgumentException("CompositeDatasets do not support getting data array");
+		return null;
+		// throw new IllegalArgumentException("CompositeDatasets do not support getting data array");
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		if (this.parent != null)
 			throw new IllegalArgumentException();
 		
-		return getDouble(position, this.dimensions.length-1);
+		return getDouble(position, 0);
 	}
 
 	@Override
