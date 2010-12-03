@@ -5,7 +5,7 @@ import imagej.UserType;
 
 import java.util.ArrayList;
 
-//TODO - must decide if indexing subsets right to left or left to right
+//TODO - our convention is that indexing subsets moves right to left
 
 public class CompositeDataset implements Dataset, RecursiveDataset
 {
@@ -53,14 +53,14 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	public double getDouble(int[] index, int axis)
 	{
 		RecursiveDataset subset = (RecursiveDataset) getSubset(index[axis]); 
-		return subset.getDouble(index, axis+1);
+		return subset.getDouble(index, axis-1);
 	}
 
 	@Override
 	public void setDouble(int[] index, int axis, double value)
 	{
 		RecursiveDataset subset = (RecursiveDataset) getSubset(index[axis]); 
-		subset.setDouble(index, axis+1, value);
+		subset.setDouble(index, axis-1, value);
 	}
 
 	@Override
@@ -116,7 +116,9 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		
 		this.subsets.add(position, ds);
 		
-		this.dimensions[0]++;
+		int outermostAxis = this.dimensions.length - 1;
+		
+		this.dimensions[outermostAxis]++;
 		
 		return ds;
 	}
@@ -131,7 +133,9 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		
 		ds.setParent(null);
 		
-		this.dimensions[0]--;
+		int outermostAxis = this.dimensions.length - 1;
+		
+		this.dimensions[outermostAxis]--;
 
 		return ds;
 	}
@@ -147,8 +151,10 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	{
 		if (this.parent != null)
 			throw new IllegalArgumentException();
+
+		int outermostAxis = this.dimensions.length - 1;
 		
-		return getDouble(position, 0);
+		return getDouble(position, outermostAxis);
 	}
 
 	@Override
@@ -157,25 +163,31 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		if (this.parent != null)
 			throw new IllegalArgumentException();
 		
-		setDouble(position, this.dimensions.length-1, value);
+		int outermostAxis = this.dimensions.length - 1;
+
+		setDouble(position, outermostAxis, value);
 	}
 
 	@Override
 	public Dataset getSubset(int[] partialIndex, int axis)
 	{
-		if (axis == partialIndex.length)
-			return this;
-		
-		if ((axis < 0) || (axis > partialIndex.length))
-			throw new IllegalArgumentException("axis index ("+axis+") out of bounds (0-"+partialIndex.length+")");
+		if (axis < 0)
+			throw new IllegalArgumentException("axis index ("+axis+") less than 0");
 
-		return ((RecursiveDataset)getSubset(partialIndex[axis])).getSubset(partialIndex, axis+1);
+		RecursiveDataset nextSubset = (RecursiveDataset)getSubset(partialIndex[axis]);
+		
+		if (axis == 0)
+			return (Dataset) nextSubset;
+		
+		return nextSubset.getSubset(partialIndex, axis-1);
 	}
 
 	@Override
 	public Dataset getSubset(int[] index)
 	{
-		return getSubset(index, 0);
+		int outermostAxis = index.length - 1;
+
+		return getSubset(index, outermostAxis);
 	}
 	
 }

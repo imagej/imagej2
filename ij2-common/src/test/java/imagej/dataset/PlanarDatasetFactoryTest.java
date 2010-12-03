@@ -1,6 +1,7 @@
 package imagej.dataset;
 
 import static org.junit.Assert.*;
+import imagej.EncodingManager;
 import imagej.UserType;
 
 import org.junit.Test;
@@ -83,8 +84,7 @@ public class PlanarDatasetFactoryTest
 		assertArrayEquals(dimensions, ds.getDimensions());
 		assertNull(ds.getData());
 		assertNotNull(ds.getSubset(new int[]{0,0}).getData());
-		// TODO - reenable
-		//assertEquals(0, ds.getDouble(new int[]{0,0,0,0}), 0);
+		assertEquals(0, ds.getDouble(new int[]{0,0,0,0}), 0);
 		assertNull(ds.getParent());
 		assertEquals(ds, ds.getSubset(0).getParent());
 		assertNotNull(ds.getSubset(new int[]{0}));
@@ -97,8 +97,7 @@ public class PlanarDatasetFactoryTest
 		assertArrayEquals(dimensions, ds.getDimensions());
 		assertNull(ds.getData());
 		assertNotNull(ds.getSubset(new int[]{0,0}).getData());
-		// TODO - reenable
-		// assertEquals(0, ds.getDouble(new int[]{0,0,0,0}), 0);
+		assertEquals(0, ds.getDouble(new int[]{0,0,0,0}), 0);
 		assertNull(ds.getParent());
 		assertEquals(ds, ds.getSubset(0).getParent());
 		assertNotNull(ds.getSubset(new int[]{0}));
@@ -106,9 +105,133 @@ public class PlanarDatasetFactoryTest
 	}
 
 	@Test
+	public void testGetData()
+	{
+		PlanarDatasetFactory factory = new PlanarDatasetFactory();
+		
+		Dataset ds;
+		int[] dimensions;
+		UserType type;
+		
+		type = UserType.LONG;
+		
+		dimensions = new int[]{1,2};
+		ds = factory.createDataset(type, dimensions);
+
+		assertFalse(ds.isComposite());
+		assertNotNull(ds.getData());
+		
+		dimensions = new int[]{1,2,3};
+		ds = factory.createDataset(type, dimensions);
+
+		assertTrue(ds.isComposite());
+		assertNull(ds.getData());
+	}
+	
+	@Test
+	public void testSetData()
+	{
+		PlanarDatasetFactory factory = new PlanarDatasetFactory();
+		
+		Dataset ds;
+		int[] dimensions;
+		UserType type;
+		Object array;
+		
+		type = UserType.USHORT;
+		
+		// should not be able to create a dataset of dim < 2
+		dimensions = new int[]{1,2};
+		
+		ds = factory.createDataset(type, dimensions);
+		
+		// try a null array
+		try {
+			ds.setData(null);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try an array of the wrong type
+		try {
+			array = EncodingManager.allocateCompatibleArray(UserType.BYTE, 2);
+			ds.setData(array);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try an array that is too big
+		try {
+			array = EncodingManager.allocateCompatibleArray(type, 3);
+			ds.setData(array);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
+		// try an array that is too small
+		try {
+			array = EncodingManager.allocateCompatibleArray(type, 1);
+			ds.setData(array);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+
+		// try an array that is right size
+		try {
+			array = EncodingManager.allocateCompatibleArray(type, 2);
+			ds.setData(array);
+			assertTrue(true);
+		} catch (Exception e) {
+			fail();
+		}
+		
+		// now try a CompositeDataset
+		try {
+			dimensions = new int[]{1,2,3};
+			ds = factory.createDataset(type, dimensions);
+			array = EncodingManager.allocateCompatibleArray(type, 6);
+			ds.setData(array);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testSetAndGetDouble()
+	{
+		PlanarDatasetFactory factory = new PlanarDatasetFactory();
+		
+		Dataset ds;
+		int[] dimensions;
+		UserType type;
+		
+		type = UserType.UINT12;
+		dimensions = new int[]{2,2,3,5}; 
+			
+		ds = factory.createDataset(type, dimensions);
+		
+		assertEquals(0, ds.getDouble(new int[]{0,0,0,0}), 0);
+		ds.setDouble(new int[]{0,0,0,0}, 14);
+		assertEquals(14, ds.getDouble(new int[]{0,0,0,0}), 0);
+
+		assertEquals(0, ds.getDouble(new int[]{1,1,1,1}), 0);
+		ds.setDouble(new int[]{1,1,1,1}, 8);
+		assertEquals(8, ds.getDouble(new int[]{1,1,1,1}), 0);
+
+		assertEquals(0, ds.getDouble(new int[]{1,1,2,4}), 0);
+		ds.setDouble(new int[]{1,1,2,4}, 99);
+		assertEquals(99, ds.getDouble(new int[]{1,1,2,4}), 0);
+	}	
+	
+	@Test
 	public void testDuplicateDataset()
 	{
-		// TODO - once method implemented add tests here
+		System.out.println("PlanarDatasetFactoryTest::testDuplicateDataset() has not been implemented.");
 	}
 
 }
