@@ -6,7 +6,7 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.Utils;
 import imagej.ij1bridge.SampleManager;
 import imagej.ij1bridge.process.ImgLibProcessor;
@@ -158,7 +158,7 @@ public class ImgLibImageStack extends ImageStack
 		return labels.size();
 	}
 
-	private void addSliceToImage(int atDepth, String label, UserType type, Object pixels)
+	private void addSliceToImage(int atDepth, String label, DataType type, Object pixels)
 	{
 		// ADD PLANE
 
@@ -198,7 +198,7 @@ public class ImgLibImageStack extends ImageStack
 
 	/**
 	* Add a plane of data to the ImageStack.
-	* @deprecated Use {@link #addSlice(String sliceLabel, UserType type, Object pixels)} instead.
+	* @deprecated Use {@link #addSlice(String sliceLabel, DataType type, Object pixels)} instead.
 	*/
 	@Deprecated
 	public void addSlice(String sliceLabel, Object pixels)
@@ -209,16 +209,16 @@ public class ImgLibImageStack extends ImageStack
 		if (!pixels.getClass().isArray())
 			throw new IllegalArgumentException("'pixels' is not an array");
 
-		UserType type;
+		DataType type;
 		
 		if (pixels instanceof byte[])
-			type = UserType.UBYTE;
+			type = DataType.UBYTE;
 		else if (pixels instanceof short[])
-			type = UserType.USHORT;
+			type = DataType.USHORT;
 		else if (pixels instanceof int[])
-			type = UserType.UINT;
+			type = DataType.UINT;
 		else if (pixels instanceof float[])
-			type = UserType.FLOAT;
+			type = DataType.FLOAT;
 		else
 			throw new IllegalArgumentException("obsolete version of addSlice() passed nonlegacy input pixel array of type "+pixels.getClass());
 		
@@ -226,7 +226,7 @@ public class ImgLibImageStack extends ImageStack
 	}
 
 	/** Adds an image in the form of a pixel array to the end of the stack. Both signed and unsigned data is supported.*/
-	public void addSlice(String sliceLabel, UserType type, Object pixels)
+	public void addSlice(String sliceLabel, DataType type, Object pixels)
 	{
 		if (pixels==null)
 			throw new IllegalArgumentException("'pixels' is null!");

@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 
 import imagej.DataEncoding;
 import imagej.EncodingManager;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.Utils;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
@@ -63,7 +63,7 @@ public class PlaneStack
 		}
 		else
 		{
-			UserType ijType = TypeManager.getUserType(imgLibType);
+			DataType ijType = TypeManager.getUserType(imgLibType);
 			
 			SetPlaneOperation<?> planeOp;
 			
@@ -172,7 +172,7 @@ public class PlaneStack
 	 * @param desiredType - the imglib type we desire the plane to be of
 	 * @param dType - the UserType of the input data
 	 */
-	private void insertPlane(int atPosition, Object data, int dataLen, UserType dType)
+	private void insertPlane(int atPosition, Object data, int dataLen, DataType dType)
 	{
 		DataEncoding encoding = EncodingManager.getEncoding(dType);
 		
@@ -277,7 +277,7 @@ public class PlaneStack
 	 * @param type - the type of the input data
 	 * @param data - an array of values representing the plane
 	 */
-	public void insertPlane(int atPosition, UserType type, Object data)
+	public void insertPlane(int atPosition, DataType type, Object data)
 	{
 		EncodingManager.verifyTypeCompatibility(data, type);
 		
@@ -291,7 +291,7 @@ public class PlaneStack
 	 * @param unsigned - a boolean specifying whether input data is signed or unsigned
 	 * @param data - an array of values representing the plane
 	 */
-	public void addPlane(UserType type, Object data)
+	public void addPlane(DataType type, Object data)
 	{
 		insertPlane(getEndPosition(), type, data);
 	}
@@ -345,7 +345,7 @@ public class PlaneStack
 		{
 			int[] planePosition = new int[]{planeNumber};
 			
-			UserType asType = TypeManager.getUserType(ImageUtils.getType(this.stack));
+			DataType asType = TypeManager.getUserType(ImageUtils.getType(this.stack));
 
 			if (this.imgLibType instanceof BitType)
 				return GetPlaneOperation.getPlaneAs((Image<BitType>)this.stack, planePosition, asType);

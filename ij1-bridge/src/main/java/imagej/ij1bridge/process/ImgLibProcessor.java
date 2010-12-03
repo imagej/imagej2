@@ -10,7 +10,7 @@ import ij.process.ImageStatistics;
 import imagej.DataEncoding;
 import imagej.EncodingManager;
 import imagej.SampleManager;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.Utils;
 import imagej.function.BinaryFunction;
 import imagej.function.NAryFunction;
@@ -153,7 +153,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private final RealType<?> type;
 
 	/** the underlying ImgLib type of the image data */
-	private final UserType ijType;
+	private final DataType ijType;
 
 	/** flag for determining if we are working with integral data (or float otherwise) */
 	private final boolean isIntegral;
@@ -2463,7 +2463,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
-		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, UserType.FLOAT);
+		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, DataType.FLOAT);
 
 		int width = getWidth();
 		int height = getHeight();

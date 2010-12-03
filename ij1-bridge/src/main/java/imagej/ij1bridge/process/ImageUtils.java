@@ -3,7 +3,7 @@ package imagej.ij1bridge.process;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import imagej.EncodingManager;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.ij1bridge.ImgLibImageStack;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class ImageUtils
 	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
 	 * @param type - the IJ value type of the input data (BYTE, USHORT, etc.)
 	 */
-	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, UserType type)
+	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, DataType type)
 	{
 		EncodingManager.verifyTypeCompatibility(pixels, type);
 		
