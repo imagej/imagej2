@@ -27,13 +27,108 @@ public class EncodingManagerTest
 	@Test
 	public void testCalcStorageUnitsRequired()
 	{
+		DataEncoding encoding;
 		
+		encoding = EncodingManager.getEncoding(UserType.BYTE);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.UBYTE);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.SHORT);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.USHORT);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.INT);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.UINT);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.FLOAT);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.LONG);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.DOUBLE);
+		for (int i = 0; i < 10; i++)
+			assertEquals(i, EncodingManager.calcStorageUnitsRequired(encoding, i));
+
+		encoding = EncodingManager.getEncoding(UserType.BIT);
+		assertEquals(0, EncodingManager.calcStorageUnitsRequired(encoding, 0));
+		assertEquals(1, EncodingManager.calcStorageUnitsRequired(encoding, 1));
+		assertEquals(1, EncodingManager.calcStorageUnitsRequired(encoding, 32));
+		assertEquals(2, EncodingManager.calcStorageUnitsRequired(encoding, 33));
+		assertEquals(2, EncodingManager.calcStorageUnitsRequired(encoding, 64));
+		assertEquals(3, EncodingManager.calcStorageUnitsRequired(encoding, 65));
+		assertEquals(3, EncodingManager.calcStorageUnitsRequired(encoding, 96));
+		assertEquals(4, EncodingManager.calcStorageUnitsRequired(encoding, 97));
+		assertEquals(4, EncodingManager.calcStorageUnitsRequired(encoding, 128));
+
+		encoding = EncodingManager.getEncoding(UserType.UINT12);
+		assertEquals(0, EncodingManager.calcStorageUnitsRequired(encoding, 0));
+		assertEquals(1, EncodingManager.calcStorageUnitsRequired(encoding, 1));
+		assertEquals(1, EncodingManager.calcStorageUnitsRequired(encoding, 2));
+		assertEquals(2, EncodingManager.calcStorageUnitsRequired(encoding, 3));
+		assertEquals(2, EncodingManager.calcStorageUnitsRequired(encoding, 4));
+		assertEquals(2, EncodingManager.calcStorageUnitsRequired(encoding, 5));
+		assertEquals(3, EncodingManager.calcStorageUnitsRequired(encoding, 6));
+		assertEquals(3, EncodingManager.calcStorageUnitsRequired(encoding, 7));
+		assertEquals(3, EncodingManager.calcStorageUnitsRequired(encoding, 8));
+		assertEquals(4, EncodingManager.calcStorageUnitsRequired(encoding, 9));
+		assertEquals(4, EncodingManager.calcStorageUnitsRequired(encoding, 10));
+		assertEquals(5, EncodingManager.calcStorageUnitsRequired(encoding, 11));
+		assertEquals(5, EncodingManager.calcStorageUnitsRequired(encoding, 12));
 	}
 	
 	@Test
 	public void testCalcMaxPixelsStorable()
 	{
-
+		DataEncoding encoding;
+		
+		encoding = EncodingManager.getEncoding(UserType.BIT);
+		assertEquals(320, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.BYTE);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.UBYTE);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.UINT12);
+		assertEquals(26, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.SHORT);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.USHORT);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.INT);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.UINT);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.FLOAT);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.LONG);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
+		
+		encoding = EncodingManager.getEncoding(UserType.DOUBLE);
+		assertEquals(10, EncodingManager.calcMaxPixelsStorable(encoding, 10));
 	}
 
 	private void compatible(StorageType type, Object data)
@@ -160,11 +255,9 @@ public class EncodingManagerTest
 		incompatible(UserType.UINT12, new byte[0]);
 	}
 
-	private void canAllocate(StorageType type, int size)
+	private void correctlyAllocates(int size, StorageType type)
 	{
-		Object array;
-		
-		array = EncodingManager.allocateCompatibleArray(type, size);
+		Object array = EncodingManager.allocateCompatibleArray(type, size);
 		assertNotNull(array);
 		assertEquals(size, Array.getLength(array));
 		EncodingManager.verifyTypeCompatibility(array, type);
@@ -173,15 +266,44 @@ public class EncodingManagerTest
 	@Test
 	public void testAllocateCompatibleArrayStorageTypeInt()
 	{
-		canAllocate(StorageType.INT8, 1);
-		canAllocate(StorageType.UINT8, 2);
-		canAllocate(StorageType.INT16, 3);
-		canAllocate(StorageType.UINT16, 4);
-		canAllocate(StorageType.INT32, 5);
-		canAllocate(StorageType.UINT32, 6);
-		canAllocate(StorageType.FLOAT32, 7);
-		canAllocate(StorageType.INT64, 8);
-		canAllocate(StorageType.FLOAT64, 9);
+		correctlyAllocates(1, StorageType.INT8);
+		correctlyAllocates(23, StorageType.UINT8);
+		correctlyAllocates(45, StorageType.INT16);
+		correctlyAllocates(67, StorageType.UINT16);
+		correctlyAllocates(89, StorageType.INT32);
+		correctlyAllocates(2, StorageType.UINT32);
+		correctlyAllocates(34, StorageType.FLOAT32);
+		correctlyAllocates(56, StorageType.INT64);
+		correctlyAllocates(78, StorageType.FLOAT64);
+
+		correctlyAllocates(1024, StorageType.INT8);
 	}
 	
+	private void correctlyAllocates(int numElements, UserType type)
+	{
+		Object array = EncodingManager.allocateCompatibleArray(type, numElements);
+		assertNotNull(array);
+		DataEncoding encoding = EncodingManager.getEncoding(type);
+		int storageUnitCount = EncodingManager.calcStorageUnitsRequired(encoding, numElements);
+		assertEquals(storageUnitCount, Array.getLength(array));
+		EncodingManager.verifyTypeCompatibility(array, type);
+	}
+
+	@Test
+	public void testAllocateCompatibleArrayUserTypeInt()
+	{
+		correctlyAllocates(1, UserType.BIT);
+		correctlyAllocates(23, UserType.BYTE);
+		correctlyAllocates(45, UserType.UBYTE);
+		correctlyAllocates(100, UserType.UINT12);
+		correctlyAllocates(67, UserType.SHORT);
+		correctlyAllocates(89, UserType.USHORT);
+		correctlyAllocates(2, UserType.INT);
+		correctlyAllocates(34, UserType.UINT);
+		correctlyAllocates(56, UserType.FLOAT);
+		correctlyAllocates(78, UserType.LONG);
+		correctlyAllocates(90, UserType.DOUBLE);
+
+		correctlyAllocates(1024, UserType.USHORT);
+	}
 }
