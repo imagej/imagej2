@@ -88,6 +88,12 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	}
 	
 	@Override
+	public void releaseData()
+	{
+		// not necessary to do anything
+	}
+	
+	@Override
 	public boolean isComposite()
 	{
 		return false;

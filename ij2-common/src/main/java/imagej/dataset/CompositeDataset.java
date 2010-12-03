@@ -95,6 +95,12 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	}
 
 	@Override
+	public void releaseData()
+	{
+		// not necessary to do anything
+	}
+	
+	@Override
 	public Dataset insertNewSubset(int position)
 	{
 		if (this.parent != null)

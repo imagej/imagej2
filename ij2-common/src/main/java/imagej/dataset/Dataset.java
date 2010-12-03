@@ -30,6 +30,9 @@ public interface Dataset
 	/** gets the primitive backing array of this Dataset's data when possible. throws exception otherwise */
 	Object getData();
 
+	/** releases the primitive backing array of this Dataset. necessary for some Dataset implementations */
+	void releaseData();
+
 	/** sets the primitive backing array for this Dataset's data when possible. throws exception otherwise */
 	void setData(Object data);
 	
