@@ -2,7 +2,6 @@ package imagej.dataset;
 
 import imagej.EncodingManager;
 import imagej.DataType;
-import imagej.process.Index;
 
 import java.util.ArrayList;
 
@@ -24,33 +23,6 @@ public class PlanarDatasetFactory implements DatasetFactory
 		return makeDataset(type, dimensionList, 0);
 	}
 	
-	@Override
-	public Dataset duplicateDataset(Dataset dataset)
-	{
-		DataType type = dataset.getType();
-		
-		int[] dimensions = dataset.getDimensions();
-		
-		Dataset newDataset = createDataset(type, dimensions);
-		
-		int[] position = Index.create(dimensions.length);
-		int[] origin = Index.create(dimensions.length);
-		int[] span = dimensions;
-
-		// TODO - there are should be faster ways of doing this. do this way for now
-		
-		while (Index.isValid(position, origin, span))
-		{
-			double value = dataset.getDouble(position);
-			newDataset.setDouble(position, value);
-			Index.increment(position, origin, span);
-		}
-		
-		newDataset.setMetaData(dataset.getMetaData());  // TODO - PROBABLY NEED TO CLONE THE METADATA HERE!!!!!!!!!!!
-		
-		return newDataset;
-	}
-
 	// ************ private interface **************************************************
 
 	private int[][] calcSubDimensions(int[] dimensions)
