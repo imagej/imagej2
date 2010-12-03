@@ -1,12 +1,12 @@
 package imagej.primitive;
 
-import imagej.UserType;
+import imagej.DataType;
 
 public class DataAccessFactory
 {
 	private DataAccessFactory() {}
 	
-	public static DataReader getReader(UserType type, Object arrayOfData)
+	public static DataReader getReader(DataType type, Object arrayOfData)
 	{
 		switch (type)
 		{
@@ -25,7 +25,7 @@ public class DataAccessFactory
 		}
 	}
 	
-	public static DataWriter getWriter(UserType type, Object arrayOfData)
+	public static DataWriter getWriter(DataType type, Object arrayOfData)
 	{
 		switch (type)
 		{

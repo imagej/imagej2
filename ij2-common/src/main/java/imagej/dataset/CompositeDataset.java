@@ -1,7 +1,7 @@
 package imagej.dataset;
 
 import imagej.MetaData;
-import imagej.UserType;
+import imagej.DataType;
 
 import java.util.ArrayList;
 
@@ -11,10 +11,10 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 {
 	private Dataset parent;
 	private ArrayList<Dataset> subsets;
-	private UserType type;
+	private DataType type;
 	private int[] dimensions;
 
-	public CompositeDataset(UserType type, int[] dimensions, ArrayList<Dataset> subsets)
+	public CompositeDataset(DataType type, int[] dimensions, ArrayList<Dataset> subsets)
 	{
 		this.type = type;
 		this.dimensions = dimensions;
@@ -31,7 +31,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	}
 	
 	@Override
-	public UserType getType()
+	public DataType getType()
 	{
 		return this.type;
 	}

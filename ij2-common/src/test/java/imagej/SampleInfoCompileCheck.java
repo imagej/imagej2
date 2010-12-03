@@ -1,6 +1,6 @@
 package imagej;
 
-import imagej.UserType;
+import imagej.DataType;
 
 public class SampleInfoCompileCheck
 {
@@ -8,18 +8,18 @@ public class SampleInfoCompileCheck
 	{
 		// compile time check for existence
 		
-		UserType type;
+		DataType type;
 		
-		type = UserType.BIT;
-		type = UserType.BYTE;
-		type = UserType.UBYTE;
-		type = UserType.UINT12;
-		type = UserType.SHORT;
-		type = UserType.USHORT;
-		type = UserType.INT;
-		type = UserType.UINT;
-		type = UserType.FLOAT;
-		type = UserType.DOUBLE;
-		type = UserType.LONG;
+		type = DataType.BIT;
+		type = DataType.BYTE;
+		type = DataType.UBYTE;
+		type = DataType.UINT12;
+		type = DataType.SHORT;
+		type = DataType.USHORT;
+		type = DataType.INT;
+		type = DataType.UINT;
+		type = DataType.FLOAT;
+		type = DataType.DOUBLE;
+		type = DataType.LONG;
 	}
 }

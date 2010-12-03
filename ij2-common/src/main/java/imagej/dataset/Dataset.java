@@ -1,7 +1,7 @@
 package imagej.dataset;
 
 import imagej.MetaData;
-import imagej.UserType;
+import imagej.DataType;
 
 /** the basic interface to data supported in ImageJ */
 public interface Dataset
@@ -10,7 +10,7 @@ public interface Dataset
 	int[] getDimensions();
 	
 	/** the user type of the dataset (BYTE, DOUBLE, UINT12, BIT, etc.) */
-	UserType getType();
+	DataType getType();
 	
 	/** get the metadata associated with the dataset */
 	MetaData getMetaData();

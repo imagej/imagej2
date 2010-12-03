@@ -12,25 +12,25 @@ public class EncodingManager
 	/** initialize the type lists */
 	static
 	{
-		encodingArray = new DataEncoding[UserType.values().length];
+		encodingArray = new DataEncoding[DataType.values().length];
 
-		encodingArray[UserType.BIT.ordinal()] = new BitEncoding();
-		encodingArray[UserType.BYTE.ordinal()] = new ByteEncoding();
-		encodingArray[UserType.UBYTE.ordinal()] = new UnsignedByteEncoding();
-		encodingArray[UserType.UINT12.ordinal()] = new Unsigned12BitEncoding();
-		encodingArray[UserType.SHORT.ordinal()] = new ShortEncoding();
-		encodingArray[UserType.USHORT.ordinal()] = new UnsignedShortEncoding();
-		encodingArray[UserType.INT.ordinal()] = new IntEncoding();
-		encodingArray[UserType.UINT.ordinal()] = new UnsignedIntEncoding();
-		encodingArray[UserType.FLOAT.ordinal()] = new FloatEncoding();
-		encodingArray[UserType.LONG.ordinal()] = new LongEncoding();
-		encodingArray[UserType.DOUBLE.ordinal()] = new DoubleEncoding();
+		encodingArray[DataType.BIT.ordinal()] = new BitEncoding();
+		encodingArray[DataType.BYTE.ordinal()] = new ByteEncoding();
+		encodingArray[DataType.UBYTE.ordinal()] = new UnsignedByteEncoding();
+		encodingArray[DataType.UINT12.ordinal()] = new Unsigned12BitEncoding();
+		encodingArray[DataType.SHORT.ordinal()] = new ShortEncoding();
+		encodingArray[DataType.USHORT.ordinal()] = new UnsignedShortEncoding();
+		encodingArray[DataType.INT.ordinal()] = new IntEncoding();
+		encodingArray[DataType.UINT.ordinal()] = new UnsignedIntEncoding();
+		encodingArray[DataType.FLOAT.ordinal()] = new FloatEncoding();
+		encodingArray[DataType.LONG.ordinal()] = new LongEncoding();
+		encodingArray[DataType.DOUBLE.ordinal()] = new DoubleEncoding();
 	}
 
 	// ***** public interface  ************************************************/
 
 	/** lookup the DataEncoding associated with the given user type */
-	public static DataEncoding getEncoding(UserType userType)
+	public static DataEncoding getEncoding(DataType userType)
 	{
 		return encodingArray[userType.ordinal()];
 	}
@@ -94,7 +94,7 @@ public class EncodingManager
 	}
 	
 	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
-	public static void verifyTypeCompatibility(Object pixels, UserType userType)
+	public static void verifyTypeCompatibility(Object pixels, DataType userType)
 	{
 		verifyTypeCompatibility(pixels, getEncoding(userType).getBackingType());
 	}
@@ -125,7 +125,7 @@ public class EncodingManager
 	}
 	
 	/** allocates and returns an array of specified UserType and number of elements */
-	public static Object allocateCompatibleArray(UserType type, int numElements)
+	public static Object allocateCompatibleArray(DataType type, int numElements)
 	{
 		DataEncoding encoding = getEncoding(type);
 		
