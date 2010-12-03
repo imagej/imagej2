@@ -14,19 +14,19 @@ public class SampleManager
 	/** initialize the type lists */
 	static
 	{
-		sampleInfoArray = new SampleInfo[UserType.values().length];
+		sampleInfoArray = new SampleInfo[DataType.values().length];
 		
-		sampleInfoArray[UserType.BIT.ordinal()] = new Sample1BitUnsigned();
-		sampleInfoArray[UserType.BYTE.ordinal()] = new Sample8BitSigned();
-		sampleInfoArray[UserType.UBYTE.ordinal()] = new Sample8BitUnsigned();
-		sampleInfoArray[UserType.UINT12.ordinal()] = new Sample12BitUnsigned();
-		sampleInfoArray[UserType.SHORT.ordinal()] = new Sample16BitSigned();
-		sampleInfoArray[UserType.USHORT.ordinal()] = new Sample16BitUnsigned();
-		sampleInfoArray[UserType.INT.ordinal()] = new Sample32BitSigned();
-		sampleInfoArray[UserType.UINT.ordinal()] = new Sample32BitUnsigned();
-		sampleInfoArray[UserType.FLOAT.ordinal()] = new Sample32BitFloat();
-		sampleInfoArray[UserType.LONG.ordinal()] = new Sample64BitSigned();
-		sampleInfoArray[UserType.DOUBLE.ordinal()] = new Sample64BitFloat();
+		sampleInfoArray[DataType.BIT.ordinal()] = new Sample1BitUnsigned();
+		sampleInfoArray[DataType.BYTE.ordinal()] = new Sample8BitSigned();
+		sampleInfoArray[DataType.UBYTE.ordinal()] = new Sample8BitUnsigned();
+		sampleInfoArray[DataType.UINT12.ordinal()] = new Sample12BitUnsigned();
+		sampleInfoArray[DataType.SHORT.ordinal()] = new Sample16BitSigned();
+		sampleInfoArray[DataType.USHORT.ordinal()] = new Sample16BitUnsigned();
+		sampleInfoArray[DataType.INT.ordinal()] = new Sample32BitSigned();
+		sampleInfoArray[DataType.UINT.ordinal()] = new Sample32BitUnsigned();
+		sampleInfoArray[DataType.FLOAT.ordinal()] = new Sample32BitFloat();
+		sampleInfoArray[DataType.LONG.ordinal()] = new Sample64BitSigned();
+		sampleInfoArray[DataType.DOUBLE.ordinal()] = new Sample64BitFloat();
 	}
 	
 	//***** constructor **********************************************/
@@ -37,7 +37,7 @@ public class SampleManager
 	//***** public interface **********************************************/
 	
 	/** get a SampleInfo associated with a UserType */
-	public static SampleInfo getSampleInfo(UserType type)
+	public static SampleInfo getSampleInfo(DataType type)
 	{
 		return sampleInfoArray[type.ordinal()];
 	}
@@ -66,7 +66,7 @@ public class SampleManager
 	/** SampleInfo that describes a 1 bit unsigned type */
 	private static class Sample1BitUnsigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.BIT; }
+		public DataType getUserType() { return DataType.BIT; }
 
 		public int getNumValues() { return 1; }
 
@@ -84,7 +84,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit signed type */
 	private static class Sample8BitSigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.BYTE; }
+		public DataType getUserType() { return DataType.BYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -102,7 +102,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit unsigned type */
 	private static class Sample8BitUnsigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.UBYTE; }
+		public DataType getUserType() { return DataType.UBYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -120,7 +120,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 12 bit unsigned type */
 	private static class Sample12BitUnsigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.UINT12; }
+		public DataType getUserType() { return DataType.UINT12; }
 
 		public int getNumValues() { return 1; }
 
@@ -138,7 +138,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit signed type */
 	private static class Sample16BitSigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.SHORT; }
+		public DataType getUserType() { return DataType.SHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -156,7 +156,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit unsigned type */
 	private static class Sample16BitUnsigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.USHORT; }
+		public DataType getUserType() { return DataType.USHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -174,7 +174,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit signed type */
 	private static class Sample32BitSigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.INT; }
+		public DataType getUserType() { return DataType.INT; }
 
 		public int getNumValues() { return 1; }
 
@@ -192,7 +192,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit unsigned type */
 	private static class Sample32BitUnsigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.UINT; }
+		public DataType getUserType() { return DataType.UINT; }
 
 		public int getNumValues() { return 1; }
 
@@ -210,7 +210,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit float type */
 	private static class Sample32BitFloat implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.FLOAT; }
+		public DataType getUserType() { return DataType.FLOAT; }
 
 		public int getNumValues() { return 1; }
 
@@ -228,7 +228,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit signed type */
 	private static class Sample64BitSigned implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.LONG; }
+		public DataType getUserType() { return DataType.LONG; }
 
 		public int getNumValues() { return 1; }
 
@@ -246,7 +246,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit float type */
 	private static class Sample64BitFloat implements SampleInfo
 	{
-		public UserType getUserType() { return UserType.DOUBLE; }
+		public DataType getUserType() { return DataType.DOUBLE; }
 
 		public int getNumValues() { return 1; }
 

@@ -3,7 +3,7 @@ package imagej.dataset;
 import imagej.DataEncoding;
 import imagej.EncodingManager;
 import imagej.MetaData;
-import imagej.UserType;
+import imagej.DataType;
 import imagej.Utils;
 import imagej.primitive.DataAccessFactory;
 import imagej.primitive.DataReader;
@@ -17,12 +17,12 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 {
 	private Object arrayOfData;
 	private int[] dimensions;
-	private UserType type;
+	private DataType type;
 	private DataReader dataReader;
 	private DataWriter dataWriter;
 	private Dataset parent;
 
-	private void verifyInputOkay(int[] dimensions, UserType type, Object arrayOfData)
+	private void verifyInputOkay(int[] dimensions, DataType type, Object arrayOfData)
 	{
 		// TODO - modify imglib so we can relax this constraint???
 		if (dimensions.length != 2)
@@ -44,7 +44,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		EncodingManager.verifyTypeCompatibility(arrayOfData, type);
 	}
 
-	public PlanarDataset(int[] dimensions, UserType type, Object arrayOfData)
+	public PlanarDataset(int[] dimensions, DataType type, Object arrayOfData)
 	{
 		verifyInputOkay(dimensions, type, arrayOfData);
 		
@@ -63,7 +63,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	}
 	
 	@Override
-	public UserType getType()
+	public DataType getType()
 	{
 		return this.type;
 	}

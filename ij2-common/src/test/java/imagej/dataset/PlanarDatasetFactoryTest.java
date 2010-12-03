@@ -2,7 +2,7 @@ package imagej.dataset;
 
 import static org.junit.Assert.*;
 import imagej.EncodingManager;
-import imagej.UserType;
+import imagej.DataType;
 
 import org.junit.Test;
 
@@ -22,9 +22,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		UserType type;
+		DataType type;
 		
-		type = UserType.UBYTE;
+		type = DataType.UBYTE;
 		
 		// should not be able to create a dataset of dim < 2
 		dimensions = new int[]{};
@@ -111,9 +111,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		UserType type;
+		DataType type;
 		
-		type = UserType.LONG;
+		type = DataType.LONG;
 		
 		dimensions = new int[]{1,2};
 		ds = factory.createDataset(type, dimensions);
@@ -135,10 +135,10 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		UserType type;
+		DataType type;
 		Object array;
 		
-		type = UserType.USHORT;
+		type = DataType.USHORT;
 		
 		// should not be able to create a dataset of dim < 2
 		dimensions = new int[]{1,2};
@@ -155,7 +155,7 @@ public class PlanarDatasetFactoryTest
 		
 		// try an array of the wrong type
 		try {
-			array = EncodingManager.allocateCompatibleArray(UserType.BYTE, 2);
+			array = EncodingManager.allocateCompatibleArray(DataType.BYTE, 2);
 			ds.setData(array);
 			fail();
 		} catch (IllegalArgumentException e) {
@@ -208,9 +208,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		UserType type;
+		DataType type;
 		
-		type = UserType.UINT12;
+		type = DataType.UINT12;
 		dimensions = new int[]{2,2,3,5}; 
 			
 		ds = factory.createDataset(type, dimensions);

@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import imagej.SampleInfo;
 import imagej.SampleManager;
-import imagej.UserType;
+import imagej.DataType;
 
 public class SampleManagerTest {
 
@@ -14,102 +14,102 @@ public class SampleManagerTest {
 	{
 		SampleInfo info;
 		
-		info = SampleManager.getSampleInfo(UserType.BIT);
+		info = SampleManager.getSampleInfo(DataType.BIT);
 		assertEquals("1-bit unsigned",info.getName());
 		assertEquals(1,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(1,info.getNumBits());
-		assertEquals(UserType.BIT,info.getUserType());
+		assertEquals(DataType.BIT,info.getUserType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 		
-		info = SampleManager.getSampleInfo(UserType.BYTE);
+		info = SampleManager.getSampleInfo(DataType.BYTE);
 		assertEquals("8-bit signed",info.getName());
 		assertEquals(8,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(8,info.getNumBits());
-		assertEquals(UserType.BYTE,info.getUserType());
+		assertEquals(DataType.BYTE,info.getUserType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.UBYTE);
+		info = SampleManager.getSampleInfo(DataType.UBYTE);
 		assertEquals("8-bit unsigned",info.getName());
 		assertEquals(8,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(8,info.getNumBits());
-		assertEquals(UserType.UBYTE,info.getUserType());
+		assertEquals(DataType.UBYTE,info.getUserType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.UINT12);
+		info = SampleManager.getSampleInfo(DataType.UINT12);
 		assertEquals("12-bit unsigned",info.getName());
 		assertEquals(12,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(12,info.getNumBits());
-		assertEquals(UserType.UINT12,info.getUserType());
+		assertEquals(DataType.UINT12,info.getUserType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.SHORT);
+		info = SampleManager.getSampleInfo(DataType.SHORT);
 		assertEquals("16-bit signed",info.getName());
 		assertEquals(16,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(16,info.getNumBits());
-		assertEquals(UserType.SHORT,info.getUserType());
+		assertEquals(DataType.SHORT,info.getUserType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.USHORT);
+		info = SampleManager.getSampleInfo(DataType.USHORT);
 		assertEquals("16-bit unsigned",info.getName());
 		assertEquals(16,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(16,info.getNumBits());
-		assertEquals(UserType.USHORT,info.getUserType());
+		assertEquals(DataType.USHORT,info.getUserType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.INT);
+		info = SampleManager.getSampleInfo(DataType.INT);
 		assertEquals("32-bit signed",info.getName());
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(UserType.INT,info.getUserType());
+		assertEquals(DataType.INT,info.getUserType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.UINT);
+		info = SampleManager.getSampleInfo(DataType.UINT);
 		assertEquals("32-bit unsigned",info.getName());
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(UserType.UINT,info.getUserType());
+		assertEquals(DataType.UINT,info.getUserType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.FLOAT);
+		info = SampleManager.getSampleInfo(DataType.FLOAT);
 		assertEquals("32-bit float",info.getName());
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(UserType.FLOAT,info.getUserType());
+		assertEquals(DataType.FLOAT,info.getUserType());
 		assertTrue(info.isFloat());
 		assertFalse(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.DOUBLE);
+		info = SampleManager.getSampleInfo(DataType.DOUBLE);
 		assertEquals("64-bit float",info.getName());
 		assertEquals(64,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(64,info.getNumBits());
-		assertEquals(UserType.DOUBLE,info.getUserType());
+		assertEquals(DataType.DOUBLE,info.getUserType());
 		assertTrue(info.isFloat());
 		assertFalse(info.isUnsigned());
 
-		info = SampleManager.getSampleInfo(UserType.LONG);
+		info = SampleManager.getSampleInfo(DataType.LONG);
 		assertEquals("64-bit signed",info.getName());
 		assertEquals(64,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(64,info.getNumBits());
-		assertEquals(UserType.LONG,info.getUserType());
+		assertEquals(DataType.LONG,info.getUserType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 	}
@@ -119,16 +119,16 @@ public class SampleManagerTest {
 	{
 		assertNull(SampleManager.findSampleInfo(null));
 		assertNull(SampleManager.findSampleInfo("ShakyJones"));
-		assertEquals(SampleManager.getSampleInfo(UserType.BIT), SampleManager.findSampleInfo("1-bit unsigned"));
-		assertEquals(SampleManager.getSampleInfo(UserType.BYTE), SampleManager.findSampleInfo("8-bit signed"));
-		assertEquals(SampleManager.getSampleInfo(UserType.UBYTE), SampleManager.findSampleInfo("8-bit unsigned"));
-		assertEquals(SampleManager.getSampleInfo(UserType.UINT12), SampleManager.findSampleInfo("12-bit unsigned"));
-		assertEquals(SampleManager.getSampleInfo(UserType.SHORT), SampleManager.findSampleInfo("16-bit signed"));
-		assertEquals(SampleManager.getSampleInfo(UserType.USHORT), SampleManager.findSampleInfo("16-bit unsigned"));
-		assertEquals(SampleManager.getSampleInfo(UserType.INT), SampleManager.findSampleInfo("32-bit signed"));
-		assertEquals(SampleManager.getSampleInfo(UserType.UINT), SampleManager.findSampleInfo("32-bit unsigned"));
-		assertEquals(SampleManager.getSampleInfo(UserType.FLOAT), SampleManager.findSampleInfo("32-bit float"));
-		assertEquals(SampleManager.getSampleInfo(UserType.DOUBLE), SampleManager.findSampleInfo("64-bit float"));
-		assertEquals(SampleManager.getSampleInfo(UserType.LONG), SampleManager.findSampleInfo("64-bit signed"));
+		assertEquals(SampleManager.getSampleInfo(DataType.BIT), SampleManager.findSampleInfo("1-bit unsigned"));
+		assertEquals(SampleManager.getSampleInfo(DataType.BYTE), SampleManager.findSampleInfo("8-bit signed"));
+		assertEquals(SampleManager.getSampleInfo(DataType.UBYTE), SampleManager.findSampleInfo("8-bit unsigned"));
+		assertEquals(SampleManager.getSampleInfo(DataType.UINT12), SampleManager.findSampleInfo("12-bit unsigned"));
+		assertEquals(SampleManager.getSampleInfo(DataType.SHORT), SampleManager.findSampleInfo("16-bit signed"));
+		assertEquals(SampleManager.getSampleInfo(DataType.USHORT), SampleManager.findSampleInfo("16-bit unsigned"));
+		assertEquals(SampleManager.getSampleInfo(DataType.INT), SampleManager.findSampleInfo("32-bit signed"));
+		assertEquals(SampleManager.getSampleInfo(DataType.UINT), SampleManager.findSampleInfo("32-bit unsigned"));
+		assertEquals(SampleManager.getSampleInfo(DataType.FLOAT), SampleManager.findSampleInfo("32-bit float"));
+		assertEquals(SampleManager.getSampleInfo(DataType.DOUBLE), SampleManager.findSampleInfo("64-bit float"));
+		assertEquals(SampleManager.getSampleInfo(DataType.LONG), SampleManager.findSampleInfo("64-bit signed"));
 	}
 }
