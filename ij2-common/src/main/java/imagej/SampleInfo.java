@@ -8,8 +8,8 @@ package imagej;
  */
 public interface SampleInfo
 {
-	/** returns the underlying ValueType for this sample's values. */
-	DataType getUserType();
+	/** returns the underlying DataType for this sample's values. */
+	DataType getDataType();
 	
 	/** returns the number of values in the sample */
 	int getNumValues();

@@ -9,7 +9,7 @@ import org.junit.Test;
 public class EncodingManagerTest
 {
 	@Test
-	public void testGetEncodingUserType()
+	public void testGetEncodingDataType()
 	{
 		assertNotNull(EncodingManager.getEncoding(DataType.BIT));
 		assertNotNull(EncodingManager.getEncoding(DataType.BYTE));
@@ -228,7 +228,7 @@ public class EncodingManagerTest
 	}
 	
 	@Test
-	public void testVerifyTypeCompatiblilityUserType()
+	public void testVerifyTypeCompatiblilityDataType()
 	{
 		// valid values
 		compatible(DataType.BYTE, new byte[0]);
@@ -290,7 +290,7 @@ public class EncodingManagerTest
 	}
 
 	@Test
-	public void testAllocateCompatibleArrayUserTypeInt()
+	public void testAllocateCompatibleArrayDataTypeInt()
 	{
 		correctlyAllocates(1, DataType.BIT);
 		correctlyAllocates(23, DataType.BYTE);

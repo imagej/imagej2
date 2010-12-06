@@ -19,7 +19,7 @@ public class SampleManagerTest {
 		assertEquals(1,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(1,info.getNumBits());
-		assertEquals(DataType.BIT,info.getUserType());
+		assertEquals(DataType.BIT,info.getDataType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 		
@@ -28,7 +28,7 @@ public class SampleManagerTest {
 		assertEquals(8,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(8,info.getNumBits());
-		assertEquals(DataType.BYTE,info.getUserType());
+		assertEquals(DataType.BYTE,info.getDataType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
@@ -37,7 +37,7 @@ public class SampleManagerTest {
 		assertEquals(8,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(8,info.getNumBits());
-		assertEquals(DataType.UBYTE,info.getUserType());
+		assertEquals(DataType.UBYTE,info.getDataType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
@@ -46,7 +46,7 @@ public class SampleManagerTest {
 		assertEquals(12,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(12,info.getNumBits());
-		assertEquals(DataType.UINT12,info.getUserType());
+		assertEquals(DataType.UINT12,info.getDataType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
@@ -55,7 +55,7 @@ public class SampleManagerTest {
 		assertEquals(16,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(16,info.getNumBits());
-		assertEquals(DataType.SHORT,info.getUserType());
+		assertEquals(DataType.SHORT,info.getDataType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
@@ -64,7 +64,7 @@ public class SampleManagerTest {
 		assertEquals(16,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(16,info.getNumBits());
-		assertEquals(DataType.USHORT,info.getUserType());
+		assertEquals(DataType.USHORT,info.getDataType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
@@ -73,7 +73,7 @@ public class SampleManagerTest {
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(DataType.INT,info.getUserType());
+		assertEquals(DataType.INT,info.getDataType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 
@@ -82,7 +82,7 @@ public class SampleManagerTest {
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(DataType.UINT,info.getUserType());
+		assertEquals(DataType.UINT,info.getDataType());
 		assertFalse(info.isFloat());
 		assertTrue(info.isUnsigned());
 
@@ -91,7 +91,7 @@ public class SampleManagerTest {
 		assertEquals(32,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(32,info.getNumBits());
-		assertEquals(DataType.FLOAT,info.getUserType());
+		assertEquals(DataType.FLOAT,info.getDataType());
 		assertTrue(info.isFloat());
 		assertFalse(info.isUnsigned());
 
@@ -100,7 +100,7 @@ public class SampleManagerTest {
 		assertEquals(64,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(64,info.getNumBits());
-		assertEquals(DataType.DOUBLE,info.getUserType());
+		assertEquals(DataType.DOUBLE,info.getDataType());
 		assertTrue(info.isFloat());
 		assertFalse(info.isUnsigned());
 
@@ -109,7 +109,7 @@ public class SampleManagerTest {
 		assertEquals(64,info.getNumBitsPerValue());
 		assertEquals(1,info.getNumValues());
 		assertEquals(64,info.getNumBits());
-		assertEquals(DataType.LONG,info.getUserType());
+		assertEquals(DataType.LONG,info.getDataType());
 		assertFalse(info.isFloat());
 		assertFalse(info.isUnsigned());
 	}

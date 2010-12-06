@@ -30,9 +30,9 @@ public class EncodingManager
 	// ***** public interface  ************************************************/
 
 	/** lookup the DataEncoding associated with the given user type */
-	public static DataEncoding getEncoding(DataType userType)
+	public static DataEncoding getEncoding(DataType dataType)
 	{
-		return encodingArray[userType.ordinal()];
+		return encodingArray[dataType.ordinal()];
 	}
 	
 	/** returns the number of storage units required to fully store a given number of pixels with a specified encoding */
@@ -94,9 +94,9 @@ public class EncodingManager
 	}
 	
 	/** verifies that an input array is compatible with a specified input type. Throws an exception if not. */
-	public static void verifyTypeCompatibility(Object pixels, DataType userType)
+	public static void verifyTypeCompatibility(Object pixels, DataType dataType)
 	{
-		verifyTypeCompatibility(pixels, getEncoding(userType).getBackingType());
+		verifyTypeCompatibility(pixels, getEncoding(dataType).getBackingType());
 	}
 
 	/** allocates and returns an array of specified StorageType and number of elements */
@@ -124,7 +124,7 @@ public class EncodingManager
 		}
 	}
 	
-	/** allocates and returns an array of specified UserType and number of elements */
+	/** allocates and returns an array of specified DataType and number of elements */
 	public static Object allocateCompatibleArray(DataType type, int numElements)
 	{
 		DataEncoding encoding = getEncoding(type);
