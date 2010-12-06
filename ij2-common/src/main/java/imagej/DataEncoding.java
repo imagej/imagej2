@@ -1,7 +1,7 @@
 package imagej;
 
-//this interface is for delineating how a data value is represented in storage. an example is Unsigned12Bit. it can be encoded as 12 BITs, 3 UBYTEs,
-//1 USHORT, or part of 1 UINT32
+// this interface is for delineating how a data value is represented in storage. an example is Unsigned12Bit. it can be encoded as 12 BITs, 1.5 UBYTEs,
+//   all of one USHORT (wasting 4 bits), or 12/32 of a UINT32
 
 public interface DataEncoding
 {
