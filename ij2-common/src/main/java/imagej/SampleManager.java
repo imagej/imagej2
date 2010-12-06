@@ -36,7 +36,7 @@ public class SampleManager
 
 	//***** public interface **********************************************/
 	
-	/** get a SampleInfo associated with a UserType */
+	/** get a SampleInfo associated with a DataType */
 	public static SampleInfo getSampleInfo(DataType type)
 	{
 		return sampleInfoArray[type.ordinal()];
@@ -66,7 +66,7 @@ public class SampleManager
 	/** SampleInfo that describes a 1 bit unsigned type */
 	private static class Sample1BitUnsigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.BIT; }
+		public DataType getDataType() { return DataType.BIT; }
 
 		public int getNumValues() { return 1; }
 
@@ -84,7 +84,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit signed type */
 	private static class Sample8BitSigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.BYTE; }
+		public DataType getDataType() { return DataType.BYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -102,7 +102,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 8 bit unsigned type */
 	private static class Sample8BitUnsigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.UBYTE; }
+		public DataType getDataType() { return DataType.UBYTE; }
 
 		public int getNumValues() { return 1; }
 
@@ -120,7 +120,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 12 bit unsigned type */
 	private static class Sample12BitUnsigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.UINT12; }
+		public DataType getDataType() { return DataType.UINT12; }
 
 		public int getNumValues() { return 1; }
 
@@ -138,7 +138,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit signed type */
 	private static class Sample16BitSigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.SHORT; }
+		public DataType getDataType() { return DataType.SHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -156,7 +156,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 16 bit unsigned type */
 	private static class Sample16BitUnsigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.USHORT; }
+		public DataType getDataType() { return DataType.USHORT; }
 
 		public int getNumValues() { return 1; }
 
@@ -174,7 +174,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit signed type */
 	private static class Sample32BitSigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.INT; }
+		public DataType getDataType() { return DataType.INT; }
 
 		public int getNumValues() { return 1; }
 
@@ -192,7 +192,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit unsigned type */
 	private static class Sample32BitUnsigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.UINT; }
+		public DataType getDataType() { return DataType.UINT; }
 
 		public int getNumValues() { return 1; }
 
@@ -210,7 +210,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 32 bit float type */
 	private static class Sample32BitFloat implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.FLOAT; }
+		public DataType getDataType() { return DataType.FLOAT; }
 
 		public int getNumValues() { return 1; }
 
@@ -228,7 +228,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit signed type */
 	private static class Sample64BitSigned implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.LONG; }
+		public DataType getDataType() { return DataType.LONG; }
 
 		public int getNumValues() { return 1; }
 
@@ -246,7 +246,7 @@ public class SampleManager
 	/** SampleInfo that describes IJ's 64 bit float type */
 	private static class Sample64BitFloat implements SampleInfo
 	{
-		public DataType getUserType() { return DataType.DOUBLE; }
+		public DataType getDataType() { return DataType.DOUBLE; }
 
 		public int getNumValues() { return 1; }
 
