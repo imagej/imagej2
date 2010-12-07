@@ -55,8 +55,7 @@ public class ShortType implements Type
 	@Override
 	public DataAccessor allocateAccessor(Object array)
 	{
-		if ( ! isStorageCompatible(array) )
-			throw new IllegalArgumentException("expected a short[] but given storage of type "+array.getClass());
+		Types.verifyCompatibility(this, array);
 
 		return new ShortAccessor(array);
 	}

@@ -55,8 +55,7 @@ public class FloatType implements Type
 	@Override
 	public DataAccessor allocateAccessor(Object array)
 	{
-		if ( ! isStorageCompatible(array) )
-			throw new IllegalArgumentException("expected a float[] but given storage of type "+array.getClass());
+		Types.verifyCompatibility(this, array);
 
 		return new FloatAccessor(array);
 	}

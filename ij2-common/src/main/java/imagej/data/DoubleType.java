@@ -55,8 +55,7 @@ public class DoubleType implements Type
 	@Override
 	public DataAccessor allocateAccessor(Object array)
 	{
-		if ( ! isStorageCompatible(array) )
-			throw new IllegalArgumentException("expected a double[] but given storage of type "+array.getClass());
+		Types.verifyCompatibility(this, array);
 
 		return new DoubleAccessor(array);
 	}
