@@ -1,7 +1,12 @@
 package imagej.imglib;
 
-import imagej.DataType;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import imagej.Utils;
+import imagej.data.Type;
+import imagej.data.Types;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -18,48 +23,50 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 
 public class TypeManager {
 
-	@SuppressWarnings("rawtypes")
 	/** the internal list of imglib type data info */
-	private static RealType[] realTypeArray;
+	private static HashMap<Type,RealType<?>> imagejTypeHash;
 
 	//***** static initialization **********************************************/
 	
 	/** initialize the type lists */
 	static
 	{
-		realTypeArray = new RealType[DataType.values().length];
-
-		realTypeArray[DataType.BIT.ordinal()] = new BitType();
-		realTypeArray[DataType.BYTE.ordinal()] = new ByteType();
-		realTypeArray[DataType.UBYTE.ordinal()] = new UnsignedByteType();
-		realTypeArray[DataType.UINT12.ordinal()] = new Unsigned12BitType();
-		realTypeArray[DataType.SHORT.ordinal()] = new ShortType();
-		realTypeArray[DataType.USHORT.ordinal()] = new UnsignedShortType();
-		realTypeArray[DataType.INT.ordinal()] = new IntType();
-		realTypeArray[DataType.UINT.ordinal()] = new UnsignedIntType();
-		realTypeArray[DataType.FLOAT.ordinal()] = new FloatType();
-		realTypeArray[DataType.LONG.ordinal()] = new LongType();
-		realTypeArray[DataType.DOUBLE.ordinal()] = new DoubleType();
+		imagejTypeHash = new HashMap<Type, RealType<?>>();
+		imagejTypeHash.put(Types.findType("1-bit unsigned"), new BitType());
+		imagejTypeHash.put(Types.findType("8-bit signed"), new ByteType());
+		imagejTypeHash.put(Types.findType("8-bit unsigned"), new UnsignedByteType());
+		imagejTypeHash.put(Types.findType("12-bit unsigned"), new Unsigned12BitType());
+		imagejTypeHash.put(Types.findType("16-bit signed"), new ShortType());
+		imagejTypeHash.put(Types.findType("16-bit unsigned"), new UnsignedShortType());
+		imagejTypeHash.put(Types.findType("32-bit signed"), new IntType());
+		imagejTypeHash.put(Types.findType("32-bit unsigned"), new UnsignedIntType());
+		imagejTypeHash.put(Types.findType("32-bit float"), new FloatType());
+		imagejTypeHash.put(Types.findType("64-bit signed"), new LongType());
+		imagejTypeHash.put(Types.findType("64-bit float"), new DoubleType());
 	}
 
 	/** get an imglib type from a IJ UserType */
-	public static RealType<?> getRealType(DataType type)
+	public static RealType<?> getRealType(Type type)
 	{
-		return realTypeArray[type.ordinal()];
+		return imagejTypeHash.get(type);
 	}
 
-	/** get the UserType (BYTE,SHORT,UINT,etc.) associated with an ImgLibType. Right now there is a one to one correspondance
-	 *  between imglib and IJ. If this changes in the future this method is defined to return the subsample UserType.
+	/** get the ImageJ Type associated with an ImgLibType. Right now there is a one to one correspondance
+	 *  between imglib and IJ. If this changes in the future this method will need to be modified.
 	 */
-	public static DataType getUserType(RealType<?> imglib)
+	public static Type getIJType(RealType<?> imglibType)
 	{
-		for (DataType vType : DataType.values())
+		// TODO - back with a has for quick lookup rather than searching every time
+		
+		Set<Entry<Type, RealType<?>>> entries = imagejTypeHash.entrySet();
+		
+		for (Entry<Type,RealType<?>> entry : entries)
 		{
-			if (realTypeArray[vType.ordinal()].getClass() == imglib.getClass())
-				return vType;
+			if (entry.getValue().getClass() == imglibType.getClass())
+				return entry.getKey();
 		}
 		
-		throw new IllegalArgumentException("unknown Imglib type : "+imglib.getClass());
+		throw new IllegalArgumentException("unknown Imglib type : "+imglibType.getClass());
 	}
 	
 	/*
@@ -68,7 +75,7 @@ public class TypeManager {
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
 			(t instanceof BitType) ||
-			(t instanceof UnsignedByteType) ||      // note that this method could getUserType(realtype) and then get SampleInfo and return isUnsigned()
+			(t instanceof UnsignedByteType) ||      // NOTE - this method could getIJType(realtype) and then get type.isUnsigned()
 			(t instanceof Unsigned12BitType) ||
 			(t instanceof UnsignedShortType) ||
 			(t instanceof UnsignedIntType)

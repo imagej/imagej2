@@ -1,19 +1,7 @@
 package imagej.imglib.process.operation;
 
-import imagej.EncodingManager;
-import imagej.DataType;
-import imagej.primitive.BitWriter;
-import imagej.primitive.ByteWriter;
-import imagej.primitive.DataWriter;
-import imagej.primitive.DoubleWriter;
-import imagej.primitive.FloatWriter;
-import imagej.primitive.IntWriter;
-import imagej.primitive.LongWriter;
-import imagej.primitive.ShortWriter;
-import imagej.primitive.UnsignedByteWriter;
-import imagej.primitive.UnsignedIntWriter;
-import imagej.primitive.UnsignedShortWriter;
-import imagej.primitive.UnsignedTwelveBitWriter;
+import imagej.data.DataAccessor;
+import imagej.data.Type;
 import imagej.process.Index;
 import imagej.process.Span;
 import mpicbg.imglib.image.Image;
@@ -25,13 +13,13 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	// *********** instance variables ******************************************************
 	
 	private int originX, originY, spanX, spanY;
-	private DataType asType;
+	private Type asType;
 	private Object outputPlane;
-	private DataWriter planeWriter;
+	private DataAccessor planeWriter;
 
 	// ************ public interface - private declarations later **************************
 	
-	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, DataType asType)
+	public GetPlaneOperation(Image<T> image, int[] origin, int[] span, Type asType)
 	{
 		super(image, origin, span);
 		this.originX = origin[0];
@@ -46,57 +34,9 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		int planeSize = this.spanX * this.spanY;
 		
-		this.outputPlane = EncodingManager.allocateCompatibleArray(this.asType, planeSize);
+		this.outputPlane = this.asType.allocateStorageArray(planeSize);
 
-		switch (this.asType)
-		{
-			case BIT:
-				this.planeWriter = new BitWriter(this.outputPlane);
-				break;
-
-			case BYTE:
-				this.planeWriter = new ByteWriter(this.outputPlane);
-				break;
-				
-			case UBYTE:
-				this.planeWriter = new UnsignedByteWriter(this.outputPlane);
-				break;
-		
-			case UINT12:
-				this.planeWriter = new UnsignedTwelveBitWriter(this.outputPlane);
-				break;
-		
-			case SHORT:
-				this.planeWriter = new ShortWriter(this.outputPlane);
-				break;
-		
-			case USHORT:
-				this.planeWriter = new UnsignedShortWriter(this.outputPlane);
-				break;
-		
-			case INT:
-				this.planeWriter = new IntWriter(this.outputPlane);
-				break;
-		
-			case UINT:
-				this.planeWriter = new UnsignedIntWriter(this.outputPlane);
-				break;
-		
-			case FLOAT:
-				this.planeWriter = new FloatWriter(this.outputPlane);
-				break;
-		
-			case LONG:
-				this.planeWriter = new LongWriter(this.outputPlane);
-				break;
-		
-			case DOUBLE:
-				this.planeWriter = new DoubleWriter(this.outputPlane);
-				break;
-		
-			default:
-				throw new IllegalStateException("GetPlaneOperation(): unsupported data type - "+this.asType);
-		}
+		this.planeWriter = this.asType.allocateAccessor(this.outputPlane);
 	}
 
 	@Override
@@ -104,7 +44,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 	{
 		int index = (position[1] - this.originY) * this.spanX + (position[0] - this.originX); 
 		
-		this.planeWriter.setValue(index, sample.getRealDouble());
+		this.planeWriter.setReal(index, sample.getRealDouble());
 	}
 
 	@Override
@@ -117,7 +57,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		return this.outputPlane;
 	}
 
-	public static <T extends RealType<T>> Object getPlaneAs(Image<T> img, int[] planePos, DataType asType)
+	public static <T extends RealType<T>> Object getPlaneAs(Image<T> img, int[] planePos, Type asType)
 	{
 		int[] origin = Index.create(0,0,planePos);
 		

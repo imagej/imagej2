@@ -1,8 +1,9 @@
 package imagej.imglib.process;
 
-import imagej.DataType;
 import imagej.Utils;
+import imagej.data.Type;
 import imagej.function.unary.CopyUnaryFunction;
+import imagej.imglib.TypeManager;
 import imagej.imglib.process.operation.BinaryAssignOperation;
 import imagej.imglib.process.operation.GetPlaneOperation;
 import imagej.process.Index;
@@ -246,42 +247,44 @@ public class ImageUtils
 	@SuppressWarnings({"unchecked"})
 	private static Object getPlaneCopy(Image<? extends RealType<?>> im, int[] planePos)
 	{
-		RealType<?> type = getType(im);
+		RealType<?> imglibType = getType(im);
+		
+		Type ijType = TypeManager.getIJType(imglibType); 
 
-		if (type instanceof BitType)
-			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, DataType.BIT);
+		if (imglibType instanceof BitType)
+			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, ijType);
 
-		if (type instanceof ByteType)
-			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, DataType.BYTE);
+		if (imglibType instanceof ByteType)
+			return GetPlaneOperation.getPlaneAs((Image<ByteType>)im, planePos, ijType);
 
-		if (type instanceof UnsignedByteType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, DataType.UBYTE);
+		if (imglibType instanceof UnsignedByteType)
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedByteType>)im, planePos, ijType);
 
-		if (type instanceof Unsigned12BitType)
-			return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)im, planePos, DataType.UINT12);
+		if (imglibType instanceof Unsigned12BitType)
+			return GetPlaneOperation.getPlaneAs((Image<Unsigned12BitType>)im, planePos, ijType);
 
-		if (type instanceof ShortType)
-			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, DataType.SHORT);
+		if (imglibType instanceof ShortType)
+			return GetPlaneOperation.getPlaneAs((Image<ShortType>)im, planePos, ijType);
 
-		if (type instanceof UnsignedShortType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)im, planePos, DataType.USHORT);
+		if (imglibType instanceof UnsignedShortType)
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedShortType>)im, planePos, ijType);
 
-		if (type instanceof IntType)
-			return GetPlaneOperation.getPlaneAs((Image<IntType>)im, planePos, DataType.INT);
+		if (imglibType instanceof IntType)
+			return GetPlaneOperation.getPlaneAs((Image<IntType>)im, planePos, ijType);
 
-		if (type instanceof UnsignedIntType)
-			return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)im, planePos, DataType.UINT);
+		if (imglibType instanceof UnsignedIntType)
+			return GetPlaneOperation.getPlaneAs((Image<UnsignedIntType>)im, planePos, ijType);
 
-		if (type instanceof LongType)
-			return GetPlaneOperation.getPlaneAs((Image<LongType>)im, planePos, DataType.LONG);
+		if (imglibType instanceof LongType)
+			return GetPlaneOperation.getPlaneAs((Image<LongType>)im, planePos, ijType);
 
-		if (type instanceof FloatType)
-			return GetPlaneOperation.getPlaneAs((Image<FloatType>)im, planePos, DataType.FLOAT);
+		if (imglibType instanceof FloatType)
+			return GetPlaneOperation.getPlaneAs((Image<FloatType>)im, planePos, ijType);
 
-		if (type instanceof DoubleType)
-			return GetPlaneOperation.getPlaneAs((Image<DoubleType>)im, planePos, DataType.DOUBLE);
+		if (imglibType instanceof DoubleType)
+			return GetPlaneOperation.getPlaneAs((Image<DoubleType>)im, planePos, ijType);
 
-		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+type.getClass());
+		throw new IllegalArgumentException("getPlaneCopy(): unsupported type - "+imglibType.getClass());
 	}
 
 	/** Converts the given image name back to a list of dimensional axis types. */
