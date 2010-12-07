@@ -1,7 +1,6 @@
 package imagej.dataset;
 
-import imagej.EncodingManager;
-import imagej.DataType;
+import imagej.data.Type;
 
 import java.util.ArrayList;
 
@@ -13,7 +12,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 	public PlanarDatasetFactory() {}
 	
 	@Override
-	public Dataset createDataset(DataType type, int[] dimensions)
+	public Dataset createDataset(Type type, int[] dimensions)
 	{
 		if (dimensions.length < 2)
 			throw new IllegalArgumentException("this implementation cannot support data whose dimension is less than 2");
@@ -40,7 +39,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 		return dimensionList;
 	}
 	
-	private Dataset makeDataset(DataType type, int[][] dimensionList, int level)
+	private Dataset makeDataset(Type type, int[][] dimensionList, int level)
 	{
 		int[] currDims = dimensionList[level];
 		int currDimsLength = currDims.length;
@@ -50,7 +49,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 		else if ( currDimsLength == 2)  // make a concrete dataset
 		{
 			int numElements = (int) ((long)currDims[0] * currDims[1]);
-			Object arrayOfData = EncodingManager.allocateCompatibleArray(type, numElements);
+			Object arrayOfData = type.allocateStorageArray(numElements);
 			return new PlanarDataset(currDims, type, arrayOfData);
 		}
 		else  // make a composite dataset

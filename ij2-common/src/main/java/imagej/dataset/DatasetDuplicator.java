@@ -1,6 +1,6 @@
 package imagej.dataset;
 
-import imagej.DataType;
+import imagej.data.Type;
 import imagej.process.Index;
 
 public class DatasetDuplicator
@@ -13,7 +13,7 @@ public class DatasetDuplicator
 	/** creates a Dataset according to given factory's style but whose shape and data values are copied from a given Dataset */ 
 	public Dataset duplicateDataset(DatasetFactory factory, Dataset dataset)
 	{
-		DataType type = dataset.getType();
+		Type type = dataset.getType();
 		
 		int[] dimensions = dataset.getDimensions();
 		

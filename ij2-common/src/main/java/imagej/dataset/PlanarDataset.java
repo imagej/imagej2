@@ -1,13 +1,10 @@
 package imagej.dataset;
 
-import imagej.DataEncoding;
-import imagej.EncodingManager;
 import imagej.MetaData;
-import imagej.DataType;
 import imagej.Utils;
-import imagej.primitive.DataAccessFactory;
-import imagej.primitive.DataReader;
-import imagej.primitive.DataWriter;
+import imagej.data.DataAccessor;
+import imagej.data.Type;
+import imagej.data.Types;
 
 import java.lang.reflect.Array;
 
@@ -17,12 +14,11 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 {
 	private Object arrayOfData;
 	private int[] dimensions;
-	private DataType type;
-	private DataReader dataReader;
-	private DataWriter dataWriter;
+	private Type type;
+	private DataAccessor dataAccessor;
 	private Dataset parent;
 
-	private void verifyInputOkay(int[] dimensions, DataType type, Object arrayOfData)
+	private void verifyInputOkay(int[] dimensions, Type type, Object arrayOfData)
 	{
 		// TODO - modify imglib so we can relax this constraint???
 		if (dimensions.length != 2)
@@ -34,25 +30,24 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (!arrayOfData.getClass().isArray())
 			throw new IllegalArgumentException("expected an array as input");
 		
-		DataEncoding encoding = EncodingManager.getEncoding(type);
+		long numPixels = Utils.getTotalSamples(dimensions);
 		
-		int expectedArrayLength = EncodingManager.calcStorageUnitsRequired(encoding, (int) Utils.getTotalSamples(dimensions));
+		long expectedArrayLength = type.calcNumStorageUnitsFromPixelCount(numPixels);
 		
 		if (Array.getLength(arrayOfData) != expectedArrayLength)
-			throw new IllegalArgumentException("array input array length does not match total sample count of given input dimensions");
+			throw new IllegalArgumentException("input array length does not match total sample count of given input dimensions");
 	
-		EncodingManager.verifyTypeCompatibility(arrayOfData, type);
+		Types.verifyCompatibility(type, arrayOfData);
 	}
-
-	public PlanarDataset(int[] dimensions, DataType type, Object arrayOfData)
+	
+	public PlanarDataset(int[] dimensions, Type type, Object arrayOfData)
 	{
 		verifyInputOkay(dimensions, type, arrayOfData);
 		
 		this.dimensions = dimensions;
 		this.type = type;
 		this.arrayOfData = arrayOfData;
-		this.dataReader = DataAccessFactory.getReader(type, arrayOfData);
-		this.dataWriter = DataAccessFactory.getWriter(type, arrayOfData);
+		this.dataAccessor = type.allocateAccessor(arrayOfData);
 		this.parent = null;
 	}
 
@@ -63,7 +58,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	}
 	
 	@Override
-	public DataType getType()
+	public Type getType()
 	{
 		return this.type;
 	}
@@ -93,6 +88,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		verifyInputOkay(this.dimensions, this.type, arrayOfData);
 
 		this.arrayOfData = arrayOfData;
+		this.dataAccessor = this.type.allocateAccessor(arrayOfData);
 	}
 	
 	@Override
@@ -162,7 +158,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		
 		int sampleNum = y*this.dimensions[0] + x;
 		
-		return this.dataReader.getValue(sampleNum);
+		return this.dataAccessor.getReal(sampleNum);
 	}
 
 	@Override
@@ -176,7 +172,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		
 		int sampleNum = y*this.dimensions[0] + x;
 		
-		this.dataWriter.setValue(sampleNum, value);
+		this.dataAccessor.setReal(sampleNum, value);
 	}
 	
 	@Override

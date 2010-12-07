@@ -1,8 +1,8 @@
 package imagej.dataset;
 
 import static org.junit.Assert.*;
-import imagej.EncodingManager;
-import imagej.DataType;
+import imagej.data.Type;
+import imagej.data.Types;
 
 import org.junit.Test;
 
@@ -22,9 +22,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		DataType type;
+		Type type;
 		
-		type = DataType.UBYTE;
+		type = Types.findType("8-bit unsigned");
 		
 		// should not be able to create a dataset of dim < 2
 		dimensions = new int[]{};
@@ -111,9 +111,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		DataType type;
+		Type type;
 		
-		type = DataType.LONG;
+		type = Types.findType("64-bit signed");
 		
 		dimensions = new int[]{1,2};
 		ds = factory.createDataset(type, dimensions);
@@ -135,10 +135,10 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		DataType type;
+		Type type;
 		Object array;
 		
-		type = DataType.USHORT;
+		type = Types.findType("16-bit unsigned");
 		
 		// should not be able to create a dataset of dim < 2
 		dimensions = new int[]{1,2};
@@ -155,7 +155,7 @@ public class PlanarDatasetFactoryTest
 		
 		// try an array of the wrong type
 		try {
-			array = EncodingManager.allocateCompatibleArray(DataType.BYTE, 2);
+			array = new int[2];
 			ds.setData(array);
 			fail();
 		} catch (IllegalArgumentException e) {
@@ -164,7 +164,7 @@ public class PlanarDatasetFactoryTest
 		
 		// try an array that is too big
 		try {
-			array = EncodingManager.allocateCompatibleArray(type, 3);
+			array = type.allocateStorageArray(3);
 			ds.setData(array);
 			fail();
 		} catch (IllegalArgumentException e) {
@@ -173,7 +173,7 @@ public class PlanarDatasetFactoryTest
 		
 		// try an array that is too small
 		try {
-			array = EncodingManager.allocateCompatibleArray(type, 1);
+			array = type.allocateStorageArray(1);
 			ds.setData(array);
 			fail();
 		} catch (IllegalArgumentException e) {
@@ -182,7 +182,7 @@ public class PlanarDatasetFactoryTest
 
 		// try an array that is right size
 		try {
-			array = EncodingManager.allocateCompatibleArray(type, 2);
+			array = type.allocateStorageArray(2);
 			ds.setData(array);
 			assertTrue(true);
 		} catch (Exception e) {
@@ -193,7 +193,7 @@ public class PlanarDatasetFactoryTest
 		try {
 			dimensions = new int[]{1,2,3};
 			ds = factory.createDataset(type, dimensions);
-			array = EncodingManager.allocateCompatibleArray(type, 6);
+			array = type.allocateStorageArray(6);
 			ds.setData(array);
 			fail();
 		} catch (IllegalArgumentException e) {
@@ -208,9 +208,9 @@ public class PlanarDatasetFactoryTest
 		
 		Dataset ds;
 		int[] dimensions;
-		DataType type;
+		Type type;
 		
-		type = DataType.UINT12;
+		type = Types.findType("12-bit unsigned");
 		dimensions = new int[]{2,2,3,5}; 
 			
 		ds = factory.createDataset(type, dimensions);

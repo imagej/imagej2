@@ -1,6 +1,5 @@
 package imagej.dataset;
 
-import imagej.SampleInfo;
 
 // TODO - these classes not yet in use. They document things that would be good to support in a dataset. Make sure that our final Dataset
 //   implementation can support such operations. Then remove these interfaces and notes from the project.
@@ -116,7 +115,7 @@ interface NAryDatasetOperation
 
 interface NumericDataset
 {
-	SampleInfo getSampleInfo();
+	//SampleInfo getSampleInfo();
 	int[] getDimensions();
 	long getTotalSamples();
 	void getSample(int[] index, Object dest);  // TODO change dest to correct thing when we know
