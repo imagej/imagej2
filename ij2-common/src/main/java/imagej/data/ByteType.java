@@ -2,8 +2,8 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class ByteType implements Type {
-
+public class ByteType implements Type
+{
 	@Override
 	public String getName()
 	{
@@ -82,7 +82,7 @@ public class ByteType implements Type {
 	@Override
 	public long calcNumStorageBytesFromPixelCount(long numPixels)
 	{
-		return numPixels;
+		return 1 * calcNumStorageUnitsFromPixelCount(numPixels);
 	}
 
 	@Override
@@ -94,7 +94,9 @@ public class ByteType implements Type {
 	@Override
 	public Object allocateStorageArray(int numPixels)
 	{
-		return new byte[numPixels];
+		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
+		
+		return new byte[(int)numStorageUnits];
 	}
 
 }

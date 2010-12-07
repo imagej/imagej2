@@ -10,22 +10,26 @@ public class FloatAccessor implements DataAccessor {
 	}
 	
 	@Override
-	public double getReal(int index) {
+	public double getReal(int index)
+	{
 		return this.floats[index];
 	}
 
 	@Override
-	public void setReal(int index, double value) {
+	public void setReal(int index, double value)
+	{
 		this.floats[index] = (float) value;
 	}
 
 	@Override
-	public long getIntegral(int index) {
+	public long getIntegral(int index)
+	{
 		return (long) this.floats[index];
 	}
 
 	@Override
-	public void setIntegral(int index, long value) {
+	public void setIntegral(int index, long value)
+	{
 		this.floats[index] = (float) value;
 	}
 

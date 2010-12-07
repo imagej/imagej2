@@ -11,37 +11,44 @@ public class BitType implements Type
 	}
 
 	@Override
-	public boolean isFloat() {
+	public boolean isFloat()
+	{
 		return false;
 	}
 
 	@Override
-	public boolean isUnsigned() {
+	public boolean isUnsigned()
+	{
 		return true;
 	}
 
 	@Override
-	public int getNumBitsData() {
+	public int getNumBitsData()
+	{
 		return 1;
 	}
 
 	@Override
-	public double getMinReal() {
+	public double getMinReal()
+	{
 		return 0;
 	}
 
 	@Override
-	public double getMaxReal() {
+	public double getMaxReal()
+	{
 		return 1;
 	}
 
 	@Override
-	public long getMinIntegral() {
+	public long getMinIntegral()
+	{
 		return 0;
 	}
 
 	@Override
-	public long getMaxIntegral() {
+	public long getMaxIntegral()
+	{
 		return 1;
 	}
 
@@ -55,27 +62,32 @@ public class BitType implements Type
 	}
 
 	@Override
-	public StorageType getStorageType() {
-		return StorageType.INT32;
+	public StorageType getStorageType()
+	{
+		return StorageType.UINT32;
 	}
 
 	@Override
-	public double getNumberOfStorageTypesPerValue() {
+	public double getNumberOfStorageTypesPerValue()
+	{
 		return 1.0 / 32.0;
 	}
 
 	@Override
-	public boolean isStorageCompatible(Object data) {
+	public boolean isStorageCompatible(Object data)
+	{
 		return data instanceof int[];
 	}
 
 	@Override
-	public long calcNumStorageBytesFromPixelCount(long numPixels) {
+	public long calcNumStorageBytesFromPixelCount(long numPixels)
+	{
 		return 4 * calcNumStorageUnitsFromPixelCount(numPixels);
 	}
 
 	@Override
-	public long calcNumStorageUnitsFromPixelCount(long numPixels) {
+	public long calcNumStorageUnitsFromPixelCount(long numPixels)
+	{
 		long numUnits = numPixels / 32;
 		if (numPixels % 32 != 0)
 			numUnits++;
@@ -83,8 +95,10 @@ public class BitType implements Type
 	}
 
 	@Override
-	public Object allocateStorageArray(int numPixels) {
+	public Object allocateStorageArray(int numPixels)
+	{
 		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
+		
 		return new int[(int)numStorageUnits];
 	}
 

@@ -20,14 +20,16 @@ public class BitAccessor implements DataAccessor
 	}
 
 	@Override
-	public void setReal(int index, double value) {
+	public void setReal(int index, double value)
+	{
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
 		placeValue(index, (int)value);
 	}
 
 	@Override
-	public long getIntegral(int index) {
+	public long getIntegral(int index)
+	{
 		int intNumber = index / 32;
 		
 		int bitNumber = index % 32;
@@ -36,7 +38,8 @@ public class BitAccessor implements DataAccessor
 	}
 
 	@Override
-	public void setIntegral(int index, long value) {
+	public void setIntegral(int index, long value)
+	{
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
 		placeValue(index, (int)value);
@@ -62,6 +65,7 @@ public class BitAccessor implements DataAccessor
 		else
 			return 0;
 	}
+	
 	private void setBit(int intNumber, int bitNumber, int bitValue)
 	{
 		int currValue = this.ints[intNumber];
