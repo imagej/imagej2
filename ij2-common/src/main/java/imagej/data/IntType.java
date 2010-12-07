@@ -56,8 +56,7 @@ public class IntType implements Type
 	@Override
 	public DataAccessor allocateAccessor(Object array)
 	{
-		if ( ! isStorageCompatible(array) )
-			throw new IllegalArgumentException("expected a int[] but given storage of type "+array.getClass());
+		Types.verifyCompatibility(this, array);
 
 		return new IntAccessor(array);
 	}
