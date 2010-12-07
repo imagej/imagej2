@@ -15,40 +15,27 @@ public class Types
 	{
 		types = new HashMap<String,Type>();
 		
-		Type type;
+		addType(new BitType());
+		addType(new ByteType());
+		addType(new UnsignedByteType());
+		addType(new Unsigned12BitType());
+		addType(new ShortType());
+		addType(new UnsignedShortType());
+		addType(new IntType());
+		addType(new UnsignedIntType());
+		addType(new FloatType());
+		addType(new LongType());
+		addType(new DoubleType());
+	}
+	
+	private static void addType(Type type)
+	{
+		String typeName = type.getName();
 		
-		type = new BitType();
-		types.put(type.getName(), type);
+		if (types.get(typeName) != null)
+			throw new IllegalStateException("more than one definition exists for type "+typeName);
 		
-		type = new ByteType();
-		types.put(type.getName(), type);
-
-		type = new UnsignedByteType();
-		types.put(type.getName(), type);
-
-		type = new Unsigned12BitType();
-		types.put(type.getName(), type);
-
-		type = new ShortType();
-		types.put(type.getName(), type);
-
-		type = new UnsignedShortType();
-		types.put(type.getName(), type);
-
-		type = new IntType();
-		types.put(type.getName(), type);
-
-		type = new UnsignedIntType();
-		types.put(type.getName(), type);
-
-		type = new FloatType();
-		types.put(type.getName(), type);
-
-		type = new LongType();
-		types.put(type.getName(), type);
-
-		type = new DoubleType();
-		types.put(type.getName(), type);
+		types.put(typeName, type);
 	}
 	
 	// *********  public interface ***************************************
