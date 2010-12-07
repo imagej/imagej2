@@ -9,7 +9,7 @@ public interface Dataset
 	/** the dimensions of the dataset */
 	int[] getDimensions();
 	
-	/** the user type of the dataset (BYTE, DOUBLE, UINT12, BIT, etc.) */
+	/** the ImageJ Type of the dataset (ByteType, DoubleType, Unsigned12BitType, BitType, etc.) */
 	Type getType();
 	
 	/** get the metadata associated with the dataset */

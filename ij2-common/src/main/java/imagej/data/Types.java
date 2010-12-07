@@ -2,15 +2,18 @@ package imagej.data;
 
 import java.util.HashMap;
 
+/** this class delineates all of the Type classes that ImageJ supports. If new types are implemented they need to be instantiated
+ * in this class' static initialization block.
+ */
 public class Types
 {
 	// *********  instance variables ***************************************
 	
-	//private static ArrayList<Type> types;
 	private static HashMap<String,Type> types;
 	
 	// *********  initialization ***************************************
-	
+
+	/** one time setup code. add new Types here as needed. */
 	static
 	{
 		types = new HashMap<String,Type>();
@@ -28,6 +31,7 @@ public class Types
 		addType(new DoubleType());
 	}
 	
+	/** helper method - ensures that Types do not share names */
 	private static void addType(Type type)
 	{
 		String typeName = type.getName();
@@ -40,11 +44,13 @@ public class Types
 	
 	// *********  public interface ***************************************
 
+	/** returns the Type associated with given name. */
 	public static Type findType(String name)
 	{
 		return types.get(name);
 	}
 	
+	/** throws an exception if given data array is not compatible with given Type's internal representation */
 	public static void verifyCompatibility(Type type, Object data)
 	{
 		if ( ! type.isStorageCompatible(data) )
