@@ -1,9 +1,7 @@
 package imagej.ij1bridge;
 
 import ij.process.ImageProcessor;
-import imagej.DataType;
 import imagej.ij1bridge.process.ImgLibProcessor;
-import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.logic.BitType;
@@ -22,44 +20,50 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class ImgLibProcessorFactory implements ProcessorFactory
 {
 	private Image<?> image;
-	private DataType type;
+	private RealType<?> realType;
 	
 	public ImgLibProcessorFactory(Image<?> image)
 	{
 		this.image = image;
-		RealType<?> realType = ImageUtils.getType(this.image);
-		this.type = TypeManager.getUserType(realType);
+		this.realType = ImageUtils.getType(this.image);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public ImageProcessor makeProcessor(int[] planePos)
 	{
-		switch (this.type)
-		{
-		case BIT:
+		if (realType instanceof BitType)
 			return new ImgLibProcessor<BitType>((Image<BitType>)image, planePos);
-		case BYTE:
+
+		if (realType instanceof ByteType)
 			return new ImgLibProcessor<ByteType>((Image<ByteType>)image, planePos);
-		case UBYTE:
+
+		if (realType instanceof UnsignedByteType)
 			return new ImgLibProcessor<UnsignedByteType>((Image<UnsignedByteType>)image, planePos);
-		case UINT12:
+
+		if (realType instanceof Unsigned12BitType)
 			return new ImgLibProcessor<Unsigned12BitType>((Image<Unsigned12BitType>)image, planePos);
-		case SHORT:
+
+		if (realType instanceof ShortType)
 			return new ImgLibProcessor<ShortType>((Image<ShortType>)image, planePos);
-		case USHORT:
+
+		if (realType instanceof UnsignedShortType)
 			return new ImgLibProcessor<UnsignedShortType>((Image<UnsignedShortType>)image, planePos);
-		case INT:
+
+		if (realType instanceof IntType)
 			return new ImgLibProcessor<IntType>((Image<IntType>)image, planePos);
-		case UINT:
+
+		if (realType instanceof UnsignedIntType)
 			return new ImgLibProcessor<UnsignedIntType>((Image<UnsignedIntType>)image, planePos);
-		case FLOAT:
+
+		if (realType instanceof FloatType)
 			return new ImgLibProcessor<FloatType>((Image<FloatType>)image, planePos);
-		case LONG:
+
+		if (realType instanceof LongType)
 			return new ImgLibProcessor<LongType>((Image<LongType>)image, planePos);
-		case DOUBLE:
+
+		if (realType instanceof DoubleType)
 			return new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, planePos);
-		default:
-			throw new IllegalStateException("Unknown sample type "+this.type);	
-		}
+
+		throw new IllegalStateException("Unknown sample type "+this.realType.getClass());	
 	}
 }

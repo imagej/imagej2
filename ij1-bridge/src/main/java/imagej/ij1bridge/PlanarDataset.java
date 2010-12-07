@@ -1,6 +1,6 @@
 package imagej.ij1bridge;
 
-import imagej.SampleInfo;
+import imagej.data.Type;
 
 public interface PlanarDataset
 {
@@ -17,6 +17,6 @@ public interface PlanarDataset
 	void setPlaneLabel(int planeNumber, String label);
 	void insertPlaneAt(int planeNumber, Object plane);  // grow the dataset. put new plane at planeNumber index moving other planes as needed
 	void deletePlaneAt(int planeNumber);                // shrink the dataset. delete plane at planeNumber index moving other planes as needed
-	SampleInfo getSampleInfo();
+	Type getType();
 	// TODO - bridge code hatches correct processor type based up SampleInfo returned
 }

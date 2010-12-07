@@ -7,11 +7,9 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
-import imagej.DataEncoding;
-import imagej.EncodingManager;
-import imagej.SampleManager;
-import imagej.DataType;
 import imagej.Utils;
+import imagej.data.Type;
+import imagej.data.Types;
 import imagej.function.BinaryFunction;
 import imagej.function.NAryFunction;
 import imagej.function.UnaryFunction;
@@ -153,7 +151,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	private final RealType<?> type;
 
 	/** the underlying ImgLib type of the image data */
-	private final DataType ijType;
+	private final Type ijType;
 
 	/** flag for determining if we are working with integral data (or float otherwise) */
 	private final boolean isIntegral;
@@ -238,7 +236,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		this.imageData = image;
 		this.type = ImageUtils.getType(image);
-		this.ijType = TypeManager.getUserType(this.type);
+		this.ijType = TypeManager.getIJType(this.type);
 
 		this.planePosition = thisPlanePosition.clone();
 
@@ -597,7 +595,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
 	private Object getCopyOfPixelsFromImage(Image<T> image, RealType<?> type, int[] planePos)
 	{
-		return GetPlaneOperation.getPlaneAs(image, planePos, TypeManager.getUserType(type));
+		return GetPlaneOperation.getPlaneAs(image, planePos, TypeManager.getIJType(type));
 	}
 
 	/** called by filterEdge(). returns the pixel at x,y. if x,y out of bounds returns nearest edge pixel. */
@@ -660,8 +658,22 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** sets the pixels for the specified image and plane position to the passed in array of pixels */
 	private void setImagePlanePixels(Image<T> image, int[] planePosition, Object pixels)
 	{
-		EncodingManager.verifyTypeCompatibility(pixels, this.ijType);
+		// verify plane is of correct type
 		
+		Types.verifyCompatibility(this.ijType, pixels);
+
+		// verify plane is of correct size
+
+		long storageUnitsExpected = this.ijType.calcNumStorageUnitsFromPixelCount((long)getWidth() * getHeight());
+		
+		int storageUnitsGiven = Array.getLength(pixels);
+
+		if (storageUnitsGiven != storageUnitsExpected)
+			throw new IllegalArgumentException("setPlane() error: input plane shape is not compatible with input image planes");
+		
+		// set the plane
+		
+		//  try to set by reference
 		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
 
 		if (planar != null)
@@ -670,21 +682,10 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
+		// otherwise set plane data
+		
 		System.out.println("setPixels() - nonoptimal container type - can only return a copy of pixels");
 
-		int numStorageUnits = Array.getLength(pixels);
-
-		DataEncoding encoding = EncodingManager.getEncoding(this.ijType);
-		
-		int minPixelsEncodable = EncodingManager.calcMaxPixelsStorable(encoding, numStorageUnits-1) + 1;
-
-		int maxPixelsEncodable = EncodingManager.calcMaxPixelsStorable(encoding,numStorageUnits);
-
-		long totalSamples = getTotalSamples();
-		
-		if ((totalSamples < minPixelsEncodable) || (totalSamples > maxPixelsEncodable))
-			throw new IllegalArgumentException("setPlane() error: input plane shape is not compatible with input image planes");
-		
 		int[] position = Index.create(0,0,planePosition);
 
 		SetPlaneOperation<T> setOp = new SetPlaneOperation<T>(image, position, pixels, this.ijType);
@@ -2463,7 +2464,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
-		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, DataType.FLOAT);
+		Object pixelValues = GetPlaneOperation.getPlaneAs(this.imageData, this.planePosition, Types.findType("32-bit float"));
 
 		int width = getWidth();
 		int height = getHeight();
@@ -2588,7 +2589,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public int getBitDepth()
 	{
-		return SampleManager.getSampleInfo(ijType).getNumBits();
+		return this.ijType.getNumBitsData();
 	}
 
 	@Override
@@ -2600,13 +2601,13 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public boolean isFloatingType()
 	{
-		return SampleManager.getSampleInfo(ijType).isFloat();
+		return this.ijType.isFloat();
 	}
 
 	@Override
 	public boolean isUnsignedType()
 	{
-		return SampleManager.getSampleInfo(ijType).isUnsigned();
+		return this.ijType.isUnsigned();
 	}
 
 	@Override
@@ -2624,7 +2625,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public String getTypeName()
 	{
-		return SampleManager.getSampleInfo(ijType).getName();
+		return this.ijType.getName();
 	}
 
 	/*

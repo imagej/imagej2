@@ -6,7 +6,8 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import imagej.DataType;
+import imagej.data.Type;
+import imagej.data.Types;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
 
@@ -21,31 +22,31 @@ public class SampleManager
 	//***** public interface **********************************************/
 	
 	/** get the UserType associated with an ImageProcessor */
-	public static DataType getUserType(ImageProcessor proc)
+	public static Type getType(ImageProcessor proc)
 	{
 		if (proc instanceof ImgLibProcessor<?>)
-			return TypeManager.getUserType(((ImgLibProcessor<?>)proc).getType());
+			return TypeManager.getIJType(((ImgLibProcessor<?>)proc).getType());
 
 		if (proc instanceof ByteProcessor)
-			return DataType.UBYTE;
+			return Types.findType("8-bit unsigned");
 
 		if (proc instanceof ShortProcessor)
-			return DataType.USHORT;
+			return Types.findType("16-bit unsigned");
 
 		if (proc instanceof FloatProcessor)
-			return DataType.FLOAT;
+			return Types.findType("32-bit float");
 		
 		if (proc instanceof ColorProcessor)
-			return DataType.UINT;
+			return Types.findType("32-bit unsigned");
 		
 		throw new IllegalArgumentException("unknown processor type");
 	}
 	
 	
 	/** get the UserType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
-	public static DataType getUserType(ImagePlus imp)
+	public static Type getType(ImagePlus imp)
 	{
-		return getUserType(imp.getProcessor());
+		return getType(imp.getProcessor());
 	}
 	
 }
