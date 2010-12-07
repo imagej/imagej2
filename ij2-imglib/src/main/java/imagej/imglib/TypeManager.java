@@ -45,7 +45,7 @@ public class TypeManager {
 		imagejTypeHash.put(Types.findType("64-bit float"), new DoubleType());
 	}
 
-	/** get an imglib type from a IJ UserType */
+	/** get an imglib type from a IJ Type */
 	public static RealType<?> getRealType(Type type)
 	{
 		return imagejTypeHash.get(type);
