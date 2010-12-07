@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 
@@ -21,7 +21,7 @@ public class AndUnaryFunction implements UnaryFunction
 	{
 		double value = ((long)input) & ((long)this.constant);
 		
-		return Utils.boundToRange(this.min, this.max, value);
+		return DoubleRange.bound(this.min, this.max, value);
 	}
 }
 

@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class MultiplyIntegralUnaryFunction implements UnaryFunction
@@ -22,6 +22,6 @@ public class MultiplyIntegralUnaryFunction implements UnaryFunction
 		
 		value = Math.floor(value);
 
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }

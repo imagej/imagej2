@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class GammaIntegralUnaryFunction implements UnaryFunction
@@ -29,6 +29,6 @@ public class GammaIntegralUnaryFunction implements UnaryFunction
 		else					
 			value = (long)(Math.exp(this.constant*Math.log((input-this.currMin)/this.currRange))*this.currRange+this.currMin);
 		
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }

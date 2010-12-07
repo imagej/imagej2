@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class SqrUshortUnaryFunction implements UnaryFunction
@@ -22,6 +22,6 @@ public class SqrUshortUnaryFunction implements UnaryFunction
 		if (value > Integer.MAX_VALUE)
 			value = 0;
 
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }

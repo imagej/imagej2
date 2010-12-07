@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class InvertUnaryFunction implements UnaryFunction
@@ -20,6 +20,6 @@ public class InvertUnaryFunction implements UnaryFunction
 	{
 		double value = this.currMax - (input - this.currMin);
 
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }
