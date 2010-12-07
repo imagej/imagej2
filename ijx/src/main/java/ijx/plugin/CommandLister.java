@@ -24,6 +24,16 @@ public class CommandLister implements PlugIn {
 			v.addElement(command+"\t"+(String)commands.get(command));
 		}
 		showList("Commands", "Command\tPlugin", v);
+
+        String[]  pluginsArray = Menus.getPlugins();
+		Vector v2 = new Vector();
+        for (int i = 0; i < pluginsArray.length; i++) {
+            String string = pluginsArray[i];
+			v2.addElement(string);
+		}
+		showList("Plugin", "nothing", v2);
+
+
 	}
 
 	public void listShortcuts() {
