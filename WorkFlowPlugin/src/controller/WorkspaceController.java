@@ -82,47 +82,7 @@ public class WorkspaceController {
 	// LANG DEF FILE //
 	// //////////////////
 
-	/**
-	 * Sets the file path for the language definition file, if the language
-	 * definition file from a given URI
-	 * 
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 * @throws ParserConfigurationException 
-	 * @throws SAXException 
-	 */
-	public void setLangDefFilePathFromURI(URI pluginURI) throws IOException, ParserConfigurationException, SAXException {
-		//String xmlFileString;
-
-		URL url = pluginURI.toURL();
-		InputStream is = url.openStream();
-		//ByteArrayOutputStream os = new ByteArrayOutputStream();
-		//byte[] buf = new byte[is.available()];
-		//int n;
-		//while ((n = is.read(buf)) >= 0)
-		//	os.write(buf, 0, n);
-		//xmlFileString = os.toString();
-		//System.out.println( xmlFileString );
-
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		Document doc;
-
-		builder = factory.newDocumentBuilder();
-
-		doc = builder.parse( is );
-
-		//os.close();
-		is.close();
-		
-		
-		langDefRoot = doc.getDocumentElement();
-
-		// set the dirty flag for the language definition file
-		// to true now that a new file has been set
-		langDefDirty = true;
-
-	}
+	
 
 	/**
 	 * Sets the file path for the language definition file, if the language
@@ -569,16 +529,15 @@ public class WorkspaceController {
 				URI pluginURI = null;
 
 				try {
-					pluginURI = URI
-							.create("http://dev.loci.wisc.edu/rlentz/lang_def.xml");
+				
 
-					// LANG_DEF_FILEPATH = "support/lang_def.xml";
+					LANG_DEF_FILEPATH = "support/lang_def.xml";
 
 					// Create a new WorkspaceController
 					WorkspaceController wc = new WorkspaceController();
 
-					// wc.setLangDefFilePath( LANG_DEF_FILEPATH );
-					wc.setLangDefFilePathFromURI(pluginURI);
+					wc.setLangDefFilePath( LANG_DEF_FILEPATH );
+					
 					wc.loadFreshWorkspace();
 					createAndShowGUI(wc);
 
