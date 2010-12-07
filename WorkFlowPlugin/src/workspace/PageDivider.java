@@ -37,7 +37,7 @@ import javax.swing.JComponent;
  * 		Page.addPixelWidth() is invoked
  * 		PageChangeListeners are invoked
  * 
- * @specfield leftPage : Page //the page on the left side of thsi PageDivider
+ * @specfield leftPage : Page //the page on the left side of this PageDivider
  * @Specfield color : Color //the color of this pageDivider
  * @specfield mouseIn : boolean flag //true if and only if mouse is over this PageDivider
  */
