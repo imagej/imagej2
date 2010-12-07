@@ -40,7 +40,7 @@ public class TypeManagerTest {
 	}
 
 	@Test
-	public void testGetUserTypeRealType()
+	public void testGetIJTypeRealType()
 	{
 		assertEquals(Types.findType("1-bit unsigned"), TypeManager.getIJType(new BitType()));
 		assertEquals(Types.findType("8-bit signed"), TypeManager.getIJType(new ByteType()));
