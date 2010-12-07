@@ -2,10 +2,9 @@ package imagej.ij1bridge;
 
 import java.lang.reflect.Array;
 
-import imagej.DataEncoding;
-import imagej.EncodingManager;
-import imagej.DataType;
 import imagej.Utils;
+import imagej.data.Type;
+import imagej.data.Types;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import imagej.imglib.process.operation.GetPlaneOperation;
@@ -63,7 +62,7 @@ public class PlaneStack
 		}
 		else
 		{
-			DataType ijType = TypeManager.getUserType(imgLibType);
+			Type ijType = TypeManager.getIJType(imgLibType);
 			
 			SetPlaneOperation<?> planeOp;
 			
@@ -172,11 +171,11 @@ public class PlaneStack
 	 * @param desiredType - the imglib type we desire the plane to be of
 	 * @param dType - the UserType of the input data
 	 */
-	private void insertPlane(int atPosition, Object data, int dataLen, DataType dType)
+	private void insertPlane(int atPosition, Object data, Type dType)
 	{
-		DataEncoding encoding = EncodingManager.getEncoding(dType);
+		int expectedSize = (int)dType.calcNumStorageUnitsFromPixelCount((long)this.planeHeight * this.planeWidth);
 		
-		int expectedSize = EncodingManager.calcStorageUnitsRequired(encoding, this.planeHeight * this.planeWidth);
+		int dataLen = Array.getLength(data);
 		
 		if (dataLen != expectedSize)
 			throw new IllegalArgumentException("insertPlane(): input data does not match dimensions of stack - given "+
@@ -277,13 +276,11 @@ public class PlaneStack
 	 * @param type - the type of the input data
 	 * @param data - an array of values representing the plane
 	 */
-	public void insertPlane(int atPosition, DataType type, Object data)
+	public void insertPlane(int atPosition, Type type, Object data)
 	{
-		EncodingManager.verifyTypeCompatibility(data, type);
+		Types.verifyCompatibility(type, data);
 		
-		int dataLen = Array.getLength(data);
-
-		insertPlane(atPosition, data, dataLen, type);
+		insertPlane(atPosition, data, type);
 	}
 
 	/**
@@ -291,7 +288,7 @@ public class PlaneStack
 	 * @param unsigned - a boolean specifying whether input data is signed or unsigned
 	 * @param data - an array of values representing the plane
 	 */
-	public void addPlane(DataType type, Object data)
+	public void addPlane(Type type, Object data)
 	{
 		insertPlane(getEndPosition(), type, data);
 	}
@@ -345,7 +342,7 @@ public class PlaneStack
 		{
 			int[] planePosition = new int[]{planeNumber};
 			
-			DataType asType = TypeManager.getUserType(ImageUtils.getType(this.stack));
+			Type asType = TypeManager.getIJType(ImageUtils.getType(this.stack));
 
 			if (this.imgLibType instanceof BitType)
 				return GetPlaneOperation.getPlaneAs((Image<BitType>)this.stack, planePosition, asType);

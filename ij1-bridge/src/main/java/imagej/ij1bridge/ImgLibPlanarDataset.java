@@ -1,9 +1,7 @@
 package imagej.ij1bridge;
 
-import imagej.SampleInfo;
-import imagej.SampleManager;
-import imagej.DataType;
 import imagej.Utils;
+import imagej.data.Type;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import imagej.process.Index;
@@ -117,11 +115,10 @@ public class ImgLibPlanarDataset implements PlanarDataset
 	}
 	
 	@Override
-	public SampleInfo getSampleInfo()
+	public Type getType()
 	{
 		RealType<?> imageType = ImageUtils.getType(this.image);
-		DataType userType = TypeManager.getUserType(imageType);
-		return SampleManager.getSampleInfo(userType);
+		return TypeManager.getIJType(imageType);
 	}
 	
 /*

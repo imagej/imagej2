@@ -2,15 +2,17 @@ package imagej.ij1bridge.process;
 
 import ij.ImagePlus;
 import ij.io.FileInfo;
-import imagej.EncodingManager;
-import imagej.DataType;
+import imagej.data.Type;
+import imagej.data.Types;
 import imagej.ij1bridge.ImgLibImageStack;
+import imagej.imglib.TypeManager;
 
 import java.io.File;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.logic.BitType;
+import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
 import mpicbg.imglib.type.numeric.integer.LongType;
@@ -42,97 +44,75 @@ public class ImageUtils
 	 * @param pixels - pixel data in the form of a primitive array whose size is width*height
 	 * @param type - the IJ value type of the input data (BYTE, USHORT, etc.)
 	 */
-	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, DataType type)
+	public static ImgLibProcessor<?> createProcessor(int width, int height, Object pixels, Type type)
 	{
-		EncodingManager.verifyTypeCompatibility(pixels, type);
+		Types.verifyCompatibility(type, pixels);
 		
 		PlanarContainerFactory containerFactory = new PlanarContainerFactory();
 
-		ImgLibProcessor<?> proc = null;
-
 		int[] dimensions = new int[]{width, height, 1};
 
-		switch (type)
+		ImgLibProcessor<?> proc = null;
+
+		RealType<?> imglibType = TypeManager.getRealType(type);
+		
+		if (imglibType instanceof BitType)
 		{
-			case BIT:
-			{
-				Image<BitType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new BitType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<BitType>(hatchedImage, 0);
-			}
-			break;
-			case BYTE:
-			{
-				Image<ByteType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new ByteType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UBYTE:
-			{
-				Image<UnsignedByteType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedByteType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UINT12:
-			{
-				Image<Unsigned12BitType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new Unsigned12BitType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<Unsigned12BitType>(hatchedImage, 0);
-			}
-			break;
-			
-			case SHORT:
-			{
-				Image<ShortType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new ShortType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
-			}
-			break;
-			
-			case USHORT:
-			{
-				Image<UnsignedShortType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedShortType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
-			}
-			break;
-			
-			case INT:
-			{
-				Image<IntType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new IntType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
-			}
-			break;
-			
-			case UINT:
-			{
-				Image<UnsignedIntType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedIntType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
-			}
-			break;
-			
-			case LONG:
-			{
-				Image<LongType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new LongType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
-			}
-			break;
-			
-			case FLOAT:
-			{
-				Image<FloatType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new FloatType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
-			}
-			break;
-			
-			case DOUBLE:
-			{
-				Image<DoubleType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new DoubleType(), containerFactory, dimensions);
-				proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
-			}
-			break;
-			
-			default:
-				throw new IllegalArgumentException("unsupprted type specified "+type);
+			Image<BitType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new BitType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<BitType>(hatchedImage, 0);
 		}
+		else if (imglibType instanceof ByteType)
+		{
+			Image<ByteType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new ByteType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof UnsignedByteType)
+		{
+			Image<UnsignedByteType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedByteType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof Unsigned12BitType)
+		{
+			Image<Unsigned12BitType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new Unsigned12BitType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<Unsigned12BitType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof ShortType)
+		{
+			Image<ShortType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new ShortType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof UnsignedShortType)
+		{
+			Image<UnsignedShortType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedShortType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof IntType)
+		{
+			Image<IntType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new IntType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof UnsignedIntType)
+		{
+			Image<UnsignedIntType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new UnsignedIntType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof LongType)
+		{
+			Image<LongType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new LongType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof FloatType)
+		{
+			Image<FloatType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new FloatType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
+		}
+		else if (imglibType instanceof DoubleType)
+		{
+			Image<DoubleType> hatchedImage = imagej.imglib.process.ImageUtils.createImage(new DoubleType(), containerFactory, dimensions);
+			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
+		}
+		else
+			throw new IllegalArgumentException("unsupported type specified "+type.getName());
 
 		proc.setPixels(pixels);
 

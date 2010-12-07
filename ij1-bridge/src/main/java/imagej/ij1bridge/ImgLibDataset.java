@@ -6,7 +6,7 @@ import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.MetaData;
-import imagej.DataType;
+import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.dataset.RecursiveDataset;
@@ -19,7 +19,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	//************ instance variables ********************************************************
 	private Dataset dataset;
 	private Image<?> shadowImage;
-	private DataType userType;
+	private Type ijType;
 	private RealType<?> realType;
 	private ArrayContainerFactory planarFactory;
 
@@ -41,11 +41,11 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 		
 		this.realType = ImageUtils.getType(image);
 
-		this.userType = TypeManager.getUserType(realType);
+		this.ijType = TypeManager.getIJType(realType);
 		
 		int[] dimensions = image.getDimensions();
 		
-		this.dataset = new PlanarDatasetFactory().createDataset(this.userType, dimensions);
+		this.dataset = new PlanarDatasetFactory().createDataset(this.ijType, dimensions);
 		
 		int subDimensionLength = dimensions.length-2;
 	
@@ -81,7 +81,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	}
 
 	@Override
-	public DataType getType()
+	public Type getType()
 	{
 		return this.dataset.getType();
 	}
