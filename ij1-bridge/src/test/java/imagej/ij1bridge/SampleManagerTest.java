@@ -44,7 +44,7 @@ public class SampleManagerTest {
 	}
 
 	@Test
-	public void testGetUserTypeImagePlus()
+	public void testGetTypeImagePlus()
 	{
 		ImagePlus imp;
 		
