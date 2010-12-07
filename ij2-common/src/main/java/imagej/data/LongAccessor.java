@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class LongAccessor implements DataAccessor {
-
+public class LongAccessor implements DataAccessor
+{
 	private long[] longs;
 	
 	public LongAccessor(Object data)
@@ -10,22 +10,26 @@ public class LongAccessor implements DataAccessor {
 	}
 	
 	@Override
-	public double getReal(int index) {
+	public double getReal(int index)
+	{
 		return this.longs[index];
 	}
 
 	@Override
-	public void setReal(int index, double value) {
+	public void setReal(int index, double value)
+	{
 		this.longs[index] = (long)value;
 	}
 
 	@Override
-	public long getIntegral(int index) {
+	public long getIntegral(int index)
+	{
 		return this.longs[index];
 	}
 
 	@Override
-	public void setIntegral(int index, long value) {
+	public void setIntegral(int index, long value)
+	{
 		this.longs[index] = value;
 	}
 

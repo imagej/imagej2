@@ -10,24 +10,28 @@ public class Unsigned12BitAccessor implements DataAccessor {
 	}
 	
 	@Override
-	public double getReal(int index) {
+	public double getReal(int index)
+	{
 		return readValue(index);
 	}
 
 	@Override
-	public void setReal(int index, double value) {
+	public void setReal(int index, double value)
+	{
 		if (value < 0) value = 0;
 		if (value > 4095) value = 4095;
 		placeValue(index, (int)value);
 	}
 
 	@Override
-	public long getIntegral(int index) {
+	public long getIntegral(int index)
+	{
 		return readValue(index);
 	}
 
 	@Override
-	public void setIntegral(int index, long value) {
+	public void setIntegral(int index, long value)
+	{
 		if (value < 0) value = 0;
 		if (value > 4095) value = 4095;
 		placeValue(index, (int)value);

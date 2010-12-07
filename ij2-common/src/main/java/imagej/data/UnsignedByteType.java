@@ -37,7 +37,7 @@ public class UnsignedByteType implements Type
 	@Override
 	public double getMaxReal()
 	{
-		return 1;
+		return 255;
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class UnsignedByteType implements Type
 	@Override
 	public long getMaxIntegral()
 	{
-		return 1;
+		return 255;
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class UnsignedByteType implements Type
 	@Override
 	public double getNumberOfStorageTypesPerValue()
 	{
-		return 1.0;
+		return 1;
 	}
 	
 	
@@ -95,8 +95,9 @@ public class UnsignedByteType implements Type
 	@Override
 	public Object allocateStorageArray(int numPixels)
 	{
-		long storageUnitCount = calcNumStorageUnitsFromPixelCount(numPixels);
-		return new byte[(int)storageUnitCount];
+		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
+		
+		return new byte[(int)numStorageUnits];
 	}
 	
 }

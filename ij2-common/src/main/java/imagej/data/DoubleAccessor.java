@@ -10,22 +10,26 @@ public class DoubleAccessor implements DataAccessor {
 	}
 	
 	@Override
-	public double getReal(int index) {
+	public double getReal(int index)
+	{
 		return this.doubles[index];
 	}
 
 	@Override
-	public void setReal(int index, double value) {
+	public void setReal(int index, double value)
+	{
 		this.doubles[index] = value;
 	}
 
 	@Override
-	public long getIntegral(int index) {
+	public long getIntegral(int index)
+	{
 		return (long) this.doubles[index];
 	}
 
 	@Override
-	public void setIntegral(int index, long value) {
+	public void setIntegral(int index, long value)
+	{
 		this.doubles[index] = value;
 	}
 

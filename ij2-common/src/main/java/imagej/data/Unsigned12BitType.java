@@ -2,50 +2,59 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class Unsigned12BitType implements Type {
-
+public class Unsigned12BitType implements Type
+{
 	@Override
-	public String getName() {
+	public String getName()
+	{
 		return "12-bit unsigned";
 	}
 
 	@Override
-	public boolean isFloat() {
+	public boolean isFloat()
+	{
 		return false;
 	}
 
 	@Override
-	public boolean isUnsigned() {
+	public boolean isUnsigned()
+	{
 		return true;
 	}
 
 	@Override
-	public int getNumBitsData() {
+	public int getNumBitsData()
+	{
 		return 12;
 	}
 
 	@Override
-	public double getMinReal() {
+	public double getMinReal()
+	{
 		return 0;
 	}
 
 	@Override
-	public double getMaxReal() {
+	public double getMaxReal()
+	{
 		return 4095;
 	}
 
 	@Override
-	public long getMinIntegral() {
+	public long getMinIntegral()
+	{
 		return 0;
 	}
 
 	@Override
-	public long getMaxIntegral() {
+	public long getMaxIntegral()
+	{
 		return 4095;
 	}
 
 	@Override
-	public DataAccessor allocateAccessor(Object array) {
+	public DataAccessor allocateAccessor(Object array)
+	{
 		if ( ! isStorageCompatible(array) )
 			throw new IllegalArgumentException("expected a int[] but given storage of type "+array.getClass());
 
@@ -53,22 +62,26 @@ public class Unsigned12BitType implements Type {
 	}
 
 	@Override
-	public StorageType getStorageType() {
-		return StorageType.INT32;
+	public StorageType getStorageType()
+	{
+		return StorageType.UINT32;
 	}
 
 	@Override
-	public double getNumberOfStorageTypesPerValue() {
+	public double getNumberOfStorageTypesPerValue()
+	{
 		return 12.0 / 32.0;
 	}
 
 	@Override
-	public boolean isStorageCompatible(Object data) {
+	public boolean isStorageCompatible(Object data)
+	{
 		return data instanceof int[];
 	}
 
 	@Override
-	public long calcNumStorageBytesFromPixelCount(long numPixels) {
+	public long calcNumStorageBytesFromPixelCount(long numPixels)
+	{
 		return 4 * calcNumStorageUnitsFromPixelCount(numPixels);
 	}
 
@@ -76,13 +89,10 @@ public class Unsigned12BitType implements Type {
 	public long calcNumStorageUnitsFromPixelCount(long numPixels)
 	{
 		long numBits = numPixels * 12;
-		
-		long ints = numBits / 32;
-		
-		if (numBits %32 != 0)
-			ints++;
-		
-		return ints;
+		long numUnits = numBits / 32;
+		if (numBits % 32 != 0)
+			numUnits++;
+		return numUnits;
 	}
 
 	@Override
