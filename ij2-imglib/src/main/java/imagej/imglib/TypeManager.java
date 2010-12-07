@@ -69,23 +69,18 @@ public class TypeManager {
 		throw new IllegalArgumentException("unknown Imglib type : "+imglibType.getClass());
 	}
 	
-	/*
-	// TODO is there a better way? ask.
 	/** returns true if given imglib type is an unsigned type */
-	public static boolean isUnsignedType(RealType<?> t) {
-		return (
-			(t instanceof BitType) ||
-			(t instanceof UnsignedByteType) ||      // NOTE - this method could getIJType(realtype) and then return type.isUnsigned()
-			(t instanceof Unsigned12BitType) ||
-			(t instanceof UnsignedShortType) ||
-			(t instanceof UnsignedIntType)
-		);
+	public static boolean isUnsignedType(RealType<?> t)
+	{
+		// NOTE - ideally we'd be able to ask Imglib about this. For now use our own tracking to simplify maintenance.
+		return getIJType(t).isUnsigned();
 	}
 
-	// TODO is there a better way? ask.
 	/** returns true if given imglib type is an integer type */
-	public static boolean isIntegralType(RealType<?> t) {      // NOTE - this method could getIJType(realtype) and then return ! type.isFloat()
-		return ((t instanceof IntegerType<?>) || (t instanceof BitType));
+	public static boolean isIntegralType(RealType<?> t)
+	{
+		// NOTE - ideally we'd be able to ask Imglib about this. For now use our own tracking to simplify maintenance.
+		return ! getIJType(t).isFloat();
 	}
 	
 	/**
