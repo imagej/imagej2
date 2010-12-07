@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class FloatAccessor implements DataAccessor {
-
+public class FloatAccessor implements DataAccessor
+{
 	private float[] floats;
 	
 	public FloatAccessor(Object data)

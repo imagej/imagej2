@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class IntAccessor implements DataAccessor {
-
+public class IntAccessor implements DataAccessor
+{
 	private int[] ints;
 	
 	public IntAccessor(Object data)

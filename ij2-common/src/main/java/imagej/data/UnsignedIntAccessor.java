@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class UnsignedIntAccessor implements DataAccessor {
-
+public class UnsignedIntAccessor implements DataAccessor
+{
 	private int[] ints;
 	
 	public UnsignedIntAccessor(Object data)
