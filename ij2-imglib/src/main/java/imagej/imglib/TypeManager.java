@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.data.Type;
 import imagej.data.Types;
 import mpicbg.imglib.type.logic.BitType;
@@ -75,7 +75,7 @@ public class TypeManager {
 	public static boolean isUnsignedType(RealType<?> t) {
 		return (
 			(t instanceof BitType) ||
-			(t instanceof UnsignedByteType) ||      // NOTE - this method could getIJType(realtype) and then get type.isUnsigned()
+			(t instanceof UnsignedByteType) ||      // NOTE - this method could getIJType(realtype) and then return type.isUnsigned()
 			(t instanceof Unsigned12BitType) ||
 			(t instanceof UnsignedShortType) ||
 			(t instanceof UnsignedIntType)
@@ -84,7 +84,7 @@ public class TypeManager {
 
 	// TODO is there a better way? ask.
 	/** returns true if given imglib type is an integer type */
-	public static boolean isIntegralType(RealType<?> t) {
+	public static boolean isIntegralType(RealType<?> t) {      // NOTE - this method could getIJType(realtype) and then return ! type.isFloat()
 		return ((t instanceof IntegerType<?>) || (t instanceof BitType));
 	}
 	
@@ -95,7 +95,7 @@ public class TypeManager {
 	 */
 	public static double boundValueToType(RealType<?> type, double inputValue)
 	{
-		return Utils.boundToRange(type.getMinValue(), type.getMaxValue(), inputValue);
+		return DoubleRange.bound(type.getMinValue(), type.getMaxValue(), inputValue);
 	}
 
     /** returns true if two imglib types are strictly compatible */
@@ -110,6 +110,6 @@ public class TypeManager {
     /** returns true if a value is within the valid range defined for an imglib type */
 	public static boolean validValue(RealType<?> type, double value)
 	{
-		return Utils.insideRange(type.getMinValue(), type.getMaxValue(), value);
+		return DoubleRange.inside(type.getMinValue(), type.getMaxValue(), value);
 	}
 }
