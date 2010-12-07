@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class DoubleAccessor implements DataAccessor {
-
+public class DoubleAccessor implements DataAccessor
+{
 	private double[] doubles;
 	
 	public DoubleAccessor(Object data)

@@ -1,7 +1,7 @@
 package imagej.data;
 
-public class UnsignedShortAccessor implements DataAccessor {
-
+public class UnsignedShortAccessor implements DataAccessor
+{
 	private short[] shorts;
 	
 	public UnsignedShortAccessor(Object data)
