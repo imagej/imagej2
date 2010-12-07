@@ -70,15 +70,7 @@ public class WorkspaceController {
     public WorkspaceController(){
         workspace = Workspace.getInstance();
     }
-    
-    
-/*    *//**
-     * Returns the single instance of this
-     * @return the single instance of this
-     *//*
-    public static WorkspaceController getInstance(){
-        return wc;
-    }*/
+ 
     
     ////////////////////
     //  LANG DEF FILE //
@@ -92,7 +84,7 @@ public class WorkspaceController {
         
         LANG_DEF_FILEPATH = filePath; //TODO do we really need to save the file path?
         
-        DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document doc;
         try {
@@ -107,11 +99,11 @@ public class WorkspaceController {
             //to true now that a new file has been set
             langDefDirty = true;
             
-        } catch (ParserConfigurationException e) {
+        } catch ( ParserConfigurationException e ) {
             e.printStackTrace();
-        }catch (SAXException e) {
+        }catch ( SAXException e ) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
         }
         
@@ -297,22 +289,22 @@ public class WorkspaceController {
      * specified for this programming project.
      * @param projectContents
      */
-    public void loadProject(String projectContents){
+    public void loadProject( String projectContents ){
         //need to reset workspace and language (only if new language has been set)
         
         //reset only if workspace actually exists
-        if(workspaceLoaded)
+        if( workspaceLoaded )
             resetWorkspace();
         
-        if(langDefDirty)
-            loadBlockLanguage(langDefRoot);
+        if( langDefDirty )
+            loadBlockLanguage( langDefRoot );
         
-        DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document doc;
         try {
             builder = factory.newDocumentBuilder();
-            doc = builder.parse(new InputSource(new StringReader(projectContents)));
+            doc = builder.parse( new InputSource( new StringReader( projectContents ) ));
             Element root = doc.getDocumentElement();
             //load the canvas (or pages and page blocks if any) blocks from the save file
             //also load drawers, or any custom drawers from file.  if no custom drawers
@@ -336,7 +328,7 @@ public class WorkspaceController {
      * Loads the programming project specified in the projectContents String, 
      * which is associated with the language definition file contained in the 
      * specified langDefContents.  All the blocks contained in projectContents
-     * must have an associted block genus defined in langDefContents.
+     * must have an associated block genus defined in langDefContents.
      * 
      * If the langDefContents have any workspace settings such as pages or 
      * drawers and projectContents has workspace settings as well, the 
@@ -513,7 +505,7 @@ public class WorkspaceController {
                 //Create a new WorkspaceController 
                 WorkspaceController wc = new WorkspaceController();
                 
-                wc.setLangDefFilePath(LANG_DEF_FILEPATH);
+                wc.setLangDefFilePath( LANG_DEF_FILEPATH );
                 wc.loadFreshWorkspace();
                 createAndShowGUI(wc);
             }

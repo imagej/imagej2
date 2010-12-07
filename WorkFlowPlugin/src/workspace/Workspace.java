@@ -250,7 +250,7 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
      */
     public WorkspaceWidget getWidgetAt(Point point){
         Iterator<WorkspaceWidget> it = workspaceWidgets.iterator();
-        //TODO: HUGE HACK, get rid of this. bascally, the facotry has priority
+        //TODO: HUGE HACK, get rid of this. basically, the factory has priority
         if(factory.contains(
         		SwingUtilities.convertPoint((JComponent)ws, point, factory.getJComponent()).x,
         		SwingUtilities.convertPoint((JComponent)ws, point, factory.getJComponent()).y)) return factory;
