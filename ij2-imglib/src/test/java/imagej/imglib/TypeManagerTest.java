@@ -3,7 +3,7 @@ package imagej.imglib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej.DataType;
+import imagej.data.Types;
 import imagej.imglib.TypeManager;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
@@ -26,33 +26,33 @@ public class TypeManagerTest {
 	@Test
 	public void testGetRealType()
 	{
-		assertTrue(TypeManager.getRealType(DataType.BIT) instanceof BitType);
-		assertTrue(TypeManager.getRealType(DataType.BYTE) instanceof ByteType);
-		assertTrue(TypeManager.getRealType(DataType.UBYTE) instanceof UnsignedByteType);
-		assertTrue(TypeManager.getRealType(DataType.UINT12) instanceof Unsigned12BitType);
-		assertTrue(TypeManager.getRealType(DataType.SHORT) instanceof ShortType);
-		assertTrue(TypeManager.getRealType(DataType.USHORT) instanceof UnsignedShortType);
-		assertTrue(TypeManager.getRealType(DataType.INT) instanceof IntType);
-		assertTrue(TypeManager.getRealType(DataType.UINT) instanceof UnsignedIntType);
-		assertTrue(TypeManager.getRealType(DataType.FLOAT) instanceof FloatType);
-		assertTrue(TypeManager.getRealType(DataType.LONG) instanceof LongType);
-		assertTrue(TypeManager.getRealType(DataType.DOUBLE) instanceof DoubleType);
+		assertTrue(TypeManager.getRealType(Types.findType("1-bit unsigned")) instanceof BitType);
+		assertTrue(TypeManager.getRealType(Types.findType("8-bit signed")) instanceof ByteType);
+		assertTrue(TypeManager.getRealType(Types.findType("8-bit unsigned")) instanceof UnsignedByteType);
+		assertTrue(TypeManager.getRealType(Types.findType("12-bit unsigned")) instanceof Unsigned12BitType);
+		assertTrue(TypeManager.getRealType(Types.findType("16-bit signed")) instanceof ShortType);
+		assertTrue(TypeManager.getRealType(Types.findType("16-bit unsigned")) instanceof UnsignedShortType);
+		assertTrue(TypeManager.getRealType(Types.findType("32-bit signed")) instanceof IntType);
+		assertTrue(TypeManager.getRealType(Types.findType("32-bit unsigned")) instanceof UnsignedIntType);
+		assertTrue(TypeManager.getRealType(Types.findType("32-bit float")) instanceof FloatType);
+		assertTrue(TypeManager.getRealType(Types.findType("64-bit signed")) instanceof LongType);
+		assertTrue(TypeManager.getRealType(Types.findType("64-bit float")) instanceof DoubleType);
 	}
 
 	@Test
 	public void testGetUserTypeRealType()
 	{
-		assertEquals(DataType.BIT, TypeManager.getUserType(new BitType()));
-		assertEquals(DataType.BYTE, TypeManager.getUserType(new ByteType()));
-		assertEquals(DataType.UBYTE, TypeManager.getUserType(new UnsignedByteType()));
-		assertEquals(DataType.UINT12, TypeManager.getUserType(new Unsigned12BitType()));
-		assertEquals(DataType.SHORT, TypeManager.getUserType(new ShortType()));
-		assertEquals(DataType.USHORT, TypeManager.getUserType(new UnsignedShortType()));
-		assertEquals(DataType.INT, TypeManager.getUserType(new IntType()));
-		assertEquals(DataType.UINT, TypeManager.getUserType(new UnsignedIntType()));
-		assertEquals(DataType.FLOAT, TypeManager.getUserType(new FloatType()));
-		assertEquals(DataType.LONG, TypeManager.getUserType(new LongType()));
-		assertEquals(DataType.DOUBLE, TypeManager.getUserType(new DoubleType()));
+		assertEquals(Types.findType("1-bit unsigned"), TypeManager.getIJType(new BitType()));
+		assertEquals(Types.findType("8-bit signed"), TypeManager.getIJType(new ByteType()));
+		assertEquals(Types.findType("8-bit unsigned"), TypeManager.getIJType(new UnsignedByteType()));
+		assertEquals(Types.findType("12-bit unsigned"), TypeManager.getIJType(new Unsigned12BitType()));
+		assertEquals(Types.findType("16-bit signed"), TypeManager.getIJType(new ShortType()));
+		assertEquals(Types.findType("16-bit unsigned"), TypeManager.getIJType(new UnsignedShortType()));
+		assertEquals(Types.findType("32-bit signed"), TypeManager.getIJType(new IntType()));
+		assertEquals(Types.findType("32-bit unsigned"), TypeManager.getIJType(new UnsignedIntType()));
+		assertEquals(Types.findType("32-bit float"), TypeManager.getIJType(new FloatType()));
+		assertEquals(Types.findType("64-bit signed"), TypeManager.getIJType(new LongType()));
+		assertEquals(Types.findType("64-bit float"), TypeManager.getIJType(new DoubleType()));
 	}
 	@Test
 	public void testIsUnsignedType() {
