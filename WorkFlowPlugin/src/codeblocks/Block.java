@@ -36,7 +36,7 @@ public class Block implements ISupportMemento {
     
    
     /** A universal hashmap of all the Block instances*/
-    private final static HashMap<Long, Block> ALL_BLOCKS= new HashMap<Long,Block>();
+    private final static HashMap<Long, Block> ALL_BLOCKS = new HashMap<Long,Block>();
     
 	//block identifying information
     private final Long blockID;
