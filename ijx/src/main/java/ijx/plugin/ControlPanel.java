@@ -20,6 +20,7 @@ import javax.swing.event.*;
 
 import ijx.CentralLookup;
 import ijx.IjxTopComponent;
+import ijx.implementation.swing.MenusSwing;
 
 /**ControlPanel.
  *
@@ -32,6 +33,7 @@ import ijx.IjxTopComponent;
  * @version 1.0g
  */
 public class ControlPanel implements PlugIn {
+
     private static final String pluginsPath = Menus.getPlugInsPath();
     private static final String pcpVersion = "1.0g";
     /** The platform-specific file separator string.*/
@@ -62,6 +64,7 @@ public class ControlPanel implements PlugIn {
     private String path = null;
     private DefaultMutableTreeNode root;
     MenuItem reloadMI = null;
+    JMenuItem reloadMISwing = null;
 
     public ControlPanel() {
         //requireDoubleClick = !(IJ.isWindows() || IJ.isMacintosh());
@@ -186,7 +189,7 @@ public class ControlPanel implements PlugIn {
      *
      */
     private synchronized DefaultMutableTreeNode doRootFromMenus() {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode("ImageJA Menus");
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode("ImageJX Menus");
         if (argLength == 0) {
             node.setUserObject("Control Panel");
         }
@@ -197,6 +200,15 @@ public class ControlPanel implements PlugIn {
                 Menu menu = menuBar.getMenu(i);
                 DefaultMutableTreeNode menuNode = new DefaultMutableTreeNode(menu.getLabel());
                 recurseSubMenu(menu, menuNode);
+                node.add(menuNode);
+            }
+        }
+        if (m instanceof MenusSwing) {
+            JMenuBar menuBar = (JMenuBar) m.getMenuBar();
+            for (int i = 0; i < menuBar.getMenuCount(); i++) {
+                JMenu menu = menuBar.getMenu(i);
+                DefaultMutableTreeNode menuNode = new DefaultMutableTreeNode(menu.getLabel());
+                recurseSubMenuSwing(menu, menuNode);
                 node.add(menuNode);
             }
         }
@@ -238,6 +250,37 @@ public class ControlPanel implements PlugIn {
                     if (label.equals("Reload Plugins")) {
                         reloadMI = mItem;
                         treeCommands.put(label, "Reload Plugins From Panel");
+                    }
+                }
+            }
+        }
+    }
+
+    private void recurseSubMenuSwing(JMenu menu, DefaultMutableTreeNode node) {
+        int items = menu.getItemCount();
+        if (items == 0) {
+            return;
+        }
+        for (int i = 0; i < items; i++) {
+            JMenuItem mItem = menu.getItem(i);
+            if (mItem != null) {
+                String label = mItem.getLabel();
+                System.out.println("" + i + " : " + label);
+                if (mItem instanceof JMenu) {
+                    DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(label);
+                    recurseSubMenuSwing((JMenu) mItem, subNode);
+                    node.add(subNode);
+                } else if (mItem instanceof JMenuItem) {
+                    if (!(label.equals("-"))) {
+                        DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(label);
+                        node.add(leaf);
+                        if (treeCommands == null) {
+                            treeCommands = new Hashtable();
+                        }
+                        if (label.equals("Reload Plugins")) {
+                            reloadMISwing = mItem;
+                            treeCommands.put(label, "Reload Plugins From Panel");
+                        }
                     }
                 }
             }
@@ -822,6 +865,7 @@ public class ControlPanel implements PlugIn {
  */
 class TreePanel implements
         ActionListener, WindowListener, TreeExpansionListener, TreeWillExpandListener {
+
     ControlPanel pcp;
     //Vector childrenPanels = new Vector();
     boolean isMainPanel;
@@ -947,6 +991,7 @@ class TreePanel implements
         addActionListener(this);
         pFrame.addWindowListener(this);
         pFrame.addComponentListener(new ComponentAdapter() {
+
             public void componentMoved(ComponentEvent e) {
                 Rectangle r = e.getComponent().getBounds();
                 if (IJ.debugMode) {
@@ -959,6 +1004,7 @@ class TreePanel implements
             }
         });
         pTree.addMouseListener(new MouseAdapter() {
+
             public void mouseClicked(MouseEvent e) {
                 isDragging = false;
                 if (pcp.requiresDoubleClick() && e.getClickCount() != 2) {
@@ -980,6 +1026,7 @@ class TreePanel implements
             }
         });
         pTree.addMouseMotionListener(new MouseMotionAdapter() {
+
             public void mouseDragged(MouseEvent e) {
                 int selRow = pTree.getRowForLocation(e.getX(), e.getY());
                 if (selRow != -1) {

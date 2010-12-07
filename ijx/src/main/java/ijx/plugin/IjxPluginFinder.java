@@ -8,7 +8,7 @@ import org.openide.util.Lookup;
 
 /* PluginFinder
  
- This is an InjectableSingleton...
+This is an InjectableSingleton...
 
 Alternative Implementation of IjxPluginFinder:
 

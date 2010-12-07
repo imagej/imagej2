@@ -120,7 +120,11 @@ public class MenusSwing implements IjxMenus {
         file.addSeparator();
         addPlugInItem(file, "Page Setup...", "ijx.plugin.filter.Printer(\"setup\")", 0, false);
         addPlugInItem(file, "Print...", "ijx.plugin.filter.Printer(\"print\")", KeyEvent.VK_P, false);
-
+        file.addSeparator();
+        // For Tesing (GBH) =============================================
+        //addPlugInItem(file, "RunTest", "ijx.plugin.CommandLister(\"command\")", 0, false);
+        addPlugInItem(file, "RunTest", "ijx.ij1.PluginLoader", 0, false);
+        //
         JMenu edit = getMenu("Edit");
         addPlugInItem(edit, "Undo", "ijx.core.Commands(\"undo\")", KeyEvent.VK_Z, false);
         edit.addSeparator();

@@ -175,7 +175,7 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 	}
 	
 	void setFont() {
-        textPanel.setFont(new Font("SanSerif", Font.PLAIN, sizes[fontSize]), antialiased.getState());
+        textPanel.setFont(new Font("monospaced", Font.PLAIN, sizes[fontSize]), antialiased.getState());
 	}
 	
 	boolean openFile(String path) {
