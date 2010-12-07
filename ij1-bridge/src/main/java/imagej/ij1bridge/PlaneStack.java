@@ -169,7 +169,7 @@ public class PlaneStack
 	 * @param data - the plane data as an array of the appropriate type
 	 * @param dataLen - the number of elements in the plane
 	 * @param desiredType - the imglib type we desire the plane to be of
-	 * @param dType - the UserType of the input data
+	 * @param dType - the Type of the input data
 	 */
 	private void insertPlane(int atPosition, Object data, Type dType)
 	{

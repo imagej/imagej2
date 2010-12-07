@@ -21,7 +21,7 @@ public class SampleManager
 
 	//***** public interface **********************************************/
 	
-	/** get the UserType associated with an ImageProcessor */
+	/** get the Type associated with an ImageProcessor */
 	public static Type getType(ImageProcessor proc)
 	{
 		if (proc instanceof ImgLibProcessor<?>)
@@ -43,7 +43,7 @@ public class SampleManager
 	}
 	
 	
-	/** get the UserType associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
+	/** get the Type associated with an ImagePlus. Calls ImagePlus::getProcessor(). */
 	public static Type getType(ImagePlus imp)
 	{
 		return getType(imp.getProcessor());
