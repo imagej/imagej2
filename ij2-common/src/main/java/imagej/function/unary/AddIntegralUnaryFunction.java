@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class AddIntegralUnaryFunction implements UnaryFunction
@@ -22,7 +22,7 @@ public class AddIntegralUnaryFunction implements UnaryFunction
 		
 		value = Math.floor(value);
 		
-		value = Utils.boundToRange(this.min, this.max, value);
+		value = DoubleRange.bound(this.min, this.max, value);
 		
 		return value;
 	}

@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class OrUnaryFunction implements UnaryFunction
@@ -20,7 +20,7 @@ public class OrUnaryFunction implements UnaryFunction
 	{
 		double value = ((long)input) | ((long)constant);
 			
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }
 

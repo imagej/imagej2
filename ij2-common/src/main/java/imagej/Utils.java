@@ -3,30 +3,6 @@ package imagej;
 /** general purpose methods */
 public class Utils
 {
-	/** returns a value bounded to a specified range */
-	public static double boundToRange(double min, double max, double value)
-	{
-		if (value < min)
-			return min;
-		
-		if (value > max)
-			return max;
-		
-		return value;
-	}
-	
-	/** returns true if given value is insize range defiined by min and max */
-	public static boolean insideRange(double min, double max, double value)
-	{
-		if (value < min)
-			return false;
-		
-		if (value > max)
-			return false;
-		
-		return true;
-	}
-
 	/** gets the last n-2 dimensions of a n-dimensional int array. */
 	public static int[] getDims3AndGreater(int[] fullDims)
 	{

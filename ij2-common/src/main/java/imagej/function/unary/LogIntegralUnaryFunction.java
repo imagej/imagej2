@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 public class LogIntegralUnaryFunction implements UnaryFunction
@@ -25,7 +25,7 @@ public class LogIntegralUnaryFunction implements UnaryFunction
 		else 
 			value = (long)(Math.log(input)*(this.currMax/Math.log(this.currMax)));
 			
-		return Utils.boundToRange(this.rangeMin, this.rangeMax, value);
+		return DoubleRange.bound(this.rangeMin, this.rangeMax, value);
 	}
 }
 

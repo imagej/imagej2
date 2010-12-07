@@ -1,6 +1,6 @@
 package imagej.function.unary;
 
-import imagej.Utils;
+import imagej.DoubleRange;
 import imagej.function.UnaryFunction;
 
 import java.util.Random;
@@ -32,7 +32,7 @@ public class AddNoiseUnaryFunction implements UnaryFunction
 			if (this.dataIsIntegral)
 				ran = Math.round(ran);
 			result = input + ran;
-			inRange = Utils.insideRange(this.min, this.max, result);
+			inRange = DoubleRange.inside(this.min, this.max, result);
 		} while (!inRange);
 		return result;
 	}
