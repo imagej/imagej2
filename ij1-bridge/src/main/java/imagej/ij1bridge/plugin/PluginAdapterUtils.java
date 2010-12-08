@@ -1,14 +1,9 @@
 package imagej.ij1bridge.plugin;
 
 import java.awt.Menu;
-import java.awt.MenuBar;
 import java.awt.MenuItem;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.accessibility.AccessibleContext;
-
-import ij.IJ;
 import ij.ImageJ;
 import imagej.plugin.PluginEntry;
 
@@ -39,6 +34,7 @@ public class PluginAdapterUtils {
 		return keyValueLabelMap;
 	}
 
+	/*
 	private static void printHashMap( HashMap<String, String> keyValueLabelMap )
 	{
 		for(String value:keyValueLabelMap.values())
@@ -46,6 +42,7 @@ public class PluginAdapterUtils {
 			System.out.println( value );
 		}
 	}
+	*/
 	
 	/*
 	 * Private method: Pass null for second argument unless you want to replace the current
