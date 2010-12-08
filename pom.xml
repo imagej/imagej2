@@ -19,13 +19,12 @@
   <url>http://imagejdev.org/</url>
 
   <modules>
-    <module>bf-imglib</module>
-    <module>image5d</module>
-    <module>ij1-bridge</module>
     <module>_ij1-patches</module>
-    <module>ij2-imglib</module>
+    <module>ij1-bridge</module>
     <module>ij2-common</module>
+    <module>ij2-imglib</module>
     <module>ijx</module>
+    <module>image5d</module>
   </modules>
 
   <repositories>
