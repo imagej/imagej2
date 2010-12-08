@@ -274,13 +274,7 @@ public class BlockConnectorShape {
 		
 		return socketPoint;
     }
-    
-    
-    
-    
-    
-    
-    
+
     //////////////////////////////////
     ///// DATA PLUGS AND SOCKETS /////
     //////////////////////////////////
