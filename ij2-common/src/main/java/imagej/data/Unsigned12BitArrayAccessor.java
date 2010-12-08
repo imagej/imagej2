@@ -1,40 +1,40 @@
 package imagej.data;
 
-public class Unsigned12BitAccessor implements DataAccessor
+public class Unsigned12BitArrayAccessor implements DataAccessor
 {
 	private int[] ints;
 	
-	public Unsigned12BitAccessor(Object data)
+	public Unsigned12BitArrayAccessor(Object data)
 	{
 		this.ints = (int[]) data;
 	}
 	
 	@Override
-	public double getReal(int index)
+	public double getReal(long index)
 	{
-		return readValue(index);
+		return readValue((int)index);
 	}
 
 	@Override
-	public void setReal(int index, double value)
+	public void setReal(long index, double value)
 	{
 		if (value < 0) value = 0;
 		if (value > 4095) value = 4095;
-		placeValue(index, (int)value);
+		placeValue((int)index, (int)value);
 	}
 
 	@Override
-	public long getIntegral(int index)
+	public long getIntegral(long index)
 	{
-		return readValue(index);
+		return readValue((int)index);
 	}
 
 	@Override
-	public void setIntegral(int index, long value)
+	public void setIntegral(long index, long value)
 	{
 		if (value < 0) value = 0;
 		if (value > 4095) value = 4095;
-		placeValue(index, (int)value);
+		placeValue((int)index, (int)value);
 	}
 
 	private int readValue(int index)

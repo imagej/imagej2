@@ -42,7 +42,7 @@ public interface Type
 	// **** read/write interface **********************
 	
 	/** returns a type appropriate DataAccessor that can be used to read and write values to the specified array */
-	DataAccessor allocateAccessor(Object array);
+	DataAccessor allocateArrayAccessor(Object array);
 	
 	// **** internal storage interface **********************
 

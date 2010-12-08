@@ -54,11 +54,11 @@ public class IntType implements Type
 	}
 
 	@Override
-	public DataAccessor allocateAccessor(Object array)
+	public DataAccessor allocateArrayAccessor(Object array)
 	{
 		Types.verifyCompatibility(this, array);
 
-		return new IntAccessor(array);
+		return new IntArrayAccessor(array);
 	}
 
 	@Override

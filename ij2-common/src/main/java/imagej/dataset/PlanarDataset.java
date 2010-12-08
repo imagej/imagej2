@@ -47,7 +47,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		this.dimensions = dimensions;
 		this.type = type;
 		this.arrayOfData = arrayOfData;
-		this.dataAccessor = type.allocateAccessor(arrayOfData);
+		this.dataAccessor = type.allocateArrayAccessor(arrayOfData);
 		this.parent = null;
 	}
 
@@ -88,7 +88,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		verifyInputOkay(this.dimensions, this.type, arrayOfData);
 
 		this.arrayOfData = arrayOfData;
-		this.dataAccessor = this.type.allocateAccessor(arrayOfData);
+		this.dataAccessor = this.type.allocateArrayAccessor(arrayOfData);
 	}
 	
 	@Override

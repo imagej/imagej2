@@ -53,11 +53,11 @@ public class DoubleType implements Type
 	}
 
 	@Override
-	public DataAccessor allocateAccessor(Object array)
+	public DataAccessor allocateArrayAccessor(Object array)
 	{
 		Types.verifyCompatibility(this, array);
 
-		return new DoubleAccessor(array);
+		return new DoubleArrayAccessor(array);
 	}
 
 	@Override

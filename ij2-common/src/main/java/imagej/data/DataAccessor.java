@@ -9,14 +9,14 @@ package imagej.data;
 public interface DataAccessor
 {
 	/** gets a double value from the backing data structure at the given index */
-	double getReal(int index);
+	double getReal(long index);
 
 	/** sets a double value in the backing data structure at the given index using given data value */
-	void setReal(int index, double value);
+	void setReal(long index, double value);
 	
 	/** gets a long value from the backing data structure at the given index */
-	long getIntegral(int index);
+	long getIntegral(long index);
 
 	/** sets a long value in the backing data structure at the given index using given data value */
-	void setIntegral(int index, long value);
+	void setIntegral(long index, long value);
 }
