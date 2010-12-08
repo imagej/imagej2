@@ -1,1 +1,0 @@
-// Propagates the display range of the current image//  to all open images of the same type.    if (nImages<=1) exit;    getMinAndMax(min, max);    depth = bitDepth();    if (depth==24) exit;    id = getImageID;    for (i=1; i<=nImages; i++) {         selectImage(i);         if (depth==bitDepth && getImageID!=id)             setMinAndMax(min, max);    }
