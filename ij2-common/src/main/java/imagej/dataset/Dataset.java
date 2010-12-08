@@ -1,5 +1,8 @@
 package imagej.dataset;
 
+// TODO - to get around long type precision loss problems change the interface a bit. 1) change get/setDouble to get/setReal(double)
+//   and 2) add get/setIntegral(long)
+
 import imagej.MetaData;
 import imagej.data.Type;
 

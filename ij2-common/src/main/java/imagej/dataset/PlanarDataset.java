@@ -8,7 +8,14 @@ import imagej.data.Types;
 
 import java.lang.reflect.Array;
 
-// TODO - our convention is that indexing subsets moves right to left
+// TODO - our convention is that indexing subsets moves right to left. seems to match imglib
+
+// TODO - I'm not checking that user provided axis values are in a valid range in all the methods below
+
+// TODO - note that cannot add subsets/remove subsets. It would be great if we could add a row or a column and have it fixup.
+//   The arrayOfData reference would then be wrong. But otherwise it seems supportable;
+
+// TODO - metadata support is nearly nonexistent. May need global metadata (num dims in primitive access) and then per subset metadata (labels)
 
 public class PlanarDataset implements Dataset, RecursiveDataset
 {
@@ -17,6 +24,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	private Type type;
 	private DataAccessor dataAccessor;
 	private Dataset parent;
+	private MetaData metadata;
 
 	private void verifyInputOkay(int[] dimensions, Type type, Object arrayOfData)
 	{
@@ -49,6 +57,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		this.arrayOfData = arrayOfData;
 		this.dataAccessor = type.allocateArrayAccessor(arrayOfData);
 		this.parent = null;
+		this.metadata = null;
 	}
 
 	@Override
@@ -66,14 +75,13 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	@Override
 	public MetaData getMetaData()
 	{
-		// TODO - do something
-		return null;
+		return this.metadata;
 	}
 	
 	@Override
 	public void setMetaData(MetaData metadata)
 	{
-		// TODO - do something
+		this.metadata = metadata;
 	}
 	
 	@Override

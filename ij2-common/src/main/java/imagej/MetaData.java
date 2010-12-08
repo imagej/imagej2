@@ -35,7 +35,8 @@ public class MetaData
 	public void setLabel(String label) { this.label = label; }
 }
 
-/*
+/* TODO
  * since we travel down a Dataset heirarchy we need to minimize memory footprint by taking axisLabels ("x,y,z,c,t") and generate
  *   ("x,y,z,c"), ("x,y,z"), ("x,y"), & ("y") and refer to these inside the appropriate axis labels for each MetaData object.
+ * I did this for dimensions in PlanarDatasetFactory. Adapt to this case when needed later.
  */
