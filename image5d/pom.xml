@@ -12,7 +12,7 @@
 
   <groupId>imagej</groupId>
   <artifactId>Image_5D</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.3-SNAPSHOT</version>
 
   <name>Image5D</name>
   <description>The Image5D plugins extend image stacks to 5 dimensions: x, y, channel (color), slice (z), frame (t).</description>
