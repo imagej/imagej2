@@ -1,18 +1,18 @@
 package imagej.data;
 
 
-public class UnsignedByteAccessor implements DataAccessor
+public class UnsignedByteArrayAccessor implements DataAccessor
 {
 	private byte[] bytes;
 	
-	public UnsignedByteAccessor(Object array)
+	public UnsignedByteArrayAccessor(Object array)
 	{
 		this.bytes = (byte[]) array;
 	}
 	
-	public double getReal(int index)
+	public double getReal(long index)
 	{
-		double byteVal = this.bytes[index];
+		double byteVal = this.bytes[(int)index];
 		
 		if (byteVal < 0)
 			byteVal = 256 + byteVal;
@@ -20,9 +20,9 @@ public class UnsignedByteAccessor implements DataAccessor
 		return byteVal;
 	}
 	
-	public long getIntegral(int index)
+	public long getIntegral(long index)
 	{
-		long byteVal = this.bytes[index];
+		long byteVal = this.bytes[(int)index];
 		
 		if (byteVal < 0)
 			byteVal = 256 + byteVal;
@@ -30,24 +30,24 @@ public class UnsignedByteAccessor implements DataAccessor
 		return byteVal;
 	}
 	
-	public void setReal(int index, double value)
+	public void setReal(long index, double value)
 	{
 		int byteVal = (int) value;
 		
 		if (byteVal < 0) byteVal = 0;
 		if (byteVal > 255) byteVal = 255;
 		
-		this.bytes[index] = (byte) (byteVal & 0xff);
+		this.bytes[(int)index] = (byte) (byteVal & 0xff);
 	}
 	
-	public void setIntegral(int index, long value)
+	public void setIntegral(long index, long value)
 	{
 		int byteVal = (int) value;
 		
 		if (byteVal < 0) byteVal = 0;
 		if (byteVal > 255) byteVal = 255;
 		
-		this.bytes[index] = (byte) (byteVal & 0xff);
+		this.bytes[(int)index] = (byte) (byteVal & 0xff);
 	}
 }
 

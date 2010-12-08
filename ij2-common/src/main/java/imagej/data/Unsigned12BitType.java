@@ -53,11 +53,11 @@ public class Unsigned12BitType implements Type
 	}
 
 	@Override
-	public DataAccessor allocateAccessor(Object array)
+	public DataAccessor allocateArrayAccessor(Object array)
 	{
 		Types.verifyCompatibility(this, array);
 
-		return new Unsigned12BitAccessor(array);
+		return new Unsigned12BitArrayAccessor(array);
 	}
 
 	@Override
@@ -69,8 +69,9 @@ public class Unsigned12BitType implements Type
 	@Override
 	public double getNumberOfStorageTypesPerValue()
 	{
-		return 12.0 / 32.0;
-	}
+		return 12.0 / 32.0; // this mirrors imglib (packed 12 bits at a time in an array of 32 bit ints)
+	}						// I think it would be more performant to store them packed 12 bits at a time
+							// in an array of bytes and access them via byte and nibble lookup
 
 	@Override
 	public boolean isStorageCompatible(Object data)
