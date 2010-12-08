@@ -36,7 +36,7 @@ public class GetPlaneOperation<T extends RealType<T>> extends PositionalSingleCu
 		
 		this.outputPlane = this.asType.allocateStorageArray(planeSize);
 
-		this.planeWriter = this.asType.allocateAccessor(this.outputPlane);
+		this.planeWriter = this.asType.allocateArrayAccessor(this.outputPlane);
 	}
 
 	@Override
