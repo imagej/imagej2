@@ -11,13 +11,13 @@ import imagej.data.Types;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
 
-/** SampleManager manages the information related to all supported types in ImageJ */
-public class SampleManager
+/** IJ1TypeManager exposes the getType() methods that take IJ1 data types and return their compatible IJ2 backing types */
+public class IJ1TypeManager
 {
 	//***** constructor **********************************************/
 	
 	/** make this class uninstantiable */
-	private SampleManager() {}
+	private IJ1TypeManager() {}
 
 	//***** public interface **********************************************/
 	

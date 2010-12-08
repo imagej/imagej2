@@ -9,7 +9,7 @@ import ij.process.ShortProcessor;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.Utils;
-import imagej.ij1bridge.SampleManager;
+import imagej.ij1bridge.IJ1TypeManager;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.process.ImageUtils;
 import imagej.process.Index;
@@ -278,7 +278,7 @@ public class ImgLibImageStack extends ImageStack
 			max = ip.getMax();
 		}
 
-		addSlice(sliceLabel, SampleManager.getType(ip), ip.getPixels());
+		addSlice(sliceLabel, IJ1TypeManager.getType(ip), ip.getPixels());
 	}
 
 	/** Adds the image in 'ip' to the stack following slice 'n'. Adds
@@ -288,7 +288,7 @@ public class ImgLibImageStack extends ImageStack
 		if (n<0 || n>numSlices())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		addSliceToImage(n, sliceLabel, SampleManager.getType(ip), ip.getPixels());
+		addSliceToImage(n, sliceLabel, IJ1TypeManager.getType(ip), ip.getPixels());
 	}
 
 	/** Deletes the specified slice, were 1<=n<=nslices. */
