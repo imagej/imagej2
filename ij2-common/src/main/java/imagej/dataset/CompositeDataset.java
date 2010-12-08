@@ -9,10 +9,11 @@ import java.util.ArrayList;
 
 public class CompositeDataset implements Dataset, RecursiveDataset
 {
-	private Dataset parent;
-	private ArrayList<Dataset> subsets;
 	private Type type;
 	private int[] dimensions;
+	private Dataset parent;
+	private MetaData metadata;
+	private ArrayList<Dataset> subsets;
 
 	public CompositeDataset(Type type, int[] dimensions, ArrayList<Dataset> subsets)
 	{
@@ -20,6 +21,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		this.dimensions = dimensions;
 		this.subsets = subsets;
 		this.parent = null;
+		this.metadata = null;
 		for (Dataset subset : this.subsets)
 			subset.setParent(this);
 	}
@@ -39,14 +41,13 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public MetaData getMetaData()
 	{
-		// TODO - do something
-		return null;
+		return this.metadata;
 	}
 	
 	@Override
 	public void setMetaData(MetaData metadata)
 	{
-		// TODO - do something
+		this.metadata = metadata;
 	}
 	
 	@Override
@@ -106,9 +107,10 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		if (this.parent != null)
 			throw new IllegalArgumentException("can only add subsets to outermost Dataset");
 
-		int[] subsetDimensions = this.dimensions.clone();
+		int[] subsetDimensions = new int[this.dimensions.length-1];
 		
-		subsetDimensions[position] = 1;
+		for (int i = 0; i < subsetDimensions.length; i++)
+			subsetDimensions[i] = this.dimensions[i];
 		
 		Dataset ds = new PlanarDatasetFactory().createDataset(this.type, subsetDimensions);
 		
@@ -149,8 +151,9 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public double getDouble(int[] position)
 	{
-		if (this.parent != null)
-			throw new IllegalArgumentException();
+		// WRONG????
+		//if (this.parent != null)
+		//	throw new IllegalArgumentException();
 
 		int outermostAxis = this.dimensions.length - 1;
 		
@@ -160,8 +163,9 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public void setDouble(int[] position, double value)
 	{
-		if (this.parent != null)
-			throw new IllegalArgumentException();
+		// WRONG????
+		//if (this.parent != null)
+		//	throw new IllegalArgumentException();
 		
 		int outermostAxis = this.dimensions.length - 1;
 
