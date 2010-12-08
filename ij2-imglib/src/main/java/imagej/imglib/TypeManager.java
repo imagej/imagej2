@@ -31,17 +31,17 @@ public class TypeManager {
 	static
 	{
 		imagejTypeHash = new HashMap<Type, RealType<?>>();
-		imagejTypeHash.put(Types.findType("1-bit unsigned"), new BitType());
-		imagejTypeHash.put(Types.findType("8-bit signed"), new ByteType());
-		imagejTypeHash.put(Types.findType("8-bit unsigned"), new UnsignedByteType());
-		imagejTypeHash.put(Types.findType("12-bit unsigned"), new Unsigned12BitType());
-		imagejTypeHash.put(Types.findType("16-bit signed"), new ShortType());
-		imagejTypeHash.put(Types.findType("16-bit unsigned"), new UnsignedShortType());
-		imagejTypeHash.put(Types.findType("32-bit signed"), new IntType());
-		imagejTypeHash.put(Types.findType("32-bit unsigned"), new UnsignedIntType());
-		imagejTypeHash.put(Types.findType("32-bit float"), new FloatType());
-		imagejTypeHash.put(Types.findType("64-bit signed"), new LongType());
-		imagejTypeHash.put(Types.findType("64-bit float"), new DoubleType());
+		imagejTypeHash.put( Types.findType("1-bit unsigned")  , new BitType()           );  // NOTE - these are all ImgLib RealTypes - not IJ Types.
+		imagejTypeHash.put( Types.findType("8-bit signed")    , new ByteType()          );  //        Duplicate names.
+		imagejTypeHash.put( Types.findType("8-bit unsigned")  , new UnsignedByteType()  );
+		imagejTypeHash.put( Types.findType("12-bit unsigned") , new Unsigned12BitType() );
+		imagejTypeHash.put( Types.findType("16-bit signed")   , new ShortType()         );
+		imagejTypeHash.put( Types.findType("16-bit unsigned") , new UnsignedShortType() );
+		imagejTypeHash.put( Types.findType("32-bit signed")   , new IntType()           );
+		imagejTypeHash.put( Types.findType("32-bit unsigned") , new UnsignedIntType()   );
+		imagejTypeHash.put( Types.findType("32-bit float")    , new FloatType()         );
+		imagejTypeHash.put( Types.findType("64-bit signed")   , new LongType()          );
+		imagejTypeHash.put( Types.findType("64-bit float")    , new DoubleType()        );
 	}
 
 	/** get an imglib type from a IJ Type */
