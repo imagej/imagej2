@@ -8,7 +8,6 @@ import imagej.DoubleRange;
 import imagej.data.Type;
 import imagej.data.Types;
 import mpicbg.imglib.type.logic.BitType;
-import mpicbg.imglib.type.numeric.IntegerType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;
 import mpicbg.imglib.type.numeric.integer.IntType;
