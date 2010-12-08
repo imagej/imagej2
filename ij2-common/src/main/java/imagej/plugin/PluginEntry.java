@@ -1,7 +1,5 @@
 package imagej.plugin;
 
-import java.util.List;
-
 public class PluginEntry {
 
 	private String pluginClass;
