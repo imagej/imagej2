@@ -1,3 +1,9 @@
+changes in Image5D 1.2.2:
+- Fix synchronous painting problem with "Image5D Stack to RGB" command.
+
+released version 1.2.2: 20101208
+
+
 changes in Image5D 1.2.1:
 - Fix problem with Z slider.
 - Image5D is now hosted on ImageJDev.org:
