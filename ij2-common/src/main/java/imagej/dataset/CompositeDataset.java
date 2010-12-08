@@ -5,7 +5,17 @@ import imagej.data.Type;
 
 import java.util.ArrayList;
 
-//TODO - our convention is that indexing subsets moves right to left
+// TODO - our convention is that indexing subsets moves right to left. seems to match imglib
+
+// TODO - I'm not checking that user provided axis values are in a valid range in any of the methods below
+
+// TODO - note that cannot add subsets/remove subsets along user specified access. Right now it just works on the outermost one. It would be
+//   great if we could add a blob and have it fixup dimensions and data as needed. In general we could insert one "slice" at a time where a slice
+//   is a Dataset whose dimensions match my dimensions except in 1 axis where its value is 1.
+
+// TODO - metadata support is nearly nonexistent. May need global metadata (num dims in primitive access) and then per subset metadata (labels)
+
+// TODO - maybe it would be speed things up considerably to cache the last subset found with getSubset(axis)
 
 public class CompositeDataset implements Dataset, RecursiveDataset
 {
