@@ -1,8 +1,8 @@
 package imagej.ij1bridge;
 
-import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.MetaData;
@@ -14,6 +14,11 @@ import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
 import imagej.process.Index;
 
+/** This is an ImgLib aware Dataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
+ * Also overrides the add/remove subset calls to set an invalid flag. Then user should always call its method called getImage() that returns
+ * a cached Image and cached Image is recreated and populated with correct primitive access when invalid. User should not cache image from the
+ * getImage() call.
+ */
 public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveDataset
 {
 	//************ instance variables ********************************************************
@@ -21,23 +26,15 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	private Image<?> shadowImage;
 	private Type ijType;
 	private RealType<?> realType;
-	private ArrayContainerFactory planarFactory;
+	private PlanarContainerFactory planarFactory;
 
-	// Notes
-	// This is an ImgLib aware Dataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
-	// Also overrides the add/remove subset calls to set an invalid flag. Then user should always call its method called getImage() that returns
-	// a cached Image and cached Image is recreated and populated with correct primitive access when invalid. User should not cache image from the
-	// getImage() call.
-	
 	//************ constructor ********************************************************
 		
 	public ImgLibDataset(Image<T> image)
 	{
 		this.shadowImage = image;
 		
-		this.planarFactory = new ArrayContainerFactory();
-		
-		this.planarFactory.setOptimizedContainerUse(true);
+		this.planarFactory = new PlanarContainerFactory();
 		
 		this.realType = ImageUtils.getType(image);
 
@@ -46,27 +43,42 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 		int[] dimensions = image.getDimensions();
 		
 		this.dataset = new PlanarDatasetFactory().createDataset(this.ijType, dimensions);
-		
-		int subDimensionLength = dimensions.length-2;
-	
-		int[] position = Index.create(subDimensionLength);
-		
-		int[] origin = Index.create(subDimensionLength);
 
-		int[] span = new int[subDimensionLength];
-		for (int i = 0; i < subDimensionLength; i++)
-			span[i] = dimensions[i];
-		
+		if (dimensions.length < 2)
+		{
+			throw new IllegalArgumentException("ImgLibDataset cannot represent data of dimensionality < 2");
+		}
+
 		PlanarAccess<ArrayDataAccess<?>> access = ImageUtils.getPlanarAccess(this.shadowImage);
 		
-		int planeNum = 0;
-		
-		while (Index.isValid(position, origin, span))
+		if (dimensions.length == 2)  // TODO - could modify indexing code and subsetting code so that below loop works silently in 2d case
 		{
-			Dataset plane = this.dataset.getSubset(position);
-			ArrayDataAccess<?> arrayAccess = access.getPlane(planeNum++);
-			plane.setData(arrayAccess.getCurrentStorageArray());
-			Index.increment(position, origin, span);
+			ArrayDataAccess<?> arrayAccess = access.getPlane(0);
+			this.dataset.setData(arrayAccess.getCurrentStorageArray());
+		}
+		else // (dimensions.length > 2)
+		{
+			// make all Dataset's planes point at ImgLib's data arrays
+			
+			int subDimensionLength = dimensions.length-2;
+		
+			int[] position = Index.create(subDimensionLength);
+			
+			int[] origin = Index.create(subDimensionLength);
+	
+			int[] span = new int[subDimensionLength];
+			for (int i = 0; i < subDimensionLength; i++)
+				span[i] = dimensions[i+2];
+			
+			int planeNum = 0;
+			
+			while (Index.isValid(position, origin, span))
+			{
+				Dataset plane = this.dataset.getSubset(position);
+				ArrayDataAccess<?> arrayAccess = access.getPlane(planeNum++);
+				plane.setData(arrayAccess.getCurrentStorageArray());
+				Index.increment(position, origin, span);
+			}
 		}
 		
 		// TODO - have a factory that takes a list of planerefs and builds a dataset without allocating data unnecessarily
@@ -89,14 +101,13 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	@Override
 	public MetaData getMetaData()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.dataset.getMetaData();
 	}
 
 	@Override
 	public void setMetaData(MetaData metadata)
 	{
-		// TODO Auto-generated method stub
+		this.dataset.setMetaData(metadata);
 	}
 
 	@Override
