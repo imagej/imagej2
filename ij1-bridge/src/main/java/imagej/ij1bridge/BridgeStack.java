@@ -18,7 +18,6 @@ public class BridgeStack extends ImageStack
 	// **** base interface instance variables
 	private Dataset dataset;
 	private ArrayList<Object> planeRefs;
-	private int[] subDimensions;
 	private int[] planeDims;
 	private ProcessorFactory processorFactory;
 	
@@ -40,8 +39,9 @@ public class BridgeStack extends ImageStack
 		
 		this.planeRefs = new ArrayList<Object>();
 		
-		if (ds.getMetaData().getDirectAccessDimensionCount() != 2)
-			throw new IllegalArgumentException("can't make a BridgeStack on a dataset unless it is organized by plane");
+		// TODO - relaxing for the moment since MetaData code not in place. do some kind of check later.
+		//if (ds.getMetaData().getDirectAccessDimensionCount() != 2)
+		//	throw new IllegalArgumentException("can't make a BridgeStack on a dataset unless it is organized by plane");
 
 		int[] dimensions = ds.getDimensions();
 		
@@ -50,41 +50,47 @@ public class BridgeStack extends ImageStack
 		if (numPlanes <= 0)
 			throw new IllegalArgumentException("can't make a BridgeStack on a dataset that has 0 planes");
 		
-		// TODO - do we want a PlaneDataset interface that enables direct access? Simplify things? Or no difference?
-		
 		this.planeDims = new int[2];
 		this.planeDims[0] = dimensions[0];
 		this.planeDims[1] = dimensions[1];
 		
-		this.subDimensions = new int[dimensions.length-2];
+		int[] subDimensions = new int[dimensions.length-2];
 		for (int i = 0; i < subDimensions.length; i++)
-			this.subDimensions[i] = dimensions[i+2];
-		
-		int[] origin = Index.create(dimensions.length-2);
-		
-		int[] position = Index.create(dimensions.length-2);
-		
-		for (int i = 0; i < numPlanes; i++)
+			subDimensions[i] = dimensions[i+2];
+
+		if (subDimensions.length == 0)
 		{
-			Object planeRef = ds.getSubset(position).getData();
+			this.planeRefs.add(this.dataset.getData());
+		}
+		else
+		{
+			int[] origin = Index.create(dimensions.length-2);
 			
-			this.planeRefs.add(planeRef);
+			int[] position = Index.create(dimensions.length-2);
 			
-			Index.increment(position, origin, this.planeDims);
+			while (Index.isValid(position, origin, subDimensions))
+			{
+				Object planeRef = ds.getSubset(position).getData();
+				
+				this.planeRefs.add(planeRef);
+				
+				Index.increment(position, origin, subDimensions);
+			}
 		}
 	}
 	
 	// ********* private interface ******************************************************
 
+	// NOTE - index in range 0..n-1
 	private void insertSlice(int index, String sliceLabel, Object pixels)
 	{
 		Dataset newSubset = this.dataset.insertNewSubset(index);
 		
 		newSubset.setData(pixels);
 		
-		setSliceLabel(sliceLabel, index+1);
-
 		this.planeRefs.add(index, pixels);  // update our cache
+
+		setSliceLabel(sliceLabel, index+1);
 	}
 	
 	// ********* public interface ******************************************************
@@ -125,7 +131,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
-		insertSlice(n, sliceLabel, ip);
+		insertSlice(n-1, sliceLabel, ip.getPixels());
 	}
 
 	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
@@ -218,7 +224,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		int[] planePos = Index.getPlanePosition(this.dataset.getDimensions(), n-1);
 		
 		this.dataset.getSubset(planePos).setData(pixels);
 		
@@ -257,7 +263,7 @@ public class BridgeStack extends ImageStack
 		
 		for (int i = 0; i < labels.length; i++)
 		{
-			int[] planePos = Index.getPlanePosition(this.subDimensions, i);
+			int[] planePos = Index.getPlanePosition(this.dataset.getDimensions(), i);
 			
 			labels[i] = this.dataset.getSubset(planePos).getMetaData().getLabel();
 		}
@@ -274,7 +280,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		int[] planePos = Index.getPlanePosition(this.dataset.getDimensions(), n-1);
 		
 		return this.dataset.getSubset(planePos).getMetaData().getLabel();
 	}
@@ -318,7 +324,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 
-		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		int[] planePos = Index.getPlanePosition(this.dataset.getDimensions(), n-1);
 		
 		this.dataset.getSubset(planePos).getMetaData().setLabel(label);
 	}
@@ -332,7 +338,7 @@ public class BridgeStack extends ImageStack
 		if (n<1 || n>this.planeRefs.size())
 			throw new IllegalArgumentException(outOfRange+n);
 		
-		int[] planePos = Index.getPlanePosition(this.subDimensions, n-1);
+		int[] planePos = Index.getPlanePosition(this.dataset.getDimensions(), n-1);
 		
 		ImageProcessor ip = processorFactory.makeProcessor(planePos);
 		
@@ -367,8 +373,7 @@ public class BridgeStack extends ImageStack
 	{
     	if ((this.planeRefs.size()==3) &&
     			(this.planeRefs.get(0) instanceof byte[]) &&
-    			(getSliceLabel(1)!=null) &&
-    			(getSliceLabel(1).equals("Red")))	
+    			("Red".equals(getSliceLabel(1))))	
 			return true;
 		
     	return false;
@@ -379,8 +384,7 @@ public class BridgeStack extends ImageStack
 	public boolean isHSB()
 	{
     	if ((this.planeRefs.size()==3) &&
-    			(getSliceLabel(1)!=null) &&
-    			(getSliceLabel(1).equals("Hue")))	
+    			("Hue".equals(getSliceLabel(1))))	
 			return true;
     	
 		return false;
