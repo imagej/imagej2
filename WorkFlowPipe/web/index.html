@@ -99,21 +99,28 @@
                     resize();
                 });
                 editor = pipeseditor.CreateEditor();
-                editor.load('xjMFQsOG3BGSovq98SvLAg');
-                opendesc('xjMFQsOG3BGSovq98SvLAg');
+               // editor.load('xjMFQsOG3BGSovq98SvLAg');
+                //opendesc('xjMFQsOG3BGSovq98SvLAg');
             }
 
-            function opendesc(id) {
-                ajaxCall("module/featured", {
+            function opendesc(id)
+            {
+                ajaxCall("module/featured",
+                {
                     "id" : id,
                     "_out" : "json"
-                }, function(data) {
-                    new maxwell.Dialog.Draggable({
+                }, 
+                function(data)
+                {
+                    new maxwell.Dialog.Draggable(
+                    {
                         content : 'About this Pipe',
-                        body : "<div class='module_featured'>" + data.description
-                            + "</div>",
+                        body : "<div class='module_featured'>" + data.description + "</div>",
                         position : 'nw'
-                    }, editor.layout.node);
+                    }, 
+                    editor.layout.node);
+
+
                 }, function(error) {
                     //no featured text or a system barf
                 });
