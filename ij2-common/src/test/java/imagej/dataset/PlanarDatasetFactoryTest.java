@@ -227,11 +227,4 @@ public class PlanarDatasetFactoryTest
 		ds.setDouble(new int[]{1,1,2,4}, 99);
 		assertEquals(99, ds.getDouble(new int[]{1,1,2,4}), 0);
 	}	
-	
-	@Test
-	public void testDuplicateDataset()
-	{
-		System.out.println("PlanarDatasetFactoryTest::testDuplicateDataset() has not been implemented.");
-	}
-
 }
