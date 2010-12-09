@@ -9,7 +9,7 @@ import imagej.StorageType;
  * new Imglib type is created and needs to be supported then the process is the same but there are a couple places in ij2-imglib that
  * also need to be tweaked. For example, imagej.imglib.process.ImageUtils::getPlaneCopy(), and
  * imagej.ij1bridge.process.ImageUtils::createProcessor() both need to be updated as they need knowledge of all Imglib types to
- * correctly create their data.
+ * correctly create their data. Also imagej.ij1bridge.ImgLibProcessorFactory needs to be expanded to include the new Imglib type.
  */
 public interface Type
 {
