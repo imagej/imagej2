@@ -16,6 +16,8 @@ import java.lang.reflect.Array;
 //   The arrayOfData reference would then be wrong. But otherwise it seems supportable;
 
 // TODO - metadata support is nearly nonexistent. May need global metadata (num dims in primitive access) and then per subset metadata (labels)
+//        As it is now there are many MetaData objects allocated. Myabe just a couple fields should be local and the rest stored with outermost
+//        parent dataset.
 
 public class PlanarDataset implements Dataset, RecursiveDataset
 {
@@ -57,7 +59,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		this.arrayOfData = arrayOfData;
 		this.dataAccessor = type.allocateArrayAccessor(arrayOfData);
 		this.parent = null;
-		this.metadata = null;
+		this.metadata = new MetaData();
 	}
 
 	@Override

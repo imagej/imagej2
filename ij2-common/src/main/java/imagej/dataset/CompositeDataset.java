@@ -13,7 +13,9 @@ import java.util.ArrayList;
 //   great if we could add a blob and have it fixup dimensions and data as needed. In general we could insert one "slice" at a time where a slice
 //   is a Dataset whose dimensions match my dimensions except in 1 axis where its value is 1.
 
-// TODO - metadata support is nearly nonexistent. May need global metadata (num dims in primitive access) and then per subset metadata (labels)
+// TODO - metadata support is nearly nonexistent. May need global metadata (num dims in primitive access) and then per subset metadata (labels).
+//        As it is now there are many MetaData objects allocated. Myabe just a couple fields should be local and the rest stored with outermost
+//        parent dataset.
 
 // TODO - maybe it would be speed things up considerably to cache the last subset found with getSubset(axis)
 
@@ -31,7 +33,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		this.dimensions = dimensions;
 		this.subsets = subsets;
 		this.parent = null;
-		this.metadata = null;
+		this.metadata = new MetaData();
 		for (Dataset subset : this.subsets)
 			subset.setParent(this);
 	}

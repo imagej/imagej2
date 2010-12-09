@@ -11,7 +11,7 @@ public class MetaData
 	
 	public MetaData()
 	{
-		this.label = "";
+		this.label = "default label";
 		this.axisLabels = new String[0];
 		this.directAccessSize = 0;
 	}
