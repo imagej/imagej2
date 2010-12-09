@@ -95,12 +95,13 @@ public class ImgLibDatasetTest
 		
 		ImgLibDataset<?> ds = new ImgLibDataset<BitType>((Image<BitType>)image);
 
-		assertNull(ds.getMetaData());
+		MetaData origMetaData = ds.getMetaData();
 		
 		MetaData m = new MetaData();
 		
 		ds.setMetaData(m);
 		
+		assertFalse(m == origMetaData);
 		assertEquals(m, ds.getMetaData());
 	}
 
