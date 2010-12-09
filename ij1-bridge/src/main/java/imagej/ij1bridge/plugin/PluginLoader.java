@@ -1,11 +1,7 @@
 package imagej.ij1bridge.plugin;
 
-import ijx.*;
-import ijx.plugin.api.PlugIn;
-import ijx.text.TextWindow;
-import ijx.util.StringAlign;
-import ijx.util.StringSorter;
-import imagej.ij1bridge.plugin.Ij1PluginFinder;
+
+import ij.plugin.PlugIn;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
 
@@ -18,6 +14,11 @@ import java.net.URL;
 import java.net.JarURLConnection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+
 
 /* 
  * PluginLoader for discovering legacy ImageJ User Plugins
@@ -95,7 +96,7 @@ public class PluginLoader implements PlugIn, PluginFinder {
     void setupPluginsPaths() {
         pluginsPath = null;
         String separator = System.getProperty("file.separator");
-        String homeDir = Prefs.getHomeDir();
+        String homeDir = ij.Prefs.getHomeDir();
         if (homeDir == null) {
             if (homeDir == null) {
                 homeDir = System.getProperty("user.dir");
@@ -159,7 +160,7 @@ public class PluginLoader implements PlugIn, PluginFinder {
         }
         String[] pluginsList = new String[v.size()];
         v.copyInto((String[]) pluginsList);
-        StringSorter.sort(pluginsList);
+        sort(pluginsList);
         return pluginsList;
     }
 
@@ -197,7 +198,7 @@ public class PluginLoader implements PlugIn, PluginFinder {
             } else {
             }
         }
-        if (Prefs.moveToMisc && classCount == 1 && otherCount == 0 && dir.indexOf("_") == -1) {
+        if (ij.Prefs.moveToMisc && classCount == 1 && otherCount == 0 && dir.indexOf("_") == -1) {
             v.setElementAt("Miscellaneous/" + className,
                     v.size() - 1);
         }
@@ -451,7 +452,7 @@ public class PluginLoader implements PlugIn, PluginFinder {
                 }
             }
         } catch (Throwable e) {
-            IJ.log(jar + ": " + e);
+            ij.IJ.log(jar + ": " + e);
         }
         return autoGenerateConfigFile(jar);
     }
@@ -492,7 +493,7 @@ public class PluginLoader implements PlugIn, PluginFinder {
                 }
             }
         } catch (Throwable e) {
-            IJ.log(jar + ": " + e);
+           ij.IJ.log(jar + ": " + e);
         }
         //IJ.log(""+(sb!=null?sb.toString():"null"));
         if (sb == null) {
@@ -641,4 +642,123 @@ public class PluginLoader implements PlugIn, PluginFinder {
         }
         System.out.println(sb.toString());
     }
+
+    // =====================================================================
+    // These should be part of a Utilities library (and removed from here)
+
+/** A simple QuickSort for String arrays. */
+// from public class StringSorter {
+
+	/** Sorts the array. */
+	public static void sort(String[] a) {
+		if (!alreadySorted(a))
+			sort(a, 0, a.length - 1);
+	}
+
+	static void sort(String[] a, int from, int to) {
+		int i = from, j = to;
+		String center = a[ (from + to) / 2 ];
+		do {
+			while ( i < to && center.compareTo(a[i]) > 0 ) i++;
+			while ( j > from && center.compareTo(a[j]) < 0 ) j--;
+			if (i < j) {String temp = a[i]; a[i] = a[j]; a[j] = temp; }
+			if (i <= j) { i++; j--; }
+		} while(i <= j);
+		if (from < j) sort(a, from, j);
+		if (i < to) sort(a,  i, to);
+	}
+
+	static boolean alreadySorted(String[] a) {
+		for ( int i=1; i<a.length; i++ ) {
+			if (a[i].compareTo(a[i-1]) < 0 )
+			return false;
+		}
+		return true;
+	}
+//}
+public class StringAlign extends Format {
+  /* Constant for left justification. */
+  public static final int JUST_LEFT = 'l';
+  /* Constant for centering. */
+  public static final int JUST_CENTRE = 'c';
+  /* Centering Constant, for those who spell "centre" the American way. */
+  public static final int JUST_CENTER = JUST_CENTRE;
+  /** Constant for right-justified Strings. */
+  public static final int JUST_RIGHT = 'r';
+
+  /** Current justification */
+  private int just;
+  /** Current max length */
+  private int maxChars;
+
+    /** Construct a StringAlign formatter; length and alignment are
+     * passed to the Constructor instead of each format() call as the
+     * expected common use is in repetitive formatting e.g., page numbers.
+     * @param nChars - the length of the output
+     * @param just - one of JUST_LEFT, JUST_CENTRE or JUST_RIGHT
+     */
+  public StringAlign(int maxChars, int just) {
+    switch(just) {
+    case JUST_LEFT:
+    case JUST_CENTRE:
+    case JUST_RIGHT:
+      this.just = just;
+      break;
+    default:
+      throw new IllegalArgumentException("invalid justification arg.");
+    }
+    if (maxChars < 0) {
+      throw new IllegalArgumentException("maxChars must be positive.");
+    }
+    this.maxChars = maxChars;
+  }
+
+  /** Format a String.
+     * @param input _ the string to be aligned.
+     * @parm where - the StringBuffer to append it to.
+     * @param ignore - a FieldPosition (may be null, not used but
+     * specified by the general contract of Format).
+     */
+  public StringBuffer format(
+    Object obj, StringBuffer where, FieldPosition ignore)  {
+
+    String s = (String)obj;
+    String wanted = s.substring(0, Math.min(s.length(), maxChars));
+
+    // Get the spaces in the right place.
+    switch (just) {
+      case JUST_RIGHT:
+        pad(where, maxChars - wanted.length());
+        where.append(wanted);
+        break;
+      case JUST_CENTRE:
+        int toAdd = maxChars - wanted.length();
+        pad(where, toAdd/2);
+        where.append(wanted);
+        pad(where, toAdd - toAdd/2);
+        break;
+      case JUST_LEFT:
+        where.append(wanted);
+        pad(where, maxChars - wanted.length());
+        break;
+      }
+    return where;
+  }
+
+  protected final void pad(StringBuffer to, int howMany) {
+    for (int i=0; i<howMany; i++)
+      to.append(' ');
+  }
+
+  /** Convenience Routine */
+  String format(String s) {
+    return format(s, new StringBuffer(), null).toString();
+  }
+
+  /** ParseObject is required, but not useful here. */
+  public Object parseObject (String source, ParsePosition pos)  {
+    return source;
+  }
+}
+
 }
