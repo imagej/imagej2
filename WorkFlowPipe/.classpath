@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="web"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-server-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-servlet-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-servlets-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-ajp-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-annotations-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-client-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-continuation-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-deploy-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-http-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-io-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-jmx-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-jndi-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-plus-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-policy-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-rewrite-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-security-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-webapp-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-websocket-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-xml-8.0.0.M2.jar"/>
+	<classpathentry kind="lib" path="lib/jsonrpc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

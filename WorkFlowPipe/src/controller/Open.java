@@ -1,39 +1,52 @@
 package controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.net.URL;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 
-import javax.swing.JTextField;
+import servlet.ServletProvider;
 
 public class Open {
 
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		String referenceURL = "http://pipes.yahoo.com/pipes/pipe.edit";
-		JFrame frame = new JFrame();
-		JPanel panel = new JPanel();
-		final JTextField url = new JTextField(20);
-		url.setText( referenceURL );
-		//JButton button = new JButton( "Open Browser" );
-		//button.addActionListener( new ActionListener() {
-		//	public void actionPerformed( ActionEvent e ) {
-				OpenBrowser.openURL( url.getText().trim() );
-		//	}
-		//});
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		//panel.add(new JLabel("URL:"));
-		//panel.add(url);
-		//panel.add(button);
-		//frame.getContentPane().add(panel);
-		frame.pack();
-		frame.setVisible(true);
+	public static void main(String[] args) throws Exception {
+
+		URL referenceURL = Open.class.getClassLoader().getResource("index.html");
+		//System.out.println( referenceURL.toString() );
+		
+		// Create a local jetty server		
+		Server server = new Server( 1999 );
+		 
+        ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        servletContextHandler.setContextPath("/servlets");
+        server.setHandler( servletContextHandler );
+        servletContextHandler.addServlet( new ServletHolder( new ServletProvider() ),"/pipe/load" );
+       
+        //WebAppContext webapp = new WebAppContext();
+        //webapp.setContextPath("/web");
+        //TODO: add web app war file
+        //webapp.setWar(referenceURL.getPath()+"/webapps/test.war");
+ 
+        //ContextHandlerCollection contexts = new ContextHandlerCollection();
+       // contexts.setHandlers(new Handler[] { servletContextHandler, webapp });
+        //server.setHandler(contexts);
+        
+        server.setHandler( servletContextHandler );
+ 
+        //server.start();
+        //OpenBrowser.openURL( referenceURL.toExternalForm() );
+        //server.join();
+        
+		
+		
 
 	}
 
