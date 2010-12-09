@@ -343,7 +343,6 @@ public class BridgeStackTest
 		assertNotNull(this.stack);
 		
 		this.stack.deleteLastSlice();
-		// this.dataset.getImage(); TODO - fix KERPOW on a empty stack !!!!
 		
 		assertNull(this.stack.getSliceLabels());
 		
