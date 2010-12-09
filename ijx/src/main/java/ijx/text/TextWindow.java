@@ -125,8 +125,9 @@ public class TextWindow extends Frame implements IjxWindow, ActionListener, Focu
 	
 	void addMenuBar() {
 		mb = new MenuBar();
-		if (Menus.getFontSize()!=0)
-			mb.setFont(Menus.getFont());
+        // @todo - move these to a global app. container
+//		if (Menus.getFontSize()!=0)
+//			mb.setFont(Menus.getFont());
 		Menu m = new Menu("File");
 		m.add(new MenuItem("Save As...", new MenuShortcut(KeyEvent.VK_S)));
 		if (getTitle().equals("Results")) {

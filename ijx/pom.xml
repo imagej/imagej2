@@ -39,7 +39,27 @@
     </dependency>
     <dependency>
     	<groupId>imagej</groupId>
+    	<artifactId>ij2-imglib</artifactId>
+    	<version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>imagej</groupId>
     	<artifactId>ij1-bridge</artifactId>
+    	<version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>mpicbg</groupId>
+    	<artifactId>imglib</artifactId>
+    	<version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>mpicbg</groupId>
+    	<artifactId>imglib-ij</artifactId>
+    	<version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>mpicbg</groupId>
+    	<artifactId>imglib-io</artifactId>
     	<version>2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
