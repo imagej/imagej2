@@ -1,6 +1,6 @@
 package imagej.selection;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.process.Index;
 
 public class MaskOffSelectionFunction implements SelectionFunction
@@ -18,7 +18,7 @@ public class MaskOffSelectionFunction implements SelectionFunction
 		
 		this.relativePosition = new int[maskOrigin.length];
 		
-		if (Utils.getTotalSamples(maskSpan) != mask.length)
+		if (Dimensions.getTotalSamples(maskSpan) != mask.length)
 			throw new IllegalArgumentException("mask size does not match mask span size");
 	}
 	

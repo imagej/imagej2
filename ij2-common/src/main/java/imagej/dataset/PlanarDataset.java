@@ -1,7 +1,7 @@
 package imagej.dataset;
 
 import imagej.MetaData;
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.DataAccessor;
 import imagej.data.Type;
 import imagej.data.Types;
@@ -40,7 +40,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (!arrayOfData.getClass().isArray())
 			throw new IllegalArgumentException("expected an array as input");
 		
-		long numPixels = Utils.getTotalSamples(dimensions);
+		long numPixels = Dimensions.getTotalSamples(dimensions);
 		
 		long expectedArrayLength = type.calcNumStorageUnitsFromPixelCount(numPixels);
 		
