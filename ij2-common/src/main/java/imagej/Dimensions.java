@@ -1,7 +1,7 @@
 package imagej;
 
 /** general purpose methods */
-public class Utils
+public class Dimensions
 {
 	/** gets the last n-2 dimensions of a n-dimensional int array. */
 	public static int[] getDims3AndGreater(int[] fullDims)

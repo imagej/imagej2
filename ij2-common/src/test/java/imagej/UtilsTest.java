@@ -4,7 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import imagej.Utils;
+import imagej.Dimensions;
 
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class UtilsTest {
 	private void getDims3AndGreaterShouldFail(int[] dims)
 	{
 		try {
-			Utils.getDims3AndGreater(dims);
+			Dimensions.getDims3AndGreater(dims);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
@@ -30,7 +30,7 @@ public class UtilsTest {
 	private void verifyDims(boolean shouldFail, int[] dims, int[] origin, int[] span)
 	{
 		try {
-			Utils.verifyDimensions(dims, origin, span);
+			Dimensions.verifyDimensions(dims, origin, span);
 			if (shouldFail)
 				fail();
 			else
@@ -49,34 +49,34 @@ public class UtilsTest {
 	public void testgetDims3AndGreater() {
 		getDims3AndGreaterShouldFail(new int[]{});
 		getDims3AndGreaterShouldFail(new int[]{1});
-		assertArrayEquals(new int[]{}, Utils.getDims3AndGreater(new int[]{1,2}));
-		assertArrayEquals(new int[]{3}, Utils.getDims3AndGreater(new int[]{1,2,3}));
-		assertArrayEquals(new int[]{3,4}, Utils.getDims3AndGreater(new int[]{1,2,3,4}));
-		assertArrayEquals(new int[]{3,4,5}, Utils.getDims3AndGreater(new int[]{1,2,3,4,5}));
+		assertArrayEquals(new int[]{}, Dimensions.getDims3AndGreater(new int[]{1,2}));
+		assertArrayEquals(new int[]{3}, Dimensions.getDims3AndGreater(new int[]{1,2,3}));
+		assertArrayEquals(new int[]{3,4}, Dimensions.getDims3AndGreater(new int[]{1,2,3,4}));
+		assertArrayEquals(new int[]{3,4,5}, Dimensions.getDims3AndGreater(new int[]{1,2,3,4,5}));
 	}
 
 	@Test
 	public void testGetTotalSamples() {
-		assertEquals(0,Utils.getTotalSamples(new int[]{}));
-		assertEquals(0,Utils.getTotalSamples(new int[]{0}));
-		assertEquals(1,Utils.getTotalSamples(new int[]{1}));
-		assertEquals(8,Utils.getTotalSamples(new int[]{8}));
-		assertEquals(1,Utils.getTotalSamples(new int[]{1,1}));
-		assertEquals(10,Utils.getTotalSamples(new int[]{2,5}));
-		assertEquals(24,Utils.getTotalSamples(new int[]{2,3,4}));
-		assertEquals(720,Utils.getTotalSamples(new int[]{1,2,3,4,5,6}));
+		assertEquals(0,Dimensions.getTotalSamples(new int[]{}));
+		assertEquals(0,Dimensions.getTotalSamples(new int[]{0}));
+		assertEquals(1,Dimensions.getTotalSamples(new int[]{1}));
+		assertEquals(8,Dimensions.getTotalSamples(new int[]{8}));
+		assertEquals(1,Dimensions.getTotalSamples(new int[]{1,1}));
+		assertEquals(10,Dimensions.getTotalSamples(new int[]{2,5}));
+		assertEquals(24,Dimensions.getTotalSamples(new int[]{2,3,4}));
+		assertEquals(720,Dimensions.getTotalSamples(new int[]{1,2,3,4,5,6}));
 	}
 
 	@Test
 	public void testGetTotalPlanes() {
-		assertEquals(0,Utils.getTotalPlanes(new int[]{}));
-		assertEquals(0,Utils.getTotalPlanes(new int[]{0}));
-		assertEquals(0,Utils.getTotalPlanes(new int[]{1}));
-		assertEquals(0,Utils.getTotalPlanes(new int[]{8}));
-		assertEquals(1,Utils.getTotalPlanes(new int[]{1,1}));
-		assertEquals(1,Utils.getTotalPlanes(new int[]{2,5}));
-		assertEquals(4,Utils.getTotalPlanes(new int[]{2,3,4}));
-		assertEquals(360,Utils.getTotalPlanes(new int[]{1,2,3,4,5,6}));
+		assertEquals(0,Dimensions.getTotalPlanes(new int[]{}));
+		assertEquals(0,Dimensions.getTotalPlanes(new int[]{0}));
+		assertEquals(0,Dimensions.getTotalPlanes(new int[]{1}));
+		assertEquals(0,Dimensions.getTotalPlanes(new int[]{8}));
+		assertEquals(1,Dimensions.getTotalPlanes(new int[]{1,1}));
+		assertEquals(1,Dimensions.getTotalPlanes(new int[]{2,5}));
+		assertEquals(4,Dimensions.getTotalPlanes(new int[]{2,3,4}));
+		assertEquals(360,Dimensions.getTotalPlanes(new int[]{1,2,3,4,5,6}));
 	}
 
 	@Test

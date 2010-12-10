@@ -1,6 +1,6 @@
 package imagej.process;
 
-import imagej.Utils;
+import imagej.Dimensions;
 
 public final class Index {
 
@@ -185,7 +185,7 @@ public final class Index {
 	/** returns the sample index of a plane number within a data set of specified dimensions */
 	public static int[] getPlanePosition(int[] dimensions, long planeNumber)
 	{
-		if ((planeNumber < 0) || (planeNumber >= Utils.getTotalPlanes(dimensions)))
+		if ((planeNumber < 0) || (planeNumber >= Dimensions.getTotalPlanes(dimensions)))
 			throw new IllegalArgumentException("invalid plane number given");
 		
 		int numDims = dimensions.length;
