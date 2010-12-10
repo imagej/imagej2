@@ -1147,8 +1147,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 						{
 							double value = ip.getd(x, y);
 							long encoding = Double.doubleToLongBits(value);
-							pvalue[0] = (int)(encoding & 0xffffffff);
-							pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
+							pvalue[0] = (int)(encoding & 0xffffffffL);
+							pvalue[1] = (int)((encoding >> 32) & 0xffffffffL);
 						}
 						else
 							throw new IllegalStateException("unsupported floating point bitDepth : "+bitDepth);
@@ -1168,8 +1168,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 					{
 						double value = ip.getd(x, y);
 						long encoding = (long)value;              // TODO - precision loss possible here
-						pvalue[0] = (int)(encoding & 0xffffffff);
-						pvalue[1] = (int)((encoding >> 32) & 0xffffffff);
+						pvalue[0] = (int)(encoding & 0xffffffffL);
+						pvalue[1] = (int)((encoding >> 32) & 0xffffffffL);
 					}
 					else
 						throw new IllegalStateException("unsupported intregral bitDepth : "+bitDepth);
