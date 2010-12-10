@@ -23,7 +23,7 @@
   <licenses>
     <license>
       <name>BSD</name>
-      <url>http://dev.imagejdev.org/svn/imagej/trunk/imagej/LICENSE.txt</url>
+      <url>http://dev.imagejdev.org/svn/imagej/trunk/_ij1-patches/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
