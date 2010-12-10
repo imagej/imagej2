@@ -7,7 +7,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.function.BinaryFunction;
@@ -1613,7 +1613,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return getCopyOfPixelsFromImage(this.imageData, this.type, this.planePosition);
 		}
 		// we have the special planar container in place
-		int[] planeDimsMaxes = Utils.getDims3AndGreater(this.imageData.getDimensions());
+		int[] planeDimsMaxes = Dimensions.getDims3AndGreater(this.imageData.getDimensions());
 		long planeNumber = Index.getSampleNumber(planeDimsMaxes, this.planePosition);
 		if (planeNumber >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("too many planes");

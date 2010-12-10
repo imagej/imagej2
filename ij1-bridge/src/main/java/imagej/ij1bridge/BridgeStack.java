@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.dataset.Dataset;
 import imagej.process.Index;
 
@@ -45,7 +45,7 @@ public class BridgeStack extends ImageStack
 
 		int[] dimensions = ds.getDimensions();
 		
-		int numPlanes = (int) Utils.getTotalPlanes(dimensions);
+		int numPlanes = (int) Dimensions.getTotalPlanes(dimensions);
 		
 		if (numPlanes <= 0)
 			throw new IllegalArgumentException("can't make a BridgeStack on a dataset that has 0 planes");

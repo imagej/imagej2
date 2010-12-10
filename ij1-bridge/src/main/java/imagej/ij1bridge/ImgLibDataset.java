@@ -6,7 +6,7 @@ import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.MetaData;
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
@@ -215,7 +215,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 		{
 			int[] dimensions = this.dataset.getDimensions();
 			
-			if (Utils.getTotalSamples(dimensions) == 0)
+			if (Dimensions.getTotalSamples(dimensions) == 0)
 				throw new IllegalArgumentException("cannot create an ImgLibDataset which has one or more dimensions of size 0");
 			
 			this.shadowImage = ImageUtils.createImage(this.realType, this.planarFactory, dimensions);

@@ -1,6 +1,6 @@
 package imagej.ij1bridge.process.operation;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.ij1bridge.process.ProgressTracker;
 import imagej.imglib.process.operation.PositionalSingleCursorRoiOperation;
@@ -27,7 +27,7 @@ public abstract class Filter3x3Operation<K extends RealType<K>> extends Position
 		
 		long updateFrequency = (long)span[0] * 25;
 		
-		addObserver(new ProgressTracker(ip, Utils.getTotalSamples(span), updateFrequency));
+		addObserver(new ProgressTracker(ip, Dimensions.getTotalSamples(span), updateFrequency));
 	}
 
 	protected final double[] getNeighborhood() { return neighborhood; }
