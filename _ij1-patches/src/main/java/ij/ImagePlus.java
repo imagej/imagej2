@@ -1657,7 +1657,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 		    		else if (unsignedType)
 						fi.fileType = FileInfo.GRAY32_UNSIGNED;
 	    			else
-						fi.fileType = FileInfo.GRAY32_SIGNED;
+						fi.fileType = FileInfo.GRAY32_INT;
 	    		}
 	    		else if (bitDepth == 64)
 	    		{

@@ -66,11 +66,8 @@ public class FileInfo implements Cloneable {
 	/** 32-bit interleaved ABGR. Import only. */
 	public static final int ABGR = 18;
 
-	/** 32 bit signed integer */
-	public static final int GRAY32_SIGNED = 19;
-	
 	/** 64 bit signed integer */
-	public static final int GRAY64_SIGNED = 20;
+	public static final int GRAY64_SIGNED = 19;
 
 	// File formats
 	public static final int UNKNOWN = 0;
