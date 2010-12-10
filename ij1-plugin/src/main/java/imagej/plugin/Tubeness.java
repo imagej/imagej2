@@ -1,20 +1,19 @@
+package imagej.plugin;
 
-package ijx.plugin.parameterized;
+import ij.plugin.PlugIn;
+import ij.WindowManager;
+import ij.IJ;
 
-import ijx.plugin.api.PlugIn;
-import ijx.WindowManager;
-import ijx.IJ;
+import ij.measure.Calibration;
 
-import ijx.measure.Calibration;
-
-import ijx.IjxImagePlus;
+import ij.ImagePlus;
 
 public class Tubeness extends AbstractPlugIn implements PlugIn {
 
 	static final String PLUGIN_VERSION = "1.2";
 
 	@Parameter(label="Input image")
-	public IjxImagePlus original = null;
+	public ImagePlus original = null;
 
 	@Parameter(label="Sigma")
 	public double sigma = 1.0;
@@ -23,7 +22,7 @@ public class Tubeness extends AbstractPlugIn implements PlugIn {
 	public boolean useCalibration = false;
 
 	@Parameter(label="Output image", output=true)
-	public IjxImagePlus result = null;
+	public ImagePlus result = null;
 
 	public void run() {
 

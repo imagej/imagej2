@@ -79,5 +79,5 @@ IjxImagePlus
     public int outputValue = 9;
  *
  */
-package ijx.plugin.parameterized;
+package imagej.plugin;
 

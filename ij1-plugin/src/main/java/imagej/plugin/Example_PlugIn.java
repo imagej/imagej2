@@ -1,11 +1,12 @@
-package ijx.plugin.parameterized;
+package imagej.plugin;
 
-import ijx.IJ;
-import ijx.ImagePlus;
-import ijx.gui.NewImage;
-import ijx.plugin.Duplicator;
-import ijx.IjxImagePlus;
-import ijx.ImageJX;
+import ij.IJ;
+import ij.ImageJ;
+import ij.ImagePlus;
+import ij.gui.NewImage;
+import ij.plugin.Duplicator;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -52,13 +53,19 @@ public class Example_PlugIn extends AbstractPlugIn {
     @Parameter
     public boolean yesOrNo = false;
     @Parameter
-    public IjxImagePlus impIn;
+    public ImagePlus impIn;
     //
     @Parameter(output = true)
-    public IjxImagePlus impOut;
+    public ImagePlus impOut;
     @Parameter(output = true)
     public int outputValue = 9;
 
+    @Parameter(label = "Positions", choices = {"Top-Left", "Top-Center", "Top-Right", 
+    		"Center-Left", "Center", "Center-Right",
+    		"Bottom-Left", "Bottom-Center", "Bottom-Right"} )
+    public String position = "Center";
+    
+    
     public Example_PlugIn() {
         // dynamically initialize parameter values here...
          impIn = IJ.getImage();
@@ -81,7 +88,7 @@ public class Example_PlugIn extends AbstractPlugIn {
 //            impOut = impIn.createImagePlus();
 //            impOut.updateAndDraw();
 
-            IJ.runPlugIn("ijx.plugin.LutLoader", "fire");
+            IJ.runPlugIn("ij.plugin.LutLoader", "fire");
         }
         PlugInFunctions.listParamaters(this);
         //============================================================
@@ -96,8 +103,8 @@ public class Example_PlugIn extends AbstractPlugIn {
         System.out.println("End of run() in " + this.getClass().getName() +".\n");
     }
 
-    public IjxImagePlus duplicateStack(IjxImagePlus imp, String newTitle) {
-        IjxImagePlus imp2 = (new Duplicator()).run(imp);
+    public ImagePlus duplicateStack(ImagePlus imp, String newTitle) {
+        ImagePlus imp2 = (new Duplicator()).run(imp);
         imp2.setTitle(newTitle);
         return imp2;
     }
@@ -108,8 +115,8 @@ public class Example_PlugIn extends AbstractPlugIn {
             SwingUtilities.invokeAndWait(new Runnable() {
 
                 public void run() {
-                    ImageJX.main(null); // launch ImageJ
-                    IjxImagePlus imp = IJ.openImage("http://rsb.info.nih.gov/ij/images/blobs.gif");
+                    ImageJ.main(null); // launch ImageJ
+                    ImagePlus imp = IJ.openImage("http://rsb.info.nih.gov/ij/images/blobs.gif");
                     imp.show();
                 }
             });
@@ -118,8 +125,8 @@ public class Example_PlugIn extends AbstractPlugIn {
         } catch (InvocationTargetException ex) {
             Logger.getLogger(Example_PlugIn.class.getName()).log(Level.SEVERE, null, ex);
         }
-        runOffEDT(args);  // interactively
-        //runOnEDT(args);
+        //runOffEDT(args);  // interactively
+        runOnEDT(args);
         //runAsFuture(args);
         //runAsFutureOnEdt(args);
     }
@@ -146,11 +153,18 @@ public class Example_PlugIn extends AbstractPlugIn {
 
             public void run() {
                 Example_PlugIn abstractPlugin = new Example_PlugIn();
-                PlugInFunctions.listParamaters(abstractPlugin);
+                //PlugInFunctions.listParamaters(abstractPlugin);
                 RunnableAdapter rPlugin = new RunnableAdapter(abstractPlugin);
                 //rPlugin.run();
                 rPlugin.runInteractively();
-                PlugInFunctions.getOutputParameters(rPlugin);
+                Iterable<Field> iterableField = PlugInFunctions.getOutputParameters(rPlugin);
+                
+                //display the output parameters
+                System.out.println("The  dialog parameters were set as outputs:");
+                for( Field field:iterableField )
+                {
+                	System.out.println( field.getName() + " " + field.getDeclaredAnnotations() + " " + field.getModifiers() + " " + field.getType() + " " + field.isSynthetic() );
+                }
             }
         });
 
@@ -188,7 +202,6 @@ public class Example_PlugIn extends AbstractPlugIn {
         } else {
             System.out.println("outputMap = null");
         }
-
     }
 
     private static void runAsFutureOnEdt(final String[] args) {

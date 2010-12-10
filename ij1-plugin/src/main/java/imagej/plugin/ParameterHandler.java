@@ -1,6 +1,6 @@
-package ijx.plugin.parameterized;
+package imagej.plugin;
 
-import ijx.ImagePlus;
+import ij.ImagePlus;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
  * @author Grant Harris gharris at mbl.edu
  */
 public class ParameterHandler {
-
+	private static final boolean DEBUG = false;
     public ParameterHandler() {
     }
 
@@ -132,8 +132,10 @@ public class ParameterHandler {
         Field[] fields;
         ParameterFilter filter;
 
-        ParameterIterator(Field[] fields, ParameterFilter filter) {
-            this.fields = fields;
+        ParameterIterator( Field[] fields, ParameterFilter filter ) {
+            if (DEBUG) System.out.println("There are " + fields.length + " fields.");
+        	this.fields = fields;
+            
             this.filter = filter;
             counter = -1;
             findNext();
