@@ -1,6 +1,6 @@
 package imagej.imglib.process.operation;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.process.Index;
 import imagej.process.Observer;
 import imagej.selection.SelectionFunction;
@@ -58,10 +58,10 @@ public abstract class PositionalDualCursorRoiOperation<T extends RealType<T>>
 		this.selector1 = null;
 		this.selector2 = null;
 		
-		Utils.verifyDimensions(image1.getDimensions(), origin1, span1);
-		Utils.verifyDimensions(image2.getDimensions(), origin2, span2);
+		Dimensions.verifyDimensions(image1.getDimensions(), origin1, span1);
+		Dimensions.verifyDimensions(image2.getDimensions(), origin2, span2);
 		
-		if (Utils.getTotalSamples(span1) != Utils.getTotalSamples(span2))
+		if (Dimensions.getTotalSamples(span1) != Dimensions.getTotalSamples(span2))
 			throw new IllegalArgumentException("PositionalDualCursorRoiOperation(): span sizes differ");
 	}
 	

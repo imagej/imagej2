@@ -1,6 +1,6 @@
 package imagej.imglib.process;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.process.Index;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -74,7 +74,7 @@ public class Snapshot<T extends RealType<T>>
 	public void copyFromImage(Image<T> image, int[] origin, int[] span)
 	{
 		// verify input
-		Utils.verifyDimensions(image.getDimensions(),origin,span);
+		Dimensions.verifyDimensions(image.getDimensions(),origin,span);
 		
 		// remember dimensions
 		this.origin = origin.clone();
