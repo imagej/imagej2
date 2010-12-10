@@ -1,6 +1,6 @@
 package imagej.ij1bridge;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
@@ -51,7 +51,7 @@ public class ImgLibPlanarDataset implements PlanarDataset
 		if (planarAccess == null)
 			throw new UnsupportedOperationException("not yet supporting nonprimitive access to imglib image planes");
 		
-		int[] lengths = Utils.getDims3AndGreater(this.image.getDimensions());
+		int[] lengths = Dimensions.getDims3AndGreater(this.image.getDimensions());
 		
 		int[] planePos = Index.getPlanePosition(this.image.getDimensions(), planeNumber);
 		
@@ -68,7 +68,7 @@ public class ImgLibPlanarDataset implements PlanarDataset
 		if (planarAccess == null)
 			throw new UnsupportedOperationException("not yet supporting nonprimitive access to imglib image planes");
 		
-		int[] lengths = Utils.getDims3AndGreater(this.image.getDimensions());
+		int[] lengths = Dimensions.getDims3AndGreater(this.image.getDimensions());
 		
 		int[] planePos = Index.getPlanePosition(this.image.getDimensions(), planeNumber);
 		

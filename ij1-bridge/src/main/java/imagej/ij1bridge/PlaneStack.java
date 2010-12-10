@@ -2,7 +2,7 @@ package imagej.ij1bridge;
 
 import java.lang.reflect.Array;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.imglib.TypeManager;
@@ -255,7 +255,7 @@ public class PlaneStack
 		if (this.stack == null)
 			return 0;
 
-		return Utils.getTotalPlanes(getStorage().getDimensions());
+		return Dimensions.getTotalPlanes(getStorage().getDimensions());
 	}
 
 	/** returns the end position of the PlaneStack where a new plane can be added */

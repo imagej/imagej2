@@ -8,7 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.data.Type;
 import imagej.data.Types;
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.ij1bridge.IJ1TypeManager;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.process.ImageUtils;
@@ -138,7 +138,7 @@ public class ImgLibImageStack extends ImageStack
 		
 		final int[] dimensions = image.getDimensions();
 		
-		final long numPlanes = Utils.getTotalPlanes(dimensions);
+		final long numPlanes = Dimensions.getTotalPlanes(dimensions);
 		
 		for (int i = 0; i < numPlanes; i++)
 			labels.add("" + i);
