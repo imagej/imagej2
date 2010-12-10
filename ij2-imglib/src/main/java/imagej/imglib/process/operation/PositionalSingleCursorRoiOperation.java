@@ -1,6 +1,6 @@
 package imagej.imglib.process.operation;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.process.Index;
 import imagej.process.Observer;
 import imagej.selection.SelectionFunction;
@@ -52,7 +52,7 @@ public abstract class PositionalSingleCursorRoiOperation<T extends RealType<T>>
 	    this.observer = null;
 	    this.selector = null;
 	    
-		Utils.verifyDimensions(image.getDimensions(), origin, span);
+		Dimensions.verifyDimensions(image.getDimensions(), origin, span);
 	}
 	
 	public Image<T> getImage() { return image; }

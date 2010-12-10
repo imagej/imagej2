@@ -1,6 +1,6 @@
 package imagej.imglib.process;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.function.unary.CopyUnaryFunction;
 import imagej.imglib.TypeManager;
@@ -52,7 +52,7 @@ public class ImageUtils
 	*/
 	public static long getTotalSamples(Image<?> image)
 	{
-		return Utils.getTotalSamples(image.getDimensions());
+		return Dimensions.getTotalSamples(image.getDimensions());
 	}
 
 	/** gets the imglib type of an imglib image */

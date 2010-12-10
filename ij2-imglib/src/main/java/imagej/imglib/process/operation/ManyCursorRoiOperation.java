@@ -1,6 +1,6 @@
 package imagej.imglib.process.operation;
 
-import imagej.Utils;
+import imagej.Dimensions;
 import imagej.process.Observer;
 import imagej.selection.SelectionFunction;
 import mpicbg.imglib.cursor.Cursor;
@@ -54,11 +54,11 @@ public abstract class ManyCursorRoiOperation<T extends RealType<T>> {
 		this.selectors = new SelectionFunction[images.length];
 		
 		for (int i = 0; i < this.images.length; i++)
-			Utils.verifyDimensions(this.images[i].getDimensions(), this.origins[i], this.spans[i]);
+			Dimensions.verifyDimensions(this.images[i].getDimensions(), this.origins[i], this.spans[i]);
 		
 		
 		for (int i = 1; i < this.spans.length; i++)
-			if (Utils.getTotalSamples(spans[0]) != Utils.getTotalSamples(spans[i]))
+			if (Dimensions.getTotalSamples(spans[0]) != Dimensions.getTotalSamples(spans[i]))
 				throw new IllegalArgumentException("ManyCursorRoiOperation(): span sizes differ");
 	}
 	
