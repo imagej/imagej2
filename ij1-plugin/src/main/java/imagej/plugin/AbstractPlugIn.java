@@ -1,8 +1,8 @@
-package ijx.plugin.parameterized;
+package imagej.plugin;
 
 
 
-import ijx.plugin.api.PlugIn;
+import ij.plugin.PlugIn;
 
 import java.util.HashMap;
 import java.util.Map;
