@@ -1,5 +1,10 @@
-package ijx;
+package ijx.core;
 
+import ijx.ExecuterIjx;
+import ijx.IJ;
+import ijx.IjxImagePlus;
+import ijx.Undo;
+import ijx.WindowManager;
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.api.PlugInFrame;
 import ijx.gui.NewImage;
