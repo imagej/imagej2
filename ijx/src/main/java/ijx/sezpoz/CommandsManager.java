@@ -42,8 +42,16 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 //import org.pf.joi.Inspector;
 
+
+/* Notes:
+ *
+ *
+ *
+ */
 public class CommandsManager {
     //
+    // The string commandKey is used internally to reference the action.
+    
     Map<String, Action> commands = new HashMap<String, Action>();  // commandKey / action
     Map<String, String> menuCommands = new HashMap<String, String>();  // "menu>submenu" / commandKey
     Map<String, String> toolbarCommands = new HashMap<String, String>();  // toolbar / commandKey
