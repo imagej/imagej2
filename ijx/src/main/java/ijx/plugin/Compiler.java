@@ -23,7 +23,7 @@ public class Compiler implements PlugIn, FilenameFilter {
 	private static final int TARGET14=0, TARGET15=1, TARGET16=2,  TARGET17=3;
 	private static final String[] targets = {"1.4", "1.5", "1.6", "1.7"};
 	private static final String TARGET_KEY = "javac.target";
-	private static com.sun.tools.javac.Main javac;
+	//private static com.sun.tools.javac.Main javac;
 	private static ByteArrayOutputStream output;
 	private static String dir, name;
 	private static Editor errors;
@@ -60,10 +60,11 @@ public class Compiler implements PlugIn, FilenameFilter {
 	 
 	boolean isJavac() {
 		try {
-			if (javac==null) {
-				output = new ByteArrayOutputStream(4096);
-				javac=new com.sun.tools.javac.Main();
-			}
+// @todo - reinstate javac
+//			if (javac==null) {
+//				output = new ByteArrayOutputStream(4096);
+//				javac=new com.sun.tools.javac.Main();
+//			}
 		} catch (NoClassDefFoundError e) {
 			IJ.error("Unable to find the javac compiler, which comes with the Windows and \n"
 					+"Linux versions of ImageJ that include Java in the ImageJ/jre folder.\n"
@@ -102,14 +103,17 @@ public class Compiler implements PlugIn, FilenameFilter {
 				str += " "+arguments[i];
 			IJ.log(str);
 		}
-		boolean compiled = javac.compile(arguments, new PrintWriter(output))==0;
-		String s = output.toString();
-		boolean errors = (!compiled || areErrors(s));
-		if (errors)
-			showErrors(s);
-		else
-			IJ.showStatus("done");
-		return compiled;
+        return false;
+//		boolean compiled = javac.compile(arguments, new PrintWriter(output))==0;
+//		String s = output.toString();
+//		boolean errors = (!compiled || areErrors(s));
+//		if (errors)
+//			showErrors(s);
+//		else
+//			IJ.showStatus("done");
+//		return compiled;
+
+
 	 }
 	 
 	 // Returns a string containing the Java classpath, 

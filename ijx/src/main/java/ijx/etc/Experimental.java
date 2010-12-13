@@ -1,5 +1,6 @@
 package ijx.etc;
 
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imagedisplay.FrameImageDisplay;
@@ -33,49 +34,54 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 public class Experimental<T extends RealType<T>> {
 
     private Image<?> image;
-    private ImgLibDataset<?> dataset;
+    //private ImgLibDataset<?> dataset;
     private BridgeStack stack;
 
     @SuppressWarnings("unchecked")
     private void tryThis() throws FormatException, IOException {
-
+        new ImageJ();
         // create blank multidim Image
-        int[] dimensions = new int[]{500, 400};
-        this.image = ImageUtils.createImage(
-                new UnsignedByteType(),
-                new PlanarContainerFactory(), dimensions);
+//        int[] dimensions = new int[]{500, 400};
+//        this.image = ImageUtils.createImage(
+//                new UnsignedByteType(),
+//                new PlanarContainerFactory(), dimensions);
         // open test image
+
+
         String filename = "testpattern.tif";
-
         final ImageOpener imageOpener = new ImageOpener();
-        Image<T> inImg = imageOpener.openImage(filename);
-        //
-        this.reportInformation(inImg);
-        BufferedImage bi = copyToBufferedImage(inImg);
-        FrameImageDisplay fid = new FrameImageDisplay(bi, "Cells.tif");
-        ImageJFunctions.displayAsVirtualStack(inImg).show();
-
-        // Assuming we have an imglib.Image that we want to operate on using an IJ1 Plugin...
-        //
-        System.out.println("ImagePlus from copyToImagePlus");
-        ImagePlus imp2 = ImageJFunctions.copyToImagePlus(inImg);
-        System.out.println("type:" + imp2.getType());
-        System.out.println("Slices: " + imp2.getNSlices());
-        ImageProcessor ip2 = imp2.getStack().getProcessor(1);
-        System.out.println("class: " + ip2.getClass().getName());
-        //
-        System.out.println("ImagePlus from BridgeStack");
-        this.dataset = new ImgLibDataset<UnsignedByteType>((Image<UnsignedByteType>) this.image);
-        this.stack = new BridgeStack(this.dataset, new ImgLibProcessorFactory(this.image));
+        Image<T> img = imageOpener.openImage(filename);
+        reportInformation(img);
+        ImgLibDataset<T> dataset = new ImgLibDataset<T>((Image<T>) img);
+        BridgeStack stack = new BridgeStack(dataset, new ImgLibProcessorFactory(img));
         ImagePlus imp = new ImagePlus("imglib Stack", stack);
-        System.out.println("type:" + imp.getType());
-        System.out.println("Slices: " + imp.getNSlices());
-        ImageProcessor ip = imp.getStack().getProcessor(1);
-        ImgLibProcessor ilp = (ImgLibProcessor)ip;
-        System.out.println("ImgLibProcessor type: " + ilp.getTypeName());
+//        System.out.println("type:" + imp.getType());
+//        System.out.println("Slices: " + imp.getNSlices());
+//        ImageProcessor ip = imp.getStack().getProcessor(1);
+//        ImgLibProcessor ilp = (ImgLibProcessor) ip;
+//        System.out.println("ImgLibProcessor type: " + ilp.getTypeName());
+        imp.show();
+
+//        BufferedImage bi = copyToBufferedImage(inImg);
+//        FrameImageDisplay fid = new FrameImageDisplay(bi, "testpattern.tif");
+//        //
+//        ImageJFunctions.displayAsVirtualStack(inImg).show();
+//
+//        // Assuming we have an imglib.Image that we want to operate on using an IJ1 Plugin...
+//        //
+//        System.out.println("ImagePlus from copyToImagePlus");
+//        ImagePlus imp2 = ImageJFunctions.copyToImagePlus(inImg);
+//        System.out.println("type:" + imp2.getType());
+//        System.out.println("Slices: " + imp2.getNSlices());
+//        ImageProcessor ip2 = imp2.getStack().getProcessor(1);
+//        System.out.println("class: " + ip2.getClass().getName());
+        //
+
+
+
+
 
     }
-
 //    public static BufferedImage toCompatibleImage(BufferedImage image) {
 //        if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
 //            return image;
@@ -88,7 +94,6 @@ public class Experimental<T extends RealType<T>> {
 //
 //        return compatibleImage;
 //    }
-
     private static final GraphicsConfiguration CONFIGURATION =
             GraphicsEnvironment.getLocalGraphicsEnvironment().
             getDefaultScreenDevice().getDefaultConfiguration();
@@ -99,9 +104,9 @@ public class Experimental<T extends RealType<T>> {
         final int dimX = dim[ 0];
         final int dimY = dim[ 1];
         final int dimZ = dim[ 2];
-		int sizeX = img.getDimension( dim[ 0 ] );
-		int sizeY = img.getDimension( dim[ 1 ] );
-		int sizeZ = img.getDimension( dim[ 2 ] );
+        int sizeX = img.getDimension(dim[ 0]);
+        int sizeY = img.getDimension(dim[ 1]);
+        int sizeZ = img.getDimension(dim[ 2]);
 
         int[] rgbPixels = ImageJVirtualStack.extractSliceRGB(img, img.getDisplay(), dimX, dimY, dimPos);
         BufferedImage bImage = CONFIGURATION.createCompatibleImage(sizeX, sizeY, Transparency.OPAQUE);
@@ -148,20 +153,20 @@ public class Experimental<T extends RealType<T>> {
         return dimReady;
     }
 
-	/** Prints out some useful information about the {@link Image}. */
-	public static <T extends RealType<T>> void reportInformation(Image<T> img) {
-		System.out.println(img);
-		final Cursor<T> cursor = img.createCursor();
-		cursor.fwd();
-		System.out.println("\tType = " + cursor.getType().getClass().getName());
-		System.out.println("\tContainer = " + cursor.getStorageContainer().getClass().getName());
-		cursor.close();
+    /** Prints out some useful information about the {@link Image}. */
+    public static <T extends RealType<T>> void reportInformation(Image<T> img) {
+        System.out.println(img);
+        final Cursor<T> cursor = img.createCursor();
+        cursor.fwd();
+        System.out.println("\tType = " + cursor.getType().getClass().getName());
+        System.out.println("\tContainer = " + cursor.getStorageContainer().getClass().getName());
+        cursor.close();
         img.toString();
-	}
+    }
+
     public static <T extends RealType<T>> void main(String[] args)
             throws FormatException, IOException {
         Experimental<T> test = new Experimental<T>();
         test.tryThis();
     }
-
 }
