@@ -218,30 +218,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 			if (Dimensions.getTotalSamples(dimensions) == 0)
 				throw new IllegalArgumentException("cannot create an ImgLibDataset which has one or more dimensions of size 0");
 			
-			this.shadowImage = ImageUtils.createImage(this.realType, this.planarFactory, dimensions);
-
-			int subDimensionLength = dimensions.length-2;
-			
-			int[] position = Index.create(subDimensionLength);
-			
-			int[] origin = Index.create(subDimensionLength);
-
-			int[] span = new int[subDimensionLength];
-			for (int i = 0; i < subDimensionLength; i++)
-				span[i] = dimensions[i];
-			
-			PlanarAccess<ArrayDataAccess<?>> access = ImageUtils.getPlanarAccess(this.shadowImage);
-
-			int planeNum = 0;
-			
-			while (Index.isValid(position, origin, span))
-			{
-				Dataset plane = this.dataset.getSubset(position);
-				Object array = plane.getData();
-				access.setPlane(planeNum, ImageUtils.makeArray(array));
-				Index.increment(position, origin, span);
-			}
-			
+			this.shadowImage = ImageUtils.createShadowImage(this.dataset);
 		}
 		
 		return this.shadowImage;
