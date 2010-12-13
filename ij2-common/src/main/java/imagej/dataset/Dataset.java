@@ -3,7 +3,8 @@ package imagej.dataset;
 // NOTE - user chooses access by getting longs or double as needed to avoid precision loss problems. For efficiency's sake maybe we extend to all
 //   data types. For now if you want integral access use set/getLong(). If you want float access use set/getReal(). The problem with extending it to
 //   all data types - imagine the case where you have unsigned byte data. If you call getByte() you'd expect to be okay but really you should getShort()
-//   to avoid data loss. This is not intuitive and furthermore loses all benefits of avoiding casts for efficiency's sake.
+//   to avoid data loss. This is not intuitive and furthermore loses all benefits of avoiding casts for efficiency's sake. I guess the lesson here is
+//   to avoid casts and range checking by using getData(), checking getType(), and doing optimized data manipulation on your own.
 
 import imagej.MetaData;
 import imagej.data.Type;
