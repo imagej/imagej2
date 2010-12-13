@@ -2,6 +2,7 @@ package imagej.imglib.process;
 
 import imagej.Dimensions;
 import imagej.data.Type;
+import imagej.dataset.Dataset;
 import imagej.function.unary.CopyUnaryFunction;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.operation.BinaryAssignOperation;
@@ -19,6 +20,7 @@ import mpicbg.imglib.container.basictypecontainer.array.FloatArray;
 import mpicbg.imglib.container.basictypecontainer.array.IntArray;
 import mpicbg.imglib.container.basictypecontainer.array.LongArray;
 import mpicbg.imglib.container.basictypecontainer.array.ShortArray;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
@@ -136,11 +138,8 @@ public class ImageUtils
 		if (array instanceof byte[]) {
 			access = new ByteArray((byte[]) array);
 		}
-		else if (array instanceof char[]) {
-			access = new CharArray((char[]) array);
-		}
-		else if (array instanceof double[]) {
-			access = new DoubleArray((double[]) array);
+		else if (array instanceof short[]) {
+			access = new ShortArray((short[]) array);
 		}
 		else if (array instanceof int[]) {
 			access = new IntArray((int[]) array);
@@ -148,11 +147,14 @@ public class ImageUtils
 		else if (array instanceof float[]) {
 			access = new FloatArray((float[]) array);
 		}
-		else if (array instanceof short[]) {
-			access = new ShortArray((short[]) array);
-		}
 		else if (array instanceof long[]) {
 			access = new LongArray((long[]) array);
+		}
+		else if (array instanceof double[]) {
+			access = new DoubleArray((double[]) array);
+		}
+		else if (array instanceof char[]) {
+			access = new CharArray((char[]) array);
 		}
 		else
 			access = null;
@@ -236,6 +238,46 @@ public class ImageUtils
 		return getDimSize(img, dimType, -1);
 	}
 
+	/** creates an ImgLib Image whose type and shape match an input Dataset. It is called a shadow image because the data planes are
+	 * shared between the Dataset and the created ImgLib Image.
+	 */
+	public static Image<?> createShadowImage(Dataset dataset)
+	{
+		PlanarContainerFactory factory = new PlanarContainerFactory();
+		
+		int[] dimensions = dataset.getDimensions();
+
+		RealType<?> realType = TypeManager.getRealType(dataset.getType());
+		
+		Image<?> shadowImage = ImageUtils.createImage(realType, factory, dimensions);
+
+		int subDimensionLength = dimensions.length-2;
+		
+		int[] position = Index.create(subDimensionLength);
+		
+		int[] origin = Index.create(subDimensionLength);
+
+		int[] span = new int[subDimensionLength];
+		for (int i = 0; i < subDimensionLength; i++)
+			span[i] = dimensions[i];
+		
+		PlanarAccess<ArrayDataAccess<?>> access = ImageUtils.getPlanarAccess(shadowImage);
+
+		int planeNum = 0;
+		
+		while (Index.isValid(position, origin, span))
+		{
+			Dataset plane = dataset.getSubset(position);
+			Object array = plane.getData();
+			if (array == null)
+				throw new IllegalArgumentException("cannot create shadow image: dataset is not organized in a planar fashion");
+			access.setPlane(planeNum, ImageUtils.makeArray(array));
+			Index.increment(position, origin, span);
+		}
+		
+		return shadowImage;
+	}
+	
 	// ***************** private methods  **************************************************
 
 	/**
