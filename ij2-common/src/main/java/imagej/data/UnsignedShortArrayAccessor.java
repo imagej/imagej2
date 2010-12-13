@@ -25,7 +25,7 @@ public class UnsignedShortArrayAccessor implements DataAccessor
 	{
 		if (value < 0) value = 0;
 		if (value > 0xffff) value = 0xffff;
-		this.shorts[(int)index] = (short) ((int) value & 0xffff);
+		this.shorts[(int)index] = (short) ((int)value & 0xffff);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class UnsignedShortArrayAccessor implements DataAccessor
 	{
 		if (value < 0) value = 0;
 		if (value > 0xffff) value = 0xffff;
-		this.shorts[(int)index] = (short) ((int) value & 0xffff);
+		this.shorts[(int)index] = (short) ((int)value & 0xffff);
 	}
 
 }

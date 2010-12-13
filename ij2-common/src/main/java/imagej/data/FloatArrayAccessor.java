@@ -18,6 +18,8 @@ public class FloatArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
+		if (value < -Float.MAX_VALUE) value = -Float.MAX_VALUE;
+		if (value > Float.MAX_VALUE) value = Float.MAX_VALUE;
 		this.floats[(int)index] = (float) value;
 	}
 
@@ -30,6 +32,8 @@ public class FloatArrayAccessor implements DataAccessor
 	@Override
 	public void setIntegral(long index, long value)
 	{
+		if (value < -Float.MAX_VALUE) value = (long)-Float.MAX_VALUE;
+		if (value > Float.MAX_VALUE) value = (long)Float.MAX_VALUE;
 		this.floats[(int)index] = (float) value;
 	}
 

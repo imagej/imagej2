@@ -18,6 +18,8 @@ public class LongArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
+		if (value < Long.MIN_VALUE) value = Long.MIN_VALUE;
+		if (value > Long.MAX_VALUE) value = Long.MAX_VALUE;
 		this.longs[(int)index] = (long)value;
 	}
 
