@@ -1,5 +1,7 @@
 package imagej.data;
 
+// TODO - check that the order we access the bits matches the order imglib accesses them
+
 public class BitArrayAccessor implements DataAccessor
 {
 	private int[] ints;
