@@ -7,11 +7,11 @@ import java.awt.image.*;
 
 import java.util.Hashtable;
 
-import javax.media.jai.RasterFactory;
+//import javax.media.jai.RasterFactory;
+//import com.sun.media.jai.codec.ImageCodec;
 
 import javax.swing.*;
 
-import com.sun.media.jai.codec.ImageCodec;
 
 public class ImageFactoryGrayScale {
     
@@ -71,36 +71,36 @@ public class ImageFactoryGrayScale {
     return new BufferedImage(ccm, wr, true, ht);
     }
      */    // create from float[]
-    public static BufferedImage createImage(int imageWidth, int imageHeight, int imageDepth,
-        float[] pixels) {
-        int w = imageWidth;
-        int h = imageHeight;
-        int nbBands = 1;
-        int[] rgbOffset = new int[nbBands];
-        SampleModel sampleModel =
-            RasterFactory.createPixelInterleavedSampleModel(DataBuffer.TYPE_FLOAT, w, h, nbBands,
-            nbBands * w, rgbOffset);
-        ColorModel colorModel = ImageCodec.createComponentColorModel(sampleModel);
-        DataBufferFloat dataBuffer = new DataBufferFloat(pixels, pixels.length);
-        WritableRaster raster =
-            RasterFactory.createWritableRaster(sampleModel, dataBuffer, new Point(0, 0));
-        return new BufferedImage(colorModel, raster, false, null);
-    }
+//    public static BufferedImage createImage(int imageWidth, int imageHeight, int imageDepth,
+//        float[] pixels) {
+//        int w = imageWidth;
+//        int h = imageHeight;
+//        int nbBands = 1;
+//        int[] rgbOffset = new int[nbBands];
+//        SampleModel sampleModel =
+//            RasterFactory.createPixelInterleavedSampleModel(DataBuffer.TYPE_FLOAT, w, h, nbBands,
+//            nbBands * w, rgbOffset);
+//        ColorModel colorModel = ImageCodec.createComponentColorModel(sampleModel);
+//        DataBufferFloat dataBuffer = new DataBufferFloat(pixels, pixels.length);
+//        WritableRaster raster =
+//            RasterFactory.createWritableRaster(sampleModel, dataBuffer, new Point(0, 0));
+//        return new BufferedImage(colorModel, raster, false, null);
+//    }
 
     //Test -------------------------------------------------------------------
-    public static BufferedImage testImageFloat() {
-        int wid = 256;
-        int ht = 256;
-        float max = 1.0f;
-        int len = wid * ht;
-        double scale = max / (float) len;
-        float[] data = new float[wid * ht];
-        for (int i = 0; i < len; i++) {
-            data[i] = (float) ((float) i * scale);
-        }
-        BufferedImage bi = createImage(wid, ht, 32, data);
-        return bi;
-    }
+//    public static BufferedImage testImageFloat() {
+//        int wid = 256;
+//        int ht = 256;
+//        float max = 1.0f;
+//        int len = wid * ht;
+//        double scale = max / (float) len;
+//        float[] data = new float[wid * ht];
+//        for (int i = 0; i < len; i++) {
+//            data[i] = (float) ((float) i * scale);
+//        }
+//        BufferedImage bi = createImage(wid, ht, 32, data);
+//        return bi;
+//    }
 
     public static BufferedImage testImageByte() {
         return testImageByte(256, 256);
@@ -156,8 +156,8 @@ public class ImageFactoryGrayScale {
         ImageFactoryGrayScale gs = new ImageFactoryGrayScale();
         BufferedImage biByte = testImageByte();
         displayImage(biByte, biByte.getWidth(), biByte.getHeight(), "Byte");
-        BufferedImage biFloat = testImageFloat();
-        displayImage(biFloat, biFloat.getWidth(), biFloat.getHeight(), "Float");
+//        BufferedImage biFloat = testImageFloat();
+//        displayImage(biFloat, biFloat.getWidth(), biFloat.getHeight(), "Float");
     }
 
     public static void displayImage(BufferedImage img, int wid, int ht, String title) {
