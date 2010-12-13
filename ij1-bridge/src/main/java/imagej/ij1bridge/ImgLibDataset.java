@@ -202,6 +202,34 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	}
 
 	@Override
+	public long getLong(int[] position)
+	{
+		return this.dataset.getLong(position);
+	}
+
+	@Override
+	public void setLong(int[] position, long value)
+	{
+		this.dataset.setLong(position, value);
+	}
+
+	@Override
+	public long getLong(int[] index, int axis)
+	{
+		RecursiveDataset ds = (RecursiveDataset) this.dataset;
+		
+		return ds.getLong(index, axis);
+	}
+
+	@Override
+	public void setLong(int[] index, int axis, long value)
+	{
+		RecursiveDataset ds = (RecursiveDataset) this.dataset;
+		
+		ds.setLong(index, axis, value);
+	}
+
+	@Override
 	public Dataset getSubset(int[] partialIndex, int axis)
 	{
 		RecursiveDataset ds = (RecursiveDataset) this.dataset;
