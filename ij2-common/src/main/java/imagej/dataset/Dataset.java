@@ -56,6 +56,12 @@ public interface Dataset
 	
 	/** set the data at the specified position to a double value */
 	void setDouble(int[] position, double value);
+
+	/** get the data at the specified position as a long */
+	long getLong(int[] position);
+	
+	/** set the data at the specified position to a long value */
+	void setLong(int[] position, long value);
 }
 
 /* ORIGINAL PARTIAL HACK - keep for a while to glean any necessary info

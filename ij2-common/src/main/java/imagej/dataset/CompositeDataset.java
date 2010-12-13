@@ -77,6 +77,20 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	}
 
 	@Override
+	public long getLong(int[] index, int axis)
+	{
+		RecursiveDataset subset = (RecursiveDataset) getSubset(index[axis]); 
+		return subset.getLong(index, axis-1);
+	}
+
+	@Override
+	public void setLong(int[] index, int axis, long value)
+	{
+		RecursiveDataset subset = (RecursiveDataset) getSubset(index[axis]); 
+		subset.setLong(index, axis-1, value);
+	}
+
+	@Override
 	public boolean isComposite()
 	{
 		return true;
@@ -163,10 +177,6 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public double getDouble(int[] position)
 	{
-		// WRONG????
-		//if (this.parent != null)
-		//	throw new IllegalArgumentException();
-
 		int outermostAxis = this.dimensions.length - 1;
 		
 		return getDouble(position, outermostAxis);
@@ -175,13 +185,25 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public void setDouble(int[] position, double value)
 	{
-		// WRONG????
-		//if (this.parent != null)
-		//	throw new IllegalArgumentException();
-		
 		int outermostAxis = this.dimensions.length - 1;
 
 		setDouble(position, outermostAxis, value);
+	}
+
+	@Override
+	public long getLong(int[] position)
+	{
+		int outermostAxis = this.dimensions.length - 1;
+		
+		return getLong(position, outermostAxis);
+	}
+
+	@Override
+	public void setLong(int[] position, long value)
+	{
+		int outermostAxis = this.dimensions.length - 1;
+
+		setLong(position, outermostAxis, value);
 	}
 
 	@Override
