@@ -18,6 +18,8 @@ public class IntArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
+		if (value < Integer.MIN_VALUE) value = Integer.MIN_VALUE;
+		if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
 		this.ints[(int)index] = (int)value;
 	}
 
@@ -30,6 +32,8 @@ public class IntArrayAccessor implements DataAccessor
 	@Override
 	public void setIntegral(long index, long value)
 	{
+		if (value < Integer.MIN_VALUE) value = Integer.MIN_VALUE;
+		if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
 		this.ints[(int)index] = (int)value;
 	}
 

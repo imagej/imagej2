@@ -32,20 +32,20 @@ public class UnsignedByteArrayAccessor implements DataAccessor
 	
 	public void setReal(long index, double value)
 	{
+		if (value < 0) value = 0;
+		if (value > 255) value = 255;
+
 		int byteVal = (int) value;
-		
-		if (byteVal < 0) byteVal = 0;
-		if (byteVal > 255) byteVal = 255;
 		
 		this.bytes[(int)index] = (byte) (byteVal & 0xff);
 	}
 	
 	public void setIntegral(long index, long value)
 	{
+		if (value < 0) value = 0;
+		if (value > 255) value = 255;
+
 		int byteVal = (int) value;
-		
-		if (byteVal < 0) byteVal = 0;
-		if (byteVal > 255) byteVal = 255;
 		
 		this.bytes[(int)index] = (byte) (byteVal & 0xff);
 	}
