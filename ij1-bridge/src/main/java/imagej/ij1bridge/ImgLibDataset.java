@@ -2,7 +2,6 @@ package imagej.ij1bridge;
 
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
-import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.MetaData;
@@ -27,15 +26,12 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	private Image<?> shadowImage;
 	private Type ijType;
 	private RealType<?> realType;
-	private PlanarContainerFactory planarFactory;
 
 	//************ constructor ********************************************************
 		
 	public ImgLibDataset(Image<T> image)
 	{
 		this.shadowImage = image;
-		
-		this.planarFactory = new PlanarContainerFactory();
 		
 		this.realType = ImageUtils.getType(image);
 
