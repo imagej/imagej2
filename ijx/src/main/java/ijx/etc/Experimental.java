@@ -45,7 +45,8 @@ public class Experimental<T extends RealType<T>> {
                 new UnsignedByteType(),
                 new PlanarContainerFactory(), dimensions);
         // open test image
-        String filename = "Cells.tif";
+        String filename = "testpattern.tif";
+
         final ImageOpener imageOpener = new ImageOpener();
         Image<T> inImg = imageOpener.openImage(filename);
         //
@@ -87,6 +88,7 @@ public class Experimental<T extends RealType<T>> {
 //
 //        return compatibleImage;
 //    }
+
     private static final GraphicsConfiguration CONFIGURATION =
             GraphicsEnvironment.getLocalGraphicsEnvironment().
             getDefaultScreenDevice().getDefaultConfiguration();

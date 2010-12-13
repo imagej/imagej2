@@ -63,6 +63,7 @@ import java.net.*;
 
 /** This class consists of static utility methods. */
 public class IJ {
+
     public static final String URL = "http://rsb.info.nih.gov/ij";
     public static final int ALL_KEYS = -1;
     public static final char micronSymbol = '\u00B5';
@@ -245,7 +246,7 @@ public class IJ {
         }
         // Load using custom classloader if this is a user
         // plugin and we are not running as an applet
-        if (!className.startsWith("ijx.")) {
+        if (!className.startsWith("ijx.") && !className.startsWith("imagej.")) {
             return runUserPlugIn(commandName, className, arg, false);
         }
         Object thePlugIn = null;
@@ -269,7 +270,9 @@ public class IJ {
     public static Object runPlugInUnchecked(String commandName, String className, String arg) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class c = Class.forName(className);
         Object thePlugIn = c.newInstance();
-        if (thePlugIn instanceof PlugIn) {
+        if (thePlugIn instanceof ij.plugin.PlugIn) {
+            ((ij.plugin.PlugIn) thePlugIn).run(arg);
+        } else if (thePlugIn instanceof PlugIn) {
             ((PlugIn) thePlugIn).run(arg);
         } else {
             new PlugInFilterRunner(thePlugIn, commandName, arg);
@@ -2088,6 +2091,7 @@ public class IJ {
     }
 
     public interface ExceptionHandler {
+
         public void handle(Throwable e);
     }
     static ExceptionHandler exceptionHandler;
