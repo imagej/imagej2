@@ -12,9 +12,9 @@ public class BitArrayAccessor implements DataAccessor
 	@Override
 	public double getReal(long index)
 	{
-		int intNumber = (int) index / 32;
+		int intNumber = (int) (index / 32);
 		
-		int bitNumber = (int) index % 32;
+		int bitNumber = (int) (index % 32);
 
 		return getBit(intNumber, bitNumber);
 	}
@@ -24,7 +24,12 @@ public class BitArrayAccessor implements DataAccessor
 	{
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		placeValue((int)index, (int)value);
+
+		int intNumber = (int) (index / 32);
+		
+		int bitNumber = (int) (index % 32);
+
+		setBit(intNumber, bitNumber, (int)value);
 	}
 
 	@Override
@@ -42,18 +47,14 @@ public class BitArrayAccessor implements DataAccessor
 	{
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		placeValue((int)index, (int)value);
-	}
 
-	private void placeValue(int index, int value)
-	{
-		int intNumber = index / 32;
+		int intNumber = (int) (index / 32);
 		
-		int bitNumber = index % 32;
+		int bitNumber = (int) (index % 32);
 
-		setBit(intNumber, bitNumber, value);
+		setBit(intNumber, bitNumber, (int)value);
 	}
-	
+
 	private int getBit(int intNumber, int bitNumber)
 	{
 		int currValue = this.ints[intNumber];
