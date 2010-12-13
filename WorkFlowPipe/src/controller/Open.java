@@ -28,7 +28,7 @@ public class Open {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContextHandler.setContextPath("/servlets");
         server.setHandler( servletContextHandler );
-        servletContextHandler.addServlet( new ServletHolder( new ServletProvider() ),"/pipe/load" );
+        servletContextHandler.addServlet( new ServletHolder( new ServletProvider() ),"/pipe/load/" );
        
         //WebAppContext webapp = new WebAppContext();
         //webapp.setContextPath("/web");
@@ -41,9 +41,9 @@ public class Open {
         
         server.setHandler( servletContextHandler );
  
-        //server.start();
-        //OpenBrowser.openURL( referenceURL.toExternalForm() );
-        //server.join();
+        server.start();
+        OpenBrowser.openURL( referenceURL.toExternalForm() );
+        server.join();
         
 		
 		

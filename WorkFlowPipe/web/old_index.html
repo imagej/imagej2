@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Editor</title>
+
+        <script type='text/javascript' src='yahoo-dom-event.js'></script>
+        <script type='text/javascript' src='dragdrop-min.js'></script>
+        <script type='text/javascript' src='connection-min.js'></script>
+        <script type='text/javascript' src='animation-min.js'></script>
+        <script type='text/javascript' src='calendar-min.js'></script>
+        <script type='text/javascript' src='logger-min.js'></script>
+        <link rel="stylesheet" type="text/css" href="reset-fonts-grids.css" />
+        <link rel="stylesheet" type="text/css" href="calendar.css" />
+        <link rel="stylesheet" type="text/css" href="logger.css" />
+        <script>
+            $namespace = YAHOO.namespace;
+            $namespace("maxwell");
+            maxwell = YAHOO.maxwell;
+            $extend = YAHOO.extend;
+        </script>
+        <script type='text/javascript' src='maxwell_c.js'></script>
+        <link rel="stylesheet" type="text/css" href="wiring.css" />
+        <link rel="stylesheet" type="text/css" href="library.css" />
+
+
+        <script>
+            var idforce = window.location.hash.substring(1);
+            if (idforce && idforce.length > 0) {
+                if (window.location.search.slice(1).indexOf("_v2=") != -1) {
+                    window.location.href = "/pipes/pipe.edit&_id=" + idforce;
+                } else {
+                    window.location.href = "/pipes/pipe.edit?_id=" + idforce;
+                }
+            }
+
+            if (maxwell.Util.ua.isIE)
+                document.execCommand("BackgroundImageCache", false, true); //IE6 flicker bug fix
+
+            var editor;
+            var pipeseditor;
+            var tabs;
+            var toolbar;
+            var pipeID = 'xjMFQsOG3BGSovq98SvLAg';
+            var crumb = 'RqBrtsZBJKP';
+            // profileurl is used in PipesEditorTabs
+            var profileurl = '/pipes/person.info?guid=Y77NJI2YPU6WQPS77DCUBQZKOQ';
+            var upgradelink = '/pipes/pipe.upgrade?_crumb=RqBrtsZBJKP&_id=xjMFQsOG3BGSovq98SvLAg';
+            var downgradelink = '/pipes/pipe.downgrade?_crumb=RqBrtsZBJKP&_id=xjMFQsOG3BGSovq98SvLAg';
+            var runurl = '/pipes/pipe.run?_id=xjMFQsOG3BGSovq98SvLAg';
+            var newurl = '/pipes/pipe.edit';
+            var is_new_editor = 0;
+            var isV2 = '';
+
+            function badbrowser(ev) {
+                var agree = confirm("Your browser is not supported by the Pipes' editor.\r\n\r\nWe recommend using Firefox, IE7 or Safari.\r\n\r\nPress 'OK' to load the editor anyway, or 'Cancel' to go back (recommended)");
+                if (agree) {
+                    YAHOO.util.Event.on(window, "resize", resize);
+                    YAHOO.util.Event.addListener(window, "keyup", quickkey);
+                    YAHOO.util.Event.addListener(document, "keyup", quickkey);
+                    init(ev);
+                } else {
+                    if (is_new_editor) {
+                        window.location = "/pipes/";
+                    } else {
+                        window.location = "/pipes/pipe.info?_id=xjMFQsOG3BGSovq98SvLAg";
+                    }
+                }
+            }
+
+            function init(ev) {
+
+                document.title = "Pipes: edit";
+                tabs = new maxwell.PipesEditorTabs();
+                toolbar = new maxwell.Toolbar();
+                var findrss = new maxwell.SearchDropDown();
+                tabs.node.appendChild(findrss.node);
+
+                $("header").appendChild(tabs.node);
+                $("header").appendChild(toolbar.node);
+
+                YAHOO.util.Event.onAvailable($id(tabs.node), function() {
+                    YAHOO.util.Event.onAvailable($id(toolbar.node), function() {
+                        init2();
+                    });
+                });
+            }
+
+            function init2() {
+                pipeseditor = new maxwell.PipesEditor(tabs, toolbar);
+                resize();
+                YAHOO.util.Event.addListener(pipeseditor.node, "keyup", quickkey);
+                YAHOO.util.Event
+                .addListener(pipeseditor.editorsnode, "keyup", quickkey);
+
+                pipeseditor.onneweditor.subscribe(function(type, args, me) {
+                    var editor = args[0];
+                    resize();
+                });
+                editor = pipeseditor.CreateEditor();
+               // editor.load('xjMFQsOG3BGSovq98SvLAg');
+                //opendesc('xjMFQsOG3BGSovq98SvLAg');
+            }
+
+            function opendesc(id)
+            {
+                ajaxCall("module/featured",
+                {
+                    "id" : id,
+                    "_out" : "json"
+                }, 
+                function(data)
+                {
+                    new maxwell.Dialog.Draggable(
+                    {
+                        content : 'About this Pipe',
+                        body : "<div class='module_featured'>" + data.description + "</div>",
+                        position : 'nw'
+                    }, 
+                    editor.layout.node);
+
+
+                }, function(error) {
+                    //no featured text or a system barf
+                });
+
+            }
+
+            function dump() {
+                var snapshot = {
+                    pipe : pipeseditor.CurrentEditor().pipe,
+                    data : pipeseditor.CurrentEditor().freeze()
+                };
+                DumperPopup(snapshot);
+            }
+
+            function resize() {
+                var height = YAHOO.util.Dom.getViewportHeight();
+                height -= $("header").offsetHeight;
+                if (!pipeseditor)
+                    return;
+                pipeseditor.node.style.height = height + "px";
+                pipeseditor.splitter.resizeAS();
+                var editor = pipeseditor.CurrentEditor();
+                if (editor)
+                    editor.splitter.resizeAS();
+            }
+
+            function newpipe() {
+                editor = new maxwell.Editor();
+            }
+
+            function quickkey(ev) {
+                var target = YAHOO.util.Event.getTarget(ev);
+                if (target.tagName == "INPUT" || target.tagName == "TEXTAREA"
+                    || target.tagName == "SELECT") {
+                    return;
+                }
+                if (ev.altKey || ev.ctrlKey || ev.shiftKey || ev.metaKey)
+                    return;
+                var dontStop = false;
+                switch (ev.keyCode) {
+                    //case 84: break;
+                    case 83: {
+                            pipeseditor.toolbar.save();
+                            break;
+                        }
+                    case 76: {
+                            pipeseditor.toolbar.layout();
+                            break;
+                        }
+                    case 69: {
+                            pipeseditor.toolbar.expand();
+                            break;
+                        }
+                    case 67: {
+                            pipeseditor.toolbar.collapse();
+                            break;
+                        }
+                    default: {
+                            dontStop = true;
+                            break
+                        }
+                }
+                if (!dontStop) {
+                    YAHOO.util.Event.stopEvent(ev);
+                }
+            }
+
+            YAHOO.util.Event.on(window, "load", init);
+            YAHOO.util.Event.on(window, "resize", resize);
+            YAHOO.util.Event.addListener(window, "keyup", quickkey);
+            YAHOO.util.Event.addListener(document, "keyup", quickkey);
+        </script>
+
+    </head>
+    <body id="body" style="overflow: hidden" SCROLL="no">
+
+        <div class='menubar' id="header"></div>
+    </body>
+</html>
