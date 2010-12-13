@@ -98,6 +98,9 @@ public class BitType implements Type
 	{
 		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
 		
+		if (numStorageUnits > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("more storage units requested ("+numStorageUnits+") than Java can allocate ("+Integer.MAX_VALUE+")");
+		
 		return new int[(int)numStorageUnits];
 	}
 

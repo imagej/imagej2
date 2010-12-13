@@ -98,9 +98,12 @@ public class Unsigned12BitType implements Type
 	@Override
 	public Object allocateStorageArray(int numPixels)
 	{
-		long numInts = calcNumStorageUnitsFromPixelCount(numPixels);
+		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
 		
-		return new int[(int)numInts];
+		if (numStorageUnits > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("more storage units requested ("+numStorageUnits+") than Java can allocate ("+Integer.MAX_VALUE+")");
+		
+		return new int[(int)numStorageUnits];
 	}
 
 }
