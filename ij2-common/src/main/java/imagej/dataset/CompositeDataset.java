@@ -210,7 +210,7 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	public Dataset getSubset(int[] partialIndex, int axis)
 	{
 		if (axis < 0)
-			throw new IllegalArgumentException("axis index ("+axis+") less than 0");
+			throw new IllegalArgumentException("index length is longer than dataset dimension length");
 
 		RecursiveDataset nextSubset = (RecursiveDataset)getSubset(partialIndex[axis]);
 		
