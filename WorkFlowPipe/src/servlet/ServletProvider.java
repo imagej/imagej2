@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +16,7 @@ public class ServletProvider extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1458365345236667188L;
-	private JSONObject jsonObject = new JSONObject();
+	private JSONObject json = new JSONObject();
 	
 	public ServletProvider() {
 		JSONArray jsonArrayModule = new JSONArray();
@@ -27,60 +26,55 @@ public class ServletProvider extends HttpServlet {
 		JSONObject jsonObjectTerminals1 = new JSONObject();
 		jsonObjectTerminals1.put("input","number");
 		jsonObjectTerminals1.put("name","_INPUT");
-
-		//add first to terminals
 		jsonArrayTerminals.put( 0, jsonObjectTerminals1 );
 		
 		//create a map for the second terminals item
-		JSONObject jsonObjectName = new JSONObject();
-		jsonObjectName.put("name","_OUTPUT");
-		jsonObjectName.put("output","number");
-		jsonArrayTerminals.put( 1, jsonObjectName);
+		JSONObject jsonObjectTerminals2 = new JSONObject();
+		jsonObjectTerminals2.put("name","_OUTPUT");
+		jsonObjectTerminals2.put("output","number");
+		jsonArrayTerminals.put( 1, jsonObjectTerminals2);
 		
-		
-		jsonObjectName = new JSONObject();
-		jsonObjectName.put("terminals",jsonArrayTerminals);
-		
-		//add terminals to module
-		jsonArrayModule.put( 1, jsonObjectName );
+		//add terminals array to module
+		JSONObject jsonObjectNameTerminals = new JSONObject();
+		jsonObjectNameTerminals.put("terminals", jsonArrayTerminals);
+		jsonArrayModule.put( jsonObjectNameTerminals );
 		
 		//add ui key value to the object
 		JSONObject jsonObjectUI = new JSONObject();
 		String uiString = "class=";
 		jsonObjectUI.put("ui", uiString);
-		jsonArrayModule.put( 2, jsonObjectUI );
+		jsonArrayModule.put( jsonObjectUI );
 		
 		//add name to module
+		JSONObject jsonObjectName = new JSONObject();
 		jsonObjectName.put("name","Simple Math");
-		jsonArrayModule.put( 3, jsonObjectName );
+		jsonArrayModule.put( jsonObjectName );
 		
 		//add type to module
 		JSONObject jsonObjectType = new JSONObject();
 		jsonObjectType.put("type","simplemath");
-		jsonArrayModule.put( 4, jsonObjectType );
+		jsonArrayModule.put( jsonObjectType );
 		
 		//add description to module
 		JSONObject jsonObjectDescription = new JSONObject();
 		jsonObjectDescription.put("description","Simple Math");
-		jsonArrayModule.put( 5, jsonObjectDescription );
+		jsonArrayModule.put( jsonObjectDescription );
 		
 		//add tags to module
 		JSONArray jsonArrayTags = new JSONArray();
 		jsonArrayTags.put("system:number");
 		JSONObject jsonObjectTags = new JSONObject();
 		jsonObjectTags.put("tags", jsonArrayTags);
-		jsonArrayModule.put(6, jsonObjectTags);
+		jsonArrayModule.put( jsonObjectTags );
 		
-		jsonObject = jsonObject.put("module", jsonArrayModule );
-		jsonObject.put("ok", new Integer(1) );
+		//add module to JSONObject 
+		json.put("module", jsonArrayModule );
 		
-		System.out.println( jsonObject.toString() );
+		//Add get 1 to array
+		json.put("ok", new Integer(1) );
+		
+		System.out.println( json.toString() );
 
-	}
-
-	public ServletProvider( JSONObject jsonObject ) 
-	{
-		this.jsonObject = jsonObject;
 	}
 
 	protected void doGet( HttpServletRequest request,
@@ -88,7 +82,7 @@ public class ServletProvider extends HttpServlet {
 			{
 		response.setContentType( "text/html" );
 		response.setStatus( HttpServletResponse.SC_OK );
-		response.getWriter().println( jsonObject.toString() );
+		response.getWriter().println( json );
 		//response.getWriter().println( "session=" + request.getSession(true).getId());
 	}
 	
