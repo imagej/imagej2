@@ -161,7 +161,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	public double getDouble(int[] index, int axis)
 	{
 		if (axis != 1)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("index length does not match dataset dimension length");
 		
 		long x = index[0];
 		long y = index[1];
@@ -175,7 +175,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	public void setDouble(int[] index, int axis, double value)
 	{
 		if (axis != 1)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("index length does not match dataset dimension length");
 
 		long x = index[0];
 		long y = index[1];
@@ -201,7 +201,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	public long getLong(int[] index, int axis)
 	{
 		if (axis != 1)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("index length does not match dataset dimension length");
 		
 		long x = index[0];
 		long y = index[1];
@@ -215,7 +215,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	public void setLong(int[] index, int axis, long value)
 	{
 		if (axis != 1)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("index length does not match dataset dimension length");
 
 		long x = index[0];
 		long y = index[1];
