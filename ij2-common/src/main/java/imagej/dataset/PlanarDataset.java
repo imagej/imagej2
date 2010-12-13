@@ -163,10 +163,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException();
 		
-		int x = index[0];
-		int y = index[1];
+		long x = index[0];
+		long y = index[1];
 		
-		int sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = y*this.dimensions[0] + x;
 		
 		return this.dataAccessor.getReal(sampleNum);
 	}
@@ -177,10 +177,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException();
 
-		int x = index[0];
-		int y = index[1];
+		long x = index[0];
+		long y = index[1];
 		
-		int sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = y*this.dimensions[0] + x;
 		
 		this.dataAccessor.setReal(sampleNum, value);
 	}
