@@ -186,6 +186,46 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	}
 	
 	@Override
+	public long getLong(int[] position)
+	{
+		return getLong(position, 1);
+	}
+
+	@Override
+	public void setLong(int[] position, long value)
+	{
+		setLong(position, 1, value);
+	}
+
+	@Override
+	public long getLong(int[] index, int axis)
+	{
+		if (axis != 1)
+			throw new IllegalArgumentException();
+		
+		long x = index[0];
+		long y = index[1];
+		
+		long sampleNum = y*this.dimensions[0] + x;
+		
+		return this.dataAccessor.getIntegral(sampleNum);
+	}
+
+	@Override
+	public void setLong(int[] index, int axis, long value)
+	{
+		if (axis != 1)
+			throw new IllegalArgumentException();
+
+		long x = index[0];
+		long y = index[1];
+		
+		long sampleNum = y*this.dimensions[0] + x;
+		
+		this.dataAccessor.setIntegral(sampleNum, value);
+	}
+	
+	@Override
 	public Dataset getParent()
 	{
 		return this.parent;
