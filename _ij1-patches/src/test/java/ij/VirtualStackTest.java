@@ -144,17 +144,6 @@ public class VirtualStackTest {
 	}
 
 	@Test
-	public void testAddSliceStringBooleanObject() {
-		// add slices via this method should fail
-		vs = new VirtualStack(3,4,null,"/fred/jones/blooka");
-		assertNotNull(vs);
-		assertEquals(0,vs.getSize());
-		vs.addSlice("zorp",true,new byte[12]);
-		vs.addSlice("porp",false,new byte[12]);
-		assertEquals(0,vs.getSize());
-	}
-
-	@Test
 	public void testDeleteSlice() {
 
 		// try on empty VirtualStack
