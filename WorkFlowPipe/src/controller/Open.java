@@ -8,7 +8,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import servlet.AjaxModuleListServletProvider;
 
-
 public class Open {
 
 	/**
@@ -17,16 +16,16 @@ public class Open {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		URL referenceURL = Open.class.getClassLoader().getResource("editpipe.html");
+		URL referenceURL = Open.class.getClassLoader().getResource("old_index.html");
 		//System.out.println( referenceURL.toString() );
 		
 		// Create a local jetty server		
-		Server server = new Server( 1999 );
+		Server server = new Server( 80 );
 		 
-        ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.setContextPath("/pipes");
+        ServletContextHandler servletContextHandler = new ServletContextHandler( ServletContextHandler.SESSIONS );
+        servletContextHandler.setContextPath( "/pipes" );
         server.setHandler( servletContextHandler );
-        servletContextHandler.addServlet( new ServletHolder( new AjaxModuleListServletProvider() ),"/ajax.module.list" );
+        servletContextHandler.addServlet( new ServletHolder( new AjaxModuleListServletProvider() ), "/ajax.module.list" );
        
         //WebAppContext webapp = new WebAppContext();
         //webapp.setContextPath("/web");
