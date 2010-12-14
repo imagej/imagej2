@@ -100,12 +100,12 @@
                 });
                 editor = pipeseditor.CreateEditor();
                // editor.load('xjMFQsOG3BGSovq98SvLAg');
-                //opendesc('xjMFQsOG3BGSovq98SvLAg');
+                opendesc('xjMFQsOG3BGSovq98SvLAg');
             }
 
             function opendesc(id)
             {
-                ajaxCall("module/featured",
+                ajaxCall("module/list",
                 {
                     "id" : id,
                     "_out" : "json"
@@ -121,9 +121,18 @@
                     editor.layout.node);
 
 
-                }, function(error) {
-                    //no featured text or a system barf
-                });
+                }, function(data)
+                {
+                    new maxwell.Dialog.Draggable(
+                    {
+                        content : 'Error',
+                        body : "<div class='module_featured'>data</div>",
+                        position : 'nw'
+                    }, 
+                    editor.layout.node);
+
+
+                } );
 
             }
 

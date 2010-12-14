@@ -20,5 +20,23 @@ public class Connection extends EntityBase
 		this.fromIdentifier = fromIdentifier; 
 		this.toIdentifier = toIdentifier;
 	}
+
+	public UUID getFromIdentifier() {
+		return fromIdentifier;
+	}
+
+	public void setFromIdentifier(UUID fromIdentifier) {
+		this.fromIdentifier = fromIdentifier;
+	}
+
+	public UUID getToIdentifier() {
+		return toIdentifier;
+	}
+
+	public void setToIdentifier(UUID toIdentifier) {
+		this.toIdentifier = toIdentifier;
+	}
+	
+	
 	
 }

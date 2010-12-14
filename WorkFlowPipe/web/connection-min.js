@@ -312,7 +312,7 @@ this._has_http_headers=false;
 }
 },
 resetDefaultHeaders:function(){
-    delete this._default_headers
+    delete this._default_headers;
     this._default_headers={};
 
     this._has_default_headers=false;

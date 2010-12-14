@@ -16,6 +16,10 @@ public class Process extends EntityBase {
 	private URI processReferenceLocation;
 	private ArrayList< Objective > objectiveArrayList;
 	
+	public ArrayList<Objective> getObjectiveArrayList() {
+		return objectiveArrayList;
+	}
+
 	public Process( UUID identifier, URI processReferenceLocation, 
 			HashMap< String, Object > propertyHashMap, ArrayList< Objective > objectiveArrayList )
 	{

@@ -1,7 +1,6 @@
 package wfentity;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.UUID;
 
