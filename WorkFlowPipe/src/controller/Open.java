@@ -2,14 +2,12 @@ package controller;
 
 import java.net.URL;
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.WebAppContext;
 
-import servlet.ServletProvider;
+import servlet.AjaxModuleListServletProvider;
+
 
 public class Open {
 
@@ -19,16 +17,16 @@ public class Open {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		URL referenceURL = Open.class.getClassLoader().getResource("index.html");
+		URL referenceURL = Open.class.getClassLoader().getResource("editpipe.html");
 		//System.out.println( referenceURL.toString() );
 		
 		// Create a local jetty server		
 		Server server = new Server( 1999 );
 		 
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.setContextPath("/servlets");
+        servletContextHandler.setContextPath("/pipes");
         server.setHandler( servletContextHandler );
-        servletContextHandler.addServlet( new ServletHolder( new ServletProvider() ),"/pipe/load/" );
+        servletContextHandler.addServlet( new ServletHolder( new AjaxModuleListServletProvider() ),"/ajax.module.list" );
        
         //WebAppContext webapp = new WebAppContext();
         //webapp.setContextPath("/web");
@@ -44,10 +42,5 @@ public class Open {
         server.start();
         OpenBrowser.openURL( referenceURL.toExternalForm() );
         server.join();
-        
-		
-		
-
 	}
-
 }
