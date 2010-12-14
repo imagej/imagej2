@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ServletProvider extends HttpServlet {
+public class AjaxModuleListServletProvider extends HttpServlet {
 
 	/**
 	 * 
@@ -18,7 +18,7 @@ public class ServletProvider extends HttpServlet {
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
 	
-	public ServletProvider() {
+	public AjaxModuleListServletProvider() {
 		JSONArray jsonArrayModule = new JSONArray();
 		JSONArray jsonArrayTerminals = new JSONArray();
 		
@@ -73,7 +73,7 @@ public class ServletProvider extends HttpServlet {
 		//Add get 1 to array
 		json.put("ok", new Integer(1) );
 		
-		System.out.println( json.toString() );
+		//System.out.println( json.toString() );
 
 	}
 
