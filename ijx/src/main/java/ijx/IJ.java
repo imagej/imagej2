@@ -1,65 +1,53 @@
 package ijx;
 
-import ijx.plugin.filter.Analyzer;
-import ijx.plugin.Macro_Runner;
-import ijx.util.Memory;
-import ijx.plugin.api.PlugIn;
-import ijx.process.ImageProcessor;
-import ijx.process.Blitter;
-import ijx.process.ColorProcessor;
-import ijx.plugin.api.PlugInFilterRunner;
-import ijx.plugin.api.PlugInFilter;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.text.*;
+import java.util.*;
+
+import ijx.app.IjxApplication;
+import ijx.app.KeyboardHandler;
+import ijx.event.EventBus;
+import ijx.event.StatusMessage;
+import ijx.gui.IjxImageCanvas;
+import ijx.gui.IjxImageWindow;
+import ijx.gui.IjxProgressBar;
+import ijx.gui.IjxToolbar;
+import ijx.gui.IjxWindow;
 import ijx.gui.NewImage;
 import ijx.gui.Wand;
-import ijx.gui.IjxToolbar;
-import ijx.gui.dialog.YesNoCancelDialog;
-import ijx.gui.dialog.MessageDialog;
-import ijx.gui.dialog.HTMLDialog;
 import ijx.gui.dialog.GenericDialog;
-import ijx.roi.Line;
-import ijx.roi.Roi;
-import ijx.roi.PointRoi;
-import ijx.roi.OvalRoi;
-import ijx.roi.PolygonRoi;
-import ijx.io.OpenDialog;
-import ijx.io.Opener;
+import ijx.gui.dialog.HTMLDialog;
+import ijx.gui.dialog.MessageDialog;
+import ijx.gui.dialog.YesNoCancelDialog;
 import ijx.io.DirectoryChooser;
 import ijx.io.FileInfo;
-import ijx.io.SaveDialog;
+import ijx.io.OpenDialog;
+import ijx.io.Opener;
 import ijx.io.PluginClassLoader;
-import ijx.CompositeImage;
-import ijx.Executer;
-import ijx.gui.IjxImageWindow;
-import ijx.gui.IjxWindow;
-import ijx.gui.IjxImageCanvas;
-import ijx.IjxFactory;
-import ijx.app.IjxApplication;
-import ijx.IjxTopComponent;
-import ijx.IjxImagePlus;
-
-
-import ijx.text.*;
-
-
-
-import ijx.util.Tools;
-import ijx.plugin.frame.Recorder;
+import ijx.io.SaveDialog;
 import ijx.macro.Interpreter;
 import ijx.measure.Calibration;
 import ijx.measure.ResultsTable;
-import ijx.CentralLookup;
-import ijx.ImageJX;
-import ijx.app.KeyboardHandler;
-import ijx.event.EventBus;
-import ijx.gui.IjxProgressBar;
-import ijx.event.StatusMessage;
-import java.awt.event.*;
-import java.text.*;
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
+import ijx.plugin.Macro_Runner;
+import ijx.plugin.api.PlugIn;
+import ijx.plugin.api.PlugInFilter;
+import ijx.plugin.api.PlugInFilterRunner;
+import ijx.plugin.filter.Analyzer;
+import ijx.plugin.frame.Recorder;
+import ijx.process.Blitter;
+import ijx.process.ColorProcessor;
+import ijx.process.ImageProcessor;
+import ijx.roi.Line;
+import ijx.roi.OvalRoi;
+import ijx.roi.PointRoi;
+import ijx.roi.PolygonRoi;
+import ijx.roi.Roi;
+import ijx.text.*;
+import ijx.util.Memory;
+import ijx.util.Tools;
 
 /** This class consists of static utility methods. */
 public class IJ {
@@ -70,7 +58,7 @@ public class IJ {
     public static final char angstromSymbol = '\u00C5';
     public static final char degreeSymbol = '\u00B0';
     //
-    private static IjxApplication ij;
+    private static IjxApplication ijApp;
     private static IjxTopComponent topComponent;
     private static IjxFactory factory;
     private static ImageJApplet applet;
@@ -104,7 +92,7 @@ public class IJ {
         if (theApplet == null) {
             System.setSecurityManager(null);
         }
-        ij = imagej;
+        ijApp = imagej;
         topComponent = tc;
         applet = theApplet;
         progressBar = topComponent.getProgressBar();
@@ -127,7 +115,7 @@ public class IJ {
 
 // <editor-fold defaultstate="collapsed" desc=" Ijx... ">
     static void cleanup() {
-        ij = null;
+        ijApp = null;
         applet = null;
         progressBar = null;
         textPanel = null;
@@ -136,7 +124,7 @@ public class IJ {
 
     /**Returns a reference to the "ImageJ" frame.*/
     public static IjxApplication getInstance() {
-        return ij;
+        return ijApp;
     }
 
     public static IjxTopComponent getTopComponent() {
@@ -177,7 +165,7 @@ public class IJ {
     does not return a value, or "[aborted]" if the macro was aborted
     due to an error.  */
     public static String runMacro(String macro, String arg) {
-        if (ij == null && Menus.getCommands() == null) {
+        if (ijApp == null && Menus.getCommands() == null) {
             init();
         }
         Macro_Runner mr = new Macro_Runner();
@@ -193,7 +181,7 @@ public class IJ {
     Returns any string value returned by the macro, or null. Scripts always return null.
     The equivalent macro function is runMacro(). */
     public static String runMacroFile(String name, String arg) {
-        if (ij == null && Menus.getCommands() == null) {
+        if (ijApp == null && Menus.getCommands() == null) {
             init();
         }
         Macro_Runner mr = new Macro_Runner();
@@ -338,8 +326,8 @@ public class IJ {
 // <editor-fold defaultstate="collapsed" desc=" Command Runners ">
     /** Starts executing a menu command in a separete thread and returns immediately. */
     public static void doCommand(String command) {
-        if (ij != null) {
-            ij.doCommand(command);
+        if (ijApp != null) {
+            ijApp.doCommand(command);
         }
     }
 
@@ -356,7 +344,7 @@ public class IJ {
     the command has finished executing. */
     public static void run(String command, String options) {
         //IJ.log("run1: "+command+" "+Thread.currentThread().hashCode());
-        if (ij == null && Menus.getCommands() == null) {
+        if (ijApp == null && Menus.getCommands() == null) {
             init();
         }
         Macro.abort = false;
@@ -431,7 +419,7 @@ public class IJ {
      *   http://rsbweb.nih.gov/ij/plugins/sine-cosine.html
      */
     public static void write(String s) {
-        if (textPanel == null && ij != null) {
+        if (textPanel == null && ijApp != null) {
             showResults();
         }
         if (textPanel != null) {
@@ -445,7 +433,7 @@ public class IJ {
         if (s == null) {
             return;
         }
-        if (logPanel == null && ij != null) {
+        if (logPanel == null && ijApp != null) {
             TextWindow logWindow = new TextWindow("Log", "", 400, 250);
             logPanel = logWindow.getTextPanel();
             logPanel.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -502,7 +490,7 @@ public class IJ {
     those in the tab-delimited 'headings' String. Writes to
     System.out.println if the "ImageJ" frame is not present.*/
     public static void setColumnHeadings(String headings) {
-        if (textPanel == null && ij != null) {
+        if (textPanel == null && ijApp != null) {
             showResults();
         }
         if (textPanel != null) {
@@ -549,7 +537,7 @@ public class IJ {
     Opens the "Results" window if it is currently not open.
     Returns null if the "ImageJ" window is not open. */
     public static TextPanel getTextPanel() {
-        if (textPanel == null && ij != null) {
+        if (textPanel == null && ijApp != null) {
             showResults();
         }
         return textPanel;
@@ -612,7 +600,7 @@ public class IJ {
 // <editor-fold defaultstate="collapsed" desc=" Status / Progress IO ">
     /**Displays a message in the ImageJ status bar.*/
     public static void showStatus(String s) {
-        if (ij != null) {
+        if (ijApp != null) {
             //topComponent.showStatus(s);
             EventBus.getDefault().publish(new StatusMessage(s));
         }
@@ -627,7 +615,7 @@ public class IJ {
         TextWindow resultsWindow = new TextWindow("Results", "", 400, 250);
         textPanel = resultsWindow.getTextPanel();
         textPanel.setResultsTable(Analyzer.getResultsTable());
-        if (ij != null) {
+        if (ijApp != null) {
             textPanel.addKeyListener(CentralLookup.getDefault().lookup(KeyboardHandler.class));
         }
     }
@@ -665,7 +653,7 @@ public class IJ {
     /**	Displays a message in a dialog box with the specified TITLE.
     Writes the Java console if ImageJ is not present. */
     public static void showMessage(String title, String msg) {
-        if (ij != null) {
+        if (ijApp != null) {
             if (msg != null && msg.startsWith("<html>")) {
                 new HTMLDialog(title, msg);
             } else {
@@ -900,8 +888,8 @@ public class IJ {
     collected, which would cause the classes static fields to be reset.
     Probably not needed with Java 1.2 or later. */
     public static void register(Class c) {
-        if (ij != null) {
-            ij.register(c);
+        if (ijApp != null) {
+            ijApp.register(c);
         }
     }
 
@@ -1166,7 +1154,7 @@ public class IJ {
      */
     public static int setupDialog(IjxImagePlus imp, int flags) {
         if (imp == null
-                || (ij != null && CentralLookup.getDefault().lookup(KeyboardHandler.class).isHotkey())) {
+                || (ijApp != null && CentralLookup.getDefault().lookup(KeyboardHandler.class).isHotkey())) {
             return flags;
         }
         int stackSize = imp.getStackSize();
@@ -1374,7 +1362,7 @@ public class IJ {
         IjxImagePlus img = WindowManager.getCurrentImage();
         if (img == null) {
             IJ.noImage();
-            if (ij == null) {
+            if (ijApp == null) {
                 System.exit(0);
             } else {
                 abort();
@@ -1763,7 +1751,7 @@ public class IJ {
     With 1.41k or later, opens images specified by a URL.
      */
     public static void open(String path) {
-        if (ij == null && Menus.getCommands() == null) {
+        if (ijApp == null && Menus.getCommands() == null) {
             init();
         }
         Opener o = new Opener();
@@ -1778,7 +1766,7 @@ public class IJ {
 
     /** Opens and displays the nth image in the specified tiff stack. */
     public static void open(String path, int n) {
-        if (ij == null && Menus.getCommands() == null) {
+        if (ijApp == null && Menus.getCommands() == null) {
             init();
         }
         IjxImagePlus imp = openImage(path, n);
@@ -2038,7 +2026,7 @@ public class IJ {
     }
 
     public static void abort() {
-        if (ij != null || Interpreter.isBatchMode()) {
+        if (ijApp != null || Interpreter.isBatchMode()) {
             throw new RuntimeException(Macro.MACRO_CANCELED);
         }
     }

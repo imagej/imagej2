@@ -226,6 +226,14 @@ public class Prefs {
 		return props.getProperty(key);
 	}
 
+    public static boolean isUseJFileChooser() {
+        return useJFileChooser;
+    }
+
+    public static void setUseJFileChooser(boolean useJFileChooser) {
+        Prefs.useJFileChooser = useJFileChooser;
+    }
+
 	/** Finds an string in IJ_Props or IJ_Prefs.txt. */
 	public static String getString(String key, String defaultString) {
 		if (props==null)

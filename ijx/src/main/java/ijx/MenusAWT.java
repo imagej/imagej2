@@ -22,7 +22,7 @@ import java.util.jar.JarFile;
 
 import org.openide.util.lookup.ServiceProvider;
 
-@ServiceProvider(service = SavesPrefs.class)
+//@ServiceProvider(service = SavesPrefs.class)
 /**
 This class installs and updates ImageJ's menus. Note that menu labels,
 even in submenus, must be unique. This is because ImageJ uses a single

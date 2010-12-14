@@ -106,6 +106,7 @@ public class ImageJX extends IjxAbstractApplication {
         this.applet = applet;
         String err1 = Prefs.load(this, applet);
         //
+        guiMode = "SDI (Swing)";
         if (guiMode == null) {
             System.exit(999);
         }

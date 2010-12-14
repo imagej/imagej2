@@ -7,10 +7,11 @@ import ijx.IJ;
 import ijx.plugin.frame.Recorder;
 import ijx.util.Java2;
 import ijx.macro.Interpreter;
-import java.awt.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+import java.awt.EventQueue;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.File;
+import javax.swing.JFileChooser;
 
 /** This class displays a dialog window from 
 	which the user can select an input file. */ 
@@ -70,7 +71,7 @@ import javax.swing.filechooser.*;
 		if (path!=null)
 			decodePath(path);
 		else {
-			if (Prefs.useJFileChooser)
+			if (Prefs.isUseJFileChooser())
 				jOpen(title, defaultDir, defaultName);
 			else
 				open(title, defaultDir, defaultName);

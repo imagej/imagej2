@@ -149,7 +149,9 @@ public class Opener {
 		}
 		if (!silentMode) IJ.showStatus("Opening: " + path);
 		long start = System.currentTimeMillis();
-		IjxImagePlus imp = openImage(path);
+		// Open Image...
+        IjxImagePlus imp = openImage(path);
+        //
 		if (imp!=null) {
 			WindowManager.checkForDuplicateName = true;
 			if (isRGB48)
@@ -392,24 +394,7 @@ public class Opener {
 		} 
 	}
 	
-	/** Used by open() and IJ.open() to open text URLs. */
-	void openTextURL(String url) {
-		if (url.endsWith(".pdf")||url.endsWith(".zip"))
-			return;
-		String text = IJ.openUrlAsString(url);
-		String name = url.substring(7);
-		int index = name.lastIndexOf("/");
-		int len = name.length();
-		if (index==len-1)
-			name = name.substring(0, len-1);
-		else if (index!=-1 && index<len-1)
-			name = name.substring(index+1);
-		name = name.replaceAll("%20", " ");
-		Editor ed = new Editor();
-		ed.setSize(600, 300);
-		ed.create(name, text);
-		IJ.showStatus("");
-	}
+
 
 	
 	public IjxImagePlus openWithHandleExtraFileTypes(String path, int[] fileType) {
@@ -1033,5 +1018,30 @@ public class Opener {
 	public static boolean getOpenUsingPlugins() {
 		return openUsingPlugins;
 	}
-	
+
+
+// <editor-fold defaultstate="collapsed" desc="Text">
+    /** Used by open() and IJ.open() to open text URLs. */
+    void openTextURL(String url) {
+        if (url.endsWith(".pdf") || url.endsWith(".zip")) {
+            return;
+
+        }
+        String text = IJ.openUrlAsString(url);
+        String name = url.substring(7);
+        int index = name.lastIndexOf("/");
+        int len = name.length();
+        if (index == len - 1) {
+            name = name.substring(0, len - 1);
+
+        } else if (index != -1 && index < len - 1) {
+            name = name.substring(index + 1);
+
+        }
+        name = name.replaceAll("%20", " ");
+        Editor ed = new Editor();
+        ed.setSize(600, 300);
+        ed.create(name, text);
+        IJ.showStatus("");
+    }// </editor-fold>
 }
