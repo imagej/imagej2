@@ -32,7 +32,7 @@
     <dependency>
       <groupId>imagej</groupId>
       <artifactId>ij</artifactId>
-      <version>1.43</version>
+      <version>1.44l9</version>
     </dependency>
 
     <dependency>

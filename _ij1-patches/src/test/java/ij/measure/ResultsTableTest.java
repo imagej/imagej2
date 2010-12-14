@@ -61,17 +61,18 @@ public class ResultsTableTest {
 		assertEquals(22,ResultsTable.SKEWNESS);
 		assertEquals(23,ResultsTable.KURTOSIS);
 		assertEquals(24,ResultsTable.AREA_FRACTION);
-		assertEquals(25,ResultsTable.CHANNEL);
-		assertEquals(26,ResultsTable.SLICE);
-		assertEquals(27,ResultsTable.FRAME);
-		assertEquals(28,ResultsTable.FERET_X);
-		assertEquals(29,ResultsTable.FERET_Y);
-		assertEquals(30,ResultsTable.FERET_ANGLE);
-		assertEquals(31,ResultsTable.MIN_FERET);
-		assertEquals(32,ResultsTable.ASPECT_RATIO);
-		assertEquals(33,ResultsTable.ROUNDNESS);
-		assertEquals(34,ResultsTable.SOLIDITY);
-		assertEquals(34,ResultsTable.LAST_HEADING);
+		assertEquals(25,ResultsTable.RAW_INTEGRATED_DENSITY);
+		assertEquals(26,ResultsTable.CHANNEL);
+		assertEquals(27,ResultsTable.SLICE);
+		assertEquals(28,ResultsTable.FRAME);
+		assertEquals(29,ResultsTable.FERET_X);
+		assertEquals(30,ResultsTable.FERET_Y);
+		assertEquals(31,ResultsTable.FERET_ANGLE);
+		assertEquals(32,ResultsTable.MIN_FERET);
+		assertEquals(33,ResultsTable.ASPECT_RATIO);
+		assertEquals(34,ResultsTable.ROUNDNESS);
+		assertEquals(35,ResultsTable.SOLIDITY);
+		assertEquals(35,ResultsTable.LAST_HEADING);
 	}
 
 	@Test
@@ -1066,17 +1067,18 @@ public class ResultsTableTest {
 		assertEquals("Skew",r.getColumnHeading(22));
 		assertEquals("Kurt",r.getColumnHeading(23));
 		assertEquals("%Area",r.getColumnHeading(24));
-		assertEquals("Ch",r.getColumnHeading(25));
-		assertEquals("Slice",r.getColumnHeading(26));
-		assertEquals("Frame",r.getColumnHeading(27));
-		assertEquals("FeretX",r.getColumnHeading(28));
-		assertEquals("FeretY",r.getColumnHeading(29));
-		assertEquals("FeretAngle",r.getColumnHeading(30));
-		assertEquals("MinFeret",r.getColumnHeading(31));
-		assertEquals("AR",r.getColumnHeading(32));
-		assertEquals("Round",r.getColumnHeading(33));
-		assertEquals("Solidity",r.getColumnHeading(34));
-		assertEquals("35",r.getColumnHeading(35));
+		assertEquals("RawIntDen",r.getColumnHeading(25));
+		assertEquals("Ch",r.getColumnHeading(26));
+		assertEquals("Slice",r.getColumnHeading(27));
+		assertEquals("Frame",r.getColumnHeading(28));
+		assertEquals("FeretX",r.getColumnHeading(29));
+		assertEquals("FeretY",r.getColumnHeading(30));
+		assertEquals("FeretAngle",r.getColumnHeading(31));
+		assertEquals("MinFeret",r.getColumnHeading(32));
+		assertEquals("AR",r.getColumnHeading(33));
+		assertEquals("Round",r.getColumnHeading(34));
+		assertEquals("Solidity",r.getColumnHeading(35));
+		assertEquals("36",r.getColumnHeading(36));
 	}
 
 	@Test
