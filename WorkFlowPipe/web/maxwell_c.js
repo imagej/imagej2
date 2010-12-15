@@ -21,9 +21,9 @@ function ajaxErrorHandler(_7) {
 function ajaxStop(_8) {
 	return YAHOO.util.Connect.abort(_8, _8._cb);
 }
-function ajaxCall(_9, _a, ok, _c, _d) {
-	if (!_c) {
-		_c = ajaxErrorHandler;
+function ajaxCall(ajaxRelativePath, jsonData, ok, errorHandlingFunction, _d) {
+	if (!errorHandlingFunction) {
+		errorHandlingFunction = ajaxErrorHandler;
 	}
 	if (!_d) {
 		_d = "GET";
@@ -31,18 +31,18 @@ function ajaxCall(_9, _a, ok, _c, _d) {
 	var _e;
 	var _f;
 	if (isV2) {
-		_a["_v2"] = "true";
+		jsonData["_v2"] = "true";
 	}
-	_9 = _9.replace(/\//g, ".");
-	if (!_9.match(/^ajax/)) {
-		_9 = "ajax." + _9;
+	ajaxRelativePath = ajaxRelativePath.replace(/\//g, ".");
+	if (!ajaxRelativePath.match(/^ajax/)) {
+		ajaxRelativePath = "ajax." + ajaxRelativePath;
 	}
 	if (_d == "GET") {
-		_e = _9 + "?" + buildURL(_a);
+		_e = ajaxRelativePath + "?" + buildURL(jsonData);
 		_f = null;
 	} else {
-		_e = _9;
-		_f = buildURL(_a);
+		_e = ajaxRelativePath;
+		_f = buildURL(jsonData);
 	}
 	var _10 = {
 		success : function(o) {
@@ -56,35 +56,35 @@ function ajaxCall(_9, _a, ok, _c, _d) {
 				if (_12 == null) {
 					var _13 = "Oops. System error: problem parsing response";
 					YAHOO.log(o.responseText);
-					_c(_13);
+					errorHandlingFunction(_13);
 					return;
 				}
 				if (typeof (_12.ok) == "undefined") {
-					_c("Oops. System error: badly formed response");
+					errorHandlingFunction("Oops. System error: badly formed response");
 					YAHOO.log(_12);
 					return;
 				}
 				if (!_12.ok) {
 					if (!_12.error) {
-						_c(_12);
+						errorHandlingFunction(_12);
 					} else {
-						_c(_12.error);
+						errorHandlingFunction(_12.error);
 					}
 					return;
 				} else {
 					if (_12.ok && _12.error) {
-						_c(_12.error);
+						errorHandlingFunction(_12.error);
 					}
 				}
 				ok(_12);
 			} else {
 				var _13 = "problem receiving response data";
-				_c(_13);
+				errorHandlingFunction(_13);
 			}
 		},
 		failure : function(o) {
 			var _15 = o.statusText;
-			_c(_15);
+			errorHandlingFunction(_15);
 		}
 	};
 	var _16 = YAHOO.util.Connect.asyncRequest(_d, _e, _10, _f);
@@ -6909,9 +6909,7 @@ maxwell.ModuleLibrary = function() {
 		YAHOO.util.Dom.addClass(node, "show");
 	}, this, true);
 };
-maxwell.ModuleLibrary.categories = [ "Sources", "User inputs", "Operators",
-		"Url", "String", "Date", "Location", "Number", "Favorites", "My pipes",
-		"Deprecated" ];
+maxwell.ModuleLibrary.categories = [ "Image Sources", "Plugins", "Favorites" ];
 maxwell.ModuleLibrary.prototype.retrieveModules = function() {
 	var self = this;
 	this.splitter.resizeAB();
