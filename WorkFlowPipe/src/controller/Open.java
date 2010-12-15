@@ -10,7 +10,7 @@ public class Open {
 		JettyServerController jettyServerController = new JettyServerController( 8080, "index.html", "/web", true );
 		
 		//add the Servlets to the controller
-		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider() );
+		//jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider() );
 		
 		//add more Servlets
 		//TODO:add more servlets

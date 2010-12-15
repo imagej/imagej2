@@ -6909,7 +6909,7 @@ maxwell.ModuleLibrary = function() {
 		YAHOO.util.Dom.addClass(node, "show");
 	}, this, true);
 };
-maxwell.ModuleLibrary.categories = [ "Image Sources", "Plugins", "Favorites" ];
+maxwell.ModuleLibrary.categories = [ "Image Sources", "Plugins", "Favorites", "My pipes", "Number" ];
 maxwell.ModuleLibrary.prototype.retrieveModules = function() {
 	var self = this;
 	this.splitter.resizeAB();
