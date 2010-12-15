@@ -46,4 +46,15 @@ public class Terminal {
 		return directionValue;
 	}
 
+	/**
+	 * @return
+	 */
+	public static Terminal[] getInOutTerminal( TerminalConnectorType inputTerminalType, TerminalConnectorType outputTerminalType ) 
+	{
+		Terminal[] terminals = new Terminal[2];
+		terminals[0] = new Terminal( true, inputTerminalType  );
+		terminals[1] = new Terminal( false, outputTerminalType );
+ 		return terminals;
+	}
+
 }
