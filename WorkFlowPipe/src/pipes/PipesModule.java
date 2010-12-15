@@ -31,4 +31,26 @@ public class PipesModule {
 		return terminals;
 	}
 
+	public Object getUIValue() {
+		return ui.getValue();
+	}
+
+	public Object getDescriptionValue() {
+		return description.getValue();
+	}
+
+	public String getTypeValue() {
+		return type.getValue();
+	}
+
+	public String getNameValue() {
+		return name.getValue();
+	}
+
+	public Tag[] getTags() {
+		return tags;
+	}
+	
+	
+
 }
