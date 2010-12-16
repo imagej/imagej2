@@ -7,9 +7,6 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import ij.Assert;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
 import ij.process.*;
 
 public class ShapeRoiTest {
@@ -102,26 +99,23 @@ public class ShapeRoiTest {
 		basicTests(s,Roi.COMPOSITE,7,1,7,15);
 	}
 
-	private void lengthTest(Roi roi)
+	private void lengthTest(double expectedLength, Roi roi)
 	{
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		s = new ShapeRoi(roi);
 		assertNotNull(s);
 		
 		// should always equal 0
 		
-		assertEquals(0,s.getLength(),Assert.DOUBLE_TOL);
-		*/
+		assertEquals(expectedLength,s.getLength(),Assert.DOUBLE_TOL);
 	}
 	
 	@Test
 	public void testGetLength() {
 		
 		// try various roi shapes
-		lengthTest(new OvalRoi(1,6,14,3));
-		lengthTest(new Roi(1,7,33,1009));
-		lengthTest(new Line(14,-33,109,-83));
+		lengthTest(34, new OvalRoi(1,6,14,3));
+		lengthTest(2084,new Roi(1,7,33,1009));
+		lengthTest(107.35455276,new Line(14,-33,109,-83));
 	}
 
 	private void feretTest(Roi roi, double[] expected)
@@ -253,6 +247,7 @@ public class ShapeRoiTest {
 		maskTest(new OvalRoi(0,0,4,4), 4, 4, new byte[]{0,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,0});
 	}
 
+	/*
 	private void printOut(ShapeRoi roi)
 	{
 		Polygon p = roi.getPolygon();
@@ -260,11 +255,15 @@ public class ShapeRoiTest {
 		for (int i = 0; i < p.npoints; i++)
 			System.out.println(p.xpoints[i]+" "+p.ypoints[i]);
 	}
+	*/
 	
 	private void orTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
 	{
 		s = a.or(b);
 		//printOut(s);
+		System.out.println("OR TEST");
+		System.out.println("  expected " + exp.getLength());
+		System.out.println("  result   " + s.getLength());
 		assertEquals(exp,s);
 	}
 	
@@ -365,6 +364,9 @@ public class ShapeRoiTest {
 	{
 		s = a.xor(b);
 		//printOut(s);
+		System.out.println("XOR TEST");
+		System.out.println("  expected " + exp.getLength());
+		System.out.println("  result   " + s.getLength());
 		assertEquals(exp,s);
 	}
 	

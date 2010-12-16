@@ -2254,7 +2254,7 @@ public abstract class ImageProcessor extends Object {
 	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public abstract int getBitDepth();
-	public abstract int getBytesPerPixel();
+	public abstract double getBytesPerPixel();
 	public abstract ImageStatistics getStatistics(int mOptions, Calibration cal);
 	public abstract boolean isFloatingType();
 	public abstract boolean isUnsignedType();

@@ -1104,7 +1104,7 @@ public class ShortProcessor extends ImageProcessor {
 	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 16; }
-	public int getBytesPerPixel() { return 2; }
+	public double getBytesPerPixel() { return 2; }
 	
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{

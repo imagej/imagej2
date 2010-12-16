@@ -979,7 +979,8 @@ public class ImagePlus implements ImageObserver, Measurements {
 		}
     }
     
-    /** Returns the number of bytes per pixel. */
+    @Deprecated
+    /** Returns the number of bytes per pixel as an integer. use getRealBytesPerPixel() instead. */
     public int getBytesPerPixel() {
 		switch (imageType)
 		{
@@ -996,12 +997,19 @@ public class ImagePlus implements ImageObserver, Measurements {
 		case OTHER:
 			if (ip == null)
 				return 0;
-			return ip.getBytesPerPixel();
+			return (int) Math.ceil(ip.getBytesPerPixel());
 		default:
 			return 0;
 		}
 	}
 
+    /** Returns the number of bytes per pixel as a double value. Works for pixel types that do not use an
+     *  even number of bytes (1-bit, 12-bit, etc.) */
+    public double getActualBytesPerPixel()
+    {
+    	return getProcessor().getBytesPerPixel();
+    }
+    
     protected void setType(int type) {
     	if ((type<0) || (type>OTHER))
     		return;
@@ -1147,7 +1155,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 					else if (bitDepth == 64)
 					{
 						double value = ip.getd(x, y);
-						long encoding = (long)value;              // TODO - precision loss possible here
+						long encoding = (long)value;              // TODO - precision loss possible here. need processors to add a getl() method
 						pvalue[0] = (int)(encoding & 0xffffffffL);
 						pvalue[1] = (int)((encoding >> 32) & 0xffffffffL);
 					}
@@ -2002,7 +2010,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 			Undo.setup(Undo.FILTER, this);
 			updateAndDraw();
 		}
-		int bytesPerPixel = clipboard.getBytesPerPixel();
+		double bytesPerPixel = clipboard.getActualBytesPerPixel();
 		//Roi roi3 = clipboard.getRoi();
 		//IJ.log("copy: "+clipboard +" "+ "roi3="+(roi3!=null?""+roi3:""));
 		if (!batchMode) {
