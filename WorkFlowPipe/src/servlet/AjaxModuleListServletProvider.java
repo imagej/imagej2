@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import pipesentity.PipesModule;
+import pipesentity.Module;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 
@@ -20,51 +20,18 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
 
-	public AjaxModuleListServletProvider( Collection<PipesModule> pipesModuleArray ) 
+	public AjaxModuleListServletProvider( Collection<Module> pipesModuleArray ) 
 	{
 		JSONArray jsonArrayModule = new JSONArray();
 
 		//add each module to the array
-		for( PipesModule pipesModule : pipesModuleArray )
+		for( Module pipesModule : pipesModuleArray )
 		{
-			JSONObject jsonModule = new JSONObject();
-			JSONArray jsonArrayTerminals = new JSONArray();
+			//Get the JSONObject representative of the module entity
+			JSONObject jsonModule = pipesModule.getJSONObject();
 			
-			// add the terminals
-			for( Terminal terminal : pipesModule.getTerminals() )
-			{
-				JSONObject jsonObjectTerminals = new JSONObject();
-				jsonObjectTerminals.put( terminal.getTypeKey(), terminal.getTypeValue() ); 
-				jsonObjectTerminals.put( terminal.getDirectionKey(), terminal.getDirectionKeyValue() );
-				jsonArrayTerminals.put( jsonObjectTerminals );
-			}
-
-			// add terminals array to module
-			jsonModule.put("terminals",jsonArrayTerminals);
-
-			// add ui key value to the object
-			jsonModule.put( "ui", pipesModule.getUIValue() );
-	
-			// add name to module
-			jsonModule.put( "name", pipesModule.getNameValue() );
-		
-			// add type to module
-			jsonModule.put( "type", pipesModule.getTypeValue() );
-
-			// add description to module
-			jsonModule.put( "description", pipesModule.getDescriptionValue() );
-		
-			// create an array for the tags
-			JSONArray jsonArrayTags = new JSONArray();
-			
-			// add tags to array
-			for( Tag tag: pipesModule.getTags() )
-				jsonArrayTags.put( tag.getValue() );
-			
-			
-			//add tags array to module
-			jsonModule.put( "tags", jsonArrayTags );
-			jsonArrayModule.put(jsonModule);
+			//put the module in the array
+			jsonArrayModule.put( jsonModule );
 		}
 		
 		// add module to JSONObject
@@ -75,6 +42,11 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 
 	}
 
+	/**
+	 * input parameters are 	_out=json
+	 * 							rnd=5582
+	 * 							.crumb=RqBrtsZBJKP
+	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
