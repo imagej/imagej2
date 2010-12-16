@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import pipesentity.Description;
 import pipesentity.Name;
-import pipesentity.PipesModule;
+import pipesentity.Module;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.TerminalConnectorType;
@@ -17,7 +17,7 @@ public class ModuleGenerator {
 		
 	}
 
-	public static PipesModule getSampleModule() {
+	public static Module getSampleModule() {
 
 		Terminal[] terminals = Terminal.getInOutTerminal( 
 				TerminalConnectorType.inputType.valueOf("number"), 
@@ -34,17 +34,17 @@ public class ModuleGenerator {
 		Tag tag = new Tag( "system:sources" );
 		Tag[] tags = Tag.getTagsArray( tag );
 		
-		return new PipesModule( terminals, ui, name, type, description, tags );
+		return new Module( terminals, ui, name, type, description, tags );
 	}
 
 	/**
 	 * Returns a sample collection representative of the inputs and features of a ModuleGenerator
 	 * @return
 	 */
-	public static ArrayList<PipesModule> getPipeModuleSampleCollection() {
+	public static ArrayList<Module> getPipeModuleSampleCollection() {
 		
 		//Create a default collection
-		ArrayList<PipesModule> pipeModuleSampleCollection = new ArrayList<PipesModule>();
+		ArrayList<Module> pipeModuleSampleCollection = new ArrayList<Module>();
 		
 		//Create a Module
 		pipeModuleSampleCollection.add( getSampleModule() ) ;
