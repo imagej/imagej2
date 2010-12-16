@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import pipes.PipesModule;
+import pipesentity.PipesModule;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 
@@ -54,13 +54,13 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 			// add description to module
 			jsonModule.put( "description", pipesModule.getDescriptionValue() );
 		
+			// create an array for the tags
 			JSONArray jsonArrayTags = new JSONArray();
 			
 			// add tags to array
-			for( Tag tag : pipesModule.getTags() )
-			{
+			for( Tag tag: pipesModule.getTags() )
 				jsonArrayTags.put( tag.getValue() );
-			}
+			
 			
 			//add tags array to module
 			jsonModule.put( "tags", jsonArrayTags );

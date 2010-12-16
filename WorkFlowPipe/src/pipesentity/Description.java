@@ -2,9 +2,14 @@ package pipesentity;
 
 public class Description {
 
-	private String value;
+	private String description;
+	
+	public Description( String description ) {
+		this.description = description;
+	}
+
 	public String getValue() {
-		return value;
+		return description;
 	}
 
 }
