@@ -23,7 +23,6 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 		
 		//hang on the reference
 		this.pipesModuleCollection = pipesModuleCollection;
-		
 	}
 
 	/**
@@ -47,29 +46,20 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 		
 			if(pipesModule.getTypeValue() != typeParameter )
 			{
-				System.out.println("JSON response is " + pipesModule.getJSONObject().toString() );
-		
+				response.setContentType( "application/json" );
+				response.setHeader( "Cache-Control", "no-cache" );
+				
+				//get JSON Info
+				JSONObject jsonObject = new Info( pipesModule ).getJSONObject();
+					
+				// Set response status
+				jsonObject.put( "ok", new Integer(1) );
+				
+				// generate the response
+				response.getWriter().write( jsonObject.toString() );
 			}
 		}
 		
-		
-		
-		response.setContentType( "application/json" );
-		response.setHeader( "Cache-Control", "no-cache" );
-			
 		//TODO: Add error handling
-		
-		//get JSON Info
-		JSONObject jsonObject = new Info( pipesModule ).getJSONObject();
-			
-		// Set response status
-		jsonObject.put( "ok", new Integer(1) );
-		
-		
-		
-		// generate the response
-		response.getWriter().write( jsonObject.toString() );
-		
 	}
-
 }
