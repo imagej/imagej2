@@ -695,11 +695,9 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			//System.out.println("PAIR");
 			initialize();
 			for (int i = 0; i < 6; i++)
 			{
-				//System.out.println("  iter "+i);
 				procPair[0].exp();
 				procPair[1].exp();
 				compareData(procPair[0],procPair[1]);
@@ -1042,7 +1040,6 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			System.out.println("PAIR");
 			assertEquals(procPair[0].getMax(), procPair[1].getMax(), DOUBLE_TOL);
 			procPair[0].setMinAndMax(42.4,107.6);
 			procPair[1].setMinAndMax(42.4,107.6);
@@ -1675,13 +1672,10 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
-			//System.out.println("PAIR");
 			Color[] colors = new Color[]{Color.white, Color.black, Color.blue, Color.red, Color.green, Color.gray, Color.magenta};
 
 			for (Color color : colors)
 			{
-				//System.out.println("  color = "+color);
-				
 				procPair[0].setColor(color);
 				procPair[1].setColor(color);
 
