@@ -15,7 +15,7 @@ import ij.Prefs;
 /**
 This abstract class is the superclass for classes that process
 the four data types (byte, short, float and RGB) supported by ImageJ.
-An ImageProcessor contains the pixel data of a 2D image and Ê
+An ImageProcessor contains the pixel data of a 2D image and
 some basic methods to manipulate it.
 @see ByteProcessor
 @see ShortProcessor
