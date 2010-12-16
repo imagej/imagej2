@@ -448,6 +448,15 @@ public class ColorProcessorTest {
 		}
 	}
 
+	private float expectedFloatValue(int value)
+	{
+		double[] weights = ColorProcessor.getWeightingFactors();
+		int r = (value & 0xff0000)>>16;
+		int g = (value & 0xff00)>>8;
+		int b = value & 0xff;
+		return (float)(r*weights[0] + g*weights[1] + b*weights[2]);
+	}
+	
 	@Test
 	public void testGetfIntInt()
 	{
@@ -460,7 +469,7 @@ public class ColorProcessorTest {
 			for(int x = 0; x < width; x++)
 			{
 				testColorProcessor.set(y*width+x, value);
-				assertEquals( value, testColorProcessor.getf(x, y), 0.0);
+				assertEquals( expectedFloatValue(value), testColorProcessor.getf(x, y), 0.0);
 			}
 		}
 	}
@@ -477,7 +486,7 @@ public class ColorProcessorTest {
 			for(int x = 0; x < width; x++)
 			{
 				testColorProcessor.set(y*width+x, value);
-				assertEquals( value, testColorProcessor.getf(y*width+x), 0.0);
+				assertEquals( expectedFloatValue(value), testColorProcessor.getf(y*width+x), 0.0);
 			}
 		}
 	}
@@ -493,8 +502,8 @@ public class ColorProcessorTest {
 			//check each component
 			for(int x = 0; x < width; x++)
 			{
-				testColorProcessor.setf(x,y, value);
-				assertEquals( value, testColorProcessor.getf(y*width+x), 0.0);
+				testColorProcessor.setf(x, y, value);
+				assertEquals( expectedFloatValue(value), testColorProcessor.getf(x, y), 0.0);
 			}
 		}
 	}
@@ -511,7 +520,7 @@ public class ColorProcessorTest {
 			for(int x = 0; x < width; x++)
 			{
 				testColorProcessor.setf(y*width+x, value);
-				assertEquals( value, testColorProcessor.getf(y*width+x), 0.0);
+				assertEquals( expectedFloatValue(value), testColorProcessor.getf(y*width+x), 0.0);
 			}
 		}
 	}

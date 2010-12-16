@@ -1,13 +1,13 @@
 package ij.process;
 import ij.measure.*;
-
 import java.awt.*;
 
 /** Statistics, including the histogram, of an image or selection. */
-public class ImageStatistics implements Measurements 
-{
+public class ImageStatistics implements Measurements {
+
 	public int[] histogram;
 	public int pixelCount;
+	public long longPixelCount;
 	public int mode;
 	public double dmode;
 	public double area;
@@ -51,7 +51,9 @@ public class ImageStatistics implements Measurements
 	
 	EllipseFitter ef;
 
-	public static ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal) {
+	
+	public static ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal)
+	{
 		return ip.getStatistics(mOptions, cal);
 	}
 
@@ -74,7 +76,7 @@ public class ImageStatistics implements Measurements
 		
 		for (int i=minThreshold; i<=maxThreshold; i++) {
 			count = histogram[i];
-			pixelCount += count;
+			longPixelCount += count;
 			sum += (double)i*count;
 			value = i;
 			sum2 += (value*value)*count;
@@ -83,11 +85,12 @@ public class ImageStatistics implements Measurements
 				mode = i;
 			}
 		}
-		area = pixelCount*pw*ph;
-		mean = sum/pixelCount;
+		pixelCount = (int)longPixelCount;
+		area = longPixelCount*pw*ph;
+		mean = sum/longPixelCount;
 		umean = mean;
 		dmode = mode;
-		calculateStdDev(pixelCount, sum, sum2);
+		calculateStdDev(longPixelCount, sum, sum2);
 		histMin = 0.0;
 		histMax = 255.0;
 	}

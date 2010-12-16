@@ -2176,7 +2176,7 @@ public class ImagePlusTest {
 		proc = ip.getProcessor();
 		assertEquals(6,proc.getPixel(0, 0));
 		assertNull(ip.getProperty("FHT"));
-		assertEquals(" my toes",ip.getTitle());
+		assertEquals("my toes",ip.getTitle());
 
 		// test that trimProcessor() ran
 		ip = new Opener().openTiff(DataConstants.DATA_DIR, "head8bit.tif");

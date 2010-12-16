@@ -1,11 +1,13 @@
 package ij.process;
-import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
+import ij.measure.Calibration;
+import ij.process.ImageStatistics;
 import ij.gui.*;
 import ij.util.*;
-import ij.measure.Calibration;
 import ij.plugin.filter.GaussianBlur;
+import ij.process.AutoThresholder.Method;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.Prefs;
@@ -13,10 +15,14 @@ import ij.Prefs;
 /**
 This abstract class is the superclass for classes that process
 the four data types (byte, short, float and RGB) supported by ImageJ.
+An ImageProcessor contains the pixel data of a 2D image and Ê
+some basic methods to manipulate it.
 @see ByteProcessor
 @see ShortProcessor
 @see FloatProcessor
 @see ColorProcessor
+@see ij.ImagePlus
+@see ij.ImageStack
 */
 public abstract class ImageProcessor extends Object {
 
@@ -60,6 +66,7 @@ public abstract class ImageProcessor extends Object {
 	private static int overRed, overGreen=255, overBlue;
 	private static int underRed, underGreen, underBlue=255;
 	private static boolean useBicubic;
+	private int sliceNumber;
 		
     ProgressBar progressBar;
 	protected int width, snapshotWidth;
@@ -92,34 +99,14 @@ public abstract class ImageProcessor extends Object {
 	protected ColorModel cm2;
 	protected SampleModel sampleModel;
 	protected static IndexColorModel defaultColorModel;
-
+	protected boolean minMaxSet;
 		
-	protected void setFgColor(int color)
-	{
-		fgColor = color;
-	}
-	
-	public int getFgColor()
-	{
-		return fgColor;
-	}
-	
-	protected boolean getSnapshotCopyMode()
-	{
-		return snapshotCopyMode;
-	}
-	
-	public Color getDrawingColor()
-	{
-		return drawingColor;
-	}
-	
 	public void showProgress(double percentDone) {
 		if (progressBar!=null)
         	progressBar.show(percentDone);
 	}
 
-	// Obsolete
+	/** @deprecated */
 	protected void hideProgress() {
 		showProgress(1.0);
 	}
@@ -414,7 +401,6 @@ public abstract class ImageProcessor extends Object {
 		}
 		int t1 = (int)minThreshold;
 		int t2 = (int)maxThreshold;
-		int index;
 		if (lutUpdate==RED_LUT)
 			for (int i=0; i<256; i++) {
 				if (i>=t1 && i<=t2) {
@@ -480,17 +466,33 @@ public abstract class ImageProcessor extends Object {
 		source = null;
 	}
 	
-	public void setAutoThreshold(String method) {
-		if (method==null)
+	public void setAutoThreshold(String mString) {
+		if (mString==null)
 			throw new IllegalArgumentException("Null method");
-		boolean darkBackground = method.indexOf("dark")!=-1;
-		int index = method.indexOf(" ");
+		boolean darkBackground = mString.indexOf("dark")!=-1;
+		int index = mString.indexOf(" ");
 		if (index!=-1)
-			method = method.substring(0, index);
-		setAutoThreshold(method, darkBackground, RED_LUT);
+			mString = mString.substring(0, index);
+		setAutoThreshold(mString, darkBackground, RED_LUT);
 	}
 	
-	public void setAutoThreshold(String method, boolean darkBackground, int lutUpdate) {
+	public void setAutoThreshold(String mString, boolean darkBackground, int lutUpdate) {
+		Method m = null;
+		try {
+			m = Method.valueOf(Method.class, mString);
+		} catch(Exception e) {
+			m = null;
+		}
+		if (m==null)
+			throw new IllegalArgumentException("Invalid method (\""+mString+"\")");
+		setAutoThreshold(m, darkBackground, lutUpdate);
+	}
+
+	public void setAutoThreshold(Method method, boolean darkBackground) {
+		setAutoThreshold(method, darkBackground, RED_LUT);
+	}
+
+	public void setAutoThreshold(Method method, boolean darkBackground, int lutUpdate) {
 		if (method==null || (this instanceof ColorProcessor))
 			return;
 		double min=0.0, max=0.0;
@@ -514,13 +516,14 @@ public abstract class ImageProcessor extends Object {
 			if (isInvertedLut())
 				{lower=0.0; upper=threshold;}
 			else
-				{lower=threshold; upper=255.0;}
+				{lower=threshold+1; upper=255.0;}
 		} else {
 			if (isInvertedLut())
-				{lower=threshold; upper=255.0;}
+				{lower=threshold+1; upper=255.0;}
 			else
 				{lower=0.0; upper=threshold;}
 		}
+		if (lower>255) lower = 255;
 		if (notByteData) {
 			if (max>min) {
 				lower = min + (lower/255.0)*(max-min);
@@ -578,7 +581,7 @@ public abstract class ImageProcessor extends Object {
 		FloatProcessor fp = new FloatProcessor(256, 1, hist, null);
 		GaussianBlur gb = new GaussianBlur();
 		gb.blur1Direction(fp, 2.0, 0.01, true, 0);
-		float maxCount=0f, sum=0f, mean, count;
+		float maxCount=0f, sum=0f, count;
 		int mode = 0;
 		for (int i=0; i<256; i++) {
 			count = hist[i];
@@ -829,6 +832,11 @@ public abstract class ImageProcessor extends Object {
 		interpolate = method!=NONE?true:false;
 	}
 	
+	/** Returns the current interpolation method (NONE, BILINEAR or BICUBIC). */
+	public int getInterpolationMethod() {
+		return interpolationMethod;
+	}
+	
 	public static String[] getInterpolationMethods() {
 		if (interpolationMethods==null)
 			interpolationMethods = new String[] {"None", "Bilinear", "Bicubic"};
@@ -840,7 +848,7 @@ public abstract class ImageProcessor extends Object {
 		return interpolate;
 	}
 
-	/** Obsolete. */
+	/** @deprecated */
 	public boolean isKillable() {
 		return false;
 	}
@@ -1079,7 +1087,7 @@ public abstract class ImageProcessor extends Object {
 		resetRoi();
 	}
 
-	/** Obsolete */
+	/** @deprecated */
 	public void drawDot2(int x, int y) {
 		drawPixel(x, y);
 		drawPixel(x-1, y);
@@ -1155,7 +1163,6 @@ public abstract class ImageProcessor extends Object {
 		Image bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		Graphics g = bi.getGraphics();
 		FontMetrics metrics = g.getFontMetrics(font);
-		int fontHeight = metrics.getHeight();
 		int descent = metrics.getDescent();
 		g.setFont(font);
 
@@ -1189,7 +1196,6 @@ public abstract class ImageProcessor extends Object {
 		g.dispose();
 		ImageProcessor ip = new ColorProcessor(bi);
 		ImageProcessor textMask = ip.convertToByte(false);
-		byte[] mpixels = (byte[])textMask.getPixels();
 		//new ij.ImagePlus("textmask",textMask).show();
 		textMask.invert();
 		if (cxx<width && cy-h<height) {
@@ -1487,8 +1493,11 @@ public abstract class ImageProcessor extends Object {
 
 	public abstract void setf(int index, float value);
 
-	/** Returns a copy of the pixel data as a 2D int array
-		with dimensions [x=0..width-1][y=0..height-1]. */
+	/** Returns a copy of the pixel data as a 2D int array with
+		dimensions [x=0..width-1][y=0..height-1]. With RGB
+		images, the returned values are in packed ARGB format.
+		With float images, the returned values must be converted
+		to float using Float.intBitsToFloat(). */
 	public int[][] getIntArray() {
 		int[][] a = new int [width][height];
 		for(int y=0; y<height; y++) {
@@ -1525,6 +1534,27 @@ public abstract class ImageProcessor extends Object {
 		}
 	}
 	
+	/** Experimental */
+	public void getNeighborhood(int x, int y, double[][] arr) {
+		int nx=arr.length;
+		int ny=arr[0].length;
+		int nx2 = (nx-1)/2;
+		int ny2 = (ny-1)/2;
+	 	if (x>=nx2 && y>=ny2 && x<width-nx2-1 && y<height-ny2-1) { 
+			int index = (y-ny2)*width + (x-nx2);
+			for (int y2=0; y2<ny; y2++) {
+	 			for (int x2=0; x2<nx; x2++)
+					arr[x2][y2] = getf(index++);			
+				index += (width - nx);
+			}	
+		} else {
+			for (int y2=0; y2<ny; y2++) {
+	 			for (int x2=0; x2<nx; x2++)
+					arr[x2][y2] = getPixelValue(x2, y2);			
+			}	
+		}
+	}
+
     /** Returns the samples for the pixel at (x,y) in an int array.
     	RGB pixels have three samples, all others have one.
 		Returns zeros if the the coordinates are not in bounds.
@@ -1557,7 +1587,7 @@ public abstract class ImageProcessor extends Object {
 		if (useBicubic)
 			return getBicubicInterpolatedPixel(x, y, this);
 		if (x<0.0 || x>=width-1.0 || y<0.0 || y>=height-1.0) {
-			if (x<-1.0 || x>=width || y<=1.0 || y>=height)
+			if (x<-1.0 || x>=width || y<-1.0 || y>=height)
 				return 0.0;
 			else
 				return getInterpolatedEdgeValue(x, y);
@@ -1610,7 +1640,7 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	static final double a = 0.5; // Catmull-Rom interpolation
-	public final double cubic(double x) {
+	public static final double cubic(double x) {
 		if (x < 0.0) x = -x;
 		double z = 0.0;
 		if (x < 1.0) 
@@ -1817,6 +1847,36 @@ public abstract class ImageProcessor extends Object {
 		return resize(dstWidth, (int)(dstWidth*((double)roiHeight/roiWidth)));
 	}
 
+	/** Creates a new ImageProcessor containing a scaled copy of this image or ROI.
+		@param dstWidth   Image width of the resulting ImageProcessor
+		@param dstHeight  Image height of the resulting ImageProcessor
+		@param useAverging  True means that the averaging occurs to avoid
+			aliasing artifacts; the kernel shape for averaging is determined by 
+			the interpolationMethod. False if subsampling without any averaging  
+			should be used on downsizing.  Has no effect on upsizing.
+		@ImageProcessor#setInterpolationMethod for setting the interpolation method
+		@author Michael Schmid
+	*/
+	public ImageProcessor resize(int dstWidth, int dstHeight, boolean useAverging) {
+		Rectangle r = getRoi();
+		int rWidth = r.width;
+		int rHeight = r.height;
+		if ((dstWidth>=rWidth && dstHeight>=rHeight) || !useAverging)
+			return resize(dstWidth, dstHeight);  //upsizing or downsizing without averaging
+		else {  //downsizing with averaging in at least one direction: convert to float
+			ImageProcessor ip2 = createProcessor(dstWidth, dstHeight);
+			FloatProcessor fp = null;
+			for (int channelNumber=0; channelNumber<getNChannels(); channelNumber++) {
+				fp = toFloat(channelNumber, fp);
+				fp.setInterpolationMethod(interpolationMethod);
+				fp.setRoi(getRoi());
+				FloatProcessor fp2 = fp.downsize(dstWidth, dstHeight);
+				ip2.setPixels(channelNumber, fp2);
+			}
+			return ip2;
+		}
+	}
+
 	/** Rotates the image or selection 'angle' degrees clockwise.
 		@see ImageProcessor#setInterpolate
 	*/
@@ -1849,7 +1909,10 @@ public abstract class ImageProcessor extends Object {
 		} 
   	}
   	
-  	/** Obsolete; replaced by translate(x,y). */
+	/**
+	* @deprecated
+	* replaced by translate(x,y)
+	*/
   	public void translate(int xOffset, int yOffset, boolean eraseBackground) {
 		translate(xOffset, yOffset);
   	}
@@ -2169,10 +2232,29 @@ public abstract class ImageProcessor extends Object {
 	public static void setUseBicubic(boolean b) {
 		useBicubic = b;
 	}
+	
+	/* Calculates and returns statistics for this image. */
+	public ImageStatistics getStatistics() {
+		return ImageStatistics.getStatistics(this, 127, null);
+	}
+	
+	/* Returns the PlugInFilter slice number. */
+	public int getSliceNumber() {
+		if (sliceNumber<1)
+			return 1;
+		else
+			return sliceNumber;
+	}
 
-	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
+	/** PlugInFilterRunner uses this method to set the slice number. */
+	public void setSliceNumber(int slice) {
+		sliceNumber = slice;
+	}
+	
+	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public abstract int getBitDepth();
+	public abstract int getBytesPerPixel();
 	public abstract ImageStatistics getStatistics(int mOptions, Calibration cal);
 	public abstract boolean isFloatingType();
 	public abstract boolean isUnsignedType();
@@ -2181,4 +2263,24 @@ public abstract class ImageProcessor extends Object {
 	public abstract String getTypeName();
 	public abstract double getd(int x, int y);
 	public abstract double getd(int index);
+
+	protected boolean getSnapshotCopyMode()
+	{
+		return snapshotCopyMode;
+	}
+
+	protected void setFgColor(int color)
+	{
+		fgColor = color;
+	}
+	
+	public int getFgColor()
+	{
+		return fgColor;
+	}
+
+	public Color getDrawingColor()
+	{
+		return drawingColor;
+	}
 }

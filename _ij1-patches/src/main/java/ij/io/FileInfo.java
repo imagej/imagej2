@@ -2,7 +2,7 @@ package ij.io;
 import ij.VirtualStack;
 import java.io.*;
 import java.util.Properties;
-
+ 
 /** This class consists of public fields that describe an image file. */
 public class FileInfo implements Cloneable {
 

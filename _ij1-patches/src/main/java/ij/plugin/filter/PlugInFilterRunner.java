@@ -2,7 +2,6 @@ package ij.plugin.filter;
 import ij.*;
 import ij.process.*;
 import ij.gui.*; 
-
 import java.awt.*;
 import java.util.Hashtable;
 
@@ -177,6 +176,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
             if (i != processedAsPreview) {
                 announceSliceNumber(i);
                 ip.setPixels(stack.getPixels(i));
+                ip.setSliceNumber(i);
                 processOneImage(ip, fp, false);
                 if (IJ.escapePressed()) {IJ.beep(); break;}
             }
@@ -226,6 +226,7 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
         if (convertToFloat) {
             for (int i=0; i<ip.getNChannels(); i++) {
                 fp = ip.toFloat(i, fp);
+                fp.setSliceNumber(ip.getSliceNumber());
                 if (thread.isInterrupted()) return;         // interrupt processing for preview?
                 if ((flags&PlugInFilter.SNAPSHOT)!=0) fp.snapshot();
 				if (doStack) IJ.showProgress(pass/(double)nPasses);
@@ -285,8 +286,6 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                     if ( (flags & PlugInFilter.DOES_ALL) != PlugInFilter.DOES_ALL)
                     {wrongType(flags, cmd); return false;}
                 	break;
-                default:
-                	throw new IllegalStateException();
             }
             if ((flags&PlugInFilter.ROI_REQUIRED)!=0 && imp.getRoi()==null)
             {IJ.error(cmd, "This command requires a selection"); return false;}

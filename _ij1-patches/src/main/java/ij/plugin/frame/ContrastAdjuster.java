@@ -1,8 +1,9 @@
 package ij.plugin.frame;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.awt.image.*;
 import ij.*;
+import ij.plugin.*;
 import ij.process.*;
 import ij.gui.*;
 import ij.measure.*;
@@ -20,6 +21,7 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	static final String[] channelLabels = {"Red", "Green", "Blue", "Cyan", "Magenta", "Yellow", "All"};
 	static final String[] altChannelLabels = {"Channel 1", "Channel 2", "Channel 3", "Channel 4", "Channel 5", "Channel 6", "All"};
 	static final int[] channelConstants = {4, 2, 1, 3, 5, 6, 7};
+	static final String[] ranges = {"Automatic", "8-bit (0-255)", "10-bit (0-1023)", "12-bit (0-4095)", "15-bit (0-32767)", "16-bit (0-65535)"};
 	
 	ContrastPlot plot = new ContrastPlot();
 	Thread thread;
@@ -323,12 +325,12 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		double max2 = imp.getDisplayRangeMax();
 		if (imp.getType()==ImagePlus.COLOR_RGB)
 			{min2=0.0; max2=255.0;}
-		if (ip instanceof ByteProcessor)
+		if ((ip instanceof ByteProcessor) || (ip instanceof ColorProcessor))
 		{
 			defaultMin = 0;
 			defaultMax = 255;
 		}
-		else  // FloatProc, ShortProc, ColorProc, or ImgLibProc
+		else
 		{
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
@@ -536,8 +538,8 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	void reset(ImagePlus imp, ImageProcessor ip) {
  		if (RGBImage)
 			ip.reset();
- 		if (!(ip instanceof ByteProcessor) && !(ip instanceof ColorProcessor))
- 		{
+		if ( !(ip instanceof ByteProcessor) && !(ip instanceof ColorProcessor))
+		{
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
@@ -570,8 +572,14 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 				pixels = b;
 			ImageProcessor ip = new ByteProcessor(w, h, pixels, null);
 			stats = ImageStatistics.getStatistics(ip, 0, imp.getCalibration());
-		} else
-			stats = imp.getStatistics();
+		} else {
+			int range = imp.getType()==ImagePlus.GRAY16?ImagePlus.getDefault16bitRange():0;
+			if (range!=0 && imp.getProcessor().getMax()==Math.pow(2,range)-1 && !(imp.getCalibration().isSigned16Bit())) {
+				ImagePlus imp2 = new ImagePlus("Temp", imp.getProcessor());
+				stats = new StackStatistics(imp2, 256, 0, Math.pow(2,range));
+			} else
+				stats = imp.getStatistics();
+		}
 		Color color = Color.gray;
 		if (imp.isComposite() && !(balance&&channels==7))
 			color = ((CompositeImage)imp).getChannelColor();
@@ -660,6 +668,9 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	}
 
 	void applyRGBStack(ImagePlus imp) {
+		double min = imp.getDisplayRangeMin();
+		double max = imp.getDisplayRangeMax();
+		if (IJ.debugMode) IJ.log("applyRGBStack: "+min+"-"+max);
 		int current = imp.getCurrentSlice();
 		int n = imp.getStackSize();
 		if (!IJ.showMessageWithCancel("Update Entire Stack?",
@@ -692,13 +703,12 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	}
 
 	void setThreshold(ImageProcessor ip) {
-		if (ip.getBitDepth() == 8)
-		{
-			if (ip.isInvertedLut())
-				ip.setThreshold(max, 255, ImageProcessor.NO_LUT_UPDATE);
-			else
-				ip.setThreshold(0, max, ImageProcessor.NO_LUT_UPDATE);
-		}
+		if (!(ip instanceof ByteProcessor))
+			return;
+		if (((ByteProcessor)ip).isInvertedLut())
+			ip.setThreshold(max, 255, ImageProcessor.NO_LUT_UPDATE);
+		else
+			ip.setThreshold(0, max, ImageProcessor.NO_LUT_UPDATE);
 	}
 
 	void autoAdjust(ImagePlus imp, ImageProcessor ip) {
@@ -760,18 +770,14 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		boolean valuesFloat = false;
-		if (ip.isFloatingType())
-			valuesFloat = true;
-		else if (cal.calibrated())
-			valuesFloat = true;
-		int digits =  valuesFloat ? 2 : 0;
+		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		int channels = imp.getNChannels();
 		GenericDialog gd = new GenericDialog("Set Display Range");
-		gd.addNumericField("Minimum Displayed Value: ", minValue, digits);
-		gd.addNumericField("Maximum Displayed Value: ", maxValue, digits);
+		gd.addNumericField("Minimum displayed value: ", minValue, digits);
+		gd.addNumericField("Maximum displayed value: ", maxValue, digits);
+		gd.addChoice("Unsigned 16-bit range:", ranges, ranges[getRangeIndex()]);
 		gd.addCheckbox("Propagate to all open images", false);
 		if (imp.isComposite())
 			gd.addCheckbox("Propagate to all "+channels+" channels", false);
@@ -782,6 +788,14 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		maxValue = gd.getNextNumber();
 		minValue = cal.getRawValue(minValue);
 		maxValue = cal.getRawValue(maxValue);
+		int rangeIndex = gd.getNextChoiceIndex();
+		int range1 = ImagePlus.getDefault16bitRange();
+		int range2 = setRange(rangeIndex);
+		if (range1!=range2 && imp.getType()==ImagePlus.GRAY16 && !cal.isSigned16Bit()) {
+			reset(imp, ip);
+			minValue = imp.getDisplayRangeMin();
+			maxValue = imp.getDisplayRangeMax();
+		}
 		boolean propagate = gd.getNextBoolean();
 		boolean allChannels = imp.isComposite()&&gd.getNextBoolean();
 		if (maxValue>=minValue) {
@@ -813,20 +827,42 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 					}
 					Recorder.record("setMinAndMax", imin, imax);
 				}
+				if (Recorder.scriptMode())
+					Recorder.recordCall("ImagePlus.setDefault16bitRange("+range2+");");
+				else
+					Recorder.recordString("call(\"ij.ImagePlus.setDefault16bitRange\", "+range2+");\n");
+
 			}
 		}
+	}
+	
+	int getRangeIndex() {
+		int range = ImagePlus.getDefault16bitRange();
+		int index = 0;
+		if (range==8) index = 1;
+		else if (range==10) index = 2;
+		else if (range==12) index = 3;
+		else if (range==15) index = 4;
+		else if (range==16) index = 5;
+		return index;
+	}
+
+	int setRange(int index) {
+		int range = 0;
+		if (index==1) range = 8;
+		else if (index==2) range = 10;
+		else if (index==3) range = 12;
+		else if (index==4) range = 15;
+		else if (index==5) range = 16;
+		ImagePlus.setDefault16bitRange(range);
+		return range;
 	}
 
 	void setWindowLevel(ImagePlus imp, ImageProcessor ip) {
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		boolean valuesFloat = false;
-		if (ip.isFloatingType())
-			valuesFloat = true;
-		else if (cal.calibrated())
-			valuesFloat = true;
-		int digits =  valuesFloat ? 2 : 0;
+		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		//IJ.log("setWindowLevel: "+min+" "+max);

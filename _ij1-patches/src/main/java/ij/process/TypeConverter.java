@@ -7,7 +7,7 @@ public class TypeConverter {
 
 	private enum ConvertFrom {BYTE, SHORT, FLOAT, RGB, OTHER};
 	private ImageProcessor ip;
-	private ConvertFrom type;
+	private ConvertFrom fromType;
 	boolean doScaling = true;
 	int width, height;
 
@@ -15,15 +15,15 @@ public class TypeConverter {
 		this.ip = ip;
 		this.doScaling = doScaling;
 		if (ip instanceof ByteProcessor)
-			type = ConvertFrom.BYTE;
+			fromType = ConvertFrom.BYTE;
 		else if (ip instanceof ShortProcessor)
-			type = ConvertFrom.SHORT;
+			fromType = ConvertFrom.SHORT;
 		else if (ip instanceof FloatProcessor)
-			type = ConvertFrom.FLOAT;
+			fromType = ConvertFrom.FLOAT;
 		else if (ip instanceof ColorProcessor)
-			type = ConvertFrom.RGB;
+			fromType = ConvertFrom.RGB;
 		else
-			type = ConvertFrom.OTHER;
+			fromType = ConvertFrom.OTHER;
 		
 		width = ip.getWidth();
 		height = ip.getHeight();
@@ -31,7 +31,7 @@ public class TypeConverter {
 
 	/** Converts processor to a ByteProcessor. */
 	public ImageProcessor convertToByte() {
-		switch (type) {
+		switch (fromType) {
 			case BYTE:
 				return ip;
 			case SHORT:
@@ -146,7 +146,7 @@ public class TypeConverter {
 	
 	/** Converts processor to a ShortProcessor. */
 	public ImageProcessor convertToShort() {
-		switch (type) {
+		switch (fromType) {
 			case BYTE:
 				return convertByteToShort();
 			case SHORT:
@@ -233,7 +233,7 @@ public class TypeConverter {
 	
 	/** Converts processor to a FloatProcessor. */
 	public ImageProcessor convertToFloat(float[] ctable) {
-		switch (type) {
+		switch (fromType) {
 			case BYTE:
 				return convertByteToFloat(ctable);
 			case SHORT:
@@ -308,7 +308,7 @@ public class TypeConverter {
 	
 	/** Converts processor to a ColorProcessor. */
 	public ImageProcessor convertToRGB() {
-		if (type==ConvertFrom.RGB)
+		if (fromType==ConvertFrom.RGB)
 			return ip;
 		else {
 			ImageProcessor ip2 = ip.convertToByte(doScaling);

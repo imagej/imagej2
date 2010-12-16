@@ -1642,8 +1642,8 @@ public class ImageProcessorTest
 	@Test
 	public void testGetFloatArray()
 	{
-		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		float[][] testFloatImageArray = refColorProcessor.getFloatArray();
+		FloatProcessor refFloatProcessor = new FloatProcessor( width, height, getRefImageArray() );
+		float[][] testFloatImageArray = refFloatProcessor.getFloatArray();
 		final int[] refImageArray = getRefImageArray();
 
 		for (int i = 0; i < height; i++)
@@ -1659,18 +1659,17 @@ public class ImageProcessorTest
 	@Test
 	public void testSetFloatArray()
 	{
-		ColorProcessor refColorProcessor = new ColorProcessor( width, height, getRefImageArray() );
-		float[][] refFloatImageArray = refColorProcessor.getFloatArray();
+		FloatProcessor refFloatProcessor = new FloatProcessor( width, height, getRefImageArray() );
+		float[][] refFloatImageArray = refFloatProcessor.getFloatArray();
 
-		ColorProcessor testColorProcessor = new ColorProcessor( width, height);
-		testColorProcessor.setFloatArray( refFloatImageArray );
+		FloatProcessor testFloatProcessor = new FloatProcessor( width, height);
+		testFloatProcessor.setFloatArray( refFloatImageArray );
 
-		for (int i = 0; i < height; i++)
+		for (int y = 0; y < height; y++)
 		{
-			for (int j = 0; j < width; j++ )
+			for (int x = 0; x < width; x++ )
 			{
-				final int index = width*i + j;
-				assertEquals(  refFloatImageArray[j][i], testColorProcessor.get(index), 0.0 );
+				assertEquals(  refFloatImageArray[x][y], testFloatProcessor.getf(x, y), 0.0 );
 			}
 		}
 	}

@@ -38,6 +38,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 	private static int yloc;
 	private static int count;
 	private static boolean centerOnScreen;
+	private static Point nextLocation;
 	
     private int textGap = centerOnScreen?0:TEXT_GAP;
 	
@@ -115,8 +116,11 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 			if (centerOnScreen) {
 				GUI.center(this);
 				centerOnScreen = false;
+			} else if (nextLocation!=null) {
+				setLocation(nextLocation);
+				nextLocation = null;
 			}
-			if (Interpreter.isBatchMode()) {
+			if (Interpreter.isBatchMode() || (IJ.getInstance()==null&&this instanceof HistogramWindow)) {
 				WindowManager.setTempCurrentImage(imp);
 				Interpreter.addBatchModeImage(imp);
 			} else
@@ -273,17 +277,17 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 				s = label + "; ";
 			}
 		}
+    	int type = imp.getType();
     	Calibration cal = imp.getCalibration();
     	if (cal.scaled()) {
     		s += IJ.d2s(imp.getWidth()*cal.pixelWidth,2) + "x" + IJ.d2s(imp.getHeight()*cal.pixelHeight,2)
  			+ " " + cal.getUnits() + " (" + imp.getWidth() + "x" + imp.getHeight() + "); ";
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
-    	s += imp.getProcessor().getTypeName();
+		s += imp.getBitDepth()+"-bit";
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
-		double size = ((double)imp.getWidth()*imp.getHeight()*imp.getStackSize())/1024.0;
-		size *= imp.getBytesPerPixel();
+		double size = imp.getBytesPerPixel() * ((double)imp.getWidth()) * imp.getHeight() * imp.getStackSize() / 1024.0;
    		String s2=null, s3=null;
     	if (size<1024.0)
     		{s2=IJ.d2s(size,0); s3="K";}
@@ -338,7 +342,9 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		if (ij!=null && ij.quitting())  // this may help avoid thread deadlocks
 			return true;
 		dispose();
-		imp.flush();
+		if (imp!=null)
+			imp.flush();
+		imp = null;
 		return true;
 	}
 	
@@ -346,9 +352,15 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		return imp;
 	}
 
-
-	void setImagePlus(ImagePlus imp) {
-		this.imp = imp;
+	public void setImage(ImagePlus imp2) {
+		ImageCanvas ic = getCanvas();
+		if (ic==null || imp2==null)
+			return;
+		imp = imp2;
+		imp.setWindow(this);
+		ic.updateImage(imp);
+		ic.setImageUpdated();
+		ic.repaint();
 		repaint();
 	}
 	
@@ -358,13 +370,20 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		this.imp = imp;
         ic.updateImage(imp);
         setLocationAndSize(true);
+        if (this instanceof StackWindow) {
+        	StackWindow sw = (StackWindow)this;
+        	int stackSize = imp.getStackSize();
+        	int nScrollbars = sw.getNScrollbars();
+        	if (stackSize==1 && nScrollbars>0)
+        		sw.removeScrollbars();
+        	else if (stackSize>1 && nScrollbars==0)
+        		sw.addScrollbars(imp);
+        }
         pack();
 		repaint();
 		maxBounds = getMaximumBounds();
-		//if (!IJ.isLinux()) {
-			setMaximizedBounds(maxBounds);
-			setMaxBoundsTime = System.currentTimeMillis();
-		//}
+		setMaximizedBounds(maxBounds);
+		setMaxBoundsTime = System.currentTimeMillis();
 	}
 
 	public ImageCanvas getCanvas() {
@@ -573,6 +592,11 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
     	centerOnScreen = true;
     }
     
+    /** Causes the next image to be displayed at the specified location. */
+    public static void setNextLocation(Point loc) {
+    	nextLocation = loc;
+    }
+
     /** Moves and resizes this window. Changes the 
     	 magnification so the image fills the window. */
     public void setLocationAndSize(int x, int y, int width, int height) {
@@ -580,7 +604,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		getCanvas().fitToWindow();
 		pack();
 	}
-
+	
 	/** Overrides the setBounds() method in Component so
 		we can find out when the window is resized. */
 	//public void setBounds(int x, int y, int width, int height)	{
