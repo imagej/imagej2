@@ -1272,7 +1272,7 @@ public class ColorProcessor extends ImageProcessor {
 	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
 	
 	public int getBitDepth() { return 24; }
-	public int getBytesPerPixel() { return 4; }
+	public double getBytesPerPixel() { return 4; }
 	
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{

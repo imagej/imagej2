@@ -1011,7 +1011,7 @@ public class FloatProcessor extends ImageProcessor {
 	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 32; }
-	public int getBytesPerPixel() { return 4; }
+	public double getBytesPerPixel() { return 4; }
 
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{

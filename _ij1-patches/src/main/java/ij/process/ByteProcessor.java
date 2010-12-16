@@ -1244,7 +1244,7 @@ public class ByteProcessor extends ImageProcessor {
 	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 8; }
-	public int getBytesPerPixel() { return 1; }
+	public double getBytesPerPixel() { return 1; }
 	
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{

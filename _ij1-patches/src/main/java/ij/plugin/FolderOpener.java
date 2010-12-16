@@ -376,7 +376,7 @@ class FolderOpenerDialog extends GenericDialog {
 		int width = imp.getWidth();
 		int height = imp.getHeight();
 		int depth = imp.getStackSize();
-		int bytesPerPixel = imp.getBytesPerPixel();
+		double bytesPerPixel = imp.getActualBytesPerPixel();
  		int n = getNumber(numberField.elementAt(0));
 		int start = getNumber(numberField.elementAt(1));
 		int inc = getNumber(numberField.elementAt(2));
@@ -416,7 +416,7 @@ class FolderOpenerDialog extends GenericDialog {
 		int n2 = ((fileCount-start+1)*depth)/inc;
 		if (n2<0) n2 = 0;
 		if (n2>n) n2 = n;
-		double size = ((double)width*height*n2*bytesPerPixel)/(1024*1024);
+		double size = (bytesPerPixel*width*height*n2)/(1024*1024);
  		((Label)theLabel).setText(width+" x "+height+" x "+n2+" ("+IJ.d2s(size,1)+"MB)");
 	}
 

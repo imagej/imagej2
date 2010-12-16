@@ -1,11 +1,8 @@
 package ij.gui;
 
 import java.awt.*;
-import java.awt.image.*;
-import java.util.Properties;
 import java.awt.event.*;
 import ij.*;
-import ij.process.*;
 import ij.io.*;
 import ij.measure.*;
 import ij.plugin.frame.*;
@@ -21,7 +18,6 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 	protected ImageJ ij;
 	protected ImageCanvas ic;
 	private double initialMagnification = 1;
-	private int newWidth, newHeight;
 	protected boolean closed;
 	private boolean newCanvas;
 	private boolean unzoomWhenMinimizing = true;
@@ -277,7 +273,6 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 				s = label + "; ";
 			}
 		}
-    	int type = imp.getType();
     	Calibration cal = imp.getCalibration();
     	if (cal.scaled()) {
     		s += IJ.d2s(imp.getWidth()*cal.pixelWidth,2) + "x" + IJ.d2s(imp.getHeight()*cal.pixelHeight,2)
@@ -287,7 +282,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 		s += imp.getBitDepth()+"-bit";
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
-		double size = imp.getBytesPerPixel() * ((double)imp.getWidth()) * imp.getHeight() * imp.getStackSize() / 1024.0;
+		double size = imp.getActualBytesPerPixel() * imp.getWidth() * imp.getHeight() * imp.getStackSize() / 1024;
    		String s2=null, s3=null;
     	if (size<1024.0)
     		{s2=IJ.d2s(size,0); s3="K";}
