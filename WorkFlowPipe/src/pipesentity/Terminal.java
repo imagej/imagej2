@@ -1,5 +1,8 @@
 package pipesentity;
 
+import pipesentity.TerminalConnectorType.inputType;
+import pipesentity.TerminalConnectorType.outputType;
+
 public class Terminal {
 	
 	//populate with defaults
@@ -13,7 +16,7 @@ public class Terminal {
 	 * @param input If the terminal is of Input Type
 	 * @param terminalConnectorType - Enumerated values of supported types
 	 */
-	public Terminal( boolean isInputTypeOfTerminal, TerminalConnectorType terminalConnectorType )
+	public Terminal( boolean isInputTypeOfTerminal, String terminalConnectorType )
 	{
 		if (isInputTypeOfTerminal)
 		{
@@ -27,7 +30,7 @@ public class Terminal {
 		}
 		
 		//assign type value
-		this.typeValue = terminalConnectorType.toString();
+		this.typeValue = terminalConnectorType;
 	}
 	
 	public String getTypeKey() {
@@ -49,11 +52,11 @@ public class Terminal {
 	/**
 	 * @return
 	 */
-	public static Terminal[] getInOutTerminal( TerminalConnectorType inputTerminalType, TerminalConnectorType outputTerminalType ) 
+	public static Terminal[] getInOutTerminal( inputType inputType1, outputType outputType1 ) 
 	{
 		Terminal[] terminals = new Terminal[2];
-		terminals[0] = new Terminal( true, inputTerminalType  );
-		terminals[1] = new Terminal( false, outputTerminalType );
+		terminals[0] = new Terminal( true, inputType1.toString()  );
+		terminals[1] = new Terminal( false, outputType1.toString() );
  		return terminals;
 	}
 

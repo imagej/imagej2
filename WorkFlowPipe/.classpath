@@ -25,5 +25,16 @@
 	<classpathentry kind="lib" path="lib/jetty-websocket-8.0.0.M2.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-xml-8.0.0.M2.jar"/>
 	<classpathentry kind="lib" path="lib/jsonrpc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/google-api-client-1.2.1-alpha-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/google-api-client-1.2.1-alpha-sources.jar"/>
+	<classpathentry kind="lib" path="lib/google-api-client-1.2.1-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.5.7.jar"/>
+	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/xpp3-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
