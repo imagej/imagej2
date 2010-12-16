@@ -2651,9 +2651,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	}
 
 	@Override
-	public int getBytesPerPixel()
+	public double getBytesPerPixel()
 	{
-		return (int) Math.ceil(getBitDepth() / 8.0);
+		return getBitDepth() / 8.0;
 	}
 
 	@Override

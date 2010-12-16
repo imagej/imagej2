@@ -249,7 +249,6 @@ public class ImgLibProcessorTest {
 			}
 		}
 
-		// TODO - reenable : stopped working when moving from ij.jar 1.43u to 1.44l9
 		assertEquals(baselineProc.getMin(), testedProc.getMin(), DOUBLE_TOL);
 		assertEquals(baselineProc.getMax(), testedProc.getMax(), DOUBLE_TOL);
 	}
