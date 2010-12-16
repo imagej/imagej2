@@ -19,7 +19,6 @@ public class ModuleSearch {
 		{
 			if( pipesModule.matchesType( type ) )
 			{
-				System.out.println("Found module match for pipesModule");
 				return pipesModule;
 			}
 		}
