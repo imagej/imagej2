@@ -388,7 +388,7 @@ public class LineTest {
 		vals = line.getPixels();
 		line.setStrokeWidth(savedLineWidth);
 		assertEquals(2,vals.length);
-		Assert.assertDoubleArraysEqual(new double[]{0.5,0.00167}, vals, Assert.DOUBLE_TOL);
+		Assert.assertDoubleArraysEqual(new double[]{1.0,0.00333333}, vals, Assert.DOUBLE_TOL);
 
 		// strokewidth != 1, try a line across diagonal
 		line = new Line(0,0,2,2);
@@ -398,7 +398,7 @@ public class LineTest {
 		vals = line.getPixels();
 		line.setStrokeWidth(savedLineWidth);
 		assertEquals(3,vals.length);
-		Assert.assertDoubleArraysEqual(new double[]{0.5,0.50199,0.25669}, vals, Assert.DOUBLE_TOL);
+		Assert.assertDoubleArraysEqual(new double[]{0.646446600,0.50199,0.40115381777}, vals, Assert.DOUBLE_TOL);
 	}
 
 	@Test

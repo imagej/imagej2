@@ -11,7 +11,6 @@ import ij.plugin.frame.RoiManager;
 import ij.macro.*;
 import ij.*;
 import ij.util.*;
-
 import java.awt.event.*;
 import java.util.*;
 import java.awt.geom.*;
@@ -108,6 +107,14 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		srcRect = r;
 	}
 
+	void setSrcRect(Rectangle srcRect) {
+		this.srcRect = srcRect;
+	}
+		
+	public Rectangle getSrcRect() {
+		return srcRect;
+	}
+	
 	public void setDrawingSize(int width, int height) {
 	    dstWidth = width;
 	    dstHeight = height;
@@ -154,20 +161,20 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
     }
     
     private void drawRoi(Roi roi, Graphics g) {
-			if (roi==currentRoi) {
-				Color lineColor = roi.getStrokeColor();
-				Color fillColor = roi.getFillColor();
-				float lineWidth = roi.getStrokeWidth();
-				roi.setStrokeColor(null);
-				roi.setFillColor(null);
-				roi.setStrokeWidth(1);
-				roi.draw(g);
-				roi.setStrokeColor(lineColor);
-				roi.setStrokeWidth(lineWidth);
-				roi.setFillColor(fillColor);
-				currentRoi = null;
-			} else
-				roi.draw(g);
+		if (roi==currentRoi) {
+			Color lineColor = roi.getStrokeColor();
+			Color fillColor = roi.getFillColor();
+			float lineWidth = roi.getStrokeWidth();
+			roi.setStrokeColor(null);
+			roi.setFillColor(null);
+			roi.setStrokeWidth(1);
+			roi.draw(g);
+			roi.setStrokeColor(lineColor);
+			roi.setStrokeWidth(lineWidth);
+			roi.setFillColor(fillColor);
+			currentRoi = null;
+		} else
+			roi.draw(g);
     }
     
     void drawAllROIs(Graphics g) {
@@ -226,19 +233,37 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		return slice;
 	}
 
-    void drawOverlay(Graphics g) {
+	void drawOverlay(Graphics g) {
+		if (imp!=null && imp.getHideOverlay())
+			return;
 		initGraphics(g);
-		Vector list = overlay.getVector();
-    	int n = list.size();
-    	if (IJ.debugMode) IJ.log("paint: drawing "+n+" ROI display list");
-    	boolean drawLabels = overlay.getDrawLabels();
-    	for (int i=0; i<n; i++) {
-    		if (overlay==null) break;
-    		drawRoi(g, (Roi)list.get(i), drawLabels?i+LIST_OFFSET:-1);
-    	}
+		int n = overlay.size();
+		if (IJ.debugMode) IJ.log("paint: drawing "+n+" ROI display list");
+		boolean drawLabels = overlay.getDrawLabels();
+		int stackSize = imp.getStackSize();
+		if (n>1 && n==stackSize && stackLabels(overlay)) { // created by Image>Stacks>Label
+			int index = imp.getCurrentSlice()-1;
+			if (index<n) {
+				overlay.temporarilyHide(0, index-1);
+				overlay.temporarilyHide(index+1, stackSize-1);
+			}
+		}
+		for (int i=0; i<n; i++) {
+			if (overlay==null) break;
+			drawRoi(g, overlay.get(i), drawLabels?i+LIST_OFFSET:-1);
+		}
 		((Graphics2D)g).setStroke(Roi.onePixelWide);
-    }
+	}
     
+	/** Was this overlay created by Image/Stacks/Label? */
+	public boolean stackLabels(Overlay o) {
+		Roi roi0 = o.get(0);
+		boolean labels = (roi0 instanceof TextRoi) && (o.get(o.size()-1) instanceof TextRoi);
+		String text = null;
+		try {text = ((TextRoi)roi0).getText();} catch(Exception e) {return false;}
+		return labels && text.length()>0 && (Character.isDigit(text.charAt(0))||text.charAt(0)==' ');
+	}
+	
     void initGraphics(Graphics g) {
 		if (smallFont==null) {
 			smallFont = new Font("SansSerif", Font.PLAIN, 9);
@@ -367,6 +392,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		}
 		catch(OutOfMemoryError e) {IJ.outOfMemory("Paint");}
 	}
+	
+	public void resetDoubleBuffer() {
+		offScreenImage = null;
+	}
 
     long firstFrame;
     int frames, fps;
@@ -403,6 +432,11 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	/** Returns the current cursor location in image coordinates. */
 	public Point getCursorLoc() {
 		return new Point(xMouse, yMouse);
+	}
+	
+	/** Returns 'true' if the cursor is over this image. */
+	public boolean cursorOverImage() {
+		return !mouseExited;
 	}
 
 	/** Returns the mouse event modifiers. */
@@ -504,14 +538,6 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		imp.setTitle(imp.getTitle());
 	}
 
-	public Rectangle getSrcRect() {
-		return srcRect;
-	}
-	
-	void setSrcRect(Rectangle srcRect) {
-		this.srcRect = srcRect;
-	}
-		
 	/** Enlarge the canvas if the user enlarges the window. */
 	void resizeCanvas(int width, int height) {
 		ImageWindow win = imp.getWindow();
@@ -605,8 +631,9 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 
 	/** Zooms in by making the window bigger. If it can't
 		be made bigger, then make the source rectangle 
-		(srcRect) smaller and center it at (x,y). */
-	public void zoomIn(int x, int y) {
+		(srcRect) smaller and center it at (sx,sy). Note that
+		sx and sy are screen coordinates. */
+	public void zoomIn(int sx, int sy) {
 		if (magnification>=32) return;
 		double newMag = getHigherZoomLevel(magnification);
 		int newWidth = (int)(imageWidth*newMag);
@@ -615,12 +642,12 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		if (newSize!=null) {
 			setDrawingSize(newSize.width, newSize.height);
 			if (newSize.width!=newWidth || newSize.height!=newHeight)
-				adjustSourceRect(newMag, x, y);
+				adjustSourceRect(newMag, sx, sy);
 			else
 				setMagnification(newMag);
 			imp.getWindow().pack();
 		} else
-			adjustSourceRect(newMag, x, y);
+			adjustSourceRect(newMag, sx, sy);
 		repaint();
 		if (srcRect.width<imageWidth || srcRect.height<imageHeight)
 			resetMaxBounds();
@@ -800,60 +827,56 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		return new Color(cm.getRGB(index));
 	}
 	
-	private Color findColor(ImageProcessor proc, int ox, int oy)
-	{
-		//IJ.write("setDrawingColor: "+setBackground+this);
+	protected void setDrawingColor(int ox, int oy, boolean setBackground) {
+		//IJ.log("setDrawingColor: "+setBackground+this);
 		int type = imp.getType();
-		if (type == ImagePlus.OTHER)
-		{
-			ImageProcessor ip = imp.getProcessor(); 
-			double min = ip.getMin();
-			double max = ip.getMax();
-			double value = ip.getd(ox,oy);
-			int index = (int)(255.0*((value-min)/(max-min)));
-			if (index<0) index = 0;
-			if (index>255) index = 255;
-			return getColor(index);
-		}
-		else // old image types
-		{
-			int[] v = imp.getPixel(ox, oy);
-			switch (type)
-			{
-				case ImagePlus.GRAY8:
-					return getColor(v[0]);
-					
-				case ImagePlus.GRAY16:
-				case ImagePlus.GRAY32:
-					ImageProcessor ip = imp.getProcessor(); 
-					double min = ip.getMin();
-					double max = ip.getMax();
-					double value = (type==ImagePlus.GRAY32)?Float.intBitsToFloat(v[0]):v[0];
-					int index = (int)(255.0*((value-min)/(max-min)));
-					if (index<0) index = 0;
-					if (index>255) index = 255;
-					return getColor(index);
-
-				case ImagePlus.COLOR_RGB:
-				case ImagePlus.COLOR_256:
-					return new Color(v[0], v[1], v[2]);
-					
-				default:
-					throw new IllegalArgumentException("findColor(): unknown image type ("+type+")");
+		int[] v = imp.getPixel(ox, oy);
+		switch (type) {
+			case ImagePlus.GRAY8: {
+				if (setBackground)
+					setBackgroundColor(getColor(v[0]));
+				else
+					setForegroundColor(getColor(v[0]));
+				break;
+			}
+			case ImagePlus.GRAY16: case ImagePlus.GRAY32: {
+				double min = imp.getProcessor().getMin();
+				double max = imp.getProcessor().getMax();
+				double value = (type==ImagePlus.GRAY32)?Float.intBitsToFloat(v[0]):v[0];
+				int index = (int)(255.0*((value-min)/(max-min)));
+				if (index<0) index = 0;
+				if (index>255) index = 255;
+				if (setBackground)
+					setBackgroundColor(getColor(index));
+				else
+					setForegroundColor(getColor(index));
+				break;
+			}
+			case ImagePlus.COLOR_RGB: case ImagePlus.COLOR_256: {
+				Color c = new Color(v[0], v[1], v[2]);
+				if (setBackground)
+					setBackgroundColor(c);
+				else
+					setForegroundColor(c);
+				break;
+			}
+			case ImagePlus.OTHER: {
+				double min = imp.getProcessor().getMin();
+				double max = imp.getProcessor().getMax();
+				double value = imp.getProcessor().getd(ox,oy);
+				int index = (int)(255.0*((value-min)/(max-min)));
+				if (index<0) index = 0;
+				if (index>255) index = 255;
+				if (setBackground)
+					setBackgroundColor(getColor(index));
+				else
+					setForegroundColor(getColor(index));
 			}
 		}
-	}
-	
-	protected void setDrawingColor(int ox, int oy, boolean setBackground) {
-		Color c = findColor(imp.getProcessor(), ox, oy);
+		Color c;
 		if (setBackground)
-		{
-			setBackgroundColor(c);
 			c = Toolbar.getBackgroundColor();
-		}
-		else
-		{
-			setForegroundColor(c);
+		else {
 			c = Toolbar.getForegroundColor();
 			imp.setColor(c);
 		}
@@ -873,12 +896,15 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (ij==null) return;
+		//if (ij==null) return;
 		showCursorStatus = true;
 		int toolID = Toolbar.getToolId();
 		ImageWindow win = imp.getWindow();
 		if (win!=null && win.running2 && toolID!=Toolbar.MAGNIFIER) {
-			win.running2 = false;
+			if (win instanceof StackWindow)
+				((StackWindow)win).setAnimate(false);
+			else
+				win.running2 = false;
 			return;
 		}
 		
@@ -912,10 +938,17 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 			case Toolbar.MAGNIFIER:
 				if (IJ.shiftKeyDown())
 					zoomToSelection(ox, oy);
-				else if ((flags & (Event.ALT_MASK|Event.META_MASK|Event.CTRL_MASK))!=0)
-					IJ.run("Out");
-				else
-					IJ.run("In");
+				else if ((flags & (Event.ALT_MASK|Event.META_MASK|Event.CTRL_MASK))!=0) {
+					//IJ.run("Out");
+					zoomOut(x, y);
+					if (getMagnification()<1.0)
+						imp.repaintWindow();
+				} else {
+					//IJ.run("In");
+	 				zoomIn(x, y);
+					if (getMagnification()<=1.0)
+						imp.repaintWindow();
+				}
 				break;
 			case Toolbar.HAND:
 				setupScroll(ox, oy);
@@ -1163,6 +1196,20 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	public boolean getShowAllROIs() {
 		return showAllROIs;
 	}
+	
+	/** Return the ROI Manager "Show All" list as an overlay. */
+	public Overlay getShowAllList() {
+		if (!showAllROIs) return null;
+		if (showAllList!=null) return showAllList;
+		RoiManager rm=RoiManager.getInstance();
+		if (rm==null) return null;
+		Roi[] rois = rm.getRoisAsArray();
+		if (rois.length==0) return null;
+		Overlay overlay = new Overlay();
+		for (int i=0; i<rois.length; i++)
+			overlay.add((Roi)rois[i].clone());
+		return overlay;
+	}
 
 	/** Returns the color used for "Show All" mode. */
 	public static Color getShowAllColor() {
@@ -1194,7 +1241,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		return overlay;
 	}
 
-	/** Obsolete; replaced by ImagePlus.setOverlay(ij.gui.Overlay). */
+	/**
+	* @deprecated
+	* replaced by ImagePlus.setOverlay(ij.gui.Overlay)
+	*/
 	public void setDisplayList(Vector list) {
 		if (list!=null) {
 			Overlay list2 = new Overlay();
@@ -1209,7 +1259,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		repaint();
 	}
 
-	/** Obsolete; replaced by ImagePlus.setOverlay(Shape, Color, BasicStroke). */
+	/**
+	* @deprecated
+	* replaced by ImagePlus.setOverlay(Shape, Color, BasicStroke)
+	*/
 	public void setDisplayList(Shape shape, Color color, BasicStroke stroke) {
 		if (shape==null)
 			{setOverlay(null); return;}
@@ -1221,7 +1274,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		setOverlay(list);
 	}
 	
-	/** Obsolete; replaced by ImagePlus.setOverlay(Roi, Color, int, Color). */
+	/**
+	* @deprecated
+	* replaced by ImagePlus.setOverlay(Roi, Color, int, Color)
+	*/
 	public void setDisplayList(Roi roi, Color color) {
 		roi.setStrokeColor(color);
 		Overlay list = new Overlay();
@@ -1229,7 +1285,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 		setOverlay(list);
 	}
 	
-	/** Obsolete; replaced by ImagePlus.getOverlay(). */
+	/**
+	* @deprecated
+	* replaced by ImagePlus.getOverlay()
+	*/
 	public Vector getDisplayList() {
 		if (overlay==null) return null;
 		Vector displayList = new Vector();
@@ -1241,6 +1300,10 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	/** Allows plugins (e.g., Orthogonal_Views) to create a custom ROI using a display list. */
 	public void setCustomRoi(boolean customRoi) {
 		this.customRoi = customRoi;
+	}
+
+	public boolean getCustomRoi() {
+		return customRoi;
 	}
 
 	/** Called by IJ.showStatus() to prevent status bar text from
@@ -1279,7 +1342,7 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 	}
 	
 	public void mouseMoved(MouseEvent e) {
-		if (ij==null) return;
+		//if (ij==null) return;
 		int sx = e.getX();
 		int sy = e.getY();
 		int ox = offScreenX(sx);

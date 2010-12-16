@@ -3,12 +3,13 @@ import ij.*;
 import ij.plugin.filter.Analyzer;
 
 /** Calibration objects contain an image's spatial and density calibration data. */
-   
+
 public class Calibration implements Cloneable {
 
 	public static final int STRAIGHT_LINE=0,POLY2=1,POLY3=2,POLY4=3,
 		EXPONENTIAL=4,POWER=5,LOG=6,RODBARD=7,GAMMA_VARIATE=8, LOG2=9, RODBARD2=10;
 	public static final int NONE=20, UNCALIBRATED_OD=21, CUSTOM=22;
+	public static final String DEFAULT_VALUE_UNIT = "Gray Value";
 
 	/** Pixel width in 'unit's */
 	public double pixelWidth = 1.0;
@@ -58,7 +59,7 @@ public class Calibration implements Cloneable {
 	private String units;
 
 	/* Pixel value unit (e.g. 'gray level', 'OD') */
-	private String valueUnit = "Gray Value";
+	private String valueUnit = DEFAULT_VALUE_UNIT;
 
 	/* Unit of time (e.g. 'sec', 'msec') */
 	private String timeUnit = "sec";
@@ -215,7 +216,7 @@ public class Calibration implements Cloneable {
  		cTable = null;
  	}
 
- 	/** Disables the density calibation if the specified image has a different bit depth. */
+ 	/** Disables the density calibation if the specified image has a differenent bit depth. */
  	public void setImage(ImagePlus imp) {
  		if (imp==null)
  			return;
@@ -223,13 +224,12 @@ public class Calibration implements Cloneable {
  		int newBitDepth = imp.getBitDepth();
  		if (newBitDepth==16 && imp.getLocalCalibration().isSigned16Bit()) {
 			double[] coeff = new double[2]; coeff[0] = -32768.0; coeff[1] = 1.0;
- 			setFunction(Calibration.STRAIGHT_LINE, coeff, "gray value");
+ 			setFunction(Calibration.STRAIGHT_LINE, coeff, DEFAULT_VALUE_UNIT);
 		} else if (newBitDepth!=bitDepth || type==ImagePlus.GRAY32 || type==ImagePlus.COLOR_RGB) {
 			String saveUnit = valueUnit;
 			disableDensityCalibration();
 			if (type==ImagePlus.GRAY32) valueUnit = saveUnit;
 		}
- 		//System.out.println("bit depth("+this+"): before "+bitDepth+" after "+newBitDepth);
  		bitDepth = newBitDepth;
  	}
  	
@@ -237,7 +237,7 @@ public class Calibration implements Cloneable {
 		function = NONE;
 		coefficients = null;
 		cTable = null;
-		valueUnit = "Gray Value";
+		valueUnit = DEFAULT_VALUE_UNIT;
  	}
  	
 	/** Returns the value unit. */
@@ -399,8 +399,57 @@ public class Calibration implements Cloneable {
 		catch (CloneNotSupportedException e) {return null;}
 	}
 
+	/** Compares two Calibration objects for equality. */
+ 	public boolean equals(Calibration cal) {
+ 		if (cal==null)
+ 			return false;
+ 		boolean equal = true;
+ 		if (cal.pixelWidth!=pixelWidth || cal.pixelHeight!=pixelHeight || cal.pixelDepth!=pixelDepth)
+ 			equal = false;
+ 		if (!cal.unit.equals(unit))
+ 			equal = false;
+ 		if (!cal.valueUnit.equals(valueUnit) || cal.function!=function)
+ 			equal = false;
+ 		return equal;
+ 	}
+ 	
+  	/** Returns true if this is a signed 16-bit image. */
+ 	public boolean isSigned16Bit() {
+		return (bitDepth==16 && function>=STRAIGHT_LINE && function<=RODBARD2 && coefficients!=null
+			&& coefficients[0]==-32768.0 && coefficients[1]==1.0);
+ 	}
+ 	
+ 	/** Sets up a calibration function that subtracts 32,768 from pixel values. */
+ 	public void setSigned16BitCalibration() {
+		double[] coeff = new double[2];
+		coeff[0] = -32768.0;
+		coeff[1] = 1.0;
+		setFunction(STRAIGHT_LINE, coeff, "Gray Value");
+ 	}
+
+ 	/** Returns true if zero clipping is enabled. */
+ 	public boolean zeroClip() {
+ 		return zeroClip;
+ 	}
+ 	
+ 	/** Sets the 'invertY' flag. */
+ 	public void setInvertY(boolean invertYCoordinates) {
+ 		invertY = invertYCoordinates;
+ 	}
+ 	
+    public String toString() {
+    	return
+    		"w=" + pixelWidth
+			+ ", h=" + pixelHeight
+			+ ", d=" + pixelDepth
+			+ ", unit=" + unit
+			+ ", f=" + function
+ 			+ ", nc=" + (coefficients!=null?""+coefficients.length:"null")
+ 			+ ", table=" + (cTable!=null?""+cTable.length:"null")
+			+ ", vunit=" + valueUnit;
+   }
 	/** Generic calibration equality test for unit tests */
-	// tests more internals of a Calibration than equals() below. Made to not break existing code.
+	// tests more internals of a Calibration than equals() does. Made to not break existing code.
 	public boolean isSameAs(Calibration other)
 	{
 		if (this == other)
@@ -444,45 +493,5 @@ public class Calibration implements Cloneable {
 		
 		return true;
 	}
-	
-	/** Compares two Calibration objects for equality. */
- 	public boolean equals(Calibration cal) {
- 		boolean equal = true;
- 		if (cal.pixelWidth!=pixelWidth || cal.pixelHeight!=pixelHeight || cal.pixelDepth!=pixelDepth)
- 			equal = false;
- 		if (!cal.unit.equals(unit))
- 			equal = false;
- 		if (!cal.valueUnit.equals(valueUnit) || cal.function!=function)
- 			equal = false;
- 		return equal;
- 	}
- 	
-  	/** Returns true if this is a signed 16-bit image. */
- 	public boolean isSigned16Bit() {
-		return (bitDepth==16 && function>=STRAIGHT_LINE && function<=RODBARD2 && coefficients!=null
-			&& coefficients[0]==-32768.0 && coefficients[1]==1.0);
- 	}
-
- 	/** Returns true if zero clipping is enabled. */
- 	public boolean zeroClip() {
- 		return zeroClip;
- 	}
- 	
- 	/** Sets the 'invertY' flag. */
- 	public void setInvertY(boolean invertYCoordinates) {
- 		invertY = invertYCoordinates;
- 	}
- 	
-    public String toString() {
-    	return
-    		"w=" + pixelWidth
-			+ ", h=" + pixelHeight
-			+ ", d=" + pixelDepth
-			+ ", unit=" + unit
-			+ ", f=" + function
- 			+ ", nc=" + (coefficients!=null?""+coefficients.length:"null")
- 			+ ", table=" + (cTable!=null?""+cTable.length:"null")
-			+ ", vunit=" + valueUnit;
-   }
 }
 

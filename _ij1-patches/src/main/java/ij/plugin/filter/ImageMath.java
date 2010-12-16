@@ -3,7 +3,6 @@ import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.macro.*;
-
 import java.awt.*;
 
 /** This plugin implements ImageJ's Process/Math submenu. */
@@ -58,7 +57,7 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		}
 
 	 	if (arg.equals("div")) {
-	 		if (mulValue==0.0&&imp.getBitDepth()!=32)
+	 		if (mulValue==0.0 && !ip.isFloatingType())
 	 			return;
 			ip.multiply(1.0/mulValue);
 			return;
@@ -155,27 +154,18 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 	 		
 			if (!isFloat(ip))
 				return;
-			
 			int w = ip.getWidth();
 			int h = ip.getHeight();
-
-			if (ip.isFloatingType())
+			int totPix = w*h;
+			for (int i=0; i<totPix; i++)
 			{
-				int totPix = w*h;
-				for (int i=0; i<totPix; i++)
-				{
-					float pixVal = ip.getf(i);
-					if (pixVal==0f)
-						ip.setf(i,Float.NaN);
-					else
-						ip.setf(i,1f/pixVal);
-				}
+				float pixVal = ip.getf(i);
+				if (pixVal==0f)
+					ip.setf(i,Float.NaN);
+				else
+					ip.setf(i,1f/pixVal);
 			}
-			else
-				throw new IllegalStateException();
-			
 			ip.resetMinAndMax();
-			
 			return;
 		}
 		
@@ -185,8 +175,8 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		}
 
 	 	if (arg.equals("abs")) {
-			if (!((ip instanceof FloatProcessor)||imp.getCalibration().isSigned16Bit())) {
-				IJ.error("32-bit or signed 16-bit image required");
+			if (!((ip.isFloatingType())||imp.getCalibration().isSigned16Bit())) {
+				IJ.error("floating point or signed 16-bit image required");
 				canceled = true;
 			} else {
 				ip.abs();
@@ -206,16 +196,13 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		return gd!=null && gd.getPreviewCheckbox().getState();
 	}
  
- 	private boolean isFloat(ImageProcessor ip)
- 	{
- 		if  (ip.isFloatingType())
- 			return true;
- 		
-		IJ.error("floating point image required");
-		
-		canceled = true;
-		
-		return false;
+ 	boolean isFloat(ImageProcessor ip) {
+		if (!(ip.isFloatingType())) {
+			IJ.error("floating point image required");
+			canceled = true;
+			return false;
+		} else
+			return true;
 	}
 	
 	void getValue (String title, String prompt, double defaultValue, int digits) {
@@ -250,21 +237,20 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		if (lower==-1.0 && upper==-1.0) {
 			lower = ip.getMinThreshold();
 			upper = ip.getMaxThreshold();
-			if (lower==ImageProcessor.NO_THRESHOLD || !(ip instanceof FloatProcessor)) {
-				IJ.error("Thresholded 32-bit float image required");
+			if (lower==ImageProcessor.NO_THRESHOLD || !(ip.isFloatingType())) {
+				IJ.error("Thresholded floating point image required");
 				canceled = true;
 				return;
 			}
 		}
-        float[] pixels = (float[])ip.getPixels();
         int width = ip.getWidth();
         int height = ip.getHeight();
         double v;
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
-                  v = pixels[y*width+x];
+                  v = ip.getf(x,y);
                   if (v<lower || v>upper)
-                      pixels[y*width+x] = Float.NaN;
+                      ip.setf(x, y, Float.NaN);
             }
         }
 		ip.resetMinAndMax();
@@ -316,13 +302,12 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		interp.setVariable("h", h);
 		boolean showProgress = pfr.getSliceNumber()==1 && !Interpreter.isBatchMode();
 		interp.setVariable("z", pfr.getSliceNumber()-1);
-		int bitDepth = imp.getBitDepth();
 		Rectangle r = ip.getRoi();
 		int inc = r.height/50;
 		if (inc<1) inc = 1;
 		double v;
 		int index, v2;
-		if (bitDepth==8) {
+		if (ip instanceof ByteProcessor) {
 			byte[] pixels1 = (byte[])ip.getPixels();
 			byte[] pixels2 = pixels1;
 			if (hasGetPixel)
@@ -346,7 +331,7 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 				}
 			}
 			if (hasGetPixel) System.arraycopy(pixels2, 0, pixels1, 0, w*h);
-		} else if (bitDepth==24) {
+		} else if (ip instanceof ColorProcessor) {
 			int rgb, red, green, blue;
 			int[] pixels1 = (int[])ip.getPixels();
 			int[] pixels2 = pixels1;
@@ -388,7 +373,7 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 				}
 			}
 			if (hasGetPixel) System.arraycopy(pixels2, 0, pixels1, 0, w*h);
-		} else {
+		} else {  // FloatProc, ShortProc, or an unknown processor type
 			for (int y=r.y; y<(r.y+r.height); y++) {
 				if (showProgress && y%inc==0)
 					IJ.showProgress(y-r.y, r.height);
@@ -423,13 +408,14 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 	}
 
 	void getMacro(String macro) {
-		gd = new GenericDialog("Macro");
+		gd = new GenericDialog("Expression Evaluator");
 		gd.addStringField("Code:", macro, 42);
 		gd.setInsets(0,40,0);
 		gd.addMessage("v=pixel value, x,y&z=pixel coordinates, w=image width,\nh=image height, a=angle, d=distance from center\n");
 		gd.setInsets(5,40,0);
 		gd.addPreviewCheckbox(pfr);
 		gd.addDialogListener(this);
+		gd.addHelp(IJ.URL+"/docs/menus/process.html#math-macro");
 		gd.showDialog();
 	}
 

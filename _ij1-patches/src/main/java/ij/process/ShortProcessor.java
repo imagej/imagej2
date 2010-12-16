@@ -3,19 +3,21 @@
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-import ij.gui.*;
-import ij.measure.Calibration;
 
-/** Objects of the class contain a 16-bit unsigned image and
-	methods that operate on that image. */
+import ij.measure.Calibration;
+import ij.process.ImageStatistics;
+import ij.process.ShortStatistics;
+
+/** ShortProcessors contain a 16-bit unsigned image
+	and methods that operate on that image. */
 public class ShortProcessor extends ImageProcessor {
 
 	private int min, max, snapshotMin, snapshotMax;
 	private short[] pixels;
 	private byte[] pixels8;
 	private short[] snapshotPixels;
-	private byte[] LUT;
 	private boolean fixedScale;
+
 
 	/** Creates a new ShortProcessor using the specified pixel array and ColorModel.
 		Set 'cm' to null to use the default grayscale LUT. */
@@ -49,13 +51,13 @@ public class ShortProcessor extends ImageProcessor {
 		this.pixels = pixels;
 		this.cm = cm;
 		resetRoi();
-		if (pixels!=null)
-			findMinAndMax();
-		fgColor = max;
 	}
 
-	/** Obsolete. 16 bit images are normally unsigned but signed images can be used by
-		subtracting 32768 and using a calibration function to restore the original values. */
+	/**
+	* @deprecated
+	* 16 bit images are normally unsigned but signed images can be simulated by
+	* subtracting 32768 and using a calibration function to restore the original values.
+	*/
 	public ShortProcessor(int width, int height, short[] pixels, ColorModel cm, boolean unsigned) {
 		this(width, height, pixels, cm);
 	}
@@ -67,7 +69,7 @@ public class ShortProcessor extends ImageProcessor {
 	}
 	
 	public void findMinAndMax() {
-		if (fixedScale)
+		if (fixedScale || pixels==null)
 			return;
 		int size = width*height;
 		int value;
@@ -80,6 +82,7 @@ public class ShortProcessor extends ImageProcessor {
 			if (value>max)
 				max = value;
 		}
+		minMaxSet = true;
 	}
 
 	/** Create an 8-bit AWT image by scaling pixels in the range min-max to 0-255. */
@@ -111,9 +114,10 @@ public class ShortProcessor extends ImageProcessor {
 		if (pixels8==null)
 			pixels8 = new byte[size];
 		int value;
-		double scale = 256.0/(max-min+1);
+		int min2=(int)getMin(), max2=(int)getMax(); 
+		double scale = 256.0/(max2-min2+1);
 		for (int i=0; i<size; i++) {
-			value = (pixels[i]&0xffff)-min;
+			value = (pixels[i]&0xffff)-min2;
 			if (value<0) value = 0;
 			value = (int)(value*scale+0.5);
 			if (value>255) value = 255;
@@ -163,8 +167,8 @@ public class ShortProcessor extends ImageProcessor {
 	public void snapshot() {
 		snapshotWidth=width;
 		snapshotHeight=height;
-		snapshotMin=min;
-		snapshotMax=max;
+		snapshotMin=(int)getMin();
+		snapshotMax=(int)getMax();
 		if (snapshotPixels==null || (snapshotPixels!=null && snapshotPixels.length!=pixels.length))
 			snapshotPixels = new short[width * height];
 		System.arraycopy(pixels, 0, snapshotPixels, 0, width*height);
@@ -175,6 +179,7 @@ public class ShortProcessor extends ImageProcessor {
 			return;
 	    min=snapshotMin;
 		max=snapshotMax;
+		minMaxSet = true;
         System.arraycopy(snapshotPixels, 0, pixels, 0, width*height);
 	}
 	
@@ -212,11 +217,13 @@ public class ShortProcessor extends ImageProcessor {
 
 	/** Returns the smallest displayed pixel value. */
 	public double getMin() {
+		if (!minMaxSet) findMinAndMax();
 		return min;
 	}
 
 	/** Returns the largest displayed pixel value. */
 	public double getMax() {
+		if (!minMaxSet) findMinAndMax();
 		return max;
 	}
 
@@ -226,16 +233,17 @@ public class ShortProcessor extends ImageProcessor {
 	@see #resetMinAndMax
 	@see ij.plugin.frame.ContrastAdjuster 
 	*/
-	public void setMinAndMax(double min, double max) {
-		if (min==0.0 && max==0.0)
+	public void setMinAndMax(double minimum, double maximum) {
+		if (minimum==0.0 && maximum==0.0)
 			{resetMinAndMax(); return;}
-		if (min<0.0)
-			min = 0.0;
-		if (max>65535.0)
-			max = 65535.0;
-		this.min = (int)min;
-		this.max = (int)max;
+		if (minimum<0.0)
+			minimum = 0.0;
+		if (maximum>65535.0)
+			maximum = 65535.0;
+		min = (int)minimum;
+		max = (int)maximum;
 		fixedScale = true;
+		minMaxSet = true;
 		resetThreshold();
 	}
 	
@@ -260,7 +268,7 @@ public class ShortProcessor extends ImageProcessor {
 	}
 
 	public final void set(int x, int y, int value) {
-		pixels[y*width + x] = (short)value;
+		pixels[y*width+x] = (short)value;
 	}
 
 	public final int get(int index) {
@@ -398,13 +406,11 @@ public class ShortProcessor extends ImageProcessor {
 	}
 
 	void getRow2(int x, int y, int[] data, int length) {
-		int value;
 		for (int i=0; i<length; i++)
 			data[i] = pixels[y*width+x+i]&0xffff;
 	}
 	
 	void putColumn2(int x, int y, int[] data, int length) {
-		int value;
 		for (int i=0; i<length; i++)
 			pixels[(y+i)*width+x] = (short)data[i];
 	}
@@ -434,11 +440,11 @@ public class ShortProcessor extends ImageProcessor {
 
 	private void process(int op, double value) {
 		int v1, v2;
-		double range = max-min;
-		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
+		double range = getMax()-getMin();
+		//boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
 		int offset = cTable!=null&&cTable[0]==-32768f?32768:0; // signed images have 32768 offset
-		int min2 = min - offset;
-		int max2 = max - offset;
+		int min2 = (int)getMin() - offset;
+		int max2 = (int)getMax() - offset;
 		int fgColor2 = fgColor - offset;
 		
 		for (int y=roiY; y<(roiY+roiHeight); y++) {
@@ -515,8 +521,6 @@ public class ShortProcessor extends ImageProcessor {
 				pixels[i++] = (short)v2;
 			}
 		}
-		if (resetMinMax)
-			findMinAndMax();
     }
 
 	public void invert() {
@@ -636,7 +640,7 @@ public class ShortProcessor extends ImageProcessor {
                     v9 = pixels2[p9]&0xffff;
                     double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
                     double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
-                    double result = Math.sqrt(sum1*sum1 + sum2*sum2);  // Wayne removed addition of 0.5 in 1.44g15
+                    double result = Math.sqrt(sum1*sum1 + sum2*sum2);
                     if (result>65535.0) result = 65535.0;
                     pixels[p] = (short)result;
                 }
@@ -780,6 +784,7 @@ public class ShortProcessor extends ImageProcessor {
 		if (interpolationMethod==BICUBIC)
 			ip2 = new ShortProcessor(getWidth(), getHeight(), pixels2, null);
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
+		short min2 = (short)getMin();
 		int index1, index2, xsi, ysi;
 		double ys, xs;
 		if (interpolationMethod==BICUBIC) {
@@ -808,7 +813,7 @@ public class ShortProcessor extends ImageProcessor {
 					xs = (x-xCenter)/xScale + xCenter;
 					xsi = (int)xs;
 					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
-						pixels[index1++] = (short)min;
+						pixels[index1++] = min2;
 					else {
 						if (interpolationMethod==BILINEAR) {
 							if (xs<0.0) xs = 0.0;
@@ -923,12 +928,11 @@ public class ShortProcessor extends ImageProcessor {
 			setMinAndMax(0.0,255.0);
 		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0) {
 			if (cTable!=null&&cTable[0]==-32768f) // signed image
-				setValue(32768.0);
+				setValue(32768);
 			else
 				setValue(0.0);
 		} else
 			fgColor = (int)(getMin() + (getMax()-getMin())*(bestIndex/255.0));
-
 	}
 	
 	/** Sets the default fill/draw value, where 0<=value<=65535). */
@@ -983,15 +987,16 @@ public class ShortProcessor extends ImageProcessor {
 			{resetThreshold(); return;}
 		if (minThreshold<0.0) minThreshold = 0.0;
 		if (maxThreshold>65535.0) maxThreshold = 65535.0;
-		if (max>min) {
+		int min2=(int)getMin(), max2=(int)getMax();
+		if (max2>min2) {
 			// scale to 0-255 using same method as create8BitImage()
-			double scale = 256.0/(max-min+1);
-			double minT = minThreshold-min;
+			double scale = 256.0/(max2-min2+1);
+			double minT = minThreshold-min2;
 			if (minT<0) minT = 0;
 			minT = (int)(minT*scale+0.5);
 			if (minT>255) minT = 255;
-			//ij.IJ.log("setThreshold: "+minT+" "+Math.round(((minThreshold-min)/(max-min))*255.0));
-			double maxT = maxThreshold-min;
+			//ij.IJ.log("setThreshold: "+minT+" "+Math.round(((minThreshold-min2)/(max2-min2))*255.0));
+			double maxT = maxThreshold-min2;
 			if (maxT<0) maxT = 0;
 			maxT = (int)(maxT*scale+0.5);
 			if (maxT>255) maxT = 255;
@@ -1061,7 +1066,7 @@ public class ShortProcessor extends ImageProcessor {
 			fPixels[i] = pixels[i]&0xffff;
 		fp.setRoi(getRoi());
 		fp.setMask(mask);
-		fp.setMinAndMax(min, max);
+		fp.setMinAndMax(getMin(), getMax());
 		fp.setThreshold(minThreshold, maxThreshold, ImageProcessor.NO_LUT_UPDATE);
 		return fp;
 	}
@@ -1096,9 +1101,10 @@ public class ShortProcessor extends ImageProcessor {
 	/** Not implemented. */
 	public void dilate() {}
 
-	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
+	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 16; }
+	public int getBytesPerPixel() { return 2; }
 	
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{

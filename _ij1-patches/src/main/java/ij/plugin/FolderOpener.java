@@ -13,7 +13,8 @@ import ij.measure.Calibration;
 opens a folder of images as a stack. */
 public class FolderOpener implements PlugIn {
 
-	private static boolean convertToGrayscale, convertToRGB;
+	private static String[] excludedTypes = {".txt", ".lut", ".roi", ".pty", ".hdr", ".java", ".ijm", ".py", ".js", ".bsh"};
+	private static boolean convertToRGB;
 	private static boolean sortFileNames = true;
 	private static boolean virtualStack;
 	private double scale = 100.0;
@@ -125,7 +126,6 @@ public class FolderOpener implements PlugIn {
 					bitDepth = imp.getBitDepth();
 					cal = imp.getCalibration();
 					if (convertToRGB) bitDepth = 24;
-					if (convertToGrayscale) bitDepth = 8;
 					ColorModel cm = imp.getProcessor().getColorModel();
 					if (virtualStack) {
 						stack = new VirtualStack(width, height, cm, directory);
@@ -158,9 +158,6 @@ public class FolderOpener implements PlugIn {
 						if (convertToRGB) {
 							ip = ip.convertToRGB();
 							bitDepth2 = 24;
-						} else if (convertToGrayscale) {
-							ip = ip.convertToByte(true);
-							bitDepth2 = 8;
 						}
 						if (bitDepth2!=bitDepth) {
 							if (bitDepth==8) {
@@ -184,7 +181,7 @@ public class FolderOpener implements PlugIn {
 					if (ip.getMin()<min) min = ip.getMin();
 					if (ip.getMax()>max) max = ip.getMax();
 					String label2 = label;
-					if (depth>1) label2 = null;
+					//if (depth>1) label2 = null;
 					if (virtualStack) {
 						if (slice==1) ((VirtualStack)stack).addSlice(list[i]);
 					} else
@@ -204,7 +201,10 @@ public class FolderOpener implements PlugIn {
 			if (info1!=null && info1.lastIndexOf("7FE0,0010")>0)
 				stack = (new DICOM_Sorter()).sort(stack);
 			ImagePlus imp2 = new ImagePlus(title, stack);
-			if (imp2.getType()==ImagePlus.GRAY16 || imp2.getType()==ImagePlus.GRAY32)
+			int imp2Type = imp2.getType();
+			if ((imp2Type==ImagePlus.GRAY16) ||
+					(imp2Type == ImagePlus.GRAY32) ||
+					(imp2Type == ImagePlus.OTHER))
 				imp2.getProcessor().setMinAndMax(min, max);
 			if (fi==null)
 				fi = new FileInfo();
@@ -234,17 +234,17 @@ public class FolderOpener implements PlugIn {
 	boolean showDialog(ImagePlus imp, String[] list) {
 		int fileCount = list.length;
 		FolderOpenerDialog gd = new FolderOpenerDialog("Sequence Options", imp, list);
-		gd.addNumericField("Number of Images:", fileCount, 0);
-		gd.addNumericField("Starting Image:", 1, 0);
+		gd.addNumericField("Number of images:", fileCount, 0);
+		gd.addNumericField("Starting image:", 1, 0);
 		gd.addNumericField("Increment:", 1, 0);
-		gd.addNumericField("Scale Images:", scale, 0, 4, "%");
-		gd.addStringField("File Name Contains:", "", 10);
-		gd.addStringField("or Enter Pattern:", "", 10);
-		gd.addCheckbox("Convert to 8-bit Grayscale", convertToGrayscale);
+		gd.addNumericField("Scale images:", scale, 0, 4, "%");
+		gd.addStringField("File name contains:", "", 10);
+		gd.addStringField("or enter pattern:", "", 10);
 		gd.addCheckbox("Convert_to_RGB", convertToRGB);
-		gd.addCheckbox("Sort Names Numerically", sortFileNames);
-		gd.addCheckbox("Use Virtual Stack", virtualStack);
+		gd.addCheckbox("Sort names numerically", sortFileNames);
+		gd.addCheckbox("Use virtual stack", virtualStack);
 		gd.addMessage("10000 x 10000 x 1000 (100.3MB)");
+		gd.addHelp(IJ.URL+"/docs/menus/file.html#seq1");
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return false;
@@ -262,7 +262,6 @@ public class FolderOpener implements PlugIn {
 			filter = regex;
 			isRegex = true;
 		}
-		convertToGrayscale = gd.getNextBoolean();
 		convertToRGB = gd.getNextBoolean();
 		sortFileNames = gd.getNextBoolean();
 		virtualStack = gd.getNextBoolean();
@@ -271,12 +270,12 @@ public class FolderOpener implements PlugIn {
 		return true;
 	}
 
-	/** Removes names that start with "." or end with ".db". ".txt", ".lut", "roi" or ".pty". */
+	/** Removes names that start with "." or end with ".db". ".txt", ".lut", "roi", ".pty" or ".hdr", ".py", etc. */
 	public String[] trimFileList(String[] rawlist) {
 		int count = 0;
 		for (int i=0; i< rawlist.length; i++) {
 			String name = rawlist[i];
-			if (name.startsWith(".")||name.equals("Thumbs.db")||name.endsWith(".txt")||name.endsWith(".lut")||name.endsWith(".roi")||name.endsWith(".pty"))
+			if (name.startsWith(".")||name.equals("Thumbs.db")||excludedFileType(name))
 				rawlist[i] = null;
 			else
 				count++;
@@ -292,6 +291,16 @@ public class FolderOpener implements PlugIn {
 			}
 		}
 		return list;
+	}
+	
+	/* Returns true if 'name' ends with ".txt", ".lut", ".roi", ".pty", ".hdr", ".java", ".ijm", ".py", ".js" or ".bsh. */
+	public static boolean excludedFileType(String name) {
+		if (name==null) return true;
+		for (int i=0; i<excludedTypes.length; i++) {
+			if (name.endsWith(excludedTypes[i]))
+				return true;
+		}
+		return false;
 	}
 
 	/** Sorts the file names into numeric order. */
@@ -357,24 +366,6 @@ class FolderOpenerDialog extends GenericDialog {
 	}
  	
 	public void itemStateChanged(ItemEvent e) {
-		Checkbox item = (Checkbox)e.getSource();
-		Checkbox grayscaleCB = (Checkbox)checkbox.elementAt(0);
-		Checkbox rgbCB = (Checkbox)checkbox.elementAt(1);
-		if (item==grayscaleCB) {
-			eightBits = item.getState();
-			if (eightBits) {
-			 rgbCB.setState(false);
-			 rgb = false;
-			}
-		}
-		if (item==rgbCB) {
-			rgb = item.getState();
-			if (rgb) {
-				grayscaleCB.setState(false);
-				eightBits = false;
-			}
-		}
- 		setStackInfo();
 	}
 	
 	public void textValueChanged(TextEvent e) {
@@ -385,6 +376,7 @@ class FolderOpenerDialog extends GenericDialog {
 		int width = imp.getWidth();
 		int height = imp.getHeight();
 		int depth = imp.getStackSize();
+		int bytesPerPixel = imp.getBytesPerPixel();
  		int n = getNumber(numberField.elementAt(0));
 		int start = getNumber(numberField.elementAt(1));
 		int inc = getNumber(numberField.elementAt(2));
@@ -415,7 +407,6 @@ class FolderOpenerDialog extends GenericDialog {
 			}
 			if (n2<n) n = n2;
  		}
-		int bytesPerPixel = imp.getBytesPerPixel();
 		if (eightBits)
 			bytesPerPixel = 1;
 		if (rgb)

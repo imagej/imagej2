@@ -34,9 +34,9 @@ public class FloatProcessorTest {
 	@BeforeClass
 	public static void runBeforeClass()
 	{
-	  String id = DataConstants.DATA_DIR + "head.tif";
-	  ImagePlus imp = new Opener().openImage(id);
-	  imageFloatData = imp.getProcessor().getFloatArray();
+		String id = DataConstants.DATA_DIR + "head.tif";
+		ImagePlus imp = new Opener().openImage(id);
+		imageFloatData = imp.getProcessor().getFloatArray();
 		combined = new float[2][imp.getWidth() * imp.getHeight()];
 	}
 
@@ -1953,18 +1953,25 @@ public class FloatProcessorTest {
         FloatProcessor refFloatProcessor  = new FloatProcessor( imageFloatData );
 
         //FloatProcessor testFloatProcessor = new FloatProcessor ( imageFloatData.length, imageFloatData[0].length, (float[]) refFloatProcessor.getIntArray(), refFloatProcessor.getColorModel());
-        int[][] refArray = refFloatProcessor.getIntArray();
+        int[][] refArray = new int[refFloatProcessor.width][refFloatProcessor.height];
+        for(int y = 0; y < refFloatProcessor.height; y++)
+        {
+            for(int x = 0; x < refFloatProcessor.width; x++)
+            {
+            	refArray[x][y] = (int) imageFloatData[x][y];
+            }
+        }
 
         //set the test Float Processor
         FloatProcessor testFloatProcessor = new FloatProcessor( refArray );
 
-
         //test the two arrays are the same
-        for(int i = 0; i < refFloatProcessor.height; i++)
+        for(int y = 0; y < refFloatProcessor.height; y++)
         {
-            for(int j = 0; j < refFloatProcessor.width; j++)
+            for(int x = 0; x < refFloatProcessor.width; x++)
             {
-                assertEquals(refFloatProcessor.getf(i*refFloatProcessor.width+j), testFloatProcessor.getf(i*refFloatProcessor.width+j), 0.0 );
+            	//System.out.println("("+x+","+y+") = baseline ("+refFloatProcessor.getf(x, y)+") actual ("+testFloatProcessor.getf(x, y)+")");
+                assertEquals(refFloatProcessor.getf(x, y), testFloatProcessor.getf(x, y), 0.0 );
             }
         }
 	}

@@ -1,10 +1,11 @@
 package ij.process;
 
-import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-import ij.gui.*;
+
 import ij.measure.Calibration;
+import ij.process.ColorStatistics;
+import ij.process.ImageStatistics;
 import ij.ImageStack;
 
 /**
@@ -156,7 +157,6 @@ public class ColorProcessor extends ImageProcessor {
 		setMinAndMax(min, max, 7);
 	}
 
-
 	public void setMinAndMax(double min, double max, int channels) {
 		if (max<min)
 			return;
@@ -285,7 +285,7 @@ public class ColorProcessor extends ImageProcessor {
 	}
 
 	public final float getf(int x, int y) {
-		return pixels[y*width+x];
+		return getf(y*width+x);
 	}
 
 	public final void setf(int x, int y, float value) {
@@ -293,7 +293,11 @@ public class ColorProcessor extends ImageProcessor {
 	}
 
 	public final float getf(int index) {
-		return pixels[index];
+		int c = pixels[index];
+		int r = (c&0xff0000)>>16;
+		int g = (c&0xff00)>>8;
+		int b = c&0xff;
+		return (float)(r*rWeight + g*gWeight + b*bWeight);
 	}
 
 	public final void setf(int index, float value) {
@@ -449,12 +453,7 @@ public class ColorProcessor extends ImageProcessor {
 	}
 
 	/** Returns the red, green and blue planes as 3 byte arrays. */
-	public void getRGB(byte[] R, byte[] G, byte[] B)
-	{
-		ColorProcessor.getRGB(width, height, pixels, R, G, B);
-	}
-	
-	public static void getRGB(int width, int height, int[] pixels, byte[] R, byte[] G, byte[] B) {
+	public void getRGB(byte[] R, byte[] G, byte[] B) {
 		int c, r, g, b;
 		for (int i=0; i < width*height; i++) {
 			c = pixels[i];
@@ -470,7 +469,6 @@ public class ColorProcessor extends ImageProcessor {
 
 	/** Sets the current pixels from 3 byte arrays (reg, green, blue). */
 	public void setRGB(byte[] R, byte[] G, byte[] B) {
-		int c, r, g, b;
 		for (int i=0; i < width*height; i++)
 			pixels[i] = 0xff000000 | ((R[i]&0xff)<<16) | ((G[i]&0xff)<<8) | B[i]&0xff;
 	}
@@ -598,7 +596,7 @@ public class ColorProcessor extends ImageProcessor {
 		byte[] R = new byte[width*height];
 		byte[] G = new byte[width*height];
 		byte[] B = new byte[width*height];
-		ColorProcessor.getRGB(width, height, this.pixels, R, G, B);
+		getRGB(R, G, B);
 		Rectangle roi = new Rectangle(roiX, roiY, roiWidth, roiHeight);
 		
 		ByteProcessor r = new ByteProcessor(width, height, R, null);
@@ -870,8 +868,8 @@ public class ColorProcessor extends ImageProcessor {
 		double xlimit = width-1.0, xlimit2 = width-1.001;
 		double ylimit = height-1.0, ylimit2 = height-1.001;
 		if (interpolationMethod==BILINEAR) {
-			if (xScale<=0.25 && yScale<=0.25)
-				return makeThumbnail(dstWidth, dstHeight, 0.6);
+			//if (xScale<=0.25 && yScale<=0.25)
+			//	return makeThumbnail(dstWidth, dstHeight, 0.6);
 			dstCenterX += xScale/2.0;
 			dstCenterY += yScale/2.0;
 		}
@@ -903,45 +901,10 @@ public class ColorProcessor extends ImageProcessor {
 		return ip2;
 	}
 	
-	/** Uses averaging to creates a new ColorProcessor containing a scaled copy 
-		of this image or selection. The amount of smoothing is determined by
-		'smoothFactor', which must be greater than zero and less than or equal 1.0
-	*/
+	/** Uses averaging to creates a new ColorProcessor containing 
+		a downsized copy  of this image or selection. */
 	public ImageProcessor makeThumbnail(int width2, int height2, double smoothFactor) {
-		ImageProcessor ip = this;
-		if (roiWidth!=width || roiHeight!=height)
-			ip = ip.crop();
-		int width = ip.getWidth();
-		int height = ip.getHeight();
-		int[] pixel = new int[3];
-		int[] sum = new int[3];
-		double xscale, yscale;
-		int w, h;
-		double product;
-		xscale = (double)width/width2;
-		yscale = (double)height/height2;
-		w = (int)(xscale*smoothFactor);
-		h = (int)(yscale*smoothFactor);
-		product = w*h;
-		ImageProcessor ip2 = ip.createProcessor(width2, height2);
-		for (int y=0; y<height2; y++) {
-			for (int x=0; x<width2; x++) {
-				for (int i=0; i<3; i++) sum[i] = 0;
-				int xbase = (int)(x*xscale);
-				int ybase = (int)(y*yscale);
-				for (int y2=0; y2<h; y2++) {
-					for (int x2=0;  x2<w; x2++) {
-						pixel = ip.getPixel(xbase+x2, ybase+y2, pixel);
-						for (int i=0; i<3; i++)
-							sum[i] += pixel[i];
-					}
-				}
-				for (int i=0; i<3; i++)
-					sum[i] = (int)(sum[i]/product+0.5);
-				ip2.putPixel(x, y, sum);
-			}
-		}
-		return ip2;
+		return resize(width2, height2, true);
 	}
 
 	/** Rotates the image or ROI 'angle' degrees clockwise.
@@ -1200,7 +1163,7 @@ public class ColorProcessor extends ImageProcessor {
 		byte[] r = new byte[size];
 		byte[] g = new byte[size];
 		byte[] b = new byte[size];
-		ColorProcessor.getRGB(width,height,pixels,r,g,b);
+		getRGB(r,g,b);
 		ImageProcessor rip = new ByteProcessor(width, height, r, null);
 		ImageProcessor gip = new ByteProcessor(width, height, g, null);
 		ImageProcessor bip = new ByteProcessor(width, height, b, null);
@@ -1309,7 +1272,8 @@ public class ColorProcessor extends ImageProcessor {
 	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
 	
 	public int getBitDepth() { return 24; }
-
+	public int getBytesPerPixel() { return 4; }
+	
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{
 		return new ColorStatistics(this, mOptions, cal);

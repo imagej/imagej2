@@ -3,8 +3,10 @@ package ij.process;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-import ij.gui.*;
+
 import ij.measure.Calibration;
+import ij.process.FloatStatistics;
+import ij.process.ImageStatistics;
 
 /** This is an 32-bit floating-point image and methods that operate on that image. */
 public class FloatProcessor extends ImageProcessor {
@@ -26,8 +28,6 @@ public class FloatProcessor extends ImageProcessor {
 		this.pixels = pixels;
 		this.cm = cm;
 		resetRoi();
-		if (pixels!=null)
-			findMinAndMax();
 	}
 
 	/** Creates a blank FloatProcessor using the default grayscale LUT that
@@ -41,7 +41,6 @@ public class FloatProcessor extends ImageProcessor {
 		this(width, height);
 		for (int i=0; i<pixels.length; i++)
 			this.pixels[i] = (float)(pixels[i]);
-		findMinAndMax();
 	}
 	
 	/** Creates a FloatProcessor from a double array using the default grayscale LUT. */
@@ -49,7 +48,6 @@ public class FloatProcessor extends ImageProcessor {
 		this(width, height);
 		for (int i=0; i<pixels.length; i++)
 			this.pixels[i] = (float)pixels[i];
-		findMinAndMax();
 	}
 	
 	/** Creates a FloatProcessor from a 2D float array using the default LUT. */
@@ -64,14 +62,19 @@ public class FloatProcessor extends ImageProcessor {
 			}
 		}
 		resetRoi();
-		findMinAndMax();
 	}
 
-	/** Creates a FloatProcessor from an int[][] array. */
+	/** Creates a FloatProcessor from a 2D int array. */
 	public FloatProcessor(int[][] array) {
-		this(array.length, array[0].length);
-		setIntArray(array);
-		findMinAndMax();
+		width = array.length;
+		height = array[0].length;
+		pixels = new float[width*height];
+		int i=0;
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				pixels[i++] = (float)array[x][y];
+			}
+		}
 	}
 
 	/**
@@ -98,6 +101,7 @@ public class FloatProcessor extends ImageProcessor {
 					max = value;
 			}
 		}
+		minMaxSet = true;
 		showProgress(1.0);
 	}
 
@@ -107,12 +111,13 @@ public class FloatProcessor extends ImageProcessor {
 	resetMinAndMax() to enable auto-scaling;
 	@see ij.plugin.frame.ContrastAdjuster 
 	*/
-	public void setMinAndMax(double min, double max) {
-		if (min==0.0 && max==0.0)
+	public void setMinAndMax(double minimum, double maximum) {
+		if (minimum==0.0 && maximum==0.0)
 			{resetMinAndMax(); return;}
-		this.min = (float)min;
-		this.max = (float)max;
+		min = (float)minimum;
+		max = (float)maximum;
 		fixedScale = true;
+		minMaxSet = true;
 		resetThreshold();
 	}
 
@@ -127,11 +132,13 @@ public class FloatProcessor extends ImageProcessor {
 
 	/** Returns the smallest displayed pixel value. */
 	public double getMin() {
+		if (!minMaxSet) findMinAndMax();
 		return min;
 	}
 
 	/** Returns the largest displayed pixel value. */
 	public double getMax() {
+		if (!minMaxSet) findMinAndMax();
 		return max;
 	}
 
@@ -162,9 +169,10 @@ public class FloatProcessor extends ImageProcessor {
 			pixels8 = new byte[size];
 		float value;
 		int ivalue;
-		float scale = 255f/(max-min);
+		float min2=(float)getMin(), max2=(float)getMax();
+		float scale = 255f/(max2-min2);
 		for (int i=0; i<size; i++) {
-			value = pixels[i]-min;
+			value = pixels[i]-min2;
 			if (value<0f) value = 0f;
 			ivalue = (int)((value*scale)+0.5f);
 			if (ivalue>255) ivalue = 255;
@@ -189,8 +197,8 @@ public class FloatProcessor extends ImageProcessor {
 	public void snapshot() {
 		snapshotWidth=width;
 		snapshotHeight=height;
-		snapshotMin=min;
-		snapshotMax=max;
+		snapshotMin=(float)getMin();
+		snapshotMax=(float)getMax();
 		if (snapshotPixels==null || (snapshotPixels!=null && snapshotPixels.length!=pixels.length))
 			snapshotPixels = new float[width * height];
         System.arraycopy(pixels, 0, snapshotPixels, 0, width*height);
@@ -201,6 +209,7 @@ public class FloatProcessor extends ImageProcessor {
 			return;
 	    min=snapshotMin;
 		max=snapshotMax;
+		minMaxSet = true;
         System.arraycopy(snapshotPixels,0,pixels,0,width*height);
 	}
 	
@@ -380,15 +389,18 @@ public class FloatProcessor extends ImageProcessor {
 
 	private void process(int op, double value) {
 		float c, v1, v2;
-		boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
+		//boolean resetMinMax = roiWidth==width && roiHeight==height && !(op==FILL);
 		c = (float)value;
+		float min2=0f, max2=0f;
+		if (op==INVERT)
+			{min2=(float)getMin(); max2=(float)getMax();}
 		for (int y=roiY; y<(roiY+roiHeight); y++) {
 			int i = y * width + roiX;
 			for (int x=roiX; x<(roiX+roiWidth); x++) {
 				v1 = pixels[i];
 				switch(op) {
 					case INVERT:
-						v2 = max - (v1 - min);
+						v2 = max2 - (v1 - min2);
 						break;
 					case FILL:
 						v2 = fillColor;
@@ -444,8 +456,6 @@ public class FloatProcessor extends ImageProcessor {
 				pixels[i++] = v2;
 			}
 		}
-		if (resetMinMax)
-			findMinAndMax();
     }
 
 	public void invert() {process(INVERT, 0.0);}
@@ -757,7 +767,7 @@ public class FloatProcessor extends ImageProcessor {
 					xs = (x-xCenter)/xScale + xCenter;
 					xsi = (int)xs;
 					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
-						pixels[index1++] = (float)min;
+						pixels[index1++] = (float)getMin();
 					else {
 						if (interpolationMethod==BILINEAR) {
 							if (xs<0.0) xs = 0.0;
@@ -841,6 +851,53 @@ public class FloatProcessor extends ImageProcessor {
 		showProgress(1.0);
 		return ip2;
 	}
+	
+	FloatProcessor downsize(int dstWidth, int dstHeight) {
+		Rectangle r = getRoi();
+		int rWidth = r.width;
+		int rHeight = r.height;
+		FloatProcessor ip2 = this;
+		if (dstWidth<rWidth) {   //downsizing in x
+			ip2 = ip2.downsize1D(dstWidth, getHeight());
+			ip2.setRoi(0, r.y, dstWidth, rHeight);  //prepare oi for resizing in y
+		}
+		if (dstHeight<rHeight)  //downsizing in y
+			ip2 = ip2.downsize1D(dstWidth, dstHeight);
+		if (ip2.getWidth()!=dstWidth || ip2.getHeight()!=dstHeight)
+			ip2 = (FloatProcessor)ip2.resize(dstWidth, dstHeight);  //do any upsizing if required
+		return ip2;
+	}
+	
+	// Downsizing in one direction. One of dstWidth or dstHeight must be equal to the
+	// width or height of the roi rectangle of the input ip
+	private FloatProcessor downsize1D(int dstWidth, int dstHeight) {
+		int width = getWidth();
+		Rectangle r = getRoi();
+		boolean xDirection = dstWidth < r.width;
+		int srcPointInc = xDirection ? 1 : width;   //increment of array index for next point along direction
+		int srcLineInc = xDirection ? width : 1;    //increment of array index for next line to be downscaled
+		int dstPointInc = xDirection ? 1 : dstWidth;
+		int dstLineInc = xDirection ? dstWidth : 1;
+		int srcLine0 = xDirection ? r.x : r.y;
+		int dstLines = xDirection ? dstHeight : dstWidth;
+		DownsizeTable dt = xDirection ?
+			new DownsizeTable(getWidth(), r.x, r.width, dstWidth, interpolationMethod) : 
+			new DownsizeTable(getHeight(), r.y, r.height, dstHeight, interpolationMethod);
+		FloatProcessor ip2 = (FloatProcessor)createProcessor(dstWidth, dstHeight);
+		float[] pixels = (float[])getPixels();
+		float[] pixels2 = (float[])ip2.getPixels();
+		for (int srcLine=srcLine0, dstLine=0; dstLine<dstLines; srcLine++,dstLine++) {
+			int dstLineOffset = dstLine * dstLineInc;
+			int tablePointer = 0;
+			for (int srcPoint=dt.srcStart, p=srcPoint*srcPointInc+srcLine*srcLineInc;
+			srcPoint<=dt.srcEnd; srcPoint++, p+=srcPointInc) {
+				float v = pixels[p];
+				for (int i=0; i<dt.kernelSize; i++, tablePointer++)
+				pixels2[dstLineOffset+dt.indices[tablePointer]*dstPointInc] += v * dt.weights[tablePointer];
+			}
+		}
+		return ip2;
+	}
 
 	/** This method is from Chapter 16 of "Digital Image Processing:
 		An Algorithmic Introduction Using Java" by Burger and Burge
@@ -872,7 +929,7 @@ public class FloatProcessor extends ImageProcessor {
 		} else if (bestIndex==0 && getMin()>0.0 && (color.getRGB()&0xffffff)==0)
 			fillColor = 0f;
 		else
-			fillColor = (float)(min + (max-min)*(bestIndex/255.0));
+			fillColor = (float)(getMin() + (getMax()-getMin())*(bestIndex/255.0));
 	}
 	
 	/** Sets the default fill/draw value. */
@@ -892,9 +949,9 @@ public class FloatProcessor extends ImageProcessor {
 	public void setThreshold(double minThreshold, double maxThreshold, int lutUpdate) {
 		if (minThreshold==NO_THRESHOLD)
 			{resetThreshold(); return;}
-		if (max>min) {
-			double minT = Math.round(((minThreshold-min)/(max-min))*255.0);
-			double maxT = Math.round(((maxThreshold-min)/(max-min))*255.0);
+		if (getMax()>getMin()) {
+			double minT = Math.round(((minThreshold-getMin())/(getMax()-getMin()))*255.0);
+			double maxT = Math.round(((maxThreshold-getMin())/(getMax()-getMin()))*255.0);
 			super.setThreshold(minT, maxT, lutUpdate); // update LUT
 		} else
 			super.resetThreshold();
@@ -950,10 +1007,11 @@ public class FloatProcessor extends ImageProcessor {
 	public double maxValue() {
 		return Float.MAX_VALUE;
 	}
-	
-	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
+
+	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 32; }
+	public int getBytesPerPixel() { return 4; }
 
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{
@@ -963,7 +1021,7 @@ public class FloatProcessor extends ImageProcessor {
 	public boolean isFloatingType() { return true; }
 	public boolean isUnsignedType() { return false; }
 
-	public double getMinimumAllowedValue() { return Float.MIN_VALUE; }
+	public double getMinimumAllowedValue() { return -Float.MAX_VALUE; }
 	public double getMaximumAllowedValue() { return Float.MAX_VALUE; }
 
 	public String getTypeName() { return "32-bit float"; }
