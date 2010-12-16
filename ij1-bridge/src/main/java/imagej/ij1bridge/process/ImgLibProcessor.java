@@ -8,6 +8,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 import imagej.Dimensions;
+import imagej.DoubleRange;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.function.BinaryFunction;
@@ -201,6 +202,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** used by snapshot() and reset(). not applicable to UnsignedByteType data. */
 	private double snapshotMax;
 
+	/** used by findMinAndMax(), setMinAndMax(), and resetMinAndMax(). not applicable to byte and UnsignedByteType based processors. */
+	private boolean fixedScale;
+	
 	/** a per thread variable. a cursor used to facilitate fast access to the ImgLib image. */
 	private ThreadLocal<LocalizableByDimCursor<T>> cachedCursor =
 		new ThreadLocal<LocalizableByDimCursor<T>>()
@@ -254,14 +258,21 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		this.isFloat = this.type instanceof FloatType;
 
 		if (this.isUnsignedByte)
+		{
+			this.min = 0;
+			this.max = 255;
 			this.setBackgroundValue(255);
+		}
 
 		this.rangeMin = this.type.getMinValue();
 		this.rangeMax = this.type.getMaxValue();
 		
+		this.fixedScale = false;
+		
 		resetRoi();
 
-		findMinAndMax();
+		//TODO - way before Wayne made min max changes in 1.44l9
+		//findMinAndMax();
 	}
 
 	/** constructor: takes an ImgLib image and the integer position of the plane within the image */
@@ -579,6 +590,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
+		if (this.fixedScale)
+			return;
+		
 		// TODO - should do something different for UnsignedByte (involving LUT) if we mirror ByteProcessor
 
 		//get the current image data
@@ -590,6 +604,8 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		mmOp.execute();
 
 		setMinAndMaxOnly(mmOp.getMin(), mmOp.getMax());
+		
+		super.minMaxSet = true;
 	}
 
 	/** returns a copy of our pixels as an array in the specified type. specified type probably has to match image's type */
@@ -1524,6 +1540,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMax()
 	{
+		if ((!this.isUnsignedByte) && (!super.minMaxSet))
+			findMinAndMax();
+		
 		return this.max;
 	}
 
@@ -1538,6 +1557,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public double getMin()
 	{
+		if ((!this.isUnsignedByte) && (!super.minMaxSet))
+			findMinAndMax();
+		
 		return this.min;
 	}
 
@@ -1815,7 +1837,15 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public void reset()
 	{
 		if (this.snapshot!=null)
+		{
 			this.snapshot.pasteIntoImage(this.imageData);
+			if (!this.isUnsignedByte)
+			{
+				this.min = this.snapshotMin;
+				this.max = this.snapshotMax;
+				this.minMaxSet = true;
+			}
+		}
 	}
 
 	/** sets the current ROI area data to that stored in the snapshot wherever the mask is nonzero */
@@ -1849,12 +1879,6 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		resetOp.setSelectionFunctions(maskOff, null);
 
 		resetOp.execute();
-
-		if (!this.isUnsignedByte)
-		{
-			this.min = this.snapshotMin;
-			this.max = this.snapshotMax;
-		}
 	}
 
 	// TODO - refactor
@@ -2303,18 +2327,46 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			return;
 		}
 
-		this.min = min;
-		this.max = max;
-
-		if (this.isIntegral)
+		if (this.isFloat)
 		{
-			this.min = (long) this.min;
-			this.max = (long) this.max;
+			this.min = (float)min;
+			this.max = (float)max;
+		}
+		else if (this.isUnsignedByte)
+		{
+			this.min = (int)min;
+			this.max = (int)max;
+		}
+		else if (this.isUnsignedShort)
+		{
+			min = DoubleRange.bound(0, 65535, min);
+			max = DoubleRange.bound(0, 65535, max);
+			this.min = (int)min;
+			this.max = (int)max;
+		}
+		else // not an old pixel type
+		{
+			if (this.isIntegral)
+			{
+				this.min = (long)min;
+				this.max = (long)max;
+			}
+			else
+			{
+				this.min = min;
+				this.max = max;
+			}
 		}
 
-		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
+		if (!this.isUnsignedByte)
+		{
+			this.fixedScale = true;
+			this.minMaxSet = true;
+		}
 
 		resetThreshold();
+		
+		// TODO : ByteProcessor has some ColorModel stuff and sets a few superclass varas. replicate here??
 	}
 
 	/** set the current image plane data to the provided pixel values */
@@ -2425,10 +2477,16 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public void resetMinAndMax()
 	{
-		// TODO - From FloatProc - there is code for setting the fixedScale boolean. May need it.
-
-		findMinAndMax();
-		resetThreshold();
+		if (this.isUnsignedByte)
+		{
+			setMinAndMax(0,255);
+		}
+		else  // all other types
+		{
+			this.fixedScale = false;
+			findMinAndMax();
+			resetThreshold();
+		}
 	}
 
 	/** Makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
@@ -2590,6 +2648,12 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	public int getBitDepth()
 	{
 		return this.ijType.getNumBitsData();
+	}
+
+	@Override
+	public int getBytesPerPixel()
+	{
+		return (int) Math.ceil(getBitDepth() / 8.0);
 	}
 
 	@Override
