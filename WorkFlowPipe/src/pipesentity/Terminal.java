@@ -60,4 +60,12 @@ public class Terminal {
  		return terminals;
 	}
 
+	public static Terminal[] getInputTerminal( inputType inputType1 ) {
+		Terminal[] terminals = new Terminal[1];
+		terminals[0] = new Terminal( true, inputType1.toString()  );
+ 		return terminals;
+	}
+	
+	
+
 }

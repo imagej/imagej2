@@ -92,13 +92,10 @@ public class Module {
 	
 	public boolean matchesType( String type )
 	{
-		System.out.println("search type is " + type + " this type is " + this.type.getValue() );
 		if ( this.type.getValue().equals( type ) )
 		{
-			System.out.println("Return true");
 			return true;
 		}
-		System.out.println("Return true");
 		return false;
 	}
 	

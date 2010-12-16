@@ -47,8 +47,32 @@ public class ModuleGenerator {
 		ArrayList<Module> pipeModuleSampleCollection = new ArrayList<Module>();
 		
 		//Create a Module
-		pipeModuleSampleCollection.add( getSampleModule() ) ;
+		pipeModuleSampleCollection.add( getSampleModule() );
+		pipeModuleSampleCollection.add( getOutputModule() );
 		
 		return pipeModuleSampleCollection;
+	}
+
+	/**
+	 * returns a fixed output module
+	 * @return
+	 */
+	public static Module getOutputModule() {
+	
+		Terminal[] terminals = Terminal.getInputTerminal( 
+				TerminalConnectorType.inputType.valueOf("rss")  );
+		
+		UI ui = new UI( "" );
+		
+		Name name = new Name( "Pipe Output" );
+		
+		Type type = new Type( "output" );
+		
+		Description description = new Description( "The pipe output needs to be fed to this module" );
+		
+		Tag tag = new Tag( null );
+		Tag[] tags = Tag.getTagsArray( tag );
+		
+		return new Module( terminals, ui, name, type, description, tags );
 	}
 }
