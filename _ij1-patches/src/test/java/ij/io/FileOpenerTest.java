@@ -475,8 +475,7 @@ public class FileOpenerTest {
 		expectSuccess("Cell_Colony.jpg",FileInfo.GIF_OR_JPG,1,408,406);
 		expectSuccess("embryos.bmp",FileInfo.BMP,1,1200,1600);
 		expectSuccess("Tree_Rings.pgm",FileInfo.PGM,1,162,1796);
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		//expectSuccess("bat-cochlea-renderings.fits",FileInfo.FITS,1,154,284);
+		expectSuccess("bat-cochlea-renderings.fits",FileInfo.FITS,1,154,284);
 		expectSuccess("gray16.zip",FileInfo.ZIP_ARCHIVE,1,154,284);
 		expectSuccess("lena-std.png",FileInfo.IMAGEIO,1,154,284);
 		expectSuccess("01.dcm",FileInfo.DICOM,1,426,640);
