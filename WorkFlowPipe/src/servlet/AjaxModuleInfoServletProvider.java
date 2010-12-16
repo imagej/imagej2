@@ -39,8 +39,6 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 		Module pipesModule = null;
 		if( typeParameter != null )
 		{
-			System.out.println("Type parameter is " + typeParameter );
-			
 			//Search for type 
 			pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, this.pipesModuleCollection );
 		

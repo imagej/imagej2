@@ -6,6 +6,7 @@ import pipes.ModuleGenerator;
 import pipesentity.Module;
 import servlet.AjaxModuleInfoServletProvider;
 import servlet.AjaxModuleListServletProvider;
+import servlet.AjaxPipePreviewServletProvider;
 import servlet.OpenIDAuthenticationServlet;
 
 //TODO:add implements run() from plugin
@@ -22,12 +23,16 @@ public class Open {
 		//add the OpenID authentication servlet to the instance
 		jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
 		
-		//add the Servlets to the controller
+		//add the module listing servlet to the controller
 		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider( pipesSampleCollection ) );
 		
-		//add the module info servlet
+		//add the module information servlet
 		jettyServerController.addServlet("/ajax.module.info", new AjaxModuleInfoServletProvider( pipesSampleCollection )  );
-				
+		
+		//add the module preview servlet
+		jettyServerController.addServlet("/ajax.pipe.preview", new AjaxPipePreviewServletProvider(  )  );
+		
+		
 		//add more Servlets
 		//TODO:add more servlets
        

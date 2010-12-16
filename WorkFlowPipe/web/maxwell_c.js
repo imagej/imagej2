@@ -8917,7 +8917,7 @@ maxwell.Toolbar = function() {
 				style : "padding-top:4px"
 			},
 			null,
-			"This is running the V1 engine. <a class=\"changeEngine\" id=\"upgrade\">Upgrade to V2</a>");
+			"This is running on the local host. <a class=\"changeEngine\" id=\"upgrade\">Upgrade to V2</a>");
 	_6e1.appendChild(la);
 	_6e1.appendChild(ex);
 	_6e1.appendChild(co);
