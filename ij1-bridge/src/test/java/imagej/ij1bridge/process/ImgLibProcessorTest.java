@@ -113,7 +113,7 @@ public class ImgLibProcessorTest {
 		}
 
 		// hack?
-		origIUBProc.setMinAndMax(0, 255);  // TODO - if not here then getMax() test fails. Might point out some ImgLibProc code needed. Although
+		//origIUBProc.setMinAndMax(0, 255);  // TODO - if not here then getMax() test fails. Might point out some ImgLibProc code needed. Although
 											//     it might just be that IJ calls setMinAndMax() and we aren't using IJ infrastructure yet.
 
 		// make sure they are the same
@@ -190,7 +190,7 @@ public class ImgLibProcessorTest {
 		BYTE_PROCS = new ImageProcessor[]{bProc,iubProc};
 		SHORT_PROCS = new ImageProcessor[]{sProc,iusProc};
 		FLOAT_PROCS = new ImageProcessor[]{fProc,ifProc};
-		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS,SHORT_PROCS,FLOAT_PROCS};
+		PROC_PAIRS = new ImageProcessor[][]{BYTE_PROCS, SHORT_PROCS,/* */ FLOAT_PROCS};
 	}
 
 	private int encodeFloatIfNeeded(boolean wantFloat, int value)
@@ -249,6 +249,7 @@ public class ImgLibProcessorTest {
 			}
 		}
 
+		// TODO - reenable : stopped working when moving from ij.jar 1.43u to 1.44l9
 		assertEquals(baselineProc.getMin(), testedProc.getMin(), DOUBLE_TOL);
 		assertEquals(baselineProc.getMax(), testedProc.getMax(), DOUBLE_TOL);
 	}
@@ -694,9 +695,11 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			//System.out.println("PAIR");
 			initialize();
 			for (int i = 0; i < 6; i++)
 			{
+				//System.out.println("  iter "+i);
 				procPair[0].exp();
 				procPair[1].exp();
 				compareData(procPair[0],procPair[1]);
@@ -1039,6 +1042,7 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			System.out.println("PAIR");
 			assertEquals(procPair[0].getMax(), procPair[1].getMax(), DOUBLE_TOL);
 			procPair[0].setMinAndMax(42.4,107.6);
 			procPair[1].setMinAndMax(42.4,107.6);
@@ -1073,7 +1077,7 @@ public class ImgLibProcessorTest {
 		assertEquals(Integer.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
 		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit unsigned"));
-		assertEquals((1L<<32)-1, proc.getMaxAllowedValue(),0);
+		assertEquals(0xffffffffL, proc.getMaxAllowedValue(),0);
 		
 		proc = ImageUtils.createProcessor(1, 1, new float[]{1}, Types.findType("32-bit float"));
 		assertEquals(Float.MAX_VALUE, proc.getMaxAllowedValue(),0);
@@ -1493,6 +1497,35 @@ public class ImgLibProcessorTest {
 	}
 
 	@Test
+	public void testReset()
+	{
+		for (ImageProcessor[] procPair : PROC_PAIRS)
+		{
+			procPair[0].setRoi(1, 2, 7, 7);
+			procPair[1].setRoi(1, 2, 7, 7);
+
+			procPair[0].snapshot();
+			procPair[1].snapshot();
+
+			for (int x = 0; x < width; x++)
+			{
+				for (int y = 0; y < height; y++)
+				{
+					procPair[0].set(x, y, (x+y)%256);
+					procPair[1].set(x, y, (x+y)%256);
+				}
+			}
+
+			compareData(procPair[0], procPair[1]);
+
+			procPair[0].reset();
+			procPair[1].reset();
+
+			compareData(procPair[0], procPair[1]);
+		}
+	}
+	
+	@Test
 	public void testResetImageProcessor()
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
@@ -1642,10 +1675,13 @@ public class ImgLibProcessorTest {
 	{
 		for (ImageProcessor[] procPair : PROC_PAIRS)
 		{
+			//System.out.println("PAIR");
 			Color[] colors = new Color[]{Color.white, Color.black, Color.blue, Color.red, Color.green, Color.gray, Color.magenta};
 
 			for (Color color : colors)
 			{
+				//System.out.println("  color = "+color);
+				
 				procPair[0].setColor(color);
 				procPair[1].setColor(color);
 
