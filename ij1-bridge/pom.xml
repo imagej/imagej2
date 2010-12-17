@@ -80,8 +80,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ij.ImageJ</mainClass>
-              <packageName>ij</packageName>
+              <packageName>imagej.ij1bridge</packageName>
             </manifest>
           </archive>
         </configuration>

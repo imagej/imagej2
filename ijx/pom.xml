@@ -88,8 +88,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ij.ImageJ</mainClass>
-                            <packageName>ij</packageName>
+                            <mainClass>ijx.ImageJX</mainClass>
+                            <packageName>ijx</packageName>
                         </manifest>
                     </archive>
                 </configuration>
