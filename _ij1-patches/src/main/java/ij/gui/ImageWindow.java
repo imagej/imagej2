@@ -279,7 +279,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
  			+ " " + cal.getUnits() + " (" + imp.getWidth() + "x" + imp.getHeight() + "); ";
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
-		s += imp.getBitDepth()+"-bit";
+    	s += imp.getProcessor().getTypeName();
     	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
 		double size = imp.getActualBytesPerPixel() * imp.getWidth() * imp.getHeight() * imp.getStackSize() / 1024;
