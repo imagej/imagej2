@@ -35,15 +35,13 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		//return the post
 		try {
 			//TODO:finish post the object
-			String jsonString = ServletRequestHelper.getResponseFiled( "def", request ).toString();
-			response.getWriter().write( jsonString );
-			System.out.println( jsonString );
+			//String jsonString = ServletRequestHelper.getResponseFiled( "def", request ).toString();
+			//response.getWriter().write( jsonString );
+			System.out.println( request.getParameter( "def" ) );
 		} catch ( Exception e ) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		System.out.println("doPOST called ");
 	}
 
 	protected void doGet( HttpServletRequest request,

@@ -90,6 +90,11 @@ public class Module {
 		return jsonModule;
 	}
 	
+	/**
+	 * Performs a string literal match on the types
+	 * @param type
+	 * @return
+	 */
 	public boolean matchesType( String type )
 	{
 		if ( this.type.getValue().equals( type ) )
@@ -97,6 +102,29 @@ public class Module {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean searchNameAndDescription( String searchTerm )
+	{
+		if ( this.name.getValue().contains(searchTerm) //or
+				|| this.description.getValue().contains(searchTerm))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the Result representation of the module
+	 * @return
+	 */
+	public Result getResult() 
+	{
+		//create a Result from the module
+		Result result = new Result( this.name, this.description, this.type, new Source("pipe") );
+		
+		//return the result
+		return result;
 	}
 	
 

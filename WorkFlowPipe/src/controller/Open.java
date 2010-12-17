@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import pipes.ModuleGenerator;
 import pipesentity.Module;
+import servlet.AjaxFeedFindServletProvider;
 import servlet.AjaxModuleInfoServletProvider;
 import servlet.AjaxModuleListServletProvider;
 import servlet.AjaxPipePreviewServletProvider;
@@ -31,6 +32,9 @@ public class Open {
 		
 		//add the module preview servlet
 		jettyServerController.addServlet("/ajax.pipe.preview", new AjaxPipePreviewServletProvider(  )  );
+		
+		//add the module preview servlet
+		jettyServerController.addServlet("/ajax.feed.find", new AjaxFeedFindServletProvider( pipesSampleCollection )  );
 		
 		
 		//add more Servlets
