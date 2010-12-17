@@ -1124,44 +1124,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 				break;
 			case OTHER:
 				if (ip != null)
-				{
-					int bitDepth = getBitDepth();
-
-					if (ip.isFloatingType())
-					{
-						if (bitDepth == 32)
-							pvalue[0] = ip.get(x, y);
-						else if (bitDepth == 64)
-						{
-							double value = ip.getd(x, y);
-							long encoding = Double.doubleToLongBits(value);
-							pvalue[0] = (int)(encoding & 0xffffffffL);
-							pvalue[1] = (int)((encoding >> 32) & 0xffffffffL);
-						}
-						else
-							throw new IllegalStateException("unsupported floating point bitDepth : "+bitDepth);
-					}
-					// ALL ARE INTEGRAL BEYOND THIS POINT
-					else if ((bitDepth == 8))
-					{
-						int value = ip.get(x,y);
-						pvalue[0] = value;
-						pvalue[3] = (int) (value - ip.getMinimumAllowedValue());
-					}
-					else if ((bitDepth == 12) || (bitDepth == 16) || (bitDepth == 32))
-					{
-						pvalue[0] = ip.get(x, y);
-					}
-					else if (bitDepth == 64)
-					{
-						double value = ip.getd(x, y);
-						long encoding = (long)value;              // TODO - precision loss possible here. need processors to add a getl() method
-						pvalue[0] = (int)(encoding & 0xffffffffL);
-						pvalue[1] = (int)((encoding >> 32) & 0xffffffffL);
-					}
-					else
-						throw new IllegalStateException("unsupported intregral bitDepth : "+bitDepth);
-				}
+					ip.encodePixelInfo(pvalue, x, y);
 				break;
 		}
 		return pvalue;

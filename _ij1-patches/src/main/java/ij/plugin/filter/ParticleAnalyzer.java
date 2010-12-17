@@ -726,7 +726,15 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		} else {
 			level1 = t1;
 			level2 = t2;
-			fillColor = ip.getMinimumAllowedValue();
+			if (ip.isFloatingType())  // WAYNE PLEASE CHECK - will PartAn work with double data, signed int data, etc.
+				fillColor = ip.getMinimumAllowedValue();
+			else  // integral type
+			{
+				if (level1 > 0)
+					fillColor = ip.getMinimumAllowedValue();    // WAYNE PLEASE CHECK - will PartAn work with double data, signed int data, etc.
+				else if (level2 < ip.getMaximumAllowedValue())
+					fillColor = ip.getMaximumAllowedValue();
+			}
 			if (imageType == RGB)  // THIS MAYBE DIFFERENT BEHAVIOR - WAYNE PLEASE CHECK
 				return false;
 		}

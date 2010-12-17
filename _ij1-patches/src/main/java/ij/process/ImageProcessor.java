@@ -2283,4 +2283,9 @@ public abstract class ImageProcessor extends Object {
 	{
 		return drawingColor;
 	}
+
+	public void encodePixelInfo(int[] destination, int x, int y)
+	{
+		// DO NOTHING. Default behavior. This method should only ever get called on processors of type OTHER. They override this implementation.
+	}
 }
