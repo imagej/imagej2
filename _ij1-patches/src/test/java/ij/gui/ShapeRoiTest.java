@@ -261,10 +261,10 @@ public class ShapeRoiTest {
 	{
 		s = a.or(b);
 		//printOut(s);
-		System.out.println("OR TEST");
-		System.out.println("  expected " + exp.getLength());
-		System.out.println("  result   " + s.getLength());
-		assertEquals(exp,s);
+		assertEquals(exp.x, s.x);
+		assertEquals(exp.y, s.y);
+		assertEquals(exp.width, s.width);
+		assertEquals(exp.height, s.height);
 	}
 	
 	@Test
@@ -299,8 +299,6 @@ public class ShapeRoiTest {
 		orTest(a,b,exp);
 
 		// disjoint areas
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		sh = new Rectangle2D.Double(0, 0, 2, 2);
 		a = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(3, 0, 2, 2);
@@ -308,14 +306,16 @@ public class ShapeRoiTest {
 		sh = new Rectangle2D.Double(0, 0, 5, 2);
 		exp = new ShapeRoi(sh);
 		orTest(a,b,exp);
-		*/
 	}
 
 	private void andTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
 	{
 		s = a.and(b);
 		//printOut(s);
-		assertEquals(exp,s);
+		assertEquals(exp.x, s.x);
+		assertEquals(exp.y, s.y);
+		assertEquals(exp.width, s.width);
+		assertEquals(exp.height, s.height);
 	}
 	
 	@Test
@@ -364,10 +364,10 @@ public class ShapeRoiTest {
 	{
 		s = a.xor(b);
 		//printOut(s);
-		System.out.println("XOR TEST");
-		System.out.println("  expected " + exp.getLength());
-		System.out.println("  result   " + s.getLength());
-		assertEquals(exp,s);
+		assertEquals(exp.x, s.x);
+		assertEquals(exp.y, s.y);
+		assertEquals(exp.width, s.width);
+		assertEquals(exp.height, s.height);
 	}
 	
 	@Test
@@ -386,8 +386,6 @@ public class ShapeRoiTest {
 		xorTest(a,b,exp);
 		
 		// intersecting area
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		sh = new Rectangle2D.Double(0, 0, 2, 2);
 		a = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(1, 0, 2, 2);
@@ -395,7 +393,6 @@ public class ShapeRoiTest {
 		sh = new Rectangle2D.Double(0, 0, 3, 2);
 		exp = new ShapeRoi(sh);
 		xorTest(a,b,exp);
-		*/
 		
 		// just touching area
 		sh = new Rectangle2D.Double(0, 0, 2, 2);
@@ -407,8 +404,6 @@ public class ShapeRoiTest {
 		xorTest(a,b,exp);
 
 		// disjoint areas
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		sh = new Rectangle2D.Double(0, 0, 2, 2);
 		a = new ShapeRoi(sh);
 		sh = new Rectangle2D.Double(3, 0, 2, 2);
@@ -416,7 +411,6 @@ public class ShapeRoiTest {
 		sh = new Rectangle2D.Double(0, 0, 5, 2);
 		exp = new ShapeRoi(sh);
 		xorTest(a,b,exp);
-		*/
 	}
 
 	private void notTest(ShapeRoi a, ShapeRoi b, ShapeRoi exp)
