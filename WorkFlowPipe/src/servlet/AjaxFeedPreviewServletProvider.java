@@ -45,6 +45,7 @@ public class AjaxFeedPreviewServletProvider extends HttpServlet {
 		response.setHeader("Cache-Control", "no-cache");
 		response.getWriter().write( json.toString() );
 	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 

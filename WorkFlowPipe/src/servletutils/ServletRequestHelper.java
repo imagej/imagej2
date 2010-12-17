@@ -1,10 +1,7 @@
 package servletutils;
 
-import java.io.BufferedReader;
 import java.text.ParseException;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONObject;
 
 /**

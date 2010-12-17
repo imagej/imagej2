@@ -65,6 +65,12 @@ public class Terminal {
 		terminals[0] = new Terminal( true, inputType1.toString()  );
  		return terminals;
 	}
+
+	public static Terminal[] getOutTerminal( outputType outputType1 ) {
+		Terminal[] terminals = new Terminal[1];
+		terminals[0] = new Terminal( false, outputType1.toString()  );
+ 		return terminals;
+	}
 	
 	
 
