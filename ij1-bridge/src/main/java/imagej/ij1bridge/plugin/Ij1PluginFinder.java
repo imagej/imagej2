@@ -17,9 +17,7 @@ public class Ij1PluginFinder implements PluginFinder {
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
 		if (IJ.getInstance() == null) {
-			// TODO -- use NO_SHOW mode (requires ImageJ 1.44)
-			new ImageJ();
-			IJ.getInstance().setVisible(false);
+			new ImageJ(ImageJ.NO_SHOW);
 		}
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
