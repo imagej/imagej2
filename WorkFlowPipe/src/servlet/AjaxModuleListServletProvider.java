@@ -1,7 +1,7 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,15 +12,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import pipesentity.Module;
-import pipesentity.Tag;
-import pipesentity.Terminal;
 
 public class AjaxModuleListServletProvider extends HttpServlet {
 
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
 
-	public AjaxModuleListServletProvider( Collection<Module> pipesModuleArray ) 
+	public AjaxModuleListServletProvider( ArrayList<Module> pipesModuleArray ) 
 	{
 		JSONArray jsonArrayModule = new JSONArray();
 

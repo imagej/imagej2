@@ -1,6 +1,9 @@
-package pipescontroller;
+package pipes;
 
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import pipesentity.Module;
 import pipesentity.Result;
@@ -41,5 +44,18 @@ public class ResultFinder {
 		
 		//return results
 		return resultArrayList;
+	}
+	
+	public static JSONObject getResultsJSONObject( String searchTerm, ArrayList<Module> moduleArrayList )
+	{
+		//create a result finder
+		ResultFinder resultFinder = new ResultFinder();
+		
+		//get the result array list
+		ArrayList<Result> resultArrayList = resultFinder.getResults( searchTerm, moduleArrayList );
+		
+		//get the JSON object from the resultArrayList
+		return Result.getResultsJSONObject( resultArrayList );
+			
 	}
 }
