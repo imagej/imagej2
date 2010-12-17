@@ -2692,6 +2692,47 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return this.ijType.getName();
 	}
 
+	@Override
+	public void encodePixelInfo(int[] destination, int x, int y)
+	{
+		int bitDepth = getBitDepth();
+
+		if (isFloatingType())
+		{
+			if (bitDepth == 32)
+				destination[0] = get(x, y);
+			else if (bitDepth == 64)
+			{
+				double value = getd(x, y);
+				long encoding = Double.doubleToLongBits(value);
+				destination[0] = (int)(encoding & 0xffffffffL);
+				destination[1] = (int)((encoding >> 32) & 0xffffffffL);
+			}
+			else
+				throw new IllegalStateException("unsupported floating point bitDepth : "+bitDepth);
+		}
+		// ALL ARE INTEGRAL BEYOND THIS POINT
+		else if ((bitDepth <= 8))
+		{
+			int value = get(x,y);
+			destination[0] = value;
+			destination[3] = (int) (value - getMinimumAllowedValue());
+		}
+		else if (bitDepth <= 32)
+		{
+			destination[0] = get(x, y);
+		}
+		else if (bitDepth <= 64)
+		{
+			double value = getd(x, y);
+			long encoding = (long)value;              // TODO - precision loss possible here. need processors to add a getl() method
+			destination[0] = (int)(encoding & 0xffffffffL);
+			destination[1] = (int)((encoding >> 32) & 0xffffffffL);
+		}
+		else
+			throw new IllegalStateException("unsupported integral bitDepth : "+bitDepth);
+	}
+	
 	/*
 	@Override
 	public boolean equals(Object o)
