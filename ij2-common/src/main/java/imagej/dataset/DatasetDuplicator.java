@@ -20,53 +20,72 @@ public class DatasetDuplicator
 		Dataset newDataset = factory.createDataset(type, dimensions);
 		
 		// choose the best way to copy to assure no precision loss
+		CopyFunction copier;
 		if (type.isFloat())
-			copyRealData(dataset, newDataset);
+			copier = new DoubleCopyFunction(dataset, newDataset);
 		else
-			copyIntegralData(dataset, newDataset);
+			copier = new LongCopyFunction(dataset, newDataset);
+		
+		copyData(dimensions, copier);
 		
 		newDataset.setMetaData(dataset.getMetaData());  // TODO - PROBABLY NEED TO CLONE THE METADATA HERE!!!!!!!!!!!
 		
 		return newDataset;
 	}
 	
-	// TODO - copying in the easiest and slowest way possible - do some speed up by indexing on planes to minimize Dataset subset lookup times
-	/** copy data as doubles */
-	private void copyRealData(Dataset fromDataset, Dataset toDataset)
+	/** copy data */
+	private void copyData(int[] dimensions, CopyFunction copier)
 	{
-		int[] dimensions = fromDataset.getDimensions();
-		
 		int[] position = Index.create(dimensions.length);
 		int[] origin = Index.create(dimensions.length);
 		int[] span = dimensions;
 
+		// TODO - copying in the easiest and slowest way possible - do some speed up by indexing on planes to minimize Dataset subset lookup times
 		while (Index.isValid(position, origin, span))
 		{
-			double value = fromDataset.getDouble(position);
-			
-			toDataset.setDouble(position, value);
-			
+			copier.copyValueFrom(position);
 			Index.increment(position, origin, span);
 		}
 	}
-
-	// TODO - copying in the easiest and slowest way possible - do some speed up by indexing on planes to minimize Dataset subset lookup times
-	/** copy data as longs */
-	private void copyIntegralData(Dataset fromDataset, Dataset toDataset)
+	
+	private interface CopyFunction
 	{
-		int[] dimensions = fromDataset.getDimensions();
+		void copyValueFrom(int[] position);
+	}
+	
+	private class LongCopyFunction implements CopyFunction
+	{
+		private Dataset fromDataset;
+		private Dataset toDataset;
 		
-		int[] position = Index.create(dimensions.length);
-		int[] origin = Index.create(dimensions.length);
-		int[] span = dimensions;
-
-		while (Index.isValid(position, origin, span))
+		public LongCopyFunction(Dataset from, Dataset to)
 		{
-			long value = fromDataset.getLong(position);
-			
-			toDataset.setLong(position, value);
-			
-			Index.increment(position, origin, span);
+			this.fromDataset = from;
+			this.toDataset = to;
+		}
+		
+		public void copyValueFrom(int[] position)
+		{
+			long value = this.fromDataset.getLong(position);
+			this.toDataset.setLong(position, value);
+		}
+	}
+	
+	private class DoubleCopyFunction implements CopyFunction
+	{
+		private Dataset fromDataset;
+		private Dataset toDataset;
+		
+		public DoubleCopyFunction(Dataset from, Dataset to)
+		{
+			this.fromDataset = from;
+			this.toDataset = to;
+		}
+		
+		public void copyValueFrom(int[] position)
+		{
+			double value = this.fromDataset.getDouble(position);
+			this.toDataset.setDouble(position, value);
 		}
 	}
 }
