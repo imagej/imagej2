@@ -55,8 +55,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ij.ImageJ</mainClass>
-              <packageName>ij</packageName>
+              <packageName>imagej.imglib</packageName>
             </manifest>
           </archive>
         </configuration>

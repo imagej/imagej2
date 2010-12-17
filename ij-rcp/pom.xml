@@ -44,8 +44,8 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ij.ImageJ</mainClass>
-              <packageName>ij</packageName>
+              <mainClass>imagej.App</mainClass>
+              <packageName>imagej</packageName>
             </manifest>
           </archive>
         </configuration>
