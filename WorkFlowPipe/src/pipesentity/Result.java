@@ -1,5 +1,7 @@
 package pipesentity;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -69,5 +71,25 @@ public class Result {
 		jsonResult.put("type", this.type);
 
 		return jsonResult.put("source", this.source);
+	}
+	
+	public static JSONObject getResultsJSONObject( ArrayList<Result> resultArrayList ) 
+	{
+		//create the Results JSON Object
+		JSONObject jsonResults = new JSONObject();
+		
+		//create a JSON array
+		JSONArray jsonArray = new JSONArray();
+		
+		//iterate through the results and add the results to the array
+		for( Result result: resultArrayList )
+		{
+			jsonArray.put( result.getJSONObject() );
+		}
+		
+		//add array to JSON Object
+		jsonResults.put( "result", jsonArray );
+		
+		return jsonResults;
 	}
 }

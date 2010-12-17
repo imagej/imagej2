@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
+import pipes.ResultFinder;
 import pipesentity.Module;
+
 /**
  * Does a Post with the following parameters:
  * _out (json), query (text), rnd (6730), and .crumb(8C/LW9MBuRW)
@@ -23,18 +24,12 @@ import pipesentity.Module;
 public class AjaxFeedFindServletProvider extends HttpServlet {
 
 	private static final long serialVersionUID = 1458365345236667188L;
-	private JSONObject json = new JSONObject();
 	private ArrayList<Module> pipesArrayList;
 
 	public AjaxFeedFindServletProvider(ArrayList<Module> pipesArrayList) {
 		
 		this.pipesArrayList = pipesArrayList;
-		
-		// Add get 1 to array
-		//json.put("ok", new Integer(1));
-
-		// System.out.println( json.toString() );
-
+	
 	}
 
 	protected void doPOST( HttpServletRequest request,
@@ -43,19 +38,25 @@ public class AjaxFeedFindServletProvider extends HttpServlet {
 		//get the query text
 		String query = request.getParameter( "query" );
 		
+		//get the JSONObject
+		JSONObject json = ResultFinder.getResultsJSONObject( query, this.pipesArrayList );
+		
+		// Add get 1 to array
+		json.put("ok", new Integer(1));
+		
+		//Return the results
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
 		response.getWriter().write( json.toString() );
 		
 	}
 	
+
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		
-		
-		// response.getWriter().println( "session=" +
-		// request.getSession(true).getId());
+		//redirect to doPOST
+		doPOST( request, response );
 	}
 
 }
