@@ -40,9 +40,6 @@ public class MenuBuilder {
 	private JMenuItem findMenuItem(final JMenuBar menubar,
 		final List<String> menuPath, final String label)
 	{
-		if (menuPath.size() == 0) {
-			throw new IllegalArgumentException("Zero-length menu path: " + label);
-		}
 		JMenu parent = findTopLevelMenu(menubar, menuPath.get(0));
 		for (int i = 1; i < menuPath.size(); i++) {
 			final String name = menuPath.get(i);
