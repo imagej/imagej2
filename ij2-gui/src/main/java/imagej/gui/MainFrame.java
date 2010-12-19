@@ -19,7 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 /** A simple and dumb Swing-based main window for ImageJ2. */
 public class MainFrame {
-	
+
 	private String info = "Hello, ImageJ";
 
 	/** Creates a new ImageJ frame that runs as an application. */
@@ -42,10 +42,7 @@ public class MainFrame {
 	private void createMenuBar(JFrame frame) {
 		final List<PluginEntry> entries = PluginUtils.findPlugins();
 		final List<String> menuPath = new ArrayList<String>();
-		menuPath.add("File");
-		menuPath.add("Import");
-		entries.add(new PluginEntry("loci.plugins.in.Importer", menuPath, "Bio-Formats", ""));
-		info = "Discovered " + entries.size() + " plugins";//TEMP
+		info = "Discovered " + entries.size() + " plugins";
 		final JMenuBar menubar = new MenuBuilder().buildMenuBar(entries);
 		frame.setJMenuBar(menubar);
 	}
