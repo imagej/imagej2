@@ -10,15 +10,6 @@ public class PluginEntry {
 	private String label;
 	private String arg;
 
-	/**
-	 * Used to represent IJ1 plugin meta information
-	 * @param pluginClass - full class name
-	 * @param label - the menu label in IJ 1.43u
-	 */
-	public PluginEntry(String pluginClass, String label) {
-		this(pluginClass, new ArrayList<String>(), label, "");
-	}
-
 	public PluginEntry(String pluginClass, List<String> menuPath,
 		String label, String arg)
 	{
@@ -64,12 +55,19 @@ public class PluginEntry {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(pluginClass);
-		sb.append(" [menu = ");
-		for (String menu : menuPath) {
-			sb.append(menu);
-			sb.append(" > ");
-		}
+		sb.append(" [");
+		sb.append("label = ");
 		sb.append(label);
+		sb.append(", arg = \"");
+		sb.append(arg);
+		sb.append("\"");
+		sb.append(", menu = ");
+		boolean first = true;
+		for (String menu : menuPath) {
+			if (first) first = false;
+			else sb.append(" > ");
+			sb.append(menu);
+		}
 		sb.append("]");
 		return sb.toString();
 	}
