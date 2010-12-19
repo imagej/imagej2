@@ -44,6 +44,9 @@ public class Ij1PluginRunner implements PluginRunner {
 
 		// execute plugin
 		plugin.run(entry.getArg());
+
+	 	// TODO: handle PlugInFilter, ExtendedPlugInFilter (via PlugInFilterRunner?)
+		// TODO: use Executer or IJ.runPlugIn instead
 	}
 
 }
