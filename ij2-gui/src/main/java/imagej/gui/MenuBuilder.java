@@ -22,6 +22,10 @@ public class MenuBuilder {
 	{
 		for (final PluginEntry entry : entries) {
 			final List<String> menuPath = entry.getMenuPath();
+			if (menuPath == null || menuPath.size() == 0) {
+				// skip plugins with no associated menu item
+				continue;
+			}
 			final String label = entry.getLabel();
 			final JMenuItem menuItem = findMenuItem(menubar, menuPath, label);
 			linkAction(entry, menuItem);
@@ -37,7 +41,7 @@ public class MenuBuilder {
 		final List<String> menuPath, final String label)
 	{
 		if (menuPath.size() == 0) {
-			throw new IllegalArgumentException("Zero-length menu path");
+			throw new IllegalArgumentException("Zero-length menu path: " + label);
 		}
 		JMenu parent = findTopLevelMenu(menubar, menuPath.get(0));
 		for (int i = 1; i < menuPath.size(); i++) {
