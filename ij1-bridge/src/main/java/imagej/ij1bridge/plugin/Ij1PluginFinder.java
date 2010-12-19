@@ -80,7 +80,7 @@ public class Ij1PluginFinder implements PluginFinder {
 	}
 
 	private String parsePluginClass(final String ij1PluginString) {
-		final int quote = ij1PluginString.indexOf("\"");
+		final int quote = ij1PluginString.indexOf("(");
 		if (quote < 0) return ij1PluginString;
 		return ij1PluginString.substring(0, quote);
 	}
