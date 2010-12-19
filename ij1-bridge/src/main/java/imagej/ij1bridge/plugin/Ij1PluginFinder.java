@@ -27,14 +27,14 @@ public class Ij1PluginFinder implements PluginFinder {
 		}
 		final ImageJ ij = IJ.getInstance();
 		if (ij == null) return;
-		Map<String, List<String>> menuPaths = parseMenus(ij);
 
+		final Map<String, List<String>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
 			final String label = key.toString();
 			final String ij1PluginString = commands.get(key).toString();
 			final String pluginClass = parsePluginClass(ij1PluginString);
-			final List<String> menuPath = menuPaths.get(label);
+			final List<String> menuPath = menuTable.get(label);
 			final String arg = parseArg(ij1PluginString);
 			final PluginEntry pluginEntry =
 				new PluginEntry(pluginClass, menuPath, label, arg);
@@ -44,32 +44,32 @@ public class Ij1PluginFinder implements PluginFinder {
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */
 	private Map<String, List<String>> parseMenus(ImageJ ij) {
-		final Map<String, List<String>> menuPaths =
+		final Map<String, List<String>> menuTable =
 			new HashMap<String, List<String>>();
 		final MenuBar menubar = ij.getMenuBar();
 		final int menuCount = menubar.getMenuCount();
 		for (int i = 0; i < menuCount; i++) {
 			final Menu menu = menubar.getMenu(i);
-			parseMenu(menu, new ArrayList<String>(), menuPaths);
+			parseMenu(menu, new ArrayList<String>(), menuTable);
 		}
-		return menuPaths;
+		return menuTable;
 	}
 
 	private void parseMenu(final Menu menu,
-		final ArrayList<String> path, final Map<String, List<String>> table)
+		final ArrayList<String> path, final Map<String, List<String>> menuTable)
 	{
 		final String label = menu.getLabel();
-		menu.add(label);
+		path.add(label);
 		final int itemCount = menu.getItemCount();
 		for (int i = 0; i < itemCount; i++) {
 			final MenuItem item = menu.getItem(i);
 			if (item instanceof Menu) {
 				final Menu subMenu = (Menu) item;
-				parseMenu(subMenu, copyList(path), table);
+				parseMenu(subMenu, copyList(path), menuTable);
 			}
 			else {
 				// add leaf item to table
-				table.put(item.getLabel(), path);
+				menuTable.put(item.getLabel(), path);
 			}
 		}
 	}
