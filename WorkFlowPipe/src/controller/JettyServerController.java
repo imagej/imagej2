@@ -121,7 +121,8 @@ public class JettyServerController {
 		jettyServer.start();
 
 		// Open the users browser to the default page
-		OpenBrowser.openURL( "http://localhost:" + this.jettyServerPort + this.contextPathString ); //TODO: why does this not work with default values? (E.g. index.html): + "/" + this.startPageString );
+		//for authenticated (E.g. OpenID check)  OpenBrowser.openURL( "http://workflowpipes.appspot.com/_ah/login?continue=http://localhost:" + this.jettyServerPort + this.contextPathString ); //Why does this not work with default values? (E.g. index.html): + "/" + this.startPageString );
+		OpenBrowser.openURL( "http://localhost:" + this.jettyServerPort + this.contextPathString );
 	}
 
 	public void stop() throws Exception {

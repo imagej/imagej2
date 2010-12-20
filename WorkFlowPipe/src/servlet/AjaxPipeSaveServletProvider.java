@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import controller.PipesController;
+
+/**
+ * ajax.pipe.save takes _out (json), name (user entered text file name), id(if this is an update action)
+ * def (JSON definition of the existing pipe state Layout), rnd (4 digit random integer), and
+ *  .crumb (a sequence of alpha numerics that is 11 characters).
+ * 
+ * The call returns ok:1, the action:(update or insert) and id:(32 character hex notation) 
+ * TODO:Is this a uuid, md5 hash, or something else?
+ * 
+ * Once a pipe has been saved, the format changes to include the addition of a desc:(99 red ballons), tags:(), and id:(fields)
+ * 
+ * @author ipatron
+ *
+ */
 public class AjaxPipeSaveServletProvider extends HttpServlet {
 
 	/**
@@ -17,75 +33,75 @@ public class AjaxPipeSaveServletProvider extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
+	private PipesController pipesController;
+	
 
-	public AjaxPipeSaveServletProvider() {
-		JSONArray jsonArrayModule = new JSONArray();
-		JSONArray jsonArrayTerminals = new JSONArray();
-
-		// create a map for the first terminals item
-		JSONObject jsonObjectTerminals1 = new JSONObject();
-		jsonObjectTerminals1.put("input", "number");
-		jsonObjectTerminals1.put("name", "_INPUT");
-		jsonArrayTerminals.put(0, jsonObjectTerminals1);
-
-		// create a map for the second terminals item
-		JSONObject jsonObjectTerminals2 = new JSONObject();
-		jsonObjectTerminals2.put("name", "_OUTPUT");
-		jsonObjectTerminals2.put("output", "number");
-		jsonArrayTerminals.put(1, jsonObjectTerminals2);
-
-		// add terminals array to module
-		JSONObject jsonObjectNameTerminals = new JSONObject();
-		jsonObjectNameTerminals.put("terminals", jsonArrayTerminals);
-		jsonArrayModule.put(jsonObjectNameTerminals);
-
-		// add ui key value to the object
-		JSONObject jsonObjectUI = new JSONObject();
-		String uiString = "class=        \t           \n            <div class=\\\"horizontal\\\"><label>Title:<\\/label> <input type='field' name='title'><\\/div>\n            <div class=\\\"horizontal\\\"><label>Description:<\\/label> <input type='field' name='description'><\\/div>\n            <div class=\\\"horizontal\\\"><label>Link:<\\/label> <input type='field' name='link'><\\/div>\n            <div class=\\\"horizontal\\\"><label>PubDate:<\\/label> <input type='field' name='pubdate'><\\/div>\n            <div class=\\\"horizontal\\\"><label>Author:<\\/label> <input type='field' name='author'><\\/div>\n            <div class=\\\"horizontal\\\"><label>GUID:<\\/label> <input type='field' name='guid'><\\/div>             \n            \n            <div class=\\\"horizontal\\\" style=\\\"margin-top:5px\\\"><label>media:content<\\/label> <img class=\\\"expandme content\\\" width=\\\"12\\\" height=\\\"15\\\" src=\\\"http:\\/\\/l.yimg.com\\/a\\/i\\/space.gif\\\"><\\/div>\n            \n            <div class=\\\"content_holder mediahide\\\">            \n\t            <div class=\\\"horizontal hozindent\\\"><label>url:<\\/label> <input type='field' name='mediaContentURL'><\\/div>\n\t            <div class=\\\"horizontal hozindent\\\"><label>type:<\\/label> <input type='field' name='mediaContentType'><\\/div>\n\t            <div class=\\\"horizontal hozindent\\\"><label>width:<\\/label> <input type='field' name='mediaContentWidth'><\\/div>\n\t            <div class=\\\"horizontal hozindent\\\"><label>height:<\\/label> <input type='field' name='mediaContentHeight'><\\/div>\n\t        <\\/div>\n            \n            <div class=\\\"horizontal\\\" style=\\\"margin-top:5px\\\"><label>media:thumbnail<\\/label> <img class=\\\"expandme thumb\\\" width=\\\"12\\\" height=\\\"15\\\" src=\\\"http:\\/\\/l.yimg.com\\/a\\/i\\/space.gif\\\"><\\/div>\n            \n            <div class=\\\"thumb_holder mediahide\\\" >            \n\t            <div class=\\\"horizontal hozindent\\\"><label>url:<\\/label> <input type='field' name='mediaThumbURL'><\\/div>\n\t            <div class=\\\"horizontal hozindent\\\"><label>width:<\\/label> <input type='field' name='mediaThumbWidth'><\\/div>\n\t            <div class=\\\"horizontal hozindent\\\"><label>height:<\\/label> <input type='field' name='mediaThumbHeight'><\\/div>\n\t       <\\/div>\n        ";
-		jsonObjectUI.put("ui", uiString);
-		jsonArrayModule.put(jsonObjectUI);
-
-		// add name to module
-		JSONObject jsonObjectName = new JSONObject();
-		jsonObjectName.put("name", "Simple Math");
-		jsonArrayModule.put(jsonObjectName);
-
-		// add type to module
-		JSONObject jsonObjectType = new JSONObject();
-		jsonObjectType.put("type", "simplemath");
-		jsonArrayModule.put(jsonObjectType);
-
-		// add description to module
-		JSONObject jsonObjectDescription = new JSONObject();
-		jsonObjectDescription.put("description", "Simple Math");
-		jsonArrayModule.put(jsonObjectDescription);
-
-		// add tags to module
-		JSONArray jsonArrayTags = new JSONArray();
-		jsonArrayTags.put("system:number");
-		JSONObject jsonObjectTags = new JSONObject();
-		jsonObjectTags.put("tags", jsonArrayTags);
-		jsonArrayModule.put(jsonObjectTags);
-
-		// add module to JSONObject
-		json.put("module", jsonArrayModule);
-
-		// Add get 1 to array
-		json.put("ok", new Integer(1));
-
-		// System.out.println( json.toString() );
-
+	public AjaxPipeSaveServletProvider( PipesController pipesController ) {
+		this.pipesController = pipesController;
 	}
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		System.out.println(request.getParameter("id"));
-		response.setContentType("application/json");
-		response.setHeader("Cache-Control", "no-cache");
-		response.getWriter().write(json.toString());
-		// response.getWriter().println( "session=" +
-		// request.getSession(true).getId());
+		try {
+			doPOST( request, response );
+		} catch (NoSuchAlgorithmException e) {
+			//TODO:Add logging and exception handling
+			e.printStackTrace();
+		}
+	}
+
+	protected void doPOST(HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
+		
+		
+		
+		//get the name
+		String name = request.getParameter("name");
+		
+		//get the .crumb
+		String crumb = request.getParameter(".crumb");
+		
+		//get the random number
+		String randomNumber = request.getParameter("rnd");
+		
+		//get the return format
+		String out = request.getParameter("_out");
+		
+		//get the definition format
+		String def = request.getParameter("def");
+				
+		//TODO: add rnd and .crumb checks
+		
+		//get the id if this is an update call
+		
+		try {
+			String id = request.getParameter("id");
+			
+			//this is an update
+			json.put("action", "update");
+			
+			//get the response, a string containing the same id
+			this.pipesController.updatePipe( name, def, id, crumb );
+			
+			json.put( "id", id );
+			
+			
+		} catch (Exception e) {
+			//this is not an update
+			json.put( "action", "insert" );
+			
+			//get the response, a string containing the id of the clone
+			String insertID = this.pipesController.insertPipe( name, def, crumb );
+			
+			json.put( "id", insertID );
+			
+		}
+		
+		// generate and send the response
+		response.setContentType( "application/json" );
+		response.setHeader( "Cache-Control", "no-cache" );
+		response.getWriter().write( json.toString() );
+		
 	}
 
 }
