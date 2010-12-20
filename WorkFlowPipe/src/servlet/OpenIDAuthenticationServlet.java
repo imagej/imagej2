@@ -1,28 +1,42 @@
 package servlet;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class OpenIDAuthenticationServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        UserService userService = UserServiceFactory.getUserService();
 
-        String thisURL = request.getRequestURI();
-        if (request.getUserPrincipal() != null) {
-            response.getWriter().println("<p>Hello, " +
-                                         request.getUserPrincipal().getName() +
-                                         "!  You can <a href=\"" +
-                                         userService.createLogoutURL(thisURL) +
-                                         "\">sign out</a>.</p>");
+	private static final long serialVersionUID = 1L;
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+    	UserService userService = UserServiceFactory.getUserService();
+    	User user = null;
+    	try {
+    		user = userService.getCurrentUser();
+    	} catch ( Exception e)
+    	{
+    		user = null;
+    	}
+
+    
+        if (user != null) {
+        	JSONObject json = new JSONObject();
+        	json.put( "guid", user.getFederatedIdentity() );
+        	response.setContentType("application/json");
+    		response.setHeader("Cache-Control", "no-cache");
+    		response.getWriter().write(json.toString());
+    
         } else {
-            response.getWriter().println("<p>Please <a href=\"" +
-                                         userService.createLoginURL(thisURL) +
-                                         "\">sign in</a>.</p>");
+        	response.sendRedirect(userService.createLoginURL(request.getRequestURI()));
         }
     }
 }
