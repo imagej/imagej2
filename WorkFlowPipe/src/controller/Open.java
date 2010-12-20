@@ -9,6 +9,7 @@ import servlet.AjaxFeedFindServletProvider;
 import servlet.AjaxFeedPreviewServletProvider;
 import servlet.AjaxModuleInfoServletProvider;
 import servlet.AjaxModuleListServletProvider;
+import servlet.AjaxPipeCloneServletProvider;
 import servlet.AjaxPipePreviewServletProvider;
 import servlet.AjaxPipeSaveServletProvider;
 import servlet.OpenIDAuthenticationServlet;
@@ -16,7 +17,6 @@ import servlet.OpenIDAuthenticationServlet;
 
 //TODO:add implements run() from plugin
 public class Open {
-	
 	
 
 	static void init( int portNumber ) throws Exception
@@ -51,7 +51,10 @@ public class Open {
 		//add the servlet to handle saving and changing of layouts
 		jettyServerController.addServlet("/ajax.pipe.save", new AjaxPipeSaveServletProvider( pipesController )  );
 		
-        //start the session and launch the default page
+		//add the ability to clone layouts
+		jettyServerController.addServlet("/ajax.pipe.clone", new AjaxPipeCloneServletProvider( pipesController )  );
+       
+		//start the session and launch the default page
 		jettyServerController.startAndLaunchBrowser();
 	}
 	

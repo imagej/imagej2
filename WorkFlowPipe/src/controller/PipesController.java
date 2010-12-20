@@ -9,26 +9,32 @@ import pipesentity.Layout;
 
 public class PipesController {
 
-	private HashMap<String, Layout> pipesArrayList;
+	private HashMap<String, Layout> layoutArrayList;
 	
-	public PipesController( HashMap<String, Layout> pipesArrayList  )
+	public PipesController( HashMap<String, Layout> layoutArrayList  )
 	{
-		this.pipesArrayList = pipesArrayList;
+		this.layoutArrayList = layoutArrayList;
 	}
 	
-	public String clonePipe( String parentID, String crumb ) throws NoSuchAlgorithmException
+	public String clonePipe( String parentID, String crumb ) 
 	{
-		String uniqueID = getUniqueID( parentID );
+		String uniqueID = null;
+		try {
+			uniqueID = getUniqueID( parentID + crumb );
+		} catch (NoSuchAlgorithmException e) {
+			//TODO: add error handling
+			e.printStackTrace();
+		}
 		
 		//add the Layout
-		pipesArrayList.put( uniqueID, new Layout( uniqueID, pipesArrayList.get( parentID ).getLayout() ) );
+		layoutArrayList.put( uniqueID, new Layout( uniqueID, layoutArrayList.get( parentID ).getLayout(), layoutArrayList.get( parentID ).getName(), layoutArrayList.get( parentID ).getDesc() ) );
 		
 		return uniqueID;
 	}
 	
 	public HashMap< String, Layout > getPipesArrayList()
 	{
-		return pipesArrayList;
+		return layoutArrayList;
 	}
 
 	/**
@@ -39,20 +45,29 @@ public class PipesController {
 	 * @param crumb - unique 
 	 * @return
 	 */
-	public void updatePipe( String name, String def, String id, String crumb ) {
-		pipesArrayList.remove( id );
-		pipesArrayList.put( id, new Layout( id, def ));
+	public void updatePipe( String name, String def, String id, String crumb, String desc, String tags ) {
+		layoutArrayList.remove( id );
+		layoutArrayList.put( id, new Layout( id, def, desc, tags ));
 	}
+	
+	//Credit:http://www.xinotes.org/notes/note/370/
+	public static String toHex(byte[] a) {
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for (int i = 0; i < a.length; i++) {
+            sb.append(Character.forDigit((a[i] & 0xf0) >> 4, 16));
+            sb.append(Character.forDigit(a[i] & 0x0f, 16));
+        }
+        return sb.toString();
+    }
+
 
 	private String getUniqueID( String key ) throws NoSuchAlgorithmException
 	{
 		//get the parent Pipe
-		byte[] bytesOfMessage = (pipesArrayList.get( key ).toString() + System.currentTimeMillis() + System.nanoTime() + new Random().nextFloat() ).getBytes();
+		byte[] bytesOfMessage = ( key + System.currentTimeMillis() + System.nanoTime() + new Random().nextFloat() ).getBytes();
 
 		MessageDigest md = MessageDigest.getInstance("MD5");
-		byte[] theDigest = md.digest( bytesOfMessage );
-		
-		return theDigest.toString();
+		return toHex( md.digest( bytesOfMessage ) );
 	}
 
 	/**
@@ -65,7 +80,7 @@ public class PipesController {
 	 */
 	public String insertPipe(String name, String def, String crumb) throws NoSuchAlgorithmException {
 		String id = getUniqueID( def + name + crumb );
-		pipesArrayList.put( id, new Layout( id, def ));
+		layoutArrayList.put( id, new Layout( id, def, "", "" ));
 		return id;
 	}
 	

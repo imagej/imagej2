@@ -16,8 +16,9 @@ public class LoadLayouts {
 	}
 
 	public static HashMap<String, Layout> loadLayouts() {
+		//TODO:add persistance
 		
-		return null;
+		return new HashMap<String, Layout>();
 	}
 
 }
