@@ -3,7 +3,6 @@ package imagej.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.gui.NewImage;
 import ij.plugin.Duplicator;
 
 import java.lang.reflect.Field;
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.SwingUtilities;
 
 /*
@@ -90,7 +90,7 @@ public class Example_PlugIn extends AbstractPlugIn {
 
             IJ.runPlugIn("ij.plugin.LutLoader", "fire");
         }
-        PlugInFunctions.listParamaters(this);
+        PlugInFunctions.listParameters(this);
         //============================================================
         System.out.println("Running with Parameters: \n" + first_name + " " + last_name);
         System.out.println("n = " + n);
@@ -175,7 +175,7 @@ public class Example_PlugIn extends AbstractPlugIn {
         // set input parameters
         abstractPlugin.setParameter("impIn", IJ.getImage());
         //
-        PlugInFunctions.listParamaters(abstractPlugin);
+        PlugInFunctions.listParameters(abstractPlugin);
         //RunnableAdapter rPlugin = new RunnableAdapter(abstractPlugin);
         Map<String, Object> outputMap = null;
 

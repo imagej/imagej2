@@ -78,7 +78,7 @@ public class PlugInFunctions extends ParameterHandler {
 		// set input parameters
 		abstractPlugin.setParameter("impIn", IJ.getImage());
 		//
-		PlugInFunctions.listParamaters(abstractPlugin);
+		PlugInFunctions.listParameters(abstractPlugin);
 	}
 
 	public static Map<String, Object> runAsFuture(Callable plugin) {
@@ -108,7 +108,7 @@ public class PlugInFunctions extends ParameterHandler {
 		return outputMap;
 	}
 
-	public static void listParamaters(Runnable plugin) {
+	public static void listParameters(Runnable plugin) {
 		System.out.println("Parameters Listing: type,  label  =  value");
 		System.out.println("------------------------------------------------------");
 		for (Field field : getParameters(plugin)) {

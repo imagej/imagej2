@@ -79,7 +79,8 @@ public class AutoPluginInvoker {
 
         // if successful
         if (null != image) {
-            List<IndexItem> plugins = new ArrayList<IndexItem>();
+            List<IndexItem<Dimensions, IAutoPlugin>> plugins =
+              new ArrayList<IndexItem<Dimensions, IAutoPlugin>>();
             // get set of dimension names
             Set<String> imageSet = dimensionSet(image.getName());
 
