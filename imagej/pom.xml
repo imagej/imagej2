@@ -12,84 +12,43 @@
   </parent>
 
   <groupId>imagej</groupId>
-  <artifactId>ij2-gui</artifactId>
+  <artifactId>imagej</artifactId>
   <version>2.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <name>ImageJ 2.0 GUI</name>
-  <description>Swing user interface for ImageJ 2.0.</description>
+  <name>ImageJ 2.0</name>
+  <description>An all-in-one bundle of ImageJ 2.0.</description>
   <url>http://imagejdev.org/</url>
   <inceptionYear>1997</inceptionYear>
 
   <licenses>
     <license>
       <name>BSD</name>
-      <url>http://dev.imagejdev.org/svn/imagej/trunk/ij2-gui/LICENSE.txt</url>
+      <url>http://dev.imagejdev.org/svn/imagej/trunk/imagej/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <dependencies>
     <dependency>
-      <groupId>com.apple</groupId>
-      <artifactId>AppleJavaExtensions</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
       <groupId>imagej</groupId>
-      <artifactId>ij1-bridge</artifactId>
+      <artifactId>ij2-gui</artifactId>
       <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>imagej</groupId>
-      <artifactId>ij</artifactId>
-      <version>1.44k6</version>
-    </dependency>
-    <dependency>
-      <groupId>imagej</groupId>
-      <artifactId>ij2-common</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>imagej</groupId>
-      <artifactId>ij2-imglib</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>mpicbg</groupId>
-      <artifactId>imglib</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>mpicbg</groupId>
-      <artifactId>imglib-ij</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>mpicbg</groupId>
-      <artifactId>imglib-io</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.java.sezpoz</groupId>
-      <artifactId>sezpoz</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-util-lookup</artifactId>
-      <version>RELEASE69</version>
     </dependency>
   </dependencies>
 
   <build>
+    <defaultGoal>assembly:single</defaultGoal>
     <plugins>
       <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/deps.xml</descriptor>
+          </descriptors>
           <archive>
             <manifest>
               <mainClass>imagej.gui.MainFrame</mainClass>
-              <packageName>imagej.gui</packageName>
             </manifest>
           </archive>
         </configuration>

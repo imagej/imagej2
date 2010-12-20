@@ -29,6 +29,7 @@
     <module>ij2-imglib</module>
     <module>ijx</module>
     <module>image5d</module>
+    <module>imagej</module>
   </modules>
 
   <repositories>
