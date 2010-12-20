@@ -1,7 +1,8 @@
 package imagej.process;
 
-import static org.junit.Assert.*;
-import imagej.process.Span;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
