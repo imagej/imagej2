@@ -38,20 +38,27 @@
   </dependencies>
 
   <build>
-    <defaultGoal>assembly:single</defaultGoal>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/deps.xml</descriptor>
-          </descriptors>
-          <archive>
-            <manifest>
-              <mainClass>imagej.gui.MainFrame</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/deps.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>imagej.gui.MainFrame</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
