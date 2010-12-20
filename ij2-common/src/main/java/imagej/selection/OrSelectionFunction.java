@@ -1,6 +1,5 @@
 package imagej.selection;
 
-import imagej.selection.SelectionFunction;
 
 public class OrSelectionFunction implements SelectionFunction
 {
