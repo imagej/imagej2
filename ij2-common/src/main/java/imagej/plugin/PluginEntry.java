@@ -1,6 +1,5 @@
 package imagej.plugin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PluginEntry {
