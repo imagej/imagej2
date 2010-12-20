@@ -45,6 +45,7 @@
           <execution>
             <phase>package</phase>
             <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/main/assembly/deps.xml</descriptor>
               </descriptors>
