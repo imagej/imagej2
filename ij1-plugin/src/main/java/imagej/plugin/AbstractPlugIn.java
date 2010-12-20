@@ -1,10 +1,7 @@
 package imagej.plugin;
 
-
-
 import ij.plugin.PlugIn;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -28,11 +25,11 @@ public abstract class AbstractPlugIn implements PlugIn, Runnable, Callable<Map<S
 	}
 
 	public void setParameter(String key, Object value) {
-		PlugInFunctions.setParameter(this, key, value);
+		ParameterHandler.setParameter(this, key, value);
 	}
 
 	public Map<String, Object> getOutputMap() {
-		return PlugInFunctions.getOutputMap(this);
+		return ParameterHandler.getOutputMap(this);
 	}
 
     public Map<String, Object> call() { // for non-interactive... must set parameters before

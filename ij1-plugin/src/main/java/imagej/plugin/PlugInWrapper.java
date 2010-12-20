@@ -1,7 +1,7 @@
 package imagej.plugin;
 
-
 import ij.IJ;
+
 /*
  * @author Johannes Schindelin johannes.schindelin at imagejdev.org
  */
@@ -13,7 +13,7 @@ public class PlugInWrapper extends RunnableAdapter {
 
     public void run(String arg) {
         try {
-            Class clazz = IJ.getClassLoader().loadClass(arg);
+            Class<?> clazz = IJ.getClassLoader().loadClass(arg);
             plugin = (Runnable) clazz.newInstance();
             super.run(arg);
         } catch (ClassNotFoundException e) {

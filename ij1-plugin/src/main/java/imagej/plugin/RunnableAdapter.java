@@ -1,6 +1,7 @@
 package imagej.plugin;
 
 import java.util.Map;
+
 /*
  * @author Johannes Schindelin johannes.schindelin at imagejdev.org
  */

@@ -1,6 +1,7 @@
 package imagej.plugin;
 
 import ij.ImagePlus;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +20,12 @@ public class ParameterHandler {
     }
 
     public static Iterable<Field> getInputParameters(Runnable plugin) {
-        return getParameters(plugin, PlugInFunctions.inputs);
+        return getParameters(plugin, ParameterHandler.inputs);
     }
 
     public static void setParameter(Runnable plugin, String key, Object value) {
         try {
-            Class clazz = plugin.getClass();
+            Class<?> clazz = plugin.getClass();
             Field field = clazz.getField(key);
             Parameter annotation = field.getAnnotation(Parameter.class);
             if (annotation == null) {
@@ -42,7 +43,7 @@ public class ParameterHandler {
     }
 
     public static Iterable<Field> getOutputParameters(Runnable plugin) {
-        return getParameters(plugin, PlugInFunctions.outputs);
+        return getParameters(plugin, ParameterHandler.outputs);
     }
 
     public static Iterable<Field> getParameters(Runnable plugin, ParameterFilter filter) {
@@ -50,7 +51,7 @@ public class ParameterHandler {
     }
 
     public static Iterable<Field> getParameters(Runnable plugin) {
-        return getParameters(plugin, PlugInFunctions.all);
+        return getParameters(plugin, ParameterHandler.all);
     }
 
     public static Iterable<ImagePlus> getOutputImages(Runnable plugin) {
