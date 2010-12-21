@@ -62,9 +62,8 @@ public class AjaxPipeCloneServletProvider extends HttpServlet {
 		String parentID = request.getParameter("id");
 
 		// get the response, a string containing the id of the clone
-		String newId = pipesController.clonePipe( parentID, crumb );
-		json.put("new_id", newId);
-		json.put("ok", new Integer(0) );
+		json = pipesController.clonePipe( parentID, crumb, json );
+
 
 		// generate and send the response
 		response.setContentType("application/json");
