@@ -46,12 +46,10 @@ public class Layout {
 		this.layoutDescription = layoutDescription;
 	}
 
-
 	public String getLayoutID()
 	{
 		return layoutID;
 	}
-	
 	
 	@Override
 	public String toString() {

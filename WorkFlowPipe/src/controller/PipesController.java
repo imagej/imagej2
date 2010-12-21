@@ -88,7 +88,7 @@ public class PipesController {
 	}
 
 	public JSONObject savePipe( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags, JSONObject json, String crumb ) {
-		System.out.println("LayoutID is " + layoutID );
+
 		if ( layoutArrayList.containsKey( layoutID )  )
 		{
 			//update the existing pipe
