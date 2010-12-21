@@ -77,41 +77,13 @@ public class AjaxPipeSaveServletProvider extends HttpServlet {
 
 		// TODO: add rnd and .crumb checks
 
-		// get the id if this is an update call
-
-
-		if (id != null) {
-			// this is an update
-			json.put("action", "update");
-
-			// get the response, a string containing the same id
-			this.pipesController.updatePipe(name, def, id, crumb, desc, tags);
-
-			json.put("id", id);
-
-		} else {
-			// this is not an update
-			json.put("action", "insert");
-
-			// get the response, a string containing the id of the clone
-			String insertID = null;
-			try {
-				insertID = this.pipesController.insertPipe(name, def, crumb);
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			json.put("id", insertID);
-		}
-
-		// Set response status
-		json.put("ok", new Integer(1));
+		// get the response, a string containing the same id
+		json = this.pipesController.savePipe( id, def, name, desc, tags, json, crumb );
 
 		// generate and send the response
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
-		response.getWriter().write(json.toString());
+		response.getWriter().write( json.toString() );
 
 	}
 

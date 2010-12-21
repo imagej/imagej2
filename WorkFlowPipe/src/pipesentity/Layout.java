@@ -1,58 +1,60 @@
 package pipesentity;
 
-import org.json.JSONObject;
 
 public class Layout {
 
-	String id;
-	String def;
-	String name;
-	String desc;
+	String layoutID;
+	String layoutDefinition;
+	String layoutName;
+	String layoutDescription;
+	String layoutTags;
 	
-	public Layout( String id, String def, String name, String description )
+	public Layout( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags )
 	{
-		this.id = id;
-		this.def = def;
-		this.name = name;
-		this.desc = desc;
-	}
-	
-	public String getDef() {
-		return def;
-	}
-
-	public void setDef(String def) {
-		this.def = def;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDesc() {
-		return desc;
-	}
-
-	public void setDescription(String description) {
-		this.desc = desc;
-	}
-
-	public String getID()
-	{
-		return id;
+		this.layoutID = layoutID;
+		this.layoutDefinition = layoutDefinition;
+		this.layoutName = layoutName;
+		this.layoutDescription = layoutDescription;
+		this.layoutTags = layoutTags;
 	}
 	
-	public String getLayout()
-	{
-		return def;
+	public String getLayoutTags() {
+		return this.layoutTags;
 	}
+	
+	public String getLayoutDefinition() {
+		return layoutDefinition;
+	}
+
+	public void setLayoutDefinition(String def) {
+		this.layoutDefinition = def;
+	}
+
+	public String getLayoutName() {
+		return layoutName;
+	}
+
+	public void setLayoutName(String name) {
+		this.layoutName = name;
+	}
+
+	public String getLayoutDescription() {
+		return layoutDescription;
+	}
+	
+	public void setLayoutDescription( String layoutDescription ) {
+		this.layoutDescription = layoutDescription;
+	}
+
+
+	public String getLayoutID()
+	{
+		return layoutID;
+	}
+	
 	
 	@Override
 	public String toString() {
-		return this.name + " " + this.id + " " + this.desc + this.def;
+		return this.layoutName + " " + this.layoutID + " " + this.layoutDescription + this.layoutDefinition;
 	}
 }

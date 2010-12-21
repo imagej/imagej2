@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.json.JSONObject;
+
 import pipesentity.Layout;
 
 public class PipesController {
@@ -16,20 +18,28 @@ public class PipesController {
 		this.layoutArrayList = layoutArrayList;
 	}
 	
-	public String clonePipe( String parentID, String crumb ) 
+	public JSONObject clonePipe( String parentID, String crumb, JSONObject json ) 
 	{
 		String uniqueID = null;
 		try {
 			uniqueID = getUniqueID( parentID + crumb );
 		} catch (NoSuchAlgorithmException e) {
-			//TODO: add error handling
+			//return error status
+			//TODO:add error logging
+			json.put("ok", new Integer(0) );
 			e.printStackTrace();
 		}
 		
 		//add the Layout
-		layoutArrayList.put( uniqueID, new Layout( uniqueID, layoutArrayList.get( parentID ).getLayout(), layoutArrayList.get( parentID ).getName(), layoutArrayList.get( parentID ).getDesc() ) );
+		layoutArrayList.put( uniqueID, new Layout( uniqueID, layoutArrayList.get( parentID ).getLayoutDefinition(), layoutArrayList.get( parentID ).getLayoutName(), layoutArrayList.get( parentID ).getLayoutDescription(), layoutArrayList.get( parentID ).getLayoutTags() ) );
 		
-		return uniqueID;
+		//set return value for new id
+		json.put("new_id", uniqueID);
+		
+		//set return value for success
+		json.put("ok", new Integer(1) );
+		
+		return json;
 	}
 	
 	public HashMap< String, Layout > getPipesArrayList()
@@ -45,9 +55,9 @@ public class PipesController {
 	 * @param crumb - unique 
 	 * @return
 	 */
-	public void updatePipe( String name, String def, String id, String crumb, String desc, String tags ) {
-		layoutArrayList.remove( id );
-		layoutArrayList.put( id, new Layout( id, def, desc, tags ));
+	public void updatePipe( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags ) {
+		layoutArrayList.remove( layoutID );
+		layoutArrayList.put( layoutID, new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ));
 	}
 	
 	//Credit:http://www.xinotes.org/notes/note/370/
@@ -70,18 +80,54 @@ public class PipesController {
 		return toHex( md.digest( bytesOfMessage ) );
 	}
 
-	/**
-	 * Update the local structure to reflect the addition of a new Layout
-	 * @param name
-	 * @param def
-	 * @param crumb
-	 * @return the new unique object id
-	 * @throws NoSuchAlgorithmException
-	 */
-	public String insertPipe(String name, String def, String crumb) throws NoSuchAlgorithmException {
-		String id = getUniqueID( def + name + crumb );
-		layoutArrayList.put( id, new Layout( id, def, "", "" ));
+	
+	public String insertPipe(  String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags, String crumb ) throws NoSuchAlgorithmException {
+		String id = getUniqueID( layoutDefinition + layoutName + crumb );
+		layoutArrayList.put( id, new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ) );
 		return id;
+	}
+
+	public JSONObject savePipe( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags, JSONObject json, String crumb ) {
+		System.out.println("LayoutID is " + layoutID );
+		if ( layoutArrayList.containsKey( layoutID )  )
+		{
+			//update the existing pipe
+			updatePipe( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags );
+			
+			//set return action type
+			json.put("action", "update");
+			
+			//set id 
+			json.put("id", layoutID );
+			
+			//set status OK
+			json.put("ok", new Integer( 1 ));
+			return json;
+		}
+		
+		//insert a new pipe
+		String newID = null;
+		
+		try {
+			//insert the pipe
+			newID = insertPipe( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags, crumb );
+		} catch (NoSuchAlgorithmException e) {
+			//set return status not ok
+			json.put("ok", new Integer(0));
+			
+			e.printStackTrace();
+		}
+		
+		//set return id
+		json.put("id", newID );
+		
+		//set return action type
+		json.put("action", "insert");
+		
+		//set return status to success
+		json.put("ok", new Integer( 1 ));
+		
+		return json;
 	}
 	
 }
