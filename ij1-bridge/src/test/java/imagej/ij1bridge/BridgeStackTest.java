@@ -8,6 +8,7 @@ import java.awt.image.IndexColorModel;
 
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import imagej.imglib.dataset.ImgLibDataset;
 import imagej.imglib.process.ImageUtils;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
