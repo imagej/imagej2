@@ -3,7 +3,9 @@ import ij.VirtualStack;
 import java.io.*;
 import java.util.Properties;
  
+// BDZ - BEGIN CHANGES
 /** This class consists of public fields that describe an image file. */
+// BDZ - END CHANGES
 public class FileInfo implements Cloneable {
 
 	/** 8-bit unsigned integer (0-255). */
@@ -67,8 +69,10 @@ public class FileInfo implements Cloneable {
 	public static final int ABGR = 18;
 
 	/** 64 bit signed integer */
+// BDZ - BEGIN ADDITIONS
 	public static final int GRAY64_SIGNED = 19;
 
+// BDZ - END ADDITIONS
 	// File formats
 	public static final int UNKNOWN = 0;
 	public static final int RAW = 1;
@@ -161,6 +165,7 @@ public class FileInfo implements Cloneable {
 	/** Returns the number of bytes used per pixel. */
 	public int getBytesPerPixel() {
 		switch (fileType)
+// BDZ - BEGIN CHANGES
 		{
 			case GRAY8:
 			case COLOR8:
@@ -203,6 +208,7 @@ public class FileInfo implements Cloneable {
 			default:
 				
 				return 0;
+// BDZ - END CHANGES
 		}
 	}
 
@@ -229,13 +235,17 @@ public class FileInfo implements Cloneable {
     	switch (fileType) {
 			case GRAY8: return "byte";
 			case GRAY12_UNSIGNED: return "uint12";
+// BDZ - BEGIN ADDITIONS
 			case GRAY16_SIGNED: return "short";
+// BDZ - END ADDITIONS
 			case GRAY16_UNSIGNED: return "ushort";
 			case GRAY32_INT: return "int";
 			case GRAY32_UNSIGNED: return "uint";
 			case GRAY32_FLOAT: return "float";
 			case GRAY64_FLOAT: return "double";
+// BDZ - BEGIN ADDITIONS
 			case GRAY64_SIGNED: return "long";
+// BDZ - END ADDITIONS
 			case COLOR8: return "byte+lut";
 			case RGB: return "RGB";
 			case RGB_PLANAR: return "RGB(p)";
@@ -245,6 +255,7 @@ public class FileInfo implements Cloneable {
 			case ABGR: return "ABGR";
 			case BGR: return "BGR";
 			case BARG: return "BARG";
+// BDZ - DELETED CODE
 			case RGB48_PLANAR: return "RGB48(p)";
 			default: return "";
     	}

@@ -4,9 +4,11 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
+// BDZ - BEGIN CHANGES
 import ij.measure.Calibration;
 import ij.process.ImageStatistics;
 import ij.process.ShortStatistics;
+// BDZ - END CHANGES
 
 /** ShortProcessors contain a 16-bit unsigned image
 	and methods that operate on that image. */
@@ -16,6 +18,7 @@ public class ShortProcessor extends ImageProcessor {
 	private short[] pixels;
 	private byte[] pixels8;
 	private short[] snapshotPixels;
+// BDZ - DELETED CODE
 	private boolean fixedScale;
 
 
@@ -110,7 +113,9 @@ public class ShortProcessor extends ImageProcessor {
 	
 	// create 8-bit image by linearly scaling from 16-bits to 8-bits
 	protected byte[] create8BitImage() {
+// BDZ - BEGIN CHANGES
 		int size = width*height;
+// BDZ - END CHANGES
 		if (pixels8==null)
 			pixels8 = new byte[size];
 		int value;
@@ -406,11 +411,13 @@ public class ShortProcessor extends ImageProcessor {
 	}
 
 	void getRow2(int x, int y, int[] data, int length) {
+// BDZ - DELETED CODE
 		for (int i=0; i<length; i++)
 			data[i] = pixels[y*width+x+i]&0xffff;
 	}
 	
 	void putColumn2(int x, int y, int[] data, int length) {
+// BDZ - DELETED CODE
 		for (int i=0; i<length; i++)
 			pixels[(y+i)*width+x] = (short)data[i];
 	}
@@ -1102,6 +1109,7 @@ public class ShortProcessor extends ImageProcessor {
 	public void dilate() {}
 
 	// NEW METHODS FOR IJ 2.0 SUPPORT
+// BDZ - BEGIN ADDITIONS
 	
 	public int getBitDepth() { return 16; }
 	public double getBytesPerPixel() { return 2; }
@@ -1122,5 +1130,6 @@ public class ShortProcessor extends ImageProcessor {
 
 	public double getd(int x, int y) { return getf(x, y); }
 	public double getd(int index) { return getf(index); }
+// BDZ - END ADDITIONS
 }
 

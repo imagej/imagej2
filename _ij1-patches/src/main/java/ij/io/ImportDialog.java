@@ -44,7 +44,9 @@ public class ImportDialog {
     private static String[] types = {"8-bit", "16-bit Signed", "16-bit Unsigned",
 		"32-bit Signed", "32-bit Unsigned", "32-bit Real", "64-bit Real", "24-bit RGB", 
 		"24-bit RGB Planar", "24-bit BGR", "24-bit Integer", "32-bit ARGB", "32-bit ABGR",
+// BDZ - BEGIN CHANGES
 		"1-bit Bitmap","12-bit Unsigned"};
+// BDZ - END CHANGES
     	
     static {
     	options = Prefs.getInt(OPTIONS,0);
@@ -222,7 +224,9 @@ public class ImportDialog {
 		else if (imageType.equals("1-bit Bitmap"))
 			fi.fileType = FileInfo.BITMAP;
 		else if (imageType.equals("12-bit Unsigned"))
+// BDZ - BEGIN ADDITIONS
 			fi.fileType = FileInfo.GRAY12_UNSIGNED;
+// BDZ - END ADDITIONS
 		else
 			fi.fileType = FileInfo.GRAY8;
 		if (IJ.debugMode) IJ.log("ImportDialog: "+fi);

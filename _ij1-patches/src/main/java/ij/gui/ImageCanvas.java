@@ -861,6 +861,7 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 				break;
 			}
 			case ImagePlus.OTHER: {
+// BDZ - BEGIN ADDITIONS
 				double min = imp.getProcessor().getMin();
 				double max = imp.getProcessor().getMax();
 				double value = imp.getProcessor().getd(ox,oy);
@@ -872,6 +873,7 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 				else
 					setForegroundColor(getColor(index));
 			}
+// BDZ - END ADDITIONS
 		}
 		Color c;
 		if (setBackground)

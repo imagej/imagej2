@@ -1,14 +1,19 @@
 package ij.process;
 import java.awt.*;
 import java.awt.image.*;
+// BDZ - DELETED CODE
 
 /** This class converts an ImageProcessor to another data type. */
 public class TypeConverter {
 
 	private enum ConvertFrom {BYTE, SHORT, FLOAT, RGB, OTHER};
+// BDZ - BEGIN CHANGES
 	private ImageProcessor ip;
+// BDZ - END CHANGES
 	private ConvertFrom fromType;
+// BDZ - BEGIN CHANGES
 	boolean doScaling = true;
+// BDZ - END CHANGES
 	int width, height;
 
 	public TypeConverter(ImageProcessor ip, boolean doScaling) {
@@ -16,15 +21,23 @@ public class TypeConverter {
 		this.doScaling = doScaling;
 		if (ip instanceof ByteProcessor)
 			fromType = ConvertFrom.BYTE;
+// BDZ - BEGIN CHANGES
 		else if (ip instanceof ShortProcessor)
+// BDZ - END CHANGES
 			fromType = ConvertFrom.SHORT;
+// BDZ - BEGIN CHANGES
 		else if (ip instanceof FloatProcessor)
+// BDZ - END CHANGES
 			fromType = ConvertFrom.FLOAT;
+// BDZ - BEGIN CHANGES
 		else if (ip instanceof ColorProcessor)
 			fromType = ConvertFrom.RGB;
+// BDZ - END CHANGES
 		else
 			fromType = ConvertFrom.OTHER;
+// BDZ - BEGIN CHANGES
 		
+// BDZ - END CHANGES
 		width = ip.getWidth();
 		height = ip.getHeight();
 	}
@@ -32,7 +45,9 @@ public class TypeConverter {
 	/** Converts processor to a ByteProcessor. */
 	public ImageProcessor convertToByte() {
 		switch (fromType) {
+// BDZ - BEGIN CHANGES
 			case BYTE:
+// BDZ - END CHANGES
 				return ip;
 			case SHORT:
 				return convertShortToByte();
@@ -41,7 +56,9 @@ public class TypeConverter {
 			case RGB:
 				return convertRGBToByte();
 			case OTHER:
+// BDZ - BEGIN ADDITIONS
 				return convertOtherToByte();
+// BDZ - END ADDITIONS
 			default:
 				return null;
 		}
@@ -96,6 +113,7 @@ public class TypeConverter {
 		int c, r, g, b;
 		int[] pixels32;
 		byte[] pixels8;
+// BDZ - DELETED CODE
 		
 		//get RGB pixels
 		pixels32 = (int[])ip.getPixels();
@@ -116,6 +134,7 @@ public class TypeConverter {
 	}
 	
 	/** creates a ByteProcessor from another processor */
+// BDZ - BEGIN ADDITIONS
 	ByteProcessor convertOtherToByte()
 	{
 		int totPix = width * height;
@@ -144,10 +163,13 @@ public class TypeConverter {
 		return new ByteProcessor(width, height, bytes, ip.getColorModel());
 	}
 	
+// BDZ - END ADDITIONS
 	/** Converts processor to a ShortProcessor. */
 	public ImageProcessor convertToShort() {
 		switch (fromType) {
+// BDZ - BEGIN CHANGES
 			case BYTE:
+// BDZ - END CHANGES
 				return convertByteToShort();
 			case SHORT:
 				return ip;
@@ -157,7 +179,9 @@ public class TypeConverter {
 				ip = convertRGBToByte();
 				return convertByteToShort();
 			case OTHER:
+// BDZ - BEGIN ADDITIONS
 				return convertOtherToShort();
+// BDZ - END ADDITIONS
 			default:
 				return null;
 		}
@@ -174,7 +198,9 @@ public class TypeConverter {
 		byte[] pixels8 = (byte[])ip.getPixels();
 		short[] pixels16 = new short[width * height];
 		for (int i=0; i<width*height; i++)
+// BDZ - BEGIN CHANGES
 			pixels16[i] = (short)(pixels8[i]&0xff);
+// BDZ - END CHANGES
 	    return new ShortProcessor(width, height, pixels16, ip.getColorModel());
 	}
 
@@ -191,7 +217,9 @@ public class TypeConverter {
 			scale = 65535.0/(max-min);
 		double value;
 		for (int i=0; i<width*height; i++) {
+// BDZ - BEGIN CHANGES
 			if (doScaling)
+// BDZ - END CHANGES
 				value = (pixels32[i]-min)*scale;
 			else
 				value = pixels32[i];
@@ -203,6 +231,7 @@ public class TypeConverter {
 	}
 
 	/** creates a ShortProcessor from an processor of unknown type */
+// BDZ - BEGIN ADDITIONS
 	ShortProcessor convertOtherToShort()
 	{
 		int totPix = width * height;
@@ -231,10 +260,13 @@ public class TypeConverter {
 		return new ShortProcessor(width, height, shorts, ip.getColorModel());
 	}
 	
+// BDZ - END ADDITIONS
 	/** Converts processor to a FloatProcessor. */
 	public ImageProcessor convertToFloat(float[] ctable) {
 		switch (fromType) {
+// BDZ - BEGIN CHANGES
 			case BYTE:
+// BDZ - END CHANGES
 				return convertByteToFloat(ctable);
 			case SHORT:
 				return convertShortToFloat(ctable);
@@ -244,7 +276,9 @@ public class TypeConverter {
 				ip = convertRGBToByte();
 				return convertByteToFloat(null);
 			case OTHER:
+// BDZ - BEGIN ADDITIONS
 				return convertOtherToFloat();
+// BDZ - END ADDITIONS
 			default:
 				return null;
 		}
@@ -263,6 +297,7 @@ public class TypeConverter {
 		}
 		byte[] pixels8 = (byte[])ip.getPixels();
 		float[] pixels32 = new float[width*height];
+// BDZ - DELETED CODE
 		if (cTable!=null && cTable.length==256) {
 			for (int i=0; i<width*height; i++)
 				pixels32[i] = cTable[pixels8[i]&255];
@@ -281,6 +316,7 @@ public class TypeConverter {
 	FloatProcessor convertShortToFloat(float[] cTable) {
 		short[] pixels16 = (short[])ip.getPixels();
 		float[] pixels32 = new float[width*height];
+// BDZ - DELETED CODE
 		if (cTable!=null && cTable.length==65536)
 			for (int i=0; i<width*height; i++)
 				pixels32[i] = cTable[pixels16[i]&0xffff];
@@ -292,6 +328,7 @@ public class TypeConverter {
 	}
 	
 	/** Creates an FloatProcessor from an unknown processor */
+// BDZ - BEGIN ADDITIONS
 	FloatProcessor convertOtherToFloat()
 	{
 		int totPix = width * height;
@@ -306,10 +343,13 @@ public class TypeConverter {
 	    return new FloatProcessor(width, height, floats, ip.getColorModel());
 	}
 	
+// BDZ - END ADDITIONS
 	/** Converts processor to a ColorProcessor. */
 	public ImageProcessor convertToRGB() {
 		if (fromType==ConvertFrom.RGB)
+// BDZ - BEGIN CHANGES
 			return ip;
+// BDZ - END CHANGES
 		else {
 			ImageProcessor ip2 = ip.convertToByte(doScaling);
 			return new ColorProcessor(ip2.createImage());

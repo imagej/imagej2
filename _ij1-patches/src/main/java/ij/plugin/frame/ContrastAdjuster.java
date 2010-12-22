@@ -326,15 +326,18 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		if (imp.getType()==ImagePlus.COLOR_RGB)
 			{min2=0.0; max2=255.0;}
 		if ((ip instanceof ByteProcessor) || (ip instanceof ColorProcessor))
+// BDZ - BEGIN CHANGES
 		{
 			defaultMin = 0;
 			defaultMax = 255;
 		}
 		else
 		{
+// BDZ - END CHANGES
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
+// BDZ - DELETED CODE
 		}
 		setMinAndMax(imp, min2, max2);
 		min = imp.getDisplayRangeMin();
@@ -539,7 +542,9 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
  		if (RGBImage)
 			ip.reset();
 		if ( !(ip instanceof ByteProcessor) && !(ip instanceof ColorProcessor))
+// BDZ - BEGIN CHANGES
 		{
+// BDZ - END CHANGES
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
@@ -771,7 +776,9 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
 		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
+// BDZ - BEGIN CHANGES
 		double minValue = cal.getCValue(min);
+// BDZ - END CHANGES
 		double maxValue = cal.getCValue(max);
 		int channels = imp.getNChannels();
 		GenericDialog gd = new GenericDialog("Set Display Range");
@@ -863,7 +870,9 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
 		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
+// BDZ - BEGIN CHANGES
 		double minValue = cal.getCValue(min);
+// BDZ - END CHANGES
 		double maxValue = cal.getCValue(max);
 		//IJ.log("setWindowLevel: "+min+" "+max);
 		double windowValue = maxValue - minValue;

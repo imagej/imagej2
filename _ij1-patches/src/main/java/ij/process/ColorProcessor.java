@@ -1,11 +1,14 @@
 package ij.process;
 
+// BDZ - DELETED CODE
 import java.awt.*;
 import java.awt.image.*;
 
+// BDZ - BEGIN CHANGES
 import ij.measure.Calibration;
 import ij.process.ColorStatistics;
 import ij.process.ImageStatistics;
+// BDZ - END CHANGES
 import ij.ImageStack;
 
 /**
@@ -469,6 +472,7 @@ public class ColorProcessor extends ImageProcessor {
 
 	/** Sets the current pixels from 3 byte arrays (reg, green, blue). */
 	public void setRGB(byte[] R, byte[] G, byte[] B) {
+// BDZ - DELETED CODE
 		for (int i=0; i < width*height; i++)
 			pixels[i] = 0xff000000 | ((R[i]&0xff)<<16) | ((G[i]&0xff)<<8) | B[i]&0xff;
 	}
@@ -1270,6 +1274,7 @@ public class ColorProcessor extends ImageProcessor {
 	}
 
 	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
+// BDZ - BEGIN ADDITIONS
 	
 	public int getBitDepth() { return 24; }
 	public double getBytesPerPixel() { return 4; }
@@ -1290,5 +1295,6 @@ public class ColorProcessor extends ImageProcessor {
 
 	public double getd(int x, int y) { return getf(x, y); }
 	public double getd(int index) { return getf(index); }
+// BDZ - END ADDITIONS
 }
 

@@ -4,9 +4,11 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
+// BDZ - BEGIN CHANGES
 import ij.process.ByteStatistics;
 import ij.measure.Calibration;
 import ij.process.ImageStatistics;
+// BDZ - END CHANGES
 import ij.Prefs;
 
 /**
@@ -1238,10 +1240,13 @@ public class ByteProcessor extends ImageProcessor {
 	}
 	
 	protected byte[] create8BitImage() {
+// BDZ - BEGIN CHANGES
 		return pixels;
+// BDZ - END CHANGES
 	}
 
 	// NEW METHODS FOR IJ 2.0 SUPPORT
+// BDZ - BEGIN ADDITIONS
 	
 	public int getBitDepth() { return 8; }
 	public double getBytesPerPixel() { return 1; }
@@ -1261,5 +1266,6 @@ public class ByteProcessor extends ImageProcessor {
 
 	public double getd(int x, int y) { return getf(x, y); }
 	public double getd(int index) { return getf(index); }
+// BDZ - END ADDITIONS
 }
 

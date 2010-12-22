@@ -58,7 +58,9 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 
 	 	if (arg.equals("div")) {
 	 		if (mulValue==0.0 && !ip.isFloatingType())
+// BDZ - BEGIN CHANGES
 	 			return;
+// BDZ - END CHANGES
 			ip.multiply(1.0/mulValue);
 			return;
 		}
@@ -152,6 +154,7 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 
 	 	if (arg.equals("reciprocal")) {
 	 		
+// BDZ - BEGIN CHANGES
 			if (!isFloat(ip))
 				return;
 			int w = ip.getWidth();
@@ -162,9 +165,12 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 				float pixVal = ip.getf(i);
 				if (pixVal==0f)
 					ip.setf(i,Float.NaN);
+// BDZ - END CHANGES
 				else
 					ip.setf(i,1f/pixVal);
+// BDZ - BEGIN CHANGES
 			}
+// BDZ - END CHANGES
 			ip.resetMinAndMax();
 			return;
 		}
@@ -176,7 +182,9 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 
 	 	if (arg.equals("abs")) {
 			if (!((ip.isFloatingType())||imp.getCalibration().isSigned16Bit())) {
+// BDZ - BEGIN CHANGES
 				IJ.error("floating point or signed 16-bit image required");
+// BDZ - END CHANGES
 				canceled = true;
 			} else {
 				ip.abs();
@@ -198,7 +206,9 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
  
  	boolean isFloat(ImageProcessor ip) {
 		if (!(ip.isFloatingType())) {
+// BDZ - BEGIN CHANGES
 			IJ.error("floating point image required");
+// BDZ - END CHANGES
 			canceled = true;
 			return false;
 		} else
@@ -238,20 +248,27 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 			lower = ip.getMinThreshold();
 			upper = ip.getMaxThreshold();
 			if (lower==ImageProcessor.NO_THRESHOLD || !(ip.isFloatingType())) {
+// BDZ - BEGIN CHANGES
 				IJ.error("Thresholded floating point image required");
+// BDZ - END CHANGES
 				canceled = true;
 				return;
 			}
 		}
+// BDZ - DELETED CODE
         int width = ip.getWidth();
         int height = ip.getHeight();
         double v;
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
                   v = ip.getf(x,y);
+// BDZ - BEGIN CHANGES
                   if (v<lower || v>upper)
+// BDZ - END CHANGES
                       ip.setf(x, y, Float.NaN);
+// BDZ - BEGIN CHANGES
             }
+// BDZ - END CHANGES
         }
 		ip.resetMinAndMax();
 		return;
@@ -302,13 +319,16 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 		interp.setVariable("h", h);
 		boolean showProgress = pfr.getSliceNumber()==1 && !Interpreter.isBatchMode();
 		interp.setVariable("z", pfr.getSliceNumber()-1);
+// BDZ - DELETED CODE
 		Rectangle r = ip.getRoi();
 		int inc = r.height/50;
 		if (inc<1) inc = 1;
 		double v;
 		int index, v2;
 		if (ip instanceof ByteProcessor) {
+// BDZ - BEGIN CHANGES
 			byte[] pixels1 = (byte[])ip.getPixels();
+// BDZ - END CHANGES
 			byte[] pixels2 = pixels1;
 			if (hasGetPixel)
 				pixels2 = new byte[w*h];
@@ -332,7 +352,9 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 			}
 			if (hasGetPixel) System.arraycopy(pixels2, 0, pixels1, 0, w*h);
 		} else if (ip instanceof ColorProcessor) {
+// BDZ - BEGIN CHANGES
 			int rgb, red, green, blue;
+// BDZ - END CHANGES
 			int[] pixels1 = (int[])ip.getPixels();
 			int[] pixels2 = pixels1;
 			if (hasGetPixel)
@@ -374,7 +396,9 @@ public class ImageMath implements ExtendedPlugInFilter, DialogListener {
 			}
 			if (hasGetPixel) System.arraycopy(pixels2, 0, pixels1, 0, w*h);
 		} else {  // FloatProc, ShortProc, or an unknown processor type
+// BDZ - BEGIN CHANGES
 			for (int y=r.y; y<(r.y+r.height); y++) {
+// BDZ - END CHANGES
 				if (showProgress && y%inc==0)
 					IJ.showProgress(y-r.y, r.height);
 				interp.setVariable("y", y);
