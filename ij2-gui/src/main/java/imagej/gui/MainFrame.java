@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 /** A simple and dumb Swing-based main window for ImageJ2. */
@@ -25,6 +26,7 @@ public class MainFrame {
 	/** Creates a new ImageJ frame that runs as an application. */
 	public MainFrame() {
 		final JFrame frame = new JFrame("ImageJ");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		createMenuBar(frame);
 		createContentPane(frame);
 		frame.pack();
