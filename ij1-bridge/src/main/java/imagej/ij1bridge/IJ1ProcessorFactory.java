@@ -19,6 +19,7 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
+import imagej.imglib.dataset.ImgLibDataset;
 
 public class IJ1ProcessorFactory implements ProcessorFactory
 {

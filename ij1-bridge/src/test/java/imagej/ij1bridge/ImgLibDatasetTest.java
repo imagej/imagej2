@@ -10,6 +10,7 @@ import imagej.data.Types;
 import imagej.dataset.CompositeDataset;
 import imagej.dataset.Dataset;
 import imagej.imglib.TypeManager;
+import imagej.imglib.dataset.ImgLibDataset;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
