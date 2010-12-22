@@ -20,6 +20,7 @@ public class BridgeStack extends ImageStack
 	private ArrayList<Object> planeRefs;
 	private int[] planeDims;
 	private ProcessorFactory processorFactory;
+	private Object[] planeRefCache;
 	
 	// *** compatibility instance variables
 	private final String outOfRange = "stack index out of range: ";
@@ -238,7 +239,12 @@ public class BridgeStack extends ImageStack
 		unused elements set to null. */
 	public Object[] getImageArray()
 	{
-		return this.planeRefs.toArray();
+		if ((this.planeRefCache == null) || (this.planeRefCache.length != this.planeRefs.size()))
+		{
+			this.planeRefCache = new Object[this.planeRefs.size()];
+		}
+		
+		return this.planeRefs.toArray(this.planeRefCache);
 	}
 	
 	@Override
