@@ -1426,6 +1426,33 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		return getf(x, y) ;
 	}
 
+	/** get the pixel value at x,y as a long. */
+	@Override
+	public long getl(int x, int y)
+	{
+		int[] position = Index.create(x, y, this.planePosition);
+
+		LocalizableByDimCursor<T> cursor = this.cachedCursor.get();
+
+		cursor.setPosition(position);
+
+		RealType<?> pixRef = cursor.getType();
+
+		return (long)pixRef.getRealDouble();  // TODO - need ImgLib method for RealType called getIntegerLong() and call it here
+
+		// do not close cursor - using cached one
+	}
+
+	/** get the pixel value at index as a long. */
+	@Override
+	public long getl(int index)
+	{
+		int width = getWidth();
+		int x = index % width;
+		int y = index / width;
+		return getl(x, y) ;
+	}
+
 	/** get the current background value. always 0 if not UnsignedByte data */
 	@Override
 	public double getBackgroundValue()
@@ -2317,6 +2344,24 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		setf( x, y, value);
 	}
 
+
+	/** set the pixel at x,y, to provided int value. if float data then value is a float encoded as an int */
+	@Override
+	public void setl(int x, int y, long value)
+	{
+		setd(x, y, (double)value);  // TODO - need ImgLib method for RealType called setInteger(long value) and then call here
+	}
+
+	/** set the pixel at index to provided int value. if float data then value is a float encoded as an int */
+	@Override
+	public void setl(int index, long value)
+	{
+		int width = getWidth();
+		int x = index % width;
+		int y = index / width;
+		setl( x, y, value) ;
+	}
+	
 	/** set min and max values to provided values. resets the threshold as needed. if passed (0,0) it will calculate actual min and max 1st. */
 	@Override
 	public void setMinAndMax(double min, double max)
@@ -2724,10 +2769,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		}
 		else if (bitDepth <= 64)
 		{
-			double value = getd(x, y);
-			long encoding = (long)value;              // TODO - precision loss possible here. need processors to add a getl() method
-			destination[0] = (int)(encoding & 0xffffffffL);
-			destination[1] = (int)((encoding >> 32) & 0xffffffffL);
+			long value = getl(x, y);
+			destination[0] = (int)(value & 0xffffffffL);
+			destination[1] = (int)((value >> 32) & 0xffffffffL);
 		}
 		else
 			throw new IllegalStateException("unsupported integral bitDepth : "+bitDepth);
