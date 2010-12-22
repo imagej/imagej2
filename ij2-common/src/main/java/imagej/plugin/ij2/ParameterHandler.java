@@ -2,6 +2,7 @@ package imagej.plugin.ij2;
 
 import imagej.plugin.PluginException;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,8 +16,6 @@ import java.util.Map;
  */
 public final class ParameterHandler {
 
-	private static final boolean DEBUG = false;
-
 	private ParameterHandler() {
 		// forbid instantiation of utility class
 	}
@@ -28,19 +27,24 @@ public final class ParameterHandler {
 	public static void setParameter(IPlugin plugin, String key, Object value) {
 		try {
 			Class<?> clazz = plugin.getClass();
-			Field field = clazz.getField(key);
+			Field field = clazz.getDeclaredField(key);
+			field.setAccessible(true); // expose non-public fields
 			Parameter annotation = field.getAnnotation(Parameter.class);
 			if (annotation == null) {
-				throw new IllegalArgumentException("field \'" + key + "\' is not a plugin parameter");
+				throw new IllegalArgumentException("field \'" +
+					key + "\' is not a plugin parameter");
 			}
 			if (annotation.output()) {
-				throw new IllegalArgumentException("field \'" + key + "\' is an output field");
+				throw new IllegalArgumentException("field \'" +
+					key + "\' is an output field");
 			}
 			field.set(plugin, value);
-		} catch (NoSuchFieldException e) {
+		}
+		catch (NoSuchFieldException e) {
 			throw new IllegalArgumentException("Invalid key: " + key);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Field is not public: " + key);
+		}
+		catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Field is not accessible: " + key);
 		}
 	}
 
@@ -48,7 +52,9 @@ public final class ParameterHandler {
 		return getParameters(plugin, ParameterHandler.outputs);
 	}
 
-	public static Iterable<Field> getParameters(IPlugin plugin, ParameterFilter filter) {
+	public static Iterable<Field> getParameters(IPlugin plugin,
+		ParameterFilter filter)
+	{
 		return new ParameterIterable(plugin, filter);
 	}
 
@@ -83,12 +89,12 @@ public final class ParameterHandler {
 				throw new PluginException(e);
 			}
 		}
-		return result;		
+		return result;
 	}
-	
-	// Parameter Filters -----------------------------------------------------------------
-	public interface ParameterFilter {
 
+	// -- Parameter Filters --
+
+	public interface ParameterFilter {
 		public boolean matches(Parameter parameter);
 	}
 
@@ -100,31 +106,31 @@ public final class ParameterHandler {
 	};
 
 	protected final static ParameterFilter inputs = new ParameterFilter() {
-
 		public boolean matches(Parameter parameter) {
 			return !parameter.output();
 		}
 	};
 
 	protected final static ParameterFilter outputs = new ParameterFilter() {
-
 		public boolean matches(Parameter parameter) {
 			return parameter.output();
 		}
 	};
 
-	protected static class ParameterIterable implements Iterable<Field> {
+	// -- Parameter Iteration --
 
+	protected static class ParameterIterable implements Iterable<Field> {
 		Field[] fields;
 		ParameterFilter filter;
 
 		ParameterIterable(Field[] fields, ParameterFilter filter) {
 			this.fields = fields;
 			this.filter = filter;
+			AccessibleObject.setAccessible(fields, true); // expose non-public fields
 		}
 
 		ParameterIterable(IPlugin plugin, ParameterFilter filter) {
-			this(plugin.getClass().getFields(), filter);
+			this(plugin.getClass().getDeclaredFields(), filter);
 		}
 
 		public Iterator<Field> iterator() {
@@ -138,7 +144,6 @@ public final class ParameterHandler {
 		ParameterFilter filter;
 
 		ParameterIterator( Field[] fields, ParameterFilter filter ) {
-			if (DEBUG) System.out.println("There are " + fields.length + " fields.");
 			this.fields = fields;
 
 			this.filter = filter;
@@ -149,12 +154,8 @@ public final class ParameterHandler {
 		void findNext() {
 			while (++counter < fields.length) {
 				Parameter parameter = fields[counter].getAnnotation(Parameter.class);
-				if (parameter == null) {
-					continue;
-				}
-				if (filter.matches(parameter)) {
-					return;
-				}
+				if (parameter == null) continue;
+				if (filter.matches(parameter)) return;
 			}
 		}
 
