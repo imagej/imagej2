@@ -1028,12 +1028,17 @@ public class FloatProcessor extends ImageProcessor {
 	public double getMinimumAllowedValue() { return -Float.MAX_VALUE; }
 	public double getMaximumAllowedValue() { return Float.MAX_VALUE; }
 
-// BDZ - END ADDITIONS
 	public String getTypeName() { return "32-bit float"; }
 
-// BDZ - BEGIN ADDITIONS
 	public double getd(int x, int y) { return getf(x, y); }
-// BDZ - END ADDITIONS
 	public double getd(int index) { return getf(index); }
+	public void setd(int x, int y, double value) { setf(x, y, (float)value); }
+	public void setd(int index, double value) { setf(index, (float)value); }
+	
+	public long getl(int x, int y) { return (long)getf(x, y); }
+	public long getl(int index) { return (long)getf(index); }
+	public void setl(int x, int y, long value) { setf(x, y, (float)value); }
+	public void setl(int index, long value) { setf(index, (float)value); }
+// BDZ - END ADDITIONS
 }
 
