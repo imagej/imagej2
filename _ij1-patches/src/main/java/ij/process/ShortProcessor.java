@@ -3,12 +3,11 @@
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-
 // BDZ - BEGIN CHANGES
 import ij.measure.Calibration;
 import ij.process.ImageStatistics;
-import ij.process.ShortStatistics;
 // BDZ - END CHANGES
+import ij.process.ShortStatistics;
 
 /** ShortProcessors contain a 16-bit unsigned image
 	and methods that operate on that image. */
@@ -112,10 +111,10 @@ public class ShortProcessor extends ImageProcessor {
 	}
 	
 	// create 8-bit image by linearly scaling from 16-bits to 8-bits
-	protected byte[] create8BitImage() {
 // BDZ - BEGIN CHANGES
-		int size = width*height;
+	protected byte[] create8BitImage() {
 // BDZ - END CHANGES
+		int size = width*height;
 		if (pixels8==null)
 			pixels8 = new byte[size];
 		int value;
@@ -1108,8 +1107,8 @@ public class ShortProcessor extends ImageProcessor {
 	/** Not implemented. */
 	public void dilate() {}
 
-	// NEW METHODS FOR IJ 2.0 SUPPORT
 // BDZ - BEGIN ADDITIONS
+	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
 	public int getBitDepth() { return 16; }
 	public double getBytesPerPixel() { return 2; }
@@ -1129,7 +1128,7 @@ public class ShortProcessor extends ImageProcessor {
 	public String getTypeName() { return "16-bit unsigned"; }
 
 	public double getd(int x, int y) { return getf(x, y); }
-	public double getd(int index) { return getf(index); }
 // BDZ - END ADDITIONS
+	public double getd(int index) { return getf(index); }
 }
 

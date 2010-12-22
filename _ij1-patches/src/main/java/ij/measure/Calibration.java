@@ -1,12 +1,10 @@
 package ij.measure;
+
 import ij.*;
 import ij.plugin.filter.Analyzer;
 
 /** Calibration objects contain an image's spatial and density calibration data. */
-
-// BDZ - BEGIN CHANGES
 public class Calibration implements Cloneable {
-// BDZ - END CHANGES
 
 	public static final int STRAIGHT_LINE=0,POLY2=1,POLY3=2,POLY4=3,
 		EXPONENTIAL=4,POWER=5,LOG=6,RODBARD=7,GAMMA_VARIATE=8, LOG2=9, RODBARD2=10;
@@ -450,8 +448,8 @@ public class Calibration implements Cloneable {
  			+ ", table=" + (cTable!=null?""+cTable.length:"null")
 			+ ", vunit=" + valueUnit;
    }
-	/** Generic calibration equality test for unit tests */
 // BDZ - BEGIN ADDITIONS
+	/** Generic calibration equality test for unit tests */
 	// tests more internals of a Calibration than equals() does. Made to not break existing code.
 	public boolean isSameAs(Calibration other)
 	{
@@ -495,7 +493,7 @@ public class Calibration implements Cloneable {
 			return false;
 		
 		return true;
-	}
 // BDZ - END ADDITIONS
+	}
 }
 

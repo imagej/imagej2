@@ -3,12 +3,11 @@ package ij.process;
 // BDZ - DELETED CODE
 import java.awt.*;
 import java.awt.image.*;
-
 // BDZ - BEGIN CHANGES
 import ij.measure.Calibration;
 import ij.process.ColorStatistics;
-import ij.process.ImageStatistics;
 // BDZ - END CHANGES
+import ij.process.ImageStatistics;
 import ij.ImageStack;
 
 /**
@@ -1273,8 +1272,8 @@ public class ColorProcessor extends ImageProcessor {
 		}
 	}
 
-	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
 // BDZ - BEGIN ADDITIONS
+	// NEW METHODS FOR BRIDGE/PATCH SUPPORT
 	
 	public int getBitDepth() { return 24; }
 	public double getBytesPerPixel() { return 4; }
@@ -1294,7 +1293,7 @@ public class ColorProcessor extends ImageProcessor {
 	public String getTypeName() { return "24-bit RGB"; }
 
 	public double getd(int x, int y) { return getf(x, y); }
-	public double getd(int index) { return getf(index); }
 // BDZ - END ADDITIONS
+	public double getd(int index) { return getf(index); }
 }
 

@@ -15,7 +15,6 @@ import java.awt.event.*;
 import java.util.*;
 import java.awt.geom.*;
 
-
 /** This is a Canvas used to display images in a Window. */
 public class ImageCanvas extends Canvas implements MouseListener, MouseMotionListener, Cloneable {
 
@@ -860,8 +859,8 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 					setForegroundColor(c);
 				break;
 			}
-			case ImagePlus.OTHER: {
 // BDZ - BEGIN ADDITIONS
+			case ImagePlus.OTHER: {
 				double min = imp.getProcessor().getMin();
 				double max = imp.getProcessor().getMax();
 				double value = imp.getProcessor().getd(ox,oy);
@@ -872,8 +871,8 @@ public class ImageCanvas extends Canvas implements MouseListener, MouseMotionLis
 					setBackgroundColor(getColor(index));
 				else
 					setForegroundColor(getColor(index));
-			}
 // BDZ - END ADDITIONS
+			}
 		}
 		Color c;
 		if (setBackground)
