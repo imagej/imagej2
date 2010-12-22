@@ -29,20 +29,18 @@
   </licenses>
 
   <dependencies>
+<!--
     <dependency>
       <groupId>com.apple</groupId>
       <artifactId>AppleJavaExtensions</artifactId>
       <version>1.4</version>
     </dependency>
+-->
+    <!-- CTR TODO remove this dependency once ImgLibDataset moves -->
     <dependency>
       <groupId>imagej</groupId>
       <artifactId>ij1-bridge</artifactId>
       <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>imagej</groupId>
-      <artifactId>ij</artifactId>
-      <version>1.44k6</version>
     </dependency>
     <dependency>
       <groupId>imagej</groupId>
@@ -55,29 +53,19 @@
       <version>2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>loci</groupId>
+      <artifactId>bio-formats</artifactId>
+      <version>5.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>mpicbg</groupId>
       <artifactId>imglib</artifactId>
       <version>2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>mpicbg</groupId>
-      <artifactId>imglib-ij</artifactId>
-      <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>mpicbg</groupId>
       <artifactId>imglib-io</artifactId>
       <version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.java.sezpoz</groupId>
-      <artifactId>sezpoz</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-util-lookup</artifactId>
-      <version>RELEASE69</version>
     </dependency>
   </dependencies>
 
