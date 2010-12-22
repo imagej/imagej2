@@ -79,5 +79,5 @@ IjxImagePlus
     public int outputValue = 9;
  *
  */
-package imagej.plugin;
+package imagej.legacy.plugin;
 

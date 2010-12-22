@@ -58,8 +58,8 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>imagej.plugin.Example_Plugin</mainClass>
-              <packageName>imagej.plugin</packageName>
+              <mainClass>imagej.legacy.plugin.Example_Plugin</mainClass>
+              <packageName>imagej.legacy.plugin</packageName>
             </manifest>
           </archive>
         </configuration>
