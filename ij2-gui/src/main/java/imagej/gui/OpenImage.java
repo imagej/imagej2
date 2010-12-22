@@ -1,6 +1,7 @@
 package imagej.gui;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 
@@ -12,10 +13,10 @@ import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.dataset.Dataset;
 import imagej.ij1bridge.ImgLibDataset;
-import imagej.plugin.IPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.plugin.ij2.IPlugin;
+import imagej.plugin.ij2.Menu;
+import imagej.plugin.ij2.Parameter;
+import imagej.plugin.ij2.Plugin;
 
 @Plugin(
 //	menuPath="File>Import>Bio-Formats...",
@@ -45,7 +46,6 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 		try {
 			final Image<T> img = imageOpener.openImage(id);
 			dataset = new ImgLibDataset<T>(img);
-			System.out.println("Image dimensions: " + dataset.getDimensions()[0] + " x " + dataset.getDimensions()[1]);//TEMP
 		}
 		catch (FormatException e) {
 			// TODO Auto-generated catch block
