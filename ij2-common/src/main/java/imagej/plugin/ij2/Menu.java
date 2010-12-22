@@ -1,4 +1,4 @@
-package imagej.plugin;
+package imagej.plugin.ij2;
 
 public @interface Menu {
 

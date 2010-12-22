@@ -1,4 +1,7 @@
-package imagej.plugin;
+package imagej.plugin.ij2;
+
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginFinder;
 
 import java.util.ArrayList;
 import java.util.List;
