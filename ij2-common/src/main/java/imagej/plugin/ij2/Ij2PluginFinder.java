@@ -1,5 +1,6 @@
 package imagej.plugin.ij2;
 
+import imagej.Log;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
 
@@ -48,6 +49,8 @@ public class Ij2PluginFinder implements PluginFinder {
 			final PluginEntry pluginEntry =
 				new PluginEntry(pluginClass, menuPath, label, arg);
 			plugins.add(pluginEntry);
+
+			Log.debug("Loaded " + pluginEntry);
 		}
 	}
 

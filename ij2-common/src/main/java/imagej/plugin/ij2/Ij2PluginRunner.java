@@ -1,10 +1,11 @@
 package imagej.plugin.ij2;
 
-import java.util.Map;
-
+import imagej.Log;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
 import imagej.plugin.PluginRunner;
+
+import java.util.Map;
 
 import org.openide.util.lookup.ServiceProvider;
 
@@ -23,15 +24,16 @@ public class Ij2PluginRunner implements PluginRunner {
 
 		// FIXME - do something with output parameters:
 		// invoke an AutoDisplayPlugin that matches each output
+
+		Log.debug("INPUTS:");
 		final Map<String, Object> inputs = ParameterHandler.getInputMap(plugin);
-		System.out.println("INPUTS:");
 		for (String key : inputs.keySet()) {
-			System.out.println("\t" + key + " = " + inputs.get(key));
+			Log.debug("\t" + key + " = " + inputs.get(key));
 		}
+		Log.debug("OUTPUTS:");
 		final Map<String, Object> outputs = ParameterHandler.getOutputMap(plugin);
-		System.out.println("OUTPUTS:");
 		for (String key : outputs.keySet()) {
-			System.out.println("\t" + key + " = " + outputs.get(key));
+			Log.debug("\t" + key + " = " + outputs.get(key));
 		}
 	}
 
