@@ -22,13 +22,15 @@ import imagej.process.Index;
 public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveDataset
 {
 	//************ instance variables ********************************************************
+	
 	private Dataset dataset;
 	private Image<?> shadowImage;
 	private Type ijType;
 	private RealType<?> realType;
 
-	//************ constructor ********************************************************
-		
+	//************ constructors ********************************************************
+	
+	/** create an ImgLibDataset from an existing ImgLib image */
 	public ImgLibDataset(Image<T> image)
 	{
 		this.shadowImage = image;
@@ -81,6 +83,19 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 		// TODO - have a factory that takes a list of planerefs and builds a dataset without allocating data unnecessarily
 	}
 
+	/** create an ImgLibDataset from a Dataset. Calling imgLibDataset.getImage() will create an ImgLib image from the original Dataset. Another
+	 * way to create an Image from a Dataset is found in ImageUtils::createShadowImage(). */
+	public ImgLibDataset(Dataset dataset)
+	{
+		this.shadowImage = null;
+		
+		this.ijType = dataset.getType();
+		
+		this.realType = TypeManager.getRealType(this.ijType);
+
+		this.dataset = dataset;
+	}
+	
 	//************ public interface ********************************************************
 
 	@Override
