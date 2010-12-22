@@ -1,4 +1,4 @@
-package imagej.plugin;
+package imagej.legacy.plugin;
 
 import ij.ImagePlus;
 

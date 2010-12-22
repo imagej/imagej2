@@ -1,4 +1,4 @@
-package imagej.plugin;
+package imagej.legacy.plugin;
 
 public class PlugInException extends Exception {
 	public PlugInException() {
