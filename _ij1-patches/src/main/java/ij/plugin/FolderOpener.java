@@ -202,9 +202,11 @@ public class FolderOpener implements PlugIn {
 				stack = (new DICOM_Sorter()).sort(stack);
 			ImagePlus imp2 = new ImagePlus(title, stack);
 			int imp2Type = imp2.getType();
+// BDZ - BEGIN CHANGES
 			if ((imp2Type==ImagePlus.GRAY16) ||
 					(imp2Type == ImagePlus.GRAY32) ||
 					(imp2Type == ImagePlus.OTHER))
+// BDZ - END CHANGES
 				imp2.getProcessor().setMinAndMax(min, max);
 			if (fi==null)
 				fi = new FileInfo();
@@ -377,7 +379,9 @@ class FolderOpenerDialog extends GenericDialog {
 		int height = imp.getHeight();
 		int depth = imp.getStackSize();
 		double bytesPerPixel = imp.getActualBytesPerPixel();
+// BDZ - BEGIN CHANGES
  		int n = getNumber(numberField.elementAt(0));
+// BDZ - END CHANGES
 		int start = getNumber(numberField.elementAt(1));
 		int inc = getNumber(numberField.elementAt(2));
 		double scale = getNumber(numberField.elementAt(3));
@@ -407,6 +411,7 @@ class FolderOpenerDialog extends GenericDialog {
 			}
 			if (n2<n) n = n2;
  		}
+// BDZ - DELETED CODE
 		if (eightBits)
 			bytesPerPixel = 1;
 		if (rgb)
@@ -417,7 +422,9 @@ class FolderOpenerDialog extends GenericDialog {
 		if (n2<0) n2 = 0;
 		if (n2>n) n2 = n;
 		double size = (bytesPerPixel*width*height*n2)/(1024*1024);
+// BDZ - BEGIN CHANGES
  		((Label)theLabel).setText(width+" x "+height+" x "+n2+" ("+IJ.d2s(size,1)+"MB)");
+// BDZ - END CHANGES
 	}
 
 	public int getNumber(Object field) {

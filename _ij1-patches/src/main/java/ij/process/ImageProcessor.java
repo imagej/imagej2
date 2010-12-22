@@ -1,9 +1,12 @@
 package ij.process;
+// BDZ - DELETED CODE
 import java.awt.*;
 import java.awt.image.*;
 
+// BDZ - BEGIN ADDITIONS
 import ij.measure.Calibration;
 import ij.process.ImageStatistics;
+// BDZ - END ADDITIONS
 import ij.gui.*;
 import ij.util.*;
 import ij.plugin.filter.GaussianBlur;
@@ -16,7 +19,9 @@ import ij.Prefs;
 This abstract class is the superclass for classes that process
 the four data types (byte, short, float and RGB) supported by ImageJ.
 An ImageProcessor contains the pixel data of a 2D image and
+// BDZ - BEGIN CHANGES
 some basic methods to manipulate it.
+// BDZ - END CHANGES
 @see ByteProcessor
 @see ShortProcessor
 @see FloatProcessor
@@ -102,7 +107,9 @@ public abstract class ImageProcessor extends Object {
 	protected boolean minMaxSet;
 		
 	public void showProgress(double percentDone) {
+// BDZ - BEGIN CHANGES
 		if (progressBar!=null)
+// BDZ - END CHANGES
         	progressBar.show(percentDone);
 	}
 
@@ -401,6 +408,7 @@ public abstract class ImageProcessor extends Object {
 		}
 		int t1 = (int)minThreshold;
 		int t2 = (int)maxThreshold;
+// BDZ - DELETED CODE
 		if (lutUpdate==RED_LUT)
 			for (int i=0; i<256; i++) {
 				if (i>=t1 && i<=t2) {
@@ -582,7 +590,9 @@ public abstract class ImageProcessor extends Object {
 		GaussianBlur gb = new GaussianBlur();
 		gb.blur1Direction(fp, 2.0, 0.01, true, 0);
 		float maxCount=0f, sum=0f, count;
+// BDZ - BEGIN CHANGES
 		int mode = 0;
+// BDZ - END CHANGES
 		for (int i=0; i<256; i++) {
 			count = hist[i];
 			sum += count;
@@ -1163,6 +1173,7 @@ public abstract class ImageProcessor extends Object {
 		Image bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		Graphics g = bi.getGraphics();
 		FontMetrics metrics = g.getFontMetrics(font);
+// BDZ - DELETED CODE
 		int descent = metrics.getDescent();
 		g.setFont(font);
 
@@ -1196,6 +1207,7 @@ public abstract class ImageProcessor extends Object {
 		g.dispose();
 		ImageProcessor ip = new ColorProcessor(bi);
 		ImageProcessor textMask = ip.convertToByte(false);
+// BDZ - DELETED CODE
 		//new ij.ImagePlus("textmask",textMask).show();
 		textMask.invert();
 		if (cxx<width && cy-h<height) {
@@ -1629,7 +1641,9 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	public final double getBilinearInterpolatedPixel(double x, double y) {
+// BDZ - BEGIN CHANGES
 		if (x>=-1 && x<width && y>=-1 && y<height) {
+// BDZ - END CHANGES
 			int method = interpolationMethod;
 			interpolationMethod = BILINEAR;
 			double value = getInterpolatedPixel(x, y);
@@ -1938,7 +1952,9 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	protected void resetPixels(Object pixels) {
+// BDZ - BEGIN CHANGES
 		if (pixels==null) {
+// BDZ - END CHANGES
 			if (img!=null) {
 				img.flush();
 				img = null;
@@ -2191,7 +2207,9 @@ public abstract class ImageProcessor extends Object {
 	
 	// method and variables used by updateComposite()
 	protected byte[]  create8BitImage() {return null;}
+// BDZ - BEGIN CHANGES
 	private byte[] bytes;
+// BDZ - END CHANGES
 	private int[] reds, greens, blues;
 
 	void updateLutBytes() {
@@ -2252,6 +2270,7 @@ public abstract class ImageProcessor extends Object {
 	}
 	
 	// NEW METHODS FOR IJ 2.0 SUPPORT
+// BDZ - BEGIN ADDITIONS
 	
 	public abstract int getBitDepth();
 	public abstract double getBytesPerPixel();
@@ -2288,4 +2307,5 @@ public abstract class ImageProcessor extends Object {
 	{
 		// DO NOTHING. Default behavior. This method should only ever get called on processors of type OTHER. They override this implementation.
 	}
+// BDZ - END ADDITIONS
 }

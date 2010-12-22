@@ -1,8 +1,10 @@
 package ij.gui;
 
 import java.awt.*;
+// BDZ - DELETED CODE
 import java.awt.event.*;
 import ij.*;
+// BDZ - DELETED CODE
 import ij.io.*;
 import ij.measure.*;
 import ij.plugin.frame.*;
@@ -18,6 +20,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 	protected ImageJ ij;
 	protected ImageCanvas ic;
 	private double initialMagnification = 1;
+// BDZ - DELETED CODE
 	protected boolean closed;
 	private boolean newCanvas;
 	private boolean unzoomWhenMinimizing = true;
@@ -273,6 +276,7 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
 				s = label + "; ";
 			}
 		}
+// BDZ - DELETED CODE
     	Calibration cal = imp.getCalibration();
     	if (cal.scaled()) {
     		s += IJ.d2s(imp.getWidth()*cal.pixelWidth,2) + "x" + IJ.d2s(imp.getHeight()*cal.pixelHeight,2)
@@ -280,10 +284,14 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
     	s += imp.getProcessor().getTypeName();
+// BDZ - BEGIN CHANGES
     	if (imp.isInvertedLut())
+// BDZ - END CHANGES
     		s += " (inverting LUT)";
 		double size = imp.getActualBytesPerPixel() * imp.getWidth() * imp.getHeight() * imp.getStackSize() / 1024;
+// BDZ - BEGIN ADDITIONS
    		String s2=null, s3=null;
+// BDZ - END ADDITIONS
     	if (size<1024.0)
     		{s2=IJ.d2s(size,0); s3="K";}
     	else if (size<10000.0)

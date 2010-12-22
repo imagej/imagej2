@@ -2,6 +2,7 @@ package ij.plugin.filter;
 import ij.*;
 import ij.process.*;
 import ij.gui.*; 
+// BDZ - DELETED CODE
 import java.awt.*;
 import java.util.Hashtable;
 
@@ -283,9 +284,11 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                     {wrongType(flags, cmd); return false;}
                     break;
                 case ImagePlus.OTHER:
+// BDZ - BEGIN ADDITIONS
                     if ( (flags & PlugInFilter.DOES_ALL) != PlugInFilter.DOES_ALL)
                     {wrongType(flags, cmd); return false;}
                 	break;
+// BDZ - END ADDITIONS
             }
             if ((flags&PlugInFilter.ROI_REQUIRED)!=0 && imp.getRoi()==null)
             {IJ.error(cmd, "This command requires a selection"); return false;}

@@ -3,6 +3,7 @@ import ij.*;
 import ij.process.*;
 import ij.gui.*;
 import ij.io.*;
+// BDZ - DELETED CODE
 import java.io.*;
 import java.util.*;
 
@@ -50,7 +51,9 @@ public class ListVirtualStack extends VirtualStack implements PlugIn {
 	
 	boolean showDialog(ImagePlus imp) {
 		double bytesPerPixel = imp.getActualBytesPerPixel();
+// BDZ - BEGIN CHANGES
 		double size = (imageWidth*imageHeight*bytesPerPixel)/(1024.0*1024.0);
+// BDZ - END CHANGES
 		int digits = size*getSize()<10.0?1:0;
 		String size1 = IJ.d2s(size*getSize(), digits)+" MB";
 		String size2 = IJ.d2s(size,1)+" MB";

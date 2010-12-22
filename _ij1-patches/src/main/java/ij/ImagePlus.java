@@ -17,7 +17,9 @@ import ij.plugin.Converter;
 /**
 An ImagePlus contain an ImageProcessor (2D image) or an ImageStack (3D, 4D or 5D image).
 It also includes metadata (spatial calibration and possibly the directory/file where
+// BDZ - BEGIN CHANGES
 it was read from). The ImageProcessor contains the pixel data (8-bit, 16-bit, float or RGB) 
+// BDZ - END CHANGES
 of the 2D image and some basic methods to manipulate it. An ImageStack is essentually 
 a list ImageProcessors of same type and size.
 @see ij.process.ImageProcessor
@@ -44,8 +46,10 @@ public class ImagePlus implements ImageObserver, Measurements {
 	public static final int COLOR_RGB = 4;
 	
 	/** Other image type */
+// BDZ - BEGIN ADDITIONS
 	public static final int OTHER = 5;
 	
+// BDZ - END ADDITIONS
 	/** True if any changes have been made to this image. */
 	public boolean changes;
 	
@@ -515,9 +519,13 @@ public class ImagePlus implements ImageObserver, Measurements {
 		else if (ip instanceof ShortProcessor)
 			type = GRAY16;
 		else if (ip instanceof FloatProcessor)
+// BDZ - BEGIN CHANGES
 			type = GRAY32;
+// BDZ - END CHANGES
 		else
+// BDZ - BEGIN ADDITIONS
 			type = OTHER;
+// BDZ - END ADDITIONS
 		if (width==0)
 			imageType = type;
 		else
@@ -949,7 +957,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	/** Returns the current image type (ImagePlus.GRAY8, ImagePlus.GRAY16,
 		ImagePlus.GRAY32, ImagePlus.COLOR_256, ImagePlus.COLOR_RGB or
+// BDZ - BEGIN CHANGES
 		ImagePlus.OTHER).
+// BDZ - END CHANGES
 		@see #getBitDepth
 	*/
     public int getType() {
@@ -959,6 +969,7 @@ public class ImagePlus implements ImageObserver, Measurements {
     /** Returns the bit depth, 8, 16, 24 (RGB) or 32. RGB images actually use 32 bits per pixel. */
     public int getBitDepth() {
 		switch (imageType)
+// BDZ - BEGIN CHANGES
 		{
 		case GRAY8:
 			return 8;
@@ -977,12 +988,16 @@ public class ImagePlus implements ImageObserver, Measurements {
 		default:
 			return 0;
 		}
+// BDZ - END CHANGES
     }
     
     @Deprecated
+// BDZ - BEGIN CHANGES
     /** Returns the number of bytes per pixel as an integer. use getRealBytesPerPixel() instead. */
+// BDZ - END CHANGES
     public int getBytesPerPixel() {
 		switch (imageType)
+// BDZ - BEGIN CHANGES
 		{
 		case GRAY8:
 			return 1;
@@ -1001,18 +1016,23 @@ public class ImagePlus implements ImageObserver, Measurements {
 		default:
 			return 0;
 		}
+// BDZ - END CHANGES
 	}
 
     /** Returns the number of bytes per pixel as a double value. Works for pixel types that do not use an
+// BDZ - BEGIN ADDITIONS
      *  even number of bytes (1-bit, 12-bit, etc.) */
     public double getActualBytesPerPixel()
     {
     	return getProcessor().getBytesPerPixel();
     }
     
+// BDZ - END ADDITIONS
     protected void setType(int type) {
     	if ((type<0) || (type>OTHER))
+// BDZ - BEGIN CHANGES
     		return;
+// BDZ - END CHANGES
     	int previousType = imageType;
     	imageType = type;
 		if (imageType!=previousType) {
@@ -1070,6 +1090,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 
 	/**
         Returns the pixel value at (x,y) as a 4 element array. Grayscale values
+// BDZ - BEGIN CHANGES
         are returned in the first element. RGB values are returned in the first
         3 elements. For indexed color images, the RGB values are returned in the
         first 3 three elements and the index (0-255) is returned in the last. For
@@ -1077,6 +1098,7 @@ public class ImagePlus implements ImageObserver, Measurements {
         high 32 bits are returned in the second element. For floating point types
         the returned integers hold the encoding (Float.floatToIntBits() or
         Double.doubleToLongBits().
+// BDZ - END CHANGES
 	*/
 	public int[] getPixel(int x, int y) {
 		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
@@ -1123,9 +1145,11 @@ public class ImagePlus implements ImageObserver, Measurements {
 				if (ip!=null) pvalue[0] = ip.getPixel(x, y);
 				break;
 			case OTHER:
+// BDZ - BEGIN ADDITIONS
 				if (ip != null)
 					ip.encodePixelInfo(pvalue, x, y);
 				break;
+// BDZ - END ADDITIONS
 		}
 		return pvalue;
 	}
@@ -1620,16 +1644,25 @@ public class ImagePlus implements ImageObserver, Measurements {
 	    	case GRAY16:
 	    		if (compositeImage && fi.nImages==3)
 					fi.fileType = FileInfo.RGB48;
+// BDZ - BEGIN CHANGES
 				else
+// BDZ - END CHANGES
 					fi.fileType = FileInfo.GRAY16_UNSIGNED;
+// BDZ - BEGIN CHANGES
 				break;
+// BDZ - END CHANGES
 	    	case GRAY32:
 				fi.fileType = FileInfo.GRAY32_FLOAT;
+// BDZ - BEGIN CHANGES
 				break;
+// BDZ - END CHANGES
 	    	case COLOR_RGB:
 				fi.fileType = FileInfo.RGB;
+// BDZ - BEGIN CHANGES
 				break;
+// BDZ - END CHANGES
 	    	case OTHER:
+// BDZ - BEGIN ADDITIONS
 	    		boolean unsignedType = ip.isUnsignedType();
 	    		boolean floatType = ip.isFloatingType();
 	    		int bitDepth = ip.getBitDepth();
@@ -1676,9 +1709,12 @@ public class ImagePlus implements ImageObserver, Measurements {
 						fi.fileType = FileInfo.GRAY64_SIGNED;
 	    		}
 	    		break;
+// BDZ - END ADDITIONS
 			default:
 				break;
+// BDZ - BEGIN ADDITIONS
     	}
+// BDZ - END ADDITIONS
     	return fi;
     }
         
@@ -1925,11 +1961,13 @@ public class ImagePlus implements ImageObserver, Measurements {
 			case COLOR_RGB:
     			return(", value=" + v[0] + "," + v[1] + "," + v[2]);
 			case OTHER:
+// BDZ - BEGIN ADDITIONS
 				double val = ip.getd(x,y);
 				if (!ip.isFloatingType())
 	    			return(", value=" + (long)val);
 				else
 					return(", value=" + IJ.d2s(val));
+// BDZ - END ADDITIONS
     		default: return("");
 		}
     }
@@ -1974,7 +2012,9 @@ public class ImagePlus implements ImageObserver, Measurements {
 			updateAndDraw();
 		}
 		double bytesPerPixel = clipboard.getActualBytesPerPixel();
+// BDZ - BEGIN CHANGES
 		//Roi roi3 = clipboard.getRoi();
+// BDZ - END CHANGES
 		//IJ.log("copy: "+clipboard +" "+ "roi3="+(roi3!=null?""+roi3:""));
 		if (!batchMode) {
 			msg = (cut)?"Cut":"Copy";
@@ -1988,6 +2028,7 @@ public class ImagePlus implements ImageObserver, Measurements {
 	 into that selection, otherwise the selection is inserted into the center of the image.*/
 	 public void paste() {
 		if (clipboard==null) return;
+// BDZ - DELETED CODE
 		
         int w = clipboard.getWidth();
         int h = clipboard.getHeight();

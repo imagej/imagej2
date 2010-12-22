@@ -2,7 +2,9 @@ package ij.gui;
 import ij.*;
 import ij.process.*;
 
+// BDZ - BEGIN ADDITIONS
 import java.awt.*;
+// BDZ - END ADDITIONS
 
 /** This class implements ImageJ's wand (tracing) tool.
   * The wand selects pixels of equal or similar value or thresholded pixels
@@ -38,7 +40,9 @@ public class Wand {
     private final static int THRESHOLDED_MODE = 256; //work on threshold
     private ImageProcessor ip;
     private boolean isColorProc;
+// BDZ - BEGIN CHANGES
     private boolean isFloatingType;
+// BDZ - END CHANGES
     private int width, height;
     private float lowerThreshold, upperThreshold;
     private int xmin;                   //of selection created
@@ -50,7 +54,9 @@ public class Wand {
     public Wand(ImageProcessor ip) {
         this.ip = ip;
         this.isColorProc = ip instanceof ColorProcessor;
+// BDZ - BEGIN CHANGES
         this.isFloatingType = ip.isFloatingType();
+// BDZ - END CHANGES
         width = ip.getWidth();
         height = ip.getHeight();
     }
@@ -110,7 +116,9 @@ public class Wand {
     public void autoOutline(int startX, int startY, double tolerance, int mode) {
         if (startX<0 || startX>=width || startY<0 || startY>=height) return;
         if (this.isFloatingType && Float.isNaN(getPixel(startX, startY))) return;
+// BDZ - BEGIN CHANGES
         exactPixelValue = tolerance==0;
+// BDZ - END CHANGES
         boolean thresholdMode = (mode & THRESHOLDED_MODE) != 0;
         boolean legacyMode = (mode & LEGACY_MODE) != 0 && tolerance == 0;
         if (!thresholdMode) {
@@ -296,6 +304,7 @@ public class Wand {
         if (x<0 || x>=width || y<0 || y>=height)
             return Float.NaN;
         else if (this.isColorProc)
+// BDZ - BEGIN CHANGES
         {
             if (exactPixelValue)   //RGB for exact match
                 return ip.get(x, y) & 0xffffff; //don't care for upper byte
@@ -304,6 +313,7 @@ public class Wand {
         }
         else
         	return ip.getf(x, y);
+// BDZ - END CHANGES
     }
 
     /* Are we tracing a one pixel wide line? Makes Legacy mode 8-connected instead of 4-connected */
