@@ -65,8 +65,8 @@ public class NavigableImageFrame extends JFrame {
 		// extract width and height
 		width = height = 0;
 		for (int i = 0; i < dims.length; i++) {
-			if (dimLabels[i] == ImageOpener.X) width = dims[i];
-			if (dimLabels[i] == ImageOpener.Y) height = dims[i];
+			if (dimLabels[i].equals(ImageOpener.X)) width = dims[i];
+			if (dimLabels[i].equals(ImageOpener.Y)) height = dims[i];
 		}
 
 		// create sliders
@@ -98,7 +98,9 @@ public class NavigableImageFrame extends JFrame {
 		int p = 0;
 		boolean first = true;
 		for (int i = 0; i < dims.length; i++) {
-			if (dimLabels[i] == ImageOpener.X || dimLabels[i] == ImageOpener.Y) {
+			if (dimLabels[i].equals(ImageOpener.X) ||
+				dimLabels[i].equals(ImageOpener.Y))
+			{
 				continue;
 			}
 			if (first) first = false;
