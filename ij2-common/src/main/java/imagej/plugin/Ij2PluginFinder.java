@@ -13,8 +13,8 @@ public class Ij2PluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
-		for (final IndexItem<Plugin, Runnable> item :
-			Index.load(Plugin.class, Runnable.class))
+		for (final IndexItem<Plugin, IPlugin> item :
+			Index.load(Plugin.class, IPlugin.class))
 		{
 			final String pluginClass = item.className();
 			final List<String> menuPath = new ArrayList<String>();

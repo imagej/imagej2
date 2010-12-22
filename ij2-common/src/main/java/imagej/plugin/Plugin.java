@@ -9,7 +9,7 @@ import net.java.sezpoz.Indexable;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=Runnable.class)
+@Indexable(type=IPlugin.class)
 public @interface Plugin {
 
 	String toolbarIcon() default "";
