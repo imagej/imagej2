@@ -24,7 +24,7 @@ public class Ij2PluginFinder implements PluginFinder {
 
 			// parse menu path from annotations
 			final Menu[] menu = item.annotation().menu();
-			if (menu != null) {
+			if (menu.length > 0) {
 				for (Menu m : menu) menuPath.add(m.label());
 			}
 			else {
@@ -32,11 +32,17 @@ public class Ij2PluginFinder implements PluginFinder {
 				final String[] menuPathTokens = item.annotation().menuPath().split(">");
 				for (String token : menuPathTokens) menuPath.add(token);
 			}
-			
+
 			// TEMP - use last menu element for label
 			final int lastIndex = menuPath.size() - 1;
-			final String label = menuPath.get(lastIndex);
-			menuPath.remove(lastIndex);
+			final String label;
+			if (lastIndex < 0) {
+				label = "";
+			}
+			else {
+				label = menuPath.get(lastIndex);
+				menuPath.remove(lastIndex);
+			}
 
 			final String arg = "";
 			final PluginEntry pluginEntry =
