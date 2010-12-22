@@ -826,12 +826,9 @@ public class RoiTest {
 		
 		roi.endPaste();
 		
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
 		snapshot = (byte[]) proc.getSnapshotPixels();
-		assertEquals(7,snapshot[0]);
-		*/
+		assertEquals(1,snapshot[0]);
 		
 		// try a legit paste in some other mode
 		proc = new ByteProcessor(1,1,new byte[]{1},null);
@@ -851,12 +848,9 @@ public class RoiTest {
 		
 		roi.endPaste();
 		
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		assertEquals(Roi.NOT_PASTING,roi.getPasteMode());
 		snapshot = (byte[]) proc.getSnapshotPixels();
-		assertEquals(8,snapshot[0]);
-		*/
+		assertEquals(1,snapshot[0]);
 		
 		// try a non-rectangular roi
 		proc = new ByteProcessor(3,3,new byte[] {0,0,0,0,0,0,0,0,0},null);
@@ -872,10 +866,7 @@ public class RoiTest {
 		
 		roi.endPaste();
 		
-		// TODO - behavior changed between 1.43u and 1.44l9: reenable later
-		/*
 		assertArrayEquals(new byte[]{0,0,0,0,1,2,0,3,4},(byte[])proc.getPixels());
-		*/
 		
 		// restore static variables
 		Roi.setPasteMode(origPasteMode);
