@@ -1963,12 +1963,11 @@ public class ImagePlus implements ImageObserver, Measurements {
     			return(", value=" + v[0] + "," + v[1] + "," + v[2]);
 // BDZ - BEGIN ADDITIONS
 			case OTHER:
-				double val = ip.getd(x,y);
-				if (!ip.isFloatingType())
-	    			return(", value=" + (long)val);
+				if (ip.isFloatingType())
+					return(", value=" + IJ.d2s( ip.getd(x,y) ));
 				else
+	    			return(", value=" + ip.getl(x,y) );
 // BDZ - END ADDITIONS
-					return(", value=" + IJ.d2s(val));
     		default: return("");
 		}
     }

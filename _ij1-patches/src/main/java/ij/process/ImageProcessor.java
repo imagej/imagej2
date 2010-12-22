@@ -2282,6 +2282,12 @@ public abstract class ImageProcessor extends Object {
 	public abstract String getTypeName();
 	public abstract double getd(int x, int y);
 	public abstract double getd(int index);
+	public abstract void setd(int x, int y, double value);
+	public abstract void setd(int index, double value);
+	public abstract long getl(int x, int y);
+	public abstract long getl(int index);
+	public abstract void setl(int x, int y, long value);
+	public abstract void setl(int index, long value);
 
 	protected boolean getSnapshotCopyMode()
 	{
@@ -2306,6 +2312,6 @@ public abstract class ImageProcessor extends Object {
 	public void encodePixelInfo(int[] destination, int x, int y)
 	{
 		// DO NOTHING. Default behavior. This method should only ever get called on processors of type OTHER. They override this implementation.
-// BDZ - END ADDITIONS
 	}
+	// BDZ - END ADDITIONS
 }

@@ -1264,7 +1264,15 @@ public class ByteProcessor extends ImageProcessor {
 	public String getTypeName() { return "8-bit unsigned"; }
 
 	public double getd(int x, int y) { return getf(x, y); }
-// BDZ - END ADDITIONS
 	public double getd(int index) { return getf(index); }
+	public void setd(int x, int y, double value) { setf(x, y, (float)value); }
+	public void setd(int index, double value) { setf(index, (float)value); }
+	
+	public long getl(int x, int y) { return get(x, y); }
+	public long getl(int index) { return get(index); }
+	public void setl(int x, int y, long value) { set(x, y, (byte)value); }
+	public void setl(int index, long value) { set(index, (byte)value); }
+
+	// BDZ - END ADDITIONS
 }
 
