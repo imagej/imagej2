@@ -1,7 +1,14 @@
 package imagej.gui;
 
+import imagej.Log;
+import imagej.dataset.Dataset;
+import imagej.imglib.dataset.ImgLibDataset;
+import imagej.plugin.ij2.IPlugin;
+import imagej.plugin.ij2.Menu;
+import imagej.plugin.ij2.Parameter;
+import imagej.plugin.ij2.Plugin;
+
 import java.io.IOException;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 
@@ -11,12 +18,6 @@ import loci.formats.gui.GUITools;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
-import imagej.dataset.Dataset;
-import imagej.imglib.dataset.ImgLibDataset;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Menu;
-import imagej.plugin.ij2.Parameter;
-import imagej.plugin.ij2.Plugin;
 
 @Plugin(
 //	menuPath="File>Import>Bio-Formats...",
@@ -48,12 +49,10 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 			dataset = new ImgLibDataset<T>(img);
 		}
 		catch (FormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.printStackTrace(e);
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.printStackTrace(e);
 		}
   }
 

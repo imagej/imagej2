@@ -8,7 +8,6 @@ import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginUtils;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -43,7 +42,6 @@ public class MainFrame {
 
 	private void createMenuBar(JFrame frame) {
 		final List<PluginEntry> entries = PluginUtils.findPlugins();
-		final List<String> menuPath = new ArrayList<String>();
 		info = "Discovered " + entries.size() + " plugins";
 		final JMenuBar menubar = new MenuBuilder().buildMenuBar(entries);
 		frame.setJMenuBar(menubar);
