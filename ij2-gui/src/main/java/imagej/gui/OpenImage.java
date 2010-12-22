@@ -12,7 +12,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.dataset.Dataset;
-import imagej.ij1bridge.ImgLibDataset;
+import imagej.imglib.dataset.ImgLibDataset;
 import imagej.plugin.ij2.IPlugin;
 import imagej.plugin.ij2.Menu;
 import imagej.plugin.ij2.Parameter;
