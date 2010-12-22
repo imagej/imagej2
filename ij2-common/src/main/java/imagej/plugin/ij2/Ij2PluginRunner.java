@@ -1,4 +1,4 @@
-package imagej.plugin;
+package imagej.plugin.ij2;
 
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
@@ -18,6 +18,9 @@ public class Ij2PluginRunner implements PluginRunner {
 
 		// execute plugin
 		plugin.run();
+
+		// FIXME - do something with output parameters:
+		// invoke an AutoDisplayPlugin that matches each output
 	}
 
 	public IPlugin createInstance(PluginEntry entry) throws PluginException {
