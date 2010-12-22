@@ -16,6 +16,10 @@ public class Log {
 		Log.logger = logger;
 	}
 
+	public static void printStackTrace(Throwable t) {
+		logger.error("Exception", t);
+	}
+
 	public static void debug(String msg) {
 		logger.debug(msg);
 	}
@@ -26,6 +30,10 @@ public class Log {
 
 	public static void info(String msg) {
 		logger.info(msg);
+	}
+
+	public static void trace(String msg) {
+		logger.trace(msg);
 	}
 
 	public static void warn(String msg) {
