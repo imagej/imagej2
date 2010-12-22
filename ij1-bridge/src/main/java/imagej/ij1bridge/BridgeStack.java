@@ -145,6 +145,8 @@ public class BridgeStack extends ImageStack
 		this.dataset.removeSubset(n-1);
 		
 		this.planeRefs.remove(n-1);
+		
+		this.planeRefCache = null;
 	}
 	
 	// TODO - make processors event listeners for addition/deletion of subsets. fixup planePos if needed (or even have proc go away if possible)
@@ -160,6 +162,8 @@ public class BridgeStack extends ImageStack
 			this.dataset.removeSubset(lastPlane);
 			
 			this.planeRefs.remove(lastPlane);
+
+			this.planeRefCache = null;
 		}
 	}
 
@@ -239,7 +243,7 @@ public class BridgeStack extends ImageStack
 		unused elements set to null. */
 	public Object[] getImageArray()
 	{
-		if ((this.planeRefCache == null) || (this.planeRefCache.length != this.planeRefs.size()))
+		if ((this.planeRefCache == null) || (this.planeRefs.size() > this.planeRefCache.length))
 		{
 			this.planeRefCache = new Object[this.planeRefs.size()];
 		}
