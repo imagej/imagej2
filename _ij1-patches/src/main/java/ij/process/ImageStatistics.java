@@ -1,4 +1,5 @@
 package ij.process;
+
 import ij.measure.*;
 import java.awt.*;
 
@@ -52,11 +53,11 @@ public class ImageStatistics implements Measurements {
 	EllipseFitter ef;
 
 	
-	public static ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal)
 // BDZ - BEGIN CHANGES
+	public static ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal)
 	{
-		return ip.getStatistics(mOptions, cal);
 // BDZ - END CHANGES
+		return ip.getStatistics(mOptions, cal);
 	}
 
 	void getRawMinAndMax(int minThreshold, int maxThreshold) {
@@ -97,10 +98,10 @@ public class ImageStatistics implements Measurements {
 		histMax = 255.0;
 	}
 	
-	protected void calculateStdDev(double n, double sum, double sum2) {
 // BDZ - BEGIN CHANGES
-		if (n>0.0) {
+	protected void calculateStdDev(double n, double sum, double sum2) {
 // BDZ - END CHANGES
+		if (n>0.0) {
 			stdDev = (n*sum2-sum*sum)/n;
 			if (stdDev>0.0)
 				stdDev = Math.sqrt(stdDev/(n-1.0));
@@ -111,10 +112,10 @@ public class ImageStatistics implements Measurements {
 			stdDev = 0.0;
 	}
 		
-	protected void setup(ImageProcessor ip, Calibration cal) {
 // BDZ - BEGIN CHANGES
-		width = ip.getWidth();
+	protected void setup(ImageProcessor ip, Calibration cal) {
 // BDZ - END CHANGES
+		width = ip.getWidth();
 		height = ip.getHeight();
 		this.cal = cal;
 		Rectangle roi = ip.getRoi();
@@ -167,10 +168,10 @@ public class ImageStatistics implements Measurements {
 		}
 	}
 	
-	protected void fitEllipse(ImageProcessor ip) {
 // BDZ - BEGIN CHANGES
-		if (ef==null)
+	protected void fitEllipse(ImageProcessor ip) {
 // BDZ - END CHANGES
+		if (ef==null)
 			ef = new EllipseFitter();
 		ef.fit(ip, this);
 		double psize = (Math.abs(pw-ph)/pw)<.01?pw:0.0;
@@ -192,10 +193,10 @@ public class ImageStatistics implements Measurements {
 			ef.drawEllipse(ip);
 	}
 	
-	protected void calculateMedian(int[] hist, int first, int last, Calibration cal) {
 // BDZ - BEGIN CHANGES
-		//ij.IJ.log("calculateMedian: "+first+"  "+last+"  "+hist.length+"  "+pixelCount);
+	protected void calculateMedian(int[] hist, int first, int last, Calibration cal) {
 // BDZ - END CHANGES
+		//ij.IJ.log("calculateMedian: "+first+"  "+last+"  "+hist.length+"  "+pixelCount);
 		double sum = 0;
 		int i = first-1;
 		double halfCount = pixelCount/2.0;

@@ -3,12 +3,11 @@ package ij.process;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-
 // BDZ - BEGIN CHANGES
 import ij.measure.Calibration;
 import ij.process.FloatStatistics;
-import ij.process.ImageStatistics;
 // BDZ - END CHANGES
+import ij.process.ImageStatistics;
 
 /** This is an 32-bit floating-point image and methods that operate on that image. */
 public class FloatProcessor extends ImageProcessor {
@@ -1009,13 +1008,13 @@ public class FloatProcessor extends ImageProcessor {
 	public double maxValue() {
 		return Float.MAX_VALUE;
 	}
+// BDZ - BEGIN ADDITIONS
 
-// BDZ - BEGIN ADDITIONS
-	// NEW METHODS FOR IJ 2.0 SUPPORT
 // BDZ - END ADDITIONS
+	// NEW METHODS FOR IJ 2.0 SUPPORT
 	
-	public int getBitDepth() { return 32; }
 // BDZ - BEGIN ADDITIONS
+	public int getBitDepth() { return 32; }
 	public double getBytesPerPixel() { return 4; }
 
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
@@ -1029,12 +1028,12 @@ public class FloatProcessor extends ImageProcessor {
 	public double getMinimumAllowedValue() { return -Float.MAX_VALUE; }
 	public double getMaximumAllowedValue() { return Float.MAX_VALUE; }
 
+// BDZ - END ADDITIONS
 	public String getTypeName() { return "32-bit float"; }
-// BDZ - END ADDITIONS
 
-	public double getd(int x, int y) { return getf(x, y); }
 // BDZ - BEGIN ADDITIONS
-	public double getd(int index) { return getf(index); }
+	public double getd(int x, int y) { return getf(x, y); }
 // BDZ - END ADDITIONS
+	public double getd(int index) { return getf(index); }
 }
 

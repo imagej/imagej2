@@ -1,4 +1,5 @@
 package ij.plugin.frame;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -325,15 +326,15 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		double max2 = imp.getDisplayRangeMax();
 		if (imp.getType()==ImagePlus.COLOR_RGB)
 			{min2=0.0; max2=255.0;}
-		if ((ip instanceof ByteProcessor) || (ip instanceof ColorProcessor))
 // BDZ - BEGIN CHANGES
+		if ((ip instanceof ByteProcessor) || (ip instanceof ColorProcessor))
 		{
 			defaultMin = 0;
 			defaultMax = 255;
 		}
 		else
-		{
 // BDZ - END CHANGES
+		{
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
@@ -541,10 +542,10 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 	void reset(ImagePlus imp, ImageProcessor ip) {
  		if (RGBImage)
 			ip.reset();
-		if ( !(ip instanceof ByteProcessor) && !(ip instanceof ColorProcessor))
 // BDZ - BEGIN CHANGES
-		{
+		if ( !(ip instanceof ByteProcessor) && !(ip instanceof ColorProcessor))
 // BDZ - END CHANGES
+		{
 			imp.resetDisplayRange();
 			defaultMin = imp.getDisplayRangeMin();
 			defaultMax = imp.getDisplayRangeMax();
@@ -775,10 +776,10 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 // BDZ - BEGIN CHANGES
-		double minValue = cal.getCValue(min);
+		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 // BDZ - END CHANGES
+		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		int channels = imp.getNChannels();
 		GenericDialog gd = new GenericDialog("Set Display Range");
@@ -869,10 +870,10 @@ public class ContrastAdjuster extends PlugInFrame implements Runnable,
 		min = imp.getDisplayRangeMin();
 		max = imp.getDisplayRangeMax();
 		Calibration cal = imp.getCalibration();
-		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 // BDZ - BEGIN CHANGES
-		double minValue = cal.getCValue(min);
+		int digits = (ip.isFloatingType()|| cal.calibrated()) ? 2 : 0;
 // BDZ - END CHANGES
+		double minValue = cal.getCValue(min);
 		double maxValue = cal.getCValue(max);
 		//IJ.log("setWindowLevel: "+min+" "+max);
 		double windowValue = maxValue - minValue;

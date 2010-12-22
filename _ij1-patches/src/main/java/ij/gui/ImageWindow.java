@@ -1,6 +1,6 @@
 package ij.gui;
 
-import java.awt.*;
+import java.awt.*; 
 // BDZ - DELETED CODE
 import java.awt.event.*;
 import ij.*;
@@ -283,15 +283,15 @@ public class ImageWindow extends Frame implements FocusListener, WindowListener,
  			+ " " + cal.getUnits() + " (" + imp.getWidth() + "x" + imp.getHeight() + "); ";
     	} else
     		s += imp.getWidth() + "x" + imp.getHeight() + " pixels; ";
-    	s += imp.getProcessor().getTypeName();
 // BDZ - BEGIN CHANGES
-    	if (imp.isInvertedLut())
+    	s += imp.getProcessor().getTypeName();
 // BDZ - END CHANGES
+    	if (imp.isInvertedLut())
     		s += " (inverting LUT)";
-		double size = imp.getActualBytesPerPixel() * imp.getWidth() * imp.getHeight() * imp.getStackSize() / 1024;
 // BDZ - BEGIN ADDITIONS
-   		String s2=null, s3=null;
+		double size = imp.getActualBytesPerPixel() * imp.getWidth() * imp.getHeight() * imp.getStackSize() / 1024;
 // BDZ - END ADDITIONS
+   		String s2=null, s3=null;
     	if (size<1024.0)
     		{s2=IJ.d2s(size,0); s3="K";}
     	else if (size<10000.0)

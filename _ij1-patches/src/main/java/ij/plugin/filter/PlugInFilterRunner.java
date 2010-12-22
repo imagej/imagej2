@@ -1,4 +1,5 @@
 package ij.plugin.filter;
+
 import ij.*;
 import ij.process.*;
 import ij.gui.*; 
@@ -283,12 +284,12 @@ public class PlugInFilterRunner implements Runnable, DialogListener {
                     if ((flags&PlugInFilter.DOES_RGB)==0)
                     {wrongType(flags, cmd); return false;}
                     break;
-                case ImagePlus.OTHER:
 // BDZ - BEGIN ADDITIONS
+                case ImagePlus.OTHER:
                     if ( (flags & PlugInFilter.DOES_ALL) != PlugInFilter.DOES_ALL)
                     {wrongType(flags, cmd); return false;}
-                	break;
 // BDZ - END ADDITIONS
+                	break;
             }
             if ((flags&PlugInFilter.ROI_REQUIRED)!=0 && imp.getRoi()==null)
             {IJ.error(cmd, "This command requires a selection"); return false;}

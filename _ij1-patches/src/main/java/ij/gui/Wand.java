@@ -1,10 +1,8 @@
 package ij.gui;
+
 import ij.*;
 import ij.process.*;
-
-// BDZ - BEGIN ADDITIONS
 import java.awt.*;
-// BDZ - END ADDITIONS
 
 /** This class implements ImageJ's wand (tracing) tool.
   * The wand selects pixels of equal or similar value or thresholded pixels
@@ -39,10 +37,10 @@ public class Wand {
 
     private final static int THRESHOLDED_MODE = 256; //work on threshold
     private ImageProcessor ip;
-    private boolean isColorProc;
 // BDZ - BEGIN CHANGES
-    private boolean isFloatingType;
+    private boolean isColorProc;
 // BDZ - END CHANGES
+    private boolean isFloatingType;
     private int width, height;
     private float lowerThreshold, upperThreshold;
     private int xmin;                   //of selection created
@@ -53,10 +51,10 @@ public class Wand {
     /** Constructs a Wand object from an ImageProcessor. */
     public Wand(ImageProcessor ip) {
         this.ip = ip;
-        this.isColorProc = ip instanceof ColorProcessor;
 // BDZ - BEGIN CHANGES
-        this.isFloatingType = ip.isFloatingType();
+        this.isColorProc = ip instanceof ColorProcessor;
 // BDZ - END CHANGES
+        this.isFloatingType = ip.isFloatingType();
         width = ip.getWidth();
         height = ip.getHeight();
     }
@@ -115,10 +113,10 @@ public class Wand {
       * in the public xpoints and ypoints fields. */
     public void autoOutline(int startX, int startY, double tolerance, int mode) {
         if (startX<0 || startX>=width || startY<0 || startY>=height) return;
-        if (this.isFloatingType && Float.isNaN(getPixel(startX, startY))) return;
 // BDZ - BEGIN CHANGES
-        exactPixelValue = tolerance==0;
+        if (this.isFloatingType && Float.isNaN(getPixel(startX, startY))) return;
 // BDZ - END CHANGES
+        exactPixelValue = tolerance==0;
         boolean thresholdMode = (mode & THRESHOLDED_MODE) != 0;
         boolean legacyMode = (mode & LEGACY_MODE) != 0 && tolerance == 0;
         if (!thresholdMode) {
@@ -303,8 +301,8 @@ public class Wand {
     private float getPixel(int x, int y) {
         if (x<0 || x>=width || y<0 || y>=height)
             return Float.NaN;
-        else if (this.isColorProc)
 // BDZ - BEGIN CHANGES
+        else if (this.isColorProc)
         {
             if (exactPixelValue)   //RGB for exact match
                 return ip.get(x, y) & 0xffffff; //don't care for upper byte
@@ -312,8 +310,8 @@ public class Wand {
                 return ip.getPixelValue(x,y);
         }
         else
-        	return ip.getf(x, y);
 // BDZ - END CHANGES
+        	return ip.getf(x, y);
     }
 
     /* Are we tracing a one pixel wide line? Makes Legacy mode 8-connected instead of 4-connected */

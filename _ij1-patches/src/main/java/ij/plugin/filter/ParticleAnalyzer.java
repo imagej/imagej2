@@ -1,4 +1,5 @@
 package ij.plugin.filter;
+
 import java.awt.*;
 import java.awt.image.IndexColorModel;
 import java.util.Properties;
@@ -81,10 +82,10 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 
 	static final String OPTIONS = "ap.options";
 	
-	static final int BYTE=0, SHORT=1, FLOAT=2, RGB=3, OTHER=4;
 // BDZ - BEGIN CHANGES
-	static final double DEFAULT_MIN_SIZE = 0.0;
+	static final int BYTE=0, SHORT=1, FLOAT=2, RGB=3, OTHER=4;
 // BDZ - END CHANGES
+	static final double DEFAULT_MIN_SIZE = 0.0;
 	static final double DEFAULT_MAX_SIZE = Double.POSITIVE_INFINITY;
 	
 	private static double staticMinSize = 0.0;
@@ -128,10 +129,10 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	private int totalCount;
 	private TextWindow tw;
 	private Wand wand;
-	private int imageType;
 // BDZ - BEGIN CHANGES
-	private boolean roiNeedsImage;
+	private int imageType;
 // BDZ - END CHANGES
+	private boolean roiNeedsImage;
 	private int minX, maxX, minY, maxY;
 	private ImagePlus redirectImp;
 	private ImageProcessor redirectIP;
@@ -201,10 +202,10 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	}
 	
 	public int setup(String arg, ImagePlus imp) {
-		// unused information:
 // BDZ - BEGIN CHANGES
-		//this.arg = arg;
+		// unused information:
 // BDZ - END CHANGES
+		//this.arg = arg;
 		this.imp = imp;
 		IJ.register(ParticleAnalyzer.class);
 		if (imp==null)
@@ -530,11 +531,11 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		for (int y=r.y; y<(r.y+r.height); y++) {
 			offset = y*width;
 			for (int x=r.x; x<(r.x+r.width); x++) {
-				if (imageType == BYTE)
 // BDZ - BEGIN CHANGES
+				if (imageType == BYTE)
 					value = ip.get(x, y);
-				else if (imageType == SHORT)
 // BDZ - END CHANGES
+				else if (imageType == SHORT)
 					value = ip.getPixel(x, y);
 				else
 					value = ip.getPixelValue(x, y);
@@ -671,10 +672,10 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 				double replaceColor = level1-1.0;
 				if (replaceColor<0.0 || replaceColor==fillColor) {
 					replaceColor = level2+1.0;
-					int maxColor = imageType==BYTE?255:65535;  // DOES THIS NEED TO CHANGE? WAYNE PLEASE CHECK THIS. COULD DO ip.getMaxAllowedValue();
 // BDZ - BEGIN CHANGES
-					if (replaceColor>maxColor || replaceColor==fillColor) {
+					int maxColor = imageType==BYTE?255:65535;  // DOES THIS NEED TO CHANGE? WAYNE PLEASE CHECK THIS. COULD DO ip.getMaxAllowedValue();
 // BDZ - END CHANGES
+					if (replaceColor>maxColor || replaceColor==fillColor) {
 						IJ.error("Particle Analyzer", "Unable to remove edge particles");
 						return false;
 					}
@@ -711,23 +712,23 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		double t1 = ip.getMinThreshold();
 		double t2 = ip.getMaxThreshold();
 		boolean invertedLut = imp.isInvertedLut();
-		if (ip instanceof ByteProcessor)
 // BDZ - BEGIN CHANGES
+		if (ip instanceof ByteProcessor)
 			imageType = BYTE;
-		else if (ip instanceof ShortProcessor)
 // BDZ - END CHANGES
+		else if (ip instanceof ShortProcessor)
 			imageType = SHORT;
 		else if (ip instanceof FloatProcessor)
 			imageType = FLOAT;
-		else if (ip instanceof ColorProcessor)
 // BDZ - BEGIN ADDITIONS
-			imageType = RGB;  // NOTE - DIFFERENT THAN ORIGINAL CODE. Old code fell through to BYTE. WAYNE PLEASE CHECK THAT THIS IS CORRECT BEHAVIOR.
+		else if (ip instanceof ColorProcessor)
 // BDZ - END ADDITIONS
+			imageType = RGB;  // NOTE - DIFFERENT THAN ORIGINAL CODE. Old code fell through to BYTE. WAYNE PLEASE CHECK THAT THIS IS CORRECT BEHAVIOR.
 		else
-			imageType = OTHER;
 // BDZ - BEGIN CHANGES
-		if (t1==ImageProcessor.NO_THRESHOLD) {
+			imageType = OTHER;
 // BDZ - END CHANGES
+		if (t1==ImageProcessor.NO_THRESHOLD) {
 			ImageStatistics stats = imp.getStatistics();
 			if (imageType!=BYTE || (stats.histogram[0]+stats.histogram[255]!=stats.pixelCount)) {
 				IJ.error("Particle Analyzer",
@@ -749,8 +750,8 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 		} else {
 			level1 = t1;
 			level2 = t2;
-			if (ip.isFloatingType())  // WAYNE PLEASE CHECK - will PartAn work with double data, signed int data, etc.
 // BDZ - BEGIN CHANGES
+			if (ip.isFloatingType())  // WAYNE PLEASE CHECK - will PartAn work with double data, signed int data, etc.
 				fillColor = ip.getMinimumAllowedValue();
 			else  // integral type
 			{
@@ -759,8 +760,8 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 				else if (level2 < ip.getMaximumAllowedValue())
 					fillColor = ip.getMaximumAllowedValue();
 			}
-			if (imageType == RGB)  // THIS MAYBE DIFFERENT BEHAVIOR - WAYNE PLEASE CHECK
 // BDZ - END CHANGES
+			if (imageType == RGB)  // THIS MAYBE DIFFERENT BEHAVIOR - WAYNE PLEASE CHECK
 				return false;
 		}
 // BDZ - DELETED CODE
@@ -829,10 +830,10 @@ public class ParticleAnalyzer implements PlugInFilter, Measurements {
 	}
 
 	ImageStatistics getStatistics(ImageProcessor ip, int mOptions, Calibration cal) {
-		return ip.getStatistics(mOptions, cal);
 // BDZ - BEGIN CHANGES
-	}
+		return ip.getStatistics(mOptions, cal);
 // BDZ - END CHANGES
+	}
 
 	/** Saves statistics for one particle in a results table. This is
 		a method subclasses may want to override. */
