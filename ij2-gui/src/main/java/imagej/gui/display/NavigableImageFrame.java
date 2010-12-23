@@ -1,16 +1,10 @@
 package imagej.gui.display;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -20,9 +14,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import loci.formats.gui.AWTImageTools;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  *
@@ -34,7 +35,8 @@ public class NavigableImageFrame extends JFrame {
 	private Dataset dataset;
 	private int[] dims;
 	private String[] dimLabels;
-	private int width, height;
+	private int xIndex, yIndex;
+	private int[] pos;
 
 	private NavigableImagePanel imagePanel;
 	private JPanel sliders;
@@ -46,28 +48,27 @@ public class NavigableImageFrame extends JFrame {
 		final GraphicsEnvironment ge =
 			GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final Rectangle bounds = ge.getMaximumWindowBounds();
-		setSize(new Dimension(bounds.width, bounds.height));
+		setBounds(bounds.width / 6, bounds.height / 6,
+			2 * bounds.width / 3, 2 * bounds.height / 3);
 
 		imagePanel = new NavigableImagePanel();
 		getContentPane().add(imagePanel, BorderLayout.CENTER);
 	}
 
 	public void setDataset(final Dataset dataset) {
-		final int[] dims = dataset.getDimensions();
-		if (dims.length < 2) {
-			throw new IllegalArgumentException(
-				"Datasets with fewer than 2 dimensions are not supported");
-		}
 		this.dataset = dataset;
-		this.dims = dims;
+		dims = dataset.getDimensions();
 		dimLabels = getDimensionLabels(dataset);
+		setTitle(getName(dataset));
 
 		// extract width and height
-		width = height = 0;
+		xIndex = yIndex = -1;
 		for (int i = 0; i < dims.length; i++) {
-			if (dimLabels[i].equals(ImageOpener.X)) width = dims[i];
-			if (dimLabels[i].equals(ImageOpener.Y)) height = dims[i];
+			if (dimLabels[i].equals(ImageOpener.X)) xIndex = i;
+			if (dimLabels[i].equals(ImageOpener.Y)) yIndex = i;
 		}
+		if (xIndex < 0) throw new IllegalArgumentException("No X dimension");
+		if (yIndex < 0) throw new IllegalArgumentException("No Y dimension");
 
 		// create sliders
 		if (sliders != null) remove(sliders);
@@ -75,69 +76,82 @@ public class NavigableImageFrame extends JFrame {
 		getContentPane().add(sliders, BorderLayout.SOUTH);
 
 		// display first image plane
-		final int[] pos = new int[dims.length - 2];
-		setPosition(pos);
+		pos = new int[dims.length - 2];
+		updatePosition();
 	}
 
-	private void setPosition(final int[] pos) {
-		final BufferedImage image = getImagePlane(pos); 
+	private void updatePosition() {
+		final BufferedImage image = getImagePlane();
 		imagePanel.setImage(image);
 		imagePanel.setNavigationImageEnabled(true);
 	}
 
-	private BufferedImage getImagePlane(final int[] pos) {
-		if (pos.length != dims.length - 2) {
-			throw new IllegalArgumentException("Invalid position");
+	private BufferedImage getImagePlane() {
+		// FIXME - how to get a subset with different axes?
+		final Object plane = pos.length == 0 ? dataset.getData() :
+			dataset.getSubset(pos).getData();
+		if (plane instanceof byte[]) {
+			return AWTImageTools.makeImage((byte[]) plane,
+				dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());
 		}
-
-		//TEMP - need to actually extract image plane from dataset
-		//for now, we paint a random image plane, for testing
-
-		// convert position to string label
-		final StringBuilder label = new StringBuilder();
-		int p = 0;
-		boolean first = true;
-		for (int i = 0; i < dims.length; i++) {
-			if (dimLabels[i].equals(ImageOpener.X) ||
-				dimLabels[i].equals(ImageOpener.Y))
-			{
-				continue;
-			}
-			if (first) first = false;
-			else label.append(", ");
-			label.append(dimLabels[i] + "=" + pos[p++]);
+		else if (plane instanceof short[]) {
+			return AWTImageTools.makeImage((short[]) plane,
+					dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());			
 		}
-
-		// create a random labeled image
-		final BufferedImage image = new BufferedImage(width, height,
-			BufferedImage.TYPE_BYTE_GRAY);
-		final Graphics g = image.getGraphics();
-		final int randomR = (int) (200 * Math.random());
-		final int randomG = (int) (200 * Math.random());
-		final int randomB = (int) (200 * Math.random());
-		g.setColor(new Color(randomR, randomG, randomB));
-		g.fillRect(0, 0, width, height);
-		g.setColor(Color.white);
-		g.drawString(label.toString(), width / 2, height / 2);
-		g.dispose();
-
-		return image;
+		else if (plane instanceof int[]) {
+			return AWTImageTools.makeImage((int[]) plane,
+					dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());			
+		}
+		else if (plane instanceof float[]) {
+			return AWTImageTools.makeImage((float[]) plane,
+				dims[xIndex], dims[yIndex]);			
+		}
+		else if (plane instanceof double[]) {
+			return AWTImageTools.makeImage((double[]) plane,
+				dims[xIndex], dims[yIndex]);
+		}
+		else {
+			throw new IllegalStateException("Unknown data type: " +
+				plane.getClass().getName());
+		}
 	}
 
 	private JPanel createSliders() {
-		final StringBuilder rows = new StringBuilder();
-		if (dims.length > 0) rows.append("3dlu");
-		for (int i = 1; i < dims.length; i++) rows.append(", 3dlu, pref");
-		PanelBuilder panelBuilder = new PanelBuilder(
-			new FormLayout("pref, 3dlu, pref:grow", rows.toString()));
-		CellConstraints cc = new CellConstraints();
+		if (dims.length == 2) return new JPanel();
 
+		final StringBuilder rows = new StringBuilder("pref");
+		for (int i = 3; i < dims.length; i++) rows.append(", 3dlu, pref");
+		final PanelBuilder panelBuilder = new PanelBuilder(
+			new FormLayout("pref, 3dlu, pref:grow", rows.toString()));
+		panelBuilder.setDefaultDialogBorder();
+		final CellConstraints cc = new CellConstraints();
+
+		int p = 0;
 		for (int i = 0; i < dims.length; i++) {
-			final int row = 2 * i + 1;
+			if (isXY(dimLabels[i])) continue;
 			final JLabel label = new JLabel(dimLabels[i]);
-			final JSlider slider = new JSlider(1, dims.length, 1);
+			final JSlider slider = new JSlider(1, dims[i], 1);
+			int minorSpacing = dims[i] / 16;
+			int majorSpacing = (dims[i] + 4) / 5;
+			if (minorSpacing == 0) minorSpacing = 1;
+			if (majorSpacing == 0) majorSpacing = 1;
+			slider.setMinorTickSpacing(minorSpacing);
+			slider.setMajorTickSpacing(majorSpacing);
+			slider.setPaintTicks(true);
+			slider.setPaintLabels(true);
+			final int posIndex = p;
+			slider.addChangeListener(new ChangeListener() {
+				@Override
+				@SuppressWarnings("synthetic-access")
+				public void stateChanged(ChangeEvent e) {
+					pos[posIndex] = slider.getValue() - 1;
+					updatePosition();
+				}
+			});
+			final int row = 2 * p + 1;
 			panelBuilder.add(label, cc.xy(1, row));
 			panelBuilder.add(slider, cc.xy(3, row));
+			p++;
 		}
 
 		return panelBuilder.getPanel();
@@ -162,6 +176,27 @@ public class NavigableImageFrame extends JFrame {
 			for (int i = 2; i < dimTypes.length; i++) dimTypes[i] = "Unknown";
 		}
 		return dimTypes;
+	}
+	
+	/**
+	 * HACK - extract name from ImgLib image object.
+	 * This code can disappear once Dataset interface has getName/setName.
+	 */
+	private static String getName(Dataset dataset) {
+		final String name;
+		if (dataset instanceof ImgLibDataset) {
+			final ImgLibDataset<?> imgLibDataset = (ImgLibDataset<?>) dataset;
+			final Image<?> img = imgLibDataset.getImage();
+			name = ImageOpener.decodeName(img.getName());
+		}
+		else {
+			name = dataset.toString();
+		}
+		return name;
+	}
+
+	private static boolean isXY(String dimLabel) {
+		return dimLabel.equals(ImageOpener.X) || dimLabel.equals(ImageOpener.Y);
 	}
 
 }
