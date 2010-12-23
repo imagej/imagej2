@@ -429,4 +429,11 @@ public class BridgeStack extends ImageStack
 		
 		return ("stack["+getWidth()+"x"+getHeight()+"x"+getSize()+v+"]");
 	}
+	
+	@Override
+	public void flush()
+	{
+		for (int i = 0; i < this.planeRefs.size(); i++)
+			this.planeRefs.set(i, null);
+	}
 }
