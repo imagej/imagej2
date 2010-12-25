@@ -46,6 +46,13 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <!-- use dist.xml for "assembly:single" target -->
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/dist.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <!-- use deps.xml for "package" target -->
         <executions>
           <execution>
             <phase>package</phase>
