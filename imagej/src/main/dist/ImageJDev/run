@@ -1,0 +1,2 @@
+#!/bin/sh
+java -Xmx512m -cp 'jars/*' imagej.gui.MainFrame

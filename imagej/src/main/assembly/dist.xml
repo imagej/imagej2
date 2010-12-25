@@ -2,29 +2,30 @@
   xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1 http://maven.apache.org/xsd/assembly-1.1.1.xsd">
-  <id>deps</id>
+  <id>dist</id>
   <formats>
-    <format>jar</format>
+    <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <!--
-  <containerDescriptorHandlers>
-    <containerDescriptorHandler>
-      <handlerName>metaInf-services</handlerName>
-    </containerDescriptorHandler>
-  </containerDescriptorHandlers>
-  -->
   <fileSets>
     <fileSet>
-      <directory>${project.build.outputDirectory}</directory>
+      <directory>${project.basedir}/src/main/dist</directory>
       <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
     </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>/ImageJDev/jars</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
-      <unpack>true</unpack>
+      <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
