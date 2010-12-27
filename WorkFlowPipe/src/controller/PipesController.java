@@ -145,5 +145,33 @@ public class PipesController {
 		
 		return json;
 	}
+
+	/**
+	 * This
+	 * @param id the pipe id to be deleted
+	 * @param json - the result of the status
+	 * @param crumb - user's session information
+	 * @return response object
+	 */
+	public JSONObject deletePipe(String id, JSONObject json, String crumb) {
+	
+		//TODO: add user filtering, crumb verification
+		layoutArrayList.remove( id );
+		
+		//set return status to success
+		json.put("ok", new Integer( 1 ));
+		
+		return json;
+	}
+
+	/**
+	 * Generates the HTML page the user hits when they want to browse their pipes
+	 * @param guid
+	 * @return
+	 */
+	public String getLayoutsHTML(String guid) {
+		
+		return null;
+	}
 	
 }

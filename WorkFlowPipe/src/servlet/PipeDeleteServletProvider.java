@@ -14,18 +14,10 @@ import org.json.JSONObject;
 import controller.PipesController;
 
 /**
- * ajax.user.updatewebpath takes four inputs through the post; path, _rnd, .crumb, and _out
- * and returns a string message such as {"ok":0,"message":"Update failed: 'httppipesyahoocompipespersoninfo' is not allowed"} for failure
- * or {"ok":1,"data":"http:\/\/pipes.yahoo.com\/pipes\/person.info?guid=KLJRE3343"} for success
- * 
- * An example of a successful post is: 
-path:/pipes/person.info
-_rnd:5021
-.crumb:9Dxl9FJn/wN
-_out:json
+ * pipe.delete takes the _id and .crumb of the user's pipe and deletes it
  * 
  */
-public class AjaxUserUpdatewebpathServletProvider extends HttpServlet {
+public class PipeDeleteServletProvider extends HttpServlet {
 
 	/**
 	 * 
@@ -34,7 +26,7 @@ public class AjaxUserUpdatewebpathServletProvider extends HttpServlet {
 	private JSONObject json = new JSONObject();
 	private PipesController pipesController;
 
-	public AjaxUserUpdatewebpathServletProvider( PipesController pipesController ) {
+	public PipeDeleteServletProvider(PipesController pipesController) {
 		this.pipesController = pipesController;
 	}
 
@@ -42,31 +34,28 @@ public class AjaxUserUpdatewebpathServletProvider extends HttpServlet {
 			HttpServletResponse response ) throws ServletException, IOException {
 
 		doPost(request, response);
+
 	}
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
-		// get the path
-		String path = request.getParameter("path");
-		
-		// get the random number
-		String rnd = request.getParameter("_rnd");
-		
+		// get the id
+		String id = request.getParameter("_id");
+
 		// get the .crumb
 		String crumb = request.getParameter(".crumb");
-		
-		// get the output format
-		String out = request.getParameter("_out");
-		
-		// TODO: add rnd and .crumb checks
+
+		// TODO: add .crumb checks
 
 		// get the response, a string containing the same id
-		json = this.pipesController.userUpdatewebpath( path, rnd, out, json, crumb );
+		json = this.pipesController.deletePipe( id, json, crumb );
 
 		// generate and send the response
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
 		response.getWriter().write( json.toString() );
+
 	}
+
 }
