@@ -1656,7 +1656,7 @@ maxwell.Terminal = function(_139) {
 	if (_139.placement == "inside") {
 		this.render.appendChild(cn("img", {
 			className : "renderimage",
-			src : "http://l.yimg.com/a/i/space.gif",
+			src : "space.gif",
 			width : "14px",
 			height : "14px"
 		}, {
@@ -5598,7 +5598,7 @@ maxwell.HtmlPlus.ListManager = function(node) {
 	this.addNode = cn("div", null, null, "&nbsp;" + lab);
 	var _483 = cn("img", {
 		className : "paramadd",
-		src : "http://l.yimg.com/a/i/space.gif",
+		src : "space.gif",
 		width : "12px",
 		height : "16px"
 	}, {
@@ -5632,7 +5632,7 @@ maxwell.HtmlPlus.ListManager.prototype.add = function() {
 	var _485 = this.template.cloneNode(true);
 	var del = cn("img", {
 		className : "paramdel",
-		src : "http://l.yimg.com/a/i/space.gif",
+		src : "space.gif",
 		width : "12px",
 		height : "16px"
 	}, {
@@ -6817,7 +6817,7 @@ maxwell.RSSDebugger.prototype.renderErrors = function(_56b) {
 		if (!err.message || !err.type) {
 			continue;
 		}
-		var html = "<img src='http://l.yimg.com/a/i/space.gif' /><span>"
+		var html = "<img src='space.gif' /><span>"
 				+ err.message + "</span>";
 		var li = cn("li", {
 			className : "error " + err.type
@@ -8545,7 +8545,7 @@ maxwell.Taglist = function(tags, node) {
 			"li",
 			null,
 			null,
-			"<input type=text><img class='add' src='http://l.yimg.com/a/i/space.gif' width=16 height=16>");
+			"<input type=text><img class='add' src='space.gif' width=16 height=16>");
 	this.input = this.inputli.firstChild;
 	this.ul.appendChild(this.inputli);
 	this.addTags(tags);
@@ -8592,7 +8592,7 @@ maxwell.Taglist.prototype.addTags = function(tags) {
 					null,
 					"<span>"
 							+ tags[i]
-							+ "</span><img class='del' src='http://l.yimg.com/a/i/space.gif' width=16 height=16>");
+							+ "</span><img class='del' src='space.gif' width=16 height=16>");
 			this.ul.insertBefore(li, this.inputli);
 		}
 	}
@@ -9301,7 +9301,7 @@ maxwell.PipesEditorTabs = function(_723) {
 			null,
 			"<a href=\""
 					+ profileurl
-					+ "\"><img  src=\"http://l.yimg.com/a/i/us/pps/pipeslogo_editor.gif\" /></a>");
+					+ "\"><img  src=\"pipeslogo_editor.gif\" /></a>");
 	this.tabsholder = cn("div", {
 		className : "pipetabsholder"
 	});

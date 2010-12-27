@@ -28,7 +28,7 @@ public class JettyServerController {
 	private Server jettyServer;
 	private int jettyServerPort = 1999;
 	private String contextPathString;
-	private String startPageString = "index.html";
+	private String startPageString;
 	private boolean jettyDirectoryListed = false;
 	private HashMap<String, Servlet> servletInstanceHashMap = new HashMap<String, Servlet>();
 
@@ -38,7 +38,7 @@ public class JettyServerController {
 	 * @param jettyServerPort
 	 *            - the suggested port for the service
 	 */
-	public JettyServerController(int jettyServerPort, String startPageString, String contextPathString, boolean jettyDirectoryListed ) 
+	public JettyServerController( int jettyServerPort, String startPageString, String contextPathString, boolean jettyDirectoryListed ) 
 	{
 		// set the start page string
 		if (startPageString != null)
@@ -98,7 +98,7 @@ public class JettyServerController {
 		servletContextHandler.setContextPath( this.contextPathString );
 
 		// add the handler
-		jettyServer.setHandler(servletContextHandler);
+		jettyServer.setHandler( servletContextHandler );
 		
 		// get the servlets
 		for (String servletPath : servletInstanceHashMap.keySet()) {
@@ -121,8 +121,8 @@ public class JettyServerController {
 		jettyServer.start();
 
 		// Open the users browser to the default page
-		//for authenticated (E.g. OpenID check)  OpenBrowser.openURL( "http://workflowpipes.appspot.com/_ah/login?continue=http://localhost:" + this.jettyServerPort + this.contextPathString ); //Why does this not work with default values? (E.g. index.html): + "/" + this.startPageString );
-		OpenBrowser.openURL( "http://localhost:" + this.jettyServerPort + this.contextPathString + "/" + this.startPageString );
+		//for authenticated (E.g. OpenID check)  OpenBrowser.openURL( "http://workflowpipes.appspot.com/_ah/login?continue=http://localhost:" + this.jettyServerPort + this.contextPathString ); //Why does this not work with default values? (E.g. index.html): + "/" + this.startPageString ); A: This needs to 
+		OpenBrowser.openURL( "http://localhost:" + this.jettyServerPort + this.contextPathString + "/"  );
 	}
 
 	public void stop() throws Exception {
