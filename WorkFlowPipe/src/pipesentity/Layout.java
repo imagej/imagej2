@@ -1,6 +1,10 @@
 package pipesentity;
 
-
+/**
+ * The Layout class maps the UI's javascript components to a Java class structure
+ * @author rick
+ *
+ */
 public class Layout {
 
 	String layoutID;
@@ -9,6 +13,14 @@ public class Layout {
 	String layoutDescription;
 	String layoutTags;
 	
+	/**
+	 * 
+	 * @param layoutID - a unique id used to track a layout
+	 * @param layoutDefinition - the JSON string representation of the layout
+	 * @param layoutName - the name the user defines for the layout
+	 * @param layoutDescription - the text description the user gives for the layout
+	 * @param layoutTags - sequence of words given to aid in the discovery of this layout
+	 */
 	public Layout( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags )
 	{
 		this.layoutID = layoutID;

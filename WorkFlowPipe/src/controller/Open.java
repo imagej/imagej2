@@ -1,6 +1,13 @@
 package controller;
 
+import imagej.plugin.PluginEntry;
+import imagej.plugin.ij2.IPlugin;
+import imagej.plugin.ij2.Ij2PluginFinder;
+import imagej.plugin.ij2.Ij2PluginRunner;
+import imagej.plugin.ij2.ParameterHandler;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import persistance.LoadLayouts;
 import pipes.ModuleGenerator;
@@ -21,6 +28,37 @@ public class Open {
 
 	static void init( int portNumber ) throws Exception
 	{
+		/*
+		//load the ij2 plugin loader
+		Ij2PluginFinder ij2PluginFinder = new Ij2PluginFinder();
+		ArrayList<PluginEntry> plugins = new ArrayList<PluginEntry>();
+		
+		//load the list
+		//ij2PluginFinder.findPlugins( plugins );
+		
+		//add plugin list manually
+		plugins.add(new PluginEntry("imagej.gui.ImageFromURL", new ArrayList<String>(), "ImageFromURL", ""));
+		plugins.add(new PluginEntry("imagej.gui.GradientImage", new ArrayList<String>(), "GradientImage", ""));
+		
+		//get a parameter handler
+		PluginEntry first = plugins.get(0);
+		System.out.println("first plugin is " + first.getLabel());
+		//get an instance...
+		Ij2PluginRunner ij2PluginRunner = new Ij2PluginRunner();
+		IPlugin iplugin = ij2PluginRunner.createInstance( first );
+		
+		//get the input map
+		HashMap<String, Object> inputParameterMap = (HashMap<String, Object>) ParameterHandler.getInputMap( iplugin );
+		
+		//get the input and output maps
+		HashMap<String, Object> outputParameterMap = (HashMap<String, Object>) ParameterHandler.getOutputMap( iplugin );
+		
+		for( String keyString : inputParameterMap.keySet() )
+			System.out.println("inputParameter " + keyString + " is " + inputParameterMap.get( keyString) );
+		
+		for( String keyString : outputParameterMap.keySet() )
+			System.out.println("outputParameter " + keyString + " is " + outputParameterMap.get( keyString) );
+		*/
 		//Create a pipes controller
 		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts() );
 		
@@ -64,9 +102,9 @@ public class Open {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		final int portNumber = 8080;
+		final int portNumber = 61011;
 		
-		//start the local services on port 8080
+		//start the local Jetty ajax services
 		init( portNumber );
 	
 	}
