@@ -45,16 +45,16 @@ public class Result {
 			JSONObject jsonResult = new JSONObject();
 
 			// add the name
-			jsonResult.put("name", this.name);
+			jsonResult.put("name", this.name.getValue() );
 
 			// add the description
-			jsonResult.put("description", this.description);
+			jsonResult.put("description", this.description.getValue() );
 
 			// add the url
-			jsonResult.put("url", this.url);
+			jsonResult.put("url", this.url.getValue() );
 
 			// add the source
-			jsonResult.put("source", this.source);
+			jsonResult.put("source", this.source.getSource() );
 
 			return jsonResult;
 		}
@@ -62,17 +62,22 @@ public class Result {
 		JSONObject jsonResult = new JSONObject();
 
 		// add the name
-		jsonResult.put("name", this.name);
+		jsonResult.put("name", this.name.getValue() );
 
 		// add the description
-		jsonResult.put("description", this.description);
+		jsonResult.put("description", this.description.getValue() );
 
 		// add the type
-		jsonResult.put("type", this.type);
+		jsonResult.put("type", this.type.getValue() );
 
-		return jsonResult.put("source", this.source);
+		return jsonResult.put("source", this.source.getSource() );
 	}
 	
+	/**
+	 * Converts an ArrayList of Result to property formatted JSON
+	 * @param resultArrayList
+	 * @return
+	 */
 	public static JSONObject getResultsJSONObject( ArrayList<Result> resultArrayList ) 
 	{
 		//create the Results JSON Object

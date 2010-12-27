@@ -1,13 +1,12 @@
 package controller;
-
+/*
 import imagej.plugin.PluginEntry;
 import imagej.plugin.ij2.IPlugin;
 import imagej.plugin.ij2.Ij2PluginFinder;
 import imagej.plugin.ij2.Ij2PluginRunner;
 import imagej.plugin.ij2.ParameterHandler;
-
+*/
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import persistance.LoadLayouts;
 import pipes.ModuleGenerator;
@@ -24,7 +23,6 @@ import servlet.OpenIDAuthenticationServlet;
 
 //TODO:add implements run() from plugin
 public class Open {
-	
 
 	static void init( int portNumber ) throws Exception
 	{
@@ -63,7 +61,7 @@ public class Open {
 		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts() );
 		
 		//Create a new JettyServerController
-		JettyServerController jettyServerController = new JettyServerController( portNumber, "index.html", "/web", true );
+		JettyServerController jettyServerController = new JettyServerController( portNumber, "pipe.edit", "/web", true );
 		
 		//Create a sample internal pipes collection
 		ArrayList<Module> pipesSampleCollection = ModuleGenerator.getPipeModuleSampleCollection();
@@ -100,7 +98,7 @@ public class Open {
 	 * @param args
 	 * @throws Exception 
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main( String[] args ) throws Exception {
 		
 		final int portNumber = 61011;
 		

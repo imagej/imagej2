@@ -129,5 +129,21 @@ public class PipesController {
 		
 		return json;
 	}
+
+	public JSONObject userUpdatewebpath( String path, String rnd, String out, JSONObject json, String crumb ) {
+		
+		//TODO: add directory switching (Domain switching support)
+		//simulate failure
+		
+		json.put("message","Update failed: '"+path+"' is not yet supported ");
+		
+		//TODO:simulate success
+		//"data":"http:\/\/localhost\/web\/person.info?guid=KLJRE3343"
+		
+		//set return status to success
+		json.put("ok", new Integer( 1 ));
+		
+		return json;
+	}
 	
 }

@@ -106,7 +106,7 @@ public class Module {
 	
 	public boolean searchNameAndDescription( String searchTerm )
 	{
-		if ( this.name.getValue().contains(searchTerm) //or
+		if ( this.name.getValue().contains( searchTerm ) //or
 				|| this.description.getValue().contains(searchTerm))
 		{
 			return true;
