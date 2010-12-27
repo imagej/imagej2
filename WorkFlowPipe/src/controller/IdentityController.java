@@ -8,7 +8,7 @@ import java.net.URLEncoder;
 
 /**
  * Controller used for all authentication checks
- *
+ * GUID is a 26 character alpha numeric value that allows persistence, cloning, publication, and deletion of layouts (workflows)
  * @author rick
  *
  */

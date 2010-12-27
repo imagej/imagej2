@@ -18,7 +18,10 @@ import servlet.AjaxModuleListServletProvider;
 import servlet.AjaxPipeCloneServletProvider;
 import servlet.AjaxPipePreviewServletProvider;
 import servlet.AjaxPipeSaveServletProvider;
+import servlet.AjaxUserUpdatewebpathServletProvider;
 import servlet.OpenIDAuthenticationServlet;
+import servlet.PersonInfoServletProvider;
+import servlet.PipeDeleteServletProvider;
 
 
 //TODO:add implements run() from plugin
@@ -90,6 +93,15 @@ public class Open {
 		//add the ability to clone layouts
 		jettyServerController.addServlet("/ajax.pipe.clone", new AjaxPipeCloneServletProvider( pipesController )  );
        
+		//add the ability to update the session path
+		jettyServerController.addServlet("/ajax.user.updatewebpath", new AjaxUserUpdatewebpathServletProvider( pipesController )  );
+       
+		//add the ability to delete a user created layout
+		jettyServerController.addServlet("/pipe.delete", new PipeDeleteServletProvider( pipesController )  );
+       
+		//add the ability to delete a user created layout
+		//jettyServerController.addServlet("/person.info", new PersonInfoServletProvider( pipesController )  );
+		
 		//start the session and launch the default page
 		jettyServerController.startAndLaunchBrowser();
 	}
