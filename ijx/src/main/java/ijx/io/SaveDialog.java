@@ -7,7 +7,7 @@ import java.io.*;
 import javax.swing.*;
 
 import ijx.plugin.frame.Recorder;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import ijx.macro.Interpreter;
 
 /** This class displays a dialog window from which the user can save a file. */

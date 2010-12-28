@@ -11,7 +11,7 @@ import ijx.action.ActionFactoryIjx;
 import ijx.action.ActionManager;
 import ijx.action.BoundAction;
 import ijx.options.Option;
-import ijx.util.StringAlign;
+import imagej.util.StringAlign;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,28 +62,7 @@ public class CommandsManager {
         return commands.get(commandKey);
     }
 
-    static class MenusOrdered {
-        int position;
-        IndexItem<ActionIjx, ?> item;
-        String commandKey;
 
-        public MenusOrdered(int position, IndexItem<ActionIjx, ?> item, String commandKey) {
-            this.position = position;
-            this.item = item;
-            this.commandKey = commandKey;
-        }
-
-        static class MenusOrderedPositionComparator implements Comparator<MenusOrdered> {
-            public int compare(MenusOrdered o1, MenusOrdered o2) {
-                return o1.position - o2.position;
-            }
-        }
-        static class MenusOrderedComparator implements Comparator<MenusOrdered> {
-            public int compare(MenusOrdered o1, MenusOrdered o2) {
-                return o1.item.annotation().menu().compareToIgnoreCase(o2.item.annotation().menu());
-            }
-        }
-    }
 
     /*
     static Map sortByValue(Map map) {
@@ -119,6 +98,29 @@ public class CommandsManager {
         Collections.sort(menues, new MenusOrdered.MenusOrderedComparator());
     }
 
+    // MenusOrdered -- Comparators for sorting
+    static class MenusOrdered {
+        int position;
+        IndexItem<ActionIjx, ?> item;
+        String commandKey;
+
+        public MenusOrdered(int position, IndexItem<ActionIjx, ?> item, String commandKey) {
+            this.position = position;
+            this.item = item;
+            this.commandKey = commandKey;
+        }
+
+        static class MenusOrderedPositionComparator implements Comparator<MenusOrdered> {
+            public int compare(MenusOrdered o1, MenusOrdered o2) {
+                return o1.position - o2.position;
+            }
+        }
+        static class MenusOrderedComparator implements Comparator<MenusOrdered> {
+            public int compare(MenusOrdered o1, MenusOrdered o2) {
+                return o1.item.annotation().menu().compareToIgnoreCase(o2.item.annotation().menu());
+            }
+        }
+    }
     public void loadOptions() {
         for (final IndexItem<Option, Object> item : Index.load(Option.class, Object.class)) {
             try {
@@ -344,7 +346,7 @@ public class CommandsManager {
             }
             menuToAddTo.put(s.item.annotation().label(), null); //menuName, new LinkedHashMap<String, LinkedHashMap>().put(labels[i], null));
         }
-        System.out.println("\nDone");
+        System.out.println("\ncreateMenuList()  Done");
 
         Set st = top.keySet();
 //        Iterator topEntryIter = top.entrySet().iterator();
@@ -417,7 +419,9 @@ public class CommandsManager {
         String label = res.getString("LABEL");
     }
 
-// Utils -------------------------------------------------------------------------------------
+// <editor-fold defaultstate="collapsed" desc=" Utils / Diagnostics ">
+// Utils / Diagnostics -------------------------------------------------------------------------------------
+//
     private void listIndexedItems() {
         System.out.println("Indexed Items:");
         System.out.println(" " + strLeft(22, "commandKey")
@@ -435,9 +439,11 @@ public class CommandsManager {
             System.out.println(indexedItemToString(commandKey, item));
         }
     }
+
     private void listMenuesArray() {
         System.out.println("Indexed Items:");
         System.out.println(" " + strLeft(22, "commandKey")
+                + strLeft(15, "label")
                 + strLeft(15, "menu")
                 + strLeft(12, "bundlePath")
                 + strLeft(12, "toolbar")
@@ -446,12 +452,13 @@ public class CommandsManager {
                 + strLeft(12, "checkBox")
                 + strLeft(12, "group"));
         for (MenusOrdered menusOrdered : menues) {
-            System.out.println(indexedItemToString( menusOrdered.commandKey,menusOrdered.item));
+            System.out.println(indexedItemToString(menusOrdered.commandKey, menusOrdered.item));
         }
     }
 
     private String indexedItemToString(String commandKey, IndexItem<ActionIjx, ?> item) {
         String menu = item.annotation().menu();
+        String label = item.annotation().label();
         String bundlePath = item.annotation().bundle(); // for i18n
         String toolbar = item.annotation().toolbar();
         int pos = item.annotation().position();
@@ -466,6 +473,7 @@ public class CommandsManager {
 //                + separator + ", "
 //                + checkBox + ", " + group + ".";
         String itemStr = " " + strLeft(22, commandKey)
+                + strLeft(15, label)
                 + strLeft(15, menu)
                 + strLeft(12, bundlePath)
                 + strLeft(12, toolbar)
@@ -479,6 +487,8 @@ public class CommandsManager {
     String strLeft(int w, String s) {
         return new StringAlign(w, StringAlign.JUST_LEFT).format(s);
     }
+
+// </editor-fold>
 
     void createTestFrame(JMenuBar bar) {
         Logger logger = Logger.getLogger("net.java.sezpoz");
@@ -499,6 +509,7 @@ public class CommandsManager {
         cmdMgr.loadAllItems();
         //cmdMgr.listIndexedItems();
         cmdMgr.listMenuesArray();
+
         ArrayList menuList = cmdMgr.createMenuList();
         JMenuBar menuBar = ActionFactoryIjx.createMenuBar(menuList);
         JMenu windowMenu = menuBar.getMenu(6);

@@ -19,7 +19,9 @@ public class PluginDiscovery {
 		System.out.println("Scanning for plugin finders...");
 		Collection<? extends PluginFinder> finders =
 			Lookup.getDefault().lookupAll(PluginFinder.class);
+
 		List<PluginEntry> plugins = new ArrayList<PluginEntry>();
+
 		for (PluginFinder finder : finders) {
 			System.out.println("Querying " + finder + "...");
 			finder.findPlugins(plugins);

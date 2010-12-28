@@ -11,7 +11,7 @@ import ijx.IJ;
 import ijx.CompositeImage;
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 import java.awt.*;

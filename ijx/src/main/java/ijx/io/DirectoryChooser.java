@@ -5,7 +5,7 @@ import ijx.IJ;
 
 
 import ijx.plugin.frame.Recorder;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;

@@ -14,7 +14,7 @@ import java.util.*;
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.ScreenGrabber;
 import ijx.plugin.api.PlugInFilterRunner;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 
 

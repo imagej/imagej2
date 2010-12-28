@@ -1,6 +1,6 @@
 package  ijx.plugin;
 import ijx.plugin.api.PlugIn;
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import ijx.Menus;
 import ijx.Prefs;
 import ijx.IJ;

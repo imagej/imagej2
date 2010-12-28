@@ -1,5 +1,5 @@
 package ijx.io;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import java.io.*;
 import java.util.*;
 import java.net.*;

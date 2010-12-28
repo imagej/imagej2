@@ -10,7 +10,7 @@ import ijx.measure.ResultsTable;
 import ijx.IJ;
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import java.util.*;
 import java.awt.*;

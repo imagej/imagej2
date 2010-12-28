@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package ijx.util;
+package imagej.util;
 
 import java.io.*;
 import java.util.List;

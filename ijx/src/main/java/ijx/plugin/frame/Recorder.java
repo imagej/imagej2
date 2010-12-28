@@ -6,7 +6,7 @@ import ijx.gui.GUI;
 import ijx.roi.TextRoi;
 import ijx.roi.Roi;
 import ijx.measure.CurveFitter;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.Macro;
 import ijx.Prefs;
 import ijx.WindowManager;

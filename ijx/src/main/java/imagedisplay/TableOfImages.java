@@ -22,7 +22,7 @@ public class TableOfImages
     JTable table;
     JPopupMenu popup;
     JMenuItem menuItem;
-    SeriesOfImages series;
+    SeriesOfImagesTiff series;
 
     public TableOfImages(String FILE, int zSections, int sampling, int sizeOfThumbs)
       {
@@ -31,7 +31,7 @@ public class TableOfImages
         int rowHeight = sizeOfThumbs;
 
 
-        series = new SeriesOfImages(FILE, zSections);
+        series = new SeriesOfImagesTiff(FILE, zSections);
         int nT = series.getTimeIntervals();
         int nZ = series.getZSections();
 
@@ -221,7 +221,7 @@ public class TableOfImages
         add(pane, BorderLayout.CENTER);
       }
 
-    private void openImageViewer(SeriesOfImages series, int r, int c)
+    private void openImageViewer(SeriesOfImagesTiff series, int r, int c)
       {
         int n = r + c *  series.getZSections();
         String title = "" + series.getFilename() + ": " + r + ", " + c + " (" + n +")";

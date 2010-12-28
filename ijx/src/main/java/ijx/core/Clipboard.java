@@ -13,7 +13,7 @@ import java.awt.image.*;
 
 
 import ijx.plugin.frame.Editor;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 
 /**	Copies and pastes images to the clipboard. */

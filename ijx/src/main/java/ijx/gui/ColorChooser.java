@@ -1,6 +1,6 @@
 package ijx.gui;
 import ijx.gui.dialog.GenericDialog;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import java.awt.*;
 import java.util.Vector;
 import java.awt.event.*;

@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.*;
 import java.net.URL;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.measure.Calibration;
 import ijx.IjxImagePlus;
 

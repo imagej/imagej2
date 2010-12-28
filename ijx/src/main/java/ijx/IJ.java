@@ -46,8 +46,8 @@ import ijx.roi.PointRoi;
 import ijx.roi.PolygonRoi;
 import ijx.roi.Roi;
 import ijx.text.*;
-import ijx.util.Memory;
-import ijx.util.Tools;
+import imagej.util.Memory;
+import imagej.util.Tools;
 
 /** This class consists of static utility methods. */
 public class IJ {

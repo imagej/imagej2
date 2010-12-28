@@ -1,7 +1,7 @@
 package ijx.process;
 import ijx.roi.OvalRoi;
-import ijx.util.Java2;
-import ijx.util.Tools;
+import imagej.util.Java2;
+import imagej.util.Tools;
 import java.awt.*;
 import java.awt.image.*;
 import ijx.plugin.filter.GaussianBlur;

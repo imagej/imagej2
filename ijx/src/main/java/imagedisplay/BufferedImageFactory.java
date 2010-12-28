@@ -1,6 +1,7 @@
 package imagedisplay;
 
 import imagej.imglib.process.ImageUtils;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -89,6 +90,15 @@ public class BufferedImageFactory {
         }
 
         throw new IllegalStateException("Unknown sample type " + realType.getClass());
+    }
+
+    public static BufferedImage makeBufferedImage(Object array,  Dimension imgDim) {
+        if(array instanceof byte[]) {
+            return byteArrayToRenderedImage((byte[])array, imgDim.width,imgDim.height);
+        }
+        else {
+            return null;
+        }
     }
 
     public static BufferedImage byteArrayToRenderedImage(byte[] imgArray, int width, int height) {

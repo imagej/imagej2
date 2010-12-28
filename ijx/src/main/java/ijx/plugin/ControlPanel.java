@@ -2,8 +2,8 @@ package ijx.plugin;
 
 import ijx.plugin.api.PlugIn;
 import ijx.gui.GUI;
-import ijx.util.StringSorter;
-import ijx.util.Java2;
+import imagej.util.StringSorter;
+import imagej.util.Java2;
 import ijx.Menus;
 import ijx.MenusAWT;
 import ijx.IJ;

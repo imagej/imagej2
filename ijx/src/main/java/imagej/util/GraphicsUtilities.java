@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 
 /*
  * $Id: GraphicsUtilities.java,v 1.1 2006/11/01 16:49:20 gfx Exp $

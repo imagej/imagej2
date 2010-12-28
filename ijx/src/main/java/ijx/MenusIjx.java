@@ -1,7 +1,7 @@
 package ijx;
 
 import ijx.process.ImageProcessor;
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import ijx.app.IjxApplication;
 
 import ijx.gui.IjxWindow;

@@ -6,7 +6,7 @@ import ijx.gui.Plot;
 import ijx.measure.ResultsTable;
 import ijx.measure.Calibration;
 import ijx.measure.Measurements;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IJ;
 import java.awt.Color;
 

@@ -1,7 +1,7 @@
 package ijx.plugin;
 import ijx.plugin.api.PlugIn;
 import ijx.gui.dialog.GenericDialog;
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import ijx.io.PluginClassLoader;
 import ijx.Menus;
 import ijx.IJ;

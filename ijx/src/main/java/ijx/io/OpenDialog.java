@@ -5,7 +5,7 @@ import ijx.IJ;
 
 
 import ijx.plugin.frame.Recorder;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import ijx.macro.Interpreter;
 import java.awt.EventQueue;
 import java.awt.FileDialog;

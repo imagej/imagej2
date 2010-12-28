@@ -110,7 +110,7 @@ public class NextImageOpener implements PlugIn {
 		File dir = new File(path);
 		if (!dir.isDirectory()) return null;
 		String[] names = dir.list();
-		ijx.util.StringSorter.sort(names);
+		imagej.util.StringSorter.sort(names);
 		int thisfile = -1;
 		for (int i=0; i<names.length; i++) {
 			if (names[i].equals(imageName)) {

@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 
 import ijx.Prefs;
 import java.awt.*;

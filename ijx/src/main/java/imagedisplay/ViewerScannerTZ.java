@@ -48,7 +48,7 @@ public class ViewerScannerTZ extends JFrame implements ImageViewer {
 //                zSections = (int)gd.getNextNumber();
                 zSections = 1;
                 
-                ScannerTZ stz = new ScannerTZ(new SeriesOfImages(argList[0], zSections));
+                ScannerTZ stz = new ScannerTZ(new SeriesOfImagesTiff(argList[0], zSections));
                 getRootPane().setContentPane(stz);
                 setSize(400, 500);
                 pack();

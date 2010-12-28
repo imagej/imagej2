@@ -11,7 +11,7 @@ import java.util.*;
 
 
 
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.FolderOpener;
 import ijx.stack.FileInfoVirtualStack;

@@ -1,8 +1,8 @@
 package ijx.implementation.swing;
 
 import ijx.process.ImageProcessor;
-import ijx.util.StringSorter;
-import ijx.util.Tools;
+import imagej.util.StringSorter;
+import imagej.util.Tools;
 import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;
@@ -124,6 +124,7 @@ public class MenusSwing implements IjxMenus {
         // For Tesing (GBH) =============================================
         //addPlugInItem(file, "RunTest", "ijx.plugin.CommandLister(\"command\")", 0, false);
         addPlugInItem(file, "RunTest", "imagej.ij1bridge.plugin.PluginLoader", 0, false);
+
         //
         JMenu edit = getMenu("Edit");
         addPlugInItem(edit, "Undo", "ijx.core.Commands(\"undo\")", KeyEvent.VK_Z, false);

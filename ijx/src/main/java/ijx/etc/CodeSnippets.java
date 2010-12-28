@@ -50,11 +50,13 @@ public class CodeSnippets {
     KeyboardHandler keyHandler  = CentralLookup.getDefault().lookup(KeyboardHandler.class);
      */
 
+/*
+ * ============================
+ * NetBeans Platform...
+ * ============================
+ */
+
     /*
-     * ============================
-     * NetBeans Platform...
-     * ============================
-     *
     // Display in status bar:
     StatusDisplayer.getDefault().setStatusText("Something happened");
 

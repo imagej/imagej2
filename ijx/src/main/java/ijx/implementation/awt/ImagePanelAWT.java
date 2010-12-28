@@ -4,7 +4,7 @@ import ijx.IJ;
 import ijx.Prefs;
 import ijx.gui.Overlay;
 import ijx.roi.Roi;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import ijx.IjxImagePlus;
 import ijx.gui.AbstractImageCanvas;
 import ijx.gui.IjxImageDisplayPanel;

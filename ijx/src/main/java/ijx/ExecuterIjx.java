@@ -1,6 +1,6 @@
 package ijx;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.text.TextWindow;
 import ijx.plugin.MacroInstaller;
 import ijx.plugin.frame.Recorder;

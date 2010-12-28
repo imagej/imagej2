@@ -12,7 +12,7 @@ import java.net.URL;
 import java.awt.*;
 import java.applet.Applet;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 
 
 import ijx.plugin.Animator;
