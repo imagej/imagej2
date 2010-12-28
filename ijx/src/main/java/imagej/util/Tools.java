@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 import java.awt.Color;
 import java.util.*;
 import java.io.*;

@@ -15,6 +15,8 @@ import mpicbg.imglib.image.ImagePlusAdapter;
 import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 import mpicbg.imglib.type.numeric.RealType;
 
+// From Fiji template...
+
 public class Imglib_Plugin<T extends RealType<T>> implements PlugInFilter {
 	ImagePlus image;
 

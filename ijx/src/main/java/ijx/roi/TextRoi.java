@@ -1,7 +1,7 @@
 package ijx.roi;
 import ijx.process.ImageProcessor;
-import ijx.util.Java2;
-import ijx.util.Tools;
+import imagej.util.Java2;
+import imagej.util.Tools;
 import ijx.WindowManager;
 import ijx.IJ;
 import java.awt.*;

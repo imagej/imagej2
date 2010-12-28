@@ -13,7 +13,7 @@ import java.util.Vector;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.plugin.frame.Recorder;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

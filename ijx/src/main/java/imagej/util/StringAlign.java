@@ -1,5 +1,5 @@
 
-package ijx.util;
+package imagej.util;
 
 
 /*

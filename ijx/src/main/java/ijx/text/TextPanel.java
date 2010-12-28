@@ -13,7 +13,7 @@ import java.awt.datatransfer.*;
 import ijx.plugin.filter.Analyzer;
 import ijx.io.SaveDialog;
 import ijx.measure.ResultsTable;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.plugin.frame.Recorder;
 import ijx.gui.dialog.GenericDialog;
 import ijx.CentralLookup;

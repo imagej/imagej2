@@ -1,11 +1,10 @@
-package ijx.util;
+package imagej.util;
 import ijx.plugin.api.PlugIn;
 import ijx.gui.dialog.GenericDialog;
 import ijx.Prefs;
 import ijx.IJ;
 
 
-import ijx.util.Tools;
 import java.util.*;
 
 /** This plugin implements the Plugins/Utilities/Proxy Settings command. It sets

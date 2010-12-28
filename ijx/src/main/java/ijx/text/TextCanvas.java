@@ -1,5 +1,5 @@
 package ijx.text;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import java.awt.*;
 import java.awt.event.*;
 

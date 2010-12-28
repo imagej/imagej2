@@ -4,7 +4,7 @@
  */
 package ijx;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.gui.IjxToolbar;
 import ijx.implementation.awt.FactoryAWT;
 import ijx.implementation.mdi.FactoryMDI;

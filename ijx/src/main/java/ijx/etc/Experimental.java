@@ -1,30 +1,27 @@
 package ijx.etc;
 
-import ijx.ImageJX;
 import imagedisplay.BufferedImageFactory;
-import imagedisplay.DisplayJAIFrame;
-import imagedisplay.FrameImageDisplay;
 import imagedisplay.NavigableImageFrame;
-import imagedisplay.NavigableImagePanel;
+import imagedisplay.ScannerTZ;
+import imagedisplay.SeriesOfImagesImgLib;
+import imagej.dataset.Dataset;
+import imagej.dataset.PlanarDatasetFactory;
 import imagej.ij1bridge.BridgeStack;
+import imagej.imglib.TypeManager;
 import imagej.imglib.process.ImageUtils;
+import imagej.process.Index;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import javax.swing.JFrame;
 import loci.formats.FormatException;
+import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
-import mpicbg.imglib.container.planar.PlanarContainer;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.display.imagej.ImageJVirtualStack;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
@@ -50,22 +47,44 @@ public class Experimental<T extends RealType<T>> {
         // open test image
 
 
-        String filename = "testpattern.tif";
+        //String filename = "testpattern.tif";
+        //String filename = "HyperStack.tif";
+        String filename = "Z5_T10.tif";
         final ImageOpener imageOpener = new ImageOpener();
         Image<T> img = imageOpener.openImage(filename);
         RealType<?> type = ImageUtils.getType(img);
-        System.out.println("type: " +  type.getClass().getName());
+        System.out.println("type: " + type.getClass().getName());
         reportInformation(img);
         System.out.println("container: " + img.getContainer().getClass().getName());
+        System.out.println("Channels: "
+                + ImageUtils.getNChannels(img));
+        System.out.println("Slices: "
+                + ImageUtils.getNSlices(img));
+        System.out.println("Samples: "
+                + ImageUtils.getTotalSamples(img));
+        System.out.println("Frames: "
+                + ImageUtils.getNFrames(img));
+
+
         BufferedImage bi = BufferedImageFactory.makeBufferedImage(img);
+
+//        ImgLibDataset<T> dataset = new ImgLibDataset<T>((Image<T>) img);
+//        dataset.getSubset(index);
+//        ArrayDataAccess ada = ((PlanarContainer) img.getContainer()).getPlane(0);
+//        Object array = ada.getCurrentStorageArray();
+
+
         // BufferedImage bi = toBufferedImageByte(img);
         //bi.getData().getDataBuffer().getDataType();
         BufferedImage bic = toCompatibleImage(bi);
-                
+
         //BufferedImage bi = copyToBufferedImage(img);
         //FrameImageDisplay fid = new FrameImageDisplay(bic, "testpattern.tif");
         new NavigableImageFrame(bic);
+        openScannerTZ(img);
         //new DisplayJAIFrame(bic);
+
+
 
 
 //        ImgLibDataset<T> dataset = new ImgLibDataset<T>((Image<T>) img);
@@ -92,11 +111,19 @@ public class Experimental<T extends RealType<T>> {
 //        System.out.println("class: " + ip2.getClass().getName());
         //
 
-
-
-
-
     }
+
+    public static void openScannerTZ(Image<?> img) {
+        JFrame frame = new JFrame("ScannerTZ");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        int zSections = 1;
+        ScannerTZ stz = new ScannerTZ(new SeriesOfImagesImgLib(img, 0));
+        frame.getRootPane().setContentPane(stz);
+        frame.setSize(400, 500);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     public static BufferedImage toCompatibleImage(BufferedImage image) {
         if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
             return image;
@@ -109,7 +136,6 @@ public class Experimental<T extends RealType<T>> {
 
         return compatibleImage;
     }
-
     private static final GraphicsConfiguration CONFIGURATION =
             GraphicsEnvironment.getLocalGraphicsEnvironment().
             getDefaultScreenDevice().getDefaultConfiguration();
@@ -129,9 +155,6 @@ public class Experimental<T extends RealType<T>> {
 //        setPixels(bImage, 0, 0, dimX, dimY, rgbPixels);
 //        return bImage;
 //    }
-
-
-
     public static void setPixels(BufferedImage img,
             int x, int y, int w, int h, int[] pixels) {
         if (pixels == null || w == 0 || h == 0) {
@@ -149,8 +172,6 @@ public class Experimental<T extends RealType<T>> {
             img.setRGB(x, y, w, h, pixels, 0, w);
         }
     }
-
-
 
     /** Prints out some useful information about the {@link Image}. */
     public static <T extends RealType<T>> void reportInformation(Image<T> img) {

@@ -10,7 +10,7 @@ public class HTMLDialog extends JDialog implements ActionListener {
 	
 	public HTMLDialog(String title, String message) {
 		super(IJ.getTopComponentFrame(), title, true);
-		ijx.util.Java2.setSystemLookAndFeel();
+		imagej.util.Java2.setSystemLookAndFeel();
 		Container container = getContentPane();
 		container.setLayout(new BorderLayout());
 		if (message==null) message = "";

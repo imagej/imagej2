@@ -1,8 +1,8 @@
 package ijx;
 
 import ijx.process.ImageProcessor;
-import ijx.util.StringSorter;
-import ijx.util.Tools;
+import imagej.util.StringSorter;
+import imagej.util.Tools;
 import ijx.app.IjxApplication;
 
 import ijx.plugin.MacroInstaller;

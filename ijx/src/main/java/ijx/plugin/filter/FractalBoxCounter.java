@@ -6,7 +6,7 @@ import ijx.gui.PlotWindow;
 import ijx.gui.dialog.GenericDialog;
 import ijx.measure.ResultsTable;
 import ijx.measure.CurveFitter;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IJ;
 import java.awt.*;
 import java.util.*;

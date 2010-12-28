@@ -12,7 +12,7 @@ import ijx.IJ;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.plugin.api.PlugInFilter;
 import ijx.plugin.frame.Recorder;
 import ijx.measure.Calibration;

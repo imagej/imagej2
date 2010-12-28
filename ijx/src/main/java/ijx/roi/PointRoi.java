@@ -10,7 +10,7 @@ import ijx.gui.IjxToolbar;
 
 import ijx.plugin.filter.Analyzer;
 import ijx.plugin.frame.Recorder;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 

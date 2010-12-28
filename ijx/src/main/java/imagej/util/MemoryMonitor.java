@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 import ijx.plugin.api.PlugIn;
 import ijx.process.ImageProcessor;
 import ijx.process.ByteProcessor;

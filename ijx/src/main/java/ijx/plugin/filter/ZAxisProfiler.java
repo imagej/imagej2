@@ -10,7 +10,7 @@ import ijx.measure.Calibration;
 import ijx.IJ;
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 import java.awt.Rectangle;

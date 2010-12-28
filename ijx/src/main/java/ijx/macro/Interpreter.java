@@ -12,7 +12,7 @@ import ijx.IJ;
 
 import ijx.plugin.Macro_Runner;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.text.*;
 import ijx.measure.ResultsTable;
 import ijx.IjxImagePlus;

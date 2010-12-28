@@ -1,7 +1,7 @@
 package ijx.implementation.mdi;
 
 import ijx.gui.IjxWindow;
-import ijx.util.GraphicsUtilities;
+import imagej.util.GraphicsUtilities;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;

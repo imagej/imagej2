@@ -23,7 +23,7 @@ import ijx.IJ;
 import ijx.macro.Interpreter;
 import ijx.plugin.filter.GaussianBlur;
 import ijx.plugin.filter.ThresholdToSelection;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxWindow;

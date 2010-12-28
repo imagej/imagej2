@@ -11,7 +11,7 @@ import ijx.plugin.filter.Analyzer;
 import ijx.text.*;
 
 import ijx.roi.Roi;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.io.SaveDialog;
 import ijx.IjxImagePlus;
 import ijx.gui.IjxWindow;

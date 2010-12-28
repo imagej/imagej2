@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 import ijx.plugin.api.PlugIn;
 import ijx.gui.dialog.GenericDialog;
 import ijx.Prefs;
@@ -6,7 +6,6 @@ import ijx.IJ;
 
 
 import java.io.*;
-import ijx.util.Tools;
 
 
 /** This plugin implements the Edit/Options/Memory command. */

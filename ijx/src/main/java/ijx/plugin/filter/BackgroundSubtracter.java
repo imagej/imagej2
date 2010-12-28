@@ -14,7 +14,7 @@ import ijx.IJ;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import java.awt.*;
 

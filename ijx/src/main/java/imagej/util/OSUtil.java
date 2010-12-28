@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;

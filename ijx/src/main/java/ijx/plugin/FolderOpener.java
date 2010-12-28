@@ -310,7 +310,7 @@ public class FolderOpener implements PlugIn {
 			}
 		}
 		if (allSameLength)
-			{ijx.util.StringSorter.sort(list); return list;}
+			{imagej.util.StringSorter.sort(list); return list;}
 		int maxDigits = 15;		
 		String[] list2 = null;	
 		char ch;	
@@ -328,12 +328,12 @@ public class FolderOpener implements PlugIn {
 			list2[i] = num + list[i];
 		}
 		if (list2!=null) {
-			ijx.util.StringSorter.sort(list2);
+			imagej.util.StringSorter.sort(list2);
 			for (int i=0; i<listLength; i++)
 				list2[i] = list2[i].substring(maxDigits);
 			return list2;	
 		} else {
-			ijx.util.StringSorter.sort(list);
+			imagej.util.StringSorter.sort(list);
 			return list;   
 		}	
 	}

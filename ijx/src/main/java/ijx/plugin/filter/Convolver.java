@@ -18,7 +18,7 @@ import ijx.IJ;
 
 import ijx.plugin.readwrite.TextReader;
 import ijx.plugin.frame.Recorder;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import java.awt.*;
 import java.awt.event.*;

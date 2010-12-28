@@ -8,7 +8,7 @@ import ijx.gui.Plot;
 import ijx.gui.PlotWindow;
 import ijx.gui.dialog.GenericDialog;
 import ijx.measure.CurveFitter;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.io.OpenDialog;
 import ijx.WindowManager;
 import ijx.IJ;

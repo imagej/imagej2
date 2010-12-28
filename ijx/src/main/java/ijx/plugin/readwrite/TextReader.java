@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 
 
 /** This plugin opens a tab or comma delimeted text file as an image.

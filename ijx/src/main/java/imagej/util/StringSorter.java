@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 
 /** A simple QuickSort for String arrays. */
 public class StringSorter {

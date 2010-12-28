@@ -5,7 +5,7 @@ import ijx.roi.Line;
 import ijx.roi.PolygonRoi;
 import ijx.roi.Roi;
 import ijx.measure.Calibration;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.Prefs;
 import ijx.IJ;
 import java.awt.*;

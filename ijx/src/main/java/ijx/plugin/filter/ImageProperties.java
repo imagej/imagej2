@@ -8,7 +8,7 @@ import ijx.IJ;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.io.FileOpener;
 import java.awt.*;
 import java.awt.event.*;

@@ -3,7 +3,7 @@ package ijx.gui;
 import ijx.process.ImageProcessor;
 import ijx.process.ColorProcessor;
 import ijx.process.ByteProcessor;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.Prefs;
 import ijx.IJ;
 import java.awt.*;

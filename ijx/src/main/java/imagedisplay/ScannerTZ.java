@@ -142,7 +142,8 @@ public class ScannerTZ extends JPanel {
         String FILE = //edu.mbl.jif.Constants.testDataPath +
                 //"Series_TZ\\" +
                 //"STMPS_Yuki_TZ_04_0428_1427_41_Z-5.tif";
-        "xyzt-200x200x10x15.tif";
+        //"Zxyzt-200x200x10x15.tif";
+        "Z5_T10.tif";
         int zSections = 5;
         
         // xyzt-200x200x10x15_b causes TIFFImageReader.getCompression NullPointer
@@ -150,7 +151,7 @@ public class ScannerTZ extends JPanel {
         JFrame frame = new JFrame("ScannerTZ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        series = new SeriesOfImages(FILE, zSections);
+        series = new SeriesOfImagesTiff(FILE, zSections);
         
         frame.setContentPane(new ScannerTZ(series));
         frame.setSize(200, 200);

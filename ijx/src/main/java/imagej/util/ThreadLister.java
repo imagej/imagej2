@@ -1,4 +1,4 @@
-package ijx.util;
+package imagej.util;
 import ijx.plugin.api.PlugIn;
 import ijx.IJ;
 import java.io.*;

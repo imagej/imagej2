@@ -13,7 +13,7 @@ import java.awt.event.*;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;
 import ijx.app.KeyboardHandler;

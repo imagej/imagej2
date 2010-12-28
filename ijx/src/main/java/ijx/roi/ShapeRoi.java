@@ -13,7 +13,7 @@ import ijx.gui.IjxToolbar;
 
 import ijx.plugin.frame.Recorder;
 import ijx.plugin.filter.Analyzer;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.CentralLookup;
 
 /**A subclass of <code>ij.gui.Roi</code> (2D Regions Of Interest) implemented in terms of java.awt.Shape.

@@ -15,7 +15,7 @@ import ijx.IJ;
 
 
 
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.measure.Measurements;
 import ijx.CentralLookup;
 import ijx.IjxImagePlus;

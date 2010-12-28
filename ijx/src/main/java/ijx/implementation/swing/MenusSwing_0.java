@@ -1,7 +1,7 @@
 package ijx.implementation.swing;
 
 import ijx.process.ImageProcessor;
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import ijx.Prefs;
 import ijx.WindowManager;
 import ijx.IJ;

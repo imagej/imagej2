@@ -7,7 +7,7 @@ import ijx.gui.dialog.GenericDialog;
 import ijx.measure.Calibration;
 import ijx.measure.CurveFitter;
 import ijx.measure.Measurements;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.io.OpenDialog;
 import ijx.io.SaveDialog;
 import ijx.io.FileOpener;

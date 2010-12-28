@@ -41,7 +41,7 @@ import ijx.measure.Measurements;
 import ijx.measure.Calibration;
 import ijx.measure.CurveFitter;
 import ijx.measure.ResultsTable;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.io.FileSaver;
 import ijx.io.OpenDialog;
 import ijx.io.Opener;
@@ -64,7 +64,7 @@ import ijx.gui.IjxImageCanvas;
 import ijx.gui.IjxImageWindow;
 import ijx.gui.IjxProgressBar;
 import ijx.gui.IjxWindow;
-import ijx.util.StringSorter;
+import imagej.util.StringSorter;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
@@ -1819,7 +1819,7 @@ public class Functions implements MacroConstants, Measurements {
             return new Variable[0];
         }
         if (System.getProperty("os.name").indexOf("Linux") != -1) {
-            ijx.util.StringSorter.sort(list);
+            imagej.util.StringSorter.sort(list);
         }
         File f2;
         int hidden = 0;

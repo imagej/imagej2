@@ -17,7 +17,7 @@ import ijx.CompositeImage;
 import ijx.plugin.readwrite.DICOM;
 import ijx.plugin.readwrite.AVI_Reader;
 import ijx.text.TextWindow;
-import ijx.util.Java2;
+import imagej.util.Java2;
 import ijx.measure.ResultsTable;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;

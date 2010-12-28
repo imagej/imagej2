@@ -34,7 +34,7 @@ import java.util.Properties;
 import ijx.text.*;
 import ijx.roi.RoiManager;
 import ijx.macro.Interpreter;
-import ijx.util.Tools;
+import imagej.util.Tools;
 import ijx.IjxImagePlus;
 import ijx.IjxImageStack;
 import ijx.SavesPrefs;
