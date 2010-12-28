@@ -87,7 +87,7 @@ _f=_f.replace(/\//g,".");
 if(!_f.match(/^ajax/)){
 _f="ajax."+_f;
 }
-_f="/pipes/"+_f;
+_f="/web/"+_f;
 if(_13=="GET"){
 url=_f+"?"+buildURL(_10,_14);
 _16=null;
@@ -402,7 +402,9 @@ this.min_mw=8;
 this.base_mh=60;
 this.base_mw=120;
 this.border=4;
-document.getElementById(_4d).appendChild(cv);
+//do not want to append to a null
+if(getElementById(_4d)!=null)
+	document.getElementById(_4d).appendChild(cv);
 if(typeof (G_vmlCanvasManager)!="undefined"){
 this.isie=true;
 G_vmlCanvasManager.initElement(cv);
@@ -705,7 +707,7 @@ this.oncancel.fire();
 YAHOO.pipes.site.InlinePermalinkEdit=function(_9c,_9d,_9e,_9f){
 if(!_9d||_9d.length==0){
 if(confirm("You must first personalize *your* own pipe web address from your pipe page.\r\n\r\nDo you want to do that now?")){
-window.location.href="/pipes/person.info?editwebaddress=1";
+window.location.href="/web/person.info?editwebaddress=1";
 }
 return;
 }
@@ -742,7 +744,7 @@ this.init();
 };
 YAHOO.pipes.site.InlineTagEdit.prototype.enhanceLi=function(li){
 var _a7=document.createElement("img");
-_a7.setAttribute("src","http://l.yimg.com/a/i/space.gif");
+_a7.setAttribute("src","space.gif");
 YAHOO.util.Dom.addClass(_a7,"tagremove");
 YAHOO.util.Event.addListener(_a7,"click",this.removeTag,this,true);
 li.appendChild(_a7);
@@ -753,7 +755,7 @@ var lis=this.list.getElementsByTagName("DIV");
 for(var i=0;i<lis.length;i++){
 this.enhanceLi(lis[i]);
 }
-var _aa="<input size='"+(this.emptytext.length)+"'class='taginput' type='text' value='"+this.emptytext+"' /><img class='tagadd' src='http://l.yimg.com/a/i/space.gif'  />";
+var _aa="<input size='"+(this.emptytext.length)+"'class='taginput' type='text' value='"+this.emptytext+"' /><img class='tagadd' src='space.gif'  />";
 this.node=document.createElement("div");
 this.node.className="show inlinetag";
 this.node.setAttribute("class","show inlinetag");

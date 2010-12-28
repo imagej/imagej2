@@ -16,10 +16,10 @@ import controller.PipesController;
 /**
  * ajax.user.updatewebpath takes four inputs through the post; path, _rnd, .crumb, and _out
  * and returns a string message such as {"ok":0,"message":"Update failed: 'httppipesyahoocompipespersoninfo' is not allowed"} for failure
- * or {"ok":1,"data":"http:\/\/pipes.yahoo.com\/pipes\/person.info?guid=KLJRE3343"} for success
+ * or {"ok":1,"data":"http:\/\/localhost\/web\/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE"} for success
  * 
  * An example of a successful post is: 
-path:/pipes/person.info
+path:/web/person.info
 _rnd:5021
 .crumb:9Dxl9FJn/wN
 _out:json

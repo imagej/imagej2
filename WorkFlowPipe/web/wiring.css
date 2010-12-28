@@ -98,7 +98,7 @@ canvas {
     background-color: transparent;
     background-position: 50% 50%;
     background-repeat: no-repeat;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_nrm_2ecececa4a4a4_2.png");
+	background-image: url("c_lg_nrm_2ecececa4a4a4_2.png");
 }
 
 .terminalrender.target {
@@ -106,13 +106,13 @@ canvas {
 	margin-bottom:-12px;
 	width:24px;
 	height:24px;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_ava_2ecececa4a4a4_1.png");
+	background-image: url("c_lg_ava_2ecececa4a4a4_1.png");
 }
 .terminalrender.target.over {
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_hvr_2ecececa4a4a4_1.png");
+	background-image: url("c_lg_hvr_2ecececa4a4a4_1.png");
 }
 .terminalrender.connected {
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_fil_2ecececa4a4a4_1.png");
+	background-image: url("c_lg_fil_2ecececa4a4a4_1.png");
 }
 
 .inside .terminalrender {
@@ -121,7 +121,7 @@ canvas {
 /*	left:50%;;
 	height:100%;*/
 	margin:0;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_sm_nrm_2ecececa4a4a4_1.png");
+	background-image: url("c_sm_nrm_2ecececa4a4a4_1.png");
 }
 
 .inside .terminalrender.connected {
@@ -130,32 +130,32 @@ canvas {
 	/*left:50%;;
 	height:100%;*/
 	margin:0;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_sm_fil_2ecececa4a4a4_1.png");
+	background-image: url("c_sm_fil_2ecececa4a4a4_1.png");
 }
 
 .inside .terminalrender.target {
 	width:20px;
 	height:20px;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_sm_ava_2ecececa4a4a4_1.png");
+	background-image: url("c_sm_ava_2ecececa4a4a4_1.png");
 }
 .inside .terminalrender.target.over {
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_sm_hvr_2ecececa4a4a4_1.png");
+	background-image: url("c_sm_hvr_2ecececa4a4a4_1.png");
 }
 
 
 .items {
-	background: transparent url("http://l.yimg.com/a/i/us/pps/e/c_lg_nrm_263e4ff25a3fc_1.png") no-repeat;
+	background: transparent url("c_lg_nrm_263e4ff25a3fc_1.png") no-repeat;
 }
 .items.connected {
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_fil_263e4ff25a3fc_1.png");
+	background-image: url("c_lg_fil_263e4ff25a3fc_1.png");
 }
 .items.target {
 	width:30px;
 	height:30px;
 	margin:-15px;
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_ava_263e4ff25a3fc_1.png");
+	background-image: url("c_lg_ava_263e4ff25a3fc_1.png");
 }
 .items.target.over {
-	background-image: url("http://l.yimg.com/a/i/us/pps/e/c_lg_hvr_263e4ff25a3fc_1.png");
+	background-image: url("c_lg_hvr_263e4ff25a3fc_1.png");
 }
 
