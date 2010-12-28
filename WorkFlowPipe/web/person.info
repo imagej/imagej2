@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    
+    <link rel="stylesheet" type="text/css" href="reset-fonts-grids.css"/>
+    <link rel="stylesheet" type="text/css" href="pipes_1.3.css"/>
+    <!--[if IE]><style>.subactions { padding-right:8px;} .subactions.active padding-right:10px;} .subactions img { vertical-align:middle;  } #pipepreview h2 { border-top:2px solid #e4e4e4; }</style><![endif]-->
+    <script>var crumb = '9FJn/wN9Dxl';
+    </script><script type='text/javascript' src='utilities.js'></script>
+    <script>var propName =  'pipes'; var propCode = 'pipes'; var crumb = '9FJn/wN9Dxl';
+    </script><script type='text/javascript' src='widgetLoader.js'></script>
+    <script type='text/javascript' src='site_c_1.1.js'></script>    <title>Pipes from User</title>
+    <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+<script type='text/javascript' src='connection-min.js'></script><link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="person.info?_out=rss&amp;display=pipes&amp;guid=SEW2J7WHQTWXX464XNNHQCOAQE"/>
+</head>
+
+<body>
+<div id="doc" class="yui-t2">
+    <div id="hd">
+        <div id="login">You're logged in as <a href="/web/eval_profile?.done=http%3A%2F%2Flocalhost%2Fweb%2Fperson.info%3Fdisplay%3Dpipes%26guid%3DSEW2J7WHQTWXX464XNNHQCOAQE&.intl=us&.pd=c%3DdTYCKFOp2e5m7Y4v1lJ1mBU-&.src=pipes">imagejuser</a> (<a href="https://login.yahoo.com/config/login?.done=http%3A%2F%2Flocalhost%2Fweb%2Fperson.info%3Fdisplay%3Dpipes%26guid%3DSEW2J7WHQTWXX464XNNHQCOAQE&.intl=us&.pd=c%3DdTYCKFOp2e5m7Y4v1lJ1mBU-&.src=pipes&logout=1">logout</a>)</div>
+            
+         <div class="nav">
+            <ul id="topnav">
+                <li><a class="navlink" href=".">Home</a></li>
+                <li><a class="navlink" href="/web/person.info">My Pipes</a></li>
+                <li><a class="navlink" href="/web/pipes.popular">Browse</a></li>
+                <li><a class="navlink" href="/web/docs">Documentation</a></li>
+                <li class="newpipeli"><a class="navlink newpipe" href="/web/pipe.edit">Create a pipe</a></li>
+            </ul>
+            <form id="searchbox" action="/web/search" method="get">
+                 <input type="text" name="q" value="" />
+                 <input type="image" class="searchimg" src="spacer.gif" width="20" height="19" alt="submit" />
+            </form>
+        </div>
+    </div>
+
+    <div id="bd">
+                <div id="yui-main">         
+            <div class="yui-b first left browse">
+            
+                <div class="entry personentry banner ">
+        <div class="mod">
+            <div class='hd'>
+                <h4 class='permalink'>Pipes Web Address: <span id="permalink">http:// localhost/web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE</span>
+																					// (<a
+																					// id='permaedit'
+																					// onclick='return
+																					// false;'>edit</a>)</h4>
+            </div>
+            <div class="bd">
+            </div>
+            <div class="ft">
+            </div>
+        </div>
+        <script>function editWebAddress() {  
+         var ipe = new YAHOO.pipes.site.InlinePermalinkEdit(document.getElementById("permalink"),"http://localhost/","web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE"); 
+          ipe.onchange.subscribe(function(type,args) {     YAHOO.pipes.site.ajax.Setuserwebpath(ipe.node,args[1],args[0],args[3]);   });};
+          YAHOO.util.Event.addListener('permaedit','click',function() { editWebAddress(); });
+           </script>
+     </div>    <div id="rendercontainer">
+    <ul id="rendertabs" class="rendertabs widetabs">
+    <li onclick="window.location='/web/person.info?display=pipes&guid=SEW2J7WHQTWXX464XNNHQCOAQE'" class="rendertab widetab active"><span>Pipes</span></li>
+    <li onclick="window.location='/web/person.info?display=favorites&guid=SEW2J7WHQTWXX464XNNHQCOAQE'" class="rendertab widetab "><span>Favorites</span></li>
+    <li class="rssfeed" style="position:absolute;"><a href='/web/person.info?_out=rss&display=pipes&guid=SEW2J7WHQTWXX464XNNHQCOAQE' title='rss feed'><img src="http://l.yimg.com/a/i/us/pps/rss.png"></a></li>
+    <li class="rssfeed" style="right:25px;position:absolute;"><a href='/web/person.info?_out=json&display=pipes&guid=SEW2J7WHQTWXX464XNNHQCOAQE' title='json feed'><img src="http://l.yimg.com/a/i/us/pps/json.png"></a></li>
+        
+   </ul>
+    <div id="results">
+    <div style="display:block" class="tabcontent active">
+    <ul class='pipelist'><li class='pipelistli'><div class='pipelistli_hd'></div><div class='pipelistli_bd'>    <div class="entry pipeentry ">
+    <a id="thumbSEW2J7WHQTWXX464XNNHQCOAQE" class="thumbimg" href="/web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE"><img id="photo" class="idicon" alt="a contributor" width="48" height="48" src="http://l.yimg.com/a/i/identity/profile_48a.png"/></a>
+    <div class="mod" style="margin-left:62px">
+        <div class='hd'>                
+            <h3 id="nameSEW2J7WHQTWXX464XNNHQCOAQE" class="title"><a id='namePSEW2J7WHQTWXX464XNNHQCOAQE' href='/web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE' class='personlink'>a contributor</a></h3>
+            <div id="ulocation"> (<a href="http://profiles.yahoo.com/u/SEW2J7WHQTWXX464XNNHQCOAQE">profile</a>)</div>
+            <label style="margin-top:5px">Edit: <a class="ypf-photo-picker" href="#">Picture</a> | <a class="nicknamePicker" href="javascript:return false;">Name</a></label>
+        </div>
+            <div class="bd">
+                <div id = "desc8421a0e8538c93033001392a21d9ae072069443023" class="desc">this is my featured text</div>
+            </div>
+            <div class="ft">
+                 
+                 <ul class='taglist'><li class='first' >Sources:</li><li class="tag"><a href='/web/search?r=source%3Agoogle.com' >google.com</a></li></ul><br/>
+                 
+                <ul class="taglist"><li><span class="number">1</span> clones</li></ul>
+            </div>
+           <script>
+                YAHOO.util.Event.addListener(window,"load",function()  {
+                    var c = new YAHOO.pipes.site.thumb("thumb0da5196dd5afd21785c9f572fc73510b336313124",48,48);
+                    c.generate({"layout":[{"id":"sw-59","xy":[331,103]},{"id":"_OUTPUT","xy":[620,230]}],"modules":[{"type":"gbase","id":"sw-59","conf":{"type":{"type":"text"},"query":{"type":"text"},"radius":{"type":"text"},"location":{"type":"location"}}},{"type":"output","id":"_OUTPUT","conf":[]}],"terminaldata":[{"id":"_OUTPUT","moduleid":"sw-59","data":{"_type":"item","_attr":{"g:area":{"_type":"text","_count":"8"},"g:customer_id":{"_type":"number","_count":"9"},"g:price":{"_type":"number","_count":"9"},"g:listing_type":{"_type":"text","_count":"9"},"author":{"_type":"text","_count":"9"},"g:target_country":{"_type":"text","_count":"9"},"g:broker":{"_type":"text","_count":"9"},"g:listing_status":{"_type":"text","_count":"9"},"g:item_type":{"_type":"text","_count":"9"},"guid":{"_type":"","_attr":{"isPermaLink":{"_type":"text","_count":"9"},"content":{"_type":"url","_count":"9"}}},"atom:updated":{"_type":"datetime","_count":"9"},"category":{"_type":"","_attr":{"domain":{"_type":"url","_count":"9"},"content":{"_type":"text","_count":"9"}}},"g:bathrooms":{"_type":"number","_count":"9"},"g:location":{"_type":"location","_attr":{"country":{"_type":"text","_count":"9"},"city":{"_type":"text","_count":"9"},"street":{"_type":"blank"},"lat":{"_type":"number","_count":"9"},"postal":{"_type":"number","_count":"9"},"lon":{"_type":"number","_count":"9"},"quality":{"_type":"number","_count":"9"},"state":{"_type":"text","_count":"9"}}},"link":{"_type":"url","_count":"9"},"g:school_district":{"_type":"text","_count":"2"},"g:id":{"_type":"number","_count":"9"},"g:image_link":{"_type":"url","_count":"9"},"description":{"_type":"text","_count":"9"},"g:item_language":{"_type":"text","_count":"9"},"g:expiration_date":{"_type":"datetime","_attr":{"hour":{"_type":"number","_count":"9"},"timezone":{"_type":"text","_count":"9"},"second":{"_type":"number","_count":"9"},"month":{"_type":"number","_count":"9"},"minute":{"_type":"number","_count":"9"},"utime":{"_type":"number","_count":"9"},"day_of_week":{"_type":"number","_count":"9"},"day":{"_type":"number","_count":"9"},"year":{"_type":"number","_count":"9"}}},"title":{"_type":"text","_count":"9"},"g:bedrooms":{"_type":"number","_count":"9"},"pubDate":{"_type":"datetime","_count":"9"},"g:property_type":{"_type":"text","_count":"9"}}}}],"wires":[{"id":"_w1","src":{"id":"_OUTPUT","moduleid":"sw-59"},"tgt":{"id":"_INPUT","moduleid":"_OUTPUT"}}]});
+                    var fa = document.getElementById('all0da5196dd5afd21785c9f572fc73510b336313124');var fb = document.getElementById('fav0da5196dd5afd21785c9f572fc73510b336313124');YAHOO.util.Event.addListener(fb,'click',function(e) { if (YAHOO.util.Dom.hasClass(fb,'favoriteoff')) { YAHOO.pipes.site.ajax.Addfav(fa,fb,'0da5196dd5afd21785c9f572fc73510b'); } else { YAHOO.pipes.site.ajax.Removefav(fa,fb,'0da5196dd5afd21785c9f572fc73510b'); };});
+                });
+          </script>
+        </div>
+    </div></div><div class='pipelistli_ft'></div></li></ul><div class="paginate"></div>    </div>
+    </div>
+    </div>
+            
+            </div><!-- /.yui-b> -->
+        </div><!-- /#yui-main -->
+        <div class="yui-b"><div class="yui-b right">    <div class="entry personentry sidebar">
+        <script>
+                        /* function listening for Nickname Picker custom events */
+            function handleNameChange(type, args, callbackData){
+                 if(type == "NicknameChangeSuccess") {
+                     document.getElementById("namePSEW2J7WHQTWXX464XNNHQCOAQE").innerHTML = args[0]; 
+                 }
+            };          
+            function handlePhotoChange(type, args, callbackData){
+                 if(type == "PhotoChangeSuccess") {
+                     document.getElementById("photo").src = args[0].imgUrl; 
+                 } 
+                 else if (type == "PhotoChangeFailure") {
+                     alert("photo change failed!");
+                 }
+            };
+            
+            /* Initialize Nickname Picker */
+            YAHOO.util.Event.addListener(window,"load",function() {
+                new YOSWIDGETS.Profiles.WidgetLoader().load("nicknamePicker", {
+                    zIndex : "1000",
+                    namePickerClass : "nicknamePicker",   // change name link
+															// class name
+                    proxyUrl : "/yos_fe_proxy/proxy.html",
+                    pickerCrumb : "VduGOpTrucc", 
+                    // callback functions subscribing to custom events
+                    nicknameChangeSuccess  : { 
+                       fn : handleNameChange, 
+                       data : {a : "input parameter"} 
+                    },
+                    nicknameChangeFailure  : { 
+                       fn : handleNameChange, 
+                       data : {a : "input parameter"} 
+                    }         
+                });
+                
+                new YOSWIDGETS.Profiles.WidgetLoader().load("photoPicker", {
+                    tnSize : "tn48",
+                    avSize : "medium",
+                    changePhotoLink : "ypf-photo-picker",   // change photo link
+															// class name
+                    proxyUrl : "/yos_fe_proxy/proxy.html", 
+                    pickerCrumb : "VduGOpTrucc",
+                    // callback functions subscribing to custom events
+                    photoChangeSuccess  : { 
+                       fn : handlePhotoChange, 
+                       data : {a : "input parameter"} 
+                    },
+                    photoChangeFailure  : { 
+                       fn : handlePhotoChange, 
+                       data : {a : "input parameter"} 
+                    }             
+                });                
+            });     ;
+        </script>
+        <a id="thumbSEW2J7WHQTWXX464XNNHQCOAQE" class="thumbimg" href="/web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE"><img id="photo" class="idicon" alt="Imagej User" width="48" height="48" src="http://l.yimg.com/a/i/identity/profile_48a.png"/></a>
+        <div class="mod" style="margin-left:62px">
+            <div class='hd'>                
+                <h3 id="nameSEW2J7WHQTWXX464XNNHQCOAQE" class="title"><a id='namePSEW2J7WHQTWXX464XNNHQCOAQE' href='/web/person.info?guid=SEW2J7WHQTWXX464XNNHQCOAQE' class='personlink'>ImageJ User</a></h3>
+                <div id="ulocation"> (<a href="http://profiles.yahoo.com/u/SEW2J7WHQTWXX464XNNHQCOAQE">profile</a>)</div>
+                <label style="margin-top:5px">Edit: <a class="ypf-photo-picker" href="#">Picture</a> | <a class="nicknamePicker" href="javascript:return false;">Name</a></label>
+            </div>
+            <div class="bd">
+                        
+            </div>           
+            <div class="ft"></div>
+        </div>
+     </div></div></div>    </div>
+</div><!--/#doc -->
+
+</body>
+</html>
+

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    
+    <link rel="stylesheet" type="text/css" href="reset-fonts-grids.css"/>
+    <link rel="stylesheet" type="text/css" href="pipes_1.3.css"/>
+    <!--[if IE]><style>.subactions { padding-right:8px;} .subactions.active padding-right:10px;} .subactions img { vertical-align:middle;  } #pipepreview h2 { border-top:2px solid #e4e4e4; }</style><![endif]-->   
+       <title>Pipes - Documentation</title>
+    <style>
+    .libpane .libpaneimg  {
+            float:left;
+            padding:4px 10px 10px 2px;
+            width:102px;
+            height:96px;
+    }
+
+    .libpane .libpaneimg {    
+            float: left;    
+    }
+
+    .libpane {
+            display:block;
+            zoom:1;
+            position:relative;
+    }
+
+    .libpanemain {
+            margin-left:116px;
+            display:block;
+            position:relative;
+            line-height:1em;
+    }
+
+    .libpaneblocklink  {
+            display:block;
+            position:relative;
+    }
+    </style>
+
+  
+</head>
+
+<body>
+<div id="doc" class="">
+    <div id="hd">
+        <div id="login">You're logged in as <a href="/eval_profile?.done=http%3A%2F%2Fpipes.yahoo.com%2Fpipes%2Fdocs&.intl=us&.pd=c%3DdTYU-&.src=pipes">user.id</a> (<a href="/login?.done=http%3A%2F%2Flocalhost%2Fweb%2Fdocs&.intl=us&.pd=c%3DdTYCKFOp2e5m7Y4v1lJ1mBU-&.src=pipes&logout=1">logout</a>)</div>
+            <a class="logo" href="."><img src="http://l.yimg.com/a/i/us/pps/pipeslogo_whitebg.gif" width="119" height="45" alt="Pipes" title="Pipes"/></a>
+         <div class="nav">
+            <ul id="topnav">
+                <li><a class="navlink" href=".">Home</a></li>
+                <li><a class="navlink" href="/web/person.info">My Pipes</a></li>
+                <li><a class="navlink" href="/web/pipes.popular">Browse</a></li>
+                <li><a class="navlink" href="/web/docs">Documentation</a></li>
+                <li class="newpipeli"><a class="navlink newpipe" href="/web/pipe.edit">Create a pipe</a></li>
+            </ul>
+            <form id="searchbox" action="/web/search" method="get">
+                 <input type="text" name="q" value="" />
+                 <input type="image" class="searchimg" src="spacer.gif" width="20" height="19" alt="submit" />
+            </form>
+        </div>
+    </div>
+
+    <div id="bd">
+                <div id="yui-main">         
+            <div class="yui-b first docs">
+            
+                <h2>What is Pipes?</h2>
+    <p>Pipes is a free online service that lets you remix popular feed types and create data mashups using a visual editor. You can use Pipes to run your own web projects, or publish and share your own web services without ever having to write a line of code.  <a href="/web/docs?doc=overview">Learn more...</a></p>
+
+    <h2>How do I use Pipes?</h2>
+
+    <div class='libpane'>
+       <div class='libpaneimg'>
+            <img src="http://l.yimg.com/a/i/us/pps/editor.01.jpg" />
+         </div>
+         <div class='libpanemain'>
+        <p>Learn more <a href="/web/docs?doc=editor">about the Pipes Editor</a>.
+
+            <p>Browse through our <a href="/web/docs?doc=modules">complete list of Modules</a> to see what you can do with Pipes.</p>
+
+        <p><a href="/web/docs?doc=tutorials">Use these online tutorials</a> to learn how to get the most out of Pipes.</p>
+           </div>
+    </div>
+
+<div style="clear:both">
+    
+    <h2>Troubleshooting</h2>
+    <p>Check our <a href="/web/docs?doc=troubleshooting">troubleshooting guide</a> if you're having problems.</p>
+
+    <h2>Wanna talk about Pipes?</h2>
+    <p>We want to hear from you.  Please <a href="http://suggestions.yahoo.com/?prop=Pipes">share your feedback and suggestions</a> with the Pipes team so that we can respond to you!</p>
+    <p>You can also <a href="http://discuss.pipes.yahoo.com/yahoo/Message_Boards_for_Pipes/">discuss Pipes with other users</a> on our message boards.</p>
+</div>
+            
+            </div><!-- /.yui-b> -->
+        </div><!-- /#yui-main -->
+            </div>
+    <div id="ft">
+              | <a href="/?prop=Pipes">Feedback</a>
+    </div><!--/#ft -->
+</div><!--/#doc -->
+
+</body>
+</html>
