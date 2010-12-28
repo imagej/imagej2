@@ -19,8 +19,7 @@ import servlet.AjaxPipeCloneServletProvider;
 import servlet.AjaxPipePreviewServletProvider;
 import servlet.AjaxPipeSaveServletProvider;
 import servlet.AjaxUserUpdatewebpathServletProvider;
-import servlet.OpenIDAuthenticationServlet;
-import servlet.PersonInfoServletProvider;
+import servlet.OpenIDServlet;
 import servlet.PipeDeleteServletProvider;
 
 
@@ -70,7 +69,8 @@ public class Open {
 		ArrayList<Module> pipesSampleCollection = ModuleGenerator.getPipeModuleSampleCollection();
 		
 		//add the OpenID authentication servlet 
-		jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
+		//jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
+		jettyServerController.addServlet("/login.required", new OpenIDServlet() );
 		
 		//add the list servlet
 		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider( pipesSampleCollection ) );
