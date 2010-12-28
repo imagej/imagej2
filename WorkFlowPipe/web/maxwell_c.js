@@ -3193,7 +3193,7 @@ maxwell.PipesEditor = function(tabs, _294) {
 };
 maxwell.PipesEditor.SetRunPipeStatus = function(txt) {
 	var pid = maxwell.PipesEditor.CurrentEditor().pipe.id;
-	var _2ae = "/pipes/pipe.info?_id=" + pid;
+	var _2ae = "pipe.info?_id=" + pid;
 	var _2af = "_run" + pid;
 	var a = "<a class='runpipe' target='+runid+' href='" + _2ae
 			+ "'>Run Pipe...</a>";
@@ -6158,7 +6158,7 @@ maxwell.HtmlPlus.InputType.url = function(_4d6, _4d7) {
 		className : "favico",
 		width : "16px",
 		height : "16px",
-		src : "http://l.yimg.com/a/i/tb/iconsgif/blank.gif"
+		src : "blank.gif"
 	});
 	maxwell.HtmlPlus.Util.manageInput(_4d6, "url");
 	YAHOO.util.Event
@@ -6198,15 +6198,14 @@ maxwell.HtmlPlus.InputType.url.prototype.change = function(url) {
 		});
 	} else {
 		sn(this.icon, {
-			src : "http://l.yimg.com/a/i/tb/iconsgif/blank.gif"
+			src : "blank.gif"
 		});
 	}
 };
 maxwell.HtmlPlus.InputType.url.prototype.badurl = function(_4de) {
 	this.input.setAttribute("title", "Unable to resolve URL " + _4de);
 	this.icon
-			.setAttribute("src",
-					"http://l.yimg.com/a/i/us/fi/yfc/images/error_images/warning_1.1.gif");
+			.setAttribute("src","warning_1.1.gif");
 };
 maxwell.HtmlPlus.InputType.url.prototype.goodurl = function(data) {
 	this.icon.setAttribute("src", data.result.favicon);
@@ -7079,7 +7078,7 @@ maxwell.PropertiesDialog = function(_5b2) {
 	_5b4 += "<tr class='pipetags'><td></td></tr>";
 	if (_5b2.pipe.id) {
 		var pid = _5b2.pipe.id;
-		var _5b6 = "/pipes/pipe.info?_id=" + pid;
+		var _5b6 = "pipe.info?_id=" + pid;
 		var _5b7 = "_run" + pid;
 		var a = "<a class='runpipe' target='+runid+' href='" + _5b6
 				+ "'>Run Pipe...</a>";
@@ -8342,7 +8341,7 @@ $extend(maxwell.LargeTooltip, maxwell.SimpleTooltip);
 maxwell.LargeTooltip.prototype.createNode = function(xy) {
 	var l = xy[0] + this.xdelta;
 	var t = xy[1] + this.ydelta;
-	this.tip = "/pipes/docs/module.php?type=" + this.tip;
+	this.tip = "/web/docs/module.php?type=" + this.tip;
 	var node = cn(
 			"div",
 			{
@@ -8928,7 +8927,7 @@ maxwell.Toolbar = function() {
 	}
 	var bb = cn("li", {
 		className : "goback"
-	}, null, "<a href=\"" + profileurl + "\">Back to My Pipes</a>");
+	}, null, "<a href=\"" + profileurl + "\">Back to My Workflows</a>");
 	var sa = maxwell.Toolbar.createBigButton("Save");
 	var pu = maxwell.Toolbar.createBigButton("Properties&hellip;");
 	var cl = maxwell.Toolbar.createBigButton("Save a copy");

@@ -12,7 +12,7 @@
 	padding-top:8px;
 	padding-left:8px;
 	padding-right:8px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_t_1.png);
+	background-image: url(dlg_t_1.png);
 	background-repeat: no-repeat;
 }
 
@@ -23,7 +23,7 @@
 	padding-left:8px;
 	padding-right:8px;
 	padding-bottom:8px;
-	background-image:url(http://l.yimg.com/a/i/us/pps/e/dlg_bg_1.png);
+	background-image:url(dlg_bg_1.png);
 	background-repeat: repeat-y;
 }
 
@@ -31,7 +31,7 @@
 	display:block;
 	position:relative;
 	width:100%;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_b_1.png);
+	background-image: url(dlg_b_1.png);
 	background-repeat: no-repeat;
 	background-position:bottom left;
 	padding-left:8px;
@@ -70,14 +70,14 @@
 	line-height:22px;
 	color:#404040;
 	padding-top:0px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_lg_t_1.png);
+	background-image: url(dlg_lg_t_1.png);
 }
 .dialogdraggable .dialogbody {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_lg_bg_1.png);
+	background-image: url(dlg_lg_bg_1.png);
 }
 .dialogdraggable .dialogfooter {
 	height:13px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_lg_b_1.png);
+	background-image: url(dlg_lg_b_1.png);
 }
 
 .dialogiframebody {
@@ -87,7 +87,7 @@
 }
 
 .dialogdraggable .dialogheader .closebutton {
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_cls_btn_nrm_2.png) no-repeat;
+	background:transparent url(mod_cls_btn_nrm_2.png) no-repeat;
 	width:14px;
 	height:14px;
 	position:absolute;
@@ -103,15 +103,15 @@
 }
 .statusdialog .dialogheader {
 	height:75px;	
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_sav_t_1.png);
+	background-image: url(dlg_sav_t_1.png);
 }
 .statusdialog .dialogbody {	
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_sav_t_1.png);
+	background-image: url(dlg_sav_t_1.png);
 	background-position:top left;
 }
 .statusdialog .dialogfooter {
 	height:8px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dlg_sav_b_1.png);
+	background-image: url(dlg_sav_b_1.png);
 }
 .dialogwaitmsg  {
 	color:#A4A4A4;
@@ -123,7 +123,7 @@
 	padding-top:8px;
 	position:relative;
 	top:16px;
-	background:transparent url(http://l.yimg.com/a/i/us/pps/logo_ani_1.gif) no-repeat;
+	background:transparent url(logo_ani_1.gif) no-repeat;
 	background-position:0px 0px;
 }
 
@@ -163,7 +163,7 @@ html body {
     left:0px;
     height: auto;
     width: 100%;
-    background: transparent url(http://l.yimg.com/a/i/us/pps/e/grd8_bg_1.gif);
+    background: transparent url(grd8_bg_1.gif);
     background-repeat: repeat; 
     overflow: auto;
     z-index: 0;
@@ -183,7 +183,7 @@ html body {
 	height:27px;
 	padding-left:4px;
 	padding-right:4px;
-	background: white url(http://l.yimg.com/a/i/us/pps/e/tlbr_bg_1.gif);
+	background: white url(tlbr_bg_1.gif);
 	background-repeat: repeat-x;
 	background-position:bottom right;
 }
@@ -233,7 +233,7 @@ html body {
 /* image specific - edit these */
 
 .mod .hd, .mod .bd, .mod .ft, .mod .inner {
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_blu_bg_2.png) no-repeat;
+	background:transparent url(mod_blu_bg_2.png) no-repeat;
 }
 
 .mod .content {padding-right:5px;} /* based on corner radius, account for inner offset */
@@ -264,10 +264,10 @@ div.content {
 /*.hd h1 {margin-right:3.5em;text-align:left;color:black;}*/
 .hd ul {position:absolute;top:3px;right:1px;cursor:pointer;}
 .hd ul li {display:block;float:left;width:12px; height:12px; cursor:pointer;margin-left:2px;}
-.hd .buttons li.help {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_hlp_btn_nrm_2.png) no-repeat;}
-.hd .buttons li.close {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_cls_btn_nrm_2.png) no-repeat;}
-.hd .buttons li.show {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_min_btn_nrm_2.png) no-repeat;}
-.hd .buttons li.hide {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_max_btn_nrm_2.png) no-repeat;}
+.hd .buttons li.help {background:transparent url(mod_hlp_btn_nrm_2.png) no-repeat;}
+.hd .buttons li.close {background:transparent url(mod_cls_btn_nrm_2.png) no-repeat;}
+.hd .buttons li.show {background:transparent url(mod_min_btn_nrm_2.png) no-repeat;}
+.hd .buttons li.hide {background:transparent url(mod_max_btn_nrm_2.png) no-repeat;}
 
 .hd .inner .title {
 	display:block;
@@ -387,7 +387,7 @@ div.content {
 	margin-left:-10px;
 	top:0px;
 	left:50%;
-	background: transparent url("http://l.yimg.com/a/i/us/pps/e/mod_cut_1.png");
+	background: transparent url("mod_cut_1.png");
 }
 .wiretool * {
 	vertical-align:bottom;
@@ -404,7 +404,7 @@ div.content {
 
 /* MODULE INPUT */
 
-.moduleinput .hd, .moduleinput .bd, .moduleinput .ft, .moduleinput .inner {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_inp_bg_1.png) no-repeat;} /* the image */
+.moduleinput .hd, .moduleinput .bd, .moduleinput .ft, .moduleinput .inner {background:transparent url(mod_inp_bg_1.png) no-repeat;} /* the image */
 
 .moduleinput .hd {background-position:right top;}
 .moduleinput .bd {background-position:right center;}
@@ -413,7 +413,7 @@ div.content {
 /* MODULE OUPUT  */
 
 .moduleoutput .hd, .moduleoutput .bd, .moduleoutput .ft, .moduleoutput .inner {
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_inp_bg_1.png) no-repeat;
+	background:transparent url(mod_inp_bg_1.png) no-repeat;
 } /* the image */
 
 .moduleoutput .hd {background-position:right top;}
@@ -426,12 +426,12 @@ div.content {
 .moduleselected {
 	z-index:800;
 }
-.moduleselect .hd, .moduleselect .bd, .moduleselect .ft, .moduleselect .inner {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_org_bg_2.png) no-repeat;} /* the image */
+.moduleselect .hd, .moduleselect .bd, .moduleselect .ft, .moduleselect .inner {background:transparent url(mod_org_bg_2.png) no-repeat;} /* the image */
 .moduleselect .hd {background-position:right top;}
 .moduleselect .bd {background-position:right center;}
 .moduleselect .ft {background-position:right bottom;}
 
-.innermod .moduleselect .hd, .innermod .moduleselect .bd, innermod .moduleselect .ft, .innermod .moduleselect .inner {background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_org_bg_2.png) no-repeat;} /* the image */
+.innermod .moduleselect .hd, .innermod .moduleselect .bd, innermod .moduleselect .ft, .innermod .moduleselect .inner {background:transparent url(mod_org_bg_2.png) no-repeat;} /* the image */
 .innermod .moduleselect .hd {background-position:right top;}
 .innermod .moduleselect .bd {background-position:right center;}
 .innermod .moduleselect .ft {background-position:right bottom;}
@@ -463,11 +463,11 @@ div.content {
 }
 .paramadd {
 	cursor:pointer;
-	background : url(http://l.yimg.com/a/i/us/pps/e/lstadd_btn_nrm_2.png) no-repeat;
+	background : url(lstadd_btn_nrm_2.png) no-repeat;
 	vertical-align:middle;
 }
 .paramadd:hover, .paramadd.hover {
-	background : url(http://l.yimg.com/a/i/us/pps/e/lstadd_btn_hvr_2.png) no-repeat;
+	background : url(lstadd_btn_hvr_2.png) no-repeat;
 }
 .paramdel {
 		m: expression(
@@ -478,10 +478,10 @@ div.content {
 .paramdel {
 	cursor:pointer;
 	vertical-align: middle;
-	background : url(http://l.yimg.com/a/i/us/pps/e/lstdel_btn_nrm_2.png) no-repeat;
+	background : url(lstdel_btn_nrm_2.png) no-repeat;
 }
 .paramdel:hover, .paramdel.hover {
-	background : url(http://l.yimg.com/a/i/us/pps/e/lstdel_btn_hvr_2.png) no-repeat;
+	background : url(lstdel_btn_hvr_2.png) no-repeat;
 }
 
 /* RSS TAB CONTENTS */
@@ -545,7 +545,7 @@ div.content {
 	height:32px;
 	margin-left:-16px;
 	margin-right:-16px;
-	background: transparent url(http://l.yimg.com/a/i/us/pps/logo_ani_1.gif) no-repeat;
+	background: transparent url(logo_ani_1.gif) no-repeat;
 }
 .rsspreview .refresh {
 	text-decoration: underline;
@@ -688,10 +688,10 @@ div.content {
 }
 
 .yahoo-accordion-title-vert.show {
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/nav_aro_r_1.png) no-repeat scroll 4px center;
+	background:transparent url(nav_aro_r_1.png) no-repeat scroll 4px center;
 }
 .yahoo-accordion-title-vert.hide {
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/nav_aro_d_1.png) no-repeat scroll 2px center;
+	background:transparent url(nav_aro_d_1.png) no-repeat scroll 2px center;
 }
 
 .terminallist {
@@ -802,7 +802,7 @@ div.content {
 .innermod .hd, .innermod .bd, .innermod .ft, .innermod .inner {
 	position:relative;
 	display:block;
-	background:transparent url(http://l.yimg.com/a/i/us/pps/e/mod_blu_bg_2.png) no-repeat;
+	background:transparent url(mod_blu_bg_2.png) no-repeat;
 }
 .innermod .inner, .innermod .hd, .innermod .bd, .innermod .ft {position:relative;zoom:1;}
 .innermod .hd {background-position:right top; position:relative;display:block;}
@@ -865,16 +865,16 @@ div.content {
 }
 
 .simpletree li.branch {
-	list-style-image: url("http://l.yimg.com/a/i/us/pps/e/dbg_aro_d_nrm_1.gif");
+	list-style-image: url("dbg_aro_d_nrm_1.gif");
 }
 .simpletree li.branch.closed {
-	list-style-image: url("http://l.yimg.com/a/i/us/pps/e/dbg_aro_r_nrm_1.gif");
+	list-style-image: url("dbg_aro_r_nrm_1.gif");
 }
 .simpletree li.branch:hover {
-	list-style-image: url("http://l.yimg.com/a/i/us/pps/e/dbg_aro_d_hvr_1.gif");
+	list-style-image: url("dbg_aro_d_hvr_1.gif");
 }
 .simpletree li.branch.closed:hover {
-	list-style-image: url("http://l.yimg.com/a/i/us/pps/e/dbg_aro_r_hvr_1.gif");
+	list-style-image: url("dbg_aro_r_hvr_1.gif");
 }
 .simpletree ul {
 	list-style-image: none;
@@ -913,7 +913,7 @@ div.content {
 }
 
 .dropinvitation {
-	background: white url(http://l.yimg.com/a/i/us/pps/e/grd8_bg_1.gif);
+	background: white url(grd8_bg_1.gif);
     background-repeat: repeat; 
 	text-align:center;
 	border:2px solid #a3a3a3;
@@ -972,22 +972,22 @@ div.dropinvitation span {
 	);
 }
 .taglist li:hover img.add, .taglist li.hover img.add {
- 	background: transparent url(http://l.yimg.com/a/i/us/pps/e/lstadd_btn_nrm_1.gif) no-repeat; 
+ 	background: transparent url(lstadd_btn_nrm_1.gif) no-repeat; 
  	background-position:bottom left;
 }
 .taglist li:hover, .taglist li.hover {
 	text-decoration: underline;
 }
 .taglist li:hover img.del, .taglist li.hover img.del {
- 	background: transparent url(http://l.yimg.com/a/i/us/pps/e/lstdel_btn_nrm_1.gif) no-repeat; 
+ 	background: transparent url(lstdel_btn_nrm_1.gif) no-repeat; 
  	 background-position:bottom left;
  }
  .taglist li img.add.hover, .taglist li img.add:hover {
- 	background: transparent url(http://l.yimg.com/a/i/us/pps/e/lstadd_btn_hvr_1.gif) no-repeat; 
+ 	background: transparent url(lstadd_btn_hvr_1.gif) no-repeat; 
  	background-position:bottom left;
 }
 .taglist li img.del.hover, .taglist li img.del:hover {
- 	background: transparent url(http://l.yimg.com/a/i/us/pps/e/lstdel_btn_hvr_1.gif) no-repeat; 
+ 	background: transparent url(lstdel_btn_hvr_1.gif) no-repeat; 
   	background-position:bottom left;
  }
 
@@ -1097,7 +1097,7 @@ div.dropinvitation span {
 	margin-left:-36px;
 	width:73px;
 	height:11px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_bg_1.gif);
+	background-image: url(sli_h_bg_1.gif);
 	cursor: n-resize;
 	cursor: row-resize;
 }*/
@@ -1109,7 +1109,7 @@ div.dropinvitation span {
 	width:100%;
 	top:-5px;
 	height:11px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_bg_1.gif);
+	background-image: url(sli_h_bg_1.gif);
 	background-position: 50% 0px;
 	background-repeat: no-repeat;
 	cursor: n-resize;
@@ -1125,7 +1125,7 @@ div.dropinvitation span {
 	margin-left:-15px;
 	width:30px;
 	height:11px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_sm_bg_1.gif);
+	background-image: url(sli_h_sm_bg_1.gif);
 	background-position: 5px 0px;
 	background-repeat: no-repeat;
 	cursor: n-resize;
@@ -1140,7 +1140,7 @@ div.dropinvitation span {
 	top:-5px;
 	width:100%;
 	height:11px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_sm_bg_1.gif);
+	background-image: url(sli_h_sm_bg_1.gif);
 	background-position: 50% 0px;
 	background-repeat: no-repeat;
 	cursor: n-resize;
@@ -1163,7 +1163,7 @@ div.dropinvitation span {
 	right:-5px;
 	width:11px;
 	height:70px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_v_bg_1.gif);
+	background-image: url(sli_v_bg_1.gif);
 	cursor: e-resize;
 	cursor: col-resize;
 }*/
@@ -1176,7 +1176,7 @@ div.dropinvitation span {
 	right:-5px;
 	width:11px;
 	height:100%;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_v_bg_1.gif);
+	background-image: url(sli_v_bg_1.gif);
 	background-position: 0px 50%;
 	background-repeat: no-repeat;
 	cursor: e-resize;
@@ -1194,13 +1194,13 @@ div.dropinvitation span {
 }
 
 .horizbutton.makemax {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_max_1.png);
+	background-image: url(sli_h_max_1.png);
 	background-position: 2px 3px;
 	background-repeat: no-repeat;
 }
 
 .horizbutton.makemin {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_h_min_1.png);
+	background-image: url(sli_h_min_1.png);
 	background-position: 2px 3px;
 	background-repeat: no-repeat;
 }
@@ -1216,13 +1216,13 @@ div.dropinvitation span {
 }
 
 .vertbutton.makemax {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_v_max_1.png);
+	background-image: url(sli_v_max_1.png);
 	background-position: 2px 2px;
 	background-repeat: no-repeat;
 }
 
 .vertbutton.makemin {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/sli_v_min_1.png);
+	background-image: url(sli_v_min_1.png);
 	background-position: 2px 2px;
 	background-repeat: no-repeat;
 }
@@ -1243,7 +1243,7 @@ div.dropinvitation span {
 .menusmallbutton {
 	display:block;
 	position:relative;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_nrm.gif);
+	background-image: url(tlbr_btn_sm_nrm.gif);
 	background-repeat: no-repeat;
 	background-position: center center;
 	margin-left:4px;
@@ -1258,7 +1258,7 @@ div.dropinvitation span {
 }
 
 .menusmallbuttonleft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_nrm.gif);
+	background-image: url(tlbr_btn_sm_nrm.gif);
 	position:absolute;
 	display:block;
 	left:-4px;
@@ -1268,7 +1268,7 @@ div.dropinvitation span {
 	height:100%;
 }
 .menusmallbuttonright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_nrm.gif);
+	background-image: url(tlbr_btn_sm_nrm.gif);
 	position:absolute;
 	display:block;
 	width:4px;
@@ -1278,19 +1278,19 @@ div.dropinvitation span {
 	height:100%;
 }
 .menusmallbutton:hover {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_hvr.gif);
+	background-image: url(tlbr_btn_sm_hvr.gif);
 }
 .menusmallbutton:hover .menusmallbuttonleft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_hvr.gif);
+	background-image: url(tlbr_btn_sm_hvr.gif);
 }
 .menusmallbutton:hover .menusmallbuttonright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_sm_hvr.gif);
+	background-image: url(tlbr_btn_sm_hvr.gif);
 }
 
 .menubigbutton {
 	display:block;
 	position:relative;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_nrm.gif);
+	background-image: url(tlbr_btn_lg_nrm.gif);
 	background-repeat: no-repeat;
 	background-position: center center;
 	margin-left:4px;
@@ -1305,7 +1305,7 @@ div.dropinvitation span {
 }
 
 .menubigbuttonleft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_nrm.gif);
+	background-image: url(tlbr_btn_lg_nrm.gif);
 	position:absolute;
 	display:block;
 	left:-4px;
@@ -1315,7 +1315,7 @@ div.dropinvitation span {
 	height:100%;
 }
 .menubigbuttonright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_nrm.gif);
+	background-image: url(tlbr_btn_lg_nrm.gif);
 	position:absolute;
 	display:block;
 	width:4px;
@@ -1325,13 +1325,13 @@ div.dropinvitation span {
 	height:100%;
 }
 .menubigbutton:hover {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_hvr.gif);
+	background-image: url(tlbr_btn_lg_hvr.gif);
 }
 .menubigbutton:hover  .menubigbuttonleft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_hvr.gif);
+	background-image: url(tlbr_btn_lg_hvr.gif);
 }
 .menubigbutton:hover .menubigbuttonright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tlbr_btn_lg_hvr.gif);
+	background-image: url(tlbr_btn_lg_hvr.gif);
 }
 
 .disabled .menubigbutton {
@@ -1355,7 +1355,7 @@ div.dropinvitation span {
 .pipetabmain {
 	display:block;
 	position:relative;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_un_bg_1.gif);
+	background-image: url(tab_un_bg_1.gif);
 	background-repeat: repeat-x;
 	background-position: left top;
 	margin-left:8px;
@@ -1364,7 +1364,7 @@ div.dropinvitation span {
 	line-height: 22px;
 }
 .pipetableft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_unun_aro_1.gif);
+	background-image: url(tab_unun_aro_1.gif);
 	position:absolute;
 	display:block;
 	top:0px;
@@ -1383,7 +1383,7 @@ div.dropinvitation span {
 }
 
 .first .pipetabmain {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_un_bg_1.gif);
+	background-image: url(tab_un_bg_1.gif);
 	margin-left:1px;
 	padding-left:8px;
 }
@@ -1395,39 +1395,39 @@ div.dropinvitation span {
 	background-color:rgb(200,200,200);
 }
 .first.only .pipetabmain {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_sel_bg_1.gif);
+	background-image: url(tab_sel_bg_1.gif);
 	margin-right:3px;
 	margin-left:3px;
 	padding-left:16px;
 	padding-right:16px;
 }
 .first.only .pipetabright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_sel_r_1.gif);
+	background-image: url(tab_sel_r_1.gif);
 	width:3px;
 	right:-3px;
 	display:block;
 }
 .first.only .pipetableft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_sel_l_1.gif);
+	background-image: url(tab_sel_l_1.gif);
 	background-color: transparent;
 	width:3px;
 	left:-3px;
 	display:block;
 }
 .last .pipetabmain {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_sel_bg_1.gif);
+	background-image: url(tab_sel_bg_1.gif);
 	margin-right:3px;
 	padding-left:16px;
 	padding-right:16px;
 }
 .last .pipetabright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_sel_r_1.gif);
+	background-image: url(tab_sel_r_1.gif);
 	width:3px;
 	right:-3px;
 	display:block;
 }
 .last .pipetableft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tab_unse_aro_1.gif);
+	background-image: url(tab_unse_aro_1.gif);
 }
 
 .searchholder {
@@ -1454,7 +1454,7 @@ div.dropinvitation span {
 	border-right:0px;
 	border-top: 0px;
 	border-bottom: 0px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/srch_bg_nrm_3.gif);	
+	background-image: url(srch_bg_nrm_3.gif);	
 	background-position: top left;
 	background-repeat:none;
 }
@@ -1465,13 +1465,13 @@ div.dropinvitation span {
 	height:19px;
 	right:0px;
 	top:0px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/srch_bg_nrm_3.gif);	
+	background-image: url(srch_bg_nrm_3.gif);	
 	background-repeat:none;
 	background-position:top right;
 }
 
 .searchbar .search:hover {
-	background-image: url(http://l.yimg.com/a/i/us/pps/srch_bg_hvr_3.gif);
+	background-image: url(srch_bg_hvr_3.gif);
 }
 
 .searchMatches {
@@ -1523,7 +1523,7 @@ div.dropinvitation span {
 .debugtabmain {
 	display:block;
 	position:absolute;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dbg_tab_bg_1.gif);
+	background-image: url(dbg_tab_bg_1.gif);
 	background-repeat: repeat-x;
 	background-position: 0px 0px;
 	margin-left:5px;
@@ -1542,7 +1542,7 @@ div.dropinvitation span {
 }
 
 .debugtableft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dbg_tab_l_1.gif);
+	background-image: url(dbg_tab_l_1.gif);
 	position:absolute;
 	display:block;
 	top:0px;
@@ -1552,7 +1552,7 @@ div.dropinvitation span {
 	height:100%;
 }
 .debugtabright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/dbg_tab_r_1.gif);
+	background-image: url(dbg_tab_r_1.gif);
 	position:absolute;
 	display:block;
 	top:0px;
@@ -1620,14 +1620,14 @@ div.dropinvitation span {
 	line-height: 18px;
 	margin-left:5px;
 	margin-right:19px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/drg_bg_1.gif);
+	background-image: url(drg_bg_1.gif);
 	background-repeat: repeat-x;
 	background-position: 0px 0px;
 	height:100%;
 }
 
 .librarymoduleleft {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/drg_l_1.gif);
+	background-image: url(drg_l_1.gif);
 	position:absolute;
 	display:block;
 	top:0px;
@@ -1638,7 +1638,7 @@ div.dropinvitation span {
 	z-index:2;
 }
 .librarymoduleright {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/drg_r_6.png);
+	background-image: url(drg_r_6.png);
 	position:absolute;
 	display:block;
 	top:0px;
@@ -1650,7 +1650,7 @@ div.dropinvitation span {
 	cursor:pointer;
 }
 .librarymodulefade {
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/drg_crop_1.png);
+	background-image: url(drg_crop_1.png);
 	position:absolute;
 	display:block;
 	top:1px;
@@ -1729,7 +1729,7 @@ textarea:focus {
 	height:auto;
 	padding:8px;
 	zoom:1;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tip_bg_1.png);
+	background-image: url(tip_bg_1.png);
 	background-position: top left;
 	background-repeat: repeat-y;
 }
@@ -1738,7 +1738,7 @@ textarea:focus {
 	width:168px;
 	display:block;
 	position:relative;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tip_b_1.png);
+	background-image: url(tip_b_1.png);
 	background-repeat: no-repeat;
 	background-position:bottom left;
 	height:4px;
@@ -1749,7 +1749,7 @@ textarea:focus {
 	position:absolute;
 	width:21px;
 	height:16px;
-	background-image: url(http://l.yimg.com/a/i/us/pps/e/tip_aro_1.png);
+	background-image: url(tip_aro_1.png);
 	background-repeat: no-repeat;
 
 }
@@ -1967,10 +1967,10 @@ status a:hover {
 }
 
 .fatal img {	
-	background-image:url(http://l.yimg.com/a/i/us/sds/gr/icon_error_med.gif);
+	background-image:url(icon_error_med.gif);
 }
 .warning img {
-	background-image:url(http://l.yimg.com/a/i/us/sds/gr/icon_warning_med.gif);
+	background-image:url(icon_warning_med.gif);
 }
 
 .enhancedtarget {
@@ -1978,7 +1978,7 @@ status a:hover {
 	font-size:12px;
 	cursor:pointer;
 	/*dbg_aro_d_nrm_1.gif*/
-	background:#c5c5c5 url(http://l.yimg.com/a/i/us/pps/e/nav_aro_r_1.png) no-repeat scroll 0px 50%;
+	background:#c5c5c5 url(nav_aro_r_1.png) no-repeat scroll 0px 50%;
 	border:1px solid #c5c5c5;
 	padding-bottom:1px;
 	padding-top:3px;
@@ -1990,7 +1990,7 @@ status a:hover {
 
 .enhancedtarget.active {
 	cursor:pointer;
-	background:#25a3fc url(http://l.yimg.com/a/i/us/pps/e/nav_aro_d_1.png) no-repeat scroll -2px 50%;
+	background:#25a3fc url(nav_aro_d_1.png) no-repeat scroll -2px 50%;
 	border:1px solid #25a3fc;
 }
 
@@ -2111,13 +2111,13 @@ a.tryinconsole {
 
 img.expandme {
     cursor:pointer;
-    background : url(http://l.yimg.com/a/i/us/pps/e/lstadd_btn_nrm_2.png) no-repeat;
+    background : url(lstadd_btn_nrm_2.png) no-repeat;
     vertical-align:middle;
 }
 
 img.closeme {
     cursor:pointer;
-    background : url(http://l.yimg.com/a/i/us/pps/e/lstdel_btn_nrm_2.png) no-repeat;
+    background : url(lstdel_btn_nrm_2.png) no-repeat;
     vertical-align:middle;
 }
 
