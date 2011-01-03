@@ -2751,7 +2751,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 				double value = getd(x, y);
 				long encoding = Double.doubleToLongBits(value);
 				destination[0] = (int)(encoding & 0xffffffffL);
-				destination[1] = (int)((encoding >> 32) & 0xffffffffL);
+				destination[1] = (int)((encoding >>> 32) & 0xffffffffL);
 			}
 			else
 				throw new IllegalStateException("unsupported floating point bitDepth : "+bitDepth);
@@ -2771,7 +2771,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		{
 			long value = getl(x, y);
 			destination[0] = (int)(value & 0xffffffffL);
-			destination[1] = (int)((value >> 32) & 0xffffffffL);
+			destination[1] = (int)((value >>> 32) & 0xffffffffL);
 		}
 		else
 			throw new IllegalStateException("unsupported integral bitDepth : "+bitDepth);
