@@ -1089,8 +1089,8 @@ public class ImagePlus implements ImageObserver, Measurements {
     
 	private int[] pvalue = new int[4];
 
+	// BDZ - BEGIN CHANGES
 	/**
-// BDZ - BEGIN CHANGES
         Returns the pixel value at (x,y) as a 4 element array. Grayscale values
         are returned in the first element. RGB values are returned in the first
         3 elements. For indexed color images, the RGB values are returned in the
@@ -1098,59 +1098,97 @@ public class ImagePlus implements ImageObserver, Measurements {
         64-bit types the low 32 bits are returned in the first element and the
         high 32 bits are returned in the second element. For floating point types
         the returned integers hold the encoding (Float.floatToIntBits() or
-// BDZ - END CHANGES
         Double.doubleToLongBits().
 	*/
-	public int[] getPixel(int x, int y) {
+	// BDZ - END CHANGES
+	public int[] getPixel(int x, int y)
+	{
 		pvalue[0]=pvalue[1]=pvalue[2]=pvalue[3]=0;
+
+// BDZ - BEGIN CHANGES
+		
+		// OLD CODE EXPANDED AND OTHER CASE ADDED - PASSES ALL TESTS
+		
+		int index, c, r, g, b;
+		int[] pixels32;
+		byte[] pixels8;
+		PixelGrabber pg;
+		
 		switch (imageType) {
-			case GRAY8: case COLOR_256:
-				int index;
-				if (ip!=null)
-					index = ip.getPixel(x, y);
-				else {
-					byte[] pixels8;
-					if (img==null) return pvalue;
-					PixelGrabber pg = new PixelGrabber(img,x,y,1,1,false);
-					try {pg.grabPixels();}
-					catch (InterruptedException e){return pvalue;};
-					pixels8 = (byte[])(pg.getPixels());
-					index = pixels8!=null?pixels8[0]&0xff:0;
-				}
-				if (imageType!=COLOR_256) {
-					pvalue[0] = index;
-					return pvalue;
-				}
-				pvalue[3] = index;
-				// fall through to get rgb values
-			case COLOR_RGB:
-				int c = 0;
-				if (imageType==COLOR_RGB && ip!=null)
-					c = ip.getPixel(x, y);
-				else {
-					int[] pixels32 = new int[1];
-					if (img==null) return pvalue;
-					PixelGrabber pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
-					try {pg.grabPixels();}
-					catch (InterruptedException e) {return pvalue;};
-					c = pixels32[0];
-				}
-				int r = (c&0xff0000)>>16;
-				int g = (c&0xff00)>>8;
-				int b = c&0xff;
-				pvalue[0] = r;
-				pvalue[1] = g;
-				pvalue[2] = b;
-				break;
-			case GRAY16: case GRAY32:
-				if (ip!=null) pvalue[0] = ip.getPixel(x, y);
-				break;
+
+		case GRAY8:
+			if (ip!=null)
+				index = ip.getPixel(x, y);
+			else {
+				if (img==null) return pvalue;
+				pg = new PixelGrabber(img,x,y,1,1,false);
+				try {pg.grabPixels();}
+				catch (InterruptedException e){return pvalue;};
+				pixels8 = (byte[])(pg.getPixels());
+				index = pixels8 != null ? pixels8[0] & 0xff : 0;
+			}
+			pvalue[0] = index;
+			return pvalue;
+
+		case COLOR_256:
+			if (ip!=null)
+				index = ip.getPixel(x, y);
+			else {
+				if (img==null) return pvalue;
+				pg = new PixelGrabber(img,x,y,1,1,false);
+				try {pg.grabPixels();}
+				catch (InterruptedException e){return pvalue;};
+				pixels8 = (byte[])(pg.getPixels());
+				index = pixels8 != null ? pixels8[0] & 0xff : 0;
+			}
+			pvalue[3] = index;
+			c = 0;
+			pixels32 = new int[1];
+			if (img==null) return pvalue;
+			pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
+			try {pg.grabPixels();}
+			catch (InterruptedException e) {return pvalue;};
+			c = pixels32[0];
+			r = (c&0xff0000)>>16;
+			g = (c&0xff00)>>8;
+			b = c&0xff;
+			pvalue[0] = r;
+			pvalue[1] = g;
+			pvalue[2] = b;
+			break;
+		
+		case COLOR_RGB:
+			c = 0;
+			if (ip!=null)
+				c = ip.getPixel(x, y);
+			else {
+				pixels32 = new int[1];
+				if (img==null) return pvalue;
+				pg = new PixelGrabber(img, x, y, 1, 1, pixels32, 0, width);
+				try {pg.grabPixels();}
+				catch (InterruptedException e) {return pvalue;};
+				c = pixels32[0];
+			}
+			r = (c&0xff0000)>>16;
+			g = (c&0xff00)>>8;
+			b = c&0xff;
+			pvalue[0] = r;
+			pvalue[1] = g;
+			pvalue[2] = b;
+			break;
+		
+		case GRAY16: case GRAY32:
+			if (ip!=null) pvalue[0] = ip.getPixel(x, y);
+			break;
+// BDZ - END CHANGES
 // BDZ - BEGIN ADDITIONS
-			case OTHER:
-				if (ip != null)
-					ip.encodePixelInfo(pvalue, x, y);
+
+		case OTHER:
+			if (ip != null)
+				ip.encodePixelInfo(pvalue, x, y);
+			break;
+		
 // BDZ - END ADDITIONS
-				break;
 		}
 		return pvalue;
 	}
@@ -1755,13 +1793,10 @@ public class ImagePlus implements ImageObserver, Measurements {
 		ip = null;
 		if (roi!=null) roi.setImage(null);
 		roi = null;
-		if (stack!=null) {
-			Object[] arrays = stack.getImageArray();
-			if (arrays!=null) {
-				for (int i=0; i<arrays.length; i++)
-					arrays[i] = null;
-			}
-		}
+// BDZ - CHANGES BEGIN
+		if (stack!=null)
+		  stack.flush();
+// BDZ - CHANGES END
 		stack = null;
 		img = null;
 		win = null;
