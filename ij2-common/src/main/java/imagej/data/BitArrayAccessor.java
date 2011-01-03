@@ -63,7 +63,7 @@ public class BitArrayAccessor implements DataAccessor
 		
 		int alignedMask = 1 << (bitNumber);
 		
-		if ((currValue & alignedMask) > 0)
+		if ((currValue & alignedMask) != 0)
 			return 1;
 		else
 			return 0;
