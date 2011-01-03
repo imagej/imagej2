@@ -8,6 +8,9 @@ import imagej.plugin.ij2.ParameterHandler;
 */
 import java.util.ArrayList;
 
+import experimental.FileUploadSerletProvider;
+import experimental.OpenIDAuthenticationServlet;
+
 import persistance.LoadLayouts;
 import pipes.ModuleGenerator;
 import pipesentity.Module;
@@ -19,7 +22,6 @@ import servlet.AjaxPipeCloneServletProvider;
 import servlet.AjaxPipePreviewServletProvider;
 import servlet.AjaxPipeSaveServletProvider;
 import servlet.AjaxUserUpdatewebpathServletProvider;
-import servlet.OpenIDServlet;
 import servlet.PipeDeleteServletProvider;
 
 
@@ -69,8 +71,8 @@ public class Open {
 		ArrayList<Module> pipesSampleCollection = ModuleGenerator.getPipeModuleSampleCollection();
 		
 		//add the OpenID authentication servlet 
-		//jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
-		jettyServerController.addServlet("/login.required", new OpenIDServlet() );
+		jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
+		//jettyServerController.addServlet("/login.required", new OpenIDServlet() );
 		
 		//add the list servlet
 		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider( pipesSampleCollection ) );
@@ -101,6 +103,9 @@ public class Open {
        
 		//add the ability to delete a user created layout
 		//jettyServerController.addServlet("/person.info", new PersonInfoServletProvider( pipesController )  );
+		
+		// add the file upload servlet //TODO: Add security / authentication before enabling
+		//jettyServerController.addServlet("/upload.file", new FileUploadSerletProvider( "/tmp" ) );
 		
 		//start the session and launch the default page
 		jettyServerController.startAndLaunchBrowser();

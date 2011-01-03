@@ -1,0 +1,503 @@
+<html>
+<head>
+<title>Upload a File</title>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<script type="text/javascript">
+        
+        
+          if (top.location != window.location) {
+          top.location = window.location;
+          }
+        
+        function showErrors() {
+          alert( "" );
+        }
+        function get_nonblank(id) {
+          var entry = document.getElementById(id).value;
+          return entry.replace(/^\s+$/,""); //remove whitespace
+        }
+        function check_fields() {
+          var file = get_nonblank("uploadedFile");
+          var url = get_nonblank("uploadURL");
+          if (file == "" && url == "") {
+            alert("Please select a file to upload.");
+            return false;
+          }
+          return true;
+        }
+
+        function toggleConversionLimitations() {
+          setDisplay('conversionLimitations',
+              isVisible('conversionLimitations') ? 'none' : '');
+        }
+
+        function showEmailInformation() {
+          setDisplay('hideEmailInformationLink', '');
+          setDisplay('showEmailInformationLink', 'none');
+          setDisplay('emailInformation', '');
+        }
+
+        function hideEmailInformation() {
+          setDisplay('showEmailInformationLink', '');
+          setDisplay('hideEmailInformationLink', 'none');
+          setDisplay('emailInformation', 'none');
+        }
+
+        
+
+        function setDisplay(id, display) {
+          var elem = document.getElementById(id);
+          if (elem) {
+            elem.style.display = display;
+          }
+        }
+
+        function isVisible(id) {
+          var elem = document.getElementById(id);
+          if (elem) {
+            return elem.style.display != 'none';
+          }
+          return false;
+        }
+      </script>
+
+<link href='experimental/doclistupload.css'
+	type='text/css' rel='stylesheet'>
+<style type="text/css">
+#gbar,#guser {
+	font-size: 13px;
+	padding-right: 8px;
+	padding-top: 4px !important
+}
+
+#gbar {
+	padding-left: 8px;
+	float: left;
+	height: 22px
+}
+
+#guser {
+	padding-bottom: 7px !important;
+	text-align: right
+}
+
+.gbh,.gbd {
+	border-top: 1px solid #c9d7f1;
+	font-size: 1px
+}
+
+.gbh {
+	height: 0;
+	position: absolute;
+	top: 24px;
+	width: 100%
+}
+
+#gbs,.gbm {
+	background: #fff;
+	left: 0;
+	position: absolute;
+	text-align: left;
+	visibility: hidden;
+	z-index: 1000
+}
+
+.gbm {
+	border: 1px solid;
+	border-color: #c9d7f1 #36c #36c #a2bae7;
+	z-index: 1001
+}
+
+.gb1 {
+	margin-right: .5em
+}
+
+#gbar .gbsup {
+	color: #c00;
+	font-size: 9px;
+	font-weight: normal;
+	line-height: 9px;
+	margin-left: -.5em;
+	margin-right: .5em;
+	*margin-left: -.5em;
+	*margin-right: .5em
+}
+
+.gb1,.gb3 {
+	zoom: 1
+}
+
+.gb2 {
+	display: block;
+	padding: .2em .5em
+}
+
+.gb2,.gb3 {
+	text-decoration: none;
+	border-bottom: none
+}
+
+a.gb1,a.gb2,a.gb3,a.gb4 {
+	color: #00c !important
+}
+
+.gbi .gb3,.gbi .gb2,.gbi .gb4 {
+	color: #dd8e27 !important
+}
+
+.gbf .gb3,.gbf .gb2,.gbf .gb4 {
+	color: #900 !important
+}
+
+a.gb2:hover {
+	background: #36c;
+	color: #fff !important
+}
+</style>
+<script type="text/javascript">(function(){function i(a,b,c){var d="on"+b;if(a.addEventListener)a.addEventListener(b,c,false);else if(a.attachEvent)a.attachEvent(d,c);else{var h=a[d];a[d]=function(){var g=h.apply(this,arguments),e=c.apply(this,arguments);return g==undefined?e:e==undefined?g:e&&g}}};var j,k,l,m=window.gbar={};function _tvs(a,b){return a||b}function _tvn(a,b){var c=parseInt(a,10);return isNaN(c)?b:c}function _tvf(a,b){var c=parseFloat(a);return isNaN(c)?b:c}function _tvb(a,b){return a=="true"?true:a=="false"?false:b}var n,o,p;
+function q(a,b,c,d,h,g){var e=document.getElementById(a);if(e){var f=e.style;f.left=d?"auto":b+"px";f.right=d?b+"px":"auto";f.top=c+"px";f.visibility=o?"hidden":"visible";if(h&&g){f.width=h+"px";f.height=g+"px"}else{q(n,b,c,d,e.offsetWidth,e.offsetHeight);o=o?"":a}}}
+var r=[],u=function(a){a=a||window.event;var b=a.target||a.srcElement;a.cancelBubble=true;if(n==null){a=document.createElement(Array.every||window.createPopup?"iframe":"div");a.frameBorder="0";n=a.id="gbs";a.src="javascript:''";b.parentNode.appendChild(a);i(document,"click",s)}var c=b;b=0;if(c.className!="gb3")c=c.parentNode;a=c.getAttribute("aria-owns")||"gbi";var d=c.offsetWidth,h=c.offsetTop>20?46:24;if(document.getElementById("tphdr"))h-=3;var g=false;do b+=c.offsetLeft||0;while(c=c.offsetParent);
+c=(document.documentElement.clientWidth||document.body.clientWidth)-b-d;var e;d=document.body;var f=document.defaultView;if(f&&f.getComputedStyle){if(d=f.getComputedStyle(d,""))e=d.direction}else e=d.currentStyle?d.currentStyle.direction:d.style.direction;e=e=="rtl";if(a=="gbi"){for(d=0;f=r[d++];)f();t(null,window.navExtra);if(e){b=c;g=true}}else if(!e){b=c;g=true}o!=a&&s();q(a,b,h,g)},s=function(){o&&q(o,0,0)},t=function(a,b){var c,d=document.getElementById("gbi"),h=a;if(!h)h=d.firstChild;for(;b&&
+(c=b.pop());){var g=d,e=c,f=h;p||(p="gb2");g.insertBefore(e,f).className=p}},v=function(a,b,c){if((b=document.getElementById(b))&&a){a.className="gb4";var d=document.createElement("span");d.appendChild(a);d.appendChild(document.createTextNode(" | "));d.id=c;b.appendChild(d)}};m.qs=l;m.setContinueCb=k;m.pc=j;m.tg=u;m.close=s;m.addLink=v;m.almm=t;})();
+</script>
+</head>
+<body class="">
+<a target=_blank href="http://www.google.com/intl/en/options/" class=gb2>even
+more &raquo;</a></div>
+</nobr></div>
+<div id=guser width=100%><nobr><span id=gbn class=gbi></span><span
+	id=gbf class=gbf><b><a target="_blank"
+	href="http://www.google.com/google-d-s/whatsnew.html" class=gb4>New
+Features!</a></b> | </span><b class=gb4>rlentz@gmail.com</b> | <span id=gbe></span><a
+	href="/settings?hl=en" onclick="this.blur();gbar.tg(event);return !1"
+	aria-haspopup=true aria-owns=gbg class=gb3><u>Settings</u> <small>&#9660;</small></a>
+| <a target=_blank id="gb_83"
+	href="http://docs.google.com/support/?hl=en" class=gb4>Help</a> | <a
+	id="gb_71" href="/logout" class=gb4>Sign out</a>
+<div class=gbm id=gbg><a target="_self" href="/settings?hl=en"
+	class=gb2>Documents settings</a> <a target=_blank
+	href="https://www.google.com/accounts/ManageAccount?hl=en" class=gb2>Google
+Account settings</a></div>
+</nobr></div>
+<div class=gbh style="left: 0"></div>
+<div class=gbh style="right: 0"></div>
+<div style="clear: both"></div>
+
+
+<div id="masthead">
+<table cellspacing="0" cellpadding="0" class="searchbar" width="100%">
+	<tr id="logo-section">
+		<td valign="top" rowspan="3" width="122" class="searchbar-logo">
+		<div><a href="https://docs.google.com/?authuser=0"><img
+			border="0" style="width: 122px; height: 30px;"
+			src="images/doclist/docs_logo_sm.gif" alt="Google Docs"></a></div>
+		</td>
+		<td valign="top" align="right"></td>
+	</tr>
+	<tr id="search-section">
+		<td valign="top">
+		<div>
+		<table width="100%" cellspacing="0" cellpadding="0"></table>
+		</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-top: 0; padding-bottom: 0; padding-right: 150px">
+		<table cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+				<div id="spellCorrection"></div>
+				</td>
+			</tr>
+		</table>
+		<table cellpadding="0" cellspacing="0" align="center">
+			<tr>
+				<td>
+				<div id="actionStatus" style="padding-top: 2px;"></div>
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td class="app topbox"><a id="backToDocsAndSpreadsheetsLink"
+			class="app" href="https://docs.google.com/"><b>&laquo;&nbsp;Back
+		to Google Docs</b></a></td>
+	</tr>
+</table>
+<div class="upload-content">
+<div class="uploadsection">
+<h2 class="uploadsection-header">Upload Files</h2>
+<div class="uploadsection-content">
+<h3 class="du-subheading">Select files</h3>
+<div class="du-p"><span style="color: ;">You are currently
+using 72 MB (0%) of your 21504 MB.</span> <a
+	href="https://www.google.com/accounts/b/0/PurchaseStorage?hl=en"
+	target="_blank">Add storage</a> <br>
+</div>
+<div class="du-p">You can upload files up to 1024 MB. Files
+converted to Google Docs have smaller limits.</div>
+<div id="uploader" class="du-uploader">
+<div id="uploader-inner" class="du-uploader-inner">
+<div id="upload-app"></div>
+<div id="du-drop-message" class="du-drop-target" style="display: none">
+<div class="du-drop-target-inner">Drag and drop files here.</div>
+</div>
+<div id="no-files-message" class="du-no-files-selected">No files
+selected...</div>
+<div id="upload-status"
+	class="du-select-files du-files-selected du-uploading goog-inline-block">Loading...</div>
+<div id="select-files" class="du-select-files goog-inline-block"
+	style="display: none;"><span id="upload-app-overlay"><span
+	class="du-upload-icon">&nbsp;</span> <span id="select-files-text"
+	class="du-select-files-text">Select files to upload</span></span> <span
+	id="upload-folder-app-overlay" style="display: none;"><span
+	class="du-upload-icon">&nbsp;</span> <span id="select-dir-text"
+	class="du-select-files-text">Select folders to upload</span></span> <span
+	id="upload-folder-enable" style="display: none;"><span
+	class="du-upload-icon">&nbsp;</span> <span id="select-dir-enable-text"
+	class="du-select-files-text">Enable folder upload</span></span></div>
+<span class="du-select-files du-files-selected du-upload-message">-
+no files selected</span></div>
+</div>
+<div id="upload-options">
+<h3 class="du-subheading">Select conversion options</h3>
+<div class="du-p">Only converted files can be edited online. <span
+	id="showConversionLimitationsLink" class="du-convert-link"
+	onclick="toggleConversionLimitations()">File types and size
+limits</span>
+<div id="conversionLimitations" class="du-conversion-limitations"
+	style="display: none;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td class="app du-conversion-limitations-header"><span
+			class="du-conversion-limitations-emph">Convert documents</span> - up
+		to 1 MB per file:</td>
+	</tr>
+	<tr>
+		<td class="app">
+		<ul class="du-conversion-limitations-ul">
+			<li>Microsoft Word (.doc, .docx), OpenDocument text (.odt),
+			StarOffice text (.sxw)</li>
+			<li>Rich text (.rtf), Plain text (.txt), HTML (.htm, .html)</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-header"><span
+			class="du-conversion-limitations-emph">Convert presentations</span> -
+		up to 10 MB per file:</td>
+	</tr>
+	<tr>
+		<td class="app">
+		<ul class="du-conversion-limitations-ul">
+			<li>Microsoft PowerPoint (.ppt, .pps)</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-header"><span
+			class="du-conversion-limitations-emph">Convert spreadsheets</span> -
+		up to 1 MB per file:</td>
+	</tr>
+	<tr>
+		<td class="app">
+		<ul class="du-conversion-limitations-ul">
+			<li>Microsoft Excel (.xls, .xlsx) files, OpenDocument
+			spreadsheets (.ods).</li>
+			<li>Comma-separated values (.csv)</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-header"><span
+			class="du-conversion-limitations-emph">Convert drawings</span> - up
+		to 2 MB per file:</td>
+	</tr>
+	<tr>
+		<td class="app">
+		<ul
+			class="du-conversion-limitations-ul du-conversion-limitations-ul-last">
+			<li>Windows Metafile (.wmf)</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-message">Some features
+		may not be fully supported when files are converted (for example,
+		footnotes, tables of contents, tracked changes and comments, embedded
+		graphs, pivot tables, and slide animations). Files that you don&#39;t
+		convert (maximum 25 MB per file) will count toward your storage limit.</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-header"><span
+			class="du-conversion-limitations-emph">Convert text from PDF
+		or image files</span> - up to 2M per file:</td>
+	</tr>
+	<tr>
+		<td class="app">
+		<ul
+			class="du-conversion-limitations-ul du-conversion-limitations-ul-last">
+			<li>Photos, scanned documents, screenshots, etc (.jpg, .gif,
+			.png)</li>
+			<li>PDF files (.pdf)</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class="app du-conversion-limitations-message">Graphics are
+		not converted &mdash; only text. For the best results, start with
+		high-resolution image files. <br>
+		<a
+			href="http://docs.google.com/support/bin/answer.py?answer=176692&amp;hl=en"
+			target="_blank">Learn about OCR (optical character recognition)</a></td>
+	</tr>
+</table>
+</div>
+</div>
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td class="app du-td-pb"><input type="checkbox"
+			id="convert-checkbox" class="du-convert-checkbox"></td>
+		<td class="app du-td-pb"><label for="convert-checkbox">Convert
+		documents, presentations, spreadsheets, and drawings to the
+		corresponding Google Docs formats</label></td>
+	</tr>
+	<tr>
+		<td class="app"><input type="checkbox" id="ocr-checkbox"
+			class="du-convert-checkbox"></td>
+		<td class="app"><label for="ocr-checkbox">Convert text
+		from PDF or image files to Google Docs documents. <a
+			href="http://docs.google.com/support/bin/answer.py?answer=176692&amp;hl=en"
+			target="_blank">How does this work?</a></label></td>
+	</tr>
+</table>
+<div class="du-legalinfo">When uploading files, you agree to abide
+by the Google Docs Terms of Service and Privacy Policy. Do not upload or
+share any content that infringes copyrights or that you otherwise do not
+have the legal right to upload or share. <a target="_blank"
+	href="http://www.google.com/google-d-s/terms.html">Learn more</a></div>
+<div class="du-select-destination-button"><span
+	id="move-to-folder" class="goog-inline-block move-to-folder">
+<div role="button" id="search-folders-button"
+	class="goog-inline-block goog-imageless-popup-button">
+<div class="goog-inline-block goog-imageless-popup-button-outer-box">
+<div class="goog-inline-block goog-imageless-popup-button-inner-box">
+<div class="goog-imageless-popup-button-pos">
+<div class="goog-imageless-popup-button-top-shadow">&nbsp;</div>
+<div class="goog-imageless-popup-button-content"><span
+	class="goog-inline-block du-folder-icon">&nbsp;</span><span class="app"
+	style="vertical-align: middle">Destination folder</span>
+<div class="goog-inline-block goog-imageless-popup-button-dropdown"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</span> <span id="visibility-state-select-ctr">
+<div role="button" id="visibility-state-select"
+	class="goog-inline-block goog-imageless-menu-button">
+<div class="goog-inline-block goog-imageless-menu-button-outer-box">
+<div class="goog-inline-block goog-imageless-menu-button-inner-box">
+<div class="goog-imageless-menu-button-pos">
+<div class="goog-imageless-menu-button-top-shadow">&nbsp;</div>
+<div class="goog-imageless-menu-button-content"><span
+	id="visibility-state-select-content" class="app"
+	style="vertical-align: middle"><span vhsh="true"
+	vsjson="{&quot;role&quot;:0,&quot;visibilityState&quot;:&quot;private&quot;,&quot;restrictedToDomain&quot;:false,&quot;domainDisplayName&quot;:&quot;&quot;,&quot;visibilityEntries&quot;:[{&quot;role&quot;:0,&quot;visibilityState&quot;:&quot;private&quot;,&quot;restrictedToDomain&quot;:false,&quot;domainDisplayNames&quot;:[&quot;&quot;]}]}"
+	class="goog-inline-block apps-share-sprite share-pill-private-icon"> </span>Private</span>
+<div class="goog-inline-block goog-imageless-menu-button-dropdown"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</span> <span id="start-upload" class="du-start-upload">
+<button class="du-start-upload-button">Start upload</button>
+</span></div>
+</div>
+</div>
+</div>
+<br>
+</div>
+<div class="footer" align="center">
+<table width="100%" cellspacing="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td align="center"><span class="grey" dir="ltr">&copy;2011
+			Google</span> - <a target="_blank"
+				href="http://docs.google.com/support/?hl=en">Help</a> - <a
+				target="_blank" href="http://www.google.com/google-d-s/terms.html">Terms</a></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<script type="text/javascript"
+	src="doclist/client/js/1592831257-doclist_upload.js"></script>
+
+<script type="text/javascript">var DL_dvs = {"role":0,"visibilityState":"private","restrictedToDomain":false,"domainDisplayName":"","visibilityEntries":[{"role":0,"visibilityState":"private","restrictedToDomain":false,"domainDisplayNames":[""]}]}</script>
+<script type="text/javascript">var DL_vvs = [{"role":20,"visibilityState":"public","restrictedToDomain":false,"visibilityEntries":[{"role":20,"visibilityState":"public","restrictedToDomain":false}]}, {"role":20,"visibilityState":"unlisted","restrictedToDomain":false,"visibilityEntries":[{"role":20,"visibilityState":"unlisted","restrictedToDomain":false}]}, {"role":0,"visibilityState":"private","restrictedToDomain":false,"visibilityEntries":[{"role":0,"visibilityState":"private","restrictedToDomain":false}]}]</script>
+<script type="text/javascript">
+        var uploadApp;
+var rootDoc = {
+'id': "0ACzaRw2FOocwUk9PVA",
+'name':
+
+            "My folders"
+          
+};
+function init() {
+var config = {
+'dropTargetElement': document.getElementById('uploader-inner'),
+'dropMessageElement': document.getElementById('du-drop-message'),
+'uploadElement': document.getElementById('upload-app'),
+'sessionUrl': "/upload/resumableupload?authuser\x3d0\x26user\x3drlentz@gmail.com",
+'jarUrl': "doclist/client/css/2035709341-uploaderapi.jar",
+'drgup': true,
+'swfUrl': "doclist/client/css/581212234-uploaderapi.swf",
+'moveToFolderElement': document.getElementById('move-to-folder'),
+'token': "FSYMbC0BAAA.Z98Rsb0BO0UpRJHQvmbM8g.Hh3kKuH4DmXBEWY1Aybzdg",
+'cleardotUrl': "images/doclist/cleardot.gif",
+'uploadOverlayElement': document.getElementById('upload-app-overlay'),
+'uploadFolderOverlayElement': document.getElementById('upload-folder-app-overlay'),
+'uploadFolderEnableElement': document.getElementById('upload-folder-enable'),
+'sft': document.getElementById('select-files-text'),
+'rootDoc': rootDoc,
+'selectFilesElement': document.getElementById('select-files'),
+'startUploadElement': document.getElementById('start-upload'),
+'protocolVersion': 4,
+'locale': 'en',
+'dw': document.getElementById('dw'),
+'uploadOptionsElement': document.getElementById('upload-options'),
+'sfbe': document.getElementById('search-folders-button'),
+'cce': document.getElementById('convert-checkbox'),
+'ue': document.getElementById('uploader'),
+'use': document.getElementById('upload-status'),
+'nfse': document.getElementById('no-files-message'),
+'vse': document.getElementById('visibility-state-select'),
+'visibilitySetting': DL_dvs,
+'validVisibilitySettings': DL_vvs
+};
+config['oce'] = document.getElementById('ocr-checkbox');
+config['ocrft'] = ['.gif','.jpg','.jpeg','.jpe','.png','.pdf'];
+
+
+
+config['eafu'] = true;
+
+uploadApp = _createUploadApplication(config);
+document.body.onunload = dispose;
+}
+function dispose() {
+if (uploadApp) {
+uploadApp.dispose();
+uploadApp = null;
+}
+}
+init();
+      </script>
+</body>
+</html>

@@ -142,9 +142,15 @@ $JSON = function(o) {
 	}
 	return ObjectToJSONString(o);
 };
+/**
+ * Converts Boolean to JSON String
+ */
 Boolean.prototype.toJSONString = function() {
 	return String(this);
 };
+/**
+ * Converts Date to JSON String in format "year-month-date-dayTHH:MM:SS"
+ */
 Date.prototype.toJSONString = function() {
 	function f(n) {
 		return n < 10 ? "0" + n : n;
@@ -153,9 +159,15 @@ Date.prototype.toJSONString = function() {
 			+ f(this.getDate()) + "T" + f(this.getHours()) + ":"
 			+ f(this.getMinutes()) + ":" + f(this.getSeconds()) + "\"";
 };
+/**
+ * Returns Number as a JSON String if a finite value
+ */
 Number.prototype.toJSONString = function() {
 	return isFinite(this) ? String(this) : "null";
 };
+/**
+ * Returns the parsed JSON value
+ */
 String.prototype.parseJSON = function() {
 	try {
 		if (/^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/
@@ -347,10 +359,19 @@ function Dumper(o) {
 		}
 	}
 }
+//set namespace to maxwell.Util
 $namespace("maxwell.Util");
+
+/**
+ * Used to return the document's element type by id
+ */
 maxwell.Util.$ = function(_41) {
 	return document.getElementById(_41);
 };
+
+/**
+ * Used to determine the browser type
+ */
 maxwell.Util.ua = {
 	isGecko : /Gecko/.test(navigator.userAgent),
 	isIE : /MSIE/.test(navigator.userAgent),
@@ -376,11 +397,21 @@ maxwell.Util.ua = {
 		return "undefined";
 	}
 };
+/**
+ * Appends a new numercial number to the end of the parameter
+ */
 maxwell.Util.newId = function(_42) {
 	maxwell.Util.newId.seq++;
 	return _42 + "-" + maxwell.Util.newId.seq;
 };
+
+//Set the starting value of the id sequence to 1
 maxwell.Util.newId.seq = 1;
+
+/**
+ * Takes the input object and assigns the value based in 44
+ * based on the inputs type
+ */
 maxwell.Util.setInputValue = function(_43, _44) {
 	var tag = _43.tagName;
 	if (!tag) {
@@ -434,6 +465,9 @@ maxwell.Util.setInputValue = function(_43, _44) {
 		}
 	}
 };
+/**
+ * Returns a list [] based on input type
+ */
 maxwell.Util.toList = function(_49) {
 	if (_49) {
 		if (_49.sort) {
@@ -445,6 +479,9 @@ maxwell.Util.toList = function(_49) {
 		return [];
 	}
 };
+/**
+ * adds a document 
+ */
 maxwell.Util.cn = function(tag, _4b, _4c, _4d) {
 	var _4e = document.createElement(tag);
 	maxwell.Util.sn(_4e, _4b, _4c);
@@ -453,6 +490,7 @@ maxwell.Util.cn = function(tag, _4b, _4c, _4d) {
 	}
 	return _4e;
 };
+
 maxwell.Util.$endsWith = function(_4f, _50) {
 	if (_4f.length < _50.length) {
 		return false;
@@ -462,6 +500,7 @@ maxwell.Util.$endsWith = function(_4f, _50) {
 	}
 	return false;
 };
+
 maxwell.Util.indexOf = function(_51) {
 	var _52 = 0;
 	for ( var i in this) {
@@ -472,6 +511,7 @@ maxwell.Util.indexOf = function(_51) {
 	}
 	return -1;
 };
+
 maxwell.Util.sn = function(_54, _55, _56) {
 	if (!_54) {
 		return;
@@ -515,6 +555,7 @@ maxwell.Util.sn = function(_54, _55, _56) {
 		}
 	}
 };
+
 maxwell.Util.$centerXY = function(_59) {
 	var _5a = YAHOO.util.Region.getRegion(_59);
 	var _5b = [];
@@ -522,6 +563,7 @@ maxwell.Util.$centerXY = function(_59) {
 	_5b[1] = (_5a.top + _5a.bottom) / 2;
 	return _5b;
 };
+
 maxwell.Util.$idCounter = 0;
 maxwell.Util.$id = function(_5c) {
 	if (typeof (_5c) == "string") {
@@ -545,6 +587,7 @@ maxwell.Util.$id = function(_5c) {
 		YAHOO.log("WARNING: id failed for " + _5c);
 	}
 };
+
 maxwell.Util.Cookie = function() {
 };
 maxwell.Util.Cookie.set = function(_5e, _5f) {
@@ -569,6 +612,7 @@ maxwell.Util.Cookie.get = function(_61) {
 	}
 	return null;
 };
+
 maxwell.Util.SetCanvasRegionIE = function(_67, _68, top, lw, lh) {
 	sn(_67, null, {
 		left : _68 + "px",
@@ -579,6 +623,7 @@ maxwell.Util.SetCanvasRegionIE = function(_67, _68, top, lw, lh) {
 	_67.getContext("2d").clearRect(0, 0, lw, lh);
 	return _67;
 };
+
 maxwell.Util.SetCanvasRegionSafari = function(_6c, _6d, top, lw, lh) {
 	var _71 = _6c.className;
 	if (!_71) {
@@ -601,6 +646,7 @@ maxwell.Util.SetCanvasRegionSafari = function(_6c, _6d, top, lw, lh) {
 	_6c.parentNode.replaceChild(_72, _6c);
 	return _72;
 };
+
 maxwell.Util.SetCanvasRegion = function(_76, _77, top, lw, lh) {
 	sn(_76, {
 		width : lw,
@@ -611,6 +657,7 @@ maxwell.Util.SetCanvasRegion = function(_76, _77, top, lw, lh) {
 	});
 	return _76;
 };
+
 if (maxwell.Util.ua.isIE) {
 	maxwell.Util.SetCanvasRegion = maxwell.Util.SetCanvasRegionIE;
 } else {
@@ -618,6 +665,7 @@ if (maxwell.Util.ua.isIE) {
 		maxwell.Util.SetCanvasRegion = maxwell.Util.SetCanvasRegionSafari;
 	}
 }
+
 maxwell.Util.SetCanvasSize = function(_7b, lw, lh) {
 	if (maxwell.Util.ua.isSafari || maxwell.Util.ua.isOpera) {
 		var _7e = _7b.className;
@@ -644,6 +692,7 @@ maxwell.Util.SetCanvasSize = function(_7b, lw, lh) {
 	}
 	return _7b;
 };
+
 maxwell.Util.$clone = function(_80) {
 	if (typeof (_80) != "object") {
 		return _80;
@@ -657,6 +706,7 @@ maxwell.Util.$clone = function(_80) {
 	}
 	return _81;
 };
+
 maxwell.Util.cook = function(str) {
 	var tmp = str.replace(/&/g, "&amp;");
 	tmp = tmp.replace(/>/g, "&gt;");
@@ -6908,6 +6958,7 @@ maxwell.ModuleLibrary = function() {
 		YAHOO.util.Dom.addClass(node, "show");
 	}, this, true);
 };
+//Get the titles from the servlet program
 maxwell.ModuleLibrary.categories = [ "Image Sources", "Plugins", "Favorites", "My pipes", "Number" ];
 maxwell.ModuleLibrary.prototype.retrieveModules = function() {
 	var self = this;
