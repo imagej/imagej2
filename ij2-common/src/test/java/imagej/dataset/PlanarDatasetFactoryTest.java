@@ -249,15 +249,15 @@ public class PlanarDatasetFactoryTest
 		ds = factory.createDataset(type, dimensions);
 		
 		assertEquals(0, ds.getLong(new int[]{0,0,0,0}));
-		ds.setLong(new int[]{0,0,0,0}, 14);
-		assertEquals(14, ds.getLong(new int[]{0,0,0,0}));
+		ds.setLong(new int[]{0,0,0,0}, Integer.MIN_VALUE);
+		assertEquals(Integer.MIN_VALUE, ds.getLong(new int[]{0,0,0,0}));
 
 		assertEquals(0, ds.getLong(new int[]{1,1,1,1}));
 		ds.setLong(new int[]{1,1,1,1}, 8);
 		assertEquals(8, ds.getLong(new int[]{1,1,1,1}));
 
 		assertEquals(0, ds.getLong(new int[]{1,1,2,4}));
-		ds.setLong(new int[]{1,1,2,4}, 99);
-		assertEquals(99, ds.getLong(new int[]{1,1,2,4}));
+		ds.setLong(new int[]{1,1,2,4}, Integer.MAX_VALUE);
+		assertEquals(Integer.MAX_VALUE, ds.getLong(new int[]{1,1,2,4}));
 	}	
 }
