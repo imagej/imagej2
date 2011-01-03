@@ -74,7 +74,7 @@ public class IntType implements Type
 	}
 
 	@Override
-	public boolean isStorageCompatible(Object data)
+	public boolean canAccept(Object data)
 	{
 		return data instanceof int[];
 	}
