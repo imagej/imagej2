@@ -106,7 +106,7 @@ public class Unsigned12BitArrayAccessor implements DataAccessor
 	
 		int shiftedValue = currValue & alignedMask;
 		
-		return shiftedValue >> (4 * nibbleNumber);
+		return shiftedValue >>> (4 * nibbleNumber);
 	}
 
 	private void setNibble(int intNumber, int nibbleNumber, int nibbleValue)
