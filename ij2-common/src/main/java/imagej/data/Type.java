@@ -53,7 +53,7 @@ public interface Type
 	double getNumberOfStorageTypesPerValue();
 	
 	/** returns true if the type of the specified data array is compatible with this type's internal representation */
-	boolean canAccept(Object data);
+	boolean compatibleWith(Object data);
 
 	/** returns the number of bytes of storage used by a given number of pixels of this type */
 	long calcNumStorageBytesFromPixelCount(long numPixels);

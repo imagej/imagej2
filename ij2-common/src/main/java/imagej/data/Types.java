@@ -53,7 +53,7 @@ public class Types
 	/** throws an exception if given data array is not compatible with given Type's internal representation */
 	public static void verifyCompatibility(Type type, Object data)
 	{
-		if ( ! type.canAccept(data) )
+		if ( ! type.compatibleWith(data) )
 			throw new IllegalArgumentException("internal representation type clash : type ("+type.getName()+") and given data class ("+data.getClass()+")");
 	}
 	

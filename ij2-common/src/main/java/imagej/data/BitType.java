@@ -73,7 +73,7 @@ public class BitType implements Type
 	}
 
 	@Override
-	public boolean canAccept(Object data)
+	public boolean compatibleWith(Object data)
 	{
 		return data instanceof int[];
 	}
