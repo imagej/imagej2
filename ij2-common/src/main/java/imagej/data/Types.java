@@ -57,6 +57,8 @@ public class Types
 			throw new IllegalArgumentException("internal representation type clash : type ("+type.getName()+") and given data class ("+data.getClass()+")");
 	}
 	
+	/** calculates the number of storage units needed to represent a given number of pixels of a given type. if number of storage units cannot be
+	 * represented as an integer this method throws an exception */
 	public static int calcIntCompatibleStorageUnits(Type type, long numPixels)
 	{
 		long numStorageUnits = type.calcNumStorageUnitsFromPixelCount(numPixels);
