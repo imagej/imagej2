@@ -2,18 +2,18 @@ package ij;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.net.URL;
+// BDZ - DELETED CODE
 import java.util.*;
 import ij.process.*;
 import ij.io.*;
 import ij.gui.*;
 import ij.measure.*;
-import ij.plugin.filter.Analyzer;
-import ij.util.Tools;
+//BDZ - DELETED CODE
+//BDZ - DELETED CODE
 import ij.macro.Interpreter;
 import ij.plugin.frame.ContrastAdjuster;
 import ij.plugin.frame.Recorder;
-import ij.plugin.Converter;
+//BDZ - DELETED CODE
 
 /**
 An ImagePlus contain an ImageProcessor (2D image) or an ImageStack (3D, 4D or 5D image).
