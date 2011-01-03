@@ -1,6 +1,5 @@
 package servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -9,10 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import servletutils.ServletRequestHelper;
+import pipesentity.Def;
+import controller.PipesController;
 
 public class AjaxPipePreviewServletProvider extends HttpServlet {
 
@@ -21,9 +20,12 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
-
-	public AjaxPipePreviewServletProvider() {
+	private PipesController pipesController;
 	
+	public AjaxPipePreviewServletProvider( PipesController pipesController  ) 
+	{	
+		//maintain a reference to the pipes controller
+		this.pipesController = pipesController;
 	}
 
 	protected void doPost( HttpServletRequest request,
@@ -32,20 +34,19 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
 	
-		//return the post
+		// Evaluate the inputs
+		String definition = request.getParameter( "def" );
+		
+		//Try to get a Java def
 		try {
-			//TODO:finish post the object
-			String jsonDefinitionString = request.getParameter( "def" );
-			
-			//Try to parse and execute the definition
-			
-			
-			response.getWriter().write( jsonDefinitionString );
-			
-		} catch ( Exception e ) {
+			Def def = new Def( definition );
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+			
+	
 	}
 
 	protected void doGet( HttpServletRequest request,
