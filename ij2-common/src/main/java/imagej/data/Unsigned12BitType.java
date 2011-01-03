@@ -74,7 +74,7 @@ public class Unsigned12BitType implements Type
 							// in an array of bytes and access them via byte and nibble lookup
 
 	@Override
-	public boolean canAccept(Object data)
+	public boolean compatibleWith(Object data)
 	{
 		return data instanceof int[];
 	}
