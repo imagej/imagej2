@@ -93,12 +93,9 @@ public class ByteType implements Type
 	@Override
 	public Object allocateStorageArray(long numPixels)
 	{
-		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
+		int numStorageUnits = Types.calcIntCompatibleStorageUnits(this, numPixels);
 		
-		if (numStorageUnits > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("more storage units requested ("+numStorageUnits+") than Java can allocate ("+Integer.MAX_VALUE+")");
-		
-		return new byte[(int)numStorageUnits];
+		return new byte[numStorageUnits];
 	}
 
 }
