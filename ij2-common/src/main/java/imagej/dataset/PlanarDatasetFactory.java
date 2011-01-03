@@ -48,7 +48,7 @@ public class PlanarDatasetFactory implements DatasetFactory
 			throw new IllegalArgumentException("this implementation cannot support data whose dimension is less than 2");
 		else if ( currDimsLength == 2)  // make a concrete dataset
 		{
-			int numElements = (int) ((long)currDims[0] * currDims[1]);
+			long numElements =  (long)currDims[0] * currDims[1];
 			Object arrayOfData = type.allocateStorageArray(numElements);
 			return new PlanarDataset(currDims, type, arrayOfData);
 		}

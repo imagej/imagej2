@@ -91,7 +91,7 @@ public class FloatType implements Type
 	}
 
 	@Override
-	public Object allocateStorageArray(int numPixels)
+	public Object allocateStorageArray(long numPixels)
 	{
 		long numStorageUnits = calcNumStorageUnitsFromPixelCount(numPixels);
 		
