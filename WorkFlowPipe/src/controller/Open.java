@@ -81,7 +81,7 @@ public class Open {
 		jettyServerController.addServlet("/ajax.module.info", new AjaxModuleInfoServletProvider( pipesSampleCollection )  );
 		
 		//add the pipe preview servlet
-		jettyServerController.addServlet("/ajax.pipe.preview", new AjaxPipePreviewServletProvider(  )  );
+		jettyServerController.addServlet("/ajax.pipe.preview", new AjaxPipePreviewServletProvider( pipesController )  );
 	
 		//add the feed preview servlet
 		jettyServerController.addServlet("/ajax.feed.preview", new AjaxFeedPreviewServletProvider(  )  );

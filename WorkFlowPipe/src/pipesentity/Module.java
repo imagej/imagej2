@@ -1,5 +1,7 @@
 package pipesentity;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,8 +14,16 @@ public class Module {
 	private Name name;
 	private Description description;
 	private Tag[] tags;
+	private Conf[] conf;
 	
-	
+	public Conf[] getConfArray() {
+		return conf;
+	}
+
+	public void setConfArray( Conf[] conf ) {
+		this.conf = conf;
+	}
+
 	public Module( Terminal[] terminals, UI ui, Name name, Type type, Description description, Tag[] tags )
 	{
 		this.terminals = terminals;
@@ -22,6 +32,10 @@ public class Module {
 		this.name = name;
 		this.description = description;
 		this.tags = tags;
+	}
+
+	public Module( JSONObject jsonObject ) {
+		System.out.println( "Module constructor " + jsonObject.toString() );
 	}
 
 	public Terminal[] getTerminals() {
@@ -125,6 +139,23 @@ public class Module {
 		
 		//return the result
 		return result;
+	}
+
+	/**
+	 * Given a JSON array of modules...
+	 * @param modulesArray
+	 * @return an Array of type Module
+	 */
+	public static ArrayList<Module> getArrayFromJSONArray( JSONArray modulesArray ) 
+	{
+		ArrayList<Module> moduleList = new ArrayList<Module>();
+		
+		for(int i = 0; i < modulesArray.length(); i++ )
+		{
+			moduleList.add( new Module( modulesArray.getJSONObject(i) ) );
+		}
+		
+		return moduleList;
 	}
 	
 
