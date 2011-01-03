@@ -37,9 +37,9 @@ public class BitArrayAccessor implements DataAccessor
 	@Override
 	public long getIntegral(long index)
 	{
-		int intNumber = (int) index / 32;
+		int intNumber = (int) (index / 32);
 		
-		int bitNumber = (int) index % 32;
+		int bitNumber = (int) (index % 32);
 
 		return getBit(intNumber, bitNumber);
 	}
