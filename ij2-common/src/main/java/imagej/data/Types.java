@@ -56,4 +56,15 @@ public class Types
 		if ( ! type.canAccept(data) )
 			throw new IllegalArgumentException("internal representation type clash : type ("+type.getName()+") and given data class ("+data.getClass()+")");
 	}
+	
+	public static int calcIntCompatibleStorageUnits(Type type, long numPixels)
+	{
+		long numStorageUnits = type.calcNumStorageUnitsFromPixelCount(numPixels);
+		
+		if (numStorageUnits > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("more storage units requested ("+numStorageUnits+") than Java can allocate ("+Integer.MAX_VALUE+")");
+		
+		return (int) numStorageUnits;
+	}
+	
 }
