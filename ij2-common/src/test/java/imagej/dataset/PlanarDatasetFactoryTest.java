@@ -233,4 +233,31 @@ public class PlanarDatasetFactoryTest
 		ds.setDouble(new int[]{1,1,2,4}, 99);
 		assertEquals(99, ds.getDouble(new int[]{1,1,2,4}), 0);
 	}	
+	
+	@Test
+	public void testSetAndGetLong()
+	{
+		PlanarDatasetFactory factory = new PlanarDatasetFactory();
+		
+		Dataset ds;
+		int[] dimensions;
+		Type type;
+		
+		type = Types.findType("32-bit signed");
+		dimensions = new int[]{2,2,3,5}; 
+			
+		ds = factory.createDataset(type, dimensions);
+		
+		assertEquals(0, ds.getLong(new int[]{0,0,0,0}));
+		ds.setLong(new int[]{0,0,0,0}, 14);
+		assertEquals(14, ds.getLong(new int[]{0,0,0,0}));
+
+		assertEquals(0, ds.getLong(new int[]{1,1,1,1}));
+		ds.setLong(new int[]{1,1,1,1}, 8);
+		assertEquals(8, ds.getLong(new int[]{1,1,1,1}));
+
+		assertEquals(0, ds.getLong(new int[]{1,1,2,4}));
+		ds.setLong(new int[]{1,1,2,4}, 99);
+		assertEquals(99, ds.getLong(new int[]{1,1,2,4}));
+	}	
 }
