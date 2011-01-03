@@ -62,5 +62,5 @@ public interface Type
 	long calcNumStorageUnitsFromPixelCount(long numPixels);
 
 	/** allocates and returns an array of the correct storage type that can hold the given number of pixels */
-	Object allocateStorageArray(int numPixels);
+	Object allocateStorageArray(long numPixels);
 }
