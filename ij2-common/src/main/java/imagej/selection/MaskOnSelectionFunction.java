@@ -11,7 +11,7 @@ public class MaskOnSelectionFunction implements SelectionFunction {
 	
 	public boolean include(int[] position, double sample)
 	{
-		return ! (maskOff.include(position, 0));
+		return ! (this.maskOff.include(position, 0));
 	}
 
 }

@@ -11,7 +11,7 @@ public class ValueGreaterThanOrEqualsSelectionFunction implements SelectionFunct
 
 	public boolean include(int[] position, double sample)
 	{
-		return greaterOrEquals.include(position, sample);
+		return this.greaterOrEquals.include(position, sample);
 	}
 }
 

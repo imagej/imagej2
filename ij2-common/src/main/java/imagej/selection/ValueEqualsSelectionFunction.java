@@ -13,7 +13,7 @@ public class ValueEqualsSelectionFunction implements SelectionFunction
 	
 	public boolean include(int[] position, double sample)
 	{
-		return Math.abs(this.value - value) < TOL;
+		return Math.abs(sample - this.value) < TOL;
 	}
 }
 
