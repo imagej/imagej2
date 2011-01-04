@@ -15,7 +15,7 @@ public class UnsignedShortArrayAccessor implements DataAccessor
 		int value = this.shorts[(int)index];
 		
 		if (value < 0)
-			value = 65536 + value;
+			value += 65536;
 		
 		return value;
 	}
@@ -34,7 +34,7 @@ public class UnsignedShortArrayAccessor implements DataAccessor
 		int value = this.shorts[(int)index];
 		
 		if (value < 0)
-			value = 65536 + value;
+			value += 65536;
 		
 		return value;
 	}
