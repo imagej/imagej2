@@ -15,7 +15,7 @@ public class UnsignedByteArrayAccessor implements DataAccessor
 		double byteVal = this.bytes[(int)index];
 		
 		if (byteVal < 0)
-			byteVal = 256 + byteVal;
+			byteVal += 256;
 		
 		return byteVal;
 	}
@@ -25,7 +25,7 @@ public class UnsignedByteArrayAccessor implements DataAccessor
 		long byteVal = this.bytes[(int)index];
 		
 		if (byteVal < 0)
-			byteVal = 256 + byteVal;
+			byteVal += 256;
 		
 		return byteVal;
 	}

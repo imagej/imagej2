@@ -15,7 +15,7 @@ public class UnsignedIntArrayAccessor implements DataAccessor
 		double value = this.ints[(int)index];
 		
 		if (value < 0)
-			value = 4294967296.0 + value;
+			value += 4294967296.0;
 		
 		return value;
 	}
@@ -34,7 +34,7 @@ public class UnsignedIntArrayAccessor implements DataAccessor
 		long value = this.ints[(int)index];
 		
 		if (value < 0)
-			value = 4294967296L + value;
+			value += 4294967296L;
 		
 		return value;
 	}
