@@ -26,9 +26,6 @@ public class MaskOffSelectionFunction implements SelectionFunction
 	{
 		int maskPosition = calcMaskPosition(position);
 		
-		if (maskPosition >= this.mask.length)
-			return false;
-		
 		return this.mask[maskPosition] == 0;
 	}
 	
@@ -40,7 +37,7 @@ public class MaskOffSelectionFunction implements SelectionFunction
 		long sampleNumber = Index.positionToRaster(this.maskSpan, this.relativePosition);
 		
 		if (sampleNumber > Integer.MAX_VALUE)
-			return this.mask.length;
+			throw new IllegalArgumentException("mask index is too large");
 		
 		return (int) sampleNumber;
 	}

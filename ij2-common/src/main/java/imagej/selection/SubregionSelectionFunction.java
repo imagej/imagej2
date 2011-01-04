@@ -19,19 +19,19 @@ public class SubregionSelectionFunction implements SelectionFunction
 	
 	public boolean include(int[] position, double sample)
 	{
-		if (neverCalled)
+		if (this.neverCalled)
 		{
-			if (origin.length != position.length)
+			if (this.origin.length != position.length)
 				throw new IllegalArgumentException("position does not have length compatible with subregion size");
 			
-			neverCalled = false;
+			this.neverCalled = false;
 		}
 		
-		for (int i = 0; i < origin.length; i++)
+		for (int i = 0; i < this.origin.length; i++)
 		{
-			int minIndex = origin[i];
+			int minIndex = this.origin[i];
 			
-			int maxIndex = minIndex + span[i] - 1;
+			int maxIndex = minIndex + this.span[i] - 1;
 			
 			int axisPosition = position[i];
 			

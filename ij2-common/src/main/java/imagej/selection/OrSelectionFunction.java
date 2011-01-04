@@ -14,7 +14,7 @@ public class OrSelectionFunction implements SelectionFunction
 	
 	public boolean include(int[] position, double sample)
 	{
-		return func1.include(position, sample) || func2.include(position, sample);
+		return this.func1.include(position, sample) || this.func2.include(position, sample);
 	}
 }
 

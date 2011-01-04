@@ -14,25 +14,25 @@ public class ModulusSelectionFunction implements SelectionFunction
 		this.value = value;
 
 		if (range <= 0)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("defined range must be positive");
 		
 		if ((value < 0) || value >= range)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("target value is outside of defined range");
 		
 		this.neverCalled = true;
 	}
 
 	public boolean include(int[] position, double sample)
 	{
-		if (neverCalled)
+		if (this.neverCalled)
 		{
-			if (axisNumber > position.length)
+			if (this.axisNumber > position.length)
 				throw new IllegalArgumentException();
 
-			neverCalled = false;
+			this.neverCalled = false;
 		}
 		
-		if (position[axisNumber] % this.range == this.value)
+		if (position[this.axisNumber] % this.range == this.value)
 			return true;
 		
 		return false;

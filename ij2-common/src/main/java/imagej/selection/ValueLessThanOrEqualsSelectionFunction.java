@@ -11,7 +11,7 @@ public class ValueLessThanOrEqualsSelectionFunction implements SelectionFunction
 
 	public boolean include(int[] position, double sample)
 	{
-		return lessOrEquals.include(position, sample);
+		return this.lessOrEquals.include(position, sample);
 	}
 }
 
