@@ -38,15 +38,26 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		String definition = request.getParameter( "def" );
 		
 		//Try to get a Java def
+		Def def = null;
 		try {
-			Def def = new Def( definition );
+			//get the def object
+			def = Def.getDef( definition );
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		// Have the pipes controller process the results
+		JSONObject responseJSON = pipesController.evaluate( def );
 			
-	
+		// generate and send the response
+		response.setContentType("application/json");
+		response.setHeader("Cache-Control", "no-cache");
+		try {
+			response.getWriter().write( responseJSON.toString() );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void doGet( HttpServletRequest request,

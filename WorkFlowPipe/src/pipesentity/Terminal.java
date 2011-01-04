@@ -1,5 +1,7 @@
 package pipesentity;
 
+import java.util.ArrayList;
+
 import pipesentity.TerminalConnectorType.inputType;
 import pipesentity.TerminalConnectorType.outputType;
 
@@ -52,24 +54,31 @@ public class Terminal {
 	/**
 	 * @return
 	 */
-	public static Terminal[] getInOutTerminal( inputType inputType1, outputType outputType1 ) 
+	public static ArrayList<Terminal> getInOutTerminal( inputType inputType1, outputType outputType1 ) 
 	{
-		Terminal[] terminals = new Terminal[2];
-		terminals[0] = new Terminal( true, inputType1.toString()  );
-		terminals[1] = new Terminal( false, outputType1.toString() );
+		ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+		terminals.add( new Terminal( true, inputType1.toString()  ) );
+		terminals.add(  new Terminal( false, outputType1.toString() ) );
  		return terminals;
 	}
 
-	public static Terminal[] getInputTerminal( inputType inputType1 ) {
-		Terminal[] terminals = new Terminal[1];
-		terminals[0] = new Terminal( true, inputType1.toString()  );
+	public static ArrayList<Terminal> getInputTerminal( inputType inputType1 ) {
+		ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+		terminals.add( new Terminal( true, inputType1.toString()  ) );
  		return terminals;
 	}
 
-	public static Terminal[] getOutTerminal( outputType outputType1 ) {
-		Terminal[] terminals = new Terminal[1];
-		terminals[0] = new Terminal( false, outputType1.toString()  );
+	public static ArrayList<Terminal> getOutTerminal( outputType outputType1 ) {
+		ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+		terminals.add( new Terminal( false, outputType1.toString() )  );
  		return terminals;
+	}
+
+	public static ArrayList<Terminal> getTerminals( String string ) {
+		ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+		
+		
+		return terminals;
 	}
 	
 	

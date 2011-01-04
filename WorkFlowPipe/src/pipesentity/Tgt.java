@@ -4,6 +4,14 @@ import org.json.JSONObject;
 
 public class Tgt {
 	
+	public String getModuleid() {
+		return moduleid;
+	}
+
+	public String getId() {
+		return id;
+	}
+
 	private String moduleid;
 	private String id;
 
@@ -14,8 +22,9 @@ public class Tgt {
 	}
 	
 	public Tgt( JSONObject json ) {
-		System.out.println("Tgt constructor " + json.toString() );
-	}
+		this.id = json.getString("id");
+		this.moduleid = json.getString("moduleid");
+}
 
 	public JSONObject getJSONObject()
 	{
@@ -25,12 +34,6 @@ public class Tgt {
 		json.put( "id", id );
 		json.put( "moduleid", moduleid );
 		
-		// create an output module
-		JSONObject jsonOutput = new JSONObject();
-		
-		// populate the output module
-		jsonOutput.put( "tgt", json );
-		
-		return jsonOutput;
+		return json;
 	}
 }

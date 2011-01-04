@@ -24,13 +24,13 @@ public class Wire {
 		this.tgt = tgt;
 	}
 	
-	public Wire(JSONObject jsonObject) 
+	public Wire( JSONObject jsonObject ) 
 	{
-		for(int i = 0; i < jsonObject.length(); i++)
-			System.out.println("Wire Constructor " + i );
-		this.id = new ID( jsonObject.getJSONArray("id") );
+		//System.out.println("Wire Constructor input " + jsonObject );
+		this.id = new ID( jsonObject.getString("id") );
 		this.src = new Src( jsonObject.getJSONObject("src") );
 		this.tgt = new Tgt( jsonObject.getJSONObject("tgt") );
+		//System.out.println("Wire Constructor output " + getJSONObject() );	
 	}
 
 	public JSONObject getJSONObject()
@@ -53,6 +53,14 @@ public class Wire {
 		for(int i = 0; i < wiresArray.length(); i++)
 			wires.add( new Wire( wiresArray.getJSONObject(i) ) );
 		return null;
+	}
+
+	public Src getSrc() {
+		return this.src;
+	}
+
+	public Tgt getTgt() {
+		return this.tgt;
 	}
 
 }

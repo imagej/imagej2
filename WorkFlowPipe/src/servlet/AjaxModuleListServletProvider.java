@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,22 +11,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import pipesentity.Module;
-
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.users.User;
+import controller.PipesController;
 
 public class AjaxModuleListServletProvider extends HttpServlet {
 
 	private static final long serialVersionUID = 1458365345236667188L;
 	private JSONObject json = new JSONObject();
 
-	public AjaxModuleListServletProvider( ArrayList<Module> pipesModuleArray ) 
+	public AjaxModuleListServletProvider( PipesController pipesController ) 
 	{
 		JSONArray jsonArrayModule = new JSONArray();
 
 		//add each module to the array
-		for( Module pipesModule : pipesModuleArray )
+		for( Module pipesModule : pipesController.getModulesArrayList() )
 		{
 			//Get the JSONObject representative of the module entity
 			JSONObject jsonModule = pipesModule.getJSONObject();

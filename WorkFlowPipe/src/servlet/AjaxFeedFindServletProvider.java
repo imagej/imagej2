@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import controller.PipesController;
+
 import pipes.ResultFinder;
 import pipesentity.Module;
 
@@ -26,9 +28,9 @@ public class AjaxFeedFindServletProvider extends HttpServlet {
 	private static final long serialVersionUID = 1458365345236667188L;
 	private ArrayList<Module> pipesArrayList;
 
-	public AjaxFeedFindServletProvider(ArrayList<Module> pipesArrayList) {
+	public AjaxFeedFindServletProvider(PipesController pipesController) {
 		
-		this.pipesArrayList = pipesArrayList;
+		this.pipesArrayList = pipesController.getModulesArrayList();
 	
 	}
 
