@@ -2,9 +2,12 @@ package pipes;
 
 import java.util.ArrayList;
 
+import modules.OUTPUT;
+import modules.FetchPage;
 import pipesentity.Description;
-import pipesentity.Name;
+import pipesentity.ID;
 import pipesentity.Module;
+import pipesentity.Name;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.TerminalConnectorType;
@@ -13,97 +16,58 @@ import pipesentity.UI;
 
 public class ModuleGenerator {
 
-	public ModuleGenerator() {
 
-	}
+	public static Module getSampleModule() 
+	{
+		ID id = new ID("sitefeed");
+		
+		ArrayList<Terminal> terminals = Terminal.getInOutTerminal( TerminalConnectorType.inputType.valueOf("number"), TerminalConnectorType.outputType.valueOf("number") );
 
-	public static Module getFetchPageModule() {
-
-		Terminal[] terminals = Terminal
-				.getOutTerminal( TerminalConnectorType.outputType.valueOf("rss") );
-
-		UI ui = new UI(
-				"\n\t\t<div class=\"horizontal\">\n\t\t\t<label>URL: </label><input name=\"URL\" type=\"url\" required=\"true\"/>\n\t\t</div> \n\t\t<div class=\"horizontal\">\n\t\t\t<label>Cut content from: </label><input name=\"from\" type=\"text\" required=\"true\"/>\n            <label>to: </label><input name=\"to\" type=\"text\" required=\"true\"/>\n        </div>\n        <div class=\"horizontal\">\n            <label>Split using delimiter: </label><input name=\"token\" type=\"text\" required=\"true\"/>\n            \n\t\t</div> \n\t\t");
-
-		Name name = new Name("Fetch Page");
-
-		Type type = new Type("fetchpage");
-
-		Description description = new Description(
-				"Fetch HTML or XHTML documents and emit as a string");
-
-		Tag tag = new Tag("system:sources");
-		Tag[] tags = Tag.getTagsArray(tag);
-
-		return new Module(terminals, ui, name, type, description, tags);
-
-	}
-
-	public static Module getSampleModule() {
-
-		Terminal[] terminals = Terminal.getInOutTerminal(
-				TerminalConnectorType.inputType.valueOf("number"),
-				TerminalConnectorType.outputType.valueOf("number"));
-
-		UI ui = new UI(
-				" <div class=\"horizontal\" label=\"URL\" repeat=\"true\"> <input name=\"URL\" required=\"true\" type=\"url\"/> </div> ");
+		UI ui = new UI("<div class=\"horizontal\" label=\"URL\" repeat=\"true\"> <input name=\"URL\" required=\"true\" type=\"url\"/> </div>");
 
 		Name name = new Name("Fetch Site Feed");
 
 		Type type = new Type("fetchsitefeed");
 
-		Description description = new Description(
-				"Find feed URLs embedded in a webpage using auto-discovery links and fetch the first one ");
+		Description description = new Description("Find feed URLs embedded in a webpage using auto-discovery links and fetch the first one ");
 
 		Tag tag = new Tag("system:sources");
-		Tag[] tags = Tag.getTagsArray(tag);
+		ArrayList<Tag> tags = Tag.getTagsArray(tag);
 
-		return new Module(terminals, ui, name, type, description, tags);
+		return new Module( id, terminals, ui, name, type, description, tags);
 	}
+	
+	public static ArrayList<Module> getModulesFromInternalPackage()
+	{
+		// Create a default collection
+		ArrayList<Module> pipeModuleInternal = new ArrayList<Module>();
+		
+		//add the fetch page module
+		//pipeModuleInternal.add( FetchPage. );
+		
+		//add the output module
+		pipeModuleInternal.add( OUTPUT.getOUTPUT() );
+		
+		// return the results
+		return pipeModuleInternal;
+	}
+	
 
 	/**
-	 * Returns a sample collection representative of the inputs and features of
-	 * a ModuleGenerator
+	 * Returns a list of the internal modules
 	 * 
 	 * @return
 	 */
-	public static ArrayList<Module> getPipeModuleSampleCollection() {
+	public static ArrayList<Module> getPipeModulesInternal() {
 
 		// Create a default collection
 		ArrayList<Module> pipeModuleSampleCollection = new ArrayList<Module>();
 
 		// Create a Module
-		pipeModuleSampleCollection.add(getSampleModule());
-		pipeModuleSampleCollection.add(getFetchPageModule());
-		pipeModuleSampleCollection.add(getOutputModule());
+		pipeModuleSampleCollection.add( new FetchPage().getModule() );
+		pipeModuleSampleCollection.add( OUTPUT.getOUTPUT() );
 
 		return pipeModuleSampleCollection;
 	}
 
-	/**
-	 * returns a fixed output module
-	 * 
-	 * @return
-	 */
-	public static Module getOutputModule() {
-
-		Terminal[] terminals = Terminal
-				.getInputTerminal(TerminalConnectorType.inputType
-						.valueOf("rss"));
-
-		UI ui = new UI("");
-
-		Name name = new Name("Pipe Output");
-
-		Type type = new Type("output");
-
-		Description description = new Description(
-				"The pipe output needs to be fed to this module");
-
-		Tag tag = new Tag(null);
-		Tag[] tags = Tag.getTagsArray(tag);
-
-		return new Module(terminals, ui, name, type, description, tags);
-	}
-	
 }

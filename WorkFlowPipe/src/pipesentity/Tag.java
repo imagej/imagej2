@@ -1,5 +1,7 @@
 package pipesentity;
 
+import java.util.ArrayList;
+
 public class Tag {
 	
 	private String tag;
@@ -22,23 +24,25 @@ public class Tag {
 		return tag;
 	}
 	
-	public static Tag[] getTagsArray(Tag ... tags)
+	public static ArrayList<Tag> getTagsArray(Tag ... tags)
 	{
 		//create array for the tags
-		Tag[] tagsArray = new Tag[ tags.length ];
+		ArrayList<Tag> tagsArray = new ArrayList<Tag>();
 	
-		
-		//create an index value
-		int tagsIndex = 0;
-		
 		//for each tag in the variable length input parameter
 		for(Tag tag : tags)
 		{
 			//add the tag to the array
-			tagsArray[ tagsIndex++ ] = tag;
+			tagsArray.add( tag );
 		}
 		
 		//return the results
 		return tagsArray;
+	}
+
+	public static ArrayList<Tag> getTags( String string ) {
+		
+		ArrayList<Tag> tags = new ArrayList<Tag>();
+		return tags;
 	}
 }

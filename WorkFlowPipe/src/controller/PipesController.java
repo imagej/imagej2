@@ -2,20 +2,31 @@ package controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Random;
 
 import org.json.JSONObject;
 
+import pipesentity.Def;
 import pipesentity.Layout;
+import pipesentity.Module;
+import experimental.LocalDefEvaluator;
 
 public class PipesController {
 
 	private HashMap<String, Layout> layoutArrayList;
+	private HashMap<String,Module> moduleHashMap = new HashMap<String, Module>();
 	
-	public PipesController( HashMap<String, Layout> layoutArrayList  )
+	public PipesController( HashMap<String, Layout> layoutArrayList, ArrayList<Module> modulesArrayList  )
 	{
+		// add the layouts
 		this.layoutArrayList = layoutArrayList;
+		
+		// add the modules
+		this.moduleHashMap = Module.getHashMap( modulesArrayList );
 	}
 	
 	public JSONObject clonePipe( String parentID, String crumb, JSONObject json ) 
@@ -41,11 +52,7 @@ public class PipesController {
 		
 		return json;
 	}
-	
-	public HashMap< String, Layout > getPipesArrayList()
-	{
-		return layoutArrayList;
-	}
+
 
 	/**
 	 * 
@@ -172,6 +179,16 @@ public class PipesController {
 	public String getLayoutsHTML(String guid) {
 		
 		return null;
+	}
+
+	public JSONObject evaluate( Def def ) 
+	{
+		//Use a local Def Evaluator	
+		return LocalDefEvaluator.getJSONResponse( def, moduleHashMap );
+	}
+
+	public ArrayList<Module> getModulesArrayList() {
+		return Module.getModulesArrayList( moduleHashMap );
 	}
 	
 }

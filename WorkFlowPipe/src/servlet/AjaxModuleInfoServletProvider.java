@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import controller.PipesController;
+
 import pipes.ModuleSearch;
 import pipesentity.Info;
 import pipesentity.Module;
@@ -19,10 +21,10 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 	private static final long serialVersionUID = 1458365345236667188L;
 	 ArrayList<Module> pipesModuleCollection;
 
-	public AjaxModuleInfoServletProvider( ArrayList<Module> pipesModuleCollection ) {
+	public AjaxModuleInfoServletProvider( PipesController pipesController ) {
 		
 		//hang on the reference
-		this.pipesModuleCollection = pipesModuleCollection;
+		this.pipesModuleCollection = pipesController.getModulesArrayList();
 	}
 
 	/**
@@ -42,7 +44,7 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 			//Search for type 
 			pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, this.pipesModuleCollection );
 		
-			if(pipesModule.getTypeValue() != typeParameter )
+			if( pipesModule.getType().getValue() != typeParameter )
 			{
 				response.setContentType( "application/json" );
 				response.setHeader( "Cache-Control", "no-cache" );

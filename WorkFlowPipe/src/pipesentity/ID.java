@@ -9,15 +9,8 @@ public class ID {
 	
 	public ID( String id )
 	{
+		//System.out.println("ID string constructor " + id );
 		this.id = id;
-	}
-
-	public ID( JSONObject json ) {
-		System.out.println("ID constructor " + json.toString() );
-	}
-
-	public ID(JSONArray jsonArray) {
-		System.out.println("ID array constructor " + jsonArray.toString() );
 	}
 
 	public String getValue() {

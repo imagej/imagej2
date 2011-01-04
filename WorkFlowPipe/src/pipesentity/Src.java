@@ -14,7 +14,8 @@ public class Src {
 	}
 	
 	public Src( JSONObject json ) {
-		System.out.println("Src constructor " + json.toString() );
+		this.id = json.getString("id");
+		this.moduleid = json.getString("moduleid");
 	}
 
 	public JSONObject getJSONObject()
@@ -25,12 +26,14 @@ public class Src {
 		json.put( "id", id );
 		json.put( "moduleid", moduleid );
 		
-		// create an output module
-		JSONObject jsonOutput = new JSONObject();
-		
-		// populate the output module
-		jsonOutput.put( "src", json );
-		
-		return jsonOutput;
+		return json;
+	}
+
+	public String getModuleid() {
+		return moduleid;
+	}
+
+	public String getId() {
+		return id;
 	}
 }

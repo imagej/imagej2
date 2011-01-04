@@ -61,24 +61,25 @@ public class Open {
 		for( String keyString : outputParameterMap.keySet() )
 			System.out.println("outputParameter " + keyString + " is " + outputParameterMap.get( keyString) );
 		*/
-		//Create a pipes controller
-		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts() );
 		
+		//Get the internal pipes
+		ArrayList<Module> internalModules = ModuleGenerator.getPipeModulesInternal();
+		
+		//Create a pipes controller
+		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts(), internalModules );
+			
 		//Create a new JettyServerController
 		JettyServerController jettyServerController = new JettyServerController( portNumber, "pipe.edit", "/web", true );
-		
-		//Create a sample internal pipes collection
-		ArrayList<Module> pipesSampleCollection = ModuleGenerator.getPipeModuleSampleCollection();
 		
 		//add the OpenID authentication servlet 
 		jettyServerController.addServlet("/login.required", new OpenIDAuthenticationServlet() );
 		//jettyServerController.addServlet("/login.required", new OpenIDServlet() );
 		
 		//add the list servlet
-		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider( pipesSampleCollection ) );
+		jettyServerController.addServlet("/ajax.module.list", new AjaxModuleListServletProvider( pipesController ) );
 		
 		//add the info servlet
-		jettyServerController.addServlet("/ajax.module.info", new AjaxModuleInfoServletProvider( pipesSampleCollection )  );
+		jettyServerController.addServlet("/ajax.module.info", new AjaxModuleInfoServletProvider( pipesController )  );
 		
 		//add the pipe preview servlet
 		jettyServerController.addServlet("/ajax.pipe.preview", new AjaxPipePreviewServletProvider( pipesController )  );
@@ -87,7 +88,7 @@ public class Open {
 		jettyServerController.addServlet("/ajax.feed.preview", new AjaxFeedPreviewServletProvider(  )  );
 	
 		//add the feed find servlet
-		jettyServerController.addServlet("/ajax.feed.find", new AjaxFeedFindServletProvider( pipesSampleCollection )  );
+		jettyServerController.addServlet("/ajax.feed.find", new AjaxFeedFindServletProvider( pipesController )  );
 		
 		//add the servlet to handle saving and changing of layouts
 		jettyServerController.addServlet("/ajax.pipe.save", new AjaxPipeSaveServletProvider( pipesController )  );
