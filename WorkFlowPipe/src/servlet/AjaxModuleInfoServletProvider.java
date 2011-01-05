@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,18 +14,19 @@ import org.json.JSONObject;
 import controller.PipesController;
 
 import pipes.ModuleSearch;
+import pipes.Service;
+import pipesapi.Module;
 import pipesentity.Info;
-import pipesentity.Module;
 
 public class AjaxModuleInfoServletProvider extends HttpServlet {
 
 	private static final long serialVersionUID = 1458365345236667188L;
-	 ArrayList<Module> pipesModuleCollection;
+	HashMap<Service, Module> modulesServiceHashMap;
 
 	public AjaxModuleInfoServletProvider( PipesController pipesController ) {
 		
 		//hang on the reference
-		this.pipesModuleCollection = pipesController.getModulesArrayList();
+		this.modulesServiceHashMap = pipesController.getModulesServiceHashMap();
 	}
 
 	/**
@@ -42,7 +44,7 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 		if( typeParameter != null )
 		{
 			//Search for type 
-			pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, this.pipesModuleCollection );
+			pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, modulesServiceHashMap );
 		
 			if( pipesModule.getType().getValue() != typeParameter )
 			{

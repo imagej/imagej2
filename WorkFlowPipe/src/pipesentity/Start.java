@@ -9,9 +9,9 @@ public class Start {
 		this.start = new Long(start);
 	}
 	
-	public String getValue()
+	public long getValue()
 	{
-		return start.toString();
+		return start;
 	}
 
 }

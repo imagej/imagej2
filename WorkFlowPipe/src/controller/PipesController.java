@@ -2,31 +2,35 @@ package controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Random;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import pipes.Service;
+import pipesapi.Module;
+import pipesentity.Conf;
 import pipesentity.Def;
+import pipesentity.ID;
 import pipesentity.Layout;
-import pipesentity.Module;
+import pipesentity.Type;
 import experimental.LocalDefEvaluator;
 
 public class PipesController {
 
-	private HashMap<String, Layout> layoutArrayList;
-	private HashMap<String,Module> moduleHashMap = new HashMap<String, Module>();
+	private HashMap< Type, Layout > layoutArrayList;
+	private HashMap< Service, Module > modulesServiceHashMap;
 	
-	public PipesController( HashMap<String, Layout> layoutArrayList, ArrayList<Module> modulesArrayList  )
+	public PipesController( HashMap<Type, Layout> layoutArrayList, HashMap<Service, Module> modulesServiceHashMap  )
 	{
 		// add the layouts
 		this.layoutArrayList = layoutArrayList;
 		
 		// add the modules
-		this.moduleHashMap = Module.getHashMap( modulesArrayList );
+		this.modulesServiceHashMap = modulesServiceHashMap;
 	}
 	
 	public JSONObject clonePipe( String parentID, String crumb, JSONObject json ) 
@@ -42,7 +46,7 @@ public class PipesController {
 		}
 		
 		//add the Layout
-		layoutArrayList.put( uniqueID, new Layout( uniqueID, layoutArrayList.get( parentID ).getLayoutDefinition(), layoutArrayList.get( parentID ).getLayoutName(), layoutArrayList.get( parentID ).getLayoutDescription(), layoutArrayList.get( parentID ).getLayoutTags() ) );
+		layoutArrayList.put( new Type( uniqueID ), new Layout( uniqueID, layoutArrayList.get( parentID ).getLayoutDefinition(), layoutArrayList.get( parentID ).getLayoutName(), layoutArrayList.get( parentID ).getLayoutDescription(), layoutArrayList.get( parentID ).getLayoutTags() ) );
 		
 		//set return value for new id
 		json.put("new_id", uniqueID);
@@ -64,7 +68,7 @@ public class PipesController {
 	 */
 	public void updatePipe( String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags ) {
 		layoutArrayList.remove( layoutID );
-		layoutArrayList.put( layoutID, new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ));
+		layoutArrayList.put( new Type( layoutID ), new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ));
 	}
 	
 	//Credit:http://www.xinotes.org/notes/note/370/
@@ -90,7 +94,7 @@ public class PipesController {
 	
 	public String insertPipe(  String layoutID, String layoutDefinition, String layoutName, String layoutDescription, String layoutTags, String crumb ) throws NoSuchAlgorithmException {
 		String id = getUniqueID( layoutDefinition + layoutName + crumb );
-		layoutArrayList.put( id, new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ) );
+		layoutArrayList.put( new Type( id ), new Layout( layoutID, layoutDefinition, layoutName, layoutDescription, layoutTags ) );
 		return id;
 	}
 
@@ -181,14 +185,30 @@ public class PipesController {
 		return null;
 	}
 
-	public JSONObject evaluate( Def def ) 
+	public JSONObject evaluate( String definition ) 
 	{
-		//Use a local Def Evaluator	
-		return LocalDefEvaluator.getJSONResponse( def, moduleHashMap );
+		// get the JSON Object
+		JSONObject definitionJSON;
+		JSONObject result = null;
+		
+		try {
+			definitionJSON = new JSONObject( definition );
+		
+			//Try to get a Java def
+			Def def = new Def( definitionJSON );
+		
+		
+			//Use a local Def Evaluator	
+			result = LocalDefEvaluator.getPreview( def, modulesServiceHashMap );
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
-	public ArrayList<Module> getModulesArrayList() {
-		return Module.getModulesArrayList( moduleHashMap );
+	public HashMap<Service, Module> getModulesServiceHashMap() {
+		return modulesServiceHashMap;
 	}
 	
 }

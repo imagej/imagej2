@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,7 +14,8 @@ import org.json.JSONObject;
 import controller.PipesController;
 
 import pipes.ResultFinder;
-import pipesentity.Module;
+import pipes.Service;
+import pipesapi.Module;
 
 /**
  * Does a Post with the following parameters:
@@ -26,11 +28,11 @@ import pipesentity.Module;
 public class AjaxFeedFindServletProvider extends HttpServlet {
 
 	private static final long serialVersionUID = 1458365345236667188L;
-	private ArrayList<Module> pipesArrayList;
+	private HashMap<Service, Module> modulesServiceHashMap;
 
 	public AjaxFeedFindServletProvider(PipesController pipesController) {
 		
-		this.pipesArrayList = pipesController.getModulesArrayList();
+		this.modulesServiceHashMap = pipesController.getModulesServiceHashMap();
 	
 	}
 
@@ -41,7 +43,7 @@ public class AjaxFeedFindServletProvider extends HttpServlet {
 		String query = request.getParameter( "query" );
 		
 		//get the JSONObject
-		JSONObject json = ResultFinder.getResultsJSONObject( query, this.pipesArrayList );
+		JSONObject json = ResultFinder.getResultsJSONObject( query, modulesServiceHashMap);
 		
 		// Add get 1 to array
 		json.put("ok", new Integer(1));

@@ -1,59 +1,69 @@
 package experimental;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
 
-import modules.FetchPage;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import pipes.Service;
+import pipesapi.Module;
+import pipesentity.Conf;
 import pipesentity.Def;
-import pipesentity.Module;
+import pipesentity.ID;
+import pipesentity.Type;
 
 public class LocalDefEvaluator {
 
-	public static JSONObject getJSONResponse( Def def, HashMap<String, Module> moduleHashMap ) 
+	public static JSONObject getPreview( Def def, HashMap<Service, Module> moduleHashMap )
 	{	
 		//create the response JSON Object
-		JSONObject resultJSON = new JSONObject();
+		JSONObject json = new JSONObject();
 		
-		//create an execution vector of Modules
-		Vector<Module> executionVector = new Vector<Module>();
+		// TODO:use wires for ordering
+		// TODO:use modules connectors for input/outputs		
+		// TODO: extend checking and ordering logic
 		
-		// get the execution vector if there are wires
-		if ( def.getWires().size() > 0)
+		JSONArray modulesJSONArray = def.getModulesArray();
+		
+		ArrayList<Module> moduleList = new ArrayList<Module>();
+
+		for (int i = 0; i < modulesJSONArray.length(); i++) 
 		{
-			executionVector = Def.getOrderedVectorofConnectedModules( def );
-		} 
-		else 
-		{
-			// get the preview module
-			executionVector = Def.getOrderedVectorOfModules( def );
+			//get the JSONObject
+			JSONObject jsonInternal = modulesJSONArray.getJSONObject(i);
+			
+			//get the type
+			Type type = new Type( jsonInternal.getString("type") );
+			
+			// get the ID
+			ID id = new ID( jsonInternal.getString("id"));
+			
+			// get the confs
+			ArrayList<Conf> confs = Conf.getConfs( jsonInternal.getString("conf") );
+			
+			// get an instance of the service
+			Module moduleInstance = moduleHashMap.get( type ).clone();
+			
+			moduleInstance.setID( id );
+			moduleInstance.setConfs( confs );
+			
+			//get the service
+			moduleList.add( moduleInstance );
 		}
-	
-		// iterate through the Modules, executing sequentially
-		Iterator<Module> executionIterator = executionVector.iterator();
-		while( executionIterator.hasNext() )
+		
+		// evaluate the modules individually
+		for( Module module : moduleList )
 		{
-			//Module to execute
-			Module toExecuteModule = executionIterator.next();
+			// get the confs
+			ArrayList<Conf> confs = module.getConfArray();
 			
-			//Module's input and parameters  //TODO replace
-			System.out.println("Executing module " + toExecuteModule.getType() + " " + toExecuteModule.getJSONObject() );
+			System.out.println( "Runnning module " + module.getType().getValue()  + " with configurations " + Conf.getJSON( confs ) );	
 			
-			//get an instance of the module to run
-			//Module module = moduleHashMap.get( key );
-			
-			// run the module
-			//module.
+			//just print the results
+			System.out.println( module.getJSONObjectResults() );
 		}
-		
-		
-		//set return status to success
-		resultJSON.put("ok", new Integer( 1 ));
-		
-		return resultJSON;
+		return json;
 	}
 
 }

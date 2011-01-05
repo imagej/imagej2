@@ -2,8 +2,8 @@ package persistance;
 
 import java.util.HashMap;
 
-
 import pipesentity.Layout;
+import pipesentity.Type;
 
 public class LoadLayouts {
 	
@@ -15,10 +15,9 @@ public class LoadLayouts {
 		return pipesLayout;
 	}
 
-	public static HashMap<String, Layout> loadLayouts() {
-		//TODO:add persistance
-		
-		return new HashMap<String, Layout>();
+	public static HashMap<Type, Layout> loadLayouts() 
+	{		
+		return new HashMap<Type, Layout>();
 	}
 
 }

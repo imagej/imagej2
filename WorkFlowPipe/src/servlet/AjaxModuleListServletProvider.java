@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import pipesentity.Module;
+import pipesapi.Module;
 import controller.PipesController;
 
 public class AjaxModuleListServletProvider extends HttpServlet {
@@ -23,7 +23,7 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 		JSONArray jsonArrayModule = new JSONArray();
 
 		//add each module to the array
-		for( Module pipesModule : pipesController.getModulesArrayList() )
+		for( Module pipesModule : pipesController.getModulesServiceHashMap().values() )
 		{
 			//Get the JSONObject representative of the module entity
 			JSONObject jsonModule = pipesModule.getJSONObject();

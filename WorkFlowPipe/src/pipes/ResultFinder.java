@@ -1,11 +1,12 @@
 package pipes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import pipesentity.Module;
+import pipesapi.Module;
 import pipesentity.Result;
 
 /**
@@ -29,11 +30,11 @@ public class ResultFinder {
 	 * @param moduleArrayList - the array list
 	 * @return
 	 */
-	public ArrayList<Result> getResults( String searchTerm, ArrayList<Module> moduleArrayList )
+	public ArrayList<Result> getResults( String searchTerm, HashMap<Service,Module> modulesServiceHashMap )
 	{
 		//search the description and name for search term and add results
 		//TODO: replace with existing search method
-		for( Module module : moduleArrayList )
+		for( Module module : modulesServiceHashMap.values() )
 		{
 			//if there is a match
 			if(module.searchNameAndDescription(searchTerm))
@@ -46,13 +47,13 @@ public class ResultFinder {
 		return resultArrayList;
 	}
 	
-	public static JSONObject getResultsJSONObject( String searchTerm, ArrayList<Module> moduleArrayList )
+	public static JSONObject getResultsJSONObject( String searchTerm, HashMap<Service, Module> modulesServiceHashMap )
 	{
 		//create a result finder
 		ResultFinder resultFinder = new ResultFinder();
 		
 		//get the result array list
-		ArrayList<Result> resultArrayList = resultFinder.getResults( searchTerm, moduleArrayList );
+		ArrayList<Result> resultArrayList = resultFinder.getResults( searchTerm, modulesServiceHashMap );
 		
 		//get the JSON object from the resultArrayList
 		return Result.getResultsJSONObject( resultArrayList );

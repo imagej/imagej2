@@ -2,9 +2,14 @@ package modules;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
+import modulesapi.IModule;
+
+import pipesapi.Module;
+import pipesentity.Conf;
 import pipesentity.Description;
 import pipesentity.ID;
-import pipesentity.Module;
 import pipesentity.Name;
 import pipesentity.Tag;
 import pipesentity.Terminal;
@@ -12,25 +17,38 @@ import pipesentity.TerminalConnectorType;
 import pipesentity.Type;
 import pipesentity.UI;
 
-public class OUTPUT {
-
-	public static Module getOUTPUT() {
-		ID id = new ID("_OUTPUT");
+public class OUTPUT extends Module implements IModule {
+	
+	public OUTPUT( JSONObject jsonObject ) {
 		
-		ArrayList<Terminal> terminals = Terminal.getInputTerminal(TerminalConnectorType.inputType.valueOf("rss"));
+		super( jsonObject );
+		
+		id = new ID("_OUTPUT");
+		
+		terminals = Terminal.getInputTerminal(TerminalConnectorType.inputType.valueOf("rss"));
 
-		UI ui = new UI("");
+		ui = new UI("");
 
-		Name name = new Name("Pipe Output");
+		name = new Name("Pipe Output");
 
-		Type type = new Type("output");
+		type = new Type("output");
 
-		Description description = new Description("The pipe output needs to be fed to this module");
+		description = new Description("The pipe output needs to be fed to this module");
 
 		Tag tag = new Tag(null);
-		ArrayList<Tag> tags = Tag.getTagsArray(tag);
+		tags = Tag.getTagsArray(tag);
+	}
 
-		return new Module( id, terminals, ui, name, type, description, tags);
+	@Override
+	public Module getModule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void go(ArrayList<Conf> confs) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

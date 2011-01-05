@@ -2,6 +2,8 @@ package pipesentity;
 
 import org.json.JSONObject;
 
+import pipesapi.Module;
+
 public class Info {
 	
 	private Module pipesModule;

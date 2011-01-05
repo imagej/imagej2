@@ -37,18 +37,8 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		// Evaluate the inputs
 		String definition = request.getParameter( "def" );
 		
-		//Try to get a Java def
-		Def def = null;
-		try {
-			//get the def object
-			def = Def.getDef( definition );
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		// Have the pipes controller process the results
-		JSONObject responseJSON = pipesController.evaluate( def );
+		JSONObject responseJSON = pipesController.evaluate( definition );
 			
 		// generate and send the response
 		response.setContentType("application/json");
@@ -56,8 +46,10 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		try {
 			response.getWriter().write( responseJSON.toString() );
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
 	}
 
 	protected void doGet( HttpServletRequest request,
