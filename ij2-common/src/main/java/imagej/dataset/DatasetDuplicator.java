@@ -5,33 +5,45 @@ import imagej.process.Index;
 
 public class DatasetDuplicator
 {
-	/** public constructor that allows subclass/override mechanism if needed */
+	// *************** public interface ****************************************************
+	
+	/** constructor that allows subclass/override mechanism if needed */
 	public DatasetDuplicator()
 	{
 	}
 	
 	/** creates a Dataset according to given factory's style but whose shape and data values are copied from a given Dataset */ 
-	public Dataset duplicateDataset(DatasetFactory factory, Dataset dataset)
+	public Dataset createDataset(DatasetFactory factory, Dataset inputDataset)
 	{
-		Type type = dataset.getType();
+		Type type = inputDataset.getType();
 		
-		int[] dimensions = dataset.getDimensions();
+		return createTypeConvertedDataset(factory, type, inputDataset);
+	}
+	
+	/** create a Dataset according to given factory's style and a specified type but whose shape and data values are copied from a given Dataset */ 
+	public Dataset createTypeConvertedDataset(DatasetFactory factory, Type type, Dataset inputDataset)
+	{
+		int[] dimensions = inputDataset.getDimensions();
 		
 		Dataset newDataset = factory.createDataset(type, dimensions);
 		
 		// choose the best way to copy to assure no precision loss
+		// TODO - could test here vs. output dataset. I'm not sure it matters. But this way input dataset values are fully preserved before conversion
 		CopyFunction copier;
-		if (type.isFloat())
-			copier = new DoubleCopyFunction(dataset, newDataset);
+		if (inputDataset.getType().isFloat())
+			copier = new DoubleCopyFunction(inputDataset, newDataset);
 		else
-			copier = new LongCopyFunction(dataset, newDataset);
+			copier = new LongCopyFunction(inputDataset, newDataset);
 		
 		copyData(dimensions, copier);
 		
-		newDataset.setMetaData(dataset.getMetaData());  // TODO - PROBABLY NEED TO CLONE THE METADATA HERE!!!!!!!!!!!
+		// TODO - SOMETHING NEEDS TO BE DONE HERE ABOUT PRESERVING METADATA
+		// newDataset.setMetaData(inputDataset.getMetaData().clone());  // something like this???
 		
 		return newDataset;
 	}
+	
+	// *************** private interface ****************************************************
 	
 	/** copy data */
 	private void copyData(int[] dimensions, CopyFunction copier)
@@ -40,17 +52,17 @@ public class DatasetDuplicator
 		int[] origin = Index.create(dimensions.length);
 		int[] span = dimensions;
 
-		// TODO - copying in the easiest and slowest way possible - do some speed up by indexing on planes to minimize Dataset subset lookup times
+		// TODO - copying in the easiest but slowest way possible - do some speed up by indexing on planes to minimize Dataset subset lookup times
 		while (Index.isValid(position, origin, span))
 		{
-			copier.copyValueFrom(position);
+			copier.copyValue(position);
 			Index.increment(position, origin, span);
 		}
 	}
 	
 	private interface CopyFunction
 	{
-		void copyValueFrom(int[] position);
+		void copyValue(int[] position);
 	}
 	
 	private class LongCopyFunction implements CopyFunction
@@ -64,9 +76,10 @@ public class DatasetDuplicator
 			this.toDataset = to;
 		}
 		
-		public void copyValueFrom(int[] position)
+		public void copyValue(int[] position)
 		{
 			long value = this.fromDataset.getLong(position);
+			
 			this.toDataset.setLong(position, value);
 		}
 	}
@@ -82,9 +95,10 @@ public class DatasetDuplicator
 			this.toDataset = to;
 		}
 		
-		public void copyValueFrom(int[] position)
+		public void copyValue(int[] position)
 		{
 			double value = this.fromDataset.getDouble(position);
+			
 			this.toDataset.setDouble(position, value);
 		}
 	}

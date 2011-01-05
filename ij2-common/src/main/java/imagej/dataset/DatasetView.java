@@ -282,6 +282,9 @@ public class DatasetView implements Dataset
 	@Override
 	public Dataset getSubset(int[] index)
 	{
+		if (index.length == 0)  // degenerate case
+			return this;
+		
 		int[] partialFullSpaceIndex = createPartialFullSpaceIndex(index);
 	
 		if (anyAxesFixedLeftOfPartialIndex(partialFullSpaceIndex))
