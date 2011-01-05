@@ -6,14 +6,12 @@ import imagej.plugin.ij2.Ij2PluginFinder;
 import imagej.plugin.ij2.Ij2PluginRunner;
 import imagej.plugin.ij2.ParameterHandler;
 */
-import java.util.ArrayList;
-
-import experimental.FileUploadSerletProvider;
-import experimental.OpenIDAuthenticationServlet;
+import java.util.HashMap;
 
 import persistance.LoadLayouts;
 import pipes.ModuleGenerator;
-import pipesentity.Module;
+import pipes.Service;
+import pipesapi.Module;
 import servlet.AjaxFeedFindServletProvider;
 import servlet.AjaxFeedPreviewServletProvider;
 import servlet.AjaxModuleInfoServletProvider;
@@ -23,6 +21,7 @@ import servlet.AjaxPipePreviewServletProvider;
 import servlet.AjaxPipeSaveServletProvider;
 import servlet.AjaxUserUpdatewebpathServletProvider;
 import servlet.PipeDeleteServletProvider;
+import experimental.OpenIDAuthenticationServlet;
 
 
 //TODO:add implements run() from plugin
@@ -62,11 +61,11 @@ public class Open {
 			System.out.println("outputParameter " + keyString + " is " + outputParameterMap.get( keyString) );
 		*/
 		
-		//Get the internal pipes
-		ArrayList<Module> internalModules = ModuleGenerator.getPipeModulesInternal();
+		//Get the internal modules
+		HashMap<Service,Module> internalModulesHashMap = ModuleGenerator.getInternalModules();
 		
 		//Create a pipes controller
-		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts(), internalModules );
+		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts(), internalModulesHashMap );
 			
 		//Create a new JettyServerController
 		JettyServerController jettyServerController = new JettyServerController( portNumber, "pipe.edit", "/web", true );
@@ -104,10 +103,7 @@ public class Open {
        
 		//add the ability to delete a user created layout
 		//jettyServerController.addServlet("/person.info", new PersonInfoServletProvider( pipesController )  );
-		
-		// add the file upload servlet //TODO: Add security / authentication before enabling
-		//jettyServerController.addServlet("/upload.file", new FileUploadSerletProvider( "/tmp" ) );
-		
+			
 		//start the session and launch the default page
 		jettyServerController.startAndLaunchBrowser();
 	}

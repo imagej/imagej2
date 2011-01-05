@@ -34,7 +34,7 @@ public class OpenIDServlet extends HttpServlet {
 			throws IOException {
 		UserService userService = UserServiceFactory.getUserService();
 		Principal user = request.getUserPrincipal();
-		Set<String> attributes = new HashSet();
+		Set<String> attributes = new HashSet<String>();
 
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();

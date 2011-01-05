@@ -1,8 +1,8 @@
 package pipes;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-import pipesentity.Module;
+import pipesapi.Module;
 
 public class ModuleSearch {
 
@@ -13,9 +13,9 @@ public class ModuleSearch {
 	 * @param pipesModulesArrayList - Collection of PipeModules
 	 * @return the first string match on type field
 	 */
-	public static Module findfirstModuleOfType( String type, ArrayList<Module> pipesModulesArrayList )
+	public static Module findfirstModuleOfType( String type, HashMap<Service, Module> modulesServiceHashMap )
 	{
-		for( Module pipesModule : pipesModulesArrayList )
+		for( Module pipesModule : modulesServiceHashMap.values() )
 		{
 			if( pipesModule.matchesType( type ) )
 			{

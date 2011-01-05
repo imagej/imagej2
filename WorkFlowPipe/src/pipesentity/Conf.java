@@ -18,14 +18,37 @@ public class Conf {
 	/**
 	 * 
 	 * @param name - Conf name
-	 * @param type - conf type
-	 * @param value - conf value
+	 * @param value - Conf value
+	 * @param type - Conf type
 	 */
-	public Conf( Name name, Type type, Value value )
+	public Conf( Name name, Value value, Type type )
 	{
 		this.name = name;
 		this.type = type;
 		this.value = value;
+	}
+	
+	public Type getType() {
+		return type;
+	}
+
+	public Value getValue() {
+		return value;
+	}
+
+	/**
+	 * returns true if conf's name matches inputName
+	 * @param name
+	 * @return
+	 */
+	public boolean isName( String inputName )
+	{
+		if( this.name.getValue() == inputName )
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -90,6 +113,45 @@ public class Conf {
 		}
 		
 		return confs;
+	}
+
+	/**
+	 * returns the first conf found matching the string name
+	 * @param confName
+	 * @param confs
+	 * @return null if no match
+	 */
+	public static Conf getConf( String confName, ArrayList<Conf> confs ) 
+	{
+		//for each conf in the array
+		for(Conf conf:confs)
+		{
+			//check to see if the name matches
+			if( conf.isName(confName))
+			{
+				//it matches so return this conf
+				return conf;
+			}
+		}
+		
+		// no match - return null
+		return null;
+		
+	}
+
+	public static JSONObject getJSON(ArrayList<Conf> confs) {
+		JSONObject json = new JSONObject(); 
+		
+		// iterate over the confs
+		for ( Conf conf : confs )
+		{
+			JSONObject internalJSON = new JSONObject(); 
+			internalJSON.put( "value", conf.value.getValue()  );
+			internalJSON.put( "type", conf.type.getValue()  );
+			
+			json.put( conf.name.getValue(), internalJSON );
+		}
+		return json;
 	}
 	
 	
