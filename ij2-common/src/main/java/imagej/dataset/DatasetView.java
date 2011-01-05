@@ -15,6 +15,9 @@ import imagej.data.Type;
 /** a DatasetView is Dataset that acts like a view into a larger Dataset with some axes fixed. */
 public class DatasetView implements Dataset
 {
+	
+	// ***************  instance variables  ***********************************************
+	
 	// Core instance variables for this implementation
 	private Dataset fullSpaceDataset;
 	private int[] fullSpaceAxisValues;
@@ -29,6 +32,8 @@ public class DatasetView implements Dataset
 	// general Dataset support variables
 	private Dataset parent;
 	private MetaData metadata;
+	
+	// ***************  constructor  ***********************************************
 	
 	/** Constructor
 	 * 
@@ -96,6 +101,53 @@ public class DatasetView implements Dataset
 		this.viewDimensionsLength = this.viewDimensions.length;
 	}
 	
+	// ***************  private interface  ***********************************************
+	
+	private boolean anyAxesFixedLeftOfPartialIndex(int[] partialFullSpaceIndex)
+	{
+		int unreferencedAxes = this.fullDimensionsLength - partialFullSpaceIndex.length;
+		
+		return (this.firstFixedAxis < unreferencedAxes);
+	}
+	
+	private int[] createPartialFullSpaceIndex(int[] viewSpaceIndex)
+	{
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		
+		int fullSpaceIndex = this.fullDimensionsLength - 1;
+
+		while ((fullSpaceIndex >= 0) && (this.fullSpaceAxisValues[fullSpaceIndex] != -1))
+		{
+			indices.add(0, this.fullSpaceAxisValues[fullSpaceIndex]);
+			fullSpaceIndex--;
+		}
+		
+		int viewIndex = viewSpaceIndex.length-1;
+		while (viewIndex >= 0)
+		{
+			// add specified view coord axis
+			indices.add(0, viewSpaceIndex[viewIndex]);
+			viewIndex--;
+			fullSpaceIndex--;
+			
+			// add any other fixed axes present
+			while ((fullSpaceIndex >= 0) && (this.fullSpaceAxisValues[fullSpaceIndex] != -1))
+			{
+				indices.add(0, this.fullSpaceAxisValues[fullSpaceIndex]);
+				fullSpaceIndex--;
+			}
+		}
+		
+		int partialIndexSize = indices.size();
+		
+		int[] partialFullSpaceIndex = new int [partialIndexSize];
+		
+		for (int i = 0; i < partialIndexSize; i++)
+			partialFullSpaceIndex[i] = indices.get(i);
+		
+		return partialFullSpaceIndex;
+	}
+	
 	private void fillFullSpaceIndex(int[] fromSubspaceIndex)
 	{
 		for (int i = 0; i < this.viewDimensionsLength; i++)
@@ -104,6 +156,8 @@ public class DatasetView implements Dataset
 			this.fullSpaceIndex[indexOfAxis] = fromSubspaceIndex[i];
 		}
 	}
+	
+	// ***************  public interface - Dataset implementations  ***********************************************
 	
 	@Override
 	public int[] getDimensions()
@@ -236,51 +290,6 @@ public class DatasetView implements Dataset
 		return this.fullSpaceDataset.getSubset(partialFullSpaceIndex);
 	}
 
-	private boolean anyAxesFixedLeftOfPartialIndex(int[] partialFullSpaceIndex)
-	{
-		int unreferencedAxes = this.fullDimensionsLength - partialFullSpaceIndex.length;
-		
-		return (this.firstFixedAxis < unreferencedAxes);
-	}
-	
-	private int[] createPartialFullSpaceIndex(int[] viewSpaceIndex)
-	{
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		
-		int fullSpaceIndex = this.fullDimensionsLength - 1;
-
-		while ((fullSpaceIndex >= 0) && (this.fullSpaceAxisValues[fullSpaceIndex] != -1))
-		{
-			indices.add(0, this.fullSpaceAxisValues[fullSpaceIndex]);
-			fullSpaceIndex--;
-		}
-		
-		int viewIndex = viewSpaceIndex.length-1;
-		while (viewIndex >= 0)
-		{
-			// add specified view coord axis
-			indices.add(0, viewSpaceIndex[viewIndex]);
-			viewIndex--;
-			fullSpaceIndex--;
-			
-			// add any other fixed axes present
-			while ((fullSpaceIndex >= 0) && (this.fullSpaceAxisValues[fullSpaceIndex] != -1))
-			{
-				indices.add(0, this.fullSpaceAxisValues[fullSpaceIndex]);
-				fullSpaceIndex--;
-			}
-		}
-		
-		int partialIndexSize = indices.size();
-		
-		int[] partialFullSpaceIndex = new int [partialIndexSize];
-		
-		for (int i = 0; i < partialIndexSize; i++)
-			partialFullSpaceIndex[i] = indices.get(i);
-		
-		return partialFullSpaceIndex;
-	}
-	
 	@Override
 	public double getDouble(int[] position)
 	{
