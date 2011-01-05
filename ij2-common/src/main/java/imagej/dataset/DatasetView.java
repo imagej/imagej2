@@ -6,10 +6,9 @@ import imagej.MetaData;
 import imagej.data.Type;
 
 // TODOs
-// Are there any right to left vs. left to right index accessing that matters here? Especially for getSubset()???
-// Dataset matches parent in extent of its subset of axes. i.e. given [1,2,3] and axes [0,1,-1] the dataset has extent 3 in its only free axis.
+// Dataset matches parent in extent of its subset of axes. i.e. given [1,2,5] and axes [0,1,-1] the dataset has extent 5 in its only free axis.
 //   Would like to come up with a subsetting view that could have smaller bounds than parent. This would cause us to have to write bounds checking
-//   code for this class on every data access.
+//   code for that class on every data access.
 
 // TODO - this is a first pass implementation. it has many instance vars that could be trimmed down. fix as possible.
 
@@ -224,15 +223,6 @@ public class DatasetView implements Dataset
 	
 	if no fixed dims left of my last partial index axis then its safe to subset
 	
-	so scan from right to left
-	maybe the way to do this is via a loop that does this:
-	  make a partial index of full space dataset
-	  Dataset curr = this.parentDS;
-	  loop looking from right to left until partial index exhausted
-	    calling curr = curr.getSubset(partialIndex[i--])
-	    rethrow exceptions if needed
-	  return curr
-	  
 	*/
 	
 	@Override
