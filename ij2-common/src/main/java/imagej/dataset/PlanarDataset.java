@@ -135,13 +135,16 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 	@Override
 	public Dataset getSubset(int[] position)
 	{
+		if (position.length == 0)  // degnerate case
+			return this;
+		
 		return getSubset(position, 1);
 	}
 
 	@Override
 	public Dataset getSubset(int[] position, int axis)
 	{
-		// TODO - hatch some kind of ReferenceDataset that stores this dataset and does appropriate coord transforms
+		// TODO - hatch a DatasetView??? I think this could lead to infinite recursion if you called getSubset() on a DatasetView backed by a PlanarDataset.
 		throw new UnsupportedOperationException("Cannot get a subset of a PlanarDataset");
 	}
 

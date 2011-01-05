@@ -223,8 +223,14 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 	@Override
 	public Dataset getSubset(int[] index)
 	{
-		int outermostAxis = index.length - 1;
-
+		int indexLength = index.length;
+		
+		// degenerate case
+		if (indexLength == 0)
+			return this;
+			
+		int outermostAxis = indexLength - 1;
+		
 		return getSubset(index, outermostAxis);
 	}
 	
