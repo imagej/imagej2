@@ -10,19 +10,19 @@ import org.json.JSONObject;
 public class Def 
 {
 	
-	private JSONArray modulesJSONArray;
+	private JSONArray modulesArrayJSON;
 	private ArrayList<Wire> wires = new ArrayList<Wire>();
 	
 	/*
 	 * Given a JSONObject def, create the Java representation
 	 */
-	public Def ( JSONObject inputJSON )
+	public Def ( JSONArray modulesArrayJSON, JSONArray wiresArrayJSON )
 	{
 		//get the modules
-		this.modulesJSONArray = inputJSON.getJSONArray("modules");
+		this.modulesArrayJSON = modulesArrayJSON;
 		
 		//get the wires
-		JSONArray wiresArray = inputJSON.getJSONArray("wires");
+		JSONArray wiresArray = wiresArrayJSON;
 		
 		// get Wires from JSON Array
 		this.wires = Wire.getArrayFromJSONArray( wiresArray );
@@ -30,7 +30,7 @@ public class Def
 	}
 
 	public JSONArray getModulesArray() {
-		return modulesJSONArray;
+		return modulesArrayJSON;
 	}
 
 	public ArrayList<Wire> getWires() {

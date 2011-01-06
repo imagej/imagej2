@@ -17,4 +17,9 @@ public class Service
 	{
 		this.type = type;
 	}
+	
+	public Type getType()
+	{
+		return type;
+	}
 }

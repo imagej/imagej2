@@ -6,23 +6,23 @@ import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import pipes.ModuleGenerator;
 import pipes.Service;
 import pipesapi.Module;
-import pipesentity.Conf;
 import pipesentity.Def;
-import pipesentity.ID;
-import pipesentity.Type;
+import pipesentity.Preview;
+import pipesentity.Response;
 
 public class LocalDefEvaluator {
 
 	public static JSONObject getPreview( Def def, HashMap<Service, Module> moduleHashMap )
 	{	
-		//create the response JSON Object
-		JSONObject json = new JSONObject();
 		
 		// TODO:use wires for ordering
 		// TODO:use modules connectors for input/outputs		
 		// TODO: extend checking and ordering logic
+		
+		System.out.println(" LocalDefEvaluator :: getPreview ... starting array list generation from def ");
 		
 		JSONArray modulesJSONArray = def.getModulesArray();
 		
@@ -33,37 +33,44 @@ public class LocalDefEvaluator {
 			//get the JSONObject
 			JSONObject jsonInternal = modulesJSONArray.getJSONObject(i);
 			
-			//get the type
-			Type type = new Type( jsonInternal.getString("type") );
+			String moduleType = jsonInternal.getString("type");
 			
-			// get the ID
-			ID id = new ID( jsonInternal.getString("id"));
+			// get the module
+			Module moduleCopy = ModuleGenerator.getModule( moduleType );
 			
-			// get the confs
-			ArrayList<Conf> confs = Conf.getConfs( jsonInternal.getString("conf") );
-			
-			// get an instance of the service
-			Module moduleInstance = moduleHashMap.get( type ).clone();
-			
-			moduleInstance.setID( id );
-			moduleInstance.setConfs( confs );
+			System.out.println( "LocalDefEvaluator :: getPreview :: Getting the instance for type : " + moduleType );
+
+			moduleCopy.assignInstanceValues( jsonInternal );
 			
 			//get the service
-			moduleList.add( moduleInstance );
+			moduleList.add( moduleCopy );
 		}
+		
+		//Create a preview response
+		Preview previewResponse = new Preview();
 		
 		// evaluate the modules individually
 		for( Module module : moduleList )
 		{
-			// get the confs
-			ArrayList<Conf> confs = module.getConfArray();
+			System.out.println( "LocalDefEvaluator :: getPreview :: Runnning module " + module.getType().getValue()  );	
 			
-			System.out.println( "Runnning module " + module.getType().getValue()  + " with configurations " + Conf.getJSON( confs ) );	
+			// create a stats 
+			Response response = new Response();
 			
-			//just print the results
-			System.out.println( module.getJSONObjectResults() );
+			// module run
+			module.go();
+			
+			// add the errors
+			previewResponse.addErrors( module.getID(), module.getErrors() );
+			
+			// add the preview
+			previewResponse.addPreview( module.getID(), module.getPreviewJSON() );
+			
+			// add the stats
+			previewResponse.addStats( "todo", response.getJSON() );
 		}
-		return json;
+		
+		return previewResponse.getJSON();
 	}
 
 }

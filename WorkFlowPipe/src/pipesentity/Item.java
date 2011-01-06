@@ -3,6 +3,7 @@ package pipesentity;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Represents the items used between modules
@@ -20,14 +21,18 @@ public class Item
 		this.value = value;
 	}
 	
-	public static JSONArray getJSON(ArrayList<Item> items) 
+	public static JSONArray getJSON( ArrayList<Item> items ) 
 	{
 		JSONArray jsonArray = new JSONArray();
 		
 		for( Item item : items )
 		{
+			JSONObject json = new JSONObject();
+			
 			// add the item
-			jsonArray.put(  item.getName() +":" + item.getName()  );
+			json.put( item.getName(), item.getValue() );
+			
+			jsonArray.put(  json  );
 		}
 		
 		return jsonArray;
