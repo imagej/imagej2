@@ -185,26 +185,20 @@ public class PipesController {
 		return null;
 	}
 
-	public JSONObject evaluate( String definition ) 
-	{
-		// get the JSON Object
-		JSONObject definitionJSON;
-		JSONObject result = null;
+	public JSONObject evaluate( JSONObject definitionJSON ) 
+	{	
+		System.out.println("PipesController :: Do evaluation called ");
+	
+		//Try to get a Java def
+		Def def = new Def( definitionJSON.getJSONArray("modules"), definitionJSON.getJSONArray("wires") );
+			
+		System.out.println("PipesController :: def created using " + definitionJSON.getJSONArray("modules") + " and " + definitionJSON.getJSONArray("wires") );
 		
-		try {
-			definitionJSON = new JSONObject( definition );
-		
-			//Try to get a Java def
-			Def def = new Def( definitionJSON );
-		
-		
-			//Use a local Def Evaluator	
-			result = LocalDefEvaluator.getPreview( def, modulesServiceHashMap );
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//Use a local Def Evaluator	
+		JSONObject result = LocalDefEvaluator.getPreview( def, modulesServiceHashMap );
+			
 		return result;
+		
 	}
 
 	public HashMap<Service, Module> getModulesServiceHashMap() {

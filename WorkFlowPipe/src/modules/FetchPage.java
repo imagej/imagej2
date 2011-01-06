@@ -5,17 +5,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
-import modulesapi.IModule;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
 
 import pipesapi.Module;
 import pipesentity.Attr;
@@ -27,53 +28,54 @@ import pipesentity.Description;
 import pipesentity.ID;
 import pipesentity.Item;
 import pipesentity.Name;
-import pipesentity.Preview;
 import pipesentity.Prop;
 import pipesentity.Tag;
 import pipesentity.Terminal;
-import pipesentity.TerminalConnectorType;
 import pipesentity.Type;
 import pipesentity.UI;
-import pipesentity.Value;
+import util.DeepCopy;
 
 /**
- * Represents the SW9 module settings
+ * Represents the module type "fetchpage"
  * @author rick
  */
-public class FetchPage extends Module implements IModule {
+public class FetchPage extends Module implements Serializable {
 
-	public FetchPage( JSONObject jsonObject ) {
+	private static final long serialVersionUID = 5622501473362572605L;
+
+	public static FetchPage getFetchPage() {
 		
-		super(jsonObject);
-	
-		id = new ID("");
+		FetchPage fetchPage = new FetchPage();
+		
+		fetchPage.id = new ID("");
 
-		terminals = Terminal.getOutTerminal(TerminalConnectorType.outputType.valueOf("items"));
+		fetchPage.terminals.add( Terminal.getOutputTerminal("items") );
 
-		ui = new UI("\n\t\t<div class=\"horizontal\">\n\t\t\t<label>URL: </label><input name=\"URL\" type=\"url\" required=\"true\"/>\n\t\t</div> \n\t\t<div class=\"horizontal\">\n\t\t\t<label>Cut content from: </label><input name=\"from\" type=\"text\" required=\"true\"/>\n            <label>to: </label><input name=\"to\" type=\"text\" required=\"true\"/>\n        </div>\n        <div class=\"horizontal\">\n            <label>Split using delimiter: </label><input name=\"token\" type=\"text\" required=\"true\"/>\n            \n\t\t</div> \n\t\t");
+		fetchPage.ui = new UI("\n\t\t<div class=\"horizontal\">\n\t\t\t<label>URL: </label><input name=\"URL\" type=\"url\" required=\"true\"/>\n\t\t</div> \n\t\t<div class=\"horizontal\">\n\t\t\t<label>Cut content from: </label><input name=\"from\" type=\"text\" required=\"true\"/>\n            <label>to: </label><input name=\"to\" type=\"text\" required=\"true\"/>\n        </div>\n        <div class=\"horizontal\">\n            <label>Split using delimiter: </label><input name=\"token\" type=\"text\" required=\"true\"/>\n            \n\t\t</div> \n\t\t");
 
-		name = new Name("Fetch Page");
+		fetchPage.name = new Name("Fetch Page");
 
-		type = new Type("fetchpage");
+		fetchPage.type = new Type("fetchpage");
 
-		description = new Description("Fetch HTML or XHTML documents and emit as a string");
+		fetchPage.description = new Description("Fetch HTML or XHTML documents and emit as a string");
 
 		Tag tag = new Tag("system:sources");
 
-		tags = Tag.getTagsArray(tag);
+		fetchPage.tags = Tag.getTagsArray(tag);
+		
+		return fetchPage;
 	}
 
 	@Override
-	public void go( ArrayList<Conf> confs ) 
+	public void go() 
 	{	
 		// call the start method
 		start();
 		
-		this.confs = confs;
-		
 		Conf urlConf = Conf.getConf( "URL", confs );
+		System.out.println("FetchPage urlConf is " + urlConf.getJSONObject() );
 		
-		// check for null
+		// check for null URL Property
 		if( urlConf == null )
 		{
 			this.addErrorWarning( "Could not find url" );
@@ -82,16 +84,38 @@ public class FetchPage extends Module implements IModule {
 		
 		// get the url
 		String url = urlConf.getValue().getValue();
-
-		InputStream inputStream = getInputStreamFromUrl( url );
+		System.out.println("FetchPage conf value for URL conf is " + url );
 		
-		String contentString = convertStreamToString( inputStream );
-		
+		String s;
+		String contentString = null;
+		BufferedReader r = null;
+		try {
+			r = new BufferedReader(new InputStreamReader(new URL("http://" + url).openStream()));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    try {
+			while ((s = r.readLine()) != null) {
+				contentString += s;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
 		// add the content to prop //TODO: there is likely a much easier way to do this...
 		this.props.add( new Prop( new Connector( "_OUTPUT", new Type("item"), new Attr( new Content( new Type("text"), new Count(1) ) ) ) ) );
 		
+		System.out.println( "FetchPage results " + contentString );
+		
 		// add the items
 		this.items.add( new Item( "content", contentString ) );
+		this.item_count.incrementCount();
+		this.count.incrementCount();
 		
 		// call stop
 		stop();	
@@ -121,7 +145,9 @@ public class FetchPage extends Module implements IModule {
 					return writer.toString();
 				} 
 			catch ( Exception e) 
-			{ this.addErrorWarning( e.getMessage() ); }
+			{ 
+				this.addErrorWarning( e.getMessage() ); 
+			}
 			finally // close the steam return partial results
 				{
 					try {
@@ -154,12 +180,4 @@ public class FetchPage extends Module implements IModule {
 		
 		return content;
 	}
-
-	@Override
-	public Module getModule() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
 }

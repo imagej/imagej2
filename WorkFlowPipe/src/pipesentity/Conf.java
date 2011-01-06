@@ -43,7 +43,7 @@ public class Conf {
 	 */
 	public boolean isName( String inputName )
 	{
-		if( this.name.getValue() == inputName )
+		if( inputName.equals( this.name.getValue() ) )
 		{
 			return true;
 		}
@@ -126,6 +126,8 @@ public class Conf {
 		//for each conf in the array
 		for(Conf conf:confs)
 		{
+			System.out.println("Conf :: getConf :: conf is " + conf.getJSONObject() );
+			
 			//check to see if the name matches
 			if( conf.isName(confName))
 			{

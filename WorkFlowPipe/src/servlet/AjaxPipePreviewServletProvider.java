@@ -9,52 +9,56 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
-import pipesentity.Def;
 import controller.PipesController;
 
 public class AjaxPipePreviewServletProvider extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1458365345236667188L;
-	private JSONObject json = new JSONObject();
+	private static final long serialVersionUID = -1156366721753088035L;
 	private PipesController pipesController;
 	
 	public AjaxPipePreviewServletProvider( PipesController pipesController  ) 
 	{	
+		
+		System.out.println( "Servlet provider constructed");
 		//maintain a reference to the pipes controller
 		this.pipesController = pipesController;
 	}
 
 	protected void doPost( HttpServletRequest request,
-			HttpServletResponse response ) 
-	{
-		response.setContentType("application/json");
-		response.setHeader("Cache-Control", "no-cache");
-	
+			HttpServletResponse response ) throws ServletException, IOException {
+		
+		System.out.println( "Servlet provider :: do post called");
+		
 		// Evaluate the inputs
-		String definition = request.getParameter( "def" );
+		String definitionString = request.getParameter( "def" );
+		
+		System.out.println( "Servlet provider :: def is " + definitionString);
+		
+		JSONObject defJSON = null;
+		try {
+			defJSON = new JSONObject( definitionString );
+		} catch (ParseException e) {
+			e.printStackTrace();
+			response.setContentType("application/json");
+			response.setHeader("Cache-Control", "no-cache");
+			response.getWriter().write( request.getParameter( "def" ) );
+			return;
+		}
 		
 		// Have the pipes controller process the results
-		JSONObject responseJSON = pipesController.evaluate( definition );
+		JSONObject responseJSON = pipesController.evaluate( defJSON );
 			
+		System.out.println( "Servlet provider :: post evalute JSON is " + responseJSON );
+		
+		String output =  responseJSON.toString();
 		// generate and send the response
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
-		try {
-			response.getWriter().write( responseJSON.toString() );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
+		response.getWriter().write( output );
 	}
 
 	protected void doGet( HttpServletRequest request,
 			HttpServletResponse response ) throws ServletException, IOException {
-
 		doPost( request, response );
 	}
 

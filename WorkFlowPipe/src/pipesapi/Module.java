@@ -28,9 +28,10 @@ import pipesentity.Terminal;
 import pipesentity.Type;
 import pipesentity.UI;
 
-
-public abstract class Module implements Cloneable {
-
+public abstract class Module {
+	
+	public abstract void go();
+	
 	// the errors reported by the object
 	protected ArrayList<Error> errors = new ArrayList<Error>();
 	
@@ -50,10 +51,10 @@ public abstract class Module implements Cloneable {
 	protected String module;
 	
 	// a list used to store the module's items
-	protected ArrayList<Item> items;
+	protected ArrayList<Item> items = new ArrayList<Item>();
 	
 	// a list used to store the inputs and outputs of a module
-	protected ArrayList<Terminal> terminals;
+	protected ArrayList<Terminal> terminals = new ArrayList<Terminal>();
 	
 	// the markup language used to create the module's UI
 	protected UI ui;
@@ -68,28 +69,28 @@ public abstract class Module implements Cloneable {
 	protected Description description;
 	
 	// discoverable terms used to discover this module
-	protected ArrayList<Tag> tags;
+	protected ArrayList<Tag> tags = new ArrayList<Tag>();
 	
 	// list of the configuration properties unique to a module
-	protected ArrayList<Conf> confs;
+	protected ArrayList<Conf> confs = new ArrayList<Conf>();
 	
 	// used to track the total execution time of the module execution
-	protected Duration duration;
+	protected Duration duration = new Duration( 0.0 );
 	
 	// used to track the start time of module execution
-	protected Start start;
+	protected Start start = new Start( 0L );
 	
 	// response used to track the modules performance stats
 	private Response response = new Response();
 	
 	// used to store the execution errors
-	protected HashMap< Type, Message > moduleErrors;
+	protected HashMap< Type, Message > moduleErrors = new HashMap< Type, Message>();
 	
 	// used to store the Preview
 	protected Preview preview;
 	
 	// Props list
-	protected ArrayList<Prop> props;
+	protected ArrayList<Prop> props = new ArrayList<Prop>();
 	
 	/**
 	 * Called at the beginning of getPreview()
@@ -133,85 +134,25 @@ public abstract class Module implements Cloneable {
 		errors.add( new Error( new Type( "warning" ), new Message ( warningString ) ) );
 		
 	}
-	
-	public JSONObject getJSONObjectResults() 
+
+	public void assignInstanceValues( JSONObject jsonObject ) 
 	{	
-		JSONObject json = new JSONObject();
-		
-		// populate error array
-		JSONArray errorsJSON = new JSONArray();
-		
-		
-		for (Error error : errors)
+		if( jsonObject != null )
 		{
-			errorsJSON.put( error.getJSON() );
-		}
-		
-		// put in instance ID in front of the error array
-		json.put( id.getValue(), errorsJSON );
-		
-		// get the Preview
-		json.put( id.getValue(), getPreviewJSON( preview ));
-		return json;
-	}
+			// if id is defined
+			if (jsonObject.getString("id") != null) {
+				this.id = new ID(jsonObject.getString("id"));
+			}
 
-	private JSONObject getPreviewJSON( Preview preview ) 
-	{
-		JSONObject json = new JSONObject();
-		
-		// add the count
-		json.put("count", count.getValue() );
-		
-		// add the item count
-		json.put("item_count", item_count.getValue() );
-		
-		// add the duration
-		json.put("duration", duration.getValue() );
-		
-		// add the prop
-		json.put( "prop", Prop.getJSON( props ) );
-		
-		// add the module id
-		json.put( "id", id.getValue() );
-		
-		// add the items
-		json.put( "items", Item.getJSON( items ) );
-		
-		// add the module
-		json.put("module", module );
-		
-		// add the start time
-		json.put("start", start.getValue() );
-		
-		
-		return null;
-	}
+			// if type is defined
+			if (jsonObject.getString("type") != null) {
+				this.type = new Type(jsonObject.getString("type"));
+			}
 
-	public Module(ID id, ArrayList<Terminal> terminals, UI ui, Name name, Type type, Description description, ArrayList<Tag> tags) {
-		this.id = id;
-		this.terminals = terminals;
-		this.type = type;
-		this.ui = ui;
-		this.name = name;
-		this.description = description;
-		this.tags = tags;
-	}
-
-	public Module(JSONObject jsonObject) 
-	{	
-		// if id is defined
-		if (jsonObject.getString("id") != null) {
-			this.id = new ID( jsonObject.getString("id") );
-		}
-
-		// if type is defined
-		if (jsonObject.getString("type") != null) {
-			this.type = new Type(jsonObject.getString("type"));
-		}
-		
-		// if conf is defined
-		if (jsonObject.getString("conf") != null) {
-			this.confs = Conf.getConfs(jsonObject.getString("conf"));
+			// if conf is defined
+			if (jsonObject.getString("conf") != null) {
+				this.confs = Conf.getConfs(jsonObject.getString("conf"));
+			}
 		}
 	}
 
@@ -256,7 +197,7 @@ public abstract class Module implements Cloneable {
 				jsonObjectTerminals.put(terminal.getTypeKey(),
 						terminal.getTypeValue());
 				jsonObjectTerminals.put(terminal.getDirectionKey(),
-						terminal.getDirectionKeyValue());
+						terminal.getDirectionValue());
 				jsonArrayTerminals.put(jsonObjectTerminals);
 			}
 
@@ -299,7 +240,7 @@ public abstract class Module implements Cloneable {
 		return jsonModule;
 	}
 
-	private ID getID() {
+	public ID getID() {
 		return this.id;
 	}
 
@@ -407,24 +348,40 @@ public abstract class Module implements Cloneable {
 		
 		return null;
 	}
-	
-	 public Module clone() {
-         return this.clone();
- }
-
-	public void setID( ID id ) {
-		this.id = id;
-	}
-
-	public void setConfs(ArrayList<Conf> confs) {
-		this.confs = confs;
-		
-	}
 
 	public ArrayList<Conf> getConfArray() {
 		return confs;
 	}
-	
 
-	
+	public JSONObject getPreviewJSON() 
+	{
+		JSONObject json = new JSONObject();
+		
+		// add the count
+		json.put("count", count.getValue() );
+		
+		// add the item count
+		json.put("item_count", item_count.getValue() );
+		
+		// add the duration
+		json.put("duration", duration.getValue() );
+		
+		// add the prop
+		json.put( "prop", Prop.getJSON( props ) );
+		
+		// add the module id
+		json.put( "id", id.getValue() );
+		
+		// add the items
+		json.put( "items", Item.getJSON( items ) );
+		
+		// add the module
+		json.put("module", module );
+		
+		// add the start time
+		json.put("start", start.getValue() );
+		
+		return json;
+	}
+
 }
