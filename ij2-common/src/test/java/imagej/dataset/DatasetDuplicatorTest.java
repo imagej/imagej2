@@ -41,9 +41,9 @@ public class DatasetDuplicatorTest {
 				double value;
 				
 				if (rng.nextBoolean())
-					value = rng.nextDouble() * type.getMaxReal();
+					value = rng.nextDouble() * 75000;
 				else
-					value = rng.nextDouble() * type.getMinReal();
+					value = rng.nextDouble() * -75000;
 					
 				ds.setDouble(position, value);
 			}
@@ -62,7 +62,8 @@ public class DatasetDuplicatorTest {
 					else
 						value = (long)(rng.nextDouble() * type.getMinIntegral());
 				}
-				ds.setDouble(position, value);
+				
+				ds.setLong(position, value);
 			}
 			
 			Index.increment(position, origin, span);
