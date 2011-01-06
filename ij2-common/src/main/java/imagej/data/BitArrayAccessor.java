@@ -24,8 +24,10 @@ public class BitArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
-		if (value < 0) value = 0;
-		if (value > 1) value = 1;
+		if (value >= 1)  // TODO - make this 0.5????
+			value = 1;
+		else
+			value = 0;
 
 		int intNumber = (int) (index / 32);
 		
@@ -47,8 +49,10 @@ public class BitArrayAccessor implements DataAccessor
 	@Override
 	public void setIntegral(long index, long value)
 	{
-		if (value < 0) value = 0;
-		if (value > 1) value = 1;
+		if (value >= 1)
+			value = 1;
+		else
+			value = 0;
 
 		int intNumber = (int) (index / 32);
 		
