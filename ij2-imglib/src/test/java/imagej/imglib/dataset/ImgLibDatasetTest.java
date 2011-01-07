@@ -49,7 +49,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<ByteType>((Image<ByteType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		assertNotNull(ds);
 		assertSame(image, ds.getImage());
@@ -65,7 +65,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 
-		ImgLibDataset<?> ds = new ImgLibDataset<IntType>((Image<IntType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		assertNotSame(dimensions, ds.getDimensions());
 		assertArrayEquals(dimensions, ds.getDimensions());
@@ -80,7 +80,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<ShortType>((Image<ShortType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		assertEquals(TypeManager.getIJType(type), ds.getType());
 	}
@@ -94,7 +94,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<BitType>((Image<BitType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		MetaData origMetaData = ds.getMetaData();
 		
@@ -113,14 +113,14 @@ public class ImgLibDatasetTest
 		RealType<?> type = new LongType();
 		Image<?> image = createImage(type, dimensions);
 
-		ImgLibDataset<?> ds = new ImgLibDataset<LongType>((Image<LongType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		assertFalse(ds.isComposite());
 
 		dimensions = new int[]{83,621,2};
 		image = createImage(type, dimensions);
 		
-		ds = new ImgLibDataset<LongType>((Image<LongType>)image);
+		ds = new ImgLibDataset(image);
 
 		assertTrue(ds.isComposite());
 	}
@@ -134,7 +134,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<UnsignedIntType>((Image<UnsignedIntType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		assertNull(ds.getParent());
 
@@ -154,7 +154,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<Unsigned12BitType>((Image<Unsigned12BitType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		Type ijType = TypeManager.getIJType(type);
 		
@@ -174,7 +174,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<DoubleType>((Image<DoubleType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		ds.releaseData();
 		
@@ -204,7 +204,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<DoubleType>((Image<DoubleType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		Object[] planeRefs = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -264,7 +264,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<DoubleType>((Image<DoubleType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		Object[] planeRefs = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -301,7 +301,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<FloatType>((Image<FloatType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		Object[] planes = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -323,7 +323,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<UnsignedByteType>((Image<UnsignedByteType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		Object[] planes = new Object[4*3];
 		int planeNum = 0;
@@ -366,7 +366,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<DoubleType>((Image<DoubleType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 		
 		for (int x = 0; x < 2; x++)
 		{
@@ -392,7 +392,7 @@ public class ImgLibDatasetTest
 
 		Image<UnsignedShortType> image = (Image<UnsignedShortType>) createImage(type, dimensions);
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<UnsignedShortType>((Image<UnsignedShortType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		for (int x = 0; x < 2; x++)
 		{
@@ -451,7 +451,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset<?> ds = new ImgLibDataset<DoubleType>((Image<DoubleType>)image);
+		ImgLibDataset ds = new ImgLibDataset(image);
 
 		assertSame(image, ds.getImage());
 		

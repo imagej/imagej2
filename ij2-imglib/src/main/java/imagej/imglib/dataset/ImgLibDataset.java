@@ -19,7 +19,7 @@ import imagej.process.Index;
  * a cached Image and cached Image is recreated and populated with correct primitive access when invalid. User should not cache image from the
  * getImage() call.
  */
-public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveDataset
+public class ImgLibDataset implements Dataset, RecursiveDataset
 {
 	//************ instance variables ********************************************************
 	
@@ -31,7 +31,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset, RecursiveD
 	//************ constructors ********************************************************
 	
 	/** create an ImgLibDataset from an existing ImgLib image */
-	public ImgLibDataset(Image<T> image)
+	public ImgLibDataset(Image<?> image)
 	{
 		this.shadowImage = image;
 		
