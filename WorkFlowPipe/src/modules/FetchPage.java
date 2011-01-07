@@ -114,16 +114,13 @@ public class FetchPage extends Module implements Serializable {
 		this.item_count.incrementCount();
 		this.count.incrementCount();
 		
-		// call stop
-		stop();	
 		
 		// add self generated stats
-		this.response = new Response( url );
 		this.response.addStat("CACHE_HIT", new Integer(1) );
 		this.response.addStat("CACHE_MISS", new Integer(2) );
 		
-		// run the stats
-		this.response.run( duration, start );
+		// call stop
+		stop();	
 	}
 	
 	// To converts an InputStream to String 
