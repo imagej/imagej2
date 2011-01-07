@@ -102,7 +102,7 @@ public class SeriesOfImagesImgLib implements SeriesOfImages {
 
         RealType<?> type = new UnsignedByteType();
 
-        ImgLibDataset<?> ds = new ImgLibDataset<UnsignedByteType>((Image<UnsignedByteType>) image);
+        ImgLibDataset ds = new ImgLibDataset(image);
 
         int[] planeIndex = new int[]{z, t};
         Object plane = ds.getSubset(planeIndex);
