@@ -59,6 +59,9 @@ public final class Index {
 	// incrementing from left to right : not textbook but hacky way to get ImgLibProcessor::duplicate() working 
 	public static void increment(int[] position, int[] origin, int[] span)
 	{
+		//if (position.length == 0)  // allow degenerate case to pass through this : TODO - bad idea???
+		//	return;
+		
 		int i = 0;
 
 		position[i]++;
