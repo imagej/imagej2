@@ -1,5 +1,6 @@
 //
 // AutoPluginInvoker.java
+
 //
 
 /*
@@ -30,7 +31,9 @@ import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilterRunner;
 
-import imagej.ij1bridge.ImgLibImageStack;
+import imagej.dataset.Dataset;
+import imagej.ij1bridge.BridgeStack;
+import imagej.imglib.dataset.ImgLibDataset;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,9 +75,15 @@ public class AutoPluginInvoker {
         // Get imglib Image from ImagePlus
         Image<?> image = null;
         ImageStack stack = imp.getStack();
+        
         // CTR: FIXME: eliminate dependency on ij1-bridge
-        if (stack instanceof ImgLibImageStack) {
-            image = ((ImgLibImageStack) stack).getStorage();
+        // BDZ: replaced references to ImgLibImageStack with BridgeStack. Must test with Aivar's plugins.
+        if (stack instanceof BridgeStack)
+        {
+        	BridgeStack bStack = (BridgeStack) stack;
+        	Dataset dataset = bStack.getDataset();
+        	if (dataset instanceof ImgLibDataset)
+        		image = ((ImgLibDataset) dataset).getImage();
         }
 
         // if successful
