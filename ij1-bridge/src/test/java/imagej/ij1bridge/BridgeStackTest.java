@@ -20,14 +20,13 @@ import org.junit.Test;
 public class BridgeStackTest
 {
 	private Image<?> image;
-	private ImgLibDataset<?> dataset;
+	private ImgLibDataset dataset;
 	private BridgeStack stack;
 
-	@SuppressWarnings("unchecked")
 	private void setupVariables(int[] dimensions)
 	{
 		this.image = ImageUtils.createImage(new UnsignedByteType(), new PlanarContainerFactory(), dimensions);
-		this.dataset = new ImgLibDataset<UnsignedByteType>((Image<UnsignedByteType>) this.image);
+		this.dataset = new ImgLibDataset(this.image);
 		this.stack = new BridgeStack(this.dataset, new ImgLibProcessorFactory(this.image));
 	}
 	
