@@ -164,7 +164,7 @@ public class NavigableImageFrame extends JFrame {
 	private static String[] getDimensionLabels(Dataset dataset) {
 		String[] dimTypes = null;
 		if (dataset instanceof ImgLibDataset) {
-			final ImgLibDataset<?> imgLibDataset = (ImgLibDataset<?>) dataset;
+			final ImgLibDataset imgLibDataset = (ImgLibDataset) dataset;
 			final Image<?> img = imgLibDataset.getImage();
 			dimTypes = ImageOpener.decodeTypes(img.getName());
 		}
@@ -185,7 +185,7 @@ public class NavigableImageFrame extends JFrame {
 	private static String getName(Dataset dataset) {
 		final String name;
 		if (dataset instanceof ImgLibDataset) {
-			final ImgLibDataset<?> imgLibDataset = (ImgLibDataset<?>) dataset;
+			final ImgLibDataset imgLibDataset = (ImgLibDataset) dataset;
 			final Image<?> img = imgLibDataset.getImage();
 			name = ImageOpener.decodeName(img.getName());
 		}
