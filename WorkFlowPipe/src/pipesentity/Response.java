@@ -22,9 +22,9 @@ public class Response {
 	private double stddev = 0.0;
 	private double sum = 0.0;
 	
-	public Response( String title )
+	public Response()
 	{
-		this.title = title;
+		
 	}
 		
 	public JSONObject getJSON()
@@ -64,6 +64,11 @@ public class Response {
 		otherStatsHashMap.put(key, value);
 	}
 	
+	public void setTitle( String title )
+	{
+		this.title = title;
+	}
+	
 	// updates the values
 	public void run( Duration duration, Start start )
 	{	
@@ -71,6 +76,8 @@ public class Response {
 	}
 
 	public String getTitle() {
+		if ( this.title != null )
 		return this.title;
+		return "";
 	}
 }

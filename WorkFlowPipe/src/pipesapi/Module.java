@@ -81,7 +81,7 @@ public abstract class Module {
 	protected Start start = new Start( 0L );
 	
 	// response used to track the modules performance stats
-	protected Response response;
+	protected Response response = new Response();
 	
 	// used to store the execution errors
 	protected HashMap< Type, Message > moduleErrors = new HashMap< Type, Message>();
