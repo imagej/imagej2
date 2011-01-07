@@ -23,11 +23,11 @@ import imagej.imglib.dataset.ImgLibDataset;
 
 public class IJ1ProcessorFactory implements ProcessorFactory
 {
-	private ImgLibDataset<?> dataset;
+	private ImgLibDataset dataset;
 	private boolean strictlyCompatible;
 	private RealType<?> realType;
 
-	public IJ1ProcessorFactory(ImgLibDataset<?> dataset, boolean strictlyCompatible)
+	public IJ1ProcessorFactory(ImgLibDataset dataset, boolean strictlyCompatible)
 	{
 		this.dataset = dataset;
 		this.strictlyCompatible = strictlyCompatible;
