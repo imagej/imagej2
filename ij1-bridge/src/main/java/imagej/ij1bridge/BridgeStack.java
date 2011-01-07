@@ -436,4 +436,9 @@ public class BridgeStack extends ImageStack
 		for (int i = 0; i < this.planeRefs.size(); i++)
 			this.planeRefs.set(i, null);
 	}
+	
+	public Dataset getDataset()
+	{
+		return this.dataset;
+	}
 }
