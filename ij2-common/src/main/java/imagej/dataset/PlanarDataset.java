@@ -60,6 +60,7 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		this.dataAccessor = type.allocateArrayAccessor(arrayOfData);
 		this.parent = null;
 		this.metadata = new MetaData();
+		this.metadata.setDirectAccessDimensionCount(2);
 	}
 
 	@Override

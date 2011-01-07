@@ -36,6 +36,11 @@ public class CompositeDataset implements Dataset, RecursiveDataset
 		this.metadata = new MetaData();
 		for (Dataset subset : this.subsets)
 			subset.setParent(this);
+		if (subsets.size() > 0)
+		{
+			int directAccessDimCount = subsets.get(0).getMetaData().getDirectAccessDimensionCount();
+			this.metadata.setDirectAccessDimensionCount(directAccessDimCount);
+		}
 	}
 	
 	@Override
