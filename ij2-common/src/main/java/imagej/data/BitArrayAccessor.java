@@ -24,7 +24,7 @@ public class BitArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
-		if (value >= 1)  // TODO - make this 0.5????
+		if (value >= 1)  // TODO - closer to Imglib : value >= 0.5
 			value = 1;
 		else
 			value = 0;

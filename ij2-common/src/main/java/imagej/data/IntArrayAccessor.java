@@ -18,9 +18,10 @@ public class IntArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
+		// TODO : Imglib sets values that out of range by wraping them to other side (neg to pos or pos to neg). Determine who needs to fix code. 
 		if (value < Integer.MIN_VALUE) value = Integer.MIN_VALUE;
 		if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
-		this.ints[(int)index] = (int)value;
+		this.ints[(int)index] = (int) value; // TODO - closer to Imglib : Math.round(value);
 	}
 
 	@Override
