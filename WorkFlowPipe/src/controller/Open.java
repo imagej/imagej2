@@ -114,7 +114,7 @@ public class Open {
 	 */
 	public static void main( String[] args ) throws Exception {
 		
-		final int portNumber = 61014;
+		final int portNumber = 61015;
 		
 		//start the local Jetty ajax services
 		init( portNumber );

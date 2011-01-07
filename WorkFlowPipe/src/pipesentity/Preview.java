@@ -57,9 +57,10 @@ public class Preview {
 		output.put( "ok", new Integer(1) );
 		
 		// add the errors
-		JSONObject jsonModules = new JSONObject();
-		jsonModules.put("modules", getModuleErrors() );
-		output.put( "errors", jsonModules  );
+		JSONObject jsonErrors = new JSONObject();
+		jsonErrors.put("modules", getModuleErrors() );
+		jsonErrors.put("pipes", getPipeErrors() );
+		output.put( "errors", jsonErrors  );
 		
 		// add the preview content
 		output.put("preview", getPreviewJSON() );
@@ -70,6 +71,14 @@ public class Preview {
 		output.put( "stats", jsonPua );
 		
 		return output;
+	}
+
+	private String getPipeErrors() {
+		JSONObject pipeErrors = new JSONObject();
+		
+		//TODO: implement pipe error reporting
+		
+		return null;
 	}
 
 	private JSONObject getPreviewJSON() 

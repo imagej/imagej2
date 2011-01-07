@@ -53,10 +53,7 @@ public class LocalDefEvaluator {
 		for( Module module : moduleList )
 		{
 			System.out.println( "LocalDefEvaluator :: getPreview :: Runnning module " + module.getType().getValue()  );	
-			
-			// create a stats 
-			Response response = new Response();
-			
+				
 			// module run
 			module.go();
 			
@@ -67,7 +64,7 @@ public class LocalDefEvaluator {
 			previewResponse.addPreview( module.getID(), module.getPreviewJSON() );
 			
 			// add the stats
-			previewResponse.addStats( "todo", response.getJSON() );
+			previewResponse.addStats( module.getResponse().getTitle(), module.getResponse().getJSON() );
 		}
 		
 		return previewResponse.getJSON();

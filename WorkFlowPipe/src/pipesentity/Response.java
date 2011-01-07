@@ -1,8 +1,15 @@
 package pipesentity;
 
+import java.util.HashMap;
+
 import org.json.JSONObject;
 
 public class Response {
+	
+
+	private HashMap<String,Object> otherStatsHashMap = new HashMap<String, Object>(); 
+	
+	private String title;
 	
 	private int count = 0;
 	private double variance = 0.0;
@@ -14,6 +21,11 @@ public class Response {
 	private double mean = 0.0;
 	private double stddev = 0.0;
 	private double sum = 0.0;
+	
+	public Response( String title )
+	{
+		this.title = title;
+	}
 		
 	public JSONObject getJSON()
 	{
@@ -35,12 +47,30 @@ public class Response {
 		// tag the internals
 		json.put("response", jsonInternals);
 		
+		// add the module specific stats
+		for( String keyString : otherStatsHashMap.keySet() )
+		{
+			json.put( keyString, otherStatsHashMap.get( keyString ) );
+		}
+		
 		return json;
 	}
 	
-	// updates the values
-	public void run( Duration duration )
+	/**
+	 * Add a module specific key / value pair
+	 */
+	public void addStat( String key, Object value )
 	{
+		otherStatsHashMap.put(key, value);
+	}
+	
+	// updates the values
+	public void run( Duration duration, Start start )
+	{	
 		//TODO: implement stats update logic 
+	}
+
+	public String getTitle() {
+		return this.title;
 	}
 }

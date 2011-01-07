@@ -29,6 +29,7 @@ import pipesentity.ID;
 import pipesentity.Item;
 import pipesentity.Name;
 import pipesentity.Prop;
+import pipesentity.Response;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.Type;
@@ -63,31 +64,27 @@ public class FetchPage extends Module implements Serializable {
 
 		fetchPage.tags = Tag.getTagsArray(tag);
 		
+		//This is simulated
+		fetchPage.module = "Yahoo::RSS::FetchPage";
+		
 		return fetchPage;
 	}
 
 	@Override
 	public void go() 
-	{	
+	{		 
 		// call the start method
 		start();
 		
 		Conf urlConf = Conf.getConf( "URL", confs );
 		System.out.println("FetchPage urlConf is " + urlConf.getJSONObject() );
-		
-		// check for null URL Property
-		if( urlConf == null )
-		{
-			this.addErrorWarning( "Could not find url" );
-			return;
-		}
-		
+				
 		// get the url
 		String url = urlConf.getValue().getValue();
 		System.out.println("FetchPage conf value for URL conf is " + url );
 		
 		String s;
-		String contentString = null;
+		String contentString = "";
 		BufferedReader r = null;
 		try {
 			r = new BufferedReader(new InputStreamReader(new URL("http://" + url).openStream()));
@@ -119,6 +116,14 @@ public class FetchPage extends Module implements Serializable {
 		
 		// call stop
 		stop();	
+		
+		// add self generated stats
+		this.response = new Response( url );
+		this.response.addStat("CACHE_HIT", new Integer(1) );
+		this.response.addStat("CACHE_MISS", new Integer(2) );
+		
+		// run the stats
+		this.response.run( duration, start );
 	}
 	
 	// To converts an InputStream to String 

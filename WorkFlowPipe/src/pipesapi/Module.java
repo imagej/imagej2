@@ -81,7 +81,7 @@ public abstract class Module {
 	protected Start start = new Start( 0L );
 	
 	// response used to track the modules performance stats
-	private Response response = new Response();
+	protected Response response;
 	
 	// used to store the execution errors
 	protected HashMap< Type, Message > moduleErrors = new HashMap< Type, Message>();
@@ -120,7 +120,7 @@ public abstract class Module {
 	// internal method used for generating runtime stats
 	private void runStats()
 	{
-		response.run( duration );
+		response.run( duration, start );
 	}
 	
 	// add an error to the module
@@ -379,9 +379,13 @@ public abstract class Module {
 		json.put("module", module );
 		
 		// add the start time
-		json.put("start", start.getValue() );
+		json.put("start", new Long( start.getValue() ) );
 		
 		return json;
+	}
+
+	public Response getResponse() {
+		return this.response;
 	}
 
 }
