@@ -4,8 +4,11 @@ import ij.ImagePlus;
 import ij.io.FileInfo;
 import imagej.data.Type;
 import imagej.data.Types;
-import imagej.ij1bridge.ImgLibImageStack;
+import imagej.ij1bridge.BridgeStack;
+import imagej.ij1bridge.IJ1ProcessorFactory;
+import imagej.ij1bridge.ProcessorFactory;
 import imagej.imglib.TypeManager;
+import imagej.imglib.dataset.ImgLibDataset;
 
 import java.io.File;
 
@@ -138,8 +141,12 @@ public class ImageUtils
 		final int sizeZ = imagej.imglib.process.ImageUtils.getNSlices(img);
 		final int sizeT = imagej.imglib.process.ImageUtils.getNFrames(img);
 
-		final ImgLibImageStack stack = new ImgLibImageStack(img);
-
+		ImgLibDataset dataset = new ImgLibDataset(img);
+		
+		ProcessorFactory factory = new IJ1ProcessorFactory(dataset, false);
+		
+		BridgeStack stack = new BridgeStack(dataset, factory);
+		
 		final ImagePlus imp = new ImagePlus(img.getName(), stack);
 
 		if (id != null)
