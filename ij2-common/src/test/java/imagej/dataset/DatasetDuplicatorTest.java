@@ -116,6 +116,16 @@ public class DatasetDuplicatorTest {
 		
 		Dataset newDS;
 		
+		dataset = createData("8-bit unsigned", new int[]{1,2});
+		populateData(dataset);
+		newDS = duplicator.createDataset(factory, dataset);
+		assertDatasetsMatch(dataset, newDS);
+
+		dataset = createData("8-bit unsigned", new int[]{1,1,2});
+		populateData(dataset);
+		newDS = duplicator.createDataset(factory, dataset);
+		assertDatasetsMatch(dataset, newDS);
+
 		dataset = createData("1-bit unsigned", new int[]{2,3,4});
 		populateData(dataset);
 		newDS = duplicator.createDataset(factory, dataset);
@@ -179,15 +189,6 @@ public class DatasetDuplicatorTest {
 		assertDatasetsMatch(view, newDS);
 	}
 
-	private void assertConvertedDatasetCorrect(Dataset orig, Dataset converted)
-	{
-		if (orig.getType() == converted.getType())
-		{
-			assertDatasetsMatch(orig, converted);
-			return;
-		}
-	}
-	
 	@Test
 	public void testCreateTypeConvertedDataset() {
 		
