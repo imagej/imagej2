@@ -17,18 +17,21 @@ public class GenericStatistics extends ImageStatistics {
 	/** Constructs an ImageStatistics object from a FloatProcessor
 		using the standard measurement options (area, mean,
 		mode, min and max). */
-	public GenericStatistics(ImgLibProcessor<?> ip) {
+	public GenericStatistics(ImageProcessor ip) {
 		this(ip, AREA+MEAN+MODE+MIN_MAX, null);
 	}
 
 	/** Constructs a FloatStatistics object from a FloatProcessor
 		using the specified measurement options.
 	*/
-	public GenericStatistics(ImgLibProcessor<?> ip, int mOptions, Calibration cal) {
+	public GenericStatistics(ImageProcessor ip, int mOptions, Calibration cal) {
 		this.width = ip.getWidth();
 		this.height = ip.getHeight();
 		setup(ip, cal);
-		this.pixels = ip.getPlaneData();
+		int planeSize = (int)((long)this.width * (long)this.height);
+		this.pixels = new double[planeSize];
+		for (int i = 0; i < planeSize; i++)
+			this.pixels[i] = ip.getd(i);
 		double minT = ip.getMinThreshold();
 		double minThreshold,maxThreshold;
 		if ((mOptions&LIMIT)==0 || minT==ImageProcessor.NO_THRESHOLD)
@@ -57,7 +60,7 @@ public class GenericStatistics extends ImageStatistics {
 			calculateAreaFraction(ip);
 	}
 
-	void getStatistics(ImgLibProcessor<?> ip, double minThreshold, double maxThreshold) {
+	void getStatistics(ImageProcessor ip, double minThreshold, double maxThreshold) {
 		double v;
 		nBins = ip.getHistogramSize();
 		histMin = ip.getHistogramMin();
@@ -137,7 +140,7 @@ public class GenericStatistics extends ImageStatistics {
         	dmode += binSize/2.0;        	
 	}
 
-	void calculateMoments(ImgLibProcessor<?> ip, double minThreshold, double maxThreshold) {
+	void calculateMoments(ImageProcessor ip, double minThreshold, double maxThreshold) {
 		byte[] mask = ip.getMaskArray();
 		int i, mi;
 		double v, v2, sum1=0.0, sum2=0.0, sum3=0.0, sum4=0.0, xsum=0.0, ysum=0.0;
@@ -173,7 +176,7 @@ public class GenericStatistics extends ImageStatistics {
 		}
 	}
 
-	void getCentroid(ImgLibProcessor<?> ip, double minThreshold, double maxThreshold) {
+	void getCentroid(ImageProcessor ip, double minThreshold, double maxThreshold) {
 		byte[] mask = ip.getMaskArray();
 		double count=0.0, xsum=0.0, ysum=0.0, v;
 		int i, mi;
@@ -200,7 +203,7 @@ public class GenericStatistics extends ImageStatistics {
 		}
 	}
 
-	void calculateAreaFraction(ImgLibProcessor<?> ip) {
+	void calculateAreaFraction(ImageProcessor ip) {
 		int sum = 0;
 		int total = 0;
 		double t1 = ip.getMinThreshold();
