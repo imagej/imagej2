@@ -91,6 +91,10 @@ public class DatasetView implements Dataset
 		this.fullSpaceDataset = referenceDataset;
 
 		this.metadata = new MetaData(); // TODO - or from reference dataset???
+		
+		int directAccessDimension = referenceDataset.getMetaData().getDirectAccessDimensionCount();
+		
+		this.metadata.setDirectAccessDimensionCount(directAccessDimension);
 	
 		this.parent = null;
 		

@@ -26,7 +26,6 @@ public class DatasetDuplicator
 	// newer way - minimizes subset lookups using primitive access so faster but not yet working
 	
 	/** create a Dataset according to given factory's style and a specified type but whose shape and data values are copied from a given Dataset */
-	/*
 	public Dataset createTypeConvertedDataset(DatasetFactory factory, Type type, Dataset inputDataset)
 	{
 		int[] dimensions = inputDataset.getDimensions();
@@ -35,7 +34,7 @@ public class DatasetDuplicator
 
 		NAryFunction copyFunc = new CopyRightmostNaryFunction(2);
 		
-		MultiDatasetTransformOperation copier = new MultiDatasetTransformOperation(copyFunc, new Dataset[]{newDataset, inputDataset});
+		MultiDatasetTransformOperation copier = new MultiDatasetTransformOperation(copyFunc, new Dataset[]{newDataset, inputDataset}, 0);
 		
 		copier.execute();
 		
@@ -45,10 +44,8 @@ public class DatasetDuplicator
 		return newDataset;
 	}
 	
-	*/
-	
 	// original way - works but may be very slow
-	
+	/*
 	public Dataset createTypeConvertedDataset(DatasetFactory factory, Type type, Dataset inputDataset)
 	{
 		int[] dimensions = inputDataset.getDimensions();
@@ -70,6 +67,8 @@ public class DatasetDuplicator
 		
 		return newDataset;
 	}
+	
+	*/
 	
 	// *************** private interface ****************************************************
 	
@@ -153,7 +152,7 @@ public class DatasetDuplicator
 			if (datasets.length != workspace.length)
 				throw new IllegalArgumentException("parameter count mismatch");
 		
-			for (int i = 0; i < datasets.length; i++)
+			for (int i = 1; i < datasets.length; i++)
 			{
 				if (Dimensions.getTotalSamples(datasets[0].getDimensions()) !=
 					Dimensions.getTotalSamples(datasets[i].getDimensions()))
@@ -191,92 +190,115 @@ public class DatasetDuplicator
 			}
 		}
 		
-		private boolean valuesAtMax(int[] position, int[] bounds)
-		{
-			int positionLen = position.length;
-			for (int i = 0; i < positionLen; i++)
-				if (position[i] >= (bounds[i]-1))
-					return false;
-			
-			return true;
-		}
-		
-		public boolean hasNext()
+		public boolean positionValid()
 		{
 			for (int i = 0; i < this.datasetCount; i++)
 			{
-				if (valuesAtMax(this.outerPositions[i],this.outerSpans[i]) &&
-						valuesAtMax(this.innerPositions[i],this.innerSpans[i]))
+				boolean outerIsValid = Index.isValid(this.outerPositions[i], this.outerOrigins[i], this.outerSpans[i]);
+				
+				if (!outerIsValid)
 					return false;
+				
+				// past here we know outer is valid
+				// but there is a case where its valid and yet the whole position is invalid: when outerPosition == []
+				//   and not innerIsValid
+				
+				if (this.outerPositions[i].length == 0)
+				{
+					boolean innerIsValid = Index.isValid(this.innerPositions[i], this.innerOrigins[i], this.innerSpans[i]); 
+					
+					if (!innerIsValid)
+						return false;
+				}
 			}
+			
 			return true;
 		}
+	
+		public void loadWorkspace()
+		{
+			for (int i = 0; i < this.datasetCount; i++)
+			{
+				if (this.directAccessDatasets[i] == null) // first pass
+				{
+					this.directAccessDatasets[i] = this.datasets[i].getSubset(this.outerPositions[i]);
+				}
+				
+				this.workspace[i] = this.directAccessDatasets[i].getDouble(this.innerPositions[i]);
+			}
+		}
 		
-		public void next()
+		public void incrementPosition()
 		{
 			int[] innerPosition;
 			int[] innerOrigin;
 			int[] innerSpan;
 			int[] outerPosition;
+			int[] outerOrigin;
+			int[] outerSpan;
 
 			for (int i = 0; i < this.datasetCount; i++)
 			{
 				innerPosition = this.innerPositions[i];
+				innerOrigin = this.innerOrigins[i];
+				innerSpan = this.innerSpans[i];
+				
+				Index.increment(innerPosition, innerOrigin, innerSpan);
+				
+				if (!Index.isValid(innerPosition, innerOrigin, innerSpan))
+				{
+					outerPosition = this.outerPositions[i];
+					
+					if (outerPosition.length == 0)
+						return;
+					
+					outerOrigin = this.outerOrigins[i];
+					
+					outerSpan = this.outerSpans[i];
 
-				if (this.directAccessDatasets[i] == null) // first pass
-				{
-					this.directAccessDatasets[i] = this.datasets[i].getSubset(this.outerPositions[i]);
-				}
-				else  // pointing at an inner dataset already
-				{
-					innerOrigin = this.innerOrigins[i];
-					innerSpan = this.innerSpans[i];
+					Index.increment(outerPosition, outerOrigin, outerSpan);
 					
-					Index.increment(innerPosition, innerOrigin, innerSpan);
-					
-					if (!Index.isValid(innerPosition, innerOrigin, innerSpan))
+					if (Index.isValid(outerPosition, outerOrigin, outerSpan))
 					{
-						outerPosition = this.outerPositions[i];
-						
-						Index.increment(outerPosition, this.outerOrigins[i], this.outerSpans[i]);
-						
 						this.directAccessDatasets[i] = this.datasets[i].getSubset(outerPosition);
 						
 						for (int j = 0; j < innerPosition.length; j++)
-							innerPosition[j] = 0;
+							innerPosition[j] = this.innerOrigins[i][j];
 					}
 				}
-				
-				this.workspace[i] = this.directAccessDatasets[i].getDouble(innerPosition);
 			}
 		}
 		
-		public void setDouble(int iterNumber, double value)
+		public void setDouble(int datasetNumber, double value)
 		{
-			int[] subPosition = this.innerPositions[iterNumber];
-			this.directAccessDatasets[iterNumber].setDouble(subPosition, value);
+			int[] subPosition = this.innerPositions[datasetNumber];
+			this.directAccessDatasets[datasetNumber].setDouble(subPosition, value);
 		}
 	}
 	
 	private class MultiDatasetTransformOperation
 	{
 		private NAryFunction function;
+		private int datasetToChange;
 		private SynchronizedIterator iter;
 		private double[] workspace;
 		
-		MultiDatasetTransformOperation(NAryFunction function, Dataset[] datasets)
+		MultiDatasetTransformOperation(NAryFunction function, Dataset[] datasets, int datasetToChange)
 		{
 			this.function = function;
+			this.datasetToChange = datasetToChange;
 			this.workspace = new double [function.getValueCount()];
 			this.iter = new SynchronizedIterator(datasets, this.workspace);
 		}
 		
 		void execute()
 		{
-			while (this.iter.hasNext())
+			while (this.iter.positionValid())
 			{
-				this.iter.next();
-				this.iter.setDouble(0, this.function.compute(this.workspace));
+				this.iter.loadWorkspace();
+				double value = this.function.compute(this.workspace);
+				this.iter.setDouble(this.datasetToChange, value);
+				this.iter.incrementPosition();
 			}
 		}
 	}
