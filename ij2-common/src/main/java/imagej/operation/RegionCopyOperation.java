@@ -4,10 +4,15 @@ import imagej.Dimensions;
 import imagej.dataset.Dataset;
 import imagej.iterator.SynchronizedIterator;
 
+/** Simple implementation of a data copier. There are more efficient ways to do so. */ 
 public class RegionCopyOperation
 {
+	// ***************** instance variables ***********************************************************
+	
 	private SynchronizedIterator iter;
 	private CopyFunction copier;
+	
+	// ***************** constructor ***********************************************************
 	
 	public RegionCopyOperation(Dataset inputDataset, int[] inputOrigin, Dataset outputDataset, int[] outputOrigin, int[] span, boolean floatData)
 	{
@@ -21,7 +26,9 @@ public class RegionCopyOperation
 			this.copier = new LongCopyFunction(this.iter);
 	}
 	
-	/** copy data */
+	// ***************** public interface ***********************************************************
+
+	/** run the actual data copy operation */
 	public void execute()
 	{
 		while (this.iter.positionValid())
@@ -32,6 +39,8 @@ public class RegionCopyOperation
 		}
 	}
 	
+	// ***************** private interface ***********************************************************
+
 	private interface CopyFunction
 	{
 		void copyValue();
