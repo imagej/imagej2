@@ -10,7 +10,7 @@ import imagej.data.Types;
 import imagej.dataset.CompositeDataset;
 import imagej.dataset.Dataset;
 import imagej.imglib.TypeManager;
-import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -32,7 +32,7 @@ import org.junit.Test;
 
 @SuppressWarnings("unchecked")
 
-public class ImgLibDatasetTest
+public class LegacyImgLibDatasetTest
 {
 	private Image<?> createImage(RealType<?> type, int[] dimensions)
 	{
@@ -49,7 +49,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		assertNotNull(ds);
 		assertSame(image, ds.getImage());
@@ -65,7 +65,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		assertNotSame(dimensions, ds.getDimensions());
 		assertArrayEquals(dimensions, ds.getDimensions());
@@ -80,7 +80,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		assertEquals(TypeManager.getIJType(type), ds.getType());
 	}
@@ -94,7 +94,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		MetaData origMetaData = ds.getMetaData();
 		
@@ -113,14 +113,14 @@ public class ImgLibDatasetTest
 		RealType<?> type = new LongType();
 		Image<?> image = createImage(type, dimensions);
 
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		assertFalse(ds.isComposite());
 
 		dimensions = new int[]{83,621,2};
 		image = createImage(type, dimensions);
 		
-		ds = new ImgLibDataset(image);
+		ds = new LegacyImgLibDataset(image);
 
 		assertTrue(ds.isComposite());
 	}
@@ -134,7 +134,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		assertNull(ds.getParent());
 
@@ -154,7 +154,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		Type ijType = TypeManager.getIJType(type);
 		
@@ -174,7 +174,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		ds.releaseData();
 		
@@ -204,7 +204,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		Object[] planeRefs = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -264,7 +264,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		Object[] planeRefs = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -301,7 +301,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		Object[] planes = new Object[4];
 		for (int i = 0; i < 4; i++)
@@ -323,7 +323,7 @@ public class ImgLibDatasetTest
 		
 		Image<?> image = createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		Object[] planes = new Object[4*3];
 		int planeNum = 0;
@@ -366,7 +366,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 		
 		for (int x = 0; x < 2; x++)
 		{
@@ -392,7 +392,7 @@ public class ImgLibDatasetTest
 
 		Image<UnsignedShortType> image = (Image<UnsignedShortType>) createImage(type, dimensions);
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		for (int x = 0; x < 2; x++)
 		{
@@ -451,7 +451,7 @@ public class ImgLibDatasetTest
 			}
 		}
 		
-		ImgLibDataset ds = new ImgLibDataset(image);
+		LegacyImgLibDataset ds = new LegacyImgLibDataset(image);
 
 		assertSame(image, ds.getImage());
 		

@@ -251,7 +251,7 @@ public class DataCompatibilityTest
 		// TODO - temp disablement to allow check in of code
 		/*
 		*/
-		Dataset imglibDS = new ImgLibDataset(this.imglibImage);
+		Dataset imglibDS = new LegacyImgLibDataset(this.imglibImage);
 
 		int[] origin = Index.create(2);
 		int[] span = Span.singlePlane(1, DATA_SIZE, 2);
