@@ -7,14 +7,14 @@ import imagej.function.LongFunction;
 import imagej.function.NAryFunction;
 import imagej.iterator.SynchronizedIterator;
 
-public class MultiDatasetTransformOperation
+public class TransformOperation
 {
 	private final LongFunction longFunction;
 	private final DoubleFunction doubleFunction;
 	private final int datasetToChange;
 	private final SynchronizedIterator iter;
 	
-	MultiDatasetTransformOperation(LongFunction function, Dataset[] datasets, int[][] origins, int[] span, int datasetToChange)
+	public TransformOperation(LongFunction function, Dataset[] datasets, int[][] origins, int[] span, int datasetToChange)
 	{
 		for (int i = 0; i < datasets.length; i++)
 			Dimensions.verifyDimensions(datasets[i].getDimensions(), origins[i], span);
@@ -29,7 +29,7 @@ public class MultiDatasetTransformOperation
 		this.iter = new SynchronizedIterator(datasets, origins, span, false);
 	}
 	
-	MultiDatasetTransformOperation(DoubleFunction function, Dataset[] datasets, int[][] origins, int[] span, int datasetToChange)
+	public TransformOperation(DoubleFunction function, Dataset[] datasets, int[][] origins, int[] span, int datasetToChange)
 	{
 		for (int i = 0; i < datasets.length; i++)
 			Dimensions.verifyDimensions(datasets[i].getDimensions(), origins[i], span);
@@ -44,7 +44,7 @@ public class MultiDatasetTransformOperation
 		this.iter = new SynchronizedIterator(datasets, origins, span, true);
 	}
 	
-	void execute()
+	public void execute()
 	{
 		double[] doubleWorkspace = iter.getDoubleWorkspace();
 		long[] longWorkspace = iter.getLongWorkspace();
