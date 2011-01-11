@@ -18,7 +18,10 @@ import imagej.dataset.DatasetDuplicator;
 import imagej.dataset.FixedDimensionDataset;
 import imagej.dataset.PlanarDataset;
 import imagej.dataset.PlanarDatasetFactory;
+import imagej.function.DoubleFunction;
+import imagej.function.LongFunction;
 import imagej.operation.RegionCopyOperation;
+import imagej.operation.TransformOperation;
 import imagej.process.Index;
 import imagej.process.Span;
 
@@ -1364,9 +1367,44 @@ public class DatasetProcessor extends ImageProcessor
 		threshold((double)thresholdLevel);
 	}
 
+	private class ThresholdDoubleFunction implements DoubleFunction
+	{
+		private double threshold, min, max;
+		
+		public ThresholdDoubleFunction(double threshold, double min, double max)
+		{
+			this.threshold = threshold;
+			this.min = min;
+			this.max = max;
+		}
+		
+		@Override
+		public int getValueCount()
+		{
+			return 1;
+		}
+
+		@Override
+		public double compute(double[] inputs)
+		{
+			if (inputs[0] <= this.threshold)
+				return this.min;
+			else
+				return this.max;
+		}
+		
+	}
+	
 	public void threshold(double thresholdLevel)
 	{
-		// TODO
+		thresholdLevel = DoubleRange.bound(this.type.getMinReal(), this.type.getMaxReal(), thresholdLevel);
+		
+		DoubleFunction function = new ThresholdDoubleFunction(thresholdLevel, 0, 255);
+		
+		TransformOperation operation =
+			new TransformOperation(function, new Dataset[]{this.dataset}, new int[][]{Index.create(2)}, this.dataset.getDimensions(), 0);
+		
+		operation.execute();
 	}
 	
 	@Override
