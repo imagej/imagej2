@@ -3,11 +3,11 @@ package imagej.dataset;
 import imagej.MetaData;
 import imagej.data.Type;
 
-public class ReadOnlyDataset implements Dataset
+public class FixedDimensionDataset implements Dataset
 {
 	private Dataset dataset;
 	
-	public ReadOnlyDataset(Dataset dataset)
+	public FixedDimensionDataset(Dataset dataset)
 	{
 		this.dataset = dataset;
 	}
@@ -27,13 +27,13 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public MetaData getMetaData()
 	{
-		return this.dataset.getMetaData(); // TODO - could user make changes here and cause problems?
+		return this.dataset.getMetaData();
 	}
 
 	@Override
 	public void setMetaData(MetaData metadata)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot set metadata");
+		this.dataset.setMetaData(metadata);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public void setParent(Dataset dataset)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot set parent");
+		this.dataset.setParent(dataset);
 	}
 
 	@Override
@@ -69,31 +69,31 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public void setData(Object data)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot set data plane");
+		this.dataset.setData(data);
 	}
 
 	@Override
 	public Dataset insertNewSubset(int position)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot insert new subset");
+		throw new UnsupportedOperationException("fixed dimension dataset - cannot insert new subset");
 	}
 
 	@Override
 	public Dataset removeSubset(int position)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot remove subset");
+		throw new UnsupportedOperationException("fixed dimension dataset - cannot remove subset");
 	}
 
 	@Override
 	public Dataset getSubset(int position)
 	{
-		return new ReadOnlyDataset(this.dataset.getSubset(position));
+		return this.dataset.getSubset(position);
 	}
 
 	@Override
 	public Dataset getSubset(int[] index)
 	{
-		return new ReadOnlyDataset(this.dataset.getSubset(index));
+		return this.dataset.getSubset(index);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public void setDouble(int[] position, double value)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot set sample values");
+		this.dataset.setDouble(position, value);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public void setLong(int[] position, long value)
 	{
-		throw new UnsupportedOperationException("readonly dataset - cannot set sample values");
+		this.dataset.setLong(position, value);
 	}
 
 }
