@@ -46,7 +46,7 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 		final ImageOpener imageOpener = new ImageOpener();
 		try {
 			final Image<T> img = imageOpener.openImage(id);
-			dataset = new ImgLibDataset(img);
+			dataset = new ImgLibDataset<T>(img);
 		}
 		catch (FormatException e) {
 			Log.printStackTrace(e);

@@ -19,15 +19,15 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
-import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 
 public class IJ1ProcessorFactory implements ProcessorFactory
 {
-	private ImgLibDataset dataset;
+	private LegacyImgLibDataset dataset;
 	private boolean strictlyCompatible;
 	private RealType<?> realType;
 
-	public IJ1ProcessorFactory(ImgLibDataset dataset, boolean strictlyCompatible)
+	public IJ1ProcessorFactory(LegacyImgLibDataset dataset, boolean strictlyCompatible)
 	{
 		this.dataset = dataset;
 		this.strictlyCompatible = strictlyCompatible;

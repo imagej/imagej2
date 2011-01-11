@@ -8,7 +8,7 @@ import imagej.ij1bridge.BridgeStack;
 import imagej.ij1bridge.IJ1ProcessorFactory;
 import imagej.ij1bridge.ProcessorFactory;
 import imagej.imglib.TypeManager;
-import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 
 import java.io.File;
 
@@ -141,7 +141,7 @@ public class ImageUtils
 		final int sizeZ = imagej.imglib.process.ImageUtils.getNSlices(img);
 		final int sizeT = imagej.imglib.process.ImageUtils.getNFrames(img);
 
-		ImgLibDataset dataset = new ImgLibDataset(img);
+		LegacyImgLibDataset dataset = new LegacyImgLibDataset(img);
 		
 		ProcessorFactory factory = new IJ1ProcessorFactory(dataset, false);
 		

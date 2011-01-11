@@ -1,10 +1,12 @@
 package imagej.gui.display;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import imagej.dataset.Dataset;
-import imagej.imglib.dataset.ImgLibDataset;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -18,12 +20,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import loci.formats.gui.AWTImageTools;
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  *
@@ -58,8 +55,8 @@ public class NavigableImageFrame extends JFrame {
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 		dims = dataset.getDimensions();
-		dimLabels = getDimensionLabels(dataset);
-		setTitle(getName(dataset));
+		dimLabels = dataset.getMetaData().getAxisLabels();
+		setTitle(dataset.getMetaData().getLabel());
 
 		// extract width and height
 		xIndex = yIndex = -1;
@@ -155,44 +152,6 @@ public class NavigableImageFrame extends JFrame {
 		}
 
 		return panelBuilder.getPanel();
-	}
-
-	/**
-	 * HACK - extract dimensional types from ImgLib image name.
-	 * This code can disappear once Dataset interface supports labels.
-	 */
-	private static String[] getDimensionLabels(Dataset dataset) {
-		String[] dimTypes = null;
-		if (dataset instanceof ImgLibDataset) {
-			final ImgLibDataset imgLibDataset = (ImgLibDataset) dataset;
-			final Image<?> img = imgLibDataset.getImage();
-			dimTypes = ImageOpener.decodeTypes(img.getName());
-		}
-		final int[] dims = dataset.getDimensions();
-		if (dimTypes == null || dimTypes.length != dims.length) {
-			dimTypes = new String[dims.length];
-			if (dimTypes.length > 0) dimTypes[0] = ImageOpener.X;
-			if (dimTypes.length > 1) dimTypes[1] = ImageOpener.Y;
-			for (int i = 2; i < dimTypes.length; i++) dimTypes[i] = "Unknown";
-		}
-		return dimTypes;
-	}
-	
-	/**
-	 * HACK - extract name from ImgLib image object.
-	 * This code can disappear once Dataset interface has getName/setName.
-	 */
-	private static String getName(Dataset dataset) {
-		final String name;
-		if (dataset instanceof ImgLibDataset) {
-			final ImgLibDataset imgLibDataset = (ImgLibDataset) dataset;
-			final Image<?> img = imgLibDataset.getImage();
-			name = ImageOpener.decodeName(img.getName());
-		}
-		else {
-			name = dataset.toString();
-		}
-		return name;
 	}
 
 	private static boolean isXY(String dimLabel) {

@@ -8,7 +8,7 @@ import java.awt.image.IndexColorModel;
 
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 import imagej.imglib.process.ImageUtils;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
@@ -20,13 +20,13 @@ import org.junit.Test;
 public class BridgeStackTest
 {
 	private Image<?> image;
-	private ImgLibDataset dataset;
+	private LegacyImgLibDataset dataset;
 	private BridgeStack stack;
 
 	private void setupVariables(int[] dimensions)
 	{
 		this.image = ImageUtils.createImage(new UnsignedByteType(), new PlanarContainerFactory(), dimensions);
-		this.dataset = new ImgLibDataset(this.image);
+		this.dataset = new LegacyImgLibDataset(this.image);
 		this.stack = new BridgeStack(this.dataset, new ImgLibProcessorFactory(this.image));
 	}
 	

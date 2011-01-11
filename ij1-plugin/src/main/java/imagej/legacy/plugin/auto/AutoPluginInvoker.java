@@ -34,6 +34,7 @@ import ij.plugin.filter.PlugInFilterRunner;
 import imagej.dataset.Dataset;
 import imagej.ij1bridge.BridgeStack;
 import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -84,6 +85,8 @@ public class AutoPluginInvoker {
         	Dataset dataset = bStack.getDataset();
         	if (dataset instanceof ImgLibDataset)
         		image = ((ImgLibDataset) dataset).getImage();
+        	if (dataset instanceof LegacyImgLibDataset)
+        		image = ((LegacyImgLibDataset) dataset).getImage();
         }
 
         // if successful
