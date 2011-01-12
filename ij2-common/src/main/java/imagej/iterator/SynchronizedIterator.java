@@ -5,8 +5,14 @@ import imagej.dataset.Dataset;
 import imagej.process.Index;
 import imagej.process.Span;
 
+/** A SynchronizedIterator simultaneously iterates over N Datasets across a given span. Currently it is written to
+ *  iterate datasets in the order that each one organizes its primitive data in order to minimize index lookup times.
+ *  However a more straightforward implementation might be just as efficient.
+ */
 public class SynchronizedIterator
 {
+	// ************ instance variables *********************************************************************************
+
 	private Dataset[] datasets;
 	private Dataset[] directAccessDatasets;
 	private int[][] outerPositions;
@@ -19,6 +25,11 @@ public class SynchronizedIterator
 	private long[] longWorkspace;
 	private int datasetCount;
 	
+	// ************ constructor *********************************************************************************
+	
+	/** Constructs a SynchronizedIterator from input Datasets and regions. The user specifies if internal workspace
+	 *  should be filled with doubles or longs.
+	 */
 	public SynchronizedIterator(Dataset[] datasets, int[][] origins, int[] span, boolean workingInFloats)
 	{
 		for (int i = 0; i < datasets.length; i++)
@@ -62,6 +73,9 @@ public class SynchronizedIterator
 		}
 	}
 	
+	// ************ public interface *********************************************************************************
+
+	/** returns true if the iterator's current position contains valid data */
 	public boolean positionValid()
 	{
 		for (int i = 0; i < this.datasetCount; i++)
@@ -87,6 +101,7 @@ public class SynchronizedIterator
 		return true;
 	}
 
+	/** loads internal workspace with data from the iterator's current postion */
 	public void loadWorkspace()
 	{
 		for (int i = 0; i < this.datasetCount; i++)
@@ -96,13 +111,14 @@ public class SynchronizedIterator
 				this.directAccessDatasets[i] = this.datasets[i].getSubset(this.outerPositions[i]);
 			}
 			
-			if (doubleWorkspace != null)
+			if (this.doubleWorkspace != null)
 				this.doubleWorkspace[i] = this.directAccessDatasets[i].getDouble(this.innerPositions[i]);
 			else
 				this.longWorkspace[i] = this.directAccessDatasets[i].getLong(this.innerPositions[i]);
 		}
 	}
-	
+
+	/** moves the iterator position forward */
 	public void incrementPosition()
 	{
 		int[] innerPosition;
@@ -143,24 +159,32 @@ public class SynchronizedIterator
 			}
 		}
 	}
-	
+
+	/** changes the value of a Dataset, specified by its offset within the collection of Datasets within the iterator,
+	 * at its current position to the specified long value.
+	 */
 	public void setLong(int datasetNumber, long value)
 	{
 		int[] subPosition = this.innerPositions[datasetNumber];
 		this.directAccessDatasets[datasetNumber].setLong(subPosition, value);
 	}
 	
+	/** changes the value of a Dataset, specified by its offset within the collection of Datasets within the iterator,
+	 * at is current position to the specified double value.
+	 */
 	public void setDouble(int datasetNumber, double value)
 	{
 		int[] subPosition = this.innerPositions[datasetNumber];
 		this.directAccessDatasets[datasetNumber].setDouble(subPosition, value);
 	}
 
+	/** returns the internal workspace of longs this iterator owns. Is null if user specified to work in doubles in constructor. */
 	public long[] getLongWorkspace()
 	{
 		return this.longWorkspace;
 	}
 
+	/** returns the internal workspace of doubles this iterator owns. Is null if user specified to work in longs in constructor. */
 	public double[] getDoubleWorkspace()
 	{
 		return this.doubleWorkspace;

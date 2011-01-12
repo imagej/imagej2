@@ -14,6 +14,9 @@ public class RegionCopyOperation
 	
 	// ***************** constructor ***********************************************************
 	
+	/** constructs a RegionCopyOperation from a region in an input dataset to a region in an output dataset. User must specify
+	 * whether to work with float data or integral data. 
+	 */
 	public RegionCopyOperation(Dataset inputDataset, int[] inputOrigin, Dataset outputDataset, int[] outputOrigin, int[] span, boolean floatData)
 	{
 		Dimensions.verifyDimensions(inputDataset.getDimensions(), inputOrigin, span);
@@ -59,7 +62,7 @@ public class RegionCopyOperation
 		
 		public void copyValue()
 		{
-			long value = this.longWorkspace[0];;
+			long value = this.longWorkspace[0];
 			
 			this.iter.setLong(1, value);
 		}
