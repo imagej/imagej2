@@ -43,17 +43,17 @@ public class UnsignedShortArrayAccessorTest {
 		this.accessor = new UnsignedShortArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setReal(0, -1.0);
+		this.accessor.setReal(0, 0);
 		assertEquals(0, this.accessor.getReal(0), 0);
 		
-		this.accessor.setReal(1, 65536.0);
+		this.accessor.setReal(1, 65535.0);
 		assertEquals(65535, this.accessor.getReal(1), 0);
 		
 		this.accessor.setReal(2, 13.4);
 		assertEquals(13, this.accessor.getReal(2), 0);
 		
 		this.accessor.setReal(3, 61101.6);
-		assertEquals(61101, this.accessor.getReal(3), 0);
+		assertEquals(61102, this.accessor.getReal(3), 0);
 		
 		this.accessor.setReal(4, 0);
 		assertEquals(0, this.accessor.getReal(4), 0);
@@ -65,10 +65,10 @@ public class UnsignedShortArrayAccessorTest {
 		this.accessor = new UnsignedShortArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setIntegral(0, -1);
+		this.accessor.setIntegral(0, 0);
 		assertEquals(0, this.accessor.getIntegral(0));
 		
-		this.accessor.setIntegral(1, 65536);
+		this.accessor.setIntegral(1, 65535);
 		assertEquals(65535, this.accessor.getIntegral(1));
 		
 		this.accessor.setIntegral(2, 13);

@@ -53,7 +53,7 @@ public class LongArrayAccessorTest {
 		assertEquals(-13, this.accessor.getReal(2), 0);
 		
 		this.accessor.setReal(3, 68.6);
-		assertEquals(68, this.accessor.getReal(3), 0);
+		assertEquals(69, this.accessor.getReal(3), 0);
 		
 		this.accessor.setReal(4, 0);
 		assertEquals(0, this.accessor.getReal(4), 0);

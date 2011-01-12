@@ -18,10 +18,12 @@ public class Unsigned12BitArrayAccessor implements DataAccessor
 	@Override
 	public void setReal(long index, double value)
 	{
-		// TODO : Imglib sets values that out of range by wraping them to other side (neg to pos or pos to neg). Determine who needs to fix code. 
-		if (value < 0) value = 0;
-		if (value > 4095) value = 4095;
-		placeValue((int)index, (int)value);  // TODO - closer to Imglib : (int)Math.round(value)
+		// TODO : Imglib sets values that out of range by wrapping them to other side (neg->pos or pos->neg).
+		// Determine who needs to fix code. 
+		//if (value < 0) value = 0;
+		//if (value > 4095) value = 4095;
+		value += (0.5d * Math.signum( value ) );  // TODO - this is essentially what imglib does
+		placeValue((int)index, (int)value);
 	}
 
 	@Override
@@ -33,9 +35,11 @@ public class Unsigned12BitArrayAccessor implements DataAccessor
 	@Override
 	public void setIntegral(long index, long value)
 	{
-		if (value < 0) value = 0;
-		if (value > 4095) value = 4095;
-		placeValue((int)index, (int)value);
+		// TODO : Imglib sets values that out of range by wrapping them to other side (neg->pos or pos->neg).
+		// Determine who needs to fix code. 
+		//if (value < 0) value = 0;
+		//if (value > 4095) value = 4095;
+		placeValue((int)index, (short)value);
 	}
 
 	private int readValue(int index)
