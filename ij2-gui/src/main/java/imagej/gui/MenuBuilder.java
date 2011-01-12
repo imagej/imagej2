@@ -1,19 +1,11 @@
 package imagej.gui;
 
-import imagej.Log;
-import imagej.dataset.Dataset;
-import imagej.gui.display.NavigableImageFrame;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
 import imagej.plugin.PluginUtils;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Ij2PluginRunner;
-import imagej.plugin.ij2.ParameterHandler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -115,26 +107,6 @@ public class MenuBuilder {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				PluginUtils.runPlugin(entry);
-
-				// TEMP - extremely temporary, horrible hack, for testing
-				try {
-					final IPlugin plugin = Ij2PluginRunner.lastRunPlugin;
-					final Map<String, Object> outputs =
-						ParameterHandler.getOutputMap(plugin);
-					for (String key : outputs.keySet()) {
-						final Object value = outputs.get(key);
-						if (value instanceof Dataset) {
-							final Dataset dataset = (Dataset) value;
-							final NavigableImageFrame imageFrame = new NavigableImageFrame();
-							imageFrame.setDataset(dataset);
-							imageFrame.setVisible(true);
-						}
-						Log.debug("\t" + key + " = " + outputs.get(key));
-					}
-				}
-				catch (PluginException e1) {
-					Log.printStackTrace(e1);
-				}
 			}
 		});
 	}

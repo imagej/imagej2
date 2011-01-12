@@ -1,9 +1,11 @@
 package imagej.plugin.ij2;
 
 import imagej.Log;
+import imagej.dataset.Dataset;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
 import imagej.plugin.PluginRunner;
+import imagej.plugin.PluginUtils;
 
 import java.util.Map;
 
@@ -29,12 +31,7 @@ public class Ij2PluginRunner implements PluginRunner {
 		// FIXME - populate plugin parameters before execution
 	}
 
-	// TEMP - extremely temporary, horrible hack, for testing
-	public static IPlugin lastRunPlugin;
-
 	private void postProcess(final IPlugin plugin) throws PluginException {
-		// FIXME - do something with output parameters:
-		// invoke an AutoDisplayPlugin that matches each output
 		Log.debug("INPUTS:");
 		final Map<String, Object> inputs = ParameterHandler.getInputMap(plugin);
 		for (String key : inputs.keySet()) {
@@ -44,10 +41,14 @@ public class Ij2PluginRunner implements PluginRunner {
 		final Map<String, Object> outputs = ParameterHandler.getOutputMap(plugin);
 		for (String key : outputs.keySet()) {
 			Log.debug("\t" + key + " = " + outputs.get(key));
+			// display output datasets onscreen
+			final Object value = outputs.get(key);
+			if (value instanceof Dataset) {
+				final Dataset dataset = (Dataset) value;
+				PluginUtils.display(dataset);
+			}
+			// TODO - handle other output parameter types?
 		}
-
-		// TEMP - extremely temporary, horrible hack, for testing
-		lastRunPlugin = plugin;
 	}
 
 	public IPlugin createInstance(final PluginEntry entry)
