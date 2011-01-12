@@ -5,11 +5,23 @@ import imagej.dataset.Dataset;
 /** this class does an iteration that is nested like multiple for loops */
 public class NestedIterator
 {
-	public NestedIterator(Dataset[] datasets, double[] workspace)
+	// ************ instance variables *********************************************************************************
+
+	private double[] doubleWorkspace;
+	private long[] longWorkspace;
+	
+	// ************ constructor *********************************************************************************
+
+	public NestedIterator(Dataset[] datasets, int[][] origins, int[][] spans, boolean workingInFloats)
 	{
-		// TODO
+		if (workingInFloats)
+			this.doubleWorkspace = new double[datasets.length];
+		else
+			this.longWorkspace = new long[datasets.length];
 	}
 	
+	// ************ public interface *********************************************************************************
+
 	public boolean positionValid()
 	{
 		// TODO
@@ -38,13 +50,11 @@ public class NestedIterator
 
 	public long[] getLongWorkspace()
 	{
-		// TODO
-		return null;
+		return this.longWorkspace;
 	}
 
 	public double[] getDoubleWorkspace()
 	{
-		// TODO
-		return null;
+		return this.doubleWorkspace;
 	}
 }
