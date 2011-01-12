@@ -35,8 +35,9 @@ import org.junit.Test;
 
 public class DataCompatibilityTest
 {
-	private static final int DATA_SIZE = 30000;
-	private static final double SCALE_FACTOR = 50000 * Math.PI;
+	private static final int DATA_SIZE = 70000;
+	private static final double SCALE_FACTOR = 2.1;
+	private double base, range;
 	private double[] data;
 	private Dataset ijDS;
 	private Image<?> imglibImage;
@@ -45,7 +46,10 @@ public class DataCompatibilityTest
 	public void setupData()
 	{
 		data = new double[DATA_SIZE];
+		
 		Random rng = new Random();
+		
+		rng.setSeed(107731);
 		
 		for (int i = 0; i < DATA_SIZE; i++)
 		{
@@ -56,6 +60,11 @@ public class DataCompatibilityTest
 		}
 	}
 
+	private double getValue(int i)
+	{
+		return this.base + (this.data[i] * this.range * SCALE_FACTOR);
+	}
+	
 	private void createImglibImage(String typeName)
 	{
 		Type type = Types.findType(typeName);
@@ -81,16 +90,80 @@ public class DataCompatibilityTest
 		
 		this.ijDS = factory.createDataset(type, dimensions);
 	}
-	
-	private void createImages(String typeName)
+
+	private void setBaseAndRange()
 	{
-		setupData();
-		createImglibImage(typeName);
-		fillImglibImage();
-		createIjDataset(typeName);
-		fillIjDataset();
+		if (this.imglibType instanceof BitType)
+		{
+				this.base = 0.0;
+				this.range = 1.0;
+		}
+		
+		else if (this.imglibType instanceof ByteType)
+		{
+				this.base = Byte.MIN_VALUE;
+				this.range = 256.0;
+		}
+		
+		else if (this.imglibType instanceof UnsignedByteType)
+		{
+				this.base = 0.0;
+				this.range = 256.0;
+		}
+		
+		else if (this.imglibType instanceof Unsigned12BitType)
+		{
+				this.base = 0.0;
+				this.range = 4096.0;
+		}
+		
+		else if (this.imglibType instanceof ShortType)
+		{
+				this.base = Short.MIN_VALUE;
+				this.range = 65536.0;
+		}
+		
+		else if (this.imglibType instanceof UnsignedShortType)
+		{
+				this.base = 0.0;
+				this.range = 65536.0;
+		}
+		
+		else if (this.imglibType instanceof IntType)
+		{
+				this.base = Integer.MIN_VALUE;
+				this.range = 0xffffffffL;
+		}
+		
+		else if (this.imglibType instanceof UnsignedIntType)
+		{
+				this.base = 0.0;
+				this.range = 0xffffffffL;
+		}
+		
+		else if (this.imglibType instanceof FloatType)
+		{
+				this.base = -50000000.0;
+				this.range = 100000000.0;
+		}
+		
+		else if (this.imglibType instanceof LongType)
+		{
+				this.base = -100L + Integer.MIN_VALUE;
+				this.range = 200L + 2L * Integer.MAX_VALUE;
+		}
+		
+		else if (this.imglibType instanceof DoubleType)
+		{
+			this.base = -50000000.0;
+			this.range = 100000000.0;
+		}
+		
+		else
+			throw new IllegalStateException("unknown type specified");
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	private void fillImglibImage()
 	{
 		double value;
@@ -103,7 +176,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -114,7 +187,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -125,7 +198,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -136,7 +209,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -147,7 +220,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -158,7 +231,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -169,7 +242,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -180,7 +253,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -191,7 +264,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -202,7 +275,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -213,7 +286,7 @@ public class DataCompatibilityTest
 			while (cursor.hasNext())
 			{
 				cursor.fwd();
-				value = this.data[i++] * SCALE_FACTOR;
+				value = getValue(i++);
 				cursor.getType().setReal(value);
 			}
 		}
@@ -232,7 +305,7 @@ public class DataCompatibilityTest
 		
 		while (Index.isValid(index, origin, span))
 		{
-			double value = this.data[i++] * SCALE_FACTOR;
+			double value = getValue(i++);
 				
 			this.ijDS.setDouble(index, value);
 			
@@ -242,22 +315,27 @@ public class DataCompatibilityTest
 	
 	private void fillImages()
 	{
+		setBaseAndRange();
 		fillImglibImage();
 		fillIjDataset();
 	}
 	
+	private void createImages(String typeName)
+	{
+		setupData();
+		createImglibImage(typeName);
+		createIjDataset(typeName);
+	}
+	
 	private void compareData()
 	{
-		// TODO - temp disablement to allow check in of code
-		/*
-		*/
 		Dataset imglibDS = new LegacyImgLibDataset(this.imglibImage);
 
 		int[] origin = Index.create(2);
 		int[] span = Span.singlePlane(1, DATA_SIZE, 2);
 		int[] index = Index.create(2);
 		
-		int i = 0;
+		//int i = 0;
 		while (Index.isValid(index, origin, span))
 		{
 			// TODO - should do isFloat and then getDouble() vs. getLong() but Imglib doesn't support setting/getting longs correctly yet
@@ -266,12 +344,12 @@ public class DataCompatibilityTest
 			
 			double imglibDouble = imglibDS.getDouble(index);
 			
-			double dataValue = this.data[i++] * SCALE_FACTOR;
+			//double dataValue = getValue(i++);
 			
 			//if (Math.abs(ijDouble-imglibDouble) > 0.00001)
-			//	System.out.println(this.ijDS.getType().getName()+" "+dataValue);
+			//	System.out.println(this.ijDS.getType().getName()+" (entry "+(i-1)+") "+dataValue+" ij("+ijDouble+") imglib("+imglibDouble+")");
 			
-			//assertEquals(ijDouble, imglibDouble, 0.00001);
+			assertEquals(ijDouble, imglibDouble, 0.00001);
 			
 			Index.increment(index, origin, span);
 		}
