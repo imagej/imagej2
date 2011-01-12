@@ -4,6 +4,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import imagej.AxisLabel;
 import imagej.dataset.Dataset;
 
 import java.awt.BorderLayout;
@@ -20,7 +21,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import loci.formats.gui.AWTImageTools;
-import mpicbg.imglib.io.ImageOpener;
 
 /**
  *
@@ -31,7 +31,7 @@ public class NavigableImageFrame extends JFrame {
 
 	private Dataset dataset;
 	private int[] dims;
-	private String[] dimLabels;
+	private AxisLabel[] dimLabels;
 	private int xIndex, yIndex;
 	private int[] pos;
 
@@ -61,8 +61,8 @@ public class NavigableImageFrame extends JFrame {
 		// extract width and height
 		xIndex = yIndex = -1;
 		for (int i = 0; i < dims.length; i++) {
-			if (dimLabels[i].equals(ImageOpener.X)) xIndex = i;
-			if (dimLabels[i].equals(ImageOpener.Y)) yIndex = i;
+			if (dimLabels[i] == AxisLabel.X) xIndex = i;
+			if (dimLabels[i] == AxisLabel.Y) yIndex = i;
 		}
 		if (xIndex < 0) throw new IllegalArgumentException("No X dimension");
 		if (yIndex < 0) throw new IllegalArgumentException("No Y dimension");
@@ -126,7 +126,7 @@ public class NavigableImageFrame extends JFrame {
 		int p = 0;
 		for (int i = 0; i < dims.length; i++) {
 			if (isXY(dimLabels[i])) continue;
-			final JLabel label = new JLabel(dimLabels[i]);
+			final JLabel label = new JLabel(dimLabels[i].toString());
 			final JSlider slider = new JSlider(1, dims[i], 1);
 			int minorSpacing = dims[i] / 16;
 			int majorSpacing = (dims[i] + 4) / 5;
@@ -154,8 +154,8 @@ public class NavigableImageFrame extends JFrame {
 		return panelBuilder.getPanel();
 	}
 
-	private static boolean isXY(String dimLabel) {
-		return dimLabel.equals(ImageOpener.X) || dimLabel.equals(ImageOpener.Y);
+	private static boolean isXY(AxisLabel dimLabel) {
+		return dimLabel == AxisLabel.X || dimLabel == AxisLabel.Y;
 	}
 
 }

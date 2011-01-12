@@ -1,5 +1,6 @@
 package imagej.imglib.dataset;
 
+import imagej.AxisLabel;
 import imagej.MetaData;
 import imagej.data.Type;
 import imagej.dataset.Dataset;
@@ -31,8 +32,12 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset {
 		final String name = img.getName();
 		final String imageName = decodeName(name);
 		final String[] imageTypes = decodeTypes(name);
+		final AxisLabel[] axisLabels = new AxisLabel[imageTypes.length];
+		for (int i=0; i<imageTypes.length; i++) {
+			axisLabels[i] = AxisLabel.getAxisLabel(imageTypes[i]);
+		}
 		metadata = new MetaData();
-		metadata.setAxisLabels(imageTypes);
+		metadata.setAxisLabels(axisLabels);
 		metadata.setLabel(imageName);
 	}
 

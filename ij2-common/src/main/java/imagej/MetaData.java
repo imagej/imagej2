@@ -5,22 +5,22 @@ package imagej;
 
 public class MetaData
 {
-	private String[] axisLabels;
+	private AxisLabel[] axisLabels;
 	private int directAccessSize;
 	private String label;
 	
 	public MetaData()
 	{
 		this.label = "default label";
-		this.axisLabels = new String[0];
+		this.axisLabels = new AxisLabel[0];
 		this.directAccessSize = 0;
 	}
 	
     // returns the order of the axes.
-	public String[] getAxisLabels() { return this.axisLabels; }
+	public AxisLabel[] getAxisLabels() { return this.axisLabels; }
 	
 	// set the order of the axes.
-	public void setAxisLabels(String[] axisLabels) { this.axisLabels = axisLabels; }
+	public void setAxisLabels(AxisLabel[] axisLabels) { this.axisLabels = axisLabels; }
 	
     // returns the number of dimensions in primitive access Datasets. So XYZ could be org 2 (x&y).
 	public int getDirectAccessDimensionCount() { return this.directAccessSize; }
