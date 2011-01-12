@@ -12,7 +12,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class Ij1PluginRunner implements PluginRunner {
 
 	@Override
-	public void runPlugin(PluginEntry entry) throws PluginException {
+	public PlugIn runPlugin(PluginEntry entry) throws PluginException {
 		// get Class object for plugin entry
 		final ClassLoader loader = ij.IJ.getClassLoader();
 		final Class<?> pluginClass;
@@ -47,6 +47,8 @@ public class Ij1PluginRunner implements PluginRunner {
 
 	 	// TODO: handle PlugInFilter, ExtendedPlugInFilter (via PlugInFilterRunner?)
 		// TODO: use Executer or IJ.runPlugIn instead
+		
+		return plugin;
 	}
 
 }

@@ -14,13 +14,15 @@ import org.openide.util.lookup.ServiceProvider;
 public class Ij2PluginRunner implements PluginRunner {
 
 	@Override
-	public void runPlugin(final PluginEntry entry) throws PluginException {
+	public IPlugin runPlugin(final PluginEntry entry) throws PluginException {
 		final IPlugin plugin = createInstance(entry);
 
 		// execute plugin
 		preProcess(plugin);
 		plugin.run();
 		postProcess(plugin);
+		
+		return plugin;
 	}
 
 	private void preProcess(final IPlugin plugin) {
