@@ -1379,7 +1379,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 		
 		@Override
-		public int getValueCount()
+		public int getParameterCount()
 		{
 			return 1;
 		}
