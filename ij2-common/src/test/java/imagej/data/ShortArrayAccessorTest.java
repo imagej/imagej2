@@ -43,17 +43,17 @@ public class ShortArrayAccessorTest {
 		this.accessor = new ShortArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setReal(0, -1.0 + Short.MIN_VALUE);
+		this.accessor.setReal(0, Short.MIN_VALUE);
 		assertEquals(Short.MIN_VALUE, this.accessor.getReal(0), 0);
 		
-		this.accessor.setReal(1, Short.MAX_VALUE+1.0);
+		this.accessor.setReal(1, Short.MAX_VALUE);
 		assertEquals(Short.MAX_VALUE, this.accessor.getReal(1), 0);
 		
 		this.accessor.setReal(2, -13.4);
 		assertEquals(-13, this.accessor.getReal(2), 0);
 		
 		this.accessor.setReal(3, 68.6);
-		assertEquals(68, this.accessor.getReal(3), 0);
+		assertEquals(69, this.accessor.getReal(3), 0);
 		
 		this.accessor.setReal(4, 0);
 		assertEquals(0, this.accessor.getReal(4), 0);
@@ -65,10 +65,10 @@ public class ShortArrayAccessorTest {
 		this.accessor = new ShortArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setIntegral(0, -1 + Short.MIN_VALUE);
+		this.accessor.setIntegral(0, Short.MIN_VALUE);
 		assertEquals(Short.MIN_VALUE, this.accessor.getIntegral(0));
 		
-		this.accessor.setIntegral(1, Short.MAX_VALUE+1L);
+		this.accessor.setIntegral(1, Short.MAX_VALUE);
 		assertEquals(Short.MAX_VALUE, this.accessor.getIntegral(1));
 		
 		this.accessor.setIntegral(2, -13);

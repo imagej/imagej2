@@ -43,20 +43,17 @@ public class UnsignedIntArrayAccessorTest {
 		this.accessor = new UnsignedIntArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setReal(0, -1.0);
+		this.accessor.setReal(0, 0);
 		assertEquals(0, this.accessor.getReal(0), 0);
 		
-		this.accessor.setReal(1, 4294967296.0);
+		this.accessor.setReal(1, 4294967295.0);
 		assertEquals(4294967295.0, this.accessor.getReal(1), 0);
 		
 		this.accessor.setReal(2, 13.4);
 		assertEquals(13, this.accessor.getReal(2), 0);
 		
 		this.accessor.setReal(3, 1234567.6);
-		assertEquals(1234567, this.accessor.getReal(3), 0);
-		
-		this.accessor.setReal(4, 0);
-		assertEquals(0, this.accessor.getReal(4), 0);
+		assertEquals(1234568, this.accessor.getReal(3), 0);
 	}
 
 	@Test
@@ -65,10 +62,10 @@ public class UnsignedIntArrayAccessorTest {
 		this.accessor = new UnsignedIntArrayAccessor(data);
 		assertNotNull(this.accessor);
 		
-		this.accessor.setIntegral(0, -1);
+		this.accessor.setIntegral(0, 0);
 		assertEquals(0, this.accessor.getIntegral(0));
 		
-		this.accessor.setIntegral(1, 4294967296L);
+		this.accessor.setIntegral(1, 4294967295L);
 		assertEquals(4294967295L, this.accessor.getIntegral(1));
 		
 		this.accessor.setIntegral(2, 13);
@@ -76,9 +73,6 @@ public class UnsignedIntArrayAccessorTest {
 		
 		this.accessor.setIntegral(3, 1234567);
 		assertEquals(1234567, this.accessor.getIntegral(3));
-		
-		this.accessor.setIntegral(4, 0);
-		assertEquals(0, this.accessor.getIntegral(4));
 	}
 
 }

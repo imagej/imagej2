@@ -42,6 +42,8 @@ public class Unsigned12BitArrayAccessorTest {
 				assertEquals(i, this.accessor.getReal(v), 0);
 			}
 			
+			/* restore if we ever clamp
+
 			for (int i = -68000; i < 0; i+=1000)
 			{
 				this.accessor.setReal(v, 99);
@@ -55,6 +57,7 @@ public class Unsigned12BitArrayAccessorTest {
 				this.accessor.setReal(v, i);
 				assertEquals(4095, this.accessor.getReal(v), 0);
 			}
+			*/
 		}
 	}
 
@@ -85,7 +88,9 @@ public class Unsigned12BitArrayAccessorTest {
 				this.accessor.setIntegral(v, i);
 				assertEquals(i, this.accessor.getIntegral(v));
 			}
-			
+
+			/* restore if we ever clamp
+
 			for (int i = -68000; i < 0; i+=1000)
 			{
 				this.accessor.setIntegral(v, 99);
@@ -99,6 +104,7 @@ public class Unsigned12BitArrayAccessorTest {
 				this.accessor.setIntegral(v, i);
 				assertEquals(4095, this.accessor.getIntegral(v));
 			}
+			 */
 		}
 	}
 
