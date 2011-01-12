@@ -5,8 +5,9 @@ public interface PluginRunner {
 	/**
 	 * Executes the given plugin.
 	 *
+	 * @return instance of the executed plugin, when applicable.
 	 * @throws PluginException if the plugin cannot be executed. 
 	 */
-	void runPlugin(PluginEntry plugin) throws PluginException;
+	Object runPlugin(PluginEntry plugin) throws PluginException;
 
 }
