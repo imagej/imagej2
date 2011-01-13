@@ -205,6 +205,7 @@ public class DatasetProcessor extends ImageProcessor
     				v9 = accessor.getReal(p9);
     				value =  (v1+v2+v3+v4+v5+v6+v7+v8+v9) / 9.0;
                     setd(p, value);
+                    tracker.update();
                 }
                 break;
                 case FIND_EDGES:
@@ -220,6 +221,7 @@ public class DatasetProcessor extends ImageProcessor
                     double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
                     value = (double)Math.sqrt(sum1*sum1 + sum2*sum2);
                     setd(p, value);
+                    tracker.update();
                 }
                 break;
                 case CONVOLVE:
@@ -236,11 +238,10 @@ public class DatasetProcessor extends ImageProcessor
                               + k7*v7 + k8*v8 + k9*v9;
                     value = sum * scale;
                     setd(p, value);
+                    tracker.update();
                 }
                 break;
 			}
-            
-            tracker.update();
     	}
 		
 		tracker.done();
@@ -442,9 +443,11 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
+		// TODO - taken from FloatProcessor's implementation
+		// I'm pretty sure Byte/Short processors might do some things slightly differently. Check.
+		
 		Rectangle r1, r2;
 		int srcIndex, dstIndex;
-		int xSrcBase, ySrcBase;
 		Object source;
 		DataAccessor srcAccessor;
 
@@ -458,8 +461,6 @@ public class DatasetProcessor extends ImageProcessor
 		source = ip.getPixels();
 		srcAccessor = this.type.allocateArrayAccessor(source);
 		r1 = r1.intersection(r2);
-		xSrcBase = (xloc<0)?-xloc:0;
-		ySrcBase = (yloc<0)?-yloc:0;
 		boolean useDBZValue = !Float.isInfinite(divideByZeroValue);
 		ProgressTracker tracker = new ProgressTracker(this, ((long)r1.width)*r1.height, 20*srcHeight);
 		for (int y=r1.y; y<(r1.y+r1.height); y++) {
@@ -615,7 +616,6 @@ public class DatasetProcessor extends ImageProcessor
 								double newValue = myValue / srcValue;
 								setd(dstIndex, newValue);
 							}
-							tracker.update();
 						}
 						else  // integral
 						{
@@ -634,8 +634,8 @@ public class DatasetProcessor extends ImageProcessor
 								long newValue = myValue / srcValue;
 								setl(dstIndex, newValue);
 							}
-							tracker.update();
 						}
+						tracker.update();
 					}
 					break;
 				case Blitter.AND:
