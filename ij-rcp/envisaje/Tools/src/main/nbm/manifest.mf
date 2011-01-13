@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/imagine/tools/Bundle.properties
+OpenIDE-Module-Layer: org/imagejdev/imagine/tools/layer.xml

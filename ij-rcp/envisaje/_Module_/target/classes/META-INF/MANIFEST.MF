@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/_module_/Bundle.proper
+ ties
+OpenIDE-Module-Layer: org/imagejdev/_module_/layer.xml
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20110108
+OpenIDE-Module-Build-Version: 201101080103
+OpenIDE-Module: org.imagejdev._Module_
+OpenIDE-Module-Public-Packages: -
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+OpenIDE-Module-Display-Category: org.imagejdev
+OpenIDE-Module-Name: _Module_ NetBeans Module
+OpenIDE-Module-Short-Description: To be set.
+OpenIDE-Module-Long-Description: To be set.
+OpenIDE-Module-Module-Dependencies:  org.openide.util > 8.6.1
+

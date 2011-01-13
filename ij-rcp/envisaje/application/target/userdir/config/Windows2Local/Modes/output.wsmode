@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mode version="2.3">
+    <name unique="output" />
+  <kind type="view" />
+  <state type="joined" />
+  <constraints>
+    <path orientation="horizontal" number="60" weight="0.7"/>
+    <path orientation="vertical" number="80" weight="0.3"/>
+    <path orientation="horizontal" number="30" weight="0.8"/>
+  </constraints>
+  <bounds x="160" y="612" width="640" height="180" />
+  <frame state="0"/>
+    <active-tc  id="output" />
+    <empty-behavior permanent="true"/>
+</mode>

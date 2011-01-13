@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/imagefiletype/Bundle.p
+ roperties
+OpenIDE-Module-Layer: org/imagejdev/imagefiletype/layer.xml
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20101201
+OpenIDE-Module-Build-Version: 201012011228
+OpenIDE-Module: org.imagejdev.ImageFileType
+OpenIDE-Module-Public-Packages: -
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+OpenIDE-Module-Display-Category: org.imagejdev
+OpenIDE-Module-Name: ImageFileType NetBeans Module
+OpenIDE-Module-Short-Description: To be set.
+OpenIDE-Module-Long-Description: To be set.
+OpenIDE-Module-Module-Dependencies:  org.openide.util > 8.6.1, org.ope
+ nide.util.lookup > 8.3.1, org.openide.filesystems > 7.38.2, org.openi
+ de.loaders > 7.16.1, org.openide.nodes > 7.16.1
+

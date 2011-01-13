@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/rasterlayer/Bundle.pro
+ perties
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20110112
+OpenIDE-Module-Build-Version: 201101120803
+OpenIDE-Module: org.imagejdev.RasterLayer
+OpenIDE-Module-Public-Packages: org.imagejdev.rasterlayer.*
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+OpenIDE-Module-Display-Category: org.imagejdev
+OpenIDE-Module-Name: RasterLayer NetBeans Module
+OpenIDE-Module-Short-Description: To be set.
+OpenIDE-Module-Long-Description: To be set.
+OpenIDE-Module-Module-Dependencies:  org.openide.util > 8.6.1, org.ope
+ nide.util.lookup > 8.3.1, org.imagejdev.PaintAPI > 1.0, org.imagejdev
+ .ImageNIO > 1.0
+

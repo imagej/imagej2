@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="brushes">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="org.imagejdev.imagine.tools.Bundle" />
+
+        <file name="org-imagejdev-imagine-tools-brushes-StandardBrush.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/standardbrush.png"/>
+        </file>
+    </folder>
+    <folder name="fills">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="org.imagejdev.imagine.tools.Bundle" />
+	    
+        <file name="org-imagejdev-imagine-tools-fills-SolidColorFill.instance">
+            <attr name="SystemFileSystem.localizingBundle" 
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/solidfill.png"/>
+        </file>
+        <file name="org-imagejdev-imagine-tools-fills-GradientFill.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/gradientfill.png"/>
+        </file>
+        
+        <file name="TestFill.instance" url="resources/smudge.png">
+            <attr name="SystemFileSystem.icon" urlvalue="nbfs:/SystemFileSystem/fills/TestFill.instance"/>
+            <attr name="instanceClass" stringvalue="org.imagejdev.imagine.tools.fills.PatternFill"/>
+            <attr name="instanceCreate" methodvalue="org.imagejdev.imagine.tools.fills.PatternFill.create"/>
+        </file>
+        
+    </folder>
+    
+    <folder name="brushtips">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="org.imagejdev.imagine.tools.Bundle" />
+	<file name="org-imagejdev-imagine-tools-brushes-tips-RoundBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/roundbrushtip.png"/>
+	</file>
+	<file name="org-imagejdev-imagine-tools-brushes-tips-FunkyBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/funkybrushtip.png"/>
+	</file>
+	<file name="org-imagejdev-imagine-tools-brushes-tips-TriangleBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/trianglebrushtip.png"/>
+	</file>
+	<file name="org-imagejdev-imagine-tools-brushes-tips-MultiPointTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/roundbrushtip.png"/>
+	</file>
+	<file name="org-imagejdev-imagine-tools-brushes-tips-HashTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="org.imagejdev.imagine.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/org/imagejdev/imagine/tools/resources/roundbrushtip.png"/>
+	</file>
+    </folder>
+    
+    <folder name="tools">
+        <folder name="raster">
+            <file name="org-imagejdev-imagine-tools-BrushTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-DrawTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-EraserTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-ImageTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-LineTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-MoveTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-OvalTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-PencilTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-RectangleTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-RoundRectTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-TextTool.instance"/>
+<!--            <file name="org-imagejdev-imagine-tools-MagicWandSelectionTool.instance"/> -->
+            <file name="org-imagejdev-imagine-tools-RectangularSelectionTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-OvalSelectionTool.instance"/>
+        </folder>
+        <folder name="vector">
+            <file name="org-imagejdev-imagine-tools-EraserTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-ImageTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-LineTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-MoveTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-OvalTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-RectangleTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-RoundRectTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-TextTool.instance"/>
+            
+            <file name="org-imagejdev-imagine-tools-MagicWandSelectionTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-RectangularSelectionTool.instance"/>
+            <file name="org-imagejdev-imagine-tools-OvalSelectionTool.instance"/>
+        </folder>
+    </folder>
+</filesystem>

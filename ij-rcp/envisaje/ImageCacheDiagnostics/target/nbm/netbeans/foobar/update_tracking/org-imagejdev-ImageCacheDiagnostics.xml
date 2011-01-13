@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.ImageCacheDiagnostics">
+    <module_version install_time="1294856960724" last="true" origin="installer" specification_version="1.0">
+        <file crc="3667321488" name="config/Modules/org-imagejdev-ImageCacheDiagnostics.xml"/>
+        <file crc="3379943687" name="modules/ext/swing-layout-1.0.3.jar"/>
+        <file crc="4267041749" name="modules/org-imagejdev-ImageCacheDiagnostics.jar"/>
+    </module_version>
+</module>

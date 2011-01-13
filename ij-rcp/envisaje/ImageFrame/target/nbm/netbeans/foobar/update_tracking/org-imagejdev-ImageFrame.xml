@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.ImageFrame">
+    <module_version install_time="1294880593391" last="true" origin="installer" specification_version="1.0">
+        <file crc="3205168510" name="config/Modules/org-imagejdev-ImageFrame.xml"/>
+        <file crc="3074806867" name="modules/org-imagejdev-ImageFrame.jar"/>
+        <file crc="3442868606" name="update_tracking/org-imagejdev-ImageFrame.xml"/>
+    </module_version>
+</module>

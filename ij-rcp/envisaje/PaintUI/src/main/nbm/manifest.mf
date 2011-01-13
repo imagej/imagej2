@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/paintui/Bundle.properties
+OpenIDE-Module-Layer: org/imagejdev/paintui/layer.xml

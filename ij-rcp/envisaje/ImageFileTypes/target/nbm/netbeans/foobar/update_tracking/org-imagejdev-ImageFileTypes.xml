@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.ImageFileTypes">
+    <module_version install_time="1294698206808" last="true" origin="installer" specification_version="1.0">
+        <file crc="1804896013" name="config/Modules/org-imagejdev-ImageFileTypes.xml"/>
+        <file crc="3379943687" name="modules/ext/swing-layout-1.0.3.jar"/>
+        <file crc="4008643002" name="modules/org-imagejdev-ImageFileTypes.jar"/>
+    </module_version>
+</module>

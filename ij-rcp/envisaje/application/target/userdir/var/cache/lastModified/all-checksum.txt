@@ -1,0 +1,8 @@
+C:\TestDev\envisaje\application\target\foo\platform=1294880616913
+C:\TestDev\envisaje\application\target\foo\bin=1294880616911
+C:\TestDev\envisaje\application\target\foo\etc=1294880616912
+C:\TestDev\envisaje\application\target\foo\extra=1294880616912
+C:\TestDev\envisaje\application\target\foo\foobar=1294880616913
+C:\TestDev\envisaje\application\target\foo\platform=1294880616913
+C:\TestDev\envisaje\application\target\userdir=1294880616913
+crc=533

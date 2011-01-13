@@ -1,0 +1,346 @@
+/*
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the License). You may not use this file except in
+ * compliance with the License.
+ *
+ * You can obtain a copy of the License at http://www.netbeans.org/cddl.html
+ * or http://www.netbeans.org/cddl.txt.
+ *
+ * When distributing Covered Code, include this CDDL Header Notice in each file
+ * and include the License file at http://www.netbeans.org/cddl.txt.
+ * If applicable, add the following below the CDDL Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ *
+ * The Original Software is NetBeans. The Initial Developer of the Original
+ * Software is Sun Microsystems, Inc. Portions Copyright 1997-2006 Sun
+ * Microsystems, Inc. All Rights Reserved.
+ */
+/*
+ * RectangleTool.java
+ *
+ * Created on September 28, 2006, 6:18 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package org.imagejdev.imagine.tools;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.imagejdev.imagine.api.Layer;
+import org.imagejdev.imagine.api.toolcustomizers.Customizers;
+import org.imagejdev.imagine.api.toolcustomizers.PaintAttributes;
+import org.imagejdev.imagine.spi.Customizer;
+import org.imagejdev.imagine.spi.CustomizerProvider;
+import org.imagejdev.imagine.spi.PaintParticipant;
+import org.imagejdev.imagine.spi.PaintParticipant.Repainter;
+import org.imagejdev.imagine.spi.Tool;
+import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.Lookups;
+
+/**
+ *
+ * @author Tim Boudreau
+ */
+public class RectangleTool_replacement implements Tool, PaintParticipant, MouseMotionListener, MouseListener, KeyListener, CustomizerProvider, ChangeListener {
+    int NO_ANCHOR_SIZE = 18;
+    private Rectangle TEMPLATE_RECTANGLE = new Rectangle (0, 0, NO_ANCHOR_SIZE, NO_ANCHOR_SIZE);
+    private MutableRectangle rect;
+    private Color color = Color.BLUE;
+    private boolean fill;
+    private int draggingCorner;
+    final Customizers customizers;
+
+    public RectangleTool_replacement (Customizers c) {
+        this.customizers = c;
+    }
+
+    public RectangleTool_replacement () {
+        this (Customizers.getDefault());
+    }
+
+    BasicStroke stroke = new BasicStroke (1F);
+    public void setThickness (float val) {
+        if (getClass() == RectangleTool.class) {
+            stroke = new BasicStroke (val);
+        } else {
+            stroke = new BasicStroke (val, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        }
+        change();
+    }
+
+    public float getThickness() {
+        return stroke.getLineWidth();
+    }
+
+    public void setColor (Color c) {
+        this.color = c;
+        change();
+    }
+
+    protected final void change() {
+        if (rect != null && repainter != null) {
+            repainter.requestRepaint(rect);
+        }
+    }
+
+    public void setFill (boolean val) {
+        this.fill = val;
+        change();
+    }
+
+    public Rectangle getRectangle() {
+        return rect == null ? null : new Rectangle (rect);
+    }
+
+    private void setDraggingCorner(int draggingCorner) {
+        this.draggingCorner = draggingCorner;
+    }
+
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE && e.getModifiersEx() == 0) {
+            clear();
+        }
+    }
+
+    private void clear() {
+        rect = null;
+        draggingCorner = MutableRectangle.ANY;
+        armed = false;
+        if (repainter != null) {
+            repainter.requestRepaint(null);
+        }
+    }
+
+    public String toString() {
+        return NbBundle.getMessage (RectangleTool.class, "Rectangle");
+    }
+
+    public void paint(Graphics2D g2d, Rectangle layerBounds, boolean commit) {
+        committing = commit;
+        paint (g2d);
+        committing = false;
+    }
+
+    private Rectangle paintedRect = new Rectangle();
+    public void paint(Graphics2D g2d) {
+        g2d.setColor(color);
+        g2d.setStroke(stroke);
+        Rectangle toPaint = rect == null ? TEMPLATE_RECTANGLE : rect;
+        paintedRect.setBounds (toPaint);
+        if (armed || committing) {
+            draw (toPaint, g2d, true);
+        }
+        merge = null;
+    }
+
+    protected void draw (Rectangle toPaint, Graphics2D g2d, boolean fill) {
+        if (fill) {
+            Color c = new Color (255, 200, 200, 100);
+            g2d.setColor(c);
+            g2d.fillRect(toPaint.x, toPaint.y, toPaint.width, toPaint.height);
+            g2d.setColor (new Color (200, 127, 127, 180));
+            g2d.drawRect(toPaint.x, toPaint.y, toPaint.width, toPaint.height);
+        } else {
+            g2d.drawRect(toPaint.x, toPaint.y, toPaint.width, toPaint.height);
+        }
+    }
+
+    public void mouseDragged(MouseEvent e) {
+       mouseMoved (e);
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        armed = true;
+        Point p = e.getPoint();
+        TEMPLATE_RECTANGLE.setLocation(p);
+        if (rect != null) {
+            repaintWithRect();
+            dragged (e.getPoint(), e.getModifiersEx());
+        } else {
+            repaintWithRect();
+        }
+    }
+
+    private void dragged (Point p, int modifiers) {
+        int currCorner = draggingCorner;
+        int corner = rect.setPoint(p, currCorner);
+
+        if ((modifiers & KeyEvent.SHIFT_DOWN_MASK) != 0) {
+            rect.makeSquare(currCorner);
+        }
+        if (corner == -2 || (corner != currCorner && corner != -1)) {
+            if (corner != -2) {
+                setDraggingCorner(corner);
+            }
+        }
+        repaintWithRect();
+    }
+
+    private void repaintNoRect() {
+        repainter.requestRepaint(null);
+    }
+
+    private Rectangle merge = new Rectangle();
+    private Rectangle scratchRect = new Rectangle();
+    private void repaintWithRect() {
+        if (merge == null) {
+            merge = new Rectangle();
+            merge.setBounds (paintedRect);
+        }
+        if (rect != null) {
+            merge = merge.union(rect);
+        } else {
+            merge = merge.union(TEMPLATE_RECTANGLE);
+        }
+        scratchRect.setBounds(merge.x, merge.y, merge.width + 1, merge.height + 1);
+        //+1 compensate for drawRect around it
+        repainter.requestRepaint (scratchRect);
+    }
+
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+        Point p = e.getPoint();
+        TEMPLATE_RECTANGLE.setLocation(p);
+        if (rect == null) {
+            p.x ++;
+            p.y ++;
+            rect = new MutableRectangle (e.getPoint(), p);
+            draggingCorner = rect.nearestCorner(p);
+        }
+    }
+
+    private static final int CLICK_DIST = 7;
+    public void mouseReleased(MouseEvent e) {
+        Point p = e.getPoint();
+        boolean inBounds = layer.getBounds().contains(p);
+        if (rect != null && inBounds) {
+            int nearestCorner = rect.nearestCorner(p);
+            if (p.distance(rect.getLocation()) < CLICK_DIST) {
+                //do nothing
+                setDraggingCorner (nearestCorner);
+                rect.setLocation(p);
+            } else {
+                setDraggingCorner(nearestCorner);
+                rect.setPoint(p, nearestCorner);
+                armed = false;
+                commit();
+                clear();
+            }
+            change();
+            repaintNoRect();
+        }
+    }
+
+    boolean committing = false;
+    private void commit() {
+        repainter.requestCommit();
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    boolean armed;
+    public void mouseExited(MouseEvent e) {
+        armed = false;
+        repaintWithRect();
+        TEMPLATE_RECTANGLE.setLocation(-100, -100);
+    }
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (rect == null) {
+            return;
+        }
+        Point p = rect.getLocation();
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_DOWN :
+                p.y ++;
+                break;
+            case KeyEvent.VK_UP :
+                p.y--;
+                break;
+            case KeyEvent.VK_LEFT :
+                p.x --;
+                break;
+            case KeyEvent.VK_RIGHT :
+                p.x ++;
+                break;
+            case KeyEvent.VK_ENTER :
+                commit();
+                break;
+        }
+    }
+
+    public String getName() {
+        return toString();
+    }
+
+    private Layer layer;
+    public void activate(Layer layer) {
+        this.layer = layer;
+        change();
+    }
+
+    public void deactivate() {
+        rect = null;
+        TEMPLATE_RECTANGLE.setBounds (0, 0, NO_ANCHOR_SIZE, NO_ANCHOR_SIZE);
+    }
+
+    public Cursor getCursor() {
+        return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    }
+
+    public Lookup getLookup() {
+        return Lookups.singleton (this);
+    }
+
+    private Repainter repainter;
+    public void attachRepainter(Repainter repainter) {
+        this.repainter = repainter;
+    }
+
+    public Icon getIcon() {
+        return new ImageIcon (DrawTool.load(DrawTool.class, "rect.png"));
+    }
+    
+    private static final int MASK = Customizers.COLOR_0 | Customizers.COLOR_1 |
+            Customizers.FILL | Customizers.STROKE;
+
+    private Customizer <PaintAttributes> customizer;
+    public Customizer <PaintAttributes> getCustomizer() {
+        if (customizer == null) {
+            customizer = customizers.getPaintAttributesCustomizer(MASK);
+            customizer.addChangeListener (this);
+        }
+        return customizer;
+    }    
+
+    public void stateChanged(ChangeEvent e) {
+        PaintAttributes atts = customizer.get();
+        setColor (atts.getColor1());
+        setFill (atts.isFill());
+        setThickness(atts.getStroke());
+    }
+}

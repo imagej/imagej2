@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+OpenIDE-Module: com.tomwheeler.example.dogfilesupport/1
+OpenIDE-Module-Layer: com/tomwheeler/example/dogfilesupport/nb/resources/layer.xml
+OpenIDE-Module-Localizing-Bundle: com/tomwheeler/example/dogfilesupport/nb/resources/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
+Name: com/tomwheeler/example/dogfilesupport/nb/file/DogDataLoader.class
+OpenIDE-Module-Class: Loader

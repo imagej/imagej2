@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.Effects">
+    <module_version install_time="1294880604539" last="true" origin="installer" specification_version="1.0">
+        <file crc="3988070952" name="config/Modules/org-imagejdev-Effects.xml"/>
+        <file crc="3379943687" name="modules/ext/swing-layout-1.0.3.jar"/>
+        <file crc="817814246" name="modules/org-imagejdev-Effects.jar"/>
+        <file crc="924570597" name="update_tracking/org-imagejdev-Effects.xml"/>
+    </module_version>
+</module>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.ToolConfigUI">
+    <module_version install_time="1294880600564" last="true" origin="installer" specification_version="1.0">
+        <file crc="2768572878" name="config/Modules/org-imagejdev-ToolConfigUI.xml"/>
+        <file crc="633424497" name="modules/org-imagejdev-ToolConfigUI.jar"/>
+        <file crc="2311119020" name="update_tracking/org-imagejdev-ToolConfigUI.xml"/>
+    </module_version>
+</module>
