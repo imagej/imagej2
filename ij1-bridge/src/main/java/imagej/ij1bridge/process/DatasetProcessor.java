@@ -5,13 +5,17 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
+import java.util.Random;
 
+import ij.Prefs;
 import ij.measure.Calibration;
+import ij.process.Blitter;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import imagej.DoubleRange;
 import imagej.LongRange;
+import imagej.data.DataAccessor;
 import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.DatasetDuplicator;
@@ -19,17 +23,32 @@ import imagej.dataset.FixedDimensionDataset;
 import imagej.dataset.PlanarDataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.function.DoubleFunction;
-import imagej.function.LongFunction;
 import imagej.operation.RegionCopyOperation;
 import imagej.operation.TransformOperation;
 import imagej.process.Index;
 import imagej.process.Span;
+
+// TODO
+//   Made some changes from old ImgLibProcessor code since this processor does not have to perfectly replicate IJ1 processor behavior
+//     - changed get() to not encode float values but casts data to int
+//     - changed resetMinAndMax() to always find min and max values (used to always set to 0/255 for unsigned byte data)
+//     - set/getBackgroundValue() do nothing but return 0 (was different for unsigned byte type)
 
 /**
  * Implements the ImageProcessor interface for an ImageJ 2.x Dataset. The dataset must be 2-Dimensional.
  */
 public class DatasetProcessor extends ImageProcessor
 {
+	// ************* statics *********************************************************************************************
+	
+	public static float divideByZeroValue;
+
+	static {
+		divideByZeroValue = (float)Prefs.getDouble(Prefs.DIV_BY_ZERO_VALUE, Float.POSITIVE_INFINITY);
+		if (divideByZeroValue==Float.MAX_VALUE)
+			divideByZeroValue = Float.POSITIVE_INFINITY;
+	}
+	
 	// ************* instance variables ***********************************************************************************
 
 	/** a per thread variable. a position index used to facilitate fast access to the image. */
@@ -81,6 +100,7 @@ public class DatasetProcessor extends ImageProcessor
 	
 	// ************* constructor ***********************************************************************************
 
+	/** create a DatasetProcessor that will reference a given Dataset. Dataset must be 2-D. */
 	public DatasetProcessor(Dataset dataset)
 	{
 		int[] dimensions = dataset.getDimensions();
@@ -127,6 +147,104 @@ public class DatasetProcessor extends ImageProcessor
 		double lowerAverage = lowerLeft + xFraction * (lowerRight - lowerLeft);
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
+
+    private void filter3x3(int type, int[] kernel)
+    {
+		double v1, v2, v3;           //input pixel values around the current pixel
+        double v4, v5, v6;
+        double v7, v8, v9;
+        double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
+        double k4=0, k5=0, k6=0;
+        double k7=0, k8=0, k9=0;
+        double scale = 0;
+
+        if (type==CONVOLVE)
+        {
+            k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
+            k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
+		    k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
+    		for (int i=0; i<kernel.length; i++)
+    			scale += kernel[i];
+    		if (scale==0)
+    			scale = 1.0;
+    		else
+    			scale = 1.0/scale; //multiplication factor (multiply is faster than divide)
+        }
+		
+		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 25*roiWidth);
+		
+		Object pixelsCopy = getPixelsCopy();
+		DataAccessor accessor = this.type.allocateArrayAccessor(pixelsCopy);
+		
+        int xEnd = roiX + roiWidth;
+        int yEnd = roiY + roiHeight;
+		for (int y=roiY; y<yEnd; y++)
+		{
+			int p  = roiX + y*width;            //points to current pixel
+            int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
+            int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
+            int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
+            v2 = accessor.getReal(p3);
+            v5 = accessor.getReal(p6);
+            v8 = accessor.getReal(p9);
+            if (roiX>0) { p3++; p6++; p9++; }
+            v3 = accessor.getReal(p3);
+            v6 = accessor.getReal(p6);
+            v9 = accessor.getReal(p9);
+
+            double value;
+            switch (type) {
+                case BLUR_MORE:
+    			for (int x=roiX; x<xEnd; x++,p++) {
+                    if (x<width-1) { p3++; p6++; p9++; }
+    				v1 = v2; v2 = v3;
+    				v3 = accessor.getReal(p3);
+    				v4 = v5; v5 = v6;
+    				v6 = accessor.getReal(p6);
+    				v7 = v8; v8 = v9;
+    				v9 = accessor.getReal(p9);
+    				value =  (v1+v2+v3+v4+v5+v6+v7+v8+v9) / 9.0;
+                    setd(p, value);
+                }
+                break;
+                case FIND_EDGES:
+    			for (int x=roiX; x<xEnd; x++,p++) {
+                    if (x<width-1) { p3++; p6++; p9++; }
+    				v1 = v2; v2 = v3;
+    				v3 = accessor.getReal(p3);
+    				v4 = v5; v5 = v6;
+    				v6 = accessor.getReal(p6);
+    				v7 = v8; v8 = v9;
+    				v9 = accessor.getReal(p9);
+                    double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
+                    double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
+                    value = (double)Math.sqrt(sum1*sum1 + sum2*sum2);
+                    setd(p, value);
+                }
+                break;
+                case CONVOLVE:
+    			for (int x=roiX; x<xEnd; x++,p++) {
+                    if (x<width-1) { p3++; p6++; p9++; }
+    				v1 = v2; v2 = v3;
+    				v3 = accessor.getReal(p3);
+    				v4 = v5; v5 = v6;
+    				v6 = accessor.getReal(p6);
+    				v7 = v8; v8 = v9;
+    				v9 = accessor.getReal(p9);
+                    double sum = k1*v1 + k2*v2 + k3*v3
+                              + k4*v4 + k5*v5 + k6*v6
+                              + k7*v7 + k8*v8 + k9*v9;
+                    value = sum * scale;
+                    setd(p, value);
+                }
+                break;
+			}
+            
+            tracker.update();
+    	}
+		
+		tracker.done();
+    }
 
 	/** find the minimum and maximum values present in this plane of the image data */
 	private void findMinAndMax()
@@ -187,6 +305,77 @@ public class DatasetProcessor extends ImageProcessor
 
 	// ************* public interface ***********************************************************************************
 
+	/** Replaces each pixel in the current ROI area of the current plane of data with its absolute value. */
+	@Override
+	public void abs()
+	{
+		if (this.type.isUnsigned())
+			return;
+		
+		if (this.isFloat)
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double value = getd(x, y);
+					if (value < 0)
+						setd(x, y, -value);
+				}
+			}
+		}
+		else // else integer data
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long value = getl(x, y);
+					if (value < 0)
+						setl(x, y, -value);
+				}
+			}
+		}
+			
+	}
+	
+	/** Adds 'value' to each pixel in the image or ROI. */
+	@Override
+	public void add(int value)
+	{
+		add((double) value);
+	}
+	
+	/** Adds 'value' to each pixel in the image or ROI. */
+	@Override
+	public void add(double value)
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double newValue = getd(x, y) + value;
+				setd(x, y, newValue);
+			}
+		}
+	}
+	
+	/** Binary AND of each pixel in the image or ROI with 'value'. */
+	@Override
+	public void and(int value)
+	{
+		if (this.isFloat)
+			return;
+		
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				long pix = getl(x, y);
+				setl(x, y, (pix & (long)value));
+			}
+		}
+	}
 
 	/** Does a lut substitution on current ROI area image data. Applies only to integral data. Note that given table
 	 *  should be of the correct size for the pixel type. It should be constructed in such a fashion that the minimum
@@ -219,6 +408,14 @@ public class DatasetProcessor extends ImageProcessor
 		findMinAndMax();
 	}
 
+	/** runs super class autoThreshold() for integral data */
+	@Override
+	public void autoThreshold()
+	{
+		if (!this.isFloat)
+			super.autoThreshold();
+	}
+
 	/**  Convolves the current image plane data with the provided kernel. */
 	@Override
 	public void convolve(float[] kernel, int kernelWidth, int kernelHeight)
@@ -238,23 +435,283 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void convolve3x3(int[] kernel)
 	{
-		// in IJ this is a speed optimized version based on direct pixel access
-		// for now don't build a speed optimized version
-		
-		float[] fKernel = new float[9];
-		
-		for (int i = 0; i < 9; i++)
-			fKernel[i] = kernel[i];
-		
-		convolve(fKernel, 3, 3);
+		filter3x3(CONVOLVE, kernel);
 	}
 
 	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode. */
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
-		// TODO Auto-generated method stub
+		Rectangle r1, r2;
+		int srcIndex, dstIndex;
+		int xSrcBase, ySrcBase;
+		Object source;
+		DataAccessor srcAccessor;
+
+		int srcWidth = ip.getWidth();
+		int srcHeight = ip.getHeight();
+		r1 = new Rectangle(srcWidth, srcHeight);
+		r1.setLocation(xloc, yloc);
+		r2 = new Rectangle(width, height);
+		if (!r1.intersects(r2))
+			return;
+		source = ip.getPixels();
+		srcAccessor = this.type.allocateArrayAccessor(source);
+		r1 = r1.intersection(r2);
+		xSrcBase = (xloc<0)?-xloc:0;
+		ySrcBase = (yloc<0)?-yloc:0;
+		boolean useDBZValue = !Float.isInfinite(divideByZeroValue);
+		ProgressTracker tracker = new ProgressTracker(this, ((long)r1.width)*r1.height, 20*srcHeight);
+		for (int y=r1.y; y<(r1.y+r1.height); y++) {
+			srcIndex = (y-yloc)*srcWidth + (r1.x-xloc);
+			dstIndex = y * width + r1.x;
+			switch (mode) {
+				case Blitter.COPY: case Blitter.COPY_INVERTED:
+					for (int i=r1.width; --i>=0;)
+					{
+						if (this.isFloat)
+						{
+							double value = srcAccessor.getReal(srcIndex++);
+							setd(dstIndex++, value);
+						}
+						else // integral
+						{
+							long value = srcAccessor.getIntegral(srcIndex++);
+							setl(dstIndex++, value);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.COPY_ZERO_TRANSPARENT:
+					for (int i=r1.width; --i>=0;)
+					{
+						if (this.isFloat)
+						{
+							double value = srcAccessor.getReal(srcIndex++);
+							if (value == 0)
+								dstIndex++;
+							else
+								setd(dstIndex++, value);
+						}
+						else // integral
+						{
+							long value = srcAccessor.getIntegral(srcIndex++);
+							if (value == 0)
+								dstIndex++;
+							else
+								setd(dstIndex++, value);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.ADD:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							setd(dstIndex, srcValue + myValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							setl(dstIndex, srcValue + myValue);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.AVERAGE:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							setd(dstIndex, (srcValue + myValue) / 2);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							setl(dstIndex, (srcValue + myValue) / 2);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.DIFFERENCE:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							double newValue = myValue - srcValue;
+							if (newValue < 0) newValue = -newValue;
+							setd(dstIndex, newValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							long newValue = myValue - srcValue;
+							if (newValue < 0) newValue = -newValue;
+							setl(dstIndex, newValue);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.SUBTRACT:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							double newValue = myValue - srcValue;
+							setd(dstIndex, newValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							long newValue = myValue - srcValue;
+							setl(dstIndex, newValue);
+						}
+						tracker.update();
+					}
+				case Blitter.MULTIPLY:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							double newValue = myValue * srcValue;
+							setd(dstIndex, newValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							long newValue = myValue * srcValue;
+							setl(dstIndex, newValue);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.DIVIDE:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							if (useDBZValue && srcValue == 0)
+								setd(dstIndex, divideByZeroValue);
+							else
+							{
+								double myValue = getd(dstIndex);
+								double newValue = myValue / srcValue;
+								setd(dstIndex, newValue);
+							}
+							tracker.update();
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							if (srcValue == 0)
+							{
+								if (myValue > 0)
+									setl(dstIndex, this.type.getMaxIntegral());
+								else if (myValue < 0)
+									setl(dstIndex, this.type.getMinIntegral());
+								// else myValue == 0 -> nothing to do
+							}
+							else  // src value is valid
+							{
+								long newValue = myValue / srcValue;
+								setl(dstIndex, newValue);
+							}
+							tracker.update();
+						}
+					}
+					break;
+				case Blitter.AND:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						long srcValue = srcAccessor.getIntegral(srcIndex);
+						long myValue = getl(dstIndex);
+						long newValue = srcValue & myValue;
+						setl(dstIndex, newValue);
+						tracker.update();
+					}
+					break;
+				case Blitter.OR:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						long srcValue = srcAccessor.getIntegral(srcIndex);
+						long myValue = getl(dstIndex);
+						long newValue = srcValue | myValue;
+						setl(dstIndex, newValue);
+						tracker.update();
+					}
+					break;
+				case Blitter.XOR:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						long srcValue = srcAccessor.getIntegral(srcIndex);
+						long myValue = getl(dstIndex);
+						long newValue = srcValue ^ myValue;
+						setl(dstIndex, newValue);
+						tracker.update();
+					}
+					break;
+				case Blitter.MIN:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							double newValue = (srcValue < myValue) ? srcValue : myValue;
+							setd(dstIndex, newValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							long newValue = (srcValue < myValue) ? srcValue : myValue;
+							setl(dstIndex, newValue);
+						}
+						tracker.update();
+					}
+					break;
+				case Blitter.MAX:
+					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					{
+						if (this.isFloat)
+						{
+							double srcValue = srcAccessor.getReal(srcIndex);
+							double myValue = getd(dstIndex);
+							double newValue = (srcValue > myValue) ? srcValue : myValue;
+							setd(dstIndex, newValue);
+						}
+						else  // integral
+						{
+							long srcValue = srcAccessor.getIntegral(srcIndex);
+							long myValue = getl(dstIndex);
+							long newValue = (srcValue > myValue) ? srcValue : myValue;
+							setl(dstIndex, newValue);
+						}
+						tracker.update();
+					}
+					break;
+			}
+		}
 		
+		tracker.done();
 	}
 
 	/** required method. used in createImage(). creates an 8bit image from our image data of another type. */
@@ -327,6 +784,7 @@ public class DatasetProcessor extends ImageProcessor
 		return proc;
 	}
 
+	/** creates a DatasetProcessor on a new Dataset whose size and contents match the current ROI area. */
 	@Override
 	public ImageProcessor crop()
 	{
@@ -343,13 +801,15 @@ public class DatasetProcessor extends ImageProcessor
 		return new DatasetProcessor(newDataset);
 	}
 
+	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
 	@Override
 	public void dilate()
 	{
-		// TODO Auto-generated method stub
-		
+		// IJ1 - only supported with ByteProcessor and then needs binary image. There exist general erode/dilate algorithms. implement later
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
+	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
 	@Override
 	public void drawPixel(int x, int y)
 	{
@@ -359,6 +819,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** creates a processor of the same size and sets its pixel values to this processor's current plane data */
 	@Override
 	public ImageProcessor duplicate()
 	{
@@ -366,7 +827,8 @@ public class DatasetProcessor extends ImageProcessor
 		
 		return new DatasetProcessor(outputDataset);
 	}
-	
+
+	/** encodes pixel info into a passed in 4 element integer array. Called by ImagePlus::getPixel() */
 	@Override
 	public void encodePixelInfo(int[] destination, int x, int y)
 	{
@@ -404,27 +866,105 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
 	@Override
 	public void erode()
 	{
-		// TODO Auto-generated method stub
-		
+		// IJ1 - only supported with ByteProcessor and then needs binary image. There exist general erode/dilate algorithms. implement later
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
+	/** Performs a exponential transform on the image or ROI. */
+	@Override
+	public void exp()
+	{
+		if (this.isFloat)
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double value = getd(x, y);
+					
+					setd(x, y, Math.exp(value));
+				}
+			}
+		}
+		else  // integral
+		{
+			double currMax = getMax();
+			
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long pixValue = getl(x, y);
+					
+					long newValue = (long)(Math.exp(pixValue*(Math.log(currMax)/currMax)));
+				
+					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+					
+					setl(x, y, newValue);
+				}
+			}
+		}
+	}
+
+	/** apply the FILL point operation over the current ROI area of the current plane of data */
+	@Override
+	public void fill()
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				setd(x, y, this.fillColor);
+			}
+		}
+	}
+
+	/** fills the current ROI area of the current plane of data with the fill color wherever the input mask is nonzero */
 	@Override
 	public void fill(ImageProcessor mask)
 	{
-		// TODO Auto-generated method stub
+		if (mask==null)
+		{
+			fill();
+			return;
+		}
 		
+		int roiWidth=this.roiWidth;
+		int roiHeight=this.roiHeight;
+		int roiX=this.roiX;
+		int roiY=this.roiY;
+		
+		if (mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight)
+			return;
+		
+		byte[] mpixels = (byte[])mask.getPixels();
+		
+		for (int y=roiY, my=0; y<(roiY+roiHeight); y++, my++)
+		{
+			int i = y * width + roiX;
+			int mi = my * roiWidth;
+			
+			for (int x=roiX; x<(roiX+roiWidth); x++)
+			{
+				if (mpixels[mi++]!=0)
+					setd(i, this.fillColor);
+				i++;
+			}
+		}
 	}
 
+    /** run specified filter on current ROI area of current plane data */
 	@Override
 	public void filter(int type)
 	{
-		// TODO Auto-generated method stub
-		
+		filter3x3(type, null);
 	}
 
+	/** swap the rows of the current ROI area about its central row */
 	@Override
 	public void flipVertical()
 	{
@@ -460,15 +1000,67 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** apply the GAMMA point operation over the current ROI area of the current plane of data */
+	@Override
+	public void gamma(double constant)
+	{
+		if (this.isFloat)
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double pixValue = getd(x, y);
+					
+					double newValue;
+					if (pixValue <= 0)
+						newValue = 0;
+					else
+						newValue = Math.exp(constant * Math.log(pixValue));
+					
+					setd(x, y, newValue);
+				}
+			}
+		}
+		else  // integral
+		{
+			double currMin = getMin();
+			double currMax = getMax();
+			
+			double currRange = currMax - currMin;
+			
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long pixValue = getl(x, y);
+					
+					long newValue;
+					if ((currRange <= 0) || (pixValue <= currMin))
+						newValue = pixValue;
+					else
+						newValue = (long) (Math.exp(constant * Math.log((pixValue-currMin)/currRange)) * currRange + currMin);
+					
+					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+
+					if (newValue != pixValue)
+						setd(x, y, newValue);
+				}
+			}
+		}
+	}
+	
 	// TODO - for IJ1 float type processor this one gets using intToFloatBits. we will not mirror this functionality.
 	//   We could test if our dataset is float and if so then calc get with intToFloatBits()) but then acts differently if int or float.
 	//   Think about this further.
+	/** get the pixel value at x,y as an int. */
 	@Override
 	public int get(int x, int y)
 	{
 		return (int) getl(x,y);
 	}
 
+	/** get the pixel value at index as an int. */
 	@Override
 	public int get(int index)
 	{
@@ -477,6 +1069,7 @@ public class DatasetProcessor extends ImageProcessor
 		return get(x, y);
 	}
 
+	/** get the current background value. always 0 if not UnsignedByte data */
 	@Override
 	public double getBackgroundValue()
 	{
@@ -508,18 +1101,23 @@ public class DatasetProcessor extends ImageProcessor
 		return q;
 	}
 
+	/** return the bit depth of the pixels associated with the processor's Dataset */
 	@Override
 	public int getBitDepth()
 	{
 		return this.type.getNumBitsData();
 	}
 
+	/** return the bytes per pixel associated with the processor's Dataset. Note that this value does not represent memory or disk usage
+	 * but just bytes of information contained in a pixel. Returns a double to support non-byte aligned pixel types (i.e. 12-bit == 1.5
+	 * bytes per pixel). */
 	@Override
 	public double getBytesPerPixel()
 	{
 		return getBitDepth() / 8.0;
 	}
 
+	/** get the pixel value at x,y as an double. */
 	@Override
 	public double getd(int x, int y)
 	{
@@ -529,6 +1127,7 @@ public class DatasetProcessor extends ImageProcessor
 		return this.dataset.getDouble(pos);
 	}
 
+	/** get the pixel value at index as an double. */
 	@Override
 	public double getd(int index)
 	{
@@ -544,12 +1143,14 @@ public class DatasetProcessor extends ImageProcessor
 		return new FixedDimensionDataset(this.dataset);  // prevent users from making changes to shape of Dataset. we always expect 2-D.
 	}
 	
+	/** get the pixel value at x,y as an float. */
 	@Override
 	public float getf(int x, int y)
 	{
 		return (float) getd(x, y);
 	}
 
+	/** get the pixel value at index as an float. */
 	@Override
 	public float getf(int index)
 	{
@@ -558,6 +1159,11 @@ public class DatasetProcessor extends ImageProcessor
 		return getf(x, y);
 	}
 
+	/** calculate the histogram of the current ROI area of the current plane. Note that this only works for integral data
+	 * with bit depth <= 16. The bit depth limitation is enforced to keep ImageJ from allocating a HUGE table. The returned
+	 * histogram keeps counts stored from minimum values to maximum values. For unsigned types this works as normal. For
+	 * signed types the table indices are thus biased by the minimum allowed pixel value.
+	 */
 	@Override
 	public int[] getHistogram()
 	{
@@ -566,27 +1172,27 @@ public class DatasetProcessor extends ImageProcessor
 		
 		int bitDepth = this.getBitDepth();
 		
-		if (bitDepth <= 16)
-		{
-			int[] histogram = new int[1 << bitDepth];
+		// limit size so we don't try to allocate HUGE table
+		if (bitDepth > 16)
+			return null;
+		
+		int[] histogram = new int[1 << bitDepth];
 
-			int minValue = (int) this.type.getMinIntegral();
-			
-			for (int x = 0; x < super.width; x++)
+		long minValue = this.type.getMinIntegral();
+		
+		for (int x = 0; x < super.width; x++)
+		{
+			for (int y = 0; y < super.height; y++)
 			{
-				for (int y = 0; y < super.height; y++)
-				{
-					int pixValue = this.get(x, y);
-					histogram[pixValue-minValue]++;
-				}
+				long pixValue = this.getl(x, y);
+				histogram[(int)(pixValue-minValue)]++;
 			}
-			
-			return histogram;
 		}
 		
-		return null;
+		return histogram;
 	}
 
+	/** returns an interpolated pixel value from double coordinates using current interpolation method */
 	@Override
 	public double getInterpolatedPixel(double x, double y)
 	{
@@ -602,6 +1208,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** get the pixel value at x,y as a long. */
 	@Override
 	public long getl(int x, int y)
 	{
@@ -611,6 +1218,7 @@ public class DatasetProcessor extends ImageProcessor
 		return this.dataset.getLong(pos);
 	}
 
+	/** get the pixel value at index as an long. */
 	@Override
 	public long getl(int index)
 	{
@@ -619,6 +1227,7 @@ public class DatasetProcessor extends ImageProcessor
 		return getl(x, y);
 	}
 
+	/** returns the maximum data value currently present in the dataset plane */
 	@Override
 	public double getMax()
 	{
@@ -628,12 +1237,14 @@ public class DatasetProcessor extends ImageProcessor
 		return this.max;
 	}
 
+	/** returns the theoretical maximum possible sample value for this type of processor */
 	@Override
 	public double getMaximumAllowedValue()
 	{
 		return this.type.getMaxReal();
 	}
 
+	/** returns the minimum data value currently present in the dataset plane */
 	@Override
 	public double getMin()
 	{
@@ -643,12 +1254,14 @@ public class DatasetProcessor extends ImageProcessor
 		return this.min;
 	}
 
+	/** returns the theoretical minimum possible sample value for this type of processor */
 	@Override
 	public double getMinimumAllowedValue()
 	{
 		return this.type.getMinReal();
 	}
 
+	/** returns the pixel at x,y as an int. if coords are out of bounds returns 0. */
 	@Override
 	public int getPixel(int x, int y)
 	{
@@ -657,6 +1270,10 @@ public class DatasetProcessor extends ImageProcessor
 		return 0;
 	}
 
+	/** given x,y, double coordinates this returns an interpolated pixel using the current interpolations methods. unlike getInterpolatedPixel()
+	 *  which assumes you're doing some kind of interpolation, this method will return nearest neighbors when no interpolation selected. note
+	 *  that it returns as an int so float values are encoded as int bits.
+	 */
 	@Override
 	public int getPixelInterpolated(double x, double y)
 	{
@@ -684,6 +1301,9 @@ public class DatasetProcessor extends ImageProcessor
 			return getPixel((int)(x+0.5), (int)(y+0.5));
 	}
 
+	/** returns the pixel values of the current Dataset's plane as an array of the appropriate type. If the Dataset supports
+	 * primitive access the actual data reference is returned. Otherwise a copy of the Dataset's pixel values are returned.
+	 */
 	@Override
 	public Object getPixels()
 	{
@@ -701,6 +1321,9 @@ public class DatasetProcessor extends ImageProcessor
 		return twoDimDataset.getData();
 	}
 
+	/** returns a copy of some pixels as an array of the appropriate type. depending upon super class variable "snapshotCopyMode"
+	 *  it will either copy current plane data or it will copy current snapshot data.
+	 */
 	@Override
 	public Object getPixelsCopy()
 	{
@@ -720,6 +1343,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** returns the pixel value at x,y as a float. if x,y, out of bounds returns 0. */
 	@Override
 	public float getPixelValue(int x, int y)
 	{
@@ -730,6 +1354,7 @@ public class DatasetProcessor extends ImageProcessor
 		return 0f;
 	}
 
+	/** returns a copy of the pixels in the current snapshot */
 	@Override
 	public Object getSnapshotPixels()
 	{
@@ -741,43 +1366,225 @@ public class DatasetProcessor extends ImageProcessor
 		return copy.getData();
 	}
 
+	// TODO - change GenericStatistics to handle both double and long data. Or create two types of ImageStatistics for
+	//   the two types (integer and real) and call correct one here.
+	/** get the type appropriate ImageStatistics for the processor. For all DatasetProcessors return GenericStatistics.
+	 * This could result in precision loss for long data.
+	 */
 	@Override
 	public ImageStatistics getStatistics(int mOptions, Calibration cal)
 	{
 		return new GenericStatistics(this, mOptions, cal);
 	}
-	
+
+	/** returns the name of the type of this processor (i.e. "8-bit unsigned", "32-bit float", etc.) */ 
 	@Override
 	public String getTypeName()
 	{
 		return this.type.getName();
 	}
+
+	/** Inverts the image or ROI. */
+	@Override
+	public void invert()
+	{
+		double min = getMin();
+		double max = getMax();
+		
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double pix = getd(x, y);
+				double newValue = max - (pix - min);
+				setd(x, y, newValue);
+			}
+		}
+	}
+	
+	/** returns true if the data type of the underlying Dataset is represented with floating point values */
 	@Override
 	public boolean isFloatingType()
 	{
 		return this.type.isFloat();
 	}
 
+	/** returns true if the data type of the underlying Dataset is represented with unsigned values */
 	@Override
 	public boolean isUnsignedType()
 	{
 		return this.type.isUnsigned();
 	}
 
+	/** Performs a log transform on the image or ROI. */
+	@Override
+	public void log()
+	{
+		if (this.isFloat)
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double value = getd(x, y);
+					
+					if (value <= 0)
+						value = 0;
+					
+					setd(x, y, Math.log(value));
+				}
+			}
+		}
+		else  // integral
+		{
+			double currMax = getMax();
+			
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long pixValue = getl(x, y);
+					
+					long newValue;
+					if (pixValue <= 0)
+						newValue = 0;
+					else 
+						newValue = (long)(Math.log(pixValue)*(currMax/Math.log(currMax)));
+			
+					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+					
+					setl(x, y, newValue);
+				}
+			}
+		}
+	}
+
+	/** Pixels greater than 'value' are set to 'value'. */
+	@Override
+	public void max(double value)
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double pix = getd(x, y);
+				if (pix > value)
+					pix = value;
+				setd(x, y, pix);
+			}
+		}
+	}
+
+	/** run the MEDIAN_FILTER on current ROI area of current plane data. only applies to UnsignedByte data */
 	@Override
 	public void medianFilter()
 	{
-		// TODO Auto-generated method stub
-		
+		// IJ1 - only supported with ByteProcessor. We could do a general case median filter here. implement later
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
+	/** Pixels less than 'value' are set to 'value'. */
+	@Override
+	public void min(double value)
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double pix = getd(x, y);
+				if (pix < value)
+					pix = value;
+				setd(x, y, pix);
+			}
+		}
+	}
+
+	/** Multiplies each pixel in the image or ROI by 'value'. */
+	@Override
+	public void multiply(double value)
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double pix = getd(x, y);
+				setd(x, y, pix * value);
+			}
+		}
+	}
+	
+	private class AddNoiseDoubleFunction implements DoubleFunction
+	{
+		private boolean dataIsIntegral;
+		private double min;
+		private double max;
+		private double range;
+		private Random rnd;
+		
+		public AddNoiseDoubleFunction(boolean isIntegral, double min, double max, double range)
+		{
+			this.dataIsIntegral = isIntegral;
+			this.min = min;
+			this.max = max;
+			this.range = range;
+			this.rnd = new Random();
+			this.rnd.setSeed(System.currentTimeMillis());  // TODO - this line not present in original code (by design???)
+		}
+
+		public int getParameterCount()
+		{
+			return 1;
+		}
+		
+		public double compute(double[] input)
+		{
+			double origValue = input[0];
+			double result, ran;
+			boolean inRange = false;
+			do {
+				ran = this.rnd.nextGaussian() * this.range;
+				if (this.dataIsIntegral)
+					ran = Math.round(ran);
+				result = origValue + ran;
+				inRange = DoubleRange.inside(this.min, this.max, result);
+			} while (!inRange);
+			return result;
+		}
+	}
+
+	/** add noise to the current ROI area of current plane data. */
 	@Override
 	public void noise(double range)
 	{
-		// TODO Auto-generated method stub
+		// TODO - this method works in doubles regardless of backing type. Long data may suffer precision loss.
 		
+		AddNoiseDoubleFunction function = new AddNoiseDoubleFunction(!this.isFloat, this.type.getMinReal(), this.type.getMaxReal(), range);
+		
+		TransformOperation op = new TransformOperation(function, new Dataset[]{this.dataset}, new int[][]{originOfRoi()}, spanOfRoiPlane(), 0);
+		
+		op.execute();
 	}
 
+	/** Binary OR of each pixel in the image or ROI with 'value'. */
+	@Override
+	public void or(int value)
+	{
+		if (this.isFloat)
+			return;
+		
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				long pix = getl(x, y);
+				setl(x, y, pix | (long)value);
+			}
+		}
+	}
+	
+	/** set the pixel at x,y to the given int value. if float data value is a float encoded as an int.
+	 *  if x,y, out of bounds do nothing.
+	 *  @deprecated use {@link DatasetProcessor::putPixelValue(int x, int y, double value)} instead. */
 	@Deprecated
 	@Override
 	public void putPixel(int x, int y, int value)
@@ -796,6 +1603,9 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** set the pixel at x,y to the given double value. if integral data the value is biased by 0.5 do force rounding.
+	 *  if x,y, out of bounds do nothing.
+	 */
 	@Override
 	public void putPixelValue(int x, int y, double value)
 	{
@@ -808,29 +1618,75 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** sets the current plane data to that stored in the snapshot */
 	@Override
 	public void reset()
 	{
 		if (this.snapshot!=null)
 		{
 			int[] origin = new int[2];
+			
 			RegionCopyOperation copier =
 				new RegionCopyOperation(this.snapshot, origin, this.dataset, origin, this.snapshot.getDimensions(), this.isFloat);
+			
 			copier.execute();
+			
 			this.min = this.snapshotMin;
 			this.max = this.snapshotMax;
+			
 			this.minMaxSet = true;
 		}
 	}
 
+	/** sets the current ROI area data to that stored in the snapshot wherever the mask is nonzero */
 	@Override
 	public void reset(ImageProcessor mask)
 	{
-		// TODO Auto-generated method stub
+		if (mask==null || this.snapshot==null)
+			return;
 		
+		if (mask.getWidth()!=roiWidth||mask.getHeight()!=roiHeight)
+			throw new IllegalArgumentException(maskSizeError(mask));
+		
+		byte[] mpixels = (byte[])mask.getPixels();
+		int[] pos = new int[2];
+		for (int y=roiY, my=0; y<(roiY+roiHeight); y++, my++)
+		{
+			int i = y * width + roiX;
+			int mi = my * roiWidth;
+			for (int x=roiX; x<(roiX+roiWidth); x++)
+			{
+				if (mpixels[mi++]==0)
+				{
+					pos[0] = x;
+					pos[1] = y;
+					
+					if (this.isFloat)
+					{
+						double snapPix = this.snapshot.getDouble(pos);
+						setd(x, y, snapPix);
+					}
+					else // integral
+					{
+						long snapPix = this.snapshot.getLong(pos);
+						setd(x, y, snapPix);
+					}
+				}
+				i++;
+			}
+		}
 	}
 
+	/** calculates actual min and max values present and resets the threshold */
 	@Override
+	public void resetMinAndMax()
+	{
+		findMinAndMax();
+		resetThreshold();
+	}
+	
+	/** create a new processor that has specified dimensions. populate it's data with interpolated pixels from this processor's ROI area data. */
+	@Override 
 	public ImageProcessor resize(int dstWidth, int dstHeight)
 	{
 		if (roiWidth==dstWidth && roiHeight==dstHeight)
@@ -851,7 +1707,7 @@ public class DatasetProcessor extends ImageProcessor
 			dstCenterY += yScale/2.0;
 		}
 
-		ImgLibProcessor<?> ip2 = (ImgLibProcessor<?>)createProcessor(dstWidth, dstHeight);
+		ImageProcessor ip2 = createProcessor(dstWidth, dstHeight);
 
 		ProgressTracker tracker = new ProgressTracker(this, ((long)dstHeight)*dstWidth, 30*dstWidth);
 
@@ -919,6 +1775,7 @@ public class DatasetProcessor extends ImageProcessor
 		return ip2;
 	}
 
+	/** rotates current ROI area pixels by given angle. destructive. interpolates pixel values as needed. */
 	@Override
 	public void rotate(double angle)
 	{
@@ -1023,6 +1880,7 @@ public class DatasetProcessor extends ImageProcessor
 		tracker.done();
 	}
 
+	/** scale current ROI area in x and y by given factors. destructive. calculates interpolated pixels as needed */
 	@Override
 	public void scale(double xScale, double yScale)
 	{
@@ -1137,6 +1995,7 @@ public class DatasetProcessor extends ImageProcessor
 	// TODO - for IJ1 float type processor this one sets using getFloatBits. we will not mirror this functionality.
 	//   We could test if our dataset is float and if so then call setf(getFloatBits(value)) but then acts differently if int or float.
 	//   Think about this further.
+	/** set the pixel at x,y to provided int value. */
 	@Override
 	public void set(int x, int y, int value)
 	{
@@ -1146,14 +2005,18 @@ public class DatasetProcessor extends ImageProcessor
 		this.dataset.setDouble(pos, value);
 	}
 
+	/** set the pixel at index to provided int value. */
 	@Override
 	public void set(int index, int value)
 	{
+		// TODO - for performance - cache a DataAccessor with this processor. Update it every time setPixels() done.
+		//   Then use it here to access pixels avoiding x,y calc and extra method call.
 		int x = index % super.width;
 		int y = index / super.width;
 		set(x, y, value);
 	}
 
+	/** set the current background value. only applies to UnsignedByte data */
 	@Override
 	public void setBackgroundValue(double value)
 	{
@@ -1169,6 +2032,7 @@ public class DatasetProcessor extends ImageProcessor
 			//}
 	}
 
+	/** set the current foreground value. */
 	@Override
 	public void setColor(Color color)
 	{
@@ -1195,6 +2059,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** set the pixel at x,y to provided double value. */
 	@Override
 	public void setd(int x, int y, double value)
 	{
@@ -1204,14 +2069,18 @@ public class DatasetProcessor extends ImageProcessor
 		this.dataset.setDouble(pos, value);
 	}
 
+	/** set the pixel at index to provided double value. */
 	@Override
 	public void setd(int index, double value)
 	{
+		// TODO - for performance - cache a DataAccessor with this processor. Update it every time setPixels() done.
+		//   Then use it here to access pixels avoiding x,y calc and extra method call.
 		int x = index % super.width;
 		int y = index / super.width;
 		setd(x, y, value);
 	}
 
+	/** set the pixel at x,y to provided float value. */
 	@Override
 	public void setf(int x, int y, float value)
 	{
@@ -1221,14 +2090,18 @@ public class DatasetProcessor extends ImageProcessor
 		this.dataset.setDouble(pos, value);
 	}
 
+	/** set the pixel at index to provided float value. */
 	@Override
 	public void setf(int index, float value)
 	{
+		// TODO - for performance - cache a DataAccessor with this processor. Update it every time setPixels() done.
+		//   Then use it here to access pixels avoiding x,y calc and extra method call.
 		int x = index % super.width;
 		int y = index / super.width;
 		setf(x, y, value);
 	}
 
+	/** set the pixel at x,y to provided long value. */
 	@Override
 	public void setl(int x, int y, long value)
 	{
@@ -1238,14 +2111,18 @@ public class DatasetProcessor extends ImageProcessor
 		this.dataset.setLong(pos, value);
 	}
 
+	/** set the pixel at index to provided long value. */
 	@Override
 	public void setl(int index, long value)
 	{
+		// TODO - for performance - cache a DataAccessor with this processor. Update it every time setPixels() done.
+		//   Then use it here to access pixels avoiding x,y calc and extra method call.
 		int x = index % super.width;
 		int y = index / super.width;
 		setl(x, y, value);
 	}
 
+	/** set min and max values to provided values. resets the threshold as needed. if passed (0,0) it will calculate actual min and max 1st. */
 	@Override
 	public void setMinAndMax(double min, double max)
 	{
@@ -1272,6 +2149,9 @@ public class DatasetProcessor extends ImageProcessor
 		
 	}
 
+	/** set the current image plane data to the provided pixel values. if underlying Dataset supports direct access if will set it's
+	 * data reference to the passed in pixels. Otherwise it will copy the values from the given pixel array into the underlying
+	 * Dataset's plane. */
 	@Override
 	public void setPixels(Object pixels)
 	{
@@ -1308,6 +2188,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** set the current image plane data to the pixel values of the provided FloatProcessor. channelNumber is ignored. */
 	@Override
 	public void setPixels(int channelNumber, FloatProcessor fp)
 	{
@@ -1318,6 +2199,7 @@ public class DatasetProcessor extends ImageProcessor
 		setMinAndMax(fp.getMin(), fp.getMax());
 	}
 
+	/** sets the current snapshot pixels to the provided pixels. It keeps a references to the pixel values. */
 	@Override
 	public void setSnapshotPixels(Object pixels)
 	{
@@ -1330,6 +2212,7 @@ public class DatasetProcessor extends ImageProcessor
 		this.snapshot = new PlanarDataset(new int[]{super.width, super.height}, this.type, pixels);
 	}
 
+	/** sets the current fill/foreground value */
 	@Override
 	public void setValue(double value)
 	{
@@ -1346,6 +2229,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
+	/** copy the current pixels to the snapshot array */
 	@Override
 	public void snapshot()
 	{
@@ -1355,18 +2239,75 @@ public class DatasetProcessor extends ImageProcessor
 		this.snapshotMax = this.getMax();
 	}
 
-	@Deprecated
+	/** Performs a square transform on the image or ROI. */
+	@Override
+	public void sqr()
+	{
+		if (this.isFloat)
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double value = getd(x, y);
+					setd(x, y, value*value);
+				}
+			}
+		}
+		else // integral type
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long value = getl(x, y);
+					setl(x, y, value*value);
+				}
+			}
+		}
+	}
+
+	/** Performs a square root transform on the image or ROI. */
+	@Override
+	public void sqrt()
+	{
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				double value = getd(x, y);
+				setd(x, y, Math.sqrt(value));
+			}
+		}
+	}
+
+	/** Makes the image binary (values of 0 and 255) splitting the pixels based on their relationship to the threshold level.
+	 *  Only applies to integral data types. Threshold level is limited to Integer range so some thresholding operations
+	 *  not possible with Long data.
+	 */
 	@Override
 	public void threshold(int thresholdLevel)
 	{
 		if (this.isFloat)
 			return;
 
-		thresholdLevel = (int) DoubleRange.bound(this.type.getMinReal(), this.type.getMaxReal(), thresholdLevel);
+		for (int x = 0; x < super.width; x++)
+		{
+			for (int y = 0; y < super.height; y++)
+			{
+				long pix = getl(x, y);
+				if (pix <= thresholdLevel)
+					setl(x, y, 0);
+				else
+					setl(x, y, 255);
+			}
+		}
 		
-		threshold((double)thresholdLevel);
+		setMinAndMaxOnly(0, 255);
+		this.minMaxSet = true;
 	}
 
+	/*
 	private class ThresholdDoubleFunction implements DoubleFunction
 	{
 		private double threshold, min, max;
@@ -1394,19 +2335,9 @@ public class DatasetProcessor extends ImageProcessor
 		}
 		
 	}
+	*/
 	
-	public void threshold(double thresholdLevel)
-	{
-		thresholdLevel = DoubleRange.bound(this.type.getMinReal(), this.type.getMaxReal(), thresholdLevel);
-		
-		DoubleFunction function = new ThresholdDoubleFunction(thresholdLevel, 0, 255);
-		
-		TransformOperation operation =
-			new TransformOperation(function, new Dataset[]{this.dataset}, new int[][]{Index.create(2)}, this.dataset.getDimensions(), 0);
-		
-		operation.execute();
-	}
-	
+	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
 	{
@@ -1428,4 +2359,21 @@ public class DatasetProcessor extends ImageProcessor
 		return fp;
 	}
 
+	/** Binary exclusive OR of each pixel in the image or ROI with 'value'. */
+	@Override
+	public void xor(int value)
+	{
+		if (this.isFloat)
+			return;
+		
+		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		{
+			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			{
+				long pix = getl(x, y);
+				setl(x, y, pix ^ (long)value);
+			}
+		}
+	}
+	
 }
