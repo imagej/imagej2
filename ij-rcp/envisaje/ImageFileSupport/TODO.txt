@@ -1,0 +1,7 @@
+Still Needed:
+----------------------------------------------------------------
+1.  Need to fill in implementation for Undo/Redo support on the editor TopComponent
+
+2.  Need to enable print support for Dog files (PrintCookie)
+
+3.  Show example of adding custom properties to the node's PropertySheet.

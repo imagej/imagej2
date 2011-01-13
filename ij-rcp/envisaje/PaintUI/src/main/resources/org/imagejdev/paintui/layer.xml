@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+  <folder name="Actions">
+    <folder name="File">
+      <file name="org-imagejdev-paintui-actions-NewCanvasAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-OpenFileAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-ExitAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-SaveCanvasAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-SaveAsAction.instance"/>
+    </folder>
+    <folder name="Image">
+      <file name="org-imagejdev-paintui-actions-ZoomOutAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-ZoomFullAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-ZoomInAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-ResizeAction.instance"/>
+    </folder>
+    <folder name="Edit">
+      <file name="org-imagejdev-paintui-actions-UndoAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-RedoAction.instance"/>
+
+      <file name="Copy.instance">
+        <attr name="instanceCreate" methodvalue="org.imagejdev.paintui.actions.ImCopyAction.createCopyAction"/>
+      </file>
+            
+      <file name="CopyAll.instance">
+        <attr name="instanceCreate" methodvalue="org.imagejdev.paintui.actions.ImCopyAction.createCopyAllAction"/>
+      </file>
+
+      <file name="Cut.instance">
+        <attr name="instanceCreate" methodvalue="org.imagejdev.paintui.actions.ImCopyAction.createCutAction"/>
+      </file>
+
+      <file name="CutAll.instance">
+        <attr name="instanceCreate" methodvalue="org.imagejdev.paintui.actions.ImCopyAction.createCutAllAction"/>
+      </file>
+
+      <file name="Delete.instance">
+        <attr name="instanceClass" stringvalue="org.imagejdev.paintui.actions.ImDeleteAction"/>
+      </file>
+            
+      <file name="org-imagejdev-paintui-actions-ImPasteAction.instance"/>
+
+      <file name="org-imagejdev-paintui-actions-SelectAllAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-InvertSelectionAction.instance"/>
+      <file name="org-imagejdev-paintui-actions-ClearSelectionAction.instance"/>
+    </folder>
+  </folder>
+  <folder name="Menu">
+    <folder name="File">
+      <file name="org-imagejdev-paintui-actions-ExitAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-ExitAction.instance"/>
+        <attr name="position" intvalue="10000"/>
+      </file>
+      <file name="org-imagejdev-paintui-actions-NewCanvasAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-NewCanvasAction.instance"/>
+        <attr name="position" intvalue="0"/>
+      </file>
+
+      <file name="org-netbeans-paintui-separatorAfter.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="200"/>
+      </file>
+
+      <file name="org-imagejdev-paintui-actions-OpenFileAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-OpenFileAction.instance"/>
+        <attr name="position" intvalue="100"/>
+      </file>
+
+      <file name="org-imagejdev-paintui-separatorAfter2.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="300"/>
+      </file>
+            
+      <file name="org-imagejdev-paintui-actions-SaveCanvasAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-SaveCanvasAction.instance"/>
+        <attr name="position" intvalue="400"/>
+      </file>
+      <file name="org-imagejdev-paintui-actions-SaveAsAction.instance">
+        <attr name="position" intvalue="500"/>
+      </file>
+      <file name="org-imagejdev-paintui-separatorBefore.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="600"/>
+      </file>
+    </folder>
+    <attr name="File/Edit" boolvalue="true"/>
+
+    <folder name="Edit">
+      <file name="org-netbeans-core-actions-JumpNextAction.shadow_hidden"/>
+      <file name="org-netbeans-core-actions-JumpPrevAction.shadow_hidden"/>
+      <file name="org-openide-actions-CutAction.instance_hidden"/>
+      <file name="org-openide-actions-DeleteAction.instance_hidden"/>
+      <file name="org-openide-actions-FindAction.instance_hidden"/>
+      <file name="org-openide-actions-PasteAction.instance_hidden"/>
+      <file name="org-openide-actions-RedoAction.instance_hidden"/>
+      <file name="org-openide-actions-ReplaceAction.instance_hidden"/>
+      <file name="org-openide-actions-UndoAction.instance_hidden"/>
+
+      <file name="org-imagejdev-paintui-actions-UndoAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-UndoAction.instance"/>
+        <attr name="position" intvalue="0"/>
+      </file>
+
+      <attr name="org-imagejdev-paintui-actions-UndoAction.shadow/org-imagejdev-paintui-actions-RedoAction.shadow" boolvalue="true"/>
+
+      <file name="org-imagejdev-paintui-actions-RedoAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-RedoAction.instance"/>
+        <attr name="position" intvalue="100"/>
+      </file>
+
+      <file name="sep1.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="200"/>
+      </file>
+      <file name="CutAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/Cut.instance"/>
+        <attr name="position" intvalue="300"/>
+      </file>
+      <file name="CutAllAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/CutAll.instance"/>
+        <attr name="position" intvalue="400"/>
+      </file>
+      <file name="CopyAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/Copy.instance"/>
+        <attr name="position" intvalue="500"/>
+      </file>
+      <file name="CopyAllAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/CopyAll.instance"/>
+        <attr name="position" intvalue="600"/>
+      </file>
+      <file name="PasteAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-ImPasteAction.instance"/>
+        <attr name="position" intvalue="700"/>
+      </file>
+      <file name="sep2.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="800"/>
+      </file>
+      <file name="DeleteAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/Delete.instance"/>
+        <attr name="position" intvalue="900"/>
+      </file>
+      <file name="sep3.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="1000"/>
+      </file>
+      <file name="org-imagejdev-paintui-actions-SelectAllAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-SelectAllAction.instance"/>
+        <attr name="position" intvalue="1100"/>
+      </file>
+
+      <file name="org-imagejdev-paintui-actions-InvertSelectionAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-InvertSelectionAction.instance"/>
+        <attr name="position" intvalue="1200"/>
+      </file>
+
+      <file name="org-imagejdev-paintui-actions-ClearSelectionAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-ClearSelectionAction.instance"/>
+        <attr name="position" intvalue="1300"/>
+      </file>
+
+    </folder>
+
+    <folder name="Image">
+      <file name="org-imagejdev-paintui-actions-ResizeAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ResizeAction.instance"/>
+        <attr name="position" intvalue="0"/>
+      </file>
+
+      <file name="sep1.instance">
+        <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+        <attr name="position" intvalue="100"/>
+      </file>
+
+
+      <file name="org-imagejdev-paintui-actions-ZoomInAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomInAction.instance"/>
+        <attr name="position" intvalue="200"/>
+      </file>
+
+      <file name="org-imagejdev-paintui-actions-ZoomOutAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomOutAction.instance"/>
+        <attr name="position" intvalue="300"/>
+      </file>
+
+    </folder>
+
+    <folder name="Window">
+	    <!-- XXX -->
+      <file name="Output_hidden"/>
+      <file name="ProgressListAction.shadow_hidden"/>
+      <file name="ViewFavoritesTabAction.shadow_hidden"/>
+      <file name="ViewRuntimeTabAction.shadow_hidden"/>
+      <file name="org-imagejdev-paintui-HistoryWindowAction.instance"/>
+    </folder>
+
+  </folder>
+  <folder name="Toolbars">
+    <folder name="File">
+      <file name="org-imagejdev-paintui-actions-NewCanvasAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-NewCanvasAction.instance"/>
+      </file>
+      <attr name="org-imagejdev-paintui-actions-NewCanvasAction.shadow/org-imagejdev-paintui-actions-OpenFileAction.shadow" boolvalue="true"/>
+
+      <file name="org-imagejdev-paintui-actions-OpenFileAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-OpenFileAction.instance"/>
+      </file>
+      <attr name="org-imagejdev-paintui-actions-OpenFileAction.shadow/org-imagejdev-paintui-actions-SaveCanvasAction.shadow" boolvalue="true"/>
+
+      <file name="org-imagejdev-paintui-actions-SaveCanvasAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-SaveCanvasAction.instance"/>
+      </file>
+      <attr name="org-imagejdev-paintui-actions-SaveCanvasAction.shadow/org-imagejdev-paintui-actions-NewCanvasAction.shadow" boolvalue="false"/>
+    </folder>
+    <folder name="Zoom">
+      <file name="org-imagejdev-paintui-ZoomPanel.instance"/>
+      <attr name="org-imagejdev-paintui-actions-ZoomInAction.shadow/org-imagejdev-paintui-actions-ZoomOutAction.shadow" boolvalue="true"/>
+
+      <file name="org-imagejdev-paintui-actions-ZoomOutAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomOutAction.instance"/>
+      </file>
+      <file name="org-imagejdev-paintui-actions-ZoomInAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomInAction.instance"/>
+      </file>
+    </folder>
+    <folder name="Memory">
+      <attr name="SystemFileSystem.localizingBundle" stringvalue="org.netbeans.core.Bundle"/>
+      <file name="org-openide-actions-GarbageCollectAction.instance"/>
+    </folder>
+
+  </folder>
+
+  <folder name="Windows2">
+    <folder name="Modes">
+      <file name="editor.wsmode" url="editor.wsmode"/>
+      <folder name="editor"/>
+    </folder>
+  </folder>
+
+  <folder name="Shortcuts">
+    <file name="D-N.shadow">
+      <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-NewCanvasAction.instance"/>
+    </file>
+    <file name="D-V.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-ImPasteAction.instance"/>
+    </file>
+    <file name="D-O.shadow">
+      <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-OpenFileAction.instance"/>
+    </file>
+    <file name="D-S.shadow">
+      <attr name="originalFile" stringvalue="Actions/File/org-imagejdev-paintui-actions-SaveCanvasAction.instance"/>
+    </file>
+    <file name="D-EQUALS.shadow">
+      <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomInAction.instance"/>
+    </file>
+    <file name="PLUS.shadow">
+      <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomInAction.instance"/>
+    </file>
+    <file name="D-MINUS.shadow">
+      <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomOutAction.instance"/>
+    </file>
+    <file name="MINUS.shadow">
+      <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ZoomOutAction.instance"/>
+    </file>
+    <file name="D-A.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-SelectAllAction.instance"/>
+    </file>
+    <file name="D-D.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-ClearSelectionAction.instance"/>
+    </file>
+    <file name="D-Z.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-UndoAction.instance"/>
+    </file>
+    <file name="D-Y.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-RedoAction.instance"/>
+    </file>
+    <file name="D-I.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-imagejdev-paintui-actions-InvertSelectionAction.instance"/>
+    </file>
+    <file name="D-X.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/Cut.instance"/>
+    </file>
+    <file name="D-C.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/Copy.instance"/>
+    </file>
+    <file name="DS-X.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/CutAll.instance"/>
+    </file>
+    <file name="DS-C.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/CopyAll.instance"/>
+    </file>
+    <!--
+    <file name="D-S.shadow">
+      <attr name="originalFile" stringvalue="Menu/File/org-imagejdev-paintui-actions-SaveAsAction.instance"/>
+    </file>
+    -->
+    <file name="D-R.shadow">
+      <attr name="originalFile" stringvalue="Actions/Image/org-imagejdev-paintui-actions-ResizeAction.instance"/>
+    </file>
+    <file name="DELETE.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/Delete.instance"/>
+    </file>
+  </folder>
+</filesystem>

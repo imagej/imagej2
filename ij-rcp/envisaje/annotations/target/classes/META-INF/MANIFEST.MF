@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/annotations/Bundle.pro
+ perties
+OpenIDE-Module-Layer: org/imagejdev/annotations/layer.xml
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20110110
+OpenIDE-Module-Build-Version: 201101100523
+OpenIDE-Module: org.imageidev.annotations
+OpenIDE-Module-Public-Packages: org.imagejdev.annotations.*
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+OpenIDE-Module-Display-Category: org.imageidev
+OpenIDE-Module-Name: Annotations Module
+OpenIDE-Module-Short-Description: To be set.
+OpenIDE-Module-Long-Description: To be set.
+OpenIDE-Module-Module-Dependencies:  org.openide.util > 8.6.1
+

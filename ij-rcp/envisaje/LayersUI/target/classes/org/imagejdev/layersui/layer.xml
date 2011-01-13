@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="org-imagejdev-layersui-LayersAction.instance"/>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="Window">
+            <file name="LayersAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-imagejdev-layersui-LayersAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="LayersTopComponent.settings" url="LayersTopComponent.xml"/>
+        </folder>
+        <folder name="Modes">
+            <file name="layers.wsmode" url="LayersMode.xml"/>
+            <folder name="layers">
+                <file name="LayersTopComponent.wstcref" url="LayersTCRef.xml"/>
+            </folder>
+        </folder>
+    </folder>    
+</filesystem>

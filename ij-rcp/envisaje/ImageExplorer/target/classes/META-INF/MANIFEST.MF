@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/imageexplorer/Bundle.p
+ roperties
+OpenIDE-Module-Layer: org/imagejdev/imageexplorer/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Implementation-Version: 1.0-20110112
+OpenIDE-Module-Build-Version: 201101120803
+OpenIDE-Module: org.imagejdev.ImageExplorer
+OpenIDE-Module-Public-Packages: org.imagejdev.imageexplorer.*
+OpenIDE-Module-Display-Category: org.imagejdev
+OpenIDE-Module-Name: ImageExplorer NetBeans Module
+OpenIDE-Module-Short-Description: To be set.
+OpenIDE-Module-Long-Description: To be set.
+OpenIDE-Module-Module-Dependencies:  org.openide.util > 8.6.1, org.ope
+ nide.util.lookup > 8.3.1, org.openide.windows > 6.33.1, org.openide.a
+ wt > 7.23.1, org.openide.nodes > 7.16.1, org.netbeans.modules.setting
+ s/1 > 1.26.1, org.openide.explorer > 6.28.2, org.openide.filesystems 
+ > 7.38.2, org.openide.loaders > 7.16.1
+

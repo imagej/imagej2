@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
+<filesystem>
+     <folder name="Menu">
+        <attr name="org-imagejdev-pluginfinder-Menu1.instance/Window" boolvalue="true"/>
+        <file name="org-imagejdev-pluginfinder-Menu1.instance"/>
+     </folder>
+
+</filesystem>

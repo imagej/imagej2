@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/imagefiletype/Bundle.properties
+OpenIDE-Module-Layer: org/imagejdev/imagefiletype/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager

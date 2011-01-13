@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.annotationProcessors">
+    <module_version install_time="1294698203071" last="true" origin="installer" specification_version="1.0">
+        <file crc="3604681431" name="config/Modules/org-imagejdev-annotationProcessors.xml"/>
+        <file crc="2822886902" name="modules/org-imagejdev-annotationProcessors.jar"/>
+    </module_version>
+</module>

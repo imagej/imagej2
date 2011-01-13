@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.tests">
+    <module_version install_time="1294509799028" last="true" origin="installer" specification_version="1.0">
+        <file crc="4081098460" name="config/Modules/org-imagejdev-tests.xml"/>
+        <file crc="1201964711" name="modules/org-imagejdev-tests.jar"/>
+    </module_version>
+</module>

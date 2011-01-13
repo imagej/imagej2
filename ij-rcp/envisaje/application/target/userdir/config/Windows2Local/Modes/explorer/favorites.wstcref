@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tc-ref version="2.2">
+    <module name="org.netbeans.modules.favorites/1" spec="1.1" />
+    <tc-id id="favorites" />
+    <state opened="false" />
+</tc-ref>

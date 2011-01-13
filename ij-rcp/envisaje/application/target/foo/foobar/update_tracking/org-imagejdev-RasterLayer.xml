@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.RasterLayer">
+    <module_version install_time="1294880604249" last="true" origin="installer" specification_version="1.0">
+        <file crc="1437520111" name="config/Modules/org-imagejdev-RasterLayer.xml"/>
+        <file crc="1341437465" name="modules/org-imagejdev-RasterLayer.jar"/>
+        <file crc="1592723740" name="update_tracking/org-imagejdev-RasterLayer.xml"/>
+    </module_version>
+</module>

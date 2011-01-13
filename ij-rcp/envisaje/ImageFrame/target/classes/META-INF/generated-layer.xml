@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN"
+                            "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="xml">
+        <folder name="entities">
+            <folder name="imagej_imageframe">
+                <file name="ImgDisplay" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--imagej.imageframe.ImgDisplayTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//imagej.imageframe//ImgDisplay//EN"/>
+                </file>
+            </folder>
+        </folder>
+        <folder name="memory">
+            <folder name="imagej">
+                <folder name="imageframe">
+                    <file name="ImgDisplayTopComponent">
+                        <!--imagej.imageframe.ImgDisplayTopComponent-->
+                        <attr name="settings.providerPath" stringvalue="xml/lookups//imagej_imageframe/ImgDisplay.instance"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
+        <folder name="lookups">
+            <folder name="imagej_imageframe">
+                <file name="ImgDisplay.instance">
+                    <!--imagej.imageframe.ImgDisplayTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="imagej.imageframe.ImgDisplayTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="imagej.imageframe.ImgDisplayTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>

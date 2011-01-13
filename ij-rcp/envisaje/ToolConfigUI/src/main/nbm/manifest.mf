@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/imagejdev/toolconfigui/Bundle.properties
+OpenIDE-Module-Layer: org/imagejdev/toolconfigui/layer.xml

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowmanager version="2.1">
+    <main-window>
+  <joined-properties
+   x="80"
+   y="45"
+   width="1440"
+   height="810"
+   relative-x="0.0"
+   relative-y="0.0"
+   relative-width="0.0"
+   relative-height="0.0"
+   centered-horizontally="false"
+   centered-vertically="false"
+   maximize-if-width-below="0"
+   maximize-if-height-below="0"
+   frame-state="0"
+/>
+  <separated-properties
+   x="160"
+   y="90"
+   width="1280"
+   height="72"
+   relative-x="0.0"
+   relative-y="0.0"
+   relative-width="0.0"
+   relative-height="0.0"
+   centered-horizontally="false"
+   centered-vertically="false"
+   frame-state="0"
+/>
+  </main-window>
+    <editor-area state="joined" frame-state="0">
+  <constraints>
+  <path orientation="horizontal" number="0" weight="0.5" />
+  <path orientation="vertical" number="0" weight="0.5" />
+  <path orientation="horizontal" number="0" weight="0.5" />
+  <path orientation="vertical" number="0" weight="0.5" />
+  <path orientation="horizontal" number="0" weight="0.5" />
+  <path orientation="vertical" number="0" weight="0.7363112391930836" />
+  <path orientation="horizontal" number="60" weight="0.7" />
+  <path orientation="vertical" number="40" weight="0.7" />
+  <path orientation="horizontal" number="40" weight="0.7" />
+  </constraints>
+  <bounds x="528" y="216" width="672" height="396" />
+    </editor-area>
+    <screen width="1600" height="900"/>
+    <active-mode name="output"/>
+    <toolbar configuration="Standard" preferred-icon-size="24"/>
+    <tc-list>
+  <tc-id id="output"/>
+  <tc-id id="LayersTopComponent"/>
+  <tc-id id="ToolsTopComponent"/>
+    </tc-list>
+</windowmanager>

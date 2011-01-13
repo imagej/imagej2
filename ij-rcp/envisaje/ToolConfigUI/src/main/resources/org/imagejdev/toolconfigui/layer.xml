@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="org-imagejdev-toolconfigui-CustomizationAction.instance"/>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="Window">
+            <file name="CustomizationAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-imagejdev-toolconfigui-CustomizationAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Modes">
+            <file name="toolscustomization.wsmode" url="ToolsCustomizationMode.xml"/>
+                   
+            <folder name="toolscustomization">
+                <file name="CustomizationTopComponent.wstcref" url="CustomizationTopComponent_1.xml"/>
+            </folder>
+        </folder>
+
+        <folder name="Components">
+            <file name="CustomizationTopComponent.settings" url="CustomizationTopComponent.xml"/>
+        </folder>
+        
+    </folder>
+</filesystem>

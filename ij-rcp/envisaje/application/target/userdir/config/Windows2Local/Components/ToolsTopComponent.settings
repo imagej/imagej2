@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+    <module name="org.imagejdev.ToolsUI" spec="1.0"/>
+    <instanceof class="java.awt.Component"/>
+    <instanceof class="java.awt.Container"/>
+    <instanceof class="java.awt.MenuContainer"/>
+    <instanceof class="java.awt.image.ImageObserver"/>
+    <instanceof class="java.io.Externalizable"/>
+    <instanceof class="java.io.Serializable"/>
+    <instanceof class="java.lang.Object"/>
+    <instanceof class="java.lang.Runnable"/>
+    <instanceof class="javax.accessibility.Accessible"/>
+    <instanceof class="javax.swing.JComponent"/>
+    <instanceof class="javax.swing.TransferHandler$HasGetTransferHandler"/>
+    <instanceof class="org.imagejdev.imagine.api.actions.Sensor$Notifiable"/>
+    <instanceof class="org.imagejdev.toolsui.ToolsTopComponent"/>
+    <instanceof class="org.openide.util.HelpCtx$Provider"/>
+    <instanceof class="org.openide.util.Lookup$Provider"/>
+    <instanceof class="org.openide.windows.TopComponent"/>
+    <serialdata class="org.imagejdev.toolsui.ToolsTopComponent">
+        ACED0005737200386F72672E696D6167656A6465762E746F6F6C7375692E546F6F6C73546F70436F6D706F6E656E74245265
+        736F6C7661626C6548656C70657200000000000000020200014C0004746F6F6C7400124C6A6176612F6C616E672F53747269
+        6E673B78707400246F72672E696D6167656A6465762E696D6167696E652E746F6F6C732E4D6F7665546F6F6C
+    </serialdata>
+</settings>

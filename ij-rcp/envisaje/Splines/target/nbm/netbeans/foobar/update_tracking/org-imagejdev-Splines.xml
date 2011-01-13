@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.imagejdev.Splines">
+    <module_version install_time="1294880600828" last="true" origin="installer" specification_version="1.0">
+        <file crc="4272021023" name="config/Modules/org-imagejdev-Splines.xml"/>
+        <file crc="3299460805" name="modules/org-imagejdev-Splines.jar"/>
+        <file crc="2996062574" name="update_tracking/org-imagejdev-Splines.xml"/>
+    </module_version>
+</module>
