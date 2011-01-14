@@ -35,6 +35,9 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 
 	@Override
 	public void run() {
+		// TODO implement input as a java.io.File rather than using GUI explicitly
+		// then this plugin can be moved out of ij2-gui and into ij2-io
+
 		// prompt for input file
 		final JFileChooser fileChooser =
 			GUITools.buildFileChooser(new ChannelMerger());

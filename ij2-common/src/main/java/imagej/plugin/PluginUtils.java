@@ -1,8 +1,5 @@
 package imagej.plugin;
 
-import imagej.dataset.Dataset;
-import imagej.plugin.ij2.DisplayPlugin;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,18 +36,6 @@ public final class PluginUtils {
 		}
 		throw new IllegalArgumentException(
 			"No compatible PluginRunners for PluginEntry: " + entry);
-	}
-
-	/** Displays the dataset using the first available {@link DisplayPlugin}. */
-	public static void display(Dataset dataset) {
-		final Collection<? extends DisplayPlugin> displayPlugins =
-			Lookup.getDefault().lookupAll(DisplayPlugin.class);
-		for (final DisplayPlugin displayPlugin : displayPlugins) {
-			if (displayPlugin.canDisplay(dataset)) {
-				displayPlugin.display(dataset);
-				return;
-			}
-		}
 	}
 
 }

@@ -6,7 +6,7 @@ import imagej.plugin.ij2.DisplayPlugin;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service=DisplayPlugin.class)
-public class NavigableImageDisplayPlugin implements DisplayPlugin {
+public class NavigableImageDisplay implements DisplayPlugin {
 
 	@Override
 	public boolean canDisplay(Dataset dataset) {
