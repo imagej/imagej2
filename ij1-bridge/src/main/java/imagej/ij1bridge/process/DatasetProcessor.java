@@ -74,6 +74,9 @@ public class DatasetProcessor extends ImageProcessor
 	/** flag for determining if we are working with float data */
 	private boolean isFloat;
 	
+	/** flag for determining if we are working with unsigned data */
+	private boolean isUnsigned;
+
 	/** the largest value actually present in the image */
 	private double max;
 	
@@ -98,6 +101,12 @@ public class DatasetProcessor extends ImageProcessor
 	/** the underlying ImageJ type of the plane data */
 	private Type type;
 	
+	/** the maximum integral value allowed for the underlying ImageJ type - caching for performance improvement */
+	private long typeMaxL;
+
+	/** the minimum integral value allowed for the underlying ImageJ type - caching for performance improvement */
+	private long typeMinL;
+	
 	// ************* constructor ***********************************************************************************
 
 	/** create a DatasetProcessor that will reference a given Dataset. Dataset must be 2-D. */
@@ -118,19 +127,66 @@ public class DatasetProcessor extends ImageProcessor
 		this.snapshot = null;
 		this.snapshotMin = 0;
 		this.snapshotMax = 0;
-		this.isFloat = this.type.isFloat();
 		this.fillColor = 0;
 		this.min = 0;
 		this.max = 0;
 		this.factory = new PlanarDatasetFactory();
 		this.duplicator = new DatasetDuplicator();
+		this.isFloat = this.type.isFloat();
+		this.isUnsigned = this.type.isUnsigned();
+		this.typeMaxL = this.type.getMaxIntegral();
+		this.typeMinL = this.type.getMinIntegral();
+
 		resetRoi();
-		// no longer necessary since getMin()/getMax(0 calc as needed
-		//findMinAndMax();
 	}
 
 
 	// ************* private interface ***********************************************************************************
+
+	private class AddNoiseDoubleFunction implements DoubleFunction
+	{
+		private boolean dataIsIntegral;
+		private double min;
+		private double max;
+		private double range;
+		private Random rnd;
+		
+		public AddNoiseDoubleFunction(boolean isIntegral, double min, double max, double range)
+		{
+			this.dataIsIntegral = isIntegral;
+			this.min = min;
+			this.max = max;
+			this.range = range;
+			this.rnd = new Random();
+			this.rnd.setSeed(System.currentTimeMillis());  // TODO - this line not present in original code (by design???)
+		}
+
+		public int getParameterCount()
+		{
+			return 1;
+		}
+		
+		public double compute(double[] input)
+		{
+			double origValue = input[0];
+			double result, ran;
+			boolean inRange = false;
+			do {
+				ran = this.rnd.nextGaussian() * this.range;
+				if (this.dataIsIntegral)
+					ran = Math.round(ran);
+				result = origValue + ran;
+				inRange = DoubleRange.inside(this.min, this.max, result);
+			} while (!inRange);
+			return result;
+		}
+	}
+
+	/** clamps values to min/max range of type. only to be called with integral type data. */
+	private long clamp(long value)
+	{
+		return LongRange.bound(this.typeMinL, this.typeMaxL, value);
+	}
 	
 	/** Uses bilinear interpolation to find the pixel value at real coordinates (x,y). */
 	private double calcBilinearPixel(double x, double y)
@@ -148,6 +204,7 @@ public class DatasetProcessor extends ImageProcessor
 		return lowerAverage + yFraction * (upperAverage - lowerAverage);
 	}
 
+	/** do a 8-neighbor filter of specified type */
     private void filter3x3(int type, int[] kernel)
     {
 		double v1, v2, v3;           //input pixel values around the current pixel
@@ -219,7 +276,7 @@ public class DatasetProcessor extends ImageProcessor
     				v9 = accessor.getReal(p9);
                     double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
                     double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
-                    value = (double)Math.sqrt(sum1*sum1 + sum2*sum2);
+                    value = Math.sqrt(sum1*sum1 + sum2*sum2);
                     setd(p, value);
                     tracker.update();
                 }
@@ -394,7 +451,7 @@ public class DatasetProcessor extends ImageProcessor
 		if (lut.length != expectedLutSize)
 			throw new IllegalArgumentException("lut size ("+lut.length+" values) does not match range of pixel type ("+expectedLutSize+" values)");
 
-		int minValue = (int) this.type.getMinIntegral();
+		int minValue = (int) this.typeMinL;
 		
 		for (int x = 0; x < super.width; x++)
 		{
@@ -439,173 +496,254 @@ public class DatasetProcessor extends ImageProcessor
 		filter3x3(CONVOLVE, kernel);
 	}
 
-	/** uses a blitter to copy pixels to xloc,yloc from ImageProcessor ip using the given mode. */
+	/** copy pixels to xloc,yloc from ImageProcessor ip using the given mode. */
 	@Override
 	public void copyBits(ImageProcessor ip, int xloc, int yloc, int mode)
 	{
-		// TODO - taken from FloatProcessor's implementation
-		// I'm pretty sure Byte/Short processors might do some things slightly differently. Check.
-		
-		Rectangle r1, r2;
-		int srcIndex, dstIndex;
-		Object source;
-		DataAccessor srcAccessor;
-
 		int srcWidth = ip.getWidth();
 		int srcHeight = ip.getHeight();
-		r1 = new Rectangle(srcWidth, srcHeight);
+		Rectangle r1 = new Rectangle(srcWidth, srcHeight);
 		r1.setLocation(xloc, yloc);
-		r2 = new Rectangle(width, height);
+		Rectangle r2 = new Rectangle(width, height);
 		if (!r1.intersects(r2))
 			return;
-		source = ip.getPixels();
-		srcAccessor = this.type.allocateArrayAccessor(source);
+		Object src = ip.getPixels();
+		DataAccessor srcAccessor = this.type.allocateArrayAccessor(src);
 		r1 = r1.intersection(r2);
 		boolean useDBZValue = !Float.isInfinite(divideByZeroValue);
-		ProgressTracker tracker = new ProgressTracker(this, ((long)r1.width)*r1.height, 20*srcHeight);
-		for (int y=r1.y; y<(r1.y+r1.height); y++) {
+		ProgressTracker tracker = new ProgressTracker(this, ((long)r1.width)*r1.height, 20*r1.width);
+		int srcIndex, dstIndex;
+		for (int y=r1.y; y<(r1.y+r1.height); y++)
+		{
 			srcIndex = (y-yloc)*srcWidth + (r1.x-xloc);
 			dstIndex = y * width + r1.x;
-			switch (mode) {
-				case Blitter.COPY: case Blitter.COPY_INVERTED:
-					for (int i=r1.width; --i>=0;)
+			switch (mode)
+			{
+				case Blitter.COPY:
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
-							double value = srcAccessor.getReal(srcIndex++);
-							setd(dstIndex++, value);
+							double value = srcAccessor.getReal(srcIndex);
+							setd(dstIndex, value);
+							tracker.update();
 						}
-						else // integral
+					}
+					else // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
-							long value = srcAccessor.getIntegral(srcIndex++);
-							setl(dstIndex++, value);
+							long value = srcAccessor.getIntegral(srcIndex);
+							setl(dstIndex, value);
+							tracker.update();
 						}
-						tracker.update();
+					}
+					break;
+				case Blitter.COPY_TRANSPARENT:
+					if (this.isFloat)
+					{
+						// TODO - FloatBlitter did not have but Short and Byte did. Wayne added code in 1.44n9 to fix this. That code not yet
+						//   released. For now assume its like ShortBlitter that just copies data. Check this later.
+
+						// just copy values (like ShortBlitter but unlike ByteBlitter)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+						{
+							double value = srcAccessor.getReal(srcIndex);
+							setd(dstIndex, value);
+							tracker.update();
+						}
+					}
+					else  // integral
+					{
+						// just copy values (like ShortBlitter but unlike ByteBlitter)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+						{
+							long value = srcAccessor.getIntegral(srcIndex);
+							setl(dstIndex, value);
+							tracker.update();
+						}
+					}
+					break;
+				case Blitter.COPY_INVERTED:
+					if (this.isFloat)
+					{
+						// TODO - change to something else? value = -value? or value = 1.0 / value? 
+						
+						// just copy values like IJ1 did for FloatProc
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+						{
+							double value = srcAccessor.getReal(srcIndex);
+							setd(dstIndex, value);
+							tracker.update();
+						}
+					}
+					else // integral
+					{
+						// TODO - only ByteBlitter actually inverted. I invert for all integral types. Might need something different. 
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+						{
+							long value = srcAccessor.getIntegral(srcIndex);
+							long newValue;
+							if (this.isUnsigned)
+								newValue = this.typeMaxL - value;
+							else
+								newValue = -value;
+							setl(dstIndex, newValue);
+							tracker.update();
+						}
 					}
 					break;
 				case Blitter.COPY_ZERO_TRANSPARENT:
-					for (int i=r1.width; --i>=0;)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
-							double value = srcAccessor.getReal(srcIndex++);
-							if (value == 0)
-								dstIndex++;
-							else
-								setd(dstIndex++, value);
+							double value = srcAccessor.getReal(srcIndex);
+							if (value != 0)
+								setd(dstIndex, value);
+							tracker.update();
 						}
-						else // integral
+					}
+					else // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
-							long value = srcAccessor.getIntegral(srcIndex++);
-							if (value == 0)
-								dstIndex++;
-							else
-								setd(dstIndex++, value);
+							long value = srcAccessor.getIntegral(srcIndex);
+							if (value != 0)
+								setl(dstIndex, value);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.ADD:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
-							setd(dstIndex, srcValue + myValue);
+							double newValue = srcValue + myValue;
+							setd(dstIndex, newValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
-							setl(dstIndex, srcValue + myValue);
+							long newValue = srcValue + myValue;
+							newValue = clamp(newValue);
+							setl(dstIndex, newValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.AVERAGE:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
-							setd(dstIndex, (srcValue + myValue) / 2);
+							double newValue = (srcValue + myValue) / 2;
+							setd(dstIndex, newValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
-							setl(dstIndex, (srcValue + myValue) / 2);
+							long newValue = (srcValue + myValue) / 2;
+							setl(dstIndex, newValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.DIFFERENCE:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
 							double newValue = myValue - srcValue;
 							if (newValue < 0) newValue = -newValue;
 							setd(dstIndex, newValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
 							long newValue = myValue - srcValue;
 							if (newValue < 0) newValue = -newValue;
+							newValue = clamp(newValue);
 							setl(dstIndex, newValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.SUBTRACT:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
 							double newValue = myValue - srcValue;
 							setd(dstIndex, newValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
 							long newValue = myValue - srcValue;
+							newValue = clamp(newValue);
 							setl(dstIndex, newValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 				case Blitter.MULTIPLY:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
 							double newValue = myValue * srcValue;
 							setd(dstIndex, newValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
 							long newValue = myValue * srcValue;
+							newValue = clamp(newValue);
 							setl(dstIndex, newValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.DIVIDE:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							if (useDBZValue && srcValue == 0)
@@ -616,17 +754,21 @@ public class DatasetProcessor extends ImageProcessor
 								double newValue = myValue / srcValue;
 								setd(dstIndex, newValue);
 							}
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
 							if (srcValue == 0)
 							{
 								if (myValue > 0)
-									setl(dstIndex, this.type.getMaxIntegral());
+									setl(dstIndex, this.typeMaxL);
 								else if (myValue < 0)
-									setl(dstIndex, this.type.getMinIntegral());
+									setl(dstIndex, this.typeMinL);
 								// else myValue == 0 -> nothing to do
 							}
 							else  // src value is valid
@@ -634,8 +776,8 @@ public class DatasetProcessor extends ImageProcessor
 								long newValue = myValue / srcValue;
 								setl(dstIndex, newValue);
 							}
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.AND:
@@ -669,43 +811,51 @@ public class DatasetProcessor extends ImageProcessor
 					}
 					break;
 				case Blitter.MIN:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
-							double newValue = (srcValue < myValue) ? srcValue : myValue;
-							setd(dstIndex, newValue);
+							if (srcValue < myValue)
+								setd(dstIndex, srcValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
-							long newValue = (srcValue < myValue) ? srcValue : myValue;
-							setl(dstIndex, newValue);
+							if (srcValue < myValue)
+								setl(dstIndex, srcValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 				case Blitter.MAX:
-					for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
+					if (this.isFloat)
 					{
-						if (this.isFloat)
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							double srcValue = srcAccessor.getReal(srcIndex);
 							double myValue = getd(dstIndex);
-							double newValue = (srcValue > myValue) ? srcValue : myValue;
-							setd(dstIndex, newValue);
+							if (srcValue > myValue)
+								setd(dstIndex, srcValue);
+							tracker.update();
 						}
-						else  // integral
+					}
+					else  // integral
+					{
+						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
 						{
 							long srcValue = srcAccessor.getIntegral(srcIndex);
 							long myValue = getl(dstIndex);
-							long newValue = (srcValue > myValue) ? srcValue : myValue;
-							setl(dstIndex, newValue);
+							if (srcValue > myValue)
+								setl(dstIndex, srcValue);
+							tracker.update();
 						}
-						tracker.update();
 					}
 					break;
 			}
@@ -902,7 +1052,7 @@ public class DatasetProcessor extends ImageProcessor
 					
 					long newValue = (long)(Math.exp(pixValue*(Math.log(currMax)/currMax)));
 				
-					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+					newValue = clamp(newValue);
 					
 					setl(x, y, newValue);
 				}
@@ -1041,7 +1191,7 @@ public class DatasetProcessor extends ImageProcessor
 					else
 						newValue = (long) (Math.exp(constant * Math.log((pixValue-currMin)/currRange)) * currRange + currMin);
 					
-					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+					newValue = clamp(newValue);
 
 					if (newValue != pixValue)
 						setd(x, y, newValue);
@@ -1178,7 +1328,7 @@ public class DatasetProcessor extends ImageProcessor
 		
 		int[] histogram = new int[1 << bitDepth];
 
-		long minValue = this.type.getMinIntegral();
+		long minValue = this.typeMinL;
 		
 		for (int x = 0; x < super.width; x++)
 		{
@@ -1293,7 +1443,7 @@ public class DatasetProcessor extends ImageProcessor
 
 			double value = getInterpolatedPixel(x, y) + 0.5;
 			
-			value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+			value = clamp((long)value);
 			
 			return (int)value;
 		}
@@ -1451,7 +1601,7 @@ public class DatasetProcessor extends ImageProcessor
 					else 
 						newValue = (long)(Math.log(pixValue)*(currMax/Math.log(currMax)));
 			
-					newValue = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), newValue);
+					newValue = clamp(newValue);
 					
 					setl(x, y, newValue);
 				}
@@ -1513,45 +1663,6 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 	
-	private class AddNoiseDoubleFunction implements DoubleFunction
-	{
-		private boolean dataIsIntegral;
-		private double min;
-		private double max;
-		private double range;
-		private Random rnd;
-		
-		public AddNoiseDoubleFunction(boolean isIntegral, double min, double max, double range)
-		{
-			this.dataIsIntegral = isIntegral;
-			this.min = min;
-			this.max = max;
-			this.range = range;
-			this.rnd = new Random();
-			this.rnd.setSeed(System.currentTimeMillis());  // TODO - this line not present in original code (by design???)
-		}
-
-		public int getParameterCount()
-		{
-			return 1;
-		}
-		
-		public double compute(double[] input)
-		{
-			double origValue = input[0];
-			double result, ran;
-			boolean inRange = false;
-			do {
-				ran = this.rnd.nextGaussian() * this.range;
-				if (this.dataIsIntegral)
-					ran = Math.round(ran);
-				result = origValue + ran;
-				inRange = DoubleRange.inside(this.min, this.max, result);
-			} while (!inRange);
-			return result;
-		}
-	}
-
 	/** add noise to the current ROI area of current plane data. */
 	@Override
 	public void noise(double range)
@@ -1597,7 +1708,7 @@ public class DatasetProcessor extends ImageProcessor
 			{
 				// can't use setd()/setl() effectively here since input value is already an int - breaks UINT32 and LONG
 
-				value = (int)LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), value);
+				value = (int) clamp(value);
 				set(x, y, value);
 			}
 		}
@@ -1725,7 +1836,7 @@ public class DatasetProcessor extends ImageProcessor
 					if (!this.isFloat)
 					{
 						value += 0.5;
-						value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+						value = clamp((long)value);
 					}
 					ip2.setd(index++, value);
 					tracker.update();
@@ -1758,7 +1869,7 @@ public class DatasetProcessor extends ImageProcessor
 						if (!this.isFloat)
 						{
 							value += 0.5;
-							value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+							value = clamp((long)value);
 						}
 						ip2.setd(index2++, value);
 					}
@@ -1822,7 +1933,7 @@ public class DatasetProcessor extends ImageProcessor
 					if (isIntegral)
 					{
 						value += 0.5;
-						value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+						value = clamp((long)value);
 					}
 					setd(index++,value);
 					tracker.update();
@@ -1852,7 +1963,7 @@ public class DatasetProcessor extends ImageProcessor
 							if (isIntegral)
 							{
 								value += 0.5;
-								value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+								value = clamp((long)value);
 							}
 							setd(index++, value);
 						}
@@ -1937,7 +2048,7 @@ public class DatasetProcessor extends ImageProcessor
 					if (isIntegral)
 					{
 						value += 0.5;
-						value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+						value = clamp((long)value);
 					}
 					setd(index++,value);
 					tracker.update();
@@ -1975,7 +2086,7 @@ public class DatasetProcessor extends ImageProcessor
 							if (isIntegral)
 							{
 								value += 0.5;
-								value = LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)value);
+								value = clamp((long)value);
 							}
 							setd(index1++, value);
 						}
@@ -2223,9 +2334,9 @@ public class DatasetProcessor extends ImageProcessor
 		//   double. That probably would work. Would work seamlessly with code. But plugins might need a recompile
 		//   if they themselves call setFgColor().
 
-		if ((!this.isFloat) && (this.type.getMaxIntegral() <= Integer.MAX_VALUE))
+		if ((!this.isFloat) && (this.typeMaxL <= Integer.MAX_VALUE))
 		{
-			setFgColor((int) LongRange.bound(this.type.getMinIntegral(), this.type.getMaxIntegral(), (long)this.fillColor));
+			setFgColor((int) clamp((long)this.fillColor));
 		}
 	}
 
@@ -2307,36 +2418,6 @@ public class DatasetProcessor extends ImageProcessor
 		this.minMaxSet = true;
 	}
 
-	/*
-	private class ThresholdDoubleFunction implements DoubleFunction
-	{
-		private double threshold, min, max;
-		
-		public ThresholdDoubleFunction(double threshold, double min, double max)
-		{
-			this.threshold = threshold;
-			this.min = min;
-			this.max = max;
-		}
-		
-		@Override
-		public int getParameterCount()
-		{
-			return 1;
-		}
-
-		@Override
-		public double compute(double[] inputs)
-		{
-			if (inputs[0] <= this.threshold)
-				return this.min;
-			else
-				return this.max;
-		}
-		
-	}
-	*/
-	
 	/** creates a FloatProcessor whose pixel values are set to those of this processor. */
 	@Override
 	public FloatProcessor toFloat(int channelNumber, FloatProcessor fp)
