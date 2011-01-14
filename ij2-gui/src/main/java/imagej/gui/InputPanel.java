@@ -18,6 +18,8 @@ public interface InputPanel {
 	/**
 	 * Adds a numeric field.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
 	 * @param initialValue
@@ -29,28 +31,26 @@ public interface InputPanel {
 	 * @param stepSize
 	 *          
 	 */
-	void addNumber(String label, Number initialValue,
+	void addNumber(String name, String label, Number initialValue,
 		Number min, Number max, Number stepSize);
-
-	/** Returns the contents of the next numeric field. */
-	Number getNextNumber();
 
 	/**
 	 * Adds a checkbox.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
 	 * @param initialValue
 	 *          the initial state
 	 */
-	void addToggle(String label, boolean initialValue);
-
-	/** Returns the state of the next checkbox. */
-	boolean getNextToggle();
+	void addToggle(String name, String label, boolean initialValue);
 
 	/**
 	 * Adds a text field.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
 	 * @param initialValue
@@ -58,53 +58,101 @@ public interface InputPanel {
 	 * @param columns
 	 *          width of field in characters
 	 */
-	void addTextField(String label, String initialValue, int columns);
-
-	/** Returns the contents of the next text field. */
-	String getNextTextField();
+	void addTextField(String name, String label, String initialValue,
+		int columns);
 
 	/**
 	 * Adds a multiple choice text field.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
-	 * @param items
-	 *          the choices
 	 * @param initialValue
 	 *          the initially selected item
+	 * @param items
+	 *          the choices
 	 */
-	void addChoice(String label, String[] items, String initialValue);
-
-	/** Returns the selected item in the next choice text field. */
-	String getNextChoice();
-
-	/** Returns the index of the selected item in the next choice text field. */
-	int getNextChoiceIndex();
+	void addChoice(String name, String label, String initialValue,
+		String[] items);
 
 	/**
 	 * Adds a file selector.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
 	 * @param initialValue
 	 *          the initially specified file
 	 */
-	void addFile(String label, File initialValue);
-
-	/** Returns the value of the next file selector. */
-	File getNextFile();
+	void addFile(String name, String label, File initialValue);
 
 	/**
 	 * Adds a dataset selector.
 	 * 
+	 * @param name
+	 *          unique name identifying this field
 	 * @param label
 	 *          the label
 	 * @param initialValue
 	 *          the initially specified dataset
 	 */
-	void addDataset(String label, Dataset initialValue);
+	void addDataset(String name, String label, Dataset initialValue);
 
-	/** Returns the value of the next dataset selector. */
-	Dataset getNextDataset();
+	/**
+	 * Returns the contents of the given numeric field.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	Number getNumber(String name);
+
+	/**
+	 * Returns the state of the given checkbox.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	boolean getToggle(String name);
+
+	/**
+	 * Returns the contents of the given text field.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	String getTextField(String name);
+
+	/**
+	 * Returns the selected item in the given choice text field.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	String getChoice(String name);
+
+	/**
+	 * Returns the index of the selected item in the given choice text field.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	int getChoiceIndex(String name);
+
+	/**
+	 * Returns the value of the given file selector.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	File getFile(String name);
+
+	/** Returns the value of the given dataset selector.
+	 * 
+	 * @param name
+	 *          unique name identifying this field
+	 */
+	Dataset getDataset(String name);
 
 }

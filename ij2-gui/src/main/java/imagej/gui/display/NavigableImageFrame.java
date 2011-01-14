@@ -29,6 +29,8 @@ import loci.formats.gui.AWTImageTools;
  */
 public class NavigableImageFrame extends JFrame {
 
+	// TODO - Rework this class to be a JPanel, not a JFrame.
+
 	private Dataset dataset;
 	private int[] dims;
 	private AxisLabel[] dimLabels;

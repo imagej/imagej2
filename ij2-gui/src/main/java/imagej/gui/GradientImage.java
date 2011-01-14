@@ -1,5 +1,7 @@
 package imagej.gui;
 
+import imagej.AxisLabel;
+import imagej.MetaData;
 import imagej.data.UnsignedByteType;
 import imagej.dataset.Dataset;
 import imagej.dataset.DatasetFactory;
@@ -36,6 +38,10 @@ public class GradientImage implements IPlugin {
 		final int[] dims = {width, height};
 		dataset = datasetFactory.createDataset(new UnsignedByteType(), dims);
 		dataset.setData(data);
+		final MetaData metadata = new MetaData();
+		metadata.setAxisLabels(new AxisLabel[] {AxisLabel.X, AxisLabel.Y});
+		metadata.setLabel("Gradient Image");
+		dataset.setMetaData(metadata);
   }
 
 }
