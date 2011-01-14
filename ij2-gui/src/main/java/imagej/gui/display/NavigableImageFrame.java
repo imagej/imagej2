@@ -60,7 +60,7 @@ public class NavigableImageFrame extends JFrame {
 
 		// extract width and height
 		xIndex = yIndex = -1;
-		for (int i = 0; i < dims.length; i++) {
+		for (int i = 0; i < dimLabels.length; i++) {
 			if (dimLabels[i] == AxisLabel.X) xIndex = i;
 			if (dimLabels[i] == AxisLabel.Y) yIndex = i;
 		}

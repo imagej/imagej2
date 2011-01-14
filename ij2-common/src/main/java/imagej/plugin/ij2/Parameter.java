@@ -9,60 +9,35 @@ import java.lang.annotation.Target;
  * @author Johannes Schindelin johannes.schindelin at imagejdev.org
  * @author Grant Harris gharris at mbl.edu
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Parameter {
-    // attributes...
-    /**
-     * @return  label to display in input widget
-     */
-    String label() default "";   
-    
-    /**
-     * number of digits to right of decimal point
-     * @return
-     */
-    int digits() default 2;
 
-    /**
-     * width of field in characters
-     * @return
-     */
-    int columns() default 6;
-    
-    /**
-     * @return a string displayed to the right of the field
-     */
-    String units() default "";
-    
-    /**
-     * @return widget to use for input
-     */
-    String widget() default "";
-    
-    /**
-     * @return is this parameter required (i.e. no default
-     */
-    boolean required() default false;
+	/** Defines if the parameter is an output. */
+	boolean output() default false;
 
-    /**
-     * Defines a key to use for saving the value to Prefs...
-     */
-    String persist() default "";
-    
-    /**
-     * Defines the list of possible values for constrained parameter
-     */
-    String[] choices() default {""};
-    
-    /**
-     * Defines if the Parameter is an output
-     */
-    boolean output() default false;
+	/** @return label to display in input widget */
+	String label() default "";
+
+	/** @return whether the parameter is required (i.e., no default) */
+	boolean required() default false;
+
+	/** Defines a key to use for saving the value persistently. */
+	String persist() default "";
+
+	/** @return minimum allowed value (numeric parameters only) */
+	String min() default "";
+
+	/** @return maximum allowed value (numeric parameters only) */
+	String max() default "";
+
+	/** @return step size to use (numeric parameters only) */
+	String stepSize() default "";
+
+	/** @return width of field in characters (text field parameters only) */
+	int columns() default 6;
+
+	/** @return the list of possible values (multiple choice text fields only) */
+	String[] choices() default {};
+
 }
-
-/*
-How to set default value of parameter
-Persistence?
- */

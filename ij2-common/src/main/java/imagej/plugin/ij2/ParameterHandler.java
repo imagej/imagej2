@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Utility methods for working with {@link Parameter} annotations.
  *
  * @author Johannes Schindelin johannes.schindelin at gmx.de
  * @author Grant Harris gharris at mbl.edu
@@ -18,6 +19,10 @@ public final class ParameterHandler {
 
 	private ParameterHandler() {
 		// forbid instantiation of utility class
+	}
+
+	public static Parameter getParameter(Field field) {
+		return field.getAnnotation(Parameter.class);
 	}
 
 	public static Iterable<Field> getInputParameters(IPlugin plugin) {
@@ -100,18 +105,21 @@ public final class ParameterHandler {
 
 	protected final static ParameterFilter all = new ParameterFilter() {
 
+		@Override
 		public boolean matches(Parameter parameter) {
 			return true;
 		}
 	};
 
 	protected final static ParameterFilter inputs = new ParameterFilter() {
+		@Override
 		public boolean matches(Parameter parameter) {
 			return !parameter.output();
 		}
 	};
 
 	protected final static ParameterFilter outputs = new ParameterFilter() {
+		@Override
 		public boolean matches(Parameter parameter) {
 			return parameter.output();
 		}
@@ -133,6 +141,7 @@ public final class ParameterHandler {
 			this(plugin.getClass().getDeclaredFields(), filter);
 		}
 
+		@Override
 		public Iterator<Field> iterator() {
 			return new ParameterIterator(fields, filter);
 		}
@@ -159,16 +168,19 @@ public final class ParameterHandler {
 			}
 		}
 
+		@Override
 		public boolean hasNext() {
 			return counter < fields.length;
 		}
 
+		@Override
 		public Field next() {
 			Field result = fields[counter];
 			findNext();
 			return result;
 		}
 
+		@Override
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
