@@ -317,6 +317,50 @@ public class DatasetProcessor extends ImageProcessor
                         tracker.update();
                     }
                     break;
+                case MAX:
+        			for (int x=roiX; x<xEnd; x++,p++) {
+                        if (x<width-1) { p3++; p6++; p9++; }
+        				v1 = v2; v2 = v3;
+        				v3 = accessor.getReal(p3);
+        				v4 = v5; v5 = v6;
+        				v6 = accessor.getReal(p6);
+        				v7 = v8; v8 = v9;
+        				v9 = accessor.getReal(p9);
+        				value = v1;
+        				if (v2 > value) value = v2;
+        				if (v3 > value) value = v3;
+        				if (v4 > value) value = v4;
+        				if (v5 > value) value = v5;
+        				if (v6 > value) value = v6;
+        				if (v7 > value) value = v7;
+        				if (v8 > value) value = v8;
+        				if (v9 > value) value = v9;
+                        setd(p, value);
+                        tracker.update();
+                    }
+                	break;
+                case MIN:
+        			for (int x=roiX; x<xEnd; x++,p++) {
+                        if (x<width-1) { p3++; p6++; p9++; }
+        				v1 = v2; v2 = v3;
+        				v3 = accessor.getReal(p3);
+        				v4 = v5; v5 = v6;
+        				v6 = accessor.getReal(p6);
+        				v7 = v8; v8 = v9;
+        				v9 = accessor.getReal(p9);
+        				value = v1;
+        				if (v2 < value) value = v2;
+        				if (v3 < value) value = v3;
+        				if (v4 < value) value = v4;
+        				if (v5 < value) value = v5;
+        				if (v6 < value) value = v6;
+        				if (v7 < value) value = v7;
+        				if (v8 < value) value = v8;
+        				if (v9 < value) value = v9;
+                        setd(p, value);
+                        tracker.update();
+                    }
+                	break;
 			}
     	}
 		
@@ -326,9 +370,6 @@ public class DatasetProcessor extends ImageProcessor
 	/** find the median value of a list of exactly 9 values. adapted from ByteProcessor::findMedian() */
 	private double find5thOf9(double[] values)
 	{
-		if (values.length != 9)
-			throw new IllegalArgumentException("find5thOf9(): input array length length must be 9");
-
 		//Finds the 5th largest of 9 values
 		for (int i = 0; i < 4; i++) {
 			double max = 0;
@@ -998,8 +1039,13 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void dilate()
 	{
-		// IJ1 - only supported with ByteProcessor and then needs binary image. There exist general erode/dilate algorithms. implement later
-		throw new UnsupportedOperationException("not yet implemented");
+		if (this.isFloat)
+			return;
+		
+		if (isInvertedLut())
+			filter(MAX);
+		else
+			filter(MIN);
 	}
 
 	/** set the pixel at x,y to the fill/foreground value. if x,y outside clip region does nothing. */
@@ -1063,8 +1109,13 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void erode()
 	{
-		// IJ1 - only supported with ByteProcessor and then needs binary image. There exist general erode/dilate algorithms. implement later
-		throw new UnsupportedOperationException("not yet implemented");
+		if (this.isFloat)
+			return;
+		
+		if (isInvertedLut())
+			filter(MIN);
+		else
+			filter(MAX);
 	}
 
 	/** Performs a exponential transform on the image or ROI. */
