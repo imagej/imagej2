@@ -1039,6 +1039,8 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void dilate()
 	{
+		// TODO - IJ1 only did this for unsigned byte type - now extending to all integral types
+
 		if (this.isFloat)
 			return;
 		
@@ -1109,6 +1111,8 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void erode()
 	{
+		// TODO - IJ1 only did this for unsigned byte type - now extending to all integral types
+
 		if (this.isFloat)
 			return;
 		
