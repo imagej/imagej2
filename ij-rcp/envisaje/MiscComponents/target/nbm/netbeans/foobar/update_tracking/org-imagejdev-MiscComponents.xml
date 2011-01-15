@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.MiscComponents">
-    <module_version install_time="1294880598231" last="true" origin="installer" specification_version="1.0">
-        <file crc="648343859" name="config/Modules/org-imagejdev-MiscComponents.xml"/>
-        <file crc="1231438874" name="modules/org-imagejdev-MiscComponents.jar"/>
-        <file crc="952428993" name="update_tracking/org-imagejdev-MiscComponents.xml"/>
-    </module_version>
-</module>

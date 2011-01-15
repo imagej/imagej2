@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Install: org/imagejdev/pluginloader/Installer.class
-OpenIDE-Module-Localizing-Bundle: org/imagejdev/pluginloader/Bundle.properties
-OpenIDE-Module-Layer: org/imagejdev/pluginloader/layer.xml
-OpenIDE-Module-Requires: org.openide.windows.WindowManager

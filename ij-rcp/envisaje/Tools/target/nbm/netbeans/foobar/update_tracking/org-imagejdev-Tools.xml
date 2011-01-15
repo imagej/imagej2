@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.Tools">
-    <module_version install_time="1294880601372" last="true" origin="installer" specification_version="1.0">
-        <file crc="92319295" name="config/Modules/org-imagejdev-Tools.xml"/>
-        <file crc="52410000" name="modules/org-imagejdev-Tools.jar"/>
-        <file crc="649457518" name="update_tracking/org-imagejdev-Tools.xml"/>
-    </module_version>
-</module>

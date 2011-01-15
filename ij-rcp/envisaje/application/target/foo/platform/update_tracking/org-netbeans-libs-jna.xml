@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.netbeans.libs.jna/1">
-    <module_version install_time="1294861588200" last="true" origin="installer" specification_version="1.7.2">
-        <file crc="1637808577" name="config/Modules/org-netbeans-libs-jna.xml"/>
-        <file crc="851042957" name="modules/ext/jna-3.0.9.jar"/>
-        <file crc="4092312227" name="modules/org-netbeans-libs-jna.jar"/>
-    </module_version>
-</module>
