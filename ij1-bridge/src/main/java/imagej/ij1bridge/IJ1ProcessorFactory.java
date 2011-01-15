@@ -6,22 +6,21 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.data.Type;
 import imagej.dataset.Dataset;
-import imagej.ij1bridge.process.DatasetProcessor;
 
-public class DatasetIJ1ProcessorFactory implements ProcessorFactory
+public class IJ1ProcessorFactory implements ProcessorFactory
 {
 	private Dataset dataset;
-	private boolean strictlyCompatible;
+	private ProcessorFactory alternateFactory;
 	
-	public DatasetIJ1ProcessorFactory(Dataset dataset, boolean strictlyCompatible)
+	public IJ1ProcessorFactory(Dataset dataset, ProcessorFactory alternatefactory)
 	{
 		this.dataset = dataset;
-		this.strictlyCompatible = strictlyCompatible;
+		this.alternateFactory = alternatefactory;
 	}
 	
 	@Override
 	public ImageProcessor makeProcessor(int[] planePos)
-	{
+	{		
 		Type type = this.dataset.getType();
 		
 		Dataset subset = this.dataset.getSubset(planePos);
@@ -48,13 +47,12 @@ public class DatasetIJ1ProcessorFactory implements ProcessorFactory
 		{
 			return new FloatProcessor(dimensions[0], dimensions[1], (float[])plane, null);
 		}
-		else if (!strictlyCompatible)
+		else if (this.alternateFactory != null)
 		{
-			return new DatasetProcessor(subset);
+			return this.alternateFactory.makeProcessor(planePos);
 		}
 		
-		throw new IllegalArgumentException("cannot find satisfactory processor type for data type "+type.getName()+
-				" (require IJ1 processors only = "+this.strictlyCompatible+")");	
+		throw new IllegalArgumentException("cannot find satisfactory processor type for data type "+type.getName()+")");
 	}
 
 }

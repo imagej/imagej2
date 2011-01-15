@@ -5,7 +5,8 @@ import ij.io.FileInfo;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.ij1bridge.BridgeStack;
-import imagej.ij1bridge.ImgLibIJ1ProcessorFactory;
+import imagej.ij1bridge.IJ1ProcessorFactory;
+import imagej.ij1bridge.ImgLibProcessorFactory;
 import imagej.ij1bridge.ProcessorFactory;
 import imagej.imglib.TypeManager;
 import imagej.imglib.dataset.LegacyImgLibDataset;
@@ -143,7 +144,9 @@ public class ImageUtils
 
 		LegacyImgLibDataset dataset = new LegacyImgLibDataset(img);
 		
-		ProcessorFactory factory = new ImgLibIJ1ProcessorFactory(dataset, false);
+		ProcessorFactory imglibFactory = new ImgLibProcessorFactory(img);
+		
+		ProcessorFactory factory = new IJ1ProcessorFactory(dataset, imglibFactory);
 		
 		BridgeStack stack = new BridgeStack(dataset, factory);
 		
