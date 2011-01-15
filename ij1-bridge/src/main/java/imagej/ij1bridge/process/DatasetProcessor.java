@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
+import java.util.Arrays;
 import java.util.Random;
 
 import ij.Prefs;
@@ -312,7 +313,7 @@ public class DatasetProcessor extends ImageProcessor
         				values[0] = v1;  values[1] = v2;  values[2] = v3;
         				values[3] = v4;  values[4] = v5;  values[5] = v6;
         				values[6] = v7;  values[7] = v8;  values[8] = v9;
-        				value = find5thOf9(values);
+        				value = medianOf9(values);
                         setd(p, value);
                         tracker.update();
                     }
@@ -367,25 +368,11 @@ public class DatasetProcessor extends ImageProcessor
 		tracker.done();
     }
 
-	/** find the median value of a list of exactly 9 values. adapted from ByteProcessor::findMedian() */
-	private double find5thOf9(double[] values)
+	/** find the median value of a list of exactly 9 values. */
+	private double medianOf9(double[] values)
 	{
-		//Finds the 5th largest of 9 values
-		for (int i = 0; i < 4; i++) {
-			double max = 0;
-			int mj = 0;
-			for (int j = 0; j < 9; j++)
-				if (values[j] > max) {
-					max = values[j];
-					mj = j;
-				}
-			values[mj] = 0;
-		}
-		double max = 0;
-		for (int j = 0; j < 9; j++)
-			if (values[j] > max)
-				max = values[j];
-		return max;
+		Arrays.sort(values);
+		return values[4];
 	}
     
 	/** find the minimum and maximum values present in this plane of the image data */
