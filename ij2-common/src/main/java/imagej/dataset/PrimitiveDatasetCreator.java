@@ -3,6 +3,7 @@ package imagej.dataset;
 import java.lang.reflect.Array;
 
 import imagej.Dimensions;
+import imagej.data.BooleanArrayAccessor;
 import imagej.data.DataAccessor;
 import imagej.data.Type;
 import imagej.data.Types;
@@ -60,6 +61,10 @@ public class PrimitiveDatasetCreator
 		
 		DataAccessor accessor = dataType.allocateArrayAccessor(arrayOfData);
 		
+		// special case hack
+		if (arrayOfData instanceof boolean[])
+			accessor = new BooleanArrayAccessor(arrayOfData);
+		
 		int i = 0;
 		while (Index.isValid(index, origin, span))
 		{
@@ -81,7 +86,11 @@ public class PrimitiveDatasetCreator
 	{
 		Type dataType = null;
 		
-		if (arrayOfData instanceof byte[])
+		if (arrayOfData instanceof boolean[])
+		{
+			dataType = Types.findType("1-bit unsigned)");
+		}
+		else if (arrayOfData instanceof byte[])
 		{
 			if (unsigned)
 				dataType = Types.findType("8-bit unsigned)");
@@ -106,18 +115,15 @@ public class PrimitiveDatasetCreator
 		{
 			dataType = Types.findType("32-bit float)");
 		}
-		else if (arrayOfData instanceof double[])
-		{
-			dataType = Types.findType("64-bit float)");
-		}
 		else if (arrayOfData instanceof long[])
 		{
 			if (!unsigned)
 				dataType = Types.findType("64-bit signed)");
 		}
-
-		// TODO
-		// it would be nice to support boolean[] but DataAccessor for 1-bit type handles an int[]
+		else if (arrayOfData instanceof double[])
+		{
+			dataType = Types.findType("64-bit float)");
+		}
 		
 		return dataType;
 	}
