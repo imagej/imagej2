@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.netbeans.core.netigso">
-    <module_version install_time="1294861587676" last="true" origin="installer" specification_version="1.4.2">
-        <file crc="3723901005" name="config/Modules/org-netbeans-core-netigso.xml"/>
-        <file crc="1737919077" name="modules/org-netbeans-core-netigso.jar"/>
-    </module_version>
-</module>

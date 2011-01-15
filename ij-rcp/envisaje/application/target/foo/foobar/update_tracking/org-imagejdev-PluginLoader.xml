@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.PluginLoader">
-    <module_version install_time="1294861591296" last="true" origin="installer" specification_version="1.0">
-        <file crc="65245536" name="config/Modules/org-imagejdev-PluginLoader.xml"/>
-        <file crc="1303168159" name="modules/org-imagejdev-PluginLoader.jar"/>
-    </module_version>
-</module>

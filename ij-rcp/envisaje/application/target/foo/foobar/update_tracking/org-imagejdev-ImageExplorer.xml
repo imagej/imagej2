@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.ImageExplorer">
-    <module_version install_time="1294880604104" last="true" origin="installer" specification_version="1.0">
-        <file crc="3296259828" name="config/Modules/org-imagejdev-ImageExplorer.xml"/>
-        <file crc="516148678" name="modules/org-imagejdev-ImageExplorer.jar"/>
-        <file crc="4139993781" name="update_tracking/org-imagejdev-ImageExplorer.xml"/>
-    </module_version>
-</module>

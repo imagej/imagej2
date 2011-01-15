@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.ColorPicker">
-    <module_version install_time="1294880604369" last="true" origin="installer" specification_version="1.0">
-        <file crc="329577392" name="config/Modules/org-imagejdev-ColorPicker.xml"/>
-        <file crc="3535747324" name="modules/org-imagejdev-ColorPicker.jar"/>
-        <file crc="1095726525" name="update_tracking/org-imagejdev-ColorPicker.xml"/>
-    </module_version>
-</module>

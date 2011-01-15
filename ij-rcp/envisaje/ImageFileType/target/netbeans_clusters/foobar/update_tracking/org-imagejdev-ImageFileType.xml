@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.ImageFileType">
-    <module_version install_time="1291224506360" last="true" origin="installer" specification_version="1.0">
-        <file crc="443098943" name="config/Modules/org-imagejdev-ImageFileType.xml"/>
-        <file crc="2297527590" name="modules/org-imagejdev-ImageFileType.jar"/>
-    </module_version>
-</module>

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="slf4j.log4j12">
-    <module_version install_time="1294861651236" last="true" origin="installer" specification_version="1.5.10">
-        <file crc="1079275012" name="config/Modules/slf4j-log4j12.xml"/>
-        <file crc="1915784965" name="modules/slf4j-log4j12.xml"/>
-    </module_version>
-</module>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.EffectsUI">
-    <module_version install_time="1294880604569" last="true" origin="installer" specification_version="1.0">
-        <file crc="2006251886" name="config/Modules/org-imagejdev-EffectsUI.xml"/>
-        <file crc="2962445352" name="modules/org-imagejdev-EffectsUI.jar"/>
-        <file crc="177264097" name="update_tracking/org-imagejdev-EffectsUI.xml"/>
-    </module_version>
-</module>

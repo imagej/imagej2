@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<tc-ref version="2.2">
-    <module name="org.netbeans.core.ui/1" spec="1.2" />
-    <tc-id id="properties" />
-    <state opened="false" />
-</tc-ref>

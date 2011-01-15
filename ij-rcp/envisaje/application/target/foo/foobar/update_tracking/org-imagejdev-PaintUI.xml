@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.imagejdev.PaintUI">
-    <module_version install_time="1294880604131" last="true" origin="installer" specification_version="1.0">
-        <file crc="1760121766" name="config/Modules/org-imagejdev-PaintUI.xml"/>
-        <file crc="3379943687" name="modules/ext/swing-layout-1.0.3.jar"/>
-        <file crc="1284360999" name="modules/org-imagejdev-PaintUI.jar"/>
-        <file crc="4159362647" name="update_tracking/org-imagejdev-PaintUI.xml"/>
-    </module_version>
-</module>

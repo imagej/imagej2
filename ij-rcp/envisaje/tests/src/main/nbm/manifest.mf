@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: org/imagejdev/tests/Bundle.properties
-OpenIDE-Module-Layer: org/imagejdev/tests/layer.xml
