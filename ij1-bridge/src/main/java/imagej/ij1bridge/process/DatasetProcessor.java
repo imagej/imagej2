@@ -215,6 +215,8 @@ public class DatasetProcessor extends ImageProcessor
         double k7=0, k8=0, k9=0;
         double scale = 0;
 
+        double[] values = new double[9];
+        
         if (type==CONVOLVE)
         {
             k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
@@ -298,12 +300,53 @@ public class DatasetProcessor extends ImageProcessor
                     tracker.update();
                 }
                 break;
+                case MEDIAN_FILTER:
+        			for (int x=roiX; x<xEnd; x++,p++) {
+                        if (x<width-1) { p3++; p6++; p9++; }
+        				v1 = v2; v2 = v3;
+        				v3 = accessor.getReal(p3);
+        				v4 = v5; v5 = v6;
+        				v6 = accessor.getReal(p6);
+        				v7 = v8; v8 = v9;
+        				v9 = accessor.getReal(p9);
+        				values[0] = v1;  values[1] = v2;  values[2] = v3;
+        				values[3] = v4;  values[4] = v5;  values[5] = v6;
+        				values[6] = v7;  values[7] = v8;  values[8] = v9;
+        				value = find5thOf9(values);
+                        setd(p, value);
+                        tracker.update();
+                    }
+                    break;
 			}
     	}
 		
 		tracker.done();
     }
 
+	/** find the median value of a list of exactly 9 values. adapted from ByteProcessor::findMedian() */
+	private double find5thOf9(double[] values)
+	{
+		if (values.length != 9)
+			throw new IllegalArgumentException("find5thOf9(): input array length length must be 9");
+
+		//Finds the 5th largest of 9 values
+		for (int i = 0; i < 4; i++) {
+			double max = 0;
+			int mj = 0;
+			for (int j = 0; j < 9; j++)
+				if (values[j] > max) {
+					max = values[j];
+					mj = j;
+				}
+			values[mj] = 0;
+		}
+		double max = 0;
+		for (int j = 0; j < 9; j++)
+			if (values[j] > max)
+				max = values[j];
+		return max;
+	}
+    
 	/** find the minimum and maximum values present in this plane of the image data */
 	private void findMinAndMax()
 	{
@@ -1629,8 +1672,8 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void medianFilter()
 	{
-		// IJ1 - only supported with ByteProcessor. We could do a general case median filter here. implement later
-		throw new UnsupportedOperationException("not yet implemented");
+		// TODO - IJ1 supported only for ByteProcessor. For now we've extended to all types
+		filter3x3(MEDIAN_FILTER, null);
 	}
 
 	/** Pixels less than 'value' are set to 'value'. */
