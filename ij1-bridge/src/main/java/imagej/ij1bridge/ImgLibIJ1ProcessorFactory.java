@@ -21,13 +21,13 @@ import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.imglib.TypeManager;
 import imagej.imglib.dataset.LegacyImgLibDataset;
 
-public class IJ1ProcessorFactory implements ProcessorFactory
+public class ImgLibIJ1ProcessorFactory implements ProcessorFactory
 {
 	private LegacyImgLibDataset dataset;
 	private boolean strictlyCompatible;
 	private RealType<?> realType;
 
-	public IJ1ProcessorFactory(LegacyImgLibDataset dataset, boolean strictlyCompatible)
+	public ImgLibIJ1ProcessorFactory(LegacyImgLibDataset dataset, boolean strictlyCompatible)
 	{
 		this.dataset = dataset;
 		this.strictlyCompatible = strictlyCompatible;
