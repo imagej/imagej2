@@ -1035,7 +1035,7 @@ public class DatasetProcessor extends ImageProcessor
 		return new DatasetProcessor(newDataset);
 	}
 
-	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
+	/** does a filter operation vs. min or max as appropriate. applies to integral data only.*/
 	@Override
 	public void dilate()
 	{
@@ -1107,7 +1107,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
-	/** does a filter operation vs. min or max as appropriate. applies to UnsignedByte data only.*/
+	/** does a filter operation vs. min or max as appropriate. applies to integral data only.*/
 	@Override
 	public void erode()
 	{
@@ -1723,11 +1723,15 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
-	/** run the MEDIAN_FILTER on current ROI area of current plane data. only applies to UnsignedByte data */
+	/** run the MEDIAN_FILTER on current ROI area of current plane data. only applies to integral data */
 	@Override
 	public void medianFilter()
 	{
-		// TODO - IJ1 supported only for ByteProcessor. For now we've extended to all types
+		// TODO - IJ1 supported only for ByteProcessor. For now we've extended to all integral types
+		
+		if (this.isFloat)
+			return;
+		
 		filter3x3(MEDIAN_FILTER, null);
 	}
 
