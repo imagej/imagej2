@@ -3,12 +3,14 @@ package imagej.ij1bridge.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
+import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.MenuShortcut;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -28,55 +30,65 @@ public class Ij1PluginFinder implements PluginFinder {
 		final ImageJ ij = IJ.getInstance();
 		if (ij == null) return;
 
-		final Map<String, List<String>> menuTable = parseMenus(ij);
+		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
-			final String label = key.toString();
 			final String ij1PluginString = commands.get(key).toString();
 			final String pluginClass = parsePluginClass(ij1PluginString);
-			final List<String> menuPath = menuTable.get(label);
+			final List<MenuEntry> menuPath = menuTable.get(key);
 			final String arg = parseArg(ij1PluginString);
 			final PluginEntry pluginEntry =
-				new PluginEntry(pluginClass, menuPath, label, arg);
+				new PluginEntry(pluginClass, menuPath, arg);
 			plugins.add(pluginEntry);
 		}
 	}
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */
-	private Map<String, List<String>> parseMenus(ImageJ ij) {
-		final Map<String, List<String>> menuTable =
-			new HashMap<String, List<String>>();
+	private Map<String, List<MenuEntry>> parseMenus(ImageJ ij) {
+		final Map<String, List<MenuEntry>> menuTable =
+			new HashMap<String, List<MenuEntry>>();
 		final MenuBar menubar = ij.getMenuBar();
 		final int menuCount = menubar.getMenuCount();
 		for (int i = 0; i < menuCount; i++) {
 			final Menu menu = menubar.getMenu(i);
-			parseMenu(menu, new ArrayList<String>(), menuTable);
+			parseMenu(menu, i, new ArrayList<MenuEntry>(), menuTable);
 		}
 		return menuTable;
 	}
 
-	private void parseMenu(final Menu menu,
-		final ArrayList<String> path, final Map<String, List<String>> menuTable)
+	private void parseMenu(final MenuItem menuItem, final int pos,
+		final ArrayList<MenuEntry> path,
+		final Map<String, List<MenuEntry>> menuTable)
 	{
-		final String label = menu.getLabel();
-		path.add(label);
-		final int itemCount = menu.getItemCount();
-		for (int i = 0; i < itemCount; i++) {
-			final MenuItem item = menu.getItem(i);
-			if (item instanceof Menu) {
-				final Menu subMenu = (Menu) item;
-				parseMenu(subMenu, copyList(path), menuTable);
+		// build menu entry
+		final String name = menuItem.getLabel();
+		final double weight = pos;
+		final MenuEntry entry = new MenuEntry(name, weight);
+		final MenuShortcut shortcut = menuItem.getShortcut();
+		if (shortcut != null) {
+			final String accelerator = shortcut.toString();
+			entry.setAccelerator(accelerator);
+		}
+		path.add(entry);
+
+		if (menuItem instanceof Menu) {
+			// non-leaf; recursively process child menu items
+			final Menu menu = (Menu) menuItem;
+			final int itemCount = menu.getItemCount();
+			for (int i = 0; i < itemCount; i++) {
+				final MenuItem item = menu.getItem(i);
+				parseMenu(item, i, copyList(path), menuTable);
 			}
-			else {
-				// add leaf item to table
-				menuTable.put(item.getLabel(), path);
-			}
+		}
+		else {
+			// leaf; add menu item to table
+			menuTable.put(menuItem.getLabel(), path);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> copyList(final ArrayList<String> list) {
-		return (ArrayList<String>) list.clone();
+	private ArrayList<MenuEntry> copyList(final ArrayList<MenuEntry> list) {
+		return (ArrayList<MenuEntry>) list.clone();
 	}
 
 	private String parsePluginClass(final String ij1PluginString) {
