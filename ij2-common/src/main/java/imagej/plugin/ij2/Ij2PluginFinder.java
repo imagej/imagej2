@@ -1,6 +1,7 @@
 package imagej.plugin.ij2;
 
 import imagej.Log;
+import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
 
@@ -21,37 +22,46 @@ public class Ij2PluginFinder implements PluginFinder {
 			Index.load(Plugin.class, IPlugin.class))
 		{
 			final String pluginClass = item.className();
-			final List<String> menuPath = new ArrayList<String>();
+			final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
 
 			// parse menu path from annotations
 			final Menu[] menu = item.annotation().menu();
 			if (menu.length > 0) {
-				for (Menu m : menu) menuPath.add(m.label());
+				parseMenuPath(menuPath, menu);
 			}
 			else {
 				// parse menuPath attribute
-				final String[] menuPathTokens = item.annotation().menuPath().split(">");
-				for (String token : menuPathTokens) menuPath.add(token);
-			}
-
-			// TEMP - use last menu element for label
-			final int lastIndex = menuPath.size() - 1;
-			final String label;
-			if (lastIndex < 0) {
-				label = "";
-			}
-			else {
-				label = menuPath.get(lastIndex);
-				menuPath.remove(lastIndex);
+				final String path = item.annotation().menuPath();
+				parseMenuPath(menuPath, path);
 			}
 
 			final String arg = "";
 			final PluginEntry pluginEntry =
-				new PluginEntry(pluginClass, menuPath, label, arg);
+				new PluginEntry(pluginClass, menuPath, arg);
 			plugins.add(pluginEntry);
 
 			Log.debug("Loaded " + pluginEntry);
 		}
+	}
+
+	private void parseMenuPath(final List<MenuEntry> menuPath,
+		final Menu[] menu)
+	{
+		for (int i = 0; i < menu.length; i++) {
+			final String name = menu[i].label();
+			final double weight = menu[i].weight();
+			final char mnemonic = menu[i].mnemonic();
+			final String accelerator = menu[i].accelerator();
+			final String icon = menu[i].icon();				
+			menuPath.add(new MenuEntry(name, weight, mnemonic, accelerator, icon));
+		}
+	}
+
+	private void parseMenuPath(final List<MenuEntry> menuPath,
+		final String path)
+	{
+		final String[] menuPathTokens = path.split(">");
+		for (String token : menuPathTokens) menuPath.add(new MenuEntry(token));
 	}
 
 }
