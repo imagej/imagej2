@@ -1,12 +1,8 @@
 package imagej.dataset;
 
-import imagej.Dimensions;
 import imagej.data.Type;
-import imagej.function.NAryFunction;
-import imagej.iterator.SynchronizedIterator;
 import imagej.operation.RegionCopyOperation;
 import imagej.process.Index;
-import imagej.process.Span;
 
 public class DatasetDuplicator
 {
@@ -44,39 +40,5 @@ public class DatasetDuplicator
 		// newDataset.setMetaData(inputDataset.getMetaData().clone());  // something like this???
 		
 		return newDataset;
-	}
-	
-	
-	// *************** private interface ****************************************************
-	
-	private class CopyRightmostNaryFunction implements NAryFunction
-	{
-		private int numValues;
-		private boolean firstTime;
-		
-		public CopyRightmostNaryFunction(int numValues)
-		{
-			this.numValues = numValues;
-			this.firstTime = false;
-		}
-
-		
-		@Override
-		public int getValueCount()
-		{
-			return this.numValues;
-		}
-
-		@Override
-		public double compute(double[] inputs)
-		{
-			if (this.firstTime)
-			{
-				if (inputs.length != this.numValues)
-					throw new IllegalArgumentException("nary function not given correct number of inputs");
-			}
-			return inputs[this.numValues-1];
-		}
-		
 	}
 }
