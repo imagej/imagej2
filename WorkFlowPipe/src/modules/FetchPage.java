@@ -2,21 +2,11 @@ package modules;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import pipesapi.Module;
 import pipesentity.Attr;
@@ -25,19 +15,19 @@ import pipesentity.Connector;
 import pipesentity.Content;
 import pipesentity.Count;
 import pipesentity.Description;
+import pipesentity.Error;
 import pipesentity.ID;
 import pipesentity.Item;
+import pipesentity.Message;
 import pipesentity.Name;
 import pipesentity.Prop;
-import pipesentity.Response;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.Type;
 import pipesentity.UI;
-import util.DeepCopy;
 
 /**
- * Represents the module type "fetchpage"
+ * Represents simple, incomplete module type "fetchpage".  Does not translate relative domains for src resources such as images.
  * @author rick
  */
 public class FetchPage extends Module implements Serializable {
@@ -64,7 +54,7 @@ public class FetchPage extends Module implements Serializable {
 
 		fetchPage.tags = Tag.getTagsArray(tag);
 		
-		//This is simulated
+		//TODO this is to be replaced with the implementation
 		fetchPage.module = "Yahoo::RSS::FetchPage";
 		
 		return fetchPage;
@@ -77,37 +67,37 @@ public class FetchPage extends Module implements Serializable {
 		start();
 		
 		Conf urlConf = Conf.getConf( "URL", confs );
-		System.out.println("FetchPage urlConf is " + urlConf.getJSONObject() );
+		// System.out.println("FetchPage urlConf is " + urlConf.getJSONObject() );
 				
 		// get the url
 		String url = urlConf.getValue().getValue();
-		System.out.println("FetchPage conf value for URL conf is " + url );
+		// System.out.println("FetchPage conf value for URL conf is " + url );
 		
 		String s;
 		String contentString = "";
 		BufferedReader r = null;
+		
 		try {
 			r = new BufferedReader(new InputStreamReader(new URL("http://" + url).openStream()));
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// add the error 
+			this.errors.add( new Error( new Type( "warning" ), new Message( e.getMessage() ) ) );
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.errors.add( new Error( new Type( "warning" ), new Message( e.getMessage() ) ) );
 		}
+		
 	    try {
 			while ((s = r.readLine()) != null) {
 				contentString += s;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.errors.add( new Error( new Type( "warning" ), new Message( e.getMessage() ) ) );
 		}
 	    
 		// add the content to prop //TODO: there is likely a much easier way to do this...
 		this.props.add( new Prop( new Connector( "_OUTPUT", new Type("item"), new Attr( new Content( new Type("text"), new Count(1) ) ) ) ) );
 		
-		System.out.println( "FetchPage results " + contentString );
+		// System.out.println( "FetchPage results " + contentString );
 		
 		// add the items
 		this.items.add( new Item( "content", contentString ) );
@@ -123,63 +113,4 @@ public class FetchPage extends Module implements Serializable {
 		stop();	
 	}
 	
-	// To converts an InputStream to String 
-	private String convertStreamToString( InputStream inputStream ) 
-	{
-		// check input stream not null
-		if ( inputStream != null) 
-		{ 
-			
-			Writer writer = new StringWriter();
-			char[] buffer = new char[1024]; 
-			
-			try {
-					Reader reader = new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ));
-					int n; 
-					// while still reading into buffer
-					while ( (n = reader.read(buffer) ) != -1) 
-					{
-						// output to the stringwriter
-						writer.write(buffer, 0, n);
-					} 
-					
-					//return the results if fully read
-					return writer.toString();
-				} 
-			catch ( Exception e) 
-			{ 
-				this.addErrorWarning( e.getMessage() ); 
-			}
-			finally // close the steam return partial results
-				{
-					try {
-						inputStream.close();
-					} catch (IOException e) {
-						this.addErrorWarning( e.getMessage() );
-					} 
-				}
-		}
-		
-		return "";
-	}
-
-
-	private InputStream getInputStreamFromUrl( String url ) 
-	{
-		InputStream content = null;
-		try {
-			HttpGet httpGet = new HttpGet(url);
-			HttpClient httpclient = new DefaultHttpClient();
-			
-			// Execute HTTP Get Request
-			HttpResponse response = httpclient.execute(httpGet);
-			content = response.getEntity().getContent();
-		} 
-		catch ( Exception e ) 
-		{
-			this.addErrorWarning( e.getMessage() );
-		}
-		
-		return content;
-	}
 }

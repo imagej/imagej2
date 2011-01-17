@@ -2,6 +2,7 @@ package pipes;
 
 import java.util.HashMap;
 
+import modules.DisplayImage;
 import modules.FetchPage;
 import modules.Output;
 import pipesapi.Module;
@@ -26,6 +27,9 @@ public class ModuleGenerator {
 		//add the output module
 		moduleServiceHashMap.put( new Service( new Type("output") ), Output.getOutput() );
 
+		//add the output module
+		moduleServiceHashMap.put( new Service( new Type("displayimage") ), DisplayImage.getDisplayImage() );
+
 		return moduleServiceHashMap;
 	}
 	
@@ -34,6 +38,9 @@ public class ModuleGenerator {
 	{
 		if ( type.equalsIgnoreCase("fetchpage") )
 			return FetchPage.getFetchPage();
+		
+		if( type.equalsIgnoreCase("displayimage"))
+			return DisplayImage.getDisplayImage();
 		
 		return Output.getOutput();
 	}

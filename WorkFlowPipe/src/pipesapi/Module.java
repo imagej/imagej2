@@ -30,7 +30,7 @@ import pipesentity.UI;
 
 public abstract class Module {
 	
-	public abstract void go();
+	public abstract void go( );
 	
 	// the errors reported by the object
 	protected ArrayList<Error> errors = new ArrayList<Error>();
