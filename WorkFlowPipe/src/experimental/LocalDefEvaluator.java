@@ -3,6 +3,7 @@ package experimental;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,9 +11,6 @@ import pipes.ModuleGenerator;
 import pipes.Service;
 import pipesapi.Module;
 import pipesentity.Def;
-import pipesentity.Preview;
-import pipesentity.Response;
-
 public class LocalDefEvaluator {
 
 	public static JSONObject getPreview( Def def, HashMap<Service, Module> moduleHashMap )
@@ -25,7 +23,7 @@ public class LocalDefEvaluator {
 		System.out.println(" LocalDefEvaluator :: getPreview ... starting array list generation from def ");
 		
 		JSONArray modulesJSONArray = def.getModulesArray();
-		
+			
 		ArrayList<Module> moduleList = new ArrayList<Module>();
 
 		for (int i = 0; i < modulesJSONArray.length(); i++) 
@@ -38,13 +36,18 @@ public class LocalDefEvaluator {
 			// get the module
 			Module moduleCopy = ModuleGenerator.getModule( moduleType );
 			
-			System.out.println( "LocalDefEvaluator :: getPreview :: Getting the instance for type : " + moduleType );
+			// System.out.println( "LocalDefEvaluator :: getPreview :: Getting the instance for type : " + moduleType );
 
 			moduleCopy.assignInstanceValues( jsonInternal );
 			
 			//get the service
 			moduleList.add( moduleCopy );
 		}
+		
+		// Create the workflow from the pipes connection
+		//WorkFlow workFlow = LOCIWorkFlowUtils.getWorkFlow( def.getWires(), moduleList );
+		/*
+		
 		
 		//Create a preview response
 		Preview previewResponse = new Preview();
@@ -55,7 +58,7 @@ public class LocalDefEvaluator {
 			System.out.println( "LocalDefEvaluator :: getPreview :: Runnning module " + module.getType().getValue()  );	
 				
 			// module run
-			module.go();
+			module.go( );
 			
 			// add the errors
 			previewResponse.addErrors( module.getID(), module.getErrors() );
@@ -67,7 +70,9 @@ public class LocalDefEvaluator {
 			previewResponse.addStats( module.getResponse().getTitle(), module.getResponse().getJSON() );
 		}
 		
-		return previewResponse.getJSON();
+		return  previewResponse.getJSON(); */
+		
+		return new JSONObject();
 	}
 
 }

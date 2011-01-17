@@ -51,14 +51,15 @@ public class AjaxPipePreviewServletProvider extends HttpServlet {
 		System.out.println( "Servlet provider :: post evalute JSON is " + responseJSON );
 		
 		String output =  responseJSON.toString();
+		
 		// generate and send the response
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-cache");
 		response.getWriter().write( output );
 	}
 
-	protected void doGet( HttpServletRequest request,
-			HttpServletResponse response ) throws ServletException, IOException {
+	protected void doGet( HttpServletRequest request, HttpServletResponse response )
+	throws ServletException, IOException {
 		doPost( request, response );
 	}
 

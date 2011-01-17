@@ -1,8 +1,7 @@
 package modules;
 
 import java.io.Serializable;
-
-
+import java.util.ArrayList;
 
 import pipesapi.Module;
 import pipesentity.Description;
@@ -12,6 +11,7 @@ import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.Type;
 import pipesentity.UI;
+import pipesentity.Error;
 
 /**
  * Represents the module type "OUTPUT"
@@ -47,6 +47,10 @@ public class Output extends Module implements Serializable {
 
 	@Override
 	public void go() {
+		
+		//process input
+		
+		
 	}
 
 }
