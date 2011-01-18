@@ -3,6 +3,8 @@ package experimental;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import loci.workflow.Workflow;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,7 +14,7 @@ import pipes.Service;
 import pipesapi.Module;
 import pipesentity.Def;
 import pipesentity.Preview;
-import workflow.LayoutToWorkFlow;
+import util.LayoutToWorkFlow;
 public class LocalDefEvaluator {
 
 	static final boolean DEBUG = true;
@@ -33,7 +35,7 @@ public class LocalDefEvaluator {
 			String moduleType = jsonInternal.getString("type");
 			
 			// get the module
-			Module moduleCopy = ModuleGenerator.getModule( moduleType );
+			Module moduleCopy = ModuleGenerator.getModule( moduleType, moduleHashMap );
 			
 			// System.out.println( "LocalDefEvaluator :: getPreview :: Getting the instance for type : " + moduleType );
 
@@ -51,13 +53,13 @@ public class LocalDefEvaluator {
 		
 		
 		// Create the workflow from the pipes connection
-		//WorkFlow workFlow = LayoutToWorkFlow.getWorkFlow( def.getWires(), moduleList );
+		Workflow workFlow = LayoutToWorkFlow.getWorkFlow( def.getWires(), moduleList );
 		
 		
 		
 		//Create a preview response
 		Preview previewResponse = new Preview();
-		
+		/*
 		// evaluate the modules individually
 		for( Module module : moduleList )
 		{
@@ -74,7 +76,7 @@ public class LocalDefEvaluator {
 			
 			// add the stats
 			previewResponse.addStats( module.getResponse().getTitle(), module.getResponse().getJSON() );
-		}
+		} */
 		
 		return  previewResponse.getJSON(); 
 		

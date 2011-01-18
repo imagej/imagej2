@@ -13,13 +13,14 @@ import controller.PipesController;
 
 public class AjaxPipePreviewServletProvider extends HttpServlet {
 
+	private static final boolean DEBUG = false;
 	private static final long serialVersionUID = -1156366721753088035L;
 	private PipesController pipesController;
 	
 	public AjaxPipePreviewServletProvider( PipesController pipesController  ) 
 	{	
 		
-		System.out.println( "Servlet provider constructed");
+		if (DEBUG) System.out.println( "Servlet provider constructed");
 		//maintain a reference to the pipes controller
 		this.pipesController = pipesController;
 	}

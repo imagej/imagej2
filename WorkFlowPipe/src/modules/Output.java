@@ -28,7 +28,7 @@ public class Output extends Module implements Serializable {
 		
 		output.id = new ID("_OUTPUT");
 		
-		output.terminals.add( Terminal.getInputTerminal("rss") );
+		output.terminals.add( Terminal.getInputTerminal("rss","_INPUT") );
 
 		output.ui = new UI("");
 
@@ -45,7 +45,6 @@ public class Output extends Module implements Serializable {
 	}
 
 
-	@Override
 	public void go() {
 		
 		//process input

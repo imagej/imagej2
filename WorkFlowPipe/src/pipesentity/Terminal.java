@@ -9,11 +9,11 @@ public class Terminal {
 	
 	// is either "_INPUT" or "_OUTPUT"
 	private String directionValue; 
-
-	public static Terminal getInputTerminal( String terminalConnectorType )
+	// TODO fix the variable names to input/output type : "name": instance name
+	public static Terminal getInputTerminal( String terminalConnectorType, String connectorName )
 	{
 		Terminal terminal = new Terminal();
-		terminal.directionValue = "_INPUT";
+		terminal.directionValue = connectorName;
 		terminal.typeKey = "input";
 		
 		//assign type value
@@ -22,10 +22,10 @@ public class Terminal {
 		return terminal;
 	}
 	
-	public static Terminal getOutputTerminal ( String terminalConnectorType )
+	public static Terminal getOutputTerminal ( String terminalConnectorType, String connectorName )
 	{
 		Terminal terminal = new Terminal();
-		terminal.directionValue = "_OUTPUT";
+		terminal.directionValue = connectorName;
 		terminal.typeKey = "output";
 		
 		//assign type value

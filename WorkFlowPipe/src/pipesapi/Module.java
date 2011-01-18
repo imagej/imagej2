@@ -1,5 +1,6 @@
 package pipesapi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,9 +29,7 @@ import pipesentity.Terminal;
 import pipesentity.Type;
 import pipesentity.UI;
 
-public abstract class Module {
-	
-	public abstract void go( );
+public abstract class Module implements Serializable {
 	
 	// the errors reported by the object
 	protected ArrayList<Error> errors = new ArrayList<Error>();

@@ -31,7 +31,7 @@ public class DisplayImage extends Module implements Serializable {
 		
 		fetchPage.id = new ID("");
 
-		fetchPage.terminals.add( Terminal.getOutputTerminal("items") );
+		fetchPage.terminals.add( Terminal.getOutputTerminal("items","_OUTPUT") );
 
 		fetchPage.ui = new UI(
 			"\n\t\t<div class=\"horizontal\">\n\t\t\t<label>ImageName: </label><input name=\"ImageName\" " +
@@ -53,7 +53,6 @@ public class DisplayImage extends Module implements Serializable {
 		return fetchPage;
 	}
 
-	@Override
 	public void go() 
 	{		 
 		// call the start method
