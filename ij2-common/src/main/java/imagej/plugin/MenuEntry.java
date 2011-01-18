@@ -1,9 +1,11 @@
 package imagej.plugin;
 
+import imagej.plugin.ij2.Menu;
+
 public class MenuEntry {
 
 	private String name;
-	private double weight = Double.POSITIVE_INFINITY;
+	private double weight = Menu.DEFAULT_WEIGHT;
 	private char mnemonic;
 	private String accelerator;
 	private String icon;
@@ -65,6 +67,18 @@ public class MenuEntry {
 
 	public String getIcon() {
 		return icon;
+	}
+
+	/**
+	 * Updates any default properties of this menu entry
+	 * to match those of the given menu entry.
+	 */
+	public void assignProperties(MenuEntry entry) {
+		if (name == null) name = entry.getName();
+		if (weight == Menu.DEFAULT_WEIGHT) weight = entry.getWeight();
+		if (mnemonic == '\0') mnemonic = entry.getMnemonic();
+		if (accelerator == null) accelerator = entry.getAccelerator();
+		if (icon == null) icon = entry.getIcon();
 	}
 
 	@Override

@@ -40,20 +40,32 @@ public class PluginEntry {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append(pluginClass);
 		sb.append(" [");
-		sb.append(", arg = \"");
-		sb.append(arg);
-		sb.append("\"");
-		sb.append(", menu = ");
-		boolean first = true;
-		for (final MenuEntry menu : menuPath) {
-			if (first) first = false;
-			else sb.append(" > ");
-			sb.append(menu);
+		boolean firstField = true;
+
+		if (arg != null && !arg.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("arg = \"");
+			sb.append(arg);
+			sb.append("\"");
 		}
-		sb.append("]");
+		
+		if (menuPath != null && !menuPath.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("menu = ");
+			boolean firstMenu = true;
+			for (final MenuEntry menu : menuPath) {
+				if (firstMenu) firstMenu = false;
+				else sb.append(" > ");
+				sb.append(menu);
+			}
+			sb.append("]");
+		}
+
 		return sb.toString();
 	}
 

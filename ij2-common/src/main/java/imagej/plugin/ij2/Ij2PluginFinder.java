@@ -39,8 +39,7 @@ public class Ij2PluginFinder implements PluginFinder {
 			final PluginEntry pluginEntry =
 				new PluginEntry(pluginClass, menuPath, arg);
 			plugins.add(pluginEntry);
-
-			Log.debug("Loaded " + pluginEntry);
+			Log.debug("Found plugin: " + pluginEntry);
 		}
 	}
 
