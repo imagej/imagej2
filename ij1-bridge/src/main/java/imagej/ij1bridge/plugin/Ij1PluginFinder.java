@@ -3,6 +3,7 @@ package imagej.ij1bridge.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
+import imagej.Log;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginFinder;
@@ -11,11 +12,15 @@ import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.MenuShortcut;
+import java.awt.Toolkit;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.KeyStroke;
 
 import org.openide.util.lookup.ServiceProvider;
 
@@ -40,6 +45,7 @@ public class Ij1PluginFinder implements PluginFinder {
 			final PluginEntry pluginEntry =
 				new PluginEntry(pluginClass, menuPath, arg);
 			plugins.add(pluginEntry);
+			Log.debug("Found legacy plugin: " + pluginEntry);
 		}
 	}
 
@@ -66,7 +72,14 @@ public class Ij1PluginFinder implements PluginFinder {
 		final MenuEntry entry = new MenuEntry(name, weight);
 		final MenuShortcut shortcut = menuItem.getShortcut();
 		if (shortcut != null) {
-			final String accelerator = shortcut.toString();
+			final int keyCode = shortcut.getKey();
+			final int shortcutMask =
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+			final int shiftMask =
+				shortcut.usesShiftModifier() ? InputEvent.SHIFT_MASK : 0;
+			final int modifiers = shortcutMask | shiftMask;
+			final KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
+			final String accelerator = keyStroke.toString();
 			entry.setAccelerator(accelerator);
 		}
 		path.add(entry);

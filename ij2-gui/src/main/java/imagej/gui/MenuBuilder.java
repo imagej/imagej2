@@ -9,7 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -21,132 +25,172 @@ import javax.swing.KeyStroke;
 public class MenuBuilder {
 
 	public JMenuBar buildMenuBar(final List<PluginEntry> entries) {
-		return buildMenus(new JMenuBar(), entries);
-	}
-
-	public JMenuBar buildMenus(final JMenuBar menubar,
-		final List<PluginEntry> entries)
-	{
+		final ShadowMenu shadowMenu = new ShadowMenu();
 		for (final PluginEntry entry : entries) {
 			Log.debug("Analyzing plugin: " + entry);
-			final List<MenuEntry> menuPath = entry.getMenuPath();
-			if (menuPath == null || menuPath.size() <= 1) {
-				// skip plugins with no associated menu item
-				continue;
+			shadowMenu.addEntry(entry);
+		}
+		return shadowMenu.createMenuBar();
+	}
+
+	/** Helper class for generating sorted list of menus. */
+	private class ShadowMenu implements Comparable<ShadowMenu> {
+		private PluginEntry pluginEntry;
+		private int menuDepth;
+		private Map<String, ShadowMenu> children =
+			new HashMap<String, ShadowMenu>();
+
+		/** Constructor for root menu node. */
+		public ShadowMenu() {
+			this(null, -1);
+		}
+
+		private ShadowMenu(final PluginEntry pluginEntry, final int menuDepth) {
+			this.pluginEntry = pluginEntry;
+			this.menuDepth = menuDepth;
+		}
+
+		public void addEntry(final PluginEntry entry) {
+			addChild(entry, 0);
+		}
+
+		public JMenuBar createMenuBar() {
+			assert pluginEntry == null && menuDepth == -1;
+			final JMenuBar menuBar = new JMenuBar();
+
+			// create menu items and add to menu bar
+			final List<JMenuItem> childMenuItems = createChildMenuItems();
+			for (final JMenuItem childMenuItem : childMenuItems) {
+				if (childMenuItem instanceof JMenu) {
+					final JMenu childMenu = (JMenu) childMenuItem;
+					menuBar.add(childMenu);
+				}
+				else {
+					Log.warn("Unexpected leaf menu item: " + childMenuItem);
+				}
 			}
-			final JMenuItem menuItem = findMenuItem(menubar, menuPath);
-			linkAction(entry, menuItem);
+
+			return menuBar;
 		}
-		return menubar;
-	}
 
-	/**
-	 * Retrieves the menu item associated with the given menu path and label,
-	 * creating it if necessary.
-	 */
-	private JMenuItem findMenuItem(final JMenuBar menubar,
-		final List<MenuEntry> menuPath)
-	{
-		assert menuPath.size() > 1;
-		final MenuEntry topLevelEntry = menuPath.get(0);
+		private MenuEntry getMenuEntry() {
+			return pluginEntry.getMenuPath().get(menuDepth);
+		}
 
-		// dig down through menu structure
-		JMenu parent = findTopLevelMenu(menubar, topLevelEntry);
-		for (int i = 1; i < menuPath.size() - 1; i++) {
-			final MenuEntry entry = menuPath.get(i);
-			final JMenuItem item = findSubMenu(parent, entry);
-			if (!(item instanceof JMenu)) {
-				throw new IllegalArgumentException(
-					"Menu path has premature leaf: " + item.getText());
+		private ShadowMenu getChild(final MenuEntry menuEntry) {
+			return children.get(menuEntry.getName());
+		}
+
+		private void addChild(final PluginEntry entry, final int depth) {
+			// retrieve existing child
+			final MenuEntry menuEntry = entry.getMenuPath().get(depth);
+			final ShadowMenu existingChild = getChild(menuEntry);
+
+			final ShadowMenu childMenu;
+			if (existingChild == null) {
+				// create new child and add to table
+				final String menuName = menuEntry.getName();
+				final ShadowMenu newChild = new ShadowMenu(entry, depth);
+				children.put(menuName, newChild);
+				childMenu = newChild;
 			}
-			parent = (JMenu) item;
-		}
-
-		// obtain leaf item
-		final MenuEntry leafEntry = menuPath.get(menuPath.size() - 1);
-		return findLeafItem(parent, leafEntry);
-	}
-
-	/** Finds the menu described by the given entry, creating it if needed. */
-	private JMenu findTopLevelMenu(final JMenuBar menubar,
-		final MenuEntry entry)
-	{
-		final String name = entry.getName();
-		for (int i = 0; i < menubar.getMenuCount(); i++) {
-			final JMenu menu = menubar.getMenu(i);
-			if (menu.getText().equals(name)) return menu;
-		}
-		// menu does not exist; create it
-		final JMenu menu = new JMenu(name);
-		menu.setMnemonic(entry.getMnemonic());
-		final KeyStroke keyStroke = getKeyStroke(entry.getAccelerator());
-		if (keyStroke != null) menu.setAccelerator(keyStroke);
-		final Icon icon = getIcon(entry.getIcon());
-		if (icon != null) menu.setIcon(icon);
-		menubar.add(menu);
-		return menu;
-	}
-
-	/**
-	 * Finds the menu item described by the given entry,
-	 * creating it as a submenu if needed.
-	 */
-	private JMenuItem findSubMenu(final JMenu menu, final MenuEntry entry) {
-		return findMenuItem(menu, entry, true);
-	}
-
-	/**
-	 * Finds the menu item described by the given entry,
-	 * creating it as a leaf if needed.
-	 */
-	private JMenuItem findLeafItem(final JMenu menu, final MenuEntry leafEntry) {
-		return findMenuItem(menu, leafEntry, false);
-	}
-
-	/**
-	 * Finds the menu item described by the given entry, creating it if needed.
-	 */
-	private JMenuItem findMenuItem(final JMenu menu, final MenuEntry entry,
-		final boolean subMenu)
-	{
-		final String name = entry.getName();
-
-		for (int i = 0; i < menu.getItemCount(); i++) {
-			final JMenuItem item = menu.getItem(i);
-			if (item.getText().equals(name)) return item;
-		}
-		final JMenuItem menuItem;
-
-		// submenu/leaf item does not exist; create it
-		if (subMenu) menuItem = new JMenu(name);
-		else menuItem = new JMenuItem(name);
-		menu.add(menuItem);
-		return menuItem;
-	}
-
-	private KeyStroke getKeyStroke(final String accelerator) {
-		// TODO
-		return null;
-	}
-
-	private Icon getIcon(String icon) {
-		if (icon == null || icon.isEmpty()) return null;
-		try {
-			return new ImageIcon(new URL(icon));
-		}
-		catch (MalformedURLException e) {
-			Log.warn("No such icon: " + icon);
-			return null;
-		}
-	}
-
-	private void linkAction(final PluginEntry entry, final JMenuItem menuItem) {
-		menuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PluginUtils.runPlugin(entry);
+			else {
+				// fill in any missing menu properties of existing child
+				final MenuEntry childMenuEntry = existingChild.getMenuEntry();
+				childMenuEntry.assignProperties(menuEntry);
+				childMenu = existingChild;
 			}
-		});
+
+			// recursively add remaining child menus
+			if (depth + 1 < entry.getMenuPath().size()) {
+				childMenu.addChild(entry, depth + 1);
+			}
+		}
+
+		/**
+		 * Generates a list of menu items corresponding
+		 * to the child menu nodes, sorted by weight.
+		 */
+		private List<JMenuItem> createChildMenuItems() {
+			// generate list of ShadowMenu objects, sorted by weight
+			final List<ShadowMenu> childMenus =
+				new ArrayList<ShadowMenu>(children.values());
+			Collections.sort(childMenus);
+
+			// create JMenuItems corresponding to ShadowMenu objects
+			final List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+			for (final ShadowMenu childMenu : childMenus) {
+				final JMenuItem item = childMenu.createMenuItem();
+				menuItems.add(item);
+			}
+			return menuItems;
+		}
+
+		/** Generates a menu item corresponding to this menu node. */
+		private JMenuItem createMenuItem() {
+			final MenuEntry menuEntry = getMenuEntry();
+
+			final String name = menuEntry.getName();
+			final char mnemonic = menuEntry.getMnemonic();
+			final String accelerator = menuEntry.getAccelerator();
+			final KeyStroke keyStroke = toKeyStroke(accelerator);
+			final String iconPath = menuEntry.getIcon();
+			final Icon icon = loadIcon(iconPath);
+
+			final JMenuItem menuItem;
+			if (children.isEmpty()) {
+				// create leaf item
+				menuItem = new JMenuItem(name);
+				linkAction(pluginEntry, menuItem);
+			}
+			else {
+				// create menu and recursively add children
+				final JMenu menu = new JMenu(name);
+				final List<JMenuItem> childMenuItems = createChildMenuItems();
+				for (final JMenuItem childMenuItem : childMenuItems) {
+					menu.add(childMenuItem);
+				}
+				menuItem = menu;
+			}
+			if (mnemonic != '\0') menuItem.setMnemonic(mnemonic);
+			if (keyStroke != null) menuItem.setAccelerator(keyStroke);
+			if (icon != null) menuItem.setIcon(icon);
+
+			return menuItem;
+		}
+
+		@Override
+		public int compareTo(ShadowMenu c) {
+			final double w1 = getMenuEntry().getWeight();
+			final double w2 = c.getMenuEntry().getWeight();
+			if (w1 < w2) return -1;
+			if (w1 > w2) return 1;
+			return 0;
+		}
+
+		private KeyStroke toKeyStroke(final String accelerator) {
+			return KeyStroke.getKeyStroke(accelerator);
+		}
+
+		private Icon loadIcon(String icon) {
+			if (icon == null || icon.isEmpty()) return null;
+			try {
+				return new ImageIcon(new URL(icon));
+			}
+			catch (MalformedURLException e) {
+				Log.warn("No such icon: " + icon);
+				return null;
+			}
+		}
+
+		private void linkAction(final PluginEntry entry, final JMenuItem menuItem) {
+			menuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					PluginUtils.runPlugin(entry);
+				}
+			});
+		}
 	}
 
 }
