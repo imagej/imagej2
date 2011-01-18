@@ -11,16 +11,15 @@ import pipes.ModuleGenerator;
 import pipes.Service;
 import pipesapi.Module;
 import pipesentity.Def;
+import pipesentity.Preview;
+import workflow.LayoutToWorkFlow;
 public class LocalDefEvaluator {
 
+	static final boolean DEBUG = true;
+	
 	public static JSONObject getPreview( Def def, HashMap<Service, Module> moduleHashMap )
 	{	
-		
-		// TODO:use wires for ordering
-		// TODO:use modules connectors for input/outputs		
-		// TODO: extend checking and ordering logic
-		
-		System.out.println(" LocalDefEvaluator :: getPreview ... starting array list generation from def ");
+		if (DEBUG) System.out.println(" LocalDefEvaluator :: getPreview ... starting array list generation from def ");
 		
 		JSONArray modulesJSONArray = def.getModulesArray();
 			
@@ -44,9 +43,16 @@ public class LocalDefEvaluator {
 			moduleList.add( moduleCopy );
 		}
 		
+		// TODO:use wires for ordering
+		// TODO:use modules connectors for input/outputs		
+		// TODO: extend checking and ordering logic
+		
+		// Create a loci workflow from the module instances and wires
+		
+		
 		// Create the workflow from the pipes connection
-		//WorkFlow workFlow = LOCIWorkFlowUtils.getWorkFlow( def.getWires(), moduleList );
-		/*
+		//WorkFlow workFlow = LayoutToWorkFlow.getWorkFlow( def.getWires(), moduleList );
+		
 		
 		
 		//Create a preview response
@@ -70,9 +76,9 @@ public class LocalDefEvaluator {
 			previewResponse.addStats( module.getResponse().getTitle(), module.getResponse().getJSON() );
 		}
 		
-		return  previewResponse.getJSON(); */
+		return  previewResponse.getJSON(); 
 		
-		return new JSONObject();
+		//return new JSONObject();
 	}
 
 }
