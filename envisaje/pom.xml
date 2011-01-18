@@ -12,18 +12,18 @@
   </parent>
 
   <groupId>imagej</groupId>
-  <artifactId>ij-rcp</artifactId>
+  <artifactId>envisaje</artifactId>
   <version>2.0-SNAPSHOT</version>
 
-  <name>ImageJ2 RCP version</name>
-  <description>Experimental RCP version of ImageJ2.</description>
+  <name>ImageJ 2.0 GUI using NetBeans RCP</name>
+  <description>Experimental NetBeans RCP version of ImageJ2.</description>
   <url>http://imagejdev.org/</url>
   <inceptionYear>1997</inceptionYear>
 
   <licenses>
     <license>
       <name>BSD</name>
-      <url>http://dev.imagejdev.org/svn/imagej/trunk/ij-rcp/LICENSE.txt</url>
+      <url>http://dev.imagejdev.org/svn/imagej/trunk/envisaje/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -44,8 +44,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>imagej.App</mainClass>
-              <packageName>imagej</packageName>
+              <packageName>imagej.envisaje</packageName>
             </manifest>
           </archive>
         </configuration>
