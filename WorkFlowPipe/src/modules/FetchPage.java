@@ -40,7 +40,7 @@ public class FetchPage extends Module implements Serializable {
 		
 		fetchPage.id = new ID("");
 
-		fetchPage.terminals.add( Terminal.getOutputTerminal("items") );
+		fetchPage.terminals.add( Terminal.getOutputTerminal("items","_OUTPUT") );
 
 		fetchPage.ui = new UI("\n\t\t<div class=\"horizontal\">\n\t\t\t<label>URL: </label><input name=\"URL\" type=\"url\" required=\"true\"/>\n\t\t</div> \n\t\t<div class=\"horizontal\">\n\t\t\t<label>Cut content from: </label><input name=\"from\" type=\"text\" required=\"true\"/>\n            <label>to: </label><input name=\"to\" type=\"text\" required=\"true\"/>\n        </div>\n        <div class=\"horizontal\">\n            <label>Split using delimiter: </label><input name=\"token\" type=\"text\" required=\"true\"/>\n            \n\t\t</div> \n\t\t");
 
@@ -60,7 +60,6 @@ public class FetchPage extends Module implements Serializable {
 		return fetchPage;
 	}
 
-	@Override
 	public void go() 
 	{		 
 		// call the start method

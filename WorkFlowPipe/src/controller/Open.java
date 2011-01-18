@@ -62,7 +62,9 @@ public class Open {
 		*/
 		
 		//Get the internal modules
-		HashMap<Service,Module> internalModulesHashMap = ModuleGenerator.getInternalModules();
+		//HashMap<Service,Module> internalModulesHashMap = ModuleGenerator.getInternalModules();
+		
+		HashMap<Service,Module> internalModulesHashMap = ModuleGenerator.getInternalModules2();
 		
 		//Create a pipes controller
 		PipesController pipesController = new PipesController( LoadLayouts.loadLayouts(), internalModulesHashMap );
