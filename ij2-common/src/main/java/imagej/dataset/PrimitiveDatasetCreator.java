@@ -88,41 +88,43 @@ public class PrimitiveDatasetCreator
 		
 		if (arrayOfData instanceof boolean[])
 		{
-			dataType = Types.findType("1-bit unsigned)");
+			dataType = Types.findType("1-bit unsigned");
 		}
 		else if (arrayOfData instanceof byte[])
 		{
 			if (unsigned)
-				dataType = Types.findType("8-bit unsigned)");
+				dataType = Types.findType("8-bit unsigned");
 			else
-				dataType = Types.findType("8-bit signed)");
+				dataType = Types.findType("8-bit signed");
 		}
 		else if (arrayOfData instanceof short[])
 		{
 			if (unsigned)
-				dataType = Types.findType("16-bit unsigned)");
+				dataType = Types.findType("16-bit unsigned");
 			else
-				dataType = Types.findType("16-bit signed)");
+				dataType = Types.findType("16-bit signed");
 		}
 		else if (arrayOfData instanceof int[])
 		{
 			if (unsigned)
-				dataType = Types.findType("32-bit unsigned)");
+				dataType = Types.findType("32-bit unsigned");
 			else
-				dataType = Types.findType("32-bit signed)");
+				dataType = Types.findType("32-bit signed");
 		}
 		else if (arrayOfData instanceof float[])
 		{
-			dataType = Types.findType("32-bit float)");
+			if (!unsigned)
+				dataType = Types.findType("32-bit float");
 		}
 		else if (arrayOfData instanceof long[])
 		{
 			if (!unsigned)
-				dataType = Types.findType("64-bit signed)");
+				dataType = Types.findType("64-bit signed");
 		}
 		else if (arrayOfData instanceof double[])
 		{
-			dataType = Types.findType("64-bit float)");
+			if (!unsigned)
+				dataType = Types.findType("64-bit float");
 		}
 		
 		return dataType;
