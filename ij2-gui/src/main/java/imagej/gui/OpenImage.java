@@ -1,8 +1,10 @@
 package imagej.gui;
 
 import imagej.Log;
+import imagej.MetaData;
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 import imagej.plugin.ij2.IPlugin;
 import imagej.plugin.ij2.Menu;
 import imagej.plugin.ij2.Parameter;
@@ -20,13 +22,11 @@ import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
 
 @Plugin(
-//	menuPath="File>Import>Bio-Formats...",
 	menu={
-    @Menu(label="File", weight=0, mnemonic='f'),
-    @Menu(label="Import", weight=0, mnemonic='i'),
-    @Menu(label="Bio-Formats...", weight=0, mnemonic='b')
-  },
-  accelerator="^O"
+		@Menu(label="File", mnemonic='f'),
+		@Menu(label="Import", mnemonic='i'),
+		@Menu(label="Bio-Formats...", mnemonic='b', accelerator="control shift O")
+	}
 )
 public class OpenImage<T extends RealType<T>> implements IPlugin {
 
@@ -49,7 +49,10 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 		final ImageOpener imageOpener = new ImageOpener();
 		try {
 			final Image<T> img = imageOpener.openImage(id);
-			dataset = new ImgLibDataset<T>(img);
+			dataset = new LegacyImgLibDataset(img);
+			// TEMP - populate required axis label metadata
+			final MetaData metadata = ImgLibDataset.createMetaData(img.getName());
+			dataset.setMetaData(metadata);
 		}
 		catch (FormatException e) {
 			Log.printStackTrace(e);
