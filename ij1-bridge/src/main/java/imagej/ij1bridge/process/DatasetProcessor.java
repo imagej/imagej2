@@ -489,7 +489,8 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 	
-	/** Binary AND of each pixel in the image or ROI with 'value'. */
+	/** Binary AND of each pixel in the image or ROI with 'value'. 'Value" is restricted to integer range so some logical
+	 * operations not possible for long data. */
 	@Override
 	public void and(int value)
 	{
@@ -638,7 +639,8 @@ public class DatasetProcessor extends ImageProcessor
 				case Blitter.COPY_INVERTED:
 					if (this.isFloat)
 					{
-						// TODO - change to something else? value = -value? or value = 1.0 / value? 
+						// TODO - change to something else? value = -value? or even value = 1.0 / value?
+						//   Or is this just a logical operation and not applicable to float. I've seen mention of grayscale inversion on the web.
 						
 						// just copy values like IJ1 did for FloatProc
 						for (int i=r1.width; --i>=0; srcIndex++, dstIndex++)
@@ -1765,7 +1767,8 @@ public class DatasetProcessor extends ImageProcessor
 		op.execute();
 	}
 
-	/** Binary OR of each pixel in the image or ROI with 'value'. */
+	/** Binary OR of each pixel in the image or ROI with 'value'.  'Value" is restricted to integer range so some logical
+	 * operations not possible for long data. */
 	@Override
 	public void or(int value)
 	{
@@ -2529,7 +2532,8 @@ public class DatasetProcessor extends ImageProcessor
 		return fp;
 	}
 
-	/** Binary exclusive OR of each pixel in the image or ROI with 'value'. */
+	/** Binary exclusive OR of each pixel in the image or ROI with 'value'. 'Value" is restricted to integer range so some logical
+	 * operations not possible for long data. */
 	@Override
 	public void xor(int value)
 	{
