@@ -1,22 +1,7 @@
 package modules;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import pipesapi.Module;
 import pipesentity.Attr;
@@ -25,17 +10,14 @@ import pipesentity.Connector;
 import pipesentity.Content;
 import pipesentity.Count;
 import pipesentity.Description;
-import pipesentity.Error;
 import pipesentity.ID;
 import pipesentity.Item;
 import pipesentity.Name;
 import pipesentity.Prop;
-import pipesentity.Response;
 import pipesentity.Tag;
 import pipesentity.Terminal;
 import pipesentity.Type;
 import pipesentity.UI;
-import util.DeepCopy;
 
 /**
  * Represents the module type "displayimage"

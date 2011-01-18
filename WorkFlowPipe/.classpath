@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/httpclient-4.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/sezpoz-1.8.jar"/>
+	<classpathentry kind="src" path="/WorkFlowEclipse"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
