@@ -165,7 +165,10 @@ public class MenuBuilder {
 			final double w2 = c.getMenuEntry().getWeight();
 			if (w1 < w2) return -1;
 			if (w1 > w2) return 1;
-			return 0;
+			// if weights are equal, sort alphabetically
+			final String n1 = getMenuEntry().getName();
+			final String n2 = c.getMenuEntry().getName();
+			return n1.compareTo(n2);
 		}
 
 		private KeyStroke toKeyStroke(final String accelerator) {
