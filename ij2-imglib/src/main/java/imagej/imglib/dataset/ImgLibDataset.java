@@ -30,15 +30,7 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset {
 	public ImgLibDataset(Image<T> img) {
 		this.img = img;
 		final String name = img.getName();
-		final String imageName = decodeName(name);
-		final String[] imageTypes = decodeTypes(name);
-		final AxisLabel[] axisLabels = new AxisLabel[imageTypes.length];
-		for (int i=0; i<imageTypes.length; i++) {
-			axisLabels[i] = AxisLabel.getAxisLabel(imageTypes[i]);
-		}
-		metadata = new MetaData();
-		metadata.setAxisLabels(axisLabels);
-		metadata.setLabel(imageName);
+		metadata = createMetaData(name);
 	}
 
 	public Image<T> getImage() {
@@ -142,6 +134,23 @@ public class ImgLibDataset<T extends RealType<T>> implements Dataset {
 	@Override
 	public void setLong(int[] position, long value) {
 		throw new UnsupportedOperationException("Cannot set long data");
+	}
+
+	/**
+	 * Extracts metadata, including axis types,
+	 * from the given encoded image name.
+	 */
+	public static MetaData createMetaData(String encodedImageName) {
+		final String imageName = decodeName(encodedImageName);
+		final String[] imageTypes = decodeTypes(encodedImageName);
+		final AxisLabel[] axisLabels = new AxisLabel[imageTypes.length];
+		for (int i=0; i<imageTypes.length; i++) {
+			axisLabels[i] = AxisLabel.getAxisLabel(imageTypes[i]);
+		}
+		final MetaData md = new MetaData();
+		md.setAxisLabels(axisLabels);
+		md.setLabel(imageName);
+		return md;
 	}
 
 	// CTR TODO - Code below is duplicated from imglib-io ImageOpener class.
