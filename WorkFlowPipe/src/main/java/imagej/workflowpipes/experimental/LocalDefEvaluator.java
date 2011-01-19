@@ -3,7 +3,7 @@ package imagej.workflowpipes.experimental;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import loci.workflow.Workflow;
+import imagej.workflow.Workflow;
 
 
 import org.json.JSONArray;

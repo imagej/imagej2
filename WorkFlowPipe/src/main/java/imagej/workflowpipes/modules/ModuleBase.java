@@ -1,6 +1,6 @@
 package imagej.workflowpipes.modules;
 
-import loci.workflow.IModuleInfo;
+import imagej.workflow.IModuleInfo;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Description;
 import imagej.workflowpipes.pipesentity.ID;
