@@ -68,8 +68,8 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>TODO</mainClass>
-              <packageName>TODO</packageName>
+              <mainClass>imagej.workflowpipes.Open</mainClass>
+              <packageName>imagej.workflowpipes</packageName>
             </manifest>
           </archive>
         </configuration>
