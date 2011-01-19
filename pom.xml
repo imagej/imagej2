@@ -21,6 +21,7 @@
   <url>http://imagejdev.org/</url>
 
   <modules>
+    <module>WorkFlowPipe</module>
     <module>_ij1-patches</module>
     <module>ij1-bridge</module>
     <module>ij1-plugin</module>
@@ -30,6 +31,7 @@
     <module>ijx</module>
     <module>image5d</module>
     <!-- <module>imagej</module> -->
+    <module>workflow</module>
   </modules>
 
   <repositories>
