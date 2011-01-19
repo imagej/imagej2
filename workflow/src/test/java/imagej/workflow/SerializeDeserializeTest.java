@@ -43,17 +43,17 @@ public class SerializeDeserializeTest extends TestCase
      */
     public void testSerialization()
     {
-        TestComponent testComponentA = new TestComponent();
+        DummyComponent testComponentA = new DummyComponent();
         testComponentA.setName("A");
         testComponentA.setInputNames(new String[] { "ONE", "TWO" });
         testComponentA.setOutputNames(new String[] { Output.DEFAULT });
-        TestComponent testComponentB = new TestComponent();
+        DummyComponent testComponentB = new DummyComponent();
         testComponentB.setName("B");
         testComponentB.setInputNames(new String[] { Input.DEFAULT } );
         testComponentB.setOutputNames(new String[] { Output.DEFAULT });
 
-        TestComponentFactory componentFactory = TestComponentFactory.getInstance();
-        ModuleFactory.getInstance().register(TestComponent.TESTCOMPONENT, componentFactory);
+        DummyComponentFactory componentFactory = DummyComponentFactory.getInstance();
+        ModuleFactory.getInstance().register(DummyComponent.TESTCOMPONENT, componentFactory);
 
         Workflow workFlow1 = new Workflow();
         workFlow1.setName("workFlow1");

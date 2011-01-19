@@ -43,16 +43,16 @@ public class PluginWiringTest extends TestCase {
     public void testPluginWiring()
     {
         // create some test plugin modules
-        PluginModule module1 = new PluginModule("loci.workflow.TestPlugin");
-        PluginModule module2 = new PluginModule("loci.workflow.TestPlugin2");
+        PluginModule module1 = new PluginModule("imagej.workflow.DummyPlugin");
+        PluginModule module2 = new PluginModule("imagej.workflow.DummyPlugin2");
 
         // create workflow, add & wire modules
         IWorkflow workflow = new Workflow();
         workflow.setName("My Workflow");
         workflow.add(module1);
         workflow.add(module2);
-        workflow.wire(module1, TestPlugin.LOWER, module2, TestPlugin2.SECOND);
-        workflow.wire(module1, TestPlugin.UPPER, module2, TestPlugin2.FIRST);
+        workflow.wire(module1, DummyPlugin.LOWER, module2, DummyPlugin2.SECOND);
+        workflow.wire(module1, DummyPlugin.UPPER, module2, DummyPlugin2.FIRST);
         workflow.finalize();
 
         // roundtrip workflow to/from XML
