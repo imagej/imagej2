@@ -35,7 +35,7 @@ public class PluginModuleTest extends TestCase {
 
     public void testPluginModule()
     {
-        PluginModule module1 = new PluginModule("loci.workflow.TestPlugin");
+        PluginModule module1 = new PluginModule("imagej.workflow.DummyPlugin");
         String xml1 = module1.toXML();
 
         String xml2 = null;
