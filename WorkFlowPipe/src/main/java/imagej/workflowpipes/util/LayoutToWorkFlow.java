@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-import loci.workflow.IModule;
-import loci.workflow.IModuleInfo;
-import loci.workflow.Workflow;
-import loci.workflow.WorkflowManager;
+import imagej.workflow.IModule;
+import imagej.workflow.IModuleInfo;
+import imagej.workflow.Workflow;
+import imagej.workflow.WorkflowManager;
 
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Wire;

@@ -5,12 +5,12 @@
 
 package imagej.workflowpipes.modules;
 
-import loci.workflow.plugin.AbstractPlugin;
-import loci.workflow.plugin.IPlugin;
-import loci.workflow.plugin.ItemWrapper;
-import loci.plugin.annotations.Img;
-import loci.plugin.annotations.Input;
-import loci.plugin.annotations.Output;
+import imagej.workflow.plugin.AbstractPlugin;
+import imagej.workflow.plugin.IPlugin;
+import imagej.workflow.plugin.ItemWrapper;
+import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Input;
+import imagej.workflow.plugin.annotations.Output;
 
 /**
  *

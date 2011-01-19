@@ -2,8 +2,8 @@ package imagej.workflowpipes.pipes;
 
 import java.util.HashMap;
 
-import loci.workflow.IModuleInfo;
-import loci.workflow.WorkflowManager;
+import imagej.workflow.IModuleInfo;
+import imagej.workflow.WorkflowManager;
 import imagej.workflowpipes.modules.DisplayImage;
 import imagej.workflowpipes.modules.FetchPage;
 import imagej.workflowpipes.modules.ModuleBase;
