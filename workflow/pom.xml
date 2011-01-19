@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>imagej</groupId>
+    <artifactId>imagej-base-pom</artifactId>
+    <version>1.09</version>
+  </parent>
+
+  <groupId>imagej</groupId>
+  <artifactId>workflow</artifactId>
+  <version>2.0-SNAPSHOT</version>
+
+  <name>Workflow</name>
+  <description>A library to facilitate efficient chaining of modules and plugins with various inputs and outputs.</description>
+  <url>http://imagejdev.org/</url>
+  <inceptionYear>1997</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://dev.imagejdev.org/svn/imagej/trunk/WorkFlowPipes/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.java.sezpoz</groupId>
+      <artifactId>sezpoz</artifactId>
+      <version>1.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>TODO</mainClass>
+              <packageName>TODO</packageName>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <id>aivar</id>
+      <name>Aivar Grislis</name>
+      <email>grislis@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/aivar-grislis</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>rlentz</id>
+      <name>Rick Lentz</name>
+      <email>rwlentz@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/rick-lentz</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+      <properties>
+        <picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
+      </properties>
+    </developer>
+  </developers>
+
+  <repositories>
+    <!-- NB: for imagej-base-pom -->
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
+</project>
