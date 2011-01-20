@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: imagej/envisaje/paintui/Bundle.properties
+OpenIDE-Module-Layer: imagej/envisaje/paintui/layer.xml

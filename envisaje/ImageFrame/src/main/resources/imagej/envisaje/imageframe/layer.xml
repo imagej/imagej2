@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="File">
+            <file name="imagej-envisaje-imageframe-OpenAction.instance">
+                <attr name="delegate" newvalue="imagej.envisaje.imageframe.OpenAction"/>
+                <attr name="displayName" bundlevalue="imagej.envisaje.imageframe.Bundle#CTL_OpenAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" boolvalue="false"/>
+            </file>
+        </folder>
+        <folder name="Window">
+            <file name="imagej-envisaje-imageframe-ImgDisplayAction.instance">
+                <attr name="component" methodvalue="imagej.envisaje.imageframe.ImgDisplayTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="imagej.envisaje.imageframe.Bundle#CTL_ImgDisplayAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="imagej-envisaje-imageframe-OpenAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-imageframe-OpenAction.instance"/>
+                <attr name="position" intvalue="-99"/>
+            </file>
+        </folder>
+        <folder name="Window">
+            <file name="ImgDisplayAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-imageframe-ImgDisplayAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Shortcuts">
+        <file name="D-O.shadow">
+            <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-imageframe-OpenAction.instance"/>
+        </file>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="ImgDisplayTopComponent.settings" url="ImgDisplayTopComponentSettings.xml"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="editor">
+                <file name="ImgDisplayTopComponent.wstcref" url="ImgDisplayTopComponentWstcref.xml"/>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>
