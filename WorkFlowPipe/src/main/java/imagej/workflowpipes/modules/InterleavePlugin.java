@@ -13,17 +13,18 @@ import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
 /**
- *
+ * Dummy plugin that takes in two strings and interleaves them as the output.
+ * 
  * @author aivar
  */
-@Input({ @Img(TestPlugin2.FIRST), @Img(TestPlugin2.SECOND) } )
+@Input({ @Img(InterleavePlugin.FIRST), @Img(InterleavePlugin.SECOND) } )
 @Output
-public class TestPlugin2 extends AbstractPlugin implements IPlugin {
+public class InterleavePlugin extends AbstractPlugin implements IPlugin {
     static final String FIRST = "FIRST";
     static final String SECOND = "SECOND";
 
     public void process() {
-        System.out.println("In TestPlugin2");
+        System.out.println("In InterleavePlugin");
         ItemWrapper item1 = get(FIRST);
         ItemWrapper item2 = get(SECOND);
         String combinedString = interleave((String) item1.getItem(), (String) item2.getItem());
