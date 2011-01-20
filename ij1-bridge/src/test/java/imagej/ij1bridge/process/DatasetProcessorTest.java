@@ -3,8 +3,11 @@ package imagej.ij1bridge.process;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
+import java.awt.Image;
 
+import ij.process.Blitter;
 import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import imagej.dataset.Dataset;
@@ -286,6 +289,7 @@ public class DatasetProcessorTest
 		setupData(new int[]{2,2}, false, new int[]{0,1,2,3});
 		//assertEquals(1.5, proc.getInterpolatedPixel(0.4, 0.6), 0);
 		// fail("not finished");
+		// TODO
 	}
 
 	@Test
@@ -293,6 +297,7 @@ public class DatasetProcessorTest
 		setupData(new int[]{2,2}, false, new int[]{0,1,2,3});
 		//assertEquals(1.5, proc.getPixelInterpolated(0.4, 0.6), 0);
 		// fail("not finished");
+		// TODO
 	}
 
 	@Test
@@ -301,21 +306,53 @@ public class DatasetProcessorTest
 		proc.getBicubicInterpolatedPixel(0.5, 0.5, proc);
 		//assertFalse(true);
 		// fail("not finished");
+		// TODO
 	}
 
 	@Test
 	public void testPutPixelIntIntInt() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new double[]{0.4,1.5,2.6,3.7});
+		proc.putPixelValue(0, 0, 93.6);
+		proc.putPixelValue(1, 0, -101);
+		proc.putPixelValue(0, 1, 0);
+		proc.putPixelValue(1, 1, Double.MAX_VALUE);
+		assertEquals(93.6, proc.getd(0,0), 0);
+		assertEquals(-101, proc.getd(1,0), 0);
+		assertEquals(0, proc.getd(0,1), 0);
+		assertEquals(Double.MAX_VALUE, proc.getd(1,1), 0);
+
+		setupData(new int[]{2,2}, false, new int[]{Integer.MIN_VALUE,-1,0,5000});
+		proc.putPixelValue(0, 0, 93.6);
+		proc.putPixelValue(1, 0, -101);
+		proc.putPixelValue(0, 1, 0);
+		proc.putPixelValue(1, 1, Integer.MAX_VALUE);
+		assertEquals(94, proc.getd(0,0), 0);
+		assertEquals(-101, proc.getd(1,0), 0);
+		assertEquals(0, proc.getd(0,1), 0);
+		assertEquals(Integer.MAX_VALUE, proc.getd(1,1), 0);
 	}
 
 	@Test
-	public void testGetPixelValue() {
-		// fail("Not yet implemented");
+	public void testGetPixelValue()
+	{
+		setupData(new int[]{2,2}, false, new double[]{0.4,1.5,2.6,3.7});
+		assertEquals(0.4, proc.getPixelValue(0,0), 0.00001);
+		assertEquals(1.5, proc.getPixelValue(1,0), 0.00001);
+		assertEquals(2.6, proc.getPixelValue(0,1), 0.00001);
+		assertEquals(3.7, proc.getPixelValue(1,1), 0.00001);
 	}
 
 	@Test
 	public void testPutPixelValue() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new double[]{0.4,1.5,2.6,3.7});
+		proc.putPixelValue(0, 0, 19.19);
+		proc.putPixelValue(1, 0, 18.18);
+		proc.putPixelValue(0, 1, 17.17);
+		proc.putPixelValue(1, 1, 16.16);
+		assertEquals(19.19, proc.getPixelValue(0,0), 0.00001);
+		assertEquals(18.18, proc.getPixelValue(1,0), 0.00001);
+		assertEquals(17.17, proc.getPixelValue(0,1), 0.00001);
+		assertEquals(16.16, proc.getPixelValue(1,1), 0.00001);
 	}
 
 	@Test
@@ -335,9 +372,129 @@ public class DatasetProcessorTest
 		assertSame(newPixels, proc.getPixels());
 	}
 
+	private ImageProcessor initNewProc()
+	{
+		ImageProcessor newProc = proc.duplicate();
+		
+		newProc.setl(0, 54);
+		newProc.setl(1, 51);
+		newProc.setl(2, 48);
+		newProc.setl(3, 45);
+		newProc.setl(4, 42);
+		newProc.setl(5, 39);
+		newProc.setl(6, 36);
+		newProc.setl(7, 33);
+		newProc.setl(8, 30);
+		newProc.setl(9, 27);
+		newProc.setl(10, 24);
+		newProc.setl(11, 21);
+		newProc.setl(12, 18);
+		newProc.setl(13, 15);
+		newProc.setl(14, 12);
+		newProc.setl(15, 9);
+		
+		return newProc;
+	}
+	
 	@Test
-	public void testCopyBits() {
-		// fail("Not yet implemented");
+	public void testCopyBits(){
+		setupData(new int[]{4,4},
+				false,
+				new long[]{0, 1, 2, 3,
+							4, 5, 6, 7,
+							8, 9, 10, 11,
+							12, 13, 14, 15});
+		
+		ImageProcessor newProc;
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.ADD);
+		assertEquals(54+0, newProc.getl(0));
+		assertEquals(9+15, newProc.getl(15));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.AND);
+		assertEquals(54&0, newProc.getl(0));
+		assertEquals(33&7, newProc.getl(7));
+		assertEquals(21&11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.AVERAGE);
+		assertEquals((54+0)/2, newProc.getl(0));
+		assertEquals((33+7)/2, newProc.getl(7));
+		assertEquals((21+11)/2, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.COPY);
+		assertEquals(0, newProc.getl(0));
+		assertEquals(7, newProc.getl(7));
+		assertEquals(11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.COPY_INVERTED);
+		assertEquals(0, newProc.getl(0));
+		assertEquals(-7, newProc.getl(7));
+		assertEquals(-11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.COPY_TRANSPARENT);
+		assertEquals(0, newProc.getl(0));
+		assertEquals(7, newProc.getl(7));
+		assertEquals(11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.COPY_ZERO_TRANSPARENT);
+		assertEquals(54, newProc.getl(0));
+		assertEquals(7, newProc.getl(7));
+		assertEquals(11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.DIFFERENCE);
+		assertEquals(Math.abs(54-0), newProc.getl(0));
+		assertEquals(Math.abs(42-4), newProc.getl(4));
+		assertEquals(Math.abs(27-9), newProc.getl(9));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.DIVIDE);
+		assertEquals(Long.MAX_VALUE, newProc.getl(0));
+		assertEquals(42/4, newProc.getl(4));
+		assertEquals(27/9, newProc.getl(9));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.MAX);
+		assertEquals(54, newProc.getl(0));
+		assertEquals(15, newProc.getl(13));
+		assertEquals(14, newProc.getl(14));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.MIN);
+		assertEquals(0, newProc.getl(0));
+		assertEquals(13, newProc.getl(13));
+		assertEquals(12, newProc.getl(14));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.MULTIPLY);
+		assertEquals(54*0, newProc.getl(0));
+		assertEquals(42*4, newProc.getl(4));
+		assertEquals(27*9, newProc.getl(9));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.OR);
+		assertEquals(54|0, newProc.getl(0));
+		assertEquals(33|7, newProc.getl(7));
+		assertEquals(21|11, newProc.getl(11));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.SUBTRACT);
+		assertEquals(54-0, newProc.getl(0));
+		assertEquals(42-4, newProc.getl(4));
+		assertEquals(27-9, newProc.getl(9));
+		
+		newProc = initNewProc();
+		newProc.copyBits(proc, 0, 0, Blitter.XOR);
+		assertEquals(54^0, newProc.getl(0));
+		assertEquals(33^7, newProc.getl(7));
+		assertEquals(21^11, newProc.getl(11));
 	}
 
 	@Test
@@ -431,17 +588,32 @@ public class DatasetProcessorTest
 
 	@Test
 	public void testGamma() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new double[]{0,14.3,452.7,1013.8});
+		proc.gamma(0.75);
+		assertEquals(0.0, proc.getd(0), 0.00001);
+		assertEquals(7.35363, proc.getd(1), 0.00001);
+		assertEquals(98.14267, proc.getd(2), 0.00001);
+		assertEquals(179.66530, proc.getd(3), 0.00001);
 	}
 
 	@Test
 	public void testLog() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new double[]{0,14.3,452.7,1013.8});
+		proc.log();
+		assertEquals(0.0, proc.getd(0), 0.00001);
+		assertEquals(2.66026, proc.getd(1), 0.00001);
+		assertEquals(6.11523, proc.getd(2), 0.00001);
+		assertEquals(6.92146, proc.getd(3), 0.00001);
 	}
 
 	@Test
 	public void testExp() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new double[]{0,1,-4,11.3});
+		proc.exp();
+		assertEquals(1, proc.getd(0), 0.00001);
+		assertEquals(Math.E, proc.getd(1), 0.00001);
+		assertEquals(0.01832, proc.getd(2), 0.00001);
+		assertEquals(80821.63754, proc.getd(3), 0.00001);
 	}
 
 	@Test
@@ -496,47 +668,89 @@ public class DatasetProcessorTest
 
 	@Test
 	public void testCreateImage() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new long[]{1,2,3,4});
+		Image image = proc.createImage();
+		assertNotNull(image);
+		// TODO - what else do I test?
 	}
 
 	@Test
 	public void testCreateProcessor() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new long[]{1,2,3,4});
+		ImageProcessor newProc = proc.createProcessor(7, 5);
+		assertEquals(7,newProc.getWidth());
+		assertEquals(5,newProc.getHeight());
+		assertEquals(proc.getMax(), newProc.getMax(), 0);
+		assertEquals(proc.getMin(), newProc.getMin(), 0);
+		assertEquals(proc.getInterpolationMethod(), newProc.getInterpolationMethod());
+		assertEquals(proc.getColorModel(), newProc.getColorModel());
 	}
 
 	@Test
-	public void testSnapshot() {
-		// fail("Not yet implemented");
-	}
-
-	@Test
-	public void testReset() {
-		// fail("Not yet implemented");
+	public void testSnapshotAndReset() {
+		setupData(new int[]{2,2}, false, new long[]{1,3,5,7});
+		proc.snapshot();
+		proc.setl(0, 99);
+		proc.setl(1, 98);
+		proc.setl(2, 97);
+		proc.setl(3, 96);
+		assertEquals(99, proc.getl(0));
+		assertEquals(98, proc.getl(1));
+		assertEquals(97, proc.getl(2));
+		assertEquals(96, proc.getl(3));
+		proc.reset();
+		assertEquals(1, proc.getl(0));
+		assertEquals(3, proc.getl(1));
+		assertEquals(5, proc.getl(2));
+		assertEquals(7, proc.getl(3));
 	}
 
 	@Test
 	public void testResetImageProcessor() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, false, new long[]{1,3,5,7});
+		proc.snapshot();
+		proc.setl(0, 99);
+		proc.setl(1, 98);
+		proc.setl(2, 97);
+		proc.setl(3, 96);
+		assertEquals(99, proc.getl(0));
+		assertEquals(98, proc.getl(1));
+		assertEquals(97, proc.getl(2));
+		assertEquals(96, proc.getl(3));
+		ImageProcessor mask = new ByteProcessor(2,2,new byte[]{0,1,0,1}, null);
+		proc.reset(mask);
+		assertEquals(1, proc.getl(0));
+		assertEquals(98, proc.getl(1));
+		assertEquals(5, proc.getl(2));
+		assertEquals(96, proc.getl(3));
 	}
 
 	@Test
-	public void testSetSnapshotPixels() {
-		// fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetSnapshotPixels() {
-		// fail("Not yet implemented");
+	public void testSetAndGetSnapshotPixels() {
+		setupData(new int[]{2,2}, false, new long[]{1,3,5,7});
+		proc.snapshot();
+		assertEquals(1, ((long[])proc.getSnapshotPixels())[0]);
+		assertEquals(3, ((long[])proc.getSnapshotPixels())[1]);
+		assertEquals(5, ((long[])proc.getSnapshotPixels())[2]);
+		assertEquals(7, ((long[])proc.getSnapshotPixels())[3]);
+		long[] newPixelData = new long[]{2,4,6,8};
+		proc.setSnapshotPixels(newPixelData);
+		assertEquals(2, ((long[])proc.getSnapshotPixels())[0]);
+		assertEquals(4, ((long[])proc.getSnapshotPixels())[1]);
+		assertEquals(6, ((long[])proc.getSnapshotPixels())[2]);
+		assertEquals(8, ((long[])proc.getSnapshotPixels())[3]);
 	}
 
 	@Test
 	public void testConvolve3x3() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testFilter() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
@@ -546,51 +760,107 @@ public class DatasetProcessorTest
 							2, 8, 7,
 							9, 4, 5});
 		proc.medianFilter();
-		//assertEquals(0, proc.get(0));
-		//assertEquals(2, proc.get(1));
-		//assertEquals(0, proc.get(2));
-		//assertEquals(2, proc.get(3));
-		//assertEquals(5, proc.get(4));
-		//assertEquals(4, proc.get(5));
-		//assertEquals(0, proc.get(6));
-		//assertEquals(4, proc.get(7));
-		//assertEquals(0, proc.get(8));
-		// fail("not finished");
+		assertEquals(2, proc.get(0,0));
+		assertEquals(3, proc.get(1,0));
+		assertEquals(6, proc.get(2,0));
+		assertEquals(4, proc.get(0,1));
+		assertEquals(5, proc.get(1,1));
+		assertEquals(5, proc.get(2,1));
+		assertEquals(8, proc.get(0,2));
+		assertEquals(5, proc.get(1,2));
+		assertEquals(5, proc.get(2,2));
 	}
 
 	@Test
 	public void testNoise() {
-		// fail("Not yet implemented");
+		setupData(new int[]{4,4}, true,
+				new short[]{ 0, 10, 20, 30,
+							40, 50, 60, 70,
+							80, 90, 100, 110,
+							120, 130, 140, 150});
+		proc.noise(12);
+		
+		// TODO - not sure what to test ...
 	}
 
 	@Test
 	public void testCrop() {
-		// fail("Not yet implemented");
+		setupData(new int[]{4,4}, false,
+				new short[]{1,2,3,4,
+							5,6,7,8,
+							9,10,11,12,
+							13,14,15,16});
+		proc.setRoi(1, 1, 2, 2);
+		ImageProcessor newProc = proc.crop();
+		assertEquals(2, newProc.getWidth());
+		assertEquals(2, newProc.getHeight());
+		assertEquals(6, newProc.getl(0,0));
+		assertEquals(7, newProc.getl(1,0));
+		assertEquals(10, newProc.getl(0,1));
+		assertEquals(11, newProc.getl(1,1));
 	}
 
 	@Test
 	public void testThreshold() {
-		// fail("Not yet implemented");
+		setupData(new int[]{4,4}, false,
+				new short[]{1,2,3,4,
+							5,6,7,8,
+							9,10,11,12,
+							13,14,15,16});
+		proc.threshold(0);
+		for (int i = 0; i < 16; i++)
+			assertEquals(255, proc.getl(i));
+
+		setupData(new int[]{4,4}, false,
+				new short[]{1,2,3,4,
+							5,6,7,8,
+							9,10,11,12,
+							13,14,15,16});
+		proc.threshold(16);
+		for (int i = 0; i < 16; i++)
+			assertEquals(0, proc.getl(i));
+
+		setupData(new int[]{4,4}, false,
+				new short[]{1,2,3,4,
+							5,6,7,8,
+							9,10,11,12,
+							13,14,15,16});
+		proc.threshold(8);
+		for (int i = 0; i < 8; i++)
+			assertEquals(0, proc.getl(i));
+		for (int i = 8; i < 16; i++)
+			assertEquals(255, proc.getl(i));
 	}
 
 	@Test
 	public void testDuplicate() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, true, new short[]{1,2,3,4});
+		ImageProcessor newProc = proc.duplicate();
+		assertEquals(proc.getWidth(), newProc.getWidth());
+		assertEquals(proc.getHeight(), newProc.getHeight());
+		assertEquals(proc.getColorModel(), newProc.getColorModel());
+		assertEquals(proc.getMax(), newProc.getMax(), 0);
+		assertEquals(proc.getMin(), newProc.getMin(), 0);
+		for (int i = 0; i < 4; i++)
+			assertEquals(proc.getl(i), newProc.getl(i));
 	}
 
 	@Test
 	public void testScale() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testResizeIntInt() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testRotate() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
@@ -606,21 +876,25 @@ public class DatasetProcessorTest
 	@Test
 	public void testErode() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testDilate() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testConvolve() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
 	public void testAutoThreshold() {
 		// fail("Not yet implemented");
+		// TODO
 	}
 
 	@Test
@@ -635,12 +909,13 @@ public class DatasetProcessorTest
 
 	@Test
 	public void testSetPixelsIntFloatProcessor() {
-		// fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCreate8BitImage() {
-		// fail("Not yet implemented");
+		setupData(new int[]{2,2}, true, new int[]{0,1,2,3});
+		FloatProcessor floatProc = new FloatProcessor(2,2,new float[]{19.6f, 18.5f, 17.4f, 16.3f}, null);
+		proc.setPixels(0, floatProc);
+		assertEquals(20, proc.getl(0));
+		assertEquals(19, proc.getl(1));
+		assertEquals(17, proc.getl(2));
+		assertEquals(16, proc.getl(3));
 	}
 
 	@Test

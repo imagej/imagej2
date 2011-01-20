@@ -206,175 +206,176 @@ public class DatasetProcessor extends ImageProcessor
 	}
 
 	/** do a 8-neighbor filter of specified type */
-    private void filter3x3(int type, int[] kernel)
-    {
+	private void filter3x3(int type, int[] kernel)
+	{
 		double v1, v2, v3;           //input pixel values around the current pixel
-        double v4, v5, v6;
-        double v7, v8, v9;
-        double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
-        double k4=0, k5=0, k6=0;
-        double k7=0, k8=0, k9=0;
-        double scale = 0;
-
-        double[] values = new double[9];
-        
-        if (type==CONVOLVE)
-        {
-            k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
-            k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
-		    k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
-    		for (int i=0; i<kernel.length; i++)
-    			scale += kernel[i];
-    		if (scale==0)
-    			scale = 1.0;
-    		else
-    			scale = 1.0/scale; //multiplication factor (multiply is faster than divide)
-        }
+		double v4, v5, v6;
+		double v7, v8, v9;
+		double k1=0, k2=0, k3=0;  //kernel values (used for CONVOLVE only)
+		double k4=0, k5=0, k6=0;
+		double k7=0, k8=0, k9=0;
+		double scale = 0;
+	
+		double[] values = new double[9];
+		
+		if (type==CONVOLVE)
+		{
+			k1=kernel[0]; k2=kernel[1]; k3=kernel[2];
+			k4=kernel[3]; k5=kernel[4]; k6=kernel[5];
+			k7=kernel[6]; k8=kernel[7]; k9=kernel[8];
+			for (int i=0; i<kernel.length; i++)
+				scale += kernel[i];
+			if (scale==0)
+				scale = 1.0;
+			else
+				scale = 1.0/scale; //multiplication factor (multiply is faster than divide)
+		}
 		
 		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 25*roiWidth);
 		
 		Object pixelsCopy = getPixelsCopy();
 		DataAccessor accessor = this.type.allocateArrayAccessor(pixelsCopy);
 		
-        int xEnd = roiX + roiWidth;
-        int yEnd = roiY + roiHeight;
+		int xEnd = roiX + roiWidth;
+		int yEnd = roiY + roiHeight;
 		for (int y=roiY; y<yEnd; y++)
 		{
 			int p  = roiX + y*width;            //points to current pixel
-            int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
-            int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
-            int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
-            v2 = accessor.getReal(p3);
-            v5 = accessor.getReal(p6);
-            v8 = accessor.getReal(p9);
-            if (roiX>0) { p3++; p6++; p9++; }
-            v3 = accessor.getReal(p3);
-            v6 = accessor.getReal(p6);
-            v9 = accessor.getReal(p9);
+			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
+			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
+			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
+			v2 = accessor.getReal(p3);
+			v5 = accessor.getReal(p6);
+			v8 = accessor.getReal(p9);
+			if (roiX>0) { p3++; p6++; p9++; }
+			v3 = accessor.getReal(p3);
+			v6 = accessor.getReal(p6);
+			v9 = accessor.getReal(p9);
 
-            double value;
-            switch (type) {
-                case BLUR_MORE:
-    			for (int x=roiX; x<xEnd; x++,p++) {
-                    if (x<width-1) { p3++; p6++; p9++; }
-    				v1 = v2; v2 = v3;
-    				v3 = accessor.getReal(p3);
-    				v4 = v5; v5 = v6;
-    				v6 = accessor.getReal(p6);
-    				v7 = v8; v8 = v9;
-    				v9 = accessor.getReal(p9);
-    				value =  (v1+v2+v3+v4+v5+v6+v7+v8+v9) / 9.0;
-                    setd(p, value);
-                    tracker.update();
-                }
-                break;
-                case FIND_EDGES:
-    			for (int x=roiX; x<xEnd; x++,p++) {
-                    if (x<width-1) { p3++; p6++; p9++; }
-    				v1 = v2; v2 = v3;
-    				v3 = accessor.getReal(p3);
-    				v4 = v5; v5 = v6;
-    				v6 = accessor.getReal(p6);
-    				v7 = v8; v8 = v9;
-    				v9 = accessor.getReal(p9);
-                    double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
-                    double sum2 = v1  + 2*v4 + v7 - v3 - 2*v6 - v9;
-                    value = Math.sqrt(sum1*sum1 + sum2*sum2);
-                    setd(p, value);
-                    tracker.update();
-                }
-                break;
-                case CONVOLVE:
-    			for (int x=roiX; x<xEnd; x++,p++) {
-                    if (x<width-1) { p3++; p6++; p9++; }
-    				v1 = v2; v2 = v3;
-    				v3 = accessor.getReal(p3);
-    				v4 = v5; v5 = v6;
-    				v6 = accessor.getReal(p6);
-    				v7 = v8; v8 = v9;
-    				v9 = accessor.getReal(p9);
-                    double sum = k1*v1 + k2*v2 + k3*v3
-                              + k4*v4 + k5*v5 + k6*v6
-                              + k7*v7 + k8*v8 + k9*v9;
-                    value = sum * scale;
-                    setd(p, value);
-                    tracker.update();
-                }
-                break;
-                case MEDIAN_FILTER:
-        			for (int x=roiX; x<xEnd; x++,p++) {
-                        if (x<width-1) { p3++; p6++; p9++; }
-        				v1 = v2; v2 = v3;
-        				v3 = accessor.getReal(p3);
-        				v4 = v5; v5 = v6;
-        				v6 = accessor.getReal(p6);
-        				v7 = v8; v8 = v9;
-        				v9 = accessor.getReal(p9);
-        				values[0] = v1;  values[1] = v2;  values[2] = v3;
-        				values[3] = v4;  values[4] = v5;  values[5] = v6;
-        				values[6] = v7;  values[7] = v8;  values[8] = v9;
-        				value = medianOf9(values);
-                        setd(p, value);
-                        tracker.update();
-                    }
-                    break;
-                case MAX:
-        			for (int x=roiX; x<xEnd; x++,p++) {
-                        if (x<width-1) { p3++; p6++; p9++; }
-        				v1 = v2; v2 = v3;
-        				v3 = accessor.getReal(p3);
-        				v4 = v5; v5 = v6;
-        				v6 = accessor.getReal(p6);
-        				v7 = v8; v8 = v9;
-        				v9 = accessor.getReal(p9);
-        				value = v1;
-        				if (v2 > value) value = v2;
-        				if (v3 > value) value = v3;
-        				if (v4 > value) value = v4;
-        				if (v5 > value) value = v5;
-        				if (v6 > value) value = v6;
-        				if (v7 > value) value = v7;
-        				if (v8 > value) value = v8;
-        				if (v9 > value) value = v9;
-                        setd(p, value);
-                        tracker.update();
-                    }
-                	break;
-                case MIN:
-        			for (int x=roiX; x<xEnd; x++,p++) {
-                        if (x<width-1) { p3++; p6++; p9++; }
-        				v1 = v2; v2 = v3;
-        				v3 = accessor.getReal(p3);
-        				v4 = v5; v5 = v6;
-        				v6 = accessor.getReal(p6);
-        				v7 = v8; v8 = v9;
-        				v9 = accessor.getReal(p9);
-        				value = v1;
-        				if (v2 < value) value = v2;
-        				if (v3 < value) value = v3;
-        				if (v4 < value) value = v4;
-        				if (v5 < value) value = v5;
-        				if (v6 < value) value = v6;
-        				if (v7 < value) value = v7;
-        				if (v8 < value) value = v8;
-        				if (v9 < value) value = v9;
-                        setd(p, value);
-                        tracker.update();
-                    }
-                	break;
+			double value;
+			switch (type) {
+				case BLUR_MORE:
+				for (int x=roiX; x<xEnd; x++,p++) {
+					if (x<width-1) { p3++; p6++; p9++; }
+					v1 = v2; v2 = v3;
+					v3 = accessor.getReal(p3);
+					v4 = v5; v5 = v6;
+					v6 = accessor.getReal(p6);
+					v7 = v8; v8 = v9;
+					v9 = accessor.getReal(p9);
+					value = (v1+v2+v3+v4+v5+v6+v7+v8+v9) / 9.0;
+					setd(p, value);
+					tracker.update();
+				}
+				break;
+				case FIND_EDGES:
+				for (int x=roiX; x<xEnd; x++,p++) {
+					if (x<width-1) { p3++; p6++; p9++; }
+					v1 = v2; v2 = v3;
+					v3 = accessor.getReal(p3);
+					v4 = v5; v5 = v6;
+					v6 = accessor.getReal(p6);
+					v7 = v8; v8 = v9;
+					v9 = accessor.getReal(p9);
+					double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
+					double sum2 = v1 + 2*v4 + v7 - v3 - 2*v6 - v9;
+					value = Math.sqrt(sum1*sum1 + sum2*sum2);
+					setd(p, value);
+					tracker.update();
+				}
+				break;
+				case CONVOLVE:
+				for (int x=roiX; x<xEnd; x++,p++) {
+					if (x<width-1) { p3++; p6++; p9++; }
+					v1 = v2; v2 = v3;
+					v3 = accessor.getReal(p3);
+					v4 = v5; v5 = v6;
+					v6 = accessor.getReal(p6);
+					v7 = v8; v8 = v9;
+					v9 = accessor.getReal(p9);
+					double sum =
+						k1*v1 + k2*v2 + k3*v3
+						+ k4*v4 + k5*v5 + k6*v6
+						+ k7*v7 + k8*v8 + k9*v9;
+					value = sum * scale;
+					setd(p, value);
+					tracker.update();
+				}
+				break;
+				case MEDIAN_FILTER:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = accessor.getReal(p3);
+						v4 = v5; v5 = v6;
+						v6 = accessor.getReal(p6);
+						v7 = v8; v8 = v9;
+						v9 = accessor.getReal(p9);
+						values[0] = v1;  values[1] = v2;  values[2] = v3;
+						values[3] = v4;  values[4] = v5;  values[5] = v6;
+						values[6] = v7;  values[7] = v8;  values[8] = v9;
+						value = medianOf9(values);
+						setd(p, value);
+						tracker.update();
+					}
+					break;
+				case MAX:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = accessor.getReal(p3);
+						v4 = v5; v5 = v6;
+						v6 = accessor.getReal(p6);
+						v7 = v8; v8 = v9;
+						v9 = accessor.getReal(p9);
+						value = v1;
+						if (v2 > value) value = v2;
+						if (v3 > value) value = v3;
+						if (v4 > value) value = v4;
+						if (v5 > value) value = v5;
+						if (v6 > value) value = v6;
+						if (v7 > value) value = v7;
+						if (v8 > value) value = v8;
+						if (v9 > value) value = v9;
+						setd(p, value);
+						tracker.update();
+					}
+					break;
+				case MIN:
+					for (int x=roiX; x<xEnd; x++,p++) {
+						if (x<width-1) { p3++; p6++; p9++; }
+						v1 = v2; v2 = v3;
+						v3 = accessor.getReal(p3);
+						v4 = v5; v5 = v6;
+						v6 = accessor.getReal(p6);
+						v7 = v8; v8 = v9;
+						v9 = accessor.getReal(p9);
+						value = v1;
+						if (v2 < value) value = v2;
+						if (v3 < value) value = v3;
+						if (v4 < value) value = v4;
+						if (v5 < value) value = v5;
+						if (v6 < value) value = v6;
+						if (v7 < value) value = v7;
+						if (v8 < value) value = v8;
+						if (v9 < value) value = v9;
+						setd(p, value);
+						tracker.update();
+					}
+					break;
 			}
-    	}
+		}
 		
 		tracker.done();
-    }
+	}
 
 	/** find the median value of a list of exactly 9 values. */
 	private double medianOf9(double[] values)
 	{
-		Arrays.sort(values);
+		Arrays.sort(values);  // TODO - using a selection algorithm would be more efficient
 		return values[4];
 	}
-    
+
 	/** find the minimum and maximum values present in this plane of the image data */
 	private void findMinAndMax()
 	{
@@ -788,6 +789,7 @@ public class DatasetProcessor extends ImageProcessor
 							tracker.update();
 						}
 					}
+					break;
 				case Blitter.MULTIPLY:
 					if (this.isFloat)
 					{
@@ -1194,7 +1196,7 @@ public class DatasetProcessor extends ImageProcessor
 		}
 	}
 
-    /** run specified filter on current ROI area of current plane data */
+	/** run specified filter on current ROI area of current plane data */
 	@Override
 	public void filter(int type)
 	{
@@ -1665,10 +1667,13 @@ public class DatasetProcessor extends ImageProcessor
 				{
 					double value = getd(x, y);
 					
+					double newValue;
 					if (value <= 0)
-						value = 0;
+						newValue = 0;
+					else
+						newValue = Math.log(value);
 					
-					setd(x, y, Math.log(value));
+					setd(x, y, newValue);
 				}
 			}
 		}
