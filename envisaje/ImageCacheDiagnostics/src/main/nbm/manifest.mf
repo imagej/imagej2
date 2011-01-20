@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: imagej/envisaje/imagecachediagnostics/Bundle.properties
+OpenIDE-Module-Layer: imagej/envisaje/imagecachediagnostics/layer.xml

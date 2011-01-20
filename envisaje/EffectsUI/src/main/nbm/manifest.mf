@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: imagej/envisaje/effectsui/Bundle.properties
+OpenIDE-Module-Layer: imagej/envisaje/effectsui/layer.xml
