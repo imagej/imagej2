@@ -58,10 +58,16 @@ public class SynchronizedIterator
 			this.innerPositions[i] = Index.create(innerSize);
 			this.outerOrigins[i] = Index.create(outerSize);
 			for (int j = 0; j < outerSize; j++)
+			{
 				this.outerOrigins[i][j] = origins[i][j+innerSize];
+				this.outerPositions[i][j] = origins[i][j+innerSize];
+			}
 			this.innerOrigins[i] = Index.create(innerSize);
 			for (int j = 0; j < innerSize; j++)
+			{
 				this.innerOrigins[i][j] = origins[i][j];
+				this.innerPositions[i][j] = origins[i][j];
+			}
 			int[] outerSpan = new int[outerSize];
 			for (int j = 0; j < outerSize; j++)
 				outerSpan[j] = span[innerSize+j];
