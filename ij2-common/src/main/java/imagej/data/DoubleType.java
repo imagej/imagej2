@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class DoubleType implements Type
+public class DoubleType extends AbstractType
 {
 	@Override
 	public String getName()

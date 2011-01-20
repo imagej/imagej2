@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class LongType implements Type
+public class LongType extends AbstractType
 {
 	@Override
 	public String getName()

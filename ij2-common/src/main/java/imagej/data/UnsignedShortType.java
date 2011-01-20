@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class UnsignedShortType implements Type
+public class UnsignedShortType extends AbstractType
 {
 	@Override
 	public String getName()

@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class IntType implements Type
+public class IntType extends AbstractType
 {
 
 	@Override

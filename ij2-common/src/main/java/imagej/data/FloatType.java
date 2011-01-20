@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class FloatType implements Type
+public class FloatType extends AbstractType
 {
 	@Override
 	public String getName()
