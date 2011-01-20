@@ -1,5 +1,10 @@
 package imagej.workflowpipes.modules;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +34,8 @@ public class ModuleBase extends Module {
 	{
             //TODO for testing
             _nameTypeDescList.add(new NameTypeDesc("URL", "url", "URL"));
-            _nameTypeDescList.add(new NameTypeDesc("from", "text", "Cut from"));
-            _nameTypeDescList.add(new NameTypeDesc("to", "text", "Cut to"));
+            _nameTypeDescList.add(new NameTypeDesc("color", "text", "Favorite color"));
+            _nameTypeDescList.add(new NameTypeDesc("pet", "text", "Pet's name"));
 
 		// populate ID
 		this.id = new ID("");
@@ -45,16 +50,10 @@ public class ModuleBase extends Module {
 		for ( String outputName : iModuleInfo.getOutputNames() )
 		{
 			this.terminals.add( Terminal.getOutputTerminal( "items", outputName ) );
-		}
-		
-		// TODO replace with UI Editor / Static
-                if ("TestPlugin".equals(iModuleInfo.getName())) {
-                    this.ui = new UI("\n\t\t<div class=\"horizontal\">\n\t\t\t<label>TestPlugin URL: </label><input name=\"URL\" type=\"url\" required=\"true\"/>\n\t\t</div> \n\t\t<div class=\"horizontal\">\n\t\t\t<label>Cut content from: </label><input name=\"from\" type=\"text\" required=\"true\"/>\n            <label>to: </label><input name=\"to\" type=\"text\" required=\"true\"/>\n        </div>\n        <div class=\"horizontal\">\n            <label>Split using delimiter: </label><input name=\"token\" type=\"text\" required=\"true\"/>\n            \n\t\t</div> \n\t\t");
+                }
 
-                }
-                else {
-                    this.ui = getUI(_nameTypeDescList);
-                }
+                // build HTML based UI
+                this.ui = getUI(_nameTypeDescList);
 
 		//
 		this.name = new Name( iModuleInfo.getName() );
@@ -93,7 +92,8 @@ public class ModuleBase extends Module {
                     }
                 }
 
-		/*Conf urlConf = Conf.getConf( "URL", confs );
+/*
+		Conf urlConf = Conf.getConf( "URL", confs );
 		// System.out.println("FetchPage urlConf is " + urlConf.getJSONObject() );
 
 		// get the url
@@ -125,7 +125,8 @@ public class ModuleBase extends Module {
 		this.props.add( new Prop( new Connector( "_OUTPUT", new Type("item"), new Attr( new Content( new Type("text"), new Count(1) ) ) ) ) );
 
 		// System.out.println( "FetchPage results " + contentString );
-
+*/
+                String contentString = "<html><body>HELLO</body></html>";
 		// add the items
 		this.items.add( new Item( "content", contentString ) );
 		this.item_count.incrementCount();
@@ -134,7 +135,7 @@ public class ModuleBase extends Module {
 
 		// add self generated stats
 		this.response.addStat("CACHE_HIT", new Integer(1) );
-		this.response.addStat("CACHE_MISS", new Integer(2) ); */
+		this.response.addStat("CACHE_MISS", new Integer(2) );
 
 		// call stop
 		stop();
