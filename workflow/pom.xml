@@ -50,8 +50,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>TODO</mainClass>
-              <packageName>TODO</packageName>
+              <packageName>imagej.workflow</packageName>
             </manifest>
           </archive>
         </configuration>
