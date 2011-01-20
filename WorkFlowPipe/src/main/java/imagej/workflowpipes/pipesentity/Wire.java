@@ -52,7 +52,7 @@ public class Wire {
 		//for each wire
 		for(int i = 0; i < wiresArray.length(); i++)
 			wires.add( new Wire( wiresArray.getJSONObject(i) ) );
-		return null;
+		return wires;
 	}
 
 	public Src getSrc() {

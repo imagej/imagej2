@@ -387,4 +387,6 @@ public abstract class Module implements Serializable {
 		return this.response;
 	}
 
+        abstract public void go();
+
 }

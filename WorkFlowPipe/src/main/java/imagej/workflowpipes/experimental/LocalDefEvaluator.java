@@ -59,7 +59,7 @@ public class LocalDefEvaluator {
 		
 		//Create a preview response
 		Preview previewResponse = new Preview();
-		/*
+
 		// evaluate the modules individually
 		for( Module module : moduleList )
 		{
@@ -76,7 +76,7 @@ public class LocalDefEvaluator {
 			
 			// add the stats
 			previewResponse.addStats( module.getResponse().getTitle(), module.getResponse().getJSON() );
-		} */
+		}
 		
 		return  previewResponse.getJSON(); 
 		
