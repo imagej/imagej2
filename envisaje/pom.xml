@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-    http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,15 +7,16 @@
     <artifactId>imagej-base-pom</artifactId>
     <version>1.09</version>
   </parent>
-
+  
   <groupId>imagej</groupId>
   <artifactId>envisaje</artifactId>
-  <version>2.0-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <name>ImageJ 2.0 GUI using NetBeans RCP</name>
+  <name>Envisage-ImageJ 2.0 RCP</name>
   <description>Experimental NetBeans RCP version of ImageJ2.</description>
   <url>http://imagejdev.org/</url>
-  <inceptionYear>1997</inceptionYear>
+  <inceptionYear>2011</inceptionYear>
 
   <licenses>
     <license>
@@ -27,32 +25,92 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <modules>
+    <module>branding</module>
+    <module>application</module>
+    <module>annotations</module>
+    <module>annotationProcessors</module>
+    <module>ImageFrame</module>
+    <module>PaintAPI</module>
+    <module>ImageExplorer</module>
+    <module>ImageFileTypes</module>
+    <module>PaintUI</module>
+    <module>RasterLayer</module>
+    <module>ImageNIO</module>
+    <module>LayersUI</module>
+    <module>MiscComponents</module>
+    <module>ToolCustomizers</module>
+    <module>ColorPicker</module>
+    <module>Splines</module>
+    <module>Tools</module>
+    <module>ToolsUI</module>
+    <module>Effects</module>
+    <module>EffectsUI</module>
+    <module>PluginFinder</module>
+    <module>ToolConfigUI</module>
+    <module>ImageCacheDiagnostics</module>
+    <module>FileManagement</module>
+  </modules>
+  
+  
+  <repositories>
+    <repository>
+      <id>netbeans</id>
+      <name>repository hosting netbeans.org api artifacts</name>
+      <url>http://bits.netbeans.org/maven2</url>
+    </repository>
+    <!-- NB: for imagej-base-pom -->
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
 
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <packageName>imagej.envisaje</packageName>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>nbm-maven-plugin</artifactId>
+          <version>3.2</version>
+          <extensions>true</extensions>
+          <configuration>
+            <brandingToken>${brandingToken}</brandingToken>
+            <cluster>foobar</cluster>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <!-- netbeans modules in 6.9+ are 1.6 compatible -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3</version>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
-  <developers>
+  <properties>
+    <netbeans.version>RELEASE691</netbeans.version>
+    <brandingToken>foo</brandingToken>
+    <netbeans.hint.license>bsd</netbeans.hint.license>
+  </properties>
+  
+    <developers>
     <developer>
       <id>wsr</id>
       <name>Wayne Rasband</name>
@@ -175,17 +233,5 @@
       </properties>
     </developer>
   </developers>
-
-  <repositories>
-    <!-- NB: for imagej-base-pom -->
-    <repository>
-      <id>imagej.releases</id>
-      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
-    </repository>
-  </repositories>
-
-  <properties>
-    <netbeans.hint.license>bsd</netbeans.hint.license>
-  </properties>
-
+  
 </project>
