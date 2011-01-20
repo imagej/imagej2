@@ -49,7 +49,12 @@ public class Types
 	{
 		return types.get(name);
 	}
-	
+
+	/** returns the complete list of known types. */
+	public static Type[] getAvailableTypes() {
+		return types.values().toArray(new Type[0]);
+	}
+
 	/** throws an exception if given data array is not compatible with given Type's internal representation */
 	public static void verifyCompatibility(Type type, Object data)
 	{

@@ -2,7 +2,7 @@ package imagej.data;
 
 import imagej.StorageType;
 
-public class BitType implements Type
+public class BitType extends AbstractType
 {
 	@Override
 	public String getName()
