@@ -227,8 +227,6 @@ public class DatasetProcessor extends ImageProcessor
 				scale += kernel[i];
 			if (scale==0)
 				scale = 1.0;
-			else
-				scale = 1.0/scale; //multiplication factor (multiply is faster than divide)
 		}
 		
 		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 25*roiWidth);
@@ -280,7 +278,10 @@ public class DatasetProcessor extends ImageProcessor
 					double sum1 = v1 + 2*v2 + v3 - v7 - 2*v8 - v9;
 					double sum2 = v1 + 2*v4 + v7 - v3 - 2*v6 - v9;
 					value = Math.sqrt(sum1*sum1 + sum2*sum2);
-					setd(p, value);
+					if (this.isFloat)
+						setd(p, value);
+					else
+						setl(p, clamp((long)(value))); // TODO - could add 0.5 to value before cast but would deviate from IJ1
 					tracker.update();
 				}
 				break;
@@ -297,8 +298,11 @@ public class DatasetProcessor extends ImageProcessor
 						k1*v1 + k2*v2 + k3*v3
 						+ k4*v4 + k5*v5 + k6*v6
 						+ k7*v7 + k8*v8 + k9*v9;
-					value = sum * scale;
-					setd(p, value);
+					value = sum / scale;
+					if (this.isFloat)
+						setd(p, value);
+					else
+						setl(p, clamp((long)(value+0.5)));
 					tracker.update();
 				}
 				break;
@@ -422,7 +426,14 @@ public class DatasetProcessor extends ImageProcessor
 			for (int y = 0; y < super.height; y++)
 			{
 				float value = proc.getf(x, y);
-				this.setf(x, y, value);
+				if (this.isFloat)
+					this.setf(x, y, value);
+				else  // integral
+				{
+					long newValue = (long)(value + 0.5);
+					newValue = clamp(newValue);
+					this.setl(x, y, newValue);
+				}
 			}
 		}
 	}
@@ -480,12 +491,26 @@ public class DatasetProcessor extends ImageProcessor
 	@Override
 	public void add(double value)
 	{
-		for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+		if (this.isFloat)
 		{
-			for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
 			{
-				double newValue = getd(x, y) + value;
-				setd(x, y, newValue);
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					double newValue = getd(x, y) + value;
+					setd(x, y, newValue);
+				}
+			}
+		}
+		else // integral
+		{
+			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
+			{
+				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
+				{
+					long newValue = getl(x, y) + (long)value;
+					setl(x, y, newValue);
+				}
 			}
 		}
 	}
@@ -524,15 +549,15 @@ public class DatasetProcessor extends ImageProcessor
 		if (lut.length != expectedLutSize)
 			throw new IllegalArgumentException("lut size ("+lut.length+" values) does not match range of pixel type ("+expectedLutSize+" values)");
 
-		int minValue = (int) this.typeMinL;
+		long minValue = this.typeMinL;
 		
 		for (int x = 0; x < super.width; x++)
 		{
 			for (int y = 0; y < super.height; y++)
 			{
-				int newValue = lut[this.get(x, y) - minValue];
+				int newValue = lut[(int)(this.getl(x, y) - minValue)];
 				
-				this.set(x, y, newValue);
+				this.setl(x, y, newValue);
 			}
 		}
 		
@@ -1133,13 +1158,15 @@ public class DatasetProcessor extends ImageProcessor
 		{
 			double currMax = getMax();
 			
+			double multiplier = Math.log(currMax) / currMax;
+			
 			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
 			{
 				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
 				{
 					long pixValue = getl(x, y);
 					
-					long newValue = (long)(Math.exp(pixValue*(Math.log(currMax)/currMax)));
+					long newValue = (long) Math.exp(pixValue*multiplier);
 				
 					newValue = clamp(newValue);
 					
@@ -1283,7 +1310,7 @@ public class DatasetProcessor extends ImageProcessor
 					newValue = clamp(newValue);
 
 					if (newValue != pixValue)
-						setd(x, y, newValue);
+						setl(x, y, newValue);
 				}
 			}
 		}
@@ -2152,7 +2179,7 @@ public class DatasetProcessor extends ImageProcessor
 				}
 			}
 		}
-		else
+		else // interpolation method != BICUBIC
 		{
 			double min = this.getMin();
 			double xlimit = super.width-1.0, xlimit2 = super.width-1.001;
@@ -2169,9 +2196,10 @@ public class DatasetProcessor extends ImageProcessor
 				{
 					xs = (x-xCenter)/xScale + xCenter;
 					xsi = (int)xs;
+					double value;
 					if (checkCoordinates && ((xsi<xmin) || (xsi>xmax) || (ysi<ymin) || (ysi>ymax)))
 					{
-						setd(index1++, min);
+						value = min;
 					}
 					else  // interpolated pixel within bounds of image
 					{
@@ -2179,19 +2207,19 @@ public class DatasetProcessor extends ImageProcessor
 						{
 							if (xs<0.0) xs = 0.0;
 							if (xs>=xlimit) xs = xlimit2;
-							double value = ip2.getInterpolatedPixel(xs, ys);
+							value = ip2.getInterpolatedPixel(xs, ys);
 							if (isIntegral)
 							{
 								value += 0.5;
 								value = clamp((long)value);
 							}
-							setd(index1++, value);
 						}
 						else  // interpolation type of NONE
 						{
-							setd(index1++, ip2.getd(index2+xsi));
+							value = ip2.getd(index2+xsi);
 						}
 					}
+					setd(index1++, value);
 					tracker.update();
 				}
 			}
