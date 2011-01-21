@@ -23,6 +23,8 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 {
 	private Object arrayOfData;
 	private int[] dimensions;
+	private int uDim;
+	private int vDim;
 	private Type type;
 	private DataAccessor dataAccessor;
 	private Dataset parent;
@@ -55,6 +57,8 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		verifyInputOkay(dimensions, type, arrayOfData);
 		
 		this.dimensions = dimensions;
+		this.uDim = dimensions[0];
+		this.vDim = dimensions[1];
 		this.type = type;
 		this.arrayOfData = arrayOfData;
 		this.dataAccessor = type.allocateArrayAccessor(arrayOfData);
@@ -167,10 +171,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException("index length does not match dataset dimension length");
 		
-		long x = index[0];
-		long y = index[1];
+		long u = index[0];
+		long v = index[1];
 		
-		long sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = v*this.uDim + u;  // TODO - this calc unsafe for big images - could overflow
 		
 		return this.dataAccessor.getReal(sampleNum);
 	}
@@ -181,10 +185,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException("index length does not match dataset dimension length");
 
-		long x = index[0];
-		long y = index[1];
+		long u = index[0];
+		long v = index[1];
 		
-		long sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = v*this.uDim + u;  // TODO - this calc unsafe for big images - could overflow
 		
 		this.dataAccessor.setReal(sampleNum, value);
 	}
@@ -207,10 +211,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException("index length does not match dataset dimension length");
 		
-		long x = index[0];
-		long y = index[1];
+		long u = index[0];
+		long v = index[1];
 		
-		long sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = v*this.uDim + u;  // TODO - this calc unsafe for big images - could overflow
 		
 		return this.dataAccessor.getIntegral(sampleNum);
 	}
@@ -221,10 +225,10 @@ public class PlanarDataset implements Dataset, RecursiveDataset
 		if (axis != 1)
 			throw new IllegalArgumentException("index length does not match dataset dimension length");
 
-		long x = index[0];
-		long y = index[1];
+		long u = index[0];
+		long v = index[1];
 		
-		long sampleNum = y*this.dimensions[0] + x;
+		long sampleNum = v*this.uDim + u;  // TODO - this calc unsafe for big images - could overflow
 		
 		this.dataAccessor.setIntegral(sampleNum, value);
 	}
