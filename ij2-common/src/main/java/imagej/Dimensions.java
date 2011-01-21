@@ -80,5 +80,11 @@ public class Dimensions
 				throw new IllegalArgumentException("verifyDimensions() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
 
-
+	/** calculates the size of a plane from given width and height. Does internal calculations with longs to avoid overflow if possible. */ 
+	public static int calcPlaneSize(int width, int height)
+	{
+		long planeSize = width;
+		planeSize *= height;
+		return (int) planeSize;
+	}
 }
