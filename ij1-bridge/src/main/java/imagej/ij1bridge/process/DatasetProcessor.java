@@ -1,7 +1,6 @@
 package imagej.ij1bridge.process;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -36,6 +35,14 @@ import imagej.process.Span;
 //     - changed get() to not encode float values but casts data to int
 //     - changed resetMinAndMax() to always find min and max values (used to always set to 0/255 for unsigned byte data)
 //     - set/getBackgroundValue() do nothing but return 0 (was different for unsigned byte type)
+//   Some performance ideas
+//     Convert all set/get(index) calls (including f/l/d variants) to set/get(x,y) calls
+//     Minimize calls to calcPlaneSize() and rather increment current plane size as loops continue
+//     Make median calc not sort() but rather an optimized selection
+//     Is there some way to use a DataAccessor to do direct reads/writes? Dataset needs to be able to allocate an appropriate DataAccessor.
+//       User would need to know how a int[] position maps to a long index. We can define by convention.
+//       Also a DataAccessor may not always be appropriate. A CompositeDataset would need a special accessor that kept an array of the subset's
+//         accessors and handed off to the correct one for set/getLong/Double.
 
 /**
  * Implements the ImageProcessor interface for an ImageJ 2.x Dataset. The dataset must be 2-Dimensional.
@@ -240,7 +247,7 @@ public class DatasetProcessor extends ImageProcessor
 		int yEnd = roiY + roiHeight;
 		for (int y=roiY; y<yEnd; y++)
 		{
-			int p  = roiX + y*width;            //points to current pixel
+			int p  = roiX + Dimensions.calcPlaneSize(y,width);            //points to current pixel
 			int p6 = p - (roiX>0 ? 1 : 0);      //will point to v6, currently lower
 			int p3 = p6 - (y>0 ? width : 0);    //will point to v3, currently lower
 			int p9 = p6 + (y<height-1 ? width : 0); // ...  to v9, currently lower
@@ -615,8 +622,8 @@ public class DatasetProcessor extends ImageProcessor
 		int srcIndex, dstIndex;
 		for (int y=r1.y; y<(r1.y+r1.height); y++)
 		{
-			srcIndex = (y-yloc)*srcWidth + (r1.x-xloc);
-			dstIndex = y * width + r1.x;
+			srcIndex = Dimensions.calcPlaneSize(y-yloc,srcWidth) + (r1.x-xloc);
+			dstIndex = Dimensions.calcPlaneSize(y,width) + r1.x;
 			switch (mode)
 			{
 				case Blitter.COPY:
@@ -1213,8 +1220,8 @@ public class DatasetProcessor extends ImageProcessor
 		
 		for (int y=roiY, my=0; y<(roiY+roiHeight); y++, my++)
 		{
-			int i = y * width + roiX;
-			int mi = my * roiWidth;
+			int i = Dimensions.calcPlaneSize(y,width) + roiX;
+			int mi = Dimensions.calcPlaneSize(my,roiWidth);
 			
 			for (int x=roiX; x<(roiX+roiWidth); x++)
 			{
@@ -1956,7 +1963,7 @@ public class DatasetProcessor extends ImageProcessor
 			for (int y=0; y<=dstHeight-1; y++)
 			{
 				ys = (y-dstCenterY)/yScale + srcCenterY;
-				int index = y*dstWidth;
+				int index = Dimensions.calcPlaneSize(y,dstWidth);
 				for (int x=0; x<=dstWidth-1; x++)
 				{
 					xs = (x-dstCenterX)/xScale + srcCenterX;
@@ -1984,28 +1991,28 @@ public class DatasetProcessor extends ImageProcessor
 					if (ys<0.0) ys = 0.0;
 					if (ys>=ylimit) ys = ylimit2;
 				}
-				index1 = super.width*(int)ys;
-				index2 = y*dstWidth;
+				index1 = Dimensions.calcPlaneSize(super.width, (int)ys);
+				index2 = Dimensions.calcPlaneSize(y,dstWidth);
 				for (int x=0; x<=dstWidth-1; x++)
 				{
 					xs = (x-dstCenterX)/xScale + srcCenterX;
+					double value;
 					if (interpolationMethod==BILINEAR)
 					{
 						if (xs<0.0) xs = 0.0;
 						if (xs>=xlimit) xs = xlimit2;
-						double value = getInterpolatedPixel(xs, ys);
+						value = getInterpolatedPixel(xs, ys);
 						if (!this.isFloat)
 						{
 							value += 0.5;
 							value = clamp((long)value);
 						}
-						ip2.setd(index2++, value);
 					}
 					else  // interp == NONE
 					{
-						double value = getd(index1+(int)xs);
-						ip2.setd(index2++, value);
+						value = getd(index1+(int)xs);
 					}
+					ip2.setd(index2++, value);
 					tracker.update();
 				}
 			}
@@ -2050,7 +2057,7 @@ public class DatasetProcessor extends ImageProcessor
 		{
 			for (int y=roiY; y<(roiY + roiHeight); y++)
 			{
-				index = y*super.width + roiX;
+				index = Dimensions.calcPlaneSize(y,super.width) + roiX;
 				tmp3 = tmp1 - y*sa + centerX;
 				tmp4 = tmp2 + y*ca + centerY;
 				for (int x=roiX; x<=xMax; x++)
@@ -2072,13 +2079,14 @@ public class DatasetProcessor extends ImageProcessor
 		{
 			for (int y=roiY; y<(roiY + roiHeight); y++)
 			{
-				index = y*super.width + roiX;
+				index = Dimensions.calcPlaneSize(y,super.width) + roiX;
 				tmp3 = tmp1 - y*sa + centerX;
 				tmp4 = tmp2 + y*ca + centerY;
 				for (int x=roiX; x<=xMax; x++)
 				{
 					xs = x*ca + tmp3;
 					ys = x*sa + tmp4;
+					double value;
 					if ((xs>=-0.01) && (xs<dwidth) && (ys>=-0.01) && (ys<dheight))
 					{
 						if (interpolationMethod==BILINEAR)
@@ -2087,13 +2095,12 @@ public class DatasetProcessor extends ImageProcessor
 							if (xs>=xlimit) xs = xlimit2;
 							if (ys<0.0) ys = 0.0;
 							if (ys>=ylimit) ys = ylimit2;
-							double value = ip2.getInterpolatedPixel(xs, ys);
+							value = ip2.getInterpolatedPixel(xs, ys);
 							if (isIntegral)
 							{
 								value += 0.5;
 								value = clamp((long)value);
 							}
-							setd(index++, value);
 						}
 						else
 						{
@@ -2101,16 +2108,16 @@ public class DatasetProcessor extends ImageProcessor
 							iys = (int)(ys+0.5);
 							if (ixs >= super.width) ixs = super.width - 1;
 							if (iys >= super.height) iys = super.height - 1;
-							setd(index++, ip2.getd(ixs,iys));
+							value = ip2.getd(ixs,iys);
 						}
 					}
 					else
 					{
-						double value = 0;
+						value = 0;
 						if (isIntegral)
 							value = this.getBackgroundValue();
-						setd(index++,value);
 					}
+					setd(index++, value);
 					tracker.update();
 				}
 			}
@@ -2168,7 +2175,7 @@ public class DatasetProcessor extends ImageProcessor
 			for (int y=ymin; y<=ymax; y++)
 			{
 				ys = (y-yCenter)/yScale + yCenter;
-				int index = y*super.width + xmin;
+				int index = Dimensions.calcPlaneSize(y,super.width) + xmin;
 				for (int x=xmin; x<=xmax; x++)
 				{
 					xs = (x-xCenter)/xScale + xCenter;
@@ -2194,8 +2201,8 @@ public class DatasetProcessor extends ImageProcessor
 				ysi = (int)ys;
 				if (ys<0.0) ys = 0.0;
 				if (ys>=ylimit) ys = ylimit2;
-				index1 = y*super.width + xmin;
-				index2 = super.width*(int)ys;
+				index1 = Dimensions.calcPlaneSize(y,super.width) + xmin;
+				index2 = Dimensions.calcPlaneSize(super.width,(int)ys);
 				for (int x=xmin; x<=xmax; x++)
 				{
 					xs = (x-xCenter)/xScale + xCenter;
