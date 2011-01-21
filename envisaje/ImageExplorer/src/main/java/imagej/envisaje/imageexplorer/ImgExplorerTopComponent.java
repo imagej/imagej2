@@ -245,7 +245,7 @@ public final class ImgExplorerTopComponent extends TopComponent implements Explo
 
 
     /* The actions are declared in the layer file and read on demand in the getActions() method.
-     * Firstly, the superclass’s getActions() method is called to obtain default actions. With the
+     * Firstly, the superclass's getActions() method is called to obtain default actions. With the
 help of the method Lookups.forPath(), a Lookup for the declared folder ContextActions/MyTC
 is created. The method lookupAll() then obtains all registered actions implementing the
 Action interface. When creating the menu, a null value is automatically replaced by a separator
