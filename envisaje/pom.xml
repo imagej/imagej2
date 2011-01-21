@@ -26,30 +26,31 @@
     </license>
   </licenses>
   <modules>
-    <module>branding</module>
-    <module>application</module>
-    <module>annotations</module>
-    <module>annotationProcessors</module>
-    <module>ImageFrame</module>
-    <module>PaintAPI</module>
+    <module>ColorPicker</module>
+    <module>Effects</module>
+    <module>EffectsUI</module>
+    <module>FileManagement</module>
+    <module>ImageCacheDiagnostics</module>
     <module>ImageExplorer</module>
     <module>ImageFileTypes</module>
-    <module>PaintUI</module>
-    <module>RasterLayer</module>
+    <module>ImageFrame</module>
     <module>ImageNIO</module>
     <module>LayersUI</module>
     <module>MiscComponents</module>
-    <module>ToolCustomizers</module>
-    <module>ColorPicker</module>
+    <module>PaintAPI</module>
+    <module>PaintUI</module>
+    <module>PluginFinder</module>
+    <module>RasterLayer</module>
     <module>Splines</module>
+    <module>ToolConfigUI</module>
+    <module>ToolCustomizers</module>
     <module>Tools</module>
     <module>ToolsUI</module>
-    <module>Effects</module>
-    <module>EffectsUI</module>
-    <module>PluginFinder</module>
-    <module>ToolConfigUI</module>
-    <module>ImageCacheDiagnostics</module>
-    <module>FileManagement</module>
+    <module>annotationProcessors</module>
+    <module>annotations</module>
+    <module>application</module>
+    <module>branding</module>
+    <module>tests</module>
   </modules>
 
   <repositories>
