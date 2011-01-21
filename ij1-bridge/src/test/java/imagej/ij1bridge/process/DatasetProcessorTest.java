@@ -963,12 +963,18 @@ public class DatasetProcessorTest
 		ij1Proc = new ShortProcessor(5,5,shorts,null);
 		setupData(new int[]{5,5}, true, shorts);
 
+		ij1Proc.setInterpolationMethod(ImageProcessor.NEAREST_NEIGHBOR);
+		proc.setInterpolationMethod(ImageProcessor.NEAREST_NEIGHBOR);
+		
 		ij1Proc.scale(0.5,0.7);
 		proc.scale(0.5,0.7);
 		
 		for (int j = 0; j < shorts.length; j++)
 			assertEquals(ij1Proc.getl(j), proc.getl(j));
 
+		ij1Proc.setInterpolationMethod(ImageProcessor.BILINEAR);
+		proc.setInterpolationMethod(ImageProcessor.BILINEAR);
+		
 		ij1Proc.scale(2.3,1.7);
 		proc.scale(2.3,1.7);
 		
@@ -1018,6 +1024,9 @@ public class DatasetProcessorTest
 		ij1Proc = new ShortProcessor(5,5,shorts,null);
 		setupData(new int[]{5,5}, true, shorts);
 
+		ij1Proc.setInterpolationMethod(ImageProcessor.NEAREST_NEIGHBOR);
+		proc.setInterpolationMethod(ImageProcessor.NEAREST_NEIGHBOR);
+		
 		for (int i = 0; i < 6; i++)
 		{
 			ij1Proc.rotate(90);
@@ -1027,6 +1036,9 @@ public class DatasetProcessorTest
 				assertEquals(ij1Proc.getl(j), proc.getl(j));
 		}
 
+		ij1Proc.setInterpolationMethod(ImageProcessor.BILINEAR);
+		proc.setInterpolationMethod(ImageProcessor.BILINEAR);
+		
 		for (int i = 0; i < 6; i++)
 		{
 			ij1Proc.rotate(-30);
@@ -1036,6 +1048,9 @@ public class DatasetProcessorTest
 				assertEquals(ij1Proc.getl(j), proc.getl(j));
 		}
 
+		ij1Proc.setInterpolationMethod(ImageProcessor.BICUBIC);
+		proc.setInterpolationMethod(ImageProcessor.BICUBIC);
+		
 		for (int i = 0; i < 6; i++)
 		{
 			ij1Proc.rotate(67.4);
