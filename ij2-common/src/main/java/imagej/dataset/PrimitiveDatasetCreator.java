@@ -59,11 +59,13 @@ public class PrimitiveDatasetCreator
 
 		boolean floatData = dataType.isFloat();
 		
-		DataAccessor accessor = dataType.allocateArrayAccessor(arrayOfData);
+		DataAccessor accessor;
 		
 		// special case hack
 		if (arrayOfData instanceof boolean[])
 			accessor = new BooleanArrayAccessor(arrayOfData);
+		else
+			accessor = dataType.allocateArrayAccessor(arrayOfData);
 		
 		int i = 0;
 		while (Index.isValid(index, origin, span))
