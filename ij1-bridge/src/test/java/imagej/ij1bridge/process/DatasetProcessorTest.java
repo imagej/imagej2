@@ -816,7 +816,7 @@ public class DatasetProcessorTest
 		proc.convolve3x3(kernel);
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
@@ -836,7 +836,7 @@ public class DatasetProcessorTest
 		proc.filter(ImageProcessor.BLUR_MORE);
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
 		setupData(new int[]{3,3}, true, shorts);
 		ij1Proc = new ShortProcessor(3,3,shorts.clone(),null);
@@ -845,7 +845,7 @@ public class DatasetProcessorTest
 		proc.filter(ImageProcessor.FIND_EDGES);
 
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
@@ -942,80 +942,93 @@ public class DatasetProcessorTest
 
 	@Test
 	public void testScale() {
-		setupData(new int[]{3,3}, false,
-				new float[]{1,2,3,
-							4,5,6,
-							7,8,9});
+		short[] shorts =
+			new short[]{17,45,106,
+						111,9,92,
+						255,187,13};
+		
+		ImageProcessor ij1Proc;
+		
+		ij1Proc = new ShortProcessor(3,3,shorts,null);
+		setupData(new int[]{3,3}, true, shorts);
 
-		ImageProcessor newProc;
+		ij1Proc.scale(0.5,0.7);
+		proc.scale(0.5,0.7);
 		
-		newProc = proc.duplicate();
-		newProc.setInterpolationMethod(ImageProcessor.NONE);
-		newProc.scale(1.5, 4.3);
-		
-		assertEquals(4, newProc.getd(0), 0);
-		assertEquals(5, newProc.getd(1), 0);
-		assertEquals(5, newProc.getd(2), 0);
-		assertEquals(4, newProc.getd(3), 0);
-		assertEquals(5, newProc.getd(4), 0);
-		assertEquals(5, newProc.getd(5), 0);
-		assertEquals(4, newProc.getd(6), 0);
-		assertEquals(5, newProc.getd(7), 0);
-		assertEquals(5, newProc.getd(8), 0);
-		
-		newProc = proc.duplicate();
-		newProc.setInterpolationMethod(ImageProcessor.NEAREST_NEIGHBOR);
-		newProc.scale(1.5, 4.3);
-		
-		assertEquals(4, newProc.getd(0), 0);
-		assertEquals(5, newProc.getd(1), 0);
-		assertEquals(5, newProc.getd(2), 0);
-		assertEquals(4, newProc.getd(3), 0);
-		assertEquals(5, newProc.getd(4), 0);
-		assertEquals(5, newProc.getd(5), 0);
-		assertEquals(4, newProc.getd(6), 0);
-		assertEquals(5, newProc.getd(7), 0);
-		assertEquals(5, newProc.getd(8), 0);
-		
-		newProc = proc.duplicate();
-		newProc.setInterpolationMethod(ImageProcessor.BICUBIC);
-		newProc.scale(1.5, 4.3);
-		
-		assertEquals(4.95349, newProc.getd(0), 0.00001);
-		assertEquals(5.62015, newProc.getd(1), 0.00001);
-		assertEquals(6.28682, newProc.getd(2), 0.00001);
-		assertEquals(5.65116, newProc.getd(3), 0.00001);
-		assertEquals(6.31783, newProc.getd(4), 0.00001);
-		assertEquals(6.98450, newProc.getd(5), 0.00001);
-		assertEquals(6.34884, newProc.getd(6), 0.00001);
-		assertEquals(7.01550, newProc.getd(7), 0.00001);
-		assertEquals(7.68217, newProc.getd(8), 0.00001);
+		for (int j = 0; j < 9; j++)
+			assertEquals(ij1Proc.getl(j), proc.getl(j));
 
-		newProc = proc.duplicate();
-		newProc.setInterpolationMethod(ImageProcessor.BILINEAR);
-		newProc.scale(1.5, 4.3);
+		ij1Proc.scale(2.3,1.7);
+		proc.scale(2.3,1.7);
 		
-		assertEquals(4.95349, newProc.getd(0), 0.00001);
-		assertEquals(5.62015, newProc.getd(1), 0.00001);
-		assertEquals(6.28682, newProc.getd(2), 0.00001);
-		assertEquals(5.65116, newProc.getd(3), 0.00001);
-		assertEquals(6.31783, newProc.getd(4), 0.00001);
-		assertEquals(6.98450, newProc.getd(5), 0.00001);
-		assertEquals(6.34884, newProc.getd(6), 0.00001);
-		assertEquals(7.01550, newProc.getd(7), 0.00001);
-		assertEquals(7.68217, newProc.getd(8), 0.00001);
+		for (int j = 0; j < 9; j++)
+			assertEquals(ij1Proc.getl(j), proc.getl(j));
 	}
 
 	@Test
 	public void testResizeIntInt() {
-		// fail("Not yet implemented");
-		// TODO
+		short[] shorts =
+			new short[]{17,45,106,
+						111,9,92,
+						255,187,13};
+		
+		ImageProcessor ij1Proc;
+		
+		ij1Proc = new ShortProcessor(3,3,shorts,null);
+		setupData(new int[]{3,3}, true, shorts);
+
+		ij1Proc.resize(5,7);
+		proc.resize(5,7);
+
+		int width = ij1Proc.getWidth();
+		int height = ij1Proc.getHeight();
+		
+		assertEquals(width, proc.getWidth());
+		assertEquals(height, proc.getHeight());
+		
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+				assertEquals(ij1Proc.getl(x,y), proc.getl(x,y));
 	}
 
 	@Test
 	public void testRotate() {
-		// fail("Not yet implemented");
-		// TODO
+		short[] shorts =
+			new short[]{17,45,106,
+						111,9,92,
+						255,187,13};
+		
+		ImageProcessor ij1Proc;
+		
+		ij1Proc = new ShortProcessor(3,3,shorts,null);
+		setupData(new int[]{3,3}, true, shorts);
+
+		for (int i = 0; i < 6; i++)
+		{
+			ij1Proc.rotate(90);
+			proc.rotate(90);
+			
+			for (int j = 0; j < 9; j++)
+				assertEquals(ij1Proc.getl(j), proc.getl(j));
+		}
+
+		for (int i = 0; i < 6; i++)
+		{
+			ij1Proc.rotate(-30);
+			proc.rotate(-30);
+			
+			for (int j = 0; j < 9; j++)
+				assertEquals(ij1Proc.getl(j), proc.getl(j));
+		}
+
+		for (int i = 0; i < 6; i++)
+		{
+			ij1Proc.rotate(49.4);
+			proc.rotate(49.4);
+			
+			for (int j = 0; j < 9; j++)
+				assertEquals(ij1Proc.getl(j), proc.getl(j));
+		}
 	}
 
 	@Test
@@ -1041,13 +1054,13 @@ public class DatasetProcessorTest
 		proc.erode();
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
 		ij1Proc.erode();
 		proc.erode();
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
@@ -1063,13 +1076,13 @@ public class DatasetProcessorTest
 		proc.dilate();
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
 		ij1Proc.dilate();
 		proc.dilate();
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
@@ -1092,13 +1105,38 @@ public class DatasetProcessorTest
 		proc.convolve(kernel,3,3);
 		
 		for (int i = 0; i < 9; i++)
-			assertEquals(ij1Proc.get(i), proc.get(i));
+			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
 	public void testAutoThreshold() {
-		// fail("Not yet implemented");
-		// TODO
+		byte[] bytes =
+			new byte[]{17,45,106,
+						111,9,92,
+						(byte)255,(byte)187,13};
+		setupData(new int[]{3,3}, true, bytes);
+		ImageProcessor ij1Proc = new ByteProcessor(3,3,bytes,null);
+		
+		ij1Proc.autoThreshold();
+		proc.autoThreshold();
+		
+		for (int i = 0; i < 9; i++)
+			assertEquals(ij1Proc.getd(i), proc.getd(i), 0.001);
+		
+		float[] floats =
+			new float[]{1.1f, 2.2f, 3.3f,
+						4.4f, 5.5f, 6.6f,
+						7.7f, 8.8f, 9.9f};
+		
+		setupData(new int[]{3,3}, false, floats);
+		ij1Proc = new FloatProcessor(3,3,floats,null);
+
+		ij1Proc.autoThreshold();
+		proc.autoThreshold();
+		
+		for (int i = 0; i < 9; i++)
+			assertEquals(ij1Proc.getd(i), proc.getd(i), 0.001);
+		
 	}
 
 	@Test
