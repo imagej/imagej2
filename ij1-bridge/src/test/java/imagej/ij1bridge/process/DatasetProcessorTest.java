@@ -288,19 +288,21 @@ public class DatasetProcessorTest
 	@Test
 	public void testGetInterpolatedPixel() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
-		for (int x = 0; x < 3; x++)
+		for (int x = 0; x < 5; x++)
 		{
 			double xD = 0.75*x;
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < 5; y++)
 			{
 				double yD = 1 + 0.4*y;
 				
@@ -314,19 +316,21 @@ public class DatasetProcessorTest
 	@Test
 	public void testGetPixelInterpolated() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
-		for (int x = 0; x < 3; x++)
+		for (int x = 0; x < 5; x++)
 		{
 			double xD = 0.75*x;
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < 5; y++)
 			{
 				double yD = 1 + 0.4*y;
 				
@@ -340,19 +344,21 @@ public class DatasetProcessorTest
 	@Test
 	public void testGetBicubicInterpolatedPixel() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
-		for (int x = 0; x < 3; x++)
+		for (int x = 0; x < 5; x++)
 		{
 			double xD = 0.75*x;
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < 5; y++)
 			{
 				double yD = 1 + 0.4*y;
 				
@@ -798,9 +804,11 @@ public class DatasetProcessorTest
 	@Test
 	public void testConvolve3x3() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		int[] kernel = {-1, 1,-1,
 						 1, 3, 1,
@@ -808,14 +816,13 @@ public class DatasetProcessorTest
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
-		assertEquals(ij1Proc.get(4), proc.get(4));
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 		
 		ij1Proc.convolve3x3(kernel);
 		proc.convolve3x3(kernel);
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < shorts.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
@@ -823,28 +830,30 @@ public class DatasetProcessorTest
 	public void testFilter() {
 		// all filters tested elsewhere indirectly except BLUR_MORE & FIND_EDGES
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		setupData(new int[]{3,3}, true, shorts);
-		ij1Proc = new ShortProcessor(3,3,shorts.clone(),null);
+		setupData(new int[]{5,5}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts.clone(),null);
 		
 		ij1Proc.filter(ImageProcessor.BLUR_MORE);
 		proc.filter(ImageProcessor.BLUR_MORE);
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < shorts.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
-		setupData(new int[]{3,3}, true, shorts);
-		ij1Proc = new ShortProcessor(3,3,shorts.clone(),null);
+		setupData(new int[]{5,5}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts.clone(),null);
 		
 		ij1Proc.filter(ImageProcessor.FIND_EDGES);
 		proc.filter(ImageProcessor.FIND_EDGES);
 
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < shorts.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
@@ -943,39 +952,43 @@ public class DatasetProcessorTest
 	@Test
 	public void testScale() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
 		ij1Proc.scale(0.5,0.7);
 		proc.scale(0.5,0.7);
 		
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < shorts.length; j++)
 			assertEquals(ij1Proc.getl(j), proc.getl(j));
 
 		ij1Proc.scale(2.3,1.7);
 		proc.scale(2.3,1.7);
 		
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < shorts.length; j++)
 			assertEquals(ij1Proc.getl(j), proc.getl(j));
 	}
 
 	@Test
 	public void testResizeIntInt() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
 		ij1Proc.resize(5,7);
 		proc.resize(5,7);
@@ -994,21 +1007,23 @@ public class DatasetProcessorTest
 	@Test
 	public void testRotate() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 
 		for (int i = 0; i < 6; i++)
 		{
 			ij1Proc.rotate(90);
 			proc.rotate(90);
 			
-			for (int j = 0; j < 9; j++)
+			for (int j = 0; j < shorts.length; j++)
 				assertEquals(ij1Proc.getl(j), proc.getl(j));
 		}
 
@@ -1017,16 +1032,16 @@ public class DatasetProcessorTest
 			ij1Proc.rotate(-30);
 			proc.rotate(-30);
 			
-			for (int j = 0; j < 9; j++)
+			for (int j = 0; j < shorts.length; j++)
 				assertEquals(ij1Proc.getl(j), proc.getl(j));
 		}
 
 		for (int i = 0; i < 6; i++)
 		{
-			ij1Proc.rotate(49.4);
-			proc.rotate(49.4);
+			ij1Proc.rotate(67.4);
+			proc.rotate(67.4);
 			
-			for (int j = 0; j < 9; j++)
+			for (int j = 0; j < shorts.length; j++)
 				assertEquals(ij1Proc.getl(j), proc.getl(j));
 		}
 	}
@@ -1053,13 +1068,13 @@ public class DatasetProcessorTest
 		ij1Proc.erode();
 		proc.erode();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < bytes.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
 		ij1Proc.erode();
 		proc.erode();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < bytes.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
@@ -1075,22 +1090,24 @@ public class DatasetProcessorTest
 		ij1Proc.dilate();
 		proc.dilate();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < bytes.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 		
 		ij1Proc.dilate();
 		proc.dilate();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < bytes.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
 	@Test
 	public void testConvolve() {
 		short[] shorts =
-			new short[]{17,45,106,
-						111,9,92,
-						255,187,13};
+			new short[]{17,45,106,907,415,
+						111,9,92,119,1213,
+						255,187,13,45,909,
+						663,122,255,444,333,
+						10,20,30,40,50};
 		
 		float[] kernel = {-1, 1,-1,
 						 1, 3, 1,
@@ -1098,13 +1115,13 @@ public class DatasetProcessorTest
 		
 		ImageProcessor ij1Proc;
 		
-		ij1Proc = new ShortProcessor(3,3,shorts,null);
-		setupData(new int[]{3,3}, true, shorts);
+		ij1Proc = new ShortProcessor(5,5,shorts,null);
+		setupData(new int[]{5,5}, true, shorts);
 		
 		ij1Proc.convolve(kernel,3,3);
 		proc.convolve(kernel,3,3);
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < shorts.length; i++)
 			assertEquals(ij1Proc.getl(i), proc.getl(i));
 	}
 
@@ -1120,7 +1137,7 @@ public class DatasetProcessorTest
 		ij1Proc.autoThreshold();
 		proc.autoThreshold();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < bytes.length; i++)
 			assertEquals(ij1Proc.getd(i), proc.getd(i), 0.001);
 		
 		float[] floats =
@@ -1134,7 +1151,7 @@ public class DatasetProcessorTest
 		ij1Proc.autoThreshold();
 		proc.autoThreshold();
 		
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < floats.length; i++)
 			assertEquals(ij1Proc.getd(i), proc.getd(i), 0.001);
 		
 	}
