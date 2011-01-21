@@ -504,11 +504,12 @@ public class DatasetProcessor extends ImageProcessor
 		}
 		else // integral
 		{
+			long longValue = (long) value;
 			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
 			{
 				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
 				{
-					long newValue = getl(x, y) + (long)value;
+					long newValue = getl(x, y) + longValue;
 					setl(x, y, newValue);
 				}
 			}
