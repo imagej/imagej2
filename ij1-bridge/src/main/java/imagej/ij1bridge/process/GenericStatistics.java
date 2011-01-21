@@ -8,6 +8,7 @@ package imagej.ij1bridge.process;
 import ij.measure.Calibration;
 
 import ij.process.*;
+import imagej.Dimensions;
 
 /** generic image statistics, including histogram. */
 public class GenericStatistics extends ImageStatistics {
@@ -28,7 +29,7 @@ public class GenericStatistics extends ImageStatistics {
 		this.width = ip.getWidth();
 		this.height = ip.getHeight();
 		setup(ip, cal);
-		int planeSize = (int)((long)this.width * (long)this.height);
+		int planeSize = Dimensions.calcPlaneSize(this.width, this.height);
 		this.pixels = new double[planeSize];
 		for (int i = 0; i < planeSize; i++)
 			this.pixels[i] = ip.getd(i);

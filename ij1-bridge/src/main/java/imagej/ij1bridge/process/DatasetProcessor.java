@@ -1,6 +1,7 @@
 package imagej.ij1bridge.process;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -14,6 +15,7 @@ import ij.process.Blitter;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import imagej.Dimensions;
 import imagej.DoubleRange;
 import imagej.LongRange;
 import imagej.data.DataAccessor;
@@ -122,7 +124,7 @@ public class DatasetProcessor extends ImageProcessor
 		this.dataset = dataset;
 		super.width = dimensions[0];
 		super.height = dimensions[1];
-		this.numPixels = (int)((long)super.width * (long)super.height);
+		this.numPixels = Dimensions.calcPlaneSize(super.width, super.height);
 		this.type = dataset.getType();
 		this.pixels8 = null;
 		this.snapshot = null;
@@ -229,7 +231,7 @@ public class DatasetProcessor extends ImageProcessor
 				scale = 1.0;
 		}
 		
-		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 25*roiWidth);
+		ProgressTracker tracker = new ProgressTracker(this, Dimensions.calcPlaneSize(roiWidth,roiHeight), 25*roiWidth);
 		
 		Object pixelsCopy = getPixelsCopy();
 		DataAccessor accessor = this.type.allocateArrayAccessor(pixelsCopy);
@@ -504,12 +506,11 @@ public class DatasetProcessor extends ImageProcessor
 		}
 		else // integral
 		{
-			long longValue = (long) value;
 			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
 			{
 				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
 				{
-					long newValue = getl(x, y) + longValue;
+					long newValue = getl(x, y) + (long)value;
 					setl(x, y, newValue);
 				}
 			}
@@ -610,7 +611,7 @@ public class DatasetProcessor extends ImageProcessor
 		DataAccessor srcAccessor = this.type.allocateArrayAccessor(src);
 		r1 = r1.intersection(r2);
 		boolean useDBZValue = !Float.isInfinite(divideByZeroValue);
-		ProgressTracker tracker = new ProgressTracker(this, ((long)r1.width)*r1.height, 20*r1.width);
+		ProgressTracker tracker = new ProgressTracker(this, Dimensions.calcPlaneSize(r1.width,r1.height), 20*r1.width);
 		int srcIndex, dstIndex;
 		for (int y=r1.y; y<(r1.y+r1.height); y++)
 		{
@@ -1709,6 +1710,8 @@ public class DatasetProcessor extends ImageProcessor
 		{
 			double currMax = getMax();
 			
+			double multiplier = currMax/Math.log(currMax);
+			
 			for (int x = super.roiX; x < (super.roiX+super.roiWidth); x++)
 			{
 				for (int y = super.roiY; y < (super.roiY+super.roiHeight); y++)
@@ -1719,7 +1722,7 @@ public class DatasetProcessor extends ImageProcessor
 					if (pixValue <= 0)
 						newValue = 0;
 					else 
-						newValue = (long)(Math.log(pixValue)*(currMax/Math.log(currMax)));
+						newValue = (long)(Math.log(pixValue)*multiplier);
 			
 					newValue = clamp(newValue);
 					
@@ -1945,7 +1948,7 @@ public class DatasetProcessor extends ImageProcessor
 
 		ImageProcessor ip2 = createProcessor(dstWidth, dstHeight);
 
-		ProgressTracker tracker = new ProgressTracker(this, ((long)dstHeight)*dstWidth, 30*dstWidth);
+		ProgressTracker tracker = new ProgressTracker(this, Dimensions.calcPlaneSize(dstWidth, dstHeight), 30*dstWidth);
 
 		double xs, ys;
 		if (interpolationMethod==BICUBIC)
@@ -2041,7 +2044,7 @@ public class DatasetProcessor extends ImageProcessor
 		double xlimit = super.width-1.0, xlimit2 = super.width-1.001;
 		double ylimit = super.height-1.0, ylimit2 = super.height-1.001;
 
-		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 30*roiWidth);
+		ProgressTracker tracker = new ProgressTracker(this, Dimensions.calcPlaneSize(roiWidth,roiHeight), 30*roiWidth);
 
 		if (interpolationMethod==BICUBIC)
 		{
@@ -2158,7 +2161,7 @@ public class DatasetProcessor extends ImageProcessor
 		int index1, index2, xsi, ysi;
 		double ys, xs;
 
-		ProgressTracker tracker = new ProgressTracker(this, ((long)roiWidth)*roiHeight, 30*roiWidth);
+		ProgressTracker tracker = new ProgressTracker(this, Dimensions.calcPlaneSize(roiWidth,roiHeight), 30*roiWidth);
 
 		if (interpolationMethod==BICUBIC)
 		{
