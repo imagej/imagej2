@@ -45,8 +45,6 @@ public class LocalDefEvaluator {
 			moduleList.add( moduleCopy );
 		}
 		
-		// TODO:use wires for ordering
-		// TODO:use modules connectors for input/outputs		
 		// TODO: extend checking and ordering logic
 		
 		// Create a loci workflow from the module instances and wires
