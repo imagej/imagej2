@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Start {
+import java.io.Serializable;
+
+public class Start implements Serializable {
 	
 	private Long start;
 	

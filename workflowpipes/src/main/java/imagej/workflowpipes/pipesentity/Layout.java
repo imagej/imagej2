@@ -1,12 +1,14 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
+
 /**
  * The Layout class maps the UI's javascript components to a Java class structure
  * @author rick
  *
  */
-public class Layout {
-
+public class Layout implements Serializable {
+    
 	String layoutID;
 	String layoutDefinition;
 	String layoutName;

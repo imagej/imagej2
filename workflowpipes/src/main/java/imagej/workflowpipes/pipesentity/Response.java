@@ -1,12 +1,12 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import org.json.JSONObject;
 
-public class Response {
+public class Response implements Serializable {
 	
-
 	private HashMap<String,Object> otherStatsHashMap = new HashMap<String, Object>(); 
 	
 	private String title;

@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,7 +11,7 @@ import org.json.JSONObject;
  * @author rick
  *
  */
-public class Preview {
+public class Preview implements Serializable {
 	
 	
 	private JSONObject statsPua = new JSONObject();

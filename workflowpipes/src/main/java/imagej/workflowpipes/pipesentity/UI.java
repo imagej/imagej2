@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class UI {
+import java.io.Serializable;
+
+public class UI implements Serializable {
 	
 	public UI( String ui)
 	{

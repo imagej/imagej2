@@ -1,8 +1,9 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
-public class Content {
+public class Content implements Serializable {
 	private Type type;
 	private Count count;
 	

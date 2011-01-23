@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Description {
+import java.io.Serializable;
+
+public class Description implements Serializable {
 
 	private String description;
 	

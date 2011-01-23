@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class URL {
+import java.io.Serializable;
+
+public class URL implements Serializable {
 
 	private String url;
 	

@@ -1,6 +1,9 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Duration {
+import java.io.Serializable;
+
+public class Duration implements Serializable {
+    
 	private double duration;
 	
 	public Duration( double duration )

@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Count {
+import java.io.Serializable;
+
+public class Count implements Serializable {
 	
 	private Integer count = 0;
 	

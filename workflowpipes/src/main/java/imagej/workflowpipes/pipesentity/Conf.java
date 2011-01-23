@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import org.json.JSONObject;
 /*
  * Used to represent the conf JSON entity
  */
-public class Conf {
+public class Conf implements Serializable {
 	
 	private Name name;
 	private Type type;

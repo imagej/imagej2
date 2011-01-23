@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /**
@@ -7,7 +8,7 @@ import org.json.JSONObject;
  * @author rick
  *
  */
-public class Error {
+public class Error implements Serializable {
 
 	private Type type;
 	private Message message;

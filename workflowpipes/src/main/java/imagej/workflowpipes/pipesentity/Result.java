@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
  * @author ipatron
  * 
  */
-public class Result {
+public class Result implements Serializable {
 
 	private Name name;
 	private Description description;
