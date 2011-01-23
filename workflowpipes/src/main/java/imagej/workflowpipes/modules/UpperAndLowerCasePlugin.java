@@ -8,7 +8,7 @@ package imagej.workflowpipes.modules;
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
@@ -18,11 +18,16 @@ import imagej.workflow.plugin.annotations.Output;
  * 
  * @author aivar
  */
-@Input
-@Output({ @Img(UpperAndLowerCasePlugin.UPPER), @Img(UpperAndLowerCasePlugin.LOWER) })
+@Input({
+    @Item(name=Input.DEFAULT, type=Item.Type.STRING)
+})
+@Output({
+    @Item(name=UpperAndLowerCasePlugin.UPPER, type=Item.Type.STRING),
+    @Item(name=UpperAndLowerCasePlugin.LOWER, type=Item.Type.STRING)
+})
 public class UpperAndLowerCasePlugin extends AbstractPlugin implements IPlugin {
-    static final String UPPER = "UPPER";
-    static final String LOWER = "LOWER";
+    static final String UPPER = "Upper cased string";
+    static final String LOWER = "Lower cased string";
 
     public void process() {
         System.out.println("in UpperAndLowerCasePlugin");

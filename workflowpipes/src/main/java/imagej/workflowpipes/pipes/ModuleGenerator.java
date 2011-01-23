@@ -10,6 +10,7 @@ import imagej.workflowpipes.modules.ModuleBase;
 import imagej.workflowpipes.modules.Output;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Type;
+import imagej.workflowpipes.util.DeepCopy;
 
 public class ModuleGenerator {
 	
@@ -50,7 +51,7 @@ public class ModuleGenerator {
 		{
 			// Create a module from the iModuleInfo ...
 			Module module = new ModuleBase( iModuleInfo );
-			
+
 			if (DEBUG) System.out.println("Found module name " + module.getType().getValue() );
 			
 			// add the module
@@ -83,8 +84,8 @@ public class ModuleGenerator {
 			// TODO implement deep copy() to allow multiple instances
 			if ( module.getType().getValue().equals( moduleType ) )
 			{
-				// return
-				return module;
+				// return a deep copy of this module
+				return (Module) DeepCopy.copy( module );
 			}
 		}
 		//TODO add error handling

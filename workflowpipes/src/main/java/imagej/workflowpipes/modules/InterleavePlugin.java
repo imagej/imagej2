@@ -8,20 +8,26 @@ package imagej.workflowpipes.modules;
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
 /**
- * Dummy plugin that takes in two strings and interleaves them as the output.
+ * Plugin that takes in two strings and interleaves them as the output.
  * 
- * @author aivar
+ * @author Aivar
  */
-@Input({ @Img(InterleavePlugin.FIRST), @Img(InterleavePlugin.SECOND) } )
-@Output
+@Input({
+    @Item(name=InterleavePlugin.FIRST, type=Item.Type.STRING),
+    @Item(name=InterleavePlugin.SECOND, type=Item.Type.STRING)
+
+})
+@Output({
+    @Item(name=Output.DEFAULT, type=Item.Type.STRING)
+})
 public class InterleavePlugin extends AbstractPlugin implements IPlugin {
-    static final String FIRST = "FIRST";
-    static final String SECOND = "SECOND";
+    static final String FIRST = "First string";
+    static final String SECOND = "Second string";
 
     public void process() {
         System.out.println("In InterleavePlugin");
