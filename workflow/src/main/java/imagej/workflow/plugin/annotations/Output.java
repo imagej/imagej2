@@ -15,8 +15,28 @@ import net.java.sezpoz.Indexable;
 import imagej.workflow.plugin.IPlugin;
 
 /**
+ * Annotation for a plugin output.  Contains a list of @Items.
  *
- * @author aivar
+ * <p>
+ * Examples:
+ * <p>
+ *   @Output
+ *     Annotation with empty list of items.  By default this will be treated as
+ *     a single output to the current image.
+ * <p>
+ *   @Output({
+ *     @Item(
+ *       name = "Scale factor",
+ *       type = Item.FLOATING;
+ *       floating = 1.0;
+ *     ),
+ *     @Item(
+ *       name = Output image",
+ *       type = Item.IMAGE
+ *     )
+ *   })
+ *
+ * @author Aivar Grislis
  */
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME) //SOURCE) //TODO was RUNTIME, sezPoz wants SOURCE:
@@ -26,5 +46,9 @@ public @interface Output {
     public final String DEFAULT = "OUTPUT";
     // see Input
     //Img[] value() default { @Img };
-    Img[] value() default {};
+
+    //TODO Work in progress, WAS:
+    //Img[] value() default {};
+
+    Item[] value() default {};
 }

@@ -9,6 +9,7 @@ import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
@@ -16,7 +17,11 @@ import imagej.workflow.plugin.annotations.Output;
  *
  * @author aivar
  */
-@Input({ @Img(DummyPlugin2.FIRST), @Img(DummyPlugin2.SECOND) } )
+//TODO old style: @Input({ @Img(DummyPlugin2.FIRST), @Img(DummyPlugin2.SECOND) } )
+@Input({
+    @Item(name = DummyPlugin2.FIRST, type = Item.Type.ITEM),
+    @Item(name = DummyPlugin2.SECOND, type = Item.Type.ITEM)
+})
 @Output
 public class DummyPlugin2 extends AbstractPlugin implements IPlugin {
     static final String FIRST = "FIRST";

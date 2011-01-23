@@ -38,7 +38,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
@@ -107,7 +107,8 @@ public class PluginAnnotations {
      * @param name
      */
     static void nameNotAnnotated(InputOutput inOut, String name) {
-        System.out.println("Missing annotation: @" + ((InputOutput.INPUT == inOut) ? "In" : "Out") + "put({@Img=\"" + name + "\"})" );
+        //TODO this message was for annotation Img, the new Item annotation is different
+        System.out.println("Missing annotation: @" + ((InputOutput.INPUT == inOut) ? "In" : "Out") + "put({@tem=\"" + name + "\"})" );
     }
 
     /**
@@ -122,13 +123,14 @@ public class PluginAnnotations {
             Annotation annotation = pluginClass.getAnnotation(Input.class);
             if (annotation instanceof Input) {
                 Input inputs = (Input) annotation;
-                Img images[] = inputs.value();
-                if (0 == images.length) {
+                Item items[] = inputs.value();
+                if (0 == items.length) {
                     set.add(Input.DEFAULT);
                 }
                 else {
-                    for (Img image : images) {
-                        set.add(image.value());
+                    for (Item item : items) {
+                        if (Item.Type.IMAGE == item.type())
+                        set.add(item.name());
                     }
                 }
             }
@@ -148,13 +150,13 @@ public class PluginAnnotations {
             Annotation annotation = pluginClass.getAnnotation(Output.class);
             if (annotation instanceof Output) {
                 Output inputs = (Output) annotation;
-                Img images[] = inputs.value();
-                if (0 == images.length) {
+                Item items[] = inputs.value();
+                if (0 == items.length) {
                     set.add(Output.DEFAULT);
                 }
                 else {
-                    for (Img image : images) {
-                        set.add(image.value());
+                    for (Item item : items) {
+                        set.add(item.name());
                     }
                 }
             }
