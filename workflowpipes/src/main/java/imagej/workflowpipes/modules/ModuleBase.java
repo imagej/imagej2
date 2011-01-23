@@ -26,6 +26,7 @@ import imagej.workflowpipes.pipesentity.Tag;
 import imagej.workflowpipes.pipesentity.Terminal;
 import imagej.workflowpipes.pipesentity.Type;
 import imagej.workflowpipes.pipesentity.UI;
+import java.io.Serializable;
 
 public class ModuleBase extends Module {
     List<NameTypeDesc> _nameTypeDescList = new ArrayList<NameTypeDesc>();
@@ -166,7 +167,7 @@ public class ModuleBase extends Module {
          * Keeps track of associated name, type, and description.
          *
          */
-        class NameTypeDesc {
+        class NameTypeDesc implements Serializable {
             private final String _name;
             private final String _type;
             private final String _desc;
