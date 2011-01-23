@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Name {
+import java.io.Serializable;
+
+public class Name implements Serializable {
 
 	private String nameString;
 	

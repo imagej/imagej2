@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Terminal {
+import java.io.Serializable;
+
+public class Terminal implements Serializable {
 	
 	//populate with defaults
 	private String typeKey;

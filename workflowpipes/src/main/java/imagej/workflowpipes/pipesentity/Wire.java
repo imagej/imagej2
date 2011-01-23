@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ import org.json.JSONObject;
  * @author rick
  *
  */
-public class Wire {
+public class Wire implements Serializable {
 	
 	private ID id;
 	private Src src;

@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.json.JSONObject;
@@ -9,7 +10,7 @@ import org.json.JSONObject;
  * @author rick
  *
  */
-public class Prop {
+public class Prop implements Serializable {
 	
 	private Connector connector;
 	

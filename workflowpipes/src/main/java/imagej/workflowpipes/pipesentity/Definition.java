@@ -1,5 +1,6 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /**
@@ -7,7 +8,7 @@ import org.json.JSONObject;
  * @author ipatron
  *
  */
-public abstract class Definition {
+public abstract class Definition implements Serializable {
 
 	JSONObject jsonObject;
 	

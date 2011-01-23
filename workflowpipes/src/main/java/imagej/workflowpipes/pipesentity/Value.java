@@ -1,11 +1,13 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
+
 /**
  * Represents the value JSON entity
  * @author rick
  *
  */
-public class Value {
+public class Value implements Serializable {
 	
 	private String value;
 	

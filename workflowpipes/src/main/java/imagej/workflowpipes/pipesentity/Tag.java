@@ -1,8 +1,9 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Tag {
+public class Tag implements Serializable {
 	
 	private String tag;
 

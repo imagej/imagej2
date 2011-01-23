@@ -1,6 +1,8 @@
 package imagej.workflowpipes.pipesentity;
 
-public class Favicon {
+import java.io.Serializable;
+
+public class Favicon implements Serializable {
 
 	private URL url;
 	

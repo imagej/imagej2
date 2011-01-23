@@ -1,11 +1,13 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
+
 /**
  * Represents the pipes error message
  * @author rick
  *
  */
-public class Message {
+public class Message implements Serializable {
 
 	private String message;
 	

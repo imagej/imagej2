@@ -1,8 +1,9 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
-public class Src {
+public class Src implements Serializable {
 	
 	private String moduleid;
 	private String id;

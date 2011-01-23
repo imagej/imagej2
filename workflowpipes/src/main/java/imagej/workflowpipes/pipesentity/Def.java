@@ -1,14 +1,13 @@
 package imagej.workflowpipes.pipesentity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /*
  * Match the JSON entity 'def'
  */
-public class Def 
-{
+public class Def implements Serializable {
 	
 	private JSONArray modulesArrayJSON;
 	private ArrayList<Wire> wires = new ArrayList<Wire>();

@@ -3,8 +3,9 @@ package imagej.workflowpipes.pipesentity;
 import org.json.JSONObject;
 
 import imagej.workflowpipes.pipesapi.Module;
+import java.io.Serializable;
 
-public class Info {
+public class Info implements Serializable {
 	
 	private Module pipesModule;
 	
