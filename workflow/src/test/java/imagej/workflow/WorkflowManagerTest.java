@@ -40,6 +40,8 @@ public class WorkflowManagerTest extends TestCase {
 
     public void testDiscovery()
     {
+        System.out.println("testDiscovery");
+        
         String xml1 = "<workflow>"
                     + "  <name>My Workflow1</name>"
                     + "  <modules>"

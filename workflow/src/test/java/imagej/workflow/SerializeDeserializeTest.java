@@ -43,6 +43,8 @@ public class SerializeDeserializeTest extends TestCase
      */
     public void testSerialization()
     {
+        System.out.println("testSerialization");
+
         DummyComponent testComponentA = new DummyComponent();
         testComponentA.setName("A");
         testComponentA.setInputNames(new String[] { "ONE", "TWO" });

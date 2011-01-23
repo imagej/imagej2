@@ -129,7 +129,7 @@ public class PluginAnnotations {
                 }
                 else {
                     for (Item item : items) {
-                        if (Item.Type.IMAGE == item.type())
+                        //TODO if (Item.Type.IMAGE == item.type())
                         set.add(item.name());
                     }
                 }
