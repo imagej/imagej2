@@ -42,6 +42,8 @@ public class PluginWiringTest extends TestCase {
 
     public void testPluginWiring()
     {
+        System.out.println("testPluginWiring");
+
         // create some test plugin modules
         PluginModule module1 = new PluginModule("imagej.workflow.DummyPlugin");
         PluginModule module2 = new PluginModule("imagej.workflow.DummyPlugin2");

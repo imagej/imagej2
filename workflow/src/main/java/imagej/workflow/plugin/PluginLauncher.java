@@ -140,6 +140,12 @@ public class PluginLauncher implements IPluginLauncher {
         @Override
         public void run() {
             Set<String> inputNames = m_annotations.getInputNames();
+
+            //TODO
+            System.out.println("INPUT NAMES");
+            for (String name: inputNames) {
+                System.out.println("INPUT NAME IS " + name);
+            }
             while (!m_quit) {
                 // assemble a set of input images
                 Map<String, ItemWrapper> inputImages = new HashMap();

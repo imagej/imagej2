@@ -36,6 +36,7 @@ public class FinalizeTest extends TestCase {
 
     public void testFinalize()
     {
+        System.out.println("testFinalize");
         DummyComponent testComponentA = new DummyComponent();
         testComponentA.setName("A");
         testComponentA.setInputNames(new String[] { "ONE", "TWO" });
