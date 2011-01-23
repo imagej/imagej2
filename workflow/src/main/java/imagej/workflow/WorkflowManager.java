@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 import imagej.workflow.util.xmllight.XMLException;
@@ -174,20 +174,20 @@ public class WorkflowManager implements IWorkflowManager {
         // annotations.  Most will have both but its not required.
 
         // look for IPlugins with Input annotation
-        for (final IndexItem<Input, IPlugin> item : Index.load(Input.class, IPlugin.class)) {
+        for (final IndexItem<Input, IPlugin> indexItem : Index.load(Input.class, IPlugin.class)) {
             PluginModuleInfo pluginInfo = getPluginInfo(
                     null, Type.INPUT,
-                    item.className(), item.annotation().value());
+                    indexItem.className(), indexItem.annotation().value());
             pluginInfos.put(pluginInfo.getName(), pluginInfo);
         }
 
         // look for IPlugins with Output annotation
-        for (final IndexItem<Output, IPlugin> item : Index.load(Output.class, IPlugin.class)) {
-            String fullName = item.className();
+        for (final IndexItem<Output, IPlugin> indexItem : Index.load(Output.class, IPlugin.class)) {
+            String fullName = indexItem.className();
             PluginModuleInfo pluginInfo = getPluginInfo(
                     (PluginModuleInfo) pluginInfos.get(PluginModuleInfo.getName(fullName)),
                     Type.OUTPUT,
-                    fullName, item.annotation().value());
+                    fullName, indexItem.annotation().value());
             pluginInfos.put(pluginInfo.getName(), pluginInfo);
         };
         return pluginInfos;
@@ -200,22 +200,22 @@ public class WorkflowManager implements IWorkflowManager {
      * @param info existing plugin info or null
      * @param inputOrOutput whether input or output annotation
      * @param fullName full package and class name
-     * @param images array of Img annotations
+     * @param items array of Item annotations
      * @return info
      */
-    private PluginModuleInfo getPluginInfo(PluginModuleInfo info, Type inputOrOutput, String fullName, Img[] images) {
+    private PluginModuleInfo getPluginInfo(PluginModuleInfo info, Type inputOrOutput, String fullName, Item[] items) {
         if (null == info) {
             info = new PluginModuleInfo(fullName);
         }
 
         // build list of image names
         List<String> names = new ArrayList<String>();
-        if (0 == images.length) {
+        if (0 == items.length) {
             names.add(Type.INPUT == inputOrOutput ? Input.DEFAULT : Output.DEFAULT);
         }
         else {
-            for (Img image : images) {
-                names.add(image.value());
+            for (Item item : items) {
+                names.add(item.name());
             }
         }
 

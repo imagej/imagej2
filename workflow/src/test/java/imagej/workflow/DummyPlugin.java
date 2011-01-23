@@ -8,7 +8,7 @@ package imagej.workflow;
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
 import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.annotations.Img;
+import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
 
@@ -17,7 +17,10 @@ import imagej.workflow.plugin.annotations.Output;
  * @author aivar
  */
 @Input
-@Output({ @Img(DummyPlugin.UPPER), @Img(DummyPlugin.LOWER) })
+@Output({
+    @Item(name = DummyPlugin.UPPER, type=Item.Type.ITEM),
+    @Item(name = DummyPlugin.LOWER, type=Item.Type.ITEM)
+})
 public class DummyPlugin extends AbstractPlugin implements IPlugin {
     static final String UPPER = "UPPER";
     static final String LOWER = "LOWER";
