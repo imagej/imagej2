@@ -29,14 +29,9 @@ public class WorkflowDebugger {
     private static final String WEB_DIR = "web";
     private static final String PREVIEW_DIR = "preview";
     private static final String IMAGE = "image";
-   // private static final String PREVIEW_FILE_DIR =
-   //         WEB_DIR + File.pathSeparator + PREVIEW_DIR;
-   // private static final String PREVIEW_FILE_NAME =
-   //         PREVIEW_FILE_DIR + File.pathSeparator + IMAGE;
     private static final String PREVIEW_FILE_DIR = WEB_DIR + "/" + PREVIEW_DIR;
     private static final String PREVIEW_FILE_NAME = PREVIEW_FILE_DIR + "/" + IMAGE;
-    private static final String PREVIEW_WEB_NAME =
-           /* WEB_DIR + '/' + */ PREVIEW_DIR + '/' + IMAGE;
+    private static final String PREVIEW_WEB_NAME = PREVIEW_DIR + '/' + IMAGE;
     private Object m_synchObject = new Object();
     private List<DebugInfo> m_debugInfoList = new ArrayList<DebugInfo>();
     private List<PreviewInfo> m_previewInfoList = new ArrayList<PreviewInfo>();
@@ -91,7 +86,10 @@ public class WorkflowDebugger {
                                 FORMAT);
                         m_previewFileList.add(file);
                         content = "<html><body>"
-                                + "<img src='" + webName + "'/>"
+                                +   "<a href='" + webName
+                                +       "' target='_blank'>"    // open link in new window
+                                +     "<img src='" + webName + "'/>"
+                                +   "</a>"
                                 + "</body></html>";
                     }
                     else {
