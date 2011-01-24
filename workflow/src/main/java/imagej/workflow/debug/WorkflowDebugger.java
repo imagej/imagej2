@@ -36,7 +36,7 @@ public class WorkflowDebugger {
     private static final String PREVIEW_FILE_DIR = WEB_DIR + "/" + PREVIEW_DIR;
     private static final String PREVIEW_FILE_NAME = PREVIEW_FILE_DIR + "/" + IMAGE;
     private static final String PREVIEW_WEB_NAME =
-            WEB_DIR + '/' + PREVIEW_DIR + '/' + IMAGE;
+           /* WEB_DIR + '/' + */ PREVIEW_DIR + '/' + IMAGE;
     private Object m_synchObject = new Object();
     private List<DebugInfo> m_debugInfoList = new ArrayList<DebugInfo>();
     private List<PreviewInfo> m_previewInfoList = new ArrayList<PreviewInfo>();
