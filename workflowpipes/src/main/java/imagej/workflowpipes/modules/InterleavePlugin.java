@@ -26,8 +26,8 @@ import imagej.workflow.plugin.annotations.Output;
     @Item(name=Output.DEFAULT, type=Item.Type.STRING)
 })
 public class InterleavePlugin extends AbstractPlugin implements IPlugin {
-    static final String FIRST = "First string";
-    static final String SECOND = "Second string";
+    public static final String FIRST = "First string";
+    public static final String SECOND = "Second string";
 
     public void process() {
         System.out.println("In InterleavePlugin");
