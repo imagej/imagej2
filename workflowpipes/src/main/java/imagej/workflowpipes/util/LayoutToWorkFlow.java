@@ -45,8 +45,7 @@ public class LayoutToWorkFlow {
 
                 System.out.println("Module Name " + module.getName().getValue() + " Id " + module.getID().getValue());
                 if (!"Pipe Output".equals(name)) { //TODO "Pipe Output" is an internal Pipes plugin
-                  //  System.out.println("id is " + module.getID().getValue()); // i.e. "sw-9" //TODO might be necessary to distinguish instances
-                    IModule lociModule = createLociModuleInstanceForName(name);
+                    IModule lociModule = createLociModuleInstanceForName(name, id);
                     moduleMap.put(id, lociModule);
                     workflow.add(lociModule);
                 }
@@ -117,12 +116,13 @@ public class LayoutToWorkFlow {
             workflow.clear();
         }
 
-        private static IModule createLociModuleInstanceForName(String name) {
+        private static IModule createLociModuleInstanceForName(String name, String instance) {
             IModule module = null;
             IModuleInfo moduleInfos[] = WorkflowManager.getInstance().getModuleInfos();
             for (IModuleInfo moduleInfo : moduleInfos) {
                 if (moduleInfo.getName().equals(name)) {
-                    module = WorkflowManager.getInstance().createInstance(moduleInfo);
+                    // create module and pass in the unique instance identifier
+                    module = WorkflowManager.getInstance().createInstance(moduleInfo, instance);
                     break;
                 }
             }
