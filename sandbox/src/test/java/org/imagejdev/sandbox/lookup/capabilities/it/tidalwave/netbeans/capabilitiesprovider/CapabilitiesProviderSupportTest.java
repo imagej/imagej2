@@ -25,6 +25,7 @@
 package org.imagejdev.sandbox.lookup.capabilities.it.tidalwave.netbeans.capabilitiesprovider;
 
 import java.util.Date;
+import org.imagejdev.sandbox.lookup.capabilities.it.tidalwave.netbeans.capabilitiesprovider.CapabilitiesProviderSupport;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
