@@ -98,10 +98,11 @@
 			<!-- NB: Generate javadocs as part of site generation. -->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<!-- NB: Workaround for javadoc bug when classes in the default package
-					access classes from non-default packages. See:
-					http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
 				<configuration>
+					<maxmemory>1024m</maxmemory>
+					<!-- NB: Workaround for javadoc bug when classes in the default
+						package access classes from non-default packages. See:
+						http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
 					<use>false</use>
 				</configuration>
 			</plugin>
