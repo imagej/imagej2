@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,6 +30,7 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+import org.openide.windows.IOProvider;
 
 public final class TestRunAction implements ActionListener {
 
@@ -39,7 +41,8 @@ public final class TestRunAction implements ActionListener {
         try {
             //this.findTopLevelMenu("Menu_a");
             this.registerTopLevelMenu("Menu_a", "MenuA");
-            this.findTopLevelMenu("Menu_a");
+            this.addItemToMenu(new JMenuItem("SubMenu"), "Menu_a");
+
 
             //new ActionMultiFile();
             //testShortcutsFolderThisWorked();
@@ -53,70 +56,84 @@ public final class TestRunAction implements ActionListener {
         }
         // DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(sb.toString(), NotifyDescriptor.INFORMATION_MESSAGE));
 
-                sb.append("getFileObject=======================\n");
-                FileObject root = Repository.getDefault().getDefaultFileSystem().getRoot();
-                FileObject dir = root.getFileObject("Menu");
-                FileObject[] kids = dir.getChildren();
-                for (int i = 0; i < kids.length; i++) {
-                    FileObject fileObject = kids[i];
-                    sb.append(fileObject.getName() + " > " + fileObject.getClass().getName());
-        
-                    DataObject dob = null;
-                    try {
-                        dob = DataObject.find(fileObject);
-                    } catch (DataObjectNotFoundException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-        
-                    InstanceCookie cookie = (InstanceCookie) dob.getCookie(InstanceCookie.class);
-                    if (cookie != null) {
-                        try {
-                            JMenuItem theMenu = (JMenuItem) cookie.instanceCreate();
-                            Container parent = theMenu.getParent();
-                            sb.append("parent=").append(parent.getClass().getName());
-                        } catch (IOException ex) {
-                            Exceptions.printStackTrace(ex);
-                        } catch (ClassNotFoundException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-                    sb.append("\n");
-                }
-                sb.append("Lookups.forPath=======================\n");
-                Lookup lookup = Lookups.forPath("Menu");
-                Collection c = lookup.lookupAll(Object.class);
-                for (Iterator it = c.iterator(); it.hasNext();) {
-                    Object object = it.next();
-                    sb.append(object.getClass().getName() + " " + object.getClass().getSuperclass().getName() + "\n");
-                }
-        
-                DialogDisplayer.getDefault().notify(
-                        new NotifyDescriptor.Message(sb.toString(), NotifyDescriptor.INFORMATION_MESSAGE));
+//                sb.append("getFileObject=======================\n");
+//                FileObject root = Repository.getDefault().getDefaultFileSystem().getRoot();
+//                FileObject dir = root.getFileObject("Menu");
+//                FileObject[] kids = dir.getChildren();
+//                for (int i = 0; i < kids.length; i++) {
+//                    FileObject fileObject = kids[i];
+//                    sb.append(fileObject.getName() + " > " + fileObject.getClass().getName());
+//
+//                    DataObject dob = null;
+//                    try {
+//                        dob = DataObject.find(fileObject);
+//                    } catch (DataObjectNotFoundException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//
+//                    InstanceCookie cookie = (InstanceCookie) dob.getCookie(InstanceCookie.class);
+//                    if (cookie != null) {
+//                        try {
+//                            JMenuItem theMenu = (JMenuItem) cookie.instanceCreate();
+//                            Container parent = theMenu.getParent();
+//                            sb.append("parent=").append(parent.getClass().getName());
+//                        } catch (IOException ex) {
+//                            Exceptions.printStackTrace(ex);
+//                        } catch (ClassNotFoundException ex) {
+//                            Exceptions.printStackTrace(ex);
+//                        }
+//                    }
+//                    sb.append("\n");
+//                }
+//        sb.append("Lookups.forPath=======================\n");
+//        Lookup lookup = Lookups.forPath("Menu");
+//        Collection c = lookup.lookupAll(Object.class);
+//        for (Iterator it = c.iterator(); it.hasNext();) {
+//            Object object = it.next();
+//            sb.append(object.getClass().getName() + " " + object.getClass().getSuperclass().getName() + "\n");
+//        }
+//
+//        DialogDisplayer.getDefault().notify(
+//                new NotifyDescriptor.Message(sb.toString(), NotifyDescriptor.INFORMATION_MESSAGE));
 
     }
+
+    //private static final FileSystem fragment = FileUtil.createMemoryFileSystem();
+
+    public void addItemToMenu(JMenuItem item, String menu) {
+        JMenu topMenu = findTopLevelMenu(menu);
+        if (topMenu != null) {
+            topMenu.add(item);
+        }
+    }
+
+    public JMenu findTopLevelMenu(String name) {
+        FileObject menu = FileUtil.getConfigFile("Menu").getFileObject(name + ".instance");
+        DataObject dob = null;
+        JMenu theMenu = null;
+        try {
+            dob = DataObject.find(menu);
+            InstanceCookie cookie = (InstanceCookie) dob.getCookie(InstanceCookie.class);
+            theMenu = (JMenu) cookie.instanceCreate();
+        } catch (DataObjectNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (ClassNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return theMenu;
+    }
+
     // Effectively adds this to layer
     // <folder name="Menu">
     //    <attr name="imagej-envisaje-pluginfinder-Menu1.instance/Window" boolvalue="true"/>
     //    <file name="imagej-envisaje-pluginfinder-Menu1.instance"/>
     // </folder>
-
-    //private static final FileSystem fragment = FileUtil.createMemoryFileSystem();
-    public void findTopLevelMenu(String name){
-        FileObject menusFO = FileUtil.getConfigFile("Menu/" + name);
-        if (menusFO != null) {
-            DataFolder menus = DataFolder.findFolder(menusFO);
-            DialogDisplayer.getDefault().notifyLater(new NotifyDescriptor.Message(menus.getName(), NotifyDescriptor.INFORMATION_MESSAGE));
-        } else {
-            DialogDisplayer.getDefault().notifyLater(new NotifyDescriptor.Message("Not found: " + name, NotifyDescriptor.ERROR_MESSAGE));
-        }
-    }
-
     public void registerTopLevelMenu(String name, String label) throws Exception {
-
         // instanciate into menu folder
         FileObject menusFO = FileUtil.getConfigFile("Menu");
         //FileObject menusFO =fragment.findResource("Menu");
-
         DataFolder menus = DataFolder.findFolder(menusFO);
         FileObject menuObject = FileUtil.createData(menus.getPrimaryFile(), name + ".instance");
         menuObject.setAttribute("instanceCreate", new JMenu(label));

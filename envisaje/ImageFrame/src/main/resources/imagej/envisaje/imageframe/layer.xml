@@ -8,9 +8,15 @@
                 <attr name="displayName" bundlevalue="imagej.envisaje.imageframe.Bundle#CTL_OpenAction"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" boolvalue="false"/>
+                <attr name="asynchronous" boolvalue="true"/>
             </file>
         </folder>
         <folder name="Window">
+            <file name="imagej-envisaje-imageframe-ImageDisplayAction.instance">
+                <attr name="component" methodvalue="imagej.envisaje.imageframe.ImageDisplayTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="imagej.envisaje.imageframe.Bundle#CTL_ImageDisplayAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
             <file name="imagej-envisaje-imageframe-ImgDisplayAction.instance">
                 <attr name="component" methodvalue="imagej.envisaje.imageframe.ImgDisplayTopComponent.findInstance"/>
                 <attr name="displayName" bundlevalue="imagej.envisaje.imageframe.Bundle#CTL_ImgDisplayAction"/>
@@ -26,6 +32,9 @@
             </file>
         </folder>
         <folder name="Window">
+            <file name="ImageDisplayAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-imageframe-ImageDisplayAction.instance"/>
+            </file>
             <file name="ImgDisplayAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-imageframe-ImgDisplayAction.instance"/>
             </file>
@@ -38,10 +47,12 @@
     </folder>
     <folder name="Windows2">
         <folder name="Components">
+            <file name="ImageDisplayTopComponent.settings" url="ImageDisplayTopComponentSettings.xml"/>
             <file name="ImgDisplayTopComponent.settings" url="ImgDisplayTopComponentSettings.xml"/>
         </folder>
         <folder name="Modes">
             <folder name="editor">
+                <file name="ImageDisplayTopComponent.wstcref" url="ImageDisplayTopComponentWstcref.xml"/>
                 <file name="ImgDisplayTopComponent.wstcref" url="ImgDisplayTopComponentWstcref.xml"/>
             </folder>
         </folder>

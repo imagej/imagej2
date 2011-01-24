@@ -14,6 +14,7 @@ import org.openide.util.RequestProcessor;
 import org.openide.util.Task;
 import org.openide.util.TaskListener;
 
+
 @Action(position = 1,
 displayName = "Cancellable",
 // path = "IJPlugins/Analysis",
@@ -28,7 +29,7 @@ public final class MyCancellableAction implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         LOG.info("actionperformed");
-        final ProgressHandle ph = ProgressHandleFactory.createHandle("task thats shows progress", new Cancellable() {
+        final ProgressHandle ph = ProgressHandleFactory.createHandle("task showing progress", new Cancellable() {
 
             public boolean cancel() {
                 return handleCancel();
