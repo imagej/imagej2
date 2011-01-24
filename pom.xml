@@ -1,59 +1,348 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-    http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>imagej</groupId>
-    <artifactId>imagej-base-pom</artifactId>
-    <version>1.09</version>
-  </parent>
+	<groupId>imagej</groupId>
+	<artifactId>imagej-base</artifactId>
+	<version>2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-  <groupId>imagej</groupId>
-  <artifactId>imagej-projects</artifactId>
-  <version>1.00</version>
-  <packaging>pom</packaging>
+	<name>ImageJ</name>
+  <description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
+	<url>http://imagejdev.org/</url>
+	<inceptionYear>1997</inceptionYear>
 
-  <name>ImageJ projects</name>
-  <description>Umbrella project for ImageJ projects.</description>
-  <url>http://imagejdev.org/</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-  <modules>
-    <module>_ij1-patches</module>
-    <module>ij1-bridge</module>
-    <module>ij1-plugin</module>
-    <module>ij2-common</module>
-    <module>ij2-gui</module>
-    <module>ij2-imglib</module>
-    <module>ijx</module>
-    <module>image5d</module>
-    <!-- <module>imagej</module> -->
-    <module>workflow</module>
-    <module>workflowpipes</module>
-  </modules>
+	<modules>
+		<module>_ij1-patches</module>
+		<module>envisaje</module>
+		<module>ij1-bridge</module>
+		<module>ij1-plugin</module>
+		<module>ij2-common</module>
+		<module>ij2-gui</module>
+		<module>ij2-imglib</module>
+		<module>ijx</module>
+		<module>image5d</module>
+		<!-- <module>imagej</module> -->
+		<module>workflow</module>
+		<module>workflowpipes</module>
+	</modules>
 
-  <repositories>
-    <!-- NB: for imagej-base-pom -->
-    <repository>
-      <id>imagej.releases</id>
-      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
-    </repository>
-  </repositories>
+	<properties>
+		<bio-formats.version>5.0-SNAPSHOT</bio-formats.version>
+		<imagej.groupId>imagej</imagej.groupId>
+		<imagej.version>${project.version}</imagej.version>
+		<imagej1.version>1.44l9</imagej1.version>
+		<imglib.version>2.0-SNAPSHOT</imglib.version>
+		<jetty.version>8.0.0.M1</jetty.version>
+		<netbeans.hint.license>bsd</netbeans.hint.license>
+		<netbeans.version>RELEASE691</netbeans.version>
+		<!-- NB: Avoid platform encoding warning when copying resources. -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 
-  <!-- NB: Workaround for javadoc bug when classes in the default package
-    access classes from non-default packages. See:
-    http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <use>false</use>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+			</extension>
+		</extensions>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<!-- NB: Generate javadocs as part of site generation. -->
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<!-- NB: Workaround for javadoc bug when classes in the default package
+					access classes from non-default packages. See:
+					http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
+				<configuration>
+					<use>false</use>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<licenses>
+		<license>
+			<name>BSD</name>
+			<url>http://dev.imagejdev.org/svn/imagej/trunk/ij2-common/LICENSE.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>ImageJDev.org</name>
+		<url>http://imagejdev.org/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>wsr</id>
+			<name>Wayne Rasband</name>
+			<email>wsr@nih.gov</email>
+			<url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
+			<organization>NIH</organization>
+			<organizationUrl>http://rsb.info.nih.gov/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+		<developer>
+			<id>curtis</id>
+			<name>Curtis Rueden</name>
+			<email>ctrueden@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/curtis-rueden</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>dscho</id>
+			<name>Johannes Schindelin</name>
+			<email>Johannes.Schindelin@gmx.de</email>
+			<url>http://loci.wisc.edu/people/johannes-schindelin</url>
+			<organization>MPI-CBG at Dresden</organization>
+			<organizationUrl>http://mpi-cbg.de/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties>
+				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>acardona</id>
+			<name>Albert Cardona</name>
+			<email>acardona@ini.phys.ethz.ch</email>
+			<url>http://albert.rierol.net/</url>
+			<organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
+			<organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Cardona_pic1.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>aivar</id>
+			<name>Aivar Grislis</name>
+			<email>grislis@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/aivar-grislis</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>bdezonia</id>
+			<name>Barry DeZonia</name>
+			<email>bdezonia@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/barry-dezonia</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Barry_DeZonia.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>gharris</id>
+			<name>Grant Harris</name>
+			<email>gharris@mbl.edu</email>
+			<url>http://loci.wisc.edu/people/grant-harris</url>
+			<organization>MBL at Woods Hole</organization>
+			<organizationUrl>http://www.mbl.edu/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+			<properties>
+				<picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>rlentz</id>
+			<name>Rick Lentz</name>
+			<email>rwlentz@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/rick-lentz</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://dev.imagejdev.org/trac/imagej/</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Hudson</system>
+		<url>http://dev.imagejdev.org:8080/</url>
+	</ciManagement>
+
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ</name>
+			<subscribe>http://rsb.info.nih.gov/ij/list.html</subscribe>
+			<unsubscribe>http://rsb.info.nih.gov/ij/list.html</unsubscribe>
+			<post>imagej@list.nih.gov</post>
+			<archive>http://list.nih.gov/archives/imagej.html</archive>
+		</mailingList>
+		<mailingList>
+			<name>ImageJX</name>
+			<subscribe>http://groups.google.com/group/imagejx</subscribe>
+			<unsubscribe>http://groups.google.com/group/imagejx</unsubscribe>
+			<post>imagejx@googlegroups.com</post>
+			<archive>http://groups.google.com/group/imagejx</archive>
+		</mailingList>
+		<mailingList>
+			<name>ImageJ-devel</name>
+			<subscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</subscribe>
+			<unsubscribe>http://imagejdev.org/mailman/listinfo/imagej-devel</unsubscribe>
+			<post>imagej-devel@imagejdev.org</post>
+			<archive>http://imagejdev.org/pipermail/imagej-devel/</archive>
+		</mailingList>
+		<mailingList>
+			<name>Fiji-users</name>
+			<subscribe>http://groups.google.com/group/fiji-users</subscribe>
+			<unsubscribe>http://groups.google.com/group/fiji-users</unsubscribe>
+			<post>fiji-users@googlegroups.com</post>
+			<archive>http://groups.google.com/group/fiji-users</archive>
+		</mailingList>
+		<mailingList>
+			<name>Fiji-devel</name>
+			<subscribe>http://groups.google.com/group/fiji-devel</subscribe>
+			<unsubscribe>http://groups.google.com/group/fiji-devel</unsubscribe>
+			<post>fiji-devel@googlegroups.com</post>
+			<archive>http://groups.google.com/group/fiji-devel</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:svn:http://dev.imagejdev.org/svn/imagej</connection>
+		<developerConnection>scm:svn:http://dev.imagejdev.org/svn/imagej</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://dev.imagejdev.org/svn/imagej</url>
+	</scm>
+
+	<repositories>
+		<!-- NB: for loci projects -->
+		<repository>
+			<id>loci.releases</id>
+			<url>http://dev.loci.wisc.edu:8081/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>loci.snapshots</id>
+			<url>http://dev.loci.wisc.edu:8081/content/repositories/snapshots</url>
+		</repository>
+		<!-- NB: for various dependencies -->
+		<repository>
+			<id>imagej.thirdparty</id>
+			<url>http://dev.imagejdev.org:8081/content/repositories/thirdparty</url>
+		</repository>
+		<!-- NB: for netcdf-java -->
+		<repository>
+			<id>unifi.it</id>
+			<url>http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos</url>
+		</repository>
+		<!-- NB: for sezpoz -->
+		<repository>
+			<id>java.net</id>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+		<!-- NB: for netbeans -->
+		<repository>
+			<id>netbeans</id>
+			<name>Repository for hosting NetBeans API artifacts</name>
+			<url>http://bits.netbeans.org/maven2</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>imagej.releases</id>
+			<name>ImageJ Releases Repository</name>
+			<url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>imagej.snapshots</id>
+			<name>ImageJ Snapshots Repository</name>
+			<url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

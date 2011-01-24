@@ -1,231 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+	http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>imagej</groupId>
-    <artifactId>imagej-base-pom</artifactId>
-    <version>1.09</version>
-  </parent>
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-base</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
 
-  <groupId>imagej.envisaje</groupId>
-  <artifactId>envisaje</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+	<groupId>imagej.envisaje</groupId>
+	<artifactId>envisaje</artifactId>
+	<packaging>pom</packaging>
 
-  <name>Envisage-ImageJ 2.0 RCP</name>
-  <description>Experimental NetBeans RCP version of ImageJ2.</description>
-  <url>http://imagejdev.org/</url>
-  <inceptionYear>2011</inceptionYear>
+	<name>Envisaje</name>
+	<description>Experimental NetBeans RCP version of ImageJ.</description>
 
-  <licenses>
-    <license>
-      <name>BSD</name>
-      <url>http://dev.imagejdev.org/svn/imagej/trunk/envisaje/LICENSE.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <modules>
-    <module>ColorPicker</module>
-    <module>Effects</module>
-    <module>EffectsUI</module>
-    <module>FileManagement</module>
-    <module>ImageCacheDiagnostics</module>
-    <module>ImageExplorer</module>
-    <module>ImageFileTypes</module>
-    <module>ImageFrame</module>
-    <module>ImageNIO</module>
-    <module>LayersUI</module>
-    <module>MiscComponents</module>
-    <module>PaintAPI</module>
-    <module>PaintUI</module>
-    <module>PluginFinder</module>
-    <module>RasterLayer</module>
-    <module>Splines</module>
-    <module>ToolConfigUI</module>
-    <module>ToolCustomizers</module>
-    <module>Tools</module>
-    <module>ToolsUI</module>
-    <module>annotationProcessors</module>
-    <module>annotations</module>
-    <module>application</module>
-    <module>branding</module>
-    <module>tests</module>
-  </modules>
+	<modules>
+		<module>ColorPicker</module>
+		<module>Effects</module>
+		<module>EffectsUI</module>
+		<module>FileManagement</module>
+		<module>ImageCacheDiagnostics</module>
+		<module>ImageExplorer</module>
+		<module>ImageFileTypes</module>
+		<module>ImageFrame</module>
+		<module>ImageNIO</module>
+		<module>LayersUI</module>
+		<module>MiscComponents</module>
+		<module>PaintAPI</module>
+		<module>PaintUI</module>
+		<module>PluginFinder</module>
+		<module>RasterLayer</module>
+		<module>Splines</module>
+		<module>ToolConfigUI</module>
+		<module>ToolCustomizers</module>
+		<module>Tools</module>
+		<module>ToolsUI</module>
+		<module>annotationProcessors</module>
+		<module>annotations</module>
+		<module>application</module>
+		<module>branding</module>
+		<module>tests</module>
+	</modules>
 
-  <repositories>
-    <!-- NB: for imagej-base-pom -->
-    <repository>
-      <id>imagej.releases</id>
-      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
-    </repository>
-  </repositories>
+	<properties>
+		<brandingToken>foo</brandingToken>
+	</properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>nbm-maven-plugin</artifactId>
+					<version>3.2</version>
+					<extensions>true</extensions>
+					<configuration>
+						<brandingToken>${brandingToken}</brandingToken>
+						<cluster>foobar</cluster>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>nbm-maven-plugin</artifactId>
-          <version>3.2</version>
-          <extensions>true</extensions>
-          <configuration>
-            <brandingToken>${brandingToken}</brandingToken>
-            <cluster>foobar</cluster>
-          </configuration>
-        </plugin>
+	<!-- NB: for imagej-base, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
 
-        <plugin>
-          <!-- netbeans modules in 6.9+ are 1.6 compatible -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3</version>
-          <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
-  <properties>
-    <netbeans.version>RELEASE691</netbeans.version>
-    <brandingToken>foo</brandingToken>
-    <netbeans.hint.license>bsd</netbeans.hint.license>
-  </properties>
-
-    <developers>
-    <developer>
-      <id>wsr</id>
-      <name>Wayne Rasband</name>
-      <email>wsr@nih.gov</email>
-      <url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
-      <organization>NIH</organization>
-      <organizationUrl>http://rsb.info.nih.gov/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-    <developer>
-      <id>curtis</id>
-      <name>Curtis Rueden</name>
-      <email>ctrueden@wisc.edu</email>
-      <url>http://loci.wisc.edu/people/curtis-rueden</url>
-      <organization>UW-Madison LOCI</organization>
-      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>-6</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>dscho</id>
-      <name>Johannes Schindelin</name>
-      <email>Johannes.Schindelin@gmx.de</email>
-      <url>http://loci.wisc.edu/people/johannes-schindelin</url>
-      <organization>MPI-CBG at Dresden</organization>
-      <organizationUrl>http://mpi-cbg.de/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>+1</timezone>
-      <properties>
-        <picUrl>http://www.loci.wisc.edu/files/loci/images/people/johannes.jpeg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>acardona</id>
-      <name>Albert Cardona</name>
-      <email>acardona@ini.phys.ethz.ch</email>
-      <url>http://albert.rierol.net/</url>
-      <organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
-      <organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
-      <roles>
-        <role>developer</role>
-      </roles>
-      <timezone>+1</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/Cardona_pic1.jpg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>aivar</id>
-      <name>Aivar Grislis</name>
-      <email>grislis@wisc.edu</email>
-      <url>http://loci.wisc.edu/people/aivar-grislis</url>
-      <organization>UW-Madison LOCI</organization>
-      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
-      <roles>
-        <role>developer</role>
-      </roles>
-      <timezone>-6</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>bdezonia</id>
-      <name>Barry DeZonia</name>
-      <email>bdezonia@wisc.edu</email>
-      <url>http://loci.wisc.edu/people/barry-dezonia</url>
-      <organization>UW-Madison LOCI</organization>
-      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
-      <roles>
-        <role>developer</role>
-      </roles>
-      <timezone>-6</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/Barry_DeZonia.jpg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>gharris</id>
-      <name>Grant Harris</name>
-      <email>gharris@mbl.edu</email>
-      <url>http://loci.wisc.edu/people/grant-harris</url>
-      <organization>MBL at Woods Hole</organization>
-      <organizationUrl>http://www.mbl.edu/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>-5</timezone>
-      <properties>
-        <picUrl>http://www.loci.wisc.edu/files/loci/images/people/GBH-2010.jpg</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <id>rlentz</id>
-      <name>Rick Lentz</name>
-      <email>rwlentz@wisc.edu</email>
-      <url>http://loci.wisc.edu/people/rick-lentz</url>
-      <organization>UW-Madison LOCI</organization>
-      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
-      <roles>
-        <role>developer</role>
-      </roles>
-      <timezone>-6</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
-      </properties>
-    </developer>
-  </developers>
-  
 </project>
