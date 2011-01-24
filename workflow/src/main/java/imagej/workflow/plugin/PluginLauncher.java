@@ -103,7 +103,7 @@ public class PluginLauncher implements IPluginLauncher {
      */
     public void externalPut(String name, ItemWrapper image) {
         String fullInName = uniqueName(name);
-        PluginScheduler.getInstance().put(fullInName, image);
+        PluginScheduler.getInstance().put(null, name, fullInName, image);
     }
 
     /**

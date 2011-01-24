@@ -15,8 +15,8 @@ import imagej.workflow.util.xmllight.XMLWriter;
 public class PluginModuleInfo implements IModuleInfo {
     final String m_name;
     final String m_fullName;
-    String[] m_inputNames = new String[0];
-    String[] m_outputNames = new String[0];
+    IItemInfo[] m_inputItemInfos = new IItemInfo[0];
+    IItemInfo[] m_outputItemInfos = new IItemInfo[0];
 
     /**
      * Static method call used within the package to derive the plugin name
@@ -49,39 +49,39 @@ public class PluginModuleInfo implements IModuleInfo {
     }
 
     /**
-     * Gets input image names.
+     * Gets input item information array.
      *
      * @return
      */
-    public String[] getInputNames() {
-        return m_inputNames;
+    public IItemInfo[] getInputItemInfos() {
+        return m_inputItemInfos;
     }
 
     /**
-     * Used within the package to set input names.
+     * Used within the package to set input item information array.
      *
      * @param inputNames
      */
-    void setInputNames(String inputNames[]) {
-        m_inputNames = inputNames;
+    void setInputItemInfos(IItemInfo inputItemInfos[]) {
+        m_inputItemInfos = inputItemInfos;
     }
 
     /**
-     * Gets output names.
+     * Gets output item information array.
      *
      * @return
      */
-    public String[] getOutputNames() {
-        return m_outputNames;
+    public IItemInfo[] getOutputItemInfos() {
+        return m_outputItemInfos;
     }
 
     /**
-     * Used within the package to set output names.
+     * Used within the package to set output item information array.
      *
      * @param outputNames
      */
-    void setOutputNames(String outputNames[]) {
-        m_outputNames = outputNames;
+    void setOutputItemInfos(IItemInfo outputItemInfos[]) {
+        m_outputItemInfos = outputItemInfos;
     }
 
     /**
@@ -113,18 +113,18 @@ public class PluginModuleInfo implements IModuleInfo {
 
         // add inputs
         xmlHelper.addTag(Workflow.INPUTS);
-        for (String name : m_inputNames) {
+        for (IItemInfo itemInfo : m_inputItemInfos) {
             xmlHelper.addTag(Workflow.INPUT);
-            xmlHelper.addTagWithContent(Workflow.NAME, name);
+            xmlHelper.addTagWithContent(Workflow.NAME, itemInfo.getName());
             xmlHelper.addEndTag(Workflow.INPUT);
         }
         xmlHelper.addEndTag(Workflow.INPUTS);
 
         // add outputs
         xmlHelper.addTag(Workflow.OUTPUTS);
-        for (String name : m_outputNames) {
+        for (IItemInfo itemInfo : m_outputItemInfos) {
             xmlHelper.addTag(Workflow.OUTPUT);
-            xmlHelper.addTagWithContent(Workflow.NAME, name);
+            xmlHelper.addTagWithContent(Workflow.NAME, itemInfo.getName());
             xmlHelper.addEndTag(Workflow.OUTPUT);
         }
         xmlHelper.addEndTag(Workflow.OUTPUTS);

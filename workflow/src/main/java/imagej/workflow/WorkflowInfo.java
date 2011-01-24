@@ -43,21 +43,23 @@ public class WorkflowInfo implements IWorkflowInfo {
     }
 
     /**
-     * Gets input image names.
+     * Gets input item information array.
      *
      * @return
      */
-    public String[] getInputNames() {
-        return m_inputNames;
+    public IItemInfo[] getInputItemInfos() {
+        throw new RuntimeException("not implemented");
+        //return null;
     }
 
     /**
-     * Gets output names.
+     * Gets output item information array.
      *
      * @return
      */
-    public String[] getOutputNames() {
-        return m_outputNames;
+    public IItemInfo[] getOutputItemInfos() {
+        throw new RuntimeException("not implemented");
+        //return null;
     }
 
     /**

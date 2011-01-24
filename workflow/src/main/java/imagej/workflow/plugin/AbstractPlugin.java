@@ -128,6 +128,6 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
         }
         */
         String fullInName = m_outputNames.get(outName);
-        PluginScheduler.getInstance().put(fullInName, image);
+        PluginScheduler.getInstance().put(null, outName, fullInName, image);
     }
 }

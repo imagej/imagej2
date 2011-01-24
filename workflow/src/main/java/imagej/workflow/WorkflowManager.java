@@ -222,22 +222,49 @@ public class WorkflowManager implements IWorkflowManager {
             info = new PluginModuleInfo(fullName);
         }
 
-        // build list of image names
-        List<String> names = new ArrayList<String>();
+        // build list of item information
+        List<IItemInfo> itemInfos = new ArrayList<IItemInfo>();
+
         if (0 == items.length) {
-            names.add(Type.INPUT == inputOrOutput ? Input.DEFAULT : Output.DEFAULT);
+            String name = Type.INPUT == inputOrOutput ? Input.DEFAULT : Output.DEFAULT;
+            itemInfos.add(new ItemInfo(name, IItemInfo.Type.IMAGE, null));
         }
         else {
             for (Item item : items) {
-                names.add(item.name());
+                String name = item.name();
+                IItemInfo.Type type = null;
+                Object value = null;
+                switch (item.type()) {
+                    case STRING:
+                        type = IItemInfo.Type.STRING;
+                        value = item.string();
+                        break;
+                    case INTEGER:
+                        type = IItemInfo.Type.INTEGER;
+                        value = item.integer();
+                        break;
+                    case FLOATING:
+                        type = IItemInfo.Type.FLOATING;
+                        value = item.floating();
+                        break;
+                    case URL:
+                        type = IItemInfo.Type.URL;
+                        value = item.url();
+                        break;
+                    case IMAGE:
+                        type = IItemInfo.Type.IMAGE;
+                        value = item.image();
+                        break;
+                }
+                itemInfos.add(new ItemInfo(name, type, value));
             }
         }
 
         if (Type.INPUT == inputOrOutput) {
-            info.setInputNames(names.toArray(new String[0]));
+            info.setInputItemInfos(itemInfos.toArray(new IItemInfo[0]));
         }
         else {
-            info.setOutputNames(names.toArray(new String[0]));
+            info.setOutputItemInfos(itemInfos.toArray(new IItemInfo[0]));
         }
         return info;
     }
