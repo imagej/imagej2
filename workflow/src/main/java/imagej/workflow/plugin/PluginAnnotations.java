@@ -108,7 +108,8 @@ public class PluginAnnotations {
      */
     static void nameNotAnnotated(InputOutput inOut, String name) {
         //TODO this message was for annotation Img, the new Item annotation is different
-        System.out.println("Missing annotation: @" + ((InputOutput.INPUT == inOut) ? "In" : "Out") + "put({@tem=\"" + name + "\"})" );
+       // System.out.println("Missing annotation: @" + ((InputOutput.INPUT == inOut) ? "In" : "Out") + "put({@Item=\"" + name + "\"})" );
+        System.out.println("Missing annotation for " + ((InputOutput.INPUT == inOut) ? "input" : "output") + " " + name);
     }
 
     /**

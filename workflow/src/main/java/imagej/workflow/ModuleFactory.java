@@ -41,20 +41,33 @@ public class ModuleFactory implements IModuleFactory {
     public void register(String tagName, IModuleFactory factory) {
         m_factories.put(tagName, factory);
     }
-
+    
     /**
      * Creates a component from XML.
-     *
+     * 
      * @param xml
      * @return
+     * @throws XMLException
      */
     public IModule create(String xml) throws XMLException {
+        return create(xml, null);
+    }
+
+    /**
+     * Creates a component from XML, given the unique instance identifier.
+     *
+     * @param xml
+     * @param instanceId
+     * @return
+     * @throws XMLException
+     */
+    public IModule create(String xml, String instanceId) throws XMLException {
         IModule module = null;
         XMLParser xmlHelper = new XMLParser();
         XMLTag tag = xmlHelper.getNextTag(xml);
         IModuleFactory factory = m_factories.get(tag.getName());
         if (null != factory) {
-            module = factory.create(xml);
+            module = factory.create(xml, instanceId);
         }
         else {
             throw new XMLException("Invalid tag " + tag.getName());

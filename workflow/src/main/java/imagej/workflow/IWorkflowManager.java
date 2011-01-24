@@ -49,7 +49,8 @@ public interface IWorkflowManager {
      * module.  Works for workflows and plugins.
      *
      * @param moduleInfo
+     * @param instanceId
      * @return
      */
-    public IModule createInstance(IModuleInfo moduleInfo);
+    public IModule createInstance(IModuleInfo moduleInfo, String instanceId);
 }

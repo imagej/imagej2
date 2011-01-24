@@ -164,7 +164,7 @@ public interface IWorkflow extends IModule {
      * Restores chained components from XML string representation.
      * Accomplishes Phases I-III.
      *
-     * @param xml
+     * @param xml string containing XML representation
      * @return whether successfully parsed
      */
     boolean fromXML(String xml);

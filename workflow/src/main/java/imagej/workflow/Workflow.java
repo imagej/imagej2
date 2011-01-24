@@ -5,15 +5,17 @@
 
 package imagej.workflow;
 
-import imagej.workflow.util.xmllight.XMLParser;
-import imagej.workflow.util.xmllight.XMLWriter;
-import imagej.workflow.util.xmllight.XMLException;
-import imagej.workflow.util.xmllight.XMLTag;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import imagej.workflow.util.xmllight.XMLParser;
+import imagej.workflow.util.xmllight.XMLWriter;
+import imagej.workflow.util.xmllight.XMLException;
+import imagej.workflow.util.xmllight.XMLTag;
 
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
@@ -43,6 +45,7 @@ public class Workflow implements IModule, IWorkflow {
 
     IModuleFactory m_moduleFactory = ModuleFactory.getInstance();
     String m_name;
+    String m_instanceId;
     Map<String, IModule> m_moduleMap = new HashMap<String, IModule>();
     List<String> m_inputNames = new ArrayList<String>();
     List<String> m_outputNames = new ArrayList<String>();
@@ -54,6 +57,14 @@ public class Workflow implements IModule, IWorkflow {
     Map<String, String> m_outputModuleNames = new HashMap<String, String>();
     IOutputListener m_listener = new OutputListener();
     Object m_synchObject = new Object();
+    
+    public Workflow() {
+        m_instanceId = UUID.randomUUID().toString();
+    }
+
+    public Workflow(String instanceId) {
+        m_instanceId = instanceId;
+    }
 
     public String getName() {
         return m_name;

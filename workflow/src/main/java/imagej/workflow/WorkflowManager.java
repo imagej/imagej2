@@ -122,10 +122,22 @@ public class WorkflowManager implements IWorkflowManager {
      * @return
      */
     public IModule createInstance(IModuleInfo moduleInfo) {
+        return createInstance(moduleInfo, null);
+    }
+
+    /**
+     * Given the module information and an instance identifider,
+     * creates an instance of the module.  Works for workflows and plugins.
+     *
+     * @param moduleInfo
+     * @param instanceId
+     * @return
+     */
+    public IModule createInstance(IModuleInfo moduleInfo, String instanceId) {
         String xml = moduleInfo.toXML();
         IModule module = null;
         try {
-            module = ModuleFactory.getInstance().create(xml);
+            module = ModuleFactory.getInstance().create(xml, instanceId);
         }
         catch (XMLException e) {
             System.out.println("internal XML problem " + e.getMessage());
