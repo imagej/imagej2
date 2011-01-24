@@ -140,7 +140,9 @@ public class WorkflowManager implements IWorkflowManager {
      * @return map of name to workflow info
      */
     private Map<String, IWorkflowInfo> parseWorkflows(String xml) {
-        System.out.println("PARSE>" + xml + "<");
+        if (!xml.isEmpty()) {
+           System.out.println("Parsing workflow XML>" + xml + "<");
+        }
         Map<String, IWorkflowInfo> map = new HashMap<String, IWorkflowInfo>();
         XMLParser xmlHelper = new XMLParser();
 
