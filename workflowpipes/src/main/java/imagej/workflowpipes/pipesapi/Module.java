@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import imagej.workflow.debug.PreviewInfo;
 
 import imagej.workflowpipes.pipesentity.Conf;
 import imagej.workflowpipes.pipesentity.Count;
@@ -387,6 +390,6 @@ public abstract class Module implements Serializable {
 		return this.response;
 	}
 
-        abstract public void go();
+        abstract public void go( List<PreviewInfo> previewInfoList );
 
 }

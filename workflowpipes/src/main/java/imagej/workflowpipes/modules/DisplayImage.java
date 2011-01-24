@@ -2,6 +2,9 @@ package imagej.workflowpipes.modules;
 
 
 import java.io.Serializable;
+import java.util.List;
+
+import imagej.workflow.debug.PreviewInfo;
 
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Attr;
@@ -53,7 +56,7 @@ public class DisplayImage extends Module implements Serializable {
 		return fetchPage;
 	}
 
-	public void go() 
+	public void go( List<PreviewInfo> previewInfoList )
 	{		 
 		// call the start method
 		start();

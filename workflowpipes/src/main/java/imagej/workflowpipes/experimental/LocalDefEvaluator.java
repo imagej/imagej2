@@ -2,9 +2,10 @@ package imagej.workflowpipes.experimental;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import imagej.workflow.Workflow;
-
+import imagej.workflow.debug.PreviewInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,9 +52,21 @@ public class LocalDefEvaluator {
 		
 		
 		// Create the workflow from the pipes connection
-		Workflow workFlow = LayoutToWorkFlow.getWorkFlow( def.getWires(), moduleList );
-		
-		
+		Workflow workflow = LayoutToWorkFlow.getWorkFlow( def.getWires(), moduleList );
+                //TODO extremely hokey; let the workflow finish
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {
+                    
+                }
+                List<PreviewInfo> previewInfoList = workflow.getPreviewInfoList();
+                for (PreviewInfo previewInfo : previewInfoList) {
+                    System.out.println( "Description: " + previewInfo.getDesc() );
+                    System.out.println( "HTML UI: " + previewInfo.getContent() );
+                    System.out.println( "Unique instance id: " + previewInfo.getInstanceId() );
+                }
+    
 		
 		//Create a preview response
 		Preview previewResponse = new Preview();
@@ -64,7 +77,7 @@ public class LocalDefEvaluator {
 			System.out.println( "LocalDefEvaluator :: getPreview :: Runnning module " + module.getType().getValue()  );	
 				
 			// module run
-			module.go( );
+			module.go( previewInfoList );
 			
 			// add the errors
 			previewResponse.addErrors( module.getID(), module.getErrors() );

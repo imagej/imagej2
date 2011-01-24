@@ -36,7 +36,8 @@ public class LayoutToWorkFlow {
 
             // create a LOCI workflow
             Workflow workflow = new Workflow();
-            workflow.setName("My Workflow");
+            workflow.setName("Pipes Workflow");
+            workflow.setDebug(true);
 
             // add modules
             for (Module module : moduleList) {
@@ -84,6 +85,7 @@ public class LayoutToWorkFlow {
             // finish up
 	    workflow.finalize();
 
+            // TODO works only for String Item.Type inputs!!!
             // run this workflow with random inputs
             String inputs[] = workflow.getInputNames();
             for (String input : inputs) {

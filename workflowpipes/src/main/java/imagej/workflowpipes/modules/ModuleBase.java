@@ -8,7 +8,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import imagej.workflow.IItemInfo;
 import imagej.workflow.IModuleInfo;
+import imagej.workflow.debug.PreviewInfo;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Attr;
 import imagej.workflowpipes.pipesentity.Conf;
@@ -33,24 +35,54 @@ public class ModuleBase extends Module {
 
 	public ModuleBase( IModuleInfo iModuleInfo )
 	{
-            //TODO for testing
-            _nameTypeDescList.add(new NameTypeDesc("URL", "url", "URL"));
-            _nameTypeDescList.add(new NameTypeDesc("color", "text", "Favorite color"));
-            _nameTypeDescList.add(new NameTypeDesc("pet", "text", "Pet's name"));
-
 		// populate ID
 		this.id = new ID("");
 
 		// loop through inputs and add terminals
-		for ( String inputName : iModuleInfo.getInputNames() )
+		for ( IItemInfo inputItemInfo : iModuleInfo.getInputItemInfos() )
 		{
-			this.terminals.add( Terminal.getInputTerminal( "items", inputName ) );
+                    String inputName = inputItemInfo.getName();
+                    String inputType = null;
+                    switch (inputItemInfo.getType()) {
+                        case STRING:
+                        case INTEGER:
+                        case FLOATING:
+                            inputType = "text";
+                            break;
+                        case URL:
+                            inputType = "url";
+                            break;
+                        case IMAGE:
+                            inputType = "items";
+                            break;
+                    }
+                    // Images become terminals, anything else is a setting in the UI.
+                    if (IItemInfo.Type.IMAGE.equals(inputItemInfo.getType())) {
+                        this.terminals.add( Terminal.getInputTerminal( inputType, inputName ) );
+                    }
+                    else {
+                        _nameTypeDescList.add(new NameTypeDesc(inputName, inputType, inputName));
+                    }
 		}
 		
 		// loop through output and add terminals
-		for ( String outputName : iModuleInfo.getOutputNames() )
+		for ( IItemInfo outputItemInfo : iModuleInfo.getOutputItemInfos() )
 		{
-			this.terminals.add( Terminal.getOutputTerminal( "items", outputName ) );
+                    String outputName = outputItemInfo.getName();
+                    String outputType = null;
+                    switch (outputItemInfo.getType()) {
+                        case STRING:
+                        case INTEGER:
+                        case FLOATING:
+                            outputType = "text";
+                            break;
+                        case URL:
+                            outputType = "url";
+                        case IMAGE:
+                            outputType = "items";
+                            break;
+                    }
+                    this .terminals.add( Terminal.getOutputTerminal( outputType, outputName ) );
                 }
 
                 // build HTML based UI
@@ -72,13 +104,21 @@ public class ModuleBase extends Module {
 		this.module = "Yahoo::RSS::FetchPage";
 	}
 
-	public void go()
+	public void go( List<PreviewInfo> previewInfoList )
 	{
             System.out.println("In ModuleBase.go()");
 		// call the start method
 		start();
 
-                for (NameTypeDesc nameTypeDesc : _nameTypeDescList) {
+                for ( PreviewInfo previewInfo : previewInfoList ) {
+		    // add the items
+		    this.items.add( new Item( previewInfo.getDesc(), previewInfo.getContent()) );
+		    this.item_count.incrementCount();
+		    this.count.incrementCount();
+
+                }
+
+    /*            for (NameTypeDesc nameTypeDesc : _nameTypeDescList) {
                     if ("url".equals(nameTypeDesc.getType())) {
                         Conf urlConf = Conf.getConf( nameTypeDesc.getName(), confs );
 
@@ -91,7 +131,7 @@ public class ModuleBase extends Module {
                         Conf conf = Conf.getConf( nameTypeDesc.getName() , confs );
                         System.out.println("type " + nameTypeDesc.getType() + " name " + nameTypeDesc.getName() + " desc " + nameTypeDesc.getDesc() + " value " + conf.getValue().getValue());
                     }
-                }
+                }*/
 
 /*
 		Conf urlConf = Conf.getConf( "URL", confs );
@@ -121,17 +161,17 @@ public class ModuleBase extends Module {
 		} catch (IOException e) {
 			this.errors.add( new Error( new Type( "warning" ), new Message( e.getMessage() ) ) );
 		}
-
+*/
 		// add the content to prop //TODO: there is likely a much easier way to do this...
-		this.props.add( new Prop( new Connector( "_OUTPUT", new Type("item"), new Attr( new Content( new Type("text"), new Count(1) ) ) ) ) );
+	//	this.props.add( new Prop( new Connector( "_OUTPUT", new Type("item"), new Attr( new Content( new Type("text"), new Count(1) ) ) ) ) );
 
 		// System.out.println( "FetchPage results " + contentString );
-*/
-                String contentString = "<html><body>HELLO</body></html>";
+//*/
+   /*             String contentString = "<html><body>HELLO</body></html>";
 		// add the items
 		this.items.add( new Item( "content", contentString ) );
 		this.item_count.incrementCount();
-		this.count.incrementCount();
+		this.count.incrementCount();*/
 
 
 		// add self generated stats

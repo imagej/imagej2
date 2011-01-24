@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import imagej.workflow.debug.PreviewInfo;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Attr;
 import imagej.workflowpipes.pipesentity.Conf;
@@ -60,7 +62,7 @@ public class FetchPage extends Module implements Serializable {
 		return fetchPage;
 	}
 
-	public void go() 
+	public void go( List<PreviewInfo> previewInfoList )
 	{		 
 		// call the start method
 		start();
