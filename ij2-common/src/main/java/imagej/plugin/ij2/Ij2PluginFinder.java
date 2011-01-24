@@ -18,6 +18,7 @@ public class Ij2PluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
+		Log.debug("Searching for IJ2 plugins...");
 		// use SezPoz to discover available IJ2 plugins
 		for (final IndexItem<Plugin, IPlugin> item :
 			Index.load(Plugin.class, IPlugin.class))
