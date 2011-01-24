@@ -2,6 +2,9 @@ package imagej.workflowpipes.modules;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
+import imagej.workflow.debug.PreviewInfo;
 
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Description;
@@ -45,7 +48,7 @@ public class Output extends Module implements Serializable {
 	}
 
 
-	public void go() {
+	public void go( List<PreviewInfo> previewInfoList ) {
 		
 		//process input
 		
