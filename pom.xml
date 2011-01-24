@@ -11,7 +11,7 @@
 	<packaging>pom</packaging>
 
 	<name>ImageJ</name>
-  <description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
+	<description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
 	<url>http://imagejdev.org/</url>
 	<inceptionYear>1997</inceptionYear>
 
@@ -59,6 +59,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
 			</extension>
 		</extensions>
 		<pluginManagement>
