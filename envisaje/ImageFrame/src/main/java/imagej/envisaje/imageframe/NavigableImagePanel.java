@@ -138,8 +138,7 @@ public class NavigableImagePanel extends JPanel {
     private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's width
     private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
     private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
-    private static final Object INTERPOLATION_TYPE =
-            RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+    private static final Object INTERPOLATION_TYPE = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
     
     private double zoomIncrement = 0.2;
     private double zoomFactor = 1.0 + zoomIncrement;

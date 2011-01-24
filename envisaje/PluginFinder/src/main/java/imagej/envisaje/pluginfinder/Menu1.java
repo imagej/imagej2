@@ -18,12 +18,17 @@ import org.openide.util.NbBundle;
  */
 public final class Menu1 extends JMenu {
 
-    private final static String menuName = "Menu_1";
+    private final static String menuName = "IJ1";
     public Menu1() {
-        super (NbBundle.getMessage(Menu1.class, "CTL_Menu1"));
-        //Sensor.register(ToolRegistry.getLookup(), Tool.class, this);
-        //Collection c = Lookup.getDefault().lookupAll (Tool.class);
-        refresh(menuName);
+        super (NbBundle.getMessage(Menu1.class, "IJ1MENU"));
+        // Sensor.register(ToolRegistry.getLookup(), Tool.class, this);
+        // Collection c = Lookup.getDefault().lookupAll (Tool.class);
+        // refresh(menuName);
+        populateIJ1Menu();
+    }
+
+    public void populateIJ1Menu() {
+        new MenuBuilder().addIJ1Menus(this);
     }
 
     private void refresh(String menu) {

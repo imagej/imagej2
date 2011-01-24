@@ -17,38 +17,22 @@ package imagej.envisaje.imageframe;
  * Code is Sun Microsystems, Inc. Portions Copyright 1997-2005 Sun
  * Microsystems, Inc. All Rights Reserved.
  */
-import java.awt.Frame;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 //import org.netbeans.paint.api.components.FileChooserUtils;
 //import org.netbeans.paint.api.util.GraphicsUtils;
 //import org.netbeans.paintui.PaintTopComponent;
-import org.openide.ErrorManager;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 import imagej.Log;
+import imagej.MetaData;
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Menu;
-import imagej.plugin.ij2.Parameter;
-import imagej.plugin.ij2.Plugin;
+import imagej.imglib.dataset.LegacyImgLibDataset;
 import java.awt.BorderLayout;
 
 import java.io.IOException;
@@ -62,6 +46,7 @@ import loci.formats.gui.GUITools;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
+import org.openide.util.AsyncGUIJob;
 import org.openide.util.Exceptions;
 
 // Were this a plugin...
@@ -74,45 +59,12 @@ import org.openide.util.Exceptions;
 //  },
 //  accelerator="^O"
 //)
-//public class OpenImage<T extends RealType<T>> implements IPlugin {
-//
-//	@Parameter(output=true)
-//	private Dataset dataset;
-//
-//	@Override
-//	public void run() {
-//		// prompt for input file
-//		final JFileChooser fileChooser =
-//			GUITools.buildFileChooser(new ChannelMerger());
-//		final int rval = fileChooser.showOpenDialog(null);
-//		if (rval != JFileChooser.APPROVE_OPTION) return; // canceled
-//		final String id = fileChooser.getSelectedFile().getAbsolutePath();
-//
-//		// open image
-//		final ImageOpener imageOpener = new ImageOpener();
-//		try {
-//			final Image<T> img = imageOpener.openImage(id);
-//			dataset = new ImgLibDataset<T>(img);
-//		}
-//		catch (FormatException e) {
-//			Log.printStackTrace(e);
-//		}
-//		catch (IOException e) {
-//			Log.printStackTrace(e);
-//		}
-//  }
-/**
- *
- * @author Timothy Boudreau
- */
 public class OpenAction<T extends RealType<T>> extends AbstractAction {
 
-    
-    private static final String ICON_BASE = "imagej/imageframe/resources/openFile24.png"; //NOI18N
-
+    private static final String ICON_BASE = "imagej/envisaje/imageframe/resources/openFile24.png"; //NOI18N
     private Dataset dataset;
     private TopComponent tc = new TopComponent();
-    NavigableImagePanelSliders iPanel = null;
+    NavigableImageFrame iPanel = null;
     private JScrollPane srcScrollPaneImage = null;
 
     public OpenAction() {
@@ -129,35 +81,44 @@ public class OpenAction<T extends RealType<T>> extends AbstractAction {
             return; // canceled
         }
         final String id = fileChooser.getSelectedFile().getAbsolutePath();
-        // open image
-        final ImageOpener imageOpener = new ImageOpener();
-        try {
-            final Image<T> img = imageOpener.openImage(id);
-            dataset = new ImgLibDataset<T>(img);
-        } catch (FormatException ex) {
-            Log.printStackTrace(ex);
-        } catch (IOException ex) {
-            Log.printStackTrace(ex);
-        }
 
-        try {
-            iPanel = new NavigableImagePanelSliders();
-            iPanel.setDataset(dataset);
-        } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        Utilities.attachInitJob(tc, new AsyncGUIJob() {
 
-        tc.removeAll();
-        tc.setDisplayName(dataset.getMetaData().getLabel());
-        tc.setLayout(new BorderLayout());
-        tc.add(iPanel, BorderLayout.CENTER);
-        //tc.repaint();
-        //tc.validate();
-        tc.open();
-        tc.requestActive();
+            public void construct() {
+                // open image
+                final ImageOpener imageOpener = new ImageOpener();
+                try {
+                    final Image<T> img = imageOpener.openImage(id);
+                    dataset = new LegacyImgLibDataset(img);
+                    // TEMP - populate required axis label metadata
+                    final MetaData metadata = ImgLibDataset.createMetaData(img.getName());
+                    dataset.setMetaData(metadata);
+                } catch (FormatException ex) {
+                    Log.printStackTrace(ex);
+                } catch (IOException ex) {
+                    Log.printStackTrace(ex);
+                }
+                try {
+                    iPanel = new NavigableImageFrame();
+                    iPanel.setDataset(dataset);
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
 
-
+            public void finished() {
+                tc.removeAll();
+                tc.setDisplayName(dataset.getMetaData().getLabel());
+                tc.setLayout(new BorderLayout());
+                tc.add(iPanel, BorderLayout.CENTER);
+                //tc.repaint();
+                //tc.validate();
+                tc.open();
+                tc.requestActive();
+            }
+        });
     }
+
     /*
     PaintTopComponent tc = new PaintTopComponent(pnl.getDimension(), pnl.isTransparent());
     Mode m = WindowManager.getDefault().findMode("editor");
@@ -205,8 +166,6 @@ public class OpenAction<T extends RealType<T>> extends AbstractAction {
 //                last.requestActive();
 //            }
 //        }
-
-
 //private static class FF extends FileFilter {
 //
 //    final Set<String> fmts;
