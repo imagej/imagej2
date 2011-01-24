@@ -29,6 +29,7 @@ public class Ij1PluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
+		Log.debug("Searching for legacy plugins...");
 		if (IJ.getInstance() == null) {
 			new ImageJ(ImageJ.NO_SHOW);
 		}
