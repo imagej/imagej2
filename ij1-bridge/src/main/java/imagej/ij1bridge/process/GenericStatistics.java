@@ -29,7 +29,7 @@ public class GenericStatistics extends ImageStatistics {
 		this.width = ip.getWidth();
 		this.height = ip.getHeight();
 		setup(ip, cal);
-		int planeSize = Dimensions.calcPlaneSize(this.width, this.height);
+		int planeSize = this.width * this.height;
 		this.pixels = new double[planeSize];
 		for (int i = 0; i < planeSize; i++)
 			this.pixels[i] = ip.getd(i);
