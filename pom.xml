@@ -314,6 +314,11 @@
 			<id>imagej.thirdparty</id>
 			<url>http://dev.imagejdev.org:8081/content/repositories/thirdparty</url>
 		</repository>
+		<!-- NB: for jai_core -->
+		<repository>
+			<id>geotools</id>
+			<url>http://download.osgeo.org/webdav/geotools</url>
+		</repository>
 		<!-- NB: for netcdf-java -->
 		<repository>
 			<id>unifi.it</id>
