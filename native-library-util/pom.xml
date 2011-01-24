@@ -1,84 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-    http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>imagej</groupId>
-    <artifactId>imagej-base-pom</artifactId>
-    <version>1.09</version>
-  </parent>
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-base</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
 
-  <groupId>imagej</groupId>
-  <artifactId>native-library-util</artifactId>
-  <version>2.0-SNAPSHOT</version>
+	<artifactId>native-library-util</artifactId>
 
-  <name>Native Libary Utility</name>
-  <description>A library for loading native libraries.</description>
-  <url>http://imagejdev.org/</url>
-  <inceptionYear>2011</inceptionYear>
+	<name>Native Library Utility</name>
+	<description>A library for loading native libraries.</description>
 
-  <licenses>
-    <license>
-      <name>BSD</name>
-      <url>http://dev.imagejdev.org/svn/imagej/trunk/native-loader/META-INF/license/loci/LICENSE.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej.nativelibrary</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.4</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+	<developers>
+		<developer>
+			<id>aivar</id>
+			<name>Aivar Grislis</name>
+			<email>grislis@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/aivar-grislis</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <packageName>imagej.nativelibrary</packageName>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <developers>
-    <developer>
-      <id>aivar</id>
-      <name>Aivar Grislis</name>
-      <email>grislis@wisc.edu</email>
-      <url>http://loci.wisc.edu/people/aivar-grislis</url>
-      <organization>UW-Madison LOCI</organization>
-      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>-6</timezone>
-      <properties>
-        <picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
-      </properties>
-    </developer>
-  </developers>
-
-  <repositories>
-    <!-- NB: for imagej-base-pom -->
-    <repository>
-      <id>imagej.releases</id>
-      <url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
-    </repository>
-  </repositories>
+	<!-- NB: for imagej-base, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
 
 </project>
-
-
