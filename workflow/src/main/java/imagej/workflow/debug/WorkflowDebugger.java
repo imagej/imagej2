@@ -5,13 +5,13 @@
 
 package imagej.workflow.debug;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ij.ImagePlus;
-import ij.io.FileSaver;
-import ij.process.ImageProcessor;
+import javax.imageio.ImageIO;
 
 import imagej.workflow.plugin.ItemWrapper;
 
@@ -25,14 +25,16 @@ import imagej.workflow.plugin.ItemWrapper;
  * @author Aivar Grislis
  */
 public class WorkflowDebugger {
-    private static final String FORMAT = "png";
+    private static final String FORMAT = "jpg";
     private static final String WEB_DIR = "web";
     private static final String PREVIEW_DIR = "preview";
     private static final String IMAGE = "image";
-    private static final String PREVIEW_FILE_DIR =
-            WEB_DIR + File.pathSeparatorChar + PREVIEW_DIR;
-    private static final String PREVIEW_FILE_NAME =
-            PREVIEW_FILE_DIR + File.pathSeparatorChar + IMAGE;
+   // private static final String PREVIEW_FILE_DIR =
+   //         WEB_DIR + File.pathSeparator + PREVIEW_DIR;
+   // private static final String PREVIEW_FILE_NAME =
+   //         PREVIEW_FILE_DIR + File.pathSeparator + IMAGE;
+    private static final String PREVIEW_FILE_DIR = WEB_DIR + "/" + PREVIEW_DIR;
+    private static final String PREVIEW_FILE_NAME = PREVIEW_FILE_DIR + "/" + IMAGE;
     private static final String PREVIEW_WEB_NAME =
             WEB_DIR + '/' + PREVIEW_DIR + '/' + IMAGE;
     private Object m_synchObject = new Object();
@@ -77,27 +79,29 @@ public class WorkflowDebugger {
                 for (DebugInfo debugInfo : m_debugInfoList) {
                     ItemWrapper itemWrapper = debugInfo.getItemWrapper();
                     Object item = itemWrapper.getItem();
-                    String html ="<html><body>";
-                    if (item instanceof ImageProcessor) {
+                    String content = "";
+                    if (item instanceof RenderedImage) {
                         // save images to local file system web site for preview
-                        String fileSuffix = m_ordinal++ + '.' + FORMAT;
+                        String fileSuffix = m_ordinal++ + "." + FORMAT;
                         String fileName = PREVIEW_FILE_NAME + fileSuffix;
                         String webName = PREVIEW_WEB_NAME + fileSuffix;
                         File file = makePreviewFile(
-                                (ImageProcessor) item,
-                                fileName);
+                                (RenderedImage) item,
+                                fileName,
+                                FORMAT);
                         m_previewFileList.add(file);
-                        html += "<img src='" + webName + "'</img>";
+                        content = "<html><body>"
+                                + "<img src='" + webName + "'/>"
+                                + "</body></html>";
                     }
                     else {
-                        html += item.toString();
+                        content = item.toString();
                     }
-                    html += "</body></html>";
                     m_previewInfoList.add(
                             new PreviewInfo(
                                     debugInfo.getInstanceId(),
                                     debugInfo.getDesc(),
-                                    html));
+                                    content));
                 }
                 // processed this debugging information
                 m_debugInfoList.clear();
@@ -147,23 +151,18 @@ public class WorkflowDebugger {
     /**
      * Creates a preview file version of an image.
      *
-     * @param imageProcessor the image
+     * @param image the image
      * @param fileName file name to use
      * @return the file
      */
-    private File makePreviewFile(ImageProcessor imageProcessor, String fileName) {
-        ImagePlus imagePlus = new ImagePlus("preview", imageProcessor);
-        FileSaver fileSaver = new FileSaver(imagePlus);
-        if (FORMAT.equals("png")) {
-            fileSaver.saveAsPng(fileName);
+    private File makePreviewFile(RenderedImage image, String fileName, String format) {
+        File file = null;
+        try {
+            file = new File(fileName);
+            ImageIO.write(image, "png", file);
         }
-        else if (FORMAT.equals("jpg")) {
-            fileSaver.saveAsJpeg(fileName);
+        catch (IOException e) {
         }
-        else {
-            // programmer error
-            System.out.println("UNKNOWN FORMAT " + FORMAT);
-        }
-        return null;
+        return file;
     }
 }

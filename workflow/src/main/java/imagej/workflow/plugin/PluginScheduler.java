@@ -40,6 +40,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import imagej.workflow.debug.DebugInfo;
+import imagej.workflow.debug.WorkflowDebugger;
 import imagej.workflow.plugin.ItemWrapper;
 
 /**
@@ -50,6 +52,7 @@ import imagej.workflow.plugin.ItemWrapper;
 public class PluginScheduler {
     private static PluginScheduler INSTANCE = null;
     private static final Object m_synchObject = new Object();
+    private WorkflowDebugger m_debugger = null;
     private volatile boolean m_quit;
     private Map<String, BlockingQueue<ItemWrapper>> m_queueMap = new HashMap<String, BlockingQueue<ItemWrapper>>();
 
@@ -68,6 +71,10 @@ public class PluginScheduler {
             INSTANCE = new PluginScheduler();
        }
        return INSTANCE;
+    }
+
+    public void setDebugger(WorkflowDebugger debugger) {
+        m_debugger = debugger;
     }
 
     /**
@@ -109,16 +116,23 @@ public class PluginScheduler {
     /**
      * Passes image to fully-qualified name.
      *
+     * @param instanceId
      * @param fullInName
      * @param image
      */
-    public void put(String fullInName, ItemWrapper image) {
+    public void put(String instanceId, String outName, String fullInName, ItemWrapper item) {
+        // show debugging information
+        if (null != m_debugger) {
+            DebugInfo debugInfo = new DebugInfo(instanceId, outName + " to " + fullInName, item);
+            m_debugger.addDebugInfo(debugInfo);
+        }
+
         boolean success = false;
         BlockingQueue<ItemWrapper> queue = getQueue(fullInName);
         //TODO currently using an unlimited LinkedBlockingQueue, so will never block
         while (!success) {
             try {
-                success = queue.offer(image, 100, TimeUnit.MILLISECONDS);
+                success = queue.offer(item, 100, TimeUnit.MILLISECONDS);
             }
             catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

@@ -20,18 +20,18 @@ public interface IModuleInfo extends IModuleInfoInternal {
     public String getName();
 
     /**
-     * Gets input image names.
+     * Gets input item information array.
      *
      * @return
      */
-    public String[] getInputNames();
+    public IItemInfo[] getInputItemInfos();
 
     /**
-     * Gets output names.
+     * Gets output item information array.
      *
      * @return
      */
-    public String[] getOutputNames();
+    public IItemInfo[] getOutputItemInfos();
 
     /**
      * Is this a workflow?

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import imagej.workflow.debug.PreviewInfo;
+import imagej.workflow.debug.WorkflowDebugger;
+
 import imagej.workflow.util.xmllight.XMLParser;
 import imagej.workflow.util.xmllight.XMLWriter;
 import imagej.workflow.util.xmllight.XMLException;
@@ -29,7 +32,7 @@ import imagej.workflow.plugin.PluginScheduler;
  *
  * @author Aivar Grislis
  */
-public class Workflow implements IModule, IWorkflow {
+public class Workflow implements IModule, IWorkflow, IWorkflowDebug {
     public static final String WORKFLOW = "workflow";
     public static final String NAME = "name";
     public static final String MODULES = "modules";
@@ -43,20 +46,21 @@ public class Workflow implements IModule, IWorkflow {
     public static final String OUTPUTS = "outputs";
     public static final String OUTPUT = "output";
 
-    IModuleFactory m_moduleFactory = ModuleFactory.getInstance();
-    String m_name;
-    String m_instanceId;
-    Map<String, IModule> m_moduleMap = new HashMap<String, IModule>();
-    List<String> m_inputNames = new ArrayList<String>();
-    List<String> m_outputNames = new ArrayList<String>();
-    List<Wire> m_wires = new ArrayList<Wire>();
-    Map<String, IModule> m_inputModules = new HashMap<String, IModule>();
-    Map<String, String> m_inputModuleNames = new HashMap<String, String>();
-    Map<String, IOutputListener> m_listeners = new HashMap<String, IOutputListener>();
-    Map<String, IModule> m_outputModules = new HashMap<String, IModule>();
-    Map<String, String> m_outputModuleNames = new HashMap<String, String>();
-    IOutputListener m_listener = new OutputListener();
-    Object m_synchObject = new Object();
+    private IModuleFactory m_moduleFactory = ModuleFactory.getInstance();
+    private String m_name;
+    private String m_instanceId;
+    private Map<String, IModule> m_moduleMap = new HashMap<String, IModule>();
+    private List<String> m_inputNames = new ArrayList<String>();
+    private List<String> m_outputNames = new ArrayList<String>();
+    private List<Wire> m_wires = new ArrayList<Wire>();
+    private Map<String, IModule> m_inputModules = new HashMap<String, IModule>();
+    private Map<String, String> m_inputModuleNames = new HashMap<String, String>();
+    private Map<String, IOutputListener> m_listeners = new HashMap<String, IOutputListener>();
+    private Map<String, IModule> m_outputModules = new HashMap<String, IModule>();
+    private Map<String, String> m_outputModuleNames = new HashMap<String, String>();
+    private IOutputListener m_listener = new OutputListener();
+    private Object m_synchObject = new Object();
+    private WorkflowDebugger m_workflowDebugger = null;
     
     public Workflow() {
         m_instanceId = UUID.randomUUID().toString();
@@ -574,8 +578,66 @@ public class Workflow implements IModule, IWorkflow {
         synchronized (m_synchObject) {
             m_listeners.clear();
         }
+        if (null != m_workflowDebugger) {
+            m_workflowDebugger.clear();
+        }
     }
-    
+
+    /**
+     * Starts debugging.
+     */
+    public void setDebug(boolean debug) {
+        if (debug) {
+            m_workflowDebugger = new WorkflowDebugger();
+        }
+        else {
+            m_workflowDebugger = null;
+        }
+        PluginScheduler.getInstance().setDebugger(m_workflowDebugger);
+    }
+
+    /**
+     * Gets debugger, if any.
+     *
+     * @return null or workflow debugger
+     */
+    public WorkflowDebugger getDebugger() {
+        return m_workflowDebugger;
+    }
+
+    /**
+     * Gets a snapshot of the preview information list.  Processes the debugging
+     * information list.
+     * <p>
+     * Called during or after workflow execution.
+     *
+     * @return list of preview information.
+     */
+    public List<PreviewInfo> getPreviewInfoList() {
+        List<PreviewInfo> previewInfoList = null;
+        if (null != m_workflowDebugger) {
+            previewInfoList = m_workflowDebugger.getPreviewInfoList();
+        }
+        return previewInfoList;
+    }
+
+    /**
+     * Gets a snapshot of the preview information list for a given instance.
+     * <p>
+     * Called during or after workflow execution.  Can be called repeatedly as
+     * workflow progresses.
+     *
+     * @param instanceId identifies the instance
+     * @return list of preview information
+     */
+    public List<PreviewInfo> getPreviewInfoList(String instanceId) {
+        List<PreviewInfo> previewInfoList = null;
+        if (null != m_workflowDebugger) {
+            previewInfoList = m_workflowDebugger.getPreviewInfoList(instanceId);
+        }
+        return previewInfoList;
+    }
+
     /**
      * Listens for output images, passes them on to external listeners.
      */
