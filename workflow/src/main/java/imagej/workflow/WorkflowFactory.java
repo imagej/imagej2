@@ -25,11 +25,22 @@ public class WorkflowFactory implements IModuleFactory {
     /**
      * Creates a workflow from XML.
      *
-     * @param xml
+     * @param xml string containing XML representation
      * @return
      */
     public IWorkflow create(String xml) {
-        IWorkflow workFlow = new Workflow();
+        return create(xml, null);
+   }
+
+    /**
+     * Creates a workflow from XML.
+     *
+     * @param xml String containing XML representation
+     * @param instanceId null or unique instance identifier
+     * @return
+     */
+    public IWorkflow create(String xml, String instanceId) {
+        IWorkflow workFlow = new Workflow(instanceId);
         workFlow.fromXML(xml);
         return workFlow;
     }

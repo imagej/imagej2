@@ -26,6 +26,10 @@ public class DummyComponentFactory implements IModuleFactory {
     }
 
     public IModule create(String xml) {
+        return create(xml, null);
+    }
+
+    public IModule create(String xml, String instanceId) {
         IModule component = new DummyComponent();
         component.fromXML(xml);
         return component;

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.ItemWrapper;
@@ -41,13 +42,18 @@ public class PluginModule implements IModule {
     public static final String CLASSNAME = "classname";
     String m_pluginClassName;
     String m_name;
+    String m_instanceId;
     PluginAnnotations m_annotations;
     IPluginLauncher m_launcher;
     Set<String> m_inputNames = Collections.EMPTY_SET;
     Set<String> m_outputNames = Collections.EMPTY_SET;
     Map<String, IOutputListener> m_listenerMap = new HashMap<String, IOutputListener>();
 
+    /**
+     * Create a plugin module instance.  Generates a unique instance identifier.
+     */
     public PluginModule() {
+        m_instanceId = UUID.randomUUID().toString();
     }
 
     /**
@@ -63,6 +69,7 @@ public class PluginModule implements IModule {
      * Create an instance for a given plugin class.
      *
      * @param className
+     * @param instanceId null or unique identifier for this instance
      */
     public PluginModule(Class pluginClass) {
         init(pluginClass);
@@ -74,6 +81,7 @@ public class PluginModule implements IModule {
      * @param className
      */
     private void init(String pluginClassName) {
+        m_instanceId = UUID.randomUUID().toString();
 
         // get associated class
         Class pluginClass = null;
@@ -123,6 +131,7 @@ public class PluginModule implements IModule {
      * Initializes given a plugin class.
      *
      * @param pluginClass
+     * @param instanceId null or unique instance identifier
      */
     private void init(Class pluginClass) {
         m_pluginClassName = pluginClass.getName();
@@ -135,7 +144,16 @@ public class PluginModule implements IModule {
         m_outputNames = m_annotations.getOutputNames();
 
         // create launcher
-        m_launcher = new PluginLauncher(pluginClass, m_annotations);
+        m_launcher = new PluginLauncher(pluginClass, m_instanceId, m_annotations);
+    }
+
+    /**
+     * Sets a unique instance identifier.
+     * 
+     * @param instanceId
+     */
+    public void setInstanceId(String instanceId) {
+        m_instanceId = instanceId;
     }
 
     /**

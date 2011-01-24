@@ -25,11 +25,25 @@ public class PluginModuleFactory implements IModuleFactory {
     /**
      * Creates a plugin module from XML.
      *
-     * @param xml
-     * @return
+     * @param xml string with XML representation
+     * @return the module
      */
     public IModule create(String xml) {
+        return create(xml, null);
+    }
+
+    /**
+     * Creates a plugin module from XML, given a unique instance identifier.
+     *
+     * @param xml sring with XML representation
+     * @param instanceId null or unique instance identifler
+     * @return the module
+     */
+    public IModule create(String xml, String instanceId) {
         PluginModule module = new PluginModule();
+        if (null != instanceId) {
+            module.setInstanceId(instanceId);
+        }
         module.fromXML(xml);
         return module;
     }

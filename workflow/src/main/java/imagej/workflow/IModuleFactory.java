@@ -16,8 +16,19 @@ public interface IModuleFactory {
     /**
      * Creates a module from XML.
      *
-     * @param xml
-     * @return
+     * @param xml string with XML description
+     * @return module instance
+     * @throws XMLException
      */
     public IModule create(String xml) throws XMLException;
+
+    /**
+     * Creates a module from XML.
+     *
+     * @param xml string with XML description
+     * @param null or unique instance identifier
+     * @return module instance
+     * @throws XMLException
+     */
+    public IModule create(String xml, String instanceId) throws XMLException;
 }

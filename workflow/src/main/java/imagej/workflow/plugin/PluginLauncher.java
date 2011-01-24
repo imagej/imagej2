@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.workflow.plugin;
 
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,12 +46,12 @@ import java.util.Set;
  */
 public class PluginLauncher implements IPluginLauncher {
     public static boolean s_singleInstance = false;
-    UUID m_id = UUID.randomUUID();
-    Class m_pluginClass;
-    PluginAnnotations m_annotations;
-    Thread m_thread;
-    volatile boolean m_quit = false;
-    Map<String, String> m_outputNames = new HashMap();
+    private Class m_pluginClass;
+    private String m_uniqueId;
+    private PluginAnnotations m_annotations;
+    private Thread m_thread;
+    private volatile boolean m_quit = false;
+    private Map<String, String> m_outputNames = new HashMap();
 
     /**
      * Creates a launcher for a given class, that has the given input and
@@ -61,8 +60,13 @@ public class PluginLauncher implements IPluginLauncher {
      * @param pluginClass
      * @param annotations
      */
-    public PluginLauncher(Class pluginClass, PluginAnnotations annotations) {
+    public PluginLauncher(Class pluginClass, String uniqueId, PluginAnnotations annotations) {
         m_pluginClass = pluginClass;
+        m_uniqueId = uniqueId;
+        //TODO
+        if (null == m_uniqueId) {
+            System.out.println("Creating PluginLauncher w/o uniqueId!!");
+        }
         m_annotations = annotations;
         m_thread = new LauncherThread();
         m_thread.setDaemon(true);
@@ -109,7 +113,7 @@ public class PluginLauncher implements IPluginLauncher {
      * @return
      */
     public String uniqueName(String name) {
-        return m_id.toString() + '-' + name;
+        return m_uniqueId + '.' + name;
     }
 
     /**
