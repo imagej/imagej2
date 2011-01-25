@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import imagej.workflow.IItemInfo;
 import imagej.workflow.IModuleInfo;
@@ -31,15 +33,19 @@ import imagej.workflowpipes.pipesentity.UI;
 import java.io.Serializable;
 
 public class ModuleBase extends Module {
-    List<NameTypeDesc> _nameTypeDescList = new ArrayList<NameTypeDesc>();
+    List<NameTypeDesc> m_nameTypeDescList = new ArrayList<NameTypeDesc>();
+    IItemInfo m_inputItemInfos[];
 
-	public ModuleBase( IModuleInfo iModuleInfo )
+	public ModuleBase( IModuleInfo moduleInfo )
 	{
+            // save inputs to get outputs later
+            m_inputItemInfos = moduleInfo.getInputItemInfos();
+
 		// populate ID
 		this.id = new ID("");
 
 		// loop through inputs and add terminals
-		for ( IItemInfo inputItemInfo : iModuleInfo.getInputItemInfos() )
+		for ( IItemInfo inputItemInfo : moduleInfo.getInputItemInfos() )
 		{
                     String inputName = inputItemInfo.getName();
                     String inputType = null;
@@ -61,12 +67,12 @@ public class ModuleBase extends Module {
                         this.terminals.add( Terminal.getInputTerminal( inputType, inputName ) );
                     }
                     else {
-                        _nameTypeDescList.add(new NameTypeDesc(inputName, inputType, inputName));
+                        m_nameTypeDescList.add(new NameTypeDesc(inputName, inputType, inputName));
                     }
 		}
 		
 		// loop through output and add terminals
-		for ( IItemInfo outputItemInfo : iModuleInfo.getOutputItemInfos() )
+		for ( IItemInfo outputItemInfo : moduleInfo.getOutputItemInfos() )
 		{
                     String outputName = outputItemInfo.getName();
                     String outputType = null;
@@ -82,17 +88,17 @@ public class ModuleBase extends Module {
                             outputType = "items";
                             break;
                     }
-                    this .terminals.add( Terminal.getOutputTerminal( outputType, outputName ) );
+                    this.terminals.add( Terminal.getOutputTerminal( outputType, outputName ) );
                 }
 
                 // build HTML based UI
-                this.ui = getUI(_nameTypeDescList);
+                this.ui = getUI(m_nameTypeDescList);
 
 		//
-		this.name = new Name( iModuleInfo.getName() );
+		this.name = new Name( moduleInfo.getName() );
 
 		// TODO replace with single string representing the GUI type
-		this.type = new Type( iModuleInfo.getName() );
+		this.type = new Type( moduleInfo.getName() );
 
 		this.description = new Description("TODO map me with descriptive text");
 
@@ -103,6 +109,49 @@ public class ModuleBase extends Module {
 		//TODO this is to be replaced with the implementation
 		this.module = "Yahoo::RSS::FetchPage";
 	}
+
+        /**
+         * Returns the user inputs, as a map from name to value object.
+         *
+         * @param list of names
+         * @return map of name to value object
+         */
+        public Map<String, Object> getInputs(List<String> wiredInputNames)
+        {
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            for (IItemInfo itemInfo : m_inputItemInfos) {
+                String name = itemInfo.getName();
+                if (!wiredInputNames.contains(name)) {
+                    Conf conf = Conf.getConf(name, confs);
+                    if (null != conf) {
+                        String value = conf.getValue().getValue();
+                        Object object = null;
+                        switch (itemInfo.getType()) {
+                            //TODO error handling, ""==value or parser fails
+                            case STRING:
+                                object = value;
+                                break;
+                            case INTEGER:
+                                object = Integer.parseInt(value);
+                                break;
+                            case FLOATING:
+                                object = Float.parseFloat(value);
+                                break;
+                            case URL:
+                                object = value;
+                                break;
+                            case IMAGE:
+                                break;
+                        }
+                        if (null != object) {
+                            map.put(name, object);
+                        }
+                    }
+                }
+            }
+            return map;
+        }
 
 	public void go( List<PreviewInfo> previewInfoList )
 	{

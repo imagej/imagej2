@@ -37,10 +37,10 @@ public class ImageInputPlugin extends AbstractPlugin implements IPlugin {
         RenderedImage image = null;
         try {
             // Read from a file
-            File file = new File("rockhopper.jpg"); //name);
+            File file = new File(name);
             image = ImageIO.read(file);
         } catch (IOException e) {
-            System.out.println("error reading file");
+            System.out.println("error reading file '" + name + "'");
         }
         ItemWrapper item = new ItemWrapper(image);
         put(item);
