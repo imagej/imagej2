@@ -123,7 +123,12 @@ public class PluginScheduler {
     public void put(String instanceId, String outName, String fullInName, ItemWrapper item) {
         // show debugging information
         if (null != m_debugger) {
-            DebugInfo debugInfo = new DebugInfo(instanceId, outName + " to " + fullInName, item);
+            String inName = fullInName;
+            int index = fullInName.indexOf('.');
+            if (index > 0) {
+                inName = fullInName.substring(++index);
+            }
+            DebugInfo debugInfo = new DebugInfo(instanceId, outName + " to " + inName, item);
             m_debugger.addDebugInfo(debugInfo);
         }
 
