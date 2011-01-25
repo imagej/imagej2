@@ -75,45 +75,46 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
     }
 
     /**
-     * Gets the default input image from previous in chain.  Called from subclass.
+     * Gets the default input object from previous in chain.  Called from subclass.
      *
-     * @return image
+     * @return object
      */
-    public ItemWrapper get() {
+    public Object get() {
         return get(Input.DEFAULT);
     }
 
     /**
-     * Gets a named input image from previous in chain.  Called from subclass.
+     * Gets a named input object from previous in chain.  Called from subclass.
      *
      * @param inName
-     * @return image
+     * @return object
      */
-    public ItemWrapper get(String inName) {
+    public Object get(String inName) {
         ItemWrapper input = m_inputImages.get(inName);
         if (null == input) {
             // run-time request disagrees with annotation
             PluginAnnotations.nameNotAnnotated(PluginAnnotations.InputOutput.INPUT, inName);
         }
-        return input;
+        return input.getItem();
     }
 
     /**
-     * Puts the default output image to next in chain (if any).  Called from subclass.
+     * Puts the default output object to next in chain (if any).  Called from subclass.
      *
-     * @param image
+     * @param object
      */
-    public void put(ItemWrapper image) {
-        put(Output.DEFAULT, image);
+    public void put(Object object) {
+        ItemWrapper item = new ItemWrapper(object);
+        put(Output.DEFAULT, item);
     }
 
     /**
-     * Puts named output image to next in chain (if any).  Called from subclass.
+     * Puts named output object to next in chain (if any).  Called from subclass.
      *
      * @param outName
-     * @param image
+     * @param object
      */
-    public void put(String outName, ItemWrapper image) {
+    public void put(String outName, Object object) {
         //TODO how to check annotation?  No longer visible from here.
         /*
         if (isAnnotatedName(InputOutput.OUTPUT, outName)) {
@@ -127,7 +128,8 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
             }
         }
         */
+        ItemWrapper item = new ItemWrapper(object);
         String fullInName = m_outputNames.get(outName);
-        PluginScheduler.getInstance().put(null, outName, fullInName, image);
+        PluginScheduler.getInstance().put(null, outName, fullInName, item);
     }
 }

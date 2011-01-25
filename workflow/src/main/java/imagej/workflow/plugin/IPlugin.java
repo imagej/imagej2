@@ -37,28 +37,28 @@ package imagej.workflow.plugin;
 /**
  * Interface for a Plugin.  Defines the main processing method that a plugin
  * implements, as well as methods that are available to the plugin internally
- * to get and put named images.
+ * to get and put named objects.
  *
  * @author Aivar Grislis
  */
 public interface IPlugin {
 
     /**
-     * Gets the default input image from previous in chain.  Called from within
+     * Gets the default input object from previous in chain.  Called from within
      * implementation.
      *
-     * @return image
+     * @return object
      */
-    ItemWrapper get();
+    Object get();
 
     /**
-     * Gets a named input image from previous in chain.  Called from within
+     * Gets a named input object from previous in chain.  Called from within
      * implemenation.
      *
      * @param inName
-     * @return image
+     * @return object
      */
-    ItemWrapper get(String inName);
+    Object get(String inName);
 
     /**
      * This is the body of the plugin, defined in implemenation.
@@ -66,19 +66,19 @@ public interface IPlugin {
     void process();
 
     /**
-     * Puts the default output image to next in chain (if any).  Called from
+     * Puts the default output object to next in chain (if any).  Called from
      * within implementation.
      *
-     * @param image
+     * @param object
      */
-    void put(ItemWrapper image);
+    void put(Object object);
 
     /**
-     * Puts named output image to next in chain (if any).  Called from within
+     * Puts named output object to next in chain (if any).  Called from within
      * implementation.
      *
      * @param outName
-     * @param image
+     * @param object
      */
-    void put(String outName, ItemWrapper image);
+    void put(String outName, Object object);
 }
