@@ -104,8 +104,7 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
      * @param object
      */
     public void put(Object object) {
-        ItemWrapper item = new ItemWrapper(object);
-        put(Output.DEFAULT, item);
+        put(Output.DEFAULT, object);
     }
 
     /**
