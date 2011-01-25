@@ -61,7 +61,7 @@ public class ModuleGenerator {
                
 
 		//add the output module
-		//moduleServiceHashMap.put( new Service( new Type("output") ), Output.getOutput() );
+		moduleServiceHashMap.put( new Service( new Type("output") ), Output.getOutput() );
 
 		return moduleServiceHashMap;
 	}

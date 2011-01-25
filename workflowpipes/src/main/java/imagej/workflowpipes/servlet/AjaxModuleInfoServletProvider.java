@@ -1,7 +1,6 @@
 package imagej.workflowpipes.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -43,9 +42,11 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 		Module pipesModule = null;
 		if( typeParameter != null )
 		{
-			//Search for type 
-			pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, modulesServiceHashMap );
-		
+                    //Search for type
+                    pipesModule = ModuleSearch.findfirstModuleOfType( typeParameter, modulesServiceHashMap );
+
+                    if ( pipesModule.getType().getValue() != null)
+                    {
 			if( pipesModule.getType().getValue() != typeParameter )
 			{
 				response.setContentType( "application/json" );
@@ -60,6 +61,7 @@ public class AjaxModuleInfoServletProvider extends HttpServlet {
 				// generate the response
 				response.getWriter().write( jsonObject.toString() );
 			}
+                    }
 		}
 		
 		//TODO: Add error handling
