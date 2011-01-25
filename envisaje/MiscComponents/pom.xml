@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-openide-awt</artifactId>
+			<version>${netbeans.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
 			<artifactId>org-openide-dialogs</artifactId>
 			<version>${netbeans.version}</version>
 		</dependency>
@@ -57,12 +62,6 @@
 			<artifactId>org-openide-util-lookup</artifactId>
 			<version>${netbeans.version}</version>
 		</dependency>
-	 <dependency>
-	  <artifactId>org-openide-awt</artifactId>
-	  <groupId>org.netbeans.api</groupId>
-	  <type>jar</type>
-	  <version>RELEASE691</version>
-	 </dependency>
 	</dependencies>
 
 	<build>
