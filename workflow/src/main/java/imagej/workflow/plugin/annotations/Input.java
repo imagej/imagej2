@@ -44,7 +44,7 @@ import imagej.workflow.plugin.IPlugin;
 // "warning: should be marked @Retention(RetentionPolicy.SOURCE)"
 @Indexable(type=IPlugin.class)
 public @interface Input {
-    public final String DEFAULT = "INPUT";
+    public final String DEFAULT = "INPUT"; //TODO this is hardcoded elsewhere in Workflow/Workflow Pipes
     //Bug ID: 6954300
     // Annotation with generics causes javac to fail when annotation processor present
     // State: 3-Accepted, bug Priority: 4-Low

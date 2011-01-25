@@ -97,6 +97,15 @@ public class Workflow implements IModule, IWorkflow, IWorkflowDebug {
         return m_outputNames.toArray(new String[0]);
     }
 
+    /**
+     * Sets input settings.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs) {
+        //TODO m_launcher.setInputs(inputs);
+    }
+
     public boolean fromXML(String xml) {
         boolean success = false;
         XMLParser xmlHelper = new XMLParser();

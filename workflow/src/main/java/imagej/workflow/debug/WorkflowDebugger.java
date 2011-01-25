@@ -72,35 +72,39 @@ public class WorkflowDebugger {
             // are we up to date?
             if (!m_debugInfoList.isEmpty()) {
                 for (DebugInfo debugInfo : m_debugInfoList) {
+                    System.out.println("debugInfo " + debugInfo.getDesc() + " " + debugInfo.getInstanceId());
                     ItemWrapper itemWrapper = debugInfo.getItemWrapper();
                     Object item = itemWrapper.getItem();
-                    String content = "";
-                    if (item instanceof RenderedImage) {
-                        // save images to local file system web site for preview
-                        String fileSuffix = m_ordinal++ + "." + FORMAT;
-                        String fileName = PREVIEW_FILE_NAME + fileSuffix;
-                        String webName = PREVIEW_WEB_NAME + fileSuffix;
-                        File file = makePreviewFile(
-                                (RenderedImage) item,
-                                fileName,
-                                FORMAT);
-                        m_previewFileList.add(file);
-                        content = "<html><body>"
-                                +   "<a href='" + webName
-                                +       "' target='_blank'>"    // open link in new window
-                                +     "<img src='" + webName + "'/>"
-                                +   "</a>"
-                                + "</body></html>";
+                    if (null != item) {
+                        String content = "";
+                        if (item instanceof RenderedImage) {
+                            // save images to local file system web site for preview
+                            String fileSuffix = m_ordinal++ + "." + FORMAT;
+                            String fileName = PREVIEW_FILE_NAME + fileSuffix;
+                            String webName = PREVIEW_WEB_NAME + fileSuffix;
+                            File file = makePreviewFile(
+                                    (RenderedImage) item,
+                                    fileName,
+                                    FORMAT);
+                            m_previewFileList.add(file);
+                            content = "<html><body>"
+                                    +   "<a href='" + webName
+                                    +       "' target='_blank'>"    // open link in new window
+                                    +     "<img src='" + webName + "'/>"
+                                    +   "</a>"
+                                    + "</body></html>";
+                        }
+                        else {
+                            content = item.toString();
+                        }
+                        m_previewInfoList.add(
+                                new PreviewInfo(
+                                        debugInfo.getInstanceId(),
+                                        debugInfo.getDesc(),
+                                        content));
                     }
-                    else {
-                        content = item.toString();
-                    }
-                    m_previewInfoList.add(
-                            new PreviewInfo(
-                                    debugInfo.getInstanceId(),
-                                    debugInfo.getDesc(),
-                                    content));
                 }
+
                 // processed this debugging information
                 m_debugInfoList.clear();
 

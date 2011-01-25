@@ -5,11 +5,13 @@
 
 package imagej.workflow;
 
+import java.io.Serializable;
+
 /**
  *
- * @author aivar
+ * @author Aivar Grislis
  */
-public class ItemInfo implements IItemInfo {
+public class ItemInfo implements IItemInfo, Serializable {
     private final String m_name;
     private final Type m_type;
     private final Object m_default;
@@ -31,5 +33,4 @@ public class ItemInfo implements IItemInfo {
     public Object getDefault() {
         return m_default;
     }
-
 }

@@ -5,6 +5,8 @@
 
 package imagej.workflow;
 
+import java.util.Map;
+
 import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.IPluginLauncher;
 
@@ -63,6 +65,13 @@ public interface IModule {
      * @return
      */
     public String[] getOutputNames();
+
+    /**
+     * Sets input settings.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs);
 
     /**
      * Furnish default input image

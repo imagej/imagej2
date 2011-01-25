@@ -81,7 +81,6 @@ public class PluginModule implements IModule {
      * @param className
      */
     private void init(String pluginClassName) {
-        m_instanceId = UUID.randomUUID().toString();
 
         // get associated class
         Class pluginClass = null;
@@ -134,6 +133,10 @@ public class PluginModule implements IModule {
      * @param instanceId null or unique instance identifier
      */
     private void init(Class pluginClass) {
+
+        if (null == m_instanceId) {
+            m_instanceId = UUID.randomUUID().toString();
+        }
         m_pluginClassName = pluginClass.getName();
         int lastDotIndex = m_pluginClassName.lastIndexOf('.');
         m_name = m_pluginClassName.substring(lastDotIndex + 1, m_pluginClassName.length());
@@ -348,6 +351,16 @@ public class PluginModule implements IModule {
      */
     public String[] getOutputNames() {
         return m_outputNames.toArray(new String[0]);
+    }
+
+
+    /**
+     * Sets input settings.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs) {
+        m_launcher.setInputs(inputs);
     }
 
     /**
