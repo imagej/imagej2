@@ -7,8 +7,6 @@ package imagej.workflow;
 
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.ItemWrapper;
-import imagej.workflow.plugin.annotations.Img;
 import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
@@ -29,11 +27,10 @@ public class DummyPlugin2 extends AbstractPlugin implements IPlugin {
 
     public void process() {
         System.out.println("In TestPlugin2");
-        ItemWrapper item1 = get(FIRST);
-        ItemWrapper item2 = get(SECOND);
-        String combinedString = interleave((String) item1.getItem(), (String) item2.getItem());
-        ItemWrapper item3 = new ItemWrapper(combinedString);
-        put(item3);
+        String item1 = (String) get(FIRST);
+        String item2 = (String) get(SECOND);
+        String combinedString = interleave(item1, item2);
+        put(combinedString);
         System.out.println("OUTPUT IS " + combinedString);
     }
 
