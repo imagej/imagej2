@@ -54,6 +54,7 @@ public class WorkflowDebugger {
      */
     public void addDebugInfo(DebugInfo debugInfo) {
         synchronized (m_synchObject) {
+            //System.out.println("add debuginfo " + debugInfo.getInstanceId() + " " + debugInfo.getDesc());
             m_debugInfoList.add(debugInfo);
         }
     }
@@ -107,10 +108,9 @@ public class WorkflowDebugger {
 
                 // processed this debugging information
                 m_debugInfoList.clear();
-
-                // return snapshot of preview list
-                previewInfoList.addAll(m_previewInfoList);
             }
+            // return snapshot of preview list
+            previewInfoList.addAll(m_previewInfoList);
             return previewInfoList;
         }
     }
@@ -125,13 +125,22 @@ public class WorkflowDebugger {
      * @return list of preview information
      */
     public List<PreviewInfo> getPreviewInfoList(String instanceId) {
+        //dump("full list" , getPreviewInfoList());
         List<PreviewInfo> previewInfoList = new ArrayList<PreviewInfo>();
         for (PreviewInfo previewInfo : getPreviewInfoList()) {
             if (instanceId.equals(previewInfo.getInstanceId())) {
                 previewInfoList.add(previewInfo);
             }
         }
+        //dump(instanceId, previewInfoList);
         return previewInfoList;
+    }
+
+    void dump(String title, List<PreviewInfo> list) {
+        System.out.println("===" + title + "===");
+        for (PreviewInfo info : list) {
+            System.out.println("id" + info.getInstanceId() + "desc" + info.getDesc());
+        }
     }
 
     /**
