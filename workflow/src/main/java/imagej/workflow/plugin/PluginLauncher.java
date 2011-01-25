@@ -114,7 +114,7 @@ public class PluginLauncher implements IPluginLauncher {
      */
     public void externalPut(String name, ItemWrapper image) {
         String fullInName = uniqueName(name);
-        PluginScheduler.getInstance().put(null, name, fullInName, image);
+        PluginScheduler.getInstance().put(m_uniqueId, name, fullInName, image);
     }
 
     /**
@@ -230,7 +230,7 @@ public class PluginLauncher implements IPluginLauncher {
         @Override
         public void run() {
             if (null != m_pluginInstance) {
-                m_pluginInstance.start(m_inputImages, m_outputNames);
+                m_pluginInstance.start(m_uniqueId, m_inputImages, m_outputNames);
             }
         }
     }
