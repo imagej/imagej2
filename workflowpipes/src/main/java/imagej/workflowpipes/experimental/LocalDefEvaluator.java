@@ -60,13 +60,6 @@ public class LocalDefEvaluator {
                 catch (InterruptedException e) {
                     
                 }
-                List<PreviewInfo> previewInfoList = workflow.getPreviewInfoList();
-                for (PreviewInfo previewInfo : previewInfoList) {
-                    System.out.println( "Description: " + previewInfo.getDesc() );
-                    System.out.println( "HTML UI: " + previewInfo.getContent() );
-                    System.out.println( "Unique instance id: " + previewInfo.getInstanceId() );
-                }
-    
 		
 		//Create a preview response
 		Preview previewResponse = new Preview();
@@ -76,7 +69,13 @@ public class LocalDefEvaluator {
 		{
 			System.out.println( "LocalDefEvaluator :: getPreview " + module.getType().getValue()  );	
 				
-			// module run
+			// module build preview
+                        List<PreviewInfo> previewInfoList = workflow.getPreviewInfoList(module.getID().getValue());
+                            for (PreviewInfo previewInfo : previewInfoList) {
+                                System.out.println( "Description: " + previewInfo.getDesc() );
+                                System.out.println( "HTML UI: " + previewInfo.getContent() );
+                                System.out.println( "Unique instance id: " + previewInfo.getInstanceId() );
+                        }
 			module.go( previewInfoList );
 			
 			// add the errors
