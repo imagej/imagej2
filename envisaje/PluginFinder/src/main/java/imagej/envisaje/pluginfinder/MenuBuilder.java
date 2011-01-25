@@ -3,6 +3,7 @@ package imagej.envisaje.pluginfinder;
 import imagej.Log;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginException;
 import imagej.plugin.PluginUtils;
 
 import java.awt.event.ActionEvent;
@@ -21,19 +22,20 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import org.openide.util.Exceptions;
 import org.openide.windows.IOProvider;
 
 public class MenuBuilder {
 
     public void addIJ1Menus(JMenu topMenu) {
-		final List<PluginEntry> entries = PluginUtils.findPlugins();
+		//final List<PluginEntry> entries = PluginUtils.findPlugins();
+        List<PluginEntry> entries = new ArrayList<PluginEntry>();
+        new Ij1PluginFinder().findPlugins(entries);
         StringBuilder sb = new StringBuilder();
         sb.append("");
-        IOProvider.getDefault().getIO("IJ1 Plugins", false).getOut().println("Discovered " + entries.size() + " plugins");
-
-
+        IOProvider.getDefault().getIO("IJ1 Plugins", false).getOut().println(
+                "Discovered " + entries.size() + " plugins");
 		buildTopMenu(entries, topMenu);
-
 		// buildMenuBar(entries);
 	}
 
@@ -214,7 +216,11 @@ public class MenuBuilder {
 			menuItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					PluginUtils.runPlugin(entry);
+                    try {
+                        new Ij1PluginRunner().runPlugin(entry);
+                    } catch (PluginException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
 				}
 			});
 		}

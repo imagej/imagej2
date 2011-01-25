@@ -1,6 +1,7 @@
 
-package imagej.envisaje.tests;
+package imagej.envisaje.tests.actions;
 
+import imagej.envisaje.tests.ButtonGroupHelper;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
