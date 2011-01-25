@@ -11,11 +11,11 @@
             </file>
         </folder>
         <folder name="File">
-            <file name="imagej-envisaje-tests-MargeAction.instance">
-                <attr name="delegate" newvalue="imagej.envisaje.tests.MargeAction"/>
+            <file name="imagej-envisaje-tests-actions-MargeAction.instance">
+                <attr name="delegate" newvalue="imagej.envisaje.tests.actions.MargeAction"/>
             </file>
-            <file name="imagej-envisaje-tests-HomerAction.instance">
-                <attr name="delegate" newvalue="imagej.envisaje.tests.HomerAction"/>
+            <file name="imagej-envisaje-tests-actions-HomerAction.instance">
+                <attr name="delegate" newvalue="imagej.envisaje.tests.actions.HomerAction"/>
             </file>
             <file name="imagej-envisaje-tests-DynamicSubMenu.instance">
                 <attr name="delegate" newvalue="imagej.envisaje.tests.DynamicSubMenu"/>
@@ -28,12 +28,12 @@
                 <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-tests-DynamicSubMenu.instance"/>
                 <attr name="position" intvalue="12"/>
             </file>
-            <file name="imagej-envisaje-tests-MargeAction.shadow">
-                <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-tests-MargeAction.instance"/>
-                <attr name="position" intvalue="0"/>
+            <file name="imagej-envisaje-tests-actions-MargeAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-tests-actions-MargeAction.instance"/>
+                <attr name="position" intvalue="11"/>
             </file>
-            <file name="imagej-envisaje-tests-HomerAction.shadow">
-                <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-tests-HomerAction.instance"/>
+            <file name="imagej-envisaje-tests-actions-HomerAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/imagej-envisaje-tests-actions-HomerAction.instance"/>
                 <attr name="position" intvalue="10"/>
             </file>
 

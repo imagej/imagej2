@@ -57,6 +57,12 @@
 			<artifactId>org-openide-util-lookup</artifactId>
 			<version>${netbeans.version}</version>
 		</dependency>
+	 <dependency>
+	  <artifactId>org-openide-awt</artifactId>
+	  <groupId>org.netbeans.api</groupId>
+	  <type>jar</type>
+	  <version>RELEASE691</version>
+	 </dependency>
 	</dependencies>
 
 	<build>
@@ -68,8 +74,9 @@
 				<extensions>true</extensions>
 				<configuration>
 					<publicPackages>
-						<publicPackage>imagej.envisaje.misccomponents</publicPackage>
-						<publicPackage>imagej.envisaje.misccomponents.explorer</publicPackage>
+					 <publicPackage>imagej.envisaje.misccomponents</publicPackage>
+					 <publicPackage>imagej.envisaje.misccomponents.explorer</publicPackage>
+					 <publicPackage>imagej.envisaje.output</publicPackage>
 					</publicPackages>
 				</configuration>
 			</plugin>

@@ -123,6 +123,12 @@
 			<version>${netbeans.version}</version>
 			<type>pom</type>
 		</dependency>
+	 <dependency>
+	  <artifactId>org-openide-util-lookup</artifactId>
+	  <groupId>org.netbeans.api</groupId>
+	  <type>jar</type>
+	  <version>RELEASE691</version>
+	 </dependency>
 	</dependencies>
 
 	<build>

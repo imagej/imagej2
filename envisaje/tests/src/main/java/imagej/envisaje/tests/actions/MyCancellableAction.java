@@ -1,4 +1,4 @@
-package imagej.envisaje.tests;
+package imagej.envisaje.tests.actions;
 
 /* From:
  * http://rubenlaguna.com/wp/2010/01/18/cancellable-tasks-and-progress-indicators-netbeans-platform/
@@ -29,17 +29,15 @@ public final class MyCancellableAction implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         LOG.info("actionperformed");
-        final ProgressHandle ph = ProgressHandleFactory.createHandle("task showing progress", new Cancellable() {
 
+        final ProgressHandle ph = ProgressHandleFactory.createHandle("task showing progress", new Cancellable() {
             public boolean cancel() {
                 return handleCancel();
             }
         });
 
         Runnable runnable = new Runnable() {
-
             private final int NUM = 60000;
-
             public void run() {
                 try {
                     ph.start(); //we must start the PH before we swith to determinate
@@ -49,14 +47,11 @@ public final class MyCancellableAction implements ActionListener {
                         ph.progress(i);
                         Thread.sleep(0); //throws InterruptedException is the task was cancelled
                     }
-
                 } catch (InterruptedException ex) {
                     LOG.info("the task was CANCELLED");
                     return;
                 }
-
             }
-
             private void doSomething(int i) {
                 LOG.info("doSomething with " + i);
                 return;
@@ -64,15 +59,12 @@ public final class MyCancellableAction implements ActionListener {
         };
 
         theTask = RP.create(runnable); //the task is not started yet
-
         theTask.addTaskListener(new TaskListener() {
             public void taskFinished(Task task) {
                 ph.finish();
             }
         });
-
         theTask.schedule(0); //start the task
-
     }
 
     private boolean handleCancel() {
@@ -80,7 +72,6 @@ public final class MyCancellableAction implements ActionListener {
         if (null == theTask) {
             return false;
         }
-
         return theTask.cancel();
     }
 

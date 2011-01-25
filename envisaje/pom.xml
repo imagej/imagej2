@@ -47,7 +47,7 @@
 	</modules>
 
 	<properties>
-		<brandingToken>foo</brandingToken>
+		<brandingToken>envisaje</brandingToken>
 	</properties>
 
 	<build>
@@ -60,7 +60,7 @@
 					<extensions>true</extensions>
 					<configuration>
 						<brandingToken>${brandingToken}</brandingToken>
-						<cluster>foobar</cluster>
+						<cluster>envisaje</cluster>
 					</configuration>
 				</plugin>
 			</plugins>
