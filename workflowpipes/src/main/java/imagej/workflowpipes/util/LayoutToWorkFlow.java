@@ -1,9 +1,9 @@
 package imagej.workflowpipes.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Random;
 
 import imagej.workflow.IModule;
 import imagej.workflow.IModuleInfo;
@@ -11,6 +11,7 @@ import imagej.workflow.Workflow;
 import imagej.workflow.WorkflowManager;
 import imagej.workflow.plugin.ItemWrapper;
 
+import imagej.workflowpipes.modules.ModuleBase;
 import imagej.workflowpipes.pipesapi.Module;
 import imagej.workflowpipes.pipesentity.Wire;
 
@@ -21,7 +22,6 @@ import imagej.workflowpipes.pipesentity.Wire;
  *
  */
 public class LayoutToWorkFlow {
-    private static Random s_random = new Random();
 
         /**
          * Gets a LOCI workflow based upon lists of Pipes wires and modules.
@@ -32,7 +32,8 @@ public class LayoutToWorkFlow {
          */
 	public static Workflow getWorkFlow( List<Wire> wireList, List<Module> moduleList )
 	{
-            Map<String, IModule> moduleMap = new HashMap<String, IModule>();
+            // get loci module by instance id
+            Map<String, IModule> lociModuleMap = new HashMap<String, IModule>();
 
             // create a LOCI workflow
             Workflow workflow = new Workflow();
@@ -47,7 +48,9 @@ public class LayoutToWorkFlow {
                 System.out.println("Module Name " + module.getName().getValue() + " Id " + module.getID().getValue());
                 if (!"Pipe Output".equals(name)) { //TODO "Pipe Output" is an internal Pipes plugin
                     IModule lociModule = createLociModuleInstanceForName(name, id);
-                    moduleMap.put(id, lociModule);
+                    Map<String, Object> inputs = getInputs(module, wireList);
+                    lociModule.setInputs(inputs);
+                    lociModuleMap.put(id, lociModule);
                     workflow.add(lociModule);
                 }
             }
@@ -63,21 +66,21 @@ public class LayoutToWorkFlow {
                     System.out.println("Wiring src module id " + srcModuleId + " src name " + srcId + " dst module id " + dstModuleId + " dst name " + dstId);
 
                     boolean hasWiredModules = true;
-                    IModule srcModule = moduleMap.get(srcModuleId);
+                    IModule srcModule = lociModuleMap.get(srcModuleId);
                     if (null == srcModule) {
                         System.out.println("!Missing src loci module for id " + srcModuleId);
                         hasWiredModules = false;
                     }
-                    IModule dstModule = moduleMap.get(dstModuleId);
+                    IModule dstModule = lociModuleMap.get(dstModuleId);
                     if (null == dstModule) {
                         System.out.println("!Missing dst loci module for id " + dstModuleId);
                         hasWiredModules = false;
                     }
                     if (hasWiredModules)
                         workflow.wire(
-                            moduleMap.get(srcModuleId),
+                            lociModuleMap.get(srcModuleId),
                             srcId,
-                            moduleMap.get(dstModuleId),
+                            lociModuleMap.get(dstModuleId),
                             dstId);
                 }
 
@@ -85,18 +88,31 @@ public class LayoutToWorkFlow {
             // finish up
 	    workflow.finalize();
 
-            // TODO works only for String Item.Type inputs!!!
-            // run this workflow with random inputs
-            String inputs[] = workflow.getInputNames();
-            for (String input : inputs) {
-                String randomName = randomName();
-                System.out.println("Workflow input " + input + " is " + randomName);
-                workflow.input(new ItemWrapper(randomName), input);
-            }
-            // of course we need a "Pipe Output" plugin to display results
+           // of course we need a "Pipe Output" plugin to display results
 
             return workflow;
 	}
+        
+        /**
+         * Builds a map of name to value object user inputs.
+         * 
+         * @param lociModule
+         * @param module
+         * @param wireList
+         * @return
+         */
+        private static Map<String, Object> getInputs(Module module, List<Wire> wireList)
+        {
+            List<String> wiredInputNames = new ArrayList<String>();
+            String moduleId = module.getID().getValue();
+            for (Wire wire : wireList) {
+                if (moduleId.equals(wire.getTgt().getModuleid())) {
+                    wiredInputNames.add(wire.getTgt().getId());
+                }
+            }
+            return ((ModuleBase) module).getInputs(wiredInputNames);
+        }
+
         /**
          * Saves an existing workflow.
          *
@@ -118,25 +134,16 @@ public class LayoutToWorkFlow {
             workflow.clear();
         }
 
-        private static IModule createLociModuleInstanceForName(String name, String instance) {
+        private static IModule createLociModuleInstanceForName(String name, String instanceId) {
             IModule module = null;
             IModuleInfo moduleInfos[] = WorkflowManager.getInstance().getModuleInfos();
             for (IModuleInfo moduleInfo : moduleInfos) {
                 if (moduleInfo.getName().equals(name)) {
                     // create module and pass in the unique instance identifier
-                    module = WorkflowManager.getInstance().createInstance(moduleInfo, instance);
+                    module = WorkflowManager.getInstance().createInstance(moduleInfo, instanceId);
                     break;
                 }
             }
             return module;
-        }
-
-        private static String randomName() {
-            String names[] = { "Abel", "Alan", "Arthur", "Bertrand", "Betty", "Bill", "Catherine",
-                "Donna", "Edward", "Fred", "George", "Hugh", "Ingrid", "Jack", "Kathy", "Louis",
-                "Martha", "Nora", "Orlando", "Penelope", "Roger", "Simon", "Thomas", "Veronica",
-                "Willy", "Xavier", "Yolanda" };
-
-            return names[s_random.nextInt(names.length)];
         }
 }
