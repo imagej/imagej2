@@ -43,7 +43,7 @@ import imagej.workflow.plugin.IPlugin;
 // "warning: should be marked @Retention(RetentionPolicy.SOURCE)"
 @Indexable(type=IPlugin.class)
 public @interface Output {
-    public final String DEFAULT = "OUTPUT";
+    public final String DEFAULT = "OUTPUT"; //TODO warning this is hardcoded elsewhere in Workflow/ Workflow Pipes
     // see Input
     //Img[] value() default { @Img };
 

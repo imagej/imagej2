@@ -8,8 +8,10 @@ package imagej.workflow;
 import imagej.workflow.IModule;
 import imagej.workflow.Workflow;
 import imagej.workflow.IOutputListener;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
@@ -226,6 +228,15 @@ public class DummyComponent implements IModule {
      */
     public String[] getOutputNames() {
         return m_outputNames.toArray(new String[0]);
+    }
+
+    /**
+     * Sets input settings.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs) {
+        //TODO
     }
 
    /**

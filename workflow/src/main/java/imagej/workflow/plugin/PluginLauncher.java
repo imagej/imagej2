@@ -51,7 +51,8 @@ public class PluginLauncher implements IPluginLauncher {
     private PluginAnnotations m_annotations;
     private Thread m_thread;
     private volatile boolean m_quit = false;
-    private Map<String, String> m_outputNames = new HashMap();
+    private Map<String, String> m_outputNames = new HashMap<String, String>();
+    private Map<String, Object> m_inputs = new HashMap<String, Object>();
 
     /**
      * Creates a launcher for a given class, that has the given input and
@@ -71,6 +72,16 @@ public class PluginLauncher implements IPluginLauncher {
         m_thread = new LauncherThread();
         m_thread.setDaemon(true);
         m_thread.start();
+    }
+
+
+    /**
+     * Sets input settings for this instance.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs) {
+        m_inputs = inputs;
     }
 
     /**
@@ -154,9 +165,22 @@ public class PluginLauncher implements IPluginLauncher {
                 // assemble a set of input images
                 Map<String, ItemWrapper> inputImages = new HashMap();
                 for (String inputName : inputNames) {
-                    String fullInName = uniqueName(inputName);
-                    ItemWrapper image = PluginScheduler.getInstance().get(fullInName);
-                    inputImages.put(inputName, image);
+                    ItemWrapper item = null;
+                    if (m_inputs.containsKey(inputName)) {
+                        // already specified for this instance
+                        item = new ItemWrapper(m_inputs.get(inputName));
+                    }
+                    else {
+                        // get from pipes
+                        String fullInName = uniqueName(inputName);
+                        item = PluginScheduler.getInstance().get(fullInName);
+                    }
+                    inputImages.put(inputName, item);
+                }
+
+                // if we didn't actually wait for any inputs, run once only.
+                if (inputNames.size() == inputNames.size()) {
+                    m_quit = true;
                 }
 
                 //TODO Good place to throttle thread creation here

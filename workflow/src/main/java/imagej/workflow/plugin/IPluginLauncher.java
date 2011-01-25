@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.workflow.plugin;
 
+import java.util.Map;
+
 /**
  * Interface to the plugin launcher.
  *
@@ -46,6 +48,12 @@ package imagej.workflow.plugin;
  * @author Aivar Grislis
  */
 public interface IPluginLauncher {
+    /**
+     * Sets input settings for this instance.
+     *
+     * @param inputs
+     */
+    public void setInputs(Map<String, Object> inputs);
 
     /**
      * Chains this plugin to the next one.
