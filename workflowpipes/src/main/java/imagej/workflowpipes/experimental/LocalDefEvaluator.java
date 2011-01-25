@@ -71,10 +71,10 @@ public class LocalDefEvaluator {
 		//Create a preview response
 		Preview previewResponse = new Preview();
 
-		// evaluate the modules individually
+		// evaluate the modules output individually
 		for( Module module : moduleList )
 		{
-			System.out.println( "LocalDefEvaluator :: getPreview :: Runnning module " + module.getType().getValue()  );	
+			System.out.println( "LocalDefEvaluator :: getPreview " + module.getType().getValue()  );	
 				
 			// module run
 			module.go( previewInfoList );
