@@ -47,10 +47,12 @@ public interface IPluginInternal {
     /**
      * Starts up processing.  Called from plugin launcher.
      *
+     * @param uniqueId
      * @param inputImages
      * @param outputNames
      */
     public void start(
+            String uniqueId,
             Map<String, ItemWrapper> inputImages,
             Map<String, String> outputNames);
 }

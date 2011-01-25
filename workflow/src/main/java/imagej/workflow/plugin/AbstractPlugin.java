@@ -47,6 +47,7 @@ import imagej.workflow.plugin.ItemWrapper;
  * @author Aivar Grislis
  */
 public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
+    String m_uniqueId;
     Map<String, ItemWrapper> m_inputImages;
     Map<String, String> m_outputNames;
 
@@ -58,8 +59,10 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
      *   the next chained plugin.
      */
     public void start(
+            String uniqueId,
             Map<String, ItemWrapper> inputImages,
             Map<String, String> outputNames) {
+        m_uniqueId = uniqueId;
         m_inputImages = inputImages;
         m_outputNames = outputNames;
 
@@ -129,6 +132,6 @@ public abstract class AbstractPlugin implements IPluginInternal, IPlugin {
         */
         ItemWrapper item = new ItemWrapper(object);
         String fullInName = m_outputNames.get(outName);
-        PluginScheduler.getInstance().put(null, outName, fullInName, item);
+        PluginScheduler.getInstance().put(m_uniqueId, outName, fullInName, item);
     }
 }
