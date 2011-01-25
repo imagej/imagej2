@@ -31,11 +31,10 @@ public class InterleavePlugin extends AbstractPlugin implements IPlugin {
 
     public void process() {
         System.out.println("In InterleavePlugin");
-        ItemWrapper item1 = get(FIRST);
-        ItemWrapper item2 = get(SECOND);
-        String combinedString = interleave((String) item1.getItem(), (String) item2.getItem());
-        ItemWrapper item3 = new ItemWrapper(combinedString);
-        put(item3);
+        String item1 = (String) get(FIRST);
+        String item2 = (String) get(SECOND);
+        String combinedString = interleave(item1, item2);
+        put(combinedString);
         System.out.println("OUTPUT IS " + combinedString);
     }
 

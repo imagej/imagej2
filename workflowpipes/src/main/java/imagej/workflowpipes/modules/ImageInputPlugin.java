@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
@@ -33,7 +32,7 @@ public class ImageInputPlugin extends AbstractPlugin implements IPlugin {
 
     public void process() {
         System.out.println("In ImageInputPlugin");
-        String name = (String) get(IMAGE_NAME).getItem();
+        String name = (String) get(IMAGE_NAME);
         RenderedImage image = null;
         try {
             // Read from a file
@@ -42,8 +41,7 @@ public class ImageInputPlugin extends AbstractPlugin implements IPlugin {
         } catch (IOException e) {
             System.out.println("error reading file '" + name + "'");
         }
-        ItemWrapper item = new ItemWrapper(image);
-        put(item);
+        put(image);
     }
 }
 

@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 
 import imagej.workflow.plugin.AbstractPlugin;
 import imagej.workflow.plugin.IPlugin;
-import imagej.workflow.plugin.ItemWrapper;
 import imagej.workflow.plugin.annotations.Item;
 import imagej.workflow.plugin.annotations.Input;
 import imagej.workflow.plugin.annotations.Output;
@@ -33,7 +32,7 @@ public class ScaleInHalfPlugin extends AbstractPlugin implements IPlugin {
 
     public void process() {
         System.out.println("In ScaleInHalfPlugin");
-        RenderedImage image = (RenderedImage) get().getItem();
+        RenderedImage image = (RenderedImage) get();
 
         // scale in half
         BufferedImage img = (BufferedImage) image;
@@ -44,7 +43,6 @@ public class ScaleInHalfPlugin extends AbstractPlugin implements IPlugin {
         quarterImage.createGraphics().drawImage(
                  img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
 
-        ItemWrapper item = new ItemWrapper(quarterImage);
-        put(item);
+        put(quarterImage);
     }
 }
