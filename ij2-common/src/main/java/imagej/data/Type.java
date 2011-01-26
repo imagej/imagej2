@@ -49,7 +49,8 @@ public interface Type
 	/** returns the StorageType (i.e. UINT8, INT64, FLOAT32, etc.) values of this type are encoded as */
 	StorageType getStorageType();
 	
-	/** returns the number of storage units each value requires to represent itself in its storageType. In practice its a double in the range (0,1]. */
+	/** returns the number of storage units each value requires to represent itself in its storageType. Notice its
+	 *  a double so fractional and/or multiple use of storage units are supported. */
 	double getNumberOfStorageTypesPerValue();
 	
 	/** returns true if the type of the specified data array is compatible with this type's internal representation */
