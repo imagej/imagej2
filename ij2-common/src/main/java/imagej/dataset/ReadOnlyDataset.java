@@ -39,7 +39,7 @@ public class ReadOnlyDataset implements Dataset
 	@Override
 	public boolean isComposite()
 	{
-		return this.dataset.isComposite();
+		return true;
 	}
 
 	@Override
