@@ -39,7 +39,7 @@ public class DatasetView implements Dataset
 	 * 
 	 * @param referenceDataset - the Dataset this view will be constrained within
 	 * @param fullSpaceAxisValues - a specified list of axis values. one entry per axis present in viewed Dataset. An example value of fixed axes
-	 *   might be [1,0,3,-1,-1] which implies x=1. y=0, z=3, c and t vary. This creates a two dim view of the larger dataset in c & t.
+	 *   might be [1,0,3,-1,-1] which implies x=1, y=0, z=3, c and t vary. This creates a two dim view of the larger Dataset in c & t.
 	 */
 	public DatasetView(Dataset referenceDataset, int[] fullSpaceAxisValues)
 	{
@@ -90,7 +90,8 @@ public class DatasetView implements Dataset
 		
 		this.fullSpaceDataset = referenceDataset;
 
-		this.metadata = new MetaData(); // TODO - or from reference dataset???
+		// TODO - build some sensible MetaData from reference dataset. label, axis labels, and directAccessDimCount cannot just be adopted as is
+		this.metadata = new MetaData();
 		
 		int directAccessDimension = referenceDataset.getMetaData().getDirectAccessDimensionCount();
 		
