@@ -17,13 +17,13 @@ public class RegionCopyOperation
 	/** constructs a RegionCopyOperation from a region in an input dataset to a region in an output dataset. User must specify
 	 * whether to work with float data or integral data. 
 	 */
-	public RegionCopyOperation(Dataset inputDataset, int[] inputOrigin, Dataset outputDataset, int[] outputOrigin, int[] span, boolean floatData)
+	public RegionCopyOperation(Dataset inputDataset, int[] inputOrigin, Dataset outputDataset, int[] outputOrigin, int[] span, boolean dataInReals)
 	{
 		Dimensions.verifyDimensions(inputDataset.getDimensions(), inputOrigin, span);
 		Dimensions.verifyDimensions(outputDataset.getDimensions(), outputOrigin, span);
 		
-		this.iter = new SynchronizedIterator(new Dataset[]{inputDataset, outputDataset}, new int[][]{inputOrigin, outputOrigin}, span, floatData);
-		if (floatData)
+		this.iter = new SynchronizedIterator(new Dataset[]{inputDataset, outputDataset}, new int[][]{inputOrigin, outputOrigin}, span, dataInReals);
+		if (dataInReals)
 			this.copier = new DoubleCopyFunction(this.iter);
 		else
 			this.copier = new LongCopyFunction(this.iter);
