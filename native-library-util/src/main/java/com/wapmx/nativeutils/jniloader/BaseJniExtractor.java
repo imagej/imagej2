@@ -101,8 +101,10 @@ public abstract class BaseJniExtractor implements JniExtractor {
             }
         }
 
-        System.out.println("URL is " + lib.toString());
-        System.out.println("URL path is " + lib.getPath());
+        if (null != lib) {
+            System.out.println("URL is " + lib.toString());
+            System.out.println("URL path is " + lib.getPath());
+        }
         System.out.println("jni dir is " + getJniDir().toString());
 
    // THis is a protected method:     System.out.println("ClassLoader.finLibrary returns " + this.getClass().getClassLoader().findLibrary(mappedlib));
