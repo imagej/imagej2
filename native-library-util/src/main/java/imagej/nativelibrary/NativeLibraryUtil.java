@@ -90,12 +90,12 @@ public class NativeLibraryUtil {
                             new DefaultJniExtractor(libraryJarClass, directory);
 
                     File extractedFile = jniExtractor.extractJni(libname);
+
+                    success = true;
                 }
                 catch (IOException e) {
                     System.out.println("IOException creating DefaultJniExtractor " + e.getMessage());
                 }
-
-                success = true;
             }
         }
         catch (SecurityException e) {
@@ -127,6 +127,7 @@ public class NativeLibraryUtil {
     private static boolean checkLibraryPath(String propertyName, String directory) {
         String paths[] = getPaths(propertyName);
         for (String path : paths) {
+            System.out.println(path);
             if (directory.equals(path)) {
                 return true;
             }
