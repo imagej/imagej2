@@ -52,7 +52,7 @@ public class IJ1ProcessorFactory implements ProcessorFactory
 			return this.alternateFactory.makeProcessor(planePos);
 		}
 		
-		throw new IllegalArgumentException("cannot find satisfactory processor type for data type "+type.getName()+")");
+		throw new IllegalArgumentException("cannot find satisfactory processor type for data type ("+type.getName()+")");
 	}
 
 }
