@@ -15,6 +15,6 @@ public class IntegralSubstitutionUnaryFunction implements UnaryFunction
 	
 	public double compute(double input)
 	{
-		return substitutionTable[(int)input - originValue];
+		return this.substitutionTable[(int)input - this.originValue];
 	}
 }
