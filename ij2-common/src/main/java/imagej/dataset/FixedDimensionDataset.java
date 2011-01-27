@@ -39,7 +39,7 @@ public class FixedDimensionDataset implements Dataset
 	@Override
 	public boolean isComposite()
 	{
-		return this.dataset.isComposite();
+		return true;
 	}
 
 	@Override
