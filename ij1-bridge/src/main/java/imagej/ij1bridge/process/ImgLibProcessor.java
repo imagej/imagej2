@@ -685,7 +685,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		int storageUnitsGiven = Array.getLength(pixels);
 
 		if (storageUnitsGiven != storageUnitsExpected)
-			throw new IllegalArgumentException("setPlane() error: input plane shape is not compatible with input image planes");
+			throw new IllegalArgumentException("setImagePlanePixels() error: input plane shape is not compatible with input image planes");
 		
 		// set the plane
 		
@@ -700,7 +700,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		// otherwise set plane data
 		
-		System.out.println("setPixels() - nonoptimal container type - can only return a copy of pixels");
+		System.out.println("setImagePlanePixels() - nonoptimal container type - cannot change pixel array reference - can only set pixel values");
 
 		int[] position = Index.create(0,0,planePosition);
 
