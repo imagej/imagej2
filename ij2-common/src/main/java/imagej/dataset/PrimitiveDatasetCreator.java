@@ -49,7 +49,7 @@ public class PrimitiveDatasetCreator
 		Type dataType = identifyType(unsigned, arrayOfData);
 		
 		if (dataType == null)
-			throw new IllegalArgumentException("unsupported array type: "+objectType+" (unsigned = "+unsigned+")");
+			throw new IllegalArgumentException("unsupported array type: "+objectType+" (unsigned flag = "+unsigned+")");
 		
 		Dataset dataset = this.factory.createDataset(dataType, dimensions);
 		
