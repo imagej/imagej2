@@ -30,13 +30,13 @@ public class SynchronizedIterator
 	/** Constructs a SynchronizedIterator from input Datasets and regions. The user specifies if internal workspace
 	 *  should be filled with doubles or longs.
 	 */
-	public SynchronizedIterator(Dataset[] datasets, int[][] origins, int[] span, boolean workingInFloats)
+	public SynchronizedIterator(Dataset[] datasets, int[][] origins, int[] span, boolean workingInReals)
 	{
 		for (int i = 0; i < datasets.length; i++)
 			Dimensions.verifyDimensions(datasets[i].getDimensions(), origins[i], span);
 		
 		this.datasets = datasets;
-		if (workingInFloats)
+		if (workingInReals)
 			this.doubleWorkspace = new double[datasets.length];
 		else
 			this.longWorkspace = new long[datasets.length];
