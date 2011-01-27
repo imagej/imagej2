@@ -1804,9 +1804,9 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 	/** add noise to the current ROI area of current plane data. */
 	@Override
-	public void noise(double range)
+	public void noise(double spread)
 	{
-		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.isIntegral, this.rangeMin, this.rangeMax, range);
+		AddNoiseUnaryFunction function = new AddNoiseUnaryFunction(this.isIntegral, this.rangeMin, this.rangeMax, spread);
 
 		nonPositionalTransform(function);
 	}
