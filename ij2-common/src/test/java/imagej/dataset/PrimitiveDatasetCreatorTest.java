@@ -27,10 +27,6 @@ public class PrimitiveDatasetCreatorTest
 		Dataset ds;
 		int[] dimensions;
 		
-		/* 
-		 * 1-bit from boolean[] will not work since boolean[] does not match the Type's internal storage (which matches Imglib)
-		 * 
-		*/
 		dimensions = new int[]{1,3};
 		ds = this.creator.createDataset(dimensions, false, new boolean[]{false, true, true});
 		assertEquals(Types.findType("1-bit unsigned"), ds.getType());
