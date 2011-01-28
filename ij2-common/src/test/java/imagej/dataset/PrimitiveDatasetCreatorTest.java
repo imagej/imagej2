@@ -30,13 +30,14 @@ public class PrimitiveDatasetCreatorTest
 		/* 
 		 * 1-bit from boolean[] will not work since boolean[] does not match the Type's internal storage (which matches Imglib)
 		 * 
+		*/
+		dimensions = new int[]{1,3};
 		ds = this.creator.createDataset(dimensions, false, new boolean[]{false, true, true});
-		assertEquals(Types.findType("1-bit signed"), ds.getType());
+		assertEquals(Types.findType("1-bit unsigned"), ds.getType());
 		assertArrayEquals(dimensions, ds.getDimensions());
 		assertEquals(0, ds.getLong(new int[]{0,0}));
 		assertEquals(1, ds.getLong(new int[]{0,1}));
 		assertEquals(1, ds.getLong(new int[]{0,2}));
-		*/
 		
 		// signed 8-bit
 		dimensions = new int[]{1,3};
