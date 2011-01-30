@@ -1914,7 +1914,7 @@ public class DatasetProcessor extends ImageProcessor
 					else // integral
 					{
 						long snapPix = this.snapshot.getLong(pos);
-						setd(x, y, snapPix);
+						setl(x, y, snapPix);
 					}
 				}
 				i++;
