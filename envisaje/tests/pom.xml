@@ -19,6 +19,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>MiscComponents</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>annotations</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -77,11 +82,6 @@
 			<artifactId>org-openide-util-lookup</artifactId>
 			<version>${netbeans.version}</version>
 		</dependency>
-	 <dependency>
-	  <groupId>${project.groupId}</groupId>
-	  <artifactId>MiscComponents</artifactId>
-	  <version>${project.version}</version>
-	 </dependency>
 	</dependencies>
 
 	<build>
