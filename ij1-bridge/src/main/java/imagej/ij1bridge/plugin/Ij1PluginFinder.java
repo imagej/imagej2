@@ -63,13 +63,12 @@ public class Ij1PluginFinder implements PluginFinder {
 		return menuTable;
 	}
 
-	private void parseMenu(final MenuItem menuItem, final int pos,
-		final ArrayList<MenuEntry> path,
+	private void parseMenu(final MenuItem menuItem,
+		final double weight, final ArrayList<MenuEntry> path,
 		final Map<String, List<MenuEntry>> menuTable)
 	{
 		// build menu entry
 		final String name = menuItem.getLabel();
-		final double weight = pos;
 		final MenuEntry entry = new MenuEntry(name, weight);
 		final MenuShortcut shortcut = menuItem.getShortcut();
 		if (shortcut != null) {
@@ -89,9 +88,13 @@ public class Ij1PluginFinder implements PluginFinder {
 			// non-leaf; recursively process child menu items
 			final Menu menu = (Menu) menuItem;
 			final int itemCount = menu.getItemCount();
+			double w = -1;
 			for (int i = 0; i < itemCount; i++) {
 				final MenuItem item = menu.getItem(i);
-				parseMenu(item, i, copyList(path), menuTable);
+				final boolean isSeparator = item.getLabel().equals("-");
+				if (isSeparator) w += 10;
+				else w += 1;
+				parseMenu(item, w, copyList(path), menuTable);
 			}
 		}
 		else {

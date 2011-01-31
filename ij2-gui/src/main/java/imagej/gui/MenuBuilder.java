@@ -119,7 +119,12 @@ public class MenuBuilder {
 
 			// create JMenuItems corresponding to ShadowMenu objects
 			final List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+			double lastWeight = Double.NaN;
 			for (final ShadowMenu childMenu : childMenus) {
+				final double weight = childMenu.getMenuEntry().getWeight();
+				final double difference = Math.abs(weight - lastWeight);
+				if (difference > 1) menuItems.add(null); // separator
+				lastWeight = weight;
 				final JMenuItem item = childMenu.createMenuItem();
 				menuItems.add(item);
 			}
@@ -148,7 +153,8 @@ public class MenuBuilder {
 				final JMenu menu = new JMenu(name);
 				final List<JMenuItem> childMenuItems = createChildMenuItems();
 				for (final JMenuItem childMenuItem : childMenuItems) {
-					menu.add(childMenuItem);
+					if (childMenuItem == null) menu.addSeparator();
+					else menu.add(childMenuItem);
 				}
 				menuItem = menu;
 			}
