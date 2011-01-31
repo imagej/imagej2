@@ -24,7 +24,7 @@ import mpicbg.imglib.type.numeric.RealType;
 @Plugin(
 	menu={
 		@Menu(label="File", mnemonic='f'),
-		@Menu(label="Import", mnemonic='i'),
+		@Menu(label="Import", mnemonic='i', weight=2),
 		@Menu(label="Bio-Formats...", mnemonic='b', accelerator="control shift O")
 	}
 )
