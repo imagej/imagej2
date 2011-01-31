@@ -21,6 +21,9 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public void process(IPlugin plugin) {
+		final Iterable<Field> inputs = ParameterHandler.getInputParameters(plugin);
+		if (!inputs.iterator().hasNext()) return; // no inputs to harvest
+
 		final InputPanel inputPanel = createInputPanel();
 		buildPanel(inputPanel, plugin);
 		final boolean ok = showDialog(inputPanel, plugin);
