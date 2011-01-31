@@ -10,13 +10,10 @@ import imagej.plugin.ij2.Menu;
 import imagej.plugin.ij2.Parameter;
 import imagej.plugin.ij2.Plugin;
 
+import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-
-import loci.formats.ChannelMerger;
 import loci.formats.FormatException;
-import loci.formats.gui.GUITools;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
@@ -30,20 +27,15 @@ import mpicbg.imglib.type.numeric.RealType;
 )
 public class OpenImage<T extends RealType<T>> implements IPlugin {
 
+	@Parameter(label="File to open")
+	private File inputFile;
+
 	@Parameter(output=true)
 	private Dataset dataset;
 
 	@Override
 	public void run() {
-		// TODO implement input as a java.io.File rather than using GUI explicitly
-		// then this plugin can be moved out of ij2-gui and into ij2-io
-
-		// prompt for input file
-		final JFileChooser fileChooser =
-			GUITools.buildFileChooser(new ChannelMerger());
-		final int rval = fileChooser.showOpenDialog(null);
-		if (rval != JFileChooser.APPROVE_OPTION) return; // canceled
-		final String id = fileChooser.getSelectedFile().getAbsolutePath();
+		final String id = inputFile.getAbsolutePath();
 
 		// open image
 		final ImageOpener imageOpener = new ImageOpener();

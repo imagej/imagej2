@@ -35,6 +35,10 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	private Map<String, JComboBox> comboBoxes =
 		new HashMap<String, JComboBox>();
 
+	/** Widget table for files. */
+	private Map<String, SwingFileSelector> fileSelectors =
+		new HashMap<String, SwingFileSelector>();
+
 	public SwingInputPanel() {
 		setBorder(new EmptyBorder(15, 15, 15, 15));
 		// TODO - use a better layout manager
@@ -87,6 +91,10 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	@Override
 	public void addFile(String name, String label, File initialValue) {
 		// TODO create FileSelector widget and add here
+		final SwingFileSelector fileSelector =
+			new SwingFileSelector(initialValue);
+		addField(label, fileSelector);
+		fileSelectors.put(name, fileSelector);
 	}
 
 	@Override
@@ -118,11 +126,10 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	public int getChoiceIndex(String name) {
 		return comboBoxes.get(name).getSelectedIndex();
 	}
-	
+
 	@Override
 	public File getFile(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return fileSelectors.get(name).getFile();
 	}
 	
 	@Override
