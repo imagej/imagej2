@@ -1,6 +1,7 @@
-package imagej.gui;
+package imagej.gui.swing;
 
 import imagej.dataset.Dataset;
+import imagej.gui.InputPanel;
 
 import java.io.File;
 import java.util.HashMap;

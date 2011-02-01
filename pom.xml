@@ -32,6 +32,7 @@
 		<module>ij2-common</module>
 		<module>ij2-gui</module>
 		<module>ij2-imglib</module>
+		<module>ij2-plugins</module>
 		<module>ijx</module>
 		<module>image5d</module>
 		<!-- <module>imagej</module> -->

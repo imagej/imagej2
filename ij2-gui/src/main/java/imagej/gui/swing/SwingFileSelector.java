@@ -1,4 +1,6 @@
-package imagej.gui;
+package imagej.gui.swing;
+
+import imagej.gui.FileSelector;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
