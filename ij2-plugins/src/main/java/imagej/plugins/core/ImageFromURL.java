@@ -1,4 +1,4 @@
-package imagej.gui;
+package imagej.plugins.core;
 
 import imagej.plugin.ij2.IPlugin;
 import imagej.plugin.ij2.Parameter;

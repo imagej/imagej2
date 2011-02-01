@@ -1,4 +1,4 @@
-package imagej.gui;
+package imagej.plugins.core;
 
 import imagej.Log;
 import imagej.MetaData;
