@@ -1,0 +1,4 @@
+<factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/sezpoz/sezpoz/1.7/sezpoz-1.7.jar" enabled="true" runInBatchMode="true"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/netbeans/api/org-openide-util-lookup/RELEASE691/org-openide-util-lookup-RELEASE691.jar" enabled="true" runInBatchMode="true"/>
+</factorypath>
