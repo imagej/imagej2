@@ -1,5 +1,7 @@
 package imagej.imglib;
 
+import java.util.Random;
+
 import imagej.function.UnaryFunction;
 import imagej.function.unary.AbsUnaryFunction;
 import imagej.function.unary.AddNoiseUnaryFunction;
@@ -122,29 +124,63 @@ public class FunctionalTransformExamples
 	
 	private class BorderPixelSelector implements SelectionFunction
 	{
-		Image<DoubleType> image;
-		LocalizableByDimCursor<DoubleType> cursor;
+		private LocalizableByDimCursor<DoubleType> cursor;
+		private int[] imageDims;
 		
-		BorderPixelSelector(Image<DoubleType> image)
+		public BorderPixelSelector(Image<DoubleType> image)
 		{
-			this.image = image;
 			this.cursor = image.createLocalizableByDimCursor();
+			this.imageDims = image.getDimensions();
 		}
 
 		@Override
 		public boolean include(int[] position, double sample)
 		{
-			if (sample != 7) return false;
+			if (sample != 7)
+				return false;
+			
+			int[] neighPos = new int[2];
+
+			// look left
+			if (position[0] > 0)
+			{
+				neighPos[0] = position[0]-1;
+				neighPos[1] = position[1];
+				this.cursor.setPosition(neighPos);
+				if (this.cursor.getType().get() != 7)
+					return true;
+			}
+
+			// look right
+			if (position[0] < this.imageDims[0]-1)
+			{
+				neighPos[0] = position[0]+1;
+				neighPos[1] = position[1];
+				this.cursor.setPosition(neighPos);
+				if (this.cursor.getType().get() != 7)
+					return true;
+			}
 
 			// look up
-			if (true)
+			if (position[1] > 0)
 			{
-				
+				neighPos[0] = position[0];
+				neighPos[1] = position[1]-1;
+				this.cursor.setPosition(neighPos);
+				if (this.cursor.getType().get() != 7)
+					return true;
 			}
 
 			// look down
-			// look left
-			// look right
+			if (position[1] < this.imageDims[1]-1)
+			{
+				neighPos[0] = position[0];
+				neighPos[1] = position[1]+1;
+				this.cursor.setPosition(neighPos);
+				if (this.cursor.getType().get() != 7)
+					return true;
+			}
+
 			
 			return false;
 		}
@@ -153,7 +189,16 @@ public class FunctionalTransformExamples
 
 	private void populateTestImage(Image<DoubleType> image)
 	{
+		Random rng = new Random();
 		
+		Cursor<DoubleType> cursor = image.createCursor();
+
+		while (cursor.hasNext())
+		{
+			cursor.fwd();
+			if (rng.nextDouble() < 0.7)
+				cursor.getType().set(7);
+		}
 	}
 	
 	private void queryEdgeOfRegion()
