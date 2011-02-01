@@ -66,11 +66,11 @@
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
-			<url>http://dev.imagejdev.org:8081/content/repositories/releases</url>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
 		</repository>
 		<repository>
 			<id>imagej.snapshots</id>
-			<url>http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
 		</repository>
 	</repositories>
 

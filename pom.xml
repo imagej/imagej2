@@ -306,16 +306,16 @@
 		<!-- NB: for loci projects -->
 		<repository>
 			<id>loci.releases</id>
-			<url>http://dev.loci.wisc.edu:8081/content/repositories/releases</url>
+			<url>http://dev.loci.wisc.edu/maven2/releases</url>
 		</repository>
 		<repository>
 			<id>loci.snapshots</id>
-			<url>http://dev.loci.wisc.edu:8081/content/repositories/snapshots</url>
+			<url>http://dev.loci.wisc.edu/maven2/snapshots</url>
 		</repository>
 		<!-- NB: for various dependencies -->
 		<repository>
 			<id>imagej.thirdparty</id>
-			<url>http://dev.imagejdev.org:8081/content/repositories/thirdparty</url>
+			<url>http://dev.imagejdev.org/maven2/thirdparty</url>
 		</repository>
 		<!-- NB: for jai_core -->
 		<repository>
