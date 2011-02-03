@@ -165,14 +165,16 @@ public class FunctionalTransformExamples
 	private class BorderPixelSelector implements SelectionFunction
 	{
 		private Image<UnsignedByteType> image;
-		private LocalizableByDimCursor<UnsignedByteType> cursor;
 		private int[] imageDims;
+		private LocalizableByDimCursor<UnsignedByteType> neighCursor;
+		private int[] neighPos;
 		
 		public BorderPixelSelector(Image<UnsignedByteType> image)
 		{
 			this.image = image;
-			this.cursor = image.createLocalizableByDimCursor();
 			this.imageDims = image.getDimensions();
+			this.neighCursor = image.createLocalizableByDimCursor();
+			this.neighPos = image.createPositionArray();
 		}
 
 		@Override
@@ -181,45 +183,43 @@ public class FunctionalTransformExamples
 			if (sample != 255)
 				return false;
 			
-			int[] neighPos = this.image.createPositionArray();
-
 			// look left
 			if (position[0] > 0)
 			{
-				neighPos[0] = position[0]-1;
-				neighPos[1] = position[1];
-				this.cursor.setPosition(neighPos);
-				if (this.cursor.getType().get() != 255)
+				this.neighPos[0] = position[0]-1;
+				this.neighPos[1] = position[1];
+				this.neighCursor.setPosition(this.neighPos);
+				if (this.neighCursor.getType().get() != 255)
 					return true;
 			}
 
 			// look right
 			if (position[0] < this.imageDims[0]-1)
 			{
-				neighPos[0] = position[0]+1;
-				neighPos[1] = position[1];
-				this.cursor.setPosition(neighPos);
-				if (this.cursor.getType().get() != 255)
+				this.neighPos[0] = position[0]+1;
+				this.neighPos[1] = position[1];
+				this.neighCursor.setPosition(this.neighPos);
+				if (this.neighCursor.getType().get() != 255)
 					return true;
 			}
 
 			// look up
 			if (position[1] > 0)
 			{
-				neighPos[0] = position[0];
-				neighPos[1] = position[1]-1;
-				this.cursor.setPosition(neighPos);
-				if (this.cursor.getType().get() != 255)
+				this.neighPos[0] = position[0];
+				this.neighPos[1] = position[1]-1;
+				this.neighCursor.setPosition(this.neighPos);
+				if (this.neighCursor.getType().get() != 255)
 					return true;
 			}
 
 			// look down
 			if (position[1] < this.imageDims[1]-1)
 			{
-				neighPos[0] = position[0];
-				neighPos[1] = position[1]+1;
-				this.cursor.setPosition(neighPos);
-				if (this.cursor.getType().get() != 255)
+				this.neighPos[0] = position[0];
+				this.neighPos[1] = position[1]+1;
+				this.neighCursor.setPosition(this.neighPos);
+				if (this.neighCursor.getType().get() != 255)
 					return true;
 			}
 
