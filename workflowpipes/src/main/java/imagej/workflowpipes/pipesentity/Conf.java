@@ -61,7 +61,13 @@ public class Conf implements Serializable {
 		this.name = new Name( name );
 		this.type = new Type( confJSON.getString("type") );
                 System.out.println("confJSON is " + confJSON);
-		this.value = new Value( confJSON.getString("value") );
+                this.value = new Value("");
+                try {
+		    this.value = new Value( confJSON.getString("value") );
+                }
+                catch (java.util.NoSuchElementException e) {
+                    System.out.println("NoSuchElementException " + e.getMessage());
+                }
 	}
 
 	/**
