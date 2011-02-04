@@ -37,15 +37,19 @@ public class DirectoryPlugin extends AbstractPlugin implements IPlugin {
         String suffix = (String) get(SUFFIX);
         File directory = new File(directoryName);
         File[] files = directory.listFiles();
-        for (File file : files) {
-            if (!file.isDirectory()) {
-                String fileName = file.getName();
-                if (fileName.endsWith(SUFFIX)) {
-                    System.out.println("found " + fileName);
-                    put(FILE, fileName);
+        System.out.println("directory is " + directory);
+        if (null != files) {
+            for (File file : files) {
+                System.out.println("file is " + file.getName());
+                if (!file.isDirectory()) {
+                    String fileName = file.getName();
+                    if (fileName.endsWith(suffix)) {
+                        System.out.println("found " + fileName);
+                        put(FILE, fileName);
+                    }
                 }
+                String fileName = file.getName();
             }
-            String fileName = file.getName();
         }
     }
 }
