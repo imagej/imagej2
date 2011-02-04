@@ -23,14 +23,26 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 		JSONArray jsonArrayModule = new JSONArray();
 
 		//add each module to the array
+                Module outputPipesModule = null;
 		for( Module pipesModule : pipesController.getModulesServiceHashMap().values() )
 		{
+                    System.out.println("pipesModule " + pipesModule.getID().getValue());
+                    if ("_OUTPUT".equals(pipesModule.getID().getValue())) {
+                        outputPipesModule = pipesModule;
+                    }
+                    else {
 			//Get the JSONObject representative of the module entity
 			JSONObject jsonModule = pipesModule.getJSONObject();
+
+                        System.out.println("jsonModule " + jsonModule.toString());
 			
 			//put the module in the array
 			jsonArrayModule.put( jsonModule );
+                    }
 		}
+                if (null != outputPipesModule) {
+                    jsonArrayModule.put( outputPipesModule.getJSONObject() );
+                }
 		
 		// add module to JSONObject
 		json.put("module", jsonArrayModule);
@@ -47,6 +59,7 @@ public class AjaxModuleListServletProvider extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+            System.out.println("doGet " + json.toString());
 		
 		 
 		response.setContentType("application/json");
