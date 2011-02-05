@@ -1,9 +1,9 @@
 package imagej.envisaje.pluginfinder;
 
 import ij.plugin.PlugIn;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
-import imagej.plugin.PluginRunner;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
+import imagej.plugin.spi.PluginRunner;
 
 import org.openide.util.lookup.ServiceProvider;
 

@@ -4,9 +4,9 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
 import imagej.Log;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginFinder;
+import imagej.plugin.api.MenuEntry;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.spi.PluginFinder;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
