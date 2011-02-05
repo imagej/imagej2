@@ -1,6 +1,8 @@
 package imagej.ij1bridge.plugin;
 
+import ij.IJ;
 import ij.plugin.PlugIn;
+import ij.plugin.filter.PlugInFilter;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginException;
 import imagej.plugin.spi.PluginRunner;
@@ -12,43 +14,16 @@ import org.openide.util.lookup.ServiceProvider;
 public class LegacyPluginRunner implements PluginRunner {
 
 	@Override
-	public PlugIn runPlugin(PluginEntry entry) throws PluginException {
-		// get Class object for plugin entry
-		final ClassLoader loader = ij.IJ.getClassLoader();
-		final Class<?> pluginClass;
-		try {
-			pluginClass = Class.forName(entry.getPluginClass(), true, loader);
-		}
-		catch (ClassNotFoundException e) {
-			throw new PluginException(e);
-		}
-		if (!PlugIn.class.isAssignableFrom(pluginClass)) {
-			throw new PluginException("Not an IJ1 plugin");
-		}
+	public Object runPlugin(PluginEntry entry) throws PluginException {
+		final Object pluginInstance =
+			IJ.runPlugIn(entry.getPluginClass(), entry.getArg());
 
-		// instantiate plugin
-		final Object pluginInstance;
-		try {
-			pluginInstance = pluginClass.newInstance();
+		if (!(pluginInstance instanceof PlugIn) &&
+			!(pluginInstance instanceof PlugInFilter))
+		{
+			throw new PluginException("Not a legacy plugin");
 		}
-		catch (InstantiationException e) {
-			throw new PluginException(e);
-		}
-		catch (IllegalAccessException e) {
-			throw new PluginException(e);
-		}
-		if (!(pluginInstance instanceof PlugIn)) {
-			throw new PluginException("Not an ij.plugin.PlugIn");
-		}
-		PlugIn plugin = (PlugIn) pluginInstance;
-
-		// execute plugin
-		plugin.run(entry.getArg());
-
-	 	// TODO: handle PlugInFilter, ExtendedPlugInFilter (via PlugInFilterRunner?)
-		// TODO: use Executer or IJ.runPlugIn instead
-		
-		return plugin;
+		return pluginInstance;
 	}
 
 }
