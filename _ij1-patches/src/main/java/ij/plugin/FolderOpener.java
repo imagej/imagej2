@@ -1,5 +1,4 @@
 package ij.plugin;
-
 import java.awt.*;
 import java.io.*;
 import java.awt.event.*;
@@ -9,12 +8,13 @@ import ij.io.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.measure.Calibration;
+import ij.util.DicomTools;
 
 /** Implements the File/Import/Image Sequence command, which
 opens a folder of images as a stack. */
 public class FolderOpener implements PlugIn {
 
-	private static String[] excludedTypes = {".txt", ".lut", ".roi", ".pty", ".hdr", ".java", ".ijm", ".py", ".js", ".bsh"};
+	private static String[] excludedTypes = {".txt", ".lut", ".roi", ".pty", ".hdr", ".java", ".ijm", ".py", ".js", ".bsh", ".xml"};
 	private static boolean convertToRGB;
 	private static boolean sortFileNames = true;
 	private static boolean virtualStack;
@@ -199,15 +199,12 @@ public class FolderOpener implements PlugIn {
 			if (stack!=null) stack.trim();
 		}
 		if (stack!=null && stack.getSize()>0) {
-			if (info1!=null && info1.lastIndexOf("7FE0,0010")>0)
-				stack = (new DICOM_Sorter()).sort(stack);
 			ImagePlus imp2 = new ImagePlus(title, stack);
 // BDZ - BEGIN CHANGES
-			int imp2Type = imp2.getType();
-			if ((imp2Type==ImagePlus.GRAY16) ||
-					(imp2Type == ImagePlus.GRAY32) ||
+			if (imp2.getType()==ImagePlus.GRAY16 ||
+				imp2.getType()==ImagePlus.GRAY32 ||
+				imp2.getType()==ImagePlus.OTHER)
 // BDZ - END CHANGES
-					(imp2Type == ImagePlus.OTHER))
 				imp2.getProcessor().setMinAndMax(min, max);
 			if (fi==null)
 				fi = new FileInfo();
@@ -226,6 +223,16 @@ public class FolderOpener implements PlugIn {
 					cal.setUnit("um");
 				}
 				imp2.setCalibration(cal);
+			}
+			if (info1!=null && info1.lastIndexOf("7FE0,0010")>0) {
+				stack = DicomTools.sort(stack);
+				imp2.setStack(stack);
+				double voxelDepth = DicomTools.getVoxelDepth(stack);
+				if (voxelDepth>0.0) {
+					if (IJ.debugMode) IJ.log("DICOM voxel depth set to "+voxelDepth+" ("+cal.pixelDepth+")");
+					cal.pixelDepth = voxelDepth;
+					imp2.setCalibration(cal);
+				}
 			}
 			if (imp2.getStackSize()==1 && info1!=null)
 				imp2.setProperty("Info", info1);
@@ -422,9 +429,7 @@ class FolderOpenerDialog extends GenericDialog {
 		int n2 = ((fileCount-start+1)*depth)/inc;
 		if (n2<0) n2 = 0;
 		if (n2>n) n2 = n;
-// BDZ - BEGIN CHANGES
-		double size = (bytesPerPixel*width*height*n2)/(1024*1024);
-// BDZ - END CHANGES
+		double size = ((double)width*height*n2*bytesPerPixel)/(1024*1024);
  		((Label)theLabel).setText(width+" x "+height+" x "+n2+" ("+IJ.d2s(size,1)+"MB)");
 	}
 
