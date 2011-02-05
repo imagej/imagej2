@@ -1,10 +1,10 @@
 package imagej.envisaje.pluginfinder;
 
 import imagej.Log;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
-import imagej.plugin.PluginUtils;
+import imagej.plugin.api.MenuEntry;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
+import imagej.plugin.api.PluginUtils;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
