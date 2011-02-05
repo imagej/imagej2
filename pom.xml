@@ -44,7 +44,7 @@
 		<bio-formats.version>5.0-SNAPSHOT</bio-formats.version>
 		<imagej.groupId>imagej</imagej.groupId>
 		<imagej.version>${project.version}</imagej.version>
-		<imagej1.version>1.44</imagej1.version>
+		<imagej1.version>1.44o</imagej1.version>
 		<imglib.version>2.0-SNAPSHOT</imglib.version>
 		<jetty.version>8.0.0.M1</jetty.version>
 		<netbeans.hint.license>bsd</netbeans.hint.license>
