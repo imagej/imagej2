@@ -230,15 +230,15 @@ public class CompositeImageTest {
 		assertArrayEquals(new int[] {4,4,3,1,1},ci.getDimensions());
 		assertFalse(ci.getOpenAsHyperStack());
 
-		// not rgb but have a stack: size == 1 should throw excep
+		// not rgb but have a stack: size == 1 should work as of 1.44o
 		try {
 			st = new ImageStack(10,15);
 			st.addSlice("Uno",new byte[]{1,2,3,4});
 			ip = new ImagePlus("Giles",st);
 			ci = new CompositeImage(ip,CompositeImage.COLOR);
-			fail();
-		} catch (IllegalArgumentException e) {
 			assertTrue(true);
+		} catch (IllegalArgumentException e) {
+			fail();
 		}
 
 		// not rgb but have a stack: size > 1 should be okay
