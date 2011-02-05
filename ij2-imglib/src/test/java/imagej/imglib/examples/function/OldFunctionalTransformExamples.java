@@ -1,4 +1,4 @@
-package imagej.imglib;
+package imagej.imglib.examples.function;
 
 import java.util.Random;
 
@@ -23,7 +23,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
-public class FunctionalTransformExamples
+public class OldFunctionalTransformExamples
 {
 	private Image<UnsignedByteType> createTestImage(int[] dimensions)
 	{
