@@ -5,10 +5,10 @@ import imagej.MetaData;
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
 import imagej.imglib.dataset.LegacyImgLibDataset;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Menu;
-import imagej.plugin.ij2.Parameter;
-import imagej.plugin.ij2.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;

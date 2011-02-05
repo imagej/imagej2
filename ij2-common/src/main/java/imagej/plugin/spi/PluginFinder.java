@@ -1,4 +1,6 @@
-package imagej.plugin;
+package imagej.plugin.spi;
+
+import imagej.plugin.api.PluginEntry;
 
 import java.util.List;
 

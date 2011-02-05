@@ -4,8 +4,9 @@
 
 package imagej.gui;
 
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginUtils;
+import imagej.gui.menus.MenuBuilder;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
 
 import java.awt.BorderLayout;
 import java.util.List;

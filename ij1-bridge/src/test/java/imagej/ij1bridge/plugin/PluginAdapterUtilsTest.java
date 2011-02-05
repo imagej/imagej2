@@ -3,7 +3,7 @@ package imagej.ij1bridge.plugin;
 import static org.junit.Assert.*;
 import ij.IJ;
 import ij.ImageJ;
-import imagej.plugin.PluginEntry;
+import imagej.plugin.api.PluginEntry;
 
 import java.util.HashMap;
 

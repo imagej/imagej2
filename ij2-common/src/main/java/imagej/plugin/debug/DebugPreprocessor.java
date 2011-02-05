@@ -1,6 +1,8 @@
-package imagej.plugin.ij2;
+package imagej.plugin.debug;
 
 import imagej.Log;
+import imagej.plugin.IPlugin;
+import imagej.plugin.spi.PluginPreprocessor;
 
 import org.openide.util.lookup.ServiceProvider;
 

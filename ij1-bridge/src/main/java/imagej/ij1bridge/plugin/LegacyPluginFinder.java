@@ -3,10 +3,12 @@ package imagej.ij1bridge.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
+import ij.WindowManager;
 import imagej.Log;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginFinder;
+import imagej.ij1bridge.BridgeWindowManager;
+import imagej.plugin.api.MenuEntry;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.spi.PluginFinder;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -25,13 +27,14 @@ import javax.swing.KeyStroke;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service=PluginFinder.class)
-public class Ij1PluginFinder implements PluginFinder {
+public class LegacyPluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
 		Log.debug("Searching for legacy plugins...");
 		if (IJ.getInstance() == null) {
 			new ImageJ(ImageJ.NO_SHOW);
+			WindowManager.setWindowManager(new BridgeWindowManager());
 		}
 		final ImageJ ij = IJ.getInstance();
 		if (ij == null) return;

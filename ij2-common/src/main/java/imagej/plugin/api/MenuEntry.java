@@ -1,6 +1,6 @@
-package imagej.plugin;
+package imagej.plugin.api;
 
-import imagej.plugin.ij2.Menu;
+import imagej.plugin.Menu;
 
 public class MenuEntry {
 

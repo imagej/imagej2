@@ -1,4 +1,4 @@
-package imagej.plugin.ij2;
+package imagej.plugin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

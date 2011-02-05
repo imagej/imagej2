@@ -2,10 +2,10 @@ package imagej.gui;
 
 import imagej.Log;
 import imagej.dataset.Dataset;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Parameter;
-import imagej.plugin.ij2.ParameterHandler;
-import imagej.plugin.ij2.PluginPreprocessor;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.ParameterHandler;
+import imagej.plugin.spi.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
 import java.io.File;

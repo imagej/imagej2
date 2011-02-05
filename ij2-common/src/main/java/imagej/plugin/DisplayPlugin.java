@@ -1,4 +1,4 @@
-package imagej.plugin.ij2;
+package imagej.plugin;
 
 import imagej.dataset.Dataset;
 

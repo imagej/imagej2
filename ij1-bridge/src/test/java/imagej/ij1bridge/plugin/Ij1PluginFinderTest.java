@@ -1,7 +1,7 @@
 package imagej.ij1bridge.plugin;
 
-import imagej.ij1bridge.plugin.Ij1PluginFinder;
-import imagej.plugin.PluginEntry;
+import imagej.ij1bridge.plugin.LegacyPluginFinder;
+import imagej.plugin.api.PluginEntry;
 
 import java.util.ArrayList;
 
