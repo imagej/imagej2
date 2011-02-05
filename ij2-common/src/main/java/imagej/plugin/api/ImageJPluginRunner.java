@@ -1,8 +1,9 @@
-package imagej.plugin.ij2;
+package imagej.plugin.api;
 
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
-import imagej.plugin.PluginRunner;
+import imagej.plugin.IPlugin;
+import imagej.plugin.spi.PluginPostprocessor;
+import imagej.plugin.spi.PluginPreprocessor;
+import imagej.plugin.spi.PluginRunner;
 
 import java.util.Collection;
 
@@ -11,7 +12,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /** Executes an IJ2 plugin. */
 @ServiceProvider(service=PluginRunner.class)
-public class Ij2PluginRunner implements PluginRunner {
+public class ImageJPluginRunner implements PluginRunner {
 
 	@Override
 	public IPlugin runPlugin(final PluginEntry entry) throws PluginException {

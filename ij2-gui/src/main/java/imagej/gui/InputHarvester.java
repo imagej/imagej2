@@ -1,6 +1,6 @@
 package imagej.gui;
 
-import imagej.plugin.ij2.IPlugin;
+import imagej.plugin.IPlugin;
 
 public interface InputHarvester {
 

@@ -1,4 +1,7 @@
-package imagej.plugin;
+package imagej.plugin.spi;
+
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
 
 public interface PluginRunner {
 

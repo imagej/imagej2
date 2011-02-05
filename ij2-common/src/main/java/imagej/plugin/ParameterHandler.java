@@ -1,6 +1,6 @@
-package imagej.plugin.ij2;
+package imagej.plugin;
 
-import imagej.plugin.PluginException;
+import imagej.plugin.api.PluginException;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;

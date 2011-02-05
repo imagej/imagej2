@@ -1,8 +1,8 @@
 package imagej.plugins.core;
 
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.Parameter;
-import imagej.plugin.ij2.Plugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 import java.awt.Image;
 import java.net.MalformedURLException;

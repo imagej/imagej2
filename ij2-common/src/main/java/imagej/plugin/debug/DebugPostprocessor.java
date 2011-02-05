@@ -1,7 +1,10 @@
-package imagej.plugin.ij2;
+package imagej.plugin.debug;
 
 import imagej.Log;
-import imagej.plugin.PluginException;
+import imagej.plugin.IPlugin;
+import imagej.plugin.ParameterHandler;
+import imagej.plugin.api.PluginException;
+import imagej.plugin.spi.PluginPostprocessor;
 
 import java.util.Map;
 

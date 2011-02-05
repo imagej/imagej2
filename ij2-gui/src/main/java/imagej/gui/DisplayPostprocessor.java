@@ -2,11 +2,11 @@ package imagej.gui;
 
 import imagej.Log;
 import imagej.dataset.Dataset;
-import imagej.plugin.PluginException;
-import imagej.plugin.ij2.DisplayPlugin;
-import imagej.plugin.ij2.IPlugin;
-import imagej.plugin.ij2.ParameterHandler;
-import imagej.plugin.ij2.PluginPostprocessor;
+import imagej.plugin.DisplayPlugin;
+import imagej.plugin.IPlugin;
+import imagej.plugin.ParameterHandler;
+import imagej.plugin.api.PluginException;
+import imagej.plugin.spi.PluginPostprocessor;
 
 import java.util.Collection;
 import java.util.Map;

@@ -1,15 +1,15 @@
 package imagej.ij1bridge.plugin;
 
 import ij.plugin.PlugIn;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
-import imagej.plugin.PluginRunner;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
+import imagej.plugin.spi.PluginRunner;
 
 import org.openide.util.lookup.ServiceProvider;
 
 /** Executes an IJ1 plugin. */
 @ServiceProvider(service=PluginRunner.class)
-public class Ij1PluginRunner implements PluginRunner {
+public class LegacyPluginRunner implements PluginRunner {
 
 	@Override
 	public PlugIn runPlugin(PluginEntry entry) throws PluginException {

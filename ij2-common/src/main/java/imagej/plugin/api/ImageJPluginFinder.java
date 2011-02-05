@@ -1,9 +1,10 @@
-package imagej.plugin.ij2;
+package imagej.plugin.api;
 
 import imagej.Log;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginFinder;
+import imagej.plugin.IPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Plugin;
+import imagej.plugin.spi.PluginFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import net.java.sezpoz.IndexItem;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service=PluginFinder.class)
-public class Ij2PluginFinder implements PluginFinder {
+public class ImageJPluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {

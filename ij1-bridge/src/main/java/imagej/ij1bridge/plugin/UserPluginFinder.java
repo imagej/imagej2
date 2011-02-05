@@ -1,23 +1,30 @@
 package imagej.ij1bridge.plugin;
 
 import ij.plugin.PlugIn;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginFinder;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.spi.PluginFinder;
 
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;
-import java.util.zip.*;
-
-import java.net.URL;
+import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.net.JarURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /* 
  * UserPluginFinder for discovering legacy ImageJ User Plugins
@@ -53,7 +60,7 @@ public class UserPluginFinder implements PlugIn, PluginFinder {
     public void run(String arg) {
         ArrayList<PluginEntry> plugins = new ArrayList<PluginEntry>();
         System.out.println("Ij1PluginFinder..............................................................");
-        new Ij1PluginFinder().findPlugins(plugins);
+        new LegacyPluginFinder().findPlugins(plugins);
         System.out.println("PluginLoader.................................................................");
         //this.findPlugins(plugins);
         // List out the PlugEntries in a TestWindow

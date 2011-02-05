@@ -1,4 +1,4 @@
-package imagej.plugin.ij2;
+package imagej.plugin.spi;
 
 public interface PluginPostprocessor extends PluginProcessor {
 	// PluginPostprocessor trivially extends PluginProcessor to differentiate
