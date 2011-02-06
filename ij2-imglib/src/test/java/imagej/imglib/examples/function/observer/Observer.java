@@ -6,7 +6,7 @@ public interface Observer
 {
 	void init();
 	void update(int[] position, double value, boolean accepted);
-	void done();
+	void done(boolean wasAborted);
 }
 
 // TODO

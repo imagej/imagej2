@@ -72,7 +72,7 @@ public class QueryOperation<T extends RealType<T>>
 		}
 
 		if (observer != null)
-			observer.done();
+			observer.done(interrupted);
 	}
 	
 	public void quit()

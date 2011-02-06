@@ -10,7 +10,7 @@ import mpicbg.imglib.type.numeric.RealType;
 //    (a 2D Image to run against a plane in a 5D Image)  Or do I avoid ROICurs and use some transformational view
 //    where dims exactly match?
 
-
+@SuppressWarnings("unchecked")
 public class MultiImageIterator<T extends RealType<T>>  // don't want to implement full Cursor API
 {
 	private Image<T>[] images;

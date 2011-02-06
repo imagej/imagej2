@@ -5,7 +5,7 @@ import mpicbg.imglib.type.numeric.RealType;
 public class AverageFunction<T extends RealType<T>> implements RealFunction<T>
 {
 	@Override
-	public int getParameterCount() { return -1; }
+	public boolean canAccept(int numParameters) { return true; }
 	
 	@Override
 	public double compute(T[] inputs)

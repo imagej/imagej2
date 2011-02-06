@@ -7,6 +7,7 @@ import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+@SuppressWarnings("unchecked")
 public class AssignOperation<T extends RealType<T>>
 {
 	private int imageCount;
@@ -43,11 +44,8 @@ public class AssignOperation<T extends RealType<T>>
 		function = func;
 		interrupted = false;
 		
-		int functionParameters = function.getParameterCount();
-		if ((functionParameters != -1) && (functionParameters != imageCount-1))
-		{
-			throw new IllegalArgumentException("function can handle "+functionParameters+" parameters and given "+(imageCount-1)+" input images");
-		}
+		if ( ! function.canAccept(inputs.length) )
+			throw new IllegalArgumentException("function cannot handle "+inputs.length+" input images");
 	}
 
 	public void setObserver(Observer o)
@@ -117,7 +115,12 @@ public class AssignOperation<T extends RealType<T>>
 		}
 
 		if (observer != null)
-			observer.done();
+			observer.done(interrupted);
+	}
+
+	public void quit()
+	{
+		interrupted = true;
 	}
 
 	// -----------------  private interface ------------------------------------------
@@ -146,11 +149,6 @@ public class AssignOperation<T extends RealType<T>>
 			variables[i] = cursors[i+1].getType();
 		
 		return variables;
-	}
-	
-	public void quit()
-	{
-		interrupted = true;
 	}
 
 }
