@@ -6,9 +6,9 @@ public class ProgressTracker implements Observer
 	private long updateFrequency;
 	private long operationsSoFar;
 
-	public ProgressTracker(long expctedOperations, long updateFrequency)
+	public ProgressTracker(long expectedOperations, long updateFrequency)
 	{
-		this.expectedOperations = expctedOperations;
+		this.expectedOperations = expectedOperations;
 		this.updateFrequency = updateFrequency;
 	}
 	

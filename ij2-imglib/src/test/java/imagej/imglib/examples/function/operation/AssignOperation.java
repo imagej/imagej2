@@ -7,6 +7,39 @@ import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
+/**
+ * An AssignOperation computes values in an output image. The output image is preallocated here. The AssignOperation uses a RealFunction
+ *  to compute each pixel value from any number of input images. The passed in function must accept the same number of parameters as the
+ *  number of input images given. (Better name welcomed: ImageAssignment? FunctionalEvaluation? Others?)
+ * 
+ * A user of this class creates an AssignOperation, constrains it as desired, and calls execute(). Note that execute() can be
+ * interrupted from another Thread using the quit() method(). (the execute() code is currently single threaded).
+ * 
+ * The operation can be constrained in a number of ways:
+ * 
+ * - the output image and each input image can be constrained to sample values only within a user specified rectangular subregion. All subregions
+ * must be shape compatible before calling execute(). See setInputRegion() and setOutputRegion().
+ * 
+ * - the generation of an output pixel can be further constrained by Conditions - up to one per image. An output pixel is changed at a pixel location
+ * only when all Conditions are satisfied. Conditions can be as complex as desired and can be composed of other Conditions. See setInputCondition()
+ * and setOutputCondition().
+ * 
+ * - the execute() iteration can be observed by any class implementing an Observer interface.
+ * 
+ * An image can be repeated multiple times within the input image list. Therefore separate regions of one image can be used as input.
+ * 
+ * An image can act as both input and output. Thus one can transform an existing image in place.
+ * 
+ * Limitation - the regions are shape compatible. Thus one pixel is computed from some function of all the pixels located in the same place relative
+ * to their own images. Thus you can't compute a function on a neighborhood very easily. As it stands you could create an AssignOperation on 9 input
+ * images that are the same input image with 9 different subregions. You could then pass a MedianFunction to calculate a median filter. Clumsy.
+ * 
+ * Ideally we'd enhance Imglib such that functions are more integrated in the core. An Image is just a function that maps input coordinates to output
+ * values. A neighborhood is a function that maps input coordinates to output values over a subdomain (thus it should be an Image also). A RealFunction
+ * could operate on neighborhoods and return values. Neighborhoods could be within one Image or span multiple Images. But really Image is wrong here as
+ * it could just be a function we sample.
+ */
+
 @SuppressWarnings("unchecked")
 public class AssignOperation<T extends RealType<T>>
 {
@@ -93,7 +126,7 @@ public class AssignOperation<T extends RealType<T>>
 			if (interrupted)
 				break;
 			
-			cursor.next();
+			cursor.fwd();
 			
 			double value = Double.NaN;
 			

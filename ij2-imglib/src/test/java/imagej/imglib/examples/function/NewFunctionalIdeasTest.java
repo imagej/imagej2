@@ -80,15 +80,15 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("square all input values");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
 		
 		SquareFunction<UnsignedByteType> function = new SquareFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1}, image1, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image0, function);
 		
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,4,9,16,25,36,49,64,81}, image1);
+		assertImageValsEqual(new int[]{1,4,9,16,25,36,49,64,81}, image0);
 
 		//System.out.println("  success");
 	}
@@ -98,17 +98,17 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("square those where input values are greater than 4");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
 		
 		SquareFunction<UnsignedByteType> function = new SquareFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1}, image1, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image0, function);
 
 		operation.setInputCondition(0, new ValueGreaterThan(4));
 		
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,2,3,4,25,36,49,64,81}, image1);
+		assertImageValsEqual(new int[]{1,2,3,4,25,36,49,64,81}, image0);
 		
 		//System.out.println("  success");
 	}
@@ -118,17 +118,17 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("square those where original output values are less than 7");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
 		
 		SquareFunction<UnsignedByteType> function = new SquareFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1}, image1, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image0, function);
 
 		operation.setOutputCondition(new ValueLessThan(7));
 		
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,4,9,16,25,36,7,8,9}, image1);
+		assertImageValsEqual(new int[]{1,4,9,16,25,36,7,8,9}, image0);
 
 		//System.out.println("  success");
 	}
@@ -138,18 +138,18 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("square one image into another");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
 		
-		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{0,0,0,0,0,0,0,0,0});
+		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{0,0,0,0,0,0,0,0,0});
 		
 		SquareFunction<UnsignedByteType> function = new SquareFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1}, image2, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image1, function);
 
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image1);
-		assertImageValsEqual(new int[]{1,4,9,16,25,36,49,64,81}, image2);
+		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image0);
+		assertImageValsEqual(new int[]{1,4,9,16,25,36,49,64,81}, image1);
 
 		//System.out.println("  success");
 	}
@@ -159,21 +159,21 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("average two images into third");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,4,5,6,7,8,9});
 		
-		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{11,12,13,14,15,16,17,18,19});
+		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{11,12,13,14,15,16,17,18,19});
 
-		Image<UnsignedByteType> image3 = createPopulatedImage(new int[]{0,0,0,0,0,0,0,0,0});
+		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{0,0,0,0,0,0,0,0,0});
 		
 		AverageFunction<UnsignedByteType> function = new AverageFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1,image2}, image3, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0,image1}, image2, function);
 
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image1);
-		assertImageValsEqual(new int[]{11,12,13,14,15,16,17,18,19}, image2);
-		assertImageValsEqual(new int[]{6,7,8,9,10,11,12,13,14}, image3);
+		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image0);
+		assertImageValsEqual(new int[]{11,12,13,14,15,16,17,18,19}, image1);
+		assertImageValsEqual(new int[]{6,7,8,9,10,11,12,13,14}, image2);
 
 		//System.out.println("  success");
 	}
@@ -183,21 +183,21 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("average two images into third conditionally");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,
 																		4,5,6,
 																		7,8,9});
 		
-		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{11,12,13,
+		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{11,12,13,
 																		14,15,16,
 																		17,18,19});
 
-		Image<UnsignedByteType> image3 = createPopulatedImage(new int[]{5,5,6,
+		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{5,5,6,
 																		6,7,7,
 																		8,8,9});
 		
 		AverageFunction<UnsignedByteType> function = new AverageFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1,image2}, image3, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0,image1}, image2, function);
 
 		operation.setInputCondition(0, new ValueLessThan(8));
 		operation.setInputRegion(0, new int[]{0,1}, new int[]{2,2});
@@ -209,9 +209,9 @@ public class NewFunctionalIdeasTest
 		
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image1);
-		assertImageValsEqual(new int[]{11,12,13,14,15,16,17,18,19}, image2);
-		assertImageValsEqual(new int[]{5,5,6,6,10,7,12,8,9}, image3);
+		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image0);
+		assertImageValsEqual(new int[]{11,12,13,14,15,16,17,18,19}, image1);
+		assertImageValsEqual(new int[]{5,5,6,6,10,7,12,8,9}, image2);
 
 		//System.out.println("  success");
 	}
@@ -221,17 +221,17 @@ public class NewFunctionalIdeasTest
 	{
 		//System.out.println("average nonoverlapping regions of a single images into a third");
 		
-		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{1,2,3,
+		Image<UnsignedByteType> image0 = createPopulatedImage(new int[]{1,2,3,
 																		4,5,6,
 																		7,8,9});
 		
-		Image<UnsignedByteType> image2 = createPopulatedImage(new int[]{0,0,0,
+		Image<UnsignedByteType> image1 = createPopulatedImage(new int[]{0,0,0,
 																		0,0,0,
 																		0,0,0});
 
 		AverageFunction<UnsignedByteType> function = new AverageFunction<UnsignedByteType>();
 
-		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image1,image1}, image2, function);
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0,image0}, image1, function);
 
 		operation.setInputRegion(0, new int[]{0,0}, new int[]{3,1});
 
@@ -241,8 +241,8 @@ public class NewFunctionalIdeasTest
 
 		operation.execute();
 		
-		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image1);
-		assertImageValsEqual(new int[]{0,0,0,0,0,0,4,5,6}, image2);
+		assertImageValsEqual(new int[]{1,2,3,4,5,6,7,8,9}, image0);
+		assertImageValsEqual(new int[]{0,0,0,0,0,0,4,5,6}, image1);
 
 		//System.out.println("  success");
 	}
