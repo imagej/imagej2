@@ -72,10 +72,10 @@ public class MultiImageIterator<T extends RealType<T>>  // don't want to impleme
 		return hasNext;
 	}
 	
-	public void next()
+	public void fwd()
 	{
 		for (int i = 0; i < cursors.length; i++)
-			cursors[i].next();
+			cursors[i].fwd();
 	}
 	
 	// -----------------  private interface ------------------------------------------
