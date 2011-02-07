@@ -10,7 +10,7 @@ import java.util.Collection;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
-/** Executes an IJ2 plugin. */
+/** Executes an ImageJ plugin. */
 @ServiceProvider(service=PluginRunner.class)
 public class ImageJPluginRunner implements PluginRunner {
 
@@ -26,7 +26,7 @@ public class ImageJPluginRunner implements PluginRunner {
 		return plugin;
 	}
 
-	private void preProcess(final IPlugin plugin) {
+	public void preProcess(final IPlugin plugin) {
 		final Collection<? extends PluginPreprocessor> processors =
 			Lookup.getDefault().lookupAll(PluginPreprocessor.class);
 		for (final PluginPreprocessor processor : processors) {
@@ -34,7 +34,7 @@ public class ImageJPluginRunner implements PluginRunner {
 		}
 	}
 
-	private void postProcess(final IPlugin plugin) {
+	public void postProcess(final IPlugin plugin) {
 		final Collection<? extends PluginPostprocessor> processors =
 			Lookup.getDefault().lookupAll(PluginPostprocessor.class);
 		for (final PluginPostprocessor processor : processors) {
@@ -54,7 +54,7 @@ public class ImageJPluginRunner implements PluginRunner {
 			throw new PluginException(e);
 		}
 		if (!IPlugin.class.isAssignableFrom(pluginClass)) {
-			throw new PluginException("Not an IJ2 plugin");
+			throw new PluginException("Not an imagej.plugin.IPlugin");
 		}
 
 		// instantiate plugin
@@ -69,7 +69,7 @@ public class ImageJPluginRunner implements PluginRunner {
 			throw new PluginException(e);
 		}
 		if (!(pluginInstance instanceof IPlugin)) {
-			throw new PluginException("Not a java.lang.IPlugin");
+			throw new PluginException("Not an imagej.plugin.IPlugin");
 		}
 		IPlugin plugin = (IPlugin) pluginInstance;
 
