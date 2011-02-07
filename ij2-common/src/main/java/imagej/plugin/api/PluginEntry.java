@@ -8,6 +8,10 @@ public class PluginEntry {
 	private List<MenuEntry> menuPath;
 	private String arg;
 
+	public PluginEntry(String pluginClass) {
+		this(pluginClass, null, null);
+	}
+
 	public PluginEntry(String pluginClass, List<MenuEntry> menuPath, String arg) {
 		this.pluginClass = pluginClass;
 		this.menuPath = menuPath;

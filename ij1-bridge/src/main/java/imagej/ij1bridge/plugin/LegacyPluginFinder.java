@@ -1,11 +1,9 @@
 package imagej.ij1bridge.plugin;
 
-import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
-import ij.WindowManager;
 import imagej.Log;
-import imagej.ij1bridge.BridgeWindowManager;
+import imagej.ij1bridge.LegacyManager;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.spi.PluginFinder;
@@ -31,14 +29,10 @@ public class LegacyPluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
-		Log.debug("Searching for legacy plugins...");
-		if (IJ.getInstance() == null) {
-			new ImageJ(ImageJ.NO_SHOW);
-			WindowManager.setWindowManager(new BridgeWindowManager());
-		}
-		final ImageJ ij = IJ.getInstance();
-		if (ij == null) return;
+		final ImageJ ij = LegacyManager.initialize();
+		assert ij != null;
 
+		Log.debug("Searching for legacy plugins...");
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
