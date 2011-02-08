@@ -7,18 +7,23 @@ import com.jgoodies.forms.layout.FormLayout;
 import imagej.AxisLabel;
 import imagej.dataset.Dataset;
 
+import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
+import javax.swing.JScrollBar;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import loci.formats.gui.AWTImageTools;
 
@@ -37,6 +42,7 @@ public class NavigableImageFrame extends JFrame {
 	private int xIndex, yIndex;
 	private int[] pos;
 
+	private JLabel label;
 	private NavigableImagePanel imagePanel;
 	private JPanel sliders;
 
@@ -50,8 +56,17 @@ public class NavigableImageFrame extends JFrame {
 		setBounds(bounds.width / 6, bounds.height / 6,
 			2 * bounds.width / 3, 2 * bounds.height / 3);
 
+		label = new JLabel(" ");
+		getContentPane().add(label, BorderLayout.NORTH);
+
 		imagePanel = new NavigableImagePanel();
-		getContentPane().add(imagePanel, BorderLayout.CENTER);
+		final JPanel borderPanel = new JPanel();
+		borderPanel.setLayout(new BorderLayout());
+		borderPanel.setBorder(new CompoundBorder(
+			new EmptyBorder(3, 3, 3, 3),
+			new LineBorder(Color.black)));
+		borderPanel.add(imagePanel, BorderLayout.CENTER);
+		getContentPane().add(borderPanel, BorderLayout.CENTER);
 	}
 
 	public void setDataset(final Dataset dataset) {
@@ -83,6 +98,17 @@ public class NavigableImageFrame extends JFrame {
 		final BufferedImage image = getImagePlane();
 		imagePanel.setImage(image);
 		imagePanel.setNavigationImageEnabled(true);
+
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (isXY(dimLabels[i])) continue;
+			p++;
+			if (dims[i] == 1) continue;
+			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
+		}
+		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		sb.append(dataset.getType());
+		label.setText(sb.toString());
 	}
 
 	private BufferedImage getImagePlane() {
@@ -119,38 +145,33 @@ public class NavigableImageFrame extends JFrame {
 		if (dims.length == 2) return new JPanel();
 
 		final StringBuilder rows = new StringBuilder("pref");
-		for (int i = 3; i < dims.length; i++) rows.append(", 3dlu, pref");
+		for (int i = 3; i < dims.length; i++) {
+			if (dims[i] > 1) rows.append(", 3dlu, pref");
+		}
 		final PanelBuilder panelBuilder = new PanelBuilder(
 			new FormLayout("pref, 3dlu, pref:grow", rows.toString()));
-		panelBuilder.setDefaultDialogBorder();
+		//panelBuilder.setDefaultDialogBorder();
 		final CellConstraints cc = new CellConstraints();
 
-		int p = 0;
-		for (int i = 0; i < dims.length; i++) {
+		for (int i = 0, p = -1, row = 1; i < dims.length; i++) {
 			if (isXY(dimLabels[i])) continue;
+			p++;
+			if (dims[i] == 1) continue;
 			final JLabel label = new JLabel(dimLabels[i].toString());
-			final JSlider slider = new JSlider(1, dims[i], 1);
-			int minorSpacing = dims[i] / 16;
-			int majorSpacing = (dims[i] + 4) / 5;
-			if (minorSpacing == 0) minorSpacing = 1;
-			if (majorSpacing == 0) majorSpacing = 1;
-			slider.setMinorTickSpacing(minorSpacing);
-			slider.setMajorTickSpacing(majorSpacing);
-			slider.setPaintTicks(true);
-			slider.setPaintLabels(true);
+			final JScrollBar slider = new JScrollBar(Adjustable.HORIZONTAL,
+				1, 1, 1, dims[i] + 1);
 			final int posIndex = p;
-			slider.addChangeListener(new ChangeListener() {
+			slider.addAdjustmentListener(new AdjustmentListener() {
 				@Override
 				@SuppressWarnings("synthetic-access")
-				public void stateChanged(ChangeEvent e) {
+				public void adjustmentValueChanged(AdjustmentEvent e) {
 					pos[posIndex] = slider.getValue() - 1;
 					updatePosition();
 				}
 			});
-			final int row = 2 * p + 1;
 			panelBuilder.add(label, cc.xy(1, row));
 			panelBuilder.add(slider, cc.xy(3, row));
-			p++;
+			row += 2;
 		}
 
 		return panelBuilder.getPanel();
