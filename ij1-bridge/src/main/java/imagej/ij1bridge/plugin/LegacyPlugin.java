@@ -5,10 +5,11 @@ import imagej.dataset.Dataset;
 import imagej.plugin.IPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.ListUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Executes an IJ1 plugin. */
 @Plugin
@@ -25,20 +26,20 @@ public class LegacyPlugin implements IPlugin {
 
 	@Override
 	public void run() {
-		final ArrayList<Dataset> outputList = LegacyPlugin.getOutputList();
-		outputList.clear();
+		final Set<Dataset> outputSet = LegacyPlugin.getOutputSet();
+		outputSet.clear();
 		IJ.runPlugIn(className, arg);
-		outputs = ListUtils.copyList(outputList);
-		outputList.clear();
+		outputs = new ArrayList<Dataset>(outputSet);
+		outputSet.clear();
 	}
 
 	/** Used to provide one list of datasets per calling thread. */
-	private static ThreadLocal<ArrayList<Dataset>> outputDatasets =
-		new ThreadLocal<ArrayList<Dataset>>()
+	private static ThreadLocal<Set<Dataset>> outputDatasets =
+		new ThreadLocal<Set<Dataset>>()
 	{
 		@Override
-		protected synchronized ArrayList<Dataset> initialValue() {
-			return new ArrayList<Dataset>();
+		protected synchronized Set<Dataset> initialValue() {
+			return new HashSet<Dataset>();
 		}
 	};
 
@@ -46,7 +47,7 @@ public class LegacyPlugin implements IPlugin {
 	 * Gets a list for storing output parameter values.
 	 * This method is thread-safe, because it uses a separate map per thread.
 	 */
-	public static ArrayList<Dataset> getOutputList() {
+	public static Set<Dataset> getOutputSet() {
 		return outputDatasets.get();
 	}
 
