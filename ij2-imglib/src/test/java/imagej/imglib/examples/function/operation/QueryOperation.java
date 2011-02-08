@@ -7,15 +7,23 @@ import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 
-// This could really be represented as an AssignOperation from one image to itself with a Copy function.
-// Would do unnecessary assignments though. Could however query multiple images at the same time this way 
+/** QueryOperation
+ * 
+ * A simple query facility for gathering information about one Image.
+ * 
+ * This functionality can be represented more powerfully using an AssignOperation with a NullFunction. Thats a more powerful query mechanism
+ * that allows multiple input images and constraining conditions.
+ * 
+ */
 
 public class QueryOperation<T extends RealType<T>>
 {
+	// -----------------  instance variables ------------------------------------------
+
 	private Image<T> image;
 	private int[] origin;
 	private int[] span;
-	private Condition condition;
+	private Condition<T> condition;
 	private Observer observer;
 	private RegionOfInterestCursor<T> cursor;
 	private boolean interrupted;
@@ -39,7 +47,7 @@ public class QueryOperation<T extends RealType<T>>
 		this.span = span;
 	}
 	
-	public void setCondition(Condition c)
+	public void setCondition(Condition<T> c)
 	{
 		condition = c;
 	}
@@ -66,7 +74,7 @@ public class QueryOperation<T extends RealType<T>>
 			
 			cursor.getPosition(position);
 			
-			boolean condSatisfied = (condition == null) || (condition.isSatisfied(position, value)); 
+			boolean condSatisfied = (condition == null) || (condition.isSatisfied(cursor, position)); 
 
 			observer.update(position,value,condSatisfied);
 		}

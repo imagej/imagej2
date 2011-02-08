@@ -8,19 +8,19 @@ public class AverageFunction<T extends RealType<T>> implements RealFunction<T>
 	public boolean canAccept(int numParameters) { return numParameters >= 0; }
 	
 	@Override
-	public double compute(T[] inputs)
+	public void compute(T[] inputs, T output)
 	{
 		int numElements = inputs.length;
 		
 		if (numElements == 0)
-			return 0;
+			return;
 		
 		double sum = 0;
 
 		for (T element : inputs)
 			sum += element.getRealDouble();
 		
-		return sum / numElements;
+		output.setReal(sum / numElements);
 	}
 	
 }

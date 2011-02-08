@@ -1,19 +1,22 @@
 package imagej.imglib.examples.function.condition;
 
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.numeric.RealType;
 
-public class AxisLessThan implements Condition
+
+public class AxisLessThan<T extends RealType<T>> implements Condition<T>
 {
 	private int axis;
 	private int bound;
 	
-	public AxisLessThan(int axis, int bound)
+	public AxisLessThan(int numAxes, int axis, int bound)
 	{
 		this.axis = axis;
 		this.bound = bound;
 	}
 	
 	@Override
-	public boolean isSatisfied(int[] position, double value)
+	public boolean isSatisfied(LocalizableCursor<T> cursor, int[] position)
 	{
 		return position[axis] < bound;
 	}

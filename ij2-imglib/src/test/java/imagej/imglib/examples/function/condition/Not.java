@@ -1,18 +1,21 @@
 package imagej.imglib.examples.function.condition;
 
-public class Not implements Condition
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.numeric.RealType;
+
+public class Not<T extends RealType<T>> implements Condition<T>
 {
-	private Condition condition;
+	private Condition<T> condition;
 	
-	public Not(Condition condition)
+	public Not(Condition<T> condition)
 	{
 		this.condition = condition;
 	}
 	
 	@Override
-	public boolean isSatisfied(int[] position, double value)
+	public boolean isSatisfied(LocalizableCursor<T> cursor, int[] position)
 	{
-		return ! condition.isSatisfied(position, value); 
+		return ! condition.isSatisfied(cursor, position); 
 	}
 	
 }

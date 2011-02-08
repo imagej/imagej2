@@ -1,7 +1,10 @@
 package imagej.imglib.examples.function.condition;
 
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.numeric.RealType;
 
-public class ValueGreaterThan implements Condition
+
+public class ValueGreaterThan<T extends RealType<T>> implements Condition<T>
 {
 	private double bound;
 	
@@ -11,9 +14,9 @@ public class ValueGreaterThan implements Condition
 	}
 	
 	@Override
-	public boolean isSatisfied(int[] position, double value)
+	public boolean isSatisfied(LocalizableCursor<T> cursor, int[] position)
 	{
-		return value > bound;
+		return cursor.getType().getRealDouble() > bound;
 	}
 }
 

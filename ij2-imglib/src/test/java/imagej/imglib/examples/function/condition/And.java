@@ -1,19 +1,22 @@
 package imagej.imglib.examples.function.condition;
 
-public class And implements Condition
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.numeric.RealType;
+
+public class And<T extends RealType<T>> implements Condition<T>
 {
-	private Condition condition1, condition2;
+	private Condition<T> condition1, condition2;
 	
-	public And(Condition condition1, Condition condition2)
+	public And(Condition<T> condition1, Condition<T> condition2)
 	{
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
 	
 	@Override
-	public boolean isSatisfied(int[] position, double value)
+	public boolean isSatisfied(LocalizableCursor<T> cursor, int[] position)
 	{
-		return condition1.isSatisfied(position, value) && condition2.isSatisfied(position, value); 
+		return condition1.isSatisfied(cursor, position) && condition2.isSatisfied(cursor, position); 
 	}
 	
 }

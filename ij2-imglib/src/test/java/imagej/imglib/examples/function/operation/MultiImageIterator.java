@@ -80,7 +80,7 @@ public class MultiImageIterator<T extends RealType<T>>  // don't want to impleme
 	
 	// -----------------  private interface ------------------------------------------
 
-	private long numInSpan(int[] span)  // TODO - reference Imglib equivalent
+	private long numInSpan(int[] span)  // TODO - call Imglib equivalent instead
 	{
 		long total = 1;
 		for (int axisLen : span)

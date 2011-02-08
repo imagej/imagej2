@@ -1,7 +1,10 @@
 package imagej.imglib.examples.function.condition;
 
-public interface Condition
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.numeric.RealType;
+
+public interface Condition<T extends RealType<T>>
 {
-	boolean isSatisfied(int[] position, double value);
+	boolean isSatisfied(LocalizableCursor<T> cursor, int[] position);
 }
 
