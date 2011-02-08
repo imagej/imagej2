@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.Log;
 import imagej.dataset.Dataset;
+import imagej.ij1bridge.LegacyImageMap;
 import imagej.ij1bridge.LegacyManager;
 import imagej.ij1bridge.plugin.LegacyPlugin;
 
@@ -21,10 +22,11 @@ public final class ImageWindowMethods {
 		final ImagePlus imp = obj.getImagePlus();
 
 		// register image with legacy manager
-		final Dataset dataset = LegacyManager.getImageMap().registerLegacyImage(imp);
+		final LegacyImageMap imageMap = LegacyManager.getImageMap();
+		final Dataset dataset = imageMap.registerLegacyImage(imp);
 
 		// record resultant dataset as a legacy plugin output
-		LegacyPlugin.getOutputList().add(dataset);
+		LegacyPlugin.getOutputSet().add(dataset);
 	}
 
 	/** Replaces {@link ImageWindow#show(). */
