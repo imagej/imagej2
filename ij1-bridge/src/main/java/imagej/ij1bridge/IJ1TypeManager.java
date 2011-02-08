@@ -15,9 +15,10 @@ import imagej.imglib.TypeManager;
 public class IJ1TypeManager
 {
 	//***** constructor **********************************************/
-	
-	/** make this class uninstantiable */
-	private IJ1TypeManager() {}
+
+	private IJ1TypeManager() {
+		// prevent instantiation of utility class
+	}
 
 	//***** public interface **********************************************/
 	
