@@ -2,7 +2,7 @@ package imagej.gui.swing;
 
 import imagej.gui.AbstractInputHarvester;
 import imagej.gui.InputPanel;
-import imagej.plugin.IPlugin;
+import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginPreprocessor;
 
 import java.awt.Frame;
@@ -24,11 +24,12 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean showDialog(InputPanel inputPanel, IPlugin plugin) {
+	public boolean showDialog(InputPanel inputPanel, PluginHandler pluginHandler)
+	{
 		final SwingInputPanel swingInputPanel = (SwingInputPanel) inputPanel;
 
 		final Frame owner = null;
-		final String title = plugin.getClass().getName(); //TEMP
+		final String title = pluginHandler.getPlugin().getClass().getName(); //TEMP
 		final JDialog dialog = new JDialog(owner, title, true);//TEMP
 		dialog.setContentPane(swingInputPanel);
 		dialog.pack();

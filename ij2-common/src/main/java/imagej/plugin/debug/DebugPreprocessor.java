@@ -1,7 +1,7 @@
 package imagej.plugin.debug;
 
 import imagej.Log;
-import imagej.plugin.IPlugin;
+import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginPreprocessor;
 
 import org.openide.util.lookup.ServiceProvider;
@@ -11,8 +11,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class DebugPreprocessor implements PluginPreprocessor {
 
 	@Override
-	public void process(IPlugin plugin) {
-		Log.debug("Executing plugin: " + plugin);
+	public void process(PluginHandler pluginHandler) {
+		Log.debug("Executing plugin: " + pluginHandler.getPlugin());
 	}
 
 }

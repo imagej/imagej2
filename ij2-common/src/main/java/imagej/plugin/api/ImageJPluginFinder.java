@@ -20,7 +20,7 @@ public class ImageJPluginFinder implements PluginFinder {
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
 		Log.debug("Searching for plugins...");
-		// use SezPoz to discover available IJ2 plugins
+		// use SezPoz to discover available plugins
 		for (final IndexItem<Plugin, IPlugin> item :
 			Index.load(Plugin.class, IPlugin.class))
 		{
@@ -38,9 +38,7 @@ public class ImageJPluginFinder implements PluginFinder {
 				parseMenuPath(menuPath, path);
 			}
 
-			final String arg = "";
-			final PluginEntry pluginEntry =
-				new PluginEntry(pluginClass, menuPath, arg);
+			final PluginEntry pluginEntry = new PluginEntry(pluginClass, menuPath);
 			plugins.add(pluginEntry);
 			Log.debug("Found plugin: " + pluginEntry);
 		}

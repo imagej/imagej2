@@ -1,9 +1,9 @@
 package imagej.plugin.spi;
 
-import imagej.plugin.IPlugin;
+import imagej.plugin.PluginHandler;
 
 public interface PluginProcessor {
 
-	void process(IPlugin plugin);
+	void process(PluginHandler pluginHandler);
 
 }

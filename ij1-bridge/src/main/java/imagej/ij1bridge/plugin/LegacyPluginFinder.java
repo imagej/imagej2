@@ -7,6 +7,7 @@ import imagej.ij1bridge.LegacyManager;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.spi.PluginFinder;
+import imagej.util.ListUtils;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -27,6 +28,9 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service=PluginFinder.class)
 public class LegacyPluginFinder implements PluginFinder {
 
+	private static final String LEGACY_PLUGIN_CLASS =
+		LegacyPlugin.class.getName();
+
 	@Override
 	public void findPlugins(List<PluginEntry> plugins) {
 		final ImageJ ij = LegacyManager.initialize();
@@ -37,11 +41,14 @@ public class LegacyPluginFinder implements PluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		for (final Object key : commands.keySet()) {
 			final String ij1PluginString = commands.get(key).toString();
-			final String pluginClass = parsePluginClass(ij1PluginString);
+			final String className = parsePluginClass(ij1PluginString);
 			final List<MenuEntry> menuPath = menuTable.get(key);
 			final String arg = parseArg(ij1PluginString);
+			final Map<String, Object> inputMap = new HashMap<String, Object>();
+			inputMap.put("className", className);
+			inputMap.put("arg", arg);
 			final PluginEntry pluginEntry =
-				new PluginEntry(pluginClass, menuPath, arg);
+				new PluginEntry(LEGACY_PLUGIN_CLASS, menuPath, inputMap);
 			plugins.add(pluginEntry);
 			Log.debug("Found legacy plugin: " + pluginEntry);
 		}
@@ -91,18 +98,13 @@ public class LegacyPluginFinder implements PluginFinder {
 				final boolean isSeparator = item.getLabel().equals("-");
 				if (isSeparator) w += 10;
 				else w += 1;
-				parseMenu(item, w, copyList(path), menuTable);
+				parseMenu(item, w, ListUtils.copyList(path), menuTable);
 			}
 		}
 		else {
 			// leaf; add menu item to table
 			menuTable.put(menuItem.getLabel(), path);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private ArrayList<MenuEntry> copyList(final ArrayList<MenuEntry> list) {
-		return (ArrayList<MenuEntry>) list.clone();
 	}
 
 	private String parsePluginClass(final String ij1PluginString) {

@@ -2,9 +2,8 @@ package imagej.gui;
 
 import imagej.Log;
 import imagej.dataset.Dataset;
-import imagej.plugin.IPlugin;
 import imagej.plugin.Parameter;
-import imagej.plugin.ParameterHandler;
+import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
@@ -12,55 +11,49 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 /**
- * InputHarvester is a plugin preprocessor that collects input parameter
- * values from the user using an {@link InputPanel} dialog box.
+ * InputHarvester is a plugin preprocessor that obtains the input parameters.
+ *
+ * It first assigns values from the passed-in input map. Any remaining
+ * parameters are collected using an {@link InputPanel} dialog box.
  */
 public abstract class AbstractInputHarvester
 	implements PluginPreprocessor, InputHarvester
 {
 
 	@Override
-	public void process(IPlugin plugin) {
-		final Iterable<Field> inputs = ParameterHandler.getInputParameters(plugin);
+	public void process(PluginHandler pluginHandler) {
+		final Iterable<Field> inputs = pluginHandler.getInputFields();
 		if (!inputs.iterator().hasNext()) return; // no inputs to harvest
 
 		final InputPanel inputPanel = createInputPanel();
-		buildPanel(inputPanel, plugin);
-		final boolean ok = showDialog(inputPanel, plugin);
+		buildPanel(inputPanel, pluginHandler);
+		final boolean ok = showDialog(inputPanel, pluginHandler);
 		if (!ok) return;
-		harvestResults(inputPanel, plugin);
+		harvestResults(inputPanel, pluginHandler);
 	}
 
 	@Override
 	public abstract InputPanel createInputPanel();
 
 	@Override
-	public void buildPanel(InputPanel inputPanel, IPlugin plugin) {
-		final Iterable<Field> inputs = ParameterHandler.getInputParameters(plugin);
+	public void buildPanel(InputPanel inputPanel, PluginHandler pluginHandler) {
+		final Iterable<Field> inputs = pluginHandler.getInputFields();
 
 		for (final Field field : inputs) {
 			final String name = field.getName();
 			final Class<?> type = field.getType();
-			final Parameter param = ParameterHandler.getParameter(field);
+			final Parameter param = pluginHandler.get(field);
 
 			final String label = makeLabel(name, param.label());
 			final boolean required = param.required();
 			final String persist = param.persist();
 
-			Object value = null;
+			Object value = "";
 			if (!persist.isEmpty()) {
 				// TODO - retrieve initial value from persistent storage
 			}
 			else if (!required) {
-				try {
-					value = field.get(plugin);
-				}
-				catch (IllegalArgumentException e) {
-					Log.printStackTrace(e);
-				}
-				catch (IllegalAccessException e) {
-					Log.printStackTrace(e);
-				}
+				value = pluginHandler.getValue(field);
 			}
 
 			if (ClassUtils.isNumber(type)) {
@@ -99,17 +92,20 @@ public abstract class AbstractInputHarvester
 	}
 
 	@Override
-	public abstract boolean showDialog(InputPanel inputPanel, IPlugin plugin);
+	public abstract boolean showDialog(InputPanel inputPanel,
+		PluginHandler pluginHandler);
 
 	@Override
-	public void harvestResults(InputPanel inputPanel, IPlugin plugin) {
+	public void harvestResults(InputPanel inputPanel,
+		PluginHandler pluginHandler)
+	{
 		// TODO: harvest inputPanel values and assign to plugin input parameters
-		final Iterable<Field> inputs = ParameterHandler.getInputParameters(plugin);
+		final Iterable<Field> inputs = pluginHandler.getInputFields();
 
 		for (final Field field : inputs) {
 			final String name = field.getName();
 			final Class<?> type = field.getType();
-			final Parameter param = ParameterHandler.getParameter(field);
+			final Parameter param = pluginHandler.get(field);
 
 			final Object value;
 			if (ClassUtils.isNumber(type)) {
@@ -130,13 +126,13 @@ public abstract class AbstractInputHarvester
 				value = inputPanel.getDataset(name);
 			}
 			else value = null;
-			if (value != null) ParameterHandler.setParameter(plugin, name, value);
+			if (value != null) pluginHandler.setValue(name, value);
 		}
 	}
 
 	private String makeLabel(String name, String label) {
 		if (label == null || label.isEmpty()) {
-			label = name.substring(0, 1).toUpperCase() + name.substring(1);
+			return name.substring(0, 1).toUpperCase() + name.substring(1);
 		}
 		return label;
 	}

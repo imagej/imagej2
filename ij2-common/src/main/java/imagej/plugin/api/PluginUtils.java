@@ -1,7 +1,7 @@
 package imagej.plugin.api;
 
+import imagej.plugin.IPlugin;
 import imagej.plugin.spi.PluginFinder;
-import imagej.plugin.spi.PluginRunner;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,19 +26,8 @@ public final class PluginUtils {
 		return plugins;
 	}
 
-	public static Object runPlugin(PluginEntry entry) {
-		final Collection<? extends PluginRunner> runners =
-			Lookup.getDefault().lookupAll(PluginRunner.class);
-		for (PluginRunner runner : runners) {
-			try {
-				return runner.runPlugin(entry);
-			}
-			catch (PluginException e) {
-				// execution failed; try the next runner
-			}
-		}
-		throw new IllegalArgumentException(
-			"No compatible PluginRunners for PluginEntry: " + entry);
+	public static IPlugin runPlugin(PluginEntry entry) {
+		return new PluginRunner(entry).run();
 	}
 
 }

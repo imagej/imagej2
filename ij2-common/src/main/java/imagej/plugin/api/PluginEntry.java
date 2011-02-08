@@ -1,24 +1,35 @@
 package imagej.plugin.api;
 
+import imagej.plugin.IPlugin;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PluginEntry {
 
 	private String pluginClass;
 	private List<MenuEntry> menuPath;
-	private String arg;
+	private Map<String, Object> presets;
 
-	public PluginEntry(String pluginClass) {
+	public PluginEntry(final String pluginClass) {
 		this(pluginClass, null, null);
 	}
 
-	public PluginEntry(String pluginClass, List<MenuEntry> menuPath, String arg) {
-		this.pluginClass = pluginClass;
-		this.menuPath = menuPath;
-		this.arg = arg;
+	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath) {
+		this(pluginClass, menuPath, null);
 	}
 
-	public void setPluginClass(String pluginClass) {
+	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
+		final Map<String, Object> presets)
+	{
+		setPluginClass(pluginClass);
+		setMenuPath(menuPath);
+		setPresets(presets);
+	}
+
+	public void setPluginClass(final String pluginClass) {
 		this.pluginClass = pluginClass;
 	}
 
@@ -26,20 +37,64 @@ public class PluginEntry {
 		return pluginClass;
 	}
 
-	public void setMenuPath(List<MenuEntry> menuPath) {
-		this.menuPath = menuPath;
+	public void setMenuPath(final List<MenuEntry> menuPath) {
+		if (menuPath == null) {
+			this.menuPath = new ArrayList<MenuEntry>();
+		}
+		else {
+			this.menuPath = menuPath;
+		}
 	}
 
 	public List<MenuEntry> getMenuPath() {
 		return menuPath;
 	}
 
-	public void setArg(String arg) {
-		this.arg = arg;
+	public void setPresets(final Map<String, Object> presets) {
+		if (presets == null) {
+			this.presets = new HashMap<String, Object>();
+		}
+		else {
+			this.presets = presets;
+		}
 	}
 
-	public String getArg() {
-		return arg;
+	public Map<String, Object> getPresets() {
+		return presets;
+	}
+
+	public IPlugin createInstance()
+		throws PluginException
+	{
+		// get Class object for plugin entry
+		final Class<?> c;
+		try {
+			c = Class.forName(getPluginClass());
+		}
+		catch (ClassNotFoundException e) {
+			throw new PluginException(e);
+		}
+		if (!IPlugin.class.isAssignableFrom(c)) {
+			throw new PluginException("Not a plugin");
+		}
+
+		// instantiate plugin
+		final Object pluginInstance;
+		try {
+			pluginInstance = c.newInstance();
+		}
+		catch (InstantiationException e) {
+			throw new PluginException(e);
+		}
+		catch (IllegalAccessException e) {
+			throw new PluginException(e);
+		}
+		if (!(pluginInstance instanceof IPlugin)) {
+			throw new PluginException("Not a plugin");
+		}
+		final IPlugin plugin = (IPlugin) pluginInstance;
+	
+		return plugin;
 	}
 
 	@Override
@@ -49,15 +104,7 @@ public class PluginEntry {
 		sb.append(" [");
 		boolean firstField = true;
 
-		if (arg != null && !arg.isEmpty()) {
-			if (firstField) firstField = false;
-			else sb.append("; ");
-			sb.append("arg = \"");
-			sb.append(arg);
-			sb.append("\"");
-		}
-		
-		if (menuPath != null && !menuPath.isEmpty()) {
+		if (!menuPath.isEmpty()) {
 			if (firstField) firstField = false;
 			else sb.append("; ");
 			sb.append("menu = ");
@@ -68,6 +115,13 @@ public class PluginEntry {
 				sb.append(menu);
 			}
 			sb.append("]");
+		}
+
+		for (final String key : presets.keySet()) {
+			final Object value = presets.get(key); 
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append(key + " = '" + value + "'");
 		}
 
 		return sb.toString();

@@ -1,15 +1,15 @@
 package imagej.gui;
 
-import imagej.plugin.IPlugin;
+import imagej.plugin.PluginHandler;
 
 public interface InputHarvester {
 
 	InputPanel createInputPanel();
 
-	void buildPanel(InputPanel inputPanel, IPlugin plugin);
+	void buildPanel(InputPanel inputPanel, PluginHandler pluginHandler);
 
-	boolean showDialog(InputPanel inputPanel, IPlugin plugin);
+	boolean showDialog(InputPanel inputPanel, PluginHandler pluginHandler);
 
-	void harvestResults(InputPanel inputPanel, IPlugin plugin);
+	void harvestResults(InputPanel inputPanel, PluginHandler pluginHandler);
 
 }
