@@ -42,7 +42,7 @@ public class NavigableImageFrame extends JFrame {
 	private int xIndex, yIndex;
 	private int[] pos;
 
-	private JLabel label;
+	private JLabel imageLabel;
 	private NavigableImagePanel imagePanel;
 	private JPanel sliders;
 
@@ -56,8 +56,8 @@ public class NavigableImageFrame extends JFrame {
 		setBounds(bounds.width / 6, bounds.height / 6,
 			2 * bounds.width / 3, 2 * bounds.height / 3);
 
-		label = new JLabel(" ");
-		getContentPane().add(label, BorderLayout.NORTH);
+		imageLabel = new JLabel(" ");
+		getContentPane().add(imageLabel, BorderLayout.NORTH);
 
 		imagePanel = new NavigableImagePanel();
 		final JPanel borderPanel = new JPanel();
@@ -108,7 +108,7 @@ public class NavigableImageFrame extends JFrame {
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getType());
-		label.setText(sb.toString());
+		imageLabel.setText(sb.toString());
 	}
 
 	private BufferedImage getImagePlane() {
