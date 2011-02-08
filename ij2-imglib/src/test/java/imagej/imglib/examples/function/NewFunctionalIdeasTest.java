@@ -1,9 +1,11 @@
 package imagej.imglib.examples.function;
 
 import static org.junit.Assert.assertEquals;
+import imagej.imglib.examples.function.condition.PixelOnBorder;
 import imagej.imglib.examples.function.condition.ValueGreaterThan;
 import imagej.imglib.examples.function.condition.ValueLessThan;
 import imagej.imglib.examples.function.function.AverageFunction;
+import imagej.imglib.examples.function.function.ConstantFunction;
 import imagej.imglib.examples.function.function.SquareFunction;
 import imagej.imglib.examples.function.operation.AssignOperation;
 
@@ -104,7 +106,7 @@ public class NewFunctionalIdeasTest
 
 		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image0, function);
 
-		operation.setInputCondition(0, new ValueGreaterThan(4));
+		operation.setInputCondition(0, new ValueGreaterThan<UnsignedByteType>(4));
 		
 		operation.execute();
 		
@@ -124,7 +126,7 @@ public class NewFunctionalIdeasTest
 
 		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image0, function);
 
-		operation.setOutputCondition(new ValueLessThan(7));
+		operation.setOutputCondition(new ValueLessThan<UnsignedByteType>(7));
 		
 		operation.execute();
 		
@@ -199,10 +201,10 @@ public class NewFunctionalIdeasTest
 
 		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0,image1}, image2, function);
 
-		operation.setInputCondition(0, new ValueLessThan(8));
+		operation.setInputCondition(0, new ValueLessThan<UnsignedByteType>(8));
 		operation.setInputRegion(0, new int[]{0,1}, new int[]{2,2});
 
-		operation.setInputCondition(1, new ValueGreaterThan(14));
+		operation.setInputCondition(1, new ValueGreaterThan<UnsignedByteType>(14));
 		operation.setInputRegion(1, new int[]{0,1}, new int[]{2,2});
 
 		operation.setOutputRegion(new int[]{0,1}, new int[]{2,2});
@@ -245,5 +247,32 @@ public class NewFunctionalIdeasTest
 		assertImageValsEqual(new int[]{0,0,0,0,0,0,4,5,6}, image1);
 
 		//System.out.println("  success");
+	}
+
+	@Test
+	public void testSpatialCondition()
+	{
+		Image<UnsignedByteType> image0 = createPopulatedImage(
+				new int[]{0,0,0,
+						0,255,0,
+						0,255,0});
+
+		Image<UnsignedByteType> image1 = createPopulatedImage(
+				new int[]{0,0,0,
+						0,0,0,
+						0,0,0});
+		
+		ConstantFunction<UnsignedByteType> function = new ConstantFunction<UnsignedByteType>(1);
+
+		AssignOperation<UnsignedByteType> operation = new AssignOperation<UnsignedByteType>(new Image[]{image0}, image1, function);
+		
+		PixelOnBorder<UnsignedByteType> condition = new PixelOnBorder<UnsignedByteType>(image0, 255);
+		
+		operation.setInputCondition(0, condition);
+		
+		operation.execute();
+		
+		assertImageValsEqual(new int[]{0,0,0,0,255,0,0,255,0}, image0);
+		assertImageValsEqual(new int[]{0,0,0,0,1,0,0,1,0}, image1);
 	}
 }
