@@ -44,11 +44,11 @@ public class LegacyPluginFinder implements PluginFinder {
 			final String className = parsePluginClass(ij1PluginString);
 			final List<MenuEntry> menuPath = menuTable.get(key);
 			final String arg = parseArg(ij1PluginString);
-			final Map<String, Object> inputMap = new HashMap<String, Object>();
-			inputMap.put("className", className);
-			inputMap.put("arg", arg);
+			final Map<String, Object> presets = new HashMap<String, Object>();
+			presets.put("className", className);
+			presets.put("arg", arg);
 			final PluginEntry pluginEntry =
-				new PluginEntry(LEGACY_PLUGIN_CLASS, menuPath, inputMap);
+				new PluginEntry(LEGACY_PLUGIN_CLASS, menuPath, presets);
 			plugins.add(pluginEntry);
 			Log.debug("Found legacy plugin: " + pluginEntry);
 		}
