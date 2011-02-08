@@ -8,12 +8,11 @@ import imagej.data.FloatType;
 import imagej.data.Type;
 import imagej.data.UnsignedByteType;
 import imagej.data.UnsignedShortType;
+import imagej.dataset.CompositeDataset;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDataset;
-import imagej.plugin.IPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.api.ImageJPluginRunner;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -23,32 +22,29 @@ public class LegacyImageMap {
 	private Map<ImagePlus, Dataset> imageTable =
 		new WeakHashMap<ImagePlus, Dataset>();
 
-	/** Ensures that the given legacy image has a corresponding dataset. */
-	public void registerLegacyImage(ImagePlus imp) {
+	/**
+	 * Ensures that the given legacy image has a corresponding dataset.
+	 *
+	 * @return the {@link Dataset} object shadowing this legacy image.
+	 */
+	public Dataset registerLegacyImage(ImagePlus imp) {
 		synchronized (imageTable) {
 			Dataset dataset = imageTable.get(imp);
 			if (dataset == null) {
 				// mirror image window to dataset
 				dataset = createDatasetMirror(imp);
 				imageTable.put(imp, dataset);
-
-				// UGLY HACK - signal creation of new dataset (e.g., to displayers)
-				// TODO - think more about the architecture surrounding this
-				final Dataset datasetOutput = dataset;
-				if (datasetOutput == null) System.out.println("DATASETOUTPUT IS NULL");//TEMP
-				new ImageJPluginRunner().postProcess(new IPlugin() {
-					@Parameter(output=true)
-					private Dataset output = datasetOutput;
-
-					@Override
-					public void run() { }
-				});
 			}
+			return dataset;
 		}
 	}
 
-	/** Ensures that the given dataset has a corresponding legacy image. */
-	public void registerDataset(Dataset dataset) {
+	/**
+	 * Ensures that the given dataset has a corresponding legacy image.
+	 *
+	 * @return the {@link ImagePlus} object shadowing this dataset.
+	 */
+	public ImagePlus registerDataset(Dataset dataset) {
 		// find image window
 		ImagePlus imp = null;
 		synchronized (imageTable) {
@@ -66,6 +62,7 @@ public class LegacyImageMap {
 			}
 		}
 		WindowManager.setTempCurrentImage(imp);
+		return imp;
 	}
 
 	private Dataset createDatasetMirror(final ImagePlus imp) {
@@ -84,15 +81,26 @@ public class LegacyImageMap {
 				throw new IllegalArgumentException(
 					"Only uint8, uint16 and float32 supported for now");
 		}
-		// TODO - update this to work for multiple planes
-		if (imp.getImageStackSize() > 1) {
-			throw new IllegalArgumentException(
-				"Only single plane images supported for now");
+		final int[] dims = imp.getDimensions();
+		final int[] cDims = {dims[0], dims[1]};
+		final int[] zDims = {dims[0], dims[1], dims[2]};
+		final int[] tDims = {dims[0], dims[1], dims[2], dims[3]};
+		int i = 0;
+		final ArrayList<Dataset> tDatasets = new ArrayList<Dataset>();
+		for (int t=0; t<dims[4]; t++) {
+			final ArrayList<Dataset> zDatasets = new ArrayList<Dataset>();
+			for (int z=0; z<dims[3]; z++) {
+				final ArrayList<Dataset> cDatasets = new ArrayList<Dataset>();
+				for (int c=0; c<dims[2]; c++) {
+					final Object plane = imp.getStack().getPixels(++i);
+					cDatasets.add(new PlanarDataset(cDims, type, plane));
+				}
+				zDatasets.add(new CompositeDataset(type, zDims, cDatasets));
+			}
+			tDatasets.add(new CompositeDataset(type, tDims, zDatasets));
 		}
-		//final int[] dims = imp.getDimensions();
-		final int[] dims = {imp.getWidth(), imp.getHeight()};
-		final Object data = imp.getProcessor().getPixels();
-		final Dataset dataset = new PlanarDataset(dims, type, data);
+		final Dataset dataset = new CompositeDataset(type, dims, tDatasets);
+
 		final MetaData metadata = new MetaData();
 		metadata.setLabel(imp.getTitle());
 		final AxisLabel[] axisLabels = {
@@ -100,6 +108,7 @@ public class LegacyImageMap {
 		};
 		metadata.setAxisLabels(axisLabels);
 		dataset.setMetaData(metadata);
+
 		return dataset;
 	}
 
