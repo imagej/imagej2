@@ -1,6 +1,6 @@
 package imagej.plugins.core;
 
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -11,7 +11,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 @Plugin
-public class ImageFromURL implements IPlugin {
+public class ImageFromURL implements ImageJPlugin {
 
 	@Parameter
 	private String url;

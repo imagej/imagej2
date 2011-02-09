@@ -6,6 +6,7 @@ import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
 import imagej.imglib.dataset.LegacyImgLibDataset;
 import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -25,7 +26,7 @@ import mpicbg.imglib.type.numeric.RealType;
 		@Menu(label="Bio-Formats...", mnemonic='b', accelerator="control shift O")
 	}
 )
-public class OpenImage<T extends RealType<T>> implements IPlugin {
+public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 
 	@Parameter(label="File to open")
 	private File inputFile;
@@ -47,10 +48,10 @@ public class OpenImage<T extends RealType<T>> implements IPlugin {
 			dataset.setMetaData(metadata);
 		}
 		catch (FormatException e) {
-			Log.printStackTrace(e);
+			Log.error(e);
 		}
 		catch (IOException e) {
-			Log.printStackTrace(e);
+			Log.error(e);
 		}
   }
 
