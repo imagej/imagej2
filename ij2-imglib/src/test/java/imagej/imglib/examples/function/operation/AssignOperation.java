@@ -14,7 +14,7 @@ import mpicbg.imglib.type.numeric.RealType;
  *  number of input images given. (Better name welcomed: ImageAssignment? FunctionalEvaluation? Others?)
  * 
  * A user of this class creates an AssignOperation, constrains it as desired, and calls execute(). Note that execute() can be
- * interrupted from another Thread using the quit() method. (the execute() code is currently single threaded).
+ * interrupted from another Thread using the quit() method. (this code is currently single threaded).
  * 
  * The operation can be constrained in a number of ways:
  * 
@@ -53,7 +53,7 @@ import mpicbg.imglib.type.numeric.RealType;
 @SuppressWarnings("unchecked")
 public class AssignOperation<T extends RealType<T>>
 {
-	// -----------------  instance varaibles ------------------------------------------
+	// -----------------  instance variables ------------------------------------------
 
 	private int imageCount;
 	private MultiImageIterator<T> cursor;
@@ -61,6 +61,7 @@ public class AssignOperation<T extends RealType<T>>
 	private int[][] positions;
 	private Observer observer;
 	private Condition[] conditions;
+	private boolean requireIntersection;
 	private RealFunction<T> function;
 	private boolean wasInterrupted;
 
@@ -86,6 +87,7 @@ public class AssignOperation<T extends RealType<T>>
 		outputVariable = null;
 		observer = null;
 		conditions = new Condition[imageCount];
+		requireIntersection = true;
 		function = func;
 		wasInterrupted = false;
 		
@@ -116,6 +118,16 @@ public class AssignOperation<T extends RealType<T>>
 	public void setInputCondition(int i, Condition<T> c)
 	{
 		conditions[i+1] = c;
+	}
+
+	public void intersectConditions()
+	{
+		requireIntersection = true;
+	}
+	
+	public void unionConditions()
+	{
+		requireIntersection = false;
 	}
 
 	public void execute()
@@ -174,19 +186,30 @@ public class AssignOperation<T extends RealType<T>>
 	{
 		for (int i = 0; i < conditions.length; i++)
 		{
-			Condition<T> c = conditions[i];
+			Condition<T> condition = conditions[i];
 			
-			if (c == null)
+			if (condition == null)
 				continue;
 			
 			LocalizableCursor<T> subcursor = cursors[i];
 			
 			subcursor.getPosition(positions[i]);
 			
-			if (!c.isSatisfied(subcursor, positions[i]))
-				return false;
+			if (condition.isSatisfied(subcursor, positions[i]))
+			{
+				if (!requireIntersection)  // if union case we can short circuit with success
+					return true;
+			}
+			else // condition not satisfied
+			{
+				if (requireIntersection)  // in intersection case we can short circuit with failure
+					return false;
+			}
 		}
-		return true;
+		if (requireIntersection) // intersection - if here everything passed
+			return true;
+		else  // union - if here nothing satisfied the condition
+			return false;
 	}
 
 	private T[] getInputVariables(RegionOfInterestCursor<T>[] cursors)
