@@ -1,9 +1,9 @@
 package imagej.envisaje.pluginfinder;
 
 import imagej.Log;
+import imagej.ij1bridge.plugin.LegacyPluginFinder;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginException;
 import imagej.plugin.api.PluginUtils;
 
 import java.awt.event.ActionEvent;
@@ -22,7 +22,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-import org.openide.util.Exceptions;
+
 import org.openide.windows.IOProvider;
 
 public class MenuBuilder {
@@ -30,7 +30,7 @@ public class MenuBuilder {
     public void addIJ1Menus(JMenu topMenu) {
 		//final List<PluginEntry> entries = PluginUtils.findPlugins();
         List<PluginEntry> entries = new ArrayList<PluginEntry>();
-        new Ij1PluginFinder().findPlugins(entries);
+        new LegacyPluginFinder().findPlugins(entries);
         StringBuilder sb = new StringBuilder();
         sb.append("");
         IOProvider.getDefault().getIO("IJ1 Plugins", false).getOut().println(
@@ -216,11 +216,7 @@ public class MenuBuilder {
 			menuItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-                    try {
-                        new Ij1PluginRunner().runPlugin(entry);
-                    } catch (PluginException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
+          PluginUtils.runPlugin(entry);
 				}
 			});
 		}
