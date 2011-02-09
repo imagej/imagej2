@@ -94,9 +94,9 @@ public class OpenAction<T extends RealType<T>> extends AbstractAction {
                     final MetaData metadata = ImgLibDataset.createMetaData(img.getName());
                     dataset.setMetaData(metadata);
                 } catch (FormatException ex) {
-                    Log.printStackTrace(ex);
+                    Log.error(ex);
                 } catch (IOException ex) {
-                    Log.printStackTrace(ex);
+                    Log.error(ex);
                 }
                 try {
                     iPanel = new NavigableImageFrame();

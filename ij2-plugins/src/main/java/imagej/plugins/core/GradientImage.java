@@ -6,14 +6,14 @@ import imagej.data.UnsignedByteType;
 import imagej.dataset.Dataset;
 import imagej.dataset.DatasetFactory;
 import imagej.dataset.PlanarDatasetFactory;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 @Plugin(
   menuPath="Process>Gradient"
 )
-public class GradientImage implements IPlugin {
+public class GradientImage implements ImageJPlugin {
 
 	@Parameter
 	private int width = 512;

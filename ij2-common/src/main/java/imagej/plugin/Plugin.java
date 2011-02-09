@@ -17,6 +17,8 @@ public @interface Plugin {
 
 	String menuPath() default "";
 
+	String menubar() default "main";
+
 	Menu[] menu() default {};
 
 }
