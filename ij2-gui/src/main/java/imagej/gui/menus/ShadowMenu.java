@@ -1,50 +1,74 @@
 package imagej.gui.menus;
 
-import imagej.Log;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-
 public class ShadowMenu implements Comparable<ShadowMenu> {
-	private PluginEntry pluginEntry;
-	private int menuDepth;
-	private Map<String, ShadowMenu> children =
-		new HashMap<String, ShadowMenu>();
 
-	/** Constructor for root menu node. */
+	private PluginEntry pluginEntry;
+
+	private int menuDepth;
+
+	private Map<String, ShadowMenu> children;
+
+	/** Constructs an empty root menu node. */
 	public ShadowMenu() {
 		this(null, -1);
+	}
+
+	/** Constructs a root menu node populated with the given plugin entries. */
+	public ShadowMenu(final List<PluginEntry> entries) {
+		this();
+		for (final PluginEntry entry : entries) addEntry(entry);
 	}
 
 	private ShadowMenu(final PluginEntry pluginEntry, final int menuDepth) {
 		this.pluginEntry = pluginEntry;
 		this.menuDepth = menuDepth;
+		children = new HashMap<String, ShadowMenu>();
+	}
+
+	public PluginEntry getPluginEntry() {
+		return pluginEntry;
+	}
+
+	public int getMenuDepth() {
+		return menuDepth;
+	}
+
+	public Map<String, ShadowMenu> getChildren() {
+		return children;
+	}
+
+	public boolean isLeaf() {
+		return children.isEmpty();
 	}
 
 	public void addEntry(final PluginEntry entry) {
 		addChild(entry, 0);
 	}
 
-	private MenuEntry getMenuEntry() {
+	public MenuEntry getMenuEntry() {
 		return pluginEntry.getMenuPath().get(menuDepth);
 	}
+
+	@Override
+	public int compareTo(ShadowMenu c) {
+		final double w1 = getMenuEntry().getWeight();
+		final double w2 = c.getMenuEntry().getWeight();
+		if (w1 < w2) return -1;
+		if (w1 > w2) return 1;
+		// if weights are equal, sort alphabetically
+		final String n1 = getMenuEntry().getName();
+		final String n2 = c.getMenuEntry().getName();
+		return n1.compareTo(n2);
+	}
+
+	// -- Helper methods --
 
 	private ShadowMenu getChild(final MenuEntry menuEntry) {
 		return children.get(menuEntry.getName());
@@ -74,121 +98,6 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		if (depth + 1 < entry.getMenuPath().size()) {
 			childMenu.addChild(entry, depth + 1);
 		}
-	}
-
-	@Override
-	public int compareTo(ShadowMenu c) {
-		final double w1 = getMenuEntry().getWeight();
-		final double w2 = c.getMenuEntry().getWeight();
-		if (w1 < w2) return -1;
-		if (w1 > w2) return 1;
-		// if weights are equal, sort alphabetically
-		final String n1 = getMenuEntry().getName();
-		final String n2 = c.getMenuEntry().getName();
-		return n1.compareTo(n2);
-	}
-
-
-	// -- BEGIN SWING SPECIFIC STUFF --
-
-	public JMenuBar createMenuBar() {
-		assert pluginEntry == null && menuDepth == -1;
-		final JMenuBar menuBar = new JMenuBar();
-
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems();
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menuBar.add(childMenu);
-			}
-			else {
-				Log.warn("Unexpected leaf menu item: " + childMenuItem);
-			}
-		}
-
-		return menuBar;
-	}
-
-	/**
-	 * Generates a list of menu items corresponding
-	 * to the child menu nodes, sorted by weight.
-	 */
-	private List<JMenuItem> createChildMenuItems() {
-		// generate list of ShadowMenu objects, sorted by weight
-		final List<ShadowMenu> childMenus =
-			new ArrayList<ShadowMenu>(children.values());
-		Collections.sort(childMenus);
-
-		// create JMenuItems corresponding to ShadowMenu objects
-		final List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
-		double lastWeight = Double.NaN;
-		for (final ShadowMenu childMenu : childMenus) {
-			final double weight = childMenu.getMenuEntry().getWeight();
-			final double difference = Math.abs(weight - lastWeight);
-			if (difference > 1) menuItems.add(null); // separator
-			lastWeight = weight;
-			final JMenuItem item = childMenu.createMenuItem();
-			menuItems.add(item);
-		}
-		return menuItems;
-	}
-
-	/** Generates a menu item corresponding to this menu node. */
-	private JMenuItem createMenuItem() {
-		final MenuEntry menuEntry = getMenuEntry();
-
-		final String name = menuEntry.getName();
-		final char mnemonic = menuEntry.getMnemonic();
-		final String accelerator = menuEntry.getAccelerator();
-		final KeyStroke keyStroke = toKeyStroke(accelerator);
-		final String iconPath = menuEntry.getIcon();
-		final Icon icon = loadIcon(iconPath);
-
-		final JMenuItem menuItem;
-		if (children.isEmpty()) {
-			// create leaf item
-			menuItem = new JMenuItem(name);
-			linkAction(pluginEntry, menuItem);
-		}
-		else {
-			// create menu and recursively add children
-			final JMenu menu = new JMenu(name);
-			final List<JMenuItem> childMenuItems = createChildMenuItems();
-			for (final JMenuItem childMenuItem : childMenuItems) {
-				if (childMenuItem == null) menu.addSeparator();
-				else menu.add(childMenuItem);
-			}
-			menuItem = menu;
-		}
-		if (mnemonic != '\0') menuItem.setMnemonic(mnemonic);
-		if (keyStroke != null) menuItem.setAccelerator(keyStroke);
-		if (icon != null) menuItem.setIcon(icon);
-
-		return menuItem;
-	}
-	private KeyStroke toKeyStroke(final String accelerator) {
-		return KeyStroke.getKeyStroke(accelerator);
-	}
-
-	private Icon loadIcon(String icon) {
-		if (icon == null || icon.isEmpty()) return null;
-		try {
-			return new ImageIcon(new URL(icon));
-		}
-		catch (MalformedURLException e) {
-			Log.warn("No such icon: " + icon);
-			return null;
-		}
-	}
-
-	private void linkAction(final PluginEntry entry, final JMenuItem menuItem) {
-		menuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PluginUtils.runPlugin(entry);
-			}
-		});
 	}
 
 }
