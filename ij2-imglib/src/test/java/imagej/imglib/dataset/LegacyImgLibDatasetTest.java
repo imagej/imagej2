@@ -1,16 +1,22 @@
 package imagej.imglib.dataset;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import imagej.MetaData;
 import imagej.data.Type;
 import imagej.data.Types;
 import imagej.dataset.CompositeDataset;
 import imagej.dataset.Dataset;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
-import imagej.imglib.dataset.LegacyImgLibDataset;
+
+import java.util.ArrayList;
 
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -37,7 +43,7 @@ public class LegacyImgLibDatasetTest
 	private Image<?> createImage(RealType<?> type, int[] dimensions)
 	{
 		PlanarContainerFactory factory = new PlanarContainerFactory();
-		return imagej.imglib.process.ImageUtils.createImage(type, factory, dimensions);
+		return ImageUtils.createImage(type, factory, dimensions);
 	}
 	
 	@Test

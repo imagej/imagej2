@@ -8,8 +8,6 @@ import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import imagej.data.Type;
 import imagej.data.Types;
-import imagej.ij1bridge.process.ImgLibProcessor;
-import imagej.imglib.TypeManager;
 
 /** IJ1TypeManager exposes the getType() methods that take IJ1 data types and return their compatible IJ2 backing types */
 public class IJ1TypeManager
@@ -25,9 +23,6 @@ public class IJ1TypeManager
 	/** get the Type associated with an ImageProcessor */
 	public static Type getType(ImageProcessor proc)
 	{
-		if (proc instanceof ImgLibProcessor<?>)
-			return TypeManager.getIJType(((ImgLibProcessor<?>)proc).getType());
-
 		if (proc instanceof ByteProcessor)
 			return Types.findType("8-bit unsigned");
 

@@ -1,18 +1,18 @@
 package imagej.imglib.dataset;
 
-import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
-import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import imagej.MetaData;
 import imagej.Dimensions;
+import imagej.MetaData;
 import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.dataset.RecursiveDataset;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
-import imagej.imglib.process.ImageUtils;
 import imagej.process.Index;
+import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
+import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
 
 /** This is an ImgLib aware Dataset. Constructor takes an imglib image and makes a dataset whose primitive access arrays match.
  * Also overrides the add/remove subset calls to set an invalid flag. Then user should always call its method called getImage() that returns
