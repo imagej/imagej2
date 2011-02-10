@@ -24,7 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij1-bridge</artifactId>
+			<artifactId>ij1-bridge-old</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
