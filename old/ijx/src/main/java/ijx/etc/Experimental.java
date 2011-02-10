@@ -4,26 +4,23 @@ import imagedisplay.BufferedImageFactory;
 import imagedisplay.NavigableImageFrame;
 import imagedisplay.ScannerTZ;
 import imagedisplay.SeriesOfImagesImgLib;
-import imagej.dataset.Dataset;
-import imagej.dataset.PlanarDatasetFactory;
 import imagej.ij1bridge.BridgeStack;
-import imagej.imglib.TypeManager;
-import imagej.imglib.process.ImageUtils;
-import imagej.process.Index;
+import imagej.imglib.ImageUtils;
+import imagej.imglib.process.OldImageUtils;
+
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+
 import javax.swing.JFrame;
+
 import loci.formats.FormatException;
-import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
-import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
-import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
 
 /**
@@ -52,18 +49,18 @@ public class Experimental<T extends RealType<T>> {
         String filename = "Z5_T10.tif";
         final ImageOpener imageOpener = new ImageOpener();
         Image<T> img = imageOpener.openImage(filename);
-        RealType<?> type = imagej.imglib.ImageUtils.getType(img);
+        RealType<?> type = ImageUtils.getType(img);
         System.out.println("type: " + type.getClass().getName());
         reportInformation(img);
         System.out.println("container: " + img.getContainer().getClass().getName());
         System.out.println("Channels: "
-                + ImageUtils.getNChannels(img));
+                + OldImageUtils.getNChannels(img));
         System.out.println("Slices: "
-                + ImageUtils.getNSlices(img));
+                + OldImageUtils.getNSlices(img));
         System.out.println("Samples: "
-                + ImageUtils.getTotalSamples(img));
+                + OldImageUtils.getTotalSamples(img));
         System.out.println("Frames: "
-                + ImageUtils.getNFrames(img));
+                + OldImageUtils.getNFrames(img));
 
 
         BufferedImage bi = BufferedImageFactory.makeBufferedImage(img);

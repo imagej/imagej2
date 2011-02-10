@@ -3,6 +3,7 @@ package imagej.imglib.process;
 import imagej.Dimensions;
 import imagej.data.Type;
 import imagej.function.unary.CopyUnaryFunction;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.operation.BinaryAssignOperation;
 import imagej.imglib.process.operation.GetPlaneOperation;
@@ -25,7 +26,7 @@ import mpicbg.imglib.type.numeric.real.DoubleType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 /** this class designed to hold functionality that could be migrated to imglib */
-public class ImageUtils
+public class OldImageUtils
 {
 	public static final String X = "X";
 	public static final String Y = "Y";
@@ -86,7 +87,7 @@ public class ImageUtils
 			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
 		}
 
-		final PlanarAccess<ArrayDataAccess<?>> planarAccess = imagej.imglib.ImageUtils.getPlanarAccess(im);
+		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageUtils.getPlanarAccess(im);
 		if (planarAccess == null) {
 			return getPlaneCopy(im, planePos);
 		}
@@ -117,7 +118,7 @@ public class ImageUtils
 			throw new IllegalArgumentException("Too few dimensions: " + dims.length);
 		}
 
-		final PlanarAccess planarAccess = imagej.imglib.ImageUtils.getPlanarAccess(im);
+		final PlanarAccess planarAccess = ImageUtils.getPlanarAccess(im);
 		if (planarAccess == null) {
 			// TODO
 			throw new RuntimeException("Unimplemented");
@@ -128,7 +129,7 @@ public class ImageUtils
 		for (int i=2; i<dims.length; i++) lengths[i - 2] = dims[i];
 		final int no = Index.positionToRaster(lengths, planePos);
 		// TODO: move ImageOpener.makeArray somewhere more suitable.
-		planarAccess.setPlane(no, imagej.imglib.ImageUtils.makeArray(plane));
+		planarAccess.setPlane(no, ImageUtils.makeArray(plane));
 	}
 
 	/** copies data from one image to another given origins and dimensional spans */
@@ -179,7 +180,7 @@ public class ImageUtils
 	@SuppressWarnings({"unchecked"})
 	private static Object getPlaneCopy(Image<? extends RealType<?>> im, int[] planePos)
 	{
-		RealType<?> imglibType = imagej.imglib.ImageUtils.getType(im);
+		RealType<?> imglibType = ImageUtils.getType(im);
 		
 		Type ijType = TypeManager.getIJType(imglibType); 
 

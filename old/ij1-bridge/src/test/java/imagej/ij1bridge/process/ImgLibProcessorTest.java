@@ -20,9 +20,10 @@ import imagej.function.binary.AddIntegralBinaryFunction;
 import imagej.function.binary.SubtractIntegralBinaryFunction;
 import imagej.function.nary.AverageNAryFunction;
 import imagej.function.unary.SqrIntegralUnaryFunction;
-import imagej.ij1bridge.process.ImageUtils;
+import imagej.ij1bridge.process.OldLegacyImageUtils;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.ij1bridge.process.ImgLibProcessor.FilterType;
+import imagej.imglib.ImageUtils;
 
 import java.awt.Color;
 import java.util.Random;
@@ -373,11 +374,11 @@ public class ImgLibProcessorTest {
 	public void testAssignFrom2Images()
 	{
 		ImgLibProcessor<UnsignedByteType> ip1 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
 		ImgLibProcessor<UnsignedByteType> ip2 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
 		ImgLibProcessor<UnsignedByteType> ip3 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{9,8,7,6,5,4,3,2,1}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{9,8,7,6,5,4,3,2,1}, Types.findType("8-bit unsigned"));
 		
 		BinaryFunction function = new AddIntegralBinaryFunction(255);
 		ip1.assign(ip2, ip3, function, null, null, null);
@@ -391,9 +392,9 @@ public class ImgLibProcessorTest {
 	public void testAssignFrom1Image()
 	{
 		ImgLibProcessor<UnsignedByteType> ip1 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
 		ImgLibProcessor<UnsignedByteType> ip2 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
 		
 		UnaryFunction function = new SqrIntegralUnaryFunction(0, 255);
 		ip1.assign(ip2, function, null, null);
@@ -408,7 +409,7 @@ public class ImgLibProcessorTest {
 		ImgLibProcessor<?> ip1;
 		
 		// changes for unsigned byte type
-		ip1 = ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
+		ip1 = OldLegacyImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
 		ip1.autoThreshold();
 		for (int i = 0; i < 4; i++)
 			assertEquals(0, ip1.getf(i), 0);
@@ -416,7 +417,7 @@ public class ImgLibProcessorTest {
 			assertEquals(255, ip1.getf(i), 0);
 
 		// no change for a type that is not unsigned byte
-		ip1 = ImageUtils.createProcessor(3, 3, new float[]{1,2,3,4,5,6,7,8,9}, Types.findType("32-bit float"));
+		ip1 = OldLegacyImageUtils.createProcessor(3, 3, new float[]{1,2,3,4,5,6,7,8,9}, Types.findType("32-bit float"));
 		ip1.autoThreshold();
 		for (int i = 0; i < 9; i++)
 			assertEquals(i+1, ip1.getf(i), 0);
@@ -530,9 +531,9 @@ public class ImgLibProcessorTest {
 	public void testCopyBitsFunctionalInterface()
 	{
 		ImgLibProcessor<UnsignedByteType> ip1 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{7,7,7,7,7,7,7,7,7}, Types.findType("8-bit unsigned"));
 		ImgLibProcessor<UnsignedByteType> ip2 =
-			(ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
+			(ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(3, 3, new byte[]{1,2,3,4,5,6,7,8,9}, Types.findType("8-bit unsigned"));
 
 		BinaryFunction function = new AddIntegralBinaryFunction(255);
 		ip1.copyBits(ip2, 0, 0, function);
@@ -783,12 +784,12 @@ public class ImgLibProcessorTest {
 
 		// should work for unsigned byte type
 		
-		ip1 = (ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
+		ip1 = (ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
 		ip1.filter(FilterType.MIN);
 		for (int i = 0; i < 4; i++)
 			assertEquals(1, ip1.get(i));
 		
-		ip1 = (ImgLibProcessor<UnsignedByteType>) ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
+		ip1 = (ImgLibProcessor<UnsignedByteType>) OldLegacyImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
 		ip1.filter(FilterType.MAX);
 		for (int i = 0; i < 4; i++)
 			assertEquals(4, ip1.get(i));
@@ -796,12 +797,12 @@ public class ImgLibProcessorTest {
 
 		// should do nothing for other types
 		
-		ip1 = (ImgLibProcessor<IntType>) ImageUtils.createProcessor(2, 2, new int[]{1,2,3,4}, Types.findType("32-bit signed"));
+		ip1 = (ImgLibProcessor<IntType>) OldLegacyImageUtils.createProcessor(2, 2, new int[]{1,2,3,4}, Types.findType("32-bit signed"));
 		ip1.filter(FilterType.MIN);
 		for (int i = 0; i < 4; i++)
 			assertEquals(i+1, ip1.get(i));
 		
-		ip1 = (ImgLibProcessor<FloatType>) ImageUtils.createProcessor(2, 2, new float[]{1,2,3,4}, Types.findType("32-bit float"));
+		ip1 = (ImgLibProcessor<FloatType>) OldLegacyImageUtils.createProcessor(2, 2, new float[]{1,2,3,4}, Types.findType("32-bit float"));
 		ip1.filter(FilterType.MAX);
 		for (int i = 0; i < 4; i++)
 			assertEquals(i+1, ip1.getf(i), 0);
@@ -907,7 +908,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetImage()
 	{
-		Image<?> image = imagej.imglib.ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		
@@ -918,13 +919,13 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetImgLibProcThatMatchesMyType()
 	{
-		Image<?> image = imagej.imglib.ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc1 = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 0);
 		
 		ImgLibProcessor<?> proc2 = new ImgLibProcessor<DoubleType>((Image<DoubleType>)image, 1);
 
-		ImgLibProcessor<?> proc3 = ImageUtils.createProcessor(1, 2, new int[]{1,2}, Types.findType("32-bit unsigned"));
+		ImgLibProcessor<?> proc3 = OldLegacyImageUtils.createProcessor(1, 2, new int[]{1,2}, Types.findType("32-bit unsigned"));
 		
 		ImgLibProcessor<?> result;
 		
@@ -1051,37 +1052,37 @@ public class ImgLibProcessorTest {
 	{
 		ImgLibProcessor<?> proc;
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("1-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("1-bit unsigned"));
 		assertEquals(1, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit signed"));
 		assertEquals(Byte.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit unsigned"));
 		assertEquals(255, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("12-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("12-bit unsigned"));
 		assertEquals(4095, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit signed"));
 		assertEquals(Short.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit unsigned"));
 		assertEquals(65535, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit signed"));
 		assertEquals(Integer.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit unsigned"));
 		assertEquals(0xffffffffL, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new float[]{1}, Types.findType("32-bit float"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new float[]{1}, Types.findType("32-bit float"));
 		assertEquals(Float.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new double[]{1}, Types.findType("64-bit float"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new double[]{1}, Types.findType("64-bit float"));
 		assertEquals(Double.MAX_VALUE, proc.getMaxAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new long[]{1}, Types.findType("64-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new long[]{1}, Types.findType("64-bit signed"));
 		assertEquals(Long.MAX_VALUE, proc.getMaxAllowedValue(),0);
 	}
 
@@ -1102,37 +1103,37 @@ public class ImgLibProcessorTest {
 	{
 		ImgLibProcessor<?> proc;
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("1-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("1-bit unsigned"));
 		assertEquals(0, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit signed"));
 		assertEquals(Byte.MIN_VALUE, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new byte[]{1}, Types.findType("8-bit unsigned"));
 		assertEquals(0, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("12-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("12-bit unsigned"));
 		assertEquals(0, proc.getMinAllowedValue(),0);
 
-		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit signed"));
 		assertEquals(Short.MIN_VALUE, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new short[]{1}, Types.findType("16-bit unsigned"));
 		assertEquals(0, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit signed"));
 		assertEquals(Integer.MIN_VALUE, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit unsigned"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new int[]{1}, Types.findType("32-bit unsigned"));
 		assertEquals(0, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new float[]{1}, Types.findType("32-bit float"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new float[]{1}, Types.findType("32-bit float"));
 		assertEquals(-Float.MAX_VALUE, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new double[]{1}, Types.findType("64-bit float"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new double[]{1}, Types.findType("64-bit float"));
 		assertEquals(-Double.MAX_VALUE, proc.getMinAllowedValue(),0);
 		
-		proc = ImageUtils.createProcessor(1, 1, new long[]{1}, Types.findType("64-bit signed"));
+		proc = OldLegacyImageUtils.createProcessor(1, 1, new long[]{1}, Types.findType("64-bit signed"));
 		assertEquals(Long.MIN_VALUE, proc.getMinAllowedValue(),0);
 	}
 
@@ -1277,7 +1278,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetPlanePosition()
 	{
-		Image<?> image = imagej.imglib.ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
+		Image<?> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{1,2,3});
 		
 		ImgLibProcessor<?> proc;
 		
@@ -1316,7 +1317,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testGetTotalSamples()
 	{
-		Image<DoubleType> image = imagej.imglib.ImageUtils.createImage(new DoubleType(), this.factory, new int[]{5,2,4});
+		Image<DoubleType> image = ImageUtils.createImage(new DoubleType(), this.factory, new int[]{5,2,4});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>(image, 0);
 		
@@ -1328,7 +1329,7 @@ public class ImgLibProcessorTest {
 	{
 		RealType<DoubleType> type = new DoubleType();
 		
-		Image<DoubleType> image = imagej.imglib.ImageUtils.createImage(type, this.factory, new int[]{5,2,4});
+		Image<DoubleType> image = ImageUtils.createImage(type, this.factory, new int[]{5,2,4});
 		
 		ImgLibProcessor<?> proc = new ImgLibProcessor<DoubleType>(image, 0);
 		
@@ -1689,7 +1690,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testSetdAndGetdXY()
 	{
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
+		ImgLibProcessor<?> proc = OldLegacyImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
 		
 		proc.setd(0, 0, 14);
 		assertEquals(14, proc.getd(0,0), 0);
@@ -1704,7 +1705,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testSetdAndGetdInt()
 	{
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
+		ImgLibProcessor<?> proc = OldLegacyImageUtils.createProcessor(2, 2, new byte[]{1,2,3,4}, Types.findType("8-bit unsigned"));
 		
 		proc.setd(0, 14);
 		assertEquals(14, proc.getd(0), 0);
@@ -2036,7 +2037,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testThresholdDouble()
 	{
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new double[]{1.2,1.4,1.6,1.8}, Types.findType("64-bit float"));
+		ImgLibProcessor<?> proc = OldLegacyImageUtils.createProcessor(2, 2, new double[]{1.2,1.4,1.6,1.8}, Types.findType("64-bit float"));
 		
 		proc.threshold(1.5);
 		
@@ -2067,7 +2068,7 @@ public class ImgLibProcessorTest {
 	@Test
 	public void testTransformMyself()
 	{
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, Types.findType("16-bit signed"));
+		ImgLibProcessor<?> proc = OldLegacyImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, Types.findType("16-bit signed"));
 		
 		UnaryFunction function = new SqrIntegralUnaryFunction(Short.MIN_VALUE, Short.MAX_VALUE);
 
@@ -2082,10 +2083,10 @@ public class ImgLibProcessorTest {
 	public void testTransformMyselfUsingOtherDataset()
 	{
 		ImgLibProcessor<ShortType> proc1 =
-			(ImgLibProcessor<ShortType> )ImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, Types.findType("16-bit signed"));
+			(ImgLibProcessor<ShortType> )OldLegacyImageUtils.createProcessor(2, 2, new short[]{1,2,3,4}, Types.findType("16-bit signed"));
 
 		ImgLibProcessor<ShortType> proc2 =
-			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{5,6,7,8}, Types.findType("16-bit signed"));
+			(ImgLibProcessor<ShortType>) OldLegacyImageUtils.createProcessor(2, 2, new short[]{5,6,7,8}, Types.findType("16-bit signed"));
 		
 		BinaryFunction function = new SubtractIntegralBinaryFunction(Short.MIN_VALUE);
 		
@@ -2097,13 +2098,13 @@ public class ImgLibProcessorTest {
 	public void testTransformMyselfUsingOtherDatasets()
 	{
 		ImgLibProcessor<ShortType> proc1 =
-			(ImgLibProcessor<ShortType> )ImageUtils.createProcessor(2, 2, new short[]{3,6,9,12}, Types.findType("16-bit signed"));
+			(ImgLibProcessor<ShortType> )OldLegacyImageUtils.createProcessor(2, 2, new short[]{3,6,9,12}, Types.findType("16-bit signed"));
 
 		ImgLibProcessor<ShortType> proc2 =
-			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{6,9,12,15}, Types.findType("16-bit signed"));
+			(ImgLibProcessor<ShortType>) OldLegacyImageUtils.createProcessor(2, 2, new short[]{6,9,12,15}, Types.findType("16-bit signed"));
 		
 		ImgLibProcessor<ShortType> proc3 =
-			(ImgLibProcessor<ShortType>) ImageUtils.createProcessor(2, 2, new short[]{9,12,15,18}, Types.findType("16-bit signed"));
+			(ImgLibProcessor<ShortType>) OldLegacyImageUtils.createProcessor(2, 2, new short[]{9,12,15,18}, Types.findType("16-bit signed"));
 
 		NAryFunction function = new AverageNAryFunction(3);
 		

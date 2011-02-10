@@ -3,17 +3,12 @@ package imagej.ij1bridge.process;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
-
 import imagej.data.Types;
-import imagej.ij1bridge.process.ImageUtils;
-import imagej.ij1bridge.process.ImgLibProcessor;
-
+import imagej.imglib.ImageUtils;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
@@ -21,7 +16,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 import org.junit.Test;
 
-public class ImageUtilsTest {
+public class OldLegacyImageUtilsTest {
 
 	// *************  instance vars ********************************************
 
@@ -33,7 +28,7 @@ public class ImageUtilsTest {
 	{
 		PlanarContainerFactory cFact = new PlanarContainerFactory();
 
-		return imagej.imglib.ImageUtils.createImage(type, cFact, dimensions);
+		return ImageUtils.createImage(type, cFact, dimensions);
 	}
 
 	// *************  public tests ********************************************
@@ -45,7 +40,7 @@ public class ImageUtilsTest {
 
 		long[] longs = new long[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-		ImgLibProcessor<?> proc = ImageUtils.createProcessor(width, height, longs, Types.findType("64-bit signed"));
+		ImgLibProcessor<?> proc = OldLegacyImageUtils.createProcessor(width, height, longs, Types.findType("64-bit signed"));
 
 		assertNotNull(proc);
 		assertEquals(width, proc.getWidth());
@@ -63,7 +58,7 @@ public class ImageUtilsTest {
 
 		// TODO : set pixel data to something
 
-		ImagePlus imp = ImageUtils.createImagePlus(image);
+		ImagePlus imp = OldLegacyImageUtils.createImagePlus(image);
 
 		int channels = image.getDimension(2);
 		int slices   = image.getDimension(3);
@@ -94,7 +89,7 @@ public class ImageUtilsTest {
 
 		// TODO : set pixel data to something
 
-		ImagePlus imp = ImageUtils.createImagePlus(image, "gadzooks");
+		ImagePlus imp = OldLegacyImageUtils.createImagePlus(image, "gadzooks");
 
 		int channels = image.getDimension(2);
 		int slices   = image.getDimension(3);

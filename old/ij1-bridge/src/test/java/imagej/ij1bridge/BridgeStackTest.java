@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.dataset.LegacyImgLibDataset;
 
 import java.awt.Rectangle;
@@ -30,7 +31,7 @@ public class BridgeStackTest
 
 	private void setupVariables(int[] dimensions)
 	{
-		this.image = imagej.imglib.ImageUtils.createImage(new UnsignedByteType(), new PlanarContainerFactory(), dimensions);
+		this.image = ImageUtils.createImage(new UnsignedByteType(), new PlanarContainerFactory(), dimensions);
 		this.dataset = new LegacyImgLibDataset(this.image);
 		this.stack = new BridgeStack(this.dataset, new ImgLibProcessorFactory(this.image));
 	}
