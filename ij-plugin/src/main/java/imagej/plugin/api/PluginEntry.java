@@ -1,6 +1,8 @@
 package imagej.plugin.api;
 
 import imagej.plugin.IPlugin;
+import imagej.plugin.PluginHandler;
+import imagej.plugin.spi.PluginHandlerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ public class PluginEntry {
 	private String pluginClass;
 	private List<MenuEntry> menuPath;
 	private Map<String, Object> presets;
+	private PluginHandlerFactory factory;
 
 	public PluginEntry(final String pluginClass) {
 		this(pluginClass, null, null);
@@ -24,9 +27,16 @@ public class PluginEntry {
 	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
 		final Map<String, Object> presets)
 	{
+		this(pluginClass, menuPath, presets, null);
+	}
+
+	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
+			final Map<String, Object> presets, PluginHandlerFactory factory)
+	{
 		setPluginClass(pluginClass);
 		setMenuPath(menuPath);
 		setPresets(presets);
+		setPluginHandlerFactory(factory);
 	}
 
 	public void setPluginClass(final String pluginClass) {
@@ -63,6 +73,23 @@ public class PluginEntry {
 		return presets;
 	}
 
+	public void setPluginHandlerFactory(PluginHandlerFactory factory) {
+		if (factory == null) {
+			this.factory = new DefaultPluginHandlerFactory();
+		}
+		else {
+			this.factory = factory;
+		}
+	}
+
+	public PluginHandlerFactory getPluginHandlerFactory() {
+		return factory;
+	}
+
+	public PluginHandler createPluginHandler() throws PluginException {
+		return factory.createPluginHandler(createInstance());
+	}
+
 	public IPlugin createInstance()
 		throws PluginException
 	{
@@ -77,7 +104,7 @@ public class PluginEntry {
 		if (!IPlugin.class.isAssignableFrom(c)) {
 			throw new PluginException("Not a plugin");
 		}
-
+	
 		// instantiate plugin
 		final Object pluginInstance;
 		try {
