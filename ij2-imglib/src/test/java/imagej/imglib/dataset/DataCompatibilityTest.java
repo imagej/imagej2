@@ -7,7 +7,7 @@ import imagej.data.Types;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.imglib.TypeManager;
-import imagej.imglib.process.ImageUtils;
+import imagej.imglib.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Span;
 
