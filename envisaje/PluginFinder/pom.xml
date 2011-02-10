@@ -19,12 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij1-bridge</artifactId>
+			<artifactId>ij-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij2-common</artifactId>
+			<artifactId>ij-legacy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

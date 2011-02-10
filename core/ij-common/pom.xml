@@ -7,21 +7,16 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-old</artifactId>
+		<artifactId>imagej-core</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij2-common-old</artifactId>
+	<artifactId>ij-common</artifactId>
 
-	<name>ImageJ 2.0 Common</name>
+	<name>ImageJ Common Library</name>
 	<description>Core classes and API for ImageJ.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-common</artifactId>
-			 <version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
@@ -67,7 +62,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-old, in case of partial checkout -->
+	<!-- NB: for imagej-core, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

@@ -7,19 +7,19 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-old</artifactId>
+		<artifactId>imagej-core</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij2-common-old</artifactId>
+	<artifactId>ij-plugin</artifactId>
 
-	<name>ImageJ 2.0 Common</name>
-	<description>Core classes and API for ImageJ.</description>
+	<name>ImageJ Plugin Framework</name>
+	<description>Core plugin architecture for ImageJ.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-common</artifactId>
+			<artifactId>ij-common</artifactId>
 			 <version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -59,7 +59,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej</packageName>
+							<packageName>imagej.plugin</packageName>
 						</manifest>
 					</archive>
 				</configuration>
@@ -67,7 +67,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-old, in case of partial checkout -->
+	<!-- NB: for imagej-core, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

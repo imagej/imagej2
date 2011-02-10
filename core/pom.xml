@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-base</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>imagej-core</artifactId>
+	<packaging>pom</packaging>
+
+	<name>ImageJ Core</name>
+	<description>Core ImageJ projects.</description>
+
+	<modules>
+		<module>ij-common</module>
+		<module>ij-core-plugins</module>
+		<module>ij-gui</module>
+		<module>ij-imglib</module>
+		<module>ij-legacy</module>
+		<module>ij-plugin</module>
+		<module>ij-plugin-gui-swing</module>
+		<!-- <module>imagej</module> -->
+	</modules>
+
+	<!-- NB: for imagej-base, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>

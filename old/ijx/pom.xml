@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-base</artifactId>
+		<artifactId>imagej-old</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
@@ -85,7 +85,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-base, in case of partial checkout -->
+	<!-- NB: for imagej-old, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
