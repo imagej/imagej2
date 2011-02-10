@@ -1,4 +1,4 @@
-package imagej.gui;
+package imagej.plugin.gui;
 
 import imagej.plugin.PluginHandler;
 

@@ -1,4 +1,4 @@
-package imagej.gui.menus;
+package imagej.plugin.gui;
 
 public interface MenuCreator<T> {
 

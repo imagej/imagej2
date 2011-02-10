@@ -1,7 +1,7 @@
-package imagej.gui.swing;
+package imagej.plugin.gui.swing;
 
-import imagej.gui.AbstractInputHarvester;
-import imagej.gui.InputPanel;
+import imagej.plugin.gui.AbstractInputHarvester;
+import imagej.plugin.gui.InputPanel;
 import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginPreprocessor;
 

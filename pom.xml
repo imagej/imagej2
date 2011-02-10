@@ -27,6 +27,8 @@
 	<modules>
 		<module>_ij1-patches</module>
 		<module>envisaje</module>
+		<module>ij-plugin</module>
+		<module>ij-plugin-gui-swing</module>
 		<module>ij1-bridge</module>
 		<module>ij2-common</module>
 		<module>ij2-gui</module>

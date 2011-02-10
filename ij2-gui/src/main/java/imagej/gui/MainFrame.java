@@ -4,8 +4,8 @@
 
 package imagej.gui;
 
-import imagej.gui.menus.ShadowMenu;
-import imagej.gui.swing.JMenuBarCreator;
+import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.swing.JMenuBarCreator;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
 

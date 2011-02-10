@@ -1,7 +1,6 @@
 package imagej.gui;
 
 import imagej.dataset.Dataset;
-import imagej.plugin.DisplayPlugin;
 import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginPostprocessor;
 

@@ -1,10 +1,10 @@
-package imagej.gui.swing;
+package imagej.plugin.gui.swing;
 
 import imagej.Log;
-import imagej.gui.menus.ShadowMenu;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.ShadowMenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
