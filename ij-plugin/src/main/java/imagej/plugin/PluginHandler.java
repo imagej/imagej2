@@ -28,23 +28,12 @@ public class PluginHandler {
 	 *
 	 * Fields in this table are excluded from the list of input parameters.
 	 */
-	protected final Map<String, Object> presets;
+	private final Map<String, Object> presets;
 
 	/** Creates a plugin handler for a new instance of the given plugin entry. */
 	public PluginHandler(final PluginEntry entry) throws PluginException {
-		this(entry.createInstance(), entry.getPresets());
-	}
-
-	/** Creates a plugin handler for the given plugin. */
-	public PluginHandler(final IPlugin plugin) {
-		this(plugin, new HashMap<String, Object>());
-	}
-
-	public PluginHandler(final IPlugin plugin,
-		final Map<String, Object> presets)
-	{
-		this.plugin = plugin;
-		this.presets = presets;
+		this.plugin = entry.createInstance();
+		this.presets = entry.getPresets();
 		setValues(presets);
 	}
 
