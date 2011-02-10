@@ -52,7 +52,7 @@ public class Experimental<T extends RealType<T>> {
         String filename = "Z5_T10.tif";
         final ImageOpener imageOpener = new ImageOpener();
         Image<T> img = imageOpener.openImage(filename);
-        RealType<?> type = ImageUtils.getType(img);
+        RealType<?> type = imagej.imglib.ImageUtils.getType(img);
         System.out.println("type: " + type.getClass().getName());
         reportInformation(img);
         System.out.println("container: " + img.getContainer().getClass().getName());

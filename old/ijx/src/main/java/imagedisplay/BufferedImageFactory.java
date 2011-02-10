@@ -1,6 +1,7 @@
 package imagedisplay;
 
-import imagej.imglib.process.ImageUtils;
+import imagej.imglib.ImageUtils;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -8,6 +9,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferUShort;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.container.planar.PlanarContainer;
 import mpicbg.imglib.image.Image;
