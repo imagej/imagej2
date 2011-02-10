@@ -8,8 +8,10 @@ import imagej.ij1bridge.BridgeStack;
 import imagej.ij1bridge.IJ1ProcessorFactory;
 import imagej.ij1bridge.ImgLibProcessorFactory;
 import imagej.ij1bridge.ProcessorFactory;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
 import imagej.imglib.dataset.LegacyImgLibDataset;
+import imagej.imglib.process.OldImageUtils;
 
 import java.io.File;
 
@@ -34,7 +36,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 //   Split this class into a separate project, imglib-utils, to avoid ij dependencies with other project (e.g., bf-imglib).
 
 /** this class designed to hold functionality that could be migrated to imglib */
-public class ImageUtils
+public class OldLegacyImageUtils
 {
 
 	// ***************** public methods  **************************************************
@@ -62,57 +64,57 @@ public class ImageUtils
 		
 		if (imglibType instanceof BitType)
 		{
-			Image<BitType> hatchedImage = imagej.imglib.ImageUtils.createImage(new BitType(), containerFactory, dimensions);
+			Image<BitType> hatchedImage = ImageUtils.createImage(new BitType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<BitType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof ByteType)
 		{
-			Image<ByteType> hatchedImage = imagej.imglib.ImageUtils.createImage(new ByteType(), containerFactory, dimensions);
+			Image<ByteType> hatchedImage = ImageUtils.createImage(new ByteType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<ByteType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof UnsignedByteType)
 		{
-			Image<UnsignedByteType> hatchedImage = imagej.imglib.ImageUtils.createImage(new UnsignedByteType(), containerFactory, dimensions);
+			Image<UnsignedByteType> hatchedImage = ImageUtils.createImage(new UnsignedByteType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<UnsignedByteType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof Unsigned12BitType)
 		{
-			Image<Unsigned12BitType> hatchedImage = imagej.imglib.ImageUtils.createImage(new Unsigned12BitType(), containerFactory, dimensions);
+			Image<Unsigned12BitType> hatchedImage = ImageUtils.createImage(new Unsigned12BitType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<Unsigned12BitType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof ShortType)
 		{
-			Image<ShortType> hatchedImage = imagej.imglib.ImageUtils.createImage(new ShortType(), containerFactory, dimensions);
+			Image<ShortType> hatchedImage = ImageUtils.createImage(new ShortType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<ShortType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof UnsignedShortType)
 		{
-			Image<UnsignedShortType> hatchedImage = imagej.imglib.ImageUtils.createImage(new UnsignedShortType(), containerFactory, dimensions);
+			Image<UnsignedShortType> hatchedImage = ImageUtils.createImage(new UnsignedShortType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<UnsignedShortType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof IntType)
 		{
-			Image<IntType> hatchedImage = imagej.imglib.ImageUtils.createImage(new IntType(), containerFactory, dimensions);
+			Image<IntType> hatchedImage = ImageUtils.createImage(new IntType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<IntType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof UnsignedIntType)
 		{
-			Image<UnsignedIntType> hatchedImage = imagej.imglib.ImageUtils.createImage(new UnsignedIntType(), containerFactory, dimensions);
+			Image<UnsignedIntType> hatchedImage = ImageUtils.createImage(new UnsignedIntType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<UnsignedIntType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof LongType)
 		{
-			Image<LongType> hatchedImage = imagej.imglib.ImageUtils.createImage(new LongType(), containerFactory, dimensions);
+			Image<LongType> hatchedImage = ImageUtils.createImage(new LongType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<LongType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof FloatType)
 		{
-			Image<FloatType> hatchedImage = imagej.imglib.ImageUtils.createImage(new FloatType(), containerFactory, dimensions);
+			Image<FloatType> hatchedImage = ImageUtils.createImage(new FloatType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<FloatType>(hatchedImage, 0);
 		}
 		else if (imglibType instanceof DoubleType)
 		{
-			Image<DoubleType> hatchedImage = imagej.imglib.ImageUtils.createImage(new DoubleType(), containerFactory, dimensions);
+			Image<DoubleType> hatchedImage = ImageUtils.createImage(new DoubleType(), containerFactory, dimensions);
 			proc = new ImgLibProcessor<DoubleType>(hatchedImage, 0);
 		}
 		else
@@ -136,11 +138,11 @@ public class ImageUtils
 	 */
 	public static ImagePlus createImagePlus(final Image<?> img, final String id)
 	{
-		final int sizeX = imagej.imglib.process.ImageUtils.getWidth(img);
-		final int sizeY = imagej.imglib.process.ImageUtils.getHeight(img);
-		final int sizeC = imagej.imglib.process.ImageUtils.getNChannels(img);
-		final int sizeZ = imagej.imglib.process.ImageUtils.getNSlices(img);
-		final int sizeT = imagej.imglib.process.ImageUtils.getNFrames(img);
+		final int sizeX = OldImageUtils.getWidth(img);
+		final int sizeY = OldImageUtils.getHeight(img);
+		final int sizeC = OldImageUtils.getNChannels(img);
+		final int sizeZ = OldImageUtils.getNSlices(img);
+		final int sizeT = OldImageUtils.getNFrames(img);
 
 		LegacyImgLibDataset dataset = new LegacyImgLibDataset(img);
 		

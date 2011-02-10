@@ -2,14 +2,14 @@ package imagej.data;
 
 import imagej.StorageType;
 
-/** The interface for the support of all pixel data types in ImageJ. Types have some methods for querying information. They also have
- * methods for handling the storage of their data. This could be separated but keeping this info together simplifies the expansion to
- * new types when needed. To add a new type you need to define a class derived from Type, implement its methods, and implement a
- * DataAccessor for the Type. The type needs to then be added to the Types class' static initialization code (see Types.java). If a
- * new Imglib type is created and needs to be supported then the process is the same but there are a couple places in ij2-imglib that
- * also need to be tweaked. For example, imagej.imglib.process.ImageUtils::getPlaneCopy(), and
- * imagej.ij1bridge.process.ImageUtils::createProcessor() both need to be updated as they need knowledge of all Imglib types to
- * correctly create their data. Also imagej.ij1bridge.ImgLibProcessorFactory needs to be expanded to include the new Imglib type.
+/**
+ * The interface for the support of all pixel data types in ImageJ. Types have
+ * some methods for querying information. They also have methods for handling
+ * the storage of their data. This could be separated but keeping this info
+ * together simplifies the expansion to new types when needed. To add a new
+ * type you need to define a class derived from Type, implement its methods,
+ * and implement a DataAccessor for the Type. The type needs to then be added
+ * to the Types class' static initialization code (see Types.java).
  */
 public interface Type
 {

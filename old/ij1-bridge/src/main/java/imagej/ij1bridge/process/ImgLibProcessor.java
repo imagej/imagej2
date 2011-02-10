@@ -61,8 +61,9 @@ import imagej.function.unary.XorUnaryFunction;
 import imagej.ij1bridge.process.operation.BlurFilterOperation;
 import imagej.ij1bridge.process.operation.Convolve3x3FilterOperation;
 import imagej.ij1bridge.process.operation.FindEdgesFilterOperation;
+import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
-import imagej.imglib.process.ImageUtils;
+import imagej.imglib.process.OldImageUtils;
 import imagej.imglib.process.Snapshot;
 import imagej.imglib.process.operation.BinaryAssignPositionalOperation;
 import imagej.imglib.process.operation.BinaryTransformPositionalOperation;
@@ -239,7 +240,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 			throw new IllegalArgumentException("Image dimensions and input plane position are not compatible.");
 
 		this.imageData = image;
-		this.type = imagej.imglib.ImageUtils.getType(image);
+		this.type = ImageUtils.getType(image);
 		this.ijType = TypeManager.getIJType(this.type);
 
 		this.planePosition = thisPlanePosition.clone();
@@ -690,11 +691,11 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 		// set the plane
 		
 		//  try to set by reference
-		PlanarAccess<?> planar = imagej.imglib.ImageUtils.getPlanarAccess(image);
+		PlanarAccess<?> planar = ImageUtils.getPlanarAccess(image);
 
 		if (planar != null)
 		{
-			ImageUtils.setPlane(image, planePosition, pixels);
+			OldImageUtils.setPlane(image, planePosition, pixels);
 			return;
 		}
 
@@ -1088,7 +1089,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ImgLibProcessor<T> ip2 = (ImgLibProcessor<T>) createProcessor(imageSpan[0], imageSpan[1]);
 
-		ImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, ip2.getImage(), newImageOrigin, newImageSpan);
+		OldImageUtils.copyFromImageToImage(this.imageData, imageOrigin, imageSpan, ip2.getImage(), newImageOrigin, newImageSpan);
 
 		return ip2;
 	}
@@ -1144,7 +1145,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		ImgLibProcessor<T> imgLibProc = (ImgLibProcessor<T>) proc;
 
-		ImageUtils.copyFromImageToImage(this.imageData,origin,span,imgLibProc.getImage(),origin,span);
+		OldImageUtils.copyFromImageToImage(this.imageData,origin,span,imgLibProc.getImage(),origin,span);
 
 		return proc;
 	}
@@ -1654,7 +1655,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	@Override
 	public Object getPixels()
 	{
-		final PlanarAccess<ArrayDataAccess<?>> planarAccess = imagej.imglib.ImageUtils.getPlanarAccess(this.imageData);
+		final PlanarAccess<ArrayDataAccess<?>> planarAccess = ImageUtils.getPlanarAccess(this.imageData);
 
 		if (planarAccess == null)
 		{
@@ -1695,7 +1696,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 	/** return the current plane data pixels as an array of doubles. converts types as needed. */
 	public double[] getPlaneData()
 	{
-		return ImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), this.planePosition);
+		return OldImageUtils.getPlaneData(this.imageData, getWidth(), getHeight(), this.planePosition);
 	}
 
 	// not an override
@@ -2011,7 +2012,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Object pixels2 = getPixelsCopy();
 
-		ImgLibProcessor<?> ip2 = imagej.ij1bridge.process.ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, this.ijType);
+		ImgLibProcessor<?> ip2 = imagej.ij1bridge.process.OldLegacyImageUtils.createProcessor(getWidth(), getHeight(), pixels2, this.ijType);
 
 		if (interpolationMethod==BICUBIC)
 			ip2.setBackgroundValue(getBackgroundValue());
@@ -2143,7 +2144,7 @@ public class ImgLibProcessor<T extends RealType<T>> extends ImageProcessor imple
 
 		Object pixels2 = getPixelsCopy();
 
-		ImgLibProcessor<?> ip2 = imagej.ij1bridge.process.ImageUtils.createProcessor(getWidth(), getHeight(), pixels2, this.ijType);
+		ImgLibProcessor<?> ip2 = imagej.ij1bridge.process.OldLegacyImageUtils.createProcessor(getWidth(), getHeight(), pixels2, this.ijType);
 
 		boolean checkCoordinates = (xScale < 1.0) || (yScale < 1.0);
 		int index1, index2, xsi, ysi;

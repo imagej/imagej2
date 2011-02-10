@@ -3,6 +3,7 @@ package imagej.imglib.process.operation;
 import static org.junit.Assert.*;
 import imagej.data.Types;
 import imagej.imglib.ImageUtils;
+import imagej.imglib.process.OldImageUtils;
 import imagej.imglib.process.operation.GetPlaneOperation;
 import imagej.process.Index;
 import imagej.process.Span;
@@ -145,8 +146,8 @@ public class GetPlaneOperationTest
 		cursor.getType().set((short) 10);
 		assertEquals(10,cursor.getType().get());
 		
-		assertEquals(21, imagej.imglib.process.ImageUtils.getWidth(image));
-		assertEquals(23, imagej.imglib.process.ImageUtils.getHeight(image));
+		assertEquals(21, OldImageUtils.getWidth(image));
+		assertEquals(23, OldImageUtils.getHeight(image));
 
 		int[] imglibPlane = (int[]) ImageUtils.getPlanarAccess(image).getPlane(0).getCurrentStorageArray();
 		

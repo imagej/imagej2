@@ -2,7 +2,7 @@ package imagedisplay;
 
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
-import imagej.imglib.process.ImageUtils;
+import imagej.imglib.process.OldImageUtils;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
@@ -43,11 +43,11 @@ public class SeriesOfImagesImgLib implements SeriesOfImages {
 
     public SeriesOfImagesImgLib(Image<?> img, long interval) {
         this.img = img;
-        System.out.println("Channels: " + ImageUtils.getNChannels(img));
+        System.out.println("Channels: " + OldImageUtils.getNChannels(img));
         this.interval = interval;
-        nZ = ImageUtils.getNSlices(img);
-        nT = ImageUtils.getNFrames(img);
-        imgDim = new Dimension(ImageUtils.getWidth(img), ImageUtils.getHeight(img));
+        nZ = OldImageUtils.getNSlices(img);
+        nT = OldImageUtils.getNFrames(img);
+        imgDim = new Dimension(OldImageUtils.getWidth(img), OldImageUtils.getHeight(img));
         numImages = nZ * nT;
         //
         dataSet = new ImgLibDataset(img);

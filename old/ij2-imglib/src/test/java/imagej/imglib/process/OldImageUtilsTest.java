@@ -3,6 +3,7 @@ package imagej.imglib.process;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import imagej.imglib.ImageUtils;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
@@ -14,7 +15,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
 
 import org.junit.Test;
 
-public class ImageUtilsTest {
+public class OldImageUtilsTest {
 
 	// *************  instance vars ********************************************
 
@@ -26,7 +27,7 @@ public class ImageUtilsTest {
 	{
 		PlanarContainerFactory cFact = new PlanarContainerFactory();
 
-		return imagej.imglib.ImageUtils.createImage(type, cFact, dimensions);
+		return ImageUtils.createImage(type, cFact, dimensions);
 	}
 
 	// *************  public tests ********************************************
@@ -60,7 +61,7 @@ public class ImageUtilsTest {
 		{
 			Image<?> image = makeImage(new UnsignedByteType(), dimensions[i]);
 
-			assertEquals(sampleCounts[i], ImageUtils.getTotalSamples(image));
+			assertEquals(sampleCounts[i], OldImageUtils.getTotalSamples(image));
 		}
 	}
 
@@ -84,7 +85,7 @@ public class ImageUtilsTest {
 		cursor.setPosition(new int[]{1,2});
 		cursor.getType().set(6);
 
-		double[] data = ImageUtils.getPlaneData(image, 2, 3, new int[]{});
+		double[] data = OldImageUtils.getPlaneData(image, 2, 3, new int[]{});
 
 		assertEquals(1,data[0],0);
 		assertEquals(2,data[1],0);
@@ -105,15 +106,15 @@ public class ImageUtilsTest {
 		short[] threes = new short[]{3,3,3,3,3,3};
 		short[] fours = new short[]{4,4,4,4,4,4};
 
-		ImageUtils.setPlane(image, new int[]{0}, ones);
-		ImageUtils.setPlane(image, new int[]{1}, twos);
-		ImageUtils.setPlane(image, new int[]{2}, threes);
-		ImageUtils.setPlane(image, new int[]{3}, fours);
+		OldImageUtils.setPlane(image, new int[]{0}, ones);
+		OldImageUtils.setPlane(image, new int[]{1}, twos);
+		OldImageUtils.setPlane(image, new int[]{2}, threes);
+		OldImageUtils.setPlane(image, new int[]{3}, fours);
 
-		assertArrayEquals(ones, (short[])ImageUtils.getPlane(image, new int[]{0}));
-		assertArrayEquals(twos, (short[])ImageUtils.getPlane(image, new int[]{1}));
-		assertArrayEquals(threes, (short[])ImageUtils.getPlane(image, new int[]{2}));
-		assertArrayEquals(fours, (short[])ImageUtils.getPlane(image, new int[]{3}));
+		assertArrayEquals(ones, (short[])OldImageUtils.getPlane(image, new int[]{0}));
+		assertArrayEquals(twos, (short[])OldImageUtils.getPlane(image, new int[]{1}));
+		assertArrayEquals(threes, (short[])OldImageUtils.getPlane(image, new int[]{2}));
+		assertArrayEquals(fours, (short[])OldImageUtils.getPlane(image, new int[]{3}));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -130,41 +131,41 @@ public class ImageUtilsTest {
 
 		Image<IntType> srcImage = (Image<IntType>) makeImage(new IntType(), new int[]{2,3,2});
 
-		ImageUtils.setPlane(srcImage, new int[]{0}, sevens);
-		ImageUtils.setPlane(srcImage, new int[]{1}, eights);
+		OldImageUtils.setPlane(srcImage, new int[]{0}, sevens);
+		OldImageUtils.setPlane(srcImage, new int[]{1}, eights);
 
-		assertTrue(sevens == ImageUtils.getPlane(srcImage, new int[]{0}));
-		assertTrue(eights == ImageUtils.getPlane(srcImage, new int[]{1}));
+		assertTrue(sevens == OldImageUtils.getPlane(srcImage, new int[]{0}));
+		assertTrue(eights == OldImageUtils.getPlane(srcImage, new int[]{1}));
 
 		Image<IntType> dstImage = (Image<IntType>) makeImage(new IntType(), new int[]{2,3,4});
 
-		ImageUtils.setPlane(dstImage, new int[]{0}, ones);
-		ImageUtils.setPlane(dstImage, new int[]{1}, twos);
-		ImageUtils.setPlane(dstImage, new int[]{2}, threes);
-		ImageUtils.setPlane(dstImage, new int[]{3}, fours);
+		OldImageUtils.setPlane(dstImage, new int[]{0}, ones);
+		OldImageUtils.setPlane(dstImage, new int[]{1}, twos);
+		OldImageUtils.setPlane(dstImage, new int[]{2}, threes);
+		OldImageUtils.setPlane(dstImage, new int[]{3}, fours);
 
-		assertTrue(ones == ImageUtils.getPlane(dstImage, new int[]{0}));
-		assertTrue(twos == ImageUtils.getPlane(dstImage, new int[]{1}));
-		assertTrue(threes == ImageUtils.getPlane(dstImage, new int[]{2}));
-		assertTrue(fours == ImageUtils.getPlane(dstImage, new int[]{3}));
+		assertTrue(ones == OldImageUtils.getPlane(dstImage, new int[]{0}));
+		assertTrue(twos == OldImageUtils.getPlane(dstImage, new int[]{1}));
+		assertTrue(threes == OldImageUtils.getPlane(dstImage, new int[]{2}));
+		assertTrue(fours == OldImageUtils.getPlane(dstImage, new int[]{3}));
 
-		ImageUtils.copyFromImageToImage(srcImage, new int[]{0,0,0}, new int[]{2,3,2},
+		OldImageUtils.copyFromImageToImage(srcImage, new int[]{0,0,0}, new int[]{2,3,2},
 										dstImage, new int[]{0,0,2}, new int[]{2,3,2});
 
-		assertTrue(ones == ImageUtils.getPlane(dstImage, new int[]{0}));
-		assertTrue(twos == ImageUtils.getPlane(dstImage, new int[]{1}));
-		assertTrue(threes == ImageUtils.getPlane(dstImage, new int[]{2}));
-		assertTrue(fours == ImageUtils.getPlane(dstImage, new int[]{3}));
+		assertTrue(ones == OldImageUtils.getPlane(dstImage, new int[]{0}));
+		assertTrue(twos == OldImageUtils.getPlane(dstImage, new int[]{1}));
+		assertTrue(threes == OldImageUtils.getPlane(dstImage, new int[]{2}));
+		assertTrue(fours == OldImageUtils.getPlane(dstImage, new int[]{3}));
 
 		Object srcPlane, dstPlane;
 
-		srcPlane = ImageUtils.getPlane(srcImage, new int[]{0});
-		dstPlane = ImageUtils.getPlane(dstImage, new int[]{2});
+		srcPlane = OldImageUtils.getPlane(srcImage, new int[]{0});
+		dstPlane = OldImageUtils.getPlane(dstImage, new int[]{2});
 		assertTrue(dstPlane != srcPlane);
 		assertArrayEquals(sevens, (int[])dstPlane);
 
-		srcPlane = ImageUtils.getPlane(srcImage, new int[]{1});
-		dstPlane = ImageUtils.getPlane(dstImage, new int[]{3});
+		srcPlane = OldImageUtils.getPlane(srcImage, new int[]{1});
+		dstPlane = OldImageUtils.getPlane(dstImage, new int[]{3});
 		assertTrue(dstPlane != srcPlane);
 		assertArrayEquals(eights, (int[])dstPlane);
 	}
@@ -177,11 +178,11 @@ public class ImageUtilsTest {
 		image = makeImage(new UnsignedIntType(), new int[]{1,2,3,4,5,6,7});
 
 		// we'll just test the default order
-		assertEquals(1,ImageUtils.getWidth(image));
-		assertEquals(2,ImageUtils.getHeight(image));
-		assertEquals(3,ImageUtils.getNChannels(image));
-		assertEquals(4,ImageUtils.getNSlices(image));
-		assertEquals(5,ImageUtils.getNFrames(image));
+		assertEquals(1,OldImageUtils.getWidth(image));
+		assertEquals(2,OldImageUtils.getHeight(image));
+		assertEquals(3,OldImageUtils.getNChannels(image));
+		assertEquals(4,OldImageUtils.getNSlices(image));
+		assertEquals(5,OldImageUtils.getNFrames(image));
 
 		// could create an image with different dim ordering and then test them but not sure how to do this
 		//   outside of loading data via BioFormats/FileOpener
