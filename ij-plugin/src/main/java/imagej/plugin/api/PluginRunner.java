@@ -14,26 +14,19 @@ import org.openide.util.Lookup;
 public class PluginRunner {
 
 	private PluginEntry entry;
-	private PluginHandler handler;
 
 	public PluginRunner(final PluginEntry entry) {
-		this(entry, null);
-	}
-
-	public PluginRunner(final PluginEntry entry, final PluginHandler handler) {
 		this.entry = entry;
-		this.handler = handler;
 	}
 
 	public IPlugin run() {
-		if (handler == null) {
-			try {
-				handler = new PluginHandler(entry);
-			}
-			catch (PluginException e) {
-				Log.debug(e);
-				return null;
-			}
+		final PluginHandler handler;
+		try {
+			handler = entry.createPluginHandler();
+		}
+		catch (PluginException e) {
+			Log.error(e);
+			return null;
 		}
 		final IPlugin plugin = handler.getPlugin();
 

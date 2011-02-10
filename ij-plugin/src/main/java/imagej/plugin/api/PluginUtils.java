@@ -1,7 +1,6 @@
 package imagej.plugin.api;
 
 import imagej.plugin.IPlugin;
-import imagej.plugin.PluginHandler;
 import imagej.plugin.spi.PluginFinder;
 
 import java.util.ArrayList;
@@ -29,10 +28,6 @@ public final class PluginUtils {
 
 	public static IPlugin runPlugin(PluginEntry entry) {
 		return new PluginRunner(entry).run();
-	}
-
-	public static IPlugin runPlugin(PluginEntry entry, PluginHandler handler) {
-		return new PluginRunner(entry, handler).run();
 	}
 
 }
