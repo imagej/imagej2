@@ -68,11 +68,15 @@ public abstract class AbstractInputHarvester
 			else if (ClassUtils.isText(type)) {
 				final String[] choices = param.choices();
 				if (choices.length > 0) {
-					inputPanel.addChoice(name, label, value.toString(), choices);
+					final String initialValue =
+						value == null ? choices[0] : value.toString();
+					inputPanel.addChoice(name, label, initialValue, choices);
 				}
 				else {
+					final String initialValue =
+						value == null ? "" : value.toString();
 					final int columns = param.columns();
-					inputPanel.addTextField(name, label, value.toString(), columns);
+					inputPanel.addTextField(name, label, initialValue, columns);
 				}
 			}
 			else if (ClassUtils.isBoolean(type)) {

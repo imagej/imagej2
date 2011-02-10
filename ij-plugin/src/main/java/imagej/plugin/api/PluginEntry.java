@@ -31,7 +31,7 @@ public class PluginEntry {
 	}
 
 	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
-			final Map<String, Object> presets, PluginHandlerFactory factory)
+			final Map<String, Object> presets, final PluginHandlerFactory factory)
 	{
 		setPluginClass(pluginClass);
 		setMenuPath(menuPath);
@@ -73,7 +73,7 @@ public class PluginEntry {
 		return presets;
 	}
 
-	public void setPluginHandlerFactory(PluginHandlerFactory factory) {
+	public void setPluginHandlerFactory(final PluginHandlerFactory factory) {
 		if (factory == null) {
 			this.factory = new DefaultPluginHandlerFactory();
 		}
@@ -87,7 +87,7 @@ public class PluginEntry {
 	}
 
 	public PluginHandler createPluginHandler() throws PluginException {
-		return factory.createPluginHandler(createInstance());
+		return factory.createPluginHandler(this);
 	}
 
 	public IPlugin createInstance()
