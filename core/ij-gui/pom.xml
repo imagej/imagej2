@@ -7,60 +7,47 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-old</artifactId>
+		<artifactId>imagej-core</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij1-bridge-old</artifactId>
+	<artifactId>ij-gui</artifactId>
 
-	<name>ImageJ 1.0 Bridge</name>
-	<description>The ImageJ bridge enables backward compatibility with ImageJ 1.x.</description>
+	<name>ImageJ GUI</name>
+	<description>A simple Swing-based ImageJ user interface.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>_ij1-patches</artifactId>
+			<artifactId>ij-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij</artifactId>
-			<version>${imagej1.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-common</artifactId>
+			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-common-old</artifactId>
+			<artifactId>ij-plugin-gui-swing</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+<!--
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-imglib</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.apple</groupId>
+			<artifactId>AppleJavaExtensions</artifactId>
+			<version>1.4</version>
+		</dependency>
+-->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-imglib-old</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.9.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
+			<groupId>loci</groupId>
+			<artifactId>bio-formats</artifactId>
+			<version>${bio-formats.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.netbeans.api</groupId>
@@ -76,7 +63,8 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ij1bridge</packageName>
+							<mainClass>imagej.gui.MainFrame</mainClass>
+							<packageName>imagej.gui</packageName>
 						</manifest>
 					</archive>
 				</configuration>
@@ -84,7 +72,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-old, in case of partial checkout -->
+	<!-- NB: for imagej-core, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

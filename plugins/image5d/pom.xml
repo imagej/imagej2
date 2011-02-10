@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-core</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>Image_5D</artifactId>
+	<version>1.2.3-SNAPSHOT</version>
+
+	<name>Image5D</name>
+	<description>The Image5D plugins extend image stacks to 5 dimensions: x, y, channel (color), slice (z), frame (t).</description>
+	<url>http://imagejdev.org/image5d</url>
+	<inceptionYear>2005</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>BSD</name>
+			<url>http://dev.imagejdev.org/svn/imagej/trunk/image5d/LICENSE.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij</artifactId>
+			<version>${imagej1.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>i5d</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<developers>
+		<developer>
+			<id>walter</id>
+			<name>Joachim Walter</name>
+			<email>walter@biz.uni-muenchen.de</email>
+			<organization>Ludwig-Maximilians-Universität München</organization>
+			<organizationUrl>http://www.uni-muenchen.de/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Melissa Linkert</name>
+			<email>melissa.linkert@glencoesoftware.com</email>
+			<url>http://openmicroscopy.org/site/about/development-teams/glencoe-software</url>
+			<organization>Glencoe Software</organization>
+			<organizationUrl>http://glencoesoftware.com/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://openmicroscopy.org/site/about/development-teams/glencoe-software/melissalinkert.png</picUrl>
+			</properties>
+		</contributor>
+		<contributor>
+			<name>Curtis Rueden</name>
+			<email>ctrueden@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/curtis-rueden</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>packager</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/curtis-2010.jpg</picUrl>
+			</properties>
+		</contributor>
+	</contributors>
+
+	<!-- NB: for imagej-core, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>

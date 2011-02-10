@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-core</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>workflowpipes</artifactId>
+
+	<name>Workflow Pipes</name>
+	<description>Web-based workflow editor using Yahoo! Pipes.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>workflow</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-1.0-sdk</artifactId>
+			<version>1.3.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.metaparadigm</groupId>
+			<artifactId>json-rpc</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>imagej.workflowpipes.Open</mainClass>
+							<packageName>imagej.workflowpipes</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<developers>
+		<developer>
+			<id>rlentz</id>
+			<name>Rick Lentz</name>
+			<email>rwlentz@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/rick-lentz</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/stu_fa08_Lentz.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>aivar</id>
+			<name>Aivar Grislis</name>
+			<email>grislis@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/aivar-grislis</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+	<!-- NB: for imagej-core, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>

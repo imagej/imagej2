@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-core</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>native-library-util</artifactId>
+
+	<name>Native Library Utility</name>
+	<description>A library for loading native libraries.</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej.nativelibrary</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<developers>
+		<developer>
+			<id>aivar</id>
+			<name>Aivar Grislis</name>
+			<email>grislis@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/aivar-grislis</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+			<properties>
+				<picUrl>http://loci.wisc.edu/files/loci/images/people/Aivar.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+	<!-- NB: for imagej-core, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>
