@@ -1,7 +1,7 @@
 package imagej.gui.display;
 
 import imagej.dataset.Dataset;
-import imagej.plugin.DisplayPlugin;
+import imagej.gui.DisplayPlugin;
 
 import org.openide.util.lookup.ServiceProvider;
 

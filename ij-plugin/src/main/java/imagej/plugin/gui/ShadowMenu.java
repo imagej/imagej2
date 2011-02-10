@@ -1,4 +1,4 @@
-package imagej.gui.menus;
+package imagej.plugin.gui;
 
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
