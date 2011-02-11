@@ -2,14 +2,14 @@ package imagej.imglib.dataset;
 
 import static org.junit.Assert.*;
 
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.imglib.TypeManager;
 import imagej.imglib.ImageUtils;
 import imagej.process.Index;
 import imagej.process.Span;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import java.util.Random;
 

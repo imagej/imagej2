@@ -71,7 +71,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ij1bridge</packageName>
+							<packageName>imagej.legacy</packageName>
 						</manifest>
 					</archive>
 				</configuration>

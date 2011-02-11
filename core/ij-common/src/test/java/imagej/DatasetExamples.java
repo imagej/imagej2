@@ -1,8 +1,5 @@
 package imagej;
 
-import imagej.data.DataAccessor;
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.dataset.Dataset;
 import imagej.dataset.DatasetDuplicator;
 import imagej.dataset.DatasetFactory;
@@ -12,6 +9,9 @@ import imagej.dataset.PlanarDatasetFactory;
 import imagej.dataset.PrimitiveDatasetCreator;
 import imagej.dataset.ReadOnlyDataset;
 import imagej.process.Index;
+import imagej.types.DataAccessor;
+import imagej.types.Type;
+import imagej.types.Types;
 
 public class DatasetExamples
 {

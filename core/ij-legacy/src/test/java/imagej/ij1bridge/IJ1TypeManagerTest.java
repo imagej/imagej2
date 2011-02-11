@@ -6,7 +6,8 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import imagej.data.Types;
+import imagej.legacy.IJ1TypeManager;
+import imagej.types.Types;
 
 import org.junit.Test;
 

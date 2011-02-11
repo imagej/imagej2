@@ -1,7 +1,7 @@
 package imagej.dataset;
 
 import static org.junit.Assert.*;
-import imagej.data.Types;
+import imagej.types.Types;
 
 import org.junit.Test;
 

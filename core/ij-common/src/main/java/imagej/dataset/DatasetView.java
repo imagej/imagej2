@@ -3,7 +3,7 @@ package imagej.dataset;
 import java.util.ArrayList;
 
 import imagej.MetaData;
-import imagej.data.Type;
+import imagej.types.Type;
 
 // TODOs
 // Dataset matches parent in extent of its subset of axes. i.e. given [1,2,5] and axes [0,1,-1] the dataset has extent 5 in its only free axis.

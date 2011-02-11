@@ -2,7 +2,7 @@ package imagej.dataset;
 
 import static org.junit.Assert.*;
 import imagej.MetaData;
-import imagej.data.Types;
+import imagej.types.Types;
 
 import org.junit.Test;
 
