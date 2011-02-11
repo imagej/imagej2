@@ -1,8 +1,8 @@
 package imagej.dataset;
 
-import imagej.data.Type;
 import imagej.operation.RegionCopyOperation;
 import imagej.process.Index;
+import imagej.types.Type;
 
 public class DatasetDuplicator
 {

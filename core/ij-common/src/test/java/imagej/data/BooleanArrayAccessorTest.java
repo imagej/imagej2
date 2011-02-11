@@ -1,6 +1,7 @@
 package imagej.data;
 
 import static org.junit.Assert.*;
+import imagej.types.BooleanArrayAccessor;
 
 import org.junit.Test;
 

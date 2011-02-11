@@ -6,17 +6,17 @@ import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 import imagej.AxisLabel;
 import imagej.MetaData;
-import imagej.data.FloatType;
-import imagej.data.Type;
-import imagej.data.Types;
-import imagej.data.UnsignedByteType;
-import imagej.data.UnsignedShortType;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.ij1bridge.BridgeStack;
 import imagej.ij1bridge.DatasetProcessorFactory;
 import imagej.ij1bridge.ProcessorFactory;
 import imagej.process.Index;
+import imagej.types.FloatType;
+import imagej.types.Type;
+import imagej.types.Types;
+import imagej.types.UnsignedByteType;
+import imagej.types.UnsignedShortType;
 
 public class Rescale_to_Type implements PlugIn {
 

@@ -7,8 +7,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import imagej.data.Type;
-import imagej.data.Types;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import org.junit.Test;
 

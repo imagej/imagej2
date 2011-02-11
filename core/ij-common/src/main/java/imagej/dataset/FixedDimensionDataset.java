@@ -1,7 +1,7 @@
 package imagej.dataset;
 
 import imagej.MetaData;
-import imagej.data.Type;
+import imagej.types.Type;
 
 public class FixedDimensionDataset implements Dataset
 {

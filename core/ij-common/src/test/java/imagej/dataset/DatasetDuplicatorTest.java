@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.process.Index;
 import imagej.process.Span;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import org.junit.Test;
 

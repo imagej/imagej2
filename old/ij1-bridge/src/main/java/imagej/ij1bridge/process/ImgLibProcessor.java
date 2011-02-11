@@ -9,8 +9,6 @@ import ij.process.ImageStatistics;
 
 import imagej.Dimensions;
 import imagej.DoubleRange;
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.function.BinaryFunction;
 import imagej.function.NAryFunction;
 import imagej.function.UnaryFunction;
@@ -81,6 +79,8 @@ import imagej.process.query.HistogramQuery;
 import imagej.selection.MaskOffSelectionFunction;
 import imagej.selection.MaskOnSelectionFunction;
 import imagej.selection.SelectionFunction;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import java.awt.Color;
 import java.awt.Rectangle;

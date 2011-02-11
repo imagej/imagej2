@@ -7,7 +7,7 @@ package imagej.dataset;
 //   to avoid casts and range checking by using getData(), checking getType(), and doing optimized data manipulation on your own.
 
 import imagej.MetaData;
-import imagej.data.Type;
+import imagej.types.Type;
 
 /** the basic interface to data supported in ImageJ */
 public interface Dataset

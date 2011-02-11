@@ -2,13 +2,13 @@ package imagej.imglib.dataset;
 
 import imagej.Dimensions;
 import imagej.MetaData;
-import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.PlanarDatasetFactory;
 import imagej.dataset.RecursiveDataset;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
 import imagej.process.Index;
+import imagej.types.Type;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.image.Image;

@@ -3,11 +3,11 @@ package imagej.dataset;
 import java.lang.reflect.Array;
 
 import imagej.Dimensions;
-import imagej.data.BooleanArrayAccessor;
-import imagej.data.DataAccessor;
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.process.Index;
+import imagej.types.BooleanArrayAccessor;
+import imagej.types.DataAccessor;
+import imagej.types.Type;
+import imagej.types.Types;
 
 /** creates a Dataset from an input primitive array of values. */
 public class PrimitiveDatasetCreator

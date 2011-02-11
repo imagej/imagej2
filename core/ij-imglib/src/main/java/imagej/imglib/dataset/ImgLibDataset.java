@@ -2,10 +2,10 @@ package imagej.imglib.dataset;
 
 import imagej.AxisLabel;
 import imagej.MetaData;
-import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
+import imagej.types.Type;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;

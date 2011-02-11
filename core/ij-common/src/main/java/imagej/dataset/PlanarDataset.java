@@ -2,9 +2,9 @@ package imagej.dataset;
 
 import imagej.MetaData;
 import imagej.Dimensions;
-import imagej.data.DataAccessor;
-import imagej.data.Type;
-import imagej.data.Types;
+import imagej.types.DataAccessor;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import java.lang.reflect.Array;
 

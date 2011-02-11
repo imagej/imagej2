@@ -1,6 +1,6 @@
 package imagej.dataset;
 
-import imagej.data.Type;
+import imagej.types.Type;
 
 /** the interface that all Dataset factories must implement for creation of data */
 public interface DatasetFactory

@@ -1,6 +1,6 @@
 package imagej.dataset;
 
-import imagej.data.Type;
+import imagej.types.Type;
 
 import java.util.ArrayList;
 

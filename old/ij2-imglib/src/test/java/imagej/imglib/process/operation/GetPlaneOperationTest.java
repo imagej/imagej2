@@ -1,12 +1,12 @@
 package imagej.imglib.process.operation;
 
 import static org.junit.Assert.*;
-import imagej.data.Types;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.process.OldImageUtils;
 import imagej.imglib.process.operation.GetPlaneOperation;
 import imagej.process.Index;
 import imagej.process.Span;
+import imagej.types.Types;
 
 import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.array.ArrayContainerFactory;

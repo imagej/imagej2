@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import imagej.DoubleRange;
-import imagej.data.Type;
-import imagej.data.Types;
+import imagej.types.Type;
+import imagej.types.Types;
 import mpicbg.imglib.type.logic.BitType;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.ByteType;

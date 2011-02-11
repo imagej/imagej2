@@ -16,8 +16,6 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import imagej.DoubleRange;
 import imagej.LongRange;
-import imagej.data.DataAccessor;
-import imagej.data.Type;
 import imagej.dataset.Dataset;
 import imagej.dataset.DatasetDuplicator;
 import imagej.dataset.FixedDimensionDataset;
@@ -28,6 +26,8 @@ import imagej.operation.RegionCopyOperation;
 import imagej.operation.TransformOperation;
 import imagej.process.Index;
 import imagej.process.Span;
+import imagej.types.DataAccessor;
+import imagej.types.Type;
 
 // TODO
 //   Made some changes from old ImgLibProcessor code since this processor does not have to perfectly replicate IJ1 processor behavior

@@ -9,12 +9,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import imagej.MetaData;
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.dataset.CompositeDataset;
 import imagej.dataset.Dataset;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import java.util.ArrayList;
 

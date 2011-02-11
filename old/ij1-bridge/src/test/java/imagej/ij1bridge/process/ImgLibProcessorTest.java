@@ -12,7 +12,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-import imagej.data.Types;
 import imagej.function.BinaryFunction;
 import imagej.function.NAryFunction;
 import imagej.function.UnaryFunction;
@@ -24,6 +23,7 @@ import imagej.ij1bridge.process.OldLegacyImageUtils;
 import imagej.ij1bridge.process.ImgLibProcessor;
 import imagej.ij1bridge.process.ImgLibProcessor.FilterType;
 import imagej.imglib.ImageUtils;
+import imagej.types.Types;
 
 import java.awt.Color;
 import java.util.Random;

@@ -2,10 +2,10 @@ package imagej.imglib.process.operation;
 
 import static org.junit.Assert.*;
 
-import imagej.data.Types;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.process.operation.SetPlaneOperation;
 import imagej.process.Index;
+import imagej.types.Types;
 
 import mpicbg.imglib.type.numeric.integer.*;
 import mpicbg.imglib.image.*;

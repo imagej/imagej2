@@ -1,7 +1,7 @@
 package imagej.envisaje.pluginfinder;
 
 import imagej.Log;
-import imagej.ij1bridge.plugin.LegacyPluginFinder;
+import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;

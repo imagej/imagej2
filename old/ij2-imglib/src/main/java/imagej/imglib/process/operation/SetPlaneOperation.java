@@ -1,9 +1,9 @@
 package imagej.imglib.process.operation;
 
-import imagej.data.DataAccessor;
-import imagej.data.Type;
 import imagej.imglib.TypeManager;
 import imagej.process.Span;
+import imagej.types.DataAccessor;
+import imagej.types.Type;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 

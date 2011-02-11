@@ -1,13 +1,13 @@
 package imagej.imglib.process;
 
 import imagej.Dimensions;
-import imagej.data.Type;
 import imagej.function.unary.CopyUnaryFunction;
 import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
 import imagej.imglib.process.operation.BinaryAssignOperation;
 import imagej.imglib.process.operation.GetPlaneOperation;
 import imagej.process.Index;
+import imagej.types.Type;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;

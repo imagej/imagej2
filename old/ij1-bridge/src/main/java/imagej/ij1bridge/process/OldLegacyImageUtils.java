@@ -2,8 +2,6 @@ package imagej.ij1bridge.process;
 
 import ij.ImagePlus;
 import ij.io.FileInfo;
-import imagej.data.Type;
-import imagej.data.Types;
 import imagej.ij1bridge.BridgeStack;
 import imagej.ij1bridge.IJ1ProcessorFactory;
 import imagej.ij1bridge.ImgLibProcessorFactory;
@@ -12,6 +10,8 @@ import imagej.imglib.ImageUtils;
 import imagej.imglib.TypeManager;
 import imagej.imglib.dataset.LegacyImgLibDataset;
 import imagej.imglib.process.OldImageUtils;
+import imagej.types.Type;
+import imagej.types.Types;
 
 import java.io.File;
 
