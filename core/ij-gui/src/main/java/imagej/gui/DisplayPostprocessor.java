@@ -1,16 +1,18 @@
 package imagej.gui;
 
+import imagej.Log;
 import imagej.dataset.Dataset;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPostprocessor;
+import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.Postprocessor;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
 
-@ServiceProvider(service=PluginPostprocessor.class)
+@Postprocessor
 public class DisplayPostprocessor implements PluginPostprocessor {
 
 	@Override
@@ -28,15 +30,21 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
 
-			// display dataset using the first compatible DisplayPlugin
-			// TODO: prompt user with dialog box if multiple matches
-			// TODO: use SezPoz instead of Lookup for DisplayPlugins?
-			final Collection<? extends DisplayPlugin> displayPlugins =
-				Lookup.getDefault().lookupAll(DisplayPlugin.class);
-			for (final DisplayPlugin displayPlugin : displayPlugins) {
-				if (displayPlugin.canDisplay(dataset)) {
-					displayPlugin.display(dataset);
-					break;
+			// use SezPoz to discover all display plugins
+			for (final IndexItem<DisplayPlugin, IDisplayPlugin> item :
+				Index.load(DisplayPlugin.class, IDisplayPlugin.class))
+			{
+				try {
+					final IDisplayPlugin displayPlugin = item.instance();
+					// display dataset using the first compatible DisplayPlugin
+					// TODO: prompt user with dialog box if multiple matches
+					if (displayPlugin.canDisplay(dataset)) {
+						displayPlugin.run();
+						break;
+					}
+				}
+				catch (InstantiationException e) {
+					Log.error(e);
 				}
 			}
 		}

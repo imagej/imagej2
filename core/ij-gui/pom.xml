@@ -49,11 +49,6 @@
 			<artifactId>bio-formats</artifactId>
 			<version>${bio-formats.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.netbeans.api</groupId>
-			<artifactId>org-openide-util-lookup</artifactId>
-			<version>${netbeans.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>

@@ -6,7 +6,8 @@ import imagej.Log;
 import imagej.legacy.LegacyManager;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
-import imagej.plugin.spi.PluginFinder;
+import imagej.plugin.finder.IPluginFinder;
+import imagej.plugin.finder.PluginFinder;
 import imagej.util.ListUtils;
 
 import java.awt.Menu;
@@ -23,10 +24,8 @@ import java.util.Map;
 
 import javax.swing.KeyStroke;
 
-import org.openide.util.lookup.ServiceProvider;
-
-@ServiceProvider(service=PluginFinder.class)
-public class LegacyPluginFinder implements PluginFinder {
+@PluginFinder
+public class LegacyPluginFinder implements IPluginFinder {
 
 	private static final String LEGACY_PLUGIN_CLASS =
 		LegacyPlugin.class.getName();

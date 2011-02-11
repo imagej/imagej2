@@ -1,8 +1,10 @@
-package imagej.plugin.api;
+package imagej.plugin.finder;
 
 import imagej.plugin.IPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
+import imagej.plugin.api.MenuEntry;
+import imagej.plugin.api.PluginEntry;
 
 import java.util.ArrayList;
 import java.util.List;

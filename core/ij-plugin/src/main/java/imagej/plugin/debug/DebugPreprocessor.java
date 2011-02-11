@@ -2,12 +2,11 @@ package imagej.plugin.debug;
 
 import imagej.Log;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPreprocessor;
-
-import org.openide.util.lookup.ServiceProvider;
+import imagej.plugin.process.PluginPreprocessor;
+import imagej.plugin.process.Preprocessor;
 
 /** A plugin preprocessor that dumps information to the log. */
-@ServiceProvider(service=PluginPreprocessor.class)
+@Preprocessor
 public class DebugPreprocessor implements PluginPreprocessor {
 
 	@Override

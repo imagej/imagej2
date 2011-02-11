@@ -1,7 +1,7 @@
 package ijx.plugin;
 
 import imagej.plugin.api.PluginEntry;
-import imagej.plugin.spi.PluginFinder;
+import imagej.plugin.finder.IPluginFinder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,12 +17,12 @@ public class PluginDiscovery {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugin finders...");
-		Collection<? extends PluginFinder> finders =
-			Lookup.getDefault().lookupAll(PluginFinder.class);
+		Collection<? extends IPluginFinder> finders =
+			Lookup.getDefault().lookupAll(IPluginFinder.class);
 
 		List<PluginEntry> plugins = new ArrayList<PluginEntry>();
 
-		for (PluginFinder finder : finders) {
+		for (IPluginFinder finder : finders) {
 			System.out.println("Querying " + finder + "...");
 			finder.findPlugins(plugins);
 		}

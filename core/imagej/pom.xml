@@ -30,7 +30,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugins</artifactId>
+			<artifactId>ij-core-plugins</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

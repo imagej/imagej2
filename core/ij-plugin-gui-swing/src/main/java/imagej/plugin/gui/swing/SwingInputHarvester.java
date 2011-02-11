@@ -1,21 +1,19 @@
 package imagej.plugin.gui.swing;
 
+import imagej.plugin.PluginHandler;
 import imagej.plugin.gui.AbstractInputHarvester;
 import imagej.plugin.gui.InputPanel;
-import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPreprocessor;
+import imagej.plugin.process.Preprocessor;
 
 import java.awt.Frame;
 
 import javax.swing.JDialog;
 
-import org.openide.util.lookup.ServiceProvider;
-
 /**
  * SwingInputHarvester is a plugin preprocessor that collects input parameter
  * values from the user using a {@link SwingInputPanel} dialog box.
  */
-@ServiceProvider(service=PluginPreprocessor.class)
+@Preprocessor
 public class SwingInputHarvester extends AbstractInputHarvester {
 
 	@Override

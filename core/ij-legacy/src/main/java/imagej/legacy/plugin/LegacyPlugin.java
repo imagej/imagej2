@@ -2,7 +2,7 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import imagej.dataset.Dataset;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 
 /** Executes an IJ1 plugin. */
 @Plugin
-public class LegacyPlugin implements IPlugin {
+public class LegacyPlugin implements ImageJPlugin {
 
 	@Parameter
 	private String className;
