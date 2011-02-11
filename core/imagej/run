@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# temporary script to launch ImageJ2
-
-mvn dependency:copy-dependencies
-java -cp 'target/dependency/*' imagej.gui.MainFrame
