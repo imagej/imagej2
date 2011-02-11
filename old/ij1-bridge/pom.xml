@@ -48,24 +48,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.9.0.GA</version>
-		</dependency>
-		<dependency>
 			<groupId>mpicbg</groupId>
 			<artifactId>imglib</artifactId>
 			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.netbeans.api</groupId>
-			<artifactId>org-openide-util-lookup</artifactId>
-			<version>${netbeans.version}</version>
 		</dependency>
 	</dependencies>
 
