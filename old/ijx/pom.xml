@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-legacy</artifactId>
+			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -43,9 +43,19 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij2-imglib-old</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.apple</groupId>
 			<artifactId>AppleJavaExtensions</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>loci</groupId>
+			<artifactId>bio-formats</artifactId>
+			<version>${bio-formats.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>mpicbg</groupId>
