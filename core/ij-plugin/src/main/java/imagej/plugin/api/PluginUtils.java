@@ -1,13 +1,15 @@
 package imagej.plugin.api;
 
+import imagej.Log;
 import imagej.plugin.IPlugin;
-import imagej.plugin.spi.PluginFinder;
+import imagej.plugin.finder.IPluginFinder;
+import imagej.plugin.finder.PluginFinder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.openide.util.Lookup;
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
 
 /** Utility class for discovering and launching plugins. */
 public final class PluginUtils {
@@ -17,11 +19,18 @@ public final class PluginUtils {
 	}
 
 	public static List<PluginEntry> findPlugins() {
-		final Collection<? extends PluginFinder> finders =
-			Lookup.getDefault().lookupAll(PluginFinder.class);
-		List<PluginEntry> plugins = new ArrayList<PluginEntry>();
-		for (PluginFinder finder : finders) {
-			finder.findPlugins(plugins);
+		// use SezPoz to discover all plugin finders
+		final List<PluginEntry> plugins = new ArrayList<PluginEntry>();
+		for (final IndexItem<PluginFinder, IPluginFinder> item :
+			Index.load(PluginFinder.class, IPluginFinder.class))
+		{
+			try {
+				final IPluginFinder finder = item.instance();
+				finder.findPlugins(plugins);
+			}
+			catch (InstantiationException e) {
+				Log.error(e);
+			}
 		}
 		return plugins;
 	}

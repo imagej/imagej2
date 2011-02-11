@@ -11,7 +11,7 @@ import javassist.NotFoundException;
 
 public final class LegacyManager {
 
-	private static final String PATCH_PKG = "imagej.ij1bridge.patches";
+	private static final String PATCH_PKG = "imagej.legacy.patches";
 
 	/** Mapping between datasets and legacy image objects. */
 	private static LegacyImageMap imageMap;
@@ -46,9 +46,9 @@ public final class LegacyManager {
 	/**
 	 * Overrides the behavior of the specified method for the given class.
 	 * The new method implementation should be declared in the
-	 * imagej.ij1bridge.patches package, with the same name as the original
+	 * imagej.legacy.patches package, with the same name as the original
 	 * class plus "Methods"; e.g., overridden ij.gui.ImageWindow methods should
-	 * be placed in the imagej.ij1bridge.patches.ImageWindowMethods class.
+	 * be placed in the imagej.legacy.patches.ImageWindowMethods class.
 	 *
 	 * New method implementations must be public static, with an additional
 	 * first parameter: the instance of the class on which to operate.

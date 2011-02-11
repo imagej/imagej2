@@ -1,11 +1,13 @@
 package imagej.gui;
 
-import imagej.dataset.Dataset;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface DisplayPlugin {
+import net.java.sezpoz.Indexable;
 
-	boolean canDisplay(Dataset dataset);
-
-	void display(Dataset dataset);
-
-}
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Indexable(type=IDisplayPlugin.class)
+public @interface DisplayPlugin { }

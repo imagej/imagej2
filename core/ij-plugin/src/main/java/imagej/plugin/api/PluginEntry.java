@@ -2,7 +2,6 @@ package imagej.plugin.api;
 
 import imagej.plugin.IPlugin;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginHandlerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

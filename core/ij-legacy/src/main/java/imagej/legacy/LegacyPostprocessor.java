@@ -2,14 +2,13 @@ package imagej.legacy;
 
 import imagej.dataset.Dataset;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPostprocessor;
+import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.Postprocessor;
 
 import java.util.Map;
 
-import org.openide.util.lookup.ServiceProvider;
-
 /** A plugin postprocessor that keeps datasets synced with legacy images. */
-@ServiceProvider(service=PluginPostprocessor.class)
+@Postprocessor
 public class LegacyPostprocessor implements PluginPostprocessor {
 
 	@Override

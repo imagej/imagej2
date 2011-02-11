@@ -2,19 +2,21 @@ package imagej.gui.display;
 
 import imagej.dataset.Dataset;
 import imagej.gui.DisplayPlugin;
+import imagej.gui.IDisplayPlugin;
 
-import org.openide.util.lookup.ServiceProvider;
+@DisplayPlugin
+public class NavigableImageDisplay implements IDisplayPlugin {
 
-@ServiceProvider(service=DisplayPlugin.class)
-public class NavigableImageDisplay implements DisplayPlugin {
+	private Dataset dataset;
 
 	@Override
-	public boolean canDisplay(Dataset dataset) {
+	public boolean canDisplay(Dataset d) {
+		dataset = d;
 		return true;
 	}
 
 	@Override
-	public void display(Dataset dataset) {
+	public void run() {
 		final NavigableImageFrame imageFrame = new NavigableImageFrame();
 		imageFrame.setDataset(dataset);
 		imageFrame.setVisible(true);

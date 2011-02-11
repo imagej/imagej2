@@ -2,14 +2,13 @@ package imagej.plugin.debug;
 
 import imagej.Log;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPostprocessor;
+import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.Postprocessor;
 
 import java.util.Map;
 
-import org.openide.util.lookup.ServiceProvider;
-
 /** A plugin postprocessor that dumps parameter values to the log. */
-@ServiceProvider(service=PluginPostprocessor.class)
+@Postprocessor
 public class DebugPostprocessor implements PluginPostprocessor {
 
 	@Override

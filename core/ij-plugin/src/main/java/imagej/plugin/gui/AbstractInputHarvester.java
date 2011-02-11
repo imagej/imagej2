@@ -4,7 +4,7 @@ import imagej.Log;
 import imagej.dataset.Dataset;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginHandler;
-import imagej.plugin.spi.PluginPreprocessor;
+import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
 import java.io.File;

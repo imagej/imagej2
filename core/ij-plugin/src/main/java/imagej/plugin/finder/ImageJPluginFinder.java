@@ -1,16 +1,14 @@
-package imagej.plugin.api;
+package imagej.plugin.finder;
 
 import imagej.Log;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.spi.PluginFinder;
+import imagej.plugin.api.PluginEntry;
 
 import java.util.List;
 
-import org.openide.util.lookup.ServiceProvider;
-
-@ServiceProvider(service=PluginFinder.class)
+@PluginFinder
 public class ImageJPluginFinder extends SezpozPluginFinder<ImageJPlugin>
-	implements PluginFinder
+	implements IPluginFinder
 {
 
 	@Override

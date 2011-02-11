@@ -1,4 +1,4 @@
-package imagej.plugin;
+package imagej.plugin.finder;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,15 +9,5 @@ import net.java.sezpoz.Indexable;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=ImageJPlugin.class)
-public @interface Plugin {
-
-	String toolbarIcon() default "";
-
-	String menuPath() default "";
-
-	String menubar() default "main";
-
-	Menu[] menu() default {};
-
-}
+@Indexable(type=IPluginFinder.class)
+public @interface PluginFinder { }
