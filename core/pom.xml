@@ -20,12 +20,11 @@
 	<modules>
 		<module>ij-common</module>
 		<module>ij-core-plugins</module>
-		<module>ij-gui</module>
 		<module>ij-imglib</module>
 		<module>ij-legacy</module>
 		<module>ij-plugin</module>
 		<module>ij-plugin-gui-swing</module>
-		<!-- <module>imagej</module> -->
+		<module>imagej</module>
 	</modules>
 
 	<!-- NB: for imagej-base, in case of partial checkout -->

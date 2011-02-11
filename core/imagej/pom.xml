@@ -11,9 +11,9 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-gui</artifactId>
+	<artifactId>imagej</artifactId>
 
-	<name>ImageJ GUI</name>
+	<name>ImageJ 2.0</name>
 	<description>A simple Swing-based ImageJ user interface.</description>
 
 	<dependencies>
@@ -48,6 +48,19 @@
 			<groupId>loci</groupId>
 			<artifactId>bio-formats</artifactId>
 			<version>${bio-formats.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-core-plugins</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-legacy</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
