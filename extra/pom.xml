@@ -20,8 +20,7 @@
 	<modules>
 		<module>ij-visad</module>
 		<module>native-library-util</module>
-		<!-- <module>opencl</module> -->
-		<module>sandbox</module>
+		<!-- <module>sandbox</module> -->
 		<module>workflow</module>
 		<module>workflowpipes</module>
 	</modules>
