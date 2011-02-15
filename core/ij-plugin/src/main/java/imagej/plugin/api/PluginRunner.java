@@ -1,68 +1,63 @@
 package imagej.plugin.api;
 
 import imagej.Log;
-import imagej.plugin.IPlugin;
-import imagej.plugin.PluginHandler;
+import imagej.plugin.PluginModule;
+import imagej.plugin.RunnablePlugin;
 import imagej.plugin.process.PluginPostprocessor;
 import imagej.plugin.process.PluginPreprocessor;
-import imagej.plugin.process.Postprocessor;
-import imagej.plugin.process.Preprocessor;
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
-/** Executes an ImageJ plugin. */
-public class PluginRunner {
+/** Executes a runnable plugin. */
+public class PluginRunner<T extends RunnablePlugin> {
 
-	private PluginEntry entry;
+	private PluginEntry<T> entry;
 
-	public PluginRunner(final PluginEntry entry) {
+	public PluginRunner(final PluginEntry<T> entry) {
 		this.entry = entry;
 	}
 
-	public IPlugin run() {
-		final PluginHandler handler;
+	public T run() {
+		final PluginModule<T> module;
 		try {
-			handler = entry.createPluginHandler();
+			module = entry.createModule();
 		}
-		catch (PluginException e) {
+		catch (final PluginException e) {
 			Log.error(e);
 			return null;
 		}
-		final IPlugin plugin = handler.getPlugin();
+		final T plugin = module.getPlugin();
 
 		// execute plugin
-		preProcess(handler);
+		preProcess(module);
 		plugin.run();
-		postProcess(handler);
+		postProcess(module);
 
 		return plugin;
 	}
 
-	public void preProcess(final PluginHandler pluginHandler) {
-		// use SezPoz to discover all plugin preprocessors
-		for (final IndexItem<Preprocessor, PluginPreprocessor> item :
-			Index.load(Preprocessor.class, PluginPreprocessor.class))
+	public void preProcess(final PluginModule<T> module) {
+		for (final PluginEntry<PluginPreprocessor> p :
+			PluginIndex.getIndex().getPlugins(PluginPreprocessor.class))
 		{
+			Log.debug("Preprocessing: " + p);//TEMP
 			try {
-				final PluginPreprocessor processor = item.instance();
-				processor.process(pluginHandler);
+				final PluginPreprocessor processor = p.createInstance();
+				processor.process(module);
 			}
-			catch (InstantiationException e) {
+			catch (final PluginException e) {
 				Log.error(e);
 			}
 		}
 	}
 
-	public void postProcess(final PluginHandler pluginHandler) {
-		// use SezPoz to discover all plugin postprocessors
-		for (final IndexItem<Postprocessor, PluginPostprocessor> item :
-			Index.load(Postprocessor.class, PluginPostprocessor.class))
+	public void postProcess(final PluginModule<T> module) {
+		for (final PluginEntry<PluginPostprocessor> p :
+			PluginIndex.getIndex().getPlugins(PluginPostprocessor.class))
 		{
 			try {
-				final PluginPostprocessor processor = item.instance();
-				processor.process(pluginHandler);
+				final PluginPostprocessor processor = p.createInstance();
+				processor.process(module);			
 			}
-			catch (InstantiationException e) {
+			catch (final PluginException e) {
 				Log.error(e);
 			}
 		}

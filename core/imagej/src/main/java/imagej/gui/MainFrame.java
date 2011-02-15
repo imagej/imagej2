@@ -4,10 +4,10 @@
 
 package imagej.gui;
 
-import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.swing.JMenuBarCreator;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.swing.JMenuBarCreator;
 
 import java.awt.BorderLayout;
 import java.util.List;
@@ -48,7 +48,7 @@ public class MainFrame {
 	}
 
 	private void createMenuBar(JFrame frame) {
-		final List<PluginEntry> entries = PluginUtils.findPlugins();
+		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
 		statusBar.setText("Discovered " + entries.size() + " plugins");
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final JMenuBar menuBar = new JMenuBar();

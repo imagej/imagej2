@@ -7,6 +7,6 @@ import java.util.List;
 public interface IPluginFinder {
 
 	/** Discovers plugins, appending them to the given list. */
-	void findPlugins(List<PluginEntry> plugins);
+	void findPlugins(List<PluginEntry<?>> plugins);
 
 }

@@ -5,7 +5,6 @@ import imagej.MetaData;
 import imagej.dataset.Dataset;
 import imagej.imglib.dataset.ImgLibDataset;
 import imagej.imglib.dataset.LegacyImgLibDataset;
-import imagej.plugin.IPlugin;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;

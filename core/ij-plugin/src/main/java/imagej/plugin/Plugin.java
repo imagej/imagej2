@@ -9,15 +9,21 @@ import net.java.sezpoz.Indexable;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=ImageJPlugin.class)
+@Indexable(type=BasePlugin.class)
 public @interface Plugin {
 
-	String toolbarIcon() default "";
+	Class<?> type() default ImageJPlugin.class;
+
+	String name() default "";
+
+	String label() default "";
+
+	String description() default "";
 
 	String menuPath() default "";
 
-	String menubar() default "main";
-
 	Menu[] menu() default {};
+
+	String iconPath() default "";
 
 }

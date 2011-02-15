@@ -1,6 +1,7 @@
 package imagej.plugin.gui.swing;
 
 import imagej.Log;
+import imagej.plugin.RunnablePlugin;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
@@ -95,11 +96,16 @@ public abstract class SwingMenuCreator {
 		}
 	}
 
-	private void linkAction(final PluginEntry entry, final JMenuItem menuItem) {
+	private <T extends RunnablePlugin> void linkAction(final PluginEntry<?> entry,
+		final JMenuItem menuItem)
+	{
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PluginUtils.runPlugin(entry);
+				// TODO - find better solution for typing here
+				@SuppressWarnings("unchecked")
+				final PluginEntry<T> runnableEntry = (PluginEntry<T>) entry;
+				PluginUtils.runPlugin(runnableEntry);
 			}
 		});
 	}

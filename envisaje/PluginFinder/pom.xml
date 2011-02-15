@@ -28,6 +28,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${imagej.groupId}</groupId>
+			<artifactId>ij-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imagej.groupId}</groupId>
+			<artifactId>ij-plugin-gui-swing</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.netbeans.api</groupId>
 			<artifactId>org-openide-dialogs</artifactId>
 			<version>${netbeans.version}</version>

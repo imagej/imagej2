@@ -1,49 +1,92 @@
 package imagej.plugin.api;
 
-import imagej.plugin.IPlugin;
-import imagej.plugin.PluginHandler;
+import imagej.plugin.BasePlugin;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.PluginModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PluginEntry {
+public class PluginEntry<T extends BasePlugin> {
 
-	private String pluginClass;
+	/** Fully qualified class name of this entry's plugin. */
+	private String pluginClassName;
+
+	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
+	private Class<T> pluginType;
+
+	/** Unique name of the plugin. */
+	private String name;
+
+	/** Human-readable label for describing the plugin. */
+	private String label;
+
+	/** String describing the plugin in detail. */
+	private String description;
+
+	/** Path to this plugin's suggested position in the menu structure. */
 	private List<MenuEntry> menuPath;
+
+	/** Resource path to this plugin's icon. */
+	private String iconPath;
+
+	/** List of inputs with fixed, preset values. */
 	private Map<String, Object> presets;
-	private PluginHandlerFactory factory;
 
-	public PluginEntry(final String pluginClass) {
-		this(pluginClass, null, null);
+	/** Factory used to create a module associated with this entry's plugin. */
+	private PluginModuleFactory<T> factory;
+
+	/** Class object for this entry's plugin. Lazily loaded. */
+	private Class<?> pluginClass;
+
+	public PluginEntry(final String pluginClassName, final Class<T> pluginType) {
+		setPluginClassName(pluginClassName);
+		setPluginType(pluginType);
+		setMenuPath(null);
+		setPresets(null);
+		setPluginModuleFactory(null);
 	}
 
-	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath) {
-		this(pluginClass, menuPath, null);
+	public void setPluginClassName(final String pluginClassName) {
+		this.pluginClassName = pluginClassName;
 	}
 
-	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
-		final Map<String, Object> presets)
-	{
-		this(pluginClass, menuPath, presets, null);
+	public String getPluginClassName() {
+		return pluginClassName;
 	}
 
-	public PluginEntry(final String pluginClass, final List<MenuEntry> menuPath,
-			final Map<String, Object> presets, final PluginHandlerFactory factory)
-	{
-		setPluginClass(pluginClass);
-		setMenuPath(menuPath);
-		setPresets(presets);
-		setPluginHandlerFactory(factory);
+	public void setPluginType(Class<T> pluginType) {
+		this.pluginType = pluginType;
+	}
+	
+	public Class<T> getPluginType() {
+		return pluginType;
 	}
 
-	public void setPluginClass(final String pluginClass) {
-		this.pluginClass = pluginClass;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
-	public String getPluginClass() {
-		return pluginClass;
+	public String getName() {
+		return name;
+	}
+
+	public void setLabel(final String label) {
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setDescription(final String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public void setMenuPath(final List<MenuEntry> menuPath) {
@@ -59,6 +102,14 @@ public class PluginEntry {
 		return menuPath;
 	}
 
+	public void setIconPath(final String iconPath) {
+		this.iconPath = iconPath;
+	}
+
+	public String getIconPath() {
+		return iconPath;
+	}
+
 	public void setPresets(final Map<String, Object> presets) {
 		if (presets == null) {
 			this.presets = new HashMap<String, Object>();
@@ -72,37 +123,48 @@ public class PluginEntry {
 		return presets;
 	}
 
-	public void setPluginHandlerFactory(final PluginHandlerFactory factory) {
+	public void setPluginModuleFactory(final PluginModuleFactory<T> factory) {
 		if (factory == null) {
-			this.factory = new DefaultPluginHandlerFactory();
+			this.factory = new DefaultPluginModuleFactory<T>();
 		}
 		else {
 			this.factory = factory;
 		}
 	}
 
-	public PluginHandlerFactory getPluginHandlerFactory() {
+	public PluginModuleFactory<T> getPluginModuleFactory() {
 		return factory;
 	}
 
-	public PluginHandler createPluginHandler() throws PluginException {
-		return factory.createPluginHandler(this);
+	/**
+	 * Creates a module to work with this entry,
+	 * using the entry's associated {@link PluginModuleFactory}.
+	 */
+	public PluginModule<T> createModule() throws PluginException {
+		return factory.createModule(this);
 	}
 
-	public IPlugin createInstance()
-		throws PluginException
-	{
-		// get Class object for plugin entry
-		final Class<?> c;
-		try {
-			c = Class.forName(getPluginClass());
+	/** Gets the class object for this entry's plugin, loading it as needed. */
+	public Class<?> getPluginClass() throws PluginException {
+		if (pluginClass == null) {
+			final Class<?> c;
+			try {
+				c = Class.forName(pluginClassName);
+			}
+			catch (ClassNotFoundException e) {
+				throw new PluginException("Class not found: " + pluginClassName, e);
+			}
+			if (!pluginType.isAssignableFrom(c)) {
+				throw new PluginException("Not a plugin: " + pluginClassName);
+			}
+			pluginClass = c;
 		}
-		catch (ClassNotFoundException e) {
-			throw new PluginException(e);
-		}
-		if (!IPlugin.class.isAssignableFrom(c)) {
-			throw new PluginException("Not a plugin");
-		}
+		return pluginClass;
+	}
+
+	/** Creates an instance of this entry's associated plugin. */
+	public T createInstance() throws PluginException {
+		final Class<?> c = getPluginClass();
 	
 		// instantiate plugin
 		final Object pluginInstance;
@@ -115,18 +177,15 @@ public class PluginEntry {
 		catch (IllegalAccessException e) {
 			throw new PluginException(e);
 		}
-		if (!(pluginInstance instanceof IPlugin)) {
-			throw new PluginException("Not a plugin");
-		}
-		final IPlugin plugin = (IPlugin) pluginInstance;
-	
+		@SuppressWarnings("unchecked")
+		final T plugin = (T) pluginInstance;
 		return plugin;
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(pluginClass);
+		sb.append(pluginClassName);
 		sb.append(" [");
 		boolean firstField = true;
 
