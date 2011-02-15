@@ -13,7 +13,7 @@
 
 	<artifactId>ij2-common-old</artifactId>
 
-	<name>ImageJ 2.0 Common</name>
+	<name>Old: ImageJ 2.0 Common</name>
 	<description>Core classes and API for ImageJ.</description>
 
 	<dependencies>

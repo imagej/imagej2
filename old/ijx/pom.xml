@@ -13,7 +13,7 @@
 
 	<artifactId>ijx</artifactId>
 
-	<name>ImageJX</name>
+	<name>Old: ImageJX</name>
 	<description>Refactoring of ImageJ 1.x for separation of concerns.</description>
 
 	<dependencies>
