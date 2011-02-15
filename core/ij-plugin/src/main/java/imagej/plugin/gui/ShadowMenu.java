@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ShadowMenu implements Comparable<ShadowMenu> {
 
-	private PluginEntry pluginEntry;
+	private PluginEntry<?> pluginEntry;
 
 	private int menuDepth;
 
@@ -21,18 +21,18 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	}
 
 	/** Constructs a root menu node populated with the given plugin entries. */
-	public ShadowMenu(final List<PluginEntry> entries) {
+	public ShadowMenu(final List<PluginEntry<?>> entries) {
 		this();
-		for (final PluginEntry entry : entries) addEntry(entry);
+		for (final PluginEntry<?> entry : entries) addEntry(entry);
 	}
 
-	private ShadowMenu(final PluginEntry pluginEntry, final int menuDepth) {
+	private ShadowMenu(final PluginEntry<?> pluginEntry, final int menuDepth) {
 		this.pluginEntry = pluginEntry;
 		this.menuDepth = menuDepth;
 		children = new HashMap<String, ShadowMenu>();
 	}
 
-	public PluginEntry getPluginEntry() {
+	public PluginEntry<?> getPluginEntry() {
 		return pluginEntry;
 	}
 
@@ -48,7 +48,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return children.isEmpty();
 	}
 
-	public void addEntry(final PluginEntry entry) {
+	public void addEntry(final PluginEntry<?> entry) {
 		addChild(entry, 0);
 	}
 
@@ -74,7 +74,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return children.get(menuEntry.getName());
 	}
 
-	private void addChild(final PluginEntry entry, final int depth) {
+	private void addChild(final PluginEntry<?> entry, final int depth) {
 		// retrieve existing child
 		final MenuEntry menuEntry = entry.getMenuPath().get(depth);
 		final ShadowMenu existingChild = getChild(menuEntry);

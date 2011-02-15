@@ -4,6 +4,7 @@ import ij.ImageJ;
 import ij.Menus;
 import imagej.Log;
 import imagej.legacy.LegacyManager;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.finder.IPluginFinder;
@@ -31,7 +32,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		LegacyPlugin.class.getName();
 
 	@Override
-	public void findPlugins(List<PluginEntry> plugins) {
+	public void findPlugins(List<PluginEntry<?>> plugins) {
 		final ImageJ ij = LegacyManager.initialize();
 		assert ij != null;
 
@@ -46,10 +47,12 @@ public class LegacyPluginFinder implements IPluginFinder {
 			final Map<String, Object> presets = new HashMap<String, Object>();
 			presets.put("className", className);
 			presets.put("arg", arg);
-			final PluginEntry pluginEntry =
-				new PluginEntry(LEGACY_PLUGIN_CLASS, menuPath, presets);
-			plugins.add(pluginEntry);
-			Log.debug("Found legacy plugin: " + pluginEntry);
+			final PluginEntry<ImageJPlugin> pe =
+				new PluginEntry<ImageJPlugin>(LEGACY_PLUGIN_CLASS, ImageJPlugin.class);
+			pe.setMenuPath(menuPath);
+			pe.setPresets(presets);
+			plugins.add(pe);
+			Log.debug("Found legacy plugin: " + pe);
 		}
 	}
 

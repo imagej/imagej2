@@ -1,7 +1,7 @@
 package imagej.plugin.api;
 
 import imagej.Log;
-import imagej.plugin.IPlugin;
+import imagej.plugin.RunnablePlugin;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 
@@ -18,9 +18,9 @@ public final class PluginUtils {
 		// prohibit instantiation of utility class
 	}
 
-	public static List<PluginEntry> findPlugins() {
+	public static List<PluginEntry<?>> findPlugins() {
 		// use SezPoz to discover all plugin finders
-		final List<PluginEntry> plugins = new ArrayList<PluginEntry>();
+		final List<PluginEntry<?>> plugins = new ArrayList<PluginEntry<?>>();
 		for (final IndexItem<PluginFinder, IPluginFinder> item :
 			Index.load(PluginFinder.class, IPluginFinder.class))
 		{
@@ -35,8 +35,8 @@ public final class PluginUtils {
 		return plugins;
 	}
 
-	public static IPlugin runPlugin(PluginEntry entry) {
-		return new PluginRunner(entry).run();
+	public static <T extends RunnablePlugin> T runPlugin(PluginEntry<T> entry) {
+		return new PluginRunner<T>(entry).run();
 	}
 
 }

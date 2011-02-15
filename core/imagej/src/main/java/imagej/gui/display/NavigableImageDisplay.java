@@ -2,21 +2,18 @@ package imagej.gui.display;
 
 import imagej.dataset.Dataset;
 import imagej.gui.DisplayPlugin;
-import imagej.gui.IDisplayPlugin;
+import imagej.plugin.Plugin;
 
-@DisplayPlugin
-public class NavigableImageDisplay implements IDisplayPlugin {
-
-	private Dataset dataset;
+@Plugin(type = DisplayPlugin.class)
+public class NavigableImageDisplay implements DisplayPlugin {
 
 	@Override
-	public boolean canDisplay(Dataset d) {
-		dataset = d;
+	public boolean canDisplay(Dataset dataset) {
 		return true;
 	}
 
 	@Override
-	public void run() {
+	public void display(Dataset dataset) {
 		final NavigableImageFrame imageFrame = new NavigableImageFrame();
 		imageFrame.setDataset(dataset);
 		imageFrame.setVisible(true);

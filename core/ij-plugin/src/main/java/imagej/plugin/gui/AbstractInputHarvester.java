@@ -3,7 +3,7 @@ package imagej.plugin.gui;
 import imagej.Log;
 import imagej.dataset.Dataset;
 import imagej.plugin.Parameter;
-import imagej.plugin.PluginHandler;
+import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
@@ -20,29 +20,33 @@ public abstract class AbstractInputHarvester
 	implements PluginPreprocessor, InputHarvester
 {
 
+	// -- PluginPreprocessor methods --
+
 	@Override
-	public void process(PluginHandler pluginHandler) {
-		final Iterable<Field> inputs = pluginHandler.getInputFields();
+	public void process(final PluginModule<?> module) {
+		final Iterable<Field> inputs = module.getInfo().getInputFields();
 		if (!inputs.iterator().hasNext()) return; // no inputs to harvest
 
 		final InputPanel inputPanel = createInputPanel();
-		buildPanel(inputPanel, pluginHandler);
-		final boolean ok = showDialog(inputPanel, pluginHandler);
+		buildPanel(inputPanel, module);
+		final boolean ok = showDialog(inputPanel, module);
 		if (!ok) return;
-		harvestResults(inputPanel, pluginHandler);
+		harvestResults(inputPanel, module);
 	}
+
+	// -- InputHarvester methods --
 
 	@Override
 	public abstract InputPanel createInputPanel();
 
 	@Override
-	public void buildPanel(InputPanel inputPanel, PluginHandler pluginHandler) {
-		final Iterable<Field> inputs = pluginHandler.getInputFields();
+	public void buildPanel(InputPanel inputPanel, PluginModule<?> module) {
+		final Iterable<Field> inputs = module.getInfo().getInputFields();
 
 		for (final Field field : inputs) {
 			final String name = field.getName();
 			final Class<?> type = field.getType();
-			final Parameter param = pluginHandler.get(field);
+			final Parameter param = module.getInfo().getParameter(field);
 
 			final String label = makeLabel(name, param.label());
 			final boolean required = param.required();
@@ -53,7 +57,7 @@ public abstract class AbstractInputHarvester
 				// TODO - retrieve initial value from persistent storage
 			}
 			else if (!required) {
-				value = pluginHandler.getValue(field);
+				value = module.getValue(field);
 			}
 
 			if (ClassUtils.isNumber(type)) {
@@ -97,19 +101,17 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public abstract boolean showDialog(InputPanel inputPanel,
-		PluginHandler pluginHandler);
+		PluginModule<?> module);
 
 	@Override
-	public void harvestResults(InputPanel inputPanel,
-		PluginHandler pluginHandler)
-	{
+	public void harvestResults(InputPanel inputPanel, PluginModule<?> module) {
 		// TODO: harvest inputPanel values and assign to plugin input parameters
-		final Iterable<Field> inputs = pluginHandler.getInputFields();
+		final Iterable<Field> inputs = module.getInfo().getInputFields();
 
 		for (final Field field : inputs) {
 			final String name = field.getName();
 			final Class<?> type = field.getType();
-			final Parameter param = pluginHandler.get(field);
+			final Parameter param = module.getInfo().getParameter(field);
 
 			final Object value;
 			if (ClassUtils.isNumber(type)) {
@@ -130,7 +132,7 @@ public abstract class AbstractInputHarvester
 				value = inputPanel.getDataset(name);
 			}
 			else value = null;
-			if (value != null) pluginHandler.setValue(name, value);
+			if (value != null) module.setInput(name, value);
 		}
 	}
 
