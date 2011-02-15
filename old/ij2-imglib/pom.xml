@@ -13,7 +13,7 @@
 
 	<artifactId>ij2-imglib-old</artifactId>
 
-	<name>ImageJ 2.0 ImgLib</name>
+	<name>Old: ImageJ 2.0 ImgLib</name>
 	<description>ImgLib implementation of ImageJ Dataset API.</description>
 
 	<dependencies>

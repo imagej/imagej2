@@ -13,7 +13,7 @@
 
 	<artifactId>ij1-bridge-old</artifactId>
 
-	<name>ImageJ 1.0 Bridge</name>
+	<name>Old: ImageJ 1.0 Bridge</name>
 	<description>The ImageJ bridge enables backward compatibility with ImageJ 1.x.</description>
 
 	<dependencies>

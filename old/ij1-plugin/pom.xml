@@ -13,7 +13,7 @@
 
 	<artifactId>ij1-plugin</artifactId>
 
-	<name>ImageJ 1.0 Declarative Plugins</name>
+	<name>Old: ImageJ 1.0 Declarative Plugins</name>
 	<description>Declarative plugin mechanism for ImageJh.</description>
 
 	<dependencies>
