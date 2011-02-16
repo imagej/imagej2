@@ -23,6 +23,11 @@ import javax.swing.KeyStroke;
 
 public abstract class SwingMenuCreator {
 
+	// TODO - create a GUI-agnostic menu tree adapter, so that the following
+	// logic can be written in a GUI-agnostic way. This will allow the menu
+	// sorting logic, etc., to function in a non-Swing-specific way.
+	// Test that it works by creating an AWT-based MenuBarCreator as well.
+
 	/**
 	 * Generates a list of menu items corresponding
 	 * to the child menu nodes, sorted by weight.
