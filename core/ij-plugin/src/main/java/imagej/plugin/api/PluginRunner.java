@@ -27,26 +27,28 @@ public class PluginRunner<T extends RunnablePlugin> {
 		final T plugin = module.getPlugin();
 
 		// execute plugin
-		preProcess(module);
+		boolean ok = preProcess(module);
+		if (!ok) return null; // execution canceled
 		plugin.run();
 		postProcess(module);
 
 		return plugin;
 	}
 
-	public void preProcess(final PluginModule<T> module) {
+	public boolean preProcess(final PluginModule<T> module) {
 		for (final PluginEntry<PluginPreprocessor> p :
 			PluginIndex.getIndex().getPlugins(PluginPreprocessor.class))
 		{
-			Log.debug("Preprocessing: " + p);//TEMP
 			try {
 				final PluginPreprocessor processor = p.createInstance();
 				processor.process(module);
+				if (processor.canceled()) return false;
 			}
 			catch (final PluginException e) {
 				Log.error(e);
 			}
 		}
+		return true;
 	}
 
 	public void postProcess(final PluginModule<T> module) {

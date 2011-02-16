@@ -20,6 +20,8 @@ public abstract class AbstractInputHarvester
 	implements PluginPreprocessor, InputHarvester
 {
 
+	private boolean canceled;
+
 	// -- PluginPreprocessor methods --
 
 	@Override
@@ -30,9 +32,12 @@ public abstract class AbstractInputHarvester
 		final InputPanel inputPanel = createInputPanel();
 		buildPanel(inputPanel, module);
 		final boolean ok = showDialog(inputPanel, module);
-		if (!ok) return;
-		harvestResults(inputPanel, module);
+		if (ok) harvestResults(inputPanel, module);
+		else canceled = true;
 	}
+
+	@Override
+	public boolean canceled() { return canceled; }
 
 	// -- InputHarvester methods --
 

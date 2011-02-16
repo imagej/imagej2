@@ -14,4 +14,7 @@ public class DebugPreprocessor implements PluginPreprocessor {
 		Log.debug("Executing plugin: " + module.getPlugin());
 	}
 
+	@Override
+	public boolean canceled() { return false; }
+
 }

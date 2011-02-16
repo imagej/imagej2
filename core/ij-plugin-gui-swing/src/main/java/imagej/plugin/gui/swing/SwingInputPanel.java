@@ -41,7 +41,6 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 		new HashMap<String, SwingFileSelector>();
 
 	public SwingInputPanel() {
-		setBorder(new EmptyBorder(15, 15, 15, 15));
 		// TODO - use a better layout manager
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); //TEMP
 	}
