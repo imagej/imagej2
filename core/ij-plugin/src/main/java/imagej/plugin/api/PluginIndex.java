@@ -17,24 +17,38 @@ public class PluginIndex {
 	/** SezPoz index of available {@link BasePlugin}s. */
 	private Index<Plugin, BasePlugin> pluginIndex;
 
+	/** ClassLoader to use when querying SezPoz. */
+	private ClassLoader classLoader;
+
 	/** Table of plugin lists, organized by plugin type. */
 	private HashMap<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
 		new HashMap<Class<?>, ArrayList<PluginEntry<?>>>();
 
-	private PluginIndex() {
-		// TODO - decide if singleton pattern is really best here
+	private PluginIndex(final ClassLoader classLoader) {
+		this.classLoader = classLoader;
 		reloadPlugins();
 	}
+
+	// TODO - decide if singleton pattern is really best here
 
 	private static PluginIndex instance;
 
 	public static PluginIndex getIndex() {
-		if (instance == null) instance = new PluginIndex();
+		return getIndex(null);
+	}
+
+	public static PluginIndex getIndex(ClassLoader classLoader) {
+		if (instance == null) instance = new PluginIndex(classLoader);
 		return instance;
 	}
 
 	public void reloadPlugins() {
-		pluginIndex = Index.load(Plugin.class, BasePlugin.class);
+		if (classLoader == null) {
+			pluginIndex = Index.load(Plugin.class, BasePlugin.class);
+		}
+		else {
+			pluginIndex = Index.load(Plugin.class, BasePlugin.class, classLoader);
+		}
 
 		// classify plugins into types
 		pluginLists.clear();
