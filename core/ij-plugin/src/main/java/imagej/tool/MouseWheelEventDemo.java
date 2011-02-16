@@ -31,9 +31,9 @@ public class MouseWheelEventDemo {
         JFrame frame = new JFrame();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ProbeTool probeTool = new ProbeTool();
-        probeTool.setJFrame( frame );
-        ToolHandler toolHandler = new ToolHandler( frame, probeTool );
+        //ProbeTool probeTool = new ProbeTool();
+        //probeTool.setJFrame( frame );
+        //ToolHandler toolHandler = new ToolHandler( frame, probeTool );
        
         //Display the window.
         frame.pack();
