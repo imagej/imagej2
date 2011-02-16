@@ -77,6 +77,21 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<configuration>
+					<programs>
+						<program>
+							<mainClass>imagej.gui.MainFrame</mainClass>
+							<name>imagej</name>
+						</program>
+					</programs>
+					<extraJvmArguments>-mx512m</extraJvmArguments>
+					<repositoryLayout>flat</repositoryLayout>
+					<repositoryName>lib</repositoryName>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
