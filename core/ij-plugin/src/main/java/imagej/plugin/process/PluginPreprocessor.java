@@ -1,6 +1,10 @@
 package imagej.plugin.process;
 
 public interface PluginPreprocessor extends PluginProcessor {
-	// PluginPreprocessor trivially extends IPluginProcessor to differentiate
-	// preprocessors from postprocessors while sharing the same contract.
+
+	// PluginPreprocessor is a plugin that extends PluginProcessor,
+	// discoverable via the plugin discovery mechanism.
+
+	boolean canceled();
+
 }
