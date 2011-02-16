@@ -66,6 +66,4 @@ public class ProbeTool implements ITool {
     {
          jFrame.setTitle( "Mouse up " + x + " " + y + " " + shift );
     }
-
-
 }
