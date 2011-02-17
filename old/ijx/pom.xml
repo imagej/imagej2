@@ -18,6 +18,21 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib-ij</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib-io</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij</artifactId>
 			<version>${imagej1.version}</version>
@@ -56,21 +71,6 @@
 			<groupId>loci</groupId>
 			<artifactId>bio-formats</artifactId>
 			<version>${bio-formats.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib-ij</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>

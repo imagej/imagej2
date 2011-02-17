@@ -18,6 +18,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij</artifactId>
 			<version>${imagej1.version}</version>
@@ -36,11 +41,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij1-bridge-old</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>
