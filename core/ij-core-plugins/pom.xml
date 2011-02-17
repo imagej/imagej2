@@ -18,6 +18,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib-io</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-common</artifactId>
 			<version>${project.version}</version>
@@ -36,16 +46,6 @@
 			<groupId>loci</groupId>
 			<artifactId>bio-formats</artifactId>
 			<version>${bio-formats.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
 		</dependency>
 	</dependencies>
 

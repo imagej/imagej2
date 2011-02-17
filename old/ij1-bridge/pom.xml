@@ -18,6 +18,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>_ij1-patches</artifactId>
 			<version>${project.version}</version>
@@ -46,11 +51,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij2-imglib-old</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
 		</dependency>
 	</dependencies>
 
