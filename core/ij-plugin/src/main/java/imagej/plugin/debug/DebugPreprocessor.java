@@ -6,7 +6,7 @@ import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPreprocessor;
 
 /** A plugin preprocessor that dumps information to the log. */
-@Plugin(type = PluginPreprocessor.class)
+@Plugin(type = PluginPreprocessor.class, priority = 0)
 public class DebugPreprocessor implements PluginPreprocessor {
 
 	@Override
