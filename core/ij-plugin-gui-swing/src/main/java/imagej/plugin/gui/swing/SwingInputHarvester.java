@@ -23,7 +23,9 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean showDialog(InputPanel inputPanel, PluginModule<?> module) {
+	public boolean showDialog(final InputPanel inputPanel,
+		final PluginModule<?> module)
+	{
 		final JOptionPane optionPane = new JOptionPane(null);
 		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 		final JDialog dialog = optionPane.createDialog(module.getInfo().getLabel());
