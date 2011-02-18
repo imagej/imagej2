@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PluginEntry<T extends BasePlugin> {
+public class PluginEntry<T extends BasePlugin>
+	implements Comparable<PluginEntry<T>>
+{
 
 	/** Fully qualified class name of this entry's plugin. */
 	private String pluginClassName;
@@ -31,6 +33,9 @@ public class PluginEntry<T extends BasePlugin> {
 
 	/** Resource path to this plugin's icon. */
 	private String iconPath;
+
+	/** Sort priority of the plugin. */
+	private int priority = Integer.MAX_VALUE;
 
 	/** List of inputs with fixed, preset values. */
 	private Map<String, Object> presets;
@@ -110,6 +115,14 @@ public class PluginEntry<T extends BasePlugin> {
 		return iconPath;
 	}
 
+	public void setPriority(final int priority) {
+		this.priority = priority;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
 	public void setPresets(final Map<String, Object> presets) {
 		if (presets == null) {
 			this.presets = new HashMap<String, Object>();
@@ -183,11 +196,34 @@ public class PluginEntry<T extends BasePlugin> {
 	}
 
 	@Override
+	public int compareTo(PluginEntry<T> entry) {
+		return priority - entry.priority;
+	}
+
+	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(pluginClassName);
 		sb.append(" [");
 		boolean firstField = true;
+
+		if (name != null && !name.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("name = " + name);
+		}
+
+		if (label != null && !label.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("label = " + label);
+		}
+
+		if (description != null && !description.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("description = " + description);
+		}
 
 		if (!menuPath.isEmpty()) {
 			if (firstField) firstField = false;
@@ -199,7 +235,18 @@ public class PluginEntry<T extends BasePlugin> {
 				else sb.append(" > ");
 				sb.append(menu);
 			}
-			sb.append("]");
+		}
+
+		if (iconPath != null && !iconPath.isEmpty()) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("iconPath = " + iconPath);
+		}
+
+		if (priority < Integer.MAX_VALUE) {
+			if (firstField) firstField = false;
+			else sb.append("; ");
+			sb.append("priority = " + priority);
 		}
 
 		for (final String key : presets.keySet()) {
@@ -208,6 +255,8 @@ public class PluginEntry<T extends BasePlugin> {
 			else sb.append("; ");
 			sb.append(key + " = '" + value + "'");
 		}
+
+		sb.append("]");
 
 		return sb.toString();
 	}

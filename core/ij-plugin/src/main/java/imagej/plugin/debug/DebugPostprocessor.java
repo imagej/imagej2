@@ -8,7 +8,7 @@ import imagej.plugin.process.PluginPostprocessor;
 import java.util.Map;
 
 /** A plugin postprocessor that dumps parameter values to the log. */
-@Plugin(type = PluginPostprocessor.class)
+@Plugin(type = PluginPostprocessor.class, priority = 0)
 public class DebugPostprocessor implements PluginPostprocessor {
 
 	@Override

@@ -13,7 +13,7 @@ import net.java.sezpoz.Indexable;
 public @interface Plugin {
 
 	Class<?> type() default ImageJPlugin.class;
-
+	
 	String name() default "";
 
 	String label() default "";
@@ -25,5 +25,13 @@ public @interface Plugin {
 	Menu[] menu() default {};
 
 	String iconPath() default "";
+
+	/**
+	 * The plugin index returns plugins sorted by priority.
+	 *
+	 * This is useful for @{PluginPreprocessor}s, e.g., to
+	 * control the order of their execution.
+	 */
+	int priority() default Integer.MAX_VALUE;
 
 }

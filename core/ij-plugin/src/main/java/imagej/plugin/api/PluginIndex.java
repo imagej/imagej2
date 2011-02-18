@@ -5,6 +5,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,6 +58,11 @@ public class PluginIndex {
 			final Class<?> type = item.annotation().type();
 			registerType(entry, type);
 		}
+
+		// sort plugin lists by priority
+		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
+			Collections.sort(pluginList);
+		}
 	}
 
 	/** Gets a copy of the list of plugins labeled with the given type. */
@@ -83,9 +89,14 @@ public class PluginIndex {
 		final String pluginClassName = item.className();
 		@SuppressWarnings("unchecked")
 		final Class<T> pluginType = (Class<T>) item.annotation().type();
-		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
 
-		// parse menu path from annotations
+		final PluginEntry<T> pe = new PluginEntry<T>(pluginClassName, pluginType);
+
+		pe.setName(item.annotation().name());
+		pe.setLabel(item.annotation().label());
+		pe.setDescription(item.annotation().description());
+
+		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
 		final Menu[] menu = item.annotation().menu();
 		if (menu.length > 0) {
 			parseMenuPath(menuPath, menu);
@@ -95,9 +106,11 @@ public class PluginIndex {
 			final String path = item.annotation().menuPath();
 			parseMenuPath(menuPath, path);
 		}
-
-		final PluginEntry<T> pe = new PluginEntry<T>(pluginClassName, pluginType);
 		pe.setMenuPath(menuPath);
+
+		pe.setIconPath(item.annotation().iconPath());
+		pe.setPriority(item.annotation().priority());
+
 		return pe;
 	}
 
