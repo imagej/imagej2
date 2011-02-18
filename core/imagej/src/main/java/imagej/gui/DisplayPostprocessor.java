@@ -1,7 +1,7 @@
 package imagej.gui;
 
 import imagej.Log;
-import imagej.dataset.Dataset;
+import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.api.PluginEntry;

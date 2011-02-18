@@ -1,14 +1,11 @@
 package imagej.core;
 
-import imagej.AxisLabel;
-import imagej.MetaData;
-import imagej.dataset.Dataset;
-import imagej.dataset.DatasetFactory;
-import imagej.dataset.PlanarDatasetFactory;
+import imagej.model.AxisLabel;
+import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.types.UnsignedByteType;
+import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
 @Plugin(
   menuPath="Process>Gradient"
@@ -34,14 +31,11 @@ public class GradientImage implements ImageJPlugin {
 			}
 		}
 
-		final DatasetFactory datasetFactory = new PlanarDatasetFactory();
+		final String name = "Gradient Image";
 		final int[] dims = {width, height};
-		dataset = datasetFactory.createDataset(new UnsignedByteType(), dims);
-		dataset.setData(data);
-		final MetaData metadata = new MetaData();
-		metadata.setAxisLabels(new AxisLabel[] {AxisLabel.X, AxisLabel.Y});
-		metadata.setLabel("Gradient Image");
-		dataset.setMetaData(metadata);
+		final AxisLabel[] axes = {AxisLabel.X, AxisLabel.Y};
+		dataset = Dataset.create(name, new UnsignedByteType(), dims, axes);
+		dataset.setPlane(0, data);
   }
 
 }

@@ -20,7 +20,7 @@
 	<modules>
 		<module>ij-common</module>
 		<module>ij-core-plugins</module>
-		<module>ij-imglib</module>
+		<module>ij-data-model</module>
 		<module>ij-legacy</module>
 		<module>ij-plugin</module>
 		<module>ij-plugin-gui-swing</module>

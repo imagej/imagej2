@@ -1,6 +1,6 @@
 package imagej.legacy;
 
-import imagej.dataset.Dataset;
+import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;

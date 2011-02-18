@@ -1,7 +1,5 @@
 package imagej.plugin.gui;
 
-import imagej.dataset.Dataset;
-
 import java.io.File;
 
 /**
@@ -89,7 +87,7 @@ public interface InputPanel {
 	void addFile(String name, String label, File initialValue);
 
 	/**
-	 * Adds a dataset selector.
+	 * Adds an object selector.
 	 * 
 	 * @param name
 	 *          unique name identifying this field
@@ -98,7 +96,7 @@ public interface InputPanel {
 	 * @param initialValue
 	 *          the initially specified dataset
 	 */
-	void addDataset(String name, String label, Dataset initialValue);
+	void addObject(String name, String label, Object initialValue);
 
 	/**
 	 * Returns the contents of the given numeric field.
@@ -148,11 +146,12 @@ public interface InputPanel {
 	 */
 	File getFile(String name);
 
-	/** Returns the value of the given dataset selector.
+	/**
+	 * Returns the value of the given object selector.
 	 * 
 	 * @param name
 	 *          unique name identifying this field
 	 */
-	Dataset getDataset(String name);
+	Object getObject(String name);
 
 }

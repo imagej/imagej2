@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-	http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-old</artifactId>
+		<artifactId>imagej-core</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij1-plugin</artifactId>
+	<artifactId>ij-data-model</artifactId>
 
-	<name>Old: ImageJ 1.0 Declarative Plugins</name>
-	<description>Declarative plugin mechanism for ImageJh.</description>
+	<name>ImageJ Data Model</name>
+	<description>ImageJ core data model, based on ImgLib.</description>
 
 	<dependencies>
 		<dependency>
@@ -24,28 +24,8 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij</artifactId>
-			<version>${imagej1.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-common</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij1-bridge-old</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij2-common-old</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>1.7</version>
 		</dependency>
 	</dependencies>
 
@@ -56,8 +36,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>imagej.legacy.plugin.Example_Plugin</mainClass>
-							<packageName>imagej.legacy.plugin</packageName>
+							<packageName>imagej.imglib</packageName>
 						</manifest>
 					</archive>
 				</configuration>
@@ -65,7 +44,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-old, in case of partial checkout -->
+	<!-- NB: for imagej-core, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
