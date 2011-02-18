@@ -10,22 +10,24 @@ import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.swing.JMenuBarCreator;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 /** A simple and dumb Swing-based main window for ImageJ2. */
 public class MainFrame {
 
-	private JPanel mainPanel;
+	private JToolBar toolBar;
 	private StatusBar statusBar;
 
 	/** Creates a new ImageJ frame that runs as an application. */
 	public MainFrame() {
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		final JFrame frame = new JFrame("ImageJ");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		createContentPane(frame);
@@ -39,9 +41,9 @@ public class MainFrame {
 		frame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
 
-		mainPanel = new JPanel();
-		mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		pane.add(mainPanel, BorderLayout.CENTER);
+		toolBar = new JToolBar();
+		toolBar.setPreferredSize(new Dimension(26 * 21, 26));//TEMP
+		pane.add(toolBar, BorderLayout.NORTH);
 
 		statusBar = new StatusBar();
 		pane.add(statusBar, BorderLayout.SOUTH);
