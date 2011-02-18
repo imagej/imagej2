@@ -5,11 +5,10 @@ import imagej.module.ModuleItem;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginException;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link ModuleInfo} class for querying metadata of a {@link BasePlugin}.
@@ -26,48 +25,37 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	/** Class object of this plugin. */
 	private final Class<?> pluginClass;
 
-	/** Creates module info for the given plugin entry. 
-	 * @throws PluginException */
+	private final Map<String, ModuleItem> inputs =
+		new HashMap<String, ModuleItem>();
+
+	private final Map<String, ModuleItem> outputs =
+		new HashMap<String, ModuleItem>();
+
+	/** Creates module info for the given plugin entry. */
 	public PluginModuleInfo(final PluginEntry<T> pluginEntry)
+		throws PluginException
+	{
+		this(pluginEntry, null);
+	}
+
+	/**
+	 * Creates module info for the given plugin entry, using
+	 * the given instance to access and assign parameter values.
+	 *
+	 * This constructor is used by {@link PluginModule} to ensure that
+	 * the {@link PluginModuleItem}s report the correct default values,
+	 * and that the {@link PluginEntry}'s presets are assigned correctly.
+	 */
+	PluginModuleInfo(final PluginEntry<T> pluginEntry, final T plugin)
 		throws PluginException
 	{
 		this.pluginEntry = pluginEntry;
 		pluginClass = pluginEntry.getPluginClass();
+		checkFields(pluginClass, plugin, true);
 	}
 
 	public PluginEntry<T> getPluginEntry() {
 		return pluginEntry;
-	}
-
-	public Field getField(final String name) {
-		try {
-			final Field field = pluginClass.getDeclaredField(name);
-			field.setAccessible(true); // expose non-public fields
-			return field;
-		}
-		catch (SecurityException e) {
-			throw new IllegalArgumentException("Cannot access field: " + name, e);
-		}
-		catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("No such field: " + name, e);
-		}
-	}
-
-	public Iterable<Field> getFields() {
-		return getFields(PluginModuleInfo.ALL);
-	}
-
-	public Iterable<Field> getInputFields() {
-		return getFields(inputFilter(pluginEntry.getPresets().keySet()));
-	}
-
-	public Iterable<Field> getOutputFields() {
-		return getFields(PluginModuleInfo.OUTPUTS);
-	}
-
-	@Deprecated
-	public Parameter getParameter(final Field field) {
-		return field.getAnnotation(Parameter.class);
 	}
 
 	// -- ModuleInfo methods --
@@ -88,117 +76,67 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	}
 
 	@Override
+	public PluginModuleItem getInput(final String name) {
+		return (PluginModuleItem) inputs.get(name);
+	}
+
+	@Override
+	public PluginModuleItem getOutput(final String name) {
+		return (PluginModuleItem) outputs.get(name);
+	}
+
+	@Override
 	public Iterable<ModuleItem> inputs() {
-		// TODO - avoid recomputing this list with every call?
-		final ArrayList<ModuleItem> inputs = new ArrayList<ModuleItem>();
-		for (final Field f: getInputFields()) {
-			final ModuleItem item = new PluginModuleItem(f);
-			inputs.add(item);
-		}
-		return inputs;
+		return inputs.values();
 	}
 
 	@Override
 	public Iterable<ModuleItem> outputs() {
-		// TODO - avoid recomputing this list with every call?
-		final ArrayList<ModuleItem> outputs = new ArrayList<ModuleItem>();
-		for (final Field f: getOutputFields()) {
-			final ModuleItem item = new PluginModuleItem(f);
-			outputs.add(item);
-		}
-		return outputs;
+		return outputs.values();
 	}
 
 	// -- Helper methods --
 
-	private Iterable<Field> getFields(final ParameterFilter filter) {
-		final Field[] fields = pluginClass.getDeclaredFields();
-		return new ParameterIterable(fields, filter);
-	}
+	/**
+	 * Recursively parses the given class's declared fields for
+	 * {@link Parameter} annotations.
+	 *
+	 * This method (rather than {@link Class#getFields()}) is used to check all
+	 * fields of the given type and ancestor types, including non-public fields.
+	 */
+	private void checkFields(final Class<?> type, final T plugin,
+		final boolean includePrivateFields)
+	{
+		if (type == null) return;
 
-	// -- Parameter filtering --
+		final Map<String, Object> presets = pluginEntry.getPresets();
 
-	private interface ParameterFilter {
-		public boolean matches(Field field, Parameter parameter);
-	}
+		for (final Field f : type.getDeclaredFields()) {
+			final boolean isPrivate = Modifier.isPrivate(f.getModifiers());
+			if (isPrivate && !includePrivateFields) continue;
+			f.setAccessible(true); // expose private fields
 
-	private static final ParameterFilter ALL = new ParameterFilter() {
-		@Override
-		public boolean matches(Field field, Parameter parameter) {
-			return true;
-		}
-	};
+			final Parameter param = f.getAnnotation(Parameter.class);
+			if (param == null) continue; // not a parameter
 
-	private static final ParameterFilter OUTPUTS = new ParameterFilter() {
-		@Override
-		public boolean matches(Field field, Parameter parameter) {
-			return parameter.output();
-		}
-	};
-
-	private static ParameterFilter inputFilter(final Set<String> excluded) {
-		return new ParameterFilter() {
-			@Override
-			public boolean matches(Field field, Parameter parameter) {
-				return !parameter.output() && !excluded.contains(field.getName());
+			final String name = f.getName();
+			if (presets.containsKey(name)) {
+				// assign preset value to field, and exclude from the list of inputs
+				PluginModule.setValue(f, plugin, presets.get(name));
 			}
-		};
-	}
-
-	// -- Parameter iteration --
-
-	private static class ParameterIterable implements Iterable<Field> {
-		private Field[] fields;
-		private ParameterFilter filter;
-
-		ParameterIterable(final Field[] fields, final ParameterFilter filter) {
-			this.fields = fields;
-			this.filter = filter;
-			AccessibleObject.setAccessible(fields, true); // expose non-public fields
-		}
-
-		@Override
-		public Iterator<Field> iterator() {
-			return new ParameterIterator(fields, filter);
-		}
-	}
-
-	private static class ParameterIterator implements Iterator<Field> {
-		private int counter;
-		private Field[] fields;
-		private ParameterFilter filter;
-
-		ParameterIterator(Field[] fields, ParameterFilter filter) {
-			this.fields = fields;
-
-			this.filter = filter;
-			counter = -1;
-			findNext();
-		}
-
-		private void findNext() {
-			while (++counter < fields.length) {
-				Parameter parameter = fields[counter].getAnnotation(Parameter.class);
-				if (parameter == null) continue;
-				if (filter.matches(fields[counter], parameter)) return;
+			else {
+				// add item to the relevant list (inputs or outputs)
+				final Object defaultValue = PluginModule.getValue(f, plugin);
+				final ModuleItem item = new PluginModuleItem(f, defaultValue);
+				if (param.output()) outputs.put(name, item);
+				else inputs.put(name, item);
 			}
 		}
 
-		@Override
-		public boolean hasNext() {
-			return counter < fields.length;
-		}
-
-		@Override
-		public Field next() {
-			Field result = fields[counter];
-			findNext();
-			return result;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
+		// check super-types for annotated fields as well
+		checkFields(type.getSuperclass(), plugin, false);
+		for (final Class<?> c : type.getInterfaces()) {
+			checkFields(c, plugin, false);
 		}
 	}
 
