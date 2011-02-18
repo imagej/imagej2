@@ -2,8 +2,10 @@ package imagej.plugin.gui;
 
 import imagej.Log;
 import imagej.dataset.Dataset;
+import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
+import imagej.plugin.PluginModuleItem;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
@@ -26,7 +28,7 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public void process(final PluginModule<?> module) {
-		final Iterable<Field> inputs = module.getInfo().getInputFields();
+		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 		if (!inputs.iterator().hasNext()) return; // no inputs to harvest
 
 		final InputPanel inputPanel = createInputPanel();
@@ -46,12 +48,12 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public void buildPanel(InputPanel inputPanel, PluginModule<?> module) {
-		final Iterable<Field> inputs = module.getInfo().getInputFields();
+		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
-		for (final Field field : inputs) {
-			final String name = field.getName();
-			final Class<?> type = field.getType();
-			final Parameter param = module.getInfo().getParameter(field);
+		for (final ModuleItem item : inputs) {
+			final String name = item.getName();
+			final Class<?> type = item.getType();
+			final Parameter param = ((PluginModuleItem) item).getParameter();
 
 			final String label = makeLabel(name, param.label());
 			final boolean required = param.required();
@@ -62,7 +64,7 @@ public abstract class AbstractInputHarvester
 				// TODO - retrieve initial value from persistent storage
 			}
 			else if (!required) {
-				value = module.getValue(field);
+				value = module.getInput(name);
 			}
 
 			if (ClassUtils.isNumber(type)) {
@@ -110,13 +112,12 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public void harvestResults(InputPanel inputPanel, PluginModule<?> module) {
-		// TODO: harvest inputPanel values and assign to plugin input parameters
-		final Iterable<Field> inputs = module.getInfo().getInputFields();
+		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
-		for (final Field field : inputs) {
-			final String name = field.getName();
-			final Class<?> type = field.getType();
-			final Parameter param = module.getInfo().getParameter(field);
+		for (final ModuleItem item : inputs) {
+			final String name = item.getName();
+			final Class<?> type = item.getType();
+			final Parameter param = ((PluginModuleItem) item).getParameter();
 
 			final Object value;
 			if (ClassUtils.isNumber(type)) {

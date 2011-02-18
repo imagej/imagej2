@@ -16,6 +16,12 @@ public interface ModuleInfo {
 	/** Gets a string describing this module. */
 	String getDescription();
 
+	/** Gets the input item with the given name. */
+	ModuleItem getInput(String name);
+
+	/** Gets the output item with the given name. */
+	ModuleItem getOutput(String name);
+
 	/** Gets the list of input items. */
 	Iterable<ModuleItem> inputs();
 
