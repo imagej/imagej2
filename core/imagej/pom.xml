@@ -18,8 +18,18 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib.groupId}</groupId>
+			<artifactId>imglib</artifactId>
+			<version>${imglib.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-data-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

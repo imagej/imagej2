@@ -1,6 +1,5 @@
 package imagej.plugin.gui.swing;
 
-import imagej.dataset.Dataset;
 import imagej.plugin.gui.InputPanel;
 
 import java.io.File;
@@ -17,6 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
+
 
 public class SwingInputPanel extends JPanel implements InputPanel {
 
@@ -98,8 +98,8 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	}
 
 	@Override
-	public void addDataset(String name, String label, Dataset initialValue) {
-		// TODO create DatasetSelector widget and add here
+	public void addObject(String name, String label, Object initialValue) {
+		// TODO create ObjectSelector widget and add here
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	}
 	
 	@Override
-	public Dataset getDataset(String name) {
+	public Object getObject(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}

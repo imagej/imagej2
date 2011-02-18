@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-imglib</artifactId>
+			<artifactId>ij-data-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

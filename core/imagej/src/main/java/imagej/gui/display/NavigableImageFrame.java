@@ -4,8 +4,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import imagej.AxisLabel;
-import imagej.dataset.Dataset;
+import imagej.model.AxisLabel;
+import imagej.model.Dataset;
+import imagej.process.Index;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -26,6 +27,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import loci.formats.gui.AWTImageTools;
+import mpicbg.imglib.image.Image;
 
 /**
  *
@@ -71,9 +73,10 @@ public class NavigableImageFrame extends JFrame {
 
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
-		dims = dataset.getDimensions();
-		dimLabels = dataset.getMetaData().getAxisLabels();
-		setTitle(dataset.getMetaData().getLabel());
+		final Image<?> image = dataset.getImage();
+		dims = image.getDimensions();
+		dimLabels = dataset.getMetadata().getAxes();
+		setTitle(dataset.getMetadata().getName());
 
 		// extract width and height
 		xIndex = yIndex = -1;
@@ -107,25 +110,26 @@ public class NavigableImageFrame extends JFrame {
 			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		sb.append(dataset.getType());
+		sb.append(image.getType());
 		imageLabel.setText(sb.toString());
 	}
 
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final Object plane = pos.length == 0 ? dataset.getData() :
-			dataset.getSubset(pos).getData();
+		final int[] dims = dataset.getImage().getDimensions();
+		final int no = Index.positionToRaster(dims, pos);
+		final Object plane = dataset.getPlane(no);
 		if (plane instanceof byte[]) {
 			return AWTImageTools.makeImage((byte[]) plane,
-				dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());
+				dims[xIndex], dims[yIndex], dataset.isSigned());
 		}
 		else if (plane instanceof short[]) {
 			return AWTImageTools.makeImage((short[]) plane,
-					dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());			
+					dims[xIndex], dims[yIndex], dataset.isSigned());			
 		}
 		else if (plane instanceof int[]) {
 			return AWTImageTools.makeImage((int[]) plane,
-					dims[xIndex], dims[yIndex], !dataset.getType().isUnsigned());			
+					dims[xIndex], dims[yIndex], dataset.isSigned());			
 		}
 		else if (plane instanceof float[]) {
 			return AWTImageTools.makeImage((float[]) plane,

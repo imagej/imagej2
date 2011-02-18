@@ -1,7 +1,5 @@
 package imagej.plugin.gui;
 
-import imagej.Log;
-import imagej.dataset.Dataset;
 import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
@@ -10,7 +8,6 @@ import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 /**
  * InputHarvester is a plugin preprocessor that obtains the input parameters.
@@ -96,12 +93,8 @@ public abstract class AbstractInputHarvester
 			else if (File.class.isAssignableFrom(type)) {
 				inputPanel.addFile(name, label, (File) value);
 			}
-			else if (Dataset.class.isAssignableFrom(type)) {
-				inputPanel.addDataset(name, label, (Dataset) value);
-			}
 			else {
-				// NB: unsupported field type
-				Log.warn("Unsupported field type: " + type.getName());
+				inputPanel.addObject(name, label, value);
 			}
 		}
 	}
@@ -134,10 +127,9 @@ public abstract class AbstractInputHarvester
 			else if (File.class.isAssignableFrom(type)) {
 				value = inputPanel.getFile(name);
 			}
-			else if (Dataset.class.isAssignableFrom(type)) {
-				value = inputPanel.getDataset(name);
+			else {
+				value = inputPanel.getObject(name);
 			}
-			else value = null;
 			if (value != null) module.setInput(name, value);
 		}
 	}

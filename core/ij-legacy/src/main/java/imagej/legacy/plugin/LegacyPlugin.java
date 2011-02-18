@@ -1,7 +1,7 @@
 package imagej.legacy.plugin;
 
 import ij.IJ;
-import imagej.dataset.Dataset;
+import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 

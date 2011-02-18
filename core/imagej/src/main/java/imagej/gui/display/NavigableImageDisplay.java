@@ -1,7 +1,7 @@
 package imagej.gui.display;
 
-import imagej.dataset.Dataset;
 import imagej.gui.DisplayPlugin;
+import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
 @Plugin(type = DisplayPlugin.class)

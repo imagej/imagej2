@@ -3,10 +3,10 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.Log;
-import imagej.dataset.Dataset;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
 import imagej.legacy.plugin.LegacyPlugin;
+import imagej.model.Dataset;
 
 /** Overrides {@link ImageWindow} methods. */
 public final class ImageWindowMethods {

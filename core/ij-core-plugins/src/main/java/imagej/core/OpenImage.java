@@ -1,10 +1,8 @@
 package imagej.core;
 
 import imagej.Log;
-import imagej.MetaData;
-import imagej.dataset.Dataset;
-import imagej.imglib.dataset.ImgLibDataset;
-import imagej.imglib.dataset.LegacyImgLibDataset;
+import imagej.model.Dataset;
+import imagej.model.Metadata;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -41,10 +39,8 @@ public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 		final ImageOpener imageOpener = new ImageOpener();
 		try {
 			final Image<T> img = imageOpener.openImage(id);
-			dataset = new LegacyImgLibDataset(img);
-			// TEMP - populate required axis label metadata
-			final MetaData metadata = ImgLibDataset.createMetaData(img.getName());
-			dataset.setMetaData(metadata);
+			final Metadata metadata = Metadata.createMetadata(img.getName());
+			dataset = new Dataset(img, metadata);
 		}
 		catch (FormatException e) {
 			Log.error(e);

@@ -1,6 +1,6 @@
 package imagej.gui;
 
-import imagej.dataset.Dataset;
+import imagej.model.Dataset;
 import imagej.plugin.BasePlugin;
 
 public interface DisplayPlugin extends BasePlugin {
