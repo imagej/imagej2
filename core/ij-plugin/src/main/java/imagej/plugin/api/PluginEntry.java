@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PluginEntry<T extends BasePlugin>
-	implements Comparable<PluginEntry<T>>
+	implements Comparable<PluginEntry<?>>
 {
 
 	/** Fully qualified class name of this entry's plugin. */
@@ -196,7 +196,7 @@ public class PluginEntry<T extends BasePlugin>
 	}
 
 	@Override
-	public int compareTo(PluginEntry<T> entry) {
+	public int compareTo(final PluginEntry<?> entry) {
 		return priority - entry.priority;
 	}
 
