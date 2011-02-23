@@ -40,6 +40,8 @@ public class Dataset {
 		return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
 	}
 
+	@SuppressWarnings({"rawtypes","unchecked"})
+	
 	public void setPlane(final int no, final Object plane) {
 		final Container<?> container = image.getContainer();
 		if (!(container instanceof PlanarAccess)) return;
@@ -77,8 +79,8 @@ public class Dataset {
 	public boolean isFloat() {
 		// HACK - imglib needs a way to query RealTypes for integer vs. float
 		final String typeName = image.createType().getClass().getName();
-		return typeName.equals("mpicbg.imglib.type.numeric.integer.FloatType")
-			|| typeName.equals("mpicbg.imglib.type.numeric.integer.DoubleType");
+		return typeName.equals("mpicbg.imglib.type.numeric.real.FloatType")
+			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
 	}
 
 	public static <T extends RealType<T>> Dataset create(final String name,
