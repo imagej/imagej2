@@ -1,4 +1,4 @@
-package imagej.core;
+package imagej.core.plugins;
 
 import imagej.Log;
 import imagej.model.Dataset;

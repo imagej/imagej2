@@ -1,4 +1,4 @@
-package imagej.core;
+package imagej.core.plugins;
 
 import imagej.model.AxisLabel;
 import imagej.model.Dataset;
