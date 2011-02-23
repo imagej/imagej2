@@ -9,7 +9,6 @@ import java.util.WeakHashMap;
 
 public class LegacyImageMap {
 
-	// TODO - change Dataset to Img when imglib2 is ready
 	private Map<ImagePlus, Dataset> imageTable =
 		new WeakHashMap<ImagePlus, Dataset>();
 
