@@ -27,6 +27,10 @@ public final class LegacyManager {
 		overrideMethod("ij.gui.ImageWindow", "public void setVisible(boolean vis)");
 		overrideMethod("ij.gui.ImageWindow", "public void show()");
 		loadClass("ij.gui.ImageWindow");
+
+		// TODO - implement renameMethod or similar, for overriding updateAndDraw
+//		renameMethod("ij.ImagePlus", "public void updateAndDraw()");
+//		loadClass("ij.ImagePlus");
 	}
 
 	public static ImageJ initialize() {
