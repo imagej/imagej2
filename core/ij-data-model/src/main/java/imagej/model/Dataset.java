@@ -50,20 +50,20 @@ public class Dataset {
 		if (plane instanceof byte[]) {
 			array = new ByteArray((byte[]) plane);
 		}
-		else if (plane instanceof double[] ) {
-			array = new DoubleArray((double[]) plane);
-		}
-		else if (plane instanceof float[] ) {
-			array = new FloatArray((float[]) plane);
+		else if (plane instanceof short[] ) {
+			array = new ShortArray((short[]) plane);
 		}
 		else if (plane instanceof int[] ) {
 			array = new IntArray((int[]) plane);
 		}
+		else if (plane instanceof float[] ) {
+			array = new FloatArray((float[]) plane);
+		}
 		else if (plane instanceof long[] ) {
 			array = new LongArray((long[]) plane);
 		}
-		else if (plane instanceof short[] ) {
-			array = new ShortArray((short[]) plane);
+		else if (plane instanceof double[] ) {
+			array = new DoubleArray((double[]) plane);
 		}
 		planarAccess.setPlane(no, array);
 	}
