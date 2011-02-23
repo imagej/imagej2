@@ -1,4 +1,4 @@
-package imagej.core;
+package imagej.core.plugins;
 
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
