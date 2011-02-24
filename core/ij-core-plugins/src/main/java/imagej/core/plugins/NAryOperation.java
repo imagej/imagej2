@@ -38,11 +38,22 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 	/** The imglib-ops function to execute. */
 	private RealFunction<T> function;
 
+	protected NAryOperation()
+	{
+		this.function = null;
+	}
+	
 	protected NAryOperation(RealFunction<T> function)
+	{
+		this();
+		setFunction(function);
+	}
+
+	public void setFunction(RealFunction<T> function)
 	{
 		this.function = function;
 	}
-
+	
 	private static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
 	{
 		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
