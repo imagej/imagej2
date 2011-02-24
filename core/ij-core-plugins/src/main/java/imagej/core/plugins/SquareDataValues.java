@@ -4,12 +4,12 @@ import imagej.plugin.Plugin;
 import imglib.ops.function.p1.SqrFunction;
 
 @Plugin(
-	menuPath = "Process>Square"
+	menuPath = "Process>Square Data Values"
 )
 @SuppressWarnings("rawtypes")
-public class Square extends NAryOperation
+public class SquareDataValues extends NAryOperation
 {
-	public Square()
+	public SquareDataValues()
 	{
 		super(new SqrFunction());
 	}
