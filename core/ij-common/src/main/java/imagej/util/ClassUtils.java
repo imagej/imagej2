@@ -28,8 +28,8 @@ public final class ClassUtils {
 		if (isShort(type)) return Short.MIN_VALUE;
 		if (isInteger(type)) return Integer.MIN_VALUE;
 		if (isLong(type)) return Long.MIN_VALUE;
-		if (isFloat(type)) return Float.MIN_VALUE;
-		if (isDouble(type)) return Double.MIN_VALUE;
+		if (isFloat(type)) return -Float.MAX_VALUE;
+		if (isDouble(type)) return -Double.MAX_VALUE;
 		return Double.NEGATIVE_INFINITY;
 	}
 
