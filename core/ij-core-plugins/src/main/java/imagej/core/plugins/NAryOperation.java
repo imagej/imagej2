@@ -7,10 +7,16 @@ import imagej.plugin.Parameter;
 import imglib.ops.function.RealFunction;
 import imglib.ops.operation.AssignOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import mpicbg.imglib.container.ContainerFactory;
+import mpicbg.imglib.container.planar.PlanarContainerFactory;
+import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
+import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // TODO - was abstract - not sure that was necessary - removed for now
 
@@ -23,11 +29,11 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 
 	// TODO - eventually, need to resolve raw type warnings
 
-	@Parameter
-	private List<Dataset> in;
+//	@Parameter
+	protected List<Dataset> in;
 
 	@Parameter(output=true)
-	private Dataset out;
+	protected Dataset out;
 
 	/** The imglib-ops function to execute. */
 	private RealFunction<T> function;
@@ -37,11 +43,26 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 		this.function = function;
 	}
 
+	private static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
+	{
+		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
+		return factory.createImage(dimensions);
+	}
+	
 	@Override
 	public void run()
 	{
-		//@SuppressWarnings("unchecked")
+		PlanarContainerFactory factory = new PlanarContainerFactory();
+		Image<UnsignedShortType> junkImage = createImage(new UnsignedShortType(), factory, new int[]{200,200});
+		Cursor<UnsignedShortType> cursor = junkImage.createCursor();
+		int index = 0;
+		for (UnsignedShortType val : cursor)
+			cursor.getType().set(index++);
+		cursor.close();
+		in = new ArrayList<Dataset>();
+		in.add(new Dataset(junkImage,null));
 		
+		//@SuppressWarnings("unchecked")
 		final Image<T>[] inputs = new Image[in.size()];
 		
 		for (int i = 0; i < inputs.length; i++) {
@@ -64,6 +85,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 	/** make an image that has same type and dimensions as Dataset (but in a planar container) */
 	private Image<T> imageFromDataset(Dataset dataset)
 	{
+		//@SuppressWarnings("unchecked")
 		return (Image<T>) dataset.getImage();
 	}
 
