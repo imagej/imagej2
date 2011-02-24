@@ -27,12 +27,50 @@ public final class LegacyManager {
 		overrideMethod("ij.gui.ImageWindow", "public void setVisible(boolean vis)");
 		overrideMethod("ij.gui.ImageWindow", "public void show()");
 		loadClass("ij.gui.ImageWindow");
-
-		// TODO - implement renameMethod or similar, for overriding updateAndDraw
-//		renameMethod("ij.ImagePlus", "public void updateAndDraw()");
-//		loadClass("ij.ImagePlus");
+		
+		insertAfterMethod( "ij.ImagePlus","updateAndDraw", "imagej.legacy.patches.ImagePlusMethods.updateAndDraw(this);" );
+	}
+	
+	/**
+	 * Modifies a class by injecting the provided code string at the end of the provided method's body
+	 * @param qualifiedClassName - The name of the class to be modified E.g. ij.ImagePlus
+	 * @param methodName - The name of the method to be modified E.g. updateAndDraw
+	 * @param codeToAdd - The string of code to add E.g. System.out.println(\"Change Me!\");
+	 */
+	public static void insertAfterMethod( String qualifiedClassName, String methodName, String codeToAdd )
+	{
+		// Get the class in question
+		ClassPool pool = ClassPool.getDefault();
+		try {
+			CtClass cc = pool.get( qualifiedClassName );
+			CtMethod cm = cc.getDeclaredMethod( methodName );
+			cm.insertAfter(codeToAdd);
+			cc.toClass();
+		} catch ( Exception e ) {
+			throw new IllegalArgumentException("Error changing class: " + qualifiedClassName, e);
+		}
 	}
 
+	/**
+	 * Modifies a class by injecting the provided code string at the start of the provided method's body
+	 * @param qualifiedClassName - The name of the class to be modified E.g. ij.ImagePlus
+	 * @param methodName - The name of the method to be modified E.g. updateAndDraw
+	 * @param codeToAdd - The string of code to add E.g. System.out.println(\"Change Me!\");
+	 */
+	public static void insertBeforeMethod( String qualifiedClassName, String methodName, String codeToAdd )
+	{
+		// Get the class in question
+		ClassPool pool = ClassPool.getDefault();
+		try {
+			CtClass cc = pool.get( qualifiedClassName );
+			CtMethod cm = cc.getDeclaredMethod( methodName );
+			cm.insertBefore(codeToAdd);
+			cc.toClass();
+		} catch ( Exception e ) {
+			throw new IllegalArgumentException("Error changing class: " + qualifiedClassName, e);
+		}
+	}
+	
 	public static ImageJ initialize() {
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) return ij;
@@ -61,7 +99,7 @@ public final class LegacyManager {
 	 * @param methodSig Method signature of the method to override;
 	 *   e.g., "public void setVisible(boolean vis)"
 	 */
-	private static void overrideMethod(String fullClass, String methodSig) {
+	private static void overrideMethod( String fullClass, String methodSig ) {
 		final int dotIndex = fullClass.lastIndexOf(".");
 		final String className = fullClass.substring(dotIndex + 1);
 
@@ -118,15 +156,20 @@ public final class LegacyManager {
 	 * @return the loaded class
 	 */
 	private static Class<?> loadClass(String fullClass) {
+		
+		//Create a hashtable container of compile time class objects
 		final ClassPool pool = ClassPool.getDefault();
+		
+		//get the compile time class handle
 		final CtClass classRef;
 		try {
-			classRef = pool.get(fullClass);
+			classRef = pool.get( fullClass );
 		}
 		catch (NotFoundException e) {
 			throw new IllegalArgumentException("No such class: " + fullClass, e);
 		}
 		try {
+			// directly load the class
 			return classRef.toClass();
 		}
 		catch (CannotCompileException e) {
