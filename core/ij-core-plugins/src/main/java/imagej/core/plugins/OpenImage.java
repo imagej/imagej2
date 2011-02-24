@@ -2,7 +2,6 @@ package imagej.core.plugins;
 
 import imagej.Log;
 import imagej.model.Dataset;
-import imagej.model.Metadata;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -39,8 +38,7 @@ public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 		final ImageOpener imageOpener = new ImageOpener();
 		try {
 			final Image<T> img = imageOpener.openImage(id);
-			final Metadata metadata = Metadata.createMetadata(img.getName());
-			dataset = new Dataset(img, metadata);
+			dataset = new Dataset(img);
 		}
 		catch (FormatException e) {
 			Log.error(e);

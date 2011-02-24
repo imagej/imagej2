@@ -12,7 +12,8 @@ public enum AxisLabel {
 	Z("Z"),
 	TIME("Time"),
 	CHANNEL("Channel"),
-	LIFETIME("Lifetime");
+	LIFETIME("Lifetime"),
+	OTHER("Other");
 
 	private static Hashtable<String, AxisLabel> axisLabels =
 		new Hashtable<String, AxisLabel>();
