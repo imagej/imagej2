@@ -1,5 +1,8 @@
 package imagej.plugin.gui.swing;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.gui.AbstractInputHarvester;
@@ -34,9 +37,27 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		widgetPane.add((SwingInputPanel) inputPanel);
 		dialog.setModal(true);
 		dialog.pack();
+		ensureDialogSizeReasonable(dialog);
 		dialog.setVisible(true);
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
 
+	private void ensureDialogSizeReasonable(JDialog dialog)
+	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		Dimension dialogSize = dialog.getSize();
+
+		int newWidth = dialogSize.width;
+		int newHeight = dialogSize.height;
+		
+		if (dialogSize.width > (0.75*screenSize.width))
+			newWidth = (int)(0.75 * screenSize.width);
+		
+		if (dialogSize.height > (0.75*screenSize.height))
+			newHeight = (int)(0.75 * screenSize.height);
+
+		dialog.setSize(newWidth, newHeight);
+	}
 }
