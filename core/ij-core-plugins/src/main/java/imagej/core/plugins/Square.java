@@ -1,17 +1,16 @@
 package imagej.core.plugins;
 
 import imagej.plugin.Plugin;
-import imglib.ops.function.SqrFunction;
+import imglib.ops.function.p1.SqrFunction;
 
 @Plugin(
-	menuPath = "Process>ZippityDooDah"
+	menuPath = "Process>Square"
 )
 @SuppressWarnings("rawtypes")
-public class Square extends NAryOperation {
-
+public class Square extends NAryOperation
+{
 	public Square()
 	{
 		super(new SqrFunction());
 	}
-
 }

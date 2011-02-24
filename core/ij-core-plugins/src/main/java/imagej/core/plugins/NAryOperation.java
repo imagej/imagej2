@@ -29,7 +29,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 
 	// TODO - eventually, need to resolve raw type warnings
 
-//	@Parameter
+//	@Parameter  // TODO - reenable this once the List<Dataset> code is in place
 	protected List<Dataset> in;
 
 	@Parameter(output=true)
