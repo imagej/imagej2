@@ -73,10 +73,12 @@ public class PluginIndex {
 		final ArrayList<PluginEntry<T>> outputList =
 			new ArrayList<PluginEntry<T>>();
 		final ArrayList<PluginEntry<?>> cachedList = pluginLists.get(type);
-		for (PluginEntry<?> entry : cachedList) {
-			@SuppressWarnings("unchecked")
-			final PluginEntry<T> typedEntry = (PluginEntry<T>) entry;
-			outputList.add(typedEntry);
+		if (cachedList != null) {
+			for (PluginEntry<?> entry : cachedList) {
+				@SuppressWarnings("unchecked")
+				final PluginEntry<T> typedEntry = (PluginEntry<T>) entry;
+				outputList.add(typedEntry);
+			}
 		}
 		return outputList;
 	}
