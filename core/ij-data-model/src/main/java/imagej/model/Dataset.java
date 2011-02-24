@@ -19,6 +19,10 @@ public class Dataset {
 	private final Image<?> image;
 	private final Metadata metadata;
 
+	public Dataset(final Image<?> image) {
+		this(image, Metadata.createMetadata(image));
+	}
+
 	public Dataset(final Image<?> image, final Metadata metadata) {
 		this.image = image;
 		this.metadata = metadata;

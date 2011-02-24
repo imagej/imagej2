@@ -60,7 +60,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 			cursor.getType().set(index++);
 		cursor.close();
 		in = new ArrayList<Dataset>();
-		in.add(new Dataset(junkImage,null));
+		in.add(new Dataset(junkImage));
 		
 		//@SuppressWarnings("unchecked")
 		final Image<T>[] inputs = new Image[in.size()];
@@ -97,8 +97,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 	
 	private Dataset datasetFromImage(Image<T> image)
 	{
-		return new Dataset(image,null);  // TODO - simplify Dataset ctor to not take Metadata. Have ctor figure metadata from Image (soon to be Img)
-										// And then default AxisLabels if needed.
+		return new Dataset(image);
 	}
 
 }

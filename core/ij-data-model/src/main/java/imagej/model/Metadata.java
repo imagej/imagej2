@@ -1,5 +1,7 @@
 package imagej.model;
 
+import mpicbg.imglib.image.Image;
+
 public class Metadata {
 
 	private String name;
@@ -26,35 +28,73 @@ public class Metadata {
 	 * Extracts metadata, including axis types,
 	 * from the given encoded image name.
 	 */
-	public static Metadata createMetadata(String encodedImageName) {
-		final String imageName = decodeName(encodedImageName);
-		final String[] imageTypes = decodeTypes(encodedImageName);
-		final AxisLabel[] axisLabels = new AxisLabel[imageTypes.length];
-		for (int i=0; i<imageTypes.length; i++) {
-			axisLabels[i] = AxisLabel.getAxisLabel(imageTypes[i]);
-		}
+	public static Metadata createMetadata(final Image<?> img) {
+		final String name = decodeName(img);
+		final AxisLabel[] axes = decodeTypes(img);
 		final Metadata md = new Metadata();
-		md.setName(imageName);
-		md.setAxes(axisLabels);
+		md.setName(name);
+		md.setAxes(axes);
 		return md;
 	}
 
-	// CTR TODO - Code below is duplicated from imglib-io ImageOpener class.
+	// CTR TODO - Code below is partially duplicated from imglib-io ImageOpener.
 	// This functionality should live in a common utility place somewhere instead.
 
-	/** Converts the given image name back to a list of dimensional axis types. */
-	public static String decodeName(String name) {
+	/** Converts the given image's encoded name back to just the name. */
+	public static String decodeName(final Image<?> img) {
+		final String name = img.getName();
 		final int lBracket = name.lastIndexOf(" [");
+		if (lBracket < 0) return name;
 		return name.substring(0, lBracket);
 	}
 
-	/** Converts the given image name back to a list of dimensional axis types. */
-	public static String[] decodeTypes(String name) {
+	/**
+	 * Converts the given image's encoded name back to a list of
+	 * dimensional axis types.
+	 *
+	 * If the name is not encoded, returns some default type assignments.
+	 */
+	public static AxisLabel[] decodeTypes(final Image<?> img) {
+		final String name = img.getName();
+
+		// extract axis labels from encoded name
 		final int lBracket = name.lastIndexOf(" [");
-		if (lBracket < 0) return new String[0];
-		final int rBracket = name.lastIndexOf("]");
-		if (rBracket < lBracket) return new String[0];
-		return name.substring(lBracket + 2, rBracket).split(" ");
+		if (lBracket >= 0) {
+			final int rBracket = name.lastIndexOf("]");
+			if (rBracket >= lBracket) {
+				final String[] tokens = name.substring(lBracket + 2, rBracket).split(" ");
+				final AxisLabel[] axes = new AxisLabel[tokens.length];
+				for (int i=0; i<tokens.length; i++) {
+					axes[i] = AxisLabel.getAxisLabel(tokens[i]);
+				}
+				return axes;
+			}
+		}
+
+		// axes were not encoded in the name; return default axis order
+		final AxisLabel[] axes = new AxisLabel[img.getNumDimensions()];
+		for (int i=0; i<axes.length; i++) {
+			switch (i) {
+				case 0:
+					axes[i] = AxisLabel.X;
+					break;
+				case 1:
+					axes[i] = AxisLabel.Y;
+					break;
+				case 2:
+					axes[i] = AxisLabel.Z;
+					break;
+				case 3:
+					axes[i] = AxisLabel.TIME;
+					break;
+				case 4:
+					axes[i] = AxisLabel.CHANNEL;
+					break;
+				default:
+					axes[i] = AxisLabel.OTHER;
+			}
+		}
+		return axes;
 	}
 
 }
