@@ -18,8 +18,7 @@ public final class ImagePlusMethods {
 	public static void updateAndDraw(ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 
-		// TODO - use reflection to call: obj.renamedUpdateAndDraw()
-
+		
 		// register image with legacy manager
 		final LegacyImageMap imageMap = LegacyManager.getImageMap();
 		final Dataset dataset = imageMap.registerLegacyImage(obj);
