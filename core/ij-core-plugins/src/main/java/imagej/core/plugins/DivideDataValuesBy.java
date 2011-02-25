@@ -22,8 +22,14 @@ public class DivideDataValuesBy extends NAryOperation
 	
 	public DivideDataValuesBy()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new DivideByConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

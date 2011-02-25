@@ -81,7 +81,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 		}
 		
 		if (function == null)
-			throw new IllegalArgumentException("function reference is null - this is not allowed: function must be set via setFunction() before calling NAryOperation::run()");
+			throw new IllegalArgumentException("function reference is null: function must be set via setFunction() before calling NAryOperation::run()");
 			
 		//@SuppressWarnings("unchecked")
 		final Image<T>[] inputs = new Image[in.size()];

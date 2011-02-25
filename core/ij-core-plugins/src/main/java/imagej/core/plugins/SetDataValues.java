@@ -6,6 +6,11 @@ import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Constant;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menuPath = "Process>Set"
 )
@@ -17,8 +22,14 @@ public class SetDataValues extends NAryOperation
 	
 	public SetDataValues()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new Constant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

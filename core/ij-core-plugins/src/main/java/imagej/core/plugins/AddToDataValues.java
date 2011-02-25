@@ -22,8 +22,14 @@ public class AddToDataValues extends NAryOperation
 	
 	public AddToDataValues()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new AddConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

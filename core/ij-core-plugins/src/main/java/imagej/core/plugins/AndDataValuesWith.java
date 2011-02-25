@@ -6,6 +6,11 @@ import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AndConstant;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menuPath = "Process>AND"
 )
@@ -17,8 +22,14 @@ public class AndDataValuesWith extends NAryOperation
 	
 	public AndDataValuesWith()
 	{
+	}
+
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new AndConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

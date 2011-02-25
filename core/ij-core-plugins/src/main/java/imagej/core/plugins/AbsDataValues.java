@@ -5,6 +5,11 @@ import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Abs;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menuPath = "Process>Abs"
 )
