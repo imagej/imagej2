@@ -101,13 +101,11 @@ public class CodeHacker {
 	 * @param methodSig Method signature of the method to override;
 	 *   e.g., "public void setVisible(boolean vis)"
 	 */
-	public void overrideMethod(final String fullClass,
-		final String methodSig)
-	{
-		overrideMethod(fullClass, methodSig, newCode(fullClass, methodSig));
+	public void insertMethod(final String fullClass, final String methodSig) {
+		insertMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
-	public void overrideMethod(final String fullClass,
+	public void insertMethod(final String fullClass,
 		final String methodSig, final String newCode)
 	{
 		final CtClass classRef = getClass(fullClass);

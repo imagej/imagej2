@@ -2,6 +2,9 @@ package imagej.legacy;
 
 import ij.IJ;
 import ij.ImageJ;
+import ij.ImagePlus;
+import imagej.legacy.plugin.LegacyPlugin;
+import imagej.model.Dataset;
 
 public final class LegacyManager {
 
@@ -14,12 +17,12 @@ public final class LegacyManager {
 
 	static {
 		// NB: Override class behavior before class loading gets too far along.
-		CodeHacker hacker = new CodeHacker();
+		final CodeHacker hacker = new CodeHacker();
 
 		// override ImageWindow behavior
-		hacker.overrideMethod("ij.gui.ImageWindow",
+		hacker.insertMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
-		hacker.overrideMethod("ij.gui.ImageWindow", "public void show()");
+		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override ImagePlus behavior
@@ -39,6 +42,14 @@ public final class LegacyManager {
 
 	public static LegacyImageMap getImageMap() {
 		return imageMap;
+	}
+
+	public static void legacyImageChanged(final ImagePlus imp) {
+		// register image with legacy manager
+		final Dataset dataset = imageMap.registerLegacyImage(imp);
+
+		// record resultant dataset as a legacy plugin output
+		LegacyPlugin.getOutputSet().add(dataset);
 	}
 
 }
