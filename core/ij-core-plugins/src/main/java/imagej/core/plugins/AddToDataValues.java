@@ -2,7 +2,9 @@ package imagej.core.plugins;
 
 import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.AddConstFunction;
+import imglib.ops.function.p1.UnaryOperatorFunction;
+import imglib.ops.operator.UnaryOperator;
+import imglib.ops.operator.unary.AddConstant;
 
 /**
  * TODO
@@ -10,7 +12,7 @@ import imglib.ops.function.p1.AddConstFunction;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Add To Data Values"
+	menuPath = "Process>Add"
 )
 @SuppressWarnings("rawtypes")
 public class AddToDataValues extends NAryOperation
@@ -20,7 +22,8 @@ public class AddToDataValues extends NAryOperation
 	
 	public AddToDataValues()
 	{
-		super();
-		super.setFunction(new AddConstFunction(constant));
+		UnaryOperator op = new AddConstant(constant);
+		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
+		setFunction(func);
 	}
 }

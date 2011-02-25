@@ -3,22 +3,17 @@ package imagej.core.plugins;
 import imagej.plugin.Plugin;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Sqr;
+import imglib.ops.operator.unary.Exp;
 
-/**
- * TODO
- *
- * @author Barry DeZonia
- */
 @Plugin(
-	menuPath = "Process>Square"
+	menuPath = "Process>Exp"
 )
 @SuppressWarnings("rawtypes")
-public class SquareDataValues extends NAryOperation
+public class ExpDataValues extends NAryOperation
 {
-	public SquareDataValues()
+	public ExpDataValues()
 	{
-		UnaryOperator op = new Sqr();
+		UnaryOperator op = new Exp();
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
 	}

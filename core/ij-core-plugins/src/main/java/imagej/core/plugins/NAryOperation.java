@@ -10,7 +10,6 @@ import imglib.ops.operation.AssignOperation;
 import java.util.ArrayList;
 import java.util.List;
 
-import mpicbg.imglib.container.ContainerFactory;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
@@ -34,7 +33,9 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 
 	// TODO - eventually, need to resolve raw type warnings
 
-//	@Parameter  // TODO - reenable this once the List<Dataset> code is in place
+	// ***************  instance variables ***************************************************************
+	
+	@Parameter
 	protected List<Dataset> in;
 
 	@Parameter(output=true)
@@ -43,41 +44,45 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 	/** The imglib-ops function to execute. */
 	private RealFunction<T> function;
 
+	// ***************  public/protected interface ***************************************************************
+
+	/** this constructor required for plugins that create a function that uses one of it's @Parameter values in construction */
 	protected NAryOperation()
 	{
 		this.function = null;
 	}
 	
+	/** preferred constructor */
 	protected NAryOperation(RealFunction<T> function)
 	{
-		this();
-		setFunction(function);
+		setFunc(function);
 	}
 
+	/** helper method that allows the function of an operation to be changed */
 	public void setFunction(RealFunction<T> function)
 	{
-		this.function = function;
+		setFunc(function);
 	}
 	
-	private static <K extends RealType<K>> Image<K> createImage(RealType<K> type, ContainerFactory cFact, int[] dimensions)
-	{
-		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
-		return factory.createImage(dimensions);
-	}
-	
+	/** runs the plugin applying the operation's function to the input and assigning it to the output */
 	@Override
 	public void run()
 	{
-		PlanarContainerFactory factory = new PlanarContainerFactory();
-		Image<UnsignedShortType> junkImage = createImage(new UnsignedShortType(), factory, new int[]{200,200});
-		Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-		int index = 0;
-		for (UnsignedShortType val : cursor)
-			cursor.getType().set(index++);
-		cursor.close();
-		in = new ArrayList<Dataset>();
-		in.add(new Dataset(junkImage));
+		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		{
+			Image<UnsignedShortType> junkImage = createImage(new UnsignedShortType(), new int[]{200,200});
+			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
+			int index = 0;
+			for (UnsignedShortType pixRef : cursor)
+				pixRef.set(index++);
+			cursor.close();
+			in = new ArrayList<Dataset>();
+			in.add(new Dataset(junkImage));
+		}
 		
+		if (function == null)
+			throw new IllegalArgumentException("function reference is null - this is not allowed: function must be set via setFunction() before calling NAryOperation::run()");
+			
 		//@SuppressWarnings("unchecked")
 		final Image<T>[] inputs = new Image[in.size()];
 		
@@ -98,6 +103,22 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 		out = datasetFromImage(output);
 	}
 
+	// ***************  private interface ***************************************************************
+
+	/** this exists so that anyone overriding setFunction() does not break NAryOperation(function) constructor */
+	private void setFunc(RealFunction<T> func)
+	{
+		this.function = func;
+	}
+	
+	/** create an image of given type and dimensions using specified container type */
+	private static <K extends RealType<K>> Image<K> createImage(RealType<K> type, int[] dimensions)
+	{
+		PlanarContainerFactory cFact = new PlanarContainerFactory();
+		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
+		return factory.createImage(dimensions);
+	}
+	
 	/** make an image that has same type and dimensions as Dataset (but in a planar container) */
 	private Image<T> imageFromDataset(Dataset dataset)
 	{
@@ -110,7 +131,8 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 	{
 		return refImage.createNewImage(refImage.getDimensions());
 	}
-	
+
+	/** make a Dataset from an Image */
 	private Dataset datasetFromImage(Image<T> image)
 	{
 		return new Dataset(image);

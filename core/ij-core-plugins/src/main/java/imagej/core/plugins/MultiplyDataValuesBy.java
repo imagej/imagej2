@@ -2,7 +2,9 @@ package imagej.core.plugins;
 
 import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.MultiplyConstFunction;
+import imglib.ops.function.p1.UnaryOperatorFunction;
+import imglib.ops.operator.UnaryOperator;
+import imglib.ops.operator.unary.MultiplyByConstant;
 
 /**
  * TODO
@@ -10,7 +12,7 @@ import imglib.ops.function.p1.MultiplyConstFunction;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Multiply Data Values By"
+	menuPath = "Process>Multiply"
 )
 @SuppressWarnings("rawtypes")
 public class MultiplyDataValuesBy extends NAryOperation
@@ -20,7 +22,8 @@ public class MultiplyDataValuesBy extends NAryOperation
 	
 	public MultiplyDataValuesBy()
 	{
-		super();
-		super.setFunction(new MultiplyConstFunction(constant));
+		UnaryOperator op = new MultiplyByConstant(constant);
+		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
+		setFunction(func);
 	}
 }

@@ -2,7 +2,9 @@ package imagej.core.plugins;
 
 import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.SubtractConstFunction;
+import imglib.ops.function.p1.UnaryOperatorFunction;
+import imglib.ops.operator.UnaryOperator;
+import imglib.ops.operator.unary.SubtractConstant;
 
 /**
  * TODO
@@ -10,7 +12,7 @@ import imglib.ops.function.p1.SubtractConstFunction;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Subtract From Data Values"
+	menuPath = "Process>Subtract"
 )
 @SuppressWarnings("rawtypes")
 public class SubtractFromDataValues extends NAryOperation
@@ -20,7 +22,8 @@ public class SubtractFromDataValues extends NAryOperation
 	
 	public SubtractFromDataValues()
 	{
-		super();
-		super.setFunction(new SubtractConstFunction(constant));
+		UnaryOperator op = new SubtractConstant(constant);
+		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
+		setFunction(func);
 	}
 }
