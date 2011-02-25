@@ -7,6 +7,12 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Rick Lentz
+ */
 public class CodeHacker {
 
 	private static final String PATCH_PKG = "imagej.legacy.patches";

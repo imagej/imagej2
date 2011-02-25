@@ -10,6 +10,12 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Rick Lentz
+ */
 @Plugin
 public class ImageFromURL implements ImageJPlugin {
 

@@ -14,6 +14,12 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Barry DeZonia
+ */
 public class Dataset {
 
 	private final Image<?> image;

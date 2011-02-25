@@ -13,9 +13,9 @@ import java.util.Map;
  * Module class for working with a {@link BasePlugin} instance,
  * particularly its {@link Parameter}s.
  *
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Johannes Schindelin johannes.schindelin at gmx.de
- * @author Grant Harris gharris at mbl.edu
+ * @author Curtis Rueden
+ * @author Johannes Schindelin
+ * @author Grant Harris
  */
 public class PluginModule<T extends BasePlugin> implements Module {
 

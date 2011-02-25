@@ -15,6 +15,11 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.io.ImageOpener;
 import mpicbg.imglib.type.numeric.RealType;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menu={
 		@Menu(label="File", mnemonic='f'),

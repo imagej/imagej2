@@ -18,6 +18,11 @@ import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class SwingInputPanel extends JPanel implements InputPanel {
 
 	private static final int MAX_SPINNER_WIDTH = 300;

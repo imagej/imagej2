@@ -7,6 +7,11 @@ import java.lang.annotation.Target;
 
 import net.java.sezpoz.Indexable;
 
+/**
+ * TODO
+ *
+ * @author Rick Lentz
+ */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Indexable(type=ITool.class)

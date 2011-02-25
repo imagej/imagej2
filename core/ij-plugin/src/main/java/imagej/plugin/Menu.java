@@ -2,6 +2,11 @@ package imagej.plugin;
 
 import java.lang.annotation.Target;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 @Target({})
 public @interface Menu {
 

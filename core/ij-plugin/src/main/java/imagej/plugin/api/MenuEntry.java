@@ -2,6 +2,11 @@ package imagej.plugin.api;
 
 import imagej.plugin.Menu;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class MenuEntry {
 
 	private String name;

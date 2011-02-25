@@ -13,6 +13,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class SwingFileSelector extends JPanel
 	implements FileSelector, ActionListener
 {

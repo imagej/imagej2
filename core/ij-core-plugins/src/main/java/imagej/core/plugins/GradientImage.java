@@ -7,6 +7,12 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Rick Lentz
+ */
 @Plugin(
   menuPath="Process>Gradient"
 )

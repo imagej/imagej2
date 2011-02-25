@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 @Plugin(type = PluginPostprocessor.class)
 public class DisplayPostprocessor implements PluginPostprocessor {
 

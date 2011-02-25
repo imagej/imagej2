@@ -12,7 +12,11 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImagePlusAdapter;
 import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 
-/** Translates between legacy and modern ImageJ image structures. */
+/**
+ * Translates between legacy and modern ImageJ image structures.
+ *
+ * @author Curtis Rueden
+ */
 public class ImageTranslator {
 
 	public Dataset createDataset(final ImagePlus imp) {

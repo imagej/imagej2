@@ -20,8 +20,13 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // TODO - was abstract - not sure that was necessary - removed for now
 
-public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
-{
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ * @author Curtis Rueden
+ */
+public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 
 	// TODO - SwingInputHarvester must prompt user for list of images
 	//  + need N-list widget with plus and minus buttons

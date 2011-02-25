@@ -1,6 +1,10 @@
 package imagej;
 
-/** general purpose methods */
+/**
+ * General purpose methods.
+ *
+ * @author Barry DeZonia
+ */
 public class Dimensions
 {
 	/** gets the last n-2 dimensions of a n-dimensional int array. */

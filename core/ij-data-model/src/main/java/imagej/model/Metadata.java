@@ -2,6 +2,12 @@ package imagej.model;
 
 import mpicbg.imglib.image.Image;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ * @author Curtis Rueden
+ */
 public class Metadata {
 
 	private String name;

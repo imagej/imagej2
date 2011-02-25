@@ -4,6 +4,11 @@ import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
 import imglib.ops.function.p1.AddConstFunction;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menuPath = "Process>Add To Data Values"
 )

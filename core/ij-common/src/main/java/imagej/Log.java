@@ -3,6 +3,11 @@ package imagej;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class Log {
 
 	private static Logger logger =

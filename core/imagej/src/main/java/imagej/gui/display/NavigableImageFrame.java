@@ -30,9 +30,10 @@ import loci.formats.gui.AWTImageTools;
 import mpicbg.imglib.image.Image;
 
 /**
+ * TODO
  *
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Grant Harris gharris at mbl.edu
+ * @author Curtis Rueden
+ * @author Grant Harris
  */
 public class NavigableImageFrame extends JFrame {
 

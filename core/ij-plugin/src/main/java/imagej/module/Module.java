@@ -13,6 +13,9 @@ import java.util.Map;
  * The Module interface represents a specific instance of a module,
  * while the corresponding {@link ModuleInfo} represents metadata
  * about that module, particularly its input and output names and types.
+ *
+ * @author Aivar Grislis
+ * @author Curtis Rueden
  */
 public interface Module {
 

@@ -1,6 +1,11 @@
 package imagej.module;
 
-/** A ModuleItem represents metadata about one input or output of a module. */
+/**
+ * A ModuleItem represents metadata about one input or output of a module.
+ * 
+ * @author Aivar Grislis
+ * @author Curtis Rueden
+ */
 public interface ModuleItem {
 
 	/** Unique name of the item. */

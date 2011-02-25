@@ -7,9 +7,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javax.swing.JFrame;
+
 /**
+ * TODO
  *
- * @author rick
+ * @author Rick Lentz
  */
 public class ToolHandler implements MouseListener, MouseWheelListener, KeyListener {
 

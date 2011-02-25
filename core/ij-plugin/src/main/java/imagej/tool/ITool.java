@@ -1,7 +1,13 @@
 package imagej.tool;
 
-// Credit http://edndoc.esri.com/arcobjects/9.2/java/api/arcobjects/com/esri/arcgis/systemUI/ITool.html
-
+/**
+ * TODO
+ *
+ * Credit http://edndoc.esri.com/arcobjects/9.2/java/api/arcobjects/com/esri/arcgis/systemUI/ITool.html
+ *
+ * @author Rick Lentz
+ * @author Grant Harris
+ */
 public interface ITool {
 
 	//Causes the tool to be the active tool.
@@ -33,4 +39,5 @@ public interface ITool {
 
 	// Occurs when a mouse button is released when this tool is active.
 	void onMouseUp(int button, int shift, int x, int y);
+
 }

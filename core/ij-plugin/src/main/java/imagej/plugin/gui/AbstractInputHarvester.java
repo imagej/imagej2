@@ -14,6 +14,8 @@ import java.io.File;
  *
  * It first assigns values from the passed-in input map. Any remaining
  * parameters are collected using an {@link InputPanel} dialog box.
+ *
+ * @author Curtis Rueden
  */
 public abstract class AbstractInputHarvester
 	implements PluginPreprocessor, InputHarvester

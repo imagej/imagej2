@@ -5,6 +5,12 @@ import imagej.plugin.display.DisplayView;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Grant Harris
+ */
 @Plugin(type = DisplayPlugin.class)
 public class NavigableImageDisplay implements DisplayPlugin {
 

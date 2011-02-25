@@ -25,6 +25,11 @@ import java.util.Map;
 
 import javax.swing.KeyStroke;
 
+/**
+ * TODO
+ * 
+ * @author Curtis Rueden
+ */
 @PluginFinder
 public class LegacyPluginFinder implements IPluginFinder {
 

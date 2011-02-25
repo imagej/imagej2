@@ -5,7 +5,10 @@ import imagej.tool.Tool;
 import javax.swing.JFrame;
 
 /**
- * @author rick
+ * TODO
+ *
+ * @author Rick Lentz
+ * @author Grant Harris
  */
 @Tool(name="Arrow Tool", description="Gives the index and value at the location")
 public class PanTool implements ITool {

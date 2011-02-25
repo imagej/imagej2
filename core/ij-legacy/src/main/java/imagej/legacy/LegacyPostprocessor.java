@@ -7,7 +7,11 @@ import imagej.plugin.process.PluginPostprocessor;
 
 import java.util.Map;
 
-/** A plugin postprocessor that keeps datasets synced with legacy images. */
+/**
+ * A plugin postprocessor that keeps datasets synced with legacy images.
+ *
+ * @author Curtis Rueden
+ */
 @Plugin(type = PluginPostprocessor.class)
 public class LegacyPostprocessor implements PluginPostprocessor {
 

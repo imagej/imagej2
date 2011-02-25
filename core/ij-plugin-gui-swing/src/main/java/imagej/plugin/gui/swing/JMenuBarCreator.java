@@ -10,6 +10,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class JMenuBarCreator extends SwingMenuCreator
 	implements MenuCreator<JMenuBar>
 {

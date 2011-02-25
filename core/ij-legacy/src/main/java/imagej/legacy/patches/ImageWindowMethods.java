@@ -4,7 +4,11 @@ import ij.gui.ImageWindow;
 import imagej.Log;
 import imagej.legacy.LegacyManager;
 
-/** Overrides {@link ImageWindow} methods. */
+/**
+ * Overrides {@link ImageWindow} methods.
+ *
+ * @author Curtis Rueden
+ */
 public final class ImageWindowMethods {
 
 	private ImageWindowMethods() {
