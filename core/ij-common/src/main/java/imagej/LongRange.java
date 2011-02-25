@@ -1,5 +1,10 @@
 package imagej;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 public class LongRange
 {
 	protected LongRange() {}

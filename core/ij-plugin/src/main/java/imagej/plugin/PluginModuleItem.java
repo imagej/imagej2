@@ -4,6 +4,11 @@ import java.lang.reflect.Field;
 
 import imagej.module.ModuleItem;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class PluginModuleItem implements ModuleItem {
 
 	private Field field;

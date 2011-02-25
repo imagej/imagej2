@@ -4,7 +4,11 @@ import ij.ImagePlus;
 import imagej.Log;
 import imagej.legacy.LegacyManager;
 
-/** Overrides {@link ImagePlus} methods. */
+/**
+ * Overrides {@link ImagePlus} methods.
+ *
+ * @author Curtis Rueden
+ */
 public final class ImagePlusMethods {
 
 	private ImagePlusMethods() {

@@ -4,6 +4,9 @@ package imagej.module;
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
  * (but not a specific instance of it). In particular, it can report details
  * on the names and types of inputs and outputs.
+ * 
+ * @author Aivar Grislis
+ * @author Curtis Rueden
  */
 public interface ModuleInfo {
 

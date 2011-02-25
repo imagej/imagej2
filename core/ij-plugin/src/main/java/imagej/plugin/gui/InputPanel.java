@@ -5,6 +5,8 @@ import java.io.File;
 /**
  * Flexible panel-building interface, for use with
  * UIs that prompt for input values of various types.
+ *
+ * @author Curtis Rueden
  */
 public interface InputPanel {
 

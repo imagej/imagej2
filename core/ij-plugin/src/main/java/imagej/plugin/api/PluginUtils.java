@@ -11,7 +11,11 @@ import java.util.List;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
-/** Utility class for discovering and launching plugins. */
+/**
+ * Utility class for discovering and launching plugins.
+ *
+ * @author Curtis Rueden
+ */
 public final class PluginUtils {
 
 	private PluginUtils() {

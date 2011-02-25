@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 /**
  * SwingInputHarvester is a plugin preprocessor that collects input parameter
  * values from the user using a {@link SwingInputPanel} dialog box.
+ *
+ * @author Curtis Rueden
  */
 @Plugin(type = PluginPreprocessor.class)
 public class SwingInputHarvester extends AbstractInputHarvester {

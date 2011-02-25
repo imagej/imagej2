@@ -4,6 +4,12 @@ import imagej.plugin.display.DisplayView;
 import imagej.model.Dataset;
 import imagej.plugin.BasePlugin;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ * @author Grant Harris
+ */
 public interface DisplayPlugin extends BasePlugin {
 
 	// DisplayPlugin extends BasePlugin, so that the name of the interface

@@ -19,7 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
-/** A simple and dumb Swing-based main window for ImageJ2. */
+/**
+ * A simple and dumb Swing-based main window for ImageJ2.
+ *
+ * @author Curtis Rueden
+ */
 public class MainFrame {
 		final JFrame frame = new JFrame("ImageJ");
 	private JToolBar toolBar;

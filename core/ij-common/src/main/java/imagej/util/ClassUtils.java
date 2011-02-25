@@ -3,6 +3,11 @@ package imagej.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public final class ClassUtils {
 
 	private ClassUtils() {

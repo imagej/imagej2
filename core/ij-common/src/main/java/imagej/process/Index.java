@@ -2,6 +2,11 @@ package imagej.process;
 
 import imagej.Dimensions;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 public final class Index {
 
 	private Index() {

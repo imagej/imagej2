@@ -6,8 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * TODO
+ *
  * @author Johannes Schindelin
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

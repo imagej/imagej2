@@ -2,6 +2,11 @@ package imagej.util;
 
 import java.util.ArrayList;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public final class ListUtils {
 
 	private ListUtils() {

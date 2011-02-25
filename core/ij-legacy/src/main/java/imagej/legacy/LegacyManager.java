@@ -6,6 +6,11 @@ import ij.ImagePlus;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.model.Dataset;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public final class LegacyManager {
 
 	/** Mapping between datasets and legacy image objects. */

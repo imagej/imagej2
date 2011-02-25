@@ -1,5 +1,10 @@
 package imagej.plugin.api;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class PluginException extends Exception {
 
   public PluginException() { super(); }

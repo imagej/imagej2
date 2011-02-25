@@ -1,6 +1,10 @@
 package imagej.process;
 
-/** Span is a helper class that supports getting ranges within n-dimensional data sets. */
+/**
+ * A helper class that supports getting ranges within n-dimensional data sets.
+ *
+ * @author Barry DeZonia
+ */
 public class Span {
 		
 	private Span() {}  // uninstantiable

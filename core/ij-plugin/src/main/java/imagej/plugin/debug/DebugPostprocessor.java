@@ -7,7 +7,11 @@ import imagej.plugin.process.PluginPostprocessor;
 
 import java.util.Map;
 
-/** A plugin postprocessor that dumps parameter values to the log. */
+/**
+ * A plugin postprocessor that dumps parameter values to the log.
+ *
+ * @author Curtis Rueden
+ */
 @Plugin(type = PluginPostprocessor.class, priority = 0)
 public class DebugPostprocessor implements PluginPostprocessor {
 

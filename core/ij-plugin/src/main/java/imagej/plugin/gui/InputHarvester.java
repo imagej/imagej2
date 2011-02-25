@@ -4,6 +4,11 @@ import imagej.plugin.PluginModule;
 
 // TODO - Use Module instead of PluginModule<?>, and move to imagej.module.gui.
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public interface InputHarvester {
 
 	InputPanel createInputPanel();

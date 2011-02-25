@@ -5,7 +5,10 @@ import imagej.tool.Tool;
 import javax.swing.JFrame;
 
 /**
- * @author rick
+ * TODO
+ *
+ * @author Rick Lentz
+ * @author Grant Harris
  */
 @Tool
 public class ProbeTool implements ITool

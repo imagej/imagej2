@@ -7,6 +7,11 @@ import imagej.model.Dataset;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class LegacyImageMap {
 
 	private Map<ImagePlus, Dataset> imageTable =

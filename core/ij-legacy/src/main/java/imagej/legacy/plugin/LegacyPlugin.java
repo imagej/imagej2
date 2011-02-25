@@ -10,7 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Executes an IJ1 plugin. */
+/**
+ * Executes an IJ1 plugin.
+ *
+ * @author Curtis Rueden
+ */
 public class LegacyPlugin implements ImageJPlugin {
 
 	@Parameter

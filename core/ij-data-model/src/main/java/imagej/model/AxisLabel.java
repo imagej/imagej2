@@ -6,6 +6,11 @@ import java.util.Hashtable;
 // Bio-Formats (loci.formats.FormatTools) and
 // imglib-io (mpicbg.imglib.io.ImageOpener).
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public enum AxisLabel {
 	X("X"),
 	Y("Y"),

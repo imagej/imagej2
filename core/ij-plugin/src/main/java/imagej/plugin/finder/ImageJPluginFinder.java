@@ -8,6 +8,11 @@ import imagej.plugin.api.PluginIndex;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 @PluginFinder
 public class ImageJPluginFinder implements IPluginFinder {
 

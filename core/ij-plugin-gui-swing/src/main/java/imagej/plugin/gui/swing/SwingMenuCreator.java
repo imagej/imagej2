@@ -21,6 +21,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public abstract class SwingMenuCreator {
 
 	// TODO - create a GUI-agnostic menu tree adapter, so that the following

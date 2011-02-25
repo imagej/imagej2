@@ -12,7 +12,11 @@ import java.util.List;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
-/** An efficient index of available plugins. */
+/**
+ * An efficient index of available plugins.
+ *
+ * @author Curtis Rueden
+ */
 public class PluginIndex {
 
 	/** SezPoz index of available {@link BasePlugin}s. */

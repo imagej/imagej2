@@ -6,7 +6,11 @@ import imagej.plugin.RunnablePlugin;
 import imagej.plugin.process.PluginPostprocessor;
 import imagej.plugin.process.PluginPreprocessor;
 
-/** Executes a runnable plugin. */
+/**
+ * Executes a runnable plugin.
+ *
+ * @author Curtis Rueden
+ */
 public class PluginRunner<T extends RunnablePlugin> {
 
 	private PluginEntry<T> entry;

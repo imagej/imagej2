@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
 public class PluginEntry<T extends BasePlugin>
 	implements Comparable<PluginEntry<?>>
 {
