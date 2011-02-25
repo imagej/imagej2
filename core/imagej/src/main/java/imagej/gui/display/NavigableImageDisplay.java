@@ -1,7 +1,8 @@
 package imagej.gui.display;
 
-import imagej.gui.DisplayPlugin;
+import imagej.plugin.display.Display;
 import imagej.plugin.display.DisplayView;
+import imagej.plugin.display.LayeredDisplay;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -11,8 +12,8 @@ import imagej.plugin.Plugin;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = DisplayPlugin.class)
-public class NavigableImageDisplay implements DisplayPlugin {
+@Plugin(type = Display.class)
+public class NavigableImageDisplay extends AbstractSwingDisplay implements LayeredDisplay {
 
 	private NavigableImageFrame imageFrame;
 
@@ -24,6 +25,14 @@ public class NavigableImageDisplay implements DisplayPlugin {
 	@Override
 	public void display(Dataset dataset) {
 		imageFrame = new NavigableImageFrame();
+
+		// listen for user input
+		imageFrame.addKeyListener(this);
+		imageFrame.addMouseListener(this);
+		imageFrame.addMouseMotionListener(this);
+		imageFrame.addMouseWheelListener(this);
+
+		// TODO - use DisplayView instead of Dataset directly
 		imageFrame.setDataset(dataset);
 		imageFrame.setVisible(true);
 	}
@@ -44,23 +53,28 @@ public class NavigableImageDisplay implements DisplayPlugin {
 	}
 
 	@Override
-	public void getViews() {
+	public DisplayView[] getViews() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void getView(int n) {
+	public DisplayView getView(int n) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void getActiveView() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public DisplayView getActiveView() {
+		return getView(0);
 	}
 
 	@Override
 	public void pan(float x, float y) {
 		imageFrame.getPanel().pan((int) x, (int) y);
+	}
+
+	@Override
+	public void zoom(float factor) {
+		// TODO
 	}
 
 }

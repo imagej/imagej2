@@ -1,4 +1,4 @@
-package imagej.gui;
+package imagej.plugin.display;
 
 import imagej.Log;
 import imagej.model.Dataset;
@@ -37,11 +37,11 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 			final Dataset dataset = (Dataset) value;
 
 			// get available display plugins from the plugin index
-			final ArrayList<PluginEntry<DisplayPlugin>> plugins =
-				PluginIndex.getIndex().getPlugins(DisplayPlugin.class);
-			for (final PluginEntry<DisplayPlugin> pe : plugins) {
+			final ArrayList<PluginEntry<Display>> plugins =
+				PluginIndex.getIndex().getPlugins(Display.class);
+			for (final PluginEntry<Display> pe : plugins) {
 				try {
-					final DisplayPlugin displayPlugin = pe.createInstance();
+					final Display displayPlugin = pe.createInstance();
 					// display dataset using the first compatible DisplayPlugin
 					// TODO: prompt user with dialog box if multiple matches
 					if (displayPlugin.canDisplay(dataset)) {

@@ -1,8 +1,9 @@
 package imagej.plugin.display;
 
 /**
+ * TODO
  *
- * @author GBH
+ * @author Grant Harris
  */
 public interface LayeredDisplay extends Display {
 
@@ -16,5 +17,6 @@ public interface LayeredDisplay extends Display {
 
 	DisplayView getView(int n);
 
-	DisplayView getActiveView(); // returns getView(0) for now
+	DisplayView getActiveView();
+
 }
