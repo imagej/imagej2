@@ -2,11 +2,11 @@ package imagej.plugin.gui.swing;
 
 import imagej.plugin.gui.InputPanel;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -15,10 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
 
+import net.miginfocom.swing.MigLayout;
 
 public class SwingInputPanel extends JPanel implements InputPanel {
+
+	private static final int MAX_SPINNER_WIDTH = 300;
 
 	/** Widget table for numbers. */
 	private Map<String, JSpinner> spinners =
@@ -41,13 +43,12 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 		new HashMap<String, SwingFileSelector>();
 
 	public SwingInputPanel() {
-		// TODO - use a better layout manager
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); //TEMP
+		setLayout(new MigLayout("wrap 2"));
 	}
 
 	@Override
 	public void addMessage(String text) {
-		add(new JLabel(text));
+		add(new JLabel(text), "span 2");
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
 			initialValue, (Comparable) min, (Comparable) max, stepSize);
 		final JSpinner spinner = new JSpinner(spinnerModel);
+		limitSpinnerWidth(spinner);
 		addField(label, spinner);
 		spinners.put(name, spinner);
 	}
@@ -65,7 +67,7 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	@Override
 	public void addToggle(String name, String label, boolean initialValue) {
 		final JCheckBox checkBox = new JCheckBox(label, initialValue);
-		add(checkBox);
+		addField(null, checkBox);
 		checkBoxes.put(name, checkBox);
 	}
 
@@ -138,13 +140,22 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 		return null;
 	}
 
-	private void addField(String label, JComponent component) {
-		JPanel p = new JPanel(); //TEMP
-		p.setBorder(new EmptyBorder(5, 5, 5, 5)); //TEMP
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS)); //TEMP
-		if (label != null) p.add(new JLabel(label));
-		p.add(component);
-		add(p);
+	private void addField(final String label, final JComponent component) {
+		add(new JLabel(label == null ? "" : label));
+		add(component);
+	}
+
+	/**
+	 * Limit spinner width to a certain maximum.
+	 *
+	 * This is a HACK to work around an issue with Double-based spinners
+	 * that attempt to size themselves very large (presumably to match
+	 * Double.MAX_VALUE).
+	 */
+	private void limitSpinnerWidth(final JSpinner spinner) {
+		final Dimension prefSize = spinner.getPreferredSize();
+		if (prefSize.width > MAX_SPINNER_WIDTH) prefSize.width = MAX_SPINNER_WIDTH;
+		spinner.setMaximumSize(prefSize);
 	}
 
 }
