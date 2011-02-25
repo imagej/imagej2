@@ -48,7 +48,7 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 
 	@Override
 	public void addMessage(String text) {
-		add(new JLabel(text), "span 2");
+		add(new JLabel(text), "span");
 	}
 
 	@Override
@@ -108,22 +108,22 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	public Number getNumber(String name) {
 		return (Number) spinners.get(name).getValue();
 	}
-	
+
 	@Override
 	public boolean getToggle(String name) {
 		return checkBoxes.get(name).isSelected();
 	}
-	
+
 	@Override
 	public String getTextField(String name) {
 		return textFields.get(name).getText();
 	}
-	
+
 	@Override
 	public String getChoice(String name) {
 		return comboBoxes.get(name).getSelectedItem().toString();
 	}
-	
+
 	@Override
 	public int getChoiceIndex(String name) {
 		return comboBoxes.get(name).getSelectedIndex();
@@ -133,7 +133,7 @@ public class SwingInputPanel extends JPanel implements InputPanel {
 	public File getFile(String name) {
 		return fileSelectors.get(name).getFile();
 	}
-	
+
 	@Override
 	public Object getObject(String name) {
 		// TODO Auto-generated method stub
