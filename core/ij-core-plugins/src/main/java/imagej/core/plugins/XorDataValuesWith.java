@@ -6,6 +6,11 @@ import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.XorConstant;
 
+/**
+ * TODO
+ *
+ * @author Barry DeZonia
+ */
 @Plugin(
 	menuPath = "Process>XOR"
 )
@@ -17,8 +22,14 @@ public class XorDataValuesWith extends NAryOperation
 	
 	public XorDataValuesWith()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new XorConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

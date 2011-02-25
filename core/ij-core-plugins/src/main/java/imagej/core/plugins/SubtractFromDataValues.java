@@ -22,8 +22,14 @@ public class SubtractFromDataValues extends NAryOperation
 	
 	public SubtractFromDataValues()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new SubtractConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }

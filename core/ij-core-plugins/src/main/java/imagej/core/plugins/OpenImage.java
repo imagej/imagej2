@@ -18,7 +18,7 @@ import mpicbg.imglib.type.numeric.RealType;
 /**
  * TODO
  *
- * @author Barry DeZonia
+ * @author Curtis Reuden
  */
 @Plugin(
 	menu={

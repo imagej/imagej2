@@ -22,8 +22,14 @@ public class MultiplyDataValuesBy extends NAryOperation
 	
 	public MultiplyDataValuesBy()
 	{
+	}
+	
+	@Override
+	public void run()
+	{
 		UnaryOperator op = new MultiplyByConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
+		super.run();
 	}
 }
