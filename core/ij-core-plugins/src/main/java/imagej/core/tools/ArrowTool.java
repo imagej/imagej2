@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 /**
  * @author rick
  */
-@Tool(name="Arrow Tool", description="Gives the index and value at the location")
+@Tool(name="Pan Tool", description="Pan image tool")
 public class ArrowTool implements ITool {
 
 
@@ -67,4 +67,9 @@ public class ArrowTool implements ITool {
     {
          throw new UnsupportedOperationException("Not supported yet.");
     }
+
+	@Override
+	public boolean activate() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

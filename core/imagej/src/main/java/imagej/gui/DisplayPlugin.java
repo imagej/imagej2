@@ -1,5 +1,6 @@
 package imagej.gui;
 
+import imagej.plugin.display.DisplayView;
 import imagej.model.Dataset;
 import imagej.plugin.BasePlugin;
 
@@ -14,4 +15,21 @@ public interface DisplayPlugin extends BasePlugin {
 	/** Displays the given dataset, if possible. */
 	void display(Dataset dataset);
 
+	// ++ Added by GBH >>>
+	
+	void addView(DisplayView view);
+
+	void removeView(DisplayView view);
+
+	void removeAllViews();
+
+	void getViews();
+
+	void getView(int n);
+
+	void getActiveView(); 	// returning getView(0) for now
+
+	void pan(float x, float y);
+
+	// <<<
 }

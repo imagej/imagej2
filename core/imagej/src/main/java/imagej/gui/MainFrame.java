@@ -21,14 +21,13 @@ import javax.swing.WindowConstants;
 
 /** A simple and dumb Swing-based main window for ImageJ2. */
 public class MainFrame {
-
+		final JFrame frame = new JFrame("ImageJ");
 	private JToolBar toolBar;
 	private StatusBar statusBar;
 
 	/** Creates a new ImageJ frame that runs as an application. */
 	public MainFrame() {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		final JFrame frame = new JFrame("ImageJ");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		createContentPane(frame);
 		createMenuBar(frame);
@@ -43,7 +42,8 @@ public class MainFrame {
 
 		toolBar = new JToolBar();
 		toolBar.setPreferredSize(new Dimension(26 * 21, 26));//TEMP
-		pane.add(toolBar, BorderLayout.NORTH);
+		frame.add(toolBar, BorderLayout.NORTH);
+		//pane.add(toolBar, BorderLayout.NORTH);
 
 		statusBar = new StatusBar();
 		pane.add(statusBar, BorderLayout.SOUTH);

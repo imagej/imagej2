@@ -7,8 +7,8 @@ import javax.swing.JFrame;
 /**
  * @author rick
  */
-@Tool
-public class FloodFillTool implements ITool {
+@Tool(name="Arrow Tool", description="Gives the index and value at the location")
+public class PanTool implements ITool {
 
 
     public void setJFrame( JFrame jFrame ){

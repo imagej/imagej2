@@ -11,7 +11,7 @@ import javax.swing.JFrame;
  *
  * @author rick
  */
-public class ToolHandler implements MouseWheelListener, KeyListener, MouseListener {
+public class ToolHandler implements MouseListener, MouseWheelListener, KeyListener {
 
     private ITool iTool;
     private JFrame jframe;
@@ -23,7 +23,6 @@ public class ToolHandler implements MouseWheelListener, KeyListener, MouseListen
         this.jframe = jframe;
         jframe.addMouseWheelListener(this);
         jframe.addKeyListener(this);
-        
     }
 
     public ITool getTool() { return iTool; }
@@ -35,7 +34,6 @@ public class ToolHandler implements MouseWheelListener, KeyListener, MouseListen
         {
            // TODO  Mouse Wheel up
         } else { // TODO mouse Wheel down
-            
         }
     }
 
@@ -53,6 +51,8 @@ public class ToolHandler implements MouseWheelListener, KeyListener, MouseListen
     public void keyReleased(KeyEvent ke) {
         iTool.onKeyUp( ke.getKeyCode(), ke.SHIFT_DOWN_MASK );
     }
+
+	// ---------
 
     @Override
     public void mouseClicked(MouseEvent me) {

@@ -66,4 +66,9 @@ public class SprayCanTool implements ITool
     {
          throw new UnsupportedOperationException("Not supported yet.");
     }
+
+	@Override
+	public boolean activate() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }
