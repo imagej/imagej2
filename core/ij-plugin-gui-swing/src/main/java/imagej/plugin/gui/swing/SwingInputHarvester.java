@@ -1,13 +1,13 @@
 package imagej.plugin.gui.swing;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.gui.AbstractInputHarvester;
 import imagej.plugin.gui.InputPanel;
 import imagej.plugin.process.PluginPreprocessor;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -34,6 +34,7 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		final JDialog dialog = optionPane.createDialog(module.getInfo().getLabel());
 		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
 		final JPanel widgetPane = (JPanel) mainPane.getComponent(0);
+		// TODO - use JScrollPane in case there are many widgets
 		widgetPane.add((SwingInputPanel) inputPanel);
 		dialog.setModal(true);
 		dialog.pack();
@@ -43,20 +44,18 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
 
-	private void ensureDialogSizeReasonable(JDialog dialog)
-	{
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		
-		Dimension dialogSize = dialog.getSize();
+	private void ensureDialogSizeReasonable(final JDialog dialog) {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();		
+		final Dimension dialogSize = dialog.getSize();
 
 		int newWidth = dialogSize.width;
 		int newHeight = dialogSize.height;
-		
-		if (dialogSize.width > (0.75*screenSize.width))
-			newWidth = (int)(0.75 * screenSize.width);
-		
-		if (dialogSize.height > (0.75*screenSize.height))
-			newHeight = (int)(0.75 * screenSize.height);
+
+		final int maxWidth = 3 * screenSize.width / 4;
+		final int maxHeight = 3 * screenSize.height / 4;
+
+		if (newWidth > maxWidth) newWidth = maxWidth;
+		if (newHeight > maxHeight) newHeight = maxHeight;
 
 		dialog.setSize(newWidth, newHeight);
 	}
