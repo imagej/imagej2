@@ -14,6 +14,8 @@ import imagej.plugin.Plugin;
 @Plugin(type = DisplayPlugin.class)
 public class NavigableImageDisplay implements DisplayPlugin {
 
+	private NavigableImageFrame imageFrame;
+
 	@Override
 	public boolean canDisplay(Dataset dataset) {
 		return true;
@@ -21,7 +23,7 @@ public class NavigableImageDisplay implements DisplayPlugin {
 
 	@Override
 	public void display(Dataset dataset) {
-		final NavigableImageFrame imageFrame = new NavigableImageFrame();
+		imageFrame = new NavigableImageFrame();
 		imageFrame.setDataset(dataset);
 		imageFrame.setVisible(true);
 	}
@@ -58,7 +60,7 @@ public class NavigableImageDisplay implements DisplayPlugin {
 
 	@Override
 	public void pan(float x, float y) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		imageFrame.getPanel().pan((int) x, (int) y);
 	}
 
 }
