@@ -98,6 +98,10 @@ public class NavigableImageFrame extends JFrame {
 		updatePosition();
 	}
 
+	public NavigableImagePanel getPanel() {
+		return imagePanel;
+	}
+
 	private void updatePosition() {
 		final BufferedImage image = getImagePlane();
 		imagePanel.setImage(image);
@@ -114,7 +118,7 @@ public class NavigableImageFrame extends JFrame {
 		sb.append(image.getType());
 		imageLabel.setText(sb.toString());
 	}
-
+	
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
 		final int[] dims = dataset.getImage().getDimensions();
