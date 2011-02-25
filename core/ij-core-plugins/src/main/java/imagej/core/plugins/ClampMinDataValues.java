@@ -4,25 +4,20 @@ import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.DivideByConstant;
+import imglib.ops.operator.unary.Min;
 
-/**
- * TODO
- *
- * @author Barry DeZonia
- */
 @Plugin(
-	menuPath = "Process>Divide"
+	menuPath = "Process>Min"
 )
 @SuppressWarnings("rawtypes")
-public class DivideDataValuesBy extends NAryOperation
+public class ClampMinDataValues extends NAryOperation
 {
-	@Parameter(label="Enter value to divide each data value by")
+	@Parameter(label="Enter minimum clamp value")
 	private double constant;
 	
-	public DivideDataValuesBy()
+	public ClampMinDataValues()
 	{
-		UnaryOperator op = new DivideByConstant(constant);
+		UnaryOperator op = new Min(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
 	}

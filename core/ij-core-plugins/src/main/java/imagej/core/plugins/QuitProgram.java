@@ -10,11 +10,11 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(
-		menuPath = "File>QuitIJ2"
+		menuPath = "File>Quit IJ2"
 )
 public class QuitProgram implements ImageJPlugin {
 
-	@Parameter(label="Exit ImageJ2?")
+	@Parameter(label="Exit ImageJ 2?")
 	private boolean userWantsToQuit;
 	
 	@Override

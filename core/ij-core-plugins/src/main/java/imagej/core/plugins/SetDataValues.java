@@ -4,25 +4,20 @@ import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.DivideByConstant;
+import imglib.ops.operator.unary.Constant;
 
-/**
- * TODO
- *
- * @author Barry DeZonia
- */
 @Plugin(
-	menuPath = "Process>Divide"
+	menuPath = "Process>Set"
 )
 @SuppressWarnings("rawtypes")
-public class DivideDataValuesBy extends NAryOperation
+public class SetDataValues extends NAryOperation
 {
-	@Parameter(label="Enter value to divide each data value by")
+	@Parameter(label="Enter value to set each data value to")
 	private double constant;
 	
-	public DivideDataValuesBy()
+	public SetDataValues()
 	{
-		UnaryOperator op = new DivideByConstant(constant);
+		UnaryOperator op = new Constant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
 	}

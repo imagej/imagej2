@@ -4,25 +4,20 @@ import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.DivideByConstant;
+import imglib.ops.operator.unary.Max;
 
-/**
- * TODO
- *
- * @author Barry DeZonia
- */
 @Plugin(
-	menuPath = "Process>Divide"
+	menuPath = "Process>Max"
 )
 @SuppressWarnings("rawtypes")
-public class DivideDataValuesBy extends NAryOperation
+public class ClampMaxDataValues extends NAryOperation
 {
-	@Parameter(label="Enter value to divide each data value by")
+	@Parameter(label="Enter maximum clamp value")
 	private double constant;
 	
-	public DivideDataValuesBy()
+	public ClampMaxDataValues()
 	{
-		UnaryOperator op = new DivideByConstant(constant);
+		UnaryOperator op = new Max(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
 	}

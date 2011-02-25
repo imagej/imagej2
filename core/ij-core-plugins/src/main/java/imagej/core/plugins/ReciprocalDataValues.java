@@ -3,22 +3,17 @@ package imagej.core.plugins;
 import imagej.plugin.Plugin;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Sqr;
+import imglib.ops.operator.unary.Reciprocal;
 
-/**
- * TODO
- *
- * @author Barry DeZonia
- */
 @Plugin(
-	menuPath = "Process>Square"
+	menuPath = "Process>Reciprocal"
 )
 @SuppressWarnings("rawtypes")
-public class SquareDataValues extends NAryOperation
+public class ReciprocalDataValues extends NAryOperation
 {
-	public SquareDataValues()
+	public ReciprocalDataValues()
 	{
-		UnaryOperator op = new Sqr();
+		UnaryOperator op = new Reciprocal();
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
 		setFunction(func);
 	}
