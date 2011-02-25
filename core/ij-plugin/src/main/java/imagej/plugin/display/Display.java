@@ -1,12 +1,18 @@
 package imagej.plugin.display;
 
 import imagej.model.Dataset;
+import imagej.plugin.BasePlugin;
 
 /**
+ * TODO
  *
- * @author GBH
+ * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface Display {
+public interface Display extends BasePlugin {
+
+	// DisplayPlugin extends BasePlugin, so that the name of the interface
+	// unambiguously identifies a display plugin.
 
 	boolean canDisplay(Dataset dataset);
 
@@ -15,4 +21,5 @@ public interface Display {
 	void pan(float x, float y);
 
 	void zoom(float factor);
+
 }

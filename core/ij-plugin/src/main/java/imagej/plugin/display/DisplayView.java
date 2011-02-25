@@ -3,8 +3,9 @@ package imagej.plugin.display;
 import imagej.model.Dataset;
 
 /**
+ * TODO
  *
- * @author GBH
+ * @author Grant Harris
  */
 public interface DisplayView {
 	
