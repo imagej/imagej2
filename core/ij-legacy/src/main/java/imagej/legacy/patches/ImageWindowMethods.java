@@ -1,12 +1,8 @@
 package imagej.legacy.patches;
 
-import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.Log;
-import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
-import imagej.legacy.plugin.LegacyPlugin;
-import imagej.model.Dataset;
 
 /** Overrides {@link ImageWindow} methods. */
 public final class ImageWindowMethods {
@@ -19,14 +15,7 @@ public final class ImageWindowMethods {
 	public static void setVisible(ImageWindow obj, boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
-		final ImagePlus imp = obj.getImagePlus();
-
-		// register image with legacy manager
-		final LegacyImageMap imageMap = LegacyManager.getImageMap();
-		final Dataset dataset = imageMap.registerLegacyImage(imp);
-
-		// record resultant dataset as a legacy plugin output
-		LegacyPlugin.getOutputSet().add(dataset);
+		LegacyManager.legacyImageChanged(obj.getImagePlus());
 	}
 
 	/** Replaces {@link ImageWindow#show(). */
