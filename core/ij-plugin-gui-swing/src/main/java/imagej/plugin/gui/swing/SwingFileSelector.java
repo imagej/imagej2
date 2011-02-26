@@ -28,7 +28,7 @@ public class SwingFileSelector extends JPanel
 	public SwingFileSelector(final File initialValue) {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		path = new JTextField(initialValue == null ?
-			"" : initialValue.getAbsolutePath());
+			"" : initialValue.getAbsolutePath(), 20);
 		add(path);
 		add(Box.createHorizontalStrut(3));
 		browse = new JButton("Browse");
