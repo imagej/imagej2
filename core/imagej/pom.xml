@@ -42,13 +42,6 @@
 			<artifactId>ij-plugin-gui-swing</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>com.apple</groupId>
-			<artifactId>AppleJavaExtensions</artifactId>
-			<version>1.4</version>
-		</dependency>
--->
 		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>forms</artifactId>
@@ -72,21 +65,19 @@
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!--
+		<dependency>
+			<groupId>com.apple</groupId>
+			<artifactId>AppleJavaExtensions</artifactId>
+			<version>1.4</version>
+			<scope>system</scope>
+		</dependency>
+		-->
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>imagej.gui.MainFrame</mainClass>
-							<packageName>imagej.gui</packageName>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -108,21 +99,31 @@
 						</goals>
 					</execution>
 				</executions>
-
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>imagej.gui.MainFrame</mainClass>
+							<packageName>imagej.gui</packageName>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
-					<programs>
-						<program>
-							<mainClass>imagej.gui.MainFrame</mainClass>
-							<name>imagej</name>
-						</program>
-					</programs>
-					<extraJvmArguments>-mx512m</extraJvmArguments>
-					<repositoryLayout>flat</repositoryLayout>
-					<repositoryName>lib</repositoryName>
+					<classpathScope>runtime</classpathScope>
+					<mainClass>imagej.gui.MainFrame</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
