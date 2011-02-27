@@ -21,6 +21,7 @@
 		<module>ij-common</module>
 		<module>ij-core-plugins</module>
 		<module>ij-data-model</module>
+		<module>ij-events</module>
 		<module>ij-legacy</module>
 		<module>ij-plugin</module>
 		<module>ij-plugin-gui-swing</module>
