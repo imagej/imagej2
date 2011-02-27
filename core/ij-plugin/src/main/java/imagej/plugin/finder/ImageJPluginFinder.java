@@ -24,11 +24,11 @@ public class ImageJPluginFinder implements IPluginFinder {
 		final long endTime = System.currentTimeMillis();
 		plugins.addAll(pluginList);
 		if (Log.isDebug()) {
-			final float time = (endTime - startTime) / 1000f;
+			final long time = endTime - startTime;
 			Log.debug("Found " + pluginList.size() +
-				" plugins in " + time + " seconds");
+				" plugins in " + time + " ms:");
 			for (PluginEntry<ImageJPlugin> pe : pluginList) {
-				Log.debug("Found plugin: " + pe);
+				Log.debug("- " + pe);
 			}
 		}
 	}
