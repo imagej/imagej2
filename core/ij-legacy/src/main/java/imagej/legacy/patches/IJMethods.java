@@ -2,6 +2,8 @@ package imagej.legacy.patches;
 
 import ij.IJ;
 import imagej.Log;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 
 /**
  * Overrides {@link IJ} methods.
@@ -10,10 +12,15 @@ import imagej.Log;
  */
 public class IJMethods {
 
+	/** Resolution to use when converting double progress to int ratio. */
+	private static final int PROGRESS_GRANULARITY = 1000;
+
 	/** Appends {@link IJ#showProgress(double)}. */
 	public static void showProgress(final double progress) {
-		Log.debug("showProgress: " + progress);
-		// TODO
+		// approximate progress as int ratio
+		final int currentIndex = (int) (PROGRESS_GRANULARITY * progress);
+		final int finalIndex = PROGRESS_GRANULARITY;
+		showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showProgress(int, int)}. */
@@ -21,13 +28,15 @@ public class IJMethods {
 		final int finalIndex)
 	{
 		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
-		// TODO
+		// report progress through global event mechanism
+		Events.publish(new StatusEvent(currentIndex, finalIndex));
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
 	public static void showStatus(final String s) {
 		Log.debug("showStatus: " + s);
-		// TODO
+		// report status through global event mechanism
+		Events.publish(new StatusEvent(s));
 	}
 
 }

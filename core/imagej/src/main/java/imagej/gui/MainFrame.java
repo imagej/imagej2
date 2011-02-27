@@ -25,37 +25,36 @@ import javax.swing.WindowConstants;
  * @author Curtis Rueden
  */
 public class MainFrame {
-		final JFrame frame = new JFrame("ImageJ");
-	private JToolBar toolBar;
-	private StatusBar statusBar;
+
+	private final JFrame frame;
+	private final JToolBar toolBar;
+	private final StatusBar statusBar;
 
 	/** Creates a new ImageJ frame that runs as an application. */
 	public MainFrame() {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		frame = new JFrame("ImageJ");
+		toolBar = new JToolBar();
+		statusBar = new StatusBar();
+
+		final JPanel pane = new JPanel();
+		frame.setContentPane(pane);
+		pane.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		createContentPane(frame);
-		createMenuBar(frame);
+
+		toolBar.setPreferredSize(new Dimension(26 * 21, 26));//TEMP
+		pane.add(toolBar, BorderLayout.NORTH);
+		pane.add(statusBar, BorderLayout.SOUTH);
+
+		createMenuBar();
+
 		frame.pack();
 		frame.setVisible(true);
 	}
 
-	private void createContentPane(JFrame frame) {
-		final JPanel pane = new JPanel();
-		frame.setContentPane(pane);
-		pane.setLayout(new BorderLayout());
-
-		toolBar = new JToolBar();
-		toolBar.setPreferredSize(new Dimension(26 * 21, 26));//TEMP
-		frame.add(toolBar, BorderLayout.NORTH);
-		//pane.add(toolBar, BorderLayout.NORTH);
-
-		statusBar = new StatusBar();
-		pane.add(statusBar, BorderLayout.SOUTH);
-	}
-
-	private void createMenuBar(JFrame frame) {
+	private void createMenuBar() {
 		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setText("Discovered " + entries.size() + " plugins");
+		statusBar.setStatus("Discovered " + entries.size() + " plugins");
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final JMenuBar menuBar = new JMenuBar();
 		new JMenuBarCreator().createMenus(rootMenu, menuBar);
