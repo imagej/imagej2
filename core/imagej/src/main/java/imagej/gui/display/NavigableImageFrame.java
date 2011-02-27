@@ -121,7 +121,6 @@ public class NavigableImageFrame extends JFrame {
 	
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final int[] dims = dataset.getImage().getDimensions();
 		final int no = Index.positionToRaster(dims, pos);
 		final Object plane = dataset.getPlane(no);
 		if (plane instanceof byte[]) {
