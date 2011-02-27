@@ -15,7 +15,7 @@ public final class ImagePlusMethods {
 		// prevent instantiation of utility class
 	}
 
-	/** Replaces {@link ImagePlus#updateAndDraw()). */
+	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		LegacyManager.legacyImageChanged(obj);
