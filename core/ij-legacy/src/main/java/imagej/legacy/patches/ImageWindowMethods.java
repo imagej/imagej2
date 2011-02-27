@@ -15,14 +15,14 @@ public final class ImageWindowMethods {
 		// prevent instantiation of utility class
 	}
 
-	/** Replaces {@link ImageWindow#setVisible(boolean). */
+	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
 	public static void setVisible(ImageWindow obj, boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
 		LegacyManager.legacyImageChanged(obj.getImagePlus());
 	}
 
-	/** Replaces {@link ImageWindow#show(). */
+	/** Replaces {@link ImageWindow#show()}. */
 	public static void show(ImageWindow obj) {
 		setVisible(obj, true);
 	}
