@@ -57,7 +57,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 			pe.setMenuPath(menuPath);
 			pe.setPresets(presets);
 			plugins.add(pe);
-			Log.debug("Found legacy plugin: " + pe);
+			Log.debug("Found legacy plugin: " + pe.getPresets().get("className") +
+				"(" + pe.getPresets().get("arg") + ")");
 		}
 	}
 
