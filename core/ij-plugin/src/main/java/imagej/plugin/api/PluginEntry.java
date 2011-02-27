@@ -209,29 +209,40 @@ public class PluginEntry<T extends BasePlugin>
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(pluginClassName);
-		sb.append(" [");
 		boolean firstField = true;
 
 		if (name != null && !name.isEmpty()) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("name = " + name);
 		}
 
 		if (label != null && !label.isEmpty()) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("label = " + label);
 		}
 
 		if (description != null && !description.isEmpty()) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("description = " + description);
 		}
 
 		if (!menuPath.isEmpty()) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("menu = ");
 			boolean firstMenu = true;
@@ -243,25 +254,34 @@ public class PluginEntry<T extends BasePlugin>
 		}
 
 		if (iconPath != null && !iconPath.isEmpty()) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("iconPath = " + iconPath);
 		}
 
 		if (priority < Integer.MAX_VALUE) {
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append("priority = " + priority);
 		}
 
 		for (final String key : presets.keySet()) {
 			final Object value = presets.get(key); 
-			if (firstField) firstField = false;
+			if (firstField) {
+				sb.append(" [");
+				firstField = false;
+			}
 			else sb.append("; ");
 			sb.append(key + " = '" + value + "'");
 		}
 
-		sb.append("]");
+		if (!firstField) sb.append("]");
 
 		return sb.toString();
 	}

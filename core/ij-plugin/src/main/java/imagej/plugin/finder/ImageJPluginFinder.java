@@ -22,6 +22,11 @@ public class ImageJPluginFinder implements IPluginFinder {
 		final ArrayList<PluginEntry<ImageJPlugin>> pluginList =
 			PluginIndex.getIndex().getPlugins(ImageJPlugin.class);
 		plugins.addAll(pluginList);
+		if (Log.isDebug()) {
+			for (PluginEntry<ImageJPlugin> pe : pluginList) {
+				Log.debug("Found plugin: " + pe);
+			}
+		}
 	}
 
 }

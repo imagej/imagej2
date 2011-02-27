@@ -56,7 +56,7 @@ public class Log {
 	public static void info(String msg, Throwable t) {
 		logger.info(msg, t);
 	}
-
+	
 	public static void trace(String msg) {
 		logger.trace(msg);
 	}
@@ -79,6 +79,26 @@ public class Log {
 
 	public static void warn(String msg, Throwable t) {
 		logger.warn(msg, t);
+	}
+
+	public static boolean isDebug() {
+		return logger.isDebugEnabled();
+	}
+
+	public static boolean isError() {
+		return logger.isErrorEnabled();
+	}
+
+	public static boolean isInfo() {
+		return logger.isInfoEnabled();
+	}
+
+	public static boolean isTrace() {
+		return logger.isTraceEnabled();
+	}
+
+	public static boolean isWarn() {
+		return logger.isWarnEnabled();
 	}
 
 }
