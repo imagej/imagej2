@@ -117,13 +117,17 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>java</goal>
+							<goal>exec</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<classpathScope>runtime</classpathScope>
-					<mainClass>imagej.gui.MainFrame</mainClass>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath/>
+						<argument>imagej.gui.MainFrame</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
