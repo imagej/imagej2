@@ -44,9 +44,9 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final long endTime = System.currentTimeMillis();
-		final float time = (endTime - startTime) / 1000f;
+		final long time = endTime - startTime;
 		Log.debug("Found " + commands.size() +
-			" legacy plugins in " + time + " seconds");
+			" legacy plugins in " + time + " ms:");
 		for (final Object key : commands.keySet()) {
 			final String ij1PluginString = commands.get(key).toString();
 			final String className = parsePluginClass(ij1PluginString);
@@ -60,7 +60,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 			pe.setMenuPath(menuPath);
 			pe.setPresets(presets);
 			plugins.add(pe);
-			Log.debug("Found legacy plugin: " + className + "(" + arg + ")");
+			Log.debug("- " + className + "(" + arg + ")");
 		}
 	}
 
