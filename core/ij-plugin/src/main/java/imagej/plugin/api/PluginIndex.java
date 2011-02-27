@@ -110,7 +110,7 @@ public class PluginIndex {
 		else {
 			// parse menuPath attribute
 			final String path = item.annotation().menuPath();
-			parseMenuPath(menuPath, path);
+			if (!path.isEmpty()) parseMenuPath(menuPath, path);
 		}
 		pe.setMenuPath(menuPath);
 
