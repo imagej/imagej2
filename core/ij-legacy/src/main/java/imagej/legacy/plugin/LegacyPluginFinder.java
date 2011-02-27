@@ -19,14 +19,16 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.KeyStroke;
 
 /**
- * TODO
+ * Discovers legacy ImageJ 1.x plugins.
  * 
  * @author Curtis Rueden
  */
@@ -35,6 +37,14 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	private static final String LEGACY_PLUGIN_CLASS =
 		LegacyPlugin.class.getName();
+
+	/** A list of plugins to exclude from legacy plugin discovery. */
+	private final Set<String> blacklist;
+
+	public LegacyPluginFinder() {
+		blacklist = new HashSet<String>();
+		blacklist.add("ij.plugin.Commands(quit)");
+	}
 
 	@Override
 	public void findPlugins(List<PluginEntry<?>> plugins) {
@@ -48,20 +58,31 @@ public class LegacyPluginFinder implements IPluginFinder {
 		Log.debug("Found " + commands.size() +
 			" legacy plugins in " + time + " ms:");
 		for (final Object key : commands.keySet()) {
-			final String ij1PluginString = commands.get(key).toString();
-			final String className = parsePluginClass(ij1PluginString);
-			final List<MenuEntry> menuPath = menuTable.get(key);
-			final String arg = parseArg(ij1PluginString);
-			final Map<String, Object> presets = new HashMap<String, Object>();
-			presets.put("className", className);
-			presets.put("arg", arg);
 			final PluginEntry<ImageJPlugin> pe =
-				new PluginEntry<ImageJPlugin>(LEGACY_PLUGIN_CLASS, ImageJPlugin.class);
-			pe.setMenuPath(menuPath);
-			pe.setPresets(presets);
-			plugins.add(pe);
-			Log.debug("- " + className + "(" + arg + ")");
+				createEntry(key, commands, menuTable);
+			if (pe != null) plugins.add(pe);
 		}
+	}
+
+	private PluginEntry<ImageJPlugin> createEntry(final Object key,
+		final Hashtable<?, ?> commands,
+		final Map<String, List<MenuEntry>> menuTable)
+	{
+		final String ij1PluginString = commands.get(key).toString();
+		if (blacklist.contains(ij1PluginString)) return null;
+
+		final String className = parsePluginClass(ij1PluginString);
+		final String arg = parseArg(ij1PluginString);
+		final List<MenuEntry> menuPath = menuTable.get(key);
+		final Map<String, Object> presets = new HashMap<String, Object>();
+		presets.put("className", className);
+		presets.put("arg", arg);
+		final PluginEntry<ImageJPlugin> pe =
+			new PluginEntry<ImageJPlugin>(LEGACY_PLUGIN_CLASS, ImageJPlugin.class);
+		pe.setMenuPath(menuPath);
+		pe.setPresets(presets);
+		Log.debug("- " + className + "(" + arg + ")");
+		return pe;
 	}
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */
