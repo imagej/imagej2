@@ -15,7 +15,7 @@ public final class Events {
 	}
 
 	public static <E extends ImageJEvent> void publish(final E e) {
-		EventBus.publish(e.getClass(), e);
+		EventBus.publish(e);
 	}
 
 	public static <E extends ImageJEvent> void subscribe(
