@@ -54,6 +54,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	}
 
 	public void addEntry(final PluginEntry<?> entry) {
+		if (entry.getMenuPath().isEmpty()) return; // no menu
 		addChild(entry, 0);
 	}
 
