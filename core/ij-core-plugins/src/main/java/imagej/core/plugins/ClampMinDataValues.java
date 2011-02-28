@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.Min;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Min"
+	menuPath = "Process>Math2>Min"
 )
 @SuppressWarnings("rawtypes")
 public class ClampMinDataValues extends NAryOperation

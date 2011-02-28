@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.OrConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>OR"
+	menuPath = "Process>Math2>OR"
 )
 @SuppressWarnings("rawtypes")
 public class OrDataValuesWith extends NAryOperation

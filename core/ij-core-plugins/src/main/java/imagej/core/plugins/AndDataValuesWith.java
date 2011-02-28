@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.AndConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>AND"
+	menuPath = "Process>Math2>AND"
 )
 @SuppressWarnings("rawtypes")
 public class AndDataValuesWith extends NAryOperation

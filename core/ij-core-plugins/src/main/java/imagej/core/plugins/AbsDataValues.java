@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Abs;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Abs"
+	menuPath = "Process>Math2>Abs"
 )
 @SuppressWarnings("rawtypes")
 public class AbsDataValues extends NAryOperation
