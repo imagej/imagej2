@@ -33,7 +33,7 @@ public final class PluginUtils {
 				finder.findPlugins(plugins);
 			}
 			catch (InstantiationException e) {
-				Log.error(e);
+				Log.warn("Invalid plugin finder: " + item, e);
 			}
 		}
 		return plugins;

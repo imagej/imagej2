@@ -1,10 +1,10 @@
 package imagej.gui.display;
 
+import imagej.model.Dataset;
+import imagej.plugin.Plugin;
 import imagej.plugin.display.Display;
 import imagej.plugin.display.DisplayView;
 import imagej.plugin.display.LayeredDisplay;
-import imagej.model.Dataset;
-import imagej.plugin.Plugin;
 
 /**
  * TODO
@@ -13,7 +13,9 @@ import imagej.plugin.Plugin;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class NavigableImageDisplay extends AbstractSwingDisplay implements LayeredDisplay {
+public class NavigableImageDisplay extends AbstractSwingDisplay
+	implements LayeredDisplay
+{
 
 	private NavigableImageFrame imageFrame;
 
@@ -35,6 +37,16 @@ public class NavigableImageDisplay extends AbstractSwingDisplay implements Layer
 		// TODO - use DisplayView instead of Dataset directly
 		imageFrame.setDataset(dataset);
 		imageFrame.setVisible(true);
+	}
+
+	@Override
+	public void pan(float x, float y) {
+		imageFrame.getPanel().pan((int) x, (int) y);
+	}
+
+	@Override
+	public void zoom(float factor) {
+		// TODO
 	}
 
 	@Override
@@ -65,16 +77,6 @@ public class NavigableImageDisplay extends AbstractSwingDisplay implements Layer
 	@Override
 	public DisplayView getActiveView() {
 		return getView(0);
-	}
-
-	@Override
-	public void pan(float x, float y) {
-		imageFrame.getPanel().pan((int) x, (int) y);
-	}
-
-	@Override
-	public void zoom(float factor) {
-		// TODO
 	}
 
 }

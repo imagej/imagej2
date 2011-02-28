@@ -4,6 +4,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginException;
+import imagej.plugin.api.SezpozEntry;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -50,11 +51,11 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 		throws PluginException
 	{
 		this.pluginEntry = pluginEntry;
-		pluginClass = pluginEntry.getPluginClass();
+		pluginClass = pluginEntry.loadClass();
 		checkFields(pluginClass, plugin, true);
 	}
 
-	public PluginEntry<T> getPluginEntry() {
+	public SezpozEntry<T> getPluginEntry() {
 		return pluginEntry;
 	}
 

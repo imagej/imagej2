@@ -42,7 +42,7 @@ public class PluginIndex {
 		return getIndex(null);
 	}
 
-	public static PluginIndex getIndex(ClassLoader classLoader) {
+	public static PluginIndex getIndex(final ClassLoader classLoader) {
 		if (instance == null) instance = new PluginIndex(classLoader);
 		return instance;
 	}
@@ -87,37 +87,35 @@ public class PluginIndex {
 		return outputList;
 	}
 
-	// -- Helper methods --
-
 	private <T extends BasePlugin> PluginEntry<T> createEntry(
 		final IndexItem<Plugin, BasePlugin> item)
 	{
-		final String pluginClassName = item.className();
+		final String className = item.className();
+		final Plugin plugin = item.annotation();
+
 		@SuppressWarnings("unchecked")
-		final Class<T> pluginType = (Class<T>) item.annotation().type();
+		final Class<T> pluginType = (Class<T>) plugin.type();
 
-		final PluginEntry<T> pe = new PluginEntry<T>(pluginClassName, pluginType);
-
-		pe.setName(item.annotation().name());
-		pe.setLabel(item.annotation().label());
-		pe.setDescription(item.annotation().description());
+		final PluginEntry<T> entry = new PluginEntry<T>(className, pluginType);
+		entry.setName(plugin.name());
+		entry.setLabel(plugin.label());
+		entry.setDescription(plugin.description());
+		entry.setIconPath(plugin.iconPath());
+		entry.setPriority(plugin.priority());
 
 		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
-		final Menu[] menu = item.annotation().menu();
+		final Menu[] menu = plugin.menu();
 		if (menu.length > 0) {
 			parseMenuPath(menuPath, menu);
 		}
 		else {
 			// parse menuPath attribute
-			final String path = item.annotation().menuPath();
+			final String path = plugin.menuPath();
 			if (!path.isEmpty()) parseMenuPath(menuPath, path);
 		}
-		pe.setMenuPath(menuPath);
+		entry.setMenuPath(menuPath);
 
-		pe.setIconPath(item.annotation().iconPath());
-		pe.setPriority(item.annotation().priority());
-
-		return pe;
+		return entry;
 	}
 
 	private void registerType(PluginEntry<?> entry, Class<?> type) {
