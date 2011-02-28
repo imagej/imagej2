@@ -93,17 +93,22 @@ public class Dataset {
 			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
 	}
 
-	public static <T extends RealType<T>> Dataset create(final String name,
-		final T type, final int[] dims, final AxisLabel[] axes)
+	// TODO - relocate this when its clear where it should go
+	public static <T extends RealType<T>> Image<T> createPlanarImage(final String name, final T type, final int[] dims)
 	{
 		final PlanarContainerFactory pcf = new PlanarContainerFactory();
 		final ImageFactory<T> imageFactory = new ImageFactory<T>(type, pcf);
-		final Image<T> image = imageFactory.createImage(dims, name);
+		return imageFactory.createImage(dims, name);
+	}
+	
+	public static <T extends RealType<T>> Dataset create(final String name,
+		final T type, final int[] dims, final AxisLabel[] axes)
+	{
+		Image<T> image = createPlanarImage(name, type, dims);
 		final Metadata metadata = new Metadata();
 		metadata.setName(name);
 		metadata.setAxes(axes);
-		final Dataset dataset = new Dataset(image, metadata);
-		return dataset;
+		return new Dataset(image, metadata);
 	}
 
 }
