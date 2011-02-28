@@ -1,6 +1,5 @@
 package imagej.legacy;
 
-import imagej.Log;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -56,7 +55,6 @@ public class CodeHacker {
 	public void insertAfterMethod(final String fullClass,
 		final String methodSig, final String newCode)
 	{
-		Log.debug("newCode = " + newCode);
 		try {
 			getMethod(fullClass, methodSig).insertAfter(newCode);
 		}
