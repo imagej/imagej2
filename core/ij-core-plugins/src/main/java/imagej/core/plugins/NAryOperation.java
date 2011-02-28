@@ -17,7 +17,7 @@ import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
-// TODO - was abstract - not sure that was necessary - removed for now
+// TODO - class was abstract - not sure that was necessary - removed for now
 
 /**
  * TODO
@@ -81,7 +81,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin {
 		}
 		
 		if (function == null)
-			throw new IllegalArgumentException("function reference is null: function must be set via setFunction() before calling NAryOperation::run()");
+			throw new IllegalStateException("function reference is null: function must be set via constructor or setFunction() before calling NAryOperation::run()");
 			
 		//@SuppressWarnings("unchecked")
 		final Image<T>[] inputs = new Image[in.size()];
