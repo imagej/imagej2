@@ -4,10 +4,8 @@ import imagej.model.Dataset;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
@@ -17,7 +15,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>NaN Background"
+	menuPath = "Process>Math2>NaN Background"
 )
 public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgorithmPlugin<T>
 {
@@ -26,10 +24,10 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 	@Parameter
 	private Dataset in;
 
-	@Parameter
+	@Parameter(label="Low threshold")
 	private double loThreshold;
 	
-	@Parameter
+	@Parameter(label="High threshold")
 	private double hiThreshold;
 
 	// ********** public interface ****************************************************************

@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.MultiplyByConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Multiply"
+	menuPath = "Process>Math2>Multiply"
 )
 @SuppressWarnings("rawtypes")
 public class MultiplyDataValuesBy extends NAryOperation

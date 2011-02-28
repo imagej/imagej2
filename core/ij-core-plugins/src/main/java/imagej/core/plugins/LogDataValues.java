@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Log;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Log"
+	menuPath = "Process>Math2>Log"
 )
 @SuppressWarnings("rawtypes")
 public class LogDataValues extends NAryOperation
