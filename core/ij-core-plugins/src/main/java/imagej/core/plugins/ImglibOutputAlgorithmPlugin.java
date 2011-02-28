@@ -44,7 +44,7 @@ public class ImglibOutputAlgorithmPlugin<T extends RealType<T>> implements Image
 	public void run()
 	{
 		if (this.algorithm == null)
-			throw new IllegalStateException("algorithm reference is null: algorithm must be set via constructor or setAlgorithm() before calling ImglibAlgorithmPlugin::run()");
+			throw new IllegalStateException("algorithm reference is null: algorithm must be set via constructor or setAlgorithm() before calling ImglibOutputAlgorithmPlugin::run()");
 		
 		if (!algorithm.checkInput() || !algorithm.process())
 			throw new IllegalStateException(algorithm.getErrorMessage());
