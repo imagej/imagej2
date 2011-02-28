@@ -6,12 +6,10 @@ import imagej.tool.Tool;
 /**
  * TODO
  * 
- * @author Rick Lentz
- * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Arrow", iconPath="/icons/arrow.png")
-public class ArrowTool extends AbstractTool {
+@Tool(name = "Zoom", iconPath = "/icons/zoom.png")
+public class ZoomTool extends AbstractTool {
 
 	// TODO
 

@@ -1,5 +1,6 @@
 package imagej.gui.display;
 
+import imagej.plugin.display.Display;
 import imagej.tool.ITool;
 
 import java.awt.event.InputEvent;
@@ -18,14 +19,16 @@ import java.awt.event.MouseWheelListener;
  * @author Grant Harris
  * @author Rick Lentz
  */
-public class AbstractSwingDisplay
-	implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener
+public abstract class AbstractSwingDisplay implements Display,
+	KeyListener, MouseListener, MouseMotionListener, MouseWheelListener
 {
 
 	private ITool activeTool;
 
 	public void setActiveTool(final ITool activeTool) {
+		if (this.activeTool != null) this.activeTool.deactivate();
 		this.activeTool = activeTool;
+		activeTool.activate(this);
 	}
 
 	public ITool getActiveTool() {
@@ -33,7 +36,7 @@ public class AbstractSwingDisplay
 	}
 
 	@Override
-	public void mouseWheelMoved( MouseWheelEvent mwe ) {
+	public void mouseWheelMoved(MouseWheelEvent mwe) {
 		int notches = mwe.getWheelRotation();
 		if (notches < 0)
 		{

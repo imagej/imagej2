@@ -25,10 +25,6 @@ public @interface Plugin {
 
 	String description() default "";
 
-	String menuPath() default "";
-
-	Menu[] menu() default {};
-
 	String iconPath() default "";
 
 	/**
@@ -38,5 +34,9 @@ public @interface Plugin {
 	 * control the order of their execution.
 	 */
 	int priority() default Integer.MAX_VALUE;
+
+	String menuPath() default "";
+
+	Menu[] menu() default {};
 
 }

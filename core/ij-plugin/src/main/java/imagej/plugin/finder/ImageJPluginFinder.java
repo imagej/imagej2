@@ -25,9 +25,8 @@ public class ImageJPluginFinder implements IPluginFinder {
 		plugins.addAll(pluginList);
 		if (Log.isDebug()) {
 			final long time = endTime - startTime;
-			Log.debug("Found " + pluginList.size() +
-				" plugins in " + time + " ms:");
-			for (PluginEntry<ImageJPlugin> pe : pluginList) {
+			Log.debug("Found " + pluginList.size() + " plugins in " + time + " ms:");
+			for (final PluginEntry<ImageJPlugin> pe : pluginList) {
 				Log.debug("- " + pe);
 			}
 		}

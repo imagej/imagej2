@@ -14,33 +14,13 @@ import java.util.Map;
  *
  * @author Curtis Rueden
  */
-public class PluginEntry<T extends BasePlugin>
-	implements Comparable<PluginEntry<?>>
-{
-
-	/** Fully qualified class name of this entry's plugin. */
-	private String pluginClassName;
+public class PluginEntry<T extends BasePlugin> extends SezpozEntry<T> {
 
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
 	private Class<T> pluginType;
 
-	/** Unique name of the plugin. */
-	private String name;
-
-	/** Human-readable label for describing the plugin. */
-	private String label;
-
-	/** String describing the plugin in detail. */
-	private String description;
-
 	/** Path to this plugin's suggested position in the menu structure. */
 	private List<MenuEntry> menuPath;
-
-	/** Resource path to this plugin's icon. */
-	private String iconPath;
-
-	/** Sort priority of the plugin. */
-	private int priority = Integer.MAX_VALUE;
 
 	/** List of inputs with fixed, preset values. */
 	private Map<String, Object> presets;
@@ -48,55 +28,20 @@ public class PluginEntry<T extends BasePlugin>
 	/** Factory used to create a module associated with this entry's plugin. */
 	private PluginModuleFactory<T> factory;
 
-	/** Class object for this entry's plugin. Lazily loaded. */
-	private Class<?> pluginClass;
-
-	public PluginEntry(final String pluginClassName, final Class<T> pluginType) {
-		setPluginClassName(pluginClassName);
+	public PluginEntry(final String className, final Class<T> pluginType) {
+		setClassName(className);
 		setPluginType(pluginType);
 		setMenuPath(null);
 		setPresets(null);
 		setPluginModuleFactory(null);
 	}
 
-	public void setPluginClassName(final String pluginClassName) {
-		this.pluginClassName = pluginClassName;
-	}
-
-	public String getPluginClassName() {
-		return pluginClassName;
-	}
-
 	public void setPluginType(Class<T> pluginType) {
 		this.pluginType = pluginType;
 	}
-	
+
 	public Class<T> getPluginType() {
 		return pluginType;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setLabel(final String label) {
-		this.label = label;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	public void setMenuPath(final List<MenuEntry> menuPath) {
@@ -110,22 +55,6 @@ public class PluginEntry<T extends BasePlugin>
 
 	public List<MenuEntry> getMenuPath() {
 		return menuPath;
-	}
-
-	public void setIconPath(final String iconPath) {
-		this.iconPath = iconPath;
-	}
-
-	public String getIconPath() {
-		return iconPath;
-	}
-
-	public void setPriority(final int priority) {
-		this.priority = priority;
-	}
-
-	public int getPriority() {
-		return priority;
 	}
 
 	public void setPresets(final Map<String, Object> presets) {
@@ -162,55 +91,15 @@ public class PluginEntry<T extends BasePlugin>
 		return factory.createModule(this);
 	}
 
-	/** Gets the class object for this entry's plugin, loading it as needed. */
-	public Class<?> getPluginClass() throws PluginException {
-		if (pluginClass == null) {
-			final Class<?> c;
-			try {
-				c = Class.forName(pluginClassName);
-			}
-			catch (ClassNotFoundException e) {
-				throw new PluginException("Class not found: " + pluginClassName, e);
-			}
-			if (!pluginType.isAssignableFrom(c)) {
-				throw new PluginException("Not a plugin: " + pluginClassName);
-			}
-			pluginClass = c;
-		}
-		return pluginClass;
-	}
-
-	/** Creates an instance of this entry's associated plugin. */
-	public T createInstance() throws PluginException {
-		final Class<?> c = getPluginClass();
-	
-		// instantiate plugin
-		final Object pluginInstance;
-		try {
-			pluginInstance = c.newInstance();
-		}
-		catch (InstantiationException e) {
-			throw new PluginException(e);
-		}
-		catch (IllegalAccessException e) {
-			throw new PluginException(e);
-		}
-		@SuppressWarnings("unchecked")
-		final T plugin = (T) pluginInstance;
-		return plugin;
-	}
-
-	@Override
-	public int compareTo(final PluginEntry<?> entry) {
-		return priority - entry.priority;
-	}
-
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(pluginClassName);
+
+		final String className = getClassName();
+		sb.append(className);
 		boolean firstField = true;
 
+		final String name = getName();
 		if (name != null && !name.isEmpty()) {
 			if (firstField) {
 				sb.append(" [");
@@ -220,6 +109,7 @@ public class PluginEntry<T extends BasePlugin>
 			sb.append("name = " + name);
 		}
 
+		final String label = getLabel();
 		if (label != null && !label.isEmpty()) {
 			if (firstField) {
 				sb.append(" [");
@@ -229,6 +119,7 @@ public class PluginEntry<T extends BasePlugin>
 			sb.append("label = " + label);
 		}
 
+		final String description = getDescription();
 		if (description != null && !description.isEmpty()) {
 			if (firstField) {
 				sb.append(" [");
@@ -253,6 +144,7 @@ public class PluginEntry<T extends BasePlugin>
 			}
 		}
 
+		final String iconPath = getIconPath();
 		if (iconPath != null && !iconPath.isEmpty()) {
 			if (firstField) {
 				sb.append(" [");
@@ -262,6 +154,7 @@ public class PluginEntry<T extends BasePlugin>
 			sb.append("iconPath = " + iconPath);
 		}
 
+		final int priority = getPriority();
 		if (priority < Integer.MAX_VALUE) {
 			if (firstField) {
 				sb.append(" [");
