@@ -45,7 +45,7 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 	{
 		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
 		{
-			Image<FloatType> junkImage = createImage(new FloatType(), new int[]{200,200});
+			Image<FloatType> junkImage = Dataset.createPlanarImage("",new FloatType(), new int[]{200,200});
 			Cursor<FloatType> cursor = junkImage.createCursor();
 			int index = 0;
 			for (FloatType pixRef : cursor)
@@ -122,13 +122,5 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 			return outputImage;
 		}
 		
-	}
-	
-	/** create an image of given type and dimensions using specified container type */
-	private static <K extends RealType<K>> Image<K> createImage(RealType<K> type, int[] dimensions)
-	{
-		PlanarContainerFactory cFact = new PlanarContainerFactory();
-		ImageFactory<K> factory = new ImageFactory<K>((K)type, cFact);
-		return factory.createImage(dimensions);
 	}
 }
