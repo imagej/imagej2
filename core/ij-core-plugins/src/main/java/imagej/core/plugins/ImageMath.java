@@ -91,6 +91,13 @@ public class ImageMath extends NAryOperation
 		if (in.size() != 2)
 			throw new IllegalArgumentException("ImageMath requires exactly two input images");
 		
+		int[] img1Dims = in.get(0).getImage().getDimensions();
+		
+		int[] img2Dims = in.get(1).getImage().getDimensions();
+
+		if ( ! dimsTheSame(img1Dims, img2Dims) )
+			throw new IllegalArgumentException("ImageMath requires the two input images to have the same dimensions");
+
 		BinaryOperator binOp = operators.get(operator);
 		
 		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
@@ -98,6 +105,18 @@ public class ImageMath extends NAryOperation
 		setFunction(binaryFunction);
 		
 		super.run();
+	}
+	
+	private boolean dimsTheSame(int[] dims1, int[] dims2)
+	{
+		if (dims1.length != dims2.length)
+			return false;
+		
+		for (int i = 0; i < dims1.length; i++)
+			if (dims1[i] != dims2[i])
+				return false;
+		
+		return true;
 	}
 	
 }
