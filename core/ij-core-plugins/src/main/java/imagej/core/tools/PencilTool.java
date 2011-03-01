@@ -9,7 +9,7 @@ import imagej.tool.Tool;
  * @author Rick Lentz
  * @author Grant Harris
  */
-@Tool(name = "Pencil", iconPath = "/icons/pencil.png")
+@Tool(name = "Pencil", iconPath = "/tools/pencil.png")
 public class PencilTool extends AbstractTool {
 
 	// TODO

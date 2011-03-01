@@ -6,12 +6,13 @@ import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolUtils;
 
-import java.awt.Dimension;
 import java.net.URL;
 import java.util.List;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 /**
@@ -22,16 +23,15 @@ import javax.swing.JToolBar;
 public class ToolBar extends JToolBar {
 
 	public ToolBar() {
-		setPreferredSize(new Dimension(26 * 21, 26));//TEMP
 		populateToolBar();
 	}
 
 	private void populateToolBar() {
 		final List<ToolEntry> entries = ToolUtils.findTools();
+		final ButtonGroup buttonGroup = new ButtonGroup();
 		for (final ToolEntry entry : entries) {
 			try {
-				final JButton button = createButton(entry);
-				add(button);
+				add(createButton(entry, buttonGroup));
 			}
 			catch (PluginException e) {
 				Log.warn("Invalid tool: " + entry, e);
@@ -39,14 +39,16 @@ public class ToolBar extends JToolBar {
 		}
 	}
 
-	private JButton createButton(final ToolEntry entry) throws PluginException {
+	private AbstractButton createButton(final ToolEntry entry,
+		final ButtonGroup buttonGroup) throws PluginException
+	{
 		final ITool tool = entry.createInstance();
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
 		final URL iconURL = entry.getIconURL();
 
-		final JButton button = new JButton();
+		final JToggleButton button = new JToggleButton();
 		if (iconURL == null) {
 			button.setText(name);
 			Log.warn("Invalid icon for tool: " + tool);
@@ -55,6 +57,7 @@ public class ToolBar extends JToolBar {
 		if (description != null && !description.isEmpty()) {
 			button.setToolTipText(description);
 		}
+		buttonGroup.add(button);
 		return button;
 	}
 

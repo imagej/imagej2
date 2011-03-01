@@ -13,7 +13,7 @@ import imagej.tool.Tool;
 @Tool(
 	name = "FloodFill",
 	label = "Flood Fill",
-	iconPath = "/icons/flood-fill.png"
+	iconPath = "/tools/flood-fill.png"
 )
 public class FloodFillTool extends AbstractTool {
 

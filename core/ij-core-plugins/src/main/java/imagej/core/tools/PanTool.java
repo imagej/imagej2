@@ -18,7 +18,7 @@ import java.awt.event.KeyEvent;
 @Tool(
 	name = "Pan",
 	description = "Pans the display",
-	iconPath = "/icons/pan.png"
+	iconPath = "/tools/pan.png"
 )
 public class PanTool extends AbstractTool {
 

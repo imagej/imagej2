@@ -12,7 +12,7 @@ import imagej.tool.Tool;
 @Tool(
 	name = "SprayCan",
 	label = "Spray Can",
-	iconPath = "/icons/spray-can.png"
+	iconPath = "/tools/spray-can.png"
 )
 public class SprayCanTool extends AbstractTool {
 
