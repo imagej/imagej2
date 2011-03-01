@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.AddConstant;
 @Plugin(
 	menuPath = "Process>Math2>Add"
 )
-@SuppressWarnings("rawtypes")
 public class AddToDataValues extends NAryOperation
 {
 	@Parameter(label="Enter value to add to each data value")

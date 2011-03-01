@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.AndConstant;
 @Plugin(
 	menuPath = "Process>Math2>AND"
 )
-@SuppressWarnings("rawtypes")
 public class AndDataValuesWith extends NAryOperation
 {
 	@Parameter(label="Enter value to AND with each data value")

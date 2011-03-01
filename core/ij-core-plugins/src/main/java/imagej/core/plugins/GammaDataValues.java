@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.Gamma;
 @Plugin(
 	menuPath = "Process>Math2>Gamma"
 )
-@SuppressWarnings("rawtypes")
 public class GammaDataValues extends NAryOperation
 {
 	@Parameter(label="Enter value for gamma constant")

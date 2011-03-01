@@ -13,7 +13,6 @@ import imglib.ops.operator.unary.Exp;
 @Plugin(
 	menuPath = "Process>Math2>Exp"
 )
-@SuppressWarnings("rawtypes")
 public class ExpDataValues extends NAryOperation
 {
 	public ExpDataValues()

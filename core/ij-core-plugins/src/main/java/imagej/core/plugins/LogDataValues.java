@@ -13,7 +13,6 @@ import imglib.ops.operator.unary.Log;
 @Plugin(
 	menuPath = "Process>Math2>Log"
 )
-@SuppressWarnings("rawtypes")
 public class LogDataValues extends NAryOperation
 {
 	public LogDataValues()

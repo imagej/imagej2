@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.MultiplyByConstant;
 @Plugin(
 	menuPath = "Process>Math2>Multiply"
 )
-@SuppressWarnings("rawtypes")
 public class MultiplyDataValuesBy extends NAryOperation
 {
 	@Parameter(label="Enter value to multiply each data value by")

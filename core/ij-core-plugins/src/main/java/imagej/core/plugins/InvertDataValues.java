@@ -20,7 +20,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 	menuPath = "Edit>Invert"
 )
-public class InvertDataValues<T extends RealType<T>> extends NAryOperation<T>
+public class InvertDataValues extends NAryOperation
 {
 	private double min, max;
 	
@@ -46,26 +46,26 @@ public class InvertDataValues<T extends RealType<T>> extends NAryOperation<T>
 		}
 		calcMinAndMax();
 		UnaryOperator op = new Invert(min, max);
-		UnaryOperatorFunction<T> opFunc = new UnaryOperatorFunction<T>(op);
+		UnaryOperatorFunction opFunc = new UnaryOperatorFunction(op);
 		setFunction(opFunc);
 		super.run();
 	}
-
+	
 	private void calcMinAndMax()
 	{
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 		
-		Cursor<T> cursor = (Cursor<T>) in.get(0).getImage().createCursor();
+		Cursor<? extends RealType<?>> cursor = (Cursor<? extends RealType<?>>) (in.get(0).getImage().createCursor());
 		
-		for (T value : cursor)
+		while (cursor.hasNext())
 		{
-			double dVal = value.getRealDouble();
+			double value = cursor.next().getRealDouble();
 			
-			if (dVal < min)
-				min = dVal;
-			if (dVal > max)
-				max = dVal;
+			if (value < min)
+				min = value;
+			if (value > max)
+				max = value;
 		}
 		
 		cursor.close();

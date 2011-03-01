@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.Max;
 @Plugin(
 	menuPath = "Process>Math2>Max"
 )
-@SuppressWarnings("rawtypes")
 public class ClampMaxDataValues extends NAryOperation
 {
 	@Parameter(label="Enter maximum clamp value")

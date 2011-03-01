@@ -17,7 +17,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 @Plugin(
 	menuPath = "Process>Math2>NaN Background"
 )
-public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgorithmPlugin<T>
+public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 {
 	// ********** instance variables ****************************************************************
 	
@@ -62,16 +62,16 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 	// ********** private interface ****************************************************************
 	
 	/** provate implementation of algorithm */
-	private class SetToNaN implements OutputAlgorithm<T>
+	private class SetToNaN implements OutputAlgorithm
 	{
-		private Image<T> inputImage;
-		private Image<T> outputImage;
+		private Image<?> inputImage;
+		private Image<?> outputImage;
 		private double loThreshold;
 		private double hiThreshold;
 		
 		public SetToNaN(Dataset in, double loThreshold, double hiThreshold)
 		{
-			inputImage = (Image<T>) in.getImage();  // TODO - failure is a real possibility here (example: pass Image<FloatType> when declared plugin of DoubleType
+			inputImage = in.getImage();  // TODO - failure is a real possibility here (example: pass Image<FloatType> when declared plugin of DoubleType
 			outputImage = inputImage.createNewImage();
 			this.loThreshold = loThreshold;
 			this.hiThreshold = hiThreshold;
@@ -92,20 +92,17 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 		@Override
 		public boolean process()
 		{
-			Cursor<T> inputCursor = inputImage.createCursor();
-			Cursor<T> outputCursor = outputImage.createCursor();
+			Cursor<? extends RealType<?>> inputCursor = (Cursor<? extends RealType<?>>) inputImage.createCursor();
+			Cursor<? extends RealType<?>> outputCursor = (Cursor<? extends RealType<?>>) outputImage.createCursor();
 			
 			while (inputCursor.hasNext() && outputCursor.hasNext())
 			{
-				T input = inputCursor.next();
-				T output = outputCursor.next();
-				
-				double inputValue = input.getRealDouble();
+				double inputValue = inputCursor.next().getRealDouble();
 				
 				if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-					output.setReal(Double.NaN);
+					outputCursor.next().setReal(Double.NaN);
 				else
-					output.setReal(inputValue);
+					outputCursor.next().setReal(inputValue);
 			}
 			
 			inputCursor.close();
@@ -115,7 +112,7 @@ public class SetBackgroundToNaN<T extends RealType<T>> extends ImglibOutputAlgor
 		}
 
 		@Override
-		public Image<T> getResult()
+		public Image<?> getResult()
 		{
 			return outputImage;
 		}

@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.SubtractConstant;
 @Plugin(
 	menuPath = "Process>Math2>Subtract"
 )
-@SuppressWarnings("rawtypes")
 public class SubtractFromDataValues extends NAryOperation
 {
 	@Parameter(label="Enter value to subtract from each data value")

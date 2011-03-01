@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.Constant;
 @Plugin(
 	menuPath = "Process>Math2>Set"
 )
-@SuppressWarnings("rawtypes")
 public class SetDataValues extends NAryOperation
 {
 	@Parameter(label="Enter value to set each data value to")

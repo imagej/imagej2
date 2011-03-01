@@ -21,7 +21,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 		menuPath = "Process>Smooth"
 )
-public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorithmPlugin<T>
+public class SmoothDataValues extends ImglibOutputAlgorithmPlugin
 {
 	@Parameter
 	private Dataset in;
@@ -46,7 +46,7 @@ public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorit
 			in = new Dataset(junkImage);
 		}
 		
-		OutputAlgorithm<T> algorithm = new SmoothAlgorithm(in);
+		OutputAlgorithm algorithm = new SmoothAlgorithm(in);
 		
 		setAlgorithm(algorithm);
 		
@@ -54,14 +54,14 @@ public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorit
 	}
 	
 	/** implements IJ1's ImageProcessor::smooth() algorithm within the structures of imglib's OutputAlgorithm */
-	private class SmoothAlgorithm implements OutputAlgorithm<T>
+	private class SmoothAlgorithm implements OutputAlgorithm
 	{
-		private Image<T> inputImage;
-		private Image<T> outputImage;
+		private Image<?> inputImage;
+		private Image<?> outputImage;
 		
 		public SmoothAlgorithm(Dataset input)
 		{
-			inputImage = (Image<T>) input.getImage();
+			inputImage = input.getImage();
 			outputImage = inputImage.createNewImage();
 		}
 
@@ -92,16 +92,18 @@ public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorit
 		@Override
 		public boolean process()
 		{
-			LocalizableByDimCursor<T> outputCursor = outputImage.createLocalizableByDimCursor();
-			OutOfBoundsStrategyFactory<T> factory = new OutOfBoundsStrategyMirrorFactory<T>();
-			LocalizableByDimCursor<T> inputCursor = inputImage.createLocalizableByDimCursor(factory);
+			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) outputImage.createLocalizableByDimCursor();
+			OutOfBoundsStrategyFactory factory = new OutOfBoundsStrategyMirrorFactory();
+			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) inputImage.createLocalizableByDimCursor(factory);
 
 			int[] inputPosition = new int[inputCursor.getNumDimensions()];
 			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
 			
 			while (outputCursor.hasNext())
 			{
-				T outputValue = outputCursor.next();
+				outputCursor.next();
 				
 				outputCursor.getPosition(inputPosition);
 				
@@ -118,7 +120,7 @@ public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorit
 					}
 				}
 				
-				outputValue.setReal(sum / 9);
+				outputCursor.getType().setReal(sum / 9);
 			}
 			
 			inputCursor.close();
@@ -128,7 +130,7 @@ public class SmoothDataValues<T extends RealType<T>> extends ImglibOutputAlgorit
 		}
 
 		@Override
-		public Image<T> getResult()
+		public Image<?> getResult()
 		{
 			return outputImage;
 		}

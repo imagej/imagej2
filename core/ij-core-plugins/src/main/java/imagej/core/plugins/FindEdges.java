@@ -21,7 +21,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 		menuPath = "Process>Find Edges"
 )
-public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugin<T>
+public class FindEdges extends ImglibOutputAlgorithmPlugin
 {
 	@Parameter
 	private Dataset in;
@@ -46,7 +46,7 @@ public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugi
 			in = new Dataset(junkImage);
 		}
 		
-		OutputAlgorithm<T> algorithm = new FindEdgesAlgorithm(in);
+		OutputAlgorithm algorithm = new FindEdgesAlgorithm(in);
 		
 		setAlgorithm(algorithm);
 		
@@ -54,14 +54,14 @@ public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugi
 	}
 	
 	/** implements IJ1's ImageProcessor::filter(FIND_EDGES) algorithm within the structures of imglib's OutputAlgorithm */
-	private class FindEdgesAlgorithm implements OutputAlgorithm<T>
+	private class FindEdgesAlgorithm implements OutputAlgorithm
 	{
-		private Image<T> inputImage;
-		private Image<T> outputImage;
+		private Image<?> inputImage;
+		private Image<?> outputImage;
 		
 		public FindEdgesAlgorithm(Dataset input)
 		{
-			inputImage = (Image<T>) input.getImage();
+			inputImage = input.getImage();
 			outputImage = inputImage.createNewImage();
 		}
 
@@ -92,9 +92,11 @@ public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugi
 		@Override
 		public boolean process()
 		{
-			LocalizableByDimCursor<T> outputCursor = outputImage.createLocalizableByDimCursor();
-			OutOfBoundsStrategyFactory<T> factory = new OutOfBoundsStrategyMirrorFactory<T>();
-			LocalizableByDimCursor<T> inputCursor = inputImage.createLocalizableByDimCursor(factory);
+			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+					(LocalizableByDimCursor<? extends RealType<?>>) outputImage.createLocalizableByDimCursor();
+			OutOfBoundsStrategyFactory factory = new OutOfBoundsStrategyMirrorFactory();
+			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) inputImage.createLocalizableByDimCursor(factory);
 
 			int[] inputPosition = new int[inputCursor.getNumDimensions()];
 			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
@@ -103,7 +105,7 @@ public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugi
 			
 			while (outputCursor.hasNext())
 			{
-				T outputValue = outputCursor.next();
+				RealType<?> outputValue = outputCursor.next();
 				
 				outputCursor.getPosition(inputPosition);
 
@@ -136,7 +138,7 @@ public class FindEdges<T extends RealType<T>> extends ImglibOutputAlgorithmPlugi
 		}
 
 		@Override
-		public Image<T> getResult()
+		public Image<?> getResult()
 		{
 			return outputImage;
 		}
