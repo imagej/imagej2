@@ -9,7 +9,7 @@ import imagej.tool.Tool;
  * @author Rick Lentz
  * @author Grant Harris
  */
-@Tool(name = "Probe", iconPath = "/icons/probe.png")
+@Tool(name = "Probe", iconPath = "/tools/probe.png")
 public class ProbeTool extends AbstractTool {
 
 	// TODO

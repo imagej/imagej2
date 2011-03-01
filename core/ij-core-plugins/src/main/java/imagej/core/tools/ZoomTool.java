@@ -8,7 +8,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Zoom", iconPath = "/icons/zoom.png")
+@Tool(name = "Zoom", iconPath = "/tools/zoom.png")
 public class ZoomTool extends AbstractTool {
 
 	// TODO

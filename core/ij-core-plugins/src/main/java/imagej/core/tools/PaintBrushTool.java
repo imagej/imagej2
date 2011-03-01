@@ -10,7 +10,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Paintbrush", iconPath = "/icons/paintbrush.png")
+@Tool(name = "Paintbrush", iconPath = "/tools/paintbrush.png")
 public class PaintBrushTool extends AbstractTool {
 
 	// TODO

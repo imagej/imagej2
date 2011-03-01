@@ -10,7 +10,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Arrow", iconPath="/icons/arrow.png")
+@Tool(name = "Arrow", iconPath="/tools/arrow.png")
 public class ArrowTool extends AbstractTool {
 
 	// TODO
