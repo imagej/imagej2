@@ -13,7 +13,6 @@ import imglib.ops.operator.unary.Sqr;
 @Plugin(
 	menuPath = "Process>Math2>Square"
 )
-@SuppressWarnings("rawtypes")
 public class SquareDataValues extends NAryOperation
 {
 	public SquareDataValues()

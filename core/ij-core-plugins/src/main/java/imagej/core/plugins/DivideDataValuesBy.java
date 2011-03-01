@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.DivideByConstant;
 @Plugin(
 	menuPath = "Process>Math2>Divide"
 )
-@SuppressWarnings("rawtypes")
 public class DivideDataValuesBy extends NAryOperation
 {
 	@Parameter(label="Enter value to divide each data value by")

@@ -13,7 +13,6 @@ import imglib.ops.operator.unary.Abs;
 @Plugin(
 	menuPath = "Process>Math2>Abs"
 )
-@SuppressWarnings("rawtypes")
 public class AbsDataValues extends NAryOperation
 {
 	public AbsDataValues()

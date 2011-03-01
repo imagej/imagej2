@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.XorConstant;
 @Plugin(
 	menuPath = "Process>Math2>XOR"
 )
-@SuppressWarnings("rawtypes")
 public class XorDataValuesWith extends NAryOperation
 {
 	@Parameter(label="Enter value to XOR with each data value")

@@ -13,7 +13,6 @@ import imglib.ops.operator.unary.Reciprocal;
 @Plugin(
 	menuPath = "Process>Math2>Reciprocal"
 )
-@SuppressWarnings("rawtypes")
 public class ReciprocalDataValues extends NAryOperation
 {
 	public ReciprocalDataValues()

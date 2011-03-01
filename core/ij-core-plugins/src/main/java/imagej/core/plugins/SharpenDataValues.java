@@ -21,7 +21,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 		menuPath = "Process>Sharpen"
 )
-public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgorithmPlugin<T>
+public class SharpenDataValues extends ImglibOutputAlgorithmPlugin
 {
 	@Parameter
 	private Dataset in;
@@ -46,7 +46,7 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 			in = new Dataset(junkImage);
 		}
 		
-		OutputAlgorithm<T> algorithm = new SharpenAlgorithm(in);
+		OutputAlgorithm algorithm = new SharpenAlgorithm(in);
 		
 		setAlgorithm(algorithm);
 		
@@ -54,14 +54,14 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 	}
 	
 	/** implements IJ1's ImageProcessor::sharpen() algorithm within the structures of imglib's OutputAlgorithm */
-	private class SharpenAlgorithm implements OutputAlgorithm<T>
+	private class SharpenAlgorithm implements OutputAlgorithm
 	{
-		private Image<T> inputImage;
-		private Image<T> outputImage;
+		private Image<?> inputImage;
+		private Image<?> outputImage;
 		
 		public SharpenAlgorithm(Dataset input)
 		{
-			inputImage = (Image<T>) input.getImage();
+			inputImage = input.getImage();
 			outputImage = inputImage.createNewImage();
 		}
 
@@ -92,9 +92,11 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 		@Override
 		public boolean process()
 		{
-			LocalizableByDimCursor<T> outputCursor = outputImage.createLocalizableByDimCursor();
-			OutOfBoundsStrategyFactory<T> factory = new OutOfBoundsStrategyMirrorFactory<T>();
-			LocalizableByDimCursor<T> inputCursor = inputImage.createLocalizableByDimCursor(factory);
+			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) outputImage.createLocalizableByDimCursor();
+			OutOfBoundsStrategyFactory factory = new OutOfBoundsStrategyMirrorFactory();
+			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) inputImage.createLocalizableByDimCursor(factory);
 
 			int[] inputPosition = new int[inputCursor.getNumDimensions()];
 			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
@@ -111,7 +113,7 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 			
 			while (outputCursor.hasNext())
 			{
-				T outputValue = outputCursor.next();
+				outputCursor.next();
 				
 				outputCursor.getPosition(inputPosition);
 				
@@ -128,7 +130,7 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 					}
 				}
 				
-				outputValue.setReal(sum / scale);
+				outputCursor.getType().setReal(sum / scale);
 			}
 			
 			inputCursor.close();
@@ -138,7 +140,7 @@ public class SharpenDataValues<T extends RealType<T>> extends ImglibOutputAlgori
 		}
 
 		@Override
-		public Image<T> getResult()
+		public Image<?> getResult()
 		{
 			return outputImage;
 		}

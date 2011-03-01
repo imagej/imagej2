@@ -11,14 +11,14 @@ import imagej.plugin.Parameter;
  *
  * @author Barry DeZonia
  */
-public class ImglibOutputAlgorithmPlugin<T extends RealType<T>> implements ImageJPlugin
+public class ImglibOutputAlgorithmPlugin implements ImageJPlugin
 {
 	// ********** instance variables ****************************************************************
 	
 	@Parameter(output=true)
 	protected Dataset output;
 
-	private OutputAlgorithm<T> algorithm;
+	private OutputAlgorithm algorithm;
 	
 	// ********** public interface ****************************************************************
 	
@@ -28,13 +28,13 @@ public class ImglibOutputAlgorithmPlugin<T extends RealType<T>> implements Image
 	}
 	
 	/** preferred constructor */
-	public ImglibOutputAlgorithmPlugin(final OutputAlgorithm<T> algorithm)
+	public ImglibOutputAlgorithmPlugin(final OutputAlgorithm algorithm)
 	{
 		this.algorithm = algorithm;
 	}
 
 	/** assign the algorithm this plugin should use. sometimes an algorithm cannot be assigned until subclass plugins have harvested their input variables. */
-	public void setAlgorithm(final OutputAlgorithm<T> algorithm)
+	public void setAlgorithm(final OutputAlgorithm algorithm)
 	{
 		this.algorithm = algorithm;
 	}

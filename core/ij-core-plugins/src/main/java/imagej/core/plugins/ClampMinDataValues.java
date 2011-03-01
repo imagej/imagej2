@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.Min;
 @Plugin(
 	menuPath = "Process>Math2>Min"
 )
-@SuppressWarnings("rawtypes")
 public class ClampMinDataValues extends NAryOperation
 {
 	@Parameter(label="Enter minimum clamp value")

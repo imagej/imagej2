@@ -14,7 +14,6 @@ import imglib.ops.operator.unary.OrConstant;
 @Plugin(
 	menuPath = "Process>Math2>OR"
 )
-@SuppressWarnings("rawtypes")
 public class OrDataValuesWith extends NAryOperation
 {
 	@Parameter(label="Enter value to OR with each data value")

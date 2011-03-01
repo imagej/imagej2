@@ -20,7 +20,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 	menuPath = "Process>Noise>Add Specified Noise"
 )
-public class AddNoiseToDataValues<T extends RealType<T>> extends NAryOperation<T>
+public class AddNoiseToDataValues extends NAryOperation
 {
 	@Parameter(label="Enter standard deviation of range")
 	private double rangeStdDev;
@@ -48,14 +48,14 @@ public class AddNoiseToDataValues<T extends RealType<T>> extends NAryOperation<T
 		
 		calcRangeMinAndMax();
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
-		UnaryOperatorFunction<T> opFunc = new UnaryOperatorFunction<T>(op);
+		UnaryOperatorFunction opFunc = new UnaryOperatorFunction(op);
 		setFunction(opFunc);
 		super.run();
 	}
 
 	private void calcRangeMinAndMax()
 	{
-		Cursor<T> cursor = (Cursor<T>) in.get(0).getImage().createCursor();
+		Cursor<? extends RealType<?>> cursor = (Cursor<? extends RealType<?>>) in.get(0).getImage().createCursor();
 		rangeMin = cursor.getType().getMinValue();
 		rangeMax = cursor.getType().getMaxValue();
 		cursor.close();

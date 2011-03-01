@@ -23,7 +23,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
+public class NAryOperation implements ImageJPlugin
 {
 	// TODO - SwingInputHarvester must prompt user for list of images
 	//  + need N-list widget with plus and minus buttons
@@ -40,7 +40,7 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 	protected Dataset out;
 
 	/** The imglib-ops function to execute. */
-	private RealFunction<T> function;
+	private RealFunction function;
 
 	// ***************  public/protected interface ***************************************************************
 
@@ -51,13 +51,13 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 	}
 	
 	/** preferred constructor */
-	public NAryOperation(RealFunction<T> function)
+	public NAryOperation(RealFunction function)
 	{
 		this.function = function;
 	}
 
 	/** helper method that allows the function of an operation to be changed */
-	public void setFunction(RealFunction<T> function)
+	public void setFunction(RealFunction function)
 	{
 		this.function = function;
 	}
@@ -82,19 +82,19 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 			throw new IllegalStateException("function reference is null: function must be set via constructor or setFunction() before calling NAryOperation::run()");
 			
 		//@SuppressWarnings("unchecked")
-		final Image<T>[] inputs = new Image[in.size()];
+		final Image[] inputs = new Image[in.size()];
 		
 		for (int i = 0; i < inputs.length; i++) {
 			inputs[i] = imageFromDataset(in.get(i));
 		}
 		
-		final Image<T> output;
+		final Image output;
 		if (out != null)
 			output = imageFromDataset(out);
 		else
 			output = zeroDataImageWithSameAttributes(inputs[0]);  // TODO - must be given at least one input image or this will be unhappy
 		
-		final AssignOperation<T> operation = new AssignOperation<T>(inputs, output, function);
+		final AssignOperation operation = new AssignOperation(inputs, output, function);
 
 		operation.execute();
 		
@@ -103,21 +103,21 @@ public class NAryOperation<T extends RealType<T>> implements ImageJPlugin
 
 	// ***************  private interface ***************************************************************
 
-	/** make an image that has same type and dimensions as Dataset (but in a planar container) */
-	private Image<T> imageFromDataset(Dataset dataset)
+	/** make an image that has same type and dimensions as Dataset */
+	private Image imageFromDataset(Dataset dataset)
 	{
 		//@SuppressWarnings("unchecked")
-		return (Image<T>) dataset.getImage();
+		return dataset.getImage();
 	}
 
 	/** make an image that has same type, container, and dimensions as refImage */
-	private Image<T> zeroDataImageWithSameAttributes(Image<T> refImage)
+	private Image zeroDataImageWithSameAttributes(Image refImage)
 	{
 		return refImage.createNewImage(refImage.getDimensions());
 	}
 
 	/** make a Dataset from an Image */
-	private Dataset datasetFromImage(Image<T> image)
+	private Dataset datasetFromImage(Image image)
 	{
 		return new Dataset(image);
 	}
