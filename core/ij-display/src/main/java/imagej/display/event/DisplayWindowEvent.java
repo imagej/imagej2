@@ -3,7 +3,7 @@ package imagej.display.event;
 import imagej.display.Display;
 
 /**
- * A event indicating something has happened to a display window.
+ * An event indicating something has happened to a display window.
  *
  * @author Curtis Rueden
  */

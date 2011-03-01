@@ -4,7 +4,7 @@ import imagej.display.Display;
 import imagej.event.ImageJEvent;
 
 /**
- * A event indicating something has happened to a display.
+ * An event indicating something has happened to a display.
  *
  * @author Curtis Rueden
  */

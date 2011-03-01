@@ -1,10 +1,10 @@
 package imagej.gui.display;
 
-import imagej.model.Dataset;
-import imagej.plugin.Plugin;
 import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.LayeredDisplay;
+import imagej.model.Dataset;
+import imagej.plugin.Plugin;
 
 /**
  * TODO
@@ -13,7 +13,7 @@ import imagej.display.LayeredDisplay;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class NavigableImageDisplay extends AbstractSwingDisplay
+public class NavigableImageDisplay extends AbstractAWTDisplay
 	implements LayeredDisplay
 {
 
@@ -33,6 +33,7 @@ public class NavigableImageDisplay extends AbstractSwingDisplay
 		imageFrame.addMouseListener(this);
 		imageFrame.addMouseMotionListener(this);
 		imageFrame.addMouseWheelListener(this);
+		imageFrame.addWindowListener(this);
 
 		// TODO - use DisplayView instead of Dataset directly
 		imageFrame.setDataset(dataset);
