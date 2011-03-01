@@ -10,7 +10,7 @@
  * Redistribution and use of this software in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *   Redistributions of source code must retain the above
+ *  * Redistributions of source code must retain the above
  *   copyright notice, this list of conditions and the
  *   following disclaimer.
  * 
@@ -58,7 +58,7 @@ public class ActionFactoryIjx {
     public List actions = new ArrayList(); // Actions to be added to menus
     public List actionsToolbar = new ArrayList(); // Actions to be added to the ToolBar
     //
-    static ActionManager manager = ActionManager.getInstance();
+    static final ActionManager manager = ActionManager.getInstance();
     static ActionContainerFactory factory = new ActionContainerFactory(manager);
     static TargetManager targetManager = TargetManager.getInstance();
 

@@ -1,6 +1,12 @@
 package imagej.tool;
 
 import imagej.display.Display;
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.key.KyReleasedEvent;
+import imagej.display.event.mouse.MsClickedEvent;
+import imagej.display.event.mouse.MsMovedEvent;
+import imagej.display.event.mouse.MsPressedEvent;
+import imagej.display.event.mouse.MsReleasedEvent;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding
@@ -30,21 +36,21 @@ public interface ITool {
 	int getCursor();
 
 	/** Occurs when a key on the keyboard is pressed when the tool is active. */
-	void onKeyDown(int keyCode, int shift);
+	void onKeyDown(KyPressedEvent evt);
 
 	/** Occurs when a key on the keyboard is released when the tool is active. */
-	void onKeyUp(int keyCode, int shift);
+	void onKeyUp(KyReleasedEvent evt);
 
 	/** Occurs when a mouse button is pressed when the tool is active. */
-	void onMouseDown(int button, int shift, int x, int y);
+	void onMouseDown(MsPressedEvent evt);
 
 	/** Occurs when a mouse button is released when the tool is active. */
-	void onMouseUp(int button, int shift, int x, int y);
+	void onMouseUp(MsReleasedEvent evt);
 
 	/** Occurs when a mouse button is double clicked when the tool is active. */
-	void onMouseDoubleClick(int button, int shift, int x, int y);
+	void onMouseClicked(MsClickedEvent evt);
 
 	/** Occurs when the mouse is moved when the tool is active. */
-	void onMouseMove(int button, int shift, int x, int y);
+	void onMouseMove(MsMovedEvent evt);
 
 }

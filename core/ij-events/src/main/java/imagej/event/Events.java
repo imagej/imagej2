@@ -19,9 +19,12 @@ public final class Events {
 	}
 
 	public static <E extends ImageJEvent> void subscribe(
-		final Class<E> c, final EventSubscriber<E> subscriber)
-	{
+			final Class<E> c, final EventSubscriber<E> subscriber) {
 		EventBus.subscribe(c, subscriber);
 	}
 
+	public static <E extends ImageJEvent> void unsubscribe(
+			final Class<E> c, final EventSubscriber<E> subscriber) {
+		EventBus.unsubscribe(c, subscriber);
+	}
 }
