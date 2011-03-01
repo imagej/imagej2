@@ -2,9 +2,9 @@ package imagej.gui.display;
 
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
-import imagej.plugin.display.Display;
-import imagej.plugin.display.DisplayView;
-import imagej.plugin.display.LayeredDisplay;
+import imagej.display.Display;
+import imagej.display.DisplayView;
+import imagej.display.LayeredDisplay;
 
 /**
  * TODO

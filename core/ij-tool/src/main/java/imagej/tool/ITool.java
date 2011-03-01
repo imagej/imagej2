@@ -1,6 +1,6 @@
 package imagej.tool;
 
-import imagej.plugin.display.Display;
+import imagej.display.Display;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding

@@ -1,4 +1,4 @@
-package imagej.plugin.display;
+package imagej.display;
 
 /**
  * TODO
