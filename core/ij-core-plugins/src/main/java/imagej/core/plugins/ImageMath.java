@@ -1,6 +1,7 @@
 package imagej.core.plugins;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import mpicbg.imglib.cursor.Cursor;
@@ -95,7 +96,7 @@ public class ImageMath extends NAryOperation
 		
 		int[] img2Dims = in.get(1).getImage().getDimensions();
 
-		if ( ! dimsTheSame(img1Dims, img2Dims) )
+		if ( ! Arrays.equals(img1Dims, img2Dims) )
 			throw new IllegalArgumentException("ImageMath requires the two input images to have the same dimensions");
 
 		BinaryOperator binOp = operators.get(operator);
@@ -105,18 +106,6 @@ public class ImageMath extends NAryOperation
 		setFunction(binaryFunction);
 		
 		super.run();
-	}
-	
-	private boolean dimsTheSame(int[] dims1, int[] dims2)
-	{
-		if (dims1.length != dims2.length)
-			return false;
-		
-		for (int i = 0; i < dims1.length; i++)
-			if (dims1[i] != dims2[i])
-				return false;
-		
-		return true;
 	}
 	
 }
