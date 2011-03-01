@@ -2,7 +2,7 @@ package imagej.tool;
 
 import java.awt.Cursor;
 
-import imagej.plugin.display.Display;
+import imagej.display.Display;
 
 /**
  * An empty {@link ITool}, to simplify tool implementations.

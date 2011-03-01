@@ -1,6 +1,6 @@
 package imagej.gui.display;
 
-import imagej.plugin.display.Display;
+import imagej.display.Display;
 import imagej.tool.ITool;
 
 import java.awt.event.InputEvent;

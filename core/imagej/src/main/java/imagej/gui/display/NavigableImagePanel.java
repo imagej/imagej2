@@ -5,10 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -412,13 +415,19 @@ public class NavigableImagePanel extends JPanel {
 	  	int scrNavImageWidth = (int)(getWidth() * SCREEN_NAV_IMAGE_FACTOR);
 	  	//int scrNavImageHeight = scrNavImageWidth * image.getHeight() / image.getWidth();
 	  	navScale = (double)scrNavImageWidth / navImageWidth;
-	  	navigationImage = new BufferedImage(navImageWidth, navImageHeight,
-	  		image.getType());
+
+	  	final GraphicsEnvironment ge =
+	  		GraphicsEnvironment.getLocalGraphicsEnvironment();
+	  	final GraphicsDevice gs = ge.getDefaultScreenDevice();
+	  	final GraphicsConfiguration gc = gs.getDefaultConfiguration();
+	  	navigationImage = gc.createCompatibleImage(navImageWidth, navImageHeight,
+	  		Transparency.OPAQUE);
+
 	  	Graphics g = navigationImage.getGraphics();
 	  	g.drawImage(image, 0, 0, navImageWidth, navImageHeight, null);
 	  }
 
-	  /**
+		/**
 	   * <p>Sets an image for display in the panel.</p>
 	   *
 	   * @param image an image to be set in the panel

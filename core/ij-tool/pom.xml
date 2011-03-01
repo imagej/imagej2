@@ -11,37 +11,12 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-core-plugins</artifactId>
+	<artifactId>ij-tool</artifactId>
 
-	<name>ImageJ Core Plugins</name>
-	<description>A collection of built-in plugins for ImageJ.</description>
+	<name>ImageJ Tools</name>
+	<description>Shared framework for ImageJ tools.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-ops</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data-model</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-display</artifactId>
@@ -53,14 +28,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-tool</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>loci</groupId>
-			<artifactId>bio-formats</artifactId>
-			<version>${bio-formats.version}</version>
+			<groupId>net.java.sezpoz</groupId>
+			<artifactId>sezpoz</artifactId>
+			<version>1.7</version>
 		</dependency>
 	</dependencies>
 
@@ -71,7 +41,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core</packageName>
+							<packageName>imagej.tool</packageName>
 						</manifest>
 					</archive>
 				</configuration>
