@@ -1,10 +1,13 @@
 package imagej.gui;
 
 import imagej.Log;
+import imagej.event.Events;
 import imagej.plugin.api.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolUtils;
+import imagej.tool.event.ToolActivatedEvent;
+import imagej.tool.event.ToolDeactivatedEvent;
 
 import java.net.URL;
 import java.util.List;
@@ -14,6 +17,8 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Simple status bar with text area and progress bar, similar to ImageJ 1.x.
@@ -58,6 +63,19 @@ public class ToolBar extends JToolBar {
 			button.setToolTipText(description);
 		}
 		buttonGroup.add(button);
+
+		button.addChangeListener(new ChangeListener() {
+			boolean active = false;
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				boolean selected = button.isSelected();
+				if (selected == active) return;
+				if (selected) Events.publish(new ToolActivatedEvent(tool));					
+				else Events.publish(new ToolDeactivatedEvent(tool));					
+				active = selected;
+			}
+		});
+
 		return button;
 	}
 
