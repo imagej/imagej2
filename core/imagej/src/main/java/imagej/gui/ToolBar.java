@@ -21,7 +21,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Simple status bar with text area and progress bar, similar to ImageJ 1.x.
+ * Button bar with selectable tools, similar to ImageJ 1.x.
  *
  * @author Curtis Rueden
  */
