@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.AddConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Add"
+	menuPath = "PureIJ2>Process>Math>Add"
 )
 public class AddToDataValues extends NAryOperation
 {

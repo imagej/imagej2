@@ -18,7 +18,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Noise>Add Specified Noise"
+	menuPath = "PureIJ2>Process>Noise>Add Specified Noise"
 )
 public class AddNoiseToDataValues extends NAryOperation
 {

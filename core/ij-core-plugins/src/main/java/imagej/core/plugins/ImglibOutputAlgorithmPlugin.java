@@ -1,7 +1,6 @@
 package imagej.core.plugins;
 
 import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.type.numeric.RealType;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;

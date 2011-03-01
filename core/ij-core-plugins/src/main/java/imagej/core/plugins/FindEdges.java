@@ -19,7 +19,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @param <T>
  */
 @Plugin(
-		menuPath = "Process>Find Edges"
+		menuPath = "PureIJ2>Process>Find Edges"
 )
 public class FindEdges extends ImglibOutputAlgorithmPlugin
 {

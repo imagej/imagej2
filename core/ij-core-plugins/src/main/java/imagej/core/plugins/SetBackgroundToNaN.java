@@ -15,7 +15,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>NaN Background"
+	menuPath = "PureIJ2>Process>Math>NaN Background"
 )
 public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 {

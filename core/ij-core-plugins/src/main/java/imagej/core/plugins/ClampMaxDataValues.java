@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.Max;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Max"
+	menuPath = "PureIJ2>Process>Math>Max"
 )
 public class ClampMaxDataValues extends NAryOperation
 {
