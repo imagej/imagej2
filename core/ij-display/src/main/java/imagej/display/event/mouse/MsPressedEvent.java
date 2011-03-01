@@ -10,9 +10,9 @@ import imagej.display.Display;
 public class MsPressedEvent extends MsButtonEvent {
 
 	public MsPressedEvent(final Display display,
-		final int x, final int y, final int button)
+		final int x, final int y, final int button, int numClicks)
 	{
-		super(display, x, y, button);
+		super(display, x, y, button, numClicks);
 	}
 
 }

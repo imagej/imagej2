@@ -1,5 +1,8 @@
 package imagej.core.tools;
 
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.mouse.MsMovedEvent;
+import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
@@ -24,11 +27,13 @@ public class PanTool extends AbstractTool {
 
 	private static final float PAN_AMOUNT = 10;
 
+	// @todo: Add customization to set pan amount
+
 	private int lastX, lastY;
 
 	@Override
-	public void onKeyDown(int keyCode, int shift) {
-		switch (keyCode) {
+	public void onKeyDown(KyPressedEvent evt) {
+		switch (evt.getCode()) {
 			case KeyEvent.VK_UP:
 				display.pan(0, -PAN_AMOUNT);
 				break;
@@ -45,16 +50,16 @@ public class PanTool extends AbstractTool {
 	}
 
 	@Override
-	public void onMouseDown(int button, int shift, int x, int y) {
-		lastX = x;
-		lastY = y;
+	public void onMouseDown(MsPressedEvent evt) {
+		lastX = evt.getX();
+		lastY = evt.getY();
 	}
 
 	@Override
-	public void onMouseMove(int button, int shift, int x, int y) {
-		display.pan(x - lastX, y - lastY);
-		lastX = x;
-		lastY = y;
+	public void onMouseMove(MsMovedEvent evt)  {
+		display.pan(evt.getX() - lastX, evt.getY() - lastY);
+		lastX = evt.getX();
+		lastY = evt.getY();
 	}
 
 }

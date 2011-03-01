@@ -1,5 +1,11 @@
 package imagej.tool;
 
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.key.KyReleasedEvent;
+import imagej.display.event.mouse.MsClickedEvent;
+import imagej.display.event.mouse.MsMovedEvent;
+import imagej.display.event.mouse.MsPressedEvent;
+import imagej.display.event.mouse.MsReleasedEvent;
 import java.awt.Cursor;
 
 import imagej.display.Display;
@@ -29,33 +35,32 @@ public abstract class AbstractTool implements ITool {
 	}
 
 	@Override
-	public void onKeyDown(int keyCode, int shift) {
+	public void onKeyDown(KyPressedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onKeyUp(int keyCode, int shift) {
+	public void onKeyUp(KyReleasedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseDown(int button, int shift, int x, int y) {
+	public void onMouseDown(MsPressedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseUp(int button, int shift, int x, int y) {
+	public void onMouseUp(MsReleasedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseDoubleClick(int button, int shift, int x, int y) {
+	public void onMouseClicked(MsClickedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseMove(int button, int shift, int x, int y) {
+	public void onMouseMove(MsMovedEvent evt) {
 		// do nothing by default
 	}
-
 }

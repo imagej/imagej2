@@ -70,8 +70,8 @@ public class ToolBar extends JToolBar {
 			public void stateChanged(ChangeEvent e) {
 				boolean selected = button.isSelected();
 				if (selected == active) return;
-				if (selected) Events.publish(new ToolActivatedEvent(tool));					
-				else Events.publish(new ToolDeactivatedEvent(tool));					
+				if (selected) Events.publish(new ToolActivatedEvent(tool));
+				else Events.publish(new ToolDeactivatedEvent(tool));
 				active = selected;
 			}
 		});
