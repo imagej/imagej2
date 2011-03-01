@@ -1,7 +1,7 @@
 package imagej.event;
 
 /**
- * A event indicating a status update.
+ * An event indicating a status update.
  *
  * @author Curtis Rueden
  */
