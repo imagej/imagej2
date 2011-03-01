@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.Gamma;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Gamma"
+	menuPath = "PureIJ2>Process>Math>Gamma"
 )
 public class GammaDataValues extends NAryOperation
 {

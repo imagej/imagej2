@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Exp;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Exp"
+	menuPath = "PureIJ2>Process>Math>Exp"
 )
 public class ExpDataValues extends NAryOperation
 {

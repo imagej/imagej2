@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Sqrt;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Square Root"
+	menuPath = "PureIJ2>Process>Math>Square Root"
 )
 public class SquareRootDataValues extends NAryOperation
 {

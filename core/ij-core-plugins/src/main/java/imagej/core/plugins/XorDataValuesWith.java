@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.XorConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>XOR"
+	menuPath = "PureIJ2>Process>Math>XOR"
 )
 public class XorDataValuesWith extends NAryOperation
 {

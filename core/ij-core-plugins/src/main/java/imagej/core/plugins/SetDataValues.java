@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.Constant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Set"
+	menuPath = "PureIJ2>Process>Math>Set"
 )
 public class SetDataValues extends NAryOperation
 {

@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.DivideByConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Divide"
+	menuPath = "PureIJ2>Process>Math>Divide"
 )
 public class DivideDataValuesBy extends NAryOperation
 {

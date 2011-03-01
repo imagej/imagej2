@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Reciprocal;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Reciprocal"
+	menuPath = "PureIJ2>Process>Math>Reciprocal"
 )
 public class ReciprocalDataValues extends NAryOperation
 {

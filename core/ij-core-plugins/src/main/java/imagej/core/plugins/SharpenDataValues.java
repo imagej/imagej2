@@ -19,7 +19,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @param <T>
  */
 @Plugin(
-		menuPath = "Process>Sharpen"
+		menuPath = "PureIJ2>Process>Sharpen"
 )
 public class SharpenDataValues extends ImglibOutputAlgorithmPlugin
 {

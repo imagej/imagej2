@@ -18,7 +18,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Edit>Invert"
+	menuPath = "PureIJ2>Edit>Invert"
 )
 public class InvertDataValues extends NAryOperation
 {

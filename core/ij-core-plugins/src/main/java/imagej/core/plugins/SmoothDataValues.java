@@ -19,7 +19,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @param <T>
  */
 @Plugin(
-		menuPath = "Process>Smooth"
+		menuPath = "PureIJ2>Process>Smooth"
 )
 public class SmoothDataValues extends ImglibOutputAlgorithmPlugin
 {

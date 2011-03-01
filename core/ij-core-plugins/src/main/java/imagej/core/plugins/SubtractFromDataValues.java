@@ -12,7 +12,7 @@ import imglib.ops.operator.unary.SubtractConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Subtract"
+	menuPath = "PureIJ2>Process>Math>Subtract"
 )
 public class SubtractFromDataValues extends NAryOperation
 {

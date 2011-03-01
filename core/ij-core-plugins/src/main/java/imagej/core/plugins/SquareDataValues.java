@@ -11,7 +11,7 @@ import imglib.ops.operator.unary.Sqr;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "Process>Math2>Square"
+	menuPath = "PureIJ2>Process>Math>Square"
 )
 public class SquareDataValues extends NAryOperation
 {

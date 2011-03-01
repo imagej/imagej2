@@ -14,7 +14,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
  * @author Rick Lentz
  */
 @Plugin(
-  menuPath="Process>Gradient"
+  menuPath="PureIJ2>Process>Gradient"
 )
 public class GradientImage implements ImageJPlugin {
 

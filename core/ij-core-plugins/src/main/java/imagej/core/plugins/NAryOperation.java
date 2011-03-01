@@ -12,7 +12,6 @@ import java.util.List;
 
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // TODO - class was abstract - not sure that was necessary - removed for now
