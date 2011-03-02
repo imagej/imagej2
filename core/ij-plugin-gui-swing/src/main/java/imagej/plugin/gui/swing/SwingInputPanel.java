@@ -40,7 +40,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final Number stepSize, final WidgetStyle style)
 	{
 		final SwingNumberWidget numberWidget =
-			new SwingNumberWidget(initialValue, min, max, stepSize, style);
+			SwingNumberWidget.create(initialValue, min, max, stepSize, style);
 		addField(label, numberWidget);
 		numberWidgets.put(name, numberWidget);
 	}
