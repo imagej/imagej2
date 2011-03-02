@@ -7,7 +7,7 @@ import java.net.URL;
  *
  * @author Curtis Rueden
  */
-public abstract class SezpozEntry<T> implements Comparable<SezpozEntry<?>> {
+public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 
 	/** Fully qualified class name of this entry's object. */
 	private String className;
@@ -21,13 +21,13 @@ public abstract class SezpozEntry<T> implements Comparable<SezpozEntry<?>> {
 	/** String describing the object in detail. */
 	private String description;
 
-	/** Resource path to this plugin's icon. */
+	/** Resource path to this object's icon. */
 	private String iconPath;
 
-	/** Sort priority of the plugin. */
+	/** Sort priority of the object. */
 	private int priority = Integer.MAX_VALUE;
 
-	/** Class object for this entry's plugin. Lazily loaded. */
+	/** Class object for this entry's object. Lazily loaded. */
 	private Class<T> classObject;
 
 	public void setClassName(final String className) {
@@ -96,11 +96,11 @@ public abstract class SezpozEntry<T> implements Comparable<SezpozEntry<?>> {
 		return classObject;
 	}
 
-	/** Creates an instance of this entry's associated plugin. */
+	/** Creates an instance of this entry's associated object. */
 	public T createInstance() throws PluginException {
 		final Class<T> c = loadClass();
 
-		// instantiate plugin
+		// instantiate object
 		final T instance;
 		try {
 			instance = c.newInstance();
@@ -120,7 +120,7 @@ public abstract class SezpozEntry<T> implements Comparable<SezpozEntry<?>> {
 	}
 
 	@Override
-	public int compareTo(final SezpozEntry<?> entry) {
+	public int compareTo(final BaseEntry<?> entry) {
 		return priority - entry.priority;
 	}
 

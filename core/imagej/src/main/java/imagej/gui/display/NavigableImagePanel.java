@@ -304,8 +304,10 @@ public class NavigableImagePanel extends JPanel {
 	  		public void mouseDragged(MouseEvent e) {
 	  			if (SwingUtilities.isLeftMouseButton(e)
 	  				&& !isInNavigationImage(e.getPoint())) {
-	  				Point p = e.getPoint();
-	  				moveImage(p);
+	  				// TODO - clean up this section, to fully remove pan support
+	  				// in favor of the pan tool way of doing things
+//	  				Point p = e.getPoint();
+//	  				moveImage(p);
 	  			}
 	  		}
 	  		public void mouseMoved(MouseEvent e) {

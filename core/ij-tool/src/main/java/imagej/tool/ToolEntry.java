@@ -1,13 +1,13 @@
 package imagej.tool;
 
-import imagej.plugin.api.SezpozEntry;
+import imagej.plugin.api.BaseEntry;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
  */
-public class ToolEntry extends SezpozEntry<ITool> {
+public class ToolEntry extends BaseEntry<ITool> {
 
 	public ToolEntry(final String className) {
 		setClassName(className);

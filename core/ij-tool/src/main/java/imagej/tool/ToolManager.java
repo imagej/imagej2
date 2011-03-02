@@ -1,86 +1,141 @@
 package imagej.tool;
 
-import imagej.display.Display;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayEvent;
-import imagej.display.event.mouse.MsEvent;
+import imagej.Log;
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.key.KyReleasedEvent;
+import imagej.display.event.mouse.MsClickedEvent;
+import imagej.display.event.mouse.MsDraggedEvent;
+import imagej.display.event.mouse.MsMovedEvent;
+import imagej.display.event.mouse.MsPressedEvent;
+import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.event.ImageJEvent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
-import imagej.tool.event.ToolEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * Keeps track of available tools, including which tool is active,
+ * and delegates UI events to the active tool.
  *
  * @author Grant Harris
-
  */
-
-// ************ This is not done !!!!!!!!!!!!!!!!
-
 public class ToolManager {
 
-	private Display activeDisplay;
-	private static ITool activeTool;
+	private List<ToolEntry> toolEntries;
 
+	/** Maintain list of subscribers, to avoid garbage collection. */
+	private List<EventSubscriber<?>> subscribers;
 
+	private ITool activeTool;
 
-	public class ToolMonitor implements EventSubscriber<ToolEvent> {
-
-		public ToolMonitor() {
-			Events.subscribe(ToolEvent.class, this);
-		}
-
-		@Override
-		public void onEvent(ToolEvent event) {
-			if (event instanceof ToolActivatedEvent) {
-				deactivateCurrentTool();
-				setActiveTool(event.getTool());
-			}
-			//if (event instanceof ToolDeactivatedEvent) {}
-		}
-
-		public ITool getActiveTool() {
-			return activeTool;
-		}
-
-		public void setActiveTool(ITool _activeTool) {
-			activeTool = _activeTool;
-			if (activeDisplay != null) {
-				activeTool.activate(activeDisplay);
-			}
-		}
-
-		private void deactivateCurrentTool() {
-			if (activeTool != null) {
-				activeTool.deactivate();
-			}
-		}
+	public ToolManager() {
+		toolEntries = ToolUtils.findTools();
+		subscribeToEvents();
 	}
 
-	class DisplayManager implements EventSubscriber<DisplayEvent> {
-
-		public DisplayManager() {
-			Events.subscribe(DisplayEvent.class, this);
-		}
-
-		@Override
-		public void onEvent(DisplayEvent event) {
-			if (event instanceof DisplayActivatedEvent) {
-				// deactivate the currently active display
-				unsubscribeDisplay(activeDisplay);
-				activeDisplay = event.getDisplay();
-				if(activeTool != null){
-					activeTool.activate(activeDisplay);
-					//Events.subscribe(DisplayEvent.class, activeDisplay);
-				}
-			}
-		}
-
-			private void unsubscribeDisplay(Display activeDisplay) {
-			 ///Events.unsubscribe(DisplayEvent.class, activeDisplay);
-		}
-
+	public List<ToolEntry> getToolEntries() {
+		return toolEntries;
 	}
+
+	public ITool getActiveTool() {
+		return activeTool;
+	}
+
+	public void setActiveTool(final ITool activeTool) {
+		if (this.activeTool == activeTool) return; // nothing to do
+		if (this.activeTool != null) {
+			// deactivate old tool
+			this.activeTool.deactivate();
+			Events.publish(new ToolDeactivatedEvent(this.activeTool));
+		}
+		this.activeTool = activeTool;
+		// activate new tool
+		activeTool.activate();
+		Events.publish(new ToolActivatedEvent(activeTool));
+	}
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		final EventSubscriber<KyPressedEvent> kyPressedSubscriber =
+			new EventSubscriber<KyPressedEvent>()
+		{
+			@Override
+			public void onEvent(final KyPressedEvent event) {
+				getActiveTool().onKeyDown(event);
+			}
+		};
+		subscribers.add(kyPressedSubscriber);
+		Events.subscribe(KyPressedEvent.class, kyPressedSubscriber);
+
+		final EventSubscriber<KyReleasedEvent> kyReleasedSubscriber =
+			new EventSubscriber<KyReleasedEvent>()
+			{
+			@Override
+			public void onEvent(final KyReleasedEvent event) {
+				getActiveTool().onKeyUp(event);
+			}
+		};
+		subscribers.add(kyReleasedSubscriber);
+		Events.subscribe(KyReleasedEvent.class, kyReleasedSubscriber);
+
+		final EventSubscriber<MsPressedEvent> msPressedSubscriber =
+			new EventSubscriber<MsPressedEvent>()
+		{
+			@Override
+			public void onEvent(final MsPressedEvent event) {
+				getActiveTool().onMouseDown(event);
+			}
+		};
+		subscribers.add(msPressedSubscriber);
+		Events.subscribe(MsPressedEvent.class, msPressedSubscriber);
+
+		final EventSubscriber<MsReleasedEvent> msReleasedSubscriber =
+			new EventSubscriber<MsReleasedEvent>()
+		{
+			@Override
+			public void onEvent(final MsReleasedEvent event) {
+				getActiveTool().onMouseUp(event);
+			}
+		};
+		subscribers.add(msReleasedSubscriber);
+		Events.subscribe(MsReleasedEvent.class, msReleasedSubscriber);
+
+		final EventSubscriber<MsClickedEvent> msClickedSubscriber =
+			new EventSubscriber<MsClickedEvent>()
+		{
+			@Override
+			public void onEvent(final MsClickedEvent event) {
+				getActiveTool().onMouseClicked(event);
+			}
+		};
+		subscribers.add(msClickedSubscriber);
+		Events.subscribe(MsClickedEvent.class, msClickedSubscriber);
+
+		final EventSubscriber<MsMovedEvent> msMovedSubscriber =
+			new EventSubscriber<MsMovedEvent>()
+		{
+			@Override
+			public void onEvent(final MsMovedEvent event) {
+				getActiveTool().onMouseMove(event);
+			}
+		};
+		subscribers.add(msMovedSubscriber);
+		Events.subscribe(MsMovedEvent.class, msMovedSubscriber);
+
+		final EventSubscriber<MsDraggedEvent> msDraggedSubscriber =
+			new EventSubscriber<MsDraggedEvent>()
+		{
+			@Override
+			public void onEvent(final MsDraggedEvent event) {
+				getActiveTool().onMouseDrag(event);
+			}
+		};
+		subscribers.add(msDraggedSubscriber);
+		Events.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
+	}
+
 }
