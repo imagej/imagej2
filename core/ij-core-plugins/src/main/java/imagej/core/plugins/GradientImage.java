@@ -5,6 +5,7 @@ import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.gui.WidgetStyle;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
 /**
@@ -18,10 +19,12 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 )
 public class GradientImage implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(min = "1", max = "2000",
+		widgetStyle = WidgetStyle.NUMBER_SCROLL_BAR)
 	private int width = 512;
 
-	@Parameter
+	@Parameter(min = "1", max = "2000",
+		widgetStyle = WidgetStyle.NUMBER_SLIDER)
 	private int height = 512;
 
 	@Parameter(output=true)
