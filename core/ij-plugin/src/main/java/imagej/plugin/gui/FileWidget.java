@@ -3,11 +3,11 @@ package imagej.plugin.gui;
 import java.io.File;
 
 /**
- * TODO
+ * Widget interface for file selectors.
  *
  * @author Curtis Rueden
  */
-public interface FileSelector {
+public interface FileWidget {
 
 	File getFile();
 

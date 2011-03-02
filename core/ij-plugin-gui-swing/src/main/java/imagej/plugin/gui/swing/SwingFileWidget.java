@@ -1,6 +1,6 @@
 package imagej.plugin.gui.swing;
 
-import imagej.plugin.gui.FileSelector;
+import imagej.plugin.gui.FileWidget;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,18 +14,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * TODO
+ * Swing implementation of file selector widget.
  *
  * @author Curtis Rueden
  */
-public class SwingFileSelector extends JPanel
-	implements FileSelector, ActionListener
+public class SwingFileWidget extends JPanel
+	implements FileWidget, ActionListener
 {
 
 	private JTextField path;
 	private JButton browse;
 
-	public SwingFileSelector(final File initialValue) {
+	public SwingFileWidget(final File initialValue) {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		path = new JTextField(initialValue == null ?
 			"" : initialValue.getAbsolutePath(), 20);

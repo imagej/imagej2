@@ -37,7 +37,7 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
 		final JPanel widgetPane = (JPanel) mainPane.getComponent(0);
 		// TODO - use JScrollPane in case there are many widgets
-		widgetPane.add((SwingInputPanel) inputPanel);
+		widgetPane.add(((SwingInputPanel) inputPanel).getPanel());
 		dialog.setModal(true);
 		dialog.pack();
 		ensureDialogSizeReasonable(dialog);

@@ -43,9 +43,6 @@ public abstract class AbstractInputHarvester
 	// -- InputHarvester methods --
 
 	@Override
-	public abstract InputPanel createInputPanel();
-
-	@Override
 	public void buildPanel(InputPanel inputPanel, PluginModule<?> module) {
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
@@ -57,6 +54,7 @@ public abstract class AbstractInputHarvester
 			final String label = makeLabel(name, param.label());
 			final boolean required = param.required();
 			final String persist = param.persist();
+			final WidgetStyle style = param.widgetStyle();
 
 			Object value = "";
 			if (!persist.isEmpty()) {
@@ -73,7 +71,8 @@ public abstract class AbstractInputHarvester
 				if (max == null) max = ClassUtils.getMaximumNumber(type);
 				Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 				if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
-				inputPanel.addNumber(name, label, (Number) value, min, max, stepSize);
+				inputPanel.addNumber(name, label, (Number) value,
+					min, max, stepSize, style);
 			}
 			else if (ClassUtils.isText(type)) {
 				final String[] choices = param.choices();
@@ -100,10 +99,6 @@ public abstract class AbstractInputHarvester
 			}
 		}
 	}
-
-	@Override
-	public abstract boolean showDialog(InputPanel inputPanel,
-		PluginModule<?> module);
 
 	@Override
 	public void harvestResults(InputPanel inputPanel, PluginModule<?> module) {
