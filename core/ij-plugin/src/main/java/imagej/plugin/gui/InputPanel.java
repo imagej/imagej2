@@ -17,7 +17,7 @@ public interface InputPanel {
 
 	/**
 	 * Adds a numeric field.
-	 * 
+	 *
 	 * @param name
 	 *          unique name identifying this field
 	 * @param label
@@ -29,10 +29,12 @@ public interface InputPanel {
 	 * @param max
 	 *          maximum allowed value
 	 * @param stepSize
-	 *          
+	 *          distance between steps when operating widget
+	 * @param style
+	 *          preferred widget style for the number chooser
 	 */
 	void addNumber(String name, String label, Number initialValue,
-		Number min, Number max, Number stepSize);
+		Number min, Number max, Number stepSize, WidgetStyle style);
 
 	/**
 	 * Adds a checkbox.

@@ -1,5 +1,7 @@
 package imagej.plugin;
 
+import imagej.plugin.gui.WidgetStyle;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,6 +29,9 @@ public @interface Parameter {
 
 	/** Defines a key to use for saving the value persistently. */
 	String persist() default "";
+
+	/** Defines the preferred widget style. */
+	WidgetStyle widgetStyle() default WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";
