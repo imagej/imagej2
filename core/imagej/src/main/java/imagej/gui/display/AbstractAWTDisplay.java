@@ -57,25 +57,21 @@ public abstract class AbstractAWTDisplay implements Display, KeyListener,
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Events.publish(new MsClickedEvent(this,
-				e.getX(), e.getY(), mouseButton(e), e.getClickCount()));
+		Events.publish(new MsClickedEvent(this, e.getX(), e.getY(),
+			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
-
-// isPopupTrigger()
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Events.publish(new MsPressedEvent(this,
-				e.getX(), e.getY(), mouseButton(e), e.getClickCount()));
+		Events.publish(new MsPressedEvent(this, e.getX(), e.getY(),
+			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		Events.publish(new MsReleasedEvent(this,
-			e.getX(), e.getY(), mouseButton(e), e.getClickCount()));
+		Events.publish(new MsReleasedEvent(this, e.getX(), e.getY(),
+			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
-
-	// @todo: Add handling of isPopupTrigger() (for context menu)
 
 	// -- MouseMotionListener methods --
 
@@ -91,8 +87,8 @@ public abstract class AbstractAWTDisplay implements Display, KeyListener,
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		Events.publish(new MsDraggedEvent(this,
-			e.getX(), e.getY(), mouseButton(e)));
+		Events.publish(new MsDraggedEvent(this, e.getX(), e.getY(),
+			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
