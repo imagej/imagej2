@@ -1,16 +1,16 @@
 package imagej.gui;
 
 import imagej.Log;
-import imagej.event.Events;
+import imagej.event.EventSubscriber;
 import imagej.plugin.api.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
-import imagej.tool.ToolUtils;
+import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
-import imagej.tool.event.ToolDeactivatedEvent;
 
 import java.net.URL;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -25,18 +25,31 @@ import javax.swing.event.ChangeListener;
  *
  * @author Curtis Rueden
  */
-public class ToolBar extends JToolBar {
+public class ToolBar extends JToolBar
+	implements EventSubscriber<ToolActivatedEvent>
+{
+
+	private ToolManager toolManager;
+
+	private Map<String, AbstractButton> toolButtons;
 
 	public ToolBar() {
+		toolManager = new ToolManager();
+		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 	}
 
+	public ToolManager getToolManager() {
+		return toolManager;
+	}
+
 	private void populateToolBar() {
-		final List<ToolEntry> entries = ToolUtils.findTools();
 		final ButtonGroup buttonGroup = new ButtonGroup();
-		for (final ToolEntry entry : entries) {
+		for (final ToolEntry entry : toolManager.getToolEntries()) {
 			try {
-				add(createButton(entry, buttonGroup));
+				final AbstractButton button = createButton(entry, buttonGroup);
+				toolButtons.put(entry.getName(), button);
+				add(button);
 			}
 			catch (PluginException e) {
 				Log.warn("Invalid tool: " + entry, e);
@@ -48,6 +61,8 @@ public class ToolBar extends JToolBar {
 		final ButtonGroup buttonGroup) throws PluginException
 	{
 		final ITool tool = entry.createInstance();
+		// TODO - consider alternatives to assigning the entry manually
+		tool.setToolEntry(entry);
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
@@ -70,13 +85,21 @@ public class ToolBar extends JToolBar {
 			public void stateChanged(ChangeEvent e) {
 				boolean selected = button.isSelected();
 				if (selected == active) return;
-				if (selected) Events.publish(new ToolActivatedEvent(tool));
-				else Events.publish(new ToolDeactivatedEvent(tool));
+				getToolManager().setActiveTool(tool);
 				active = selected;
 			}
 		});
 
 		return button;
+	}
+
+	@Override
+	public void onEvent(final ToolActivatedEvent event) {
+		final String name = event.getTool().getName();
+		if (name == null) return; // no name, no button?
+		final AbstractButton button = toolButtons.get(name);
+		if (button == null) return; // not on toolbar
+		button.setSelected(true);
 	}
 
 }

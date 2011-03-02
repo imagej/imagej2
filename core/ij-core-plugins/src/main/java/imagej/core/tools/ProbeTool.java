@@ -1,6 +1,6 @@
 package imagej.core.tools;
 
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
@@ -10,7 +10,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  */
 @Tool(name = "Probe", iconPath = "/tools/probe.png")
-public class ProbeTool extends AbstractTool {
+public class ProbeTool extends BaseTool {
 
 	// TODO
 

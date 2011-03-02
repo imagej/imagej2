@@ -1,6 +1,6 @@
 package imagej.core.tools;
 
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
@@ -15,7 +15,7 @@ import imagej.tool.Tool;
 	label = "Flood Fill",
 	iconPath = "/tools/flood-fill.png"
 )
-public class FloodFillTool extends AbstractTool {
+public class FloodFillTool extends BaseTool {
 
 	// TODO
 

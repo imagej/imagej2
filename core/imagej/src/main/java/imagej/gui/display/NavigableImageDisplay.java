@@ -1,5 +1,6 @@
 package imagej.gui.display;
 
+import imagej.Log;
 import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.LayeredDisplay;
@@ -29,10 +30,10 @@ public class NavigableImageDisplay extends AbstractAWTDisplay
 		imageFrame = new NavigableImageFrame();
 
 		// listen for user input
-		imageFrame.addKeyListener(this);
-		imageFrame.addMouseListener(this);
-		imageFrame.addMouseMotionListener(this);
-		imageFrame.addMouseWheelListener(this);
+		imageFrame.getPanel().addKeyListener(this);
+		imageFrame.getPanel().addMouseListener(this);
+		imageFrame.getPanel().addMouseMotionListener(this);
+		imageFrame.getPanel().addMouseWheelListener(this);
 		imageFrame.addWindowListener(this);
 
 		// TODO - use DisplayView instead of Dataset directly

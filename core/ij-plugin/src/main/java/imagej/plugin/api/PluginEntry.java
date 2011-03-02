@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Curtis Rueden
  */
-public class PluginEntry<T extends BasePlugin> extends SezpozEntry<T> {
+public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
 	private Class<T> pluginType;

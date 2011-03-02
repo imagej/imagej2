@@ -1,9 +1,10 @@
 package imagej.core.tools;
 
+import imagej.display.Display;
 import imagej.display.event.key.KyPressedEvent;
-import imagej.display.event.mouse.MsMovedEvent;
+import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 import java.awt.event.KeyEvent;
@@ -23,7 +24,7 @@ import java.awt.event.KeyEvent;
 	description = "Pans the display",
 	iconPath = "/tools/pan.png"
 )
-public class PanTool extends AbstractTool {
+public class PanTool extends BaseTool {
 
 	private static final float PAN_AMOUNT = 10;
 
@@ -33,6 +34,7 @@ public class PanTool extends AbstractTool {
 
 	@Override
 	public void onKeyDown(KyPressedEvent evt) {
+		final Display display = evt.getDisplay();
 		switch (evt.getCode()) {
 			case KeyEvent.VK_UP:
 				display.pan(0, -PAN_AMOUNT);
@@ -56,7 +58,8 @@ public class PanTool extends AbstractTool {
 	}
 
 	@Override
-	public void onMouseMove(MsMovedEvent evt)  {
+	public void onMouseDrag(MsDraggedEvent evt)  {
+		final Display display = evt.getDisplay();
 		display.pan(evt.getX() - lastX, evt.getY() - lastY);
 		lastX = evt.getX();
 		lastY = evt.getY();

@@ -1,6 +1,6 @@
 package imagej.core.tools;
 
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
@@ -14,7 +14,7 @@ import imagej.tool.Tool;
 	label = "Spray Can",
 	iconPath = "/tools/spray-can.png"
 )
-public class SprayCanTool extends AbstractTool {
+public class SprayCanTool extends BaseTool {
 
 	// TODO
 

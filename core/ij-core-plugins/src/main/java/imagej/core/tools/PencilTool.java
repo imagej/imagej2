@@ -1,6 +1,6 @@
 package imagej.core.tools;
 
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
@@ -10,7 +10,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  */
 @Tool(name = "Pencil", iconPath = "/tools/pencil.png")
-public class PencilTool extends AbstractTool {
+public class PencilTool extends BaseTool {
 
 	// TODO
 

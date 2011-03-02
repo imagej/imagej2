@@ -1,6 +1,6 @@
 package imagej.core.tools;
 
-import imagej.tool.AbstractTool;
+import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
@@ -11,7 +11,7 @@ import imagej.tool.Tool;
  * @author Curtis Rueden
  */
 @Tool(name = "Arrow", iconPath="/tools/arrow.png")
-public class ArrowTool extends AbstractTool {
+public class ArrowTool extends BaseTool {
 
 	// TODO
 
