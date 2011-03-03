@@ -6,10 +6,8 @@ package imagej.plugin.gui;
  * @author Curtis Rueden
  */
 public enum WidgetStyle {
-
 	DEFAULT,
 	NUMBER_SPINNER,
 	NUMBER_SLIDER,
 	NUMBER_SCROLL_BAR
-
 }
