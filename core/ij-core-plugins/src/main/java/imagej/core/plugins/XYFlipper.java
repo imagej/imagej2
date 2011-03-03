@@ -1,5 +1,6 @@
 package imagej.core.plugins;
 
+import imagej.Dimensions;
 import imagej.model.Dataset;
 import imagej.plugin.Parameter;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
@@ -54,7 +55,7 @@ public abstract class XYFlipper extends ImglibOutputAlgorithmPlugin
 
 			int[] inputDimensions = in.getImage().getDimensions();
 
-			if ((calcNumNontrivialDimensions(inputDimensions) != 2) ||
+			if ((Dimensions.countNontrivialDimensions(inputDimensions) != 2) ||
 					((inputDimensions[0] == 1) || (inputDimensions[1] == 1)))
 			{
 				errMessage = "Flipping only works on an Image made of a 2d plane of XY data";
@@ -119,18 +120,6 @@ public abstract class XYFlipper extends ImglibOutputAlgorithmPlugin
 		public Image<?> getResult()
 		{
 			return outputImage;
-		}
-
-		// TODO - move this somewhere to be reused
-		private int calcNumNontrivialDimensions(int[] dimensions)
-		{
-			int numNonTrivial = 0;
-			
-			for (int dim : dimensions)
-				if (dim > 1)
-					numNonTrivial++;
-			
-			return numNonTrivial;
 		}
 	}
 }
