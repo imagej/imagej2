@@ -7,6 +7,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
+import imagej.display.event.mouse.MsWheelEvent;
 
 import java.awt.Cursor;
 
@@ -87,7 +88,7 @@ public abstract class BaseTool implements ITool {
 	}
 
 	@Override
-	public void onMouseClicked(MsClickedEvent evt) {
+	public void onMouseClick(MsClickedEvent evt) {
 		// do nothing by default
 	}
 
@@ -98,6 +99,11 @@ public abstract class BaseTool implements ITool {
 
 	@Override
 	public void onMouseDrag(MsDraggedEvent evt) {
+		// do nothing by default
+	}
+
+	@Override
+	public void onMouseWheel(MsWheelEvent evt) {
 		// do nothing by default
 	}
 

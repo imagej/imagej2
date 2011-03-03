@@ -1,6 +1,5 @@
 package imagej.tool;
 
-import imagej.Log;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;
@@ -21,6 +20,7 @@ import java.util.List;
  * and delegates UI events to the active tool.
  *
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 public class ToolManager {
 
@@ -109,7 +109,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsClickedEvent event) {
-				getActiveTool().onMouseClicked(event);
+				getActiveTool().onMouseClick(event);
 			}
 		};
 		subscribers.add(msClickedSubscriber);
