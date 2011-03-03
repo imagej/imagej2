@@ -7,6 +7,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
+import imagej.display.event.mouse.MsWheelEvent;
 
 /**
  * Interface for ImageJ tools. While it possible to create a tool
@@ -43,25 +44,28 @@ public interface ITool {
 	/** Informs the tool that it is no longer active. */
 	void deactivate();
 
-	/** Occurs when a key on the keyboard is pressed when the tool is active. */
-	void onKeyDown(KyPressedEvent evt);
+	/** Occurs when a key on the keyboard is pressed while the tool is active. */
+	void onKeyDown(KyPressedEvent event);
 
-	/** Occurs when a key on the keyboard is released when the tool is active. */
-	void onKeyUp(KyReleasedEvent evt);
+	/** Occurs when a key on the keyboard is released while the tool is active. */
+	void onKeyUp(KyReleasedEvent event);
 
-	/** Occurs when a mouse button is pressed when the tool is active. */
-	void onMouseDown(MsPressedEvent evt);
+	/** Occurs when a mouse button is pressed while the tool is active. */
+	void onMouseDown(MsPressedEvent event);
 
-	/** Occurs when a mouse button is released when the tool is active. */
-	void onMouseUp(MsReleasedEvent evt);
+	/** Occurs when a mouse button is released while the tool is active. */
+	void onMouseUp(MsReleasedEvent event);
 
-	/** Occurs when a mouse button is double clicked when the tool is active. */
-	void onMouseClicked(MsClickedEvent evt);
+	/** Occurs when a mouse button is double clicked while the tool is active. */
+	void onMouseClick(MsClickedEvent event);
 
-	/** Occurs when the mouse is moved when the tool is active. */
-	void onMouseMove(MsMovedEvent evt);
+	/** Occurs when the mouse is moved while the tool is active. */
+	void onMouseMove(MsMovedEvent event);
 
-	/** Occurs when the mouse is dragged when the tool is active. */
-	void onMouseDrag(MsDraggedEvent evt);
+	/** Occurs when the mouse is dragged while the tool is active. */
+	void onMouseDrag(MsDraggedEvent event);
+	
+	/** Occurs when the mouse wheel is moved while the tool is active. */
+	void onMouseWheel(MsWheelEvent event);
 
 }
