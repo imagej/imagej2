@@ -29,14 +29,12 @@ public class SaltAndPepper extends ImglibOutputAlgorithmPlugin
 	
 	private Image<?> inputImage;
 	private Image<?> outputImage;
-	private String errMessage;
+	private String errMessage = "No error";
 	private LocalizableByDimCursor<? extends RealType<?>> outputCursor;  // working cursor
 	private int[] outputPosition;  // workspace for setting output position
 	
 	public SaltAndPepper()
 	{
-		errMessage = "No error";
-		
 		setAlgorithm(new SaltAndPepperAlgorithm());
 	}
 	

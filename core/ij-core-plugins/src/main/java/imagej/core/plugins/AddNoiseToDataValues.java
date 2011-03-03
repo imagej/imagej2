@@ -17,12 +17,8 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  *
  * @author Barry DeZonia
  */
-@Plugin(
-	menuPath = "PureIJ2>Process>Noise>Add Specified Noise"
-)
 public class AddNoiseToDataValues extends NAryOperation
 {
-	@Parameter(label="Enter standard deviation of range")
 	private double rangeStdDev;
 	
 	private double rangeMin, rangeMax;
@@ -31,6 +27,11 @@ public class AddNoiseToDataValues extends NAryOperation
 	{
 	}
 
+	protected void setStdDev(double stdDev)
+	{
+		this.rangeStdDev = stdDev;
+	}
+	
 	@Override
 	public void run()
 	{
