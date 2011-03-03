@@ -84,4 +84,16 @@ public class Dimensions
 				throw new IllegalArgumentException("verifyDimensions() : span range (origin+span) beyond input image boundaries at index " + i);
 	}
 
+
+	/** given an array of dimensions this returns the number of axes whose dimension is > 1 */
+	public static int countNontrivialDimensions(int[] dimensions)
+	{
+		int numNonTrivial = 0;
+		
+		for (int dim : dimensions)
+			if (dim > 1)
+				numNonTrivial++;
+		
+		return numNonTrivial;
+	}
 }
