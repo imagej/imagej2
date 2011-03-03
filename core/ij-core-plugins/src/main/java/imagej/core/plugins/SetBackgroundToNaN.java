@@ -29,6 +29,8 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 	
 	@Parameter(label="High threshold")
 	private double hiThreshold;
+	
+	private String errMessage = "No error";
 
 	// ********** public interface ****************************************************************
 	
@@ -86,7 +88,7 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 		@Override
 		public String getErrorMessage()
 		{
-			return null;
+			return errMessage;
 		}
 
 		@Override

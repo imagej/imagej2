@@ -1,16 +1,6 @@
 package imagej.core.plugins;
 
-import imagej.model.Dataset;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyFactory;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyMirrorFactory;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
  * TODO
@@ -21,128 +11,52 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 @Plugin(
 		menuPath = "PureIJ2>Process>Sharpen"
 )
-public class SharpenDataValues extends ImglibOutputAlgorithmPlugin
+public class SharpenDataValues extends Neighborhood3x3Operation
 {
-	@Parameter
-	private Dataset in;
-	
-	private String errMessage;
-
 	public SharpenDataValues()
 	{
+		setWatcher(new SharpenEdgesWatcher());
 	}
 	
-	@Override
-	public void run()
+	private class SharpenEdgesWatcher implements Neighborhood3x3Watcher
 	{
-		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set((index++)%243);
-			cursor.close();
-			in = new Dataset(junkImage);
-		}
+		private double sum;
+		private double scale;
+		private int[] weight;
+		private int neighIndex;
 		
-		OutputAlgorithm algorithm = new SharpenAlgorithm(in);
-		
-		setAlgorithm(algorithm);
-		
-		super.run();
-	}
-	
-	/** implements IJ1's ImageProcessor::sharpen() algorithm within the structures of imglib's OutputAlgorithm */
-	private class SharpenAlgorithm implements OutputAlgorithm
-	{
-		private Image<?> inputImage;
-		private Image<?> outputImage;
-		
-		public SharpenAlgorithm(Dataset input)
-		{
-			inputImage = input.getImage();
-			outputImage = inputImage.createNewImage();
-		}
-
 		@Override
-		public boolean checkInput()
+		public void setup()
 		{
-			if (inputImage == null)
-			{
-				errMessage = "input image is null";
-				return false;
-			}
-			
-			if (inputImage.getNumDimensions() != 2)
-			{
-				errMessage = "input image is not 2d but has "+inputImage.getNumDimensions()+" dimensions";
-				return false;
-			}
-			
-			return true;
-		}
-
-		@Override
-		public String getErrorMessage()
-		{
-			return errMessage;
-		}
-
-		@Override
-		public boolean process()
-		{
-			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
-				(LocalizableByDimCursor<? extends RealType<?>>) outputImage.createLocalizableByDimCursor();
-			OutOfBoundsStrategyFactory factory = new OutOfBoundsStrategyMirrorFactory();
-			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
-				(LocalizableByDimCursor<? extends RealType<?>>) inputImage.createLocalizableByDimCursor(factory);
-
-			int[] inputPosition = new int[inputCursor.getNumDimensions()];
-			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
-
-			int[] weight = new int[9];
+			weight = new int[9];
 			for (int i = 0; i < 9; i++)
 				weight[i] = -1;
 			weight[4] = 12;
 
-			double scale = 0;
+			scale = 0;
 			for (int i = 0; i < 9; i++)
 				scale += weight[i];
-			if (scale == 0) scale = 1;
-			
-			while (outputCursor.hasNext())
-			{
-				outputCursor.next();
-				
-				outputCursor.getPosition(inputPosition);
-				
-				double sum = 0;
-				int i = 0;
-				for (int dy = -1; dy <= 1; dy++)
-				{
-					localInputPosition[1] = inputPosition[1] + dy;
-					for (int dx = -1; dx <= 1; dx++)
-					{
-						localInputPosition[0] = inputPosition[0] + dx;
-						inputCursor.setPosition(localInputPosition);
-						sum += weight[i++] * inputCursor.getType().getRealDouble();
-					}
-				}
-				
-				outputCursor.getType().setReal(sum / scale);
-			}
-			
-			inputCursor.close();
-			outputCursor.close();
-			
-			return true;
+			if (scale == 0)
+				scale = 1;
 		}
 
 		@Override
-		public Image<?> getResult()
+		public void initializeNeighborhood(int[] position)
 		{
-			return outputImage;
+			sum = 0;
+			neighIndex = 0;
+		}
+
+		@Override
+		public void visitLocation(int dx, int dy, double value)
+		{
+			sum += weight[neighIndex++] * value;
+		}
+
+		@Override
+		public double calcOutputValue()
+		{
+			return sum / scale;
 		}
 	}
 }
