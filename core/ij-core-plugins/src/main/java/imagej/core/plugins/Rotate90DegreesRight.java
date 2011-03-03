@@ -2,6 +2,9 @@ package imagej.core.plugins;
 
 import imagej.plugin.Plugin;
 
+// TODO - IJ1 also swaps calibration values pixelWidth/pixelHeight during this operation.
+//   Must do so too when calibration stored by Dataset/Img.
+
 /**
  * TODO
  * @author Barry DeZonia
