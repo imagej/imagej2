@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
  * @author Grant Harris
  * @author Curtis Rueden
  */
+
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Parameter {
@@ -31,7 +33,12 @@ public @interface Parameter {
 	String persist() default "";
 
 	/** Defines the preferred widget style. */
-	WidgetStyle widgetStyle() default WidgetStyle.DEFAULT;
+	/* The fully qualified name required to workaround javac bug:
+	 * http://bugs.sun.com/view_bug.do?bug_id=6512707
+	 * See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	 */
+
+	WidgetStyle widgetStyle() default  imagej.plugin.gui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";
