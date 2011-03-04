@@ -1,4 +1,4 @@
-package imagej.gui.display;
+package imagej.gui.swing.display;
 
 import imagej.Log;
 import imagej.display.Display;

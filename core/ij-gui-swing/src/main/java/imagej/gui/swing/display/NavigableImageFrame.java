@@ -1,4 +1,4 @@
-package imagej.gui.display;
+package imagej.gui.swing.display;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

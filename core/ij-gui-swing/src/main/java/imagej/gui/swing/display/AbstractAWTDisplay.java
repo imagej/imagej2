@@ -1,4 +1,4 @@
-package imagej.gui.display;
+package imagej.gui.swing.display;
 
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;

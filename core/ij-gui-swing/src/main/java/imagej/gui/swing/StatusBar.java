@@ -1,4 +1,4 @@
-package imagej.gui;
+package imagej.gui.swing;
 
 import imagej.event.EventSubscriber;
 import imagej.event.Events;

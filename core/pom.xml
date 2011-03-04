@@ -23,6 +23,7 @@
 		<module>ij-data-model</module>
 		<module>ij-display</module>
 		<module>ij-events</module>
+		<module>ij-gui-swing</module>
 		<module>ij-legacy</module>
 		<module>ij-plugin</module>
 		<module>ij-plugin-gui-swing</module>
