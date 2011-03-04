@@ -2,7 +2,7 @@
 // MainFrame.java
 //
 
-package imagej.gui;
+package imagej.gui.swing;
 
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;

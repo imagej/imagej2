@@ -13,59 +13,14 @@
 
 	<artifactId>imagej</artifactId>
 
-	<name>ImageJ 2.0</name>
-	<description>A simple Swing-based ImageJ user interface.</description>
+	<name>ImageJ</name>
+	<description>ImageJ application launcher (Swing version).</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-common</artifactId>
+			<artifactId>ij-gui-swing</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data-model</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-display</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-events</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin-gui-swing</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-tool</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>forms</artifactId>
-			<version>1.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>loci</groupId>
-			<artifactId>bio-formats</artifactId>
-			<version>${bio-formats.version}</version>
 		</dependency>
 
 		<dependency>
@@ -120,8 +75,8 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>imagej.gui.MainFrame</mainClass>
-							<packageName>imagej.gui</packageName>
+							<mainClass>imagej.launcher.swing.SwingLauncher</mainClass>
+							<packageName>imagej.launcher.swing</packageName>
 						</manifest>
 					</archive>
 				</configuration>
@@ -141,7 +96,7 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath/>
-						<argument>imagej.gui.MainFrame</argument>
+						<argument>imagej.launcher.swing.SwingLauncher</argument>
 					</arguments>
 				</configuration>
 			</plugin>
