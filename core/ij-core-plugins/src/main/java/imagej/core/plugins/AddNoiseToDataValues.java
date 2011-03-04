@@ -17,25 +17,30 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  *
  * @author Barry DeZonia
  */
-public class AddNoiseToDataValues extends NAryOperation
+public class AddNoiseToDataValues
 {
+	private Dataset input;
+	private Dataset output;
 	private double rangeStdDev;
-	
 	private double rangeMin, rangeMax;
 	
-	public AddNoiseToDataValues()
+	public AddNoiseToDataValues(Dataset input)
 	{
+		this.input = input;
 	}
 
+	public void setOutput(Dataset output)
+	{
+		this.output = output;
+	}
 	protected void setStdDev(double stdDev)
 	{
 		this.rangeStdDev = stdDev;
 	}
 	
-	@Override
-	public void run()
+	public Dataset run()
 	{
-		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
 		{
 			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
@@ -43,20 +48,25 @@ public class AddNoiseToDataValues extends NAryOperation
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set(index++);
 			cursor.close();
-			in = new ArrayList<Dataset>();
-			in.add(new Dataset(junkImage));
+			input = new Dataset(junkImage);
 		}
 		
 		calcRangeMinAndMax();
+		
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
+		
 		UnaryOperatorFunction opFunc = new UnaryOperatorFunction(op);
-		setFunction(opFunc);
-		super.run();
+		
+		NAryOperation operation = new NAryOperation(input, opFunc);
+
+		operation.setOutput(output);
+		
+		return operation.run();
 	}
 
 	private void calcRangeMinAndMax()
 	{
-		Cursor<? extends RealType<?>> cursor = (Cursor<? extends RealType<?>>) in.get(0).getImage().createCursor();
+		Cursor<? extends RealType<?>> cursor = (Cursor<? extends RealType<?>>) input.getImage().createCursor();
 		rangeMin = cursor.getType().getMinValue();
 		rangeMax = cursor.getType().getMaxValue();
 		cursor.close();

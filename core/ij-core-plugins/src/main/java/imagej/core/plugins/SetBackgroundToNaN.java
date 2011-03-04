@@ -1,6 +1,7 @@
 package imagej.core.plugins;
 
 import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
@@ -17,12 +18,15 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 @Plugin(
 	menuPath = "PureIJ2>Process>Math>NaN Background"
 )
-public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
+public class SetBackgroundToNaN implements ImageJPlugin
 {
 	// ********** instance variables ****************************************************************
 	
 	@Parameter
-	private Dataset in;
+	private Dataset input;
+
+	@Parameter(output=true)
+	private Dataset output;
 
 	@Parameter(label="Low threshold")
 	private double loThreshold;
@@ -30,8 +34,6 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 	@Parameter(label="High threshold")
 	private double hiThreshold;
 	
-	private String errMessage = "No error";
-
 	// ********** public interface ****************************************************************
 	
 	/** basic constructor */
@@ -43,7 +45,7 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 	@Override
 	public void run()
 	{
-		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
+		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
 		{
 			Image<FloatType> junkImage = Dataset.createPlanarImage("",new FloatType(), new int[]{200,200});
 			Cursor<FloatType> cursor = junkImage.createCursor();
@@ -51,13 +53,14 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 			for (FloatType pixRef : cursor)
 				pixRef.set(index++);
 			cursor.close();
-			in = new Dataset(junkImage);
+			input = new Dataset(junkImage);
 		}
 		
-		if (in.isFloat())
+		if (input.isFloat())
 		{
-			setAlgorithm(new SetToNaN(in, loThreshold, hiThreshold));
-			super.run();
+			OutputAlgorithm algorithm = new SetToNaN(input, loThreshold, hiThreshold);
+			ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(algorithm);
+			output = runner.run();
 		}
 	}
 	
@@ -70,7 +73,8 @@ public class SetBackgroundToNaN extends ImglibOutputAlgorithmPlugin
 		private Image<?> outputImage;
 		private double loThreshold;
 		private double hiThreshold;
-		
+		private String errMessage = "No error";
+
 		public SetToNaN(Dataset in, double loThreshold, double hiThreshold)
 		{
 			inputImage = in.getImage();  // TODO - failure is a real possibility here (example: pass Image<FloatType> when declared plugin of DoubleType

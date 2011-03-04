@@ -1,5 +1,9 @@
 package imagej.core.plugins;
 
+import imagej.core.plugins.XYFlipper.FlipCoordinateTransformer;
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
@@ -11,18 +15,40 @@ import imagej.plugin.Plugin;
 @Plugin(
 		menuPath = "PureIJ2>Image>Transform>Flip Vertically"
 )
-public class FlipVertically extends XYFlipper
+public class FlipVertically implements ImageJPlugin
 {
-	@Override
-	void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition)
+	@Parameter
+	private Dataset input;
+	
+	@Parameter(output=true)
+	private Dataset output;
+	
+	public FlipVertically()
 	{
-		outputPosition[0] = inputPosition[0];
-		outputPosition[1] = inputDimensions[1] - inputPosition[1] - 1;
 	}
-
+	
 	@Override
-	int[] calcOutputDimensions(int[] inputDimensions)
+	public void run()
 	{
-		return inputDimensions.clone();
+		FlipCoordinateTransformer flipTransformer = new VertFlipTransformer();
+		XYFlipper flipper = new XYFlipper(input, flipTransformer);
+		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(flipper);
+		output = runner.run();
+	}
+	
+	class VertFlipTransformer implements FlipCoordinateTransformer
+	{
+		@Override
+		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition)
+		{
+			outputPosition[0] = inputPosition[0];
+			outputPosition[1] = inputDimensions[1] - inputPosition[1] - 1;
+		}
+
+		@Override
+		public int[] calcOutputDimensions(int[] inputDimensions)
+		{
+			return inputDimensions.clone();
+		}
 	}
 }

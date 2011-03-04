@@ -1,5 +1,7 @@
 package imagej.core.plugins;
 
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -11,8 +13,14 @@ import imagej.plugin.Plugin;
 @Plugin(
 	menuPath = "PureIJ2>Process>Noise>Add Specified Noise"
 )
-public class AddSpecificNoiseToDataValues extends AddNoiseToDataValues
+public class AddSpecificNoiseToDataValues implements ImageJPlugin
 {
+	@Parameter
+	Dataset input;
+	
+	@Parameter(output=true)
+	Dataset output;
+	
 	@Parameter(label="Enter standard deviation of range")
 	double stdDev;
 	
@@ -23,7 +31,9 @@ public class AddSpecificNoiseToDataValues extends AddNoiseToDataValues
 	@Override
 	public void run()
 	{
-		setStdDev(stdDev);
-		super.run();
+		AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(input);
+		noiseAdder.setOutput(output);
+		noiseAdder.setStdDev(stdDev);
+		output = noiseAdder.run();
 	}
 }

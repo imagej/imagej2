@@ -1,8 +1,6 @@
 package imagej.core.plugins;
 
 import imagej.model.Dataset;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
 
 import imglib.ops.function.RealFunction;
 import imglib.ops.operation.AssignOperation;
@@ -14,58 +12,38 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
-// TODO - class was abstract - not sure that was necessary - removed for now
-
 /**
  * TODO
  *
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class NAryOperation implements ImageJPlugin
+public class NAryOperation
 {
-	// TODO - SwingInputHarvester must prompt user for list of images
-	//  + need N-list widget with plus and minus buttons
-	//  + need Dataset support -- JComboBox
-
-	// TODO - eventually, need to resolve raw type warnings
-
 	// ***************  instance variables ***************************************************************
 	
-	@Parameter
-	protected List<Dataset> in;
+	/** the list of input Datasets that will be fed as input to the user supplied function */
+	private List<Dataset> inputs;
 
-	@Parameter(output=true)
-	protected Dataset out;
+	/** the output Dataset that will be filled with computation of user supplied function from inputs */
+	private Dataset output;
 
 	/** The imglib-ops function to execute. */
 	private RealFunction function;
 
 	// ***************  public/protected interface ***************************************************************
 
-	/** this constructor required for plugins that create a function that uses one of it's @Parameter values in construction */
-	public NAryOperation()
+	/** this constructor a convenience for those plugins that work from a single input Dataset */
+	public NAryOperation(Dataset input, RealFunction function)
 	{
-		this.function = null;
-	}
-	
-	/** preferred constructor */
-	public NAryOperation(RealFunction function)
-	{
+		this.inputs = new ArrayList<Dataset>();
+		this.inputs.add(input);
 		this.function = function;
-	}
+		this.output = null;
+		if (!function.canAccept(1))
+			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept a single input");
 
-	/** helper method that allows the function of an operation to be changed */
-	public void setFunction(RealFunction function)
-	{
-		this.function = function;
-	}
-	
-	/** runs the plugin applying the operation's function to the input and assigning it to the output */
-	@Override
-	public void run()
-	{
-		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
 		{
 			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
@@ -73,31 +51,88 @@ public class NAryOperation implements ImageJPlugin
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set(index++);
 			cursor.close();
-			in = new ArrayList<Dataset>();
-			in.add(new Dataset(junkImage));
+			inputs = new ArrayList<Dataset>();
+			inputs.add(new Dataset(junkImage));
 		}
 		
+	}
+
+	/** this constructor a convenience for those plugins that work from a two input Datasets */
+	public NAryOperation(Dataset input1, Dataset input2, RealFunction function)
+	{
+		this.inputs = new ArrayList<Dataset>();
+		this.inputs.add(input1);
+		this.inputs.add(input2);
+		this.function = function;
+		this.output = null;
+		if (!function.canAccept(2))
+			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept two inputs");
+
+		if ((input1 == null) || (input2 == null))  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		{
+			Image<UnsignedShortType> junkImage1 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
+			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
+			int index = 0;
+			for (UnsignedShortType pixRef : cursor)
+				pixRef.set(index++);
+			cursor.close();
+
+			Image<UnsignedShortType> junkImage2 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
+			cursor = junkImage2.createCursor();
+			index = 0;
+			for (UnsignedShortType pixRef : cursor)
+				pixRef.set(65535 - index++);
+			cursor.close();
+
+			inputs = new ArrayList<Dataset>();
+			inputs.add(new Dataset(junkImage1));
+			inputs.add(new Dataset(junkImage2));
+		}
+	}
+
+	/** takes a List of Datasets as input, an Dataset to store results in (can be null) and a function to be applied (can be null */
+	public NAryOperation(List<Dataset> inputs, RealFunction function)
+	{
+		this.inputs = inputs;
+		this.function = function;
+		this.output = null;
+		if (!function.canAccept(inputs.size()))
+			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept "+inputs.size()+" inputs");
+	}
+	
+	/** helper method that allows output Dataset of an operation to be set or changed */
+	public void setOutput(Dataset output)
+	{
+		this.output = output;
+	}
+	
+	/** runs the plugin applying the operation's function to the input and assigning it to the output */
+	public Dataset run()
+	{
 		if (function == null)
-			throw new IllegalStateException("function reference is null: function must be set via constructor or setFunction() before calling NAryOperation::run()");
+			throw new IllegalStateException("NAryOperation::run() - function reference is improperly initialized (null)");
 			
 		//@SuppressWarnings("unchecked")
-		final Image[] inputs = new Image[in.size()];
+		final Image[] inputImages = new Image[inputs.size()];
 		
-		for (int i = 0; i < inputs.length; i++) {
-			inputs[i] = imageFromDataset(in.get(i));
+		for (int i = 0; i < inputImages.length; i++) {
+			inputImages[i] = imageFromDataset(inputs.get(i));
 		}
 		
-		final Image output;
-		if (out != null)
-			output = imageFromDataset(out);
+		final Image outputImage;
+		if (output != null)
+			outputImage = imageFromDataset(output);
 		else
-			output = zeroDataImageWithSameAttributes(inputs[0]);  // TODO - must be given at least one input image or this will be unhappy
+			outputImage = zeroDataImageWithSameAttributes(inputImages[0]);  // TODO - must be given at least one input image or this will be unhappy
 		
-		final AssignOperation operation = new AssignOperation(inputs, output, function);
+		final AssignOperation operation = new AssignOperation(inputImages, outputImage, function);
 
 		operation.execute();
 		
-		out = datasetFromImage(output);
+		if (output != null)
+			return output;
+		else
+			return datasetFromImage(outputImage);
 	}
 
 	// ***************  private interface ***************************************************************

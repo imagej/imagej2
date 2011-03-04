@@ -1,7 +1,6 @@
 package imagej.core.plugins;
 
 import imagej.model.Dataset;
-import imagej.plugin.Parameter;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
@@ -19,10 +18,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  *
  * @param <T>
  */
-public class Neighborhood3x3Operation extends ImglibOutputAlgorithmPlugin
+public class Neighborhood3x3Operation
 {
-	@Parameter
-	private Dataset in;
+	private Dataset input;
 	
 	private String errMessage = "No error";
 	
@@ -36,19 +34,15 @@ public class Neighborhood3x3Operation extends ImglibOutputAlgorithmPlugin
 		double calcOutputValue();
 	}
 	
-	public Neighborhood3x3Operation()
+	public Neighborhood3x3Operation(Dataset input, Neighborhood3x3Watcher watcher)
 	{
-	}
-	
-	protected void setWatcher(Neighborhood3x3Watcher watcher)
-	{
+		this.input = input;
 		this.watcher = watcher;
 	}
 	
-	@Override
-	public void run()
+	public Dataset run()
 	{
-		if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
+		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
 		{
 			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
@@ -56,14 +50,14 @@ public class Neighborhood3x3Operation extends ImglibOutputAlgorithmPlugin
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set((index++)%243);
 			cursor.close();
-			in = new Dataset(junkImage);
+			input = new Dataset(junkImage);
 		}
 		
-		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(in);
+		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(input);
 		
-		setAlgorithm(algorithm);
+		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(algorithm);
 		
-		super.run();
+		return runner.run();
 	}
 	
 	/** implements IJ1's ImageProcessor::filter(FIND_EDGES) algorithm within the structures of imglib's OutputAlgorithm */

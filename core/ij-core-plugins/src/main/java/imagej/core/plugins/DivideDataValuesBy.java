@@ -1,5 +1,7 @@
 package imagej.core.plugins;
 
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
 import imglib.ops.function.p1.UnaryOperatorFunction;
@@ -14,8 +16,14 @@ import imglib.ops.operator.unary.DivideByConstant;
 @Plugin(
 	menuPath = "PureIJ2>Process>Math>Divide"
 )
-public class DivideDataValuesBy extends NAryOperation
+public class DivideDataValuesBy implements ImageJPlugin
 {
+	@Parameter
+	Dataset input;
+	
+	@Parameter(output=true)
+	Dataset output;
+	
 	@Parameter(label="Enter value to divide each data value by")
 	private double constant;
 	
@@ -28,7 +36,8 @@ public class DivideDataValuesBy extends NAryOperation
 	{
 		UnaryOperator op = new DivideByConstant(constant);
 		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
-		setFunction(func);
-		super.run();
+		NAryOperation operation = new NAryOperation(input, func);
+		operation.setOutput(output);
+		output = operation.run();
 	}
 }
