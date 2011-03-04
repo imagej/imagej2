@@ -1,5 +1,8 @@
 package imagej.core.plugins;
 
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
@@ -11,10 +14,24 @@ import imagej.plugin.Plugin;
 @Plugin(
 		menuPath = "PureIJ2>Process>Shadows>Northeast"
 )
-public class ShadowsNortheast extends Convolve3x3Operation
+public class ShadowsNortheast implements ImageJPlugin
 {
+	@Parameter
+	private Dataset input;
+	
+	@Parameter(output=true)
+	private Dataset output;
+	
+	private Convolve3x3Operation operation;
+	
 	public ShadowsNortheast()
 	{
-		super(new double[]{0,1,2,  -1,1,1,  -2,-1,0});
+	}
+
+	@Override
+	public void run()
+	{
+		operation = new Convolve3x3Operation(input, new double[]{0,1,2,  -1,1,1,  -2,-1,0});
+		output = operation.run();
 	}
 }

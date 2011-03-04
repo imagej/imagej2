@@ -7,6 +7,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -19,10 +20,13 @@ import imagej.plugin.Plugin;
 @Plugin(
 		menuPath = "PureIJ2>Image>Crop"
 )
-public class CropImage extends ImglibOutputAlgorithmPlugin
+public class CropImage implements ImageJPlugin
 {
 	@Parameter
-	Dataset in;
+	Dataset input;
+	
+	@Parameter(output=true)
+	Dataset output;
 	
 	@Parameter
 	private int minX;
@@ -35,10 +39,6 @@ public class CropImage extends ImglibOutputAlgorithmPlugin
 
 	@Parameter
 	private int maxY;
-
-	private String errMessage = "No error";
-	private Image<? extends RealType<?>> inputImage;
-	private Image<? extends RealType<?>> outputImage;
 	
 	public CropImage()
 	{
@@ -47,16 +47,22 @@ public class CropImage extends ImglibOutputAlgorithmPlugin
 	@Override
 	public void run()
 	{
-		setAlgorithm(new CropAlgorithm());
-		super.run();
+		OutputAlgorithm algorithm = new CropAlgorithm();
+		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(algorithm);
+		output = runner.run();
 	}
 	
 	private class CropAlgorithm implements OutputAlgorithm
 	{
+
+		private String errMessage = "No error";
+		private Image<? extends RealType<?>> inputImage;
+		private Image<? extends RealType<?>> outputImage;
+
 		@Override
 		public boolean checkInput()
 		{
-			if (in == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
+			if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
 			{
 				Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 				Cursor<UnsignedShortType> cursor = junkImage.createCursor();
@@ -64,10 +70,10 @@ public class CropImage extends ImglibOutputAlgorithmPlugin
 				for (UnsignedShortType pixRef : cursor)
 					pixRef.set(index++);
 				cursor.close();
-				in = new Dataset(junkImage);
+				input = new Dataset(junkImage);
 			}
 
-			inputImage = (Image<? extends RealType<?>>) in.getImage();
+			inputImage = (Image<? extends RealType<?>>) input.getImage();
 			
 			int[] newDimensions = inputImage.getDimensions().clone();
 			

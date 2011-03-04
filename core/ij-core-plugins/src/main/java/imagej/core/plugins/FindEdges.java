@@ -1,5 +1,9 @@
 package imagej.core.plugins;
 
+import imagej.core.plugins.Neighborhood3x3Operation.Neighborhood3x3Watcher;
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
@@ -11,11 +15,16 @@ import imagej.plugin.Plugin;
 @Plugin(
 		menuPath = "PureIJ2>Process>Find Edges"
 )
-public class FindEdges extends Neighborhood3x3Operation
+public class FindEdges implements ImageJPlugin
 {
+	@Parameter
+	private Dataset input;
+	
+	@Parameter(output=true)
+	private Dataset output;
+
 	public FindEdges()
 	{
-		setWatcher(new FindEdgesWatcher());
 	}
 	
 	private class FindEdgesWatcher implements Neighborhood3x3Watcher
@@ -51,5 +60,12 @@ public class FindEdges extends Neighborhood3x3Operation
             
             return Math.sqrt(sum1*sum1 + sum2*sum2);
 		}
+	}
+
+	@Override
+	public void run()
+	{
+		Neighborhood3x3Operation operation = new Neighborhood3x3Operation(input, new FindEdgesWatcher());
+		output = operation.run();
 	}
 }

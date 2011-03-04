@@ -1,5 +1,8 @@
 package imagej.core.plugins;
 
+import imagej.core.plugins.Neighborhood3x3Operation.Neighborhood3x3Watcher;
+import imagej.model.Dataset;
+
 /**
  * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3 kernel as input.
  * It is used by the various Shadow implementations, SharpenDataValues, SmoothDataValues, etc.
@@ -8,24 +11,35 @@ package imagej.core.plugins;
  *
  * @param <T>
  */
-public class Convolve3x3Operation extends Neighborhood3x3Operation
+public class Convolve3x3Operation
 {
+	private Dataset input;
 	private double[] kernel;
+	private Neighborhood3x3Operation operation; 
 	
-	public Convolve3x3Operation(double[] kernel)
+	public Convolve3x3Operation(Dataset input, double[] kernel)
 	{
+		this.input = input;
+		this.kernel = kernel;
+		this.operation = new Neighborhood3x3Operation(input, new ConvolveWatcher());
+		
 		if (kernel.length != 9)
 			throw new IllegalArgumentException("kernel must contain nine elements (shaped 3x3)");
-		
-		this.kernel = kernel;
-		
-		setWatcher(new ConvolveWatcher());
+	}
+	
+	public Dataset run()
+	{
+		return operation.run();
 	}
 	
 	private class ConvolveWatcher implements Neighborhood3x3Watcher
 	{
 		private double scale;
 		private double sum;
+		
+		public ConvolveWatcher()
+		{
+		}
 		
 		@Override
 		public void setup()

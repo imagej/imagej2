@@ -9,6 +9,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -22,28 +23,38 @@ import imagej.plugin.Plugin;
 @Plugin(
 	menuPath = "PureIJ2>Process>Noise>Salt and Pepper"
 )
-public class SaltAndPepper extends ImglibOutputAlgorithmPlugin
+public class SaltAndPepper implements ImageJPlugin
 {
 	@Parameter
-	private Dataset in;
+	private Dataset input;
 	
-	private Image<?> inputImage;
-	private Image<?> outputImage;
-	private String errMessage = "No error";
-	private LocalizableByDimCursor<? extends RealType<?>> outputCursor;  // working cursor
-	private int[] outputPosition;  // workspace for setting output position
+	@Parameter(output=true)
+	private Dataset output;
 	
 	public SaltAndPepper()
 	{
-		setAlgorithm(new SaltAndPepperAlgorithm());
+	}
+	
+	@Override
+	public void run()
+	{
+		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm());
+		output = runner.run();
 	}
 	
 	private class SaltAndPepperAlgorithm implements OutputAlgorithm
 	{
+
+		private Image<?> inputImage;
+		private Image<?> outputImage;
+		private String errMessage = "No error";
+		private LocalizableByDimCursor<? extends RealType<?>> outputCursor;  // working cursor
+		private int[] outputPosition;  // workspace for setting output position
+
 		@Override
 		public boolean checkInput()
 		{
-			if (in == null)  // TODO - remove later
+			if (input == null)  // TODO - remove later
 			{
 				Image<UnsignedByteType> junkImage = Dataset.createPlanarImage("", new UnsignedByteType(), new int[]{200,200});
 				Cursor<UnsignedByteType> cursor = junkImage.createCursor();
@@ -51,10 +62,10 @@ public class SaltAndPepper extends ImglibOutputAlgorithmPlugin
 				for (UnsignedByteType pixRef : cursor)
 					pixRef.set((index++) % 256);
 				cursor.close();
-				in = new Dataset(junkImage);
+				input = new Dataset(junkImage);
 			}
 			
-			inputImage = in.getImage();
+			inputImage = input.getImage();
 			
 			if (inputImage.getNumDimensions() != 2)
 			{
@@ -116,14 +127,14 @@ public class SaltAndPepper extends ImglibOutputAlgorithmPlugin
 		
 		private void initOutputImageVariables()
 		{
-			outputPosition = new int[2];
-			
 			LocalizableByDimCursor<? extends RealType<?>> inputCursor = 
 				(LocalizableByDimCursor<? extends RealType<?>>) inputImage.createLocalizableByDimCursor();
 			
 			outputCursor = (LocalizableByDimCursor<? extends RealType<?>>) outputImage.createLocalizableByDimCursor();
 			
-			while (inputCursor.hasNext() && outputCursor.hasNext())
+			outputPosition = outputImage.createPositionArray();
+			
+			while (inputCursor.hasNext())
 			{
 				inputCursor.next();
 				outputCursor.setPosition(inputCursor);

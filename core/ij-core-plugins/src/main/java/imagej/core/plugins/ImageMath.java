@@ -8,6 +8,7 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.function.p2.BinaryOperatorFunction;
@@ -38,11 +39,20 @@ import imglib.ops.operator.binary.Xor;
 @Plugin(
 	menuPath = "PureIJ2>Process>Image Calculator"
 )
-public class ImageMath extends NAryOperation
+public class ImageMath implements ImageJPlugin
 {
+	@Parameter
+	private Dataset input1;
+	
+	@Parameter
+	private Dataset input2;
+	
+	@Parameter(output=true)
+	private Dataset output;
+	
 	@Parameter(label="Operation to do between the two input images",
 				choices={"Add","Subtract","Multiply","Divide","AND","OR","XOR","Min","Max","Average","Difference","Copy","Transparent-zero"})
-	String operator;
+	String operatorName;
 
 	private HashMap<String,BinaryOperator> operators;
 	
@@ -68,7 +78,7 @@ public class ImageMath extends NAryOperation
 	@Override
 	public void run()
 	{
-		if (in == null)  // temp - to test for now
+		if (input1 == null)  // temp - to test for now
 		{
 			Image<UnsignedShortType> junkImage1 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
@@ -76,36 +86,39 @@ public class ImageMath extends NAryOperation
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set(index++);
 			cursor.close();
+
+			input1 = new Dataset(junkImage1);
+		}
+		
+		if (input2 == null)  // temp - to test for now
+		{
 			
 			Image<UnsignedShortType> junkImage2 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
-			cursor = junkImage2.createCursor();
-			index = 0;
+			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
+			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set((index++) % 100);
 			cursor.close();
 
-			in = new ArrayList<Dataset>();
-			in.add(new Dataset(junkImage1));
-			in.add(new Dataset(junkImage2));
+			input2 = new Dataset(junkImage2);
 		}
 		
-		if (in.size() != 2)
-			throw new IllegalArgumentException("ImageMath requires exactly two input images");
+		int[] img1Dims = input1.getImage().getDimensions();
 		
-		int[] img1Dims = in.get(0).getImage().getDimensions();
-		
-		int[] img2Dims = in.get(1).getImage().getDimensions();
+		int[] img2Dims = input2.getImage().getDimensions();
 
 		if ( ! Arrays.equals(img1Dims, img2Dims) )
 			throw new IllegalArgumentException("ImageMath requires the two input images to have the same dimensions");
 
-		BinaryOperator binOp = operators.get(operator);
+		BinaryOperator binOp = operators.get(operatorName);
 		
 		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
 		
-		setFunction(binaryFunction);
+		NAryOperation operation = new NAryOperation(input1, input2, binaryFunction);
 		
-		super.run();
+		operation.setOutput(output);
+		
+		output = operation.run();
 	}
 	
 }
