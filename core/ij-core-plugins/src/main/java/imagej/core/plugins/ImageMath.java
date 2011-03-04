@@ -41,6 +41,8 @@ import imglib.ops.operator.binary.Xor;
 )
 public class ImageMath implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input1;
 	
@@ -52,10 +54,14 @@ public class ImageMath implements ImageJPlugin
 	
 	@Parameter(label="Operation to do between the two input images",
 				choices={"Add","Subtract","Multiply","Divide","AND","OR","XOR","Min","Max","Average","Difference","Copy","Transparent-zero"})
-	String operatorName;
+	private String operatorName;
+
+	// ***************  other instance variables ***************************************************************
 
 	private HashMap<String,BinaryOperator> operators;
 	
+	// ***************  constructor ***************************************************************
+
 	public ImageMath()
 	{
 		operators = new HashMap<String,BinaryOperator>();
@@ -75,6 +81,8 @@ public class ImageMath implements ImageJPlugin
 		operators.put("Transparent-zero", new CopyTransparentZero());
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

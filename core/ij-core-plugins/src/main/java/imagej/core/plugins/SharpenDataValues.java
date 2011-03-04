@@ -16,17 +16,25 @@ import imagej.plugin.Plugin;
 )
 public class SharpenDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  other instance variables ***************************************************************
+
 	private Convolve3x3Operation operation;
 	
+	// ***************  constructor ***************************************************************
+
 	public SharpenDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

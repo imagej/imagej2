@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Constant;
 
 /**
- * TODO
+ * Fills an output Dataset with a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,8 +18,10 @@ import imglib.ops.operator.unary.Constant;
 )
 public class FillDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
-	private Dataset input;
+	private Dataset input;  // TODO - does this make sense? used for dimensions only I think. Or do we want in place changing?
 	
 	@Parameter(output=true)
 	private Dataset output;
@@ -27,10 +29,14 @@ public class FillDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to fill each data value with")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public FillDataValues()
 	{
 	}
 	
+	// ***************  public interrface ***************************************************************
+
 	@Override
 	public void run()
 	{

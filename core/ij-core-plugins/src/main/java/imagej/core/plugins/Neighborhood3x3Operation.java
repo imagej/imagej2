@@ -20,11 +20,15 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 public class Neighborhood3x3Operation
 {
+	// ***************  instance variables ***************************************************************
+
 	private Dataset input;
 	
 	private String errMessage = "No error";
 	
 	private Neighborhood3x3Watcher watcher; 
+
+	// ***************  exported interface ***************************************************************
 
 	interface Neighborhood3x3Watcher
 	{
@@ -34,12 +38,16 @@ public class Neighborhood3x3Operation
 		double calcOutputValue();
 	}
 	
+	// ***************  constructor ***************************************************************
+
 	public Neighborhood3x3Operation(Dataset input, Neighborhood3x3Watcher watcher)
 	{
 		this.input = input;
 		this.watcher = watcher;
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	public Dataset run()
 	{
 		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
@@ -60,6 +68,8 @@ public class Neighborhood3x3Operation
 		return runner.run();
 	}
 	
+	// ***************  private interface ***************************************************************
+
 	/** implements IJ1's ImageProcessor::filter(FIND_EDGES) algorithm within the structures of imglib's OutputAlgorithm */
 	private class Neighborhood3x3Algorithm implements OutputAlgorithm
 	{

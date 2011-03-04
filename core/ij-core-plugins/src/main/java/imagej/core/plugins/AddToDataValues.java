@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AddConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by adding a user defined constant value to an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.AddConstant;
 )
 public class AddToDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
@@ -27,10 +29,14 @@ public class AddToDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to add to each data value")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public AddToDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

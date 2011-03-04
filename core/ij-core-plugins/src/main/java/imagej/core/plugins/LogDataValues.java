@@ -18,16 +18,22 @@ import imglib.ops.operator.unary.Log;
 )
 public class LogDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public LogDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

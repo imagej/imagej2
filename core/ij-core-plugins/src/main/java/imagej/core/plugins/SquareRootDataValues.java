@@ -18,16 +18,22 @@ import imglib.ops.operator.unary.Sqrt;
 )
 public class SquareRootDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public SquareRootDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

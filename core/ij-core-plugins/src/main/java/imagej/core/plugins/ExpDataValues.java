@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Exp;
 
 /**
- * TODO
+ * Fills an output Dataset by exponentiating an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -18,15 +18,21 @@ import imglib.ops.operator.unary.Exp;
 )
 public class ExpDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public ExpDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

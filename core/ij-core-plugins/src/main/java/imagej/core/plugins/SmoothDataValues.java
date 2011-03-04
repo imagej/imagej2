@@ -16,17 +16,26 @@ import imagej.plugin.Plugin;
 )
 public class SmoothDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	
+	// ***************  other instance variables ***************************************************************
+	
 	private Convolve3x3Operation operation;
 	
+	// ***************  constructor ***************************************************************
+
 	public SmoothDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

@@ -6,7 +6,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Fills an output Dataset by applying a default amount of random noise to an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -15,15 +15,21 @@ import imagej.plugin.Plugin;
 )
 public class AddDefaultNoiseToDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
 	@Parameter(output=true)
 	Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public AddDefaultNoiseToDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.MultiplyByConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by multiplying an input Dataset by a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.MultiplyByConstant;
 )
 public class MultiplyDataValuesBy implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
@@ -27,10 +29,14 @@ public class MultiplyDataValuesBy implements ImageJPlugin
 	@Parameter(label="Enter value for scaling constant")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public MultiplyDataValuesBy()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

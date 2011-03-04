@@ -31,7 +31,7 @@ public class NAryOperation
 	/** The imglib-ops function to execute. */
 	private RealFunction function;
 
-	// ***************  public/protected interface ***************************************************************
+	// ***************  constructors ***************************************************************
 
 	/** this constructor a convenience for those plugins that work from a single input Dataset */
 	public NAryOperation(Dataset input, RealFunction function)
@@ -100,6 +100,8 @@ public class NAryOperation
 			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept "+inputs.size()+" inputs");
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	/** helper method that allows output Dataset of an operation to be set or changed */
 	public void setOutput(Dataset output)
 	{

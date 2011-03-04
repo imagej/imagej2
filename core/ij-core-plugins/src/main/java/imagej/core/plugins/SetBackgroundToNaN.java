@@ -34,13 +34,15 @@ public class SetBackgroundToNaN implements ImageJPlugin
 	@Parameter(label="High threshold")
 	private double hiThreshold;
 	
-	// ********** public interface ****************************************************************
+	// ***************  constructor ***************************************************************
 	
 	/** basic constructor */
 	public SetBackgroundToNaN()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	/** runs this plugin */
 	@Override
 	public void run()
@@ -66,7 +68,7 @@ public class SetBackgroundToNaN implements ImageJPlugin
 	
 	// ********** private interface ****************************************************************
 	
-	/** provate implementation of algorithm */
+	/** private implementation of algorithm */
 	private class SetToNaN implements OutputAlgorithm
 	{
 		private Image<?> inputImage;

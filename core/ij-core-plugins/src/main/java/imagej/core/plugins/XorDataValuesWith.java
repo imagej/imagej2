@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.XorConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by XORing an input Dataset with a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.XorConstant;
 )
 public class XorDataValuesWith implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -27,9 +29,13 @@ public class XorDataValuesWith implements ImageJPlugin
 	@Parameter(label="Enter value to XOR with each data value")
 	private long constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public XorDataValuesWith()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

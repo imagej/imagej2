@@ -18,16 +18,22 @@ import imglib.ops.operator.unary.Reciprocal;
 )
 public class ReciprocalDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public ReciprocalDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

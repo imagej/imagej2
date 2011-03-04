@@ -25,16 +25,22 @@ import imagej.plugin.Plugin;
 )
 public class SaltAndPepper implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public SaltAndPepper()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{
@@ -42,6 +48,8 @@ public class SaltAndPepper implements ImageJPlugin
 		output = runner.run();
 	}
 	
+	// ***************  private interface ***************************************************************
+
 	private class SaltAndPepperAlgorithm implements OutputAlgorithm
 	{
 

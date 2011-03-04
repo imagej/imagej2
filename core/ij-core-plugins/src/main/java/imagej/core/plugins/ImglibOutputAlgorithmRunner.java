@@ -14,13 +14,15 @@ public class ImglibOutputAlgorithmRunner
 	
 	private OutputAlgorithm algorithm;
 	
-	// ********** public interface ****************************************************************
-	
+	// ***************  constructor ***************************************************************
+
 	/** preferred constructor */
 	public ImglibOutputAlgorithmRunner(final OutputAlgorithm algorithm)
 	{
 		this.algorithm = algorithm;
 	}
+
+	// ***************  public interface ***************************************************************
 
 	/** run the plugin and assign output */
 	public Dataset run()

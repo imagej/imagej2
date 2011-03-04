@@ -6,7 +6,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Fills an output Dataset by applying a user calibrated amount of random noise to an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -15,6 +15,8 @@ import imagej.plugin.Plugin;
 )
 public class AddSpecificNoiseToDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -24,9 +26,13 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin
 	@Parameter(label="Enter standard deviation of range")
 	double stdDev;
 	
+	// ***************  constructor ***************************************************************
+
 	public AddSpecificNoiseToDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

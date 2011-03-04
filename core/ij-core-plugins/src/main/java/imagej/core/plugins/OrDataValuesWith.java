@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.OrConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by ORing an input Dataset with a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.OrConstant;
 )
 public class OrDataValuesWith implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -27,9 +29,13 @@ public class OrDataValuesWith implements ImageJPlugin
 	@Parameter(label="Enter value to OR with each data value")
 	private long constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public OrDataValuesWith()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()
