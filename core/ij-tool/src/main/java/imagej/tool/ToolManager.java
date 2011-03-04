@@ -65,7 +65,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final KyPressedEvent event) {
-				getActiveTool().onKeyDown(event);
+				if(getActiveTool()!=null) getActiveTool().onKeyDown(event);
 			}
 		};
 		subscribers.add(kyPressedSubscriber);
@@ -76,7 +76,7 @@ public class ToolManager {
 			{
 			@Override
 			public void onEvent(final KyReleasedEvent event) {
-				getActiveTool().onKeyUp(event);
+				if(getActiveTool()!=null) getActiveTool().onKeyUp(event);
 			}
 		};
 		subscribers.add(kyReleasedSubscriber);
@@ -87,7 +87,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsPressedEvent event) {
-				getActiveTool().onMouseDown(event);
+				if(getActiveTool()!=null) getActiveTool().onMouseDown(event);
 			}
 		};
 		subscribers.add(msPressedSubscriber);
@@ -98,7 +98,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsReleasedEvent event) {
-				getActiveTool().onMouseUp(event);
+				if(getActiveTool()!=null) getActiveTool().onMouseUp(event);
 			}
 		};
 		subscribers.add(msReleasedSubscriber);
@@ -109,7 +109,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsClickedEvent event) {
-				getActiveTool().onMouseClick(event);
+				if(getActiveTool()!=null) getActiveTool().onMouseClick(event);
 			}
 		};
 		subscribers.add(msClickedSubscriber);
@@ -120,7 +120,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsMovedEvent event) {
-				getActiveTool().onMouseMove(event);
+				if(getActiveTool()!=null) getActiveTool().onMouseMove(event);
 			}
 		};
 		subscribers.add(msMovedSubscriber);
@@ -131,7 +131,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsDraggedEvent event) {
-				getActiveTool().onMouseDrag(event);
+				if(getActiveTool()!=null) getActiveTool().onMouseDrag(event);
 			}
 		};
 		subscribers.add(msDraggedSubscriber);
