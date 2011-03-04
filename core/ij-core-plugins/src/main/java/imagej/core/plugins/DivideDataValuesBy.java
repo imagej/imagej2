@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.DivideByConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by dividing an input Dataset by a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.DivideByConstant;
 )
 public class DivideDataValuesBy implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -27,10 +29,14 @@ public class DivideDataValuesBy implements ImageJPlugin
 	@Parameter(label="Enter value to divide each data value by")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public DivideDataValuesBy()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

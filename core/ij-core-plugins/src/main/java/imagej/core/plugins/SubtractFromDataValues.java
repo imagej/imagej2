@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.SubtractConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by subtracting a user defined constant value from an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.SubtractConstant;
 )
 public class SubtractFromDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
@@ -27,10 +29,14 @@ public class SubtractFromDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to subtract from each data value")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public SubtractFromDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

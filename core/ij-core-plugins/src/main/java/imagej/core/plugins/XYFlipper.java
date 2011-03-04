@@ -12,15 +12,16 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 // TODO - in IJ1 this flips single plane in active window. do we want to extend to all planes???
 
 /**
- * XYFlipper is the base class for FlipVertically and FlipHorizontally
+ * XYFlipper is used by FlipVertically, FlipHorizontally, Rotate90DegreesLeft and Rotate90DegreesRight
  * 
  * @author Barry DeZonia
  *
- * @param <T>
  */
 public class XYFlipper implements OutputAlgorithm
 {
-	protected Dataset input;
+	// ***************  instance variables ***************************************************************
+
+	private Dataset input;
 	
 	private String errMessage = "No error";
 	
@@ -28,18 +29,24 @@ public class XYFlipper implements OutputAlgorithm
 	
 	private FlipCoordinateTransformer flipper;
 
+	// ***************  exported interface ***************************************************************
+
 	interface FlipCoordinateTransformer
 	{
-		void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition);
 		int[] calcOutputDimensions(int[] inputDimensions);
+		void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition);
 	}
 	
+	// ***************  constructor ***************************************************************
+
 	public XYFlipper(Dataset input, FlipCoordinateTransformer flipper)
 	{
 		this.input = input;
 		this.flipper = flipper;
 	}
 	
+	// ***************  public interface : implementation of OutputAlgorithm methods  *********************
+
 	@Override
 	public boolean checkInput()
 	{
@@ -56,6 +63,7 @@ public class XYFlipper implements OutputAlgorithm
 
 		int[] inputDimensions = input.getImage().getDimensions();
 
+		// with the use of countNontrivialDimensions() this algorithm can accept images of dim {x,y,1,...}
 		if ((Dimensions.countNontrivialDimensions(inputDimensions) != 2) ||
 				((inputDimensions[0] == 1) || (inputDimensions[1] == 1)))
 		{

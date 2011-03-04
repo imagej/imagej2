@@ -11,17 +11,25 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+// TODO - minX, minY, maxX, maxY are treated as harvested variables (for simple testing). Should make them passed
+//        in parameters to constructor
+
+// TODO - the IJ1 crop plugin can do a lot more than this can. Investigate its abilities and replicate them as needed
+
 /**
- * TODO
+ * Creates an output Dataset by cropping an input Dataset in X & Y. Works on images of any dimensionality. X & Y are assumed
+ * to be the first two dimensions.
+ *
  * @author Barry DeZonia
  *
- * @param <T>
  */
 @Plugin(
 		menuPath = "PureIJ2>Image>Crop"
 )
 public class CropImage implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -40,10 +48,16 @@ public class CropImage implements ImageJPlugin
 	@Parameter
 	private int maxY;
 	
+	// ***************  constructor ***************************************************************
+
+	/** default constructor */
 	public CropImage()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
+	/** runs the crop process and returns the output as a Dataset */
 	@Override
 	public void run()
 	{
@@ -52,13 +66,16 @@ public class CropImage implements ImageJPlugin
 		output = runner.run();
 	}
 	
+	// ***************  private interface ***************************************************************
+
+	/** CropAlgorithm is responsible for creating the cropped image from the input Dataset. It is an Imglib OutputAlgorithm. */
 	private class CropAlgorithm implements OutputAlgorithm
 	{
-
 		private String errMessage = "No error";
 		private Image<? extends RealType<?>> inputImage;
 		private Image<? extends RealType<?>> outputImage;
 
+		/** returns false if there is any problem with the input data. returns true otherwise. */
 		@Override
 		public boolean checkInput()
 		{
@@ -85,12 +102,14 @@ public class CropImage implements ImageJPlugin
 			return true;
 		}
 
+		/** returns the current error message */
 		@Override
 		public String getErrorMessage()
 		{
 			return errMessage;
 		}
 
+		/** runs the cropping process */
 		@Override
 		public boolean process()
 		{
@@ -121,6 +140,7 @@ public class CropImage implements ImageJPlugin
 			return true;
 		}
 
+		/** returns the resulting output image. not valid before checkInput() and process() have been called. */
 		@Override
 		public Image<?> getResult()
 		{

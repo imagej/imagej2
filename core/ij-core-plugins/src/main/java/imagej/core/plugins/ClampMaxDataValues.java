@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Max;
 
 /**
- * TODO
+ * Fills an output Dataset by clamping an input Dataset such that no values are greater than a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.Max;
 )
 public class ClampMaxDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -27,10 +29,14 @@ public class ClampMaxDataValues implements ImageJPlugin
 	@Parameter(label="Enter maximum clamp value")
 	private double constant;
 	
+	// ***************  constructor ***************************************************************
+
 	public ClampMaxDataValues()
 	{
 	}
 	
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{

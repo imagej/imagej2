@@ -24,17 +24,25 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 )
 public class InvertDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  instance variables ***************************************************************
+
 	private double min, max;
 	
+	// ***************  constructor ***************************************************************
+
 	public InvertDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()
@@ -57,6 +65,8 @@ public class InvertDataValues implements ImageJPlugin
 		output = operation.run();
 	}
 	
+	// ***************  private interface ***************************************************************
+
 	private void calcMinAndMax()
 	{
 		min = Double.MAX_VALUE;

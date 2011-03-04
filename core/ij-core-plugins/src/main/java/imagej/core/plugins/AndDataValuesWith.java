@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AndConstant;
 
 /**
- * TODO
+ * Fills an output Dataset by ANDing an input Dataset with a user defined constant value.
  *
  * @author Barry DeZonia
  */
@@ -18,6 +18,8 @@ import imglib.ops.operator.unary.AndConstant;
 )
 public class AndDataValuesWith implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
@@ -27,9 +29,13 @@ public class AndDataValuesWith implements ImageJPlugin
 	@Parameter(label="Enter value to AND with each data value")
 	private long constant;
 	
+	// ***************  constructor ***************************************************************
+	
 	public AndDataValuesWith()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

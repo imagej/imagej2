@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Copy;
 
 /**
- * TODO
+ * Fills an output Dataset with the contents of an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -18,15 +18,21 @@ import imglib.ops.operator.unary.Copy;
 )
 public class DuplicateImage implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public DuplicateImage()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

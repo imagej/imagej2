@@ -9,7 +9,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Abs;
 
 /**
- * TODO
+ * Fills an output Dataset by applying the absolute value function to an input Dataset.
  *
  * @author Barry DeZonia
  */
@@ -18,15 +18,21 @@ import imglib.ops.operator.unary.Abs;
 )
 public class AbsDataValues implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	Dataset input;
 	
 	@Parameter(output=true)
 	Dataset output;
 	
+	// ***************  constructor ***************************************************************
+
 	public AbsDataValues()
 	{
 	}
+
+	// ***************  public interface ***************************************************************
 
 	@Override
 	public void run()

@@ -16,22 +16,26 @@ import imagej.plugin.Plugin;
 )
 public class ShadowsSouth implements ImageJPlugin
 {
+	// ***************  instance variables that are Parameters ***************************************************************
+
 	@Parameter
 	private Dataset input;
 	
 	@Parameter(output=true)
 	private Dataset output;
 	
-	private Convolve3x3Operation operation;
-	
+	// ***************  constructor ***************************************************************
+
 	public ShadowsSouth()
 	{
 	}
 
+	// ***************  public interface ***************************************************************
+
 	@Override
 	public void run()
 	{
-		operation = new Convolve3x3Operation(input, new double[]{-1,-2,-1,  0,1,0,  1,2,1});
+		Convolve3x3Operation operation = new Convolve3x3Operation(input, new double[]{-1,-2,-1,  0,1,0,  1,2,1});
 		output = operation.run();
 	}
 }
