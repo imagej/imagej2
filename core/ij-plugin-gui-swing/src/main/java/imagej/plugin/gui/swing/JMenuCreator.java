@@ -43,7 +43,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 /**
- * TODO
+ * Populate a Swing {@link JMenu} with menu items.
  *
  * @author Curtis Rueden
  */
@@ -51,7 +51,6 @@ public class JMenuCreator extends SwingMenuCreator<JMenu> {
 
 	@Override
 	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
 		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
 		for (final JMenuItem childMenuItem : childMenuItems) {
 			if (childMenuItem instanceof JMenu) {

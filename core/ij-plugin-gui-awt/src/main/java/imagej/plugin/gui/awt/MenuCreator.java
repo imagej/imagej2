@@ -42,7 +42,7 @@ import java.awt.MenuItem;
 import java.util.List;
 
 /**
- * TODO
+ * Populate an AWT {@link Menu} with menu items.
  *
  * @author Curtis Rueden
  */
@@ -50,7 +50,6 @@ public class MenuCreator extends AWTMenuCreator<Menu> {
 
 	@Override
 	public void createMenus(final ShadowMenu root, final Menu menu) {
-		// create menu items and add to menu bar
 		final List<MenuItem> childMenuItems = createChildMenuItems(root);
 		for (final MenuItem childMenuItem : childMenuItems) {
 			if (childMenuItem instanceof Menu) {
