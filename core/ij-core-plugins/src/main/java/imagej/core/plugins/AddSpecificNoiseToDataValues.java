@@ -25,12 +25,6 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin
 	
 	@Parameter(label="Enter standard deviation of range")
 	double stdDev;
-	
-	// ***************  constructor ***************************************************************
-
-	public AddSpecificNoiseToDataValues()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

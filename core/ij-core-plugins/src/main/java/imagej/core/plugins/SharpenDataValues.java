@@ -22,12 +22,6 @@ public class SharpenDataValues implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
-
-	public SharpenDataValues()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

@@ -24,13 +24,7 @@ public class FlipVertically implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public FlipVertically()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

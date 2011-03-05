@@ -10,7 +10,7 @@ import imagej.Dimensions;
 public final class Index {
 
 	private Index() {
-	  // NB: Prevent instantiation of utility class.
+	  // prevent instantiation of utility class
 	}
 
 	/** create an index array of length numDims initialized to zeroes */
@@ -159,13 +159,16 @@ public final class Index {
 	 * @param pos preallocated position array to populate with the result
 	 * @return position along each dimensional axis
 	 */
-	public static int[] rasterToPosition(int[] lengths, int raster, int[] pos) {
+	public static int[] rasterToPosition(final int[] lengths,
+		final int raster, final int[] pos)
+	{
 		int offset = 1;
+		int r = raster;
 		for (int i = 0; i < pos.length; i++) {
-			int offset1 = offset * lengths[i];
-			int q = i < pos.length - 1 ? raster % offset1 : raster;
+			final int offset1 = offset * lengths[i];
+			final int q = i < pos.length - 1 ? r % offset1 : r;
 			pos[i] = q / offset;
-			raster -= q;
+			r -= q;
 			offset = offset1;
 		}
 		return pos;

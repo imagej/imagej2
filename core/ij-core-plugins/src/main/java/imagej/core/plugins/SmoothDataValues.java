@@ -23,12 +23,6 @@ public class SmoothDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 	
-	// ***************  constructor ***************************************************************
-
-	public SmoothDataValues()
-	{
-	}
-
 	// ***************  public interface ***************************************************************
 
 	@Override

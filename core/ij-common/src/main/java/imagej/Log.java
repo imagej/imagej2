@@ -8,7 +8,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Curtis Rueden
  */
-public class Log {
+public final class Log {
+
+	private Log() {
+		// prevent instantiation of utility class
+	}
 
 	private static Logger logger =
 		LoggerFactory.getLogger(Log.class);

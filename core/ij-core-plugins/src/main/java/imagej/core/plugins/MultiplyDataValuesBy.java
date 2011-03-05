@@ -2,9 +2,8 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.UnaryOperatorFunction;
+import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.MultiplyByConstant;
 
@@ -28,13 +27,7 @@ public class MultiplyDataValuesBy implements ImageJPlugin
 	
 	@Parameter(label="Enter value for scaling constant")
 	private double constant;
-	
-	// ***************  constructor ***************************************************************
 
-	public MultiplyDataValuesBy()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

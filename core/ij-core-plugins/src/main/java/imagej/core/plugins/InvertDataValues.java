@@ -1,12 +1,9 @@
 package imagej.core.plugins;
 
-import java.util.ArrayList;
-
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Invert;
 import mpicbg.imglib.cursor.Cursor;
@@ -35,12 +32,6 @@ public class InvertDataValues implements ImageJPlugin
 	// ***************  instance variables ***************************************************************
 
 	private double min, max;
-	
-	// ***************  constructor ***************************************************************
-
-	public InvertDataValues()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

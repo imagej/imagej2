@@ -1,12 +1,5 @@
 package imagej.core.plugins;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
@@ -26,6 +19,13 @@ import imglib.ops.operator.binary.Multiply;
 import imglib.ops.operator.binary.Or;
 import imglib.ops.operator.binary.Subtract;
 import imglib.ops.operator.binary.Xor;
+
+import java.util.Arrays;
+import java.util.HashMap;
+
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // NOTE - attempted to use the ImageCalculator in Imglib and inherit from ImglibOutputAlgorithmPlugin but could not solve
 //   compiler errors and warnings. That test implementation saved below commented out. For now I'll do this via imglib-ops

@@ -52,10 +52,6 @@ public class Convolve3x3Operation
 		private double scale;
 		private double sum;
 		
-		public ConvolveWatcher()
-		{
-		}
-
 		/** precalculates the kernel scale for use later */
 		@Override
 		public void setup()

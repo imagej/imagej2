@@ -35,6 +35,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		outputSet.clear();
 	}
 
+	public List<Dataset> getOutputs() {
+		return outputs;
+	}
+
 	/** Used to provide one list of datasets per calling thread. */
 	private static ThreadLocal<Set<Dataset>> outputDatasets =
 		new ThreadLocal<Set<Dataset>>()

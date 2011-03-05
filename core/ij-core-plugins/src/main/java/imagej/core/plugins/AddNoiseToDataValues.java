@@ -1,7 +1,6 @@
 package imagej.core.plugins;
 
 import imagej.model.Dataset;
-import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AddNoise;
 import mpicbg.imglib.cursor.Cursor;

@@ -5,9 +5,11 @@ package imagej.process;
  *
  * @author Barry DeZonia
  */
-public class Span {
+public final class Span {
 		
-	private Span() {}  // uninstantiable
+	private Span() {
+		// prevent instantiation of utility class
+	}
 	
 	/** create a span array of length numDims initialized to zeroes */
 	public static int[] create(int numDims)
