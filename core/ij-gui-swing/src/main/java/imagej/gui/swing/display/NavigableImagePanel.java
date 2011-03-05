@@ -516,12 +516,12 @@ public class NavigableImagePanel extends JPanel {
 	}
 
 	//Moves te image (by dragging with the mouse) to a new mouse position p.
-	private void moveImage(Point p) {
-		int xDelta = p.x - mousePosition.x;
-		int yDelta = p.y - mousePosition.y;
-		mousePosition = p;
-		pan(xDelta, yDelta);
-	}
+//	private void moveImage(Point p) {
+//		int xDelta = p.x - mousePosition.x;
+//		int yDelta = p.y - mousePosition.y;
+//		mousePosition = p;
+//		pan(xDelta, yDelta);
+//	}
 
 	//Gets the bounds of the image area currently displayed in the panel (in image
 	//coordinates).
