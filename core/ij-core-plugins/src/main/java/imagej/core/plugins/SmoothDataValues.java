@@ -9,7 +9,6 @@ import imagej.plugin.Plugin;
  * TODO
  * @author Barry DeZonia
  *
- * @param <T>
  */
 @Plugin(
 		menuPath = "PureIJ2>Process>Smooth"
@@ -24,11 +23,6 @@ public class SmoothDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 	
-	
-	// ***************  other instance variables ***************************************************************
-	
-	private Convolve3x3Operation operation;
-	
 	// ***************  constructor ***************************************************************
 
 	public SmoothDataValues()
@@ -40,7 +34,7 @@ public class SmoothDataValues implements ImageJPlugin
 	@Override
 	public void run()
 	{
-		operation = new Convolve3x3Operation(input, new double[]{1,1,1,  1,1,1,  1,1,1});
+		Convolve3x3Operation operation = new Convolve3x3Operation(input, new double[]{1,1,1,  1,1,1,  1,1,1});
 		output = operation.run();
 	}
 }

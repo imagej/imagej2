@@ -76,13 +76,7 @@ public class AddNoiseToDataValues
 		
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
 		
-		UnaryOperatorFunction opFunc = new UnaryOperatorFunction(op);
-		
-		NAryOperation operation = new NAryOperation(input, opFunc);
-
-		operation.setOutput(output);
-		
-		return operation.run();
+		return new UnaryTransformation(input, output, op).run();
 	}
 
 	// ***************  private interface ***************************************************************
