@@ -154,7 +154,7 @@ import javax.swing.SwingUtilities;
  *
  * @see
  *   <a href="http://today.java.net/article/2007/03/23/navigable-image-panel">A
- *     Navigable Image Panel</a> on Java.net
+ *     Navigable Image Panel</a>
  *
  * @author Slav Boleslawski
  * @author Romain Guy
