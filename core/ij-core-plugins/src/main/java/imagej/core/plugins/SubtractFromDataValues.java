@@ -14,7 +14,7 @@ import imglib.ops.operator.unary.SubtractConstant;
  * @author Barry DeZonia
  */
 @Plugin(
-	menuPath = "PureIJ2>Process>Math>Add"
+	menuPath = "PureIJ2>Process>Math>Subtract"
 )
 public class SubtractFromDataValues implements ImageJPlugin
 {
@@ -41,9 +41,6 @@ public class SubtractFromDataValues implements ImageJPlugin
 	public void run()
 	{
 		UnaryOperator op = new SubtractConstant(constant);
-		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
-		NAryOperation operation = new NAryOperation(input, func);
-		operation.setOutput(output);
-		output = operation.run();
+		output = new UnaryTransformation(input, output, op).run();
 	}
 }

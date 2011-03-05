@@ -38,9 +38,6 @@ public class ReciprocalDataValues implements ImageJPlugin
 	public void run()
 	{
 		UnaryOperator op = new Reciprocal();
-		UnaryOperatorFunction func = new UnaryOperatorFunction(op);
-		NAryOperation operation = new NAryOperation(input, func);
-		operation.setOutput(output);
-		output = operation.run();
+		output = new UnaryTransformation(input, output, op).run();
 	}
 }
