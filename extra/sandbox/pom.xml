@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-core</artifactId>
+		<artifactId>imagej-extra</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
@@ -39,7 +39,7 @@
 		</dependency>
 	</dependencies>
 
-	<!-- NB: for imagej-core, in case of partial checkout -->
+	<!-- NB: for imagej-extra, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
