@@ -11,46 +11,21 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-core-plugins</artifactId>
+	<artifactId>ij-core-tools</artifactId>
 
-	<name>ImageJ Core Plugins</name>
-	<description>A collection of built-in plugins for ImageJ.</description>
+	<name>ImageJ Core Tools</name>
+	<description>A collection of built-in tools for ImageJ.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-ops</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-common</artifactId>
+			<artifactId>ij-display</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data-model</artifactId>
+			<artifactId>ij-tool</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>loci</groupId>
-			<artifactId>bio-formats</artifactId>
-			<version>${bio-formats.version}</version>
 		</dependency>
 	</dependencies>
 
