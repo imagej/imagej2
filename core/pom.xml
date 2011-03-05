@@ -20,6 +20,7 @@
 	<modules>
 		<module>ij-common</module>
 		<module>ij-core-plugins</module>
+		<module>ij-core-tools</module>
 		<module>ij-data-model</module>
 		<module>ij-display</module>
 		<module>ij-events</module>
