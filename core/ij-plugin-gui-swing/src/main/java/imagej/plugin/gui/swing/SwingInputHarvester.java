@@ -52,6 +52,7 @@ import javax.swing.JPanel;
  * values from the user using a {@link SwingInputPanel} dialog box.
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = PluginPreprocessor.class)
 public class SwingInputHarvester extends AbstractInputHarvester {
