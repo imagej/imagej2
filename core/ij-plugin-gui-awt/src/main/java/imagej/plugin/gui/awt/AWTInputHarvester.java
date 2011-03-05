@@ -53,6 +53,7 @@ import javax.swing.JPanel;
  * values from the user using an {@link AWTInputPanel} dialog box.
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = PluginPreprocessor.class)
 public class AWTInputHarvester extends AbstractInputHarvester {
