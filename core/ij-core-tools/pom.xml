@@ -36,7 +36,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core</packageName>
+							<packageName>imagej.core.tools</packageName>
 						</manifest>
 					</archive>
 				</configuration>
