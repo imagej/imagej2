@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// MenuCreator.java
 //
 
 /*
@@ -32,30 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
 import imagej.Log;
 import imagej.plugin.gui.ShadowMenu;
 
+import java.awt.Menu;
+import java.awt.MenuItem;
 import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class MenuCreator extends AWTMenuCreator<Menu> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
+	public void createMenus(final ShadowMenu root, final Menu menu) {
 		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
+		final List<MenuItem> childMenuItems = createChildMenuItems(root);
+		for (final MenuItem childMenuItem : childMenuItems) {
+			if (childMenuItem instanceof Menu) {
+				final Menu childMenu = (Menu) childMenuItem;
 				menu.add(childMenu);
 			}
 			else {

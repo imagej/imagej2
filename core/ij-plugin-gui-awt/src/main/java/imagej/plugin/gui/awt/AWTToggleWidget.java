@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// AWTToggleWidget.java
 //
 
 /*
@@ -32,36 +32,31 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
-import imagej.Log;
-import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.ToggleWidget;
 
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.Panel;
 
 /**
- * TODO
+ * AWT implementation of boolean toggle widget.
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class AWTToggleWidget extends Panel implements ToggleWidget {
+
+	private Checkbox checkbox;
+
+	public AWTToggleWidget(final boolean initialValue) {
+		checkbox = new Checkbox("", initialValue);
+		add(checkbox, BorderLayout.CENTER);
+	}
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
-		}
+	public boolean isSelected() {
+		return checkbox.getState();
 	}
 
 }

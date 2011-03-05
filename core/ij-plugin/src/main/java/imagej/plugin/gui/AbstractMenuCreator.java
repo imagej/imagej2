@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// MenuCreator.java
 //
 
 /*
@@ -32,36 +32,50 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui;
 
-import imagej.Log;
-import imagej.plugin.gui.ShadowMenu;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
+ *
+ * @param <M> Top-level menu class to populate (e.g., JMenuBar or JMenu)
+ * @param <I> Menu item class (e.g., JMenuItem or MenuItem)
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public abstract class AbstractMenuCreator<M, I> implements MenuCreator<M> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
+	public abstract void createMenus(ShadowMenu root, M target);
+
+	/** Generates a menu item corresponding to this shadow menu node. */
+	protected abstract I createMenuItem(ShadowMenu shadow);
+
+	/**
+	 * Generates a list of menu items corresponding
+	 * to the child menu nodes, sorted by weight.
+	 */
+	protected List<I> createChildMenuItems(final ShadowMenu shadow) {
+		// generate list of ShadowMenu objects, sorted by weight
+		final List<ShadowMenu> childMenus =
+			new ArrayList<ShadowMenu>(shadow.getChildren().values());
+		Collections.sort(childMenus);
+
+		// create menu items corresponding to ShadowMenu objects
+		final List<I> menuItems = new ArrayList<I>();
+		double lastWeight = Double.NaN;
+		for (final ShadowMenu childMenu : childMenus) {
+			final double weight = childMenu.getMenuEntry().getWeight();
+			final double difference = Math.abs(weight - lastWeight);
+			if (difference > 1) menuItems.add(null); // separator
+			lastWeight = weight;
+			final I item = createMenuItem(childMenu);
+			menuItems.add(item);
 		}
+		return menuItems;
 	}
 
 }

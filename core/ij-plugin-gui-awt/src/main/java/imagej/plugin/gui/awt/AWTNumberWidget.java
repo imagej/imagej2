@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// AWTNumberWidget.java
 //
 
 /*
@@ -32,35 +32,65 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
-import imagej.Log;
-import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.NumberWidget;
 
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
+import java.awt.Panel;
+import java.awt.Scrollbar;
+import java.awt.TextField;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 /**
- * TODO
+ * AWT implementation of number chooser widget.
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class AWTNumberWidget extends Panel
+	implements NumberWidget, AdjustmentListener, TextListener
+{
+
+	private Scrollbar scrollBar;
+	private TextField textField;
+
+	public AWTNumberWidget(final Number initialValue,
+		final Number min, final Number max, final Number stepSize)
+	{
+		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
+			initialValue.intValue(), 1, min.intValue(), max.intValue() + 1);
+		scrollBar.setUnitIncrement(stepSize.intValue());
+		scrollBar.addAdjustmentListener(this);
+		add(scrollBar, BorderLayout.CENTER);
+
+		textField = new TextField(initialValue.toString(), 6);
+		textField.addTextListener(this);
+		add(textField, BorderLayout.EAST);
+	}
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
+	public Number getValue() {
+		return scrollBar.getValue();
+	}
+
+	@Override
+	public void adjustmentValueChanged(final AdjustmentEvent e) {
+		scrollBar.removeAdjustmentListener(this);
+		textField.setText("" + scrollBar.getValue());
+		scrollBar.addAdjustmentListener(this);
+	}
+
+	@Override
+	public void textValueChanged(TextEvent e) {
+		try {
+			scrollBar.setValue(Integer.parseInt(textField.getText()));
+		}
+		catch (NumberFormatException exc) {
+			// invalid number in text field; do not update scroll bar
 		}
 	}
 
