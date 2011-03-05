@@ -18,7 +18,6 @@
 	<description>Non-core ImageJ projects.</description>
 
 	<modules>
-		<module>ij-visad</module>
 		<module>native-library-util</module>
 		<!-- <module>sandbox</module> -->
 		<module>workflow</module>

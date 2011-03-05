@@ -18,6 +18,7 @@
 	<description>External ImageJ plugins.</description>
 
 	<modules>
+		<module>ij-visad</module>
 		<module>image5d</module>
 	</modules>
 
