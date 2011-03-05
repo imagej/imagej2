@@ -1,6 +1,6 @@
 Image5D plugins for 5-dimensional image stacks in ImageJ.
 
-Copyright (c) 2010, ImageJDev.org.
+Copyright (c) 2010, Joachim Walter and ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
