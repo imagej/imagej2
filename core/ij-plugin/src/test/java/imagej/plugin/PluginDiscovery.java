@@ -39,6 +39,11 @@ import imagej.plugin.api.PluginUtils;
 
 import java.util.List;
 
+/**
+ * A simple test of the plugin discovery mechanism.
+ *
+ * @author Curtis Rueden
+ */
 public class PluginDiscovery {
 
 	/**
