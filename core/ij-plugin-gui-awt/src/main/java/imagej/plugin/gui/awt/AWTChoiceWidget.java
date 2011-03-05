@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// AWTChoiceWidget.java
 //
 
 /*
@@ -32,36 +32,38 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
-import imagej.Log;
-import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.ChoiceWidget;
 
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.BorderLayout;
+import java.awt.Choice;
+import java.awt.Panel;
 
 /**
- * TODO
+ * AWT implementation of multiple choice selector widget.
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class AWTChoiceWidget extends Panel implements ChoiceWidget {
+
+	private Choice choice;
+
+	public AWTChoiceWidget(final String initialValue, final String[] items) {
+		choice = new Choice();
+		for (final String item : items) choice.add(item);
+		choice.select(initialValue);
+		add(choice, BorderLayout.CENTER);
+	}
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
-		}
+	public String getItem() {
+		return choice.getSelectedItem().toString();
+	}
+
+	@Override
+	public int getIndex() {
+		return choice.getSelectedIndex();
 	}
 
 }

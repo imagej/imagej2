@@ -27,6 +27,7 @@
 		<module>ij-gui-swing</module>
 		<module>ij-legacy</module>
 		<module>ij-plugin</module>
+		<module>ij-plugin-gui-awt</module>
 		<module>ij-plugin-gui-swing</module>
 		<module>ij-tool</module>
 		<module>imagej</module>

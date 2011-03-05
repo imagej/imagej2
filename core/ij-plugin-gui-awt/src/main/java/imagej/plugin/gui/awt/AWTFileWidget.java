@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// AWTFileWidget.java
 //
 
 /*
@@ -32,36 +32,59 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
-import imagej.Log;
-import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.FileWidget;
 
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
- * TODO
+ * AWT implementation of file selector widget.
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class AWTFileWidget extends Panel
+	implements FileWidget, ActionListener
+{
+
+	private TextField path;
+	private Button browse;
+
+	public AWTFileWidget(final File initialValue) {
+		setLayout(new BorderLayout());
+		path = new TextField(initialValue == null ?
+			"" : initialValue.getAbsolutePath(), 20);
+		add(path, BorderLayout.CENTER);
+		browse = new Button("Browse");
+		browse.addActionListener(this);
+		add(browse, BorderLayout.EAST);
+	}
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
+	public File getFile() {
+		return new File(path.getText());
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		File file = new File(path.getText());
+		if (!file.isDirectory()) {
+			file = file.getParentFile();
 		}
+		final FileDialog fileDialog = new FileDialog((Frame) null);
+		fileDialog.setDirectory(file.getAbsolutePath());
+		fileDialog.setVisible(true);
+		final String filename = fileDialog.getFile();
+		if (filename == null) return;
+		path.setText(filename);
 	}
 
 }

@@ -1,5 +1,5 @@
 //
-// SwingMenuCreator.java
+// AWTMenuCreator.java
 //
 
 /*
@@ -32,9 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
-import imagej.Log;
 import imagej.plugin.RunnablePlugin;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
@@ -42,79 +41,48 @@ import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.AbstractMenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 
+import java.awt.Menu;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
  */
-public abstract class SwingMenuCreator<M>
-	extends AbstractMenuCreator<M, JMenuItem>
+public abstract class AWTMenuCreator<M>
+	extends AbstractMenuCreator<M, MenuItem>
 {
 
 	@Override
-	protected JMenuItem createMenuItem(ShadowMenu shadow) {
+	public MenuItem createMenuItem(ShadowMenu shadow) {
 		final MenuEntry menuEntry = shadow.getMenuEntry();
 
 		final String name = menuEntry.getName();
-		final char mnemonic = menuEntry.getMnemonic();
-		final String accelerator = menuEntry.getAccelerator();
-		final KeyStroke keyStroke = toKeyStroke(accelerator);
-		final String iconPath = menuEntry.getIcon();
-		final Icon icon = loadIcon(iconPath);
 
-		final JMenuItem menuItem;
+		final MenuItem menuItem;
 		if (shadow.isLeaf()) {
 			// create leaf item
-			menuItem = new JMenuItem(name);
+			menuItem = new MenuItem(name);
 			linkAction(shadow.getPluginEntry(), menuItem);
 		}
 		else {
 			// create menu and recursively add children
-			final JMenu menu = new JMenu(name);
-			final List<JMenuItem> childMenuItems = createChildMenuItems(shadow);
-			for (final JMenuItem childMenuItem : childMenuItems) {
+			final Menu menu = new Menu(name);
+			final List<MenuItem> childMenuItems = createChildMenuItems(shadow);
+			for (final MenuItem childMenuItem : childMenuItems) {
 				if (childMenuItem == null) menu.addSeparator();
 				else menu.add(childMenuItem);
 			}
 			menuItem = menu;
 		}
-		if (mnemonic != '\0') menuItem.setMnemonic(mnemonic);
-		if (keyStroke != null) menuItem.setAccelerator(keyStroke);
-		if (icon != null) menuItem.setIcon(icon);
 
 		return menuItem;
 	}
 
-	private KeyStroke toKeyStroke(final String accelerator) {
-		return KeyStroke.getKeyStroke(accelerator);
-	}
-
-	private Icon loadIcon(String icon) {
-		if (icon == null || icon.isEmpty()) return null;
-		try {
-			return new ImageIcon(new URL(icon));
-		}
-		catch (MalformedURLException e) {
-			Log.warn("No such icon: " + icon);
-			return null;
-		}
-	}
-
-	private void linkAction(final PluginEntry<?> entry,
-		final JMenuItem menuItem)
-	{
+	private void linkAction(final PluginEntry<?> entry, final MenuItem menuItem) {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -1,5 +1,5 @@
 //
-// JMenuCreator.java
+// MenuBarCreator.java
 //
 
 /*
@@ -32,31 +32,31 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.swing;
+package imagej.plugin.gui.awt;
 
 import imagej.Log;
 import imagej.plugin.gui.ShadowMenu;
 
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
  */
-public class JMenuCreator extends SwingMenuCreator<JMenu> {
+public class MenuBarCreator extends AWTMenuCreator<MenuBar> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
+	public void createMenus(final ShadowMenu root, final MenuBar menuBar) {
 		// create menu items and add to menu bar
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
+		final List<MenuItem> childMenuItems = createChildMenuItems(root);
+		for (final MenuItem childMenuItem : childMenuItems) {
+			if (childMenuItem instanceof Menu) {
+				final Menu childMenu = (Menu) childMenuItem;
+				menuBar.add(childMenu);
 			}
 			else {
 				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);

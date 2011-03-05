@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.swing;
 
 import imagej.Log;
-import imagej.plugin.gui.MenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 
 import java.util.List;
@@ -49,9 +48,7 @@ import javax.swing.JMenuItem;
  *
  * @author Curtis Rueden
  */
-public class JMenuBarCreator extends SwingMenuCreator
-	implements MenuCreator<JMenuBar>
-{
+public class JMenuBarCreator extends SwingMenuCreator<JMenuBar> {
 
 	@Override
 	public void createMenus(final ShadowMenu root, final JMenuBar menuBar) {
