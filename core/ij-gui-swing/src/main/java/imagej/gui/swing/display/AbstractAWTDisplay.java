@@ -1,17 +1,25 @@
 package imagej.gui.swing.display;
 
 import imagej.display.Display;
-import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.key.KyTypedEvent;
 import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsClickedEvent;
 import imagej.display.event.mouse.MsDraggedEvent;
+import imagej.display.event.mouse.MsEnteredEvent;
+import imagej.display.event.mouse.MsExitedEvent;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
+import imagej.display.event.window.WinActivatedEvent;
+import imagej.display.event.window.WinClosedEvent;
+import imagej.display.event.window.WinClosingEvent;
+import imagej.display.event.window.WinDeactivatedEvent;
+import imagej.display.event.window.WinDeiconifiedEvent;
+import imagej.display.event.window.WinIconifiedEvent;
+import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.Events;
 
 import java.awt.event.KeyEvent;
@@ -38,13 +46,13 @@ public abstract class AbstractAWTDisplay implements Display, KeyListener,
 	@Override
 	public void keyTyped(KeyEvent e) {
 		Events.publish(new KyTypedEvent(this,
-				e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
+			e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		Events.publish(new KyPressedEvent(this,
-				e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
+			e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
 	}
 
 	@Override
@@ -77,12 +85,12 @@ public abstract class AbstractAWTDisplay implements Display, KeyListener,
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO
+		Events.publish(new MsEnteredEvent(this, e.getX(), e.getY()));
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO
+		Events.publish(new MsExitedEvent(this, e.getX(), e.getY()));
 	}
 
 	@Override
@@ -108,37 +116,37 @@ public abstract class AbstractAWTDisplay implements Display, KeyListener,
 
 	@Override
 	public void windowActivated(WindowEvent e) {
-		Events.publish(new DisplayActivatedEvent(this));
+		Events.publish(new WinActivatedEvent(this));
 	}
 
 	@Override
 	public void windowClosed(WindowEvent e) {
-		// TODO
+		Events.publish(new WinClosedEvent(this));
 	}
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		// TODO
+		Events.publish(new WinClosingEvent(this));
 	}
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
-		// TODO
+		Events.publish(new WinDeactivatedEvent(this));
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent e) {
-		// TODO
+		Events.publish(new WinDeiconifiedEvent(this));
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
-		// TODO
+		Events.publish(new WinIconifiedEvent(this));
 	}
 
 	@Override
 	public void windowOpened(WindowEvent e) {
-		// TODO
+		Events.publish(new WinOpenedEvent(this));
 	}
 
 	private int mouseButton(final MouseEvent e) {
