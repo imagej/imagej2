@@ -32,13 +32,7 @@ public class SaltAndPepper implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public SaltAndPepper()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

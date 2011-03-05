@@ -2,9 +2,8 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.UnaryOperatorFunction;
+import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Log;
 
@@ -25,13 +24,7 @@ public class LogDataValues implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public LogDataValues()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

@@ -193,6 +193,8 @@ public class NavigableImagePanel extends JPanel {
 	private void addResizeListener() {
 		// Handle component resizing
 		addComponentListener(new ComponentAdapter() {
+			@SuppressWarnings("synthetic-access")
+			@Override
 			public void componentResized(ComponentEvent e) {
 				if (scale > 0.0) {
 					if (isFullImageInPanel()) {
@@ -213,6 +215,8 @@ public class NavigableImagePanel extends JPanel {
 	private void addMouseListeners() {
 		addMouseListener(new MouseAdapter() {
 
+			@SuppressWarnings("synthetic-access")
+			@Override
 			public void mousePressed(MouseEvent e) {
 				if (SwingUtilities.isLeftMouseButton(e)) {
 					if (isInNavigationImage(e.getPoint())) {
@@ -225,6 +229,8 @@ public class NavigableImagePanel extends JPanel {
 
 		addMouseMotionListener(new MouseMotionListener() {
 
+			@SuppressWarnings("synthetic-access")
+			@Override
 			public void mouseDragged(MouseEvent e) {
 				if (SwingUtilities.isLeftMouseButton(e)
 						&& !isInNavigationImage(e.getPoint())) {
@@ -235,6 +241,8 @@ public class NavigableImagePanel extends JPanel {
 				}
 			}
 
+			@SuppressWarnings("synthetic-access")
+			@Override
 			public void mouseMoved(MouseEvent e) {
 				//we need the mouse position so that after zooming
 				//that position of the image is maintained
@@ -542,6 +550,7 @@ public class NavigableImagePanel extends JPanel {
 	 *
 	 * @param g the <code>Graphics</code> context for painting
 	 */
+	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g); // Paints the background
 		if (image == null) {
@@ -694,6 +703,7 @@ public class NavigableImagePanel extends JPanel {
 			return (int) Math.round(y);
 		}
 
+		@Override
 		public String toString() {
 			return "[Coords: x=" + x + ",y=" + y + "]";
 		}
@@ -704,6 +714,7 @@ public class NavigableImagePanel extends JPanel {
 	private WheelZoomDevice wheelZoomDevice = null;
 	private ButtonZoomDevice buttonZoomDevice = null;
 	
+		@SuppressWarnings("synthetic-access")
 		private void addWheelZoomDevice() {
 		if (wheelZoomDevice == null) {
 			wheelZoomDevice = new WheelZoomDevice();
@@ -711,6 +722,7 @@ public class NavigableImagePanel extends JPanel {
 		}
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private void addButtonZoomDevice() {
 		if (buttonZoomDevice == null) {
 			buttonZoomDevice = new ButtonZoomDevice();
@@ -788,6 +800,7 @@ public class NavigableImagePanel extends JPanel {
 			this.zoomDevice = zoomDevice;
 		}
 
+		@Override
 		public String toString() {
 			return zoomDevice;
 		}
@@ -795,6 +808,8 @@ public class NavigableImagePanel extends JPanel {
 
 	private class WheelZoomDevice implements MouseWheelListener {
 
+		@SuppressWarnings("synthetic-access")
+		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			Point p = e.getPoint();
 			boolean zoomIn = (e.getWheelRotation() < 0);
@@ -818,6 +833,8 @@ public class NavigableImagePanel extends JPanel {
 
 	private class ButtonZoomDevice extends MouseAdapter {
 
+		@SuppressWarnings("synthetic-access")
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			Point p = e.getPoint();
 			if (SwingUtilities.isRightMouseButton(e)) {
@@ -852,6 +869,7 @@ public class NavigableImagePanel extends JPanel {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				final JFrame frame = new JFrame("Navigable Image Panel");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

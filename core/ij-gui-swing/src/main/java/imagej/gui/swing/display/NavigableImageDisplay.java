@@ -1,6 +1,5 @@
 package imagej.gui.swing.display;
 
-import imagej.Log;
 import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.LayeredDisplay;

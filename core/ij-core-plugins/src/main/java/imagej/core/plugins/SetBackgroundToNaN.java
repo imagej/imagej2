@@ -33,14 +33,7 @@ public class SetBackgroundToNaN implements ImageJPlugin
 	
 	@Parameter(label="High threshold")
 	private double hiThreshold;
-	
-	// ***************  constructor ***************************************************************
-	
-	/** basic constructor */
-	public SetBackgroundToNaN()
-	{
-	}
-	
+
 	// ***************  public interface ***************************************************************
 
 	/** runs this plugin */

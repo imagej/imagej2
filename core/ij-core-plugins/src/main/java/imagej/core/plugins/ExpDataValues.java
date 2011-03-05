@@ -4,7 +4,6 @@ import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Exp;
 
@@ -25,12 +24,6 @@ public class ExpDataValues implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
-
-	public ExpDataValues()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

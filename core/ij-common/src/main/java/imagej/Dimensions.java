@@ -5,8 +5,12 @@ package imagej;
  *
  * @author Barry DeZonia
  */
-public class Dimensions
-{
+public final class Dimensions {
+
+	private Dimensions() {
+		// prevent instantiation of utility class
+	}
+
 	/** gets the last n-2 dimensions of a n-dimensional int array. */
 	public static int[] getDims3AndGreater(int[] fullDims)
 	{
@@ -96,4 +100,5 @@ public class Dimensions
 		
 		return numNonTrivial;
 	}
+
 }

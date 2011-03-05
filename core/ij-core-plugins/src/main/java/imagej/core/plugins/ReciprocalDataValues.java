@@ -2,9 +2,8 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.UnaryOperatorFunction;
+import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Reciprocal;
 
@@ -25,13 +24,7 @@ public class ReciprocalDataValues implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public ReciprocalDataValues()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

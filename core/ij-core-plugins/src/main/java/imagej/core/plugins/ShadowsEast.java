@@ -23,12 +23,6 @@ public class ShadowsEast implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
-
-	public ShadowsEast()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

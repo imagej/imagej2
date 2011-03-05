@@ -24,13 +24,7 @@ public class FlipHorizontally implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public FlipHorizontally()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override

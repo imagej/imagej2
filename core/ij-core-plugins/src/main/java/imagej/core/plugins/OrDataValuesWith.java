@@ -2,9 +2,8 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-import imglib.ops.function.p1.UnaryOperatorFunction;
+import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.OrConstant;
 
@@ -28,12 +27,6 @@ public class OrDataValuesWith implements ImageJPlugin
 	
 	@Parameter(label="Enter value to OR with each data value")
 	private long constant;
-	
-	// ***************  constructor ***************************************************************
-
-	public OrDataValuesWith()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

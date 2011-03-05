@@ -1,15 +1,15 @@
 package imagej.core.plugins;
 
+import imagej.model.Dataset;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import imagej.model.Dataset;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 // TODO - minX, minY, maxX, maxY are treated as harvested variables (for simple testing). Should make them passed
 //        in parameters to constructor
@@ -47,14 +47,7 @@ public class CropImage implements ImageJPlugin
 
 	@Parameter
 	private int maxY;
-	
-	// ***************  constructor ***************************************************************
 
-	/** default constructor */
-	public CropImage()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	/** runs the crop process and returns the output as a Dataset */

@@ -23,12 +23,6 @@ public class ShadowsWest implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
-
-	public ShadowsWest()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

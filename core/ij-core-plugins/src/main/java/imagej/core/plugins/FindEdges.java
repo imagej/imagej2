@@ -25,13 +25,6 @@ public class FindEdges implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 
-	// ***************  constructor ***************************************************************
-
-	/** default constructor */
-	public FindEdges()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	/** sets the output Dataset to the result of the find edges operation */

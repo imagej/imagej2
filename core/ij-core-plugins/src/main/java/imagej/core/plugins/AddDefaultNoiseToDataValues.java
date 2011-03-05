@@ -22,12 +22,6 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin
 	
 	@Parameter(output=true)
 	Dataset output;
-	
-	// ***************  constructor ***************************************************************
-
-	public AddDefaultNoiseToDataValues()
-	{
-	}
 
 	// ***************  public interface ***************************************************************
 

@@ -26,13 +26,7 @@ public class Rotate90DegreesLeft implements ImageJPlugin
 	
 	@Parameter(output=true)
 	private Dataset output;
-	
-	// ***************  constructor ***************************************************************
 
-	public Rotate90DegreesLeft()
-	{
-	}
-	
 	// ***************  public interface ***************************************************************
 
 	@Override
