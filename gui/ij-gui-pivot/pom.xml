@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-gui</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ij-gui-pivot</artifactId>
+
+	<name>ImageJ GUI: Pivot</name>
+	<description>An Apache Pivot-based ImageJ user interface.</description>
+
+	<dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-data-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-display</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-events</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+		<!--
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-plugin-gui-pivot</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+		-->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-tool</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pivot</groupId>
+      <artifactId>pivot-core</artifactId>
+      <version>${pivot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pivot</groupId>
+      <artifactId>pivot-wtk</artifactId>
+      <version>${pivot.version}</version>
+    </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej.gui.pivot</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- NB: for imagej-gui, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>
