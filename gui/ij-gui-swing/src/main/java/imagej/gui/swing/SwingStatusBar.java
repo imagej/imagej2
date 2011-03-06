@@ -1,5 +1,5 @@
 //
-// StatusBar.java
+// SwingStatusBar.java
 //
 
 /*
@@ -44,15 +44,17 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
- * Simple status bar with text area and progress bar, similar to ImageJ 1.x.
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
  *
  * @author Curtis Rueden
  */
-public class StatusBar extends JPanel implements EventSubscriber<StatusEvent> {
+public class SwingStatusBar extends JPanel
+	implements EventSubscriber<StatusEvent>
+{
 
 	private final JProgressBar progressBar;
 
-	public StatusBar() {
+	public SwingStatusBar() {
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		setLayout(new BorderLayout());

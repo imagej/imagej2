@@ -152,7 +152,7 @@ public class NavigableImageFrame extends JFrame {
 		sb.append(image.getType());
 		imageLabel.setText(sb.toString());
 	}
-	
+
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
 		final int no = Index.positionToRaster(dims, pos);

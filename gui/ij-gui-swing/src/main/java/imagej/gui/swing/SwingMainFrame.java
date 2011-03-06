@@ -1,5 +1,5 @@
 //
-// SwingLauncher.java
+// SwingMainFrame.java
 //
 
 /*
@@ -32,23 +32,59 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.launcher.swing;
+package imagej.gui.swing;
 
-import imagej.gui.swing.MainFrame;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.swing.JMenuBarCreator;
+import imagej.tool.ToolManager;
+
+import java.awt.BorderLayout;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 /**
- * Launches the ImageJ Swing user interface.
+ * Swing-based main window for ImageJ.
  *
  * @author Curtis Rueden
  */
-public final class SwingLauncher {
+public class SwingMainFrame {
 
-	private SwingLauncher() {
-		// prevent instantiation of utility class
+	private final JFrame frame;
+	private final SwingToolBar toolBar;
+	private final SwingStatusBar statusBar;
+
+	/** Creates a new ImageJ application frame. */
+	public SwingMainFrame() {
+		frame = new JFrame("ImageJ");
+		toolBar = new SwingToolBar(new ToolManager());
+		statusBar = new SwingStatusBar();
+		createMenuBar();
+
+		final JPanel pane = new JPanel();
+		frame.setContentPane(pane);
+		pane.setLayout(new BorderLayout());
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+		pane.add(toolBar, BorderLayout.NORTH);
+		pane.add(statusBar, BorderLayout.SOUTH);
+
+		frame.pack();
+		frame.setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		new MainFrame();
+	private void createMenuBar() {
+		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
+		statusBar.setStatus("Discovered " + entries.size() + " plugins");
+		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		final JMenuBar menuBar = new JMenuBar();
+		new JMenuBarCreator().createMenus(rootMenu, menuBar);
+		frame.setJMenuBar(menuBar);
 	}
 
 }

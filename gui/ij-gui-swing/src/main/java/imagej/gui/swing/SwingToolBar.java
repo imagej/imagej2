@@ -1,5 +1,5 @@
 //
-// ToolBar.java
+// SwingToolBar.java
 //
 
 /*
@@ -59,7 +59,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author Curtis Rueden
  */
-public class ToolBar extends JToolBar
+public class SwingToolBar extends JToolBar
 	implements EventSubscriber<ToolActivatedEvent>
 {
 
@@ -67,8 +67,8 @@ public class ToolBar extends JToolBar
 
 	private Map<String, AbstractButton> toolButtons;
 
-	public ToolBar() {
-		toolManager = new ToolManager();
+	public SwingToolBar(final ToolManager toolManager) {
+		this.toolManager = toolManager;
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 	}
