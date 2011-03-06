@@ -19,12 +19,19 @@
 
 	<modules>
 		<module>ij-gui-awt</module>
+		<module>ij-gui-pivot</module>
 		<module>ij-gui-swing</module>
 		<module>ij-plugin-gui-awt</module>
+		<!--<module>ij-plugin-gui-pivot</module>-->
 		<module>ij-plugin-gui-swing</module>
 		<module>imagej</module>
 		<module>imagej-awt</module>
+		<module>imagej-pivot</module>
 	</modules>
+
+	<properties>
+	  <pivot.version>1.4</pivot.version>
+	</properties>
 
 	<!-- NB: for imagej-base, in case of partial checkout -->
 	<repositories>
