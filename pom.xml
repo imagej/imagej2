@@ -29,6 +29,7 @@
 		<module>core</module>
 		<!-- <module>envisaje</module> -->
 		<module>extra</module>
+		<module>gui</module>
 		<module>old</module>
 		<module>plugins</module>
 	</modules>
