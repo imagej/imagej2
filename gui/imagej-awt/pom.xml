@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-core</artifactId>
+		<artifactId>imagej-gui</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
@@ -55,33 +55,11 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/application.xml</descriptor>
-					</descriptors>
-					<!--
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					-->
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>imagej.launcher.awt.SwingLauncher</mainClass>
+							<mainClass>imagej.launcher.awt.AWTLauncher</mainClass>
 							<packageName>imagej.launcher.awt</packageName>
 						</manifest>
 					</archive>
@@ -102,14 +80,14 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath/>
-						<argument>imagej.launcher.awt.SwingLauncher</argument>
+						<argument>imagej.launcher.awt.AWTLauncher</argument>
 					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-core, in case of partial checkout -->
+	<!-- NB: for imagej-gui, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
