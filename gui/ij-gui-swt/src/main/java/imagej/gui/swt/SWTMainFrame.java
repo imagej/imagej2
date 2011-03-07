@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTMainFrame.java
 //
 
 /*
@@ -32,59 +32,51 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.swt.MenuCreator;
+import imagej.tool.ToolManager;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import java.util.List;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+import net.miginfocom.swt.MigLayout;
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+/**
+ * SWT-based main window for ImageJ.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTMainFrame extends Shell {
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+	private final SWTStatusBar statusBar;
 
-        window.open(display);
-    }
+	/** Creates a new ImageJ application frame. */
+	public SWTMainFrame(final Display display) {
+		super(display, 0);
+		setLayout(new MigLayout("wrap 1"));
+		setText("ImageJ");
+		new SWTToolBar(display, this, new ToolManager());
+		statusBar = new SWTStatusBar(this);
+//		createMenuBar();
 
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
+		pack();
+		open();
+	}
 
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	private void createMenuBar() {
+		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
+		statusBar.setStatus("Discovered " + entries.size() + " plugins");
+		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		final Menu menuBar = new Menu(this);
+		new MenuCreator().createMenus(rootMenu, menuBar);
+		setMenuBar(menuBar); // TODO - is this necesssary?
+	}
 
 }

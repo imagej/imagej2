@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTLauncher.java
 //
 
 /*
@@ -32,59 +32,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.launcher.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import org.eclipse.swt.widgets.Display;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import imagej.gui.swt.SWTMainFrame;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+/**
+ * Launches the ImageJ Eclipse SWT user interface.
+ *
+ * @author Curtis Rueden
+ */
+public final class SWTLauncher {
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	private SWTLauncher() {
+		// prevent instantiation of utility class
+	}
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	public static void main(String[] args) {
+//		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		final Display display = new Display();
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+		final SWTMainFrame swtMainFrame = new SWTMainFrame(display);
 
-        window.open(display);
-    }
-
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+		while (!swtMainFrame.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
+	}
 
 }

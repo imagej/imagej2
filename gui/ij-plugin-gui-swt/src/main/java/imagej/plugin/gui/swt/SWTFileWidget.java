@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTFileWidget.java
 //
 
 /*
@@ -32,59 +32,56 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.plugin.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.plugin.gui.FileWidget;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import java.io.File;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+import net.miginfocom.swt.MigLayout;
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+/**
+ * SWT implementation of file selector widget.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTFileWidget extends Composite implements FileWidget {
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+	private Text path;
+	private Button browse;
 
-        window.open(display);
-    }
+	public SWTFileWidget(final Composite parent, final File initialValue) {
+		super(parent, 0);
+		setLayout(new MigLayout());
+		path = new Text(this, 0);
+		path.setText(initialValue == null ?
+			"" : initialValue.getAbsolutePath());
+		path.setTextLimit(20);
+		browse = new Button(this, 0);
+		browse.setText("Browse");
+	}
 
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
+	@Override
+	public File getFile() {
+		return new File(path.getText());
+	}
 
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+//	@Override
+//	public void actionPerformed(ActionEvent e) {
+//		File file = new File(path.getText());
+//		if (!file.isDirectory()) {
+//			file = file.getParentFile();
+//		}
+//		final FileDialog fileDialog = new FileDialog((Frame) null);
+//		fileDialog.setDirectory(file.getAbsolutePath());
+//		fileDialog.setVisible(true);
+//		final String filename = fileDialog.getFile();
+//		if (filename == null) return;
+//		path.setText(filename);
+//	}
 
 }

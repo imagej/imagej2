@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// MenuCreator.java
 //
 
 /*
@@ -32,59 +32,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.plugin.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.Log;
+import imagej.plugin.gui.ShadowMenu;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import java.util.List;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+/**
+ * Populate an SWT {@link Menu} with menu items.
+ *
+ * @author Curtis Rueden
+ */
+public class MenuCreator extends SWTMenuCreator<Menu> {
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
-
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
-
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
-
-        window.open(display);
-    }
-
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public void createMenus(final ShadowMenu root, final Menu menu) {
+		final List<MenuItem> childMenuItems = createChildMenuItems(root);
+		for (final MenuItem childMenuItem : childMenuItems) {
+//			if (childMenuItem instanceof Menu) {
+//				final Menu childMenu = (Menu) childMenuItem;
+//				menu.add(childMenu);
+//			}
+//			else {
+//				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
+//			}
+		}
+	}
 
 }
