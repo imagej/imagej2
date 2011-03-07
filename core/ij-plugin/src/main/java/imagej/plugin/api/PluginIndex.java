@@ -162,7 +162,7 @@ public class PluginIndex {
 	}
 
 	private void parseMenuPath(final List<MenuEntry> menuPath,
-			final Menu[] menu)
+		final Menu[] menu)
 	{
 		for (int i = 0; i < menu.length; i++) {
 			final String name = menu[i].label();
@@ -175,7 +175,7 @@ public class PluginIndex {
 	}
 
 	private void parseMenuPath(final List<MenuEntry> menuPath,
-			final String path)
+		final String path)
 	{
 		final String[] menuPathTokens = path.split(">");
 		for (String token : menuPathTokens) menuPath.add(new MenuEntry(token));
