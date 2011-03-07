@@ -43,9 +43,6 @@ import imagej.tool.Tool;
 
 import java.awt.event.KeyEvent;
 
-// TODO - rework tool framework to use event bus instead
-// E.g., PanTool implements ImageSubscriber<DisplayMouseEvent>?
-
 /**
  * TODO
  * 
