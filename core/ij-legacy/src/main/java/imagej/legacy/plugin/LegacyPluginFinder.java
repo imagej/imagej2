@@ -85,9 +85,36 @@ public class LegacyPluginFinder implements IPluginFinder {
 		blacklist.add("ij.plugin.filter.Filters(\"smooth\")");  // Process>Smooth
 		blacklist.add("ij.plugin.filter.Filters(\"sharpen\")");  // Process>Sharpen
 		blacklist.add("ij.plugin.filter.Filters(\"edge\")");  // Process>Find Edges
-		blacklist.add("ij.plugin.filter.Filters(\"add\")");  // Process>Add Specified Noise
-		blacklist.add("ij.plugin.filter.Filters(\"noise\")"); // Process>Add Noise
+		blacklist.add("ij.plugin.filter.Filters(\"add\")");  // Process>Add Noise
+		blacklist.add("ij.plugin.filter.Filters(\"noise\")"); // Process>Add Specified Noise
 		blacklist.add("ij.plugin.filter.SaltAndPepper");  // Process>Salt and Pepper
+		blacklist.add("ij.plugin.filter.Shadows(\"north\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"northeast\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"east\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"southeast\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"south\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"southwest\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"west\")");
+		blacklist.add("ij.plugin.filter.Shadows(\"northwest\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"add\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"sub\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"mul\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"div\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"and\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"or\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"xor\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"min\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"max\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"gamma\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"set\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"log\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"exp\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"sqr\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"sqrt\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"reciprocal\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"nan\")");
+		blacklist.add("ij.plugin.filter.ImageMath(\"abs\")");
+		blacklist.add("ij.plugin.ImageCalculator");
 	}
 
 	@Override
