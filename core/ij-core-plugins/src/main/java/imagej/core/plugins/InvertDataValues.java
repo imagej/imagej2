@@ -53,7 +53,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Edit>Invert")
+@Plugin(menuPath = "Edit>Invert")
 public class InvertDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

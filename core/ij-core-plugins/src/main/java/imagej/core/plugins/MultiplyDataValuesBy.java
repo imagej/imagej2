@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.MultiplyByConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Multiply")
+@Plugin(menuPath = "Process>Math>Multiply")
 public class MultiplyDataValuesBy implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

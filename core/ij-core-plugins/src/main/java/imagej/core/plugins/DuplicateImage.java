@@ -46,7 +46,7 @@ import imglib.ops.operator.unary.Copy;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Image>Duplicate")
+@Plugin(menuPath = "Image>Duplicate")
 public class DuplicateImage implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

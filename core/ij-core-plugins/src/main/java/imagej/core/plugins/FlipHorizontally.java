@@ -47,7 +47,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Image>Transform>Flip Horizontally")
+@Plugin(menuPath = "Image>Transform>Flip Horizontally")
 public class FlipHorizontally implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.DivideByConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Divide")
+@Plugin(menuPath = "Process>Math>Divide")
 public class DivideDataValuesBy implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

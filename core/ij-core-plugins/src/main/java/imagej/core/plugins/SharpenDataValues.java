@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Process>Sharpen")
+@Plugin(menuPath = "Process>Sharpen")
 public class SharpenDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

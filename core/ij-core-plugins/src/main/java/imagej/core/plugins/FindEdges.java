@@ -46,7 +46,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Process>Find Edges")
+@Plugin(menuPath = "Process>Find Edges")
 public class FindEdges implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

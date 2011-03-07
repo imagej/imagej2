@@ -48,7 +48,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
  * @author Curtis Rueden
  * @author Rick Lentz
  */
-@Plugin(menuPath = "PureIJ2>Process>Gradient")
+@Plugin(menuPath = "Process>Gradient")
 public class GradientImage implements ImageJPlugin {
 
 	@Parameter(min = "1", max = "2000", widgetStyle = WidgetStyle.NUMBER_SCROLL_BAR)

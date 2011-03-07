@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Process>Smooth")
+@Plugin(menuPath = "Process>Smooth")
 public class SmoothDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

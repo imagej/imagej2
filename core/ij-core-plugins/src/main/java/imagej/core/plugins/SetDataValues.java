@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.Constant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Set")
+@Plugin(menuPath = "Process>Math>Set")
 public class SetDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

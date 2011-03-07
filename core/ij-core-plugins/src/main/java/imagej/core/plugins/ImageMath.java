@@ -71,7 +71,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Image Calculator")
+@Plugin(menuPath = "Process>Image Calculator")
 public class ImageMath implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

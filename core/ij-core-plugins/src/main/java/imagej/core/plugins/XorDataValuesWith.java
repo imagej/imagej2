@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.XorConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>XOR")
+@Plugin(menuPath = "Process>Math>XOR")
 public class XorDataValuesWith implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
