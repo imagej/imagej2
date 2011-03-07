@@ -42,7 +42,8 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Constant;
 
 /**
- * TODO
+ * Fills an output image with a user specified constant value. The dimensions of the output image are copied
+ * an input image.
  *
  * @author Barry DeZonia
  */

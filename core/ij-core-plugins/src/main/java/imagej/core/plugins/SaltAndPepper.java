@@ -50,7 +50,8 @@ import imagej.plugin.Plugin;
 // TODO - IJ1's implementation works on the current ROI rectangle. This plugin works on whole plane
 
 /**
- * TODO
+ * Implements the same functionality as IJ1's Salt and Pepper plugin. Assigns random pixels to 255 or 0. 0 and 255 assignments
+ * are each evenly balanaced at 2.5% of the image. Conforms to the Imglib OutputAlgorithm interface.
  *
  * @author Barry DeZonia
  */
@@ -78,15 +79,18 @@ public class SaltAndPepper implements ImageJPlugin
 	
 	// ***************  private interface ***************************************************************
 
+	/** implementation of the salt and pepper algorithm as an Imglib OutputAlgorithm */
 	private class SaltAndPepperAlgorithm implements OutputAlgorithm
 	{
-
+		//  instance variables  ---------------------------
+		
 		private Image<?> inputImage;
 		private Image<?> outputImage;
 		private String errMessage = "No error";
 		private LocalizableByDimCursor<? extends RealType<?>> outputCursor;  // working cursor
 		private int[] outputPosition;  // workspace for setting output position
 
+		/** make sure input is 2d */
 		@Override
 		public boolean checkInput()
 		{
@@ -116,12 +120,14 @@ public class SaltAndPepper implements ImageJPlugin
 			return true;
 		}
 
+		/** get error message - really only valid if checkInput() returns false */
 		@Override
 		public String getErrorMessage()
 		{
 			return errMessage;
 		}
 
+		/** assigns the output image from the input image replacing 5% of the pixels with 0 or 255. */
 		@Override
 		public boolean process()
 		{
@@ -155,12 +161,16 @@ public class SaltAndPepper implements ImageJPlugin
 			return true;
 		}
 
+		/** returns the output image created by this algorithm. nonexistent before checkInput(0 called. not valid before process() run. */
 		@Override
 		public Image<?> getResult()
 		{
 			return outputImage;
 		}
 		
+		//  --- private helper
+
+		/** copies the input image's values to the out image as is. also leaves outputCursor open for later use */
 		private void initOutputImageVariables()
 		{
 			LocalizableByDimCursor<? extends RealType<?>> inputCursor = 
@@ -185,6 +195,9 @@ public class SaltAndPepper implements ImageJPlugin
 			// **** DO NOT CLOSE outputCursor - we'll reuse it
 		}
 		
+		//  --- private helper
+
+		/** sets a value at a specific (x,y) location in the output image to a given value */
 		private void setOutputPixel(int x, int y, double value)
 		{
 			outputPosition[0] = x;

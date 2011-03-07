@@ -40,10 +40,10 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Implements IJ1's Shadows West plugin functionality
+ *
  * @author Barry DeZonia
  *
- * @param <T>
  */
 @Plugin(
 		menuPath = "PureIJ2>Process>Shadows>West"

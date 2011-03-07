@@ -42,7 +42,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Sqrt;
 
 /**
- * TODO
+ * Fills an output Dataset by taking the square root of the data values of an input Dataset.
  *
  * @author Barry DeZonia
  */

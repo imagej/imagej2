@@ -46,7 +46,9 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
- * TODO
+ * Fills an output Dataset by applying an inversion to an input Dataset's data values. The inversion is relative to the minimum
+ * and maximum data values present in the input Dataset. Note that in IJ1 inversion for 8-bit data is relative to 0 & 255
+ * which is not mirrored here.
  *
  * @author Barry DeZonia
  */
@@ -69,6 +71,7 @@ public class InvertDataValues implements ImageJPlugin
 
 	// ***************  public interface ***************************************************************
 
+	/** fills the output image from the input image */
 	@Override
 	public void run()
 	{
@@ -89,6 +92,7 @@ public class InvertDataValues implements ImageJPlugin
 	
 	// ***************  private interface ***************************************************************
 
+	/** finds the smallest and largest data values actually present in the input image */
 	private void calcMinAndMax()
 	{
 		min = Double.MAX_VALUE;

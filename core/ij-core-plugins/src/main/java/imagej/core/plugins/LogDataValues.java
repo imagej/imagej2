@@ -42,7 +42,7 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Log;
 
 /**
- * TODO
+ * Fills an output Dataset by taking the log of an input Dataset.
  *
  * @author Barry DeZonia
  */

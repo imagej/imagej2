@@ -40,7 +40,8 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Implements IJ1's Smooth plugin functionality
+ *
  * @author Barry DeZonia
  *
  */

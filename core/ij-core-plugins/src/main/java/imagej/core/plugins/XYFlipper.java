@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
-import imagej.Dimensions;
 import imagej.model.Dataset;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
 import mpicbg.imglib.cursor.Cursor;
@@ -44,6 +43,8 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // TODO - in IJ1 this flips single plane in active window. do we want to extend to all planes???
+
+// TODO - XYFlipper could be renamed to something else. It takes XY data and transforms it some other space */
 
 /**
  * XYFlipper is used by FlipVertically, FlipHorizontally, Rotate90DegreesLeft and Rotate90DegreesRight
@@ -65,9 +66,13 @@ public class XYFlipper implements OutputAlgorithm
 
 	// ***************  exported interface ***************************************************************
 
+	/** this interface is exported for use by algorithms that want to create images from 2d input data */
 	interface FlipCoordinateTransformer
 	{
+		/** maps an input image's dimensions to the output image's coordinate space */
 		int[] calcOutputDimensions(int[] inputDimensions);
+		
+		/** maps a position within an input image's coordinate space to the output image's coordinate space */
 		void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition);
 	}
 	
@@ -81,6 +86,7 @@ public class XYFlipper implements OutputAlgorithm
 	
 	// ***************  public interface : implementation of OutputAlgorithm methods  *********************
 
+	/** makes sure input is okay and creates output image */
 	@Override
 	public boolean checkInput()
 	{
@@ -97,11 +103,9 @@ public class XYFlipper implements OutputAlgorithm
 
 		int[] inputDimensions = input.getImage().getDimensions();
 
-		// with the use of countNontrivialDimensions() this algorithm can accept images of dim {x,y,1,...}
-		if ((Dimensions.countNontrivialDimensions(inputDimensions) != 2) ||
-				((inputDimensions[0] == 1) || (inputDimensions[1] == 1)))
+		if (input.getImage().getNumDimensions() != 2)
 		{
-			errMessage = "Flipping only works on an Image made of a 2d plane of XY data";
+			errMessage = "Flipping only works on a 2d plane of XY data";
 			return false;
 		}
 
@@ -112,12 +116,14 @@ public class XYFlipper implements OutputAlgorithm
 		return true;
 	}
 
+	/** returns the current error message. only valid of checkInput() returns false */
 	@Override
 	public String getErrorMessage()
 	{
 		return errMessage;
 	}
 
+	/** fills the output image from the input image doing coordinate transformations as needed */
 	@Override
 	public boolean process()
 	{
@@ -159,6 +165,7 @@ public class XYFlipper implements OutputAlgorithm
 		return true;
 	}
 
+	/** returns the resulting output image */
 	@Override
 	public Image<?> getResult()
 	{
