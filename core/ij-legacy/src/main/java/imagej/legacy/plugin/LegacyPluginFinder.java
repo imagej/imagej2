@@ -153,8 +153,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		}
 		path.add(entry);
 
-		if (menuItem instanceof Menu) {
-			// non-leaf; recursively process child menu items
+		if (menuItem instanceof Menu) { // non-leaf
+			// recursively process child menu items
 			final Menu menu = (Menu) menuItem;
 			final int itemCount = menu.getItemCount();
 			double w = -1;
@@ -166,8 +166,11 @@ public class LegacyPluginFinder implements IPluginFinder {
 				parseMenu(item, w, ListUtils.copyList(path), menuTable);
 			}
 		}
-		else {
-			// leaf; add menu item to table
+		else { // leaf item
+			// flag legacy plugin with special icon
+			entry.setIcon("/icons/legacy.png");
+
+			// add menu item to table
 			menuTable.put(menuItem.getLabel(), path);
 		}
 	}

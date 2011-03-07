@@ -38,13 +38,13 @@ import imagej.Log;
 import imagej.plugin.RunnablePlugin;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
 import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.AbstractMenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -64,15 +64,13 @@ public abstract class SwingMenuCreator<M>
 {
 
 	@Override
-	protected JMenuItem createMenuItem(ShadowMenu shadow) {
+	protected JMenuItem createMenuItem(final ShadowMenu shadow) {
 		final MenuEntry menuEntry = shadow.getMenuEntry();
 
 		final String name = menuEntry.getName();
 		final char mnemonic = menuEntry.getMnemonic();
-		final String accelerator = menuEntry.getAccelerator();
-		final KeyStroke keyStroke = toKeyStroke(accelerator);
-		final String iconPath = menuEntry.getIcon();
-		final Icon icon = loadIcon(iconPath);
+		final KeyStroke keyStroke = getKeyStroke(shadow);
+		final Icon icon = loadIcon(shadow);
 
 		final JMenuItem menuItem;
 		if (shadow.isLeaf()) {
@@ -97,19 +95,24 @@ public abstract class SwingMenuCreator<M>
 		return menuItem;
 	}
 
-	private KeyStroke toKeyStroke(final String accelerator) {
+	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
+		final String accelerator = shadow.getMenuEntry().getAccelerator();
 		return KeyStroke.getKeyStroke(accelerator);
 	}
 
-	private Icon loadIcon(String icon) {
-		if (icon == null || icon.isEmpty()) return null;
+	private Icon loadIcon(final ShadowMenu shadow) {
+		final String iconPath = shadow.getMenuEntry().getIcon();
+		if (iconPath == null || iconPath.isEmpty()) return null;
 		try {
-			return new ImageIcon(new URL(icon));
+			final Class<?> c = shadow.getPluginEntry().loadClass();
+			final URL iconURL = c.getResource(iconPath);
+			if (iconURL == null) return null;
+			return new ImageIcon(iconURL);
 		}
-		catch (MalformedURLException e) {
-			Log.warn("No such icon: " + icon);
-			return null;
+		catch (PluginException e) {
+			Log.error("Could not load icon: " + iconPath, e);
 		}
+		return null;
 	}
 
 	private void linkAction(final PluginEntry<?> entry,
