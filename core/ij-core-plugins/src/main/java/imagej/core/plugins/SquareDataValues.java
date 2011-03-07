@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.Sqr;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Square")
+@Plugin(menuPath = "Process>Math>Square")
 public class SquareDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.Min;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Min")
+@Plugin(menuPath = "Process>Math>Min")
 public class ClampMinDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

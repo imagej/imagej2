@@ -56,7 +56,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Noise>Salt and Pepper")
+@Plugin(menuPath = "Process>Noise>Salt and Pepper")
 public class SaltAndPepper implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

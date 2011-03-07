@@ -46,7 +46,7 @@ import imglib.ops.operator.unary.Constant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Edit>Fill")
+@Plugin(menuPath = "Edit>Fill")
 public class FillDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

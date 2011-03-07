@@ -58,7 +58,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Image>Crop")
+@Plugin(menuPath = "Image>Crop")
 public class CropImage implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

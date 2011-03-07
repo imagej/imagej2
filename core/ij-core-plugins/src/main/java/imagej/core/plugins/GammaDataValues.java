@@ -48,7 +48,7 @@ import imglib.ops.operator.unary.Gamma;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Gamma")
+@Plugin(menuPath = "Process>Math>Gamma")
 public class GammaDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

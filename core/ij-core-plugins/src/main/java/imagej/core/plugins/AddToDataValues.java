@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.AddConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Add")
+@Plugin(menuPath = "Process>Math>Add")
 public class AddToDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

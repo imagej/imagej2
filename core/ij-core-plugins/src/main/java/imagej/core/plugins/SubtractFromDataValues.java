@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.SubtractConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Subtract")
+@Plugin(menuPath = "Process>Math>Subtract")
 public class SubtractFromDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

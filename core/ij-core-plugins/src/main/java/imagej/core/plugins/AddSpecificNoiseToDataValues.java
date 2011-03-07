@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Noise>Add Specified Noise")
+@Plugin(menuPath = "Process>Noise>Add Specified Noise")
 public class AddSpecificNoiseToDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

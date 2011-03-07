@@ -46,7 +46,7 @@ import imglib.ops.operator.unary.Log;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Log")
+@Plugin(menuPath = "Process>Math>Log")
 public class LogDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

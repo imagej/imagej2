@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.Max;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Max")
+@Plugin(menuPath = "Process>Math>Max")
 public class ClampMaxDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

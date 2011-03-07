@@ -46,7 +46,7 @@ import imglib.ops.operator.unary.Exp;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Exp")
+@Plugin(menuPath = "Process>Math>Exp")
 public class ExpDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

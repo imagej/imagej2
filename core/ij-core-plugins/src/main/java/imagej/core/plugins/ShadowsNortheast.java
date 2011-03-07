@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Process>Shadows>Northeast")
+@Plugin(menuPath = "Process>Shadows>Northeast")
 public class ShadowsNortheast implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

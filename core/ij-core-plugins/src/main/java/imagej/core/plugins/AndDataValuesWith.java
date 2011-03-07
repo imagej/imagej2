@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.AndConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>AND")
+@Plugin(menuPath = "Process>Math>AND")
 public class AndDataValuesWith implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

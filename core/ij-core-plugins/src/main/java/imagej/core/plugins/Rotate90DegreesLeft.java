@@ -49,7 +49,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * 
  */
-@Plugin(menuPath = "PureIJ2>Image>Transform>Rotate 90 Degrees Left")
+@Plugin(menuPath = "Image>Transform>Rotate 90 Degrees Left")
 public class Rotate90DegreesLeft implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

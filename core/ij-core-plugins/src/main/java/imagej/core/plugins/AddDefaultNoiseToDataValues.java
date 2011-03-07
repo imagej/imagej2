@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Noise>Add Noise")
+@Plugin(menuPath = "Process>Noise>Add Noise")
 public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

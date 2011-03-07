@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.Abs;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>Abs")
+@Plugin(menuPath = "Process>Math>Abs")
 public class AbsDataValues implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 

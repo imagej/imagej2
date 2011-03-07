@@ -51,7 +51,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>NaN Background")
+@Plugin(menuPath = "Process>Math>NaN Background")
 public class SetBackgroundToNaN implements ImageJPlugin {
 	// -- instance variables --
 

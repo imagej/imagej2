@@ -47,7 +47,7 @@ import imglib.ops.operator.unary.OrConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "PureIJ2>Process>Math>OR")
+@Plugin(menuPath = "Process>Math>OR")
 public class OrDataValuesWith implements ImageJPlugin {
 	// -- instance variables that are Parameters --
 
