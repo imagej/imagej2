@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTStatusBar.java
 //
 
 /*
@@ -32,59 +32,54 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import net.miginfocom.swt.MigLayout;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+/**
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTStatusBar extends Composite
+	implements EventSubscriber<StatusEvent>
+{
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	private final Label label;
+	private final ProgressBar progressBar;
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+	public SWTStatusBar(final Composite parent) {
+		super(parent, 0);
+		setLayout(new MigLayout());
+		label = new Label(this, 0);
+		progressBar = new ProgressBar(this, 0);
+		Events.subscribe(StatusEvent.class, this);
+	}
 
-        window.open(display);
-    }
+	public void setStatus(final String message) {
+		label.setText(message);
+	}
 
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
+	public void setProgress(final int val, final int max) {
+		progressBar.setSelection(val);
+		progressBar.setMaximum(max);
+	}
 
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public void onEvent(final StatusEvent event) {
+		final String message = event.getStatusMessage();
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		setStatus(message);
+		setProgress(val, max);
+	}
 
 }

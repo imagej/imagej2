@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTChoiceWidget.java
 //
 
 /*
@@ -32,59 +32,45 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.plugin.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.plugin.gui.ChoiceWidget;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+/**
+ * SWT implementation of multiple choice selector widget.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTChoiceWidget extends Composite implements ChoiceWidget {
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	private Combo combo;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	public SWTChoiceWidget(final Composite parent,
+		final String initialValue, final String[] items)
+	{
+		super(parent, 0);
+		combo = new Combo(this, SWT.DROP_DOWN);
+		combo.setItems(items);
+		for (int i=0; i<items.length; i++) {
+			if (items[i].equals(initialValue)) {
+				combo.select(i);
+				break;
+			}
+		}
+	}
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+	@Override
+	public String getItem() {
+		return combo.getItem(combo.getSelectionIndex());
+	}
 
-        window.open(display);
-    }
-
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public int getIndex() {
+		return combo.getSelectionIndex();
+	}
 
 }

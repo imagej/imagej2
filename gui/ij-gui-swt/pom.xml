@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-gui</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ij-gui-swt</artifactId>
+
+	<name>ImageJ GUI: SWT</name>
+	<description>An Eclipse SWT-based ImageJ user interface.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-data-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-display</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-events</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugin-gui-swt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-tool</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<!-- NB: Include OS-specific SWT dependency. -->
+	<profiles>
+		<profile>
+			<id>swt-win32</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>swt</groupId>
+					<artifactId>swt-win32</artifactId>
+					<version>${swt.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>swt-macosx</id>
+			<activation>
+				<os>
+					<name>mac os x</name>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>swt</groupId>
+					<artifactId>swt-macosx</artifactId>
+					<version>${swt.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>swt-linux</id>
+			<activation>
+				<os>
+					<name>linux</name>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>swt</groupId>
+					<artifactId>swt-linux-gtk</artifactId>
+					<version>${swt.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej.gui.swt</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- NB: for imagej-gui, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>

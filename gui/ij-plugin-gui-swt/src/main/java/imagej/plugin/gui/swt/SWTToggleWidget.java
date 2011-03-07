@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTToggleWidget.java
 //
 
 /*
@@ -32,59 +32,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.plugin.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.plugin.gui.ToggleWidget;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+/**
+ * SWT implementation of boolean toggle widget.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTToggleWidget extends Composite implements ToggleWidget {
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	private Button checkbox;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	public SWTToggleWidget(final Composite parent, final boolean initialValue) {
+		super(parent, 0);
+		checkbox = new Button(this, SWT.CHECK);
+		checkbox.setSelection(initialValue);
+	}
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
-
-        window.open(display);
-    }
-
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public boolean isSelected() {
+		return checkbox.getSelection();
+	}
 
 }

@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTTextFieldWidget.java
 //
 
 /*
@@ -32,59 +32,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.plugin.gui.swt;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.plugin.gui.TextFieldWidget;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 
-public class PivotApplication implements Application {
-    private Window window = null;
+/**
+ * SWT implementation of text field widget.
+ *
+ * @author Curtis Rueden
+ */
+public class SWTTextFieldWidget extends Composite implements TextFieldWidget {
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	private Text text;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	public SWTTextFieldWidget(final Composite parent,
+		final String initialValue, final int columns)
+	{
+		super(parent, 0);
+		text = new Text(this, 0);
+		text.setText(initialValue);
+		text.setTextLimit(columns);
+	}
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
-
-        window.open(display);
-    }
-
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public String getText() {
+		return text.getText();
+	}
 
 }

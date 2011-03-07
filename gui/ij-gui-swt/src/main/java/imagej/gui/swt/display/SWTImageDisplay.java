@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// SWTImageDisplay.java
 //
 
 /*
@@ -32,59 +32,46 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.gui.swt.display;
 
-import java.awt.Color;
-import java.awt.Font;
+import imagej.display.Display;
+import imagej.model.Dataset;
+import imagej.plugin.Plugin;
 
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+/**
+ * TODO
+ *
+ * @author Curtis Rueden
+ */
+@Plugin(type = Display.class)
+public class SWTImageDisplay implements Display {
 
-public class PivotApplication implements Application {
-    private Window window = null;
+	private SWTImageFrame imageFrame;
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	@Override
+	public boolean canDisplay(Dataset dataset) {
+		return true;
+	}
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	@Override
+	public void display(final Dataset dataset) {
+		imageFrame = new SWTImageFrame();
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+		// TODO - listen for user input
 
-        window.open(display);
-    }
+		// TODO - use DisplayView instead of Dataset directly
+		imageFrame.setDataset(dataset);
+		imageFrame.open();
+	}
 
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
+	@Override
+	public void pan(float x, float y) {
+		// TODO
+	}
 
-        return false;
-    }
-
-    @Override
-    public void suspend() {
-    }
-
-    @Override
-    public void resume() {
-    }
+	@Override
+	public void zoom(float factor) {
+		// TODO
+	}
 
 }
