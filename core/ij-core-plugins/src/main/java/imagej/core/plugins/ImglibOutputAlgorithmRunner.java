@@ -44,11 +44,11 @@ import imagej.model.Dataset;
  */
 public class ImglibOutputAlgorithmRunner
 {
-	// ********** instance variables ****************************************************************
+	// -- instance variables --
 	
 	private OutputAlgorithm algorithm;
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	/** preferred constructor */
 	public ImglibOutputAlgorithmRunner(final OutputAlgorithm algorithm)
@@ -56,7 +56,7 @@ public class ImglibOutputAlgorithmRunner
 		this.algorithm = algorithm;
 	}
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** run the plugin and assign output */
 	public Dataset run()

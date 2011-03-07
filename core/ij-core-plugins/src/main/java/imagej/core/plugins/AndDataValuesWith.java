@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.AndConstant;
 )
 public class AndDataValuesWith implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -62,7 +62,7 @@ public class AndDataValuesWith implements ImageJPlugin
 	@Parameter(label="Enter value to AND with each data value")
 	private long constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

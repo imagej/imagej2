@@ -49,7 +49,7 @@ import imagej.plugin.Plugin;
 )
 public class AddDefaultNoiseToDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -57,7 +57,7 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

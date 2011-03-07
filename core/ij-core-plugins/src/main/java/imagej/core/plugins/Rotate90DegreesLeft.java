@@ -53,7 +53,7 @@ import imagej.plugin.Plugin;
 )
 public class Rotate90DegreesLeft implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -61,7 +61,7 @@ public class Rotate90DegreesLeft implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()
@@ -72,7 +72,7 @@ public class Rotate90DegreesLeft implements ImageJPlugin
 		output = runner.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	private class NinetyLeftTransformer implements FlipCoordinateTransformer
 	{

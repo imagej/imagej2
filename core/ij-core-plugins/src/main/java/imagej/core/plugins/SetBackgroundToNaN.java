@@ -55,7 +55,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 )
 public class SetBackgroundToNaN implements ImageJPlugin
 {
-	// ********** instance variables ****************************************************************
+	// -- instance variables --
 	
 	@Parameter
 	private Dataset input;
@@ -69,7 +69,7 @@ public class SetBackgroundToNaN implements ImageJPlugin
 	@Parameter(label="High threshold")
 	private double hiThreshold;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** runs this plugin */
 	@Override
@@ -94,7 +94,7 @@ public class SetBackgroundToNaN implements ImageJPlugin
 		}
 	}
 	
-	// ********** private interface ****************************************************************
+	// -- private interface --
 	
 	/** private implementation of algorithm */
 	private class SetToNaN implements OutputAlgorithm

@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.Max;
 )
 public class ClampMaxDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -62,7 +62,7 @@ public class ClampMaxDataValues implements ImageJPlugin
 	@Parameter(label="Enter maximum clamp value")
 	private double constant;
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

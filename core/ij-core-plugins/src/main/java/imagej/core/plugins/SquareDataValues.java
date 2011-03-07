@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.Sqr;
 )
 public class SquareDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -59,7 +59,7 @@ public class SquareDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

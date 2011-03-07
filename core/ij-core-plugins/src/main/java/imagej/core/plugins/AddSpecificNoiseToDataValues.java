@@ -49,7 +49,7 @@ import imagej.plugin.Plugin;
 )
 public class AddSpecificNoiseToDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -60,7 +60,7 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin
 	@Parameter(label="Enter standard deviation of range")
 	double stdDev;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

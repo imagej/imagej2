@@ -54,7 +54,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 public class XYFlipper implements OutputAlgorithm
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	private Dataset input;
 	
@@ -64,7 +64,7 @@ public class XYFlipper implements OutputAlgorithm
 	
 	private FlipCoordinateTransformer flipper;
 
-	// ***************  exported interface ***************************************************************
+	// -- exported interface --
 
 	/** this interface is exported for use by algorithms that want to create images from 2d input data */
 	interface FlipCoordinateTransformer
@@ -76,7 +76,7 @@ public class XYFlipper implements OutputAlgorithm
 		void calcOutputPosition(int[] inputDimensions, int[] inputPosition, int[] outputPosition);
 	}
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	public XYFlipper(Dataset input, FlipCoordinateTransformer flipper)
 	{
@@ -84,7 +84,7 @@ public class XYFlipper implements OutputAlgorithm
 		this.flipper = flipper;
 	}
 	
-	// ***************  public interface : implementation of OutputAlgorithm methods  *********************
+	// -- public interface : implementation of OutputAlgorithm methods  --
 
 	/** makes sure input is okay and creates output image */
 	@Override

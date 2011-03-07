@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.Abs;
 )
 public class AbsDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -59,7 +59,7 @@ public class AbsDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

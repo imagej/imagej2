@@ -52,7 +52,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 public class AddNoiseToDataValues
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	/** the input Dataset that contains original values */
 	private Dataset input;
@@ -68,7 +68,7 @@ public class AddNoiseToDataValues
 	 */
 	private double rangeMin, rangeMax;
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	/** constructor - takes an input Dataset as the baseline data to compute perturbed values from. */
 	public AddNoiseToDataValues(Dataset input)
@@ -76,7 +76,7 @@ public class AddNoiseToDataValues
 		this.input = input;
 	}
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** use this method to specify the output Dataset that will hold output data. if this method is not called
 	 * then the add noise operation defaults to creating a new output Dataset and returning it from the run() method. */
@@ -112,7 +112,7 @@ public class AddNoiseToDataValues
 		return new UnaryTransformation(input, output, op).run();
 	}
 
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** calculates the min and max allowable data range for the image : depends upon its underlying data type */
 	private void calcRangeMinAndMax()
