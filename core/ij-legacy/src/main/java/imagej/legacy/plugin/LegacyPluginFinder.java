@@ -71,13 +71,15 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	private static final String LEGACY_PLUGIN_CLASS =
 		LegacyPlugin.class.getName();
+	
+	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
 
 	/** A list of plugins to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
 	public LegacyPluginFinder() {
 		blacklist = new HashSet<String>();
-		blacklist.add("ij.plugin.Commands(quit)");
+		blacklist.add("ij.plugin.Commands(\"quit\")");
 	}
 
 	@Override
@@ -98,15 +100,21 @@ public class LegacyPluginFinder implements IPluginFinder {
 		}
 	}
 
-	private PluginEntry<ImageJPlugin> createEntry(final Object key,
-		final Hashtable<?, ?> commands,
+	private PluginEntry<ImageJPlugin> createEntry(
+		final Object key, final Hashtable<?, ?> commands,
 		final Map<String, List<MenuEntry>> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
-		if (blacklist.contains(ij1PluginString)) return null;
+
+		if (blacklist.contains(ij1PluginString)) {
+			Log.debug("- [BLACKLISTED] " + ij1PluginString);
+			return null;
+		}
+		Log.debug("- " + ij1PluginString);
 
 		final String className = parsePluginClass(ij1PluginString);
 		final String arg = parseArg(ij1PluginString);
+
 		final List<MenuEntry> menuPath = menuTable.get(key);
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
@@ -115,7 +123,10 @@ public class LegacyPluginFinder implements IPluginFinder {
 			new PluginEntry<ImageJPlugin>(LEGACY_PLUGIN_CLASS, ImageJPlugin.class);
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);
-		Log.debug("- " + className + "(" + arg + ")");
+
+		// flag legacy plugin with special icon
+		menuPath.get(menuPath.size() - 1).setIcon(LEGACY_PLUGIN_ICON);
+
 		return pe;
 	}
 
@@ -167,9 +178,6 @@ public class LegacyPluginFinder implements IPluginFinder {
 			}
 		}
 		else { // leaf item
-			// flag legacy plugin with special icon
-			entry.setIcon("/icons/legacy.png");
-
 			// add menu item to table
 			menuTable.put(menuItem.getLabel(), path);
 		}
