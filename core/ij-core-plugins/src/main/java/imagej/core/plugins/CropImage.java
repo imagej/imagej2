@@ -62,7 +62,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 )
 public class CropImage implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -82,7 +82,7 @@ public class CropImage implements ImageJPlugin
 	@Parameter
 	private int maxY;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** runs the crop process and returns the output as a Dataset */
 	@Override
@@ -93,7 +93,7 @@ public class CropImage implements ImageJPlugin
 		output = runner.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** CropAlgorithm is responsible for creating the cropped image from the input Dataset. It is an Imglib OutputAlgorithm. */
 	private class CropAlgorithm implements OutputAlgorithm

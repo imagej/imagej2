@@ -57,7 +57,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 )
 public class InvertDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -65,11 +65,11 @@ public class InvertDataValues implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 	
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	private double min, max;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** fills the output image from the input image */
 	@Override
@@ -90,7 +90,7 @@ public class InvertDataValues implements ImageJPlugin
 		output = new UnaryTransformation(input, output, op).run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** finds the smallest and largest data values actually present in the input image */
 	private void calcMinAndMax()

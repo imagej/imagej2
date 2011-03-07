@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 )
 public class FindEdges implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -59,7 +59,7 @@ public class FindEdges implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** sets the output Dataset to the result of the find edges operation */
 	@Override
@@ -69,7 +69,7 @@ public class FindEdges implements ImageJPlugin
 		output = operation.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	private class FindEdgesWatcher implements Neighborhood3x3Watcher
 	{

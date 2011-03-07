@@ -42,13 +42,13 @@ import imglib.ops.operator.UnaryOperator;
  * returns the output image that is the result of such a pixel by pixel application. */
 public class UnaryTransformation
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	private Dataset input;
 	private Dataset output;
 	private UnaryOperator operator;
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	public UnaryTransformation(Dataset input, Dataset output, UnaryOperator operator)
 	{
@@ -57,7 +57,7 @@ public class UnaryTransformation
 		this.operator = operator;
 	}
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	public Dataset run()
 	{

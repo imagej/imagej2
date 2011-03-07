@@ -57,7 +57,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 public class NAryOperation
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 	
 	/** the list of input Datasets that will be fed as input to the user supplied function */
 	private List<Dataset> inputs;
@@ -68,7 +68,7 @@ public class NAryOperation
 	/** The imglib-ops function to execute. */
 	private RealFunction function;
 
-	// ***************  constructors ***************************************************************
+	// -- constructors --
 
 	/** this constructor a convenience for those plugins that work from a single input Dataset */
 	public NAryOperation(Dataset input, RealFunction function)
@@ -140,7 +140,7 @@ public class NAryOperation
 			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept "+inputs.size()+" inputs");
 	}
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** helper method that allows output Dataset of an operation to be set or changed */
 	public void setOutput(Dataset output)
@@ -177,7 +177,7 @@ public class NAryOperation
 			return datasetFromImage(outputImage);
 	}
 
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** make an image that has same type and dimensions as Dataset */
 	private Image imageFromDataset(Dataset dataset)

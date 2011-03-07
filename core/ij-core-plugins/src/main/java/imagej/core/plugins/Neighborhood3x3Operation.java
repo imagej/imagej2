@@ -54,7 +54,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 public class Neighborhood3x3Operation
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	private Dataset input;
 	
@@ -62,7 +62,7 @@ public class Neighborhood3x3Operation
 	
 	private Neighborhood3x3Watcher watcher; 
 
-	// ***************  exported interface ***************************************************************
+	// -- exported interface --
 
 	/** this interface is implemented by classes who want to do a 3x3 neighborhood operation of some sort */
 	interface Neighborhood3x3Watcher
@@ -80,7 +80,7 @@ public class Neighborhood3x3Operation
 		double calcOutputValue();
 	}
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	public Neighborhood3x3Operation(Dataset input, Neighborhood3x3Watcher watcher)
 	{
@@ -91,7 +91,7 @@ public class Neighborhood3x3Operation
 			throw new IllegalArgumentException("neighborhood watcher cannot be null!");
 	}
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	public Dataset run()
 	{
@@ -113,7 +113,7 @@ public class Neighborhood3x3Operation
 		return runner.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** implements any Neighborhood3x3Watcher algorithm using imglib's OutputAlgorithm. creates an output image as a result. */
 	private class Neighborhood3x3Algorithm implements OutputAlgorithm

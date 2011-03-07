@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.MultiplyByConstant;
 )
 public class MultiplyDataValuesBy implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -62,7 +62,7 @@ public class MultiplyDataValuesBy implements ImageJPlugin
 	@Parameter(label="Enter value for scaling constant")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

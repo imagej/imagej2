@@ -76,7 +76,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 )
 public class ImageMath implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input1;
@@ -91,11 +91,11 @@ public class ImageMath implements ImageJPlugin
 				choices={"Add","Subtract","Multiply","Divide","AND","OR","XOR","Min","Max","Average","Difference","Copy","Transparent-zero"})
 	private String operatorName;
 
-	// ***************  other instance variables ***************************************************************
+	// -- other instance variables --
 
 	private HashMap<String,BinaryOperator> operators;
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	/** constructs the ImageMath object by initializing which binary operations are avaialable. */
 	public ImageMath()
@@ -117,7 +117,7 @@ public class ImageMath implements ImageJPlugin
 		operators.put("Transparent-zero", new CopyTransparentZero());
 	}
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 
 	/** runs the plugin filling the output image with the user specified binary combination of the two input images. */

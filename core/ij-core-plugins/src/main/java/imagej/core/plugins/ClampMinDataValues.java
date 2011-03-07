@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.Min;
 )
 public class ClampMinDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -62,7 +62,7 @@ public class ClampMinDataValues implements ImageJPlugin
 	@Parameter(label="Enter minimum clamp value")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

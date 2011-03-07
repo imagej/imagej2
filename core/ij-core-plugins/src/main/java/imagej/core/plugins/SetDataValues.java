@@ -52,7 +52,7 @@ import imglib.ops.operator.unary.Constant;
 )
 public class SetDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -63,7 +63,7 @@ public class SetDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to fill each value with")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

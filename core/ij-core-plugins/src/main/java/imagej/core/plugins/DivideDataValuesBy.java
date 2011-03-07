@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.DivideByConstant;
 )
 public class DivideDataValuesBy implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	Dataset input;
@@ -62,7 +62,7 @@ public class DivideDataValuesBy implements ImageJPlugin
 	@Parameter(label="Enter value to divide each data value by")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

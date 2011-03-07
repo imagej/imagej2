@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.Constant;
 )
 public class FillDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;  // TODO - does this make sense? used for dimensions only I think. Or do we want in place changing?
@@ -62,7 +62,7 @@ public class FillDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to fill each data value with")
 	private double constant;
 
-	// ***************  public interrface ***************************************************************
+	// -- public interrface --
 
 	@Override
 	public void run()

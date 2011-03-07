@@ -48,7 +48,7 @@ import imagej.model.Dataset;
  */
 public class Convolve3x3Operation
 {
-	// ***************  instance variables ***************************************************************
+	// -- instance variables --
 
 	/** the kernel to convolve an input Dataset by */
 	private double[] kernel;
@@ -56,7 +56,7 @@ public class Convolve3x3Operation
 	/** the 3x3 operation that will run on the input Dataset and call back this class as needed */
 	private Neighborhood3x3Operation operation; 
 	
-	// ***************  constructor ***************************************************************
+	// -- constructor --
 
 	/** constructor. takes an input Dataset and a kernel that will be used to calculate data values. */
 	public Convolve3x3Operation(Dataset input, double[] kernel)
@@ -68,7 +68,7 @@ public class Convolve3x3Operation
 			throw new IllegalArgumentException("kernel must contain nine elements (shaped 3x3)");
 	}
 	
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** runs the convolution and returns the output Dataset containing the convolved values */
 	public Dataset run()
@@ -76,7 +76,7 @@ public class Convolve3x3Operation
 		return operation.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** ConvolveWatcher is where the actual convolution value of one output pixel is calculated. The watcher is called from
 	 * Neighborhood3x3Operation visiting each pixel in the input image (and all its immediate neighbors) once. ConvolveWatcher

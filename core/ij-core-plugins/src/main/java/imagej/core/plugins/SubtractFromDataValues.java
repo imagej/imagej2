@@ -51,7 +51,7 @@ import imglib.ops.operator.unary.SubtractConstant;
 )
 public class SubtractFromDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -62,7 +62,7 @@ public class SubtractFromDataValues implements ImageJPlugin
 	@Parameter(label="Enter value to subtract from each data value")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()

@@ -52,7 +52,7 @@ import imglib.ops.operator.unary.Gamma;
 )
 public class GammaDataValues implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -63,7 +63,7 @@ public class GammaDataValues implements ImageJPlugin
 	@Parameter(label="Enter value for gamma constant")
 	private double constant;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	/** runs the plugin changing the data values of the output image */
 	@Override

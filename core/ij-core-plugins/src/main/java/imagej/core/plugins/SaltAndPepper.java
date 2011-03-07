@@ -60,7 +60,7 @@ import imagej.plugin.Plugin;
 )
 public class SaltAndPepper implements ImageJPlugin
 {
-	// ***************  instance variables that are Parameters ***************************************************************
+	// -- instance variables that are Parameters --
 
 	@Parameter
 	private Dataset input;
@@ -68,7 +68,7 @@ public class SaltAndPepper implements ImageJPlugin
 	@Parameter(output=true)
 	private Dataset output;
 
-	// ***************  public interface ***************************************************************
+	// -- public interface --
 
 	@Override
 	public void run()
@@ -77,12 +77,12 @@ public class SaltAndPepper implements ImageJPlugin
 		output = runner.run();
 	}
 	
-	// ***************  private interface ***************************************************************
+	// -- private interface --
 
 	/** implementation of the salt and pepper algorithm as an Imglib OutputAlgorithm */
 	private class SaltAndPepperAlgorithm implements OutputAlgorithm
 	{
-		//  instance variables  ---------------------------
+		// -- instance variables --
 		
 		private Image<?> inputImage;
 		private Image<?> outputImage;
@@ -168,7 +168,7 @@ public class SaltAndPepper implements ImageJPlugin
 			return outputImage;
 		}
 		
-		//  --- private helper
+		//  -- private helper --
 
 		/** copies the input image's values to the out image as is. also leaves outputCursor open for later use */
 		private void initOutputImageVariables()
@@ -192,10 +192,10 @@ public class SaltAndPepper implements ImageJPlugin
 			
 			inputCursor.close();
 			
-			// **** DO NOT CLOSE outputCursor - we'll reuse it
+			// NB: DO NOT CLOSE outputCursor - we'll reuse it
 		}
 		
-		//  --- private helper
+		//  -- private helper --
 
 		/** sets a value at a specific (x,y) location in the output image to a given value */
 		private void setOutputPixel(int x, int y, double value)
