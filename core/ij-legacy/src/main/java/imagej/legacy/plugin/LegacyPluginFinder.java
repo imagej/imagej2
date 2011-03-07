@@ -79,7 +79,15 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	public LegacyPluginFinder() {
 		blacklist = new HashSet<String>();
-		blacklist.add("ij.plugin.Commands(\"quit\")");
+		blacklist.add("ij.plugin.Commands(\"quit\")");  // File>Quit
+		blacklist.add("ij.plugin.filter.Filler(\"fill\")");  // Edit>Fill
+		blacklist.add("ij.plugin.filter.Filters(\"invert\")");  // Edit>Invert
+		blacklist.add("ij.plugin.filter.Filters(\"smooth\")");  // Process>Smooth
+		blacklist.add("ij.plugin.filter.Filters(\"sharpen\")");  // Process>Sharpen
+		blacklist.add("ij.plugin.filter.Filters(\"edge\")");  // Process>Find Edges
+		blacklist.add("ij.plugin.filter.Filters(\"add\")");  // Process>Add Specified Noise
+		blacklist.add("ij.plugin.filter.Filters(\"noise\")"); // Process>Add Noise
+		blacklist.add("ij.plugin.filter.SaltAndPepper");  // Process>Salt and Pepper
 	}
 
 	@Override
