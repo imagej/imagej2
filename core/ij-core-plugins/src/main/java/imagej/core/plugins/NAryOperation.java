@@ -47,7 +47,10 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
- * TODO
+ * Assigns an output Dataset's values by applying a RealFunction to a number of input Datasets.
+ * Has a number of convenience constructors for working with 1, 2, or n input Datasets. The
+ * user specified RealFunction must accept the same number of parameters as the number of
+ * input Datasets.
  *
  * @author Barry DeZonia
  * @author Curtis Rueden
@@ -102,7 +105,7 @@ public class NAryOperation
 		if (!function.canAccept(2))
 			throw new IllegalArgumentException("NAryOperation constructor - given function cannot accept two inputs");
 
-		if ((input1 == null) || (input2 == null))  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		if (input1 == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
 		{
 			Image<UnsignedShortType> junkImage1 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
 			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
@@ -111,20 +114,23 @@ public class NAryOperation
 				pixRef.set(index++);
 			cursor.close();
 
+			inputs.set(0,new Dataset(junkImage1));
+		}
+
+		if (input2 == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a List<Dataset> @Parameter
+		{
 			Image<UnsignedShortType> junkImage2 = Dataset.createPlanarImage("", new UnsignedShortType(), new int[]{200,200});
-			cursor = junkImage2.createCursor();
-			index = 0;
+			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
+			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
 				pixRef.set(65535 - index++);
 			cursor.close();
 
-			inputs = new ArrayList<Dataset>();
-			inputs.add(new Dataset(junkImage1));
-			inputs.add(new Dataset(junkImage2));
+			inputs.set(1, new Dataset(junkImage2));
 		}
 	}
 
-	/** takes a List of Datasets as input, an Dataset to store results in (can be null) and a function to be applied (can be null */
+	/** takes a List of Datasets as input, a Dataset to store results in (can be null) and a function to be applied */
 	public NAryOperation(List<Dataset> inputs, RealFunction function)
 	{
 		this.inputs = inputs;

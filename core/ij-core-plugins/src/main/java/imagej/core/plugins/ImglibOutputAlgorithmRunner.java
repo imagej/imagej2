@@ -38,7 +38,7 @@ import mpicbg.imglib.algorithm.OutputAlgorithm;
 import imagej.model.Dataset;
 
 /**
- * TODO
+ * Runs an Imglib OutputAlgorithm and returns the algorithm's output Image wrapped in a Dataset.   
  *
  * @author Barry DeZonia
  */

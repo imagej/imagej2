@@ -42,7 +42,8 @@ import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Gamma;
 
 /**
- * TODO
+ * Fills an output Dataset with the result of applying the gamma function to an input Dataset.
+ *  The gamma function is initialized using a user specified constant.  
  *
  * @author Barry DeZonia
  */
@@ -64,6 +65,7 @@ public class GammaDataValues implements ImageJPlugin
 
 	// ***************  public interface ***************************************************************
 
+	/** runs the plugin changing the data values of the output image */
 	@Override
 	public void run()
 	{

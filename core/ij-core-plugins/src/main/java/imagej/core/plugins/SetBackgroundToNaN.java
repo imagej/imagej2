@@ -45,7 +45,8 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 
 /**
- * TODO
+ * Fills an output Dataset with the values of an input Dataset. All the values in the input Dataset that are outside
+ * user defined thresholds are assigned NaN.
  *
  * @author Barry DeZonia
  */

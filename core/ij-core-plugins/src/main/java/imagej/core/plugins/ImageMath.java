@@ -61,12 +61,13 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
-// NOTE - attempted to use the ImageCalculator in Imglib and inherit from ImglibOutputAlgorithmPlugin but could not solve
+// NOTE - attempted to use the ImageCalculator in Imglib using ImglibOutputAlgorithmRunner but could not solve
 //   compiler errors and warnings. That test implementation saved below commented out. For now I'll do this via imglib-ops
 //   and hatch binary ops as needed. Even with ImageCalculator attempt I'd need to hatch multiple Functions somewhere.
 
 /**
- * TODO
+ * Fills an output Dataset with a combination of two input Datasets. The combination is specified by the
+ *  user (such as Add, Min, Average, etc.).
  *
  * @author Barry DeZonia
  */
@@ -96,6 +97,7 @@ public class ImageMath implements ImageJPlugin
 	
 	// ***************  constructor ***************************************************************
 
+	/** constructs the ImageMath object by initializing which binary operations are avaialable. */
 	public ImageMath()
 	{
 		operators = new HashMap<String,BinaryOperator>();
@@ -117,6 +119,8 @@ public class ImageMath implements ImageJPlugin
 	
 	// ***************  public interface ***************************************************************
 
+
+	/** runs the plugin filling the output image with the user specified binary combination of the two input images. */
 	@Override
 	public void run()
 	{

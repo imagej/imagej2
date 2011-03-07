@@ -45,12 +45,12 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
- * Neighborhood3x3Operation - the base class for 3x3 neighborhood operation plugins such as
- *  SmoothDataValues, SharpenDataValues, and FindEdges
+ * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation plugins such as
+ *  SmoothDataValues, SharpenDataValues, and FindEdges. Does the work of communicating with
+ *  a Neighborhood3x3Watcher.
  *
  * @author Barry DeZonia
  *
- * @param <T>
  */
 public class Neighborhood3x3Operation
 {
@@ -64,11 +64,19 @@ public class Neighborhood3x3Operation
 
 	// ***************  exported interface ***************************************************************
 
+	/** this interface is implemented by classes who want to do a 3x3 neighborhood operation of some sort */
 	interface Neighborhood3x3Watcher
 	{
+		/** called once before the neighborhood iterations take place to allow implementer to initialize state */
 		void setup();
+		
+		/** called once each time a neighborhood is visited for the first time to allow implementer to initialize local neighborhood state */
 		void initializeNeighborhood(int[] position);
+		
+		/** called 9 times (3x3), once for each value at a location so implementer can update state for the local neighborhood */ 
 		void visitLocation(int dx, int dy, double value);
+		
+		/** called after neighborhood is completely visited. allows implemented to calculate the output value for that neighborhood */
 		double calcOutputValue();
 	}
 	
@@ -78,6 +86,9 @@ public class Neighborhood3x3Operation
 	{
 		this.input = input;
 		this.watcher = watcher;
+
+		if (watcher == null)
+			throw new IllegalArgumentException("neighborhood watcher cannot be null!");
 	}
 	
 	// ***************  public interface ***************************************************************
@@ -104,27 +115,23 @@ public class Neighborhood3x3Operation
 	
 	// ***************  private interface ***************************************************************
 
-	/** implements IJ1's ImageProcessor::filter(FIND_EDGES) algorithm within the structures of imglib's OutputAlgorithm */
+	/** implements any Neighborhood3x3Watcher algorithm using imglib's OutputAlgorithm. creates an output image as a result. */
 	private class Neighborhood3x3Algorithm implements OutputAlgorithm
 	{
 		private Image<?> inputImage;
 		private Image<?> outputImage;
-		
+
+		/** constructor - an algorithm will reference an input Dataset */
 		public Neighborhood3x3Algorithm(Dataset input)
 		{
 			inputImage = input.getImage();
 			outputImage = inputImage.createNewImage();
 		}
 
+		/** make sure we have an input image and that it's dimensionality is correct */
 		@Override
 		public boolean checkInput()
 		{
-			if (watcher == null)
-			{
-				errMessage = "neighborhood watcher has not been initialized with setWatcher()";
-				return false;
-			}
-			
 			if (inputImage == null)
 			{
 				errMessage = "input image is null";
@@ -140,12 +147,15 @@ public class Neighborhood3x3Operation
 			return true;
 		}
 
+		/** returns the current value of the error message. Only useful if checkInput() returns false. */
 		@Override
 		public String getErrorMessage()
 		{
 			return errMessage;
 		}
 
+		/** iterates over the input image updating the Neighborhood3x3Watcher as it goes. sets the values in the output image
+		 * to the resulting data values calculated by the Neighborhood3x3Watcher. */
 		@Override
 		public boolean process()
 		{
@@ -157,28 +167,41 @@ public class Neighborhood3x3Operation
 
 			int[] inputPosition = new int[inputCursor.getNumDimensions()];
 			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
-			
+
+			// initialize the watcher
 			watcher.setup();
-			
+
+			// walk the output image
 			while (outputCursor.hasNext())
 			{
+				// locate cursor on next location
 				RealType<?> outputValue = outputCursor.next();
 				
+				// remember the location so that the input image cursor can use it
 				outputCursor.getPosition(inputPosition);
 
+				// let watcher know we are visiting a new neighborhood
 				watcher.initializeNeighborhood(inputPosition);
-				
+
+				// iteratote over the 3x3 neighborhod
 				for (int dy = -1; dy <= 1; dy++)
 				{
+					// calc local y
 					localInputPosition[1] = inputPosition[1] + dy;
 					for (int dx = -1; dx <= 1; dx++)
 					{
+						// calc local x
 						localInputPosition[0] = inputPosition[0] + dx;
+
+						// move the input cursor there
 						inputCursor.setPosition(localInputPosition);
+						
+						// update watcher about the position and value of the subneighborhood location
 						watcher.visitLocation(dx, dy, inputCursor.getType().getRealDouble());
 					}
 				}
 
+				// assign output
                 outputValue.setReal(watcher.calcOutputValue());
 			}
 			
@@ -188,6 +211,7 @@ public class Neighborhood3x3Operation
 			return true;
 		}
 
+		/** returns the resulting output image of this algorithm */
 		@Override
 		public Image<?> getResult()
 		{

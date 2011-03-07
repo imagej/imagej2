@@ -38,6 +38,8 @@ import imagej.model.Dataset;
 import imglib.ops.function.p1.UnaryOperatorFunction;
 import imglib.ops.operator.UnaryOperator;
 
+/** helper class for use by many plugins that apply a UnaryOperator to some input image. the run() method
+ * returns the output image that is the result of such a pixel by pixel application. */
 public class UnaryTransformation
 {
 	// ***************  instance variables ***************************************************************

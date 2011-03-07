@@ -34,15 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.real.FloatType;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
+import imglib.ops.operator.unary.Copy;
 import imglib.ops.operator.unary.Reciprocal;
 
 /**
- * TODO
+ * Fills an output Dataset by taking reciprocal values of an input Dataset. IJ1 did nothing for integral values and so we mirror here.
  *
  * @author Barry DeZonia
  */
@@ -64,7 +68,20 @@ public class ReciprocalDataValues implements ImageJPlugin
 	@Override
 	public void run()
 	{
+		if (input == null)  // TODO - temporary code to test these until IJ2 plugins can correctly fill a Dataset @Parameter
+		{
+			Image<FloatType> junkImage1 = Dataset.createPlanarImage("", new FloatType(), new int[]{200,200});
+			Cursor<FloatType> cursor = junkImage1.createCursor();
+			int index = 0;
+			for (FloatType pixRef : cursor)
+				pixRef.set(index++);
+			cursor.close();
+
+			input = new Dataset(junkImage1);
+		}
 		UnaryOperator op = new Reciprocal();
+		if (!input.isFloat())  // This is similar to what IJ1 does
+			op = new Copy();
 		output = new UnaryTransformation(input, output, op).run();
 	}
 }
