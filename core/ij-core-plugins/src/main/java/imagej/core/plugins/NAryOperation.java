@@ -3,34 +3,34 @@
 //
 
 /*
- ImageJ software for multidimensional image processing and analysis.
+ImageJ software for multidimensional image processing and analysis.
 
- Copyright (c) 2010, ImageJDev.org.
- All rights reserved.
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- */
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package imagej.core.plugins;
 
@@ -56,6 +56,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Curtis Rueden
  */
 public class NAryOperation {
+
 	// -- instance variables --
 
 	/**
@@ -84,16 +85,16 @@ public class NAryOperation {
 		this.inputs.add(input);
 		this.function = function;
 		this.output = null;
-		if (!function.canAccept(1))
-			throw new IllegalArgumentException(
-					"NAryOperation constructor - given function cannot accept a single input");
+		if (!function.canAccept(1)) throw new IllegalArgumentException(
+			"NAryOperation constructor - given function cannot accept a single input");
 
 		if (input == null) // TODO - temporary code to test these until IJ2
-							// plugins can correctly fill a List<Dataset>
-							// @Parameter
+		// plugins can correctly fill a List<Dataset>
+		// @Parameter
 		{
-			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -106,8 +107,8 @@ public class NAryOperation {
 	}
 
 	/**
-	 * this constructor a convenience for those plugins that work from a two
-	 * input Datasets
+	 * this constructor a convenience for those plugins that work from a two input
+	 * Datasets
 	 */
 	public NAryOperation(Dataset input1, Dataset input2, RealFunction function) {
 		this.inputs = new ArrayList<Dataset>();
@@ -115,16 +116,16 @@ public class NAryOperation {
 		this.inputs.add(input2);
 		this.function = function;
 		this.output = null;
-		if (!function.canAccept(2))
-			throw new IllegalArgumentException(
-					"NAryOperation constructor - given function cannot accept two inputs");
+		if (!function.canAccept(2)) throw new IllegalArgumentException(
+			"NAryOperation constructor - given function cannot accept two inputs");
 
 		if (input1 == null) // TODO - temporary code to test these until IJ2
-							// plugins can correctly fill a List<Dataset>
-							// @Parameter
+		// plugins can correctly fill a List<Dataset>
+		// @Parameter
 		{
-			Image<UnsignedShortType> junkImage1 = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage1 =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -135,11 +136,12 @@ public class NAryOperation {
 		}
 
 		if (input2 == null) // TODO - temporary code to test these until IJ2
-							// plugins can correctly fill a List<Dataset>
-							// @Parameter
+		// plugins can correctly fill a List<Dataset>
+		// @Parameter
 		{
-			Image<UnsignedShortType> junkImage2 = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage2 =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -158,10 +160,9 @@ public class NAryOperation {
 		this.inputs = inputs;
 		this.function = function;
 		this.output = null;
-		if (!function.canAccept(inputs.size()))
-			throw new IllegalArgumentException(
-					"NAryOperation constructor - given function cannot accept "
-							+ inputs.size() + " inputs");
+		if (!function.canAccept(inputs.size())) throw new IllegalArgumentException(
+			"NAryOperation constructor - given function cannot accept " +
+				inputs.size() + " inputs");
 	}
 
 	// -- public interface --
@@ -179,9 +180,8 @@ public class NAryOperation {
 	 * assigning it to the output
 	 */
 	public Dataset run() {
-		if (function == null)
-			throw new IllegalStateException(
-					"NAryOperation::run() - function reference is improperly initialized (null)");
+		if (function == null) throw new IllegalStateException(
+			"NAryOperation::run() - function reference is improperly initialized (null)");
 
 		// @SuppressWarnings("unchecked")
 		final Image[] inputImages = new Image[inputs.size()];
@@ -191,21 +191,18 @@ public class NAryOperation {
 		}
 
 		final Image outputImage;
-		if (output != null)
-			outputImage = imageFromDataset(output);
-		else
-			outputImage = zeroDataImageWithSameAttributes(inputImages[0]);
-		// TODO - must be given at least one input image or prev line will throw null ptr exception
+		if (output != null) outputImage = imageFromDataset(output);
+		else outputImage = zeroDataImageWithSameAttributes(inputImages[0]);
+		// TODO - must be given at least one input image or prev line will throw
+		// null ptr exception
 
-		final AssignOperation operation = new AssignOperation(inputImages,
-				outputImage, function);
+		final AssignOperation operation =
+			new AssignOperation(inputImages, outputImage, function);
 
 		operation.execute();
 
-		if (output != null)
-			return output;
-		else
-			return datasetFromImage(outputImage);
+		if (output != null) return output;
+		else return datasetFromImage(outputImage);
 	}
 
 	// -- private interface --

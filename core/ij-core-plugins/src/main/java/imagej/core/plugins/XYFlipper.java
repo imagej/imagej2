@@ -3,34 +3,34 @@
 //
 
 /*
- ImageJ software for multidimensional image processing and analysis.
+ImageJ software for multidimensional image processing and analysis.
 
- Copyright (c) 2010, ImageJDev.org.
- All rights reserved.
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- */
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package imagej.core.plugins;
 
@@ -51,9 +51,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * and Rotate90DegreesRight
  * 
  * @author Barry DeZonia
- * 
  */
 public class XYFlipper implements OutputAlgorithm {
+
 	// -- instance variables --
 
 	private Dataset input;
@@ -67,22 +67,22 @@ public class XYFlipper implements OutputAlgorithm {
 	// -- exported interface --
 
 	/**
-	 * this interface is exported for use by algorithms that want to create
-	 * images from 2d input data
+	 * this interface is exported for use by algorithms that want to create images
+	 * from 2d input data
 	 */
 	interface FlipCoordinateTransformer {
+
 		/**
-		 * maps an input image's dimensions to the output image's coordinate
-		 * space
+		 * maps an input image's dimensions to the output image's coordinate space
 		 */
 		int[] calcOutputDimensions(int[] inputDimensions);
 
 		/**
-		 * maps a position within an input image's coordinate space to the
-		 * output image's coordinate space
+		 * maps a position within an input image's coordinate space to the output
+		 * image's coordinate space
 		 */
 		void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
-				int[] outputPosition);
+			int[] outputPosition);
 	}
 
 	// -- constructor --
@@ -98,10 +98,11 @@ public class XYFlipper implements OutputAlgorithm {
 	@Override
 	public boolean checkInput() {
 		if (input == null) // TODO - temporary code to test these until IJ2
-							// plugins can correctly fill a Dataset @Parameter
+		// plugins can correctly fill a Dataset @Parameter
 		{
-			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -119,15 +120,15 @@ public class XYFlipper implements OutputAlgorithm {
 
 		int[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
 
-		outputImage = (Image<? extends RealType<?>>) input.getImage()
-				.createNewImage(outputDimensions);
+		outputImage =
+			(Image<? extends RealType<?>>) input.getImage().createNewImage(
+				outputDimensions);
 
 		return true;
 	}
 
 	/**
-	 * returns the current error message. only valid of checkInput() returns
-	 * false
+	 * returns the current error message. only valid of checkInput() returns false
 	 */
 	@Override
 	public String getErrorMessage() {
@@ -140,13 +141,13 @@ public class XYFlipper implements OutputAlgorithm {
 	 */
 	@Override
 	public boolean process() {
-		Image<? extends RealType<?>> inputImage = (Image<? extends RealType<?>>) input
-				.getImage();
+		Image<? extends RealType<?>> inputImage =
+			(Image<? extends RealType<?>>) input.getImage();
 
-		LocalizableByDimCursor<? extends RealType<?>> inputCursor = inputImage
-				.createLocalizableByDimCursor();
-		LocalizableByDimCursor<? extends RealType<?>> outputCursor = outputImage
-				.createLocalizableByDimCursor();
+		LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+			inputImage.createLocalizableByDimCursor();
+		LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+			outputImage.createLocalizableByDimCursor();
 
 		int[] inputDimensions = inputImage.getDimensions();
 
@@ -163,7 +164,7 @@ public class XYFlipper implements OutputAlgorithm {
 				inputPosition[0] = x;
 
 				flipper.calcOutputPosition(inputDimensions, inputPosition,
-						outputPosition);
+					outputPosition);
 
 				inputCursor.setPosition(inputPosition);
 				outputCursor.setPosition(outputPosition);

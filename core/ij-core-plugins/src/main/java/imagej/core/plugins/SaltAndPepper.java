@@ -3,34 +3,34 @@
 //
 
 /*
- ImageJ software for multidimensional image processing and analysis.
+ImageJ software for multidimensional image processing and analysis.
 
- Copyright (c) 2010, ImageJDev.org.
- All rights reserved.
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- */
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package imagej.core.plugins;
 
@@ -58,6 +58,7 @@ import imagej.plugin.Plugin;
  */
 @Plugin(menuPath = "Process>Noise>Salt and Pepper")
 public class SaltAndPepper implements ImageJPlugin {
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -70,8 +71,8 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(
-				new SaltAndPepperAlgorithm());
+		ImglibOutputAlgorithmRunner runner =
+			new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm());
 		output = runner.run();
 	}
 
@@ -82,13 +83,14 @@ public class SaltAndPepper implements ImageJPlugin {
 	 * OutputAlgorithm
 	 */
 	private class SaltAndPepperAlgorithm implements OutputAlgorithm {
+
 		// -- instance variables --
 
 		private Image<?> inputImage;
 		private Image<?> outputImage;
 		private String errMessage = "No error";
 		private LocalizableByDimCursor<? extends RealType<?>> outputCursor; // working
-																			// cursor
+		// cursor
 		private int[] outputPosition; // workspace for setting output position
 
 		/** make sure input is 2d */
@@ -96,8 +98,9 @@ public class SaltAndPepper implements ImageJPlugin {
 		public boolean checkInput() {
 			if (input == null) // TODO - remove later
 			{
-				Image<UnsignedByteType> junkImage = Dataset.createPlanarImage(
-						"", new UnsignedByteType(), new int[] { 200, 200 });
+				Image<UnsignedByteType> junkImage =
+					Dataset.createPlanarImage("", new UnsignedByteType(), new int[] {
+						200, 200 });
 				Cursor<UnsignedByteType> cursor = junkImage.createCursor();
 				int index = 0;
 				for (UnsignedByteType pixRef : cursor)
@@ -127,8 +130,8 @@ public class SaltAndPepper implements ImageJPlugin {
 		}
 
 		/**
-		 * assigns the output image from the input image replacing 5% of the
-		 * pixels with 0 or 255.
+		 * assigns the output image from the input image replacing 5% of the pixels
+		 * with 0 or 255.
 		 */
 		@Override
 		public boolean process() {
@@ -162,8 +165,8 @@ public class SaltAndPepper implements ImageJPlugin {
 		}
 
 		/**
-		 * returns the output image created by this algorithm. nonexistent
-		 * before checkInput(0 called. not valid before process() run.
+		 * returns the output image created by this algorithm. nonexistent before
+		 * checkInput(0 called. not valid before process() run.
 		 */
 		@Override
 		public Image<?> getResult() {
@@ -177,10 +180,12 @@ public class SaltAndPepper implements ImageJPlugin {
 		 * outputCursor open for later use
 		 */
 		private void initOutputImageVariables() {
-			LocalizableByDimCursor<? extends RealType<?>> inputCursor = (LocalizableByDimCursor<? extends RealType<?>>) inputImage
+			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) inputImage
 					.createLocalizableByDimCursor();
 
-			outputCursor = (LocalizableByDimCursor<? extends RealType<?>>) outputImage
+			outputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) outputImage
 					.createLocalizableByDimCursor();
 
 			outputPosition = outputImage.createPositionArray();
@@ -202,8 +207,8 @@ public class SaltAndPepper implements ImageJPlugin {
 		// -- private helper --
 
 		/**
-		 * sets a value at a specific (x,y) location in the output image to a
-		 * given value
+		 * sets a value at a specific (x,y) location in the output image to a given
+		 * value
 		 */
 		private void setOutputPixel(int x, int y, double value) {
 			outputPosition[0] = x;
