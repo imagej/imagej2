@@ -3,34 +3,34 @@
 //
 
 /*
- ImageJ software for multidimensional image processing and analysis.
+ImageJ software for multidimensional image processing and analysis.
 
- Copyright (c) 2010, ImageJDev.org.
- All rights reserved.
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- */
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package imagej.core.plugins;
 
@@ -50,9 +50,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * work of communicating with a Neighborhood3x3Watcher.
  * 
  * @author Barry DeZonia
- * 
  */
 public class Neighborhood3x3Operation {
+
 	// -- instance variables --
 
 	private Dataset input;
@@ -64,10 +64,11 @@ public class Neighborhood3x3Operation {
 	// -- exported interface --
 
 	/**
-	 * this interface is implemented by classes who want to do a 3x3
-	 * neighborhood operation of some sort
+	 * this interface is implemented by classes who want to do a 3x3 neighborhood
+	 * operation of some sort
 	 */
 	interface Neighborhood3x3Watcher {
+
 		/**
 		 * called once before the neighborhood iterations take place to allow
 		 * implementer to initialize state
@@ -81,38 +82,38 @@ public class Neighborhood3x3Operation {
 		void initializeNeighborhood(int[] position);
 
 		/**
-		 * called 9 times (3x3), once for each value at a location so
-		 * implementer can update state for the local neighborhood
+		 * called 9 times (3x3), once for each value at a location so implementer
+		 * can update state for the local neighborhood
 		 */
 		void visitLocation(int dx, int dy, double value);
 
 		/**
-		 * called after neighborhood is completely visited. allows implemented
-		 * to calculate the output value for that neighborhood
+		 * called after neighborhood is completely visited. allows implemented to
+		 * calculate the output value for that neighborhood
 		 */
 		double calcOutputValue();
 	}
 
 	// -- constructor --
 
-	public Neighborhood3x3Operation(Dataset input,
-			Neighborhood3x3Watcher watcher) {
+	public Neighborhood3x3Operation(Dataset input, Neighborhood3x3Watcher watcher)
+	{
 		this.input = input;
 		this.watcher = watcher;
 
-		if (watcher == null)
-			throw new IllegalArgumentException(
-					"neighborhood watcher cannot be null!");
+		if (watcher == null) throw new IllegalArgumentException(
+			"neighborhood watcher cannot be null!");
 	}
 
 	// -- public interface --
 
 	public Dataset run() {
 		if (input == null) // TODO - temporary code to test these until IJ2
-							// plugins can correctly fill a Dataset @Parameter
+		// plugins can correctly fill a Dataset @Parameter
 		{
-			Image<UnsignedShortType> junkImage = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -123,8 +124,8 @@ public class Neighborhood3x3Operation {
 
 		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(input);
 
-		ImglibOutputAlgorithmRunner runner = new ImglibOutputAlgorithmRunner(
-				algorithm);
+		ImglibOutputAlgorithmRunner runner =
+			new ImglibOutputAlgorithmRunner(algorithm);
 
 		return runner.run();
 	}
@@ -136,6 +137,7 @@ public class Neighborhood3x3Operation {
 	 * OutputAlgorithm. creates an output image as a result.
 	 */
 	private class Neighborhood3x3Algorithm implements OutputAlgorithm {
+
 		private Image<?> inputImage;
 		private Image<?> outputImage;
 
@@ -146,8 +148,7 @@ public class Neighborhood3x3Operation {
 		}
 
 		/**
-		 * make sure we have an input image and that it's dimensionality is
-		 * correct
+		 * make sure we have an input image and that it's dimensionality is correct
 		 */
 		@Override
 		public boolean checkInput() {
@@ -157,8 +158,9 @@ public class Neighborhood3x3Operation {
 			}
 
 			if (inputImage.getNumDimensions() != 2) {
-				errMessage = "input image is not 2d but has "
-						+ inputImage.getNumDimensions() + " dimensions";
+				errMessage =
+					"input image is not 2d but has " + inputImage.getNumDimensions() +
+						" dimensions";
 				return false;
 			}
 
@@ -175,16 +177,19 @@ public class Neighborhood3x3Operation {
 		}
 
 		/**
-		 * iterates over the input image updating the Neighborhood3x3Watcher as
-		 * it goes. sets the values in the output image to the resulting data
-		 * values calculated by the Neighborhood3x3Watcher.
+		 * iterates over the input image updating the Neighborhood3x3Watcher as it
+		 * goes. sets the values in the output image to the resulting data values
+		 * calculated by the Neighborhood3x3Watcher.
 		 */
 		@Override
 		public boolean process() {
-			LocalizableByDimCursor<? extends RealType<?>> outputCursor = (LocalizableByDimCursor<? extends RealType<?>>) outputImage
+			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) outputImage
 					.createLocalizableByDimCursor();
-			OutOfBoundsStrategyFactory factory = new OutOfBoundsStrategyMirrorFactory();
-			LocalizableByDimCursor<? extends RealType<?>> inputCursor = (LocalizableByDimCursor<? extends RealType<?>>) inputImage
+			OutOfBoundsStrategyFactory factory =
+				new OutOfBoundsStrategyMirrorFactory();
+			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+				(LocalizableByDimCursor<? extends RealType<?>>) inputImage
 					.createLocalizableByDimCursor(factory);
 
 			int[] inputPosition = new int[inputCursor.getNumDimensions()];
@@ -218,8 +223,8 @@ public class Neighborhood3x3Operation {
 
 						// update watcher about the position and value of the
 						// subneighborhood location
-						watcher.visitLocation(dx, dy, inputCursor.getType()
-								.getRealDouble());
+						watcher
+							.visitLocation(dx, dy, inputCursor.getType().getRealDouble());
 					}
 				}
 

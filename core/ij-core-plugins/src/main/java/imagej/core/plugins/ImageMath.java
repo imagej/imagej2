@@ -3,34 +3,34 @@
 //
 
 /*
- ImageJ software for multidimensional image processing and analysis.
+ImageJ software for multidimensional image processing and analysis.
 
- Copyright (c) 2010, ImageJDev.org.
- All rights reserved.
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- */
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package imagej.core.plugins;
 
@@ -73,6 +73,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 @Plugin(menuPath = "Process>Image Calculator")
 public class ImageMath implements ImageJPlugin {
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -84,9 +85,9 @@ public class ImageMath implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Operation to do between the two input images", choices = {
-			"Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR", "Min",
-			"Max", "Average", "Difference", "Copy", "Transparent-zero" })
+	@Parameter(label = "Operation to do between the two input images",
+		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
+			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
 	private String operatorName;
 
 	// -- other instance variables --
@@ -96,8 +97,8 @@ public class ImageMath implements ImageJPlugin {
 	// -- constructor --
 
 	/**
-	 * constructs the ImageMath object by initializing which binary operations
-	 * are avaialable.
+	 * constructs the ImageMath object by initializing which binary operations are
+	 * avaialable.
 	 */
 	public ImageMath() {
 		operators = new HashMap<String, BinaryOperator>();
@@ -127,8 +128,9 @@ public class ImageMath implements ImageJPlugin {
 	public void run() {
 		if (input1 == null) // temp - to test for now
 		{
-			Image<UnsignedShortType> junkImage1 = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage1 =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -141,8 +143,9 @@ public class ImageMath implements ImageJPlugin {
 		if (input2 == null) // temp - to test for now
 		{
 
-			Image<UnsignedShortType> junkImage2 = Dataset.createPlanarImage("",
-					new UnsignedShortType(), new int[] { 200, 200 });
+			Image<UnsignedShortType> junkImage2 =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
 			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
 			int index = 0;
 			for (UnsignedShortType pixRef : cursor)
@@ -156,17 +159,14 @@ public class ImageMath implements ImageJPlugin {
 
 		int[] img2Dims = input2.getImage().getDimensions();
 
-		if (!Arrays.equals(img1Dims, img2Dims))
-			throw new IllegalArgumentException(
-					"ImageMath requires the two input images to have the same dimensions");
+		if (!Arrays.equals(img1Dims, img2Dims)) throw new IllegalArgumentException(
+			"ImageMath requires the two input images to have the same dimensions");
 
 		BinaryOperator binOp = operators.get(operatorName);
 
-		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(
-				binOp);
+		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
 
-		NAryOperation operation = new NAryOperation(input1, input2,
-				binaryFunction);
+		NAryOperation operation = new NAryOperation(input1, input2, binaryFunction);
 
 		operation.setOutput(output);
 
