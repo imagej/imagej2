@@ -54,12 +54,17 @@ public class JMenuBarCreator extends SwingMenuCreator<JMenuBar> {
 	public void createMenus(final ShadowMenu root, final JMenuBar menuBar) {
 		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
 		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
+			if (childMenuItem == null) {
+				Log.warn("JMenuBarCreator: Ignoring separator");
+			}
+			else if (childMenuItem instanceof JMenu) {
 				final JMenu childMenu = (JMenu) childMenuItem;
+				Log.debug("JMenuBarCreator: Adding menu: " + childMenu.getText());
 				menuBar.add(childMenu);
 			}
 			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
+				Log.warn("JMenuBarCreator: Ignoring leaf item: " +
+					childMenuItem.getText());
 			}
 		}
 	}

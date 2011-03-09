@@ -44,7 +44,7 @@ import javax.swing.JMenuItem;
 
 /**
  * Populate a Swing {@link JMenu} with menu items.
- *
+ * 
  * @author Curtis Rueden
  */
 public class JMenuCreator extends SwingMenuCreator<JMenu> {
@@ -53,12 +53,14 @@ public class JMenuCreator extends SwingMenuCreator<JMenu> {
 	public void createMenus(final ShadowMenu root, final JMenu menu) {
 		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
 		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				menu.add(childMenu);
+			if (childMenuItem == null) {
+				Log.debug("JMenuCreator: Adding separator");
+				menu.addSeparator();
 			}
 			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
+				Log.debug("JMenuCreator: Adding menu item: " +
+					childMenuItem.getText());
+				menu.add(childMenuItem);
 			}
 		}
 	}
