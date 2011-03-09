@@ -47,6 +47,64 @@ public final class Prefs {
 		// prevent instantiation of utility class
 	}
 
+	// -- Global preferences --
+
+	public static String get(final String key) {
+		return get(Prefs.class, key);
+	}
+
+	public static String get(final String key, final String defaultValue) {
+		return get(Prefs.class, key, defaultValue);
+	}
+
+	public static boolean
+		getBoolean(final String key, final boolean defaultValue)
+	{
+		return getBoolean(Prefs.class, key, defaultValue);
+	}
+
+	public static double getDouble(final String key, final double defaultValue) {
+		return getDouble(Prefs.class, key, defaultValue);
+	}
+
+	public static float getFloat(final String key, final float defaultValue) {
+		return getFloat(Prefs.class, key, defaultValue);
+	}
+
+	public static int getInt(final String key, final int defaultValue) {
+		return getInt(Prefs.class, key, defaultValue);
+	}
+
+	public static long getLong(final String key, final long defaultValue) {
+		return getLong(Prefs.class, key, defaultValue);
+	}
+
+	public static void put(final String key, final String value) {
+		put(Prefs.class, key, value);
+	}
+
+	public static void put(final String key, final boolean value) {
+		put(Prefs.class, key, value);
+	}
+
+	public static void put(final String key, final double value) {
+		put(Prefs.class, key, value);
+	}
+
+	public static void put(final String key, final float value) {
+		put(Prefs.class, key, value);
+	}
+
+	public static void put(final String key, final int value) {
+		put(Prefs.class, key, value);
+	}
+
+	public static void put(final String key, final long value) {
+		put(Prefs.class, key, value);
+	}
+
+	// -- Class-specific preferences --
+
 	public static String get(final Class<?> c, final String key) {
 		return get(c, key, null);
 	}
