@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -53,7 +54,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Edit>Invert")
+@Plugin(menu = {
+	@Menu(label = "Edit", mnemonic = 'e'),
+	@Menu(label = "Invert", accelerator = "shift command I") })
 public class InvertDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

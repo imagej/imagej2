@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -45,7 +46,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Noise>Add Noise")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Noise", mnemonic = 'n'),
+	@Menu(label = "Add Noise", weight = 1) })
 public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -47,7 +48,10 @@ import imglib.ops.operator.unary.SubtractConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Math>Subtract")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Subtract...", weight = 2) })
 public class SubtractFromDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

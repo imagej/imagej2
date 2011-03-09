@@ -37,6 +37,7 @@ package imagej.core.plugins;
 import imagej.core.plugins.XYFlipper.FlipCoordinateTransformer;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -48,7 +49,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Image>Transform>Rotate 90 Degrees Left")
+@Plugin(menu = {
+	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Transform", mnemonic = 't'),
+	@Menu(label = "Rotate 90 Degrees Left", weight = 5) })
 public class Rotate90DegreesLeft implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
@@ -57,7 +58,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Image>Crop")
+@Plugin(menu = {
+	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Crop", accelerator = "shift command x")})  // TODO - add correct weight
 public class CropImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

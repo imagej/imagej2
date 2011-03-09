@@ -39,6 +39,7 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.real.FloatType;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -51,7 +52,10 @@ import imglib.ops.operator.unary.Reciprocal;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Math>Reciprocal")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Reciprocal", weight = 16) })
 public class ReciprocalDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

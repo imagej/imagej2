@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -47,7 +48,10 @@ import imglib.ops.operator.unary.Min;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Math>Min")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Min...", weight = 8) })
 public class ClampMinDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

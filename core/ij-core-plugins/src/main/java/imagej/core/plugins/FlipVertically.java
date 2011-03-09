@@ -37,6 +37,7 @@ package imagej.core.plugins;
 import imagej.core.plugins.XYFlipper.FlipCoordinateTransformer;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -46,7 +47,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Image>Transform>Flip Vertically")
+@Plugin(menu = {
+	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Transform", mnemonic = 't'),
+	@Menu(label = "Flip Vertically", weight = 2) })
 public class FlipVertically implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

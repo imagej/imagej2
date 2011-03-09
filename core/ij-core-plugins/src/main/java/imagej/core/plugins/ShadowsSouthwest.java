@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -44,7 +45,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Shadows>Southwest")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Shadows", mnemonic = 's'),
+	@Menu(label = "Southwest", weight = 6) })
 public class ShadowsSouthwest implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

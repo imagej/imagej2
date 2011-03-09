@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -45,7 +46,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Noise>Add Specified Noise")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Noise", mnemonic = 'n'),
+	@Menu(label = "Add Specified Noise...", weight = 2) })
 public class AddSpecificNoiseToDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

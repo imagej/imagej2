@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -46,7 +47,9 @@ import imglib.ops.operator.unary.Constant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Edit>Fill")
+@Plugin(menu = {
+	@Menu(label = "Edit", mnemonic = '2'),
+	@Menu(label = "Fill", accelerator = "command F")})
 public class FillDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
