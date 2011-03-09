@@ -63,8 +63,11 @@ public @interface Parameter {
 	/** Defines whether the parameter is required (i.e., no default). */
 	boolean required() default false;
 
+	/** Defines whether to remember the most recent value of the parameter. */
+	boolean persist() default true;
+
 	/** Defines a key to use for saving the value persistently. */
-	String persist() default "";
+	String persistKey() default "";
 
 	/** Defines the preferred widget style. */
 	/* The fully qualified name required to workaround javac bug:

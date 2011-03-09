@@ -34,10 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui;
 
+import imagej.Log;
+import imagej.Prefs;
 import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
 import imagej.plugin.PluginModuleItem;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginException;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 
@@ -45,14 +49,12 @@ import java.io.File;
 
 /**
  * InputHarvester is a plugin preprocessor that obtains the input parameters.
- *
- * It first assigns values from the passed-in input map. Any remaining
- * parameters are collected using an {@link InputPanel} dialog box.
- *
+ * Parameters are collected using an {@link InputPanel} dialog box.
+ * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputHarvester
-	implements PluginPreprocessor, InputHarvester
+public abstract class AbstractInputHarvester implements PluginPreprocessor,
+	InputHarvester
 {
 
 	private boolean canceled;
@@ -72,71 +74,73 @@ public abstract class AbstractInputHarvester
 	}
 
 	@Override
-	public boolean canceled() { return canceled; }
+	public boolean canceled() {
+		return canceled;
+	}
 
 	// -- InputHarvester methods --
 
 	@Override
-	public void buildPanel(InputPanel inputPanel, PluginModule<?> module) {
+	public void buildPanel(final InputPanel inputPanel,
+		final PluginModule<?> module)
+	{
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
 		for (final ModuleItem item : inputs) {
 			final String name = item.getName();
 			final Class<?> type = item.getType();
-			final Parameter param = ((PluginModuleItem) item).getParameter();
 
+			final Parameter param = ((PluginModuleItem) item).getParameter();
 			final String label = makeLabel(name, param.label());
 			final boolean required = param.required();
-			final String persist = param.persist();
+			final boolean persist = param.persist();
+			final String persistKey = param.persistKey();
 			final WidgetStyle style = param.widgetStyle();
 
-			Object value = "";
-			if (!persist.isEmpty()) {
-				// TODO - retrieve initial value from persistent storage
-			}
-			else if (!required) {
-				value = module.getInput(name);
-			}
+			final Object defaultValue = required ? null : module.getInput(name);
+			final String prefValue =
+				persist ? getPrefValue(module, item, persistKey) : null;
 
 			if (ClassUtils.isNumber(type)) {
+				final Number initialValue =
+					getInitialNumberValue(prefValue, defaultValue, type);
+
 				Number min = ClassUtils.toNumber(param.min(), type);
 				if (min == null) min = ClassUtils.getMinimumNumber(type);
 				Number max = ClassUtils.toNumber(param.max(), type);
 				if (max == null) max = ClassUtils.getMaximumNumber(type);
 				Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 				if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
-				// BDZ begin - range clamp initial value to avoid runtime error
-				Number val = (Number) value;
-				if (val.doubleValue() < min.doubleValue())
-					value = min;
-				if (val.doubleValue() > max.doubleValue())
-					value = max;
-				// BDZ end
-				inputPanel.addNumber(name, label, (Number) value,
-					min, max, stepSize, style);
+				inputPanel.addNumber(name, label, initialValue, min, max, stepSize,
+					style);
 			}
 			else if (ClassUtils.isText(type)) {
 				final String[] choices = param.choices();
 				if (choices.length > 0) {
 					final String initialValue =
-						value == null ? choices[0] : value.toString();
+						getInitialStringValue(prefValue, defaultValue, choices[0]);
 					inputPanel.addChoice(name, label, initialValue, choices);
 				}
 				else {
 					final String initialValue =
-						value == null ? "" : value.toString();
+						getInitialStringValue(prefValue, defaultValue, "");
 					final int columns = param.columns();
 					inputPanel.addTextField(name, label, initialValue, columns);
 				}
 			}
 			else if (ClassUtils.isBoolean(type)) {
-				inputPanel.addToggle(name, label, (Boolean) value);
+				final Boolean initialValue =
+					getInitialBooleanValue(prefValue, defaultValue, Boolean.FALSE);
+				inputPanel.addToggle(name, label, initialValue);
 			}
 			else if (File.class.isAssignableFrom(type)) {
-				inputPanel.addFile(name, label, (File) value);
+				final File initialValue = getInitialFileValue(prefValue, defaultValue);
+				inputPanel.addFile(name, label, initialValue);
 			}
 			else {
-				inputPanel.addObject(name, label, value);
+				final Object initialValue =
+					getInitialObjectValue(prefValue, defaultValue);
+				inputPanel.addObject(name, label, initialValue);
 			}
 		}
 	}
@@ -168,7 +172,10 @@ public abstract class AbstractInputHarvester
 			else {
 				value = inputPanel.getObject(name);
 			}
-			if (value != null) module.setInput(name, value);
+			if (value != null) {
+				module.setInput(name, value);
+				// TODO - persist if there is a key for it
+			}
 		}
 	}
 
@@ -177,6 +184,65 @@ public abstract class AbstractInputHarvester
 			return name.substring(0, 1).toUpperCase() + name.substring(1);
 		}
 		return label;
+	}
+
+	private String getPrefValue(final PluginModule<?> module,
+		final ModuleItem item, final String persistKey)
+	{
+		final String prefValue;
+		if (persistKey.isEmpty()) {
+			try {
+				final PluginEntry<?> pluginEntry = module.getInfo().getPluginEntry();
+				final Class<?> prefClass = pluginEntry.loadClass();
+				final String prefKey = item.getName();
+				prefValue = Prefs.get(prefClass, prefKey);
+			}
+			catch (PluginException e) {
+				Log.error("Error retrieving preference: ", e);
+				return null;
+			}
+		}
+		else {
+			prefValue = Prefs.get(persistKey);
+		}
+		return prefValue;
+	}
+
+	private Number getInitialNumberValue(final String prefValue,
+		final Object defaultValue, final Class<?> type)
+	{
+		if (prefValue != null) return ClassUtils.toNumber(prefValue, type);
+		return (Number) defaultValue;
+	}
+
+	private String getInitialStringValue(final String prefValue,
+		final Object defaultValue, final String lastResort)
+	{
+		if (prefValue != null) return prefValue;
+		if (defaultValue != null) return defaultValue.toString();
+		return lastResort;
+	}
+
+	private Boolean getInitialBooleanValue(final String prefValue,
+		final Object defaultValue, final Boolean lastResort)
+	{
+		if (prefValue != null) return new Boolean(prefValue);
+		if (defaultValue != null) return new Boolean(defaultValue.toString());
+		return lastResort;
+	}
+
+	private File getInitialFileValue(final String prefValue,
+		final Object defaultValue)
+	{
+		if (prefValue != null) return new File(prefValue);
+		return new File(defaultValue.toString());
+	}
+
+	private Object getInitialObjectValue(final String prefValue,
+		final Object defaultValue)
+	{
+		if (prefValue != null) return prefValue;
+		return defaultValue;
 	}
 
 }
