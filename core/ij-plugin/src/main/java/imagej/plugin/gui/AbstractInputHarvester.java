@@ -105,6 +105,13 @@ public abstract class AbstractInputHarvester
 				if (max == null) max = ClassUtils.getMaximumNumber(type);
 				Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 				if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
+				// BDZ begin - range clamp initial value to avoid runtime error
+				Number val = (Number) value;
+				if (val.doubleValue() < min.doubleValue())
+					value = min;
+				if (val.doubleValue() > max.doubleValue())
+					value = max;
+				// BDZ end
 				inputPanel.addNumber(name, label, (Number) value,
 					min, max, stepSize, style);
 			}
