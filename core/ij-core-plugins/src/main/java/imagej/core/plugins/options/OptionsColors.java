@@ -5,7 +5,13 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-@Plugin(menu = {
+/**
+ * Runs the Edit::Options::Colors... dialog
+ * 
+ * @author Barry DeZonia
+ */
+
+@Plugin(menu = { 
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
 	@Menu(label = "Colors...", weight = 8) })
