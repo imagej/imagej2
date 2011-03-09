@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -48,7 +49,10 @@ import imglib.ops.operator.unary.Gamma;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Math>Gamma")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Gamma...", weight = 10) })
 public class GammaDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

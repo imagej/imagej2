@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -46,7 +47,9 @@ import imglib.ops.operator.unary.Copy;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Image>Duplicate")
+@Plugin(menu = {
+	@Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Duplicate...", accelerator="shift command D")})
 public class DuplicateImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

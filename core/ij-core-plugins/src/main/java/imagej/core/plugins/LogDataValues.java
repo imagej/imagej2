@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
@@ -46,7 +47,10 @@ import imglib.ops.operator.unary.Log;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Math>Log")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Log", weight = 12) })
 public class LogDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

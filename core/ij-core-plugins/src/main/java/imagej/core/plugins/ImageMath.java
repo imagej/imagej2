@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.function.p2.BinaryOperatorFunction;
@@ -71,7 +72,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Image Calculator")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Image Calculator...", weight = 13) })
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

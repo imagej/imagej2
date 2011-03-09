@@ -44,6 +44,7 @@ import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -56,7 +57,10 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Noise>Salt and Pepper")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Noise", mnemonic = 'n'),
+	@Menu(label = "Salt and Pepper", weight = 3) })
 public class SaltAndPepper implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

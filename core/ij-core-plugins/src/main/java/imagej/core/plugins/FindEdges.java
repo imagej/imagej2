@@ -37,6 +37,7 @@ package imagej.core.plugins;
 import imagej.core.plugins.Neighborhood3x3Operation.Neighborhood3x3Watcher;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -45,7 +46,9 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Find Edges")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Find Edges", weight = 3) })
 public class FindEdges implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

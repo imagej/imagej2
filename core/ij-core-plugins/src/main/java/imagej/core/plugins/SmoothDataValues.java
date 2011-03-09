@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -44,7 +45,9 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Smooth")
+@Plugin(menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Smooth", weight = 1, accelerator = "shift command S") })
 public class SmoothDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
