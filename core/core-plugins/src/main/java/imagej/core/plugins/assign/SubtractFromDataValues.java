@@ -62,8 +62,11 @@ public class SubtractFromDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Enter value to subtract from each data value")
+	@Parameter(label = "Value")
 	private double constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

@@ -62,8 +62,11 @@ public class OrDataValuesWith implements ImageJPlugin {
 	@Parameter(output = true)
 	Dataset output;
 
-	@Parameter(label = "Enter value to OR with each data value")
+	@Parameter(label = "Value (binary)")
 	private long constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

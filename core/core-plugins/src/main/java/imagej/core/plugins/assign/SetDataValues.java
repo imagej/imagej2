@@ -62,8 +62,11 @@ public class SetDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Enter value to fill each value with")
+	@Parameter(label = "Value")
 	private double constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 
