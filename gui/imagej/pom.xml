@@ -12,7 +12,6 @@
 	</parent>
 
 	<artifactId>imagej</artifactId>
-	<packaging>pom</packaging>
 
 	<name>ImageJ</name>
 	<description>ImageJ application launcher.</description>
@@ -178,6 +177,17 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>imagej.launcher</packageName>
+							<mainClass>imagej.launcher.ImageJ</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
