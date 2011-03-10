@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ij-events</artifactId>
+      <artifactId>ij-event</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -45,7 +45,7 @@
 		<!--
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ij-plugin-gui-pivot</artifactId>
+      <artifactId>ij-plugin-pivot</artifactId>
       <version>${project.version}</version>
     </dependency>
 		-->
