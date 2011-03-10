@@ -49,7 +49,7 @@ import imglib.ops.operator.unary.Copy;
  */
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Duplicate...", accelerator="shift command D")})
+	@Menu(label = "Duplicate...", accelerator="shift control D")})
 public class DuplicateImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

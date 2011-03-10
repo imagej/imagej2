@@ -49,7 +49,7 @@ import imglib.ops.operator.unary.Constant;
  */
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Fill", accelerator = "command f")})
+	@Menu(label = "Fill", accelerator = "control F")})
 public class FillDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

@@ -56,7 +56,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Invert", accelerator = "shift command i") })
+	@Menu(label = "Invert", accelerator = "shift control I") })
 public class InvertDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

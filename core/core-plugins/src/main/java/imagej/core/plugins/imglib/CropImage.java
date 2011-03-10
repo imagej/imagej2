@@ -60,7 +60,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  */
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Crop", accelerator = "shift command x")})  // TODO - add correct weight
+	@Menu(label = "Crop", accelerator = "shift control X")})  // TODO - add correct weight
 public class CropImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
