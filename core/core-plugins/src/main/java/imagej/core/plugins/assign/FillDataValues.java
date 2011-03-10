@@ -61,7 +61,7 @@ public class FillDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Value")
+	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
 	private double constant;
 
 	// -- public interrface --
