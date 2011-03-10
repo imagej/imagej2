@@ -97,9 +97,13 @@ public abstract class SwingMenuCreator<M>
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
 		String accelerator = shadow.getMenuEntry().getAccelerator();
-		if (accelerator != null && isMac()) {
+		if (accelerator != null){
+			// allow use of ^X to represent control X in plugin keyboard accel parameters
+			accelerator = accelerator.replaceAll("^", "control ");
 			// on Mac, use Command instead of Control for keyboard shortcuts
-			accelerator = accelerator.replaceAll("control", "meta"); 
+			if (isMac())
+				if (accelerator.indexOf("meta") == -1)  // only if meta not already in use
+					accelerator = accelerator.replaceAll("control", "meta");
 		}
 		return KeyStroke.getKeyStroke(accelerator);
 	}
