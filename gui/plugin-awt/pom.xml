@@ -11,7 +11,7 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-plugin-gui-awt</artifactId>
+	<artifactId>ij-plugin-awt</artifactId>
 
 	<name>ImageJ Plugin Framework: AWT</name>
 	<description>AWT GUI components for use with ImageJ plugin architecture.</description>

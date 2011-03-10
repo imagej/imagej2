@@ -11,7 +11,7 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-plugin-gui-swt</artifactId>
+	<artifactId>ij-plugin-swt</artifactId>
 
 	<name>ImageJ Plugin Framework: SWT</name>
 	<description>Eclipse SWT GUI components for use with ImageJ plugin architecture.</description>
