@@ -60,6 +60,9 @@ public class DuplicateImage implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
+	@Parameter(label="TODO - IJ1 asks but we may just create an unsaved output Dataset - Output filename")
+	private String outputFileName;
+
 	// -- public interface --
 
 	@Override
