@@ -4,19 +4,15 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import imagej.AxisLabel;
 import imagej.dataset.Dataset;
+import imagej.model.AxisLabel;
 
 import java.awt.BorderLayout;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
