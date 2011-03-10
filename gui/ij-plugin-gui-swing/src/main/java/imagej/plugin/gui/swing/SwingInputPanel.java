@@ -47,7 +47,7 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class SwingInputPanel extends AbstractInputPanel {
@@ -70,8 +70,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addNumber(final String name, final String label,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize, final WidgetStyle style)
+		final Number initialValue, final WidgetStyle style, final Number min,
+		final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
 			SwingNumberWidget.create(initialValue, min, max, stepSize, style);
@@ -81,17 +81,16 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addToggle(final String name, final String label,
-		final boolean initialValue)
+		final boolean initialValue, final WidgetStyle style)
 	{
-		final SwingToggleWidget toggleWidget =
-			new SwingToggleWidget(initialValue);
+		final SwingToggleWidget toggleWidget = new SwingToggleWidget(initialValue);
 		addField(label, toggleWidget);
 		toggleWidgets.put(name, toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final String name, final String label,
-		final String initialValue, final int columns)
+		final String initialValue, final WidgetStyle style, final int columns)
 	{
 		final SwingTextFieldWidget textFieldWidget =
 			new SwingTextFieldWidget(initialValue, columns);
@@ -101,7 +100,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addChoice(final String name, final String label,
-		final String initialValue, final String[] items)
+		final String initialValue, final WidgetStyle style, final String[] items)
 	{
 		final SwingChoiceWidget choiceWidget =
 			new SwingChoiceWidget(initialValue, items);
@@ -111,17 +110,16 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addFile(final String name, final String label,
-		final File initialValue)
+		final File initialValue, final WidgetStyle style)
 	{
-		final SwingFileWidget fileWidget =
-			new SwingFileWidget(initialValue);
+		final SwingFileWidget fileWidget = new SwingFileWidget(initialValue);
 		addField(label, fileWidget);
 		fileWidgets.put(name, fileWidget);
 	}
 
 	@Override
 	public void addObject(final String name, final String label,
-		final Object initialValue)
+		final Object initialValue, final WidgetStyle style)
 	{
 		// TODO create ObjectWidget and add here
 	}

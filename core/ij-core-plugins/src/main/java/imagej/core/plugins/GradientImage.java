@@ -52,10 +52,10 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 public class GradientImage implements ImageJPlugin {
 
 	@Parameter(min = "1", max = "2000",
-		widgetStyle = WidgetStyle.NUMBER_SCROLL_BAR)
+		style = WidgetStyle.NUMBER_SCROLL_BAR)
 	private int width = 512;
 
-	@Parameter(min = "1", max = "2000", widgetStyle = WidgetStyle.NUMBER_SLIDER)
+	@Parameter(min = "1", max = "2000", style = WidgetStyle.NUMBER_SLIDER)
 	private int height = 512;
 
 	@Parameter(output = true)
