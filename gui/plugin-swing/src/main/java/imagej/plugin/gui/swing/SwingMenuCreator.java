@@ -96,7 +96,11 @@ public abstract class SwingMenuCreator<M>
 	}
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
-		final String accelerator = shadow.getMenuEntry().getAccelerator();
+		String accelerator = shadow.getMenuEntry().getAccelerator();
+		if (accelerator != null && isMac()) {
+			// on Mac, use Command instead of Control for keyboard shortcuts
+			accelerator = accelerator.replaceAll("control", "meta"); 
+		}
 		return KeyStroke.getKeyStroke(accelerator);
 	}
 
@@ -128,6 +132,10 @@ public abstract class SwingMenuCreator<M>
 				PluginUtils.runPlugin(runnableEntry);
 			}
 		});
+	}
+
+	private boolean isMac() {
+		return System.getProperty("os.name").startsWith("Mac");
 	}
 
 }
