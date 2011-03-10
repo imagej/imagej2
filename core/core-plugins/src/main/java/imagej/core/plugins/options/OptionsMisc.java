@@ -16,25 +16,25 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Misc...", weight = 15) })
 public class OptionsMisc implements ImageJPlugin{
 
-	@Parameter(label = "Divide by zero value")
+	@Parameter(label = "Divide by zero value", persist=true)
 	private String divByZeroVal;
 
-	@Parameter(label = "Use pointer cursor")
+	@Parameter(label = "Use pointer cursor", persist=true)
 	private boolean usePtrCursor;
 
-	@Parameter(label = "Hide \"Process Stack?\" dialog")
+	@Parameter(label = "Hide \"Process Stack?\" dialog", persist=true)
 	private boolean hideProcessStackDialog;
 
-	@Parameter(label = "Require command key for shortcuts")
+	@Parameter(label = "Require command key for shortcuts", persist=true)
 	private boolean requireCommandKey;
 
-	@Parameter(label = "Move isolated plugins to Misc. menu")
+	@Parameter(label = "Move isolated plugins to Misc. menu", persist=true)
 	private boolean moveIsolatedPlugins;
 
-	@Parameter(label = "Run single instance listener")
+	@Parameter(label = "Run single instance listener", persist=true)
 	private boolean runSingleInstanceListener;
 
-	@Parameter(label = "Debug mode")
+	@Parameter(label = "Debug mode", persist=true)
 	private boolean debugMode;
 
 	@Override

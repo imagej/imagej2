@@ -16,13 +16,13 @@ import imagej.plugin.Plugin;
 	@Menu(label = "DICOM...", weight = 14) })
 public class OptionsDicom implements ImageJPlugin{
 
-	@Parameter(label = "Open as 32-bit float")
+	@Parameter(label = "Open as 32-bit float", persist=true)
 	private boolean generateDebugInfo;
 
-	@Parameter(label = "Orthogonal Views: Rotate YZ")
+	@Parameter(label = "Orthogonal Views: Rotate YZ", persist=true)
 	private boolean rotateYZ;
 
-	@Parameter(label = "Orthogonal Views: Rotate XZ")
+	@Parameter(label = "Orthogonal Views: Rotate XZ", persist=true)
 	private boolean rotateXZ;
 
 	@Override

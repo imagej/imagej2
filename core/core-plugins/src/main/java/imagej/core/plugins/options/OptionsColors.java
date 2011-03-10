@@ -17,13 +17,13 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Colors...", weight = 8) })
 public class OptionsColors implements ImageJPlugin{
 
-	@Parameter(label = "Foreground", choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
+	@Parameter(label = "Foreground", persist=true, choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
 	private String fgColor;
 	
-	@Parameter(label = "Background", choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
+	@Parameter(label = "Background", persist=true, choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
 	private String bgColor;
 	
-	@Parameter(label = "Selection", choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
+	@Parameter(label = "Selection", persist=true, choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
 	private String selColor;
 	
 	@Override

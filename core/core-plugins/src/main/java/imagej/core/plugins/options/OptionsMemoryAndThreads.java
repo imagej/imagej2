@@ -16,13 +16,13 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Memory & Threads...", weight = 11) })
 public class OptionsMemoryAndThreads implements ImageJPlugin{
 
-	@Parameter(label = "Maximum memory (MB)")
+	@Parameter(label = "Maximum memory (MB)", persist=true)
 	private int maxMemory;
 	
-	@Parameter(label = "Parallel threads for stacks")
+	@Parameter(label = "Parallel threads for stacks", persist=true)
 	private int stackThreads;
 
-	@Parameter(label = "Run garbage collector on status bar click")
+	@Parameter(label = "Run garbage collector on status bar click", persist=true)
 	private boolean runGcOnClick;
 
 	@Override
