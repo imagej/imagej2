@@ -47,7 +47,7 @@ import imagej.plugin.Plugin;
  */
 @Plugin(menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Smooth", weight = 1, accelerator = "shift command s") })
+	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") })
 public class SmoothDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
