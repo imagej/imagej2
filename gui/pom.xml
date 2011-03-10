@@ -18,18 +18,15 @@
 	<description>ImageJ GUI projects.</description>
 
 	<modules>
-		<module>ij-gui-awt</module>
-		<module>ij-gui-pivot</module>
-		<module>ij-gui-swing</module>
-		<module>ij-gui-swt</module>
-		<module>ij-plugin-gui-awt</module>
-		<!--<module>ij-plugin-gui-pivot</module>-->
-		<module>ij-plugin-gui-swing</module>
-		<module>ij-plugin-gui-swt</module>
+		<module>gui-awt</module>
+		<module>gui-pivot</module>
+		<module>gui-swing</module>
+		<module>gui-swt</module>
 		<module>imagej</module>
-		<module>imagej-awt</module>
-		<module>imagej-pivot</module>
-		<module>imagej-swt</module>
+		<module>plugin-awt</module>
+		<!--<module>plugin-pivot</module>-->
+		<module>plugin-swing</module>
+		<module>plugin-swt</module>
 	</modules>
 
 	<properties>

@@ -18,15 +18,15 @@
 	<description>Core ImageJ projects.</description>
 
 	<modules>
-		<module>ij-common</module>
-		<module>ij-core-plugins</module>
-		<module>ij-core-tools</module>
-		<module>ij-data-model</module>
-		<module>ij-display</module>
-		<module>ij-events</module>
-		<module>ij-legacy</module>
-		<module>ij-plugin</module>
-		<module>ij-tool</module>
+		<module>common</module>
+		<module>core-plugins</module>
+		<module>core-tools</module>
+		<module>data-model</module>
+		<module>display</module>
+		<module>event</module>
+		<module>legacy</module>
+		<module>plugin</module>
+		<module>tool</module>
 	</modules>
 
 	<!-- NB: for imagej-base, in case of partial checkout -->

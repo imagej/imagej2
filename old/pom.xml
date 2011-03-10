@@ -18,6 +18,7 @@
 	<description>Unused and/or obsolete ImageJ projects.</description>
 
 	<modules>
+		<module>_ij1-patches</module>
 		<module>ij1-bridge</module>
 		<module>ij1-plugin</module>
 		<module>ij2-common</module>
