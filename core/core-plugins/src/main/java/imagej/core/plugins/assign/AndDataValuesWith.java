@@ -62,8 +62,11 @@ public class AndDataValuesWith implements ImageJPlugin {
 	@Parameter(output = true)
 	Dataset output;
 
-	@Parameter(label = "Enter value to AND with each data value")
+	@Parameter(label = "Value (binary)")
 	private long constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

@@ -62,8 +62,11 @@ public class MultiplyDataValuesBy implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Enter value for scaling constant")
+	@Parameter(label = "Value")
 	private double constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

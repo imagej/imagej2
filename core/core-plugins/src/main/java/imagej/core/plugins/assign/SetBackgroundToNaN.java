@@ -67,10 +67,10 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Low threshold")
+	@Parameter(label = "TODO - should be used from current threshold - for now ask - Low threshold")
 	private double loThreshold;
 
-	@Parameter(label = "High threshold")
+	@Parameter(label = "TODO - should be used from current threshold - for now ask - High threshold")
 	private double hiThreshold;
 
 	// -- public interface --

@@ -62,8 +62,11 @@ public class DivideDataValuesBy implements ImageJPlugin {
 	@Parameter(output = true)
 	Dataset output;
 
-	@Parameter(label = "Enter value to divide each data value by")
+	@Parameter(label = "Value")
 	private double constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

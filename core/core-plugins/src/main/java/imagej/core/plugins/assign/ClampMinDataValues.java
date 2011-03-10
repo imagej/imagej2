@@ -62,8 +62,11 @@ public class ClampMinDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	Dataset output;
 
-	@Parameter(label = "Enter minimum clamp value")
+	@Parameter(label = "Value")
 	private double constant;
+
+	@Parameter(label = "Preview")
+	private boolean preview;
 
 	// -- public interface --
 

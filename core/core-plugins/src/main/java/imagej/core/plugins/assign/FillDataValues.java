@@ -61,7 +61,7 @@ public class FillDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Enter value to fill each data value with")
+	@Parameter(label = "Value")
 	private double constant;
 
 	// -- public interrface --

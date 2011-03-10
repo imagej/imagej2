@@ -60,7 +60,7 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	Dataset output;
 
-	@Parameter(label = "Enter standard deviation of range")
+	@Parameter(label = "Standard deviation")
 	double stdDev;
 
 	// -- public interface --
