@@ -167,7 +167,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 
 	private void addNumber(final InputPanel inputPanel, final String name,
 		final Class<?> type, final Parameter param, final String label,
-		final Number initialValue)
+		Number initialValue)
 	{
 		Number min = ClassUtils.toNumber(param.min(), type);
 		if (min == null) min = ClassUtils.getMinimumNumber(type);
@@ -175,10 +175,47 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		if (max == null) max = ClassUtils.getMaximumNumber(type);
 		Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
-		inputPanel.addNumber(name, label, initialValue, param.style(), min, max,
+		Number value = rangeClamp(type, min, max, initialValue);
+		inputPanel.addNumber(name, label, value, param.style(), min, max,
 			stepSize);
 	}
 
+	private Number rangeClamp(final Class<?> type, Number min, Number max, Number value)
+	{
+		if (ClassUtils.isByte(type))
+		{
+			if (value.byteValue() < min.byteValue()) return min;
+			if (value.byteValue() > max.byteValue()) return max;
+		}
+		else if (ClassUtils.isDouble(type))
+		{
+			if (value.doubleValue() < min.doubleValue()) return min;
+			if (value.doubleValue() > max.doubleValue()) return max;
+		}
+		else if (ClassUtils.isFloat(type))
+		{
+			if (value.floatValue() < min.floatValue()) return min;
+			if (value.floatValue() > max.floatValue()) return max;
+		}
+		else if (ClassUtils.isInteger(type))
+		{
+			if (value.intValue() < min.intValue()) return min;
+			if (value.intValue() > max.intValue()) return max;
+		}
+		else if (ClassUtils.isLong(type))
+		{
+			if (value.longValue() < min.longValue()) return min;
+			if (value.longValue() > max.longValue()) return max;
+		}
+		else if (ClassUtils.isShort(type))
+		{
+			if (value.shortValue() < min.shortValue()) return min;
+			if (value.shortValue() > max.shortValue()) return max;
+		}
+		
+		return value;
+	}
+	
 	private void addTextField(final InputPanel inputPanel, final String name,
 		final Parameter param, final String label, final String initialValue)
 	{
