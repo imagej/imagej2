@@ -16,10 +16,10 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Wand Tool...", weight = 7) })
 public class OptionsWandTool implements ImageJPlugin{
 
-	@Parameter(label = "Mode", choices = {"Legacy", "4-connected", "8-connected"})
+	@Parameter(label = "Mode", persist=true, choices = {"Legacy", "4-connected", "8-connected"})
 	private String mode;
 	
-	@Parameter(label = "Tolerance")
+	@Parameter(label = "Tolerance", persist=true)
 	private double tolerance;
 
 	@Override

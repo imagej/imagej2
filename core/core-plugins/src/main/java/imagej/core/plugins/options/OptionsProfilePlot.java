@@ -16,37 +16,37 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Profile Plot Options...", weight = 4) })
 public class OptionsProfilePlot implements ImageJPlugin{
 
-	@Parameter(label = "Width (pixels)")
+	@Parameter(label = "Width (pixels)", persist=true)
 	private int width;
 	
-	@Parameter(label = "Height (pixels)")
+	@Parameter(label = "Height (pixels)", persist=true)
 	private int height;
 	
-	@Parameter(label = "Minimum Y")
+	@Parameter(label = "Minimum Y", persist=true)
 	private double minY;
 	
-	@Parameter(label = "Maximum Y")
+	@Parameter(label = "Maximum Y", persist=true)
 	private double maxY;
 	
-	@Parameter(label = "Fixed y-axis scale")
+	@Parameter(label = "Fixed y-axis scale", persist=true)
 	private boolean yFixedScale;
 
-	@Parameter(label = "Do not save x-values")
+	@Parameter(label = "Do not save x-values", persist=true)
 	private boolean noSaveXValues;
 
-	@Parameter(label = "Auto-close")
+	@Parameter(label = "Auto-close", persist=true)
 	private boolean autoClose;
 
-	@Parameter(label = "Vertical profile")
+	@Parameter(label = "Vertical profile", persist=true)
 	private boolean vertProfile;
 
-	@Parameter(label = "List values")
+	@Parameter(label = "List values", persist=true)
 	private boolean listValues;
 
-	@Parameter(label = "Interpolate line profiles")
+	@Parameter(label = "Interpolate line profiles", persist=true)
 	private boolean interpLineProf;
 
-	@Parameter(label = "Draw grid lines")
+	@Parameter(label = "Draw grid lines", persist=true)
 	private boolean drawGridLines;
 
 	@Override

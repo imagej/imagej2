@@ -17,10 +17,10 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Conversions...", weight = 10) })
 public class OptionsConversions implements ImageJPlugin{
 
-	@Parameter(label = "Scale When Converting")
+	@Parameter(label = "Scale When Converting", persist=true)
 	private boolean scaleWhenConverting;
 	
-	@Parameter(label = "Weighted RGB Conversions")
+	@Parameter(label = "Weighted RGB Conversions", persist=true)
 	private boolean weightedRgbConversions;
 	
 	@Override

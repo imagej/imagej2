@@ -17,16 +17,16 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Arrow Tool...", weight = 5) })
 public class OptionsArrowTool implements ImageJPlugin{
 
-	@Parameter(label = "Width", min = "1", max = "50")
+	@Parameter(label = "Width", min = "1", max = "50", persist=true)
 	private int arrowWidth;
 	
-	@Parameter(label = "Size", min = "0", max = "30")
+	@Parameter(label = "Size", min = "0", max = "30", persist=true)
 	private int arrowSize;
 	
-	@Parameter(label = "Color", choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
+	@Parameter(label = "Color", persist=true, choices = {"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
 	private String arrowColor;
 	
-	@Parameter(label = "Style", choices = {"Filled", "Notched", "Open", "Headless"})
+	@Parameter(label = "Style", persist=true, choices = {"Filled", "Notched", "Open", "Headless"})
 	private String arrowStyle;
 	
 	@Parameter(label = "Double headed")

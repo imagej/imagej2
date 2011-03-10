@@ -16,22 +16,22 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Point Tool...", weight = 6) })
 public class OptionsPointTool implements ImageJPlugin{
 
-	@Parameter(label = "Mark Width (pixels)")
+	@Parameter(label = "Mark Width (pixels)", persist=true)
 	private int markWidth;
 	
-	@Parameter(label = "Auto-Measure")
+	@Parameter(label = "Auto-Measure", persist=true)
 	private boolean autoMeasure;
 	
-	@Parameter(label = "Auto-Next Slice")
+	@Parameter(label = "Auto-Next Slice", persist=true)
 	private boolean autoNextSlice;
 	
-	@Parameter(label = "Add to ROI Manager")
+	@Parameter(label = "Add to ROI Manager", persist=true)
 	private boolean addToRoiMgr;
 	
-	@Parameter(label = "Label Points")
+	@Parameter(label = "Label Points", persist=true)
 	private boolean labelPoints;
 	
-	@Parameter(label = "Selection Color", choices =
+	@Parameter(label = "Selection Color", persist=true, choices =
 	{"red","green","blue","magenta", "cyan", "yellow", "orange", "black", "white"})
 	private String selectionColor;
 	

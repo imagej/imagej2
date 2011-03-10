@@ -16,10 +16,10 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Compiler...", weight = 13) })
 public class OptionsCompiler implements ImageJPlugin{
 
-	@Parameter(label = "Target", choices = {"1.4","1.5","1.6","1.7"})
+	@Parameter(label = "Target", choices = {"1.4","1.5","1.6","1.7"}, persist=true)
 	private String targetJavaVersion;
 	
-	@Parameter(label = "Generate debugging ino (javac -g)")
+	@Parameter(label = "Generate debugging ino (javac -g)", persist=true)
 	private boolean generateDebugInfo;
 
 	@Override

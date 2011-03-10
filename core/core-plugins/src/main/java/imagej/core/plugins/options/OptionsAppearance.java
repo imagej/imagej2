@@ -17,25 +17,25 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Appearance...", weight = 9) })
 public class OptionsAppearance implements ImageJPlugin{
 
-	@Parameter(label = "Interpolate zoomed images")
+	@Parameter(label = "Interpolate zoomed images", persist=true)
 	private boolean interpZoomedImages;
 	
-	@Parameter(label = "Open images at 100%")
+	@Parameter(label = "Open images at 100%", persist=true)
 	private boolean fullZoomImages;
 	
-	@Parameter(label = "Black canvas")
+	@Parameter(label = "Black canvas", persist=true)
 	private boolean blackCanvas;
 	
-	@Parameter(label = "No image border")
+	@Parameter(label = "No image border", persist=true)
 	private boolean noImageBorder;
 	
-	@Parameter(label = "Use inverting lookup table")
+	@Parameter(label = "Use inverting lookup table", persist=true)
 	private boolean useInvertingLUT;
 	
-	@Parameter(label = "Antialiased tool icons")
+	@Parameter(label = "Antialiased tool icons", persist=true)
 	private boolean antialiasedToolIcons;
 	
-	@Parameter(label = "Menu font size (points)")
+	@Parameter(label = "Menu font size (points)", persist=true)
 	private int menuFontSize;
 	
 	@Override

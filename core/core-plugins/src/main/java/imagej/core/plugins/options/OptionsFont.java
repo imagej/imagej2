@@ -16,16 +16,16 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Fonts...", weight = 3) })
 public class OptionsFont implements ImageJPlugin{
 
-	@Parameter(label = "Font")  // TODO populate from system fonts
+	@Parameter(label = "Font", persist=true)  // TODO populate from system fonts
 	private String font;
 	
-	@Parameter(label = "Size", min = "8", max = "72")
+	@Parameter(label = "Size", min = "8", max = "72", persist=true)
 	private int fontSize;
 	
-	@Parameter(label = "Style", choices={"Plain", "Bold", "Italic", "Bold + Italic"})
+	@Parameter(label = "Style", choices={"Plain", "Bold", "Italic", "Bold + Italic"}, persist=true)
 	private String fontStyle;
 
-	@Parameter(label = "Smooth")
+	@Parameter(label = "Smooth", persist=true)
 	private boolean fontSmooth;
 
 	@Override

@@ -16,13 +16,13 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Proxy Settings...", weight = 12) })
 public class OptionsProxy implements ImageJPlugin{
 
-	@Parameter(label = "Proxy Server")
+	@Parameter(label = "Proxy Server", persist=true)
 	private String proxyServer;
 	
-	@Parameter(label = "Port")
+	@Parameter(label = "Port", persist=true)
 	private int port;
 
-	@Parameter(label = "Authenticate")
+	@Parameter(label = "Authenticate", persist=true)
 	private boolean authenticationRequired;
 
 	@Override
