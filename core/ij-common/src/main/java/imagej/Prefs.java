@@ -49,145 +49,146 @@ public final class Prefs {
 
 	// -- Global preferences --
 
-	public static String get(final String key) {
-		return get(Prefs.class, key);
+	public static String get(final String name) {
+		return get((Class<?>) null, name);
 	}
 
-	public static String get(final String key, final String defaultValue) {
-		return get(Prefs.class, key, defaultValue);
+	public static String get(final String name, final String defaultValue) {
+		return get(null, name, defaultValue);
 	}
 
-	public static boolean
-		getBoolean(final String key, final boolean defaultValue)
+	public static boolean getBoolean(final String name,
+		final boolean defaultValue)
 	{
-		return getBoolean(Prefs.class, key, defaultValue);
+		return getBoolean(null, name, defaultValue);
 	}
 
-	public static double getDouble(final String key, final double defaultValue) {
-		return getDouble(Prefs.class, key, defaultValue);
+	public static double getDouble(final String name, final double defaultValue)
+	{
+		return getDouble(null, name, defaultValue);
 	}
 
-	public static float getFloat(final String key, final float defaultValue) {
-		return getFloat(Prefs.class, key, defaultValue);
+	public static float getFloat(final String name, final float defaultValue) {
+		return getFloat(null, name, defaultValue);
 	}
 
-	public static int getInt(final String key, final int defaultValue) {
-		return getInt(Prefs.class, key, defaultValue);
+	public static int getInt(final String name, final int defaultValue) {
+		return getInt(null, name, defaultValue);
 	}
 
-	public static long getLong(final String key, final long defaultValue) {
-		return getLong(Prefs.class, key, defaultValue);
+	public static long getLong(final String name, final long defaultValue) {
+		return getLong(null, name, defaultValue);
 	}
 
-	public static void put(final String key, final String value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final String value) {
+		put(null, name, value);
 	}
 
-	public static void put(final String key, final boolean value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final boolean value) {
+		put(null, name, value);
 	}
 
-	public static void put(final String key, final double value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final double value) {
+		put(null, name, value);
 	}
 
-	public static void put(final String key, final float value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final float value) {
+		put(null, name, value);
 	}
 
-	public static void put(final String key, final int value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final int value) {
+		put(null, name, value);
 	}
 
-	public static void put(final String key, final long value) {
-		put(Prefs.class, key, value);
+	public static void put(final String name, final long value) {
+		put(null, name, value);
 	}
 
 	// -- Class-specific preferences --
 
-	public static String get(final Class<?> c, final String key) {
-		return get(c, key, null);
+	public static String get(final Class<?> c, final String name) {
+		return get(c, name, null);
 	}
 
-	public static String get(final Class<?> c, final String key,
+	public static String get(final Class<?> c, final String name,
 		final String defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.get(key, defaultValue);
+		return prefs(c).get(key(c, name), defaultValue);
 	}
 
-	public static boolean getBoolean(final Class<?> c, final String key,
+	public static boolean getBoolean(final Class<?> c, final String name,
 		final boolean defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.getBoolean(key, defaultValue);
+		return prefs(c).getBoolean(key(c, name), defaultValue);
 	}
 
-	public static double getDouble(final Class<?> c, final String key,
+	public static double getDouble(final Class<?> c, final String name,
 		final double defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.getDouble(key, defaultValue);
+		return prefs(c).getDouble(key(c, name), defaultValue);
 	}
 
-	public static float getFloat(final Class<?> c, final String key,
+	public static float getFloat(final Class<?> c, final String name,
 		final float defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.getFloat(key, defaultValue);
+		return prefs(c).getFloat(key(c, name), defaultValue);
 	}
 
-	public static int getInt(final Class<?> c, final String key,
+	public static int getInt(final Class<?> c, final String name,
 		final int defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.getInt(key, defaultValue);
+		return prefs(c).getInt(key(c, name), defaultValue);
 	}
 
-	public static long getLong(final Class<?> c, final String key,
+	public static long getLong(final Class<?> c, final String name,
 		final long defaultValue)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		return prefs.getLong(key, defaultValue);
+		return prefs(c).getLong(key(c, name), defaultValue);
 	}
 
-	public static void
-		put(final Class<?> c, final String key, final String value)
+	public static void put(final Class<?> c, final String name,
+		final String value)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.put(key, value);
+		prefs(c).put(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String key,
+	public static void put(final Class<?> c, final String name,
 		final boolean value)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.putBoolean(key, value);
+		prefs(c).putBoolean(key(c, name), value);
+	}
+
+	public static void put(final Class<?> c, final String name,
+		final double value)
+	{
+		prefs(c).putDouble(key(c, name), value);
 	}
 
 	public static void
-		put(final Class<?> c, final String key, final double value)
+		put(final Class<?> c, final String name, final float value)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.putDouble(key, value);
+		prefs(c).putFloat(key(c, name), value);
+	}
+
+	public static void put(final Class<?> c, final String name, final int value)
+	{
+		prefs(c).putInt(key(c, name), value);
 	}
 
 	public static void
-		put(final Class<?> c, final String key, final float value)
+		put(final Class<?> c, final String name, final long value)
 	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.putFloat(key, value);
+		prefs(c).putLong(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String key, final int value) {
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.putInt(key, value);
+	// -- Helper methods --
+
+	private static Preferences prefs(final Class<?> c) {
+		return Preferences.userNodeForPackage(c == null ? Prefs.class : c);
 	}
 
-	public static void put(final Class<?> c, final String key, final long value)
-	{
-		final Preferences prefs = Preferences.userNodeForPackage(c);
-		prefs.putLong(key, value);
+	private static String key(final Class<?> c, final String name) {
+		return c == null ? name : c.getSimpleName() + "." + name;
 	}
 
 }
