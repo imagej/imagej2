@@ -11,7 +11,7 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-plugin-gui-swing</artifactId>
+	<artifactId>ij-plugin-swing</artifactId>
 
 	<name>ImageJ Plugin Framework: Swing</name>
 	<description>Swing GUI components for use with ImageJ plugin architecture.</description>
