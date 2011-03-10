@@ -46,7 +46,7 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class AWTInputPanel extends AbstractInputPanel {
@@ -69,8 +69,8 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addNumber(final String name, final String label,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize, final WidgetStyle style)
+		final Number initialValue, final WidgetStyle style, final Number min,
+		final Number max, final Number stepSize)
 	{
 		final AWTNumberWidget numberWidget =
 			new AWTNumberWidget(initialValue, min, max, stepSize);
@@ -80,17 +80,16 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addToggle(final String name, final String label,
-		final boolean initialValue)
+		final boolean initialValue, final WidgetStyle style)
 	{
-		final AWTToggleWidget toggleWidget =
-			new AWTToggleWidget(initialValue);
+		final AWTToggleWidget toggleWidget = new AWTToggleWidget(initialValue);
 		addField(label, toggleWidget);
 		toggleWidgets.put(name, toggleWidget);
 	}
 
 	@Override
 	public void addTextField(final String name, final String label,
-		final String initialValue, final int columns)
+		final String initialValue, final WidgetStyle style, final int columns)
 	{
 		final AWTTextFieldWidget textFieldWidget =
 			new AWTTextFieldWidget(initialValue, columns);
@@ -100,7 +99,7 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addChoice(final String name, final String label,
-		final String initialValue, final String[] items)
+		final String initialValue, final WidgetStyle style, final String[] items)
 	{
 		final AWTChoiceWidget choiceWidget =
 			new AWTChoiceWidget(initialValue, items);
@@ -110,17 +109,16 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addFile(final String name, final String label,
-		final File initialValue)
+		final File initialValue, final WidgetStyle style)
 	{
-		final AWTFileWidget fileWidget =
-			new AWTFileWidget(initialValue);
+		final AWTFileWidget fileWidget = new AWTFileWidget(initialValue);
 		addField(label, fileWidget);
 		fileWidgets.put(name, fileWidget);
 	}
 
 	@Override
 	public void addObject(final String name, final String label,
-		final Object initialValue)
+		final Object initialValue, final WidgetStyle style)
 	{
 		// TODO create ObjectWidget and add here
 	}

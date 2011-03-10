@@ -75,7 +75,7 @@ public @interface Parameter {
 	 * See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
 	 */
 
-	WidgetStyle widgetStyle() default  imagej.plugin.gui.WidgetStyle.DEFAULT;
+	WidgetStyle style() default  imagej.plugin.gui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";

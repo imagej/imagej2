@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.Label;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTInputPanel extends AbstractInputPanel {
@@ -70,8 +70,8 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addNumber(final String name, final String label,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize, final WidgetStyle style)
+		final Number initialValue, final WidgetStyle style, final Number min,
+		final Number max, final Number stepSize)
 	{
 		addLabel(label);
 		final SWTNumberWidget numberWidget =
@@ -81,7 +81,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addToggle(final String name, final String label,
-		final boolean initialValue)
+		final boolean initialValue, final WidgetStyle style)
 	{
 		addLabel(label);
 		final SWTToggleWidget toggleWidget =
@@ -91,7 +91,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addTextField(final String name, final String label,
-		final String initialValue, final int columns)
+		final String initialValue, final WidgetStyle style, final int columns)
 	{
 		addLabel(label);
 		final SWTTextFieldWidget textFieldWidget =
@@ -101,7 +101,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addChoice(final String name, final String label,
-		final String initialValue, final String[] items)
+		final String initialValue, final WidgetStyle style, final String[] items)
 	{
 		addLabel(label);
 		final SWTChoiceWidget choiceWidget =
@@ -111,7 +111,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addFile(final String name, final String label,
-		final File initialValue)
+		final File initialValue, final WidgetStyle style)
 	{
 		addLabel(label);
 		final SWTFileWidget fileWidget = new SWTFileWidget(panel, initialValue);
@@ -120,7 +120,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addObject(final String name, final String label,
-		final Object initialValue)
+		final Object initialValue, final WidgetStyle style)
 	{
 		// TODO create ObjectWidget and add here
 	}
