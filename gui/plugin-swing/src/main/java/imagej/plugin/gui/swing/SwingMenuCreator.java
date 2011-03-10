@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -98,8 +99,9 @@ public abstract class SwingMenuCreator<M>
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
 		String accelerator = shadow.getMenuEntry().getAccelerator();
 		if (accelerator != null){
+			System.out.print("accelerator specified : original = ("+accelerator+")");
 			// allow use of ^X to represent control X in plugin keyboard accel parameters
-			accelerator = accelerator.replaceAll("^", "control ");
+			accelerator = accelerator.replaceAll(Pattern.quote("^"), "control ");  // NB: extra space REQUIRED
 			// on Mac, use Command instead of Control for keyboard shortcuts
 			if (isMac())
 				if (accelerator.indexOf("meta") == -1)  // only if meta not already in use
