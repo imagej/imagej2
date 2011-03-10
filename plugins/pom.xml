@@ -18,7 +18,7 @@
 	<description>External ImageJ plugins.</description>
 
 	<modules>
-		<module>ij-visad</module>
+		<module>visad-plugin</module>
 		<module>image5d</module>
 	</modules>
 

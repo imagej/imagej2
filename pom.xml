@@ -25,7 +25,6 @@
 	</dependencies>
 
 	<modules>
-		<module>_ij1-patches</module>
 		<module>core</module>
 		<!-- <module>envisaje</module> -->
 		<module>extra</module>
