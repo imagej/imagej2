@@ -1,5 +1,6 @@
 package imagej.core.plugins.options;
 
+import imagej.SettingsKeys;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -17,10 +18,12 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Conversions...", weight = 10) })
 public class OptionsConversions implements ImageJPlugin{
 
-	@Parameter(label = "Scale When Converting", persist=true)
+	@Parameter(label = "Scale When Converting",
+		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_SCALE)
 	private boolean scaleWhenConverting;
 	
-	@Parameter(label = "Weighted RGB Conversions", persist=true)
+	@Parameter(label = "Weighted RGB Conversions",
+		persistKey = SettingsKeys.OPTIONS_CONVERSIONS_WEIGHTED)
 	private boolean weightedRgbConversions;
 	
 	@Override
