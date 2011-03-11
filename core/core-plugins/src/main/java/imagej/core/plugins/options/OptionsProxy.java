@@ -1,5 +1,6 @@
 package imagej.core.plugins.options;
 
+import imagej.SettingsKeys;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -16,13 +17,16 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Proxy Settings...", weight = 12) })
 public class OptionsProxy implements ImageJPlugin{
 
-	@Parameter(label = "Proxy Server", persist=true)
+	@Parameter(label = "Proxy Server",
+		persistKey = SettingsKeys.OPTIONS_PROXY_SERVER)
 	private String proxyServer;
 	
-	@Parameter(label = "Port", persist=true)
+	@Parameter(label = "Port",
+		persistKey = SettingsKeys.OPTIONS_PROXY_PORT)
 	private int port;
 
-	@Parameter(label = "Authenticate", persist=true)
+	@Parameter(label = "Authenticate",
+		persistKey = SettingsKeys.OPTIONS_PROXY_AUTHENTICATE)
 	private boolean authenticationRequired;
 
 	@Override

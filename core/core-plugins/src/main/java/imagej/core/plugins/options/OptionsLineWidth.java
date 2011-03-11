@@ -1,5 +1,6 @@
 package imagej.core.plugins.options;
 
+import imagej.SettingsKeys;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -16,7 +17,8 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Line Width...", weight = 1) })
 public class OptionsLineWidth implements ImageJPlugin{
 
-	@Parameter(label = "Line Width", persist = true)
+	@Parameter(label = "Line Width",
+		persistKey = SettingsKeys.OPTIONS_LINEWIDTH_WIDTH)
 	private int lineWidth;
 	
 	@Override
