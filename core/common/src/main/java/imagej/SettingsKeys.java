@@ -90,7 +90,7 @@ public class SettingsKeys
 	public static final String OPTIONS_POINT_SELECTION_COLOR = "settings.point.SelectionColor";
 
 	// from the Options Profile Plot dialog
-	public static final String OPTIONS_PROFILEPLOT_WIDTH = "settings.profileplot";
+	public static final String OPTIONS_PROFILEPLOT_WIDTH = "settings.profileplot.Width";
 	public static final String OPTIONS_PROFILEPLOT_HEIGHT = "settings.profileplot.Height";
 	public static final String OPTIONS_PROFILEPLOT_MIN_Y = "settings.profileplot.MinY";
 	public static final String OPTIONS_PROFILEPLOT_MAX_Y = "settings.profileplot.MaxY";
