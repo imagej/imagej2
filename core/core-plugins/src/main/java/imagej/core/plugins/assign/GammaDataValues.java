@@ -63,7 +63,7 @@ public class GammaDataValues implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "Value")
+	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
 	private double constant;
 
 	@Parameter(label = "Preview")
