@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui;
 
+import imagej.Log;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 
@@ -97,7 +98,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	}
 
 	@Override
-	public int compareTo(ShadowMenu c) {
+	public int compareTo(final ShadowMenu c) {
 		final double w1 = getMenuEntry().getWeight();
 		final double w2 = c.getMenuEntry().getWeight();
 		if (w1 < w2) return -1;
@@ -106,6 +107,11 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		final String n1 = getMenuEntry().getName();
 		final String n2 = c.getMenuEntry().getName();
 		return n1.compareTo(n2);
+	}
+
+	@Override
+	public String toString() {
+		return getMenuEntry().getName();
 	}
 
 	// -- Helper methods --
@@ -137,6 +143,9 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		// recursively add remaining child menus
 		if (depth + 1 < entry.getMenuPath().size()) {
 			childMenu.addChild(entry, depth + 1);
+		}
+		else if (existingChild != null) {
+			Log.warn("ShadowMenu: leaf item already exists: " + existingChild);
 		}
 	}
 
