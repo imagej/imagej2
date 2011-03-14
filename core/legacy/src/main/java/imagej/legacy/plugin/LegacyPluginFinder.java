@@ -62,7 +62,7 @@ import java.util.Set;
 import javax.swing.KeyStroke;
 
 /**
- * Discovers legacy ImageJ 1.x plugins.
+ * Discovers legacy ImageJ 1.x plugins by walking the invisible IJ1 AWT menu entries
  * 
  * @author Curtis Rueden
  */
@@ -79,42 +79,66 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	public LegacyPluginFinder() {
 		blacklist = new HashSet<String>();
+		
+		// TODO - load these from a data file
+		
 		blacklist.add("ij.plugin.Commands(\"quit\")");  // File>Quit
 		blacklist.add("ij.plugin.filter.Filler(\"fill\")");  // Edit>Fill
 		blacklist.add("ij.plugin.filter.Filters(\"invert\")");  // Edit>Invert
+		blacklist.add("ij.plugin.Options(\"line\")");  // Edit>Options>Line Width
+		blacklist.add("ij.plugin.Options(\"io\")");  // Edit>Options>Input/Output
+		blacklist.add("ij.plugin.frame.Fonts");  // Edit>Options>Fonts
+		blacklist.add("ij.plugin.filter.Profiler(\"set\")");  // Edit>Options>Profile Plot
+		blacklist.add("ij.plugin.ArrowToolOptions");  // Edit>Options>Arrow Tool
+		blacklist.add("ij.plugin.Colors(\"point\")");  // Edit>Options>Point Tool
+		blacklist.add("ij.plugin.WandToolOptions");  // Edit>Options>Wand Tools
+		blacklist.add("ij.plugin.Colors");  // Edit>Options>Colors
+		blacklist.add("ij.plugin.Options(\"display\")");  // Edit>Options>Appearance
+		blacklist.add("ij.plugin.Options(\"conv\")");  // Edit>Options>Conversions
+		blacklist.add("ij.plugin.Memory");  // Edit>Options>Memory & Threads
+		blacklist.add("ij.plugin.ProxySettings");  // Edit>Options>Proxy Settings
+		blacklist.add("ij.plugin.Compiler(\"options\")");  // Edit>Options>Compiler
+		blacklist.add("ij.plugin.Options(\"dicom\")");  // Edit>Options>DICOM
+		blacklist.add("ij.plugin.Options(\"misc\")");  // Edit>Options>Misc.
+		blacklist.add("ij.plugin.Resizer(\"crop\")");  // Image>Crop
+		blacklist.add("ij.plugin.Duplicator"); // Image>Duplicate
+		blacklist.add("ij.plugin.filter.Transformer(\"fliph\")");  // Image>Transform>Flip Horizontally
+		blacklist.add("ij.plugin.filter.Transformer(\"flipv\")");  // Image>Transform>Flip Vertically
+		blacklist.add("ij.plugin.filter.Transformer(\"left\")");  // Image>Transform>Rotate 90 Degrees Left
+		blacklist.add("ij.plugin.filter.Transformer(\"right\")");  // Image>Transform>Rotate 90 Degrees Right
 		blacklist.add("ij.plugin.filter.Filters(\"smooth\")");  // Process>Smooth
 		blacklist.add("ij.plugin.filter.Filters(\"sharpen\")");  // Process>Sharpen
 		blacklist.add("ij.plugin.filter.Filters(\"edge\")");  // Process>Find Edges
-		blacklist.add("ij.plugin.filter.Filters(\"add\")");  // Process>Add Noise
-		blacklist.add("ij.plugin.filter.Filters(\"noise\")"); // Process>Add Specified Noise
-		blacklist.add("ij.plugin.filter.SaltAndPepper");  // Process>Salt and Pepper
-		blacklist.add("ij.plugin.filter.Shadows(\"north\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"northeast\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"east\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"southeast\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"south\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"southwest\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"west\")");
-		blacklist.add("ij.plugin.filter.Shadows(\"northwest\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"add\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"sub\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"mul\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"div\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"and\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"or\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"xor\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"min\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"max\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"gamma\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"set\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"log\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"exp\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"sqr\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"sqrt\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"reciprocal\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"nan\")");
-		blacklist.add("ij.plugin.filter.ImageMath(\"abs\")");
-		blacklist.add("ij.plugin.ImageCalculator");
+		blacklist.add("ij.plugin.filter.Filters(\"add\")");  // Process>Noise>Add Noise
+		blacklist.add("ij.plugin.filter.Filters(\"noise\")"); // Process>Noise>Add Specified Noise
+		blacklist.add("ij.plugin.filter.SaltAndPepper");  // Process>Noise>Salt and Pepper
+		blacklist.add("ij.plugin.filter.Shadows(\"north\")");  // Process>Shadows>North 
+		blacklist.add("ij.plugin.filter.Shadows(\"northeast\")");  // Process>Shadows>Northeast
+		blacklist.add("ij.plugin.filter.Shadows(\"east\")");  // Process>Shadows>East
+		blacklist.add("ij.plugin.filter.Shadows(\"southeast\")");  // Process>Shadows>Southeast
+		blacklist.add("ij.plugin.filter.Shadows(\"south\")");  // Process>Shadows>South
+		blacklist.add("ij.plugin.filter.Shadows(\"southwest\")");  // Process>Shadows>Southwest
+		blacklist.add("ij.plugin.filter.Shadows(\"west\")");  // Process>Shadows>West
+		blacklist.add("ij.plugin.filter.Shadows(\"northwest\")");  // Process>Shadows>Northwest
+		blacklist.add("ij.plugin.filter.ImageMath(\"add\")");  // Process>Math>Add
+		blacklist.add("ij.plugin.filter.ImageMath(\"sub\")");  // Process>Math>Subtract
+		blacklist.add("ij.plugin.filter.ImageMath(\"mul\")");  // Process>Math>Multiply
+		blacklist.add("ij.plugin.filter.ImageMath(\"div\")");  // Process>Math>Divide
+		blacklist.add("ij.plugin.filter.ImageMath(\"and\")");  // Process>Math>AND
+		blacklist.add("ij.plugin.filter.ImageMath(\"or\")");  // Process>Math>OR
+		blacklist.add("ij.plugin.filter.ImageMath(\"xor\")");  // Process>Math>XOR
+		blacklist.add("ij.plugin.filter.ImageMath(\"min\")");  // Process>Math>Min
+		blacklist.add("ij.plugin.filter.ImageMath(\"max\")");  // Process>Math>Max
+		blacklist.add("ij.plugin.filter.ImageMath(\"gamma\")");  // Process>Math>Gamma
+		blacklist.add("ij.plugin.filter.ImageMath(\"set\")");  // Process>Math>Set
+		blacklist.add("ij.plugin.filter.ImageMath(\"log\")");  // Process>Math>Log
+		blacklist.add("ij.plugin.filter.ImageMath(\"exp\")");  // Process>Math>Exp
+		blacklist.add("ij.plugin.filter.ImageMath(\"sqr\")");  // Process>Math>Sqr
+		blacklist.add("ij.plugin.filter.ImageMath(\"sqrt\")");  // Process>Math>Sqrt
+		blacklist.add("ij.plugin.filter.ImageMath(\"reciprocal\")");  // Process>Math>Reciprocal
+		blacklist.add("ij.plugin.filter.ImageMath(\"nan\")");  // Process>Math>Set Background To NaN
+		blacklist.add("ij.plugin.filter.ImageMath(\"abs\")");  // Process>Math>Abs
+		blacklist.add("ij.plugin.ImageCalculator");  // Process>Image Calculator
 	}
 
 	@Override
