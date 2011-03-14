@@ -46,9 +46,6 @@ import java.lang.reflect.Method;
  */
 public final class ImageJ {
 
-//	private static final String MAIN_CLASS = "imagej.gui.awt.AWTLauncher";
-//	private static final String MAIN_CLASS = "imagej.gui.pivot.PivotLauncher";
-//	private static final String MAIN_CLASS = "imagej.gui.swt.SWTLauncher";
 	private static final String MAIN_CLASS = "imagej.gui.swing.SwingLauncher";
 
 	private ImageJ() {
