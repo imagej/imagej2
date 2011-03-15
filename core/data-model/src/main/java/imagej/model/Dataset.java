@@ -58,6 +58,22 @@ public class Dataset {
 
 	private final Image<?> image;
 	private final Metadata metadata;
+	
+	// FIXME TEMP - the current selection for this Dataset. Temporarily located
+	//   here for plugin testing purposes. Really should be viewcentric.
+	private int selectionMinX, selectionMinY, selectionMaxX, selectionMaxY;
+	public int getSelectionMinX() { return selectionMinX; }  // could define a nonAWT rect
+	public int getSelectionMinY() { return selectionMinY; }  //   and return it but lets
+	public int getSelectionMaxX() { return selectionMaxX; }  //   not pollute Dataset at
+	public int getSelectionMaxY() { return selectionMaxY; }  //   this time
+	public void setSelection(int minX, int minY, int maxX, int maxY)
+	{
+		selectionMinX = minX;
+		selectionMinY = minY;
+		selectionMaxX = maxX;
+		selectionMaxY = maxY;
+	}
+	// END FIXME TEMP
 
 	public Dataset(final Image<?> image) {
 		this(image, Metadata.createMetadata(image));
