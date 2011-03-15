@@ -90,7 +90,7 @@ public class Convolve3x3Operation {
 	 * ConvolveWatcher is where the actual convolution value of one output pixel
 	 * is calculated. The watcher is called from Neighborhood3x3Operation visiting
 	 * each pixel in the input image (and all its immediate neighbors) once.
-	 * ConvolveWatcher tallies that information and returns apprpriate values as
+	 * ConvolveWatcher tallies that information and returns appropriate values as
 	 * necessary.
 	 */
 	private class ConvolveWatcher implements Neighborhood3x3Watcher {

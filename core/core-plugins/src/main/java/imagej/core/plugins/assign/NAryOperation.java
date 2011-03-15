@@ -74,6 +74,10 @@ public class NAryOperation {
 	/** The imglib-ops function to execute. */
 	private RealFunction function;
 
+	/** subregion information used to support working on subregions of inputs */
+	private int[] outputOrigin, outputSpan;
+	private int[][] inputOrigins, inputSpans;
+	
 	// -- constructors --
 
 	/**
@@ -88,9 +92,10 @@ public class NAryOperation {
 		if (!function.canAccept(1)) throw new IllegalArgumentException(
 			"NAryOperation constructor - given function cannot accept a single input");
 
+		initializeSubregionVariables();
+		
 		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a List<Dataset>
-		// @Parameter
+		// plugins can correctly fill a Dataset @Parameter
 		{
 			Image<UnsignedShortType> junkImage =
 				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
@@ -120,8 +125,7 @@ public class NAryOperation {
 			"NAryOperation constructor - given function cannot accept two inputs");
 
 		if (input1 == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a List<Dataset>
-		// @Parameter
+		// plugins can correctly fill a Dataset @Parameter
 		{
 			Image<UnsignedShortType> junkImage1 =
 				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
@@ -136,8 +140,7 @@ public class NAryOperation {
 		}
 
 		if (input2 == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a List<Dataset>
-		// @Parameter
+		// plugins can correctly fill a List<Dataset> @Parameter
 		{
 			Image<UnsignedShortType> junkImage2 =
 				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
@@ -175,6 +178,18 @@ public class NAryOperation {
 		this.output = output;
 	}
 
+	public void setOutputRegion(int[] origin, int[] span)
+	{
+		outputOrigin = origin;
+		outputSpan = span;
+	}
+	
+	public void setInputRegion(int i, int[] origin, int[] span)
+	{
+		inputOrigins[i] = origin;
+		inputSpans[i] = span;
+	}
+
 	/**
 	 * runs the plugin applying the operation's function to the input and
 	 * assigning it to the output
@@ -199,6 +214,10 @@ public class NAryOperation {
 		final AssignOperation operation =
 			new AssignOperation(inputImages, outputImage, function);
 
+		operation.setOutputRegion(outputOrigin, outputSpan);
+		for (int i = 0; i < inputImages.length; i++)
+			operation.setInputRegion(i, inputOrigins[i], inputSpans[i]);
+		
 		operation.execute();
 
 		if (output != null) return output;
@@ -223,4 +242,19 @@ public class NAryOperation {
 		return new Dataset(image);
 	}
 
+	/** sets up subregion variables to default values */
+	private void initializeSubregionVariables()
+	{
+		int numInputs = inputs.size();
+		outputOrigin = new int[inputs.get(0).getImage().getNumDimensions()];
+		outputSpan = inputs.get(0).getImage().getDimensions();
+		inputOrigins = new int[numInputs][];
+		inputSpans = new int[numInputs][];
+		for (int i = 0; i < numInputs; i++)
+		{
+			Image<?> image = inputs.get(i).getImage();
+			inputOrigins[i] = new int[image.getNumDimensions()];
+			inputSpans[i] = image.getDimensions();
+		}
+	}
 }
