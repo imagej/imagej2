@@ -17,18 +17,6 @@
 	<name>ImageJ GUI</name>
 	<description>ImageJ GUI projects.</description>
 
-	<modules>
-		<module>gui-awt</module>
-		<module>gui-pivot</module>
-		<module>gui-swing</module>
-		<module>gui-swt</module>
-		<module>imagej</module>
-		<module>plugin-awt</module>
-		<!--<module>plugin-pivot</module>-->
-		<module>plugin-swing</module>
-		<module>plugin-swt</module>
-	</modules>
-
 	<properties>
 	  <pivot.version>1.4</pivot.version>
 		<swt.version>3.0m7</swt.version>
@@ -45,5 +33,39 @@
 			<url>http://dev.imagejdev.org/maven2/snapshots</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>awt</id>
+			<modules>
+				<module>gui-awt</module>
+				<module>plugin-awt</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>pivot</id>
+			<modules>
+				<module>gui-pivot</module>
+				<!--<module>plugin-pivot</module>-->
+			</modules>
+		</profile>
+		<profile>
+			<id>swing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>gui-swing</module>
+				<module>plugin-swing</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>swt</id>
+			<modules>
+				<module>gui-swt</module>
+				<module>plugin-swt</module>
+			</modules>
+		</profile>
+	</profiles>
 
 </project>
