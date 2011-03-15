@@ -17,6 +17,10 @@
 	<name>ImageJ GUI</name>
 	<description>ImageJ GUI projects.</description>
 
+	<modules>
+		<module>imagej</module>
+	</modules>
+
 	<properties>
 	  <pivot.version>1.4</pivot.version>
 		<swt.version>3.0m7</swt.version>
