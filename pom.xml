@@ -81,6 +81,16 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.fusesource.mvnplugins</groupId>
+				<artifactId>maven-graph-plugin</artifactId>
+				<version>1.0</version>
+				<configuration>
+					<hideScopes>runtime,test</hideScopes>
+					<label>Dependency Graph for ${project.name}</label>
+					<target>${project.build.directory}/dependency-graph.dot</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -329,6 +339,16 @@
 			<url>http://bits.netbeans.org/maven2</url>
 		</repository>
 	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mvnplugins.fusesource.org</id>
+			<url>http://mvnplugins.fusesource.org/repo/release</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<distributionManagement>
 		<repository>
