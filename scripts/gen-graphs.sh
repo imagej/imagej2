@@ -6,12 +6,13 @@
 set -e
 
 ROOT=`cd "$(dirname $0)/.." ; pwd`
-COMPONENTS=(core gui)
+COMPONENTS=(. core gui)
 
 GRAPH_CMD="
   neato
-  -Goverlap=false
+  -Goverlap=scale
   -Gsplines=true
+  -Gepsilon=0.0001
   -Tsvg
   -o dependency-graph.svg
   dependency-graph.dot
