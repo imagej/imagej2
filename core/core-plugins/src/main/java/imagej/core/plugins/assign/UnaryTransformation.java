@@ -47,29 +47,27 @@ public class UnaryTransformation {
 
 	// -- instance variables --
 
-	private Dataset input;
-	private Dataset output;
-	private UnaryOperator operator;
+	private NAryOperation operation;
 
 	// -- constructor --
 
 	public UnaryTransformation(Dataset input, Dataset output,
 		UnaryOperator operator)
 	{
-		this.input = input;
-		this.output = output;
-		this.operator = operator;
+		UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
+		operation = new NAryOperation(input, function);
+		operation.setOutput(output);
 	}
 
 	// -- public interface --
 
+	public void setRegion(int[] origin, int[] span)
+	{
+		operation.setInputRegion(0, origin, span);
+		operation.setOutputRegion(origin, span);
+	}
+	
 	public Dataset run() {
-		UnaryOperatorFunction func = new UnaryOperatorFunction(operator);
-
-		NAryOperation operation = new NAryOperation(input, func);
-
-		operation.setOutput(output);
-
 		return operation.run();
 	}
 }

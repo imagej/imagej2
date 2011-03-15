@@ -47,8 +47,8 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation
- * plugins such as SmoothDataValues, SharpenDataValues, and FindEdges. Does the
- * work of communicating with a Neighborhood3x3Watcher.
+ * plugins such as SmoothDataValues, SharpenDataValues, and FindEdges. Does
+ * the work of communicating with a Neighborhood3x3Watcher.
  * 
  * @author Barry DeZonia
  */
@@ -112,7 +112,7 @@ public class Neighborhood3x3Operation {
 		/** constructor - an algorithm will reference an input Dataset */
 		public Neighborhood3x3Algorithm(Dataset input) {
 			inputImage = input.getImage();
-			outputImage = inputImage.createNewImage();
+			outputImage = null;  // initialize later
 		}
 
 		/**
@@ -131,6 +131,8 @@ public class Neighborhood3x3Operation {
 						" dimensions";
 				return false;
 			}
+
+			outputImage = inputImage.createNewImage();
 
 			return true;
 		}
@@ -154,8 +156,10 @@ public class Neighborhood3x3Operation {
 			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
 				(LocalizableByDimCursor<? extends RealType<?>>) outputImage
 					.createLocalizableByDimCursor();
+
 			OutOfBoundsStrategyFactory factory =
 				new OutOfBoundsStrategyMirrorFactory();
+			
 			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
 				(LocalizableByDimCursor<? extends RealType<?>>) inputImage
 					.createLocalizableByDimCursor(factory);
@@ -191,8 +195,9 @@ public class Neighborhood3x3Operation {
 
 						// update watcher about the position and value of the
 						// subneighborhood location
-						watcher
-							.visitLocation(dx, dy, inputCursor.getType().getRealDouble());
+						double inputValue = inputCursor.getType().getRealDouble();
+						
+						watcher.visitLocation(dx, dy, inputValue);
 					}
 				}
 
