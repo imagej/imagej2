@@ -36,6 +36,19 @@
 
 	<profiles>
 		<profile>
+			<id>all</id>
+			<modules>
+				<module>gui-awt</module>
+				<module>gui-pivot</module>
+				<module>gui-swing</module>
+				<module>gui-swt</module>
+				<module>plugin-awt</module>
+				<!-- <module>plugin-pivot</module> -->
+				<module>plugin-swing</module>
+				<module>plugin-swt</module>
+			</modules>
+		</profile>
+		<profile>
 			<id>awt</id>
 			<modules>
 				<module>gui-awt</module>
@@ -46,7 +59,7 @@
 			<id>pivot</id>
 			<modules>
 				<module>gui-pivot</module>
-				<!--<module>plugin-pivot</module>-->
+				<!-- <module>plugin-pivot</module> -->
 			</modules>
 		</profile>
 		<profile>
