@@ -52,7 +52,7 @@ import mpicbg.imglib.type.numeric.RealType;
 /**
  * TODO
  * 
- * @author Curtis Reuden
+ * @author Curtis Rueden
  */
 @Plugin(menu = {
 	@Menu(label = "File", mnemonic = 'f'),
