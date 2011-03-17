@@ -13,8 +13,8 @@ GRAPH_CMD="
   -Goverlap=scale
   -Gsplines=true
   -Gepsilon=0.0001
-  -Tsvg
-  -o dependency-graph.svg
+  -Tjpg
+  -o dependency-graph.jpg
   dependency-graph.dot
 "
 
