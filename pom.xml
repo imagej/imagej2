@@ -99,6 +99,7 @@
 			<!-- NB: Generate javadocs as part of site generation. -->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
 				<configuration>
 					<maxmemory>1024m</maxmemory>
 					<!-- NB: Workaround for javadoc bug when classes in the default
