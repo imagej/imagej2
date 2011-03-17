@@ -60,6 +60,9 @@ public @interface Parameter {
 	/** Defines a label for the parameter. */
 	String label() default "";
 
+	/** Defines a description for the parameter. */
+	String description() default "";
+
 	/** Defines whether the parameter is required (i.e., no default). */
 	boolean required() default false;
 
