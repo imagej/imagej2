@@ -70,7 +70,10 @@ public @interface Parameter {
 	 * output, such as a "verbose" flag.</li>
 	 * </ul>
 	 */
-	ParamVisibility visibility() default ParamVisibility.NORMAL;
+	// NB: We use the fully qualified name to work around a javac bug:
+	// http://bugs.sun.com/view_bug.do?bug_id=6512707
+	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	ParamVisibility visibility() default imagej.plugin.ParamVisibility.NORMAL;
 
 	/** Defines a label for the parameter. */
 	String label() default "";
