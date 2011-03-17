@@ -43,19 +43,34 @@ import java.lang.annotation.Target;
 
 /**
  * TODO
- *
+ * 
  * @author Johannes Schindelin
  * @author Grant Harris
  * @author Curtis Rueden
  */
-
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Parameter {
 
 	/** Defines if the parameter is an output. */
 	boolean output() default false;
+
+	/**
+	 * Defines the "visibility" of the parameter.
+	 * <p>
+	 * Choices are:
+	 * <ul>
+	 * <li>NORMAL: parameter is included in the history for purposes of data
+	 * provenance, and included as a parameter when recording scripts.</li>
+	 * <li>TRANSIENT: parameter is excluded from the history for the purposes of
+	 * data provenance, but still included as a parameter when recording scripts.</li>
+	 * <li>INVISIBLE: parameter is excluded from the history for the purposes of
+	 * data provenance, and also excluded as a parameter when recording scripts.
+	 * This option should only be used for parameters with no effect on the final
+	 * output, such as a "verbose" flag.</li>
+	 * </ul>
+	 */
+	ParamVisibility visibility() default ParamVisibility.NORMAL;
 
 	/** Defines a label for the parameter. */
 	String label() default "";
@@ -73,12 +88,10 @@ public @interface Parameter {
 	String persistKey() default "";
 
 	/** Defines the preferred widget style. */
-	/* The fully qualified name required to workaround javac bug:
-	 * http://bugs.sun.com/view_bug.do?bug_id=6512707
-	 * See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	 */
-
-	WidgetStyle style() default  imagej.plugin.gui.WidgetStyle.DEFAULT;
+	// NB: We use the fully qualified name to work around a javac bug:
+	// http://bugs.sun.com/view_bug.do?bug_id=6512707
+	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
+	WidgetStyle style() default imagej.plugin.gui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";
@@ -90,8 +103,8 @@ public @interface Parameter {
 	String stepSize() default "";
 
 	/**
-	 * Defines the width of the input field in characters
-	 * (text field parameters only).
+	 * Defines the width of the input field in characters (text field parameters
+	 * only).
 	 */
 	int columns() default 6;
 
