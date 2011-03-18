@@ -67,6 +67,10 @@ public enum AxisLabel {
 		return axisLabels.get(label);
 	}
 
+	public static boolean isXY(AxisLabel dimLabel) {
+		return dimLabel == AxisLabel.X || dimLabel == AxisLabel.Y;
+	}
+
 	private String label;
 
 	private AxisLabel(String label) {
