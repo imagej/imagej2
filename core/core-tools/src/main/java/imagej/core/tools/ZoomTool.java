@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.display.Display;
+import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
@@ -42,9 +44,17 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Zoom", iconPath = "/tools/zoom.png")
+@Tool(name = "Zoom", description = "Image Zoom Tool",  iconPath = "/tools/zoom.png")
+
 public class ZoomTool extends BaseTool {
 
 	// TODO
+		@Override
+	public void onMouseDown(MsPressedEvent evt) {
+		final Display display = evt.getDisplay();
+//		display.zoom(factor)
+//		lastX = evt.getX();
+//		lastY = evt.getY();
+	}
 
 }

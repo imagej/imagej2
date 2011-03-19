@@ -40,6 +40,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import java.awt.Cursor;
 
 import java.awt.event.KeyEvent;
 
@@ -94,6 +95,11 @@ public class PanTool extends BaseTool {
 		display.pan(evt.getX() - lastX, evt.getY() - lastY);
 		lastX = evt.getX();
 		lastY = evt.getY();
+	}
+
+	@Override
+	public int getCursor() {
+		return Cursor.HAND_CURSOR;
 	}
 
 }
