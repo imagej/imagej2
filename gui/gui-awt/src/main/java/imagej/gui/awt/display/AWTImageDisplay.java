@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.gui.awt.display;
 
 import imagej.display.Display;
+import imagej.display.ImageDisplayWindow;
+import imagej.display.NavigableImageCanvas;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -71,9 +73,60 @@ public class AWTImageDisplay extends AbstractAWTDisplay {
 		// TODO
 	}
 
+
 	@Override
-	public void zoom(float factor) {
-		// TODO
+	public Dataset getDataset() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public ImageDisplayWindow getImageDisplayWindow() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public NavigableImageCanvas getImageCanvas() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Object getCurrentPlane() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public float getPanX() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public float getPanY() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void setZoom(float factor, float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomIn(float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomOut(float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomToFit(int w, int h) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public float getZoom() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 }

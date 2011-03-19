@@ -1,4 +1,3 @@
-// OBS
 //
 // NavigableImageFrame.java
 //
@@ -35,9 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.gui.swing.display;
 
 import imagej.display.DisplayController;
+import imagej.display.EventDispatcher;
+import imagej.display.ImageDisplayWindow;
+import imagej.display.ImageCanvas;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import imagej.display.NavigableImageCanvas;
 
 import imagej.model.AxisLabel;
 
@@ -48,6 +51,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -58,28 +62,24 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-
 /**
  * TODO
  *
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class NavigableImageFrame extends JFrame {
+public class NavigableImageJFrame extends JFrame implements ImageDisplayWindow {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 	private JLabel imageLabel;
-	private NavigableImagePanel imagePanel;
+	private NavigableImageCanvas imgCanvas;
 	private JPanel sliders;
 	//
 	private DisplayController controller;
 
-	public NavigableImageFrame(DisplayController controller, NavigableImagePanel imagePanel) {
-		this.controller = controller;
-		this.imagePanel = imagePanel;
-
+	public NavigableImageJFrame(NavigableImageCanvas imgCanvas) {
+		this.imgCanvas = imgCanvas;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
 		// maximize window size
 		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final Rectangle bounds = ge.getMaximumWindowBounds();
@@ -87,28 +87,31 @@ public class NavigableImageFrame extends JFrame {
 				2 * bounds.width / 3, 2 * bounds.height / 3);
 		imageLabel = new JLabel(" ");
 		getContentPane().add(imageLabel, BorderLayout.NORTH);
-
-		//imagePanel = new NavigableImagePanel();
 		final JPanel borderPanel = new JPanel();
 		borderPanel.setLayout(new BorderLayout());
 		borderPanel.setBorder(new CompoundBorder(
 				new EmptyBorder(3, 3, 3, 3),
 				new LineBorder(Color.black)));
-		borderPanel.add(imagePanel, BorderLayout.CENTER);
+		borderPanel.add((NavigableImagePanel) imgCanvas, BorderLayout.CENTER);
 		getContentPane().add(borderPanel, BorderLayout.CENTER);
+
+	}
+
+	@Override
+	public void setDisplayController(DisplayController controller) {
+		this.controller = controller;
+		int[] dims = controller.getDims();
+		AxisLabel[] dimLabels = controller.getDimLabels();
+		sliders = createSliders(dims, dimLabels);
+		getContentPane().add(sliders, BorderLayout.SOUTH);
 	}
 
 	public void setLabel(String s) {
 		imageLabel.setText(s);
 	}
 
-	public NavigableImagePanel getPanel() {
-		return imagePanel;
-	}
-
-	public void addControls(int[] dims, AxisLabel[] dimLabels) {
-		sliders = createSliders(dims, dimLabels);
-		getContentPane().add(sliders, BorderLayout.SOUTH);
+	public ImageCanvas getPanel() {
+		return imgCanvas;
 	}
 
 	private JPanel createSliders(int[] dims, AxisLabel[] dimLabels) {
@@ -159,6 +162,32 @@ public class NavigableImageFrame extends JFrame {
 			row += 2;
 		}
 		return panelBuilder.getPanel();
+	}
+
+	@Override
+	public void setImageCanvas(ImageCanvas canvas) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public ImageCanvas getImageCanvas() {
+		return imgCanvas;
+	}
+
+	@Override
+	public void setImage(BufferedImage image) {
+		imgCanvas.setImage(image);
+	}
+
+	@Override
+	public void updateImage() {
+		imgCanvas.updateImage();
+	}
+
+	@Override
+	public void addEventDispatcher(EventDispatcher dispatcher) {
+		addWindowListener((AWTEventDispatcher) dispatcher);
+
 	}
 
 }
