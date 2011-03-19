@@ -22,7 +22,7 @@ import javax.swing.*;
  *
  * @author Qiang Yu (qiangyu@gmail.com)
  */
-public class ZoomJPanel extends JPanel {
+public class ZoomJPanel extends JPanel implements ZoomableView {
 
     private float MAX_ZOOM_FACTOR_X = 16f;
     private float MIN_ZOOM_FACTOR_X = 0.25f;

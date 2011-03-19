@@ -35,6 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.gui.swt.display;
 
 import imagej.display.Display;
+import imagej.display.ImageCanvas;
+import imagej.display.ImageDisplayWindow;
+import imagej.display.NavigableImageCanvas;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -70,8 +73,111 @@ public class SWTImageDisplay implements Display {
 	}
 
 	@Override
-	public void zoom(float factor) {
-		// TODO
+	public float getPanX() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
+
+	@Override
+	public float getPanY() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void setZoom(float factor, float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomIn(float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomOut(float centerX, float centerY) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void zoomToFit(int w, int h) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public float getZoom() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Dataset getDataset() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public ImageDisplayWindow getImageDisplayWindow() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public NavigableImageCanvas getImageCanvas() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Object getCurrentPlane() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	/*
+	Viewer	API ideas
+	From Aivar March 15
+
+// Scales to fit within arbitrary screen dimensions.
+scaleToFit(Dimension dim)
+
+// Gets screen dimensions.
+Dimension getScreenDimension()
+
+// Scales (closest) to arbitrary factor.
+scaleFactor(float factor)
+
+// Gets scale factor.
+float getScaleFactor()
+
+// Pans in screen increments, as much as possible.
+//
+// Used when you drag the mouse with the hand tool selected.
+pan(int x, int y)
+
+// Zooms in or out, if possible.
+// This assumes that the Viewer
+// Used when you press '+' or '-'.
+void zoom(boolean in)
+
+// Zooms in or out, if possible, and re-centers, in screen coordinates.
+//
+// Used when you click on the image with the zoom tool selected.
+zoom(boolean in, int x, int y)
+
+// Converts scaled screen coordinates to raw image coordinates.
+//
+// Coordinate is just some class to encapsulate x, y.
+Coordinate screenToImage(Coordinate coord);
+
+// Converts raw image coordinates to scaled screen coordinates.
+//
+// Can be negative or greater than screen window dimensions.
+Coordinate imageToScreen(Coordinate coord);
+
+// Invalidate image rectangles.
+//
+// Not called from the UI but called after ROI-based or otherwise.
+// localized image changes. Forces retile and redraw.
+void invalidateRects(Rectangle[] rects);
+
+// Invalidate whole image.
+//
+// Called after image changes. Forces retile and redraw.
+void invalidate();
+*/
 
 }

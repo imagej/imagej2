@@ -68,7 +68,9 @@ public class MyJavaP {
 //      for (int i = 0; i < argv.length; i++)
 //        pp.doClass(argv[i]);
         String[] clazz = new String[]{
-"ijx.process.ImageProcessor",
+"ijx.roi.Roi",
+"ijx.roi.ShapeRoi",
+"ijx.roi.RoiManager"
 //"ij.WindowManager",
 //"ij.gui.ColorChooser",
 //"ij.gui.ColorPanel",

@@ -1,5 +1,5 @@
 //
-// NavigableImageDisplay.java
+// SimpleImageDisplay.java
 //
 
 /*
@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,16 +30,17 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package imagej.gui.swing.display;
 
+import imagej.display.NavigableImageCanvas;
 import imagej.display.Display;
+import imagej.display.DisplayController;
 import imagej.display.DisplayView;
+import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.ImageDisplayWindow;
 import imagej.display.LayeredDisplay;
-import imagej.display.NavigableImageCanvas;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -49,14 +50,17 @@ import imagej.plugin.Plugin;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-// @Plugin(type = Display.class)
-public class NavigableImageDisplay extends AbstractAWTDisplay
-	implements Display
-{
+@Plugin(type = Display.class)
+public class SimpleImageDisplay implements Display {
 
-	//private NavigableImageFrame imageFrame;
-	private ImageDisplayWindow imageFrame;
-	private NavigableImageCanvas imagecanvas;
+	private ImageDisplayWindow imgWindow;
+	private NavigableImageCanvas imgCanvas;
+	private Dataset dataset;
+	private DisplayController controller;
+
+	public SimpleImageDisplay() {
+	}
+
 	@Override
 	public boolean canDisplay(Dataset dataset) {
 		return true;
@@ -64,28 +68,46 @@ public class NavigableImageDisplay extends AbstractAWTDisplay
 
 	@Override
 	public void display(Dataset dataset) {
-		// NavigableImagePanel imagePanel = new NavigableImagePanel();
-		//imageFrame = new NavigableImageFrame(controller,imagePanel);
-		//DisplayController controller = new DisplayController(dataset, imageFrame);
+		this.dataset = dataset;
+		//imgCanvas = new ImageCanvasSwing();
+		imgCanvas = new NavigableImagePanel();
+		imgWindow = new NavigableImageJFrame(imgCanvas);
+		controller = new DisplayController(this);
+		imgWindow.setDisplayController(controller);
+		EventDispatcher dispatcher = new AWTEventDispatcher(this);
+		imgCanvas.addEventDispatcher(dispatcher);
+		imgCanvas.subscribeToToolEvents();
+		imgWindow.addEventDispatcher(dispatcher);
+		// TODO - use DisplayView instead of Dataset directly
+		//imageFrame.setDataset(dataset);
+		//((NavigableImageJFrame)imgWindow).pack();
+		((NavigableImageJFrame)imgWindow).setVisible(true);
+	}
 
 
+	@Override
+	public Dataset getDataset() {
+		return dataset;
+	}
 
-		// listen for user input
-//		imageFrame.getPanel().addKeyListener(this);
-//		imageFrame.getPanel().addMouseListener(this);
-//		imageFrame.getPanel().addMouseMotionListener(this);
-//		imageFrame.getPanel().addMouseWheelListener(this);
-//		imageFrame.addWindowListener(this);
-//
-//		// TODO - use DisplayView instead of Dataset directly
-//		//imageFrame.setDataset(dataset);
-//		imageFrame.pack();
-//		imageFrame.setVisible(true);
+	@Override
+	public ImageDisplayWindow getImageDisplayWindow() {
+		return imgWindow;
+	}
+
+	@Override
+	public NavigableImageCanvas getImageCanvas() {
+		return imgCanvas;
+	}
+
+	@Override
+	public Object getCurrentPlane() {
+		return controller.getCurrentPlane();
 	}
 
 	@Override
 	public void pan(float x, float y) {
-		//imageFrame.getPanel().pan((int) x, (int) y);
+		imgCanvas.pan((int) x, (int) y);
 	}
 
 	// TODO
@@ -127,24 +149,5 @@ public class NavigableImageDisplay extends AbstractAWTDisplay
 		//throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	@Override
-	public ImageDisplayWindow getImageDisplayWindow() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public NavigableImageCanvas getImageCanvas() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public Dataset getDataset() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public Object getCurrentPlane() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
 
 }
