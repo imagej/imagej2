@@ -42,7 +42,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Angle", iconPath="/tools/angle.png")
+@Tool(name = "Angle", iconPath="/tools/angle.png", description = "Angle")
 public class AngleTool extends BaseTool {
 
 	// TODO

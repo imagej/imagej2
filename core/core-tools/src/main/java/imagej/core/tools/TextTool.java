@@ -36,15 +36,22 @@ package imagej.core.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import java.awt.Cursor;
 
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Text", iconPath="/tools/text.png")
+@Tool(name = "Text", iconPath="/tools/text.png", description = "Text")
 public class TextTool extends BaseTool {
 
+	@Override
+	public int getCursor() {
+		return Cursor.TEXT_CURSOR;
+	}
+
 	// TODO
+
 
 }

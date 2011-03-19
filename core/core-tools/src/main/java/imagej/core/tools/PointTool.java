@@ -36,15 +36,23 @@ package imagej.core.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import java.awt.Cursor;
 
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Point", iconPath="/tools/point.png")
+@Tool(name = "Point", iconPath="/tools/point.png", description = "Point")
 public class PointTool extends BaseTool {
 
+	@Override
+	public int getCursor() {
+		return Cursor.CROSSHAIR_CURSOR;
+	}
+
 	// TODO
+
+
 
 }
