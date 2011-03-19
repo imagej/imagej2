@@ -89,6 +89,8 @@ public class ToolManager {
 		// activate new tool
 		activeTool.activate();
 		Events.publish(new ToolActivatedEvent(activeTool));
+		// debug
+		System.out.println("Active Tool set: " + activeTool.getName());
 	}
 
 	private void subscribeToEvents() {
