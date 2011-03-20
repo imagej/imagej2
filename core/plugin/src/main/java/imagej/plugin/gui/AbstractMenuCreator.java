@@ -1,5 +1,5 @@
 //
-// MenuCreator.java
+// AbstractMenuCreator.java
 //
 
 /*
@@ -34,48 +34,64 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * TODO
- *
+ * Abstract helper class for generating a menu structure.
+ * <p>
+ * The class differentiates between top-level menu components (such as
+ * JMenuBar), and hierarchical menu components (such as JMenu).
+ * </p>
+ * 
  * @author Curtis Rueden
- *
- * @param <M> Top-level menu class to populate (e.g., JMenuBar or JMenu)
- * @param <I> Menu item class (e.g., JMenuItem or MenuItem)
+ * @param <T> Top-level menu class to populate (e.g., JMenuBar or JMenu)
+ * @param <M> Hierarchical menu class (e.g., JMenu or Menu)
  */
-public abstract class AbstractMenuCreator<M, I> implements MenuCreator<M> {
+public abstract class AbstractMenuCreator<T, M> implements MenuCreator<T> {
 
 	@Override
-	public abstract void createMenus(ShadowMenu root, M target);
-
-	/** Generates a menu item corresponding to this shadow menu node. */
-	protected abstract I createMenuItem(ShadowMenu shadow);
-
-	/**
-	 * Generates a list of menu items corresponding
-	 * to the child menu nodes, sorted by weight.
-	 */
-	protected List<I> createChildMenuItems(final ShadowMenu shadow) {
-		// generate list of ShadowMenu objects, sorted by weight
-		final List<ShadowMenu> childMenus =
-			new ArrayList<ShadowMenu>(shadow.getChildren().values());
-		Collections.sort(childMenus);
-
-		// create menu items corresponding to ShadowMenu objects
-		final List<I> menuItems = new ArrayList<I>();
+	public void createMenus(final ShadowMenu root, final T target) {
 		double lastWeight = Double.NaN;
-		for (final ShadowMenu childMenu : childMenus) {
-			final double weight = childMenu.getMenuEntry().getWeight();
+		for (final ShadowMenu child : root.getChildren()) {
+			final double weight = child.getMenuEntry().getWeight();
 			final double difference = Math.abs(weight - lastWeight);
-			if (difference > 1) menuItems.add(null); // separator
+			if (difference > 1) addSeparatorToTop(target);
 			lastWeight = weight;
-			final I item = createMenuItem(childMenu);
-			menuItems.add(item);
+			if (child.isLeaf()) {
+				addLeafToTop(child, target);
+			}
+			else {
+				final M nonLeaf = addNonLeafToTop(child, target);
+				populateMenu(child, nonLeaf);
+			}
 		}
-		return menuItems;
 	}
+
+	private void populateMenu(final ShadowMenu shadow, final M target) {
+		double lastWeight = Double.NaN;
+		for (final ShadowMenu child : shadow.getChildren()) {
+			final double weight = child.getMenuEntry().getWeight();
+			final double difference = Math.abs(weight - lastWeight);
+			if (difference > 1) addSeparatorToMenu(target);
+			lastWeight = weight;
+			if (child.isLeaf()) {
+				addLeafToMenu(child, target);
+			}
+			else {
+				final M nonLeaf = addNonLeafToMenu(child, target);
+				populateMenu(child, nonLeaf);
+			}
+		}
+	}
+
+	protected abstract void addLeafToMenu(ShadowMenu shadow, M target);
+
+	protected abstract void addLeafToTop(ShadowMenu shadow, T target);
+
+	protected abstract M addNonLeafToMenu(ShadowMenu shadow, M target);
+
+	protected abstract M addNonLeafToTop(ShadowMenu shadow, T target);
+
+	protected abstract void addSeparatorToMenu(M target);
+
+	protected abstract void addSeparatorToTop(T target);
 
 }

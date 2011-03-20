@@ -37,36 +37,35 @@ package imagej.plugin.gui.swing;
 import imagej.Log;
 import imagej.plugin.gui.ShadowMenu;
 
-import java.util.List;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /**
  * Populate a Swing {@link JMenuBar} with menu items.
- *
+ * 
  * @author Curtis Rueden
  */
 public class JMenuBarCreator extends SwingMenuCreator<JMenuBar> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenuBar menuBar) {
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem == null) {
-				Log.warn("JMenuBarCreator: Ignoring separator");
-			}
-			else if (childMenuItem instanceof JMenu) {
-				final JMenu childMenu = (JMenu) childMenuItem;
-				Log.debug("JMenuBarCreator: Adding menu: " + childMenu.getText());
-				menuBar.add(childMenu);
-			}
-			else {
-				Log.warn("JMenuBarCreator: Ignoring leaf item: " +
-					childMenuItem.getText());
-			}
-		}
+	protected void addLeafToTop(final ShadowMenu shadow, final JMenuBar target) {
+		final JMenuItem menuItem = createLeaf(shadow);
+		target.add(menuItem);
+	}
+
+	@Override
+	protected JMenu addNonLeafToTop(final ShadowMenu shadow,
+		final JMenuBar target)
+	{
+		final JMenu menu = createNonLeaf(shadow);
+		target.add(menu);
+		return menu;
+	}
+
+	@Override
+	protected void addSeparatorToTop(final JMenuBar target) {
+		Log.warn("JMenuBarCreator: Ignoring top-level separator");
 	}
 
 }

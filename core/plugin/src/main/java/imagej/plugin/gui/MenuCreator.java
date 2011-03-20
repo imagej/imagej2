@@ -39,10 +39,10 @@ package imagej.plugin.gui;
  *
  * @author Curtis Rueden
  *
- * @param <M> Top-level menu class to populate (e.g., JMenuBar or JMenu)
+ * @param <T> Top-level menu class to populate (e.g., JMenuBar or JMenu)
  */
-public interface MenuCreator<M> {
+public interface MenuCreator<T> {
 
-	void createMenus(ShadowMenu root, M target);
+	void createMenus(ShadowMenu root, T toplevel);
 
 }

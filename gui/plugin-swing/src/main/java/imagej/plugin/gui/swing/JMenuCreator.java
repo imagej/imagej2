@@ -34,13 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swing;
 
-import imagej.Log;
 import imagej.plugin.gui.ShadowMenu;
 
-import java.util.List;
-
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /**
  * Populate a Swing {@link JMenu} with menu items.
@@ -50,19 +46,19 @@ import javax.swing.JMenuItem;
 public class JMenuCreator extends SwingMenuCreator<JMenu> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final JMenu menu) {
-		final List<JMenuItem> childMenuItems = createChildMenuItems(root);
-		for (final JMenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem == null) {
-				Log.debug("JMenuCreator: Adding separator");
-				menu.addSeparator();
-			}
-			else {
-				Log.debug("JMenuCreator: Adding menu item: " +
-					childMenuItem.getText());
-				menu.add(childMenuItem);
-			}
-		}
+	protected void addLeafToTop(final ShadowMenu shadow, final JMenu target) {
+		addLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected JMenu addNonLeafToTop(final ShadowMenu shadow, final JMenu target)
+	{
+		return addNonLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected void addSeparatorToTop(final JMenu target) {
+		addSeparatorToMenu(target);
 	}
 
 }

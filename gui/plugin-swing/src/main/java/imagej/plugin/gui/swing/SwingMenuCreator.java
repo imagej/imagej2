@@ -36,7 +36,6 @@ package imagej.plugin.gui.swing;
 
 import imagej.Log;
 import imagej.plugin.RunnablePlugin;
-import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginException;
 import imagej.plugin.api.PluginUtils;
@@ -46,7 +45,6 @@ import imagej.plugin.gui.ShadowMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.Icon;
@@ -57,54 +55,59 @@ import javax.swing.KeyStroke;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
-public abstract class SwingMenuCreator<M>
-	extends AbstractMenuCreator<M, JMenuItem>
+public abstract class SwingMenuCreator<T> extends
+	AbstractMenuCreator<T, JMenu>
 {
 
 	@Override
-	protected JMenuItem createMenuItem(final ShadowMenu shadow) {
-		final MenuEntry menuEntry = shadow.getMenuEntry();
+	protected void addLeafToMenu(final ShadowMenu shadow, final JMenu target) {
+		final JMenuItem menuItem = createLeaf(shadow);
+		target.add(menuItem);
+	}
 
-		final String name = menuEntry.getName();
-		final char mnemonic = menuEntry.getMnemonic();
-		final KeyStroke keyStroke = getKeyStroke(shadow);
-		final Icon icon = loadIcon(shadow);
+	@Override
+	protected JMenu
+		addNonLeafToMenu(final ShadowMenu shadow, final JMenu target)
+	{
+		final JMenu menu = createNonLeaf(shadow);
+		target.add(menu);
+		return menu;
+	}
 
-		final JMenuItem menuItem;
-		if (shadow.isLeaf()) {
-			// create leaf item
-			menuItem = new JMenuItem(name);
-			linkAction(shadow.getPluginEntry(), menuItem);
-		}
-		else {
-			// create menu and recursively add children
-			final JMenu menu = new JMenu(name);
-			final List<JMenuItem> childMenuItems = createChildMenuItems(shadow);
-			for (final JMenuItem childMenuItem : childMenuItems) {
-				if (childMenuItem == null) menu.addSeparator();
-				else menu.add(childMenuItem);
-			}
-			menuItem = menu;
-		}
-		if (mnemonic != '\0') menuItem.setMnemonic(mnemonic);
-		if (keyStroke != null) menuItem.setAccelerator(keyStroke);
-		if (icon != null) menuItem.setIcon(icon);
+	@Override
+	protected void addSeparatorToMenu(final JMenu target) {
+		target.addSeparator();
+	}
 
+	protected JMenuItem createLeaf(final ShadowMenu shadow) {
+		final JMenuItem menuItem = new JMenuItem(shadow.getMenuEntry().getName());
+		assignProperties(menuItem, shadow);
+		linkAction(shadow.getPluginEntry(), menuItem);
 		return menuItem;
 	}
+
+	protected JMenu createNonLeaf(final ShadowMenu shadow) {
+		final JMenu menu = new JMenu(shadow.getMenuEntry().getName());
+		assignProperties(menu, shadow);
+		return menu;
+	}
+
+	// -- Helper methods --
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
 		String accelerator = shadow.getMenuEntry().getAccelerator();
 		if (accelerator != null) {
-			// allow use of ^X to represent control X in plugin keyboard accel parameters
-			accelerator = accelerator.replaceAll(Pattern.quote("^"), "control ");  // NB: extra space REQUIRED
+			// allow use of ^X to represent control X in keyboard accel parameters
+			// NB: extra space REQUIRED
+			accelerator = accelerator.replaceAll(Pattern.quote("^"), "control ");
 			// on Mac, use Command instead of Control for keyboard shortcuts
-			if (isMac())
-				if (accelerator.indexOf("meta") == -1)  // only if meta not already in use
-					accelerator = accelerator.replaceAll("control", "meta");
+			if (isMac() && accelerator.indexOf("meta") < 0) {
+				// only if meta not already in use
+				accelerator = accelerator.replaceAll("control", "meta");
+			}
 		}
 		return KeyStroke.getKeyStroke(accelerator);
 	}
@@ -118,18 +121,32 @@ public abstract class SwingMenuCreator<M>
 			if (iconURL == null) return null;
 			return new ImageIcon(iconURL);
 		}
-		catch (PluginException e) {
+		catch (final PluginException e) {
 			Log.error("Could not load icon: " + iconPath, e);
 		}
 		return null;
 	}
 
-	private void linkAction(final PluginEntry<?> entry,
-		final JMenuItem menuItem)
+	private void assignProperties(final JMenuItem menuItem,
+		final ShadowMenu shadow)
+	{
+		final char mnemonic = shadow.getMenuEntry().getMnemonic();
+		if (mnemonic != '\0') menuItem.setMnemonic(mnemonic);
+
+		final KeyStroke keyStroke = getKeyStroke(shadow);
+		if (keyStroke != null) menuItem.setAccelerator(keyStroke);
+
+		final Icon icon = loadIcon(shadow);
+		if (icon != null) menuItem.setIcon(icon);
+	}
+
+	private void
+		linkAction(final PluginEntry<?> entry, final JMenuItem menuItem)
 	{
 		menuItem.addActionListener(new ActionListener() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				// TODO - find better solution for typing here
 				@SuppressWarnings("unchecked")
 				final PluginEntry<? extends RunnablePlugin> runnableEntry =

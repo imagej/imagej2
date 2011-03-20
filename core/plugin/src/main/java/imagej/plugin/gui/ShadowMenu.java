@@ -38,6 +38,8 @@ import imagej.Log;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +82,12 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return menuDepth;
 	}
 
-	public Map<String, ShadowMenu> getChildren() {
-		return children;
+	/** Gets this menu's children, sorted by weight. */
+	public List<ShadowMenu> getChildren() {
+		final List<ShadowMenu> childMenus =
+			new ArrayList<ShadowMenu>(children.values());
+		Collections.sort(childMenus);
+		return childMenus;
 	}
 
 	public boolean isLeaf() {
@@ -96,6 +102,8 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	public MenuEntry getMenuEntry() {
 		return pluginEntry.getMenuPath().get(menuDepth);
 	}
+
+	// -- Object methods --
 
 	@Override
 	public int compareTo(final ShadowMenu c) {
