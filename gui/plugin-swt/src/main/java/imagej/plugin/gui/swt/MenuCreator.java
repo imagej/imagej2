@@ -34,32 +34,76 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swt;
 
-import imagej.Log;
+import imagej.plugin.RunnablePlugin;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.AbstractMenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import java.util.List;
 
 /**
- * Populate an SWT {@link Menu} with menu items.
- *
+ * TODO
+ * 
  * @author Curtis Rueden
  */
-public class MenuCreator extends SWTMenuCreator<Menu> {
+public class MenuCreator<M> extends AbstractMenuCreator<Menu, Menu> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final Menu menu) {
-		final List<MenuItem> childMenuItems = createChildMenuItems(root);
-		for (final MenuItem childMenuItem : childMenuItems) {
-//			if (childMenuItem instanceof Menu) {
-//				final Menu childMenu = (Menu) childMenuItem;
-//				menu.add(childMenu);
-//			}
-//			else {
-//				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-//			}
-		}
+	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
+		final MenuItem menuItem = new MenuItem(target, 0);
+		menuItem.setText(shadow.getMenuEntry().getName());
+		linkAction(shadow.getPluginEntry(), menuItem);
+	}
+
+	@Override
+	protected void addLeafToTop(final ShadowMenu shadow, final Menu target) {
+		addLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected Menu addNonLeafToMenu(final ShadowMenu shadow, final Menu target) {
+		final Menu menu = new Menu(target);
+		final MenuItem menuItem = new MenuItem(target, SWT.CASCADE);
+		menuItem.setText(shadow.getMenuEntry().getName());
+		menuItem.setMenu(menu);
+		return menu;
+	}
+
+	@Override
+	protected Menu addNonLeafToTop(final ShadowMenu shadow, final Menu target) {
+		return addNonLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected void addSeparatorToMenu(final Menu target) {
+		new MenuItem(target, SWT.SEPARATOR);
+	}
+
+	@Override
+	protected void addSeparatorToTop(final Menu target) {
+		addSeparatorToMenu(target);
+	}
+
+	// -- Helper methods --
+
+	private void linkAction(final PluginEntry<?> entry, final MenuItem menuItem)
+	{
+		menuItem.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				// TODO - find better solution for typing here
+				@SuppressWarnings("unchecked")
+				final PluginEntry<? extends RunnablePlugin> runnableEntry =
+					(PluginEntry<? extends RunnablePlugin>) entry;
+				PluginUtils.runPlugin(runnableEntry);
+			}
+		});
 	}
 
 }
