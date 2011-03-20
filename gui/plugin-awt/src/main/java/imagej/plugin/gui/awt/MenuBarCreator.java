@@ -39,8 +39,6 @@ import imagej.plugin.gui.ShadowMenu;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
-import java.awt.MenuItem;
-import java.util.List;
 
 /**
  * Populate an AWT {@link MenuBar} with menu items.
@@ -50,17 +48,22 @@ import java.util.List;
 public class MenuBarCreator extends AWTMenuCreator<MenuBar> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final MenuBar menuBar) {
-		final List<MenuItem> childMenuItems = createChildMenuItems(root);
-		for (final MenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof Menu) {
-				final Menu childMenu = (Menu) childMenuItem;
-				menuBar.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
-		}
+	protected void addLeafToTop(final ShadowMenu shadow, final MenuBar target) {
+		Log.warn("MenuBarCreator: Ignoring top-level leaf: " + shadow);
+	}
+
+	@Override
+	protected Menu addNonLeafToTop(final ShadowMenu shadow,
+		final MenuBar target)
+	{
+		final Menu menu = createNonLeaf(shadow);
+		target.add(menu);
+		return menu;
+	}
+
+	@Override
+	protected void addSeparatorToTop(final MenuBar target) {
+		Log.warn("MenuBarCreator: Ignoring top-level separator");
 	}
 
 }

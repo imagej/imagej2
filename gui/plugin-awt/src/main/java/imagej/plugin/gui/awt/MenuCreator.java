@@ -34,12 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.awt;
 
-import imagej.Log;
 import imagej.plugin.gui.ShadowMenu;
 
 import java.awt.Menu;
-import java.awt.MenuItem;
-import java.util.List;
 
 /**
  * Populate an AWT {@link Menu} with menu items.
@@ -49,17 +46,19 @@ import java.util.List;
 public class MenuCreator extends AWTMenuCreator<Menu> {
 
 	@Override
-	public void createMenus(final ShadowMenu root, final Menu menu) {
-		final List<MenuItem> childMenuItems = createChildMenuItems(root);
-		for (final MenuItem childMenuItem : childMenuItems) {
-			if (childMenuItem instanceof Menu) {
-				final Menu childMenu = (Menu) childMenuItem;
-				menu.add(childMenu);
-			}
-			else {
-				Log.warn("Ignoring unexpected leaf menu item: " + childMenuItem);
-			}
-		}
+	protected void addLeafToTop(final ShadowMenu shadow, final Menu target) {
+		addLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected Menu addNonLeafToTop(final ShadowMenu shadow, final Menu target)
+	{
+		return addNonLeafToMenu(shadow, target);
+	}
+
+	@Override
+	protected void addSeparatorToTop(final Menu target) {
+		addSeparatorToMenu(target);
 	}
 
 }
