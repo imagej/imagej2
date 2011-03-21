@@ -62,7 +62,7 @@ public class SWTInputHarvester extends AbstractInputHarvester {
 	private static final Display DISPLAY = new Display();
 
 	@Override
-	public InputPanel createInputPanel() {
+	public SWTInputPanel createInputPanel() {
 		return new SWTInputPanel(null);
 	}
 

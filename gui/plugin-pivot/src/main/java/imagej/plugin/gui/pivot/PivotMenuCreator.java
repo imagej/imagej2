@@ -35,10 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.pivot;
 
 import imagej.Log;
+import imagej.plugin.RunnablePlugin;
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.AbstractMenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 
+import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.Menu.SectionSequence;
@@ -58,6 +63,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		addLeafToMenu(final ShadowMenu shadow, final MenuButton target)
 	{
 		final Menu.Item item = new Menu.Item(shadow.getMenuEntry().getName());
+		linkAction(shadow.getPluginEntry(), item);
 		getLastSection(target).add(item);
 	}
 
@@ -66,6 +72,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		Log.debug("PivotMenuCreator: Adding leaf item: " + shadow);
 		final PushButton button = new PushButton();
 		button.setButtonData(shadow.getMenuEntry().getName());
+		linkAction(shadow.getPluginEntry(), button);
 		target.add(button);
 	}
 
@@ -101,6 +108,8 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		target.add(new Label("|"));
 	}
 
+	// -- Helper methods --
+
 	private MenuButton createMenuButton(final ShadowMenu shadow) {
 		final MenuButton button = new MenuButton();
 		button.setButtonData(shadow.getMenuEntry().getName());
@@ -110,9 +119,25 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		return button;
 	}
 
-	private Menu.Section getLastSection(MenuButton target) {
+	private Menu.Section getLastSection(final MenuButton target) {
 		final SectionSequence sections = target.getMenu().getSections();
 		return sections.get(sections.getLength() - 1);
+	}
+
+	private void
+		linkAction(final PluginEntry<?> entry, final Button button)
+	{
+		button.setAction(new Action() {
+
+			@Override
+			public void perform() {
+				// TODO - find better solution for typing here
+				@SuppressWarnings("unchecked")
+				final PluginEntry<? extends RunnablePlugin> runnableEntry =
+					(PluginEntry<? extends RunnablePlugin>) entry;
+				PluginUtils.runPlugin(runnableEntry);
+			}
+		});
 	}
 
 }

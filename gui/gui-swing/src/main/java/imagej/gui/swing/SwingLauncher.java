@@ -47,7 +47,7 @@ public final class SwingLauncher {
 
 	public static void main(String[] args) {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		new SwingMainFrame();
+		new SwingApplication();
 	}
 
 }

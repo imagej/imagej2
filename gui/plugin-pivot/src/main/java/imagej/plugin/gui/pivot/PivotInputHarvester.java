@@ -54,7 +54,7 @@ import org.apache.pivot.wtk.Sheet;
 public class PivotInputHarvester extends AbstractInputHarvester {
 
 	@Override
-	public InputPanel createInputPanel() {
+	public PivotInputPanel createInputPanel() {
 		return new PivotInputPanel();
 	}
 
