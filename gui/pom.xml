@@ -47,7 +47,7 @@
 				<module>gui-swing</module>
 				<module>gui-swt</module>
 				<module>plugin-awt</module>
-				<!-- <module>plugin-pivot</module> -->
+				<module>plugin-pivot</module>
 				<module>plugin-swing</module>
 				<module>plugin-swt</module>
 			</modules>
@@ -63,7 +63,7 @@
 			<id>pivot</id>
 			<modules>
 				<module>gui-pivot</module>
-				<!-- <module>plugin-pivot</module> -->
+				<module>plugin-pivot</module>
 			</modules>
 		</profile>
 		<profile>
