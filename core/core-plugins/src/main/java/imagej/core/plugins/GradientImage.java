@@ -43,7 +43,7 @@ import imagej.plugin.gui.WidgetStyle;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
 /**
- * TODO
+ * A simple demonstration plugin, which generates a gradient image.
  * 
  * @author Curtis Rueden
  * @author Rick Lentz
