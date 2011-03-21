@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.model;
 
+import imagej.Rect;
+
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
@@ -61,17 +63,17 @@ public class Dataset {
 	
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	//   here for plugin testing purposes. Really should be viewcentric.
-	private int selectionMinX, selectionMinY, selectionMaxX, selectionMaxY;
-	public int getSelectionMinX() { return selectionMinX; }  // could define a nonAWT rect
-	public int getSelectionMinY() { return selectionMinY; }  //   and return it but lets
-	public int getSelectionMaxX() { return selectionMaxX; }  //   not pollute Dataset at
-	public int getSelectionMaxY() { return selectionMaxY; }  //   this time
+	private Rect selection;
 	public void setSelection(int minX, int minY, int maxX, int maxY)
 	{
-		selectionMinX = minX;
-		selectionMinY = minY;
-		selectionMaxX = maxX;
-		selectionMaxY = maxY;
+		selection.x = minX;
+		selection.y = minY;
+		selection.width = maxX-minX+1;
+		selection.height = maxY-minY+1;
+	}
+	public Rect getSelection()
+	{
+		return selection;
 	}
 	// END FIXME TEMP
 
