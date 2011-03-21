@@ -51,9 +51,9 @@ public final class SWTLauncher {
 //		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		final Display display = new Display();
 
-		final SWTMainFrame swtMainFrame = new SWTMainFrame(display);
+		final SWTApplication swtApplication = new SWTApplication(display);
 
-		while (!swtMainFrame.isDisposed()) {
+		while (!swtApplication.getShell().isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		display.dispose();

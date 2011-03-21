@@ -1,5 +1,5 @@
 //
-// AWTMainFrame.java
+// AWTApplication.java
 //
 
 /*
@@ -52,14 +52,14 @@ import java.util.List;
  *
  * @author Curtis Rueden
  */
-public class AWTMainFrame {
+public class AWTApplication {
 
 	private final Frame frame;
 	private final AWTToolBar toolBar;
 	private final AWTStatusBar statusBar;
 
 	/** Creates a new ImageJ application frame. */
-	public AWTMainFrame() {
+	public AWTApplication() {
 		frame = new Frame("ImageJ");
 		toolBar = new AWTToolBar(new ToolManager());
 		statusBar = new AWTStatusBar();

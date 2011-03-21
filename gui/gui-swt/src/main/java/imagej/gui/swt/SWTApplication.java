@@ -1,5 +1,5 @@
 //
-// SWTMainFrame.java
+// SWTApplication.java
 //
 
 /*
@@ -49,34 +49,39 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * SWT-based main window for ImageJ.
+ * SWT-based application for ImageJ.
  *
  * @author Curtis Rueden
  */
-public class SWTMainFrame extends Shell {
+public class SWTApplication {
 
+	private final Shell shell;
 	private final SWTStatusBar statusBar;
 
 	/** Creates a new ImageJ application frame. */
-	public SWTMainFrame(final Display display) {
-		super(display, 0);
-		setLayout(new MigLayout("wrap 1"));
-		setText("ImageJ");
-		new SWTToolBar(display, this, new ToolManager());
-		statusBar = new SWTStatusBar(this);
-//		createMenuBar();
+	public SWTApplication(final Display display) {
+		shell = new Shell(display, 0);
+		shell.setLayout(new MigLayout("wrap 1"));
+		shell.setText("ImageJ");
+		new SWTToolBar(display, shell, new ToolManager());
+		statusBar = new SWTStatusBar(shell);
+		createMenuBar();
 
-		pack();
-		open();
+		shell.pack();
+		shell.open();
+	}
+
+	public Shell getShell() {
+		return shell;
 	}
 
 	private void createMenuBar() {
 		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
 		statusBar.setStatus("Discovered " + entries.size() + " plugins");
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
-		final Menu menuBar = new Menu(this);
+		final Menu menuBar = new Menu(shell);
 		new MenuCreator().createMenus(rootMenu, menuBar);
-		setMenuBar(menuBar); // TODO - is this necesssary?
+		shell.setMenuBar(menuBar); // TODO - is this necesssary?
 	}
 
 }

@@ -1,5 +1,5 @@
 //
-// SwingMainFrame.java
+// SwingApplication.java
 //
 
 /*
@@ -49,18 +49,18 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 /**
- * Swing-based main window for ImageJ.
+ * Swing-based application for ImageJ.
  *
  * @author Curtis Rueden
  */
-public class SwingMainFrame {
+public class SwingApplication {
 
 	private final JFrame frame;
 	private final SwingToolBar toolBar;
 	private final SwingStatusBar statusBar;
 
 	/** Creates a new ImageJ application frame. */
-	public SwingMainFrame() {
+	public SwingApplication() {
 		frame = new JFrame("ImageJ");
 		toolBar = new SwingToolBar(new ToolManager());
 		statusBar = new SwingStatusBar();

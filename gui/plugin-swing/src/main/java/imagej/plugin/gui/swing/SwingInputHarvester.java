@@ -58,7 +58,7 @@ import javax.swing.JPanel;
 public class SwingInputHarvester extends AbstractInputHarvester {
 
 	@Override
-	public InputPanel createInputPanel() {
+	public SwingInputPanel createInputPanel() {
 		return new SwingInputPanel();
 	}
 

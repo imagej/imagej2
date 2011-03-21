@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.MenuItem;
  * 
  * @author Curtis Rueden
  */
-public class MenuCreator<M> extends AbstractMenuCreator<Menu, Menu> {
+public class MenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {

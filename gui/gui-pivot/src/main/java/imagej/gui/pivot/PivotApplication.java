@@ -34,57 +34,136 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.pivot;
 
+import imagej.Log;
+import imagej.plugin.gui.pivot.PivotMenuCreator;
+
 import java.awt.Color;
 import java.awt.Font;
 
+import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
+import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Application;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Checkbox;
 import org.apache.pivot.wtk.Display;
+import org.apache.pivot.wtk.Frame;
 import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ImageView;
 import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ListButton;
+import org.apache.pivot.wtk.Menu;
+import org.apache.pivot.wtk.MenuButton;
+import org.apache.pivot.wtk.Orientation;
+import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.Slider;
+import org.apache.pivot.wtk.SliderValueListener;
+import org.apache.pivot.wtk.Spinner;
+import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.VerticalAlignment;
-import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtk.media.Image;
+import org.apache.pivot.wtk.content.NumericSpinnerData;
 
 public class PivotApplication implements Application {
-    private Window window = null;
 
-    @Override
-    public void startup(Display display, Map<String, String> properties) {
-        window = new Window();
+	private Frame frame = null;
 
-        Label label = new Label();
-        label.setText("Hello World!");
-        label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
-        label.getStyles().put("color", Color.RED);
-        label.getStyles().put("horizontalAlignment",
-            HorizontalAlignment.CENTER);
-        label.getStyles().put("verticalAlignment",
-            VerticalAlignment.CENTER);
+	@Override
+	public void startup(Display display, Map<String, String> properties) {
 
-        window.setContent(label);
-        window.setTitle("Hello World!");
-        window.setMaximized(true);
+		frame = new Frame(display);
 
-        window.open(display);
-    }
+		final BoxPane pane = new BoxPane();
+		pane.setOrientation(Orientation.VERTICAL);
 
-    @Override
-    public boolean shutdown(boolean optional) {
-        if (window != null) {
-            window.close();
-        }
+		final BoxPane menus = new BoxPane();
+		pane.add(menus);
 
-        return false;
-    }
+		final MenuButton fileButton = new MenuButton();
+		fileButton.setButtonData("File");
+		final Menu fileMenu = new Menu();
+		fileButton.setMenu(fileMenu);
+		menus.add(fileButton);
 
-    @Override
-    public void suspend() {
-    }
+		final Menu.Section fileSection = new Menu.Section();
+		fileMenu.getSections().add(fileSection);
 
-    @Override
-    public void resume() {
-    }
+		final Menu.Item fileNewItem = new Menu.Item("New");
+		fileSection.add(fileNewItem);
+
+		final Menu.Item fileOpenItem = new Menu.Item("Open");
+		fileSection.add(fileOpenItem);
+
+		final Label label = new Label();
+		label.setText("Hello World!");
+		label.getStyles().put("font", new Font("Arial", Font.BOLD, 24));
+		label.getStyles().put("color", Color.RED);
+		label.getStyles().put("horizontalAlignment", HorizontalAlignment.CENTER);
+		label.getStyles().put("verticalAlignment", VerticalAlignment.CENTER);
+		pane.add(label);
+
+		final PushButton pushButton = new PushButton();
+		pushButton.setButtonData("Push Button");
+		pane.add(pushButton);
+
+		final TextInput textInput = new TextInput();
+		textInput.setText("TextInput");
+		pane.add(textInput);
+
+		final Checkbox checkbox = new Checkbox();
+		checkbox.setSelected(true);
+		pane.add(checkbox);
+
+		final BoxPane sliderPane = new BoxPane();
+		sliderPane.setOrientation(Orientation.HORIZONTAL);
+		final Slider slider = new Slider();
+		slider.setValue(18);
+		slider.setRange(5, 23);
+		sliderPane.add(slider);
+		final Label sliderLabel = new Label();
+		sliderLabel.setText("18");
+		sliderPane.add(sliderLabel);
+		slider.getSliderValueListeners().add(new SliderValueListener() {
+			@Override
+			public void valueChanged(Slider s, int previousValue) {
+        sliderLabel.setText("" + s.getValue());
+      }
+		});
+		pane.add(sliderPane);
+
+		final Spinner spinner = new Spinner();
+		spinner.setPreferredWidth(50);
+		spinner.setSpinnerData(new NumericSpinnerData(5, 23, 2));
+		pane.add(spinner);
+
+		final ListButton comboBox = new ListButton();
+		final List<String> listData = new ArrayList<String>();
+		listData.add("Quick");
+		listData.add("Brown");
+		listData.add("Fox");
+		comboBox.setListData(listData);
+		comboBox.setSelectedIndex(0);
+		pane.add(comboBox);
+
+		frame.setContent(pane);
+		frame.setTitle("Hello World!");
+		frame.setMaximized(true);
+
+		frame.open(display);
+	}
+
+	@Override
+	public boolean shutdown(boolean optional) {
+		if (frame != null) {
+			frame.close();
+		}
+
+		return false;
+	}
+
+	@Override
+	public void suspend() {}
+
+	@Override
+	public void resume() {}
 
 }
