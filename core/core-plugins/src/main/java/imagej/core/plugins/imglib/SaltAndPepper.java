@@ -42,6 +42,7 @@ import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import imagej.Rect;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -76,7 +77,7 @@ public class SaltAndPepper implements ImageJPlugin {
 	@Override
 	public void run() {
 		ImglibOutputAlgorithmRunner runner =
-			new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm());
+			new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm(input));
 		output = runner.run();
 	}
 
@@ -93,10 +94,17 @@ public class SaltAndPepper implements ImageJPlugin {
 		private Image<?> inputImage;
 		private Image<?> outputImage;
 		private String errMessage = "No error";
-		private LocalizableByDimCursor<? extends RealType<?>> outputCursor; // working
-		// cursor
+		private Rect selection;
+		
+		// working cursor
+		private LocalizableByDimCursor<? extends RealType<?>> outputCursor;
 		private int[] outputPosition; // workspace for setting output position
 
+		SaltAndPepperAlgorithm(Dataset input)
+		{
+			selection = input.getSelection();
+		}
+		
 		/** make sure input is 2d */
 		@Override
 		public boolean checkInput() {
@@ -111,6 +119,7 @@ public class SaltAndPepper implements ImageJPlugin {
 					pixRef.set((index++) % 256);
 				cursor.close();
 				input = new Dataset(junkImage);
+				selection = input.getSelection();
 			}
 
 			inputImage = input.getImage();
@@ -147,19 +156,23 @@ public class SaltAndPepper implements ImageJPlugin {
 
 			long numPixels = (long) (inputImage.getNumPixels() * percentToChange);
 
-			int width = inputImage.getDimension(0);
-
-			int height = inputImage.getDimension(1);
-
+			int ox = selection.x;
+			int oy = selection.y;
+			int w = selection.width;
+			int h = selection.height;
+			
+			if (w <= 0) w = inputImage.getDimension(0);
+			if (h <= 0) h = inputImage.getDimension(1);
+			
 			for (long p = 0; p < numPixels / 2; p++) {
 				int randomX, randomY;
 
-				randomX = rng.nextInt(width);
-				randomY = rng.nextInt(height);
+				randomX = ox + rng.nextInt(w);
+				randomY = oy + rng.nextInt(h);
 				setOutputPixel(randomX, randomY, 255);
 
-				randomX = rng.nextInt(width);
-				randomY = rng.nextInt(height);
+				randomX = ox + rng.nextInt(w);
+				randomY = oy + rng.nextInt(h);
 				setOutputPixel(randomX, randomY, 0);
 			}
 

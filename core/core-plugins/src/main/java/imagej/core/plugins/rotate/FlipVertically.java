@@ -89,5 +89,10 @@ public class FlipVertically implements ImageJPlugin {
 		public int[] calcOutputDimensions(int[] inputDimensions) {
 			return inputDimensions.clone();
 		}
+		
+		@Override
+		public boolean isShapePreserving() {
+			return true;
+		}
 	}
 }

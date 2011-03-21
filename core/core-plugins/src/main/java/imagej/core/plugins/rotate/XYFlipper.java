@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import imagej.Rect;
 import imagej.model.Dataset;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
 import mpicbg.imglib.cursor.Cursor;
@@ -83,6 +84,11 @@ public class XYFlipper implements OutputAlgorithm {
 		 */
 		void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
 			int[] outputPosition);
+		
+		/**
+		 * returns if this transformation does not reorder X & Y axes
+		 */
+		boolean isShapePreserving();
 	}
 
 	// -- constructor --
@@ -153,14 +159,33 @@ public class XYFlipper implements OutputAlgorithm {
 
 		int width = inputDimensions[0];
 		int height = inputDimensions[1];
-
+		
 		int[] inputPosition = inputImage.createPositionArray();
 		int[] outputPosition = outputImage.createPositionArray();
 
-		for (int y = 0; y < height; y++) {
+		Rect selectedRegion = input.getSelection();
+		
+		int rx, ry, rw, rh;
+		
+		if (flipper.isShapePreserving() &&
+				(selectedRegion.width > 0) &&
+				(selectedRegion.height > 0)) {
+			rx = selectedRegion.x;
+			ry = selectedRegion.y;
+			rw = selectedRegion.width;
+			rh = selectedRegion.height;
+		}
+		else {
+			rx = 0;
+			ry = 0;
+			rw = width;
+			rh = height;
+		}
+		
+		for (int y = ry; y < rh; y++) {
 			inputPosition[1] = y;
 
-			for (int x = 0; x < width; x++) {
+			for (int x = rx; x < rw; x++) {
 				inputPosition[0] = x;
 
 				flipper.calcOutputPosition(inputDimensions, inputPosition,

@@ -63,8 +63,8 @@ public class SharpenDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		Convolve3x3Operation operation =
-			new Convolve3x3Operation(input, new double[] { -1, -1, -1, -1, 12, -1,
-				-1, -1, -1 });
+			new Convolve3x3Operation(input,
+				new double[] { -1, -1, -1, -1, 12, -1, -1, -1, -1 });
 		output = operation.run();
 	}
 }

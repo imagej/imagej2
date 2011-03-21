@@ -125,7 +125,9 @@ public class AddNoiseToDataValues {
 
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
 
-		return new UnaryTransformation(input, output, op).run();
+		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+
+		return transform.run();
 	}
 
 	// -- private interface --
