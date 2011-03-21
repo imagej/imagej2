@@ -80,11 +80,10 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 	protected MenuButton addNonLeafToMenu(final ShadowMenu shadow,
 		final MenuButton target)
 	{
-		Log.debug("PivotMenuCreator: Ignoring nested menu: " + shadow); // TODO
-//		final MenuButton button = createMenuButton(shadow);
-//		target.getMenu().getSections().get(0).add(new Item(button));
-//		final Menu menu = target.getMenu();
-		return null;
+		final MenuButton button = createMenuButton(shadow);
+		final Menu.Item item = new Menu.Item(shadow.getMenuEntry().getName());
+		getLastSection(target).add(item);
+		return button;
 	}
 
 	@Override
@@ -120,6 +119,8 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 	}
 
 	private Menu.Section getLastSection(final MenuButton target) {
+		Log.info("getLastSection: target=" + target);//TEMP
+		Log.info("getLastSection: menu=" + target.getMenu());//TEMP
 		final SectionSequence sections = target.getMenu().getSections();
 		return sections.get(sections.getLength() - 1);
 	}
