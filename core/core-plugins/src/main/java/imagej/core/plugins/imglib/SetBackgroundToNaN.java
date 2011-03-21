@@ -32,9 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.assign;
+package imagej.core.plugins.imglib;
 
-import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -139,9 +138,10 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 			while (inputCursor.hasNext() && outputCursor.hasNext()) {
 				double inputValue = inputCursor.next().getRealDouble();
 
-				if ((inputValue < loThreshold) || (inputValue > hiThreshold)) outputCursor
-					.next().setReal(Double.NaN);
-				else outputCursor.next().setReal(inputValue);
+				if ((inputValue < loThreshold) || (inputValue > hiThreshold))
+					outputCursor.next().setReal(Double.NaN);
+				else
+					outputCursor.next().setReal(inputValue);
 			}
 
 			inputCursor.close();

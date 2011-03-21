@@ -64,8 +64,8 @@ public class ShadowsSouthwest implements ImageJPlugin {
 	@Override
 	public void run() {
 		Convolve3x3Operation operation =
-			new Convolve3x3Operation(input, new double[] { 0, -1, -2, 1, 1, -1, 2, 1,
-				0 });
+			new Convolve3x3Operation(input,
+				new double[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
 		output = operation.run();
 	}
 }

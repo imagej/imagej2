@@ -62,9 +62,11 @@ import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
-// NOTE - attempted to use the ImageCalculator in Imglib using ImglibOutputAlgorithmRunner but could not solve
-//   compiler errors and warnings. That test implementation saved below commented out. For now I'll do this via imglib-ops
-//   and hatch binary ops as needed. Even with ImageCalculator attempt I'd need to hatch multiple Functions somewhere.
+// NOTE - attempted to use the ImageCalculator in Imglib using
+// ImglibOutputAlgorithmRunner but could not solve compiler errors and
+// warnings. That test implementation saved below commented out. For now
+// I'll do this via imglib-ops and hatch binary ops as needed. Even with
+// ImageCalculator attempt I'd need to hatch multiple Functions somewhere.
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -72,8 +74,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "Process", mnemonic = 'p'),
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Image Calculator...", weight = 13) })
 public class ImageMath implements ImageJPlugin {
 

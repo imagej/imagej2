@@ -96,5 +96,10 @@ public class Rotate90DegreesRight implements ImageJPlugin {
 
 			return outputDims;
 		}
+		
+		@Override
+		public boolean isShapePreserving() {
+			return false;
+		}
 	}
 }

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import imagej.Rect;
 import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -83,24 +84,10 @@ public class SquareDataValues implements ImageJPlugin {
 				pixRef.set(index++);
 			cursor.close();
 			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
 		}
-		input.setSelection(20, 30, 150, 175);
 		UnaryOperator op = new Sqr();
 		UnaryTransformation transform = new UnaryTransformation(input, output, op);
-		int minX = input.getSelectionMinX();
-		int minY = input.getSelectionMinY();
-		int maxX = input.getSelectionMaxX();
-		int maxY = input.getSelectionMaxY();
-		if (maxX == 0) maxX = input.getImage().getDimension(0) - 1;
-		if (maxY == 0) maxY = input.getImage().getDimension(1) - 1;
-		int[] inputOrigin = new int[input.getImage().getNumDimensions()];
-		inputOrigin[0] = minX;
-		inputOrigin[1] = minY;
-		int[] inputSpan = input.getImage().getDimensions();
-		inputSpan[0] = maxX-minX+1;
-		inputSpan[1] = maxY-minY+1;
-		transform.setRegion(inputOrigin, inputSpan);
-		//transform.setOutputRegion();  // DO THIS TOO???
 		output = transform.run();
 	}
 }
