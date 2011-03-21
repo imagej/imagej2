@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// PivotStatusBar.java
 //
 
 /*
@@ -34,70 +34,52 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.pivot;
 
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
-import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.pivot.PivotMenuCreator;
+import imagej.event.EventSubscriber;
+import imagej.event.StatusEvent;
 
-import java.util.List;
-
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.Frame;
-import org.apache.pivot.wtk.Orientation;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Meter;
 
-public class PivotApplication implements Application {
+/**
+ * Status bar with text area and progress bar, similar to ImageJ 1.x.
+ *
+ * @author Curtis Rueden
+ */
+public final class PivotStatusBar extends BoxPane
+	implements EventSubscriber<StatusEvent>
+{
 
-	private Frame frame;
-	private BoxPane contentPane;
-	private PivotStatusBar statusBar;
+	private final Label label;
+	private final Meter meter;
 
-	@Override
-	public void startup(Display display, Map<String, String> properties) {
-		frame = new Frame();
-//	toolBar = new PivotToolBar(new ToolManager());
-		statusBar = new PivotStatusBar();
-
-		contentPane = new BoxPane();
-		contentPane.setOrientation(Orientation.VERTICAL);
-		frame.setContent(contentPane);
-		createMenuBar();
-
-		contentPane.add(statusBar);
-
-		frame.setTitle("ImageJ");
-		frame.setMaximized(true);
-		frame.open(display);
+	public PivotStatusBar() {
+		label = new Label();
+		add(label);
+		meter = new Meter();
+		add(meter);
 	}
 
-	@Override
-	public boolean shutdown(boolean optional) {
-		if (frame != null) {
-			frame.close();
+	public void setStatus(final String message) {
+		label.setText(message == null ? "" : message);
+	}
+
+	public void setProgress(final int val, final int max) {
+		if (val >= 0 && val < max) {
+			meter.setPercentage((double) val / max);
 		}
-
-		return false;
+		else {
+			meter.setPercentage(0);
+		}
 	}
 
 	@Override
-	public void suspend() {
-		// NB: no action needed.
-	}
-
-	@Override
-	public void resume() {
-		// NB: no action needed.
-	}
-
-	private void createMenuBar() {
-		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setStatus("Discovered " + entries.size() + " plugins");
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
-		final BoxPane menuPane = new BoxPane();
-		new PivotMenuCreator().createMenus(rootMenu, menuPane);
-		contentPane.add(menuPane);
+	public void onEvent(final StatusEvent event) {
+		final String message = event.getStatusMessage();
+		final int val = event.getProgressValue();
+		final int max = event.getProgressMaximum();
+		setStatus(message);
+		setProgress(val, max);
 	}
 
 }
