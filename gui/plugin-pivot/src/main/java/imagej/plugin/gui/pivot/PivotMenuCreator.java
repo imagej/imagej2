@@ -119,8 +119,6 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 	}
 
 	private Menu.Section getLastSection(final MenuButton target) {
-		Log.info("getLastSection: target=" + target);//TEMP
-		Log.info("getLastSection: menu=" + target.getMenu());//TEMP
 		final SectionSequence sections = target.getMenu().getSections();
 		return sections.get(sections.getLength() - 1);
 	}
