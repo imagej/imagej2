@@ -89,8 +89,9 @@ public class InvertDataValues implements ImageJPlugin {
 				pixRef.set(index++);
 			cursor.close();
 			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
 		}
-		calcMinAndMax();
+		calcValueRange();
 		UnaryOperator op = new Invert(min, max);
 		UnaryTransformation transform = new UnaryTransformation(input, output, op);
 		output = transform.run();
@@ -102,7 +103,7 @@ public class InvertDataValues implements ImageJPlugin {
 	 * finds the smallest and largest data values actually present in the input
 	 * image
 	 */
-	private void calcMinAndMax() {
+	private void calcValueRange() {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 

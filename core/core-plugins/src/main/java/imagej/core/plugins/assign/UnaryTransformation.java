@@ -67,6 +67,7 @@ public class UnaryTransformation {
 
 	public void setRegion(int[] fullDimensions, Rect selection)
 	{
+		if (selection == null) return;
 		int[] origin = new int[fullDimensions.length];
 		origin[0] = selection.x;
 		origin[1] = selection.y;

@@ -90,6 +90,7 @@ public class Neighborhood3x3Operation {
 				pixRef.set((index++) % 243);
 			cursor.close();
 			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
 		}
 
 		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(input);
