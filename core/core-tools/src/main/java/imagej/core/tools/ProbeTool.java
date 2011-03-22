@@ -31,16 +31,17 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
+
 package imagej.core.tools;
 
 import imagej.Coords;
+import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
-//FIXME - cannot use AWT in ij-core-tools
 import java.awt.Point;
 
 /**
@@ -49,42 +50,54 @@ import java.awt.Point;
  * @author Rick Lentz
  * @author Grant Harris
  */
-@Tool(name = "Probe",
-iconPath = "/tools/probe.png",
-description = "Probe Pixel Tool")
+@Tool(name = "Probe", iconPath = "/tools/probe.png",
+	description = "Probe Pixel Tool")
 public class ProbeTool extends BaseTool {
 
 	@Override
-	public void onMouseMove(MsMovedEvent evt) {
-		Object plane = evt.getDisplay().getCurrentPlane();
-		int x = evt.getX();
-		int y = evt.getY();
-		Point mousePos = new Point(x,y);
-		Coords coords = evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
-		int imageWidth = evt.getDisplay().getImageCanvas().getImage().getWidth();
+	public void onMouseMove(final MsMovedEvent evt) {
+		final Object plane = evt.getDisplay().getCurrentPlane();
+		final int x = evt.getX();
+		final int y = evt.getY();
+		final Point mousePos = new Point(x, y);
+		final Coords coords =
+			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
+		final int imageWidth =
+			evt.getDisplay().getImageCanvas().getImage().getWidth();
 		if (evt.getDisplay().getImageCanvas().isInImage(mousePos)) {
 			String s = "";
-			int offset = coords.getIntX() + imageWidth * coords.getIntY();
+			final int cx = coords.getIntX();
+			final int cy = coords.getIntY();
+			final int offset = cx + imageWidth * cy;
 			if (plane instanceof byte[]) {
 				s = "" + (((byte[]) plane)[offset] & 0xFF);
-			} else if (plane instanceof short[]) {
-				s = "" + (((short[]) plane)[offset] & 0xffff);
-			} else if (plane instanceof int[]) {
-				s = "" + ((int[]) plane)[offset];
-			} else if (plane instanceof float[]) {
-				s = "" + ((float[]) plane)[offset];
-			} else if (plane instanceof double[]) {
-				s = "" + ((double[]) plane)[offset];
-			} else {
-				throw new IllegalStateException("Unknown data type: "
-						+ plane.getClass().getName());
 			}
-			Events.publish(new StatusEvent(s + "  (" + x + ", " + y + ")"));
-		} else {
+			else if (plane instanceof short[]) {
+				s = "" + (((short[]) plane)[offset] & 0xffff);
+			}
+			else if (plane instanceof int[]) {
+				s = "" + ((int[]) plane)[offset];
+			}
+			else if (plane instanceof float[]) {
+				s = "" + ((float[]) plane)[offset];
+			}
+			else if (plane instanceof double[]) {
+				s = "" + ((double[]) plane)[offset];
+			}
+			else {
+				throw new IllegalStateException("Unknown data type: " +
+					plane.getClass().getName());
+			}
+			Events.publish(new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
+		}
+		else {
 			Events.publish(new StatusEvent(""));
 		}
 	}
 
-	// TODO
+	@Override
+	public MouseCursor getCursor() {
+		return MouseCursor.CROSSHAIR;
+	}
 
 }
