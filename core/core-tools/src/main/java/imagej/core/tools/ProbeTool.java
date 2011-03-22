@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.Coords;
-import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+
 //FIXME - cannot use AWT in ij-core-tools
 import java.awt.Point;
 
@@ -85,10 +85,6 @@ public class ProbeTool extends BaseTool {
 		}
 	}
 
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.DEFAULT;
-	}
 	// TODO
 
 }

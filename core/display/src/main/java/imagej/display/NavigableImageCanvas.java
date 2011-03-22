@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 //import imagej.gui.swing.display.NavigableImagePanel.ZoomDevice;
-//FIXME - cannot use AWT in ij-display
 import imagej.Coords;
 
+//FIXME - cannot use AWT in ij-display
 import java.awt.Point;
 
 /**

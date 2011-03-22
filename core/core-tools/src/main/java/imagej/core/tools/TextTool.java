@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.display.MouseCursor;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
-import java.awt.Cursor;
 
 /**
  * TODO
@@ -47,8 +47,8 @@ import java.awt.Cursor;
 public class TextTool extends BaseTool {
 
 	@Override
-	public int getCursor() {
-		return Cursor.TEXT_CURSOR;
+	public MouseCursor getCursor() {
+		return MouseCursor.TEXT;
 	}
 
 	// TODO
