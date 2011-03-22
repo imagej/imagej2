@@ -79,6 +79,9 @@ public class ProbeTool extends BaseTool {
 			else if (plane instanceof float[]) {
 				s = "" + ((float[]) plane)[offset];
 			}
+			else if (plane instanceof long[]) {
+				s = "" + ((long[]) plane)[offset];
+			}
 			else if (plane instanceof double[]) {
 				s = "" + ((double[]) plane)[offset];
 			}
