@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
+import imagej.display.MouseCursor;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;
@@ -70,7 +71,7 @@ public interface ITool {
 	String getDescription();
 
 	/** The tool's mouse pointer. */
-	int getCursor();
+	MouseCursor getCursor();
 
 	/** Informs the tool that it is now active. */
 	void activate();
