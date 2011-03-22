@@ -82,6 +82,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 			cursor.close();
 
 			input = new Dataset(junkImage1);
+			input.setSelection(20, 30, 150, 175);
 		}
 		UnaryOperator op = new Reciprocal();
 		if (!input.isFloat()) // This is similar to what IJ1 does

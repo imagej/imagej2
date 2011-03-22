@@ -115,6 +115,7 @@ public class XYFlipper implements OutputAlgorithm {
 				pixRef.set(index++);
 			cursor.close();
 			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
 		}
 
 		int[] inputDimensions = input.getImage().getDimensions();

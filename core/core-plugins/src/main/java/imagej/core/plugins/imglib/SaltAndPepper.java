@@ -77,7 +77,7 @@ public class SaltAndPepper implements ImageJPlugin {
 	@Override
 	public void run() {
 		ImglibOutputAlgorithmRunner runner =
-			new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm(input));
+			new ImglibOutputAlgorithmRunner(new SaltAndPepperAlgorithm());
 		output = runner.run();
 	}
 
@@ -100,11 +100,6 @@ public class SaltAndPepper implements ImageJPlugin {
 		private LocalizableByDimCursor<? extends RealType<?>> outputCursor;
 		private int[] outputPosition; // workspace for setting output position
 
-		SaltAndPepperAlgorithm(Dataset input)
-		{
-			selection = input.getSelection();
-		}
-		
 		/** make sure input is 2d */
 		@Override
 		public boolean checkInput() {
@@ -119,8 +114,10 @@ public class SaltAndPepper implements ImageJPlugin {
 					pixRef.set((index++) % 256);
 				cursor.close();
 				input = new Dataset(junkImage);
-				selection = input.getSelection();
+				input.setSelection(20, 30, 150, 175);
 			}
+
+			selection = input.getSelection();
 
 			inputImage = input.getImage();
 

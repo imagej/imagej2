@@ -119,9 +119,10 @@ public class AddNoiseToDataValues {
 				pixRef.set(index++);
 			cursor.close();
 			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
 		}
 
-		calcRangeMinAndMax();
+		calcTypeMinAndMax();
 
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
 
@@ -136,7 +137,7 @@ public class AddNoiseToDataValues {
 	 * calculates the min and max allowable data range for the image : depends
 	 * upon its underlying data type
 	 */
-	private void calcRangeMinAndMax() {
+	private void calcTypeMinAndMax() {
 		Cursor<? extends RealType<?>> cursor =
 			(Cursor<? extends RealType<?>>) input.getImage().createCursor();
 		rangeMin = cursor.getType().getMinValue();
