@@ -35,7 +35,6 @@ package imagej.core.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
-import java.awt.Cursor;
 
 /**
  * TODO
@@ -46,11 +45,6 @@ import java.awt.Cursor;
  */
 @Tool(name = "Arrow", iconPath = "/tools/arrow.png", description = "Arrow")
 public class ArrowTool extends BaseTool {
-
-	@Override
-	public int getCursor() {
-		return Cursor.DEFAULT_CURSOR;
-	}
 
 	// TODO
 

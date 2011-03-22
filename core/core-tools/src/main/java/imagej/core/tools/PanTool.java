@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.display.Display;
+import imagej.display.MouseCursor;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
-import java.awt.Cursor;
-
+//FIXME - cannot use AWT in ij-core-tools
 import java.awt.event.KeyEvent;
 
 /**
@@ -98,8 +98,8 @@ public class PanTool extends BaseTool {
 	}
 
 	@Override
-	public int getCursor() {
-		return Cursor.HAND_CURSOR;
+	public MouseCursor getCursor() {
+		return MouseCursor.HAND;
 	}
 
 }
