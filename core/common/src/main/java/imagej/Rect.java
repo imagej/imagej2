@@ -31,87 +31,84 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej;
 
 /**
-* A class for representing a rectangular region.
-* This class is very similar to {@link java.awt.Rectangle};
-* it mainly exists to avoid problems with AWT, JNI and headless operation.
-* Adapted from BioFormats' Region class.
-*/
+ * A class for representing a rectangular region. This class is very similar to
+ * {@link java.awt.Rectangle}; it mainly exists to avoid problems with AWT, JNI
+ * and headless operation. Adapted from BioFormats' Region class.
+ */
 public class Rect {
 
-// -- Fields --
+  // -- Fields --
 
-public int x;
-public int y;
-public int width;
-public int height;
+	public int x;
+	public int y;
+	public int width;
+	public int height;
 
-// -- Constructor --
+  // -- Constructor --
 
-public Rect()
-{ 
-	// default constructor - allow all instance vars to be initialized to 0
-}
+	public Rect() {
+		// default constructor - allow all instance vars to be initialized to 0
+	}
 
-public Rect(int x, int y, int width, int height) {
- this.x = x;
- this.y = y;
- this.width = width;
- this.height = height;
-}
+	public Rect(final int x, final int y, final int width, final int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
 
-// -- Rect API methods --
+  // -- Rect API methods --
 
-/** Returns true if this rect intersects the given rect. */
-public boolean intersects(Rect r) {
- int tw = this.width;
- int th = this.height;
- int rw = r.width;
- int rh = r.height;
- if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
-   return false;
- }
- int tx = this.x;
- int ty = this.y;
- int rx = r.x;
- int ry = r.y;
- rw += rx;
- rh += ry;
- tw += tx;
- th += ty;
- boolean rtn = ((rw < rx || rw > tx) && (rh < ry || rh > ty) &&
-   (tw < tx || tw > rx) && (th < ty || th > ry));
- return rtn;
-}
+	/** Returns true if this rect intersects the given rect. */
+	public boolean intersects(final Rect r) {
+		int tw = this.width;
+		int th = this.height;
+		int rw = r.width;
+		int rh = r.height;
+		if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
+			return false;
+		}
+		final int tx = this.x;
+		final int ty = this.y;
+		final int rx = r.x;
+		final int ry = r.y;
+		rw += rx;
+		rh += ry;
+		tw += tx;
+		th += ty;
+		final boolean rtn =
+			((rw < rx || rw > tx) && (rh < ry || rh > ty) && (tw < tx || tw > rx) && (th < ty || th > ry));
+		return rtn;
+	}
 
-/**
-* Returns a Rect representing the intersection of this Rect with the
-* given Rect.  If the two Rects do not intersect, the result is an
-* empty Rect.
-*/
-public Rect intersection(Rect r) {
- int newX = Math.max(this.x, r.x);
- int newY = Math.max(this.y, r.y);
- int newW = Math.min(this.x + this.width, r.x + r.width) - x;
- int newH = Math.min(this.y + this.height, r.y + r.height) - y;
+	/**
+	 * Returns a Rect representing the intersection of this Rect with the given
+	 * Rect. If the two Rects do not intersect, the result is an empty Rect.
+	 */
+	public Rect intersection(final Rect r) {
+		final int newX = Math.max(this.x, r.x);
+		final int newY = Math.max(this.y, r.y);
+		int newW = Math.min(this.x + this.width, r.x + r.width) - x;
+		int newH = Math.min(this.y + this.height, r.y + r.height) - y;
 
- if (newW < 0) newW = 0;
- if (newH < 0) newH = 0;
+		if (newW < 0) newW = 0;
+		if (newH < 0) newH = 0;
 
- return new Rect(newX, newY, newW, newH);
-}
+		return new Rect(newX, newY, newW, newH);
+	}
 
-@Override
-public String toString() {
- return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;
-}
+	@Override
+	public String toString() {
+		return "x=" + x + ", y=" + y + ", w=" + width + ", h=" + height;
+	}
 
-@Override
-public boolean equals(Object o) {
- if (!(o instanceof Rect)) return false;
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof Rect)) return false;
 
- Rect that = (Rect) o;
- return this.x == that.x && this.y == that.y && this.width == that.width &&
-   this.height == that.height;
-}
+		final Rect that = (Rect) o;
+		return this.x == that.x && this.y == that.y && this.width == that.width &&
+			this.height == that.height;
+	}
 
 }
