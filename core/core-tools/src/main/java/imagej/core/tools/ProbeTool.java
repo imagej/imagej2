@@ -62,8 +62,7 @@ public class ProbeTool extends BaseTool {
 		final Point mousePos = new Point(x, y);
 		final Coords coords =
 			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
-		final int imageWidth =
-			evt.getDisplay().getImageCanvas().getImage().getWidth();
+		final int imageWidth = evt.getDisplay().getImageCanvas().getImageWidth();
 		if (evt.getDisplay().getImageCanvas().isInImage(mousePos)) {
 			String s = "";
 			final int cx = coords.getIntX();
@@ -88,7 +87,8 @@ public class ProbeTool extends BaseTool {
 				throw new IllegalStateException("Unknown data type: " +
 					plane.getClass().getName());
 			}
-			Events.publish(new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
+			Events
+				.publish(new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
 		}
 		else {
 			Events.publish(new StatusEvent(""));

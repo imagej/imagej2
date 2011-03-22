@@ -38,7 +38,6 @@ import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageDisplayWindow;
-import imagej.display.NavigableImageCanvas;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -53,10 +52,8 @@ public class SimpleImageDisplay implements Display {
 
 	private ImageDisplayWindow imgWindow;
 	private NavigableImagePanel imgCanvas;
-	private Dataset dataset;
+	private Dataset theDataset;
 	private DisplayController controller;
-
-	public SimpleImageDisplay() {}
 
 	@Override
 	public boolean canDisplay(final Dataset dataset) {
@@ -65,11 +62,11 @@ public class SimpleImageDisplay implements Display {
 
 	@Override
 	public void display(final Dataset dataset) {
-		this.dataset = dataset;
+		theDataset = dataset;
 		// imgCanvas = new ImageCanvasSwing();
 		imgCanvas = new NavigableImagePanel();
 		imgWindow = new NavigableImageFrame(imgCanvas);
-		controller = new DisplayController(this);
+		controller = new AWTDisplayController(this);
 		imgWindow.setDisplayController(controller);
 		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
@@ -83,7 +80,7 @@ public class SimpleImageDisplay implements Display {
 
 	@Override
 	public Dataset getDataset() {
-		return dataset;
+		return theDataset;
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public class SimpleImageDisplay implements Display {
 	}
 
 	@Override
-	public NavigableImageCanvas getImageCanvas() {
+	public NavigableImagePanel getImageCanvas() {
 		return imgCanvas;
 	}
 

@@ -38,7 +38,6 @@ import imagej.Coords;
 import imagej.display.EventDispatcher;
 import imagej.display.MouseCursor;
 import imagej.display.NavigableImageCanvas;
-import imagej.display.ToolEnabled;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
@@ -87,6 +86,8 @@ import javax.swing.SwingUtilities;
  * </p>
  * 
  * <pre>
+ * 
+ * 
  * 
  * 
  * 
@@ -209,7 +210,7 @@ import javax.swing.SwingUtilities;
  * http://weblogs.java.net/blog/gfx/archive/2005/09/zoom_pictures_w.html
  */
 public class NavigableImagePanel extends JPanel implements
-	NavigableImageCanvas, ToolEnabled
+	NavigableImageCanvas
 {
 
 	// Rendering...
@@ -226,7 +227,6 @@ public class NavigableImagePanel extends JPanel implements
 	private int originY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
-	private BufferedImage sampleImage; // for values
 
 	/**
 	 * <p>
@@ -284,7 +284,7 @@ public class NavigableImagePanel extends JPanel implements
 				}
 			}
 
-			@SuppressWarnings("synthetic-a ccess")
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void mouseMoved(final MouseEvent e) {
 				// we need the mouse position so that after zooming
@@ -346,7 +346,6 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	public void setImage(final BufferedImage image) {
 		final BufferedImage oldImage = this.image;
-		sampleImage = image;
 		this.image = toCompatibleImage(image);
 		// Reset scale so that initializeParameters() is called in paintComponent()
 		// for the new image.
@@ -461,14 +460,6 @@ public class NavigableImagePanel extends JPanel implements
 		originX += xDelta;
 		originY += yDelta;
 		repaint();
-	}
-
-	// Moves te image (by dragging with the mouse) to a new mouse position p.
-	private void moveImage(final Point p) {
-		final int xDelta = p.x - mousePosition.x;
-		final int yDelta = p.y - mousePosition.y;
-		mousePosition = p;
-		pan(xDelta, yDelta);
 	}
 
 // </editor-fold>
