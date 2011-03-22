@@ -56,7 +56,7 @@ public interface ToolEnabled {
 	 *
 	 */
 
-	void setCursor(int cursor);
+	void setCursor(MouseCursor cursor);
 
 	/* 
 	 on JPanel:

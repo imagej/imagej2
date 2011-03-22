@@ -52,7 +52,7 @@ public class AWTCursorManager {
 //        }
 //
 //        if (newAwtCursorCode == Cursor.DEFAULT_CURSOR) {
-//            cursorCode = Input.CURSOR_DEFAULT;
+//            cursorCode = Input.DEFAULT;
 //        }
 //
 //        if (this.cursorCode != cursorCode || this.awtCursorCode != newAwtCursorCode) {
@@ -67,7 +67,7 @@ public class AWTCursorManager {
 //        }
 //    }
 
-	private int getAWTCursorCode(final MouseCursor cursorCode) {
+	public static int getAWTCursorCode(final MouseCursor cursorCode) {
 		switch (cursorCode) {
 			default:
 				return Cursor.DEFAULT_CURSOR;
@@ -75,31 +75,31 @@ public class AWTCursorManager {
 				return Cursor.DEFAULT_CURSOR;
 			case OFF:
 				return Cursor.CUSTOM_CURSOR;
-			case CURSOR_HAND:
+			case HAND:
 				return Cursor.HAND_CURSOR;
 			case CROSSHAIR:
 				return Cursor.CROSSHAIR_CURSOR;
-			case CURSOR_MOVE:
+			case MOVE:
 				return Cursor.MOVE_CURSOR;
-			case CURSOR_TEXT:
+			case TEXT:
 				return Cursor.TEXT_CURSOR;
-			case CURSOR_WAIT:
+			case WAIT:
 				return Cursor.WAIT_CURSOR;
-			case CURSOR_N_RESIZE:
+			case N_RESIZE:
 				return Cursor.N_RESIZE_CURSOR;
-			case CURSOR_S_RESIZE:
+			case S_RESIZE:
 				return Cursor.S_RESIZE_CURSOR;
-			case CURSOR_W_RESIZE:
+			case W_RESIZE:
 				return Cursor.W_RESIZE_CURSOR;
-			case CURSOR_E_RESIZE:
+			case E_RESIZE:
 				return Cursor.E_RESIZE_CURSOR;
-			case CURSOR_NW_RESIZE:
+			case NW_RESIZE:
 				return Cursor.NW_RESIZE_CURSOR;
-			case CURSOR_NE_RESIZE:
+			case NE_RESIZE:
 				return Cursor.NE_RESIZE_CURSOR;
-			case CURSOR_SW_RESIZE:
+			case SW_RESIZE:
 				return Cursor.SW_RESIZE_CURSOR;
-			case CURSOR_SE_RESIZE:
+			case SE_RESIZE:
 				return Cursor.SE_RESIZE_CURSOR;
 		}
 	}
