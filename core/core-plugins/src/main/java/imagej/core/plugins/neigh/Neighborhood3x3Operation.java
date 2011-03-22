@@ -34,11 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.neigh;
 
+import imagej.Rect;
 import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.model.Dataset;
 import mpicbg.imglib.algorithm.OutputAlgorithm;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.outofbounds.OutOfBoundsStrategyFactory;
 import mpicbg.imglib.outofbounds.OutOfBoundsStrategyMirrorFactory;
@@ -108,11 +110,13 @@ public class Neighborhood3x3Operation {
 
 		private Image<?> inputImage;
 		private Image<?> outputImage;
+		private Rect selection;
 
 		/** constructor - an algorithm will reference an input Dataset */
 		public Neighborhood3x3Algorithm(Dataset input) {
 			inputImage = input.getImage();
 			outputImage = null;  // initialize later
+			selection = input.getSelection();
 		}
 
 		/**
@@ -157,6 +161,19 @@ public class Neighborhood3x3Operation {
 				(LocalizableByDimCursor<? extends RealType<?>>) outputImage
 					.createLocalizableByDimCursor();
 
+			int[] origin = outputImage.createPositionArray();
+			origin[0] = selection.x;
+			origin[1] = selection.y;
+			
+			int[] span = outputImage.getDimensions();
+			if (selection.width > 0)
+				span[0] = selection.width;
+			if (selection.height > 0)
+				span[1] = selection.height;
+			
+			RegionOfInterestCursor<? extends RealType<?>> neighCursor =
+				new RegionOfInterestCursor(outputCursor, origin, span);
+			
 			OutOfBoundsStrategyFactory factory =
 				new OutOfBoundsStrategyMirrorFactory();
 			
@@ -170,24 +187,32 @@ public class Neighborhood3x3Operation {
 			// initialize the watcher
 			watcher.setup();
 
-			// walk the output image
-			while (outputCursor.hasNext()) {
+			// walk the neighborhood of the output image
+			
+			while (neighCursor.hasNext()) {
+				
 				// locate cursor on next location
-				RealType<?> outputValue = outputCursor.next();
+				RealType<?> outputValue = neighCursor.next();
 
 				// remember the location so that the input image cursor can use
 				// it
-				outputCursor.getPosition(inputPosition);
-
+				neighCursor.getPosition(inputPosition);
+				
+				// NOTE - inputPosition is in relative coordinates of neigh cursor.
+				//  Must translate to input coord space.
+				for (int i = 0; i < inputPosition.length; i++)
+					inputPosition[i] += origin[i];
+				
 				// let watcher know we are visiting a new neighborhood
 				watcher.initializeNeighborhood(inputPosition);
 
 				// iterate over the 3x3 neighborhood
 				for (int dy = -1; dy <= 1; dy++) {
-					// calc local y
+
 					localInputPosition[1] = inputPosition[1] + dy;
+					
 					for (int dx = -1; dx <= 1; dx++) {
-						// calc local x
+
 						localInputPosition[0] = inputPosition[0] + dx;
 
 						// move the input cursor there
@@ -206,6 +231,7 @@ public class Neighborhood3x3Operation {
 			}
 
 			inputCursor.close();
+			neighCursor.close();
 			outputCursor.close();
 
 			return true;
