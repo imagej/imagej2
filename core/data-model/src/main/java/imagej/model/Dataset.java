@@ -46,6 +46,7 @@ import mpicbg.imglib.container.basictypecontainer.array.IntArray;
 import mpicbg.imglib.container.basictypecontainer.array.LongArray;
 import mpicbg.imglib.container.basictypecontainer.array.ShortArray;
 import mpicbg.imglib.container.planar.PlanarContainerFactory;
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
 import mpicbg.imglib.type.numeric.RealType;
@@ -104,7 +105,6 @@ public class Dataset {
 	}
 
 	@SuppressWarnings({"rawtypes","unchecked"})
-	
 	public void setPlane(final int no, final Object plane) {
 		final Container<?> container = image.getContainer();
 		if (!(container instanceof PlanarAccess)) return;
@@ -129,6 +129,18 @@ public class Dataset {
 			array = new DoubleArray((double[]) plane);
 		}
 		planarAccess.setPlane(no, array);
+	}
+
+	public double getDoubleValue(final int[] pos) {
+		// NB: This method is slow... will change anyway with ImgLib2.
+		@SuppressWarnings("unchecked")
+		final LocalizableByDimCursor<? extends RealType<?>> cursor =
+			(LocalizableByDimCursor<? extends RealType<?>>)
+			image.createLocalizableByDimCursor();
+		cursor.setPosition(pos);
+		final double value = cursor.getType().getRealDouble();
+		cursor.close();
+		return value;
 	}
 
 	// TEMP
