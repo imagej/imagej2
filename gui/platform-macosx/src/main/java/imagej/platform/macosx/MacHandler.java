@@ -83,6 +83,7 @@ public class MacHandler implements AboutHandler, AppForegroundListener,
 
 	/** Constructs a Mac OS X adapter. */
 	public MacHandler() {
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		final Application app = Application.getApplication();
 		app.setAboutHandler(this);
 		app.setPreferencesHandler(this);
