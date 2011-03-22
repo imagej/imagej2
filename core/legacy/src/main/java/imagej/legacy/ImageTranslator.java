@@ -48,33 +48,34 @@ import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 
 /**
  * Translates between legacy and modern ImageJ image structures.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ImageTranslator {
 
 	public Dataset createDataset(final ImagePlus imp) {
 		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
+		final Image<?> img;
 		try {
-			final Method m = ImagePlusAdapter.class.getMethod("wrap",
-				ImagePlus.class);
-			final Image<?> img = (Image<?>) m.invoke(null, imp);
-			final Metadata metadata = populateMetadata(imp);
-			final Dataset dataset = new Dataset(img, metadata);
-			return dataset;
+			final Method m =
+				ImagePlusAdapter.class.getMethod("wrap", ImagePlus.class);
+			img = (Image<?>) m.invoke(null, imp);
 		}
-		catch (NoSuchMethodException exc) {
+		catch (final NoSuchMethodException exc) {
 			return null;
 		}
-		catch (IllegalArgumentException e) {
+		catch (final IllegalArgumentException e) {
 			return null;
 		}
-		catch (IllegalAccessException e) {
+		catch (final IllegalAccessException e) {
 			return null;
 		}
-		catch (InvocationTargetException e) {
+		catch (final InvocationTargetException e) {
 			return null;
 		}
+		final Metadata metadata = populateMetadata(imp);
+		final Dataset dataset = new Dataset(img, metadata);
+		return dataset;
 	}
 
 	public ImagePlus createLegacyImage(final Dataset dataset) {
@@ -82,9 +83,9 @@ public class ImageTranslator {
 	}
 
 	private Metadata populateMetadata(final ImagePlus imp) {
-		final AxisLabel[] axes = {
-			AxisLabel.X, AxisLabel.Y, AxisLabel.CHANNEL, AxisLabel.Z, AxisLabel.TIME
-		};
+		final AxisLabel[] axes =
+			{ AxisLabel.X, AxisLabel.Y, AxisLabel.CHANNEL, AxisLabel.Z,
+				AxisLabel.TIME };
 		final Metadata metadata = new Metadata();
 		metadata.setName(imp.getTitle());
 		metadata.setAxes(axes);
