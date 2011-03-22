@@ -84,6 +84,7 @@ public class Dataset {
 	public Dataset(final Image<?> image, final Metadata metadata) {
 		this.image = image;
 		this.metadata = metadata;
+		this.selection = new Rect();
 	}
 
 	public Image<?> getImage() {
