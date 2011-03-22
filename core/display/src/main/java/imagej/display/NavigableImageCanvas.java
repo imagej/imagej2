@@ -1,68 +1,123 @@
+//
+// NavigableImageCanvas.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.display;
 
 //import imagej.gui.swing.display.NavigableImagePanel.ZoomDevice;
+//FIXME - cannot use AWT in ij-display
 import java.awt.Point;
 
 /**
- *
- * @author GBH
+ * TODO
+ * 
+ * @author Grant Harris
  */
-public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled{
+public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 
-	/*** This is an interface extracted from NavigableImagePanel
-	 *  GBH, March 17, 2011
+	/***
+	 * This is an interface extracted from NavigableImagePanel GBH, March 17, 2011
 	 */
 
 	// set EventDispatcher as event listener on this - esp. for key, mouse events
 	void addEventDispatcher(EventDispatcher dispatcher);
-	
+
 	/**
-	 * <p>Identifies a change to the zoom increment.</p>
+	 * <p>
+	 * Identifies a change to the zoom increment.
+	 * </p>
 	 */
 	String ZOOM_INCREMENT_CHANGED_PROPERTY = "zoomIncrement";
 	/**
-	 * <p>Identifies a change to the zoom level.</p>
+	 * <p>
+	 * Identifies a change to the zoom level.
+	 * </p>
 	 */
 	String ZOOM_LEVEL_CHANGED_PROPERTY = "zoomLevel";
 
 	/**
-	 * <p>Gets the image origin.</p>
-	 * <p>Image origin is defined as the upper, left corner of the image in
-	 * the panel's coordinate system.</p>
-	 * @return the point of the upper, left corner of the image in the panel's coordinates
-	 * system.
+	 * <p>
+	 * Gets the image origin.
+	 * </p>
+	 * <p>
+	 * Image origin is defined as the upper, left corner of the image in the
+	 * panel's coordinate system.
+	 * </p>
+	 * 
+	 * @return the point of the upper, left corner of the image in the panel's
+	 *         coordinates system.
 	 */
 	Point getImageOrigin();
 
 	/**
-	 * <p>Gets the current zoom level.</p>
-	 *
+	 * <p>
+	 * Gets the current zoom level.
+	 * </p>
+	 * 
 	 * @return the current zoom level
 	 */
 	double getZoom();
 
 	/**
-	 * <p>Gets the current zoom device.</p>
+	 * <p>
+	 * Gets the current zoom device.
+	 * </p>
 	 */
 	// ZoomDevice getZoomDevice();
 
 	/**
-	 * <p>Gets the current zoom increment.</p>
-	 *
+	 * <p>
+	 * Gets the current zoom increment.
+	 * </p>
+	 * 
 	 * @return the current zoom increment
 	 */
 	double getZoomIncrement();
 
 	/**
-	 * <p>Indicates whether the high quality rendering feature is enabled.</p>
-	 *
+	 * <p>
+	 * Indicates whether the high quality rendering feature is enabled.
+	 * </p>
+	 * 
 	 * @return true if high quality rendering is enabled, false otherwise.
 	 */
 	boolean isHighQualityRenderingEnabled();
 
 	/**
-	 * <p>Indicates whether navigation image is enabled.<p>
-	 *
+	 * <p>
+	 * Indicates whether navigation image is enabled.
+	 * <p>
+	 * 
 	 * @return true when navigation image is enabled, false otherwise.
 	 */
 	boolean isNavigationImageEnabled();
@@ -73,70 +128,98 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled{
 	void pan(int xDelta, int yDelta);
 
 	/**
-	 * <p>Enables/disables high quality rendering.</p>
-	 *
+	 * <p>
+	 * Enables/disables high quality rendering.
+	 * </p>
+	 * 
 	 * @param enabled enables/disables high quality rendering
 	 */
 	void setHighQualityRenderingEnabled(boolean enabled);
 
 	/**
-	 * <p>Sets the image origin.</p>
-	 * <p>Image origin is defined as the upper, left corner of the image in
-	 * the panel's coordinate system. After a new origin is set, the image is repainted.
-	 * This method is used for programmatic image navigation.</p>
+	 * <p>
+	 * Sets the image origin.
+	 * </p>
+	 * <p>
+	 * Image origin is defined as the upper, left corner of the image in the
+	 * panel's coordinate system. After a new origin is set, the image is
+	 * repainted. This method is used for programmatic image navigation.
+	 * </p>
+	 * 
 	 * @param x the x coordinate of the new image origin
 	 * @param y the y coordinate of the new image origin
 	 */
 	void setImageOrigin(int x, int y);
 
 	/**
-	 * <p>Sets the image origin.</p>
-	 * <p>Image origin is defined as the upper, left corner of the image in
-	 * the panel's coordinate system. After a new origin is set, the image is repainted.
-	 * This method is used for programmatic image navigation.</p>
+	 * <p>
+	 * Sets the image origin.
+	 * </p>
+	 * <p>
+	 * Image origin is defined as the upper, left corner of the image in the
+	 * panel's coordinate system. After a new origin is set, the image is
+	 * repainted. This method is used for programmatic image navigation.
+	 * </p>
+	 * 
 	 * @param newOrigin the value of a new image origin
 	 */
 	void setImageOrigin(Point newOrigin);
 
 	/**
-	 * <p>Enables/disables navigation with the navigation image.</p>
-	 * <p>Navigation image should be disabled when custom, programmatic navigation
-	 * is implemented.</p>
-	 *
+	 * <p>
+	 * Enables/disables navigation with the navigation image.
+	 * </p>
+	 * <p>
+	 * Navigation image should be disabled when custom, programmatic navigation is
+	 * implemented.
+	 * </p>
+	 * 
 	 * @param enabled true when navigation image is enabled, false otherwise.
 	 */
 	void setNavigationImageEnabled(boolean enabled);
 
 	/**
-	 * <p>Sets the zoom level used to display the image.</p>
-	 * <p>This method is used in programmatic zooming. The zooming center is
-	 * the point of the image closest to the center of the panel.
-	 * After a new zoom level is set the image is repainted.</p>
-	 *
+	 * <p>
+	 * Sets the zoom level used to display the image.
+	 * </p>
+	 * <p>
+	 * This method is used in programmatic zooming. The zooming center is the
+	 * point of the image closest to the center of the panel. After a new zoom
+	 * level is set the image is repainted.
+	 * </p>
+	 * 
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
 	void setZoom(double newZoom);
 
 	/**
-	 * <p>Sets the zoom level used to display the image, and the zooming center,
-	 * around which zooming is done.</p>
-	 * <p>This method is used in programmatic zooming.
-	 * After a new zoom level is set the image is repainted.</p>
-	 *
+	 * <p>
+	 * Sets the zoom level used to display the image, and the zooming center,
+	 * around which zooming is done.
+	 * </p>
+	 * <p>
+	 * This method is used in programmatic zooming. After a new zoom level is set
+	 * the image is repainted.
+	 * </p>
+	 * 
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
 	void setZoom(double newZoom, Point zoomingCenter);
 
 	/**
-	 * <p>Sets a new zoom device.</p>
-	 *
+	 * <p>
+	 * Sets a new zoom device.
+	 * </p>
+	 * 
 	 * @param newZoomDevice specifies the type of a new zoom device.
 	 */
-	//void setZoomDevice(ZoomDevice newZoomDevice);
+	// void setZoomDevice(ZoomDevice newZoomDevice);
 
 	/**
-	 * <p>Sets a new zoom increment value.</p>
-	 *
+	 * <p>
+	 * Sets a new zoom increment value.
+	 * </p>
+	 * 
 	 * @param newZoomIncrement new zoom increment value
 	 */
 	void setZoomIncrement(double newZoomIncrement);
@@ -144,9 +227,9 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled{
 	// Is this point in the image as displayed in the panel
 	boolean isInImage(Point p);
 
-	//Converts this panel's coordinates into the original image coordinates
+	// Converts this panel's coordinates into the original image coordinates
 	Coords panelToImageCoords(Point p);
 
-	//Converts the original image coordinates into this panel's coordinates
+	// Converts the original image coordinates into this panel's coordinates
 	Coords imageToPanelCoords(Coords p);
 }

@@ -1,5 +1,5 @@
 //
-// AbstractAWTDisplay.java
+// AWTEventDispatcher.java
 //
 
 /*
@@ -69,56 +69,56 @@ import java.awt.event.WindowListener;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
+ * @author Grant Harris
  */
-public class AWTEventDispatcher implements EventDispatcher,
-		KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WindowListener
+public class AWTEventDispatcher implements EventDispatcher, KeyListener,
+	MouseListener, MouseMotionListener, MouseWheelListener, WindowListener
 {
+
 	Display display;
 
-
-	public AWTEventDispatcher(Display display) {
+	public AWTEventDispatcher(final Display display) {
 		this.display = display;
 	}
-
 
 	// -- KeyListener methods --
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		Events.publish(new KyTypedEvent(display,
-			e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
+	public void keyTyped(final KeyEvent e) {
+		Events.publish(new KyTypedEvent(display, e.getKeyChar(), e.getKeyCode(),
+			e.getModifiers()));
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		Events.publish(new KyPressedEvent(display,
-			e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
+	public void keyPressed(final KeyEvent e) {
+		Events.publish(new KyPressedEvent(display, e.getKeyChar(), e.getKeyCode(),
+			e.getModifiers()));
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		Events.publish(new KyReleasedEvent(display,
-			e.getKeyChar(), e.getKeyCode(), e.getModifiers()));
+	public void keyReleased(final KeyEvent e) {
+		Events.publish(new KyReleasedEvent(display, e.getKeyChar(),
+			e.getKeyCode(), e.getModifiers()));
 	}
 
 	// -- MouseListener methods --
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(final MouseEvent e) {
 		Events.publish(new MsClickedEvent(display, e.getX(), e.getY(),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(final MouseEvent e) {
 		Events.publish(new MsPressedEvent(display, e.getX(), e.getY(),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(final MouseEvent e) {
 		Events.publish(new MsReleasedEvent(display, e.getX(), e.getY(),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
@@ -126,70 +126,72 @@ public class AWTEventDispatcher implements EventDispatcher,
 	// -- MouseMotionListener methods --
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(final MouseEvent e) {
 		Events.publish(new MsEnteredEvent(display, e.getX(), e.getY()));
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(final MouseEvent e) {
 		Events.publish(new MsExitedEvent(display, e.getX(), e.getY()));
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
+	public void mouseDragged(final MouseEvent e) {
 		Events.publish(new MsDraggedEvent(display, e.getX(), e.getY(),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void mouseMoved(final MouseEvent e) {
 		Events.publish(new MsMovedEvent(display, e.getX(), e.getY()));
 	}
 
 	// -- MouseWheelListener methods --
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		Events.publish(new MsWheelEvent(display,
-			e.getX(), e.getY(), e.getWheelRotation()));
+	public void mouseWheelMoved(final MouseWheelEvent e) {
+		Events.publish(new MsWheelEvent(display, e.getX(), e.getY(), e
+			.getWheelRotation()));
 	}
 
 	// -- WindowListener methods --
 
 	@Override
-	public void windowActivated(WindowEvent e) {
+	public void windowActivated(final WindowEvent e) {
 		Events.publish(new WinActivatedEvent(display));
 	}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
+	public void windowClosed(final WindowEvent e) {
 		Events.publish(new WinClosedEvent(display));
 	}
 
 	@Override
-	public void windowClosing(WindowEvent e) {
+	public void windowClosing(final WindowEvent e) {
 		Events.publish(new WinClosingEvent(display));
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
+	public void windowDeactivated(final WindowEvent e) {
 		Events.publish(new WinDeactivatedEvent(display));
 	}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {
+	public void windowDeiconified(final WindowEvent e) {
 		Events.publish(new WinDeiconifiedEvent(display));
 	}
 
 	@Override
-	public void windowIconified(WindowEvent e) {
+	public void windowIconified(final WindowEvent e) {
 		Events.publish(new WinIconifiedEvent(display));
 	}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
+	public void windowOpened(final WindowEvent e) {
 		Events.publish(new WinOpenedEvent(display));
 	}
+
+	// -- Helper methods --
 
 	private int mouseButton(final MouseEvent e) {
 		switch (e.getButton()) {

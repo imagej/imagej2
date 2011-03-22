@@ -1,18 +1,55 @@
+//
+// DisplayController.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.display;
 
 import imagej.model.AxisLabel;
 import imagej.model.Dataset;
 import imagej.process.Index;
+
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+
 import loci.formats.gui.AWTImageTools;
 import mpicbg.imglib.image.Image;
 
 /**
- *
- * @author GBH
+ * TODO
+ * 
+ * @author Grant Harris
  */
 public class DisplayController {
 
@@ -22,8 +59,8 @@ public class DisplayController {
 	private AxisLabel[] dimLabels;
 	private int xIndex, yIndex;
 	private int[] pos;
-	private ImageDisplayWindow imgWindow;
-	private Display display;
+	private final ImageDisplayWindow imgWindow;
+	private final Display display;
 	private Object currentPlane;
 
 	public Object getCurrentPlane() {
@@ -43,9 +80,10 @@ public class DisplayController {
 	}
 
 	private String imageName;
-	//private NavigableImagePanel imgPanel;
 
-	public DisplayController(Display display) {
+	// private NavigableImagePanel imgPanel;
+
+	public DisplayController(final Display display) {
 		this.display = display;
 		this.imgWindow = this.display.getImageDisplayWindow();
 		setDataset(this.display.getDataset());
@@ -79,7 +117,7 @@ public class DisplayController {
 		updatePosition();
 	}
 
-	public void updatePosition(int posIndex, int newValue) {
+	public void updatePosition(final int posIndex, final int newValue) {
 		pos[posIndex] = newValue;
 		updatePosition();
 	}
@@ -90,11 +128,13 @@ public class DisplayController {
 			display.getImageCanvas().setImage(bImage);
 		}
 		// this is ugly... just trying it out.
-		//imgPanel.setNavigationImageEnabled(true);
+		// imgPanel.setNavigationImageEnabled(true);
 		imgWindow.setLabel(makeLabel(image, dims, dimLabels));
 	}
 
-	private String makeLabel(Image<?> image, int[] dims, AxisLabel[] dimLabels) {
+	private String makeLabel(final Image<?> image, final int[] dims,
+		final AxisLabel[] dimLabels)
+	{
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (AxisLabel.isXY(dimLabels[i])) {
@@ -107,7 +147,7 @@ public class DisplayController {
 			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		//sb.append(image.getType());
+		// sb.append(image.getType());
 		return sb.toString();
 
 	}
@@ -118,39 +158,45 @@ public class DisplayController {
 		final Object plane = dataset.getPlane(no);
 		currentPlane = plane;
 		if (plane instanceof byte[]) {
-			return AWTImageTools.makeImage((byte[]) plane,
-					dims[xIndex], dims[yIndex], dataset.isSigned());
-		} else if (plane instanceof short[]) {
-			return AWTImageTools.makeImage((short[]) plane,
-					dims[xIndex], dims[yIndex], dataset.isSigned());
-		} else if (plane instanceof int[]) {
-			return AWTImageTools.makeImage((int[]) plane,
-					dims[xIndex], dims[yIndex], dataset.isSigned());
-		} else if (plane instanceof float[]) {
-			return AWTImageTools.makeImage((float[]) plane,
-					dims[xIndex], dims[yIndex]);
-		} else if (plane instanceof double[]) {
-			return AWTImageTools.makeImage((double[]) plane,
-					dims[xIndex], dims[yIndex]);
-		} else {
-			throw new IllegalStateException("Unknown data type: "
-					+ plane.getClass().getName());
+			return AWTImageTools.makeImage((byte[]) plane, dims[xIndex],
+				dims[yIndex], dataset.isSigned());
+		}
+		else if (plane instanceof short[]) {
+			return AWTImageTools.makeImage((short[]) plane, dims[xIndex],
+				dims[yIndex], dataset.isSigned());
+		}
+		else if (plane instanceof int[]) {
+			return AWTImageTools.makeImage((int[]) plane, dims[xIndex],
+				dims[yIndex], dataset.isSigned());
+		}
+		else if (plane instanceof float[]) {
+			return AWTImageTools.makeImage((float[]) plane, dims[xIndex],
+				dims[yIndex]);
+		}
+		else if (plane instanceof double[]) {
+			return AWTImageTools.makeImage((double[]) plane, dims[xIndex],
+				dims[yIndex]);
+		}
+		else {
+			throw new IllegalStateException("Unknown data type: " +
+				plane.getClass().getName());
 		}
 	}
 
-	private static BufferedImage toCompatibleImage(BufferedImage image) {
+	private static BufferedImage toCompatibleImage(final BufferedImage image) {
 		if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
 			return image;
 		}
-		BufferedImage compatibleImage = CONFIGURATION.createCompatibleImage(
-				image.getWidth(), image.getHeight(), image.getTransparency());
-		Graphics g = compatibleImage.getGraphics();
+		final BufferedImage compatibleImage =
+			CONFIGURATION.createCompatibleImage(image.getWidth(), image.getHeight(),
+				image.getTransparency());
+		final Graphics g = compatibleImage.getGraphics();
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
 		return compatibleImage;
 	}
 
 	private static final GraphicsConfiguration CONFIGURATION =
-			GraphicsEnvironment.getLocalGraphicsEnvironment().
-			getDefaultScreenDevice().getDefaultConfiguration();
+		GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+			.getDefaultConfiguration();
 }

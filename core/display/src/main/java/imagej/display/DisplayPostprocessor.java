@@ -49,23 +49,24 @@ import java.util.Map;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = PluginPostprocessor.class)
 public class DisplayPostprocessor implements PluginPostprocessor {
 
 	@Override
-	public void process(PluginModule<?> module) {
+	public void process(final PluginModule<?> module) {
 		final Map<String, Object> outputs = module.getOutputs();
 		handleOutput(outputs.values());
 	}
 
 	/** Displays output datasets. */
-	public void handleOutput(Object value) {
+	public void handleOutput(final Object value) {
 		if (value instanceof Collection) {
 			final Collection<?> collection = (Collection<?>) value;
-			for (final Object item : collection) handleOutput(item);
+			for (final Object item : collection)
+				handleOutput(item);
 		}
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
@@ -83,7 +84,7 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 						break;
 					}
 				}
-				catch (PluginException e) {
+				catch (final PluginException e) {
 					Log.error(e);
 				}
 			}
