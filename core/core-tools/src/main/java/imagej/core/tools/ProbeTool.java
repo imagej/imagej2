@@ -67,20 +67,31 @@ public class ProbeTool extends BaseTool {
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
 			final int offset = cx + imageWidth * cy;
+			// TODO - remove case logic; rework in favor of planar 2D display
+			// architecture, probing dataset for values instead of extracting from
+			// cooked plane object
+			final boolean signed = evt.getDisplay().getDataset().isSigned();
 			if (plane instanceof byte[]) {
-				s = "" + (((byte[]) plane)[offset] & 0xFF);
+				final byte value = ((byte[]) plane)[offset];
+				if (signed) s = "" + value;
+				else s = "" + (value & 0xff);
 			}
 			else if (plane instanceof short[]) {
-				s = "" + (((short[]) plane)[offset] & 0xffff);
+				final short value = ((short[]) plane)[offset];
+				if (signed) s = "" + value;
+				else s = "" + (value & 0xffff);
 			}
 			else if (plane instanceof int[]) {
-				s = "" + ((int[]) plane)[offset];
+				final int value = ((int[]) plane)[offset];
+				if (signed) s = "" + value;
+				else s = "" + (value & 0xffffffff);
+			}
+			else if (plane instanceof long[]) {
+				// NB: no "uint64" yet
+				s = "" + ((long[]) plane)[offset];
 			}
 			else if (plane instanceof float[]) {
 				s = "" + ((float[]) plane)[offset];
-			}
-			else if (plane instanceof long[]) {
-				s = "" + ((long[]) plane)[offset];
 			}
 			else if (plane instanceof double[]) {
 				s = "" + ((double[]) plane)[offset];
