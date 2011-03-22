@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
+import imagej.display.MouseCursor;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;
@@ -42,8 +43,6 @@ import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
-
-import java.awt.Cursor;
 
 /**
  * Base class for ImageJ tools. A tool is a collection of rules binding
@@ -87,8 +86,8 @@ public abstract class BaseTool implements ITool {
 	}
 
 	@Override
-	public int getCursor() {
-		return Cursor.DEFAULT_CURSOR;
+	public MouseCursor getCursor() {
+		return MouseCursor.DEFAULT;
 	}
 
 	@Override

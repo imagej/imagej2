@@ -1,5 +1,5 @@
 //
-// CursorMgr.java
+// AWTCursorManager.java
 //
 
 /*
@@ -32,9 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.gui.swing.display;
 
-//FIXME - cannot use AWT in ij-display
+import imagej.display.MouseCursor;
+
 import java.awt.Cursor;
 
 /**
@@ -42,7 +43,7 @@ import java.awt.Cursor;
  * 
  * @author Grant Harris
  */
-public class CursorMgr {
+public class AWTCursorManager {
 
 //	void setCursor(int cursorCode) {
 //        int newAwtCursorCode = getAWTCursorCode(cursorCode);
@@ -66,17 +67,17 @@ public class CursorMgr {
 //        }
 //    }
 
-	private int getAWTCursorCode(final CursorCodes cursorCode) {
+	private int getAWTCursorCode(final MouseCursor cursorCode) {
 		switch (cursorCode) {
 			default:
 				return Cursor.DEFAULT_CURSOR;
-			case CURSOR_DEFAULT:
+			case DEFAULT:
 				return Cursor.DEFAULT_CURSOR;
-			case CURSOR_OFF:
+			case OFF:
 				return Cursor.CUSTOM_CURSOR;
 			case CURSOR_HAND:
 				return Cursor.HAND_CURSOR;
-			case CURSOR_CROSSHAIR:
+			case CROSSHAIR:
 				return Cursor.CROSSHAIR_CURSOR;
 			case CURSOR_MOVE:
 				return Cursor.MOVE_CURSOR;
@@ -100,14 +101,7 @@ public class CursorMgr {
 				return Cursor.SW_RESIZE_CURSOR;
 			case CURSOR_SE_RESIZE:
 				return Cursor.SE_RESIZE_CURSOR;
-
 		}
 	}
-}
 
-enum CursorCodes {
-	CURSOR_DEFAULT, CURSOR_OFF, CURSOR_CROSSHAIR, CURSOR_HAND, CURSOR_MOVE,
-		CURSOR_TEXT, CURSOR_WAIT, CURSOR_N_RESIZE, CURSOR_S_RESIZE,
-		CURSOR_W_RESIZE, CURSOR_E_RESIZE, CURSOR_NW_RESIZE, CURSOR_NE_RESIZE,
-		CURSOR_SW_RESIZE, CURSOR_SE_RESIZE
 }
