@@ -51,7 +51,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -174,11 +173,6 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 	@Override
 	public ImageCanvas getImageCanvas() {
 		return imgCanvas;
-	}
-
-	@Override
-	public void setImage(final BufferedImage image) {
-		imgCanvas.setImage(image);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 //
-// ImageDisplayWindow.java
+// RealCoords.java
 //
 
 /*
@@ -32,27 +32,36 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej;
 
 /**
+ * This class represents an (X, Y) coordinate pair in real coordinates.
+ * It is required for high precision image coordinates translation.
+ *
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface ImageDisplayWindow {
+public class RealCoords {
 
-	void setDisplayController(DisplayController controller);
+	public double x;
+	public double y;
 
-	// void addControls(DisplayController controller);
+	public RealCoords(final double x, final double y) {
+		this.x = x;
+		this.y = y;
+	}
 
-	void setImageCanvas(ImageCanvas canvas);
+	public int getIntX() {
+		return (int) (x + 0.5);
+	}
 
-	ImageCanvas getImageCanvas();
+	public int getIntY() {
+		return (int) (y + 0.5);
+	}
 
-	void updateImage();
-
-	void setLabel(String s);
-
-	void setTitle(String s);
-
-	void addEventDispatcher(EventDispatcher dispatcher);
+	@Override
+	public String toString() {
+		return "[Coords: x=" + x + ",y=" + y + "]";
+	}
 
 }

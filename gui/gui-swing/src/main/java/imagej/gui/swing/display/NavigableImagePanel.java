@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.swing.display;
 
-import imagej.Coords;
+import imagej.IntCoords;
+import imagej.RealCoords;
 import imagej.display.EventDispatcher;
 import imagej.display.MouseCursor;
 import imagej.display.NavigableImageCanvas;
@@ -86,6 +87,7 @@ import javax.swing.SwingUtilities;
  * </p>
  * 
  * <pre>
+ * 
  * 
  * 
  * 
@@ -262,7 +264,7 @@ public class NavigableImagePanel extends JPanel implements
 				if (SwingUtilities.isLeftMouseButton(e)) {
 					if (isInNavigationImage(e.getPoint())) {
 						final Point p = e.getPoint();
-						displayImageAt(p);
+						displayImageAt(ptToCoords(p));
 					}
 				}
 			}
@@ -413,8 +415,8 @@ public class NavigableImagePanel extends JPanel implements
 	 *         coordinates system.
 	 */
 	@Override
-	public Point getImageOrigin() {
-		return new Point(originX, originY);
+	public IntCoords getImageOrigin() {
+		return new IntCoords(originX, originY);
 	}
 
 	/**
@@ -432,7 +434,7 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	@Override
 	public void setImageOrigin(final int x, final int y) {
-		setImageOrigin(new Point(x, y));
+		setImageOrigin(new IntCoords(x, y));
 	}
 
 	/**
@@ -448,7 +450,7 @@ public class NavigableImagePanel extends JPanel implements
 	 * @param newOrigin the value of a new image origin
 	 */
 	@Override
-	public void setImageOrigin(final Point newOrigin) {
+	public void setImageOrigin(final IntCoords newOrigin) {
 		originX = newOrigin.x;
 		originY = newOrigin.y;
 		repaint();
@@ -503,20 +505,20 @@ public class NavigableImagePanel extends JPanel implements
 
 	// Converts this panel's coordinates into the original image coordinates
 	@Override
-	public Coords panelToImageCoords(final Point p) {
-		return new Coords((p.x - originX) / scale, (p.y - originY) / scale);
+	public RealCoords panelToImageCoords(final IntCoords p) {
+		return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
 	}
 
 	// Converts the original image coordinates into this panel's coordinates
 	@Override
-	public Coords imageToPanelCoords(final Coords p) {
-		return new Coords((p.x * scale) + originX, (p.y * scale) + originY);
+	public RealCoords imageToPanelCoords(final RealCoords p) {
+		return new RealCoords((p.x * scale) + originX, (p.y * scale) + originY);
 	}
 
 	// Tests whether a given point in the panel falls within the image boundaries.
 	@Override
-	public boolean isInImage(final Point p) {
-		final Coords coords = panelToImageCoords(p);
+	public boolean isInImage(final IntCoords p) {
+		final RealCoords coords = panelToImageCoords(p);
 		final int x = coords.getIntX();
 		final int y = coords.getIntY();
 		return (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight());
@@ -572,9 +574,9 @@ public class NavigableImagePanel extends JPanel implements
 	 * image coordinates).
 	 */
 	private Rectangle getImageClipBounds() {
-		final Coords startCoords = panelToImageCoords(new Point(0, 0));
-		final Coords endCoords =
-			panelToImageCoords(new Point(getWidth() - 1, getHeight() - 1));
+		final RealCoords startCoords = panelToImageCoords(new IntCoords(0, 0));
+		final RealCoords endCoords =
+			panelToImageCoords(new IntCoords(getWidth() - 1, getHeight() - 1));
 		final int panelX1 = startCoords.getIntX();
 		final int panelY1 = startCoords.getIntY();
 		final int panelX2 = endCoords.getIntX();
@@ -715,7 +717,8 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	@Override
 	public void setZoom(final double newZoom) {
-		final Point zoomingCenter = new Point(getWidth() / 2, getHeight() / 2);
+		final IntCoords zoomingCenter =
+			new IntCoords(getWidth() / 2, getHeight() / 2);
 		setZoom(newZoom, zoomingCenter);
 	}
 
@@ -732,8 +735,8 @@ public class NavigableImagePanel extends JPanel implements
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
 	@Override
-	public void setZoom(final double newZoom, final Point zoomingCenter) {
-		final Coords imageP = panelToImageCoords(zoomingCenter);
+	public void setZoom(final double newZoom, final IntCoords zoomingCenter) {
+		final RealCoords imageP = panelToImageCoords(zoomingCenter);
 		if (imageP.x < 0.0) {
 			imageP.x = 0.0;
 		}
@@ -746,10 +749,10 @@ public class NavigableImagePanel extends JPanel implements
 		if (imageP.y >= image.getHeight()) {
 			imageP.y = image.getHeight() - 1.0;
 		}
-		final Coords correctedP = imageToPanelCoords(imageP);
+		final RealCoords correctedP = imageToPanelCoords(imageP);
 		final double oldZoom = getZoom();
 		scale = zoomToScale(newZoom);
-		final Coords panelP = imageToPanelCoords(imageP);
+		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (correctedP.getIntX() - (int) panelP.x);
 		originY += (correctedP.getIntY() - (int) panelP.y);
 		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),
@@ -795,10 +798,10 @@ public class NavigableImagePanel extends JPanel implements
 	// Zooms an image in the panel by repainting it at the new zoom level.
 	// The current mouse position is the zooming center.
 	private void zoomImage() {
-		final Coords imageP = panelToImageCoords(mousePosition);
+		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
 		final double oldZoom = getZoom();
 		scale *= zoomFactor;
-		final Coords panelP = imageToPanelCoords(imageP);
+		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (mousePosition.x - (int) panelP.x);
 		originY += (mousePosition.y - (int) panelP.y);
 		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),
@@ -853,20 +856,24 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 	// Converts the navigation image coordinates into the zoomed image coordinates
-	private Point navToZoomedImageCoords(final Point p) {
+	private IntCoords navToZoomedImageCoords(final IntCoords p) {
 		final int x = p.x * getScreenImageWidth() / getScreenNavImageWidth();
 		final int y = p.y * getScreenImageHeight() / getScreenNavImageHeight();
-		return new Point(x, y);
+		return new IntCoords(x, y);
 	}
 
 	// The user clicked within the navigation image and this part of the image
 	// is displayed in the panel. The clicked point of the image is centered in
 	// the panel.
-	private void displayImageAt(final Point p) {
-		final Point scrImagePoint = navToZoomedImageCoords(p);
+	private void displayImageAt(final IntCoords p) {
+		final IntCoords scrImagePoint = navToZoomedImageCoords(p);
 		originX = -(scrImagePoint.x - getWidth() / 2);
 		originY = -(scrImagePoint.y - getHeight() / 2);
 		repaint();
+	}
+
+	private IntCoords ptToCoords(final Point p) {
+		return new IntCoords(p.x, p.y);
 	}
 
 	/**
@@ -1073,7 +1080,7 @@ public class NavigableImagePanel extends JPanel implements
 				}
 				zoomNavigationImage();
 			}
-			else if (isInImage(p)) {
+			else if (isInImage(ptToCoords(p))) {
 				if (zoomIn) {
 					zoomFactor = 1.0 + zoomIncrement;
 				}
@@ -1097,7 +1104,7 @@ public class NavigableImagePanel extends JPanel implements
 					navZoomFactor = 1.0 - zoomIncrement;
 					zoomNavigationImage();
 				}
-				else if (isInImage(p)) {
+				else if (isInImage(ptToCoords(p))) {
 					zoomFactor = 1.0 - zoomIncrement;
 					zoomImage();
 				}
@@ -1107,7 +1114,7 @@ public class NavigableImagePanel extends JPanel implements
 					navZoomFactor = 1.0 + zoomIncrement;
 					zoomNavigationImage();
 				}
-				else if (isInImage(p)) {
+				else if (isInImage(ptToCoords(p))) {
 					zoomFactor = 1.0 + zoomIncrement;
 					zoomImage();
 				}
