@@ -34,6 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import imagej.Log;
+import imagej.Rect;
 import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.model.Dataset;
@@ -66,7 +71,21 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		FlipCoordinateTransformer flipTransformer = new HorzFlipTransformer();
+		if (input == null) // TODO - temporary code to test these until IJ2
+		// plugins can correctly fill a Dataset @Parameter
+		{
+			Image<UnsignedShortType> junkImage =
+				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+					200 });
+			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
+			int index = 0;
+			for (UnsignedShortType pixRef : cursor)
+				pixRef.set(index++);
+			cursor.close();
+			input = new Dataset(junkImage);
+			input.setSelection(20, 30, 150, 175);
+		}
+		FlipCoordinateTransformer flipTransformer = new HorzFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibOutputAlgorithmRunner runner =
 			new ImglibOutputAlgorithmRunner(flipper);
@@ -77,11 +96,20 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	private class HorzFlipTransformer implements FlipCoordinateTransformer {
 
+		private int maxX;
+		
+		HorzFlipTransformer(Dataset input) {
+			maxX = input.getImage().getDimension(0);
+			Rect currentSelection = input.getSelection();
+			if (currentSelection.width > 0)
+				maxX = currentSelection.x + currentSelection.width;
+		}
+		
 		@Override
 		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
 			int[] outputPosition)
 		{
-			outputPosition[0] = inputDimensions[0] - inputPosition[0] - 1;
+			outputPosition[0] = maxX - inputPosition[0] - 1;
 			outputPosition[1] = inputPosition[1];
 		}
 

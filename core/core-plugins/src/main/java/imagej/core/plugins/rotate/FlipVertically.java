@@ -34,6 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import mpicbg.imglib.cursor.Cursor;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import imagej.Rect;
 import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.model.Dataset;
@@ -66,7 +70,21 @@ public class FlipVertically implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		FlipCoordinateTransformer flipTransformer = new VertFlipTransformer();
+		if (input == null) // TODO - temporary code to test these until IJ2
+			// plugins can correctly fill a Dataset @Parameter
+			{
+				Image<UnsignedShortType> junkImage =
+					Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
+						200 });
+				Cursor<UnsignedShortType> cursor = junkImage.createCursor();
+				int index = 0;
+				for (UnsignedShortType pixRef : cursor)
+					pixRef.set(index++);
+				cursor.close();
+				input = new Dataset(junkImage);
+				input.setSelection(20, 30, 150, 175);
+			}
+		FlipCoordinateTransformer flipTransformer = new VertFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibOutputAlgorithmRunner runner =
 			new ImglibOutputAlgorithmRunner(flipper);
@@ -77,12 +95,21 @@ public class FlipVertically implements ImageJPlugin {
 
 	private class VertFlipTransformer implements FlipCoordinateTransformer {
 
+		private int maxY;
+		
+		VertFlipTransformer(Dataset input) {
+			maxY = input.getImage().getDimension(1);
+			Rect currentSelection = input.getSelection();
+			if (currentSelection.height > 0)
+				maxY = currentSelection.y + currentSelection.height;
+		}
+		
 		@Override
 		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
 			int[] outputPosition)
 		{
 			outputPosition[0] = inputPosition[0];
-			outputPosition[1] = inputDimensions[1] - inputPosition[1] - 1;
+			outputPosition[1] = maxY - inputPosition[1] - 1;
 		}
 
 		@Override
