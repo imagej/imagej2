@@ -36,7 +36,7 @@ package imagej.display;
 
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 public interface LayeredDisplay extends Display {
