@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 package imagej.core.tools;
 
-import imagej.display.Coords;
+import imagej.Coords;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;

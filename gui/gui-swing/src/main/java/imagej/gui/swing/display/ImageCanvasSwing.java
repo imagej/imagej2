@@ -1,6 +1,6 @@
 package imagej.gui.swing.display;
 
-import imagej.display.Coords;
+import imagej.Coords;
 import imagej.display.EventDispatcher;
 import imagej.display.NavigableImageCanvas;
 import imagej.event.ImageJEvent;

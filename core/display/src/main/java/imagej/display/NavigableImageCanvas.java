@@ -36,6 +36,8 @@ package imagej.display;
 
 //import imagej.gui.swing.display.NavigableImagePanel.ZoomDevice;
 //FIXME - cannot use AWT in ij-display
+import imagej.Coords;
+
 import java.awt.Point;
 
 /**
