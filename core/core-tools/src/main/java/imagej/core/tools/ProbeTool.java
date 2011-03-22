@@ -34,15 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.Coords;
+import imagej.IntCoords;
+import imagej.RealCoords;
 import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
-
-import java.awt.Point;
 
 /**
  * TODO
@@ -59,8 +58,8 @@ public class ProbeTool extends BaseTool {
 		final Object plane = evt.getDisplay().getCurrentPlane();
 		final int x = evt.getX();
 		final int y = evt.getY();
-		final Point mousePos = new Point(x, y);
-		final Coords coords =
+		final IntCoords mousePos = new IntCoords(x, y);
+		final RealCoords coords =
 			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
 		final int imageWidth = evt.getDisplay().getImageCanvas().getImageWidth();
 		if (evt.getDisplay().getImageCanvas().isInImage(mousePos)) {

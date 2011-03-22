@@ -1,5 +1,5 @@
 //
-// Coords.java
+// IntCoords.java
 //
 
 /*
@@ -35,32 +35,25 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej;
 
 /**
- * TODO
+ * This class represents an (X, Y) coordinate pair in integer coordinates.
+ * It mainly exists to avoid AWT references to java.awt.Point.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-//This class is required for high precision image coordinates translation.
-public class Coords {
+public class IntCoords {
 
-	public double x;
-	public double y;
+	public int x;
+	public int y;
 
-	public Coords(final double x, final double y) {
+	public IntCoords(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public int getIntX() {
-		return (int) Math.round(x);
-	}
-
-	public int getIntY() {
-		return (int) Math.round(y);
-	}
-
 	@Override
 	public String toString() {
-		return "[Coords: x=" + x + ",y=" + y + "]";
+		return "[Coords: x=" + x + ", y=" + y + "]";
 	}
 
 }

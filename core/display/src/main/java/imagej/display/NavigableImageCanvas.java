@@ -34,11 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-//import imagej.gui.swing.display.NavigableImagePanel.ZoomDevice;
-import imagej.Coords;
-
-//FIXME - cannot use AWT in ij-display
-import java.awt.Point;
+import imagej.IntCoords;
+import imagej.RealCoords;
 
 /**
  * TODO
@@ -79,7 +76,7 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 	 * @return the point of the upper, left corner of the image in the panel's
 	 *         coordinates system.
 	 */
-	Point getImageOrigin();
+	IntCoords getImageOrigin();
 
 	/**
 	 * <p>
@@ -165,7 +162,7 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 	 * 
 	 * @param newOrigin the value of a new image origin
 	 */
-	void setImageOrigin(Point newOrigin);
+	void setImageOrigin(IntCoords newOrigin);
 
 	/**
 	 * <p>
@@ -206,7 +203,7 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 	 * 
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
-	void setZoom(double newZoom, Point zoomingCenter);
+	void setZoom(double newZoom, IntCoords zoomingCenter);
 
 	/**
 	 * <p>
@@ -227,11 +224,11 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 	void setZoomIncrement(double newZoomIncrement);
 
 	// Is this point in the image as displayed in the panel
-	boolean isInImage(Point p);
+	boolean isInImage(IntCoords p);
 
 	// Converts this panel's coordinates into the original image coordinates
-	Coords panelToImageCoords(Point p);
+	RealCoords panelToImageCoords(IntCoords p);
 
 	// Converts the original image coordinates into this panel's coordinates
-	Coords imageToPanelCoords(Coords p);
+	RealCoords imageToPanelCoords(RealCoords p);
 }

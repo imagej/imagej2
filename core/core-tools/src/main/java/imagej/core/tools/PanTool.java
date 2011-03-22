@@ -41,7 +41,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
-//FIXME - cannot use AWT in ij-core-tools
+
 import java.awt.event.KeyEvent;
 
 /**
@@ -67,6 +67,8 @@ public class PanTool extends BaseTool {
 	@Override
 	public void onKeyDown(KyPressedEvent evt) {
 		final Display display = evt.getDisplay();
+		// TODO - eliminate use of AWT here
+		// to do so, need GUI-agnostic Key enum with all key codes...
 		switch (evt.getCode()) {
 			case KeyEvent.VK_UP:
 				display.pan(0, -PAN_AMOUNT);
