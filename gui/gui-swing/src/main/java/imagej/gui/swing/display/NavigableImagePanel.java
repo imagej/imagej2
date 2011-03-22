@@ -36,6 +36,7 @@ package imagej.gui.swing.display;
 
 import imagej.Coords;
 import imagej.display.EventDispatcher;
+import imagej.display.MouseCursor;
 import imagej.display.NavigableImageCanvas;
 import imagej.display.ToolEnabled;
 import imagej.event.EventSubscriber;
@@ -489,8 +490,9 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 	@Override
-	public void setCursor(final int cursor) {
-		setCursor(Cursor.getPredefinedCursor(cursor));
+	public void setCursor(final MouseCursor cursor) {
+		final int cursorCode = AWTCursorManager.getAWTCursorCode(cursor);
+		setCursor(Cursor.getPredefinedCursor(cursorCode));
 	}
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Coordinate XForms, Origin >>> ">
