@@ -88,6 +88,8 @@ import javax.swing.SwingUtilities;
  * 
  * <pre>
  * 
+ * 
+ * 
  * NavigableImagePanel panel = new NavigableImagePanel(image);
  * </pre>
  * 
@@ -325,6 +327,16 @@ public class NavigableImagePanel extends JPanel implements
 		// setSize(image.getWidth(), image.getHeight());
 	}
 
+	@Override
+	public int getImageWidth() {
+		return image.getWidth();
+	}
+
+	@Override
+	public int getImageHeight() {
+		return image.getHeight();
+	}
+
 	/**
 	 * <p>
 	 * Sets an image for display in the panel.
@@ -332,7 +344,6 @@ public class NavigableImagePanel extends JPanel implements
 	 * 
 	 * @param image an image to be set in the panel
 	 */
-	@Override
 	public void setImage(final BufferedImage image) {
 		final BufferedImage oldImage = this.image;
 		sampleImage = image;
@@ -344,7 +355,6 @@ public class NavigableImagePanel extends JPanel implements
 		repaint();
 	}
 
-	@Override
 	public BufferedImage getImage() {
 		return image;
 	}
@@ -384,7 +394,8 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Position / Panning >>> ">
-	// Centers the current image in the panel.
+
+	/** Centers the current image in the panel. */
 	private void centerImage() {
 		originX = (getWidth() - getScreenImageWidth()) / 2;
 		originY = (getHeight() - getScreenImageHeight()) / 2;
@@ -458,7 +469,9 @@ public class NavigableImagePanel extends JPanel implements
 		final int yDelta = p.y - mousePosition.y;
 		mousePosition = p;
 		pan(xDelta, yDelta);
-	}// </editor-fold>
+	}
+
+// </editor-fold>
 
 	@Override
 	public void updateImage() {
@@ -527,6 +540,7 @@ public class NavigableImagePanel extends JPanel implements
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="<<< Rendering Quality >>>">
+
 	/**
 	 * <p>
 	 * Indicates whether the high quality rendering feature is enabled.
@@ -556,11 +570,16 @@ public class NavigableImagePanel extends JPanel implements
 	// when image decimation stops and interpolation starts.
 	private boolean isHighQualityRendering() {
 		return (highQualityRenderingEnabled && scale > HIGH_QUALITY_RENDERING_SCALE_THRESHOLD);
-	}// </editor-fold>
+	}
+
+// </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Paint >>> ">
-//Gets the bounds of the image area currently displayed in the panel (in image
-	// coordinates).
+
+	/**
+	 * Gets the bounds of the image area currently displayed in the panel (in
+	 * image coordinates).
+	 */
 	private Rectangle getImageClipBounds() {
 		final Coords startCoords = panelToImageCoords(new Point(0, 0));
 		final Coords endCoords =
@@ -623,9 +642,12 @@ public class NavigableImagePanel extends JPanel implements
 		}
 		drawNavigationImage(g);
 
-	}// </editor-fold>
+	}
+
+// </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Resizing >>> ">
+
 	private void addResizeListener() {
 		// Handle component resizing
 		addComponentListener(new ComponentAdapter() {
@@ -667,9 +689,11 @@ public class NavigableImagePanel extends JPanel implements
 		repaint();
 	}
 
-	// </editor-fold>
+// </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc=" <<< Zooming >>> ">
-	// Converts the specified zoom level to scale.
+
+	/** Converts the specified zoom level to scale. */
 	private double zoomToScale(final double zoom) {
 		return initialScale * zoom;
 	}
@@ -794,9 +818,7 @@ public class NavigableImagePanel extends JPanel implements
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" <<< NavigationImage >>> ">
-	/* Navigation Image - ... being separated from Navigable Image Panel.
-	 *
-	 */
+
 	private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's
 																															// width
 	private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
@@ -926,11 +948,12 @@ public class NavigableImagePanel extends JPanel implements
 		g.drawRect(x, y, width, height);
 	}
 
-	// </editor-fold>
+// </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Zoom Device >>> ">
-	//
-	// Zooming ---------------------------------------
+
+	// -- Zooming --
+
 	private WheelZoomDevice wheelZoomDevice = null;
 	private ButtonZoomDevice buttonZoomDevice = null;
 
@@ -1103,6 +1126,7 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 // </editor-fold>
+
 	public static void main(final String[] args) {
 		// if (args.length == 0) {
 		// System.out.println("Usage: java NavigableImagePanel imageFilename");

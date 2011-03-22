@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-//FIXME - cannot use AWT in ij-display
-import java.awt.image.BufferedImage;
-
 /**
  * TODO
  * 
@@ -52,10 +49,11 @@ public interface ImageCanvas {
 	 */
 	String IMAGE_CHANGED_PROPERTY = "image";
 
-	/** Sets the primary, probably background, image. */
-	void setImage(BufferedImage image);
+	/** Gets the width of the current image. */
+	int getImageWidth();
 
-	BufferedImage getImage();
+	/** Gets the height of the current image. */
+	int getImageHeight();
 
 	/** Forces a repaint when the image data buffer is changed. */
 	void updateImage();

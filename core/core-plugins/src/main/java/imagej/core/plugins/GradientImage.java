@@ -51,6 +51,9 @@ import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 @Plugin(menuPath = "Process>Gradient")
 public class GradientImage implements ImageJPlugin {
 
+	@Parameter(choices={"uint8", "uint16", "uint32", "int8", "int16", "int32"})
+	private String pixelType = "uint8";
+
 	@Parameter(min = "1", max = "2000",
 		style = WidgetStyle.NUMBER_SCROLL_BAR)
 	private int width = 512;

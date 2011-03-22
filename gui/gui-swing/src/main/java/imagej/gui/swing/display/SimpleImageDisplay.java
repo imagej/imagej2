@@ -31,22 +31,20 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
+
 package imagej.gui.swing.display;
 
-import imagej.display.NavigableImageCanvas;
 import imagej.display.Display;
 import imagej.display.DisplayController;
-import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
-import imagej.display.ImageCanvas;
 import imagej.display.ImageDisplayWindow;
-import imagej.display.LayeredDisplay;
+import imagej.display.NavigableImageCanvas;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
@@ -54,36 +52,34 @@ import imagej.plugin.Plugin;
 public class SimpleImageDisplay implements Display {
 
 	private ImageDisplayWindow imgWindow;
-	private NavigableImageCanvas imgCanvas;
+	private NavigableImagePanel imgCanvas;
 	private Dataset dataset;
 	private DisplayController controller;
 
-	public SimpleImageDisplay() {
-	}
+	public SimpleImageDisplay() {}
 
 	@Override
-	public boolean canDisplay(Dataset dataset) {
+	public boolean canDisplay(final Dataset dataset) {
 		return true;
 	}
 
 	@Override
-	public void display(Dataset dataset) {
+	public void display(final Dataset dataset) {
 		this.dataset = dataset;
-		//imgCanvas = new ImageCanvasSwing();
+		// imgCanvas = new ImageCanvasSwing();
 		imgCanvas = new NavigableImagePanel();
-		imgWindow = new NavigableImageJFrame(imgCanvas);
+		imgWindow = new NavigableImageFrame(imgCanvas);
 		controller = new DisplayController(this);
 		imgWindow.setDisplayController(controller);
-		EventDispatcher dispatcher = new AWTEventDispatcher(this);
+		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
 		imgCanvas.subscribeToToolEvents();
 		imgWindow.addEventDispatcher(dispatcher);
 		// TODO - use DisplayView instead of Dataset directly
-		//imageFrame.setDataset(dataset);
-		//((NavigableImageJFrame)imgWindow).pack();
-		((NavigableImageJFrame)imgWindow).setVisible(true);
+		// imageFrame.setDataset(dataset);
+		// ((NavigableImageJFrame)imgWindow).pack();
+		((NavigableImageFrame) imgWindow).setVisible(true);
 	}
-
 
 	@Override
 	public Dataset getDataset() {
@@ -106,7 +102,7 @@ public class SimpleImageDisplay implements Display {
 	}
 
 	@Override
-	public void pan(float x, float y) {
+	public void pan(final float x, final float y) {
 		imgCanvas.pan((int) x, (int) y);
 	}
 
@@ -124,30 +120,31 @@ public class SimpleImageDisplay implements Display {
 	}
 
 	@Override
-	public void setZoom(float factor, float centerX, float centerY) {
+	public void setZoom(final float factor, final float centerX,
+		final float centerY)
+	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void zoomIn(float centerX, float centerY) {
+	public void zoomIn(final float centerX, final float centerY) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void zoomOut(float centerX, float centerY) {
+	public void zoomOut(final float centerX, final float centerY) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void zoomToFit(int w, int h) {
+	public void zoomToFit(final int w, final int h) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public float getZoom() {
 		return 1f;
-		//throw new UnsupportedOperationException("Not supported yet.");
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
-
 
 }

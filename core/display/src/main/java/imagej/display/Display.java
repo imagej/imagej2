@@ -45,8 +45,6 @@ import imagej.plugin.BasePlugin;
  */
 public interface Display extends BasePlugin {
 
-	// DisplayPlugin extends BasePlugin, so that the name of the interface
-	// unambiguously identifies a display plugin.
 	boolean canDisplay(Dataset dataset);
 
 	void display(Dataset dataset);
@@ -59,7 +57,7 @@ public interface Display extends BasePlugin {
 
 	Object getCurrentPlane();
 
-	// Pan
+	// -- Pan methods --
 
 	void pan(float x, float y);
 
@@ -67,7 +65,7 @@ public interface Display extends BasePlugin {
 
 	float getPanY();
 
-	// Zoom
+	// -- Zoom methods --
 
 	void setZoom(float factor, float centerX, float centerY);
 
