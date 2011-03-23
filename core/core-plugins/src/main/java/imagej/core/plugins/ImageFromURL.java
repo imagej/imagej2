@@ -45,7 +45,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 /**
- * TODO
+ * Very simple plugin illustrating the ImageJ plugin architecture.
  * 
  * @author Curtis Rueden
  * @author Rick Lentz
@@ -66,8 +66,17 @@ public class ImageFromURL implements ImageJPlugin {
 			icon = new ImageIcon(new URL(url));
 		}
 		catch (MalformedURLException e) {
-			throw new RuntimeException(e);// TEMP
+			throw new IllegalArgumentException("Invalid URL: " + url, e);
 		}
 		image = icon.getImage();
 	}
+
+	public String getURL() {
+		return url;
+	}
+
+	public Image getImage() {
+		return image;
+	}
+
 }
