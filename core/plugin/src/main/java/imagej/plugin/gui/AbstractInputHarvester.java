@@ -177,9 +177,9 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		if (max == null) max = ClassUtils.getMaximumNumber(type);
 		Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
-		final Number iValue = clampToRange(min, max, initialValue);
-		inputPanel
-			.addNumber(name, label, iValue, param.style(), min, max, stepSize);
+		final Number iValue = clampToRange(initialValue, min, max);
+		inputPanel.addNumber(name, label, iValue,
+			param.style(), min, max, stepSize);
 	}
 
 	private void addTextField(final InputPanel inputPanel, final String name,
