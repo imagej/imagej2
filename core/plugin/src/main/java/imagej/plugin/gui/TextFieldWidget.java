@@ -39,7 +39,7 @@ package imagej.plugin.gui;
  *
  * @author Curtis Rueden
  */
-public interface TextFieldWidget {
+public interface TextFieldWidget extends InputWidget {
 
 	String getText();
 

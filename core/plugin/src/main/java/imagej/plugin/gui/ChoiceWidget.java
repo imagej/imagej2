@@ -39,7 +39,7 @@ package imagej.plugin.gui;
  *
  * @author Curtis Rueden
  */
-public interface ChoiceWidget {
+public interface ChoiceWidget extends InputWidget {
 
 	String getItem();
 	int getIndex();

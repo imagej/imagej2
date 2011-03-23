@@ -54,9 +54,18 @@ public class AWTToggleWidget extends Panel implements ToggleWidget {
 		add(checkbox, BorderLayout.CENTER);
 	}
 
+	// -- ToggleWidget methods --
+
 	@Override
 	public boolean isSelected() {
 		return checkbox.getState();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

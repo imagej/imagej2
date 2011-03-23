@@ -63,6 +63,8 @@ public class SWTChoiceWidget extends Composite implements ChoiceWidget {
 		}
 	}
 
+	// -- ChoiceWidget methods --
+
 	@Override
 	public String getItem() {
 		return combo.getItem(combo.getSelectionIndex());
@@ -71,6 +73,13 @@ public class SWTChoiceWidget extends Composite implements ChoiceWidget {
 	@Override
 	public int getIndex() {
 		return combo.getSelectionIndex();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

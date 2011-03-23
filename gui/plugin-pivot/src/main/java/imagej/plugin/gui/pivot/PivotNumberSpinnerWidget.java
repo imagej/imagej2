@@ -57,9 +57,18 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		add(spinner);
 	}
 
+	// -- NumberWidget methods --
+
 	@Override
 	public Number getValue() {
 		return new Integer(spinner.getSelectedItem().toString());
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

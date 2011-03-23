@@ -35,31 +35,41 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.swing;
 
 import imagej.plugin.gui.NumberWidget;
+import imagej.plugin.gui.ParamDetails;
 import imagej.plugin.gui.WidgetStyle;
 
 import javax.swing.JPanel;
 
 /**
  * Swing implementation of number chooser widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public abstract class SwingNumberWidget
-	extends JPanel implements NumberWidget
+public abstract class SwingNumberWidget extends JPanel implements NumberWidget
 {
+	
+	protected ParamDetails details;
 
-	public static SwingNumberWidget create(final Number initialValue,
-		final Number min, final Number max, final Number stepSize,
-		final WidgetStyle style)
+	public SwingNumberWidget(final ParamDetails details) {
+		this.details = details;
+	}
+
+	public static SwingNumberWidget create(final ParamDetails details,
+		final Number initialValue, final Number min, final Number max,
+		final Number stepSize)
 	{
+		final WidgetStyle style = details.getStyle();
 		if (style == WidgetStyle.DEFAULT || style == WidgetStyle.NUMBER_SPINNER) {
-			return new SwingNumberSpinnerWidget(initialValue, min, max, stepSize);
+			return new SwingNumberSpinnerWidget(details, initialValue, min, max,
+				stepSize);
 		}
 		else if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new SwingNumberScrollBarWidget(initialValue, min, max, stepSize);
+			return new SwingNumberScrollBarWidget(details, initialValue, min, max,
+				stepSize);
 		}
 		else if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new SwingNumberSliderWidget(initialValue, min, max, stepSize);
+			return new SwingNumberSliderWidget(details, initialValue, min, max,
+				stepSize);
 		}
 		else {
 			throw new IllegalArgumentException("Invalid widget style: " + style);

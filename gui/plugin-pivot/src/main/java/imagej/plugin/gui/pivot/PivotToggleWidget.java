@@ -54,9 +54,18 @@ public class PivotToggleWidget extends BoxPane implements ToggleWidget {
 		add(checkbox);
 	}
 
+	// -- ToggleWidget methods --
+
 	@Override
 	public boolean isSelected() {
 		return checkbox.isSelected();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

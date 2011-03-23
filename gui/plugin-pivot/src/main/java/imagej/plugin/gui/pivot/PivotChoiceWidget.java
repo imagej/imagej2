@@ -56,6 +56,8 @@ public class PivotChoiceWidget extends BoxPane implements ChoiceWidget {
 		add(listButton);
 	}
 
+	// -- ChoiceWidget methods --
+
 	@Override
 	public String getItem() {
 		return listButton.getSelectedItem().toString();
@@ -64,6 +66,13 @@ public class PivotChoiceWidget extends BoxPane implements ChoiceWidget {
 	@Override
 	public int getIndex() {
 		return listButton.getSelectedIndex();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

@@ -39,7 +39,7 @@ package imagej.plugin.gui;
  *
  * @author Curtis Rueden
  */
-public interface NumberWidget {
+public interface NumberWidget extends InputWidget {
 
 	Number getValue();
 

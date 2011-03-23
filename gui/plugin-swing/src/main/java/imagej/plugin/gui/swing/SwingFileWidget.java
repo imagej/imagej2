@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.swing;
 
 import imagej.plugin.gui.FileWidget;
+import imagej.plugin.gui.ParamDetails;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +47,8 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * Swing implementation of file selector widget.
@@ -53,27 +56,29 @@ import javax.swing.JTextField;
  * @author Curtis Rueden
  */
 public class SwingFileWidget extends JPanel
-	implements FileWidget, ActionListener
+	implements ActionListener, DocumentListener, FileWidget
 {
 
+	private ParamDetails details;
 	private JTextField path;
 	private JButton browse;
 
-	public SwingFileWidget(final File initialValue) {
+	public SwingFileWidget(final ParamDetails details, final File initialValue) {
+		this.details = details;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		path = new JTextField(initialValue == null ?
 			"" : initialValue.getAbsolutePath(), 20);
 		add(path);
+		path.getDocument().addDocumentListener(this);
+
 		add(Box.createHorizontalStrut(3));
+
 		browse = new JButton("Browse");
-		browse.addActionListener(this);
 		add(browse);
+		browse.addActionListener(this);
 	}
 
-	@Override
-	public File getFile() {
-		return new File(path.getText());
-	}
+	// -- ActionListener methods --
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -86,6 +91,45 @@ public class SwingFileWidget extends JPanel
 		if (rval != JFileChooser.APPROVE_OPTION) return;
 		file = chooser.getSelectedFile();
 		if (file != null) path.setText(file.getAbsolutePath());
+	}
+
+	// -- DocumentListener methods --
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		documentUpdate();
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		documentUpdate();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		documentUpdate();
+	}
+
+	// -- FileWidget methods --
+
+	@Override
+	public File getFile() {
+		return new File(path.getText());
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		path.getDocument().removeDocumentListener(this);
+		path.setText(details.getValue().toString());
+		path.getDocument().addDocumentListener(this);
+	}
+
+	// -- Helper methods --
+
+	private void documentUpdate() {
+		details.setValue(new File(path.getText()));
 	}
 
 }

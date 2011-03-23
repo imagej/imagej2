@@ -34,30 +34,74 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swing;
 
+import imagej.plugin.gui.ParamDetails;
 import imagej.plugin.gui.TextFieldWidget;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * Swing implementation of text field widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingTextFieldWidget extends JPanel implements TextFieldWidget {
+public class SwingTextFieldWidget extends JPanel
+	implements DocumentListener, TextFieldWidget
+{
 
-	private JTextField textField;
+	private final ParamDetails details;
+	private final JTextField textField;
 
-	public SwingTextFieldWidget(final String initialValue, final int columns) {
+	public SwingTextFieldWidget(final ParamDetails details,
+		final String initialValue, final int columns)
+	{
+		this.details = details;
 		textField = new JTextField(initialValue, columns);
 		add(textField, BorderLayout.CENTER);
+		textField.getDocument().addDocumentListener(this);
 	}
+
+	// -- DocumentListener methods --
+
+	@Override
+	public void changedUpdate(final DocumentEvent e) {
+		documentUpdate();
+	}
+
+	@Override
+	public void insertUpdate(final DocumentEvent e) {
+		documentUpdate();
+	}
+
+	@Override
+	public void removeUpdate(final DocumentEvent e) {
+		documentUpdate();
+	}
+
+	// -- TextFieldWidget methods --
 
 	@Override
 	public String getText() {
 		return textField.getText();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		textField.getDocument().removeDocumentListener(this);
+		textField.setText(details.getValue().toString());
+		textField.getDocument().addDocumentListener(this);
+	}
+
+	// -- Helper methods --
+
+	private void documentUpdate() {
+		details.setValue(textField.getText());
 	}
 
 }

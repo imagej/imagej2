@@ -34,7 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import imagej.Log;
+import imagej.plugin.BasePlugin;
 import imagej.plugin.Parameter;
+import imagej.plugin.PluginModule;
 
 /**
  * TODO
@@ -43,6 +49,8 @@ import imagej.plugin.Parameter;
  */
 public class ParamDetails {
 
+	private final InputPanel inputPanel;
+	private final PluginModule<?> module;
 	private final String name;
 	private final Class<?> type;
 	private final Parameter param;
@@ -52,9 +60,14 @@ public class ParamDetails {
 	private final String callback;
 	private final WidgetStyle style;
 
-	public ParamDetails(final String name, final Class<?> type,
-		final Parameter param)
+	private final Method callbackMethod;
+
+	public ParamDetails(final InputPanel inputPanel,
+		final PluginModule<?> module, final String name,
+		final Class<?> type, final Parameter param)
 	{
+		this.inputPanel = inputPanel;
+		this.module = module;
 		this.name = name;
 		this.type = type;
 		this.param = param;
@@ -63,6 +76,21 @@ public class ParamDetails {
 		description = param.description();
 		callback = param.callback();
 		style = param.style();
+
+		callbackMethod = lookupCallbackMethod();
+	}
+
+	public PluginModule<?> getModule() {
+		return module;
+	}
+
+	public Object getValue() {
+		return module.getInput(name);
+	}
+
+	public void setValue(final Object value) {
+		module.setInput(name, value);
+		executeCallbackMethod();
 	}
 
 	public String getName() {
@@ -93,11 +121,62 @@ public class ParamDetails {
 		return style;
 	}
 
+	// -- Helper methods --
+
 	private String makeLabel(final String s) {
 		if (s == null || s.isEmpty()) {
 			return name.substring(0, 1).toUpperCase() + name.substring(1);
 		}
 		return s;
+	}
+
+	private Method lookupCallbackMethod() {
+		if (callback.isEmpty()) return null;
+		final BasePlugin plugin = module.getPlugin();
+		try {
+			// TODO - support inherited callback methods
+			final Method m = plugin.getClass().getDeclaredMethod(callback);
+			m.setAccessible(true);
+			return m;
+		}
+		catch (SecurityException e) {
+			Log.warn(plugin.getClass().getName() +
+				": illegal callback method \"" + callback +
+				"\" for parameter " + name, e);
+		}
+		catch (NoSuchMethodException e) {
+			Log.warn(plugin.getClass().getName() +
+				": no callback method \"" + callback +
+				"\" for parameter " + name, e);
+		}
+		return null;
+	}
+
+	/** Invokes the callback method associated with the parameter. */
+	private void executeCallbackMethod() {
+		if (callbackMethod == null) return;
+		final BasePlugin plugin = module.getPlugin();
+		try {
+			Log.debug(plugin.getClass().getName() +
+				": executing callback method: " + callback);
+			callbackMethod.invoke(plugin);
+			inputPanel.refresh();
+		}
+		catch (IllegalArgumentException e) {
+			Log.warn(plugin.getClass().getName() +
+				": error executing callback method \"" + callback +
+				"\" for parameter " + name, e);
+		}
+		catch (IllegalAccessException e) {
+			Log.warn(plugin.getClass().getName() +
+				": error executing callback method \"" + callback +
+				"\" for parameter " + name, e);
+		}
+		catch (InvocationTargetException e) {
+			Log.warn(plugin.getClass().getName() +
+				": error executing callback method \"" + callback +
+				"\" for parameter " + name, e);
+		}
 	}
 
 }

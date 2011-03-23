@@ -72,10 +72,21 @@ public class AWTNumberWidget extends Panel
 		add(textField, BorderLayout.EAST);
 	}
 
+	// -- NumberWidget methods --
+
 	@Override
 	public Number getValue() {
 		return scrollBar.getValue();
 	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
+	}
+
+	// -- AdjustmentListener methods --
 
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
@@ -83,6 +94,8 @@ public class AWTNumberWidget extends Panel
 		textField.setText("" + scrollBar.getValue());
 		scrollBar.addAdjustmentListener(this);
 	}
+
+	// -- TextListener methods --
 
 	@Override
 	public void textValueChanged(TextEvent e) {

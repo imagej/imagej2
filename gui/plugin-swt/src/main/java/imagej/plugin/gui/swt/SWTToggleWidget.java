@@ -55,9 +55,18 @@ public class SWTToggleWidget extends Composite implements ToggleWidget {
 		checkbox.setSelection(initialValue);
 	}
 
+	// -- ToggleWidget methods --
+
 	@Override
 	public boolean isSelected() {
 		return checkbox.getSelection();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

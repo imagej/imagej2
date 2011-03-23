@@ -68,10 +68,21 @@ public class PivotFileWidget extends BoxPane
 		add(browse);
 	}
 
+	// -- FileWidget methods --
+
 	@Override
 	public File getFile() {
 		return new File(path.getText());
 	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
+	}
+
+	// -- ButtonPressListener methods --
 
 	@Override
 	public void buttonPressed(Button b) {

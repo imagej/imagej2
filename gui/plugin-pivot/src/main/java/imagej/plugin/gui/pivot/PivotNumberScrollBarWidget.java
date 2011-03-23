@@ -35,11 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.pivot;
 
 import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.ScrollBar;
 import org.apache.pivot.wtk.ScrollBarValueListener;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
 
 /**
  * Pivot implementation of number chooser widget, using a scroll bar.
@@ -66,10 +63,21 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget
 		scrollBar.getScrollBarValueListeners().add(this);
 	}
 
+	// -- NumberWidget methods --
+
 	@Override
 	public Number getValue() {
 		return scrollBar.getValue();
 	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
+	}
+
+	// -- ScrollBarValueListener methods --
 
 	@Override
 	public void valueChanged(ScrollBar s, int previousValue) {

@@ -1,5 +1,5 @@
 //
-// PivotNumberSliderWidget.java
+// InputWidget.java
 //
 
 /*
@@ -32,56 +32,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.gui.pivot;
-
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.Slider;
-import org.apache.pivot.wtk.SliderValueListener;
+package imagej.plugin.gui;
 
 /**
- * Pivot implementation of number chooser widget, using a slider.
- * 
+ * Top-level widget interface.
+ *
  * @author Curtis Rueden
  */
-public class PivotNumberSliderWidget extends PivotNumberWidget
-	implements SliderValueListener
-{
+public interface InputWidget {
 
-	private Slider slider;
-	private Label label;
-
-	public PivotNumberSliderWidget(final Number initialValue,
-		final Number min, final Number max, final Number stepSize)
-	{
-		slider = new Slider();
-		slider.setValue(initialValue.intValue());
-		slider.setRange(min.intValue(), max.intValue());
-		add(slider);
-		label = new Label();
-		label.setText(initialValue.toString());
-		add(label);
-		slider.getSliderValueListeners().add(this);
-	}
-
-	// -- NumberWidget methods --
-
-	@Override
-	public Number getValue() {
-		return slider.getValue();
-	}
-
-	// -- InputWidget methods --
-
-	@Override
-	public void refresh() {
-		// TODO
-	}
-
-	// -- SliderValueListener methods --
-
-	@Override
-	public void valueChanged(final Slider s, final int previousValue) {
-		label.setText("" + s.getValue());
-	}
+	/** Refreshes the widget to reflect the latest model value(s). */
+	void refresh();
 
 }

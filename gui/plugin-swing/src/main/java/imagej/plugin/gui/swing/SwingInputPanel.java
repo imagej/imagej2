@@ -75,8 +75,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final Number min, final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
-			SwingNumberWidget.create(initialValue, min, max, stepSize,
-			details.getStyle());
+			SwingNumberWidget.create(details, initialValue, min, max, stepSize);
 		addField(details.getLabel(), numberWidget);
 		numberWidgets.put(details.getName(), numberWidget);
 	}
@@ -84,7 +83,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 	@Override
 	public void addToggle(final ParamDetails details, final boolean initialValue)
 	{
-		final SwingToggleWidget toggleWidget = new SwingToggleWidget(initialValue);
+		final SwingToggleWidget toggleWidget =
+			new SwingToggleWidget(details, initialValue);
 		addField(details.getLabel(), toggleWidget);
 		toggleWidgets.put(details.getName(), toggleWidget);
 	}
@@ -94,7 +94,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final String initialValue, final int columns)
 	{
 		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(initialValue, columns);
+			new SwingTextFieldWidget(details, initialValue, columns);
 		addField(details.getLabel(), textFieldWidget);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
@@ -104,14 +104,15 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final String[] items)
 	{
 		final SwingChoiceWidget choiceWidget =
-			new SwingChoiceWidget(initialValue, items);
+			new SwingChoiceWidget(details, initialValue, items);
 		addField(details.getLabel(), choiceWidget);
 		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final ParamDetails details, final File initialValue) {
-		final SwingFileWidget fileWidget = new SwingFileWidget(initialValue);
+		final SwingFileWidget fileWidget =
+			new SwingFileWidget(details, initialValue);
 		addField(details.getLabel(), fileWidget);
 		fileWidgets.put(details.getName(), fileWidget);
 	}

@@ -65,9 +65,18 @@ public class SWTFileWidget extends Composite implements FileWidget {
 		browse.setText("Browse");
 	}
 
+	// -- FileWidget methods --
+
 	@Override
 	public File getFile() {
 		return new File(path.getText());
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 //	@Override
