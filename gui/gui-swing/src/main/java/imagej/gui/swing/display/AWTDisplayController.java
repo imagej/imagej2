@@ -128,6 +128,8 @@ public class AWTDisplayController implements DisplayController {
 		updatePosition();
 	}
 
+	// -- Helper methods --
+
 	private void updatePosition() {
 		final BufferedImage bImage = getImagePlane();
 		if (bImage != null) {
@@ -135,28 +137,25 @@ public class AWTDisplayController implements DisplayController {
 		}
 		// this is ugly... just trying it out.
 		// imgPanel.setNavigationImageEnabled(true);
-		imgWindow.setLabel(makeLabel(dims, dimLabels));
+		imgWindow.setLabel(makeLabel());
 	}
 
-	private String
-		makeLabel(final int[] dimLengths, final AxisLabel[] axisLabels)
-	{
+	private String makeLabel() {
 		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, p = -1; i < dimLengths.length; i++) {
-			if (AxisLabel.isXY(axisLabels[i])) {
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (AxisLabel.isXY(dimLabels[i])) {
 				continue;
 			}
 			p++;
-			if (dimLengths[i] == 1) {
+			if (dims[i] == 1) {
 				continue;
 			}
-			sb.append(axisLabels[i] + ": " + (pos[p] + 1) + "/" + dimLengths[i] +
+			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] +
 				"; ");
 		}
-		sb.append(dimLengths[xIndex] + "x" + dimLengths[yIndex] + "; ");
-		// sb.append(image.getType());
+		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		sb.append(dataset.getPixelType());
 		return sb.toString();
-
 	}
 
 	private BufferedImage getImagePlane() {
