@@ -1,5 +1,5 @@
 //
-// ImageTranslator.java
+// LegacyMetadata.java
 //
 
 /*
@@ -35,30 +35,29 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.model.Dataset;
+import imagej.model.AxisLabel;
+import imagej.model.Metadata;
+
 
 /**
- * Translates between legacy and modern ImageJ image structures.
+ * Creates Metadata from a legacy ImageJ ImagePlus
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-public class ImageTranslator {
-
-	public Dataset createDataset(final ImagePlus imp) {
-		
-		if (imp.getType() == ImagePlus.COLOR_RGB)
-			return new ColorDataImageTranslator().createDataset(imp);
-
-		return new RawDataImageTranslator().createDataset(imp);
+public class LegacyMetadata
+{
+	public LegacyMetadata() {
+		// do nothing
 	}
-
-	public ImagePlus createLegacyImage(final Dataset dataset) {
-		
-		if (dataset.isRgbMerged())
-			return new ColorDataImageTranslator().createLegacyImage(dataset);
-
-		return new RawDataImageTranslator().createLegacyImage(dataset);
+	
+	public Metadata create(ImagePlus imp) {
+		final AxisLabel[] axes =
+			{ AxisLabel.X, AxisLabel.Y, AxisLabel.CHANNEL, AxisLabel.Z,
+				AxisLabel.TIME };
+		final Metadata metadata = new Metadata();
+		metadata.setName(imp.getTitle());
+		metadata.setAxes(axes);
+		return metadata;
 	}
-
 }
+
