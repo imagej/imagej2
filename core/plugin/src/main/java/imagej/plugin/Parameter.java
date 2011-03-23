@@ -90,6 +90,16 @@ public @interface Parameter {
 	/** Defines a key to use for saving the value persistently. */
 	String persistKey() default "";
 
+	/**
+	 * Defines a function that is called whenever this parameter changes.
+	 * <p>
+	 * This mechanism enables interdependent parameters of various types.
+	 * For example, two int parameters "width" and "height" could update each
+	 * other when another boolean "Preserve aspect ratio" flag is set.
+	 * </p>
+	 */
+	String callback() default "";
+
 	/** Defines the preferred widget style. */
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
