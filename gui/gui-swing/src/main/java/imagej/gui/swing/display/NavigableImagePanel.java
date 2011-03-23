@@ -799,6 +799,30 @@ public class NavigableImagePanel extends JPanel implements
 	// The current mouse position is the zooming center.
 	private void zoomImage() {
 		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+		
+		// check if zoomed in too close
+		if ((zoomFactor > 1) && (scale > initialScale))
+		{
+		  // TODO - do we want minDimension instead?
+			int maxDimension = Math.max(image.getWidth(), image.getHeight());
+
+			// if zooming the image would show less than one pixel of image data
+			if ((maxDimension / getZoom()) < 1)
+				return;  // DO NOT ZOOM ANY FARTHER
+		}
+		
+		// check if zoomed out too far
+		if ((zoomFactor < 1) && (scale < initialScale))
+		{
+			// get boundaries of image in panel coords
+			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
+			final RealCoords farCorner = imageToPanelCoords(new RealCoords(image.getWidth(),image.getHeight()));
+
+			// if boundaries take up less than 25 pixels in either dimension 
+			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y < 25)))
+				return;  // DO NOT ZOOM ANY FARTHER
+		}
+		
 		final double oldZoom = getZoom();
 		scale *= zoomFactor;
 		final RealCoords panelP = imageToPanelCoords(imageP);
