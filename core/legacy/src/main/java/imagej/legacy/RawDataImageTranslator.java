@@ -1,5 +1,5 @@
 //
-// ImageTranslator.java
+// RawDataImageTranslator.java
 //
 
 /*
@@ -36,29 +36,54 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import imagej.model.Dataset;
+import imagej.model.Metadata;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.image.ImagePlusAdapter;
+import mpicbg.imglib.image.display.imagej.ImageJFunctions;
+
 
 /**
- * Translates between legacy and modern ImageJ image structures.
+ * Translates between legacy and modern ImageJ image structures for
+ * non-color data.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class ImageTranslator {
+public class RawDataImageTranslator {
+	RawDataImageTranslator() {
+		// do nothing
+	}
 
 	public Dataset createDataset(final ImagePlus imp) {
-		
-		if (imp.getType() == ImagePlus.COLOR_RGB)
-			return new ColorDataImageTranslator().createDataset(imp);
-
-		return new RawDataImageTranslator().createDataset(imp);
+		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
+		final Image<?> img;
+		try {
+			final Method m =
+				ImagePlusAdapter.class.getMethod("wrap", ImagePlus.class);
+			img = (Image<?>) m.invoke(null, imp);
+		}
+		catch (final NoSuchMethodException exc) {
+			return null;
+		}
+		catch (final IllegalArgumentException e) {
+			return null;
+		}
+		catch (final IllegalAccessException e) {
+			return null;
+		}
+		catch (final InvocationTargetException e) {
+			return null;
+		}
+		final Metadata metadata = new LegacyMetadata().create(imp);
+		final Dataset dataset = new Dataset(img, metadata);
+		return dataset;
 	}
-
+	
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		
-		if (dataset.isRgbMerged())
-			return new ColorDataImageTranslator().createLegacyImage(dataset);
-
-		return new RawDataImageTranslator().createLegacyImage(dataset);
+		return ImageJFunctions.displayAsVirtualStack(dataset.getImage());
 	}
-
 }
