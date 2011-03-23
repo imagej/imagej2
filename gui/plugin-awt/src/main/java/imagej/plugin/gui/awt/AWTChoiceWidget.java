@@ -56,6 +56,8 @@ public class AWTChoiceWidget extends Panel implements ChoiceWidget {
 		add(choice, BorderLayout.CENTER);
 	}
 
+	// -- ChoiceWidget methods --
+
 	@Override
 	public String getItem() {
 		return choice.getSelectedItem().toString();
@@ -64,6 +66,13 @@ public class AWTChoiceWidget extends Panel implements ChoiceWidget {
 	@Override
 	public int getIndex() {
 		return choice.getSelectedIndex();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

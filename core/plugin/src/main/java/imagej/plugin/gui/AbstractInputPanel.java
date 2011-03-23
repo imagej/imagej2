@@ -101,4 +101,13 @@ public abstract class AbstractInputPanel implements InputPanel {
 		return null;
 	}
 
+	@Override
+	public void refresh() {
+		for (final InputWidget w : numberWidgets.values()) w.refresh();
+		for (final InputWidget w : toggleWidgets.values()) w.refresh();
+		for (final InputWidget w : textFieldWidgets.values()) w.refresh();
+		for (final InputWidget w : choiceWidgets.values()) w.refresh();
+		for (final InputWidget w : fileWidgets.values()) w.refresh();
+	}
+
 }

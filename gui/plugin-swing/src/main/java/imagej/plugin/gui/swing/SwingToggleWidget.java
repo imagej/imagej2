@@ -34,30 +34,59 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swing;
 
+import imagej.plugin.gui.ParamDetails;
 import imagej.plugin.gui.ToggleWidget;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Swing implementation of boolean toggle widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingToggleWidget extends JPanel implements ToggleWidget {
+public class SwingToggleWidget extends JPanel
+	implements ChangeListener, ToggleWidget
+{
 
-	private JCheckBox checkBox;
+	private final ParamDetails details;
+	private final JCheckBox checkBox;
 
-	public SwingToggleWidget(final boolean initialValue) {
+	public SwingToggleWidget(final ParamDetails details,
+		final boolean initialValue)
+	{
+		this.details = details;
 		checkBox = new JCheckBox("", initialValue);
 		add(checkBox, BorderLayout.CENTER);
+		checkBox.addChangeListener(this);
 	}
+
+	// -- ChangeListener methods --
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		details.setValue(checkBox.isSelected());
+	}
+
+	// -- ToggleWidget methods --
 
 	@Override
 	public boolean isSelected() {
 		return checkBox.isSelected();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		final boolean value = (Boolean) details.getValue();
+		checkBox.removeChangeListener(this);
+		checkBox.setSelected(value);
+		checkBox.addChangeListener(this);
 	}
 
 }

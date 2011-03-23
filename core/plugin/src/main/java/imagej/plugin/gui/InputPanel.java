@@ -152,4 +152,7 @@ public interface InputPanel {
 	 */
 	Object getObject(String name);
 
+	/** Updates the widgets to reflect the most recent parameter value(s). */
+	void refresh();
+
 }

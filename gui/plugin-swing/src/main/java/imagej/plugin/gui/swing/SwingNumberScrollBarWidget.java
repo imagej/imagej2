@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swing;
 
+import imagej.plugin.gui.ParamDetails;
+
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.event.AdjustmentEvent;
@@ -56,31 +58,54 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 	private JScrollBar scrollBar;
 	private JTextField textField;
 
-	public SwingNumberScrollBarWidget(final Number initialValue,
-		final Number min, final Number max, final Number stepSize)
+	public SwingNumberScrollBarWidget(final ParamDetails details,
+		final Number initialValue, final Number min, final Number max,
+		final Number stepSize)
 	{
+		super(details);
+
 		scrollBar = new JScrollBar(Adjustable.HORIZONTAL,
 			initialValue.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
-		scrollBar.addAdjustmentListener(this);
 		add(scrollBar, BorderLayout.CENTER);
+		scrollBar.addAdjustmentListener(this);
 
 		textField = new JTextField(initialValue.toString(), 6);
-		textField.getDocument().addDocumentListener(this);
 		add(textField, BorderLayout.EAST);
+		textField.getDocument().addDocumentListener(this);
 	}
+
+	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
 		return scrollBar.getValue();
 	}
 
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		final Number value = (Number) details.getValue();
+		scrollBar.removeAdjustmentListener(this);
+		textField.getDocument().removeDocumentListener(this);
+		scrollBar.setValue(value.intValue());
+		textField.setText(value.toString());
+		scrollBar.addAdjustmentListener(this);
+		textField.getDocument().addDocumentListener(this);
+	}
+
+	// -- AdjustmentListener methods --
+
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
-		scrollBar.removeAdjustmentListener(this);
+		textField.getDocument().removeDocumentListener(this);
 		textField.setText("" + scrollBar.getValue());
-		scrollBar.addAdjustmentListener(this);
+		textField.getDocument().addDocumentListener(this);
+		details.setValue(scrollBar.getValue());
 	}
+
+	// -- DocumentListener methods --
 
 	@Override
 	public void changedUpdate(final DocumentEvent e) {
@@ -96,6 +121,8 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 	public void removeUpdate(final DocumentEvent e) {
 		documentUpdate();
 	}
+
+	// -- Helper methods --
 
 	private void documentUpdate() {
 		try {

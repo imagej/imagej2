@@ -57,9 +57,18 @@ public class SWTTextFieldWidget extends Composite implements TextFieldWidget {
 		text.setTextLimit(columns);
 	}
 
+	// -- TextFieldWidget methods --
+
 	@Override
 	public String getText() {
 		return text.getText();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

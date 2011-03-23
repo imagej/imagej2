@@ -35,26 +35,45 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.swing;
 
 import imagej.plugin.gui.ChoiceWidget;
+import imagej.plugin.gui.ParamDetails;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 /**
  * Swing implementation of multiple choice selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingChoiceWidget extends JPanel implements ChoiceWidget {
+public class SwingChoiceWidget extends JPanel
+	implements ActionListener, ChoiceWidget
+{
 
-	private JComboBox comboBox;
+	private final ParamDetails details;
+	private final JComboBox comboBox;
 
-	public SwingChoiceWidget(final String initialValue, final String[] items) {
+	public SwingChoiceWidget(final ParamDetails details,
+		final String initialValue, final String[] items)
+	{
+		this.details = details;
 		comboBox = new JComboBox(items);
 		comboBox.setSelectedItem(initialValue);
 		add(comboBox, BorderLayout.CENTER);
+		comboBox.addActionListener(this);
 	}
+
+	// -- ActionListener methods --
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		details.setValue(comboBox.getSelectedItem());
+	}
+
+	// -- ChoiceWidget methods --
 
 	@Override
 	public String getItem() {
@@ -64,6 +83,15 @@ public class SwingChoiceWidget extends JPanel implements ChoiceWidget {
 	@Override
 	public int getIndex() {
 		return comboBox.getSelectedIndex();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		comboBox.removeActionListener(this);
+		comboBox.setSelectedItem(details.getValue());
+		comboBox.addActionListener(this);
 	}
 
 }

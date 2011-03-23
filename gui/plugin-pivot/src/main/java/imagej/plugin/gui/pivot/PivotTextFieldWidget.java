@@ -54,9 +54,18 @@ public class PivotTextFieldWidget extends BoxPane implements TextFieldWidget {
 		add(textInput);
 	}
 
+	// -- TextFieldWidget methods --
+
 	@Override
 	public String getText() {
 		return textInput.getText();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

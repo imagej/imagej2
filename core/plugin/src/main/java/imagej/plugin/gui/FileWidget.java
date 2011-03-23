@@ -41,7 +41,7 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public interface FileWidget {
+public interface FileWidget extends InputWidget {
 
 	File getFile();
 

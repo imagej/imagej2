@@ -68,10 +68,21 @@ public class AWTFileWidget extends Panel
 		add(browse, BorderLayout.EAST);
 	}
 
+	// -- FileWidget methods --
+
 	@Override
 	public File getFile() {
 		return new File(path.getText());
 	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
+	}
+
+	// -- ActionListener methods --
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

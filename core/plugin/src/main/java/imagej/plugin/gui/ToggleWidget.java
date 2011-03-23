@@ -39,7 +39,7 @@ package imagej.plugin.gui;
  *
  * @author Curtis Rueden
  */
-public interface ToggleWidget {
+public interface ToggleWidget extends InputWidget {
 
 	boolean isSelected();
 

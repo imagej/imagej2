@@ -60,9 +60,18 @@ public class SWTNumberWidget extends Composite implements NumberWidget {
 			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
 	}
 
+	// -- NumberWidget methods --
+
 	@Override
 	public Number getValue() {
 		return slider.getSelection();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

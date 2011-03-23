@@ -54,9 +54,18 @@ public class AWTTextFieldWidget extends Panel implements TextFieldWidget {
 		add(textField, BorderLayout.CENTER);
 	}
 
+	// -- TextFieldWidget methods --
+
 	@Override
 	public String getText() {
 		return textField.getText();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		// TODO
 	}
 
 }

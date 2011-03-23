@@ -34,22 +34,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swing;
 
+import imagej.plugin.gui.ParamDetails;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Swing implementation of number chooser widget, using a slider.
  *
  * @author Curtis Rueden
  */
-public class SwingNumberSliderWidget extends SwingNumberWidget {
+public class SwingNumberSliderWidget extends SwingNumberWidget implements ChangeListener {
 
 	private JSlider slider;
 
-	public SwingNumberSliderWidget(final Number initialValue,
-		final Number min, final Number max, final Number stepSize)
+	public SwingNumberSliderWidget(final ParamDetails details,
+		final Number initialValue, final Number min, final Number max,
+		final Number stepSize)
 	{
+		super(details);
+
 		slider = new JSlider(min.intValue(), max.intValue(),
 			initialValue.intValue());
 		slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
@@ -57,11 +64,31 @@ public class SwingNumberSliderWidget extends SwingNumberWidget {
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		add(slider, BorderLayout.CENTER);
+		slider.addChangeListener(this);
 	}
+
+	// -- ChangeListener methods --
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		details.setValue(slider.getValue());
+	}
+
+	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
 		return slider.getValue();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		final Number value = (Number) details.getValue();
+		slider.removeChangeListener(this);
+		slider.setValue(value.intValue());
+		slider.addChangeListener(this);
 	}
 
 }

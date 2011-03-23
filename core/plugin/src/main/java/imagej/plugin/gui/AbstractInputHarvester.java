@@ -90,7 +90,8 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 			final String name = item.getName();
 			final Class<?> type = item.getType();
 			final Parameter param = ((PluginModuleItem) item).getParameter();
-			final ParamDetails details = new ParamDetails(name, type, param);
+			final ParamDetails details =
+				new ParamDetails(inputPanel, module, name, type, param);
 
 			final boolean required = param.required();
 			final boolean persist = param.persist();
