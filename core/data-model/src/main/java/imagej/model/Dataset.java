@@ -61,6 +61,7 @@ public class Dataset {
 
 	private final Image<?> image;
 	private final Metadata metadata;
+	private boolean isRgbMerged;
 	
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	//   here for plugin testing purposes. Really should be viewcentric.
@@ -85,9 +86,20 @@ public class Dataset {
 	public Dataset(final Image<?> image, final Metadata metadata) {
 		this.image = image;
 		this.metadata = metadata;
+		this.isRgbMerged = false;
 		this.selection = new Rect();
 	}
 
+	/** to be used in legacy layer only. allows the various legacy layer image translators to support color images correctly. */
+	public void setIsRgbMerged(boolean value) {
+		this.isRgbMerged = value;
+	}
+	
+	/** to be used in legacy layer only. allows the various legacy layer image translators to support color images correctly. */
+	public boolean isRgbMerged() {
+		return isRgbMerged;
+	}
+	
 	public Image<?> getImage() {
 		return image;
 	}
