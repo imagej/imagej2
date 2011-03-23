@@ -67,6 +67,7 @@ public class ToolManager {
 
 	public ToolManager() {
 		toolEntries = ToolUtils.findTools();
+		activeTool = new DummyTool();
 		subscribeToEvents();
 	}
 
@@ -80,17 +81,16 @@ public class ToolManager {
 
 	public void setActiveTool(final ITool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do
-		if (this.activeTool != null) {
-			// deactivate old tool
-			this.activeTool.deactivate();
-			Events.publish(new ToolDeactivatedEvent(this.activeTool));
-		}
-		this.activeTool = activeTool;
+		assert this.activeTool != null;
+
+		// deactivate old tool
+		this.activeTool.deactivate();
+		Events.publish(new ToolDeactivatedEvent(this.activeTool));
+
 		// activate new tool
+		this.activeTool = activeTool;
 		activeTool.activate();
 		Events.publish(new ToolActivatedEvent(activeTool));
-		// debug
-		System.out.println("Active Tool set: " + activeTool.getName());
 	}
 
 	private void subscribeToEvents() {
@@ -101,7 +101,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final KyPressedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onKeyDown(event);
+				getActiveTool().onKeyDown(event);
 			}
 		};
 		subscribers.add(kyPressedSubscriber);
@@ -112,7 +112,7 @@ public class ToolManager {
 			{
 			@Override
 			public void onEvent(final KyReleasedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onKeyUp(event);
+				getActiveTool().onKeyUp(event);
 			}
 		};
 		subscribers.add(kyReleasedSubscriber);
@@ -123,7 +123,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsPressedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onMouseDown(event);
+				getActiveTool().onMouseDown(event);
 			}
 		};
 		subscribers.add(msPressedSubscriber);
@@ -134,7 +134,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsReleasedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onMouseUp(event);
+				getActiveTool().onMouseUp(event);
 			}
 		};
 		subscribers.add(msReleasedSubscriber);
@@ -145,7 +145,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsClickedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onMouseClick(event);
+				getActiveTool().onMouseClick(event);
 			}
 		};
 		subscribers.add(msClickedSubscriber);
@@ -156,7 +156,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsMovedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onMouseMove(event);
+				getActiveTool().onMouseMove(event);
 			}
 		};
 		subscribers.add(msMovedSubscriber);
@@ -167,7 +167,7 @@ public class ToolManager {
 		{
 			@Override
 			public void onEvent(final MsDraggedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onMouseDrag(event);
+				getActiveTool().onMouseDrag(event);
 			}
 		};
 		subscribers.add(msDraggedSubscriber);
