@@ -41,7 +41,9 @@ import imagej.plugin.api.PluginException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,11 +61,21 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	/** Class object of this plugin. */
 	private final Class<?> pluginClass;
 
-	private final Map<String, ModuleItem> inputs =
+	/** Table of inputs, keyed on name. */
+	private final Map<String, ModuleItem> inputMap =
 		new HashMap<String, ModuleItem>();
 
-	private final Map<String, ModuleItem> outputs =
+	/** Table of outputs, keyed on name. */
+	private final Map<String, ModuleItem> outputMap =
 		new HashMap<String, ModuleItem>();
+
+	/** Ordered list of input items. */
+	private final List<ModuleItem> inputList =
+		new ArrayList<ModuleItem>();
+
+	/** Ordered list of output items. */
+	private final List<ModuleItem> outputList =
+		new ArrayList<ModuleItem>();
 
 	/** Creates module info for the given plugin entry. */
 	public PluginModuleInfo(final PluginEntry<T> pluginEntry)
@@ -111,22 +123,22 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 
 	@Override
 	public PluginModuleItem getInput(final String name) {
-		return (PluginModuleItem) inputs.get(name);
+		return (PluginModuleItem) inputMap.get(name);
 	}
 
 	@Override
 	public PluginModuleItem getOutput(final String name) {
-		return (PluginModuleItem) outputs.get(name);
+		return (PluginModuleItem) outputMap.get(name);
 	}
 
 	@Override
 	public Iterable<ModuleItem> inputs() {
-		return inputs.values();
+		return inputList;
 	}
 
 	@Override
 	public Iterable<ModuleItem> outputs() {
-		return outputs.values();
+		return outputList;
 	}
 
 	// -- Helper methods --
@@ -162,8 +174,14 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 				// add item to the relevant list (inputs or outputs)
 				final Object defaultValue = PluginModule.getValue(f, plugin);
 				final ModuleItem item = new PluginModuleItem(f, defaultValue);
-				if (param.output()) outputs.put(name, item);
-				else inputs.put(name, item);
+				if (param.output()) {
+					outputMap.put(name, item);
+					outputList.add(item);
+				}
+				else {
+					inputMap.put(name, item);
+					inputList.add(item);
+				}
 			}
 		}
 
