@@ -162,6 +162,8 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 				value = inputPanel.getObject(name);
 			}
 			if (value != null) {
+				// TODO - eliminate this unnecessary step
+				// (widgets call setInput whenever they change)
 				module.setInput(name, value);
 
 				if (persist) {
