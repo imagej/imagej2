@@ -51,6 +51,8 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -62,6 +64,12 @@ import javax.swing.event.ChangeListener;
 public class SwingToolBar extends JToolBar
 	implements EventSubscriber<ToolActivatedEvent>
 {
+
+	protected static final Border ACTIVE_BORDER =
+		new BevelBorder(BevelBorder.LOWERED);
+
+	protected static final Border INACTIVE_BORDER =
+		new BevelBorder(BevelBorder.RAISED);
 
 	private ToolManager toolManager;
 
@@ -118,11 +126,13 @@ public class SwingToolBar extends JToolBar
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				boolean selected = button.isSelected();
+				button.setBorder(selected ? ACTIVE_BORDER : INACTIVE_BORDER);
 				if (selected == active) return;
 				getToolManager().setActiveTool(tool);
 				active = selected;
 			}
 		});
+		button.setBorder(INACTIVE_BORDER);
 
 		return button;
 	}
