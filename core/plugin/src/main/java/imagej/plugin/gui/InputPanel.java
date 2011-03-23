@@ -52,73 +52,56 @@ public interface InputPanel {
 	/**
 	 * Adds a numeric field.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue value to be initially displayed
-	 * @param style preferred widget style for the numeric field
 	 * @param min minimum allowed value
 	 * @param max maximum allowed value
 	 * @param stepSize distance between steps when operating widget
 	 */
-	void addNumber(String name, String label, Number initialValue,
-		WidgetStyle style, Number min, Number max, Number stepSize);
+	void addNumber(ParamDetails details, Number initialValue,
+		Number min, Number max, Number stepSize);
 
 	/**
 	 * Adds a checkbox field.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue the initial state
-	 * @param style preferred widget style for the checkbox field
 	 */
-	void addToggle(String name, String label, boolean initialValue,
-		WidgetStyle style);
+	void addToggle(ParamDetails details, boolean initialValue);
 
 	/**
 	 * Adds a text field.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue the text initially displayed
-	 * @param style preferred widget style for the text field
 	 * @param columns width of field in characters
 	 */
-	void addTextField(String name, String label, String initialValue,
-		WidgetStyle style, int columns);
+	void addTextField(ParamDetails details, String initialValue, int columns);
 
 	/**
 	 * Adds a multiple choice text field.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue the initially selected item
-	 * @param style preferred widget style for the text field
 	 * @param items the choices
 	 */
-	void addChoice(String name, String label, String initialValue,
-		WidgetStyle style, String[] items);
+	void addChoice(ParamDetails details, String initialValue, String[] items);
 
 	/**
 	 * Adds a file selector.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue the initially specified file
-	 * @param style preferred widget style for the file selector
 	 */
-	void
-		addFile(String name, String label, File initialValue, WidgetStyle style);
+	void addFile(ParamDetails details, File initialValue);
 
 	/**
 	 * Adds an object selector.
 	 * 
-	 * @param name unique name identifying this field
-	 * @param label the label
+	 * @param details basic parameter details (e.g., name, label, description)
 	 * @param initialValue the initially specified dataset
-	 * @param style preferred widget style for the object selector
 	 */
-	void addObject(String name, String label, Object initialValue,
-		WidgetStyle style);
+	void addObject(ParamDetails details, Object initialValue);
 
 	/**
 	 * Returns the contents of the given numeric field.

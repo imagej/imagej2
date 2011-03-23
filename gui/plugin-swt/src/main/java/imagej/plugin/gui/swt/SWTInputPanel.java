@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.swt;
 
 import imagej.plugin.gui.AbstractInputPanel;
-import imagej.plugin.gui.WidgetStyle;
+import imagej.plugin.gui.ParamDetails;
 
 import java.io.File;
 
@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Label;
  */
 public class SWTInputPanel extends AbstractInputPanel {
 
-	private Composite panel;
+	private final Composite panel;
 
 	public SWTInputPanel(final Composite parent) {
 		panel = new Composite(parent, 0);
@@ -62,6 +62,8 @@ public class SWTInputPanel extends AbstractInputPanel {
 		return panel;
 	}
 
+	// -- InputPanel methods --
+
 	@Override
 	public void addMessage(final String text) {
 		final Label label = addLabel(text);
@@ -69,61 +71,58 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final String name, final String label,
-		final Number initialValue, final WidgetStyle style, final Number min,
-		final Number max, final Number stepSize)
+	public void addNumber(final ParamDetails details, final Number initialValue,
+		final Number min, final Number max, final Number stepSize)
 	{
-		addLabel(label);
+		addLabel(details.getLabel());
 		final SWTNumberWidget numberWidget =
 			new SWTNumberWidget(panel, initialValue, min, max, stepSize);
-		numberWidgets.put(name, numberWidget);
+		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final String name, final String label,
-		final boolean initialValue, final WidgetStyle style)
+	public void addToggle(final ParamDetails details, final boolean initialValue)
 	{
-		addLabel(label);
+		addLabel(details.getLabel());
 		final SWTToggleWidget toggleWidget =
 			new SWTToggleWidget(panel, initialValue);
-		toggleWidgets.put(name, toggleWidget);
+		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final String name, final String label,
-		final String initialValue, final WidgetStyle style, final int columns)
+	public void addTextField(final ParamDetails details,
+		final String initialValue, final int columns)
 	{
-		addLabel(label);
+		addLabel(details.getLabel());
 		final SWTTextFieldWidget textFieldWidget =
 			new SWTTextFieldWidget(panel, initialValue, columns);
-		textFieldWidgets.put(name, textFieldWidget);
+		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final String name, final String label,
-		final String initialValue, final WidgetStyle style, final String[] items)
+	public void addChoice(final ParamDetails details, final String initialValue,
+		final String[] items)
 	{
-		addLabel(label);
+		addLabel(details.getLabel());
 		final SWTChoiceWidget choiceWidget =
 			new SWTChoiceWidget(panel, initialValue, items);
-		choiceWidgets.put(name, choiceWidget);
+		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final String name, final String label,
-		final File initialValue, final WidgetStyle style)
-	{
-		addLabel(label);
+	public void addFile(final ParamDetails details, final File initialValue) {
+		addLabel(details.getLabel());
 		final SWTFileWidget fileWidget = new SWTFileWidget(panel, initialValue);
-		fileWidgets.put(name, fileWidget);
+		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final String name, final String label,
-		final Object initialValue, final WidgetStyle style)
+	public void addObject(final ParamDetails details, final Object initialValue)
 	{
 		// TODO create ObjectWidget and add here
 	}
+
+	// -- Helper methods --
 
 	private Label addLabel(final String text) {
 		final Label label = new Label(panel, 0);
