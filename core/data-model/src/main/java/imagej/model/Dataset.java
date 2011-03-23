@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.model;
 
 import imagej.Rect;
-
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
@@ -49,6 +48,7 @@ import mpicbg.imglib.container.planar.PlanarContainerFactory;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.image.ImageFactory;
+import mpicbg.imglib.type.Type;
 import mpicbg.imglib.type.numeric.RealType;
 
 /**
@@ -106,6 +106,26 @@ public class Dataset {
 
 	public Metadata getMetadata() {
 		return metadata;
+	}
+
+	/** Gets a string description of the dataset's pixel type. */
+	public String getPixelType() {
+		// HACK: Since type.toString() isn't nice, we use crazy logic here.
+		// TODO: Eliminate this, by improving type.toString() in ImgLib2.
+		final Type<?> type = image.createType();
+		String pixelType = type.getClass().getSimpleName();
+		pixelType = pixelType.replaceAll("Type", "");
+		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");
+		pixelType = pixelType.replaceAll("Byte", "8-bit");
+		pixelType = pixelType.replaceAll("([0-9]+)Bit", "$1-bit"); // e.g., 12Bit
+		pixelType = pixelType.replaceAll("Short", "16-bit");
+		pixelType = pixelType.replaceAll("Int", "32-bit");
+		pixelType = pixelType.replaceAll("Long", "64-bit");
+		pixelType = pixelType.replaceAll("Float", "32-bit (real)");
+		pixelType = pixelType.replaceAll("Double", "64-bit (real)");
+		pixelType = pixelType.replaceAll("Unsigned(.*)", "$1 (unsigned)");
+		if (pixelType.indexOf("(") < 0) pixelType = pixelType + " (signed)";
+		return pixelType;
 	}
 
 	public Object getPlane(final int no) {
