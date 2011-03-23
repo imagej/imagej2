@@ -112,20 +112,20 @@ public class GradientImage implements ImageJPlugin {
 
 	// -- Parameter callback methods --
 
-	private void bitDepthChanged() {
+	protected void bitDepthChanged() {
 		if (signedForbidden()) signed = false;
 		if (signedRequired()) signed = true;
 		if (floatingForbidden()) floating = false;
 	}
 
-	private void signedChanged() {
+	protected void signedChanged() {
 		if (signed && signedForbidden() || !signed && signedRequired()) {
 			bitDepth = DEPTH8;
 		}
 		if (!signed) floating = false; // no unsigned floating types
 	}
 
-	private void floatingChanged() {
+	protected void floatingChanged() {
 		if (floating && floatingForbidden()) bitDepth = DEPTH32;
 		if (floating) signed = true; // no unsigned floating types
 	}
