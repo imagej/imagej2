@@ -39,46 +39,148 @@ import imagej.model.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.gui.WidgetStyle;
+import mpicbg.imglib.cursor.LocalizableCursor;
+import mpicbg.imglib.type.logic.BitType;
+import mpicbg.imglib.type.numeric.RealType;
+import mpicbg.imglib.type.numeric.integer.ByteType;
+import mpicbg.imglib.type.numeric.integer.IntType;
+import mpicbg.imglib.type.numeric.integer.LongType;
+import mpicbg.imglib.type.numeric.integer.ShortType;
+import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
+import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import mpicbg.imglib.type.numeric.real.DoubleType;
+import mpicbg.imglib.type.numeric.real.FloatType;
 
 /**
- * A simple demonstration plugin, which generates a gradient image.
+ * A demonstration plugin that generates a gradient image.
  * 
  * @author Curtis Rueden
- * @author Rick Lentz
  */
 @Plugin(menuPath = "Process>Gradient")
 public class GradientImage implements ImageJPlugin {
 
-	@Parameter(choices={"uint8", "uint16", "uint32", "int8", "int16", "int32"})
-	private String pixelType = "uint8";
+	public static final String DEPTH1 = "1-bit";
+	public static final String DEPTH8 = "8-bit";
+	public static final String DEPTH12 = "12-bit";
+	public static final String DEPTH16 = "16-bit";
+	public static final String DEPTH32 = "32-bit";
+	public static final String DEPTH64 = "64-bit";
 
-	@Parameter(min = "1", max = "2000",
-		style = WidgetStyle.NUMBER_SCROLL_BAR)
+	@Parameter(callback = "bitDepthChanged",
+		choices = { DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
+	private String bitDepth = DEPTH8;
+
+	@Parameter(callback = "signedChanged")
+	private boolean signed = false;
+
+	@Parameter(callback = "floatingChanged")
+	private boolean floating = false;
+
+	@Parameter(min = "1")
 	private int width = 512;
 
-	@Parameter(min = "1", max = "2000", style = WidgetStyle.NUMBER_SLIDER)
+	@Parameter(min = "1")
 	private int height = 512;
 
 	@Parameter(output = true)
 	private Dataset dataset;
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
-		byte[] data = new byte[width * height];
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				int index = y * width + x;
-				data[index] = (byte) (x + y);
-			}
-		}
-
+		// create the dataset
 		final String name = "Gradient Image";
+		final RealType type = makeType();
 		final int[] dims = { width, height };
 		final AxisLabel[] axes = { AxisLabel.X, AxisLabel.Y };
-		dataset = Dataset.create(name, new UnsignedByteType(), dims, axes);
-		dataset.setPlane(0, data);
+		dataset = Dataset.create(name, type, dims, axes);
+
+		// fill in the diagonal gradient
+		final LocalizableCursor<? extends RealType<?>> cursor =
+			(LocalizableCursor<? extends RealType<?>>)
+			dataset.getImage().createLocalizableCursor();
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			final int x = cursor.getPosition(0);
+			final int y = cursor.getPosition(1);
+			cursor.getType().setReal(x + y);
+		}
+		cursor.close();
+	}
+
+	// -- Parameter callback methods --
+
+	private void bitDepthChanged() {
+		if (signedForbidden()) signed = false;
+		if (signedRequired()) signed = true;
+		if (floatingForbidden()) floating = false;
+	}
+
+	private void signedChanged() {
+		if (signed && signedForbidden() || !signed && signedRequired()) {
+			bitDepth = DEPTH8;
+		}
+		if (!signed) floating = false; // no unsigned floating types
+	}
+
+	private void floatingChanged() {
+		if (floating && floatingForbidden()) bitDepth = DEPTH32;
+		if (floating) signed = true; // no unsigned floating types
+	}
+
+	// -- Helper methods --
+
+	private RealType<? extends RealType<?>> makeType() {
+		if (bitDepth.equals(DEPTH1)) {
+			assert !signed && !floating;
+			return new BitType();
+		}
+		if (bitDepth.equals(DEPTH8)) {
+			assert !floating;
+			if (signed) return new ByteType();
+			return new UnsignedByteType();
+		}
+		if (bitDepth.equals(DEPTH12)) {
+			assert !signed && !floating;
+			return new Unsigned12BitType();
+		}
+		if (bitDepth.equals(DEPTH16)) {
+			assert !floating;
+			if (signed) return new ShortType();
+			return new UnsignedShortType();
+		}
+		if (bitDepth.equals(DEPTH32)) {
+			if (floating) {
+				assert signed;
+				return new FloatType();
+			}
+			if (signed) return new IntType();
+			return new UnsignedIntType();
+		}
+		if (bitDepth.equals(DEPTH64)) {
+			assert signed;
+			if (floating) return new DoubleType();
+			return new LongType();
+		}
+		throw new IllegalStateException("Invalid parameters: bitDepth=" +
+			bitDepth + ", signed=" + signed + ", floating=" + floating);
+	}
+
+	private boolean signedForbidden() {
+		// 1-bit and 12-bit signed data are not supported
+		return bitDepth.equals(DEPTH1) || bitDepth.equals(DEPTH12);
+	}
+
+	private boolean signedRequired() {
+		// 64-bit unsigned data is not supported
+		return bitDepth.equals(DEPTH64);
+	}
+
+	private boolean floatingForbidden() {
+		// only 32-bit and 64-bit floating point are supported
+		return !bitDepth.equals(DEPTH32) && !bitDepth.equals(DEPTH64);
 	}
 
 }
