@@ -68,6 +68,12 @@ public class GradientImage implements ImageJPlugin {
 	public static final String DEPTH32 = "32-bit";
 	public static final String DEPTH64 = "64-bit";
 
+	@Parameter(min = "1")
+	private int width = 512;
+
+	@Parameter(min = "1")
+	private int height = 512;
+
 	@Parameter(callback = "bitDepthChanged",
 		choices = { DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
 	private String bitDepth = DEPTH8;
@@ -77,12 +83,6 @@ public class GradientImage implements ImageJPlugin {
 
 	@Parameter(callback = "floatingChanged")
 	private boolean floating = false;
-
-	@Parameter(min = "1")
-	private int width = 512;
-
-	@Parameter(min = "1")
-	private int height = 512;
 
 	@Parameter(output = true)
 	private Dataset dataset;
