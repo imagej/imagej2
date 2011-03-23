@@ -89,9 +89,9 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		for (final ModuleItem item : inputs) {
 			final String name = item.getName();
 			final Class<?> type = item.getType();
-
 			final Parameter param = ((PluginModuleItem) item).getParameter();
-			final String label = makeLabel(name, param.label());
+			final ParamDetails details = new ParamDetails(name, type, param);
+
 			final boolean required = param.required();
 			final boolean persist = param.persist();
 			final String persistKey = param.persistKey();
@@ -101,24 +101,29 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 				persist ? getPrefValue(module, item, persistKey) : null;
 
 			if (ClassUtils.isNumber(type)) {
-				addNumber(inputPanel, name, type, param, label, getInitialNumberValue(
-					prefValue, defaultValue, type));
+				final Number initialValue =
+					getInitialNumberValue(prefValue, defaultValue, type);
+				addNumber(inputPanel, details, initialValue);
 			}
 			else if (ClassUtils.isText(type)) {
-				addTextField(inputPanel, name, param, label, getInitialStringValue(
-					prefValue, defaultValue));
+				final String initialValue =
+					getInitialStringValue(prefValue, defaultValue);
+				addTextField(inputPanel, details, initialValue);
 			}
 			else if (ClassUtils.isBoolean(type)) {
-				addToggle(inputPanel, name, param, label, getInitialBooleanValue(
-					prefValue, defaultValue));
+				boolean initialValue =
+					getInitialBooleanValue(prefValue, defaultValue);
+				addToggle(inputPanel, details, initialValue);
 			}
 			else if (File.class.isAssignableFrom(type)) {
-				addFile(inputPanel, name, param, label, getInitialFileValue(prefValue,
-					defaultValue));
+				final File initialValue =
+					getInitialFileValue(prefValue, defaultValue);
+				addFile(inputPanel, details, initialValue);
 			}
 			else {
-				addObject(inputPanel, name, param, label, getInitialObjectValue(
-					prefValue, defaultValue));
+				final Object initialValue =
+					getInitialObjectValue(prefValue, defaultValue);
+				addObject(inputPanel, details, initialValue);
 			}
 		}
 	}
@@ -167,10 +172,11 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 
 	// -- Helper methods - input panel population --
 
-	private void addNumber(final InputPanel inputPanel, final String name,
-		final Class<?> type, final Parameter param, final String label,
-		final Number initialValue)
+	private void addNumber(final InputPanel inputPanel,
+		final ParamDetails details, final Number initialValue)
 	{
+		final Class<?> type = details.getType();
+		final Parameter param = details.getParameter();
 		Number min = ClassUtils.toNumber(param.min(), type);
 		if (min == null) min = ClassUtils.getMinimumNumber(type);
 		Number max = ClassUtils.toNumber(param.max(), type);
@@ -178,41 +184,40 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
 		final Number iValue = clampToRange(initialValue, min, max);
-		inputPanel.addNumber(name, label, iValue,
-			param.style(), min, max, stepSize);
+		inputPanel.addNumber(details, iValue, min, max, stepSize);
 	}
 
-	private void addTextField(final InputPanel inputPanel, final String name,
-		final Parameter param, final String label, final String initialValue)
+	private void addTextField(final InputPanel inputPanel,
+		final ParamDetails details, final String initialValue)
 	{
-		final String[] choices = param.choices();
+		final String[] choices = details.getParameter().choices();
 		if (choices.length > 0) {
 			final String iValue = initialValue == null ? choices[0] : initialValue;
-			inputPanel.addChoice(name, label, iValue, param.style(), choices);
+			inputPanel.addChoice(details, iValue, choices);
 		}
 		else {
 			final String iValue = initialValue == null ? "" : initialValue;
-			final int columns = param.columns();
-			inputPanel.addTextField(name, label, iValue, param.style(), columns);
+			final int columns = details.getParameter().columns();
+			inputPanel.addTextField(details, iValue, columns);
 		}
 	}
 
-	private void addToggle(final InputPanel inputPanel, final String name,
-		final Parameter param, final String label, final Boolean initialValue)
+	private void addToggle(final InputPanel inputPanel,
+		final ParamDetails details, final Boolean initialValue)
 	{
-		inputPanel.addToggle(name, label, initialValue, param.style());
+		inputPanel.addToggle(details, initialValue);
 	}
 
-	private void addFile(final InputPanel inputPanel, final String name,
-		final Parameter param, final String label, final File initialValue)
+	private void addFile(final InputPanel inputPanel,
+		final ParamDetails details, final File initialValue)
 	{
-		inputPanel.addFile(name, label, initialValue, param.style());
+		inputPanel.addFile(details, initialValue);
 	}
 
-	private void addObject(final InputPanel inputPanel, final String name,
-		final Parameter param, final String label, final Object initialValue)
+	private void addObject(final InputPanel inputPanel, 
+		final ParamDetails details, final Object initialValue)
 	{
-		inputPanel.addObject(name, label, initialValue, param.style());
+		inputPanel.addObject(details, initialValue);
 	}
 
 	// -- Helper methods - initial value computation --
@@ -298,13 +303,6 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 	}
 
 	// -- Helper methods - other --
-
-	private String makeLabel(final String name, final String label) {
-		if (label == null || label.isEmpty()) {
-			return name.substring(0, 1).toUpperCase() + name.substring(1);
-		}
-		return label;
-	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Number clampToRange(final Number value,

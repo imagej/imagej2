@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui.pivot;
 
 import imagej.plugin.gui.AbstractInputPanel;
-import imagej.plugin.gui.WidgetStyle;
+import imagej.plugin.gui.ParamDetails;
 
 import java.io.File;
 
@@ -50,7 +50,7 @@ import org.apache.pivot.wtk.TablePane;
  */
 public class PivotInputPanel extends AbstractInputPanel {
 
-	private TablePane pane;
+	private final TablePane pane;
 
 	public PivotInputPanel() {
 		pane = new TablePane();
@@ -60,66 +60,66 @@ public class PivotInputPanel extends AbstractInputPanel {
 		return pane;
 	}
 
+	// -- InputPanel methods --
+
 	@Override
 	public void addMessage(final String text) {
 		pane.add(new Label(text));
 	}
 
 	@Override
-	public void addNumber(final String name, final String label,
-		final Number initialValue, final WidgetStyle style, final Number min,
-		final Number max, final Number stepSize)
+	public void addNumber(final ParamDetails details, final Number initialValue,
+		final Number min, final Number max, final Number stepSize)
 	{
 		final PivotNumberWidget numberWidget =
-			PivotNumberWidget.create(initialValue, min, max, stepSize, style);
-		addField(label, numberWidget);
-		numberWidgets.put(name, numberWidget);
+			PivotNumberWidget.create(initialValue, min, max, stepSize,
+			details.getStyle());
+		addField(details.getLabel(), numberWidget);
+		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final String name, final String label,
-		final boolean initialValue, final WidgetStyle style)
+	public void addToggle(final ParamDetails details, final boolean initialValue)
 	{
 		final PivotToggleWidget toggleWidget = new PivotToggleWidget(initialValue);
-		addField(label, toggleWidget);
-		toggleWidgets.put(name, toggleWidget);
+		addField(details.getLabel(), toggleWidget);
+		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final String name, final String label,
-		final String initialValue, final WidgetStyle style, final int columns)
+	public void addTextField(final ParamDetails details,
+		final String initialValue, final int columns)
 	{
 		final PivotTextFieldWidget textFieldWidget =
 			new PivotTextFieldWidget(initialValue, columns);
-		addField(label, textFieldWidget);
-		textFieldWidgets.put(name, textFieldWidget);
+		addField(details.getLabel(), textFieldWidget);
+		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final String name, final String label,
-		final String initialValue, final WidgetStyle style, final String[] items)
+	public void addChoice(final ParamDetails details, final String initialValue,
+		final String[] items)
 	{
 		final PivotChoiceWidget choiceWidget =
 			new PivotChoiceWidget(initialValue, items);
-		addField(label, choiceWidget);
-		choiceWidgets.put(name, choiceWidget);
+		addField(details.getLabel(), choiceWidget);
+		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final String name, final String label,
-		final File initialValue, final WidgetStyle style)
-	{
+	public void addFile(final ParamDetails details, final File initialValue) {
 		final PivotFileWidget fileWidget = new PivotFileWidget(initialValue);
-		addField(label, fileWidget);
-		fileWidgets.put(name, fileWidget);
+		addField(details.getLabel(), fileWidget);
+		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final String name, final String label,
-		final Object initialValue, final WidgetStyle style)
+	public void addObject(final ParamDetails details, final Object initialValue)
 	{
 		// TODO create ObjectWidget and add here
 	}
+
+	// -- Helper methods --
 
 	private void addField(final String label, final Container component) {
 		pane.add(new Label(label == null ? "" : label));
