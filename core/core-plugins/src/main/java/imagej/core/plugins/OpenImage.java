@@ -85,4 +85,12 @@ public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 		}
 	}
 
+	public File getInputFile() {
+		return inputFile;
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
 }
