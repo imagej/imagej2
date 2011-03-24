@@ -37,7 +37,6 @@ package imagej.gui.swing.display;
 import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
-import imagej.display.ImageDisplayWindow;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -50,7 +49,7 @@ import imagej.plugin.Plugin;
 @Plugin(type = Display.class)
 public class SimpleImageDisplay implements Display {
 
-	private ImageDisplayWindow imgWindow;
+	private NavigableImageFrame imgWindow;
 	private NavigableImagePanel imgCanvas;
 	private Dataset theDataset;
 	private DisplayController controller;
@@ -75,7 +74,7 @@ public class SimpleImageDisplay implements Display {
 		// TODO - use DisplayView instead of Dataset directly
 		// imageFrame.setDataset(dataset);
 		// ((NavigableImageJFrame)imgWindow).pack();
-		((NavigableImageFrame) imgWindow).setVisible(true);
+		imgWindow.setVisible(true);
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class SimpleImageDisplay implements Display {
 	}
 
 	@Override
-	public ImageDisplayWindow getImageDisplayWindow() {
+	public NavigableImageFrame getImageDisplayWindow() {
 		return imgWindow;
 	}
 
