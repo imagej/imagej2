@@ -34,10 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.swing.display;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
@@ -47,8 +43,7 @@ import imagej.model.AxisLabel;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
+import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
@@ -56,10 +51,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  * TODO
@@ -70,30 +67,34 @@ import javax.swing.border.LineBorder;
 public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
+
 	private final JLabel imageLabel;
 	private final NavigableImagePanel imgCanvas;
 	private JPanel sliders;
-	//
-	private DisplayController controller;
+
+	protected DisplayController controller;
 
 	public NavigableImageFrame(final NavigableImagePanel imgCanvas) {
 		this.imgCanvas = imgCanvas;
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		// maximize window size
-		final GraphicsEnvironment ge =
-			GraphicsEnvironment.getLocalGraphicsEnvironment();
-		final Rectangle bounds = ge.getMaximumWindowBounds();
-		setBounds(bounds.width / 6, bounds.height / 6, 2 * bounds.width / 3,
-			2 * bounds.height / 3);
-		imageLabel = new JLabel(" ");
-		getContentPane().add(imageLabel, BorderLayout.NORTH);
-		final JPanel borderPanel = new JPanel();
-		borderPanel.setLayout(new BorderLayout());
-		borderPanel.setBorder(new CompoundBorder(new EmptyBorder(3, 3, 3, 3),
-			new LineBorder(Color.black)));
-		borderPanel.add(imgCanvas, BorderLayout.CENTER);
-		getContentPane().add(borderPanel, BorderLayout.CENTER);
+		imgCanvas.setBorder(new LineBorder(Color.black));
 
+		imageLabel = new JLabel(" ");
+		final int prefHeight = imageLabel.getPreferredSize().height;
+		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
+
+		sliders = new JPanel();
+		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
+
+		final JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		pane.setBorder(new EmptyBorder(3, 3, 3, 3));
+		setContentPane(pane);
+
+		pane.add(imageLabel, BorderLayout.NORTH);
+		pane.add(imgCanvas, BorderLayout.CENTER);
+		pane.add(sliders, BorderLayout.SOUTH);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
 	@Override
@@ -101,8 +102,7 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		this.controller = controller;
 		final int[] dims = controller.getDims();
 		final AxisLabel[] dimLabels = controller.getDimLabels();
-		sliders = createSliders(dims, dimLabels);
-		getContentPane().add(sliders, BorderLayout.SOUTH);
+		createSliders(dims, dimLabels);
 	}
 
 	@Override
@@ -114,55 +114,28 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		return imgCanvas;
 	}
 
-	private JPanel createSliders(final int[] dims, final AxisLabel[] dimLabels) {
-		if (sliders != null) {
-			remove(sliders);
-		}
-		if (dims.length == 2) {
-			return new JPanel();
-		}
+	private void createSliders(final int[] dims, final AxisLabel[] dimLabels) {
+		sliders.removeAll();
 
-		final StringBuilder rows = new StringBuilder("pref");
-		for (int i = 3; i < dims.length; i++) {
-			if (dims[i] > 1) {
-				rows.append(", 3dlu, pref");
-			}
-		}
-		final PanelBuilder panelBuilder =
-			new PanelBuilder(
-				new FormLayout("pref, 3dlu, pref:grow", rows.toString()));
-		// panelBuilder.setDefaultDialogBorder();
-		final CellConstraints cc = new CellConstraints();
-
-		for (int i = 0, p = -1, row = 1; i < dims.length; i++) {
-			if (AxisLabel.isXY(dimLabels[i])) {
-				continue;
-			}
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (AxisLabel.isXY(dimLabels[i])) continue;
 			p++;
-			if (dims[i] == 1) {
-				continue;
-			}
+			if (dims[i] == 1) continue;
+
 			final JLabel label = new JLabel(dimLabels[i].toString());
+			label.setHorizontalAlignment(SwingConstants.RIGHT);
 			final JScrollBar slider =
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, dims[i] + 1);
 			final int posIndex = p;
 			slider.addAdjustmentListener(new AdjustmentListener() {
-
 				@Override
-				@SuppressWarnings("synthetic-access")
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-
-					// pos[posIndex] = slider.getValue() - 1;
-					// controller.updatePosition();
 					controller.updatePosition(posIndex, slider.getValue() - 1);
 				}
-
 			});
-			panelBuilder.add(label, cc.xy(1, row));
-			panelBuilder.add(slider, cc.xy(3, row));
-			row += 2;
+			sliders.add(label);
+			sliders.add(slider);
 		}
-		return panelBuilder.getPanel();
 	}
 
 	@Override

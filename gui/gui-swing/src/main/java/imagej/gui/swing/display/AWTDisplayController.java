@@ -57,11 +57,18 @@ public class AWTDisplayController implements DisplayController {
 	private Image<?> image;
 	private int[] dims;
 	private AxisLabel[] dimLabels;
+	private String imageName;
 	private int xIndex, yIndex;
 	private int[] pos;
 	private final ImageDisplayWindow imgWindow;
 	private final SimpleImageDisplay display;
 	private Object currentPlane;
+
+	public AWTDisplayController(final SimpleImageDisplay display) {
+		this.display = display;
+		imgWindow = display.getImageDisplayWindow();
+		setDataset(display.getDataset());
+	}
 
 	@Override
 	public Object getCurrentPlane() {
@@ -81,16 +88,6 @@ public class AWTDisplayController implements DisplayController {
 	@Override
 	public int[] getPos() {
 		return pos;
-	}
-
-	private String imageName;
-
-	// private NavigableImagePanel imgPanel;
-
-	public AWTDisplayController(final SimpleImageDisplay display) {
-		this.display = display;
-		this.imgWindow = this.display.getImageDisplayWindow();
-		setDataset(this.display.getDataset());
 	}
 
 	@Override
@@ -120,6 +117,7 @@ public class AWTDisplayController implements DisplayController {
 		// display first image plane
 		pos = new int[dims.length - 2];
 		updatePosition();
+		display.getImageDisplayWindow().pack();
 	}
 
 	@Override

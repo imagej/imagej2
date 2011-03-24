@@ -43,7 +43,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -64,12 +63,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -341,24 +335,15 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 	/**
-	 * <p>
 	 * Sets an image for display in the panel.
-	 * </p>
 	 * 
-	 * @param image an image to be set in the panel
+	 * @param newImage an image to be set in the panel
 	 */
 	public void setImage(final BufferedImage newImage) {
-		final BufferedImage oldImage = this.image;
-		this.image = toCompatibleImage(newImage);
-		setPreferredSize(new Dimension(this.image.getWidth(), this.image.getHeight()));
-		NavigableImageFrame frame = (NavigableImageFrame) getTopLevelAncestor(); 
-		frame.pack();
-		// Reset scale so that initializeParameters() is called in paintComponent()
-		// for the new image.
-		scale = 0.0;
-		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, this.image);
-		// old way that may have been wrong
-		//firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, newImage);
+		final BufferedImage oldImage = image;
+		image = toCompatibleImage(newImage);
+		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 		repaint();
 	}
 
@@ -366,11 +351,7 @@ public class NavigableImagePanel extends JPanel implements
 		return image;
 	}
 
-	/**
-	 * <p>
-	 * Tests whether an image uses the standard RGB color space.
-	 * </p>
-	 */
+	/** Tests whether an image uses the standard RGB color space. */
 	public static boolean isStandardRGBImage(final BufferedImage bImage) {
 		return bImage.getColorModel().getColorSpace().isCS_sRGB();
 	}
@@ -782,7 +763,7 @@ public class NavigableImagePanel extends JPanel implements
 	}
 
 	private double calculateZoomIncrement() {
-		return this.zoomIncrement;
+		return zoomIncrement;
 	}
 
 	/**
