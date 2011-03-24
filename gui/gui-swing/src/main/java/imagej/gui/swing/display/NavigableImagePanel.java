@@ -1153,41 +1153,4 @@ public class NavigableImagePanel extends JPanel implements
 
 // </editor-fold>
 
-	public static void main(final String[] args) {
-		// if (args.length == 0) {
-		// System.out.println("Usage: java NavigableImagePanel imageFilename");
-		// System.exit(1);
-		// }
-
-		final String filename = // args[0];
-			"diatoms.jpg";
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				final JFrame frame = new JFrame("Navigable Image Panel");
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				final NavigableImagePanel panel = new NavigableImagePanel();
-				try {
-					final BufferedImage image = ImageIO.read(new File(filename));
-					panel.setImage(image);
-				}
-				catch (final IOException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "",
-						JOptionPane.ERROR_MESSAGE);
-					System.exit(1);
-				}
-				panel.setNavigationImageEnabled(true);
-				frame.getContentPane().add(panel, BorderLayout.CENTER);
-				final GraphicsEnvironment ge =
-					GraphicsEnvironment.getLocalGraphicsEnvironment();
-				final Rectangle bounds = ge.getMaximumWindowBounds();
-				frame.setSize(new Dimension(bounds.width, bounds.height));
-				frame.setVisible(true);
-			}
-
-		});
-	}
-
 }
