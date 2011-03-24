@@ -323,6 +323,7 @@ public class NavigableImagePanel extends JPanel implements
 
 		// An image is initially centered
 		centerImage();
+
 		if (isNavigationImageEnabled()) {
 			createNavigationImage();
 		}
@@ -346,13 +347,18 @@ public class NavigableImagePanel extends JPanel implements
 	 * 
 	 * @param image an image to be set in the panel
 	 */
-	public void setImage(final BufferedImage image) {
+	public void setImage(final BufferedImage newImage) {
 		final BufferedImage oldImage = this.image;
-		this.image = toCompatibleImage(image);
+		this.image = toCompatibleImage(newImage);
+		setPreferredSize(new Dimension(this.image.getWidth(), this.image.getHeight()));
+		NavigableImageFrame frame = (NavigableImageFrame) getTopLevelAncestor(); 
+		frame.pack();
 		// Reset scale so that initializeParameters() is called in paintComponent()
 		// for the new image.
 		scale = 0.0;
-		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
+		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, this.image);
+		// old way that may have been wrong
+		//firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, newImage);
 		repaint();
 	}
 
@@ -634,7 +640,6 @@ public class NavigableImagePanel extends JPanel implements
 				getScreenImageHeight(), null);
 		}
 		drawNavigationImage(g);
-
 	}
 
 // </editor-fold>
@@ -803,7 +808,6 @@ public class NavigableImagePanel extends JPanel implements
 		// check if zoomed in too close
 		if ((zoomFactor > 1) && (scale > initialScale))
 		{
-		  // TODO - do we want minDimension instead?
 			int maxDimension = Math.max(image.getWidth(), image.getHeight());
 
 			// if zooming the image would show less than one pixel of image data
@@ -842,7 +846,7 @@ public class NavigableImagePanel extends JPanel implements
 	private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
 	private double navZoomFactor = 1.0 + zoomIncrement;
 	private double navScale = 0.0;
-	private boolean navigationImageEnabled = true;
+	private boolean navigationImageEnabled = false;  // TODO - enable with a hotkey?????
 	private BufferedImage navigationImage;
 	private int navImageWidth;
 	private int navImageHeight;
