@@ -77,7 +77,6 @@ public class ColorDataImageTranslator {
 		final Dataset dataset = new Dataset(image, metadata);
 
 		int totPixels = w * h;
-		
 
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
@@ -86,12 +85,7 @@ public class ColorDataImageTranslator {
 				byte[] rValues = new byte[totPixels];
 				byte[] gValues = new byte[totPixels];
 				byte[] bValues = new byte[totPixels];
-				for (int i = 0; i < totPixels; i++) {
-					int pixelValue = proc.get(i);
-					rValues[i] = (byte) ((pixelValue & 0xff0000) >> 16);
-					gValues[i] = (byte) ((pixelValue & 0x00ff00) >> 8);
-					bValues[i] = (byte) ((pixelValue & 0x0000ff) >> 0);
-				}
+				proc.getRGB(rValues, gValues, bValues);
 				dataset.setPlane(planeIndex+0, rValues);
 				dataset.setPlane(planeIndex+1, gValues);
 				dataset.setPlane(planeIndex+2, bValues);
