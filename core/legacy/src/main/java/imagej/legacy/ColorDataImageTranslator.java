@@ -86,10 +86,10 @@ public class ColorDataImageTranslator {
 				byte[] gValues = new byte[totPixels];
 				byte[] bValues = new byte[totPixels];
 				proc.getRGB(rValues, gValues, bValues);
-				dataset.setPlane(planeIndex+0, rValues);
-				dataset.setPlane(planeIndex+1, gValues);
-				dataset.setPlane(planeIndex+2, bValues);
-				planeIndex += 3;
+				dataset.setPlane(3*planeIndex+0, rValues);
+				dataset.setPlane(3*planeIndex+1, gValues);
+				dataset.setPlane(3*planeIndex+2, bValues);
+				planeIndex++;
 			}
 		}
 		
