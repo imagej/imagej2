@@ -56,6 +56,7 @@ public class AWTDisplayController implements DisplayController {
 	private Dataset dataset;
 	private Image<?> image;
 	private int[] dims;
+	private int[] planeDims;
 	private AxisLabel[] dimLabels;
 	private String imageName;
 	private int xIndex, yIndex;
@@ -113,6 +114,12 @@ public class AWTDisplayController implements DisplayController {
 		if (yIndex < 0) {
 			throw new IllegalArgumentException("No Y dimension");
 		}
+		planeDims = new int[dims.length-2];
+		int d = 0;
+		for (int i = 0; i < dims.length; i++) {
+			if ((i == xIndex) || (i == yIndex)) continue;
+			planeDims[d++] = dims[i];
+		}
 		imgWindow.setTitle(imageName);
 		// display first image plane
 		pos = new int[dims.length - 2];
@@ -158,7 +165,7 @@ public class AWTDisplayController implements DisplayController {
 
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final int no = Index.positionToRaster(dims, pos);
+		final int no = Index.positionToRaster(planeDims, pos);
 		final Object plane = dataset.getPlane(no);
 		currentPlane = plane;
 		if (plane instanceof byte[]) {
