@@ -1,5 +1,5 @@
 //
-// AppSystemSleepEvent.java
+// AppUserSessionEvent.java
 //
 
 /*
@@ -32,27 +32,23 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
 
 /**
- * An event sent when the system enters and exits power save sleep.
+ * An event sent when the application is asked to open its about window.
  *
  * @author Curtis Rueden
  */
-public class AppSystemSleepEvent extends ApplicationEvent {
+public class AppUserSessionEvent extends ApplicationEvent {
 
-	private boolean sleep;
+	private boolean activated;
 
-	public AppSystemSleepEvent(final boolean sleep) {
-		this.sleep = sleep;
+	public AppUserSessionEvent(final boolean activated) {
+		this.activated = activated;
 	}
 
-	public boolean isSleeping() {
-		return sleep;
-	}
-
-	public boolean isWaking() {
-		return !sleep;
+	public boolean isActivated() {
+		return activated;
 	}
 
 }

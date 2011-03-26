@@ -1,5 +1,5 @@
 //
-// AppScreenSleepEvent.java
+// AppPreferencesEvent.java
 //
 
 /*
@@ -32,28 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
 
 /**
- * An event sent when the displays attached to the system enter and exit power
- * save sleep.
- * 
+ * An event sent when the application is asked to open its preferences window.
+ *
  * @author Curtis Rueden
  */
-public class AppScreenSleepEvent extends ApplicationEvent {
-
-	private boolean sleep;
-
-	public AppScreenSleepEvent(final boolean sleep) {
-		this.sleep = sleep;
-	}
-
-	public boolean isSleeping() {
-		return sleep;
-	}
-
-	public boolean isWaking() {
-		return !sleep;
-	}
-
+public class AppPreferencesEvent extends ApplicationEvent {
+	// placeholder event class
 }

@@ -1,5 +1,5 @@
 //
-// AppQuitEvent.java
+// AppSystemSleepEvent.java
 //
 
 /*
@@ -32,13 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
 
 /**
- * An event sent when the application is asked to quit.
+ * An event sent when the system enters and exits power save sleep.
  *
  * @author Curtis Rueden
  */
-public class AppQuitEvent extends ApplicationEvent {
-	// placeholder event class
+public class AppSystemSleepEvent extends ApplicationEvent {
+
+	private boolean sleep;
+
+	public AppSystemSleepEvent(final boolean sleep) {
+		this.sleep = sleep;
+	}
+
+	public boolean isSleeping() {
+		return sleep;
+	}
+
+	public boolean isWaking() {
+		return !sleep;
+	}
+
 }

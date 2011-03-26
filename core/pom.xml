@@ -25,6 +25,7 @@
 		<module>display</module>
 		<module>event</module>
 		<module>legacy</module>
+		<module>platform</module>
 		<module>plugin</module>
 		<module>tool</module>
 	</modules>

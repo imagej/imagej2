@@ -1,5 +1,5 @@
 //
-// AppAboutEvent.java
+// AppQuitEvent.java
 //
 
 /*
@@ -32,13 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
 
 /**
- * An event sent when the application is asked to open its about window.
+ * An event sent when the application is asked to quit.
  *
  * @author Curtis Rueden
  */
-public class AppAboutEvent extends ApplicationEvent {
+public class AppQuitEvent extends ApplicationEvent {
 	// placeholder event class
 }
