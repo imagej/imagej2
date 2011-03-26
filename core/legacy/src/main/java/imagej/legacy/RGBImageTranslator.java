@@ -1,5 +1,5 @@
 //
-// ColorDataImageTranslator.java
+// RGBImageTranslator.java
 //
 
 /*
@@ -42,91 +42,102 @@ import imagej.model.Metadata;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 
-
 /**
- * Translates between legacy and modern ImageJ image structures
- * for color data
+ * Translates between legacy and modern ImageJ image structures for RGB data.
  * 
  * @author Barry DeZonia
  */
-public class ColorDataImageTranslator {
-	ColorDataImageTranslator() {
-		// do nothing
-	}
+public class RGBImageTranslator implements ImageTranslator {
 
-	/** expects input ImagePlus to be of type COLOR_RGB and number of channels == 1 argb channel */
+	/**
+	 * Expects input {@link ImagePlus} to be of type COLOR_RGB with one channel.
+	 */
+	@Override
 	public Dataset createDataset(final ImagePlus imp) {
-		if (imp.getType() != ImagePlus.COLOR_RGB)
-			throw new IllegalArgumentException("an ImagePlus of type COLOR_RGB is required for this operation");
+		if (imp.getType() != ImagePlus.COLOR_RGB) {
+			throw new IllegalArgumentException(
+				"an ImagePlus of type COLOR_RGB is required for this operation");
+		}
 
-		if (imp.getNChannels() != 1)
-			throw new IllegalArgumentException("expected color image to have a single channel of argb data");
-		
-		int w = imp.getWidth();
-		int h = imp.getHeight();
-		int c = 3;
-		int z = imp.getNSlices();
-		int t = imp.getNFrames();
+		if (imp.getNChannels() != 1) {
+			throw new IllegalArgumentException(
+				"expected color image to have a single channel of argb data");
+		}
 
-		int[] imageDims = new int[]{w, h, c, z, t};
-		
-		Image<UnsignedByteType> image = Dataset.createPlanarImage(imp.getTitle(), new UnsignedByteType(), imageDims);
-		
-		final Metadata metadata = new LegacyMetadata().create(imp);
+		final int w = imp.getWidth();
+		final int h = imp.getHeight();
+		final int c = 3;
+		final int z = imp.getNSlices();
+		final int t = imp.getNFrames();
+
+		final int[] imageDims = new int[] { w, h, c, z, t };
+
+		final Image<UnsignedByteType> image =
+			Dataset.createPlanarImage(imp.getTitle(), new UnsignedByteType(),
+				imageDims);
+
+		final Metadata metadata = LegacyMetadata.create(imp);
 
 		final Dataset dataset = new Dataset(image, metadata);
 
-		int totPixels = w * h;
+		final int totPixels = w * h;
 
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
 			for (int zIndex = 0; zIndex < z; zIndex++) {
-				ColorProcessor proc = (ColorProcessor) imp.getStack().getProcessor(planeIndex+1);
-				byte[] rValues = new byte[totPixels];
-				byte[] gValues = new byte[totPixels];
-				byte[] bValues = new byte[totPixels];
+				final ColorProcessor proc =
+					(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
+				final byte[] rValues = new byte[totPixels];
+				final byte[] gValues = new byte[totPixels];
+				final byte[] bValues = new byte[totPixels];
 				proc.getRGB(rValues, gValues, bValues);
-				dataset.setPlane(3*planeIndex+0, rValues);
-				dataset.setPlane(3*planeIndex+1, gValues);
-				dataset.setPlane(3*planeIndex+2, bValues);
+				dataset.setPlane(3 * planeIndex + 0, rValues);
+				dataset.setPlane(3 * planeIndex + 1, gValues);
+				dataset.setPlane(3 * planeIndex + 2, bValues);
 				planeIndex++;
 			}
 		}
-		
+
 		dataset.setIsRgbMerged(true);
-		
+
 		return dataset;
 	}
 
-	/** expects input Dataset to have isRgbMerged() true and number of channels == 3 */
+	/**
+	 * Expects input {@link Dataset} to have isRgbMerged() set with 3 channels.
+	 */
+	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		if (!dataset.isRgbMerged())
-			throw new IllegalArgumentException("a merged dataset is required for this operation");
+		if (!dataset.isRgbMerged()) throw new IllegalArgumentException(
+			"a merged dataset is required for this operation");
 
-		if (dataset.getImage().getDimension(2) != 3)
-			throw new IllegalArgumentException("expected dataset to have channel dimension be the 3rd dimension with value of 3");
+		if (dataset.getImage().getDimension(2) != 3) {
+			throw new IllegalArgumentException("expected dataset to have "
+				+ "channel dimension be the 3rd dimension with value of 3");
+		}
 
-		int w = dataset.getImage().getDimension(0);
-		int h = dataset.getImage().getDimension(1);
+		final int w = dataset.getImage().getDimension(0);
+		final int h = dataset.getImage().getDimension(1);
 		// c == 3 is already known
-		int z = dataset.getImage().getDimension(3);
-		int t = dataset.getImage().getDimension(4);
+		final int z = dataset.getImage().getDimension(3);
+		final int t = dataset.getImage().getDimension(4);
 
-		ImageStack stack = new ImageStack(w,h);
+		final ImageStack stack = new ImageStack(w, h);
 
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
 			for (int zIndex = 0; zIndex < z; zIndex++) {
-				byte[] rValues = (byte[]) dataset.getPlane(planeIndex+0);
-				byte[] gValues = (byte[]) dataset.getPlane(planeIndex+1);
-				byte[] bValues = (byte[]) dataset.getPlane(planeIndex+2);
-				ColorProcessor proc = new ColorProcessor(w,h);
+				final byte[] rValues = (byte[]) dataset.getPlane(planeIndex + 0);
+				final byte[] gValues = (byte[]) dataset.getPlane(planeIndex + 1);
+				final byte[] bValues = (byte[]) dataset.getPlane(planeIndex + 2);
+				final ColorProcessor proc = new ColorProcessor(w, h);
 				proc.setRGB(rValues, gValues, bValues);
 				stack.addSlice(null, proc);
 				planeIndex += 3;
 			}
 		}
-		
+
 		return new ImagePlus(dataset.getMetadata().getName(), stack);
 	}
+
 }

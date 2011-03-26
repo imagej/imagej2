@@ -1,5 +1,5 @@
 //
-// LegacyMetadata.java
+// DefaultImageTranslator.java
 //
 
 /*
@@ -35,28 +35,35 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.model.AxisLabel;
-import imagej.model.Metadata;
+import imagej.model.Dataset;
 
 /**
- * Utility methods for {@link Metadata} for a legacy image.
- *
+ * Translates between legacy and modern ImageJ image structures.
+ * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public final class LegacyMetadata {
+public class DefaultImageTranslator implements ImageTranslator {
 
-	private LegacyMetadata() {
-		// prevent instantiation of utility class
+	private RGBImageTranslator rgbTranslator = new RGBImageTranslator();
+	private GrayscaleImageTranslator defaultTranslator =
+		new GrayscaleImageTranslator();
+
+	@Override
+	public Dataset createDataset(final ImagePlus imp) {
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			return rgbTranslator.createDataset(imp);
+		}
+		return defaultTranslator.createDataset(imp);
 	}
 
-	public static Metadata create(final ImagePlus imp) {
-		final AxisLabel[] axes = {
-			AxisLabel.X, AxisLabel.Y, AxisLabel.CHANNEL, AxisLabel.Z, AxisLabel.TIME
-		};
-		final Metadata metadata = new Metadata();
-		metadata.setName(imp.getTitle());
-		metadata.setAxes(axes);
-		return metadata;
+	@Override
+	public ImagePlus createLegacyImage(final Dataset dataset) {		
+		if (dataset.isRgbMerged()) {
+			return rgbTranslator.createLegacyImage(dataset);
+		}
+
+		return defaultTranslator.createLegacyImage(dataset);
 	}
 
 }

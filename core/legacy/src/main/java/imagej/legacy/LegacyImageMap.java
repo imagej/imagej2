@@ -51,7 +51,7 @@ public class LegacyImageMap {
 	private Map<ImagePlus, Dataset> imageTable =
 		new WeakHashMap<ImagePlus, Dataset>();
 
-	private ImageTranslator imageTranslator = new ImageTranslator();
+	private ImageTranslator imageTranslator = new DefaultImageTranslator();
 
 	/**
 	 * Ensures that the given legacy image has a corresponding dataset.
