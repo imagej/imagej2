@@ -1,5 +1,5 @@
 //
-// RawDataImageTranslator.java
+// GrayscaleImageTranslator.java
 //
 
 /*
@@ -48,16 +48,14 @@ import mpicbg.imglib.image.display.imagej.ImageJFunctions;
 
 /**
  * Translates between legacy and modern ImageJ image structures for
- * non-color data.
- * 
+ * non-RGB data.
+ *
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class RawDataImageTranslator {
-	RawDataImageTranslator() {
-		// do nothing
-	}
+public class GrayscaleImageTranslator implements ImageTranslator {
 
+	@Override
 	public Dataset createDataset(final ImagePlus imp) {
 		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
 		final Image<?> img;
@@ -78,12 +76,14 @@ public class RawDataImageTranslator {
 		catch (final InvocationTargetException e) {
 			return null;
 		}
-		final Metadata metadata = new LegacyMetadata().create(imp);
+		final Metadata metadata = LegacyMetadata.create(imp);
 		final Dataset dataset = new Dataset(img, metadata);
 		return dataset;
 	}
-	
+
+	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
 		return ImageJFunctions.displayAsVirtualStack(dataset.getImage());
 	}
+
 }

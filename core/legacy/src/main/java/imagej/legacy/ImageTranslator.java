@@ -38,27 +38,15 @@ import ij.ImagePlus;
 import imagej.model.Dataset;
 
 /**
- * Translates between legacy and modern ImageJ image structures.
- * 
+ * The interface for translating between legacy and modern ImageJ image
+ * structures.
+ *
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-public class ImageTranslator {
+public interface ImageTranslator {
 
-	public Dataset createDataset(final ImagePlus imp) {
-		
-		if (imp.getType() == ImagePlus.COLOR_RGB)
-			return new ColorDataImageTranslator().createDataset(imp);
+	Dataset createDataset(final ImagePlus imp);
 
-		return new RawDataImageTranslator().createDataset(imp);
-	}
-
-	public ImagePlus createLegacyImage(final Dataset dataset) {
-		
-		if (dataset.isRgbMerged())
-			return new ColorDataImageTranslator().createLegacyImage(dataset);
-
-		return new RawDataImageTranslator().createLegacyImage(dataset);
-	}
+	ImagePlus createLegacyImage(final Dataset dataset);
 
 }
