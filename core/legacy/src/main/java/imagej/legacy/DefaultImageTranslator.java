@@ -46,7 +46,7 @@ import imagej.model.Dataset;
 public class DefaultImageTranslator implements ImageTranslator {
 
 	private RGBImageTranslator rgbTranslator = new RGBImageTranslator();
-	private GrayscaleImageTranslator defaultTranslator =
+	private GrayscaleImageTranslator grayscaleTranslator =
 		new GrayscaleImageTranslator();
 
 	@Override
@@ -54,7 +54,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			return rgbTranslator.createDataset(imp);
 		}
-		return defaultTranslator.createDataset(imp);
+		return grayscaleTranslator.createDataset(imp);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 			return rgbTranslator.createLegacyImage(dataset);
 		}
 
-		return defaultTranslator.createLegacyImage(dataset);
+		return grayscaleTranslator.createLegacyImage(dataset);
 	}
 
 }
