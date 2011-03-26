@@ -1,5 +1,5 @@
 //
-// AppReOpenEvent.java
+// AppPrintEvent.java
 //
 
 /*
@@ -32,13 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
 
 /**
- * An event sent when the application is asked to re-open itself.
+ * An event sent when the app is asked to print a list of files. 
  *
  * @author Curtis Rueden
  */
-public class AppReOpenEvent extends ApplicationEvent {
+public class AppPrintEvent extends ApplicationEvent {
 	// placeholder event class
 }

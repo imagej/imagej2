@@ -1,5 +1,5 @@
 //
-// MacHandler.java
+// MacOSXAppListener.java
 //
 
 /*
@@ -48,7 +48,6 @@ import com.apple.eawt.AppEvent.UserSessionEvent;
 import com.apple.eawt.AppForegroundListener;
 import com.apple.eawt.AppHiddenListener;
 import com.apple.eawt.AppReOpenedListener;
-import com.apple.eawt.Application;
 import com.apple.eawt.PreferencesHandler;
 import com.apple.eawt.PrintFilesHandler;
 import com.apple.eawt.QuitHandler;
@@ -58,39 +57,34 @@ import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
 
 import imagej.event.Events;
-import imagej.event.app.AppAboutEvent;
-import imagej.event.app.AppFocusEvent;
-import imagej.event.app.AppPreferencesEvent;
-import imagej.event.app.AppPrintEvent;
-import imagej.event.app.AppQuitEvent;
-import imagej.event.app.AppReOpenEvent;
-import imagej.event.app.AppScreenSleepEvent;
-import imagej.event.app.AppSystemSleepEvent;
-import imagej.event.app.AppUserSessionEvent;
-import imagej.event.app.AppVisibleEvent;
+import imagej.platform.Platform;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppFocusEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppPrintEvent;
+import imagej.platform.event.AppQuitEvent;
+import imagej.platform.event.AppReOpenEvent;
+import imagej.platform.event.AppScreenSleepEvent;
+import imagej.platform.event.AppSystemSleepEvent;
+import imagej.platform.event.AppUserSessionEvent;
+import imagej.platform.event.AppVisibleEvent;
 
 /**
- * An adapter for handling Mac OS X application issues. Application events are
- * rebroadcast as ImageJ events.
+ * An adapter for handling Mac OS X application issues:
+ * <ul>
+ * <li>Application events are rebroadcast as ImageJ events.</li>
+ * <li>Mac OS X screen menu bar is enabled.</li>
+ * <li>Special screen menu bar menu items are handled.</li> 
+ * </ul>
  * 
  * @author Curtis Rueden
  */
-public class MacHandler implements AboutHandler, AppForegroundListener,
-	AppHiddenListener, AppReOpenedListener, PreferencesHandler,
-	PrintFilesHandler, QuitHandler, ScreenSleepListener, SystemSleepListener,
-	UserSessionListener
+@Platform(osName = "Mac OS X")
+public class MacOSXAppListener implements AboutHandler,
+	AppForegroundListener, AppHiddenListener, AppReOpenedListener,
+	PreferencesHandler, PrintFilesHandler, QuitHandler, ScreenSleepListener,
+	SystemSleepListener, UserSessionListener
 {
-
-	/** Constructs a Mac OS X adapter. */
-	public MacHandler() {
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		final Application app = Application.getApplication();
-		app.setAboutHandler(this);
-		app.setPreferencesHandler(this);
-		app.setPrintFileHandler(this);
-		app.setQuitHandler(this);
-		app.addAppEventListener(this);
-	}
 
 	// -- AboutHandler methods --
 

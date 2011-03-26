@@ -11,21 +11,26 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-platform-macosx</artifactId>
+	<artifactId>ij-platform</artifactId>
 
-	<name>ImageJ Platform: Mac OS X</name>
-	<description>Platform-specific code for Mac OS X.</description>
+	<name>ImageJ Platform</name>
+	<description>Framework for platform-specific ImageJ code.</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-event</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
-			<version>${project.version}</version>
+			<groupId>net.java.sezpoz</groupId>
+			<artifactId>sezpoz</artifactId>
+			<version>1.7</version>
 		</dependency>
 
 		<dependency>

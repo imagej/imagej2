@@ -1,5 +1,5 @@
 //
-// AppPrintEvent.java
+// MacOSXPlatform.java
 //
 
 /*
@@ -32,13 +32,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.macosx;
+
+import com.apple.eawt.Application;
+
+import imagej.platform.Platform;
+import imagej.platform.PlatformHandler;
 
 /**
- * An event sent when the app is asked to print a list of files. 
- *
+ * An platform implementation for handling Mac OS X platform issues:
+ * <ul>
+ * <li>Application events are rebroadcast as ImageJ events.</li>
+ * <li>Mac OS X screen menu bar is enabled.</li>
+ * <li>Special screen menu bar menu items are handled.</li> 
+ * </ul>
+ * 
  * @author Curtis Rueden
  */
-public class AppPrintEvent extends ApplicationEvent {
-	// placeholder event class
+@Platform(osName = "Mac OS X")
+public class MacOSXPlatform implements PlatformHandler {
+
+	// -- PlatformHandler methods --
+
+	@Override
+	public void configure() {
+		// set Mac OS X-specific system properties
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("apple.awt.brushMetalLook", "true");
+
+		// translate Mac OS X application events into ImageJ events
+		final MacOSXAppListener appListener =
+			new MacOSXAppListener();
+		final Application app = Application.getApplication();
+		app.setAboutHandler(appListener);
+		app.setPreferencesHandler(appListener);
+		app.setPrintFileHandler(appListener);
+		app.setQuitHandler(appListener);
+		app.addAppEventListener(appListener);
+	}
+
 }

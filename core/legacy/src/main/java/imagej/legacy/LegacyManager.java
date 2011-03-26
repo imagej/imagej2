@@ -42,17 +42,20 @@ import imagej.model.Dataset;
 
 /**
  * Utility class for managing the linkage to legacy ImageJ 1.x.
- *
+ * <p>
  * The legacy manager overrides the behavior of various IJ1 methods,
  * inserting seams so that (e.g.) the modern GUI is aware of IJ1 events
  * as they occur.
- *
+ * </p>
+ * <p>
  * It also maintains an image map between IJ1 {@link ImagePlus} objects
  * and IJ2 {@link Dataset}s.
- *
+ * </p>
+ * <p>
  * In this fashion, when a legacy plugin is executed on a {@link Dataset},
  * the manager transparently translates it into an {@link ImagePlus}, and
  * vice versa, enabling backward compatibility with legacy plugins.
+ * </p>
  *
  * @author Curtis Rueden
  */

@@ -1,5 +1,5 @@
 //
-// AppUserSessionEvent.java
+// ApplicationEvent.java
 //
 
 /*
@@ -32,23 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform.event;
+
+import imagej.event.ImageJEvent;
 
 /**
- * An event sent when the application is asked to open its about window.
+ * An event indicating an application-level occurrence.
+ *
+ * Exists mainly to facility handling of Mac-specific menu items.
  *
  * @author Curtis Rueden
  */
-public class AppUserSessionEvent extends ApplicationEvent {
-
-	private boolean activated;
-
-	public AppUserSessionEvent(final boolean activated) {
-		this.activated = activated;
-	}
-
-	public boolean isActivated() {
-		return activated;
-	}
-
+public class ApplicationEvent extends ImageJEvent {
+	// placeholder event class
 }

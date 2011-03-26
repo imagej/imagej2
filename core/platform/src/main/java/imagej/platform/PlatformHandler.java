@@ -1,5 +1,5 @@
 //
-// AppPreferencesEvent.java
+// PlatformHandler.java
 //
 
 /*
@@ -32,13 +32,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
+package imagej.platform;
 
 /**
- * An event sent when the application is asked to open its preferences window.
- *
+ * An interface for configuring a specific deployment platform.
+ * 
  * @author Curtis Rueden
  */
-public class AppPreferencesEvent extends ApplicationEvent {
-	// placeholder event class
+public interface PlatformHandler {
+
+	void configure();
+
 }

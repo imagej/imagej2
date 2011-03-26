@@ -1,5 +1,5 @@
 //
-// ApplicationEvent.java
+// AppFocusEvent.java
 //
 
 /*
@@ -32,17 +32,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event.app;
-
-import imagej.event.ImageJEvent;
+package imagej.platform.event;
 
 /**
- * An event indicating an application-level occurrence.
- *
- * Exists mainly to facility handling of Mac-specific menu items.
- *
+ * An event sent when the application has become the foreground app, or when it
+ * has resigned being the foreground app.
+ * 
  * @author Curtis Rueden
  */
-public class ApplicationEvent extends ImageJEvent {
-	// placeholder event class
+public class AppFocusEvent extends ApplicationEvent {
+
+	private boolean focus;
+
+	public AppFocusEvent(final boolean focus) {
+		this.focus = focus;
+	}
+
+	public boolean isForeground() {
+		return focus;
+	}
+
+	public boolean isBackground() {
+		return !focus;
+	}
+
 }
