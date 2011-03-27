@@ -13,8 +13,8 @@
 
 	<artifactId>ij-ui</artifactId>
 
-	<name>ImageJ User Interface framework</name>
-	<description>Framework for ImageJ user interfaces.</description>
+	<name>ImageJ User Interface Framework</name>
+	<description>Shared framework for ImageJ user interfaces.</description>
 
 	<dependencies>
 		<dependency>

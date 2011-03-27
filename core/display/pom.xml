@@ -13,7 +13,7 @@
 
 	<artifactId>ij-display</artifactId>
 
-	<name>ImageJ Displays</name>
+	<name>ImageJ Display Framework</name>
 	<description>Shared framework for ImageJ displays.</description>
 
 	<dependencies>

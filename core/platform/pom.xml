@@ -13,8 +13,8 @@
 
 	<artifactId>ij-platform</artifactId>
 
-	<name>ImageJ Platform</name>
-	<description>Framework for platform-specific ImageJ code.</description>
+	<name>ImageJ Platform Framework</name>
+	<description>Shared framework for platform-specific ImageJ code.</description>
 
 	<dependencies>
 		<dependency>
