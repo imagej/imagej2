@@ -13,7 +13,7 @@
 
 	<artifactId>ij-tool</artifactId>
 
-	<name>ImageJ Tools</name>
+	<name>ImageJ Tool Framework</name>
 	<description>Shared framework for ImageJ tools.</description>
 
 	<dependencies>
