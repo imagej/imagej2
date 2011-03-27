@@ -38,9 +38,6 @@ import imagej.ui.UIManager;
 
 /**
  * Launches the ImageJ user interface.
- * <p>
- * This class exists mainly to ease execution of ImageJ from IDEs.
- * </p>
  * 
  * @author Curtis Rueden
  */

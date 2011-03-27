@@ -19,6 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core-plugins</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
@@ -48,23 +54,6 @@
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<executable>java</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath/>
-								<argument>imagej.gui.awt.AWTLauncher</argument>
-							</arguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<profile>
@@ -77,23 +66,6 @@
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<executable>java</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath/>
-								<argument>imagej.gui.pivot.PivotLauncher</argument>
-							</arguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<profile>
@@ -109,23 +81,6 @@
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<executable>java</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath/>
-								<argument>imagej.gui.swing.SwingLauncher</argument>
-							</arguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<profile>
@@ -138,23 +93,6 @@
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<executable>java</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath/>
-								<argument>imagej.gui.swt.SWTLauncher</argument>
-							</arguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 
@@ -197,6 +135,14 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath/>
+						<argument>imagej.launcher.ImageJ</argument>
+					</arguments>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
