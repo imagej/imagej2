@@ -105,7 +105,7 @@ public class PivotUI implements Application, UserInterface {
 
 	@Override
 	public void initialize() {
-		final String[] args = { "imagej.gui.pivot.PivotApplication" };
+		final String[] args = { getClass().getName() };
 		DesktopApplicationContext.main(args);
 	}
 
