@@ -1,5 +1,5 @@
 //
-// SWTLauncher.java
+// UserInterface.java
 //
 
 /*
@@ -32,31 +32,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.swt;
-
-import org.eclipse.swt.widgets.Display;
+package imagej.ui;
 
 /**
- * Launches the ImageJ Eclipse SWT user interface.
+ * An end-user ImageJ application.
  *
  * @author Curtis Rueden
  */
-public final class SWTLauncher {
+public interface UserInterface {
 
-	private SWTLauncher() {
-		// prevent instantiation of utility class
-	}
-
-	public static void main(String[] args) {
-//		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		final Display display = new Display();
-
-		final SWTApplication swtApplication = new SWTApplication(display);
-
-		while (!swtApplication.getShell().isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
-		}
-		display.dispose();
-	}
+	void initialize();
 
 }

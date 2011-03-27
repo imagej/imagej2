@@ -34,8 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.launcher;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import imagej.ui.UIManager;
 
 /**
  * Launches the ImageJ user interface.
@@ -47,40 +46,12 @@ import java.lang.reflect.Method;
  */
 public final class ImageJ {
 
-	private static final String[] MAIN_CLASSES = {
-		"imagej.gui.awt.AWTLauncher",
-		"imagej.gui.pivot.PivotLauncher",
-		"imagej.gui.swing.SwingLauncher",
-		"imagej.gui.swt.SWTLauncher"
-	};
-
 	private ImageJ() {
 		// prevent instantiation of utility class
 	}
 
 	public static void main(final String[] args) throws Exception {
-		final Class<?> c = loadFirstClass(MAIN_CLASSES);
-		runMain(c, args);
-	}
-
-	private static void runMain(final Class<?> c, final String[] args)
-		throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-		IllegalAccessException, InvocationTargetException
-	{
-		final Method m = c.getMethod("main", String[].class);
-		m.invoke(null, new Object[] { args });
-	}
-
-	private static Class<?> loadFirstClass(String[] mainClasses) {
-		for (final String mainClass : mainClasses) {
-			try {
-				return Class.forName(mainClass);
-			}
-			catch (ClassNotFoundException e) {
-				// try the next class...
-			}
-		}
-		return null;
+		UIManager.initialize();
 	}
 
 }

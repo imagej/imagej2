@@ -28,6 +28,7 @@
 		<module>platform</module>
 		<module>plugin</module>
 		<module>tool</module>
+		<module>ui</module>
 	</modules>
 
 	<!-- NB: for imagej-base, in case of partial checkout -->

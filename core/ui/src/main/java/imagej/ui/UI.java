@@ -1,5 +1,5 @@
 //
-// PivotLauncher.java
+// UserInterface.java
 //
 
 /*
@@ -32,26 +32,23 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.pivot;
+package imagej.ui;
 
-import org.apache.pivot.wtk.DesktopApplicationContext;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import net.java.sezpoz.Indexable;
 
 /**
- * Launches the ImageJ Pivot user interface as a desktop application.
+ * Annotation indicating a discoverable user interface.
  *
  * @author Curtis Rueden
  */
-public final class PivotLauncher {
-
-	private PivotLauncher() {
-		// prevent instantiation of utility class
-	}
-
-	public static void main(final String[] args) {
-		final String[] newArgs = new String[args.length + 1];
-		newArgs[0] = "imagej.gui.pivot.PivotApplication";
-		System.arraycopy(args, 0, newArgs, 1, args.length);
-		DesktopApplicationContext.main(newArgs);
-	}
-
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Indexable(type=UserInterface.class)
+public @interface UI {
+	// no attributes for the moment...
 }
