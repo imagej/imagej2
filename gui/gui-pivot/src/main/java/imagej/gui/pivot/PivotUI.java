@@ -1,5 +1,5 @@
 //
-// PivotApplication.java
+// PivotUI.java
 //
 
 /*
@@ -38,24 +38,37 @@ import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.pivot.PivotMenuCreator;
+import imagej.ui.UserInterface;
+import imagej.ui.UI;
 
 import java.util.List;
 
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Frame;
 import org.apache.pivot.wtk.Orientation;
 
-public class PivotApplication implements Application {
+/**
+ * TODO
+ * 
+ * @author Curtis Rueden
+ */
+@UI
+public class PivotUI implements Application, UserInterface {
 
 	private Frame frame;
 	private BoxPane contentPane;
 	private PivotStatusBar statusBar;
 
+	// -- Application methods --
+
 	@Override
-	public void startup(Display display, Map<String, String> properties) {
+	public void startup(final Display display,
+		final Map<String, String> properties)
+	{
 		frame = new Frame();
 //	toolBar = new PivotToolBar(new ToolManager());
 		statusBar = new PivotStatusBar();
@@ -73,11 +86,8 @@ public class PivotApplication implements Application {
 	}
 
 	@Override
-	public boolean shutdown(boolean optional) {
-		if (frame != null) {
-			frame.close();
-		}
-
+	public boolean shutdown(final boolean optional) {
+		if (frame != null) frame.close();
 		return false;
 	}
 
@@ -90,6 +100,16 @@ public class PivotApplication implements Application {
 	public void resume() {
 		// NB: no action needed.
 	}
+
+	// -- UserInterface methods --
+
+	@Override
+	public void initialize() {
+		final String[] args = { "imagej.gui.pivot.PivotApplication" };
+		DesktopApplicationContext.main(args);
+	}
+
+	// -- Helper methods --
 
 	private void createMenuBar() {
 		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();

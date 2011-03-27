@@ -1,5 +1,5 @@
 //
-// SWTApplication.java
+// AWTUI.java
 //
 
 /*
@@ -32,56 +32,68 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.swt;
+package imagej.gui.awt;
 
 import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.swt.MenuCreator;
+import imagej.plugin.gui.awt.MenuBarCreator;
 import imagej.tool.ToolManager;
+import imagej.ui.UserInterface;
+import imagej.ui.UI;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.MenuBar;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
-import net.miginfocom.swt.MigLayout;
-
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
-
 /**
- * SWT-based application for ImageJ.
+ * AWT-based user interface for ImageJ.
  *
  * @author Curtis Rueden
  */
-public class SWTApplication {
+@UI
+public class AWTUI implements UserInterface {
 
-	private final Shell shell;
-	private final SWTStatusBar statusBar;
+	private Frame frame;
+	private AWTToolBar toolBar;
+	private AWTStatusBar statusBar;
 
-	/** Creates a new ImageJ application frame. */
-	public SWTApplication(final Display display) {
-		shell = new Shell(display, 0);
-		shell.setLayout(new MigLayout("wrap 1"));
-		shell.setText("ImageJ");
-		new SWTToolBar(display, shell, new ToolManager());
-		statusBar = new SWTStatusBar(shell);
+	// -- UserInterface methods --
+
+	@Override
+	public void initialize() {
+		frame = new Frame("ImageJ");
+		toolBar = new AWTToolBar(new ToolManager());
+		statusBar = new AWTStatusBar();
 		createMenuBar();
 
-		shell.pack();
-		shell.open();
+		frame.setLayout(new BorderLayout());
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				System.exit(0);
+			}
+		});
+
+		frame.add(toolBar, BorderLayout.NORTH);
+		frame.add(statusBar, BorderLayout.SOUTH);
+
+		frame.pack();
+		frame.setVisible(true);
 	}
 
-	public Shell getShell() {
-		return shell;
-	}
+	// -- Helper methods --
 
 	private void createMenuBar() {
 		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
 		statusBar.setStatus("Discovered " + entries.size() + " plugins");
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
-		final Menu menuBar = new Menu(shell);
-		new MenuCreator().createMenus(rootMenu, menuBar);
-		shell.setMenuBar(menuBar); // TODO - is this necesssary?
+		final MenuBar menuBar = new MenuBar();
+		new MenuBarCreator().createMenus(rootMenu, menuBar);
+		frame.setMenuBar(menuBar);
 	}
 
 }

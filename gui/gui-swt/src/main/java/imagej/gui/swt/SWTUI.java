@@ -1,5 +1,5 @@
 //
-// AWTLauncher.java
+// SWTUI.java
 //
 
 /*
@@ -32,21 +32,74 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.awt;
+package imagej.gui.swt;
+
+import imagej.plugin.api.PluginEntry;
+import imagej.plugin.api.PluginUtils;
+import imagej.plugin.gui.ShadowMenu;
+import imagej.plugin.gui.swt.MenuCreator;
+import imagej.tool.ToolManager;
+import imagej.ui.UserInterface;
+import imagej.ui.UI;
+
+import java.util.List;
+
+import net.miginfocom.swt.MigLayout;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 /**
- * Launches the ImageJ AWT user interface.
+ * SWT-based user interface for ImageJ.
  *
  * @author Curtis Rueden
  */
-public final class AWTLauncher {
+@UI
+public class SWTUI implements UserInterface, Runnable {
 
-	private AWTLauncher() {
-		// prevent instantiation of utility class
+	private Display display;
+	private Shell shell;
+	private SWTStatusBar statusBar;
+
+	// -- UserInterface methods --
+
+	@Override
+	public void initialize() {
+		display = new Display();
+
+		shell = new Shell(display, 0);
+		shell.setLayout(new MigLayout("wrap 1"));
+		shell.setText("ImageJ");
+		new SWTToolBar(display, shell, new ToolManager());
+		statusBar = new SWTStatusBar(shell);
+		createMenuBar();
+
+		shell.pack();
+		shell.open();
+
+		new Thread(this, "SWT-Dispatch").start();
 	}
 
-	public static void main(String[] args) {
-		new AWTApplication();
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
+	}
+
+	// -- Helper methods --
+
+	private void createMenuBar() {
+		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
+		statusBar.setStatus("Discovered " + entries.size() + " plugins");
+		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		final Menu menuBar = new Menu(shell);
+		new MenuCreator().createMenus(rootMenu, menuBar);
+		shell.setMenuBar(menuBar); // TODO - is this necessary?
 	}
 
 }

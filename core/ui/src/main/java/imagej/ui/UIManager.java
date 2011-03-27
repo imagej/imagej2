@@ -1,5 +1,5 @@
 //
-// SwingApplication.java
+// UIManager.java
 //
 
 /*
@@ -32,59 +32,51 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.swing;
+package imagej.ui;
 
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
-import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.swing.JMenuBarCreator;
-import imagej.tool.ToolManager;
+import imagej.Log;
 
-import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
 
 /**
- * Swing-based application for ImageJ.
+ * Utility class for discovering available user interfaces.
  *
  * @author Curtis Rueden
  */
-public class SwingApplication {
+public final class UIManager {
 
-	private final JFrame frame;
-	private final SwingToolBar toolBar;
-	private final SwingStatusBar statusBar;
-
-	/** Creates a new ImageJ application frame. */
-	public SwingApplication() {
-		frame = new JFrame("ImageJ");
-		toolBar = new SwingToolBar(new ToolManager());
-		statusBar = new SwingStatusBar();
-		createMenuBar();
-
-		final JPanel pane = new JPanel();
-		frame.setContentPane(pane);
-		pane.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-		pane.add(toolBar, BorderLayout.NORTH);
-		pane.add(statusBar, BorderLayout.SOUTH);
-
-		frame.pack();
-		frame.setVisible(true);
+	private UIManager() {
+		// prevent instantiation of utility class
 	}
 
-	private void createMenuBar() {
-		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setStatus("Discovered " + entries.size() + " plugins");
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
-		final JMenuBar menuBar = new JMenuBar();
-		new JMenuBarCreator().createMenus(rootMenu, menuBar);
-		frame.setJMenuBar(menuBar);
+	public static void initialize() {
+		final List<UserInterface> uis = getAvailableUIs();
+		if (uis.size() > 0) {
+			final UserInterface ui = uis.get(0);
+			Log.debug("Launching user interface: " + ui);
+			ui.initialize();
+		}
+		else Log.warn("No user interfaces found.");
+	}
+
+	public static List<UserInterface> getAvailableUIs() {
+		// use SezPoz to discover all user interfaces
+		final List<UserInterface> uis = new ArrayList<UserInterface>();
+		for (final IndexItem<UI, UserInterface> item :
+			Index.load(UI.class, UserInterface.class))
+		{
+			try {
+				uis.add(item.instance());
+			}
+			catch (InstantiationException e) {
+				Log.warn("Invalid user interface: " + item, e);
+			}
+		}
+		return uis;
 	}
 
 }
