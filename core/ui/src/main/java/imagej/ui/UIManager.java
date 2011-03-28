@@ -35,7 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.Log;
-import imagej.platform.PlatformManager;
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,19 +45,24 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Utility class for discovering available user interfaces.
+ * Manager component for the ImageJ user interface.
  *
  * @author Curtis Rueden
  */
-public final class UIManager {
+@Manager
+public final class UIManager implements ManagerComponent {
 
-	private UIManager() {
-		// prevent instantiation of utility class
+	/** Processes the given command line arguments. */
+	public void processArgs(final String[] args) {
+		Log.debug("Received command line arguments:");
+		for (String arg : args) Log.debug("\t" + arg);
+		// TODO - pass along arguments to applicable user interface
 	}
 
-	public static void initialize() {
-		PlatformManager.initialize();
+	// -- ManagerComponent methods --
 
+	@Override
+	public void initialize() {
 		final List<UserInterface> uis = getAvailableUIs();
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
@@ -66,14 +72,18 @@ public final class UIManager {
 		else Log.warn("No user interfaces found.");
 	}
 
-	public static List<UserInterface> getAvailableUIs() {
+	// -- Helper methods --
+
+	private List<UserInterface> getAvailableUIs() {
 		// use SezPoz to discover all user interfaces
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
 		for (final IndexItem<UI, UserInterface> item :
 			Index.load(UI.class, UserInterface.class))
 		{
 			try {
-				uis.add(item.instance());
+				final UserInterface ui = item.instance();
+				Log.debug("Discovered user interface: " + ui);
+				uis.add(ui);
 			}
 			catch (InstantiationException e) {
 				Log.warn("Invalid user interface: " + item, e);

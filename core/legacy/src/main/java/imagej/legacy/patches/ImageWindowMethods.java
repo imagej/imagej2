@@ -37,6 +37,7 @@ package imagej.legacy.patches;
 import ij.gui.ImageWindow;
 import imagej.Log;
 import imagej.legacy.LegacyManager;
+import imagej.manager.Managers;
 
 /**
  * Overrides {@link ImageWindow} methods.
@@ -53,7 +54,8 @@ public final class ImageWindowMethods {
 	public static void setVisible(ImageWindow obj, boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
-		LegacyManager.legacyImageChanged(obj.getImagePlus());
+		final LegacyManager legacyManager = Managers.get(LegacyManager.class);
+		legacyManager.legacyImageChanged(obj.getImagePlus());
 	}
 
 	/** Replaces {@link ImageWindow#show()}. */

@@ -34,10 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.launcher;
 
+import imagej.manager.Managers;
 import imagej.ui.UIManager;
 
 /**
- * Launches the ImageJ user interface.
+ * Launches ImageJ.
  * 
  * @author Curtis Rueden
  */
@@ -47,8 +48,9 @@ public final class ImageJ {
 		// prevent instantiation of utility class
 	}
 
-	public static void main(final String[] args) throws Exception {
-		UIManager.initialize();
+	public static void main(String[] args) {
+		Managers.initialize();
+		Managers.get(UIManager.class).processArgs(args);
 	}
 
 }

@@ -24,7 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
+			<artifactId>ij-manager</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -49,7 +49,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-gui, in case of partial checkout -->
+	<!-- NB: for imagej-ui, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

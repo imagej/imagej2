@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.plugin;
 
+import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
 import imagej.Log;
-import imagej.legacy.LegacyManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.api.MenuEntry;
 import imagej.plugin.api.PluginEntry;
@@ -102,7 +102,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 	@Override
 	public void findPlugins(List<PluginEntry<?>> plugins) {
 		final long startTime = System.currentTimeMillis();
-		final ImageJ ij = LegacyManager.initialize();
+		final ImageJ ij = IJ.getInstance();
 		assert ij != null;
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import imagej.manager.Managers;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
@@ -57,7 +58,8 @@ public class LegacyPostprocessor implements PluginPostprocessor {
 			final Object value = outputs.get(name);
 			if (value instanceof Dataset) {
 				final Dataset dataset = (Dataset) value;
-				LegacyManager.getImageMap().registerDataset(dataset);
+				final LegacyManager legacyManager = Managers.get(LegacyManager.class);
+				legacyManager.getImageMap().registerDataset(dataset);
 			}
 		}
 	}

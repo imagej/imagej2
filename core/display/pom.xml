@@ -37,11 +37,6 @@
 			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	 <dependency>
-	  <groupId>loci</groupId>
-	  <artifactId>bio-formats</artifactId>
-	  <version>5.0-SNAPSHOT</version>
-	 </dependency>
 	</dependencies>
 
 	<build>

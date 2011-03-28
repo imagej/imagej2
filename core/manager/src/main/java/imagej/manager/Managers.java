@@ -37,36 +37,95 @@ package imagej.manager;
 import imagej.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Utility class for discovering available manager components.
- *
+ * Utility class for working with ImageJ manager components.
+ * 
  * @author Curtis Rueden
  */
 public final class Managers {
 
-	private Managers() {
-		// prevent instantiation of utility class
+	// TODO - decide if singleton pattern is really best here
+
+	private static Managers instance;
+
+	/** Initializes all available ImageJ manager components. */
+	public static void initialize() {
+		getInstance();
+	}
+
+	public static Managers getInstance() {
+		if (instance == null) instance = new Managers();
+		return instance;
+	}
+
+	public static <T extends ManagerComponent> T get(final Class<T> c) {
+		return getInstance().getManager(c);
 	}
 
 	public static List<ManagerComponent> loadManagers() {
-		// use SezPoz to discover all user interfaces
-		final List<ManagerComponent> managers = new ArrayList<ManagerComponent>();
+		// use SezPoz to discover all manager components
+		final List<ManagerEntry> entries = new ArrayList<ManagerEntry>();
 		for (final IndexItem<Manager, ManagerComponent> item :
 			Index.load(Manager.class, ManagerComponent.class))
 		{
 			try {
-				managers.add(item.instance());
+				final int priority = item.annotation().priority();
+				entries.add(new ManagerEntry(item.instance(), priority));
 			}
-			catch (InstantiationException e) {
+			catch (final InstantiationException e) {
 				Log.warn("Invalid manager component: " + item, e);
 			}
 		}
+		Collections.sort(entries);
+
+		final List<ManagerComponent> managers = new ArrayList<ManagerComponent>();
+		for (final ManagerEntry entry : entries) managers.add(entry.manager);
 		return managers;
+	}
+
+	private final Map<Class<?>, ManagerComponent> managers;
+
+	private Managers() {
+		managers = new Hashtable<Class<?>, ManagerComponent>();
+		for (ManagerComponent m : Managers.loadManagers()) {
+			managers.put(m.getClass(), m);
+			Log.debug("Initializing manager component: " + m);
+			m.initialize();
+		}
+		instance = this;
+	}
+
+	public <T extends ManagerComponent> T getManager(final Class<T> c) {
+		@SuppressWarnings("unchecked")
+		final T manager = (T) managers.get(c);
+		return manager;
+	}
+
+	/** Helper class for sorting managers by priority. */
+	private static class ManagerEntry implements Comparable<ManagerEntry> {
+
+		protected ManagerComponent manager;
+		protected int priority;
+
+		protected ManagerEntry(final ManagerComponent manager, final int priority)
+		{
+			this.manager = manager;
+			this.priority = priority;
+		}
+
+		@Override
+		public int compareTo(final ManagerEntry entry) {
+			return priority - entry.priority;
+		}
+
 	}
 
 }
