@@ -51,6 +51,6 @@ import net.java.sezpoz.Indexable;
 @Indexable(type=ManagerComponent.class)
 public @interface Manager {
 
-	int priority() default Integer.MAX_VALUE;
+	int priority() default Managers.NORMAL_PRIORITY;
 
 }

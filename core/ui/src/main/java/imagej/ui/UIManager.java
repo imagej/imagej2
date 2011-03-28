@@ -36,6 +36,7 @@ package imagej.ui;
 
 import imagej.Log;
 import imagej.manager.Manager;
+import imagej.manager.Managers;
 import imagej.manager.ManagerComponent;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager
+@Manager(priority = Managers.LAST_PRIORITY)
 public final class UIManager implements ManagerComponent {
 
 	/** Processes the given command line arguments. */

@@ -52,6 +52,12 @@ import net.java.sezpoz.IndexItem;
  */
 public final class Managers {
 
+	public static final int FIRST_PRIORITY = 0;
+	public static final int HIGH_PRIORITY = 25;
+	public static final int NORMAL_PRIORITY = 50;
+	public static final int LOW_PRIORITY = 75;
+	public static final int LAST_PRIORITY = 100;
+
 	// TODO - decide if singleton pattern is really best here
 
 	private static Managers instance;

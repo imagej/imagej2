@@ -36,6 +36,7 @@ package imagej.platform;
 
 import imagej.Log;
 import imagej.manager.Manager;
+import imagej.manager.Managers;
 import imagej.manager.ManagerComponent;
 
 import java.util.ArrayList;
@@ -49,10 +50,8 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = PlatformManager.PRIORITY)
+@Manager(priority = Managers.LOW_PRIORITY)
 public final class PlatformManager implements ManagerComponent {
-
-	public static final int PRIORITY = 0;
 
 	// -- ManagerComponent methods --
 
