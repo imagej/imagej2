@@ -43,6 +43,8 @@ import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 
@@ -50,13 +52,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Keeps track of available tools, including which tool is active,
- * and delegates UI events to the active tool.
+ * Manager component for keeping track of available tools, including which
+ * tool is active, and delegating UI events to the active tool.
  *
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ToolManager {
+@Manager
+public class ToolManager implements ManagerComponent {
 
 	private List<ToolEntry> toolEntries;
 
@@ -65,12 +68,6 @@ public class ToolManager {
 
 	private ITool activeTool;
 
-	public ToolManager() {
-		toolEntries = ToolUtils.findTools();
-		activeTool = new DummyTool();
-		subscribeToEvents();
-	}
-
 	public List<ToolEntry> getToolEntries() {
 		return toolEntries;
 	}
@@ -78,6 +75,17 @@ public class ToolManager {
 	public ITool getActiveTool() {
 		return activeTool;
 	}
+
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
+		toolEntries = ToolUtils.findTools();
+		activeTool = new DummyTool();
+		subscribeToEvents();
+	}
+
+	// -- Helper methods --
 
 	public void setActiveTool(final ITool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do

@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// UI.java
 //
 
 /*

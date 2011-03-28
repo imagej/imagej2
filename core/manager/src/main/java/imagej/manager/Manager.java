@@ -48,7 +48,9 @@ import net.java.sezpoz.Indexable;
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=Manager.class)
+@Indexable(type=ManagerComponent.class)
 public @interface Manager {
-	// no attributes for the moment...
+
+	int priority() default Integer.MAX_VALUE;
+
 }

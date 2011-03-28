@@ -34,14 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import imagej.legacy.plugin.LegacyPlugin;
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
 import imagej.model.Dataset;
 
 /**
- * Utility class for managing the linkage to legacy ImageJ 1.x.
+ * Manager component for working with legacy ImageJ 1.x.
  * <p>
  * The legacy manager overrides the behavior of various IJ1 methods,
  * inserting seams so that (e.g.) the modern GUI is aware of IJ1 events
@@ -59,14 +60,10 @@ import imagej.model.Dataset;
  *
  * @author Curtis Rueden
  */
-public final class LegacyManager {
+@Manager(priority = LegacyManager.PRIORITY)
+public final class LegacyManager implements ManagerComponent {
 
-	/** Mapping between datasets and legacy image objects. */
-	private static LegacyImageMap imageMap;
-
-	private LegacyManager() {
-		// prevent instantiation of utility class
-	}
+	public static final int PRIORITY = 0;
 
 	static {
 		// NB: Override class behavior before class loading gets too far along.
@@ -97,26 +94,29 @@ public final class LegacyManager {
 		hacker.loadClass("MacAdapter");
 	}
 
-	public static ImageJ initialize() {
-		final ImageJ ij = IJ.getInstance();
-		if (ij != null) return ij;
+	/** Mapping between datasets and legacy image objects. */
+	private LegacyImageMap imageMap;
 
-		imageMap = new LegacyImageMap();
-
-		// initialize legacy ImageJ application
-		return new ImageJ(ImageJ.NO_SHOW);
-	}
-
-	public static LegacyImageMap getImageMap() {
+	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
 
-	public static void legacyImageChanged(final ImagePlus imp) {
+	public void legacyImageChanged(final ImagePlus imp) {
 		// register image with legacy manager
 		final Dataset dataset = imageMap.registerLegacyImage(imp);
 
 		// record resultant dataset as a legacy plugin output
 		LegacyPlugin.getOutputSet().add(dataset);
+	}
+
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
+		imageMap = new LegacyImageMap();
+
+		// initialize legacy ImageJ application
+		new ImageJ(ImageJ.NO_SHOW);
 	}
 
 }

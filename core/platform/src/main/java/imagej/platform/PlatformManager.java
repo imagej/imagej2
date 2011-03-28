@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.platform;
 
 import imagej.Log;
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +45,19 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Utility class for managing platform-specific deployment issues.
+ * Manager component for platform-specific deployment issues.
  *
  * @author Curtis Rueden
  */
-public final class PlatformManager {
+@Manager(priority = PlatformManager.PRIORITY)
+public final class PlatformManager implements ManagerComponent {
 
-	private PlatformManager() {
-		// prevent instantiation of utility class
-	}
+	public static final int PRIORITY = 0;
 
-	public static void initialize() {
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
 		final List<PlatformHandler> platforms = getTargetPlatforms();
 		for (final PlatformHandler platform : platforms) {
 			Log.debug("Configuring platform: " + platform);
@@ -62,7 +66,9 @@ public final class PlatformManager {
     if (platforms.size() == 0) Log.debug("No platforms to configure.");
 	}
 
-	public static List<PlatformHandler> getTargetPlatforms() {
+	// -- Helper methods --
+
+	private List<PlatformHandler> getTargetPlatforms() {
 		// use SezPoz to discover all platform handlers
 		final List<PlatformHandler> platforms = new ArrayList<PlatformHandler>();
 		for (final IndexItem<Platform, PlatformHandler> item :
@@ -79,7 +85,7 @@ public final class PlatformManager {
 		return platforms;
 	}
 
-	private static boolean isTargetPlatform(final Platform p) {
+	private boolean isTargetPlatform(final Platform p) {
 		final String javaVendor = System.getProperty("java.vendor");
 		if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
 

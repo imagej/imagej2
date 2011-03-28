@@ -37,6 +37,7 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import imagej.Log;
 import imagej.legacy.LegacyManager;
+import imagej.manager.Managers;
 
 /**
  * Overrides {@link ImagePlus} methods.
@@ -52,7 +53,8 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
-		LegacyManager.legacyImageChanged(obj);
+		final LegacyManager legacyManager = Managers.get(LegacyManager.class);
+		legacyManager.legacyImageChanged(obj);
 	}
 
 }
