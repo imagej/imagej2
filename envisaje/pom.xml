@@ -56,7 +56,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>nbm-maven-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.3</version>
 					<extensions>true</extensions>
 					<configuration>
 						<brandingToken>${brandingToken}</brandingToken>
