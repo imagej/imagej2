@@ -81,17 +81,22 @@ public final class LegacyManager {
 			"public static void showStatus(java.lang.String s)");
 		hacker.loadClass("ij.IJ");
 
+		// override behavior of ij.ImagePlus
+		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
+		hacker.loadClass("ij.ImagePlus");
+
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
-		// override behavior of ij.ImagePlus
-		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
-		hacker.loadClass("ij.ImagePlus");
+		// override behavior of MacAdapter
+		hacker.replaceMethod("MacAdapter",
+			"public void run(java.lang.String arg)", ";");
+		hacker.loadClass("MacAdapter");
 	}
-	
+
 	public static ImageJ initialize() {
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) return ij;

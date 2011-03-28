@@ -52,19 +52,19 @@ import net.java.sezpoz.Indexable;
 @Indexable(type=PlatformHandler.class)
 public @interface Platform {
 
-	/** Java Runtime Environment version to match. */
-	String javaVersion() default "";
-
 	/** Java Runtime Environment vendor to match. */
 	String javaVendor() default "";
 
-	/** Operating system name to match. */
-	String osName() default "";
+	/** Minimum required Java Runtime Environment version. */
+	String javaVersion() default "";
 
 	/** Operating system architecture to match. */
 	String osArch() default "";
 
-	/** Operating system version to match. */
+	/** Operating system name to match. */
+	String osName() default "";
+
+	/** Minimum required operating system version. */
 	String osVersion() default "";
 
 }
