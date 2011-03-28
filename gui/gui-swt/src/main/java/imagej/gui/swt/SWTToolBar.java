@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.gui.swt;
 
 import imagej.Log;
+import imagej.manager.Managers;
 import imagej.plugin.api.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
@@ -65,12 +66,10 @@ public class SWTToolBar extends Composite {
 	private final ToolManager toolManager;
 	private final Map<String, Button> toolButtons;
 
-	public SWTToolBar(final Display display,
-		final Composite parent, final ToolManager toolManager)
-	{
+	public SWTToolBar(final Display display, final Composite parent) {
 		super(parent, 0);
 		this.display = display;
-		this.toolManager = toolManager;
+		toolManager = Managers.get(ToolManager.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
 		populateToolBar();

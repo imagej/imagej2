@@ -67,7 +67,7 @@ public class SwingUI implements UserInterface {
 	@Override
 	public void initialize() {
 		frame = new JFrame("ImageJ");
-		toolBar = new SwingToolBar(new ToolManager());
+		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
 		createMenuBar();
 

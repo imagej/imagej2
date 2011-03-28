@@ -36,6 +36,7 @@ package imagej.gui.swing;
 
 import imagej.Log;
 import imagej.event.EventSubscriber;
+import imagej.manager.Managers;
 import imagej.plugin.api.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
@@ -75,8 +76,8 @@ public class SwingToolBar extends JToolBar
 
 	private Map<String, AbstractButton> toolButtons;
 
-	public SwingToolBar(final ToolManager toolManager) {
-		this.toolManager = toolManager;
+	public SwingToolBar() {
+		toolManager = Managers.get(ToolManager.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 	}
