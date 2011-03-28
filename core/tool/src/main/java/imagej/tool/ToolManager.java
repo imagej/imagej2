@@ -44,6 +44,7 @@ import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.manager.Manager;
+import imagej.manager.Managers;
 import imagej.manager.ManagerComponent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
@@ -58,10 +59,8 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Manager(priority = ToolManager.PRIORITY)
+@Manager(priority = Managers.HIGH_PRIORITY)
 public class ToolManager implements ManagerComponent {
-
-	public static final int PRIORITY = 0;
 
 	private List<ToolEntry> toolEntries;
 

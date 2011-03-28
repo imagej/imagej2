@@ -70,7 +70,7 @@ public class PivotUI implements Application, UserInterface {
 		final Map<String, String> properties)
 	{
 		frame = new Frame();
-//	toolBar = new PivotToolBar(new ToolManager());
+//		toolBar = new PivotToolBar();
 		statusBar = new PivotStatusBar();
 
 		contentPane = new BoxPane();

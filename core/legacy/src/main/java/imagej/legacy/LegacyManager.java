@@ -38,6 +38,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.manager.Manager;
+import imagej.manager.Managers;
 import imagej.manager.ManagerComponent;
 import imagej.model.Dataset;
 
@@ -60,10 +61,8 @@ import imagej.model.Dataset;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = LegacyManager.PRIORITY)
+@Manager(priority = Managers.NORMAL_PRIORITY)
 public final class LegacyManager implements ManagerComponent {
-
-	public static final int PRIORITY = 0;
 
 	static {
 		// NB: Override class behavior before class loading gets too far along.
