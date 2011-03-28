@@ -46,6 +46,7 @@
 				<module>gui-pivot</module>
 				<module>gui-swing</module>
 				<module>gui-swt</module>
+				<module>platform-macosx</module>
 				<module>plugin-awt</module>
 				<module>plugin-pivot</module>
 				<module>plugin-swing</module>

@@ -45,9 +45,10 @@ import javassist.NotFoundException;
  * The code hacker provides a mechanism for altering the behavior of classes
  * before they are loaded, for the purpose of injecting new methods and/or
  * altering existing ones.
- *
+ * <p>
  * In ImageJ, this mechanism is used to provide new seams into legacy ImageJ1
  * code, so that (e.g.) the modern GUI is aware of IJ1 events as they occur.
+ * </p>
  *
  * @author Curtis Rueden
  * @author Rick Lentz
@@ -58,16 +59,21 @@ public class CodeHacker {
 	private static final String PATCH_SUFFIX = "Methods";
 
 	private ClassPool pool;
-	
+
 	public CodeHacker() {
 		pool = ClassPool.getDefault();
 	}
 
 	/**
-	 * TODO
+	 * Modifies a class by injecting additional code at the end of the
+	 * specified method's body.
+	 * <p>
+	 * The extra code is defined in the imagej.legacy.patches package, as
+	 * described in the documentation for {@link #insertMethod(String, String)}.
+	 * </p>
 	 *
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to override;
+	 * @param fullClass Fully qualified name of the class to modify.
+	 * @param methodSig Method signature of the method to modify;
 	 *   e.g., "public void updateAndDraw()"
 	 */
 	public void insertAfterMethod(final String fullClass,
@@ -78,13 +84,13 @@ public class CodeHacker {
 
 	/**
 	 * Modifies a class by injecting the provided code string
-	 * at the end of the provided method's body.
+	 * at the end of the specified method's body.
 	 *
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to override;
+	 * @param fullClass Fully qualified name of the class to modify.
+	 * @param methodSig Method signature of the method to modify;
 	 *   e.g., "public void updateAndDraw()"
 	 * @param newCode The string of code to add;
-	 *   e.g., System.out.println(\"Change Me!\");
+	 *   e.g., System.out.println(\"Hello World!\");
 	 */
 	public void insertAfterMethod(final String fullClass,
 		final String methodSig, final String newCode)
@@ -99,7 +105,12 @@ public class CodeHacker {
 	}
 
 	/**
-	 * TODO
+	 * Modifies a class by injecting additional code
+	 * at the start of the specified method's body.
+	 * <p>
+	 * The extra code is defined in the imagej.legacy.patches package, as
+	 * described in the documentation for {@link #insertMethod(String, String)}.
+	 * </p>
 	 *
 	 * @param fullClass Fully qualified name of the class to override.
 	 * @param methodSig Method signature of the method to override;
@@ -113,13 +124,13 @@ public class CodeHacker {
 
 	/**
 	 * Modifies a class by injecting the provided code string
-	 * at the start of the provided method's body.
+	 * at the start of the specified method's body.
 	 *
 	 * @param fullClass Fully qualified name of the class to override.
 	 * @param methodSig Method signature of the method to override;
 	 *   e.g., "public void updateAndDraw()"
 	 * @param newCode The string of code to add;
-	 *   e.g., System.out.println(\"Change Me!\");
+	 *   e.g., System.out.println(\"Hello World!\");
 	 */
 	public void insertBeforeMethod(final String fullClass,
 		final String methodSig, final String newCode)
@@ -134,14 +145,21 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Inserts the specified method into the given class.
+	 * Modifies a class by injecting a new method.
+	 * <p>
+	 * The body of the method is defined in the imagej.legacy.patches package,
+	 * as described in the {@link #insertMethod(String, String)} method
+	 * documentation.
+	 * <p>
 	 * The new method implementation should be declared in the
 	 * imagej.legacy.patches package, with the same name as the original
 	 * class plus "Methods"; e.g., overridden ij.gui.ImageWindow methods should
 	 * be placed in the imagej.legacy.patches.ImageWindowMethods class.
-	 *
+	 * </p>
+	 * <p>
 	 * New method implementations must be public static, with an additional
 	 * first parameter: the instance of the class on which to operate.
+	 * </p>
 	 *
 	 * @param fullClass Fully qualified name of the class to override.
 	 * @param methodSig Method signature of the method to override;
@@ -151,6 +169,16 @@ public class CodeHacker {
 		insertMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
+	/**
+	 * Modifies a class by injecting the provided code string
+	 * as a new method.
+	 *
+	 * @param fullClass Fully qualified name of the class to override.
+	 * @param methodSig Method signature of the method to override;
+	 *   e.g., "public void updateAndDraw()"
+	 * @param newCode The string of code to add;
+	 *   e.g., System.out.println(\"Hello World!\");
+	 */
 	public void insertMethod(final String fullClass,
 		final String methodSig, final String newCode)
 	{
@@ -167,13 +195,51 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Modifies a class by replacing the specified method.
+	 * <p>
+	 * The new code is defined in the imagej.legacy.patches package, as
+	 * described in the documentation for {@link #insertMethod(String, String)}.
+	 * </p>
+	 *
+	 * @param fullClass Fully qualified name of the class to override.
+	 * @param methodSig Method signature of the method to replace;
+	 *   e.g., "public void setVisible(boolean vis)"
+	 */
+	public void replaceMethod(final String fullClass, final String methodSig) {
+		replaceMethod(fullClass, methodSig, newCode(fullClass, methodSig));
+	}
+
+	/**
+	 * Modifies a class by replacing the specified method with the provided code
+	 * string.
+	 *
+	 * @param fullClass Fully qualified name of the class to override.
+	 * @param methodSig Method signature of the method to replace;
+	 *   e.g., "public void setVisible(boolean vis)"
+	 * @param newCode The string of code to add;
+	 *   e.g., System.out.println(\"Hello World!\");
+	 */
+	public void replaceMethod(final String fullClass,
+		final String methodSig, final String newCode)
+	{
+		try {
+			getMethod(fullClass, methodSig).setBody(newCode);
+		}
+		catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot modify method: " +
+				methodSig, e);
+		}
+	}
+
+	/**
 	 * Loads the given, possibly modified, class.
-	 *
+	 *<p>
 	 * This method must be called to confirm any changes made with
-	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod} or
-	 * {@link #insertMethod}.
+	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
+	 * {@link #insertMethod} or {@link #replaceMethod}.
+	 * </p>
 	 *
-	 * @param fullClass fully qualified class name to load
+	 * @param fullClass Fully qualified class name to load.
 	 * @return the loaded class
 	 */
 	public Class<?> loadClass(String fullClass) {

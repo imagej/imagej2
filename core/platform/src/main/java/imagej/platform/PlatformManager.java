@@ -54,9 +54,12 @@ public final class PlatformManager {
 	}
 
 	public static void initialize() {
-		for (final PlatformHandler platform : getTargetPlatforms()) {
+		final List<PlatformHandler> platforms = getTargetPlatforms();
+		for (final PlatformHandler platform : platforms) {
+			Log.debug("Configuring platform: " + platform);
 			platform.configure();
 		}
+    if (platforms.size() == 0) Log.debug("No platforms to configure.");
 	}
 
 	public static List<PlatformHandler> getTargetPlatforms() {
@@ -78,16 +81,16 @@ public final class PlatformManager {
 
 	private static boolean isTargetPlatform(final Platform p) {
 		final String javaVendor = System.getProperty("java.vendor");
-		if (!javaVendor.matches(p.javaVendor())) return false;
+		if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
 
 		final String javaVersion = System.getProperty("java.version");
 		if (javaVersion.compareTo(p.javaVersion()) < 0) return false;
 
 		final String osName = System.getProperty("os.name");
-		if (!osName.matches(p.osName())) return false;
+		if (!osName.matches(".*" + p.osName() + ".*")) return false;
 
 		final String osArch = System.getProperty("os.arch");
-		if (!osArch.matches(p.osArch())) return false;
+		if (!osArch.matches(".*" + p.osArch() + ".*")) return false;
 
 		final String osVersion = System.getProperty("os.version");
 		if (osVersion.compareTo(p.osVersion()) < 0) return false;

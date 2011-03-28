@@ -57,7 +57,6 @@ import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
 
 import imagej.event.Events;
-import imagej.platform.Platform;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppFocusEvent;
 import imagej.platform.event.AppPreferencesEvent;
@@ -79,7 +78,6 @@ import imagej.platform.event.AppVisibleEvent;
  * 
  * @author Curtis Rueden
  */
-@Platform(osName = "Mac OS X")
 public class MacOSXAppListener implements AboutHandler,
 	AppForegroundListener, AppHiddenListener, AppReOpenedListener,
 	PreferencesHandler, PrintFilesHandler, QuitHandler, ScreenSleepListener,

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 import imagej.Log;
+import imagej.platform.PlatformManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,8 @@ public final class UIManager {
 	}
 
 	public static void initialize() {
+		PlatformManager.initialize();
+
 		final List<UserInterface> uis = getAvailableUIs();
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
