@@ -83,7 +83,6 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
 		sliders = new JPanel();
-		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
 
 		final JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
@@ -102,7 +101,8 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		this.controller = controller;
 		final int[] dims = controller.getDims();
 		final AxisLabel[] dimLabels = controller.getDimLabels();
-		createSliders(dims, dimLabels);
+		if (dims.length > 2)
+			createSliders(dims, dimLabels);
 	}
 
 	@Override
@@ -115,8 +115,8 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 	}
 
 	private void createSliders(final int[] dims, final AxisLabel[] dimLabels) {
+		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
 		sliders.removeAll();
-
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (AxisLabel.isXY(dimLabels[i])) continue;
 			p++;
