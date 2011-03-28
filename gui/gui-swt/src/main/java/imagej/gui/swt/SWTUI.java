@@ -38,9 +38,8 @@ import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.swt.MenuCreator;
-import imagej.tool.ToolManager;
-import imagej.ui.UserInterface;
 import imagej.ui.UI;
+import imagej.ui.UserInterface;
 
 import java.util.List;
 
@@ -71,7 +70,7 @@ public class SWTUI implements UserInterface, Runnable {
 		shell = new Shell(display, 0);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText("ImageJ");
-		new SWTToolBar(display, shell, new ToolManager());
+		new SWTToolBar(display, shell);
 		statusBar = new SWTStatusBar(shell);
 		createMenuBar();
 

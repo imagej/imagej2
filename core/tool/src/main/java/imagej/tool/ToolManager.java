@@ -58,8 +58,10 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Manager
+@Manager(priority = ToolManager.PRIORITY)
 public class ToolManager implements ManagerComponent {
+
+	public static final int PRIORITY = 0;
 
 	private List<ToolEntry> toolEntries;
 

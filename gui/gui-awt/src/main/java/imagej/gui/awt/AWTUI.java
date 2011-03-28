@@ -38,9 +38,8 @@ import imagej.plugin.api.PluginEntry;
 import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.awt.MenuBarCreator;
-import imagej.tool.ToolManager;
-import imagej.ui.UserInterface;
 import imagej.ui.UI;
+import imagej.ui.UserInterface;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -66,7 +65,7 @@ public class AWTUI implements UserInterface {
 	@Override
 	public void initialize() {
 		frame = new Frame("ImageJ");
-		toolBar = new AWTToolBar(new ToolManager());
+		toolBar = new AWTToolBar();
 		statusBar = new AWTStatusBar();
 		createMenuBar();
 
