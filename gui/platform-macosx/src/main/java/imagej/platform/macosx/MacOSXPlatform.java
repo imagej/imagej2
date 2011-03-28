@@ -58,7 +58,6 @@ public class MacOSXPlatform implements PlatformHandler {
 	public void configure() {
 		// set Mac OS X-specific system properties
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		System.setProperty("apple.awt.brushMetalLook", "true");
 
 		// translate Mac OS X application events into ImageJ events
 		final MacOSXAppListener appListener =
