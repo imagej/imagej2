@@ -67,6 +67,11 @@ public class SimpleImageDisplay implements Display {
 		imgWindow = new NavigableImageFrame(imgCanvas);
 		controller = new AWTDisplayController(this);
 		imgWindow.setDisplayController(controller);
+		// FIXME - this is a second call to set the Dataset. An earlier call is
+		// contained in the AWTDisplayController constructor. If the Dataset not
+		// reset here then image width will not fill the zoom window. Will debug
+		// further but patch for now in preparation of release of alpha 1.
+		controller.setDataset(dataset);
 		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
 		imgCanvas.subscribeToToolEvents();
