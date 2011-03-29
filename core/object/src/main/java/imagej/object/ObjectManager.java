@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.Log;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.manager.Manager;
@@ -73,12 +72,10 @@ public final class ObjectManager implements ManagerComponent {
 	}
 
 	public void addObject(final Object obj) {
-		Log.debug("=======> ADDING OBJECT: " + obj);//TEMP
 		addObject(obj, obj.getClass());
 	}
 
 	public void removeObject(final Object obj) {
-		Log.debug("=======> REMOVING OBJECT: " + obj);//TEMP
 		removeObject(obj, obj.getClass());
 	}
 
