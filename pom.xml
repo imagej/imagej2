@@ -15,15 +15,6 @@
 	<url>http://imagejdev.org/</url>
 	<inceptionYear>1997</inceptionYear>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
 	<modules>
 		<module>core</module>
 		<module>gui</module>
@@ -37,6 +28,7 @@
 		<imglib.groupId>mpicbg</imglib.groupId>
 		<imglib.version>2.0-SNAPSHOT</imglib.version>
 		<jetty.version>8.0.0.M1</jetty.version>
+		<junit.version>4.8.1</junit.version>
 		<netbeans.hint.license>bsd</netbeans.hint.license>
 		<netbeans.version>RELEASE691</netbeans.version>
 		<!-- NB: Avoid platform encoding warning when copying resources. -->
