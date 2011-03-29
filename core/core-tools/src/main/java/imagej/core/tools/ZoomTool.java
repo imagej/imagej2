@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.IntCoords;
 import imagej.display.Display;
+import imagej.display.NavigableImageCanvas;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
@@ -44,23 +45,24 @@ import imagej.tool.Tool;
  * TODO
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",  iconPath = "/tools/zoom.png")
 
 public class ZoomTool extends BaseTool {
 
-	// TODO
-		@Override
+	@Override
 	public void onMouseDown(MsPressedEvent evt) {
 		final Display display = evt.getDisplay();
-		double currentZoom = display.getImageCanvas().getZoom();
+		final NavigableImageCanvas canvas = display.getImageCanvas();
+		double currentZoom = canvas.getZoom();
 		double newZoom = 1;
 		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON)
-			newZoom = currentZoom * display.getImageCanvas().getZoomIncrement();
+			newZoom = currentZoom * canvas.getZoomIncrement();  // zoom in
 		else
-			newZoom = currentZoom / display.getImageCanvas().getZoomIncrement();
+			newZoom = currentZoom / canvas.getZoomIncrement();  // zoom out
 		IntCoords zoomingCenter = new IntCoords(evt.getX(), evt.getY());
-		display.getImageCanvas().setZoom(newZoom, zoomingCenter);
+		canvas.setZoom(newZoom, zoomingCenter);
 	}
 
 }
