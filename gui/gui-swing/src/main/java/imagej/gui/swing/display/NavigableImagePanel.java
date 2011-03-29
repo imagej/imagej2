@@ -39,8 +39,10 @@ import imagej.RealCoords;
 import imagej.display.EventDispatcher;
 import imagej.display.MouseCursor;
 import imagej.display.NavigableImageCanvas;
+import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.model.Dataset;
 import imagej.tool.event.ToolActivatedEvent;
 
 import java.awt.Color;
@@ -813,8 +815,7 @@ public class NavigableImagePanel extends JPanel implements
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (mousePosition.x - (int) panelP.x);
 		originY += (mousePosition.y - (int) panelP.y);
-		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),
-			new Double(getZoom()));
+		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
 		repaint();
 	}
 

@@ -38,6 +38,9 @@ import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.ImageDisplayWindow;
+import imagej.display.event.ZoomEvent;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
 import imagej.model.AxisLabel;
 
 import java.awt.Adjustable;
@@ -64,7 +67,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
+public class NavigableImageFrame extends JFrame implements ImageDisplayWindow, EventSubscriber<ZoomEvent> {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 
@@ -99,6 +102,8 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		pane.add(graphicPane, BorderLayout.CENTER);
 		pane.add(sliders, BorderLayout.SOUTH);
 
+		subscribeToZoomEvents();
+		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
@@ -164,4 +169,28 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 
 	}
 
+	private void subscribeToZoomEvents()
+	{
+		Events.subscribe(ZoomEvent.class, this);
+	}
+	
+	/*
+	 * Handles setting the title to the current dataset name and zoom level
+	 */
+	@Override
+	public void onEvent(ZoomEvent event) {
+		if (event.getCanvas() != imgCanvas)
+			return;
+		String datasetName = "";
+		if (this.controller != null)
+			datasetName = this.controller.getDataset().getMetadata().getName();
+		double zoom = event.getNewZoom();
+		if (zoom == 1.0)  // exactly
+			setTitle(datasetName);
+		else
+		{
+			String percentZoom = String.format("%.2f", zoom*100);
+			setTitle(datasetName+ " (" + percentZoom + "%)");
+		}
+	}
 }
