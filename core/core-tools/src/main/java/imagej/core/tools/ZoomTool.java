@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.IntCoords;
 import imagej.display.Display;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
@@ -52,9 +53,14 @@ public class ZoomTool extends BaseTool {
 		@Override
 	public void onMouseDown(MsPressedEvent evt) {
 		final Display display = evt.getDisplay();
-//		display.zoom(factor)
-//		lastX = evt.getX();
-//		lastY = evt.getY();
+		double currentZoom = display.getImageCanvas().getZoom();
+		double newZoom = 1;
+		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON)
+			newZoom = currentZoom * display.getImageCanvas().getZoomIncrement();
+		else
+			newZoom = currentZoom / display.getImageCanvas().getZoomIncrement();
+		IntCoords zoomingCenter = new IntCoords(evt.getX(), evt.getY());
+		display.getImageCanvas().setZoom(newZoom, zoomingCenter);
 	}
 
 }
