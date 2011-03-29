@@ -136,40 +136,16 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
 		for (final ModuleItem item : inputs) {
-			final String name = item.getName();
-			final Class<?> type = item.getType();
-
 			final Parameter param = ((PluginModuleItem) item).getParameter();
 			final boolean persist = param.persist();
+			if (!persist) continue;
+
+			final String name = item.getName();
+			final Object value = module.getInput(name);
+			if (value == null) continue;
+
 			final String persistKey = param.persistKey();
-
-			final Object value;
-			if (ClassUtils.isNumber(type)) {
-				value = inputPanel.getNumber(name);
-			}
-			else if (ClassUtils.isText(type)) {
-				final String[] choices = param.choices();
-				if (choices.length > 0) value = inputPanel.getChoice(name);
-				else value = inputPanel.getTextField(name);
-			}
-			else if (ClassUtils.isBoolean(type)) {
-				value = inputPanel.getToggle(name);
-			}
-			else if (File.class.isAssignableFrom(type)) {
-				value = inputPanel.getFile(name);
-			}
-			else {
-				value = inputPanel.getObject(name);
-			}
-			if (value != null) {
-				// TODO - eliminate this unnecessary step
-				// (widgets call setInput whenever they change)
-				module.setInput(name, value);
-
-				if (persist) {
-					setPrefValue(module, item, persistKey, value);
-				}
-			}
+			setPrefValue(module, item, persistKey, value);
 		}
 	}
 
