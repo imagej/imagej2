@@ -65,6 +65,10 @@ public abstract class AbstractInputPanel implements InputPanel {
 	protected Map<String, FileWidget> fileWidgets =
 		new HashMap<String, FileWidget>();
 
+	/** Widget table for objects. */
+	protected Map<String, ObjectWidget> objectWidgets =
+		new HashMap<String, ObjectWidget>();
+
 	@Override
 	public Number getNumber(final String name) {
 		return numberWidgets.get(name).getValue();
@@ -97,8 +101,7 @@ public abstract class AbstractInputPanel implements InputPanel {
 
 	@Override
 	public Object getObject(final String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return objectWidgets.get(name).getObject();
 	}
 
 	@Override
@@ -108,6 +111,7 @@ public abstract class AbstractInputPanel implements InputPanel {
 		for (final InputWidget w : textFieldWidgets.values()) w.refresh();
 		for (final InputWidget w : choiceWidgets.values()) w.refresh();
 		for (final InputWidget w : fileWidgets.values()) w.refresh();
+		for (final InputWidget w : objectWidgets.values()) w.refresh();
 	}
 
 }
