@@ -92,6 +92,11 @@ public class AWTDisplayController implements DisplayController {
 	}
 
 	@Override
+	public Dataset getDataset() {
+		return dataset;
+	}
+	
+	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 		image = dataset.getImage();
