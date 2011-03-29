@@ -47,8 +47,8 @@
 		</plugins>
 	</build>
 
+	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
-		<!-- NB: for imagej-old, in case of partial checkout -->
 		<repository>
 			<id>imagej.releases</id>
 			<url>http://dev.imagejdev.org/maven2/releases</url>

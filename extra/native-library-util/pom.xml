@@ -50,7 +50,7 @@
 		</developer>
 	</developers>
 
-	<!-- NB: for imagej-extra, in case of partial checkout -->
+	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
