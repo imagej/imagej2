@@ -38,10 +38,10 @@ import imagej.Log;
 import imagej.Prefs;
 import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginException;
 import imagej.plugin.PluginModule;
 import imagej.plugin.PluginModuleItem;
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginException;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
 

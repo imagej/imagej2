@@ -35,12 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.Log;
+import imagej.manager.Managers;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginException;
+import imagej.plugin.PluginManager;
 import imagej.plugin.PluginModule;
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginException;
-import imagej.plugin.api.PluginIndex;
 import imagej.plugin.process.PluginPostprocessor;
 
 import java.util.ArrayList;
@@ -72,8 +73,9 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 			final Dataset dataset = (Dataset) value;
 
 			// get available display plugins from the plugin index
+			final PluginManager pluginManager = Managers.get(PluginManager.class);
 			final ArrayList<PluginEntry<Display>> plugins =
-				PluginIndex.getIndex().getPlugins(Display.class);
+				pluginManager.getPlugins(Display.class);
 			for (final PluginEntry<Display> pe : plugins) {
 				try {
 					final Display displayPlugin = pe.createInstance();

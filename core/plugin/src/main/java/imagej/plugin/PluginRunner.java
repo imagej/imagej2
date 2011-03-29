@@ -1,5 +1,5 @@
 //
-// PluginException.java
+// PluginRunner.java
 //
 
 /*
@@ -32,18 +32,76 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.api;
+package imagej.plugin;
+
+import imagej.Log;
+import imagej.manager.Managers;
+import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.PluginPreprocessor;
 
 /**
- * TODO
+ * Executes a runnable plugin.
  *
  * @author Curtis Rueden
  */
-public class PluginException extends Exception {
+public class PluginRunner<T extends RunnablePlugin> {
 
-  public PluginException() { super(); }
-  public PluginException(String s) { super(s); }
-  public PluginException(String s, Throwable cause) { super(s, cause); }
-  public PluginException(Throwable cause) { super(cause); }
+	private PluginEntry<T> entry;
+
+	public PluginRunner(final PluginEntry<T> entry) {
+		this.entry = entry;
+	}
+
+	public T run() {
+		final PluginModule<T> module;
+		try {
+			module = entry.createModule();
+		}
+		catch (final PluginException e) {
+			Log.error(e);
+			return null;
+		}
+		final T plugin = module.getPlugin();
+
+		// execute plugin
+		boolean ok = preProcess(module);
+		if (!ok) return null; // execution canceled
+		plugin.run();
+		postProcess(module);
+
+		return plugin;
+	}
+
+	public boolean preProcess(final PluginModule<T> module) {
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		for (final PluginEntry<PluginPreprocessor> p :
+			pluginManager.getPlugins(PluginPreprocessor.class))
+		{
+			try {
+				final PluginPreprocessor processor = p.createInstance();
+				processor.process(module);
+				if (processor.canceled()) return false;
+			}
+			catch (final PluginException e) {
+				Log.error(e);
+			}
+		}
+		return true;
+	}
+
+	public void postProcess(final PluginModule<T> module) {
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		for (final PluginEntry<PluginPostprocessor> p :
+			pluginManager.getPlugins(PluginPostprocessor.class))
+		{
+			try {
+				final PluginPostprocessor processor = p.createInstance();
+				processor.process(module);			
+			}
+			catch (final PluginException e) {
+				Log.error(e);
+			}
+		}
+	}
 
 }

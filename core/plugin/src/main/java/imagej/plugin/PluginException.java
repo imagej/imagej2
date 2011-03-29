@@ -1,5 +1,5 @@
 //
-// DefaultPluginModuleFactory.java
+// PluginException.java
 //
 
 /*
@@ -32,25 +32,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.api;
-
-import imagej.plugin.BasePlugin;
-import imagej.plugin.PluginModule;
+package imagej.plugin;
 
 /**
  * TODO
  *
  * @author Curtis Rueden
  */
-public class DefaultPluginModuleFactory<T extends BasePlugin>
-	implements PluginModuleFactory<T>
-{
+public class PluginException extends Exception {
 
-	@Override
-	public PluginModule<T> createModule(final PluginEntry<T> entry)
-		throws PluginException
-	{
-		return new PluginModule<T>(entry);
-	}
+  public PluginException() { super(); }
+  public PluginException(String s) { super(s); }
+  public PluginException(String s, Throwable cause) { super(s, cause); }
+  public PluginException(Throwable cause) { super(cause); }
 
 }

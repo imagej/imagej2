@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.swing;
 
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.swing.JMenuBarCreator;
 import imagej.tool.ToolManager;

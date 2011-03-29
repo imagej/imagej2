@@ -39,8 +39,8 @@ import ij.ImageJ;
 import ij.Menus;
 import imagej.Log;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.api.MenuEntry;
-import imagej.plugin.api.PluginEntry;
+import imagej.plugin.MenuEntry;
+import imagej.plugin.PluginEntry;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 import imagej.util.ListUtils;
@@ -68,9 +68,10 @@ import javax.swing.KeyStroke;
 
 /**
  * Discovers legacy ImageJ 1.x plugins.
- *
+ * <p>
  * To accomplish this, we must crawl the (invisible) ImageJ 1.x AWT menu,
  * because IJ1 does not store the list of commands in any other data structure.
+ * </p>
  *
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -101,15 +102,11 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry<?>> plugins) {
-		final long startTime = System.currentTimeMillis();
 		final ImageJ ij = IJ.getInstance();
 		assert ij != null;
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
-		final long endTime = System.currentTimeMillis();
-		final long time = endTime - startTime;
-		Log.debug("Found " + commands.size() +
-			" legacy plugins in " + time + " ms:");
+		Log.debug("Found " + commands.size() + " legacy plugins:");
 		for (final Object key : commands.keySet()) {
 			final PluginEntry<ImageJPlugin> pe =
 				createEntry(key, commands, menuTable);

@@ -35,15 +35,16 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.finder;
 
 import imagej.Log;
+import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginIndex;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * Discovers ImageJ plugins, by querying the plugin manager.
  *
  * @author Curtis Rueden
  */
@@ -52,14 +53,12 @@ public class ImageJPluginFinder implements IPluginFinder {
 
 	@Override
 	public void findPlugins(List<PluginEntry<?>> plugins) {
-		final long startTime = System.currentTimeMillis();
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
 		final ArrayList<PluginEntry<ImageJPlugin>> pluginList =
-			PluginIndex.getIndex().getPlugins(ImageJPlugin.class);
-		final long endTime = System.currentTimeMillis();
+			pluginManager.getPlugins(ImageJPlugin.class);
 		plugins.addAll(pluginList);
 		if (Log.isDebug()) {
-			final long time = endTime - startTime;
-			Log.debug("Found " + pluginList.size() + " plugins in " + time + " ms:");
+			Log.debug("Found " + pluginList.size() + " plugins:");
 			for (final PluginEntry<ImageJPlugin> pe : pluginList) {
 				Log.debug("- " + pe);
 			}

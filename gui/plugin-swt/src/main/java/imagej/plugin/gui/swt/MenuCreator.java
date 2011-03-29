@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.gui.swt;
 
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginUtils;
 import imagej.plugin.RunnablePlugin;
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
 import imagej.plugin.gui.AbstractMenuCreator;
 import imagej.plugin.gui.ShadowMenu;
 

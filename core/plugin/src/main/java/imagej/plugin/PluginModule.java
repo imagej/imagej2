@@ -36,8 +36,6 @@ package imagej.plugin;
 
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginException;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

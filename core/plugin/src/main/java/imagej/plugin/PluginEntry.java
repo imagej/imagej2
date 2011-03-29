@@ -32,11 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.api;
+package imagej.plugin;
 
-import imagej.plugin.BasePlugin;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.PluginModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
