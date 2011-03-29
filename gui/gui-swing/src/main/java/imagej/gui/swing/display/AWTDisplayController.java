@@ -117,14 +117,24 @@ public class AWTDisplayController implements DisplayController {
 		planeDims = new int[dims.length-2];
 		int d = 0;
 		for (int i = 0; i < dims.length; i++) {
-			if ((i == xIndex) || (i == yIndex)) continue;
+			if ((i == xIndex) || (i == yIndex))
+				continue;
 			planeDims[d++] = dims[i];
 		}
 		imgWindow.setTitle(imageName);
 		// display first image plane
 		pos = new int[dims.length - 2];
 		updatePosition();
+		//FIXME - disabled. make this UI call in SimpleImageDisplay to
+		// avoid incorrectly calculating image canvas dimensions.
+		// Reenable if actually needed.
 		display.getImageDisplayWindow().pack();
+		
+		// TODO
+		// maybe the best way to handle a change in Dataset, rather than pack() everytime,
+		// would be to fire an event here that says my Dataset has changed. the display
+		// that owns this Dataset could subscribe to Dataset changed events and it can
+		// decide whether its appropriate for the frame to be repacked.
 	}
 
 	@Override
