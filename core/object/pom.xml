@@ -11,17 +11,12 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-data-model</artifactId>
+	<artifactId>ij-object</artifactId>
 
-	<name>ImageJ Data Model</name>
-	<description>ImageJ core data model, based on ImgLib.</description>
+	<name>ImageJ Object Framework</name>
+	<description>Shared framework for ImageJ object collections.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-common</artifactId>
@@ -37,11 +32,6 @@
 			<artifactId>ij-manager</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-object</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -51,7 +41,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.imglib</packageName>
+							<packageName>imagej.object</packageName>
 						</manifest>
 					</archive>
 				</configuration>

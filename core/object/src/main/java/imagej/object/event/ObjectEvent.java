@@ -1,5 +1,5 @@
 //
-// DatasetEvent.java
+// ObjectEvent.java
 //
 
 /*
@@ -32,26 +32,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.model.event;
+package imagej.object.event;
 
 import imagej.event.ImageJEvent;
-import imagej.model.Dataset;
 
 /**
- * An event indicating something has happened to a dataset.
+ * An event indicating something has happened to an object.
  *
  * @author Curtis Rueden
  */
-public class DatasetEvent extends ImageJEvent {
+public class ObjectEvent extends ImageJEvent {
 
-	private Dataset dataset;
+	private Object obj;
 
-	public DatasetEvent(final Dataset dataset) {
-		this.dataset = dataset;
+	public ObjectEvent(final Object obj) {
+		this.obj = obj;
 	}
 
-	public Dataset getDataset() {
-		return dataset;
+	public Object getObject() {
+		return obj;
 	}
 
 }

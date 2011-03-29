@@ -35,16 +35,27 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.model.event;
 
 import imagej.model.Dataset;
+import imagej.object.event.ObjectCreatedEvent;
 
 /**
  * An event indicating a new dataset has been created.
  *
  * @author Curtis Rueden
  */
-public class DatasetCreatedEvent extends DatasetEvent {
+public class DatasetCreatedEvent extends ObjectCreatedEvent {
+
+	private Dataset dataset;
 
 	public DatasetCreatedEvent(final Dataset dataset) {
 		super(dataset);
+		this.dataset = dataset;
+	}
+
+	// -- ObjectEvent methods --
+
+	@Override
+	public Dataset getObject() {
+		return dataset;
 	}
 
 }

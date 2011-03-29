@@ -1,5 +1,5 @@
 //
-// DisplayManager.java
+// ObjectDeletedEvent.java
 //
 
 /*
@@ -32,63 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
-
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.event.EventSubscriber;
-import imagej.event.Events;
-import imagej.manager.Manager;
-import imagej.manager.ManagerComponent;
-import imagej.manager.Managers;
-
-import java.util.ArrayList;
-import java.util.List;
+package imagej.object.event;
 
 /**
- * Manager component for keeping track of active displays.
+ * An event indicating an object has been deleted.
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.LOW_PRIORITY)
-public class DisplayManager implements ManagerComponent {
+public class ObjectDeletedEvent extends ObjectEvent {
 
-	private final List<Display> displays = new ArrayList<Display>();
-
-	public void addDisplay(final Display display) {
-		if (!displays.contains(display)) displays.add(display);
-	}
-
-	public void removeDisplay(final Display display) {
-		displays.remove(display);
-	}
-
-	/** Gets a list of active displays. */
-	public List<Display> getDisplays() {
-		final List<Display> displayList = new ArrayList<Display>(displays);
-		return displayList;
-	}
-
-	// -- ManagerComponent methods --
-
-	@Override
-	public void initialize() {
-		Events.subscribe(DisplayCreatedEvent.class,
-			new EventSubscriber<DisplayCreatedEvent>()
-		{
-			@Override
-			public void onEvent(final DisplayCreatedEvent event) {
-				addDisplay(event.getDisplay());
-			}			
-		});
-		Events.subscribe(DisplayDeletedEvent.class,
-			new EventSubscriber<DisplayDeletedEvent>()
-		{
-			@Override
-			public void onEvent(final DisplayDeletedEvent event) {
-				removeDisplay(event.getDisplay());
-			}			
-		});
+	public ObjectDeletedEvent(final Object obj) {
+		super(obj);
 	}
 
 }

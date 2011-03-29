@@ -35,16 +35,27 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.model.event;
 
 import imagej.model.Dataset;
+import imagej.object.event.ObjectChangedEvent;
 
 /**
  * An event indicating a dataset has been changed somehow.
  *
  * @author Curtis Rueden
  */
-public class DatasetChangedEvent extends DatasetEvent {
+public class DatasetChangedEvent extends ObjectChangedEvent {
+
+	private Dataset dataset;
 
 	public DatasetChangedEvent(final Dataset dataset) {
 		super(dataset);
+		this.dataset = dataset;
+	}
+
+	// -- ObjectEvent methods --
+
+	@Override
+	public Dataset getObject() {
+		return dataset;
 	}
 
 }
