@@ -1,5 +1,5 @@
 //
-// DisplayDeletedEvent.java
+// ObjectCreatedEvent.java
 //
 
 /*
@@ -32,20 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.event;
-
-import imagej.display.Display;
-import imagej.display.event.DisplayEvent;
+package imagej.object.event;
 
 /**
- * An event indicating a display has been deleted.
+ * An event indicating a new object has been created.
  *
  * @author Curtis Rueden
  */
-public class DisplayDeletedEvent extends DisplayEvent {
+public class ObjectCreatedEvent extends ObjectEvent {
 
-	public DisplayDeletedEvent(final Display display) {
-		super(display);
+	public ObjectCreatedEvent(final Object obj) {
+		super(obj);
 	}
 
 }

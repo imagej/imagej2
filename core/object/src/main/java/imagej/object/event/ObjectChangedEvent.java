@@ -1,5 +1,5 @@
 //
-// DisplayCreatedEvent.java
+// ObjectChangedEvent.java
 //
 
 /*
@@ -32,20 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.event;
-
-import imagej.display.Display;
-import imagej.display.event.DisplayEvent;
+package imagej.object.event;
 
 /**
- * An event indicating a new display has been created.
+ * An event indicating an object has been changed somehow.
  *
  * @author Curtis Rueden
  */
-public class DisplayCreatedEvent extends DisplayEvent {
+public class ObjectChangedEvent extends ObjectEvent {
 
-	public DisplayCreatedEvent(final Display display) {
-		super(display);
+	public ObjectChangedEvent(final Object obj) {
+		super(obj);
 	}
 
 }

@@ -199,17 +199,10 @@ public class Dataset implements Comparable<Dataset> {
 
 	/**
 	 * Deletes the given dataset, cleaning up resources
-	 * and removing it from the {@link DatasetManager}.
+	 * and removing it from the object manager.
 	 */
 	public void delete() {
 		Events.publish(new DatasetDeletedEvent(this));
-	}
-
-	// -- Object methods --
-
-	@Override
-	public void finalize() {
-		delete();
 	}
 
 	// -- Comparable methods --
