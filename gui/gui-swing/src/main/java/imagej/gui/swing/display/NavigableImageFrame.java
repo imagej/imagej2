@@ -67,7 +67,9 @@ import net.miginfocom.swing.MigLayout;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class NavigableImageFrame extends JFrame implements ImageDisplayWindow, EventSubscriber<ZoomEvent> {
+public class NavigableImageFrame extends JFrame
+	implements ImageDisplayWindow, EventSubscriber<ZoomEvent>
+{
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 
@@ -169,8 +171,7 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow, E
 
 	}
 
-	private void subscribeToZoomEvents()
-	{
+	private void subscribeToZoomEvents() {
 		Events.subscribe(ZoomEvent.class, this);
 	}
 	
