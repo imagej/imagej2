@@ -199,7 +199,9 @@ import javax.swing.SwingUtilities;
  * GBH: 
  * TODO: Break out the NavigationImage from the panel
  * TODO: Change firePropertyChanges to emit Events on EventBus.
- *  (BDZ - this was done in one case : see below ... ZoomEvent)
+ *  (BDZ - this was done in the zoom changing cases : see below ... ZoomEvents)
+ * TODO: the navigation preview is disabled. Also its zoom scaling has not
+ *  been updated to mirror the overall image zoom scaling.
  * Rearranged code into sections: ZoomDevice, NavigationImage, ...
  *
  * Extracted an interface....
@@ -221,11 +223,11 @@ public class NavigableImagePanel extends JPanel implements
 	private BufferedImage image;
 	private double initialScale = 0.0;
 	private double scale = 0.0;
+	private double newScale = 1;
 	private int originX = 0;
 	private int originY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
-	private double multiplier = 1.2; // temporary value
 
 	/**
 	 * <p>
@@ -317,6 +319,7 @@ public class NavigableImagePanel extends JPanel implements
 		final double yScale = (double) getHeight() / image.getHeight();
 		initialScale = Math.min(xScale, yScale);
 		scale = initialScale;
+		newScale = scale;
 
 		// An image is initially centered
 		centerImage();
@@ -725,6 +728,10 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	@Override
 	public void setZoom(final double newZoom, final IntCoords zoomingCenter) {
+		// FIXME - minor issue - in an image that does not have odd number of rows
+		//  or cols the zooming center is truncated and the image will likely
+		//  display a pixel off an edge of the screen. The zoomingCenter should
+		//  be RealCoords and all later calcs should utilze floating point math.
 		final RealCoords imageP = panelToImageCoords(zoomingCenter);
 		if (imageP.x < 0.0) {
 			imageP.x = 0.0;
@@ -744,8 +751,7 @@ public class NavigableImagePanel extends JPanel implements
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (correctedP.getIntX() - (int) panelP.x);
 		originY += (correctedP.getIntY() - (int) panelP.y);
-		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),
-			new Double(getZoom()));
+		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
 		repaint();
 	}
 
@@ -790,20 +796,20 @@ public class NavigableImagePanel extends JPanel implements
 		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
 		
 		// check if trying to zoom in too close
-		if (zoomFactor > scale)
+		if (newScale > scale)
 		{
 			int maxDimension = Math.max(image.getWidth(), image.getHeight());
 
 			// if zooming the image would show less than one pixel of image data
 			if ((maxDimension / getZoom()) < 1)
 			{
-				zoomFactor = scale;  // reset so that mouse wheel does not alter scale incorrectly
+				newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
 				return;  // DO NOT ZOOM ANY FARTHER
 			}
 		}
 		
 		// check if trying to zoom out too far
-		if (zoomFactor < scale)
+		if (newScale < scale)
 		{
 			// get boundaries of image in panel coords
 			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
@@ -812,13 +818,13 @@ public class NavigableImagePanel extends JPanel implements
 			// if boundaries take up less than 25 pixels in either dimension 
 			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y < 25)))
 			{
-				zoomFactor = scale;  // reset so that mouse wheel does not alter scale incorrectly
+				newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
 				return;  // DO NOT ZOOM ANY FARTHER
 			}
 		}
 		
 		final double oldZoom = getZoom();
-		scale = zoomFactor;
+		scale = newScale;
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (mousePosition.x - (int) panelP.x);
 		originY += (mousePosition.y - (int) panelP.y);
@@ -1100,10 +1106,10 @@ public class NavigableImagePanel extends JPanel implements
 			}
 			else if (isInImage(ptToCoords(p))) {
 				if (zoomIn) {
-					zoomFactor *=  multiplier;
+					newScale *= zoomFactor;
 				}
 				else {
-					zoomFactor /= multiplier;
+					newScale /= zoomFactor;
 				}
 				zoomImage();
 			}
@@ -1123,7 +1129,7 @@ public class NavigableImagePanel extends JPanel implements
 					zoomNavigationImage();
 				}
 				else if (isInImage(ptToCoords(p))) {
-					zoomFactor /= multiplier;
+					newScale /= zoomFactor;
 					zoomImage();
 				}
 			}
@@ -1133,7 +1139,7 @@ public class NavigableImagePanel extends JPanel implements
 					zoomNavigationImage();
 				}
 				else if (isInImage(ptToCoords(p))) {
-					zoomFactor *= multiplier;
+					newScale *= zoomFactor;
 					zoomImage();
 				}
 			}
