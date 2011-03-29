@@ -23,6 +23,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-manager</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
 			<version>1.7</version>
@@ -44,7 +49,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-core, in case of partial checkout -->
+	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

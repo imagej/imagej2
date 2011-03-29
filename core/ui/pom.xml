@@ -49,7 +49,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for imagej-ui, in case of partial checkout -->
+	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>

@@ -26,18 +26,6 @@
 		<swt.version>3.0m7</swt.version>
 	</properties>
 
-	<!-- NB: for imagej-base, in case of partial checkout -->
-	<repositories>
-		<repository>
-			<id>imagej.releases</id>
-			<url>http://dev.imagejdev.org/maven2/releases</url>
-		</repository>
-		<repository>
-			<id>imagej.snapshots</id>
-			<url>http://dev.imagejdev.org/maven2/snapshots</url>
-		</repository>
-	</repositories>
-
 	<profiles>
 		<profile>
 			<id>all</id>
@@ -85,5 +73,17 @@
 			</modules>
 		</profile>
 	</profiles>
+
+	<!-- NB: for project parent, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
 
 </project>
