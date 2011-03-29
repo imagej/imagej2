@@ -93,22 +93,6 @@ public class NAryOperation {
 			"NAryOperation constructor - given function cannot accept a single input");
 
 		initializeSubregionVariables();
-		
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-			inputs = new ArrayList<Dataset>();
-			inputs.add(new Dataset(junkImage));
-		}
-
 	}
 
 	/**
@@ -123,36 +107,6 @@ public class NAryOperation {
 		this.output = null;
 		if (!function.canAccept(2)) throw new IllegalArgumentException(
 			"NAryOperation constructor - given function cannot accept two inputs");
-
-		if (input1 == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage1 =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-
-			inputs.set(0, new Dataset(junkImage1));
-		}
-
-		if (input2 == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a List<Dataset> @Parameter
-		{
-			Image<UnsignedShortType> junkImage2 =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(65535 - index++);
-			cursor.close();
-
-			inputs.set(1, new Dataset(junkImage2));
-		}
 	}
 
 	/**

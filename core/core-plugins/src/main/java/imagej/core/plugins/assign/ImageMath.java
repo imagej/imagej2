@@ -130,35 +130,6 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		if (input1 == null) // temp - to test for now
-		{
-			Image<UnsignedShortType> junkImage1 =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage1.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-
-			input1 = new Dataset(junkImage1);
-		}
-
-		if (input2 == null) // temp - to test for now
-		{
-
-			Image<UnsignedShortType> junkImage2 =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage2.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set((index++) % 100);
-			cursor.close();
-
-			input2 = new Dataset(junkImage2);
-		}
-
 		int[] img1Dims = input1.getImage().getDimensions();
 
 		int[] img2Dims = input2.getImage().getDimensions();

@@ -103,20 +103,6 @@ public class SaltAndPepper implements ImageJPlugin {
 		/** make sure input is 2d */
 		@Override
 		public boolean checkInput() {
-			if (input == null) // TODO - remove later
-			{
-				Image<UnsignedByteType> junkImage =
-					Dataset.createPlanarImage("", new UnsignedByteType(), new int[] {
-						200, 200 });
-				Cursor<UnsignedByteType> cursor = junkImage.createCursor();
-				int index = 0;
-				for (UnsignedByteType pixRef : cursor)
-					pixRef.set((index++) % 256);
-				cursor.close();
-				input = new Dataset(junkImage);
-				input.setSelection(20, 30, 150, 175);
-			}
-
 			selection = input.getSelection();
 
 			inputImage = input.getImage();

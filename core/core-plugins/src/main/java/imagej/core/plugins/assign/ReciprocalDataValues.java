@@ -70,20 +70,6 @@ public class ReciprocalDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<FloatType> junkImage1 =
-				Dataset.createPlanarImage("", new FloatType(), new int[] { 200, 200 });
-			Cursor<FloatType> cursor = junkImage1.createCursor();
-			int index = 0;
-			for (FloatType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-
-			input = new Dataset(junkImage1);
-			input.setSelection(20, 30, 150, 175);
-		}
 		UnaryOperator op = new Reciprocal();
 		if (!input.isFloat()) // This is similar to what IJ1 does
 			op = new Copy();
