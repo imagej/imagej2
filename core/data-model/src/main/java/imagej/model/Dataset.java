@@ -205,6 +205,13 @@ public class Dataset implements Comparable<Dataset> {
 		Events.publish(new DatasetDeletedEvent(this));
 	}
 
+	/**
+	 * displays the Dataset as a string (for now simply its name)
+	 */
+	@Override
+	public String toString() {
+		return this.metadata.getName();
+	}
 	// -- Comparable methods --
 
 	@Override
