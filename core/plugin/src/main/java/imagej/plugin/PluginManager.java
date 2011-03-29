@@ -32,11 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.api;
+package imagej.plugin;
 
-import imagej.plugin.BasePlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
+import imagej.manager.Managers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,39 +47,26 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * An efficient index of available plugins.
+ * Manager component for keeping track of available plugins.
  *
  * @author Curtis Rueden
  */
-public class PluginIndex {
+@Manager(priority = Managers.HIGH_PRIORITY)
+public class PluginManager implements ManagerComponent {
+
+	/** Class loader to use when querying SezPoz. */
+	private static ClassLoader classLoader;
+
+	public static void setPluginClassLoader(final ClassLoader cl) {
+		classLoader = cl;
+	}
 
 	/** SezPoz index of available {@link BasePlugin}s. */
 	private Index<Plugin, BasePlugin> pluginIndex;
 
-	/** ClassLoader to use when querying SezPoz. */
-	private ClassLoader classLoader;
-
 	/** Table of plugin lists, organized by plugin type. */
 	private HashMap<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
 		new HashMap<Class<?>, ArrayList<PluginEntry<?>>>();
-
-	private PluginIndex(final ClassLoader classLoader) {
-		this.classLoader = classLoader;
-		reloadPlugins();
-	}
-
-	// TODO - decide if singleton pattern is really best here
-
-	private static PluginIndex instance;
-
-	public static PluginIndex getIndex() {
-		return getIndex(null);
-	}
-
-	public static PluginIndex getIndex(final ClassLoader classLoader) {
-		if (instance == null) instance = new PluginIndex(classLoader);
-		return instance;
-	}
 
 	public void reloadPlugins() {
 		if (classLoader == null) {
@@ -120,6 +107,15 @@ public class PluginIndex {
 		}
 		return outputList;
 	}
+
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
+		reloadPlugins();
+	}
+
+	// -- Helper methods --
 
 	private <T extends BasePlugin> PluginEntry<T> createEntry(
 		final IndexItem<Plugin, BasePlugin> item)

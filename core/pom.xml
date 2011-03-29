@@ -26,6 +26,7 @@
 		<module>event</module>
 		<module>legacy</module>
 		<module>manager</module>
+		<module>module</module>
 		<module>platform</module>
 		<module>plugin</module>
 		<module>tool</module>

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.gui.pivot;
 
-import imagej.plugin.api.PluginEntry;
-import imagej.plugin.api.PluginUtils;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginUtils;
 import imagej.plugin.gui.ShadowMenu;
 import imagej.plugin.gui.pivot.PivotMenuCreator;
 import imagej.ui.UserInterface;

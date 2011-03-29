@@ -37,7 +37,7 @@ package imagej.gui.swing;
 import imagej.Log;
 import imagej.event.EventSubscriber;
 import imagej.manager.Managers;
-import imagej.plugin.api.PluginException;
+import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;

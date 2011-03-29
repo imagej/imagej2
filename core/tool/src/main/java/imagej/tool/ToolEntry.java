@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.plugin.api.BaseEntry;
+import imagej.plugin.BaseEntry;
 
 /**
  * TODO

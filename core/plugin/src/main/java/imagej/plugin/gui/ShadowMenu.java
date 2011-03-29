@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.gui;
 
 import imagej.Log;
-import imagej.plugin.api.MenuEntry;
-import imagej.plugin.api.PluginEntry;
+import imagej.plugin.MenuEntry;
+import imagej.plugin.PluginEntry;
 
 import java.util.ArrayList;
 import java.util.Collections;
