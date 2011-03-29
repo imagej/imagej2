@@ -1,5 +1,5 @@
 //
-// SwingUI.java
+// DisplayDeletedEvent.java
 //
 
 /*
@@ -32,65 +32,30 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.gui.swing;
+package imagej.display.event;
 
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginUtils;
-import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.swing.JMenuBarCreator;
-import imagej.ui.UI;
-import imagej.ui.UserInterface;
-
-import java.awt.BorderLayout;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+import imagej.display.Display;
+import imagej.object.event.ObjectDeletedEvent;
 
 /**
- * Swing-based user interface for ImageJ.
+ * An event indicating a display has been deleted.
  *
  * @author Curtis Rueden
  */
-@UI
-public class SwingUI implements UserInterface {
+public class DisplayDeletedEvent extends ObjectDeletedEvent {
 
-	private JFrame frame;
-	private SwingToolBar toolBar;
-	private SwingStatusBar statusBar;
+	private Display display;
 
-	// -- UserInterface methods --
-
-	@Override
-	public void initialize() {
-		frame = new JFrame("ImageJ");
-		toolBar = new SwingToolBar();
-		statusBar = new SwingStatusBar();
-		createMenuBar();
-
-		final JPanel pane = new JPanel();
-		frame.setContentPane(pane);
-		pane.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-		pane.add(toolBar, BorderLayout.NORTH);
-		pane.add(statusBar, BorderLayout.SOUTH);
-
-		frame.pack();
-		frame.setVisible(true);
+	public DisplayDeletedEvent(final Display display) {
+		super(display);
+		this.display = display;
 	}
 
-	// -- Helper methods --
+	// -- ObjectEvent methods --
 
-	private void createMenuBar() {
-		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setStatus("Discovered " + entries.size() + " plugins");
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
-		final JMenuBar menuBar = new JMenuBar();
-		new JMenuBarCreator().createMenus(rootMenu, menuBar);
-		frame.setJMenuBar(menuBar);
+	@Override
+	public Display getObject() {
+		return display;
 	}
 
 }

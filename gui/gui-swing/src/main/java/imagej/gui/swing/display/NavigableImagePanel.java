@@ -486,7 +486,7 @@ public class NavigableImagePanel extends JPanel implements
 
 	@Override
 	public void setCursor(final MouseCursor cursor) {
-		final int cursorCode = AWTCursorManager.getAWTCursorCode(cursor);
+		final int cursorCode = AWTCursors.getCursorCode(cursor);
 		setCursor(Cursor.getPredefinedCursor(cursorCode));
 	}
 

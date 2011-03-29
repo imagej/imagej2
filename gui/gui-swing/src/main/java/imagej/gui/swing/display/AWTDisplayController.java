@@ -129,7 +129,7 @@ public class AWTDisplayController implements DisplayController {
 		imgWindow.setTitle(imageName);
 		// display first image plane
 		pos = new int[dims.length - 2];
-		updatePosition();
+		update();
 		//FIXME - disabled. make this UI call in SimpleImageDisplay to
 		// avoid incorrectly calculating image canvas dimensions.
 		// Reenable if actually needed.
@@ -145,12 +145,11 @@ public class AWTDisplayController implements DisplayController {
 	@Override
 	public void updatePosition(final int posIndex, final int newValue) {
 		pos[posIndex] = newValue;
-		updatePosition();
+		update();
 	}
 
-	// -- Helper methods --
-
-	private void updatePosition() {
+	@Override
+	public void update() {
 		final BufferedImage bImage = getImagePlane();
 		if (bImage != null) {
 			display.getImageCanvas().setImage(bImage);
@@ -159,6 +158,8 @@ public class AWTDisplayController implements DisplayController {
 		// imgPanel.setNavigationImageEnabled(true);
 		imgWindow.setLabel(makeLabel());
 	}
+
+	// -- Helper methods --
 
 	private String makeLabel() {
 		final StringBuilder sb = new StringBuilder();

@@ -70,63 +70,67 @@ public class AWTImageDisplay extends AbstractAWTDisplay {
 
 	@Override
 	public void pan(float x, float y) {
-		// TODO
+		throw new UnsupportedOperationException("TODO");
 	}
 
+	@Override
+	public void update() {
+		throw new UnsupportedOperationException("TODO");
+	}
 
 	@Override
 	public Dataset getDataset() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public ImageDisplayWindow getImageDisplayWindow() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public NavigableImageCanvas getImageCanvas() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public Object getCurrentPlane() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public float getPanX() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public float getPanY() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public void setZoom(float factor, float centerX, float centerY) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public void zoomIn(float centerX, float centerY) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public void zoomOut(float centerX, float centerY) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public void zoomToFit(int w, int h) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public float getZoom() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("TODO");
 	}
 
 }

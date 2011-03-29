@@ -59,4 +59,6 @@ public interface DisplayController {
 
 	void updatePosition(final int posIndex, final int newValue);
 
+	void update();
+
 }

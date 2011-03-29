@@ -1,5 +1,5 @@
 //
-// AWTCursorManager.java
+// AWTCursors.java
 //
 
 /*
@@ -43,31 +43,13 @@ import java.awt.Cursor;
  * 
  * @author Grant Harris
  */
-public class AWTCursorManager {
+public final class AWTCursors {
 
-//	void setCursor(int cursorCode) {
-//        int newAwtCursorCode = getAWTCursorCode(cursorCode);
-//        if (newAwtCursorCode == Cursor.CUSTOM_CURSOR && invisibleCursor == null) {
-//            newAwtCursorCode = Cursor.DEFAULT_CURSOR;
-//        }
-//
-//        if (newAwtCursorCode == Cursor.DEFAULT_CURSOR) {
-//            cursorCode = Input.DEFAULT;
-//        }
-//
-//        if (this.cursorCode != cursorCode || this.awtCursorCode != newAwtCursorCode) {
-//            if (newAwtCursorCode == Cursor.CUSTOM_CURSOR) {
-//                comp.setCursor(invisibleCursor);
-//            }
-//            else {
-//                comp.setCursor(Cursor.getPredefinedCursor(newAwtCursorCode));
-//            }
-//            this.awtCursorCode = newAwtCursorCode;
-//            this.cursorCode = cursorCode;
-//        }
-//    }
+	private AWTCursors() {
+		// prevent instantiation of utility class
+	}
 
-	public static int getAWTCursorCode(final MouseCursor cursorCode) {
+	public static int getCursorCode(final MouseCursor cursorCode) {
 		switch (cursorCode) {
 			default:
 				return Cursor.DEFAULT_CURSOR;

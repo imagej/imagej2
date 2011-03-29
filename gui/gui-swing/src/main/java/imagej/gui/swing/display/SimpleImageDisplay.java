@@ -37,6 +37,8 @@ package imagej.gui.swing.display;
 import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.event.Events;
 import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 
@@ -53,6 +55,13 @@ public class SimpleImageDisplay implements Display {
 	private NavigableImagePanel imgCanvas;
 	private Dataset theDataset;
 	private DisplayController controller;
+
+	public SimpleImageDisplay() {
+		Events.publish(new DisplayCreatedEvent(this));
+		// CTR FIXME - listen for imgWindow windowClosing and send
+		// DisplayDeletedEvent. Think about how best this should work...
+		// Is a display always deleted when its window is closed?
+	}
 
 	@Override
 	public boolean canDisplay(final Dataset dataset) {
@@ -89,6 +98,11 @@ public class SimpleImageDisplay implements Display {
 	@Override
 	public Dataset getDataset() {
 		return theDataset;
+	}
+
+	@Override
+	public void update() {
+		controller.update();
 	}
 
 	@Override
