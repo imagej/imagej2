@@ -35,6 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.model;
 
 import imagej.Rect;
+import imagej.event.Events;
+import imagej.model.event.DatasetCreatedEvent;
+import imagej.model.event.DatasetDeletedEvent;
 import mpicbg.imglib.container.Container;
 import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
 import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
@@ -57,7 +60,7 @@ import mpicbg.imglib.type.numeric.RealType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset {
+public class Dataset implements Comparable<Dataset> {
 
 	private final Image<?> image;
 	private final Metadata metadata;
@@ -84,10 +87,14 @@ public class Dataset {
 	}
 
 	public Dataset(final Image<?> image, final Metadata metadata) {
+		if (metadata == null) {
+			throw new IllegalArgumentException("Metadata must not be null");
+		}
 		this.image = image;
 		this.metadata = metadata;
 		this.isRgbMerged = false;
 		this.selection = new Rect();
+		Events.publish(new DatasetCreatedEvent(this));
 	}
 
 	/** to be used in legacy layer only. allows the various legacy layer image translators to support color images correctly. */
@@ -189,6 +196,30 @@ public class Dataset {
 		return typeName.equals("mpicbg.imglib.type.numeric.real.FloatType")
 			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
 	}
+
+	/**
+	 * Deletes the given dataset, cleaning up resources
+	 * and removing it from the {@link DatasetManager}.
+	 */
+	public void delete() {
+		Events.publish(new DatasetDeletedEvent(this));
+	}
+
+	// -- Object methods --
+
+	@Override
+	public void finalize() {
+		delete();
+	}
+
+	// -- Comparable methods --
+
+	@Override
+	public int compareTo(Dataset dataset) {
+		return getMetadata().getName().compareTo(dataset.getMetadata().getName());
+	}
+
+	// -- Static utility methods --
 
 	// TODO - relocate this when its clear where it should go
 	public static <T extends RealType<T>> Image<T> createPlanarImage(final String name, final T type, final int[] dims)
