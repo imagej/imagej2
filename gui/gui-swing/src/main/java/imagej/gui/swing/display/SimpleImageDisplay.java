@@ -73,7 +73,8 @@ public class SimpleImageDisplay implements Display {
 		// further but patch for now in preparation of release of alpha 1.
 		controller.setDataset(dataset);
 		// FIXME - this pack() call an experiment to avoid it in
-		//   imgWindow.setDisplayController(). Did not test well.
+		//   imgWindow.setDisplayController(). Works but controller probably
+		//   should pack.
 		//imgWindow.pack();
 		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
