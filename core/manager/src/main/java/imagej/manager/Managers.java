@@ -52,11 +52,11 @@ import net.java.sezpoz.IndexItem;
  */
 public final class Managers {
 
-	public static final int FIRST_PRIORITY = 0;
-	public static final int HIGH_PRIORITY = 25;
-	public static final int NORMAL_PRIORITY = 50;
-	public static final int LOW_PRIORITY = 75;
-	public static final int LAST_PRIORITY = 100;
+	public static final float FIRST_PRIORITY = 0;
+	public static final float HIGH_PRIORITY = 25;
+	public static final float NORMAL_PRIORITY = 50;
+	public static final float LOW_PRIORITY = 75;
+	public static final float LAST_PRIORITY = 100;
 
 	// TODO - decide if singleton pattern is really best here
 
@@ -86,7 +86,7 @@ public final class Managers {
 			Index.load(Manager.class, ManagerComponent.class))
 		{
 			try {
-				final int priority = item.annotation().priority();
+				final float priority = item.annotation().priority();
 				entries.add(new ManagerEntry(item.instance(), priority));
 			}
 			catch (final InstantiationException e) {
@@ -132,9 +132,10 @@ public final class Managers {
 	private static class ManagerEntry implements Comparable<ManagerEntry> {
 
 		protected ManagerComponent manager;
-		protected int priority;
+		protected float priority;
 
-		protected ManagerEntry(final ManagerComponent manager, final int priority)
+		protected ManagerEntry(final ManagerComponent manager,
+			final float priority)
 		{
 			this.manager = manager;
 			this.priority = priority;
@@ -142,7 +143,9 @@ public final class Managers {
 
 		@Override
 		public int compareTo(final ManagerEntry entry) {
-			return priority - entry.priority;
+			if (priority < entry.priority) return -1;
+			else if (priority > entry.priority) return 1;
+			else return 0;
 		}
 
 	}
