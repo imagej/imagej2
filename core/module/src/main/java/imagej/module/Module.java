@@ -38,16 +38,17 @@ import java.util.Map;
 
 /**
  * A Module is an encapsulated piece of functionality with inputs and outputs.
+ * <p>
+ * There are several types of modules, including plugins and scripts, as well as
+ * workflows, which are directed acyclic graphs consisting of modules whose
+ * inputs and outputs are connected.
+ * </p>
+ * <p>
+ * The Module interface represents a specific instance of a module, while the
+ * corresponding {@link ModuleInfo} represents metadata about that module,
+ * particularly its input and output names and types.
+ * </p>
  * 
- * There are several types of modules, including plugins (see
- * {@link PluginModule}) and scripts (see {@link ScriptModule}),
- * as well as {@link Workflow}s, which are directed acyclic graphs
- * consisting of modules whose inputs and outputs are connected.
- *
- * The Module interface represents a specific instance of a module,
- * while the corresponding {@link ModuleInfo} represents metadata
- * about that module, particularly its input and output names and types.
- *
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
