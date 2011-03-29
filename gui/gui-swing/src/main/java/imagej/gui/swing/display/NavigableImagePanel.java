@@ -42,7 +42,6 @@ import imagej.display.NavigableImageCanvas;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.model.Dataset;
 import imagej.tool.event.ToolActivatedEvent;
 
 import java.awt.Color;
@@ -200,6 +199,7 @@ import javax.swing.SwingUtilities;
  * GBH: 
  * TODO: Break out the NavigationImage from the panel
  * TODO: Change firePropertyChanges to emit Events on EventBus.
+ *  (BDZ - this was done in one case : see below ... ZoomEvent)
  * Rearranged code into sections: ZoomDevice, NavigationImage, ...
  *
  * Extracted an interface....
@@ -217,7 +217,7 @@ public class NavigableImagePanel extends JPanel implements
 	private static final Object INTERPOLATION_TYPE =
 		RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 	private boolean highQualityRenderingEnabled = true;
-	private double zoomFactor = 1.0 + getZoomIncrement();
+	private double zoomFactor = 1.2; // 1.0 + getZoomIncrement();
 	private BufferedImage image;
 	private double initialScale = 0.0;
 	private double scale = 0.0;
@@ -225,6 +225,7 @@ public class NavigableImagePanel extends JPanel implements
 	private int originY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
+	private double multiplier = 1.2; // temporary value
 
 	/**
 	 * <p>
@@ -788,18 +789,21 @@ public class NavigableImagePanel extends JPanel implements
 	private void zoomImage() {
 		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
 		
-		// check if zoomed in too close
-		if ((zoomFactor > 1) && (scale > initialScale))
+		// check if trying to zoom in too close
+		if (zoomFactor > scale)
 		{
 			int maxDimension = Math.max(image.getWidth(), image.getHeight());
 
 			// if zooming the image would show less than one pixel of image data
 			if ((maxDimension / getZoom()) < 1)
+			{
+				zoomFactor = scale;  // reset so that mouse wheel does not alter scale incorrectly
 				return;  // DO NOT ZOOM ANY FARTHER
+			}
 		}
 		
-		// check if zoomed out too far
-		if ((zoomFactor < 1) && (scale < initialScale))
+		// check if trying to zoom out too far
+		if (zoomFactor < scale)
 		{
 			// get boundaries of image in panel coords
 			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
@@ -807,11 +811,14 @@ public class NavigableImagePanel extends JPanel implements
 
 			// if boundaries take up less than 25 pixels in either dimension 
 			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y < 25)))
+			{
+				zoomFactor = scale;  // reset so that mouse wheel does not alter scale incorrectly
 				return;  // DO NOT ZOOM ANY FARTHER
+			}
 		}
 		
 		final double oldZoom = getZoom();
-		scale *= zoomFactor;
+		scale = zoomFactor;
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (mousePosition.x - (int) panelP.x);
 		originY += (mousePosition.y - (int) panelP.y);
@@ -945,7 +952,8 @@ public class NavigableImagePanel extends JPanel implements
 		if (isFullImageInPanel()) {
 			return;
 		}
-		final int x = -originX * getScreenNavImageWidth() / getScreenImageWidth();
+		final int x =
+			-originX * getScreenNavImageWidth() / getScreenImageWidth();
 		final int y =
 			-originY * getScreenNavImageHeight() / getScreenImageHeight();
 		final int width =
@@ -1092,10 +1100,10 @@ public class NavigableImagePanel extends JPanel implements
 			}
 			else if (isInImage(ptToCoords(p))) {
 				if (zoomIn) {
-					zoomFactor = 1.0 + zoomIncrement;
+					zoomFactor *=  multiplier;
 				}
 				else {
-					zoomFactor = 1.0 - zoomIncrement;
+					zoomFactor /= multiplier;
 				}
 				zoomImage();
 			}
@@ -1115,7 +1123,7 @@ public class NavigableImagePanel extends JPanel implements
 					zoomNavigationImage();
 				}
 				else if (isInImage(ptToCoords(p))) {
-					zoomFactor = 1.0 - zoomIncrement;
+					zoomFactor /= multiplier;
 					zoomImage();
 				}
 			}
@@ -1125,7 +1133,7 @@ public class NavigableImagePanel extends JPanel implements
 					zoomNavigationImage();
 				}
 				else if (isInImage(ptToCoords(p))) {
-					zoomFactor = 1.0 + zoomIncrement;
+					zoomFactor *= multiplier;
 					zoomImage();
 				}
 			}
