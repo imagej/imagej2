@@ -75,20 +75,6 @@ public class AndDataValuesWith implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-			// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-			input = new Dataset(junkImage);
-			input.setSelection(20, 30, 150, 175);
-		}
 		UnaryOperator op = new AndConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, output, op);
 		output = transform.run();

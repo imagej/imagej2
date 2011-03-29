@@ -78,21 +78,6 @@ public class Neighborhood3x3Operation {
 	// -- public interface --
 
 	public Dataset run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set((index++) % 243);
-			cursor.close();
-			input = new Dataset(junkImage);
-			input.setSelection(20, 30, 150, 175);
-		}
-
 		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(input);
 
 		ImglibOutputAlgorithmRunner runner =

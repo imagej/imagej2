@@ -106,22 +106,6 @@ public class AddNoiseToDataValues {
 
 	/** runs the operation and returns the Dataset that contains the output data */
 	public Dataset run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a List<Dataset>
-		// @Parameter
-		{
-			Image<UnsignedShortType> junkImage =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-			input = new Dataset(junkImage);
-			input.setSelection(20, 30, 150, 175);
-		}
-
 		calcTypeMinAndMax();
 
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);

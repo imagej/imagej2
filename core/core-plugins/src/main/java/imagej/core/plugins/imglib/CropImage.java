@@ -112,21 +112,6 @@ public class CropImage implements ImageJPlugin {
 		 */
 		@Override
 		public boolean checkInput() {
-			if (input == null) // TODO - temporary code to test these until IJ2
-			// plugins can correctly fill a Dataset
-			// @Parameter
-			{
-				Image<UnsignedShortType> junkImage =
-					Dataset.createPlanarImage("", new UnsignedShortType(), new int[] {
-						200, 200 });
-				Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-				int index = 0;
-				for (UnsignedShortType pixRef : cursor)
-					pixRef.set(index++);
-				cursor.close();
-				input = new Dataset(junkImage);
-			}
-
 			inputImage = (Image<? extends RealType<?>>) input.getImage();
 
 			int[] newDimensions = inputImage.getDimensions().clone();

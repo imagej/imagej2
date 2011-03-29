@@ -71,20 +71,6 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<UnsignedShortType> junkImage =
-				Dataset.createPlanarImage("", new UnsignedShortType(), new int[] { 200,
-					200 });
-			Cursor<UnsignedShortType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (UnsignedShortType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-			input = new Dataset(junkImage);
-			input.setSelection(20, 30, 150, 175);
-		}
 		FlipCoordinateTransformer flipTransformer = new HorzFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibOutputAlgorithmRunner runner =

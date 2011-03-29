@@ -77,19 +77,6 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	/** runs this plugin */
 	@Override
 	public void run() {
-		if (input == null) // TODO - temporary code to test these until IJ2
-		// plugins can correctly fill a Dataset @Parameter
-		{
-			Image<FloatType> junkImage =
-				Dataset.createPlanarImage("", new FloatType(), new int[] { 200, 200 });
-			Cursor<FloatType> cursor = junkImage.createCursor();
-			int index = 0;
-			for (FloatType pixRef : cursor)
-				pixRef.set(index++);
-			cursor.close();
-			input = new Dataset(junkImage);
-		}
-
 		if (input.isFloat()) {
 			OutputAlgorithm algorithm = new SetToNaN(input, loThreshold, hiThreshold);
 			ImglibOutputAlgorithmRunner runner =
