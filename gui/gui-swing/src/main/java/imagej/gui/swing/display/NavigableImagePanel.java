@@ -210,7 +210,7 @@ import javax.swing.SwingUtilities;
  * http://weblogs.java.net/blog/gfx/archive/2005/09/zoom_pictures_w.html
  */
 public class NavigableImagePanel extends JPanel implements
-	NavigableImageCanvas
+	NavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
 {
 
 	// Rendering...
@@ -477,15 +477,7 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	@Override
 	public void subscribeToToolEvents() {
-		final EventSubscriber<ToolActivatedEvent> toolSubscriber =
-			new EventSubscriber<ToolActivatedEvent>() {
-
-				@Override
-				public void onEvent(final ToolActivatedEvent event) {
-					setCursor(event.getTool().getCursor());
-				}
-			};
-		Events.subscribe(ToolActivatedEvent.class, toolSubscriber);
+		Events.subscribe(ToolActivatedEvent.class, this);
 	}
 
 	@Override
@@ -1047,6 +1039,16 @@ public class NavigableImagePanel extends JPanel implements
 			return ZoomDevice.NONE;
 		}
 	}
+
+
+	// -- EventSubscriber methods --
+
+	@Override
+	public void onEvent(final ToolActivatedEvent event) {
+		setCursor(event.getTool().getCursor());
+	}
+
+	// -- Helper classes --
 
 	/**
 	 * <p>
