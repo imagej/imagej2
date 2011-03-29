@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
-			<version>1.7</version>
+			<version>${sezpoz.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.concord.external</groupId>
