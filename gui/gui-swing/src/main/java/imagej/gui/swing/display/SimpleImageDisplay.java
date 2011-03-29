@@ -72,6 +72,9 @@ public class SimpleImageDisplay implements Display {
 		// reset here then image width will not fill the zoom window. Will debug
 		// further but patch for now in preparation of release of alpha 1.
 		controller.setDataset(dataset);
+		// FIXME - this pack() call an experiment to avoid it in
+		//   imgWindow.setDisplayController(). Did not test well.
+		//imgWindow.pack();
 		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
 		imgCanvas.subscribeToToolEvents();
