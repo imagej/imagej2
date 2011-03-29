@@ -37,6 +37,7 @@ package imagej.display;
 import imagej.Log;
 import imagej.manager.Managers;
 import imagej.model.Dataset;
+import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
@@ -44,8 +45,8 @@ import imagej.plugin.PluginManager;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,28 +72,57 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		}
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
-
-			// get available display plugins from the plugin index
-			final PluginManager pluginManager = Managers.get(PluginManager.class);
-			final ArrayList<PluginEntry<Display>> plugins =
-				pluginManager.getPlugins(Display.class);
-			for (final PluginEntry<Display> pe : plugins) {
-				try {
-					final Display displayPlugin = pe.createInstance();
-					// display dataset using the first compatible DisplayPlugin
-					// TODO: prompt user with dialog box if multiple matches
-					if (displayPlugin.canDisplay(dataset)) {
-						displayPlugin.display(dataset);
-						break;
-					}
-				}
-				catch (final PluginException e) {
-					Log.error(e);
-				}
-			}
+			final int numUpdated = updateDisplays(dataset);
+			if (numUpdated == 0) displayDataset(dataset);
 		}
 		else {
 			// ignore non-Dataset output
+		}
+	}
+
+	// -- Helper methods --
+
+	/** Updates displays that are currently rendering the dataset. */
+	private int updateDisplays(final Dataset dataset) {
+		// CTR FIXME - Instead of this postprocessor updating the displays,
+		// it would make much more sense for the datasets to publish
+		// DatasetChangedEvents and for the displays to subscribe to them,
+		// then update themselves.
+
+		final ObjectManager objectManager = Managers.get(ObjectManager.class);
+		final List<Display> displays = objectManager.getObjects(Display.class);
+		Log.debug("Checking " + displays.size() + " existing displays...");//TEMP
+
+		int numUpdated = 0;
+		for (final Display display : displays) {
+			Log.debug("Checking display: " + display);//TEMP
+			if (dataset == display.getDataset()) {
+				display.update();
+				numUpdated++;
+			}
+		}
+		return numUpdated;
+	}
+
+	private void displayDataset(final Dataset dataset) {
+		// get available display plugins from the plugin manager
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final List<PluginEntry<Display>> plugins =
+			pluginManager.getPlugins(Display.class);
+
+		for (final PluginEntry<Display> pe : plugins) {
+			try {
+				final Display displayPlugin = pe.createInstance();
+				// display dataset using the first compatible DisplayPlugin
+				// TODO: prompt user with dialog box if multiple matches
+				if (displayPlugin.canDisplay(dataset)) {
+					displayPlugin.display(dataset);
+					break;
+				}
+			}
+			catch (final PluginException e) {
+				Log.error("Invalid display plugin: " + pe, e);
+			}
 		}
 	}
 

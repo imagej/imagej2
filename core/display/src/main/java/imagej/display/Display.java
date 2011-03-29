@@ -51,6 +51,8 @@ public interface Display extends BasePlugin {
 
 	Dataset getDataset();
 
+	void update();
+
 	ImageDisplayWindow getImageDisplayWindow();
 
 	NavigableImageCanvas getImageCanvas();
