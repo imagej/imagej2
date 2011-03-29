@@ -202,6 +202,9 @@ import javax.swing.SwingUtilities;
  *  (BDZ - this was done in the zoom changing cases : see below ... ZoomEvents)
  * TODO: the navigation preview is disabled. Also its zoom scaling has not
  *  been updated to mirror the overall image zoom scaling.
+ * TODO: finish phasing out zoomIncrement and utilizing zoomFactor. May require
+ *  changes to base classes/interfaces.
+ * 
  * Rearranged code into sections: ZoomDevice, NavigationImage, ...
  *
  * Extracted an interface....
@@ -228,6 +231,7 @@ public class NavigableImagePanel extends JPanel implements
 	private int originY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
+	private double zoomIncrement = 0.2;  // TODO - finish phasing this out
 
 	/**
 	 * <p>
@@ -706,6 +710,10 @@ public class NavigableImagePanel extends JPanel implements
 		setZoom(newZoom, zoomingCenter);
 	}
 
+	public double getZoomMultiplier() {
+		return zoomFactor;
+	}
+	
 	/**
 	 * <p>
 	 * Sets the zoom level used to display the image, and the zooming center,
@@ -739,7 +747,11 @@ public class NavigableImagePanel extends JPanel implements
 		}
 		final RealCoords correctedP = imageToPanelCoords(imageP);
 		final double oldZoom = getZoom();
-		scale = zoomToScale(newZoom);
+		double calculatedScale = zoomToScale(newZoom);
+		if (scaleOutOfBounds(calculatedScale))
+			return;
+		newScale = calculatedScale;
+		scale = newScale;
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (correctedP.getIntX() - (int) panelP.x);
 		originY += (correctedP.getIntY() - (int) panelP.y);
@@ -749,8 +761,6 @@ public class NavigableImagePanel extends JPanel implements
 
 	// TODO - allow the increment to be a function
 
-	private double zoomIncrement = 0.2;
-
 	/**
 	 * <p>
 	 * Gets the current zoom increment.
@@ -759,12 +769,10 @@ public class NavigableImagePanel extends JPanel implements
 	 * @return the current zoom increment
 	 */
 	@Override
-	public double getZoomIncrement() {
-		return calculateZoomIncrement();
-	}
-
-	private double calculateZoomIncrement() {
-		return zoomIncrement;
+	public double getZoomIncrement() {  // TODO - fix callers of this
+		return zoomFactor;
+		// OLD - increment was additive and factor is multiplicative
+		//return zoomIncrement;
 	}
 
 	/**
@@ -776,32 +784,28 @@ public class NavigableImagePanel extends JPanel implements
 	 */
 	@Override
 	public void setZoomIncrement(final double newZoomIncrement) {
+		throw new UnsupportedOperationException("not supported at the moment");
+		/*
 		final double oldZoomIncrement = zoomIncrement;
 		zoomIncrement = newZoomIncrement;
 		firePropertyChange(ZOOM_INCREMENT_CHANGED_PROPERTY, new Double(
 			oldZoomIncrement), new Double(zoomIncrement));
+			*/
 	}
 
-	// Zooms an image in the panel by repainting it at the new zoom level.
-	// The current mouse position is the zooming center.
-	private void zoomImage() {
-		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
-		
+	private boolean scaleOutOfBounds(double desiredScale) {
 		// check if trying to zoom in too close
-		if (newScale > scale)
+		if (desiredScale > scale)
 		{
 			int maxDimension = Math.max(image.getWidth(), image.getHeight());
 
 			// if zooming the image would show less than one pixel of image data
 			if ((maxDimension / getZoom()) < 1)
-			{
-				newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
-				return;  // DO NOT ZOOM ANY FARTHER
-			}
+				return true;
 		}
 		
 		// check if trying to zoom out too far
-		if (newScale < scale)
+		if (desiredScale < scale)
 		{
 			// get boundaries of image in panel coords
 			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
@@ -809,12 +813,21 @@ public class NavigableImagePanel extends JPanel implements
 
 			// if boundaries take up less than 25 pixels in either dimension 
 			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y < 25)))
-			{
-				newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
-				return;  // DO NOT ZOOM ANY FARTHER
-			}
+				return true;
 		}
 		
+		return false;
+	}
+	
+	// Zooms an image in the panel by repainting it at the new zoom level.
+	// The current mouse position is the zooming center.
+	private void zoomImage() {
+		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+		if (scaleOutOfBounds(newScale))
+		{
+			newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
+			return;  // DO NOT ZOOM ANY FARTHER
+		}
 		final double oldZoom = getZoom();
 		scale = newScale;
 		final RealCoords panelP = imageToPanelCoords(imageP);
