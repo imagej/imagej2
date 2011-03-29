@@ -53,6 +53,8 @@ public interface DisplayController {
 
 	int[] getPos();
 
+	Dataset getDataset();
+	
 	void setDataset(final Dataset dataset);
 
 	void updatePosition(final int posIndex, final int newValue);
