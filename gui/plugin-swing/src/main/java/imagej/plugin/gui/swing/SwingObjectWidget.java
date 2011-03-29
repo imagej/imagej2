@@ -45,7 +45,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 /**
- * Swing implementation of multiple choice selector widget.
+ * Swing implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
@@ -62,6 +62,9 @@ public class SwingObjectWidget extends JPanel
 		this.details = details;
 		comboBox = new JComboBox(items);
 		comboBox.setSelectedItem(initialValue);
+		if (comboBox.getSelectedIndex() < 0 && items.length > 0) {
+			comboBox.setSelectedIndex(0);
+		}
 		add(comboBox, BorderLayout.CENTER);
 		comboBox.addActionListener(this);
 	}
