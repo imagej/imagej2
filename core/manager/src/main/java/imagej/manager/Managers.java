@@ -67,15 +67,18 @@ public final class Managers {
 		getInstance();
 	}
 
+	/** Gets the singleton Managers instance. */
 	public static Managers getInstance() {
-		if (instance == null) instance = new Managers();
+		if (instance == null) new Managers();
 		return instance;
 	}
 
+	/** Gets the manager component of the given class. */
 	public static <T extends ManagerComponent> T get(final Class<T> c) {
 		return getInstance().getManager(c);
 	}
 
+	/** Discovers manager components present on the classpath. */
 	public static List<ManagerComponent> loadManagers() {
 		// use SezPoz to discover all manager components
 		final List<ManagerEntry> entries = new ArrayList<ManagerEntry>();
@@ -100,15 +103,25 @@ public final class Managers {
 	private final Map<Class<?>, ManagerComponent> managers;
 
 	private Managers() {
+		instance = this;
 		managers = new Hashtable<Class<?>, ManagerComponent>();
-		for (ManagerComponent m : Managers.loadManagers()) {
+
+		// discover available managers
+		final List<ManagerComponent> managerList = loadManagers();
+
+		// add managers to lookup table
+		for (final ManagerComponent m : managerList) {
 			managers.put(m.getClass(), m);
+		}
+
+		// initialize manager components
+		for (final ManagerComponent m : managerList) {
 			Log.debug("Initializing manager component: " + m);
 			m.initialize();
 		}
-		instance = this;
 	}
 
+	/** Gets the manager component of the given class. */
 	public <T extends ManagerComponent> T getManager(final Class<T> c) {
 		@SuppressWarnings("unchecked")
 		final T manager = (T) managers.get(c);
