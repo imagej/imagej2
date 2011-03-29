@@ -76,13 +76,19 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 
 	public NavigableImageFrame(final NavigableImagePanel imgCanvas) {
 		this.imgCanvas = imgCanvas;
-		imgCanvas.setBorder(new LineBorder(Color.black));
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
+		JPanel graphicPane = new JPanel();
+		graphicPane.setLayout(new BorderLayout());
+		graphicPane.setBorder(new LineBorder(Color.black));
+		graphicPane.add(imgCanvas, BorderLayout.CENTER);
+
+		
 		sliders = new JPanel();
+		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
 
 		final JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
@@ -90,7 +96,7 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		setContentPane(pane);
 
 		pane.add(imageLabel, BorderLayout.NORTH);
-		pane.add(imgCanvas, BorderLayout.CENTER);
+		pane.add(graphicPane, BorderLayout.CENTER);
 		pane.add(sliders, BorderLayout.SOUTH);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -101,8 +107,8 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 		this.controller = controller;
 		final int[] dims = controller.getDims();
 		final AxisLabel[] dimLabels = controller.getDimLabels();
-		if (dims.length > 2)
-			createSliders(dims, dimLabels);
+		createSliders(dims, dimLabels);
+		sliders.setVisible(dims.length > 2);
 	}
 
 	@Override
@@ -115,7 +121,6 @@ public class NavigableImageFrame extends JFrame implements ImageDisplayWindow {
 	}
 
 	private void createSliders(final int[] dims, final AxisLabel[] dimLabels) {
-		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
 		sliders.removeAll();
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (AxisLabel.isXY(dimLabels[i])) continue;
