@@ -89,9 +89,9 @@ public class CropImage implements ImageJPlugin {
 	@Override
 	public void run() {
 		OutputAlgorithm algorithm = new CropAlgorithm();
-		ImglibOutputAlgorithmRunner runner =
-			new ImglibOutputAlgorithmRunner(algorithm);
-		output = runner.run();
+		ImglibDataTransform runner =
+			new ImglibDataTransform(input, algorithm);
+		output = input;
 	}
 
 	// -- private interface --
