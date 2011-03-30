@@ -115,12 +115,12 @@ public class Dataset implements Comparable<Dataset> {
 	public void setImage(Image<?> newImageData) {
 		
 		if (image.getNumDimensions() != newImageData.getNumDimensions())
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("new image data has to have the same number of dimensions as the internal image");
 		
 		this.image = newImageData;
-		
 		// NB - keeping all the old metadata for now. TODO - revisit this?
-		// NB - keeping isRgnMerged status for now. TODO - revisit this?
+		// NB - keeping isRgbMerged status for now. TODO - revisit this?
+		this.selection = new Rect();
 		
 		Events.publish(new DatasetChangedEvent(this));
 	}
