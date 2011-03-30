@@ -27,7 +27,6 @@
       <outputDirectory>/jar</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
-      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
 </assembly>
