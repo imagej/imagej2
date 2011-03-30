@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imagej.plugin.BasePlugin;
 
 /**

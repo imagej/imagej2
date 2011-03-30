@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.manager;
 
-import imagej.Log;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;

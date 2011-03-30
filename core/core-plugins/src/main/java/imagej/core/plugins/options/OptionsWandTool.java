@@ -1,10 +1,10 @@
 package imagej.core.plugins.options;
 
-import imagej.SettingsKeys;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.SettingsKeys;
 
 /**
  * Runs the Edit::Options::Wand Tool... dialog

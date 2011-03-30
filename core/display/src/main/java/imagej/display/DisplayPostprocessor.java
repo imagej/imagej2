@@ -34,9 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.Log;
+import imagej.data.Dataset;
 import imagej.manager.Managers;
-import imagej.model.Dataset;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
@@ -44,6 +43,7 @@ import imagej.plugin.PluginException;
 import imagej.plugin.PluginManager;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;
+import imagej.util.Log;
 
 import java.util.Collection;
 import java.util.List;

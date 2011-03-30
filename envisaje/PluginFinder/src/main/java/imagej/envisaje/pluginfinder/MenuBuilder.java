@@ -2,8 +2,8 @@ package imagej.envisaje.pluginfinder;
 
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.gui.ShadowMenu;
-import imagej.plugin.gui.swing.JMenuCreator;
+import imagej.plugin.ui.ShadowMenu;
+import imagej.plugin.ui.swing.JMenuCreator;
 
 import java.util.ArrayList;
 import java.util.List;

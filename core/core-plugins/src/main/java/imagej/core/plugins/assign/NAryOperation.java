@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 
 import imglib.ops.function.RealFunction;
 import imglib.ops.operation.AssignOperation;

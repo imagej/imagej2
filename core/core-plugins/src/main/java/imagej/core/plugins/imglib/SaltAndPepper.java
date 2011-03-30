@@ -42,12 +42,12 @@ import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import imagej.Rect;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.Rect;
 
 // TODO - IJ1's implementation works on the current ROI rectangle. This plugin works on whole plane
 

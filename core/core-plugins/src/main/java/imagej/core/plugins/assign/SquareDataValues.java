@@ -39,12 +39,12 @@ import java.util.ArrayList;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import imagej.Rect;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.Rect;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Sqr;
 

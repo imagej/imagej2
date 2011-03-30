@@ -73,8 +73,8 @@ public class Open {
 		//ij2PluginFinder.findPlugins( plugins );
 		
 		//add plugin list manually
-		plugins.add(new PluginEntry("imagej.gui.ImageFromURL", new ArrayList<String>(), "ImageFromURL", ""));
-		plugins.add(new PluginEntry("imagej.gui.GradientImage", new ArrayList<String>(), "GradientImage", ""));
+		plugins.add(new PluginEntry("imagej.core.plugins.ImageFromURL", new ArrayList<String>(), "ImageFromURL", ""));
+		plugins.add(new PluginEntry("imagej.core.plugins.GradientImage", new ArrayList<String>(), "GradientImage", ""));
 		
 		//get a parameter handler
 		PluginEntry first = plugins.get(0);

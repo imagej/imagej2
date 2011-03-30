@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>imagej</groupId>
+		<artifactId>imagej-base</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>imagej-ui</artifactId>
+	<packaging>pom</packaging>
+
+	<name>ImageJ UI</name>
+	<description>ImageJ user interface projects.</description>
+
+	<modules>
+		<module>imagej</module>
+	</modules>
+
+	<properties>
+	  <pivot.version>1.4</pivot.version>
+		<swt.version>3.0m7</swt.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>all</id>
+			<modules>
+				<module>ui-awt</module>
+				<module>ui-pivot</module>
+				<module>ui-swing</module>
+				<module>ui-swt</module>
+				<module>platform-macosx</module>
+				<module>plugin-awt</module>
+				<module>plugin-pivot</module>
+				<module>plugin-swing</module>
+				<module>plugin-swt</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>awt</id>
+			<modules>
+				<module>ui-awt</module>
+				<module>plugin-awt</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>pivot</id>
+			<modules>
+				<module>ui-pivot</module>
+				<module>plugin-pivot</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>swing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>ui-swing</module>
+				<module>plugin-swing</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>swt</id>
+			<modules>
+				<module>ui-swt</module>
+				<module>plugin-swt</module>
+			</modules>
+		</profile>
+	</profiles>
+
+	<!-- NB: for project parent, in case of partial checkout -->
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
+
+</project>

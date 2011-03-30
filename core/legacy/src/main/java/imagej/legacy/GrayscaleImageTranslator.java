@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.model.Dataset;
-import imagej.model.Metadata;
+import imagej.data.Dataset;
+import imagej.data.Metadata;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

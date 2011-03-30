@@ -25,7 +25,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-common</artifactId>
+			<artifactId>ij-util</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

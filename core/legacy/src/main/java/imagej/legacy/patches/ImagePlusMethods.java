@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.patches;
 
 import ij.ImagePlus;
-import imagej.Log;
 import imagej.legacy.LegacyManager;
 import imagej.manager.Managers;
+import imagej.util.Log;
 
 /**
  * Overrides {@link ImagePlus} methods.

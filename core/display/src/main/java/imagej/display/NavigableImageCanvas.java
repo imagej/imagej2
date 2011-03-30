@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.IntCoords;
-import imagej.RealCoords;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * TODO

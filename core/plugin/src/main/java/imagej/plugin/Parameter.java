@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.plugin.gui.WidgetStyle;
+import imagej.plugin.ui.WidgetStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -104,7 +104,7 @@ public @interface Parameter {
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	WidgetStyle style() default imagej.plugin.gui.WidgetStyle.DEFAULT;
+	WidgetStyle style() default imagej.plugin.ui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";

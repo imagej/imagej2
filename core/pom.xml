@@ -18,10 +18,9 @@
 	<description>Core ImageJ projects.</description>
 
 	<modules>
-		<module>common</module>
 		<module>core-plugins</module>
 		<module>core-tools</module>
-		<module>data-model</module>
+		<module>data</module>
 		<module>display</module>
 		<module>event</module>
 		<module>legacy</module>
@@ -32,6 +31,7 @@
 		<module>plugin</module>
 		<module>tool</module>
 		<module>ui</module>
+		<module>util</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->

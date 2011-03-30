@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.IntCoords;
-import imagej.RealCoords;
 import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * TODO

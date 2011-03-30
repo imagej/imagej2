@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.model.AxisLabel;
-import imagej.model.Dataset;
+import imagej.data.AxisLabel;
+import imagej.data.Dataset;
 
 /**
  * TODO

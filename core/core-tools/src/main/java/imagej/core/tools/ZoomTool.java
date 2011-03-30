@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.IntCoords;
 import imagej.display.Display;
 import imagej.display.NavigableImageCanvas;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.util.IntCoords;
 
 /**
  * TODO

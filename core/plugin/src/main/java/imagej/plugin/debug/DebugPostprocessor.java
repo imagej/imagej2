@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.debug;
 
-import imagej.Log;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;
+import imagej.util.Log;
 
 import java.util.Map;
 

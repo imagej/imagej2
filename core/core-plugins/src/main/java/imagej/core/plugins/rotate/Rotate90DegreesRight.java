@@ -36,7 +36,7 @@ package imagej.core.plugins.rotate;
 
 import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;

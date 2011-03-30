@@ -14,12 +14,12 @@
 	<artifactId>ij-manager</artifactId>
 
 	<name>ImageJ Manager Framework</name>
-	<description>Shared framework for ImageJ managers.</description>
+	<description>Shared framework for ImageJ manager components.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-common</artifactId>
+			<artifactId>ij-util</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

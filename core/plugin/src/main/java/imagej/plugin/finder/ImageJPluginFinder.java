@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.finder;
 
-import imagej.Log;
 import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
