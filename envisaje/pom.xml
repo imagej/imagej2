@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-base</artifactId>
+		<artifactId>imagej-pom-base</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 

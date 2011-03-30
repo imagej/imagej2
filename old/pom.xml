@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-base</artifactId>
+		<artifactId>imagej-pom-base</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>imagej-old</artifactId>
+	<artifactId>imagej-pom-old</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ Old Projects</name>
+	<name>ImageJ Projects: Old</name>
 	<description>Unused and/or obsolete ImageJ projects.</description>
 
 	<modules>
