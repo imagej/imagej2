@@ -19,6 +19,7 @@
 
 	<modules>
 		<module>imagej</module>
+		<module>platform-macosx</module>
 	</modules>
 
 	<properties>
@@ -34,7 +35,6 @@
 				<module>ui-pivot</module>
 				<module>ui-swing</module>
 				<module>ui-swt</module>
-				<module>platform-macosx</module>
 				<module>plugin-awt</module>
 				<module>plugin-pivot</module>
 				<module>plugin-swing</module>
