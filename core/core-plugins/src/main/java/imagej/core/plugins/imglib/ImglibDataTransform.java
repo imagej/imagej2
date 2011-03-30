@@ -43,29 +43,31 @@ import imagej.data.Dataset;
  * 
  * @author Barry DeZonia
  */
-public class ImglibOutputAlgorithmRunner {
+public class ImglibDataTransform {
 
 	// -- instance variables --
 
+	private Dataset dataset;
 	private OutputAlgorithm algorithm;
 
 	// -- constructor --
 
 	/** preferred constructor */
-	public ImglibOutputAlgorithmRunner(final OutputAlgorithm algorithm) {
+	public ImglibDataTransform(Dataset dataset, OutputAlgorithm algorithm) {
+		this.dataset = dataset;
 		this.algorithm = algorithm;
 	}
 
 	// -- public interface --
 
 	/** run the plugin and assign output */
-	public Dataset run() {
+	public void run() {
 		if (this.algorithm == null) throw new IllegalStateException(
 			"algorithm reference is null");
 
 		if (!algorithm.checkInput() || !algorithm.process()) throw new IllegalStateException(
 			algorithm.getErrorMessage());
 
-		return new Dataset(algorithm.getResult());
+		dataset.setImage(algorithm.getResult());
 	}
 }
