@@ -6,7 +6,7 @@
 set -e
 
 ROOT=`cd "$(dirname $0)/.." ; pwd`
-COMPONENTS=(. core gui)
+COMPONENTS=(. core ui)
 
 GRAPH_CMD="
   neato
