@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.data.event.DatasetChangedEvent;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
@@ -62,7 +63,7 @@ import mpicbg.imglib.type.numeric.RealType;
  */
 public class Dataset implements Comparable<Dataset> {
 
-	private final Image<?> image;
+	private Image<?> image;
 	private final Metadata metadata;
 	private boolean isRgbMerged;
 	
@@ -109,6 +110,19 @@ public class Dataset implements Comparable<Dataset> {
 	
 	public Image<?> getImage() {
 		return image;
+	}
+
+	public void setImage(Image<?> newImageData) {
+		
+		if (image.getNumDimensions() != newImageData.getNumDimensions())
+			throw new IllegalArgumentException();
+		
+		this.image = newImageData;
+		
+		// NB - keeping all the old metadata for now. TODO - revisit this?
+		// NB - keeping isRgnMerged status for now. TODO - revisit this?
+		
+		Events.publish(new DatasetChangedEvent(this));
 	}
 
 	public Metadata getMetadata() {
