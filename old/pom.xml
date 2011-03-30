@@ -19,7 +19,6 @@
 
 	<modules>
 		<module>_ij1-patches</module>
-		<module>ijx</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
