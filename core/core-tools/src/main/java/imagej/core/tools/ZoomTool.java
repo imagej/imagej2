@@ -36,7 +36,10 @@ package imagej.core.tools;
 
 import imagej.display.Display;
 import imagej.display.NavigableImageCanvas;
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsPressedEvent;
+import imagej.display.event.mouse.MsWheelEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
@@ -47,22 +50,52 @@ import imagej.util.IntCoords;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Tool(name = "Zoom", description = "Image Zoom Tool",  iconPath = "/tools/zoom.png")
-
+@Tool(name = "Zoom", description = "Image Zoom Tool",
+	iconPath = "/tools/zoom.png")
 public class ZoomTool extends BaseTool {
 
+	// -- ITool methods --
+
 	@Override
-	public void onMouseDown(MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		final Display display = evt.getDisplay();
+		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) zoomIn(display, center);
+		else zoomOut(display, center);
+	}
+
+	@Override
+	public void onKeyDown(final KyPressedEvent evt) {
+		final Display display = evt.getDisplay();
+		final char c = evt.getCharacter();
+		if (c == '=' || c == '+') zoomIn(display, null);
+		else if (c == '-') zoomOut(display, null);
+	}
+
+	@Override
+	public void onMouseWheel(MsWheelEvent evt) {
+		final Display display = evt.getDisplay();
+		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		if (evt.getWheelRotation() > 0) zoomIn(display, center);
+		else zoomOut(display, center);
+	}
+
+	// -- Helper methods --
+
+	private void zoomIn(final Display display, final IntCoords zoomCenter) {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
-		double currentZoom = canvas.getZoom();
-		double newZoom = 1;
-		if (evt.getButton() == MsPressedEvent.LEFT_BUTTON)
-			newZoom = currentZoom * canvas.getZoomIncrement();  // zoom in
-		else
-			newZoom = currentZoom / canvas.getZoomIncrement();  // zoom out
-		IntCoords zoomingCenter = new IntCoords(evt.getX(), evt.getY());
-		canvas.setZoom(newZoom, zoomingCenter);
+		final double currentZoom = canvas.getZoom();
+		final double newZoom = currentZoom * canvas.getZoomIncrement();
+		if (zoomCenter == null) canvas.setZoom(newZoom);
+		else canvas.setZoom(newZoom, zoomCenter);
+	}
+
+	private void zoomOut(final Display display, final IntCoords zoomCenter) {
+		final NavigableImageCanvas canvas = display.getImageCanvas();
+		final double currentZoom = canvas.getZoom();
+		final double newZoom = currentZoom / canvas.getZoomIncrement();
+		if (zoomCenter == null) canvas.setZoom(newZoom);
+		else canvas.setZoom(newZoom, zoomCenter);
 	}
 
 }
