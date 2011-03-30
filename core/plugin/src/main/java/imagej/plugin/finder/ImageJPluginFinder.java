@@ -34,35 +34,117 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.finder;
 
-import imagej.manager.Managers;
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.BasePlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.MenuEntry;
+import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginManager;
 import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
+
 /**
- * Discovers ImageJ plugins, by querying the plugin manager.
+ * Discovers ImageJ plugins.
+ * <p>
+ * To accomplish this, SezPoz scans the classpath for {@link Plugin}
+ * annotations.
+ * </p>
  *
  * @author Curtis Rueden
  */
 @PluginFinder
 public class ImageJPluginFinder implements IPluginFinder {
 
+	/** Class loader to use when querying SezPoz. */
+	private static ClassLoader classLoader;
+
+	/** Sets the class loader to use when querying SezPoz. */
+	public static void setPluginClassLoader(final ClassLoader cl) {
+		classLoader = cl;
+	}
+
+	// -- IPluginFinder methods --
+
 	@Override
-	public void findPlugins(List<PluginEntry<?>> plugins) {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
-		final ArrayList<PluginEntry<ImageJPlugin>> pluginList =
-			pluginManager.getPlugins(ImageJPlugin.class);
-		plugins.addAll(pluginList);
+	public void findPlugins(final List<PluginEntry<?>> plugins) {
+		final Index<Plugin, BasePlugin> pluginIndex;
+		if (classLoader == null) {
+			pluginIndex = Index.load(Plugin.class, BasePlugin.class);
+		}
+		else {
+			pluginIndex = Index.load(Plugin.class, BasePlugin.class, classLoader);
+		}
+
+		final int oldSize = plugins.size();
+		for (final IndexItem<Plugin, BasePlugin> item : pluginIndex) {
+			final PluginEntry<?> entry = createEntry(item);
+			plugins.add(entry);
+		}
+		final int newSize = plugins.size();
+
 		if (Log.isDebug()) {
-			Log.debug("Found " + pluginList.size() + " plugins:");
-			for (final PluginEntry<ImageJPlugin> pe : pluginList) {
-				Log.debug("- " + pe);
+			Log.debug("Found " + (newSize - oldSize) + " plugins:");
+			for (int i = oldSize; i < newSize; i++) {
+				Log.debug("- " + plugins.get(i));
 			}
 		}
+	}
+
+	// -- Helper methods --
+
+	private <T extends BasePlugin> PluginEntry<T> createEntry(
+		final IndexItem<Plugin, BasePlugin> item)
+	{
+		final String className = item.className();
+		final Plugin plugin = item.annotation();
+
+		@SuppressWarnings("unchecked")
+		final Class<T> pluginType = (Class<T>) plugin.type();
+
+		final PluginEntry<T> entry = new PluginEntry<T>(className, pluginType);
+		entry.setName(plugin.name());
+		entry.setLabel(plugin.label());
+		entry.setDescription(plugin.description());
+		entry.setIconPath(plugin.iconPath());
+		entry.setPriority(plugin.priority());
+
+		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
+		final Menu[] menu = plugin.menu();
+		if (menu.length > 0) {
+			parseMenuPath(menuPath, menu);
+		}
+		else {
+			// parse menuPath attribute
+			final String path = plugin.menuPath();
+			if (!path.isEmpty()) parseMenuPath(menuPath, path);
+		}
+		entry.setMenuPath(menuPath);
+
+		return entry;
+	}
+
+	private void parseMenuPath(final List<MenuEntry> menuPath,
+		final Menu[] menu)
+	{
+		for (int i = 0; i < menu.length; i++) {
+			final String name = menu[i].label();
+			final double weight = menu[i].weight();
+			final char mnemonic = menu[i].mnemonic();
+			final String accelerator = menu[i].accelerator();
+			final String icon = menu[i].icon();				
+			menuPath.add(new MenuEntry(name, weight, mnemonic, accelerator, icon));
+		}
+	}
+
+	private void parseMenuPath(final List<MenuEntry> menuPath,
+		final String path)
+	{
+		final String[] menuPathTokens = path.split(">");
+		for (String token : menuPathTokens) menuPath.add(new MenuEntry(token));
 	}
 
 }

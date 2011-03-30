@@ -59,6 +59,7 @@ public class SwingStatusBar extends JPanel
 		progressBar.setStringPainted(true);
 		setLayout(new BorderLayout());
 		add(progressBar, BorderLayout.CENTER);
+		setStatus("");
 		Events.subscribe(StatusEvent.class, this);
 	}
 

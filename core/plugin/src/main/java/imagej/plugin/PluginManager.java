@@ -1,5 +1,5 @@
 //
-// PluginIndex.java
+// PluginManager.java
 //
 
 /*
@@ -37,11 +37,15 @@ package imagej.plugin;
 import imagej.manager.Manager;
 import imagej.manager.ManagerComponent;
 import imagej.manager.Managers;
+import imagej.plugin.finder.IPluginFinder;
+import imagej.plugin.finder.PluginFinder;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -51,43 +55,26 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.HIGH_PRIORITY)
+@Manager(priority = Managers.NORMAL_PRIORITY)
 public class PluginManager implements ManagerComponent {
 
-	/** Class loader to use when querying SezPoz. */
-	private static ClassLoader classLoader;
-
-	public static void setPluginClassLoader(final ClassLoader cl) {
-		classLoader = cl;
-	}
-
-	/** SezPoz index of available {@link BasePlugin}s. */
-	private Index<Plugin, BasePlugin> pluginIndex;
+	/** The complete list of known plugins. */
+	private List<PluginEntry<?>> plugins = new ArrayList<PluginEntry<?>>();
 
 	/** Table of plugin lists, organized by plugin type. */
-	private HashMap<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
-		new HashMap<Class<?>, ArrayList<PluginEntry<?>>>();
+	private Map<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
+		new ConcurrentHashMap<Class<?>, ArrayList<PluginEntry<?>>>();
 
+	/** Rediscovers all available plugins. */
 	public void reloadPlugins() {
-		if (classLoader == null) {
-			pluginIndex = Index.load(Plugin.class, BasePlugin.class);
-		}
-		else {
-			pluginIndex = Index.load(Plugin.class, BasePlugin.class, classLoader);
-		}
+		findPlugins();
+		classifyPlugins();
+		sortPlugins();
+	}
 
-		// classify plugins into types
-		pluginLists.clear();
-		for (final IndexItem<Plugin, BasePlugin> item : pluginIndex) {
-			final PluginEntry<?> entry = createEntry(item);
-			final Class<?> type = item.annotation().type();
-			registerType(entry, type);
-		}
-
-		// sort plugin lists by priority
-		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
-			Collections.sort(pluginList);
-		}
+	/** Gets the list of known plugins. */
+	public List<PluginEntry<?>> getPlugins() {
+		return Collections.unmodifiableList(plugins);
 	}
 
 	/** Gets a copy of the list of plugins labeled with the given type. */
@@ -108,6 +95,50 @@ public class PluginManager implements ManagerComponent {
 		return outputList;
 	}
 
+	/**
+	 * Searches the plugin index for the {@link PluginEntry} describing the
+	 * given plugin class.
+	 */
+	public <T extends BasePlugin> PluginEntry<T>
+		getPluginEntry(final Class<T> pluginClass)
+	{
+		// TODO - Come up with a faster search mechanism.
+		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
+			for (PluginEntry<?> entry : pluginList) {
+				if (entry.getClassName().equals(pluginClass.getName())) {
+					@SuppressWarnings("unchecked")
+					final PluginEntry<T> match = (PluginEntry<T>) entry;
+					return match;
+				}
+			}
+		}
+		return null; // no match
+	}
+
+	/**
+	 * Executes the plugin represented by the given {@link PluginEntry},
+	 * in its own thread.
+	 */
+	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry) {
+		// TODO - Implement a better threading mechanism for launching plugins.
+		// Perhaps a ThreadManager so that the UI can query currently
+		// running plugins and so forth?
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				new PluginRunner<T>(entry).run();
+			}
+		}, "PluginRunner-" + entry.getClassName()).start();
+	}
+
+	/**
+	 * Executes the plugin represented by the given class,
+	 * in its own thread.
+	 */
+	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
+		run(getPluginEntry(pluginClass));
+	}
+
 	// -- ManagerComponent methods --
 
 	@Override
@@ -117,64 +148,45 @@ public class PluginManager implements ManagerComponent {
 
 	// -- Helper methods --
 
-	private <T extends BasePlugin> PluginEntry<T> createEntry(
-		final IndexItem<Plugin, BasePlugin> item)
-	{
-		final String className = item.className();
-		final Plugin plugin = item.annotation();
-
-		@SuppressWarnings("unchecked")
-		final Class<T> pluginType = (Class<T>) plugin.type();
-
-		final PluginEntry<T> entry = new PluginEntry<T>(className, pluginType);
-		entry.setName(plugin.name());
-		entry.setLabel(plugin.label());
-		entry.setDescription(plugin.description());
-		entry.setIconPath(plugin.iconPath());
-		entry.setPriority(plugin.priority());
-
-		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
-		final Menu[] menu = plugin.menu();
-		if (menu.length > 0) {
-			parseMenuPath(menuPath, menu);
+	/** Discovers and invokes all plugin finders. */
+	private void findPlugins() {
+		plugins.clear();
+		for (final IndexItem<PluginFinder, IPluginFinder> item :
+			Index.load(PluginFinder.class, IPluginFinder.class))
+		{
+			try {
+				final IPluginFinder finder = item.instance();
+				finder.findPlugins(plugins);
+			}
+			catch (final InstantiationException e) {
+				Log.warn("Invalid plugin finder: " + item, e);
+			}
 		}
-		else {
-			// parse menuPath attribute
-			final String path = plugin.menuPath();
-			if (!path.isEmpty()) parseMenuPath(menuPath, path);
-		}
-		entry.setMenuPath(menuPath);
-
-		return entry;
 	}
 
-	private void registerType(PluginEntry<?> entry, Class<?> type) {
+	/** Classifies plugins according to type. */
+	private void classifyPlugins() {
+		pluginLists.clear();
+		for (final PluginEntry<?> entry : plugins) {
+			final Class<?> type = entry.getPluginType();
+			registerType(entry, type);
+		}
+	}
+
+	/** Sorts plugin lists by priority. */
+	private void sortPlugins() {
+		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
+			Collections.sort(pluginList);
+		}
+	}
+
+	private void registerType(final PluginEntry<?> entry, final Class<?> type) {
 		ArrayList<PluginEntry<?>> pluginList = pluginLists.get(type);
 		if (pluginList == null) {
 			pluginList = new ArrayList<PluginEntry<?>>();
 			pluginLists.put(type, pluginList);
 		}
 		pluginList.add(entry);
-	}
-
-	private void parseMenuPath(final List<MenuEntry> menuPath,
-		final Menu[] menu)
-	{
-		for (int i = 0; i < menu.length; i++) {
-			final String name = menu[i].label();
-			final double weight = menu[i].weight();
-			final char mnemonic = menu[i].mnemonic();
-			final String accelerator = menu[i].accelerator();
-			final String icon = menu[i].icon();				
-			menuPath.add(new MenuEntry(name, weight, mnemonic, accelerator, icon));
-		}
-	}
-
-	private void parseMenuPath(final List<MenuEntry> menuPath,
-		final String path)
-	{
-		final String[] menuPathTokens = path.split(">");
-		for (String token : menuPathTokens) menuPath.add(new MenuEntry(token));
 	}
 
 }

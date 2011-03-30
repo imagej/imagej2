@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
+import imagej.manager.Managers;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginUtils;
+import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swt.MenuCreator;
 import imagej.ui.UI;
@@ -93,8 +94,8 @@ public class SWTUI implements UserInterface, Runnable {
 	// -- Helper methods --
 
 	private void createMenuBar() {
-		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setStatus("Discovered " + entries.size() + " plugins");
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final Menu menuBar = new Menu(shell);
 		new MenuCreator().createMenus(rootMenu, menuBar);
