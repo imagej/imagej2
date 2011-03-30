@@ -38,9 +38,11 @@ import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -101,10 +103,12 @@ public final class Managers {
 	}
 
 	private final Map<Class<?>, ManagerComponent> managers;
+	private final Set<Class<? extends ManagerComponent>> initializedManagers;
 
 	private Managers() {
 		instance = this;
-		managers = new Hashtable<Class<?>, ManagerComponent>();
+		managers = new ConcurrentHashMap<Class<?>, ManagerComponent>();
+		initializedManagers = new HashSet<Class<? extends ManagerComponent>>();
 
 		// discover available managers
 		final List<ManagerComponent> managerList = loadManagers();
@@ -118,6 +122,7 @@ public final class Managers {
 		for (final ManagerComponent m : managerList) {
 			Log.debug("Initializing manager component: " + m);
 			m.initialize();
+			initializedManagers.add(m.getClass());
 		}
 	}
 
@@ -125,6 +130,16 @@ public final class Managers {
 	public <T extends ManagerComponent> T getManager(final Class<T> c) {
 		@SuppressWarnings("unchecked")
 		final T manager = (T) managers.get(c);
+		if (!initializedManagers.contains(c)) {
+			// NB: For now, disallow access to uninitialized managers. In the future,
+			// there may be a reason to allow it (e.g., managers with circular
+			// dependencies), but at the moment it is useful for debugging manager
+			// priorities for this exception to be thrown. Ideally, all managers
+			// should be initialized in a strict hierarchy. It would probably be
+			// worthwhile to think further about the manager architecture in general.
+			throw new IllegalStateException(
+				"Access to uninitialized manager component: " + c);
+		}
 		return manager;
 	}
 

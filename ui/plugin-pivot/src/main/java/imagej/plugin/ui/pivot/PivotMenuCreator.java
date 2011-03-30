@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.manager.Managers;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginUtils;
+import imagej.plugin.PluginManager;
 import imagej.plugin.RunnablePlugin;
 import imagej.plugin.ui.AbstractMenuCreator;
 import imagej.plugin.ui.ShadowMenu;
@@ -134,7 +135,8 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 				@SuppressWarnings("unchecked")
 				final PluginEntry<? extends RunnablePlugin> runnableEntry =
 					(PluginEntry<? extends RunnablePlugin>) entry;
-				PluginUtils.runPlugin(runnableEntry);
+				final PluginManager pluginManager = Managers.get(PluginManager.class);
+				pluginManager.run(runnableEntry);
 			}
 		});
 	}

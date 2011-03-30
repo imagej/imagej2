@@ -37,6 +37,8 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
+import imagej.legacy.LegacyManager;
+import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
@@ -100,8 +102,11 @@ public class LegacyPluginFinder implements IPluginFinder {
 		}
 	}
 
+	// -- IPluginFinder methods --
+
 	@Override
 	public void findPlugins(List<PluginEntry<?>> plugins) {
+		Managers.get(LegacyManager.class); // ensure ImageJ v1.x is initialized
 		final ImageJ ij = IJ.getInstance();
 		assert ij != null;
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);

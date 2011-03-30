@@ -61,7 +61,7 @@ import imagej.manager.ManagerComponent;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.NORMAL_PRIORITY)
+@Manager(priority = Managers.HIGH_PRIORITY)
 public final class LegacyManager implements ManagerComponent {
 
 	static {

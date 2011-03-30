@@ -34,8 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.pivot;
 
+import imagej.manager.Managers;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginUtils;
+import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.pivot.PivotMenuCreator;
 import imagej.ui.UserInterface;
@@ -112,8 +113,8 @@ public class PivotUI implements Application, UserInterface {
 	// -- Helper methods --
 
 	private void createMenuBar() {
-		final List<PluginEntry<?>> entries = PluginUtils.findPlugins();
-		statusBar.setStatus("Discovered " + entries.size() + " plugins");
+		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final BoxPane menuPane = new BoxPane();
 		new PivotMenuCreator().createMenus(rootMenu, menuPane);

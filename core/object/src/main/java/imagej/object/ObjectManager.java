@@ -122,7 +122,6 @@ public final class ObjectManager implements ManagerComponent {
 		return list;
 	}
 
-
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
