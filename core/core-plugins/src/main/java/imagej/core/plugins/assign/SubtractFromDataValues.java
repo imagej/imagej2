@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -76,7 +73,7 @@ public class SubtractFromDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		UnaryOperator op = new SubtractConstant(constant);
-		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		output = transform.run();
 	}
 }

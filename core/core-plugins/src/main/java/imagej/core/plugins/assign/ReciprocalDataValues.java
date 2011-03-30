@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.real.FloatType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -73,7 +70,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 		UnaryOperator op = new Reciprocal();
 		if (!input.isFloat()) // This is similar to what IJ1 does
 			op = new Copy();
-		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		output = transform.run();
 	}
 }

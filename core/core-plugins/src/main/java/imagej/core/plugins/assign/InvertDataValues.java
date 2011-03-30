@@ -42,9 +42,7 @@ import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Invert;
 import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data
@@ -78,7 +76,7 @@ public class InvertDataValues implements ImageJPlugin {
 	public void run() {
 		calcValueRange();
 		UnaryOperator op = new Invert(min, max);
-		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		output = transform.run();
 	}
 
