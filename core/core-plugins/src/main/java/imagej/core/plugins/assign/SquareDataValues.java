@@ -34,17 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import java.util.ArrayList;
-
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Rect;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Sqr;
 
@@ -73,7 +67,7 @@ public class SquareDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		UnaryOperator op = new Sqr();
-		UnaryTransformation transform = new UnaryTransformation(input, output, op);
+		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		output = transform.run();
 	}
 }

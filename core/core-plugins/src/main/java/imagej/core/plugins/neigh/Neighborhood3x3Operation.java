@@ -34,18 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.neigh;
 
-import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.data.Dataset;
 import imagej.util.Rect;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.outofbounds.OutOfBoundsStrategyFactory;
 import mpicbg.imglib.outofbounds.OutOfBoundsStrategyMirrorFactory;
 import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation
@@ -59,9 +55,9 @@ public class Neighborhood3x3Operation {
 	// -- instance variables --
 
 	private Dataset input;
-
-	private String errMessage = "No error";
-
+	private Image<?> inputImage;
+	private Image<?> inputImageCopy;
+	private Rect selection;
 	private Neighborhood3x3Watcher watcher;
 
 	// -- constructor --
@@ -77,156 +73,116 @@ public class Neighborhood3x3Operation {
 
 	// -- public interface --
 
-	public Dataset run() {
-		OutputAlgorithm algorithm = new Neighborhood3x3Algorithm(input);
-
-		ImglibOutputAlgorithmRunner runner =
-			new ImglibOutputAlgorithmRunner(algorithm);
-
-		return runner.run();
+	public Dataset run()
+	{
+		checkInput();
+		setupWorkingData();
+		runAssignment();
+		return input;
 	}
 
 	// -- private interface --
 
 	/**
-	 * implements any Neighborhood3x3Watcher algorithm using imglib's
-	 * OutputAlgorithm. creates an output image as a result.
+	 * make sure we have an input image and that it's dimensionality is correct
 	 */
-	private class Neighborhood3x3Algorithm implements OutputAlgorithm {
+	public void checkInput() {
+		if (input == null)
+			throw new IllegalArgumentException("input Dataset is null");
+		
+		if (input.getImage() == null)
+			throw new IllegalArgumentException("input Image is null");
 
-		private Image<?> inputImage;
-		private Image<?> outputImage;
-		private Rect selection;
+		if (input.getImage().getNumDimensions() != 2)
+			throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().getNumDimensions() + " dimensions");
+	}
 
-		/** constructor - an algorithm will reference an input Dataset */
-		public Neighborhood3x3Algorithm(Dataset input) {
-			inputImage = input.getImage();
-			outputImage = null;  // initialize later
-			selection = input.getSelection();
-		}
 
-		/**
-		 * make sure we have an input image and that it's dimensionality is correct
-		 */
-		@Override
-		public boolean checkInput() {
-			if (inputImage == null) {
-				errMessage = "input image is null";
-				return false;
-			}
+	public void setupWorkingData()
+	{
+		inputImage = input.getImage();
+		inputImageCopy = inputImage.clone();
+		selection = input.getSelection();
+	}
 
-			if (inputImage.getNumDimensions() != 2) {
-				errMessage =
-					"input image is not 2d but has " + inputImage.getNumDimensions() +
-						" dimensions";
-				return false;
-			}
+	public void runAssignment()
+	{
+		LocalizableByDimCursor<? extends RealType<?>> outputCursor =
+			(LocalizableByDimCursor<? extends RealType<?>>) inputImage
+				.createLocalizableByDimCursor();
 
-			outputImage = inputImage.createNewImage();
+		int[] origin = inputImage.createPositionArray();
+		origin[0] = selection.x;
+		origin[1] = selection.y;
+		
+		int[] span = inputImage.getDimensions();
+		if (selection.width > 0)
+			span[0] = selection.width;
+		if (selection.height > 0)
+			span[1] = selection.height;
+		
+		OutOfBoundsStrategyFactory factory =
+			new OutOfBoundsStrategyMirrorFactory();
+		
+		LocalizableByDimCursor<? extends RealType<?>> inputCursor =
+			(LocalizableByDimCursor<? extends RealType<?>>) inputImageCopy
+				.createLocalizableByDimCursor(factory);
 
-			return true;
-		}
+		RegionOfInterestCursor<? extends RealType<?>> neighCursor =
+			new RegionOfInterestCursor(inputCursor, origin, span);
+		
+		int[] inputPosition = new int[inputCursor.getNumDimensions()];
+		int[] localInputPosition = new int[inputCursor.getNumDimensions()];
 
-		/**
-		 * returns the current value of the error message. Only useful if
-		 * checkInput() returns false.
-		 */
-		@Override
-		public String getErrorMessage() {
-			return errMessage;
-		}
+		// initialize the watcher
+		watcher.setup();
 
-		/**
-		 * iterates over the input image updating the Neighborhood3x3Watcher as it
-		 * goes. sets the values in the output image to the resulting data values
-		 * calculated by the Neighborhood3x3Watcher.
-		 */
-		@Override
-		public boolean process() {
-			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
-				(LocalizableByDimCursor<? extends RealType<?>>) outputImage
-					.createLocalizableByDimCursor();
-
-			int[] origin = outputImage.createPositionArray();
-			origin[0] = selection.x;
-			origin[1] = selection.y;
+		// walk the selected region of the input image copy
+		
+		while (neighCursor.hasNext()) {
 			
-			int[] span = outputImage.getDimensions();
-			if (selection.width > 0)
-				span[0] = selection.width;
-			if (selection.height > 0)
-				span[1] = selection.height;
-			
-			RegionOfInterestCursor<? extends RealType<?>> neighCursor =
-				new RegionOfInterestCursor(outputCursor, origin, span);
-			
-			OutOfBoundsStrategyFactory factory =
-				new OutOfBoundsStrategyMirrorFactory();
-			
-			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
-				(LocalizableByDimCursor<? extends RealType<?>>) inputImage
-					.createLocalizableByDimCursor(factory);
+			// locate input cursor on next location
+			neighCursor.fwd();
 
-			int[] inputPosition = new int[inputCursor.getNumDimensions()];
-			int[] localInputPosition = new int[inputCursor.getNumDimensions()];
-
-			// initialize the watcher
-			watcher.setup();
-
-			// walk the neighborhood of the output image
+			// remember the location so that the input image cursor can use it
+			neighCursor.getPosition(inputPosition);
 			
-			while (neighCursor.hasNext()) {
+			// NOTE - inputPosition is in relative coordinates of neigh cursor.
+			//  Must translate to input coord space.
+			for (int i = 0; i < inputPosition.length; i++)
+				inputPosition[i] += origin[i];
+			
+			// let watcher know we are visiting a new neighborhood
+			watcher.initializeNeighborhood(inputPosition);
+
+			// iterate over the 3x3 neighborhood
+			for (int dy = -1; dy <= 1; dy++) {
+
+				localInputPosition[1] = inputPosition[1] + dy;
 				
-				// locate cursor on next location
-				RealType<?> outputValue = neighCursor.next();
+				for (int dx = -1; dx <= 1; dx++) {
 
-				// remember the location so that the input image cursor can use
-				// it
-				neighCursor.getPosition(inputPosition);
-				
-				// NOTE - inputPosition is in relative coordinates of neigh cursor.
-				//  Must translate to input coord space.
-				for (int i = 0; i < inputPosition.length; i++)
-					inputPosition[i] += origin[i];
-				
-				// let watcher know we are visiting a new neighborhood
-				watcher.initializeNeighborhood(inputPosition);
+					localInputPosition[0] = inputPosition[0] + dx;
 
-				// iterate over the 3x3 neighborhood
-				for (int dy = -1; dy <= 1; dy++) {
+					// move the input cursor there
+					inputCursor.setPosition(localInputPosition);
 
-					localInputPosition[1] = inputPosition[1] + dy;
+					// update watcher about the position and value of the
+					// subneighborhood location
+					double localValue = inputCursor.getType().getRealDouble();
 					
-					for (int dx = -1; dx <= 1; dx++) {
-
-						localInputPosition[0] = inputPosition[0] + dx;
-
-						// move the input cursor there
-						inputCursor.setPosition(localInputPosition);
-
-						// update watcher about the position and value of the
-						// subneighborhood location
-						double inputValue = inputCursor.getType().getRealDouble();
-						
-						watcher.visitLocation(dx, dy, inputValue);
-					}
+					watcher.visitLocation(dx, dy, localValue);
 				}
-
-				// assign output
-				outputValue.setReal(watcher.calcOutputValue());
 			}
 
-			inputCursor.close();
-			neighCursor.close();
-			outputCursor.close();
-
-			return true;
+			// assign output
+			outputCursor.setPosition(inputPosition);
+			
+			outputCursor.getType().setReal(watcher.calcOutputValue());
 		}
 
-		/** returns the resulting output image of this algorithm */
-		@Override
-		public Image<?> getResult() {
-			return outputImage;
-		}
+		neighCursor.close();
+		inputCursor.close();
+		outputCursor.close();
 	}
 }

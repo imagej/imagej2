@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.imglib;
+package imagej.core.plugins;
 
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
@@ -66,81 +66,64 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label = "TODO - should be used from current threshold - for now ask - Low threshold")
+	@Parameter(label =
+		"TODO - should use current threshold - for now ask - Low threshold")
 	private double loThreshold;
 
-	@Parameter(label = "TODO - should be used from current threshold - for now ask - High threshold")
+	@Parameter(label =
+		"TODO - should use current threshold - for now ask - High threshold")
 	private double hiThreshold;
 
+	private Image<?> inputImage;
+	
 	// -- public interface --
 
 	/** runs this plugin */
 	@Override
 	public void run() {
 		if (input.isFloat()) {
-			OutputAlgorithm algorithm = new SetToNaN(input, loThreshold, hiThreshold);
-			ImglibOutputAlgorithmRunner runner =
-				new ImglibOutputAlgorithmRunner(algorithm);
-			output = runner.run();
+			checkInput();
+			setupWorkingData();
+			assignPixels();
+			cleanup();
 		}
+		output = input;
 	}
-
+	
 	// -- private interface --
 
-	/** private implementation of algorithm */
-	private class SetToNaN implements OutputAlgorithm {
+	private void checkInput() {
+		if (input == null)
+			throw new IllegalArgumentException("input Dataset is null");
+		
+		if (input.getImage() == null)
+			throw new IllegalArgumentException("input Image is null");
+			
+		if (loThreshold > hiThreshold)
+			throw new IllegalArgumentException(
+				"threshold values incorrectly specified (min > max)");
+	}
+	
+	private void setupWorkingData() {
+		inputImage = input.getImage();
+	}
+	
+	private void assignPixels() {
+		Cursor<? extends RealType<?>> cursor =
+			(Cursor<? extends RealType<?>>) inputImage.createCursor();
 
-		private Image<?> inputImage;
-		private Image<?> outputImage;
-		private double loThreshold;
-		private double hiThreshold;
-		private String errMessage = "No error";
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			
+			double inputValue = cursor.getType().getRealDouble();
 
-		public SetToNaN(Dataset in, double loThreshold, double hiThreshold) {
-			inputImage = in.getImage(); // TODO - failure is a real possibility
-			// here (example: pass Image<FloatType>
-			// when declared plugin of DoubleType
-			outputImage = inputImage.createNewImage();
-			this.loThreshold = loThreshold;
-			this.hiThreshold = hiThreshold;
+			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
+				cursor.getType().setReal(Double.NaN);
 		}
 
-		@Override
-		public boolean checkInput() {
-			return true;
-		}
-
-		@Override
-		public String getErrorMessage() {
-			return errMessage;
-		}
-
-		@Override
-		public boolean process() {
-			Cursor<? extends RealType<?>> inputCursor =
-				(Cursor<? extends RealType<?>>) inputImage.createCursor();
-			Cursor<? extends RealType<?>> outputCursor =
-				(Cursor<? extends RealType<?>>) outputImage.createCursor();
-
-			while (inputCursor.hasNext() && outputCursor.hasNext()) {
-				double inputValue = inputCursor.next().getRealDouble();
-
-				if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-					outputCursor.next().setReal(Double.NaN);
-				else
-					outputCursor.next().setReal(inputValue);
-			}
-
-			inputCursor.close();
-			outputCursor.close();
-
-			return true;
-		}
-
-		@Override
-		public Image<?> getResult() {
-			return outputImage;
-		}
-
+		cursor.close();
+	}
+	
+	private void cleanup() {
 	}
 }
