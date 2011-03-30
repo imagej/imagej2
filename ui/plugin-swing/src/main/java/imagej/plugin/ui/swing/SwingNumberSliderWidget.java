@@ -52,19 +52,19 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 	private JSlider slider;
 
 	public SwingNumberSliderWidget(final ParamDetails details,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize)
+		final Number min, final Number max, final Number stepSize)
 	{
 		super(details);
 
-		slider = new JSlider(min.intValue(), max.intValue(),
-			initialValue.intValue());
+		slider = new JSlider(min.intValue(), max.intValue(), min.intValue());
 		slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
 		slider.setMinorTickSpacing(stepSize.intValue());
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		add(slider, BorderLayout.CENTER);
 		slider.addChangeListener(this);
+
+		refresh();
 	}
 
 	// -- ChangeListener methods --
@@ -86,9 +86,7 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 	@Override
 	public void refresh() {
 		final Number value = (Number) details.getValue();
-		slider.removeChangeListener(this);
 		slider.setValue(value.intValue());
-		slider.addChangeListener(this);
 	}
 
 }

@@ -39,8 +39,6 @@ import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamDetails;
 
-import java.io.File;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,60 +71,56 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details, final Number initialValue,
+	public void addNumber(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
-			SwingNumberWidget.create(details, initialValue, min, max, stepSize);
+			SwingNumberWidget.create(details, min, max, stepSize);
 		addField(details.getLabel(), numberWidget);
 		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details, final boolean initialValue)
-	{
+	public void addToggle(final ParamDetails details) {
 		final SwingToggleWidget toggleWidget =
-			new SwingToggleWidget(details, initialValue);
+			new SwingToggleWidget(details);
 		addField(details.getLabel(), toggleWidget);
 		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details,
-		final String initialValue, final int columns)
+	public void addTextField(final ParamDetails details, final int columns)
 	{
 		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(details, initialValue, columns);
+			new SwingTextFieldWidget(details, columns);
 		addField(details.getLabel(), textFieldWidget);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String initialValue,
-		final String[] items)
+	public void addChoice(final ParamDetails details, final String[] items)
 	{
 		final SwingChoiceWidget choiceWidget =
-			new SwingChoiceWidget(details, initialValue, items);
+			new SwingChoiceWidget(details, items);
 		addField(details.getLabel(), choiceWidget);
 		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details, final File initialValue) {
-		final SwingFileWidget fileWidget =
-			new SwingFileWidget(details, initialValue);
+	public void addFile(final ParamDetails details) {
+		final SwingFileWidget fileWidget = new SwingFileWidget(details);
 		addField(details.getLabel(), fileWidget);
 		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details, final Object initialValue)
+	public void addObject(final ParamDetails details)
 	{
 		final Class<?> type = details.getType();
 		final ObjectManager objectManager = Managers.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		final SwingObjectWidget objectWidget =
-			new SwingObjectWidget(details, initialValue, items);
+			new SwingObjectWidget(details, items);
 		addField(details.getLabel(), objectWidget);
 		objectWidgets.put(details.getName(), objectWidget);
 	}

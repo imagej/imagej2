@@ -56,13 +56,14 @@ public class SwingToggleWidget extends JPanel
 	private final ParamDetails details;
 	private final JCheckBox checkBox;
 
-	public SwingToggleWidget(final ParamDetails details,
-		final boolean initialValue)
-	{
+	public SwingToggleWidget(final ParamDetails details) {
 		this.details = details;
-		checkBox = new JCheckBox("", initialValue);
+
+		checkBox = new JCheckBox("");
 		add(checkBox, BorderLayout.CENTER);
 		checkBox.addChangeListener(this);
+
+		refresh();
 	}
 
 	// -- ChangeListener methods --
@@ -84,9 +85,7 @@ public class SwingToggleWidget extends JPanel
 	@Override
 	public void refresh() {
 		final boolean value = (Boolean) details.getValue();
-		checkBox.removeChangeListener(this);
 		checkBox.setSelected(value);
-		checkBox.addChangeListener(this);
 	}
 
 }

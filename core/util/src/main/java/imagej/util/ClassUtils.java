@@ -39,7 +39,7 @@ import java.math.BigInteger;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public final class ClassUtils {
@@ -49,11 +49,11 @@ public final class ClassUtils {
 	}
 
 	/** Converts the given string to a {@link Number}. */
-	public static Number toNumber(String num, Class<?> type) {
-		if (num.isEmpty()) return null;
-		if (isByte(type) || isShort(type) || isInteger(type)) {
-			return new Integer(num);
-		}
+	public static Number toNumber(final String num, final Class<?> type) {
+		if (num == null || num.isEmpty()) return null;
+		if (isByte(type)) return new Byte(num);
+		if (isShort(type)) return new Short(num);
+		if (isInteger(type)) return new Integer(num);
 		if (isLong(type)) return new Long(num);
 		if (isFloat(type)) return new Float(num);
 		if (isDouble(type)) return new Double(num);
@@ -61,8 +61,8 @@ public final class ClassUtils {
 		if (BigDecimal.class.isAssignableFrom(type)) return new BigDecimal(num);
 		return null;
 	}
-	
-	public static Number getMinimumNumber(Class<?> type) {
+
+	public static Number getMinimumNumber(final Class<?> type) {
 		if (isByte(type)) return Byte.MIN_VALUE;
 		if (isShort(type)) return Short.MIN_VALUE;
 		if (isInteger(type)) return Integer.MIN_VALUE;
@@ -72,7 +72,7 @@ public final class ClassUtils {
 		return Double.NEGATIVE_INFINITY;
 	}
 
-	public static Number getMaximumNumber(Class<?> type) {
+	public static Number getMaximumNumber(final Class<?> type) {
 		if (isByte(type)) return Byte.MAX_VALUE;
 		if (isShort(type)) return Short.MAX_VALUE;
 		if (isInteger(type)) return Integer.MAX_VALUE;
@@ -82,47 +82,47 @@ public final class ClassUtils {
 		return Double.POSITIVE_INFINITY;
 	}
 
-	public static boolean isBoolean(Class<?> type) {
+	public static boolean isBoolean(final Class<?> type) {
 		return Boolean.class.isAssignableFrom(type) ||
 			boolean.class.isAssignableFrom(type);
 	}
 
-	public static boolean isByte(Class<?> type) {
+	public static boolean isByte(final Class<?> type) {
 		return Byte.class.isAssignableFrom(type) ||
 			byte.class.isAssignableFrom(type);
 	}
 
-	public static boolean isCharacter(Class<?> type) {
+	public static boolean isCharacter(final Class<?> type) {
 		return Character.class.isAssignableFrom(type) ||
 			char.class.isAssignableFrom(type);
 	}
 
-	public static boolean isDouble(Class<?> type) {
+	public static boolean isDouble(final Class<?> type) {
 		return Double.class.isAssignableFrom(type) ||
 			double.class.isAssignableFrom(type);
 	}
 
-	public static boolean isFloat(Class<?> type) {
+	public static boolean isFloat(final Class<?> type) {
 		return Float.class.isAssignableFrom(type) ||
 			float.class.isAssignableFrom(type);
 	}
 
-	public static boolean isInteger(Class<?> type) {
+	public static boolean isInteger(final Class<?> type) {
 		return Integer.class.isAssignableFrom(type) ||
 			int.class.isAssignableFrom(type);
 	}
 
-	public static boolean isLong(Class<?> type) {
+	public static boolean isLong(final Class<?> type) {
 		return Long.class.isAssignableFrom(type) ||
 			long.class.isAssignableFrom(type);
 	}
 
-	public static boolean isShort(Class<?> type) {
+	public static boolean isShort(final Class<?> type) {
 		return Short.class.isAssignableFrom(type) ||
 			short.class.isAssignableFrom(type);
 	}
 
-	public static boolean isNumber(Class<?> type) {
+	public static boolean isNumber(final Class<?> type) {
 		return Number.class.isAssignableFrom(type) ||
 			byte.class.isAssignableFrom(type) ||
 			double.class.isAssignableFrom(type) ||
@@ -131,8 +131,8 @@ public final class ClassUtils {
 			long.class.isAssignableFrom(type) ||
 			short.class.isAssignableFrom(type);
 	}
-	
-	public static boolean isText(Class<?> type) {
+
+	public static boolean isText(final Class<?> type) {
 		return String.class.isAssignableFrom(type) || isCharacter(type);
 	}
 

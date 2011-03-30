@@ -58,21 +58,24 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 	private JScrollBar scrollBar;
 	private JTextField textField;
 
+	private boolean textFieldUpdating;
+
 	public SwingNumberScrollBarWidget(final ParamDetails details,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize)
+		final Number min, final Number max, final Number stepSize)
 	{
 		super(details);
 
 		scrollBar = new JScrollBar(Adjustable.HORIZONTAL,
-			initialValue.intValue(), 1, min.intValue(), max.intValue() + 1);
+			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		add(scrollBar, BorderLayout.CENTER);
 		scrollBar.addAdjustmentListener(this);
 
-		textField = new JTextField(initialValue.toString(), 6);
+		textField = new JTextField("", 6);
 		add(textField, BorderLayout.EAST);
 		textField.getDocument().addDocumentListener(this);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
@@ -86,22 +89,16 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 
 	@Override
 	public void refresh() {
-		final Number value = (Number) details.getValue();
-		scrollBar.removeAdjustmentListener(this);
-		textField.getDocument().removeDocumentListener(this);
+ 		final Number value = (Number) details.getValue();
 		scrollBar.setValue(value.intValue());
 		textField.setText(value.toString());
-		scrollBar.addAdjustmentListener(this);
-		textField.getDocument().addDocumentListener(this);
 	}
 
 	// -- AdjustmentListener methods --
 
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
-		textField.getDocument().removeDocumentListener(this);
-		textField.setText("" + scrollBar.getValue());
-		textField.getDocument().addDocumentListener(this);
+		if (!textFieldUpdating) textField.setText("" + scrollBar.getValue());
 		details.setValue(scrollBar.getValue());
 	}
 
@@ -125,12 +122,14 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 	// -- Helper methods --
 
 	private void documentUpdate() {
+		textFieldUpdating = true;
 		try {
 			scrollBar.setValue(Integer.parseInt(textField.getText()));
 		}
 		catch (NumberFormatException e) {
 			// invalid number in text field; do not update scroll bar
 		}
+		textFieldUpdating = false;
 	}
 
 }

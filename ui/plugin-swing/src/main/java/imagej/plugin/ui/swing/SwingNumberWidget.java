@@ -37,6 +37,7 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.NumberWidget;
 import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.WidgetStyle;
+import imagej.util.Log;
 
 import javax.swing.JPanel;
 
@@ -55,25 +56,19 @@ public abstract class SwingNumberWidget extends JPanel implements NumberWidget
 	}
 
 	public static SwingNumberWidget create(final ParamDetails details,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize)
+		final Number min, final Number max, final Number stepSize)
 	{
 		final WidgetStyle style = details.getStyle();
-		if (style == WidgetStyle.DEFAULT || style == WidgetStyle.NUMBER_SPINNER) {
-			return new SwingNumberSpinnerWidget(details, initialValue, min, max,
-				stepSize);
+		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
+			return new SwingNumberScrollBarWidget(details, min, max, stepSize);
 		}
-		else if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new SwingNumberScrollBarWidget(details, initialValue, min, max,
-				stepSize);
+		if (style == WidgetStyle.NUMBER_SLIDER) {
+			return new SwingNumberSliderWidget(details, min, max, stepSize);
 		}
-		else if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new SwingNumberSliderWidget(details, initialValue, min, max,
-				stepSize);
+		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
+			Log.warn("Ignoring unsupported widget style: " + style);
 		}
-		else {
-			throw new IllegalArgumentException("Invalid widget style: " + style);
-		}
+		return new SwingNumberSpinnerWidget(details, min, max, stepSize);
 	}
 
 }

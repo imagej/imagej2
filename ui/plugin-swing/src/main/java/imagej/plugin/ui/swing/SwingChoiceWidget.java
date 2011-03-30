@@ -56,14 +56,14 @@ public class SwingChoiceWidget extends JPanel
 	private final ParamDetails details;
 	private final JComboBox comboBox;
 
-	public SwingChoiceWidget(final ParamDetails details,
-		final String initialValue, final String[] items)
-	{
+	public SwingChoiceWidget(final ParamDetails details, final String[] items) {
 		this.details = details;
+
 		comboBox = new JComboBox(items);
-		comboBox.setSelectedItem(initialValue);
 		add(comboBox, BorderLayout.CENTER);
 		comboBox.addActionListener(this);
+
+		refresh();
 	}
 
 	// -- ActionListener methods --
@@ -89,9 +89,25 @@ public class SwingChoiceWidget extends JPanel
 
 	@Override
 	public void refresh() {
-		comboBox.removeActionListener(this);
-		comboBox.setSelectedItem(details.getValue());
-		comboBox.addActionListener(this);
+		comboBox.setSelectedItem(getValidValue());
+	}
+
+	// -- Helper methods --
+
+	private Object getValidValue() {
+		final int itemCount = comboBox.getItemCount();
+		if (itemCount == 0) return null; // no valid values exist
+
+		final Object value = details.getValue();
+		for (int i = 0; i < itemCount; i++) {
+			final Object item = comboBox.getItemAt(i);
+			if (value == item) return value;
+		}
+
+		// value was invalid; reset to first choice on the list
+		final Object validValue = comboBox.getItemAt(0);
+		details.setValue(validValue);
+		return validValue;
 	}
 
 }

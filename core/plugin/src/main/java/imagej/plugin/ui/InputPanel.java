@@ -53,55 +53,49 @@ public interface InputPanel {
 	 * Adds a numeric field.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue value to be initially displayed
 	 * @param min minimum allowed value
 	 * @param max maximum allowed value
 	 * @param stepSize distance between steps when operating widget
 	 */
-	void addNumber(ParamDetails details, Number initialValue,
+	void addNumber(ParamDetails details,
 		Number min, Number max, Number stepSize);
 
 	/**
 	 * Adds a checkbox field.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue the initial state
 	 */
-	void addToggle(ParamDetails details, boolean initialValue);
+	void addToggle(ParamDetails details);
 
 	/**
 	 * Adds a text field.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue the text initially displayed
 	 * @param columns width of field in characters
 	 */
-	void addTextField(ParamDetails details, String initialValue, int columns);
+	void addTextField(ParamDetails details, int columns);
 
 	/**
 	 * Adds a multiple choice text field.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue the initially selected item
 	 * @param items the choices
 	 */
-	void addChoice(ParamDetails details, String initialValue, String[] items);
+	void addChoice(ParamDetails details, String[] items);
 
 	/**
 	 * Adds a file selector.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue the initially specified file
 	 */
-	void addFile(ParamDetails details, File initialValue);
+	void addFile(ParamDetails details);
 
 	/**
 	 * Adds an object selector.
 	 * 
 	 * @param details basic parameter details (e.g., name, label, description)
-	 * @param initialValue the initially specified dataset
 	 */
-	void addObject(ParamDetails details, Object initialValue);
+	void addObject(ParamDetails details);
 
 	/**
 	 * Returns the contents of the given numeric field.

@@ -56,13 +56,14 @@ public class SwingTextFieldWidget extends JPanel
 	private final ParamDetails details;
 	private final JTextField textField;
 
-	public SwingTextFieldWidget(final ParamDetails details,
-		final String initialValue, final int columns)
-	{
+	public SwingTextFieldWidget(final ParamDetails details, final int columns) {
 		this.details = details;
-		textField = new JTextField(initialValue, columns);
+
+		textField = new JTextField("", columns);
 		add(textField, BorderLayout.CENTER);
 		textField.getDocument().addDocumentListener(this);
+
+		refresh();
 	}
 
 	// -- DocumentListener methods --
@@ -93,9 +94,7 @@ public class SwingTextFieldWidget extends JPanel
 
 	@Override
 	public void refresh() {
-		textField.getDocument().removeDocumentListener(this);
 		textField.setText(details.getValue().toString());
-		textField.getDocument().addDocumentListener(this);
 	}
 
 	// -- Helper methods --
