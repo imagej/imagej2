@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.Log;
 import imagej.manager.Managers;
 import imagej.plugin.process.PluginPostprocessor;
 import imagej.plugin.process.PluginPreprocessor;
+import imagej.util.Log;
 
 /**
  * Executes a runnable plugin.

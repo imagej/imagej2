@@ -37,14 +37,14 @@ package imagej.core.plugins.rotate;
 import mpicbg.imglib.cursor.Cursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import imagej.Rect;
 import imagej.core.plugins.imglib.ImglibOutputAlgorithmRunner;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.Rect;
 
 /**
  * Creates an output Dataset that is a duplicate of an input Dataset flipped

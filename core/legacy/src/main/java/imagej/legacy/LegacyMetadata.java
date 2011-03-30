@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.model.AxisLabel;
-import imagej.model.Metadata;
+import imagej.data.AxisLabel;
+import imagej.data.Metadata;
 
 /**
  * Utility methods for {@link Metadata} for a legacy image.

@@ -13,8 +13,8 @@
 
 	<artifactId>ij-object</artifactId>
 
-	<name>ImageJ Object Framework</name>
-	<description>Shared framework for ImageJ object collections.</description>
+	<name>ImageJ Object Collections</name>
+	<description>ImageJ object collections.</description>
 
 	<dependencies>
 		<dependency>

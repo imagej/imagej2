@@ -37,13 +37,13 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Menus;
-import imagej.Log;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 import imagej.util.ListUtils;
+import imagej.util.Log;
 
 import java.awt.Menu;
 import java.awt.MenuBar;

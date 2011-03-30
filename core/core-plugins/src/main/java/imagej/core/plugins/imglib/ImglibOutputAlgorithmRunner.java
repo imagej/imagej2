@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import mpicbg.imglib.algorithm.OutputAlgorithm;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 
 /**
  * Runs an Imglib OutputAlgorithm and returns the algorithm's output Image

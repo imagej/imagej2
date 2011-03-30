@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AddNoise;
 import mpicbg.imglib.cursor.Cursor;

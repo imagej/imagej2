@@ -36,7 +36,7 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.WindowManager;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 
 import java.util.Map;
 import java.util.WeakHashMap;

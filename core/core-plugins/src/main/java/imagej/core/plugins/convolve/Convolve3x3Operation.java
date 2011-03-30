@@ -36,7 +36,7 @@ package imagej.core.plugins.convolve;
 
 import imagej.core.plugins.neigh.Neighborhood3x3Operation;
 import imagej.core.plugins.neigh.Neighborhood3x3Watcher;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 
 /**
  * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3

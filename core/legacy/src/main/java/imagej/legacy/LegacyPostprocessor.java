@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import imagej.data.Dataset;
 import imagej.manager.Managers;
-import imagej.model.Dataset;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;

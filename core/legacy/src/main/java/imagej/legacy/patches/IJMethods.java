@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.patches;
 
 import ij.IJ;
-import imagej.Log;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.util.Log;
 
 /**
  * Overrides {@link IJ} methods.

@@ -37,8 +37,8 @@ package imagej.legacy;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
-import imagej.model.Dataset;
-import imagej.model.Metadata;
+import imagej.data.Dataset;
+import imagej.data.Metadata;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 

@@ -36,17 +36,17 @@ package imagej.legacy;
 
 import ij.ImageJ;
 import ij.ImagePlus;
+import imagej.data.Dataset;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.manager.Manager;
 import imagej.manager.Managers;
 import imagej.manager.ManagerComponent;
-import imagej.model.Dataset;
 
 /**
  * Manager component for working with legacy ImageJ 1.x.
  * <p>
  * The legacy manager overrides the behavior of various IJ1 methods,
- * inserting seams so that (e.g.) the modern GUI is aware of IJ1 events
+ * inserting seams so that (e.g.) the modern UI is aware of IJ1 events
  * as they occur.
  * </p>
  * <p>

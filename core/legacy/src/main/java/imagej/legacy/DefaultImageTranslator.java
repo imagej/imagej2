@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.model.Dataset;
+import imagej.data.Dataset;
 
 /**
  * Translates between legacy and modern ImageJ image structures.
