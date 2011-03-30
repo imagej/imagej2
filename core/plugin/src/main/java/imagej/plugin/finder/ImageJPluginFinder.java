@@ -144,7 +144,9 @@ public class ImageJPluginFinder implements IPluginFinder {
 		final String path)
 	{
 		final String[] menuPathTokens = path.split(">");
-		for (String token : menuPathTokens) menuPath.add(new MenuEntry(token));
+		for (final String token : menuPathTokens) {
+			menuPath.add(new MenuEntry(token.trim()));
+		}
 	}
 
 }

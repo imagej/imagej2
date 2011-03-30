@@ -57,18 +57,18 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 	private final JSpinner spinner;
 
 	public SwingNumberSpinnerWidget(final ParamDetails details,
-		final Number initialValue, final Number min, final Number max,
-		final Number stepSize)
+		final Number min, final Number max, final Number stepSize)
 	{
 		super(details);
 
-		final SpinnerNumberModel spinnerModel =
-			new SpinnerNumberModel(initialValue, (Comparable<?>) min,
-				(Comparable<?>) max, stepSize);
+		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(min,
+			(Comparable<?>) min, (Comparable<?>) max, stepSize);
 		spinner = new JSpinner(spinnerModel);
 		limitWidth(spinner, 300);
 		add(spinner, BorderLayout.CENTER);
 		spinner.addChangeListener(this);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
@@ -82,9 +82,8 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 
 	@Override
 	public void refresh() {
-		spinner.removeChangeListener(this);
-		spinner.setValue(details.getValue());
-		spinner.addChangeListener(this);
+		final Object value = details.getValue();
+		if (value != null) spinner.setValue(value);
 	}
 
 	// -- ChangeListener methods --

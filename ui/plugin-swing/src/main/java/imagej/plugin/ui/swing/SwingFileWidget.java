@@ -63,11 +63,12 @@ public class SwingFileWidget extends JPanel
 	private JTextField path;
 	private JButton browse;
 
-	public SwingFileWidget(final ParamDetails details, final File initialValue) {
+	public SwingFileWidget(final ParamDetails details) {
 		this.details = details;
+
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		path = new JTextField(initialValue == null ?
-			"" : initialValue.getAbsolutePath(), 20);
+
+		path = new JTextField("", 20);
 		add(path);
 		path.getDocument().addDocumentListener(this);
 
@@ -76,6 +77,8 @@ public class SwingFileWidget extends JPanel
 		browse = new JButton("Browse");
 		add(browse);
 		browse.addActionListener(this);
+
+		refresh();
 	}
 
 	// -- ActionListener methods --
@@ -121,9 +124,7 @@ public class SwingFileWidget extends JPanel
 
 	@Override
 	public void refresh() {
-		path.getDocument().removeDocumentListener(this);
 		path.setText(details.getValue().toString());
-		path.getDocument().addDocumentListener(this);
 	}
 
 	// -- Helper methods --

@@ -163,7 +163,8 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
 		final Number iValue = clampToRange(initialValue, min, max);
-		inputPanel.addNumber(details, iValue, min, max, stepSize);
+		details.setValue(iValue);
+		inputPanel.addNumber(details, min, max, stepSize);
 	}
 
 	private void addTextField(final InputPanel inputPanel,
@@ -172,31 +173,36 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		final String[] choices = details.getParameter().choices();
 		if (choices.length > 0) {
 			final String iValue = initialValue == null ? choices[0] : initialValue;
-			inputPanel.addChoice(details, iValue, choices);
+			details.setValue(iValue);
+			inputPanel.addChoice(details, choices);
 		}
 		else {
 			final String iValue = initialValue == null ? "" : initialValue;
 			final int columns = details.getParameter().columns();
-			inputPanel.addTextField(details, iValue, columns);
+			details.setValue(iValue);
+			inputPanel.addTextField(details, columns);
 		}
 	}
 
 	private void addToggle(final InputPanel inputPanel,
 		final ParamDetails details, final Boolean initialValue)
 	{
-		inputPanel.addToggle(details, initialValue);
+		details.setValue(initialValue);
+		inputPanel.addToggle(details);
 	}
 
 	private void addFile(final InputPanel inputPanel,
 		final ParamDetails details, final File initialValue)
 	{
-		inputPanel.addFile(details, initialValue);
+		details.setValue(initialValue);
+		inputPanel.addFile(details);
 	}
 
 	private void addObject(final InputPanel inputPanel, 
 		final ParamDetails details, final Object initialValue)
 	{
-		inputPanel.addObject(details, initialValue);
+		details.setValue(initialValue);
+		inputPanel.addObject(details);
 	}
 
 	// -- Helper methods - initial value computation --
@@ -287,6 +293,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 	private Number clampToRange(final Number value,
 		final Number min, final Number max)
 	{
+		if (value == null) return min;
 		final Class<?> type = value.getClass();
 		if (Comparable.class.isAssignableFrom(type)) {
 			final Comparable cValue = (Comparable) value;
