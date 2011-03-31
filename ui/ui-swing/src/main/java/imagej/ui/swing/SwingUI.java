@@ -41,23 +41,37 @@ import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
+import imagej.util.Log;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
  * Swing-based user interface for ImageJ.
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @UI
 public class SwingUI implements UserInterface {
 
+	static final String VERSION_NAME = "ImageJ 2.0 alpha 1";
+	static final String README_FILE = "README.txt";
+	
 	private JFrame frame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
@@ -81,6 +95,9 @@ public class SwingUI implements UserInterface {
 
 		frame.pack();
 		frame.setVisible(true);
+		
+		// TODO - set a Pref and only display README if Pref not found
+		displayReadme();
 	}
 
 	// -- Helper methods --
@@ -94,4 +111,56 @@ public class SwingUI implements UserInterface {
 		frame.setJMenuBar(menuBar);
 	}
 
+	private void displayReadme() {
+		final JDialog dialog = new JDialog(frame);
+		final JTextArea text = new JTextArea(25,80);
+		text.setEditable(false);
+		final JScrollPane scrollPane = new JScrollPane(text);
+		scrollPane.setPreferredSize(new Dimension(800,600));
+		BorderLayout layout = new BorderLayout();
+		dialog.setLayout(layout);
+		dialog.add(scrollPane, BorderLayout.CENTER);
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		dialog.setTitle(VERSION_NAME + " README file");
+		dialog.pack();
+		
+		List<String> readmeStrings = loadReadmeFile();
+		for (int i = 0; i < readmeStrings.size(); i++)
+			text.append(readmeStrings.get(i)+"\n");
+
+		dialog.setVisible(true);
+	}
+	
+	private List<String> loadReadmeFile()
+	{
+		Log.debug("current working dir = " + new File(".").getAbsolutePath());
+		
+		// determine path to README file
+
+		// path to README file is in base ImageJ installation directory
+		String pathToBaseInstallation;
+
+		// from within Eclipse it is relative to this UI's run path
+		pathToBaseInstallation = "../../";
+		
+		// TODO - from the command line must find absolute path of installation
+		//   directory of application
+		
+		List<String> stringsList = new ArrayList<String>();
+		
+		try {
+			String lineOfText;
+			BufferedReader br = new BufferedReader(
+				new FileReader(pathToBaseInstallation + README_FILE));
+			while ((lineOfText = br.readLine()) != null) {
+				stringsList.add(lineOfText);
+			}
+		}
+		catch (IOException e) {
+			String filePath = new File(README_FILE).getAbsolutePath();
+			throw new IllegalArgumentException("Can't find file "+filePath);
+		}
+
+		return stringsList;
+	}
 }
