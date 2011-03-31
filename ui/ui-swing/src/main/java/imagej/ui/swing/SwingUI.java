@@ -46,6 +46,7 @@ import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 import imagej.util.Log;
+import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -56,7 +57,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -66,16 +66,17 @@ import javax.swing.WindowConstants;
 
 /**
  * Swing-based user interface for ImageJ.
- *
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 @UI
 public class SwingUI implements UserInterface {
 
-	static final String VERSION_NAME = "ImageJ 2.0 alpha 1";
-	static final String README_FILE = "README.txt";
-	
+	public static final String VERSION = "2.0.0-alpha1";
+	private static final String README_FILE = "README.txt";
+	private static final String PREF_FIRST_RUN = "firstRun-2.0.0-alpha1";
+
 	private JFrame frame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
@@ -99,8 +100,7 @@ public class SwingUI implements UserInterface {
 
 		frame.pack();
 		frame.setVisible(true);
-		
-		// TODO - set a Pref and only display README if Pref not found
+
 		displayReadme();
 	}
 
@@ -122,56 +122,60 @@ public class SwingUI implements UserInterface {
 	}
 
 	private void displayReadme() {
-		final JDialog dialog = new JDialog(frame);
-		final JTextArea text = new JTextArea(25,80);
+		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
+		if (firstRun != null) return;
+		Prefs.put(getClass(), PREF_FIRST_RUN, false);
+
+		final JFrame readmeFrame = new JFrame();
+		final JTextArea text = new JTextArea(25, 80);
 		text.setEditable(false);
 		final JScrollPane scrollPane = new JScrollPane(text);
-		scrollPane.setPreferredSize(new Dimension(800,600));
-		BorderLayout layout = new BorderLayout();
-		dialog.setLayout(layout);
-		dialog.add(scrollPane, BorderLayout.CENTER);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setTitle(VERSION_NAME + " README file");
-		dialog.pack();
-		
-		List<String> readmeStrings = loadReadmeFile();
-		for (int i = 0; i < readmeStrings.size(); i++)
-			text.append(readmeStrings.get(i)+"\n");
+		scrollPane.setPreferredSize(new Dimension(800, 600));
+		readmeFrame.setLayout(new BorderLayout());
+		readmeFrame.add(scrollPane, BorderLayout.CENTER);
+		readmeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		readmeFrame.setTitle("ImageJ v" + VERSION + " - " + README_FILE);
+		readmeFrame.pack();
 
-		dialog.setVisible(true);
+		final List<String> readmeStrings = loadReadmeFile();
+		for (int i = 0; i < readmeStrings.size(); i++)
+			text.append(readmeStrings.get(i) + "\n");
+
+		readmeFrame.setVisible(true);
 	}
-	
+
 	private List<String> loadReadmeFile() {
 		Log.debug("current working dir = " + new File(".").getAbsolutePath());
-		
+
 		// determine path to README file
 
 		// path to README file is in base ImageJ installation directory
 		String pathToBaseInstallation;
 
 		// when not run inside Eclipse must set path to the
-		//   installation directory of application.
-		//   Assume app shell script always changes directory into imagej
-		//   base installation directory.
+		// installation directory of application.
+		// Assume app shell script always changes directory into imagej
+		// base installation directory.
 		pathToBaseInstallation = "./";
 
 		// TODO - hack to allow development in Eclipse. From within
 		// Eclipse path is relative to this UI's run path
 		pathToBaseInstallation = "../../";
-		
-		List<String> stringsList = new ArrayList<String>();
-		
+
+		final List<String> stringsList = new ArrayList<String>();
+
 		try {
 			String lineOfText;
-			BufferedReader br = new BufferedReader(
-				new FileReader(pathToBaseInstallation + README_FILE));
+			final BufferedReader br =
+				new BufferedReader(
+					new FileReader(pathToBaseInstallation + README_FILE));
 			while ((lineOfText = br.readLine()) != null) {
 				stringsList.add(lineOfText);
 			}
 		}
-		catch (IOException e) {
-			String filePath = new File(README_FILE).getAbsolutePath();
-			throw new IllegalArgumentException("Can't find file "+filePath);
+		catch (final IOException e) {
+			final String filePath = new File(README_FILE).getAbsolutePath();
+			throw new IllegalArgumentException("Can't find file " + filePath);
 		}
 
 		return stringsList;
