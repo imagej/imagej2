@@ -40,6 +40,7 @@ import imagej.manager.ManagerComponent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.java.sezpoz.Index;
@@ -55,9 +56,13 @@ public final class PlatformManager implements ManagerComponent {
 
 	// -- ManagerComponent methods --
 
+	/** Platform handlers applicable to this platform. */
+	private List<PlatformHandler> targetPlatforms;
+
 	@Override
 	public void initialize() {
-		final List<PlatformHandler> platforms = getTargetPlatforms();
+		final List<PlatformHandler> platforms = discoverTargetPlatforms();
+		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final PlatformHandler platform : platforms) {
 			Log.debug("Configuring platform: " + platform);
 			platform.configure();
@@ -65,10 +70,15 @@ public final class PlatformManager implements ManagerComponent {
     if (platforms.size() == 0) Log.debug("No platforms to configure.");
 	}
 
+	/** Gets the platform handlers applicable to this platform. */
+	public List<PlatformHandler> getTargetPlatforms() {
+		return targetPlatforms;
+	}
+
 	// -- Helper methods --
 
-	private List<PlatformHandler> getTargetPlatforms() {
-		// use SezPoz to discover all platform handlers
+	/** Discovers target platform handlers using SezPoz. */
+	private List<PlatformHandler> discoverTargetPlatforms() {
 		final List<PlatformHandler> platforms = new ArrayList<PlatformHandler>();
 		for (final IndexItem<Platform, PlatformHandler> item :
 			Index.load(Platform.class, PlatformHandler.class))
@@ -84,6 +94,10 @@ public final class PlatformManager implements ManagerComponent {
 		return platforms;
 	}
 
+	/**
+	 * Determines whether the given platform description is applicable to this
+	 * platform.
+	 */ 
 	private boolean isTargetPlatform(final Platform p) {
 		final String javaVendor = System.getProperty("java.vendor");
 		if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;

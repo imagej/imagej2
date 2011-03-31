@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
+import imagej.event.Events;
 import imagej.manager.Managers;
+import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
@@ -81,6 +83,11 @@ public class SWTUI implements UserInterface, Runnable {
 		new Thread(this, "SWT-Dispatch").start();
 	}
 
+	@Override
+	public void processArgs(final String[] args) {
+		// TODO
+	}
+
 	// -- Runnable methods --
 
 	@Override
@@ -100,6 +107,7 @@ public class SWTUI implements UserInterface, Runnable {
 		final Menu menuBar = new Menu(shell);
 		new MenuCreator().createMenus(rootMenu, menuBar);
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
+		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

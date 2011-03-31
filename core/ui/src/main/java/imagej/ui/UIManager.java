@@ -40,6 +40,7 @@ import imagej.manager.ManagerComponent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.java.sezpoz.Index;
@@ -53,30 +54,48 @@ import net.java.sezpoz.IndexItem;
 @Manager(priority = Managers.LAST_PRIORITY)
 public final class UIManager implements ManagerComponent {
 
+	/** The active user interface. */
+	private UserInterface userInterface;
+
+	/** Available user interfaces. */
+	private List<UserInterface> availableUIs;
+
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
 		Log.debug("Received command line arguments:");
 		for (String arg : args) Log.debug("\t" + arg);
-		// TODO - pass along arguments to applicable user interface
+		userInterface.processArgs(args);
+	}
+
+	/** Gets the active user interface. */
+	public UserInterface getUI() {
+		return userInterface;
+	}
+
+	/** Gets the user interfaces available on the classpath. */
+	public List<UserInterface> getAvailableUIs() {
+		return availableUIs;
 	}
 
 	// -- ManagerComponent methods --
 
 	@Override
 	public void initialize() {
-		final List<UserInterface> uis = getAvailableUIs();
+		final List<UserInterface> uis = discoverUIs();
+		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
 			Log.debug("Launching user interface: " + ui);
 			ui.initialize();
+			userInterface = ui;
 		}
 		else Log.warn("No user interfaces found.");
 	}
 
 	// -- Helper methods --
 
-	private List<UserInterface> getAvailableUIs() {
-		// use SezPoz to discover all user interfaces
+	/** Discovers user interfaces using SezPoz. */
+	private List<UserInterface> discoverUIs() {
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
 		for (final IndexItem<UI, UserInterface> item :
 			Index.load(UI.class, UserInterface.class))

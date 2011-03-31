@@ -1,5 +1,5 @@
 //
-// MacOSXPlatform.java
+// AppMenusCreatedEvent.java
 //
 
 /*
@@ -32,62 +32,23 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.platform.macosx;
-
-import com.apple.eawt.Application;
-
-import imagej.event.EventSubscriber;
-import imagej.event.Events;
-import imagej.platform.Platform;
-import imagej.platform.PlatformHandler;
-import imagej.platform.event.AppMenusCreatedEvent;
-
-import javax.swing.JMenuBar;
+package imagej.platform.event;
 
 /**
- * An platform implementation for handling Mac OS X platform issues:
- * <ul>
- * <li>Application events are rebroadcast as ImageJ events.</li>
- * <li>Mac OS X screen menu bar is enabled.</li>
- * <li>Special screen menu bar menu items are handled.</li>
- * </ul>
+ * An event sent when the application has created and populated its menus.
  * 
  * @author Curtis Rueden
  */
-@Platform(osName = "Mac OS X")
-public class MacOSXPlatform implements PlatformHandler,
-	EventSubscriber<AppMenusCreatedEvent>
-{
+public class AppMenusCreatedEvent extends ApplicationEvent {
 
-	// -- PlatformHandler methods --
+	private final Object menus;
 
-	@Override
-	public void configure() {
-		// set Mac OS X-specific system properties
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-
-		// translate Mac OS X application events into ImageJ events
-		final MacOSXAppListener appListener = new MacOSXAppListener();
-		final Application app = Application.getApplication();
-		app.setAboutHandler(appListener);
-		app.setPreferencesHandler(appListener);
-		app.setPrintFileHandler(appListener);
-		app.setQuitHandler(appListener);
-		app.addAppEventListener(appListener);
-
-		Events.subscribe(AppMenusCreatedEvent.class, this);
+	public AppMenusCreatedEvent(final Object menus) {
+		this.menus = menus;
 	}
 
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final AppMenusCreatedEvent event) {
-		final Object menus = event.getMenus();
-		if (!(menus instanceof JMenuBar)) return;
-
-		final JMenuBar menuBar = (JMenuBar) menus;
-		final Application app = Application.getApplication();
-		app.setDefaultMenuBar(menuBar);
+	public Object getMenus() {
+		return menus;
 	}
 
 }
