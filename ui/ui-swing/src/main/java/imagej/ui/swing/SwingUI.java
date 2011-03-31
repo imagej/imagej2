@@ -52,6 +52,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -138,6 +139,7 @@ public class SwingUI implements UserInterface {
 		readmeFrame.pack();
 
 		final List<String> readmeStrings = loadReadmeFile();
+
 		for (int i = 0; i < readmeStrings.size(); i++)
 			text.append(readmeStrings.get(i) + "\n");
 
@@ -152,13 +154,12 @@ public class SwingUI implements UserInterface {
 		// path to README file is in base ImageJ installation directory
 		String pathToBaseInstallation;
 
-		// when not run inside Eclipse must set path to the
-		// installation directory of application.
-		// Assume app shell script always changes directory into imagej
-		// base installation directory.
+		// when not run inside Eclipse must set path to the installation
+		//   directory of application. We will assume application shell script
+		//   always changes directory into imagej base installation directory.
 		pathToBaseInstallation = "./";
 
-		// TODO - hack to allow development in Eclipse. From within
+		// TODO - HACK to allow development in Eclipse. From within
 		// Eclipse path is relative to this UI's run path
 		pathToBaseInstallation = "../../";
 
@@ -173,9 +174,12 @@ public class SwingUI implements UserInterface {
 				stringsList.add(lineOfText);
 			}
 		}
-		catch (final IOException e) {
-			final String filePath = new File(README_FILE).getAbsolutePath();
-			throw new IllegalArgumentException("Can't find file " + filePath);
+		catch (FileNotFoundException e) {
+			throw new IllegalArgumentException(README_FILE + " not found at " +
+				new File(pathToBaseInstallation).getAbsolutePath());
+		}
+		catch (IOException e) {
+			throw new IllegalStateException(e.getMessage());
 		}
 
 		return stringsList;
