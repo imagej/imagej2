@@ -41,6 +41,7 @@ import imagej.plugin.Plugin;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
+import java.io.File;
 import java.math.BigInteger;
 
 /**
@@ -86,6 +87,9 @@ public class ParameterTester implements ImageJPlugin {
 	private String choice;
 
 	@Parameter
+	private File file;
+
+	@Parameter
 	private Dataset dataset;
 
 	@Parameter(label = "spinner", style = WidgetStyle.NUMBER_SPINNER, min = "0",
@@ -115,6 +119,7 @@ public class ParameterTester implements ImageJPlugin {
 		Log.info("\tString = " + string);
 		Log.info("\tmultiple choice = " + choice);
 		Log.info("\tDataset = " + dataset);
+		Log.info("\tFile = " + file);
 		Log.info("\tspinner = " + spinnerNumber);
 		Log.info("\tslider = " + sliderNumber);
 		Log.info("\tscroll bar = " + scrollBarNumber);
