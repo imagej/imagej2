@@ -32,6 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+// TODO - see TODOs below
+
 package imagej.ui.swing;
 
 import imagej.manager.Managers;
@@ -140,11 +142,15 @@ public class SwingUI implements UserInterface {
 		// path to README file is in base ImageJ installation directory
 		String pathToBaseInstallation;
 
-		// from within Eclipse it is relative to this UI's run path
+		// when not run inside Eclipse must set path to the
+		//   installation directory of application.
+		//   Assume app shell script always changes directory into imagej
+		//   base installation directory.
+		pathToBaseInstallation = "./";
+
+		// TODO - hack to allow development in Eclipse. From within
+		// Eclipse path is relative to this UI's run path
 		pathToBaseInstallation = "../../";
-		
-		// TODO - from the command line must find absolute path of installation
-		//   directory of application
 		
 		List<String> stringsList = new ArrayList<String>();
 		
