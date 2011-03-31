@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import imagej.util.Log;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -248,7 +249,8 @@ public class CodeHacker {
 			return classRef.toClass();
 		}
 		catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot load class: " + fullClass, e);
+			Log.warn("Cannot load class: " + fullClass, e);
+			return null;
 		}
 	}
 
@@ -259,7 +261,7 @@ public class CodeHacker {
 		}
 		catch (NotFoundException e) {
 			throw new IllegalArgumentException("No such class: " + fullClass, e);
-		}		
+		}
 	}
 
 	/**
