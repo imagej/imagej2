@@ -43,4 +43,6 @@ public interface UserInterface {
 
 	void initialize();
 
+	void processArgs(String[] args);
+
 }
