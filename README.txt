@@ -1,18 +1,24 @@
 Welcome to ImageJ 2.0 alpha 1
 
+IJ2 is currently made up of both IJ1 & IJ2 plugins. IJ1 plugins are distinguished
+with a small microscope icon next to their name in the menus. Commands implemented
+purely in IJ2 do not have this marker.
+
 There are a number of known issues with this release:
 
 The memory allocated to ImageJ is fixed at 512 mb
 
 Color is currently unsupported.
   * All images display in grayscale
-  * Color images are separated into images with 3 channels 
+  * Color images are separated into images with 3 channels
 
 The following toolbar tools are working. Unlisted tools are not.
 
   * Pan (hand icon)
   * Zoom (magnifying glass icon)
   * Probe (crosshairs icon)
+
+The Window menu is nonfunctional 
 
 The following menu entries are working. Unlisted commands do not work.
 
@@ -54,6 +60,33 @@ The following menu entries are working. Unlisted commands do not work.
           Ultimate Points
     * Math
     * FFT > FFT
+    * Filters
+        all except Show Circular Masks
     * Image Calculator
     * Gradient
 
+  Analyze menu
+
+    * Measure
+    * Analyze Particles
+    * Summarize
+    * Distribution
+    * Clear Results
+    * Histogram
+    * Surface Plot
+    * Tools > Save XY Coordinates
+    * Tools > Fractal Box Count
+    * Tools > Curve Fitting
+    * Tools > Scale Bar
+    * Tools > Calibration Bar
+
+  Plugins menu
+
+    * Macros > Run
+    * Macros > Edit
+    * Shortcuts > List Shortcuts
+    * Utilities > Control Panel
+    * Utilities > ImageJ Properties
+    * Utilities > Threads
+    * Utilities > Capture Image
+    * Utilities > Capture Screen
