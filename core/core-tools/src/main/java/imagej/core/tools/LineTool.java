@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = LineTool.PRIORITY, enabled = false)
 public class LineTool extends BaseTool {
 
-	private static final int PRIORITY = 104;
+	public static final int PRIORITY = 104;
 
 	// TODO
 

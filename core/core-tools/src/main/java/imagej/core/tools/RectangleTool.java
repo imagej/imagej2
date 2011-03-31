@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = RectangleTool.PRIORITY, enabled = false)
 public class RectangleTool extends BaseTool {
 
-	private static final int PRIORITY = 100;
+	public static final int PRIORITY = 100;
 
 	// TODO
 
