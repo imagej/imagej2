@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.TextFieldWidget;
 
 import org.apache.pivot.wtk.BoxPane;
@@ -41,16 +42,19 @@ import org.apache.pivot.wtk.TextInput;
 
 /**
  * Pivot implementation of text field widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PivotTextFieldWidget extends BoxPane implements TextFieldWidget {
 
-	private TextInput textInput;
+	private final ParamDetails details;
+	private final TextInput textInput;
 
-	public PivotTextFieldWidget(final String initialValue, final int columns) {
+	public PivotTextFieldWidget(final ParamDetails details) {
+		this.details = details;
+
 		textInput = new TextInput();
-		textInput.setText(initialValue);
+
 		add(textInput);
 	}
 
@@ -65,7 +69,7 @@ public class PivotTextFieldWidget extends BoxPane implements TextFieldWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		textInput.setText(details.getValue().toString());
 	}
 
 }

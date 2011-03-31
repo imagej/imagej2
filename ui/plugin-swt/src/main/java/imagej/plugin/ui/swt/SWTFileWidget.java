@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.plugin.ui.FileWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import java.io.File;
 
@@ -51,18 +52,23 @@ import org.eclipse.swt.widgets.Text;
  */
 public class SWTFileWidget extends Composite implements FileWidget {
 
+	private ParamDetails details;
 	private Text path;
 	private Button browse;
 
-	public SWTFileWidget(final Composite parent, final File initialValue) {
+	public SWTFileWidget(final Composite parent, final ParamDetails details) {
 		super(parent, 0);
+		this.details = details;
+
 		setLayout(new MigLayout());
+
 		path = new Text(this, 0);
-		path.setText(initialValue == null ?
-			"" : initialValue.getAbsolutePath());
 		path.setTextLimit(20);
+
 		browse = new Button(this, 0);
 		browse.setText("Browse");
+
+		refresh();
 	}
 
 	// -- FileWidget methods --
@@ -76,21 +82,7 @@ public class SWTFileWidget extends Composite implements FileWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		path.setText(details.getValue().toString());
 	}
-
-//	@Override
-//	public void actionPerformed(ActionEvent e) {
-//		File file = new File(path.getText());
-//		if (!file.isDirectory()) {
-//			file = file.getParentFile();
-//		}
-//		final FileDialog fileDialog = new FileDialog((Frame) null);
-//		fileDialog.setDirectory(file.getAbsolutePath());
-//		fileDialog.setVisible(true);
-//		final String filename = fileDialog.getFile();
-//		if (filename == null) return;
-//		path.setText(filename);
-//	}
 
 }

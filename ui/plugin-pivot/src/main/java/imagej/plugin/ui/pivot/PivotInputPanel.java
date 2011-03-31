@@ -37,8 +37,6 @@ package imagej.plugin.ui.pivot;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamDetails;
 
-import java.io.File;
-
 import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.TablePane;
@@ -88,7 +86,7 @@ public class PivotInputPanel extends AbstractInputPanel {
 	@Override
 	public void addTextField(final ParamDetails details, final int columns) {
 		final PivotTextFieldWidget textFieldWidget =
-			new PivotTextFieldWidget(details, columns);
+			new PivotTextFieldWidget(details);
 		addField(details.getLabel(), textFieldWidget);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}

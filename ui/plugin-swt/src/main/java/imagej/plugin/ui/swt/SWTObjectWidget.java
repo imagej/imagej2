@@ -1,5 +1,5 @@
 //
-// PivotFileWidget.java
+// SWTObjectWidget.java
 //
 
 /*
@@ -32,76 +32,58 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.ui.pivot;
+package imagej.plugin.ui.swt;
 
-import imagej.plugin.ui.FileWidget;
+import imagej.plugin.ui.ObjectWidget;
 import imagej.plugin.ui.ParamDetails;
 
-import java.io.File;
-
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
-import org.apache.pivot.wtk.FileBrowserSheet;
-import org.apache.pivot.wtk.FileBrowserSheet.Mode;
-import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.TextInput;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
 
 /**
- * Pivot implementation of file selector widget.
+ * SWT implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
-public class PivotFileWidget extends BoxPane implements FileWidget,
-	ButtonPressListener
-{
+public class SWTObjectWidget extends Composite implements ObjectWidget {
 
 	private final ParamDetails details;
-	private final TextInput path;
-	private final PushButton browse;
+	private final Combo combo;
+	private final Object[] items;
 
-	public PivotFileWidget(final ParamDetails details) {
+	public SWTObjectWidget(final Composite parent, final ParamDetails details,
+		final Object[] items)
+	{
+		super(parent, 0);
 		this.details = details;
+		this.items = items;
 
-		path = new TextInput();
-		add(path);
-
-		browse = new PushButton("Browse");
-		browse.getButtonPressListeners().add(this);
-		add(browse);
+		combo = new Combo(this, SWT.DROP_DOWN);
+		for (final Object item : items) combo.add(item.toString());
 
 		refresh();
 	}
 
-	// -- FileWidget methods --
+	// -- ChoiceWidget methods --
 
 	@Override
-	public File getFile() {
-		return new File(path.getText());
+	public Object getObject() {
+		return items[combo.getSelectionIndex()];
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		path.setText(details.getValue().toString());
-	}
-
-	// -- ButtonPressListener methods --
-
-	@Override
-	public void buttonPressed(final Button b) {
-		File file = new File(path.getText());
-		if (!file.isDirectory()) {
-			file = file.getParentFile();
+		final Object value = details.getValue();
+		for (int i = 0; i < items.length; i++) {
+			final Object item = items[i];
+			if (item == value) {
+				combo.select(i);
+				break;
+			}
 		}
-		final FileBrowserSheet browser = new FileBrowserSheet(Mode.OPEN);
-		browser.setSelectedFile(file);
-		browser.open(path.getWindow());
-		final boolean success = browser.getResult();
-		if (!success) return;
-		file = browser.getSelectedFile();
-		if (file != null) path.setText(file.getAbsolutePath());
 	}
 
 }

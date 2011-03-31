@@ -34,41 +34,50 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.plugin.ui.ParamDetails;
+import imagej.util.ClassUtils;
+
 import org.apache.pivot.wtk.Spinner;
 import org.apache.pivot.wtk.content.NumericSpinnerData;
 
 /**
  * Pivot implementation of number chooser widget, using a spinner.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
-	private Spinner spinner;
+	private final ParamDetails details;
+	private final Spinner spinner;
 
-	public PivotNumberSpinnerWidget(final Number initialValue,
+	public PivotNumberSpinnerWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
+		this.details = details;
+
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);
-		spinner.setSpinnerData(new NumericSpinnerData(
-			min.intValue(), max.intValue(), stepSize.intValue()));
-		spinner.setSelectedItem(initialValue.intValue());
+		spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
+			max.intValue(), stepSize.intValue()));
 		add(spinner);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
-		return new Integer(spinner.getSelectedItem().toString());
+		final String value = spinner.getSelectedItem().toString();
+		return ClassUtils.toNumber(value, details.getType());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		// TODO
+		final Number value = (Number) details.getValue();
+		spinner.setSelectedItem(value.intValue());
 	}
 
 }
