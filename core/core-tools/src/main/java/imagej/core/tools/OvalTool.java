@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = OvalTool.PRIORITY, enabled = false)
 public class OvalTool extends BaseTool {
 
-	private static final int PRIORITY = 101;
+	public static final int PRIORITY = 101;
 
 	// TODO
 

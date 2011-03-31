@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = FreehandTool.PRIORITY, enabled = false)
 public class FreehandTool extends BaseTool {
 
-	private static final int PRIORITY = 103;
+	public static final int PRIORITY = 103;
 
 	// TODO
 

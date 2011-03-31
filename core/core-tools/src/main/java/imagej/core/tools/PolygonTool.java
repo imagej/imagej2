@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = PolygonTool.PRIORITY, enabled = false)
 public class PolygonTool extends BaseTool {
 
-	private static final int PRIORITY = 102;
+	public static final int PRIORITY = 102;
 
 	// TODO
 
