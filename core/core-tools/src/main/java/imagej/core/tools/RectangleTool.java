@@ -42,8 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Rectangle", iconPath="/tools/rectangle.png")
+@Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
+	priority = RectangleTool.PRIORITY, enabled = false)
 public class RectangleTool extends BaseTool {
+
+	private static final int PRIORITY = 100;
 
 	// TODO
 

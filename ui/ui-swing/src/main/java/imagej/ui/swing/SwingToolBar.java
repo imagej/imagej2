@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.event.EventSubscriber;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.manager.Managers;
 import imagej.plugin.PluginException;
 import imagej.tool.ITool;
@@ -43,6 +45,8 @@ import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.util.Log;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,11 +92,17 @@ public class SwingToolBar extends JToolBar
 
 	private void populateToolBar() {
 		final ButtonGroup buttonGroup = new ButtonGroup();
+		int lastPriority = Integer.MAX_VALUE;
 		for (final ToolEntry entry : toolManager.getToolEntries()) {
 			try {
 				final AbstractButton button = createButton(entry, buttonGroup);
 				toolButtons.put(entry.getName(), button);
 				add(button);
+
+				// add a separator between tools with clustered priorities
+				final int priority = entry.getPriority();
+				if (priority - lastPriority > 10) addSeparator();
+				lastPriority = priority;
 			}
 			catch (PluginException e) {
 				Log.warn("Invalid tool: " + entry, e);
@@ -110,18 +120,33 @@ public class SwingToolBar extends JToolBar
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
 		final URL iconURL = entry.getIconURL();
+		final boolean enabled = entry.isEnabled();
 
 		final JToggleButton button = new JToggleButton();
+
+		// set icon
 		if (iconURL == null) {
 			button.setText(name);
 			Log.warn("Invalid icon for tool: " + tool);
 		}
 		else button.setIcon(new ImageIcon(iconURL, label));
-		if (description != null && !description.isEmpty()) {
-			button.setToolTipText(description);
+		
+		// set tool tip
+		if (label != null && !label.isEmpty()) {
+			button.setToolTipText(label);
 		}
+		else button.setToolTipText(name);
 		buttonGroup.add(button);
 
+		// display description on mouseover
+		button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(final MouseEvent evt) {
+				Events.publish(new StatusEvent(description));
+			}
+		});
+
+		// activate tool when button pressed
 		button.addChangeListener(new ChangeListener() {
 			boolean active = false;
 			@Override
@@ -133,7 +158,9 @@ public class SwingToolBar extends JToolBar
 				active = selected;
 			}
 		});
+
 		button.setBorder(INACTIVE_BORDER);
+		button.setEnabled(enabled);
 
 		return button;
 	}

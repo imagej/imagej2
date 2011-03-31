@@ -43,8 +43,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Point", iconPath="/tools/point.png", description = "Point")
+@Tool(name = "Point", iconPath = "/tools/point.png", description = "Point",
+	priority = PointTool.PRIORITY, enabled = false)
 public class PointTool extends BaseTool {
+
+	public static final int PRIORITY = 105;
 
 	@Override
 	public MouseCursor getCursor() {
@@ -52,7 +55,5 @@ public class PointTool extends BaseTool {
 	}
 
 	// TODO
-
-
 
 }

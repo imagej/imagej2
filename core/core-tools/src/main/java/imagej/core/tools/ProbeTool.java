@@ -50,8 +50,12 @@ import imagej.util.RealCoords;
  * @author Grant Harris
  */
 @Tool(name = "Probe", iconPath = "/tools/probe.png",
-	description = "Probe Pixel Tool")
+	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
 public class ProbeTool extends BaseTool {
+
+	public static final int PRIORITY = 204;
+
+	// -- ITool methods --
 
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {

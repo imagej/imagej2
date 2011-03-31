@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.manager.Managers;
 import imagej.plugin.PluginException;
 import imagej.tool.ITool;
@@ -45,10 +47,13 @@ import java.awt.Button;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,11 +81,17 @@ public class AWTToolBar extends Panel {
 	}
 
 	private void populateToolBar() {
+		int lastPriority = Integer.MAX_VALUE;
 		for (final ToolEntry entry : toolManager.getToolEntries()) {
 			try {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
 				add(button);
+
+				// add a separator between tools with clustered priorities
+				final int priority = entry.getPriority();
+				if (priority - lastPriority > 10) add(new Label(" "));
+				lastPriority = priority;
 			}
 			catch (PluginException e) {
 				Log.warn("Invalid tool: " + entry, e);
@@ -93,9 +104,12 @@ public class AWTToolBar extends Panel {
 		// TODO - consider alternatives to assigning the entry manually
 		tool.setToolEntry(entry);
 		final String name = entry.getName();
+		final String label = entry.getLabel();
+		final String description = entry.getDescription();
 		final URL iconURL = entry.getIconURL();
-
 		final Image iconImage = loadImage(iconURL);
+		final boolean enabled = entry.isEnabled();
+
 		final Button button = new Button() {
 			@Override
 			public void paint(final Graphics g) {
@@ -110,16 +124,28 @@ public class AWTToolBar extends Panel {
 			}
 		};
 		if (iconURL == null) {
-			button.setLabel(name);
+			if (label != null && !label.isEmpty()) button.setLabel(label);
+			else button.setLabel(name);
 			Log.warn("Invalid icon for tool: " + tool);
 		}
 
+		// display description on mouseover
+		button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(final MouseEvent evt) {
+				Events.publish(new StatusEvent(description));
+			}
+		});
+
+		// activate tool when button pressed
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getToolManager().setActiveTool(tool);
 			}
 		});
+
+		button.setEnabled(enabled);
 
 		return button;
 	}

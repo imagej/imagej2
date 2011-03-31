@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
+
 package imagej.core.tools;
 
 import imagej.tool.BaseTool;
@@ -43,8 +44,11 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Arrow", iconPath = "/tools/arrow.png", description = "Arrow")
+@Tool(name = "Arrow", iconPath = "/tools/arrow.png", description = "Arrow",
+	priority = ArrowTool.PRIORITY, enabled = false)
 public class ArrowTool extends BaseTool {
+
+	public static final int PRIORITY = 305;
 
 	// TODO
 

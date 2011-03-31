@@ -141,8 +141,7 @@ public class SwingUI implements UserInterface {
 		dialog.setVisible(true);
 	}
 	
-	private List<String> loadReadmeFile()
-	{
+	private List<String> loadReadmeFile() {
 		Log.debug("current working dir = " + new File(".").getAbsolutePath());
 		
 		// determine path to README file
@@ -177,4 +176,5 @@ public class SwingUI implements UserInterface {
 
 		return stringsList;
 	}
+
 }

@@ -43,8 +43,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Text", iconPath="/tools/text.png", description = "Text")
+@Tool(name = "Text", iconPath = "/tools/text.png", description = "Text",
+	priority = TextTool.PRIORITY, enabled = false)
 public class TextTool extends BaseTool {
+
+	public static final int PRIORITY = 201;
 
 	@Override
 	public MouseCursor getCursor() {
@@ -52,6 +55,5 @@ public class TextTool extends BaseTool {
 	}
 
 	// TODO
-
 
 }

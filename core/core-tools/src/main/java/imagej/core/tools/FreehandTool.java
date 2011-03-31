@@ -42,8 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Freehand", iconPath="/tools/freehand.png")
+@Tool(name = "Freehand", iconPath = "/tools/freehand.png",
+	priority = FreehandTool.PRIORITY, enabled = false)
 public class FreehandTool extends BaseTool {
+
+	private static final int PRIORITY = 103;
 
 	// TODO
 

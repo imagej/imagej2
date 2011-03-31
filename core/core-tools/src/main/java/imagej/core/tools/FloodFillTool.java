@@ -44,12 +44,12 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(
-	name = "FloodFill",
-	label = "Flood Fill",
-	iconPath = "/tools/flood-fill.png"
-)
+@Tool(name = "FloodFill", label = "Flood Fill",
+	iconPath = "/tools/flood-fill.png", priority = FloodFillTool.PRIORITY,
+	enabled = false)
 public class FloodFillTool extends BaseTool {
+
+	public static final int PRIORITY = 304;
 
 	// TODO
 
