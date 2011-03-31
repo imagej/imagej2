@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.plugin.ui.NumberWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -42,22 +43,25 @@ import org.eclipse.swt.widgets.Slider;
 
 /**
  * SWT implementation of number chooser widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTNumberWidget extends Composite implements NumberWidget {
 
-	private Slider slider;
+	private final ParamDetails details;
+	private final Slider slider;
 
-	public SWTNumberWidget(final Composite parent, final Number initialValue,
+	public SWTNumberWidget(final Composite parent, final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
 		super(parent, 0);
+		this.details = details;
+
 		slider = new Slider(this, SWT.HORIZONTAL);
-		slider.setMinimum(min.intValue());
-		slider.setMaximum(max.intValue());
-		slider.setValues(initialValue.intValue(), min.intValue(), max.intValue(),
+		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
 			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
@@ -71,7 +75,8 @@ public class SWTNumberWidget extends Composite implements NumberWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		final Number value = (Number) details.getValue();
+		slider.setSelection(value.intValue());
 	}
 
 }

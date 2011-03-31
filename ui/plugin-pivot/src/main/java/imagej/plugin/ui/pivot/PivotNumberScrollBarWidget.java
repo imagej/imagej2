@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.plugin.ui.ParamDetails;
+import imagej.util.ClassUtils;
+
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ScrollBar;
 import org.apache.pivot.wtk.ScrollBarValueListener;
@@ -47,40 +50,48 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget
 	implements ScrollBarValueListener
 {
 
-	private ScrollBar scrollBar;
-	private Label label;
+	private final ParamDetails details;
+	private final ScrollBar scrollBar;
+	private final Label label;
 
-	public PivotNumberScrollBarWidget(final Number initialValue,
+	public PivotNumberScrollBarWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
+		this.details = details;
+
 		scrollBar = new ScrollBar();
-		scrollBar.setValue(initialValue.intValue());
 		scrollBar.setRange(min.intValue(), max.intValue());
+		scrollBar.setBlockIncrement(stepSize.intValue());
 		add(scrollBar);
-		label = new Label();
-		label.setText(initialValue.toString());
-		add(label);
 		scrollBar.getScrollBarValueListeners().add(this);
+
+		label = new Label();
+		add(label);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
-		return scrollBar.getValue();
+		final String value = "" + scrollBar.getValue();
+		return ClassUtils.toNumber(value, details.getType());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		// TODO
+		final Number value = (Number) details.getValue();
+		scrollBar.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 
 	// -- ScrollBarValueListener methods --
 
 	@Override
-	public void valueChanged(ScrollBar s, int previousValue) {
+	public void valueChanged(final ScrollBar s, final int previousValue) {
 		label.setText("" + scrollBar.getValue());
 	}
 

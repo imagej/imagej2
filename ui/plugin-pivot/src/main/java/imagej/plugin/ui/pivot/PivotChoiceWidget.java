@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.plugin.ui.ChoiceWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
@@ -42,18 +43,22 @@ import org.apache.pivot.wtk.ListButton;
 
 /**
  * Pivot implementation of multiple choice selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PivotChoiceWidget extends BoxPane implements ChoiceWidget {
 
-	private ListButton listButton;
+	private final ParamDetails details;
+	private final ListButton listButton;
 
-	public PivotChoiceWidget(final String initialValue, final String[] items) {
+	public PivotChoiceWidget(final ParamDetails details, final String[] items) {
+		this.details = details;
+
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));
-		listButton.setSelectedItem(initialValue);
 		add(listButton);
+
+		refresh();
 	}
 
 	// -- ChoiceWidget methods --
@@ -72,7 +77,7 @@ public class PivotChoiceWidget extends BoxPane implements ChoiceWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		listButton.setSelectedItem(details.getValue());
 	}
 
 }

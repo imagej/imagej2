@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.ToggleWidget;
 
 import org.eclipse.swt.SWT;
@@ -42,17 +43,21 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * SWT implementation of boolean toggle widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTToggleWidget extends Composite implements ToggleWidget {
 
-	private Button checkbox;
+	private final ParamDetails details;
+	private final Button checkbox;
 
-	public SWTToggleWidget(final Composite parent, final boolean initialValue) {
+	public SWTToggleWidget(final Composite parent, final ParamDetails details) {
 		super(parent, 0);
+		this.details = details;
+
 		checkbox = new Button(this, SWT.CHECK);
-		checkbox.setSelection(initialValue);
+
+		refresh();
 	}
 
 	// -- ToggleWidget methods --
@@ -66,7 +71,7 @@ public class SWTToggleWidget extends Composite implements ToggleWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		checkbox.setSelection((Boolean) details.getValue());
 	}
 
 }

@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
+import imagej.manager.Managers;
+import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamDetails;
-
-import java.io.File;
-
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;
@@ -113,7 +112,12 @@ public class SWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addObject(final ParamDetails details) {
-		// TODO create ObjectWidget and add here
+		final Class<?> type = details.getType();
+		final ObjectManager objectManager = Managers.get(ObjectManager.class);
+		final Object[] items = objectManager.getObjects(type).toArray();
+		final SWTObjectWidget objectWidget =
+			new SWTObjectWidget(panel, details, items);
+		objectWidgets.put(details.getName(), objectWidget);
 	}
 
 	// -- Helper methods --

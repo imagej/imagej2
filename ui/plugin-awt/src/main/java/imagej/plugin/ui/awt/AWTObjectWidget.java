@@ -72,7 +72,7 @@ public class AWTObjectWidget extends Panel
 
 	@Override
 	public Object getObject() {
-		return choice.getSelectedItem();
+		return items[choice.getSelectedIndex()];
 	}
 
 	// -- InputWidget methods --
@@ -86,7 +86,7 @@ public class AWTObjectWidget extends Panel
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		details.setValue(items[choice.getSelectedIndex()]);
+		details.setValue(getObject());
 	}
 
 	// -- Helper methods --

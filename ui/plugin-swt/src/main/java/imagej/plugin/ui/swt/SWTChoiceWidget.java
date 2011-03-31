@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.plugin.ui.ChoiceWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -42,25 +43,24 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * SWT implementation of multiple choice selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTChoiceWidget extends Composite implements ChoiceWidget {
 
-	private Combo combo;
+	private final ParamDetails details;
+	private final Combo combo;
 
-	public SWTChoiceWidget(final Composite parent,
-		final String initialValue, final String[] items)
+	public SWTChoiceWidget(final Composite parent, final ParamDetails details,
+		final String[] items)
 	{
 		super(parent, 0);
+		this.details = details;
+
 		combo = new Combo(this, SWT.DROP_DOWN);
 		combo.setItems(items);
-		for (int i=0; i<items.length; i++) {
-			if (items[i].equals(initialValue)) {
-				combo.select(i);
-				break;
-			}
-		}
+
+		refresh();
 	}
 
 	// -- ChoiceWidget methods --
@@ -79,7 +79,14 @@ public class SWTChoiceWidget extends Composite implements ChoiceWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		final String value = details.getValue().toString();
+		for (int i = 0; i < combo.getItemCount(); i++) {
+			final String item = combo.getItem(i);
+			if (item.equals(value)) {
+				combo.select(i);
+				break;
+			}
+		}
 	}
 
 }

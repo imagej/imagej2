@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.plugin.ui.ParamDetails;
+import imagej.util.ClassUtils;
+
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Slider;
 import org.apache.pivot.wtk.SliderValueListener;
@@ -47,34 +50,41 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	implements SliderValueListener
 {
 
-	private Slider slider;
-	private Label label;
+	private final ParamDetails details;
+	private final Slider slider;
+	private final Label label;
 
-	public PivotNumberSliderWidget(final Number initialValue,
+	public PivotNumberSliderWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
+		this.details = details;
+
 		slider = new Slider();
-		slider.setValue(initialValue.intValue());
 		slider.setRange(min.intValue(), max.intValue());
 		add(slider);
-		label = new Label();
-		label.setText(initialValue.toString());
-		add(label);
 		slider.getSliderValueListeners().add(this);
+
+		label = new Label();
+		add(label);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
 
 	@Override
 	public Number getValue() {
-		return slider.getValue();
+		final String value = "" + slider.getValue();
+		return ClassUtils.toNumber(value, details.getType());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		// TODO
+		final Number value = (Number) details.getValue();
+		slider.setValue(value.intValue());
+		label.setText(value.toString());
 	}
 
 	// -- SliderValueListener methods --

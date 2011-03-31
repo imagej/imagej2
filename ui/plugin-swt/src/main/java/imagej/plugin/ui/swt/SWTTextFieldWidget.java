@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.TextFieldWidget;
 
 import org.eclipse.swt.widgets.Composite;
@@ -41,20 +42,24 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * SWT implementation of text field widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTTextFieldWidget extends Composite implements TextFieldWidget {
 
-	private Text text;
+	private final ParamDetails details;
+	private final Text text;
 
 	public SWTTextFieldWidget(final Composite parent,
-		final String initialValue, final int columns)
+		final ParamDetails details, final int columns)
 	{
 		super(parent, 0);
+		this.details = details;
+
 		text = new Text(this, 0);
-		text.setText(initialValue);
 		text.setTextLimit(columns);
+
+		refresh();
 	}
 
 	// -- TextFieldWidget methods --
@@ -68,7 +73,7 @@ public class SWTTextFieldWidget extends Composite implements TextFieldWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		text.setText(details.getValue().toString());
 	}
 
 }

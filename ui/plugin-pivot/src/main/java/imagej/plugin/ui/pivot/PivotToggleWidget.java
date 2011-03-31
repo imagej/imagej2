@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.ToggleWidget;
 
 import org.apache.pivot.wtk.BoxPane;
@@ -41,17 +42,21 @@ import org.apache.pivot.wtk.Checkbox;
 
 /**
  * Pivot implementation of boolean toggle widget.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PivotToggleWidget extends BoxPane implements ToggleWidget {
 
-	private Checkbox checkbox;
+	private final ParamDetails details;
+	private final Checkbox checkbox;
 
-	public PivotToggleWidget(final boolean initialValue) {
+	public PivotToggleWidget(final ParamDetails details) {
+		this.details = details;
+
 		checkbox = new Checkbox();
-		checkbox.setSelected(initialValue);
 		add(checkbox);
+
+		refresh();
 	}
 
 	// -- ToggleWidget methods --
@@ -65,7 +70,7 @@ public class PivotToggleWidget extends BoxPane implements ToggleWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		checkbox.setSelected((Boolean) details.getValue());
 	}
 
 }
