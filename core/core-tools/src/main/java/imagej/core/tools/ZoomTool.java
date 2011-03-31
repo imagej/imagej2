@@ -45,14 +45,16 @@ import imagej.tool.Tool;
 import imagej.util.IntCoords;
 
 /**
- * TODO
+ * Tool for zooming in and out of a display.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",
-	iconPath = "/tools/zoom.png")
+	iconPath = "/tools/zoom.png", priority = ZoomTool.PRIORITY)
 public class ZoomTool extends BaseTool {
+
+	public static final int PRIORITY = 202;
 
 	// -- ITool methods --
 
@@ -73,7 +75,7 @@ public class ZoomTool extends BaseTool {
 	}
 
 	@Override
-	public void onMouseWheel(MsWheelEvent evt) {
+	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display display = evt.getDisplay();
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() > 0) zoomIn(display, center);

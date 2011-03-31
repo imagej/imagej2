@@ -42,8 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Wand", iconPath="/tools/wand.png")
+@Tool(name = "Wand", iconPath = "/tools/wand.png",
+	priority = WandTool.PRIORITY, enabled = false)
 public class WandTool extends BaseTool {
+
+	public static final int PRIORITY = 200;
 
 	// TODO
 

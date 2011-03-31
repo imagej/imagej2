@@ -44,8 +44,11 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Paintbrush", iconPath = "/tools/paintbrush.png")
+@Tool(name = "Paintbrush", iconPath = "/tools/paintbrush.png",
+	priority = PaintBrushTool.PRIORITY, enabled = false)
 public class PaintBrushTool extends BaseTool {
+
+	public static final int PRIORITY = 300;
 
 	// TODO
 

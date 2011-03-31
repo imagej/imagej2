@@ -50,7 +50,11 @@ import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
 
 /**
  * Manager component for keeping track of available tools, including which
@@ -70,7 +74,7 @@ public class ToolManager implements ManagerComponent {
 	private ITool activeTool;
 
 	public List<ToolEntry> getToolEntries() {
-		return toolEntries;
+		return Collections.unmodifiableList(toolEntries);
 	}
 
 	public ITool getActiveTool() {
@@ -81,12 +85,11 @@ public class ToolManager implements ManagerComponent {
 
 	@Override
 	public void initialize() {
-		toolEntries = ToolUtils.findTools();
+		toolEntries = findTools();
+		Collections.sort(toolEntries);
 		activeTool = new DummyTool();
 		subscribeToEvents();
 	}
-
-	// -- Helper methods --
 
 	public void setActiveTool(final ITool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do
@@ -100,6 +103,33 @@ public class ToolManager implements ManagerComponent {
 		this.activeTool = activeTool;
 		activeTool.activate();
 		Events.publish(new ToolActivatedEvent(activeTool));
+	}
+
+	// -- Helper methods --
+
+	/** Discovers tools using SezPoz. */
+	private List<ToolEntry> findTools() {
+		final Index<Tool, ITool> toolIndex = Index.load(Tool.class, ITool.class);
+		final List<ToolEntry> tools = new ArrayList<ToolEntry>();
+		for (final IndexItem<Tool, ITool> item : toolIndex) {
+			tools.add(createEntry(item));
+		}
+		return tools;
+	}
+	
+	private ToolEntry createEntry(final IndexItem<Tool, ITool> item) {
+		final String className = item.className();
+		final Tool tool = item.annotation();
+
+		final ToolEntry entry = new ToolEntry(className);
+		entry.setName(tool.name());
+		entry.setLabel(tool.label());
+		entry.setDescription(tool.description());
+		entry.setIconPath(tool.iconPath());
+		entry.setPriority(tool.priority());
+		entry.setEnabled(tool.enabled());
+
+		return entry;
 	}
 
 	private void subscribeToEvents() {
@@ -118,7 +148,7 @@ public class ToolManager implements ManagerComponent {
 
 		final EventSubscriber<KyReleasedEvent> kyReleasedSubscriber =
 			new EventSubscriber<KyReleasedEvent>()
-			{
+		{
 			@Override
 			public void onEvent(final KyReleasedEvent event) {
 				getActiveTool().onKeyUp(event);

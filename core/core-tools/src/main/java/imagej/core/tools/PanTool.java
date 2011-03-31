@@ -45,18 +45,17 @@ import imagej.tool.Tool;
 import java.awt.event.KeyEvent;
 
 /**
- * TODO
+ * Tool for panning the display.
  * 
  * @author Rick Lentz
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(
-	name = "Pan",
-	description = "Pans the display",
-	iconPath = "/tools/pan.png"
-)
+@Tool(name = "Pan", description = "Pans the display",
+	iconPath = "/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends BaseTool {
+
+	public static final int PRIORITY = 203;
 
 	private static final float PAN_AMOUNT = 10;
 
@@ -65,7 +64,7 @@ public class PanTool extends BaseTool {
 	private int lastX, lastY;
 
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
+	public void onKeyDown(final KyPressedEvent evt) {
 		final Display display = evt.getDisplay();
 		// TODO - eliminate use of AWT here
 		// to do so, need GUI-agnostic Key enum with all key codes...
@@ -86,13 +85,13 @@ public class PanTool extends BaseTool {
 	}
 
 	@Override
-	public void onMouseDown(MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		lastX = evt.getX();
 		lastY = evt.getY();
 	}
 
 	@Override
-	public void onMouseDrag(MsDraggedEvent evt)  {
+	public void onMouseDrag(final MsDraggedEvent evt) {
 		final Display display = evt.getDisplay();
 		display.pan(evt.getX() - lastX, evt.getY() - lastY);
 		lastX = evt.getX();

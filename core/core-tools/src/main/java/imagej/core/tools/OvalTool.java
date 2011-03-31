@@ -42,8 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Oval", iconPath="/tools/oval.png")
+@Tool(name = "Oval", iconPath = "/tools/oval.png",
+	priority = OvalTool.PRIORITY, enabled = false)
 public class OvalTool extends BaseTool {
+
+	private static final int PRIORITY = 101;
 
 	// TODO
 

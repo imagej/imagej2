@@ -42,8 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Polygon", iconPath="/tools/polygon.png")
+@Tool(name = "Polygon", iconPath = "/tools/polygon.png",
+	priority = PolygonTool.PRIORITY, enabled = false)
 public class PolygonTool extends BaseTool {
+
+	private static final int PRIORITY = 102;
 
 	// TODO
 

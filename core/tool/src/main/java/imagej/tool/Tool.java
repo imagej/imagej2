@@ -62,4 +62,7 @@ public @interface Tool {
 
 	int priority() default Integer.MAX_VALUE;
 
+	// TEMP - for disabling unfinished tools
+	boolean enabled() default true;
+
 }
