@@ -35,7 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.plugin.ui.NumberWidget;
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.WidgetStyle;
+import imagej.util.Log;
 
 import org.apache.pivot.wtk.BoxPane;
 
@@ -48,22 +50,20 @@ public abstract class PivotNumberWidget
 	extends BoxPane implements NumberWidget
 {
 
-	public static PivotNumberWidget create(final Number initialValue,
+	public static PivotNumberWidget create(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize,
 		final WidgetStyle style)
 	{
-		if (style == WidgetStyle.DEFAULT || style == WidgetStyle.NUMBER_SPINNER) {
-			return new PivotNumberSpinnerWidget(initialValue, min, max, stepSize);
+		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
+			return new PivotNumberScrollBarWidget(details, min, max, stepSize);
 		}
-		else if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new PivotNumberScrollBarWidget(initialValue, min, max, stepSize);
+		if (style == WidgetStyle.NUMBER_SLIDER) {
+			return new PivotNumberSliderWidget(details, min, max, stepSize);
 		}
-		else if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new PivotNumberSliderWidget(initialValue, min, max, stepSize);
+		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
+			Log.warn("Ignoring unsupported widget style: " + style);
 		}
-		else {
-			throw new IllegalArgumentException("Invalid widget style: " + style);
-		}
+		return new PivotNumberSpinnerWidget(details, min, max, stepSize);
 	}
 
 }

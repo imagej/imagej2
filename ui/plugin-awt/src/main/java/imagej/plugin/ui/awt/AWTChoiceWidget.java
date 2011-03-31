@@ -35,32 +35,42 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.plugin.ui.ChoiceWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * AWT implementation of multiple choice selector widget.
  *
  * @author Curtis Rueden
  */
-public class AWTChoiceWidget extends Panel implements ChoiceWidget {
+public class AWTChoiceWidget extends Panel
+	implements ChoiceWidget, ItemListener
+{
 
+	private final ParamDetails details;
 	private Choice choice;
 
-	public AWTChoiceWidget(final String initialValue, final String[] items) {
+	public AWTChoiceWidget(final ParamDetails details, final String[] items) {
+		this.details = details;
+
 		choice = new Choice();
 		for (final String item : items) choice.add(item);
-		choice.select(initialValue);
+		choice.addItemListener(this);
 		add(choice, BorderLayout.CENTER);
+
+		refresh();
 	}
 
 	// -- ChoiceWidget methods --
 
 	@Override
 	public String getItem() {
-		return choice.getSelectedItem().toString();
+		return choice.getSelectedItem();
 	}
 
 	@Override
@@ -72,7 +82,32 @@ public class AWTChoiceWidget extends Panel implements ChoiceWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		choice.select(getValidValue());
+	}
+
+	// -- ItemListener methods --
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		details.setValue(choice.getSelectedItem());
+	}
+
+	// -- Helper methods --
+
+	private String getValidValue() {
+		final int itemCount = choice.getItemCount();
+		if (itemCount == 0) return null; // no valid values exist
+
+		final String value = details.getValue().toString();
+		for (int i = 0; i < itemCount; i++) {
+			final String item = choice.getItem(i);
+			if (value == item) return value;
+		}
+
+		// value was invalid; reset to first choice on the list
+		final String validValue = choice.getItem(0);
+		details.setValue(validValue);
+		return validValue;
 	}
 
 }

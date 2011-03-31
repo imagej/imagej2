@@ -114,8 +114,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addObject(final ParamDetails details)
-	{
+	public void addObject(final ParamDetails details) {
 		final Class<?> type = details.getType();
 		final ObjectManager objectManager = Managers.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();

@@ -68,54 +68,48 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details, final Number initialValue,
+	public void addNumber(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final PivotNumberWidget numberWidget =
-			PivotNumberWidget.create(initialValue, min, max, stepSize,
+			PivotNumberWidget.create(details, min, max, stepSize,
 			details.getStyle());
 		addField(details.getLabel(), numberWidget);
 		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details, final boolean initialValue)
-	{
-		final PivotToggleWidget toggleWidget = new PivotToggleWidget(initialValue);
+	public void addToggle(final ParamDetails details) {
+		final PivotToggleWidget toggleWidget = new PivotToggleWidget(details);
 		addField(details.getLabel(), toggleWidget);
 		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details,
-		final String initialValue, final int columns)
-	{
+	public void addTextField(final ParamDetails details, final int columns) {
 		final PivotTextFieldWidget textFieldWidget =
-			new PivotTextFieldWidget(initialValue, columns);
+			new PivotTextFieldWidget(details, columns);
 		addField(details.getLabel(), textFieldWidget);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String initialValue,
-		final String[] items)
-	{
+	public void addChoice(final ParamDetails details, final String[] items) {
 		final PivotChoiceWidget choiceWidget =
-			new PivotChoiceWidget(initialValue, items);
+			new PivotChoiceWidget(details, items);
 		addField(details.getLabel(), choiceWidget);
 		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details, final File initialValue) {
-		final PivotFileWidget fileWidget = new PivotFileWidget(initialValue);
+	public void addFile(final ParamDetails details) {
+		final PivotFileWidget fileWidget = new PivotFileWidget(details);
 		addField(details.getLabel(), fileWidget);
 		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details, final Object initialValue)
-	{
+	public void addObject(final ParamDetails details) {
 		// TODO create ObjectWidget and add here
 	}
 
