@@ -72,6 +72,7 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibDataTransform runner =
 			new ImglibDataTransform(input, flipper);
+		runner.run();
 		output = input;
 	}
 
