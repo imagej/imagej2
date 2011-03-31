@@ -52,16 +52,16 @@ The following menu entries are working. Unlisted commands do not work.
     * Noise > Add Specific Noise
     * Noise > Salt and Pepper
     * Shadows
-        all commands except Shadows Demo
+        (all commands except Shadows Demo)
     * Binary
-        all commands except:
+        (all commands except:
           Convert to Mask
           Close
-          Ultimate Points
+          Ultimate Points)
     * Math
     * FFT > FFT
     * Filters
-        all except Show Circular Masks
+        (all commands except Show Circular Masks)
     * Image Calculator
     * Gradient
 
