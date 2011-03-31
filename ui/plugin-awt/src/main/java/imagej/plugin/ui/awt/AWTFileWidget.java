@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.plugin.ui.FileWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -44,6 +45,8 @@ import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.io.File;
 
 /**
@@ -52,20 +55,27 @@ import java.io.File;
  * @author Curtis Rueden
  */
 public class AWTFileWidget extends Panel
-	implements FileWidget, ActionListener
+	implements FileWidget, ActionListener, TextListener
 {
 
+	private ParamDetails details;
 	private TextField path;
 	private Button browse;
 
-	public AWTFileWidget(final File initialValue) {
+	public AWTFileWidget(final ParamDetails details) {
+		this.details = details;
+
 		setLayout(new BorderLayout());
-		path = new TextField(initialValue == null ?
-			"" : initialValue.getAbsolutePath(), 20);
+
+		path = new TextField(20);
+		path.addTextListener(this);
 		add(path, BorderLayout.CENTER);
+
 		browse = new Button("Browse");
 		browse.addActionListener(this);
 		add(browse, BorderLayout.EAST);
+
+		refresh();
 	}
 
 	// -- FileWidget methods --
@@ -79,7 +89,7 @@ public class AWTFileWidget extends Panel
 
 	@Override
 	public void refresh() {
-		// TODO
+		path.setText(details.getValue().toString());
 	}
 
 	// -- ActionListener methods --
@@ -96,6 +106,13 @@ public class AWTFileWidget extends Panel
 		final String filename = fileDialog.getFile();
 		if (filename == null) return;
 		path.setText(filename);
+	}
+
+	// -- TextListener methods --
+
+	@Override
+	public void textValueChanged(TextEvent e) {
+		details.setValue(new File(path.getText()));
 	}
 
 }

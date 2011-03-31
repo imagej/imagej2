@@ -34,24 +34,35 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.TextFieldWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Panel;
 import java.awt.TextField;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 /**
  * AWT implementation of text field widget.
  *
  * @author Curtis Rueden
  */
-public class AWTTextFieldWidget extends Panel implements TextFieldWidget {
+public class AWTTextFieldWidget extends Panel implements TextFieldWidget,
+	TextListener
+{
 
+	private ParamDetails details;
 	private TextField textField;
 
-	public AWTTextFieldWidget(final String initialValue, final int columns) {
-		textField = new TextField(initialValue, columns);
+	public AWTTextFieldWidget(final ParamDetails details, final int columns) {
+		this.details = details;
+
+		textField = new TextField("", columns);
+		textField.addTextListener(this);
 		add(textField, BorderLayout.CENTER);
+
+		refresh();
 	}
 
 	// -- TextFieldWidget methods --
@@ -65,7 +76,14 @@ public class AWTTextFieldWidget extends Panel implements TextFieldWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		textField.setText(details.getValue().toString());
+	}
+
+	// -- TextListener methods --
+
+	@Override
+	public void textValueChanged(final TextEvent e) {
+		details.setValue(textField.getText());
 	}
 
 }

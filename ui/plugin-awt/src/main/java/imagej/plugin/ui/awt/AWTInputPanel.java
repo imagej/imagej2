@@ -34,13 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
+import imagej.manager.Managers;
+import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamDetails;
 
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
-import java.io.File;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -70,54 +71,53 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details, final Number initialValue,
+	public void addNumber(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final AWTNumberWidget numberWidget =
-			new AWTNumberWidget(initialValue, min, max, stepSize);
+			new AWTNumberWidget(details, min, max, stepSize);
 		addField(details.getLabel(), numberWidget);
 		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details, final boolean initialValue)
-	{
-		final AWTToggleWidget toggleWidget = new AWTToggleWidget(initialValue);
+	public void addToggle(final ParamDetails details) {
+		final AWTToggleWidget toggleWidget = new AWTToggleWidget(details);
 		addField(details.getLabel(), toggleWidget);
 		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details,
-		final String initialValue, final int columns)
-	{
+	public void addTextField(final ParamDetails details, final int columns) {
 		final AWTTextFieldWidget textFieldWidget =
-			new AWTTextFieldWidget(initialValue, columns);
+			new AWTTextFieldWidget(details, columns);
 		addField(details.getLabel(), textFieldWidget);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String initialValue,
-		final String[] items)
-	{
+	public void addChoice(final ParamDetails details, final String[] items) {
 		final AWTChoiceWidget choiceWidget =
-			new AWTChoiceWidget(initialValue, items);
+			new AWTChoiceWidget(details, items);
 		addField(details.getLabel(), choiceWidget);
 		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details, final File initialValue) {
-		final AWTFileWidget fileWidget = new AWTFileWidget(initialValue);
+	public void addFile(final ParamDetails details) {
+		final AWTFileWidget fileWidget = new AWTFileWidget(details);
 		addField(details.getLabel(), fileWidget);
 		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details, final Object initialValue)
-	{
-		// TODO create ObjectWidget and add here
+	public void addObject(final ParamDetails details) {
+		final Class<?> type = details.getType();
+		final ObjectManager objectManager = Managers.get(ObjectManager.class);
+		final Object[] items = objectManager.getObjects(type).toArray();
+		final AWTObjectWidget objectWidget = new AWTObjectWidget(details, items);
+		addField(details.getLabel(), objectWidget);
+		objectWidgets.put(details.getName(), objectWidget);
 	}
 
 	// -- Helper methods --

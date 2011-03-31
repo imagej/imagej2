@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
+import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.ToggleWidget;
 
 import java.awt.BorderLayout;
@@ -47,11 +48,16 @@ import java.awt.Panel;
  */
 public class AWTToggleWidget extends Panel implements ToggleWidget {
 
+	private ParamDetails details;
 	private Checkbox checkbox;
 
-	public AWTToggleWidget(final boolean initialValue) {
-		checkbox = new Checkbox("", initialValue);
+	public AWTToggleWidget(final ParamDetails details) {
+		this.details = details;
+
+		checkbox = new Checkbox("");
 		add(checkbox, BorderLayout.CENTER);
+
+		refresh();
 	}
 
 	// -- ToggleWidget methods --
@@ -65,7 +71,8 @@ public class AWTToggleWidget extends Panel implements ToggleWidget {
 
 	@Override
 	public void refresh() {
-		// TODO
+		final boolean value = (Boolean) details.getValue();
+		checkbox.setState(value);
 	}
 
 }

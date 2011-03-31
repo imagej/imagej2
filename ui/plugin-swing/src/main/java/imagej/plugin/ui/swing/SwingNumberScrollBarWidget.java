@@ -71,7 +71,7 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 		add(scrollBar, BorderLayout.CENTER);
 		scrollBar.addAdjustmentListener(this);
 
-		textField = new JTextField("", 6);
+		textField = new JTextField(6);
 		add(textField, BorderLayout.EAST);
 		textField.getDocument().addDocumentListener(this);
 

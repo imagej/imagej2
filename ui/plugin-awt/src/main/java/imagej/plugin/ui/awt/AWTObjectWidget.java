@@ -1,5 +1,5 @@
 //
-// AWTStatusBar.java
+// AWTObjectWidget.java
 //
 
 /*
@@ -32,60 +32,79 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.awt;
+package imagej.plugin.ui.awt;
 
-import imagej.event.EventSubscriber;
-import imagej.event.Events;
-import imagej.event.StatusEvent;
+import imagej.plugin.ui.ObjectWidget;
+import imagej.plugin.ui.ParamDetails;
 
-import java.awt.Graphics;
-import java.awt.Label;
+import java.awt.BorderLayout;
+import java.awt.Choice;
+import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
- * Status bar with text area and progress bar, similar to ImageJ 1.x.
- *
+ * AWT implementation of object selector widget.
+ * 
  * @author Curtis Rueden
  */
-public class AWTStatusBar extends Label
-	implements EventSubscriber<StatusEvent>
+public class AWTObjectWidget extends Panel
+	implements ItemListener, ObjectWidget
 {
 
-	private int value;
-	private int maximum;
+	private final ParamDetails details;
+	private final Choice choice;
+	private final Object[] items;
 
-	public AWTStatusBar() {
-		Events.subscribe(StatusEvent.class, this);
+	public AWTObjectWidget(final ParamDetails details, final Object[] items) {
+		this.details = details;
+		this.items = items;
+
+		choice = new Choice();
+		for (final Object item : items) choice.add(item.toString());
+		add(choice, BorderLayout.CENTER);
+		choice.addItemListener(this);
+
+		refresh();
 	}
+
+	// -- ObjectWidget methods --
 
 	@Override
-	public void paint(Graphics g) {
-		final int width = getWidth();
-		final int height = getHeight();
-		final int pix = maximum > 0 ? value * width / maximum : 0;
-		g.setColor(getForeground());
-		g.fillRect(0, 0, pix, height);
-		g.setColor(getBackground());
-		g.fillRect(pix, 0, width, height);
-		super.paint(g);
+	public Object getObject() {
+		return choice.getSelectedItem();
 	}
 
-	public void setStatus(final String message) {
-		setText(message);
-	}
-
-	public void setProgress(final int val, final int max) {
-		value = val;
-		maximum = max;
-		repaint();
-	}
+	// -- InputWidget methods --
 
 	@Override
-	public void onEvent(final StatusEvent event) {
-		final String message = event.getStatusMessage();
-		final int val = event.getProgressValue();
-		final int max = event.getProgressMaximum();
-		setStatus(message);
-		setProgress(val, max);
+	public void refresh() {
+		choice.select(getValidValue());
+	}
+
+	// -- ItemListener methods --
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		details.setValue(items[choice.getSelectedIndex()]);
+	}
+
+	// -- Helper methods --
+
+	private String getValidValue() {
+		final int itemCount = choice.getItemCount();
+		if (itemCount == 0) return null; // no valid values exist
+
+		final String value = details.getValue().toString();
+		for (int i = 0; i < itemCount; i++) {
+			final String item = choice.getItem(i);
+			if (value == item) return value;
+		}
+
+		// value was invalid; reset to first choice on the list
+		final String validValue = choice.getItem(0);
+		details.setValue(validValue);
+		return validValue;
 	}
 
 }

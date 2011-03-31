@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.plugin.ui.NumberWidget;
+import imagej.plugin.ui.ParamDetails;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -55,21 +56,26 @@ public class AWTNumberWidget extends Panel
 	implements NumberWidget, AdjustmentListener, TextListener
 {
 
+	private ParamDetails details;
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final Number initialValue,
+	public AWTNumberWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
+		this.details = details;
+
 		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
-			initialValue.intValue(), 1, min.intValue(), max.intValue() + 1);
+			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
 		scrollBar.addAdjustmentListener(this);
 		add(scrollBar, BorderLayout.CENTER);
 
-		textField = new TextField(initialValue.toString(), 6);
+		textField = new TextField(6);
 		textField.addTextListener(this);
 		add(textField, BorderLayout.EAST);
+
+		refresh();
 	}
 
 	// -- NumberWidget methods --
@@ -83,16 +89,16 @@ public class AWTNumberWidget extends Panel
 
 	@Override
 	public void refresh() {
-		// TODO
+ 		final Number value = (Number) details.getValue();
+		scrollBar.setValue(value.intValue());
+		textField.setText(value.toString());
 	}
 
 	// -- AdjustmentListener methods --
 
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
-		scrollBar.removeAdjustmentListener(this);
 		textField.setText("" + scrollBar.getValue());
-		scrollBar.addAdjustmentListener(this);
 	}
 
 	// -- TextListener methods --

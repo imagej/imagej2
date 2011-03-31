@@ -71,54 +71,48 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details, final Number initialValue,
+	public void addNumber(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
 		addLabel(details.getLabel());
 		final SWTNumberWidget numberWidget =
-			new SWTNumberWidget(panel, initialValue, min, max, stepSize);
+			new SWTNumberWidget(panel, details, min, max, stepSize);
 		numberWidgets.put(details.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details, final boolean initialValue)
-	{
+	public void addToggle(final ParamDetails details) {
 		addLabel(details.getLabel());
 		final SWTToggleWidget toggleWidget =
-			new SWTToggleWidget(panel, initialValue);
+			new SWTToggleWidget(panel, details);
 		toggleWidgets.put(details.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details,
-		final String initialValue, final int columns)
-	{
+	public void addTextField(final ParamDetails details, final int columns) {
 		addLabel(details.getLabel());
 		final SWTTextFieldWidget textFieldWidget =
-			new SWTTextFieldWidget(panel, initialValue, columns);
+			new SWTTextFieldWidget(panel, details, columns);
 		textFieldWidgets.put(details.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String initialValue,
-		final String[] items)
-	{
+	public void addChoice(final ParamDetails details, final String[] items) {
 		addLabel(details.getLabel());
 		final SWTChoiceWidget choiceWidget =
-			new SWTChoiceWidget(panel, initialValue, items);
+			new SWTChoiceWidget(panel, details, items);
 		choiceWidgets.put(details.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details, final File initialValue) {
+	public void addFile(final ParamDetails details) {
 		addLabel(details.getLabel());
-		final SWTFileWidget fileWidget = new SWTFileWidget(panel, initialValue);
+		final SWTFileWidget fileWidget = new SWTFileWidget(panel, details);
 		fileWidgets.put(details.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details, final Object initialValue)
-	{
+	public void addObject(final ParamDetails details) {
 		// TODO create ObjectWidget and add here
 	}
 
