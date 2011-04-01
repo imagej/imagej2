@@ -104,13 +104,14 @@ public class SwingStatusBar extends JPanel
 	protected String getInfoString() {
 		final String javaVersion = System.getProperty("java.version");
 		final String osArch = System.getProperty("os.arch");
-		final long totalMem = Runtime.getRuntime().maxMemory();
+		final long maxMem = Runtime.getRuntime().maxMemory();
+		final long totalMem = Runtime.getRuntime().totalMemory();
 		final long freeMem = Runtime.getRuntime().freeMemory();
 		final long usedMem = totalMem - freeMem;
 		final long usedMB = usedMem / 1048576;
-		final long totalMB = totalMem / 1048576;
+		final long maxMB = maxMem / 1048576;
 		return "ImageJ 2.0.0-alpha1; Java " + javaVersion +
-			" [" + osArch + "]; " + usedMB + "MB of " + totalMB + "MB";
+			" [" + osArch + "]; " + usedMB + "MB of " + maxMB + "MB";
 	}
 
 }
