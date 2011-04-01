@@ -1,96 +1,121 @@
-Welcome to ImageJ 2.0 alpha 1
+Thanks for trying ImageJ 2.0.0-alpha1!
 
-IJ2 is currently made up of both IJ1 & IJ2 plugins. IJ1 plugins are distinguished
-with a small microscope icon next to their name in the menus. Commands implemented
-purely in IJ2 do not have this marker.
+This is an "alpha"-quality release, meaning the code is not finished, nor is
+the design fully stabilized. We are releasing it for early community feedback,
+and to demonstrate project directions and progress.
 
-There are a number of known issues with this release:
+For this release, we have tried to model the application after ImageJ v1.x as
+much as is reasonable. However, please be aware that version 2.0.0 is
+essentially a total rewrite of ImageJ from the ground up. It provides backward
+compatibility with older versions of ImageJ by bundling the latest v1.x code
+and translating between "legacy" and "modern" image structures.
 
-The memory allocated to ImageJ is fixed at 512 mb
+For more details, see the ImageJDev web site at:
+  http://imagejdev.org/
 
-Color is currently unsupported.
-  * All images display in grayscale
-  * Color images are separated into images with 3 channels
 
-The following toolbar tools are working. Unlisted tools are not.
+KNOWN ISSUES
+------------
+
+There are many known issues with this release:
+
+1) Color displays and LUTs are currently unsupported:
+  * All images display in grayscale.
+  * RGB color images are separated into images with 3 channels.
+
+2) The memory allocated to ImageJ is fixed at 512 MB.
+
+3) Most
+
+
+TOOLBAR
+-------
+
+Most toolbar tools are not yet implemented, and hence grayed out.
+The following tools are working:
 
   * Pan (hand icon)
   * Zoom (magnifying glass icon)
   * Probe (crosshairs icon)
 
-The Window menu is nonfunctional 
 
-The following menu entries are working. Unlisted commands do not work.
+MENUS
+-----
 
-  File menu
+IJ2 is currently made up of both IJ1 & IJ2 plugins. IJ1 plugins are
+distinguished with a small microscope icon next to their name in the menus.
+Commands implemented purely in IJ2 do not have this marker.
 
-    * File > New
-    * File > Open
-    * File > Open Samples
-    * File > Quit
+The following menu commands are working. Unlisted commands do not work.
 
-  Edit menu
+  * File menu:
+    - File > New
+    - File > Open
+    - File > Open Samples
+    - File > Quit
 
-    * Edit > Undo
-        (works for ImageJ 1.x commands)
-    * Edit > Fill
-    * Edit > Invert
-    * Edit > Options
-        (note that option values can be set but their values are ignored internally)
+  * Edit menu:
+    - Edit > Undo
+      + works for ImageJ 1.x commands
+    - Edit > Fill
+    - Edit > Invert
+    - Edit > Options
+      + option values can be set but their values are ignored internally
 
-  Image menu
+  * Image menu:
+    - Image > Transform > Flip Horizontally
+    - Image > Transform > Flip Vertically
+    - Image > Transform > Rotate 90 Degrees Left
+    - Image > Transform > Rotate 90 Degrees Right
+    - Image > Transform > Rotate
+    - Image > Transform > Translate
 
-    * Image > Transform > Flip Horizontally
-    * Image > Transform > Flip Vertically
-    * Image > Transform > Rotate 90 Degrees Left
-    * Image > Transform > Rotate 90 Degrees Right
-    * Image > Transform > Rotate
-    * Image > Transform > Translate
+  * Process menu:
+    - Smooth
+    - Sharpen
+    - Find Edges
+    - Noise > Add Noise
+    - Noise > Add Specific Noise
+    - Noise > Salt and Pepper
+    - Shadows
+      + all commands except Shadows Demo
+    - Binary
+      + all commands except:
+        * Convert to Mask
+        * Close
+        * Ultimate Points
+    - Math
+    - FFT > FFT
+    - Filters
+      + all commands except Show Circular Masks
+    - Image Calculator
+    - Gradient
 
-  Process menu
+  * Analyze menu:
+    - Measure
+    - Analyze Particles
+    - Summarize
+    - Distribution
+    - Clear Results
+    - Histogram
+    - Surface Plot
+    - Tools > Save XY Coordinates
+    - Tools > Fractal Box Count
+    - Tools > Curve Fitting
+    - Tools > Scale Bar
+    - Tools > Calibration Bar
 
-    * Smooth
-    * Sharpen
-    * Find Edges
-    * Noise > Add Noise
-    * Noise > Add Specific Noise
-    * Noise > Salt and Pepper
-    * Shadows
-        (all commands except Shadows Demo)
-    * Binary
-        (all commands except:
-          Convert to Mask
-          Close
-          Ultimate Points)
-    * Math
-    * FFT > FFT
-    * Filters
-        (all commands except Show Circular Masks)
-    * Image Calculator
-    * Gradient
+  * Plugins menu:
+    - Macros > Run
+    - Macros > Edit
+    - Shortcuts > List Shortcuts
+    - Utilities > Control Panel
+    - Utilities > ImageJ Properties
+    - Utilities > Threads
+    - Utilities > Capture Image
+    - Utilities > Capture Screen
 
-  Analyze menu
 
-    * Measure
-    * Analyze Particles
-    * Summarize
-    * Distribution
-    * Clear Results
-    * Histogram
-    * Surface Plot
-    * Tools > Save XY Coordinates
-    * Tools > Fractal Box Count
-    * Tools > Curve Fitting
-    * Tools > Scale Bar
-    * Tools > Calibration Bar
+MACROS AND SCRIPTS
+------------------
 
-  Plugins menu
-
-    * Macros > Run
-    * Macros > Edit
-    * Shortcuts > List Shortcuts
-    * Utilities > Control Panel
-    * Utilities > ImageJ Properties
-    * Utilities > Threads
-    * Utilities > Capture Image
-    * Utilities > Capture Screen
