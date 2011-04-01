@@ -109,8 +109,8 @@ public class SwingStatusBar extends JPanel
 		final long usedMem = totalMem - freeMem;
 		final long usedMB = usedMem / 1048576;
 		final long totalMB = totalMem / 1048576;
-		return "ImageJ 2.0.0-alpha1; Java " + javaVersion + "; " +
-			"[" + osArch + "]; " + usedMB + "MB of " + totalMB + "MB";
+		return "ImageJ 2.0.0-alpha1; Java " + javaVersion +
+			" [" + osArch + "]; " + usedMB + "MB of " + totalMB + "MB";
 	}
 
 }
