@@ -352,7 +352,9 @@ public class NavigableImagePanel extends JPanel implements
 	public void setImage(final BufferedImage newImage) {
 		final BufferedImage oldImage = image;
 		image = toCompatibleImage(newImage);
-		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+		int imageW = image.getWidth();
+		int imageH = image.getHeight();
+		setPreferredSize(new Dimension(imageW, imageH));
 		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 		repaint();
 	}
