@@ -72,8 +72,7 @@ public class FlipVertically implements ImageJPlugin {
 	public void run() {
 		FlipCoordinateTransformer flipTransformer = new VertFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
-		ImglibDataTransform runner =
-			new ImglibDataTransform(input, flipper);
+		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
 		output = input;
 	}

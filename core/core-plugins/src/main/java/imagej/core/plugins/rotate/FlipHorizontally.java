@@ -73,8 +73,7 @@ public class FlipHorizontally implements ImageJPlugin {
 	public void run() {
 		FlipCoordinateTransformer flipTransformer = new HorzFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
-		ImglibDataTransform runner =
-			new ImglibDataTransform(input, flipper);
+		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
 		output = input;
 	}
