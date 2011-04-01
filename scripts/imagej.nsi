@@ -18,12 +18,13 @@ ShowInstDetails nevershow
 
 !define CLASSPATH "plugins;jar\imagej-2.0-SNAPSHOT.jar"
 !define CLASS "imagej.ImageJ"
+!define JVM_ARGS "-mx512m"
 
 Section ""
   Call GetJRE
   Pop $R0
 
-  StrCpy $0 '"$R0" -classpath "${CLASSPATH}" ${CLASS}'
+  StrCpy $0 '"$R0" -classpath "${CLASSPATH}" ${JVM_ARGS} ${CLASS}'
 
   SetOutPath $EXEDIR
   ExecWait $0
