@@ -83,7 +83,6 @@ The following menu commands are working. Unlisted commands do not work.
     - Process > Binary
       + all commands except:
         * Convert to Mask
-        * Close
         * Ultimate Points
     - Process > Math
     - Process > FFT > FFT
