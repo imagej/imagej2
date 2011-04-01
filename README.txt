@@ -4,14 +4,24 @@ This is an "alpha"-quality release, meaning the code is not finished, nor is
 the design fully stabilized. We are releasing it for early community feedback,
 and to demonstrate project directions and progress.
 
+DO NOT USE THIS RELEASE FOR ANYTHING IMPORTANT.
+
 For this release, we have tried to model the application after ImageJ v1.x as
 much as is reasonable. However, please be aware that version 2.0.0 is
 essentially a total rewrite of ImageJ from the ground up. It provides backward
 compatibility with older versions of ImageJ by bundling the latest v1.x code
 and translating between "legacy" and "modern" image structures.
 
-For more details, see the ImageJDev web site at:
+For more details on the project, see the ImageJDev web site at:
   http://imagejdev.org/
+
+
+LICENSING
+---------
+
+While our intention is to license ImageJ under a BSD-style license (see
+LICENSE.txt), it is currently distributed with GPL-licensed software, meaning
+this alpha version is technically also provided under terms of the GPL.
 
 
 KNOWN ISSUES
@@ -19,13 +29,19 @@ KNOWN ISSUES
 
 There are many known issues with this release:
 
-1) Color displays and LUTs are currently unsupported:
-  * All images display in grayscale.
-  * RGB color images are separated into images with 3 channels.
+1) The image displays are still very simple. Color displays and LUTs are
+   not yet supported:
+     * All images display in grayscale.
+     * RGB color images are separated into images with 3 channels.
+     * Scaling is limited to 0-255; e.g., 16-bit images may appear black.
 
 2) The memory allocated to ImageJ is fixed at 512 MB.
 
-3) Most
+3) Thanks to ImgLib (http://imagejdev.org/imglib), there are many new pixel
+   types. You can generate images with these types using the Process > Gradient
+   command, but some types (e.g., uint1 and uint12) are not yet working.
+
+4) Many more bugs and limitations not listed here.
 
 
 TOOLBAR
@@ -121,3 +137,6 @@ The following menu commands are working. Unlisted commands do not work.
 MACROS AND SCRIPTS
 ------------------
 
+It is possible to execute IJ1 macros in IJ2, though you will likely experience
+mixed results. You can even include calls to overridden IJ2 commands but they
+will not record correctly.
