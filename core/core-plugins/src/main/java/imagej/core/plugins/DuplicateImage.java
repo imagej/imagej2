@@ -64,6 +64,8 @@ public class DuplicateImage implements ImageJPlugin {
 	@Parameter(label="Output filename")
 	private String outputFilename;
 
+	// TODO - make a parameter field called file extension with predefined choices?
+	
 	// -- public interface --
 
 	@Override
