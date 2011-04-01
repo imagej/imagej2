@@ -72,49 +72,49 @@ The following menu commands are working. Unlisted commands do not work.
     - Image > Transform > Translate
 
   * Process menu:
-    - Smooth
-    - Sharpen
-    - Find Edges
-    - Noise > Add Noise
-    - Noise > Add Specific Noise
-    - Noise > Salt and Pepper
-    - Shadows
+    - Process > Smooth
+    - Process > Sharpen
+    - Process > Find Edges
+    - Process > Noise > Add Noise
+    - Process > Noise > Add Specific Noise
+    - Process > Noise > Salt and Pepper
+    - Process > Shadows
       + all commands except Shadows Demo
-    - Binary
+    - Process > Binary
       + all commands except:
         * Convert to Mask
         * Close
         * Ultimate Points
-    - Math
-    - FFT > FFT
-    - Filters
+    - Process > Math
+    - Process > FFT > FFT
+    - Process > Filters
       + all commands except Show Circular Masks
-    - Image Calculator
-    - Gradient
+    - Process > Image Calculator
+    - Process > Gradient
 
   * Analyze menu:
-    - Measure
-    - Analyze Particles
-    - Summarize
-    - Distribution
-    - Clear Results
-    - Histogram
-    - Surface Plot
-    - Tools > Save XY Coordinates
-    - Tools > Fractal Box Count
-    - Tools > Curve Fitting
-    - Tools > Scale Bar
-    - Tools > Calibration Bar
+    - Analyze > Measure
+    - Analyze > Analyze Particles
+    - Analyze > Summarize
+    - Analyze > Distribution
+    - Analyze > Clear Results
+    - Analyze > Histogram
+    - Analyze > Surface Plot
+    - Analyze > Tools > Save XY Coordinates
+    - Analyze > Tools > Fractal Box Count
+    - Analyze > Tools > Curve Fitting
+    - Analyze > Tools > Scale Bar
+    - Analyze > Tools > Calibration Bar
 
   * Plugins menu:
-    - Macros > Run
-    - Macros > Edit
-    - Shortcuts > List Shortcuts
-    - Utilities > Control Panel
-    - Utilities > ImageJ Properties
-    - Utilities > Threads
-    - Utilities > Capture Image
-    - Utilities > Capture Screen
+    - Plugins > Macros > Run
+    - Plugins > Macros > Edit
+    - Plugins > Shortcuts > List Shortcuts
+    - Plugins > Utilities > Control Panel
+    - Plugins > Utilities > ImageJ Properties
+    - Plugins > Utilities > Threads
+    - Plugins > Utilities > Capture Image
+    - Plugins > Utilities > Capture Screen
 
 
 MACROS AND SCRIPTS
