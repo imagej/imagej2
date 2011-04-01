@@ -63,11 +63,14 @@ public @interface Parameter {
 	 * <li>NORMAL: parameter is included in the history for purposes of data
 	 * provenance, and included as a parameter when recording scripts.</li>
 	 * <li>TRANSIENT: parameter is excluded from the history for the purposes of
-	 * data provenance, but still included as a parameter when recording scripts.</li>
+	 * data provenance, but still included as a parameter when recording
+	 * scripts.</li>
 	 * <li>INVISIBLE: parameter is excluded from the history for the purposes of
 	 * data provenance, and also excluded as a parameter when recording scripts.
 	 * This option should only be used for parameters with no effect on the final
 	 * output, such as a "verbose" flag.</li>
+	 * <li>MESSAGE: parameter value is intended as a message only, not editable
+	 * by the user nor included as an input or output parameter.</li>
 	 * </ul>
 	 */
 	// NB: We use the fully qualified name to work around a javac bug:
