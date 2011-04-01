@@ -39,6 +39,8 @@ import imagej.event.Events;
 import imagej.event.StatusEvent;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -61,6 +63,14 @@ public class SwingStatusBar extends JPanel
 		add(progressBar, BorderLayout.CENTER);
 		setStatus("");
 		Events.subscribe(StatusEvent.class, this);
+
+		progressBar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(final MouseEvent evt) {
+				System.gc();
+				Events.publish(new StatusEvent(getInfoString()));
+			}
+		});
 	}
 
 	public void setStatus(final String message) {
@@ -78,6 +88,8 @@ public class SwingStatusBar extends JPanel
 		}
 	}
 
+	// -- EventSubscriber methods --
+
 	@Override
 	public void onEvent(final StatusEvent event) {
 		final String message = event.getStatusMessage();
@@ -85,6 +97,20 @@ public class SwingStatusBar extends JPanel
 		final int max = event.getProgressMaximum();
 		setStatus(message);
 		setProgress(val, max);
+	}
+
+	// -- Helper methods --
+
+	protected String getInfoString() {
+		final String javaVersion = System.getProperty("java.version");
+		final String osArch = System.getProperty("os.arch");
+		final long totalMem = Runtime.getRuntime().maxMemory();
+		final long freeMem = Runtime.getRuntime().freeMemory();
+		final long usedMem = totalMem - freeMem;
+		final long usedMB = usedMem / 1048576;
+		final long totalMB = totalMem / 1048576;
+		return "ImageJ 2.0.0-alpha1; Java " + javaVersion + "; " +
+			"[" + osArch + "]; " + usedMB + "MB of " + totalMB + "MB";
 	}
 
 }
