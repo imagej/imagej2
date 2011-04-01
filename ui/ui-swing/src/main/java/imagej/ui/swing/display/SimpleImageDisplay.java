@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import java.awt.Dimension;
+import java.util.Arrays;
+
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayController;
@@ -55,6 +58,7 @@ public class SimpleImageDisplay implements Display {
 	private NavigableImagePanel imgCanvas;
 	private Dataset theDataset;
 	private DisplayController controller;
+	private int[] lastKnownDimensions;
 
 	public SimpleImageDisplay() {
 		Events.publish(new DisplayCreatedEvent(this));
@@ -71,6 +75,7 @@ public class SimpleImageDisplay implements Display {
 	@Override
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
+		lastKnownDimensions = dataset.getImage().getDimensions();
 		// imgCanvas = new ImageCanvasSwing();
 		imgCanvas = new NavigableImagePanel();
 		imgWindow = new NavigableImageFrame(imgCanvas);
@@ -102,6 +107,12 @@ public class SimpleImageDisplay implements Display {
 
 	@Override
 	public void update() {
+		// did the shape of the dataset change?
+		int[] currDimensions = theDataset.getImage().getDimensions();
+		if (!Arrays.equals(lastKnownDimensions, currDimensions)) {
+			lastKnownDimensions = currDimensions;
+			controller.setDataset(theDataset);
+		}
 		controller.update();
 	}
 
