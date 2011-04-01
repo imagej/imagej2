@@ -88,7 +88,7 @@ The following menu commands are working. Unlisted commands do not work.
     - Process > Math
     - Process > FFT > FFT
     - Process > Filters
-      + all commands except Show Circular Masks
+      + all commands
     - Process > Image Calculator
     - Process > Gradient
 
