@@ -117,14 +117,16 @@ public class SwingFileWidget extends JPanel
 
 	@Override
 	public File getFile() {
-		return new File(path.getText());
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		path.setText(details.getValue().toString());
+		final File value = (File) details.getValue();
+		path.setText(value == null ? "" : value.toString());
 	}
 
 	// -- Helper methods --
