@@ -1,5 +1,5 @@
 //
-// ParamVisibility.java
+// AboutImageJ.java
 //
 
 /*
@@ -32,25 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin;
+package imagej.core.plugins.app;
+
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.ParamVisibility;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
- * Defines the "visibility" of a parameter.
- * <p>
- * Choices are:
- * <ul>
- * <li>NORMAL: parameter is included in the history for purposes of data
- * provenance, and included as a parameter when recording scripts.</li>
- * <li>TRANSIENT: parameter is excluded from the history for the purposes of
- * data provenance, but still included as a parameter when recording scripts.</li>
- * <li>INVISIBLE: parameter is excluded from the history for the purposes of
- * data provenance, and also excluded as a parameter when recording scripts.
- * This option should only be used for parameters with no effect on the final
- * output, such as a "verbose" flag.</li>
- * </ul>
+ * TODO
  * 
  * @author Curtis Rueden
  */
-public enum ParamVisibility {
-	NORMAL, TRANSIENT, INVISIBLE, MESSAGE
+@Plugin
+public class AboutImageJ implements ImageJPlugin {
+
+	@Parameter(visibility = ParamVisibility.MESSAGE)
+	public final String message = "Unimplemented";
+
+	@Override
+	public void run() {
+		// TODO
+	}
+
 }

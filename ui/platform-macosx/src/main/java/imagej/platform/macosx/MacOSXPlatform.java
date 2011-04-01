@@ -85,9 +85,13 @@ public class MacOSXPlatform implements PlatformHandler,
 		final Object menus = event.getMenus();
 		if (!(menus instanceof JMenuBar)) return;
 
-		final JMenuBar menuBar = (JMenuBar) menus;
-		final Application app = Application.getApplication();
-		app.setDefaultMenuBar(menuBar);
+		// TODO - fix problem where the default menu bar replicates the File menu,
+		// and no menu accelerators work.
+//		final JMenuBar menuBar = (JMenuBar) menus;
+//		final Application app = Application.getApplication();
+//		app.setDefaultMenuBar(menuBar);
+
+		// TODO - remove About, Preferences and Quit menu items from the menu bar?
 	}
 
 }

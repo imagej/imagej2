@@ -39,6 +39,7 @@ package imagej.ui.swing;
 import imagej.event.Events;
 import imagej.manager.Managers;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.platform.event.AppQuitEvent;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
@@ -50,6 +51,8 @@ import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -94,7 +97,13 @@ public class SwingUI implements UserInterface {
 		final JPanel pane = new JPanel();
 		frame.setContentPane(pane);
 		pane.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final WindowEvent evt) {
+				Events.publish(new AppQuitEvent());
+			}
+		});
 
 		pane.add(toolBar, BorderLayout.NORTH);
 		pane.add(statusBar, BorderLayout.SOUTH);

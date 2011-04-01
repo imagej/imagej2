@@ -1,5 +1,5 @@
 //
-// QuitProgram.java
+// AboutImageJ.java
 //
 
 /*
@@ -32,37 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.plugins;
+package imagej.core.plugins.app;
 
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.ParamVisibility;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-
-import java.awt.HeadlessException;
-
-import javax.swing.JOptionPane;
 
 /**
  * TODO
  * 
- * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "File>Quit")
-public class QuitProgram implements ImageJPlugin {
+@Plugin
+public class ShowPrefs implements ImageJPlugin {
+
+	@Parameter(visibility = ParamVisibility.MESSAGE)
+	public final String message = "Unimplemented";
 
 	@Override
 	public void run() {
-		try {
-			int rval = JOptionPane.showConfirmDialog(null, "Really quit ImageJ?",
-				"ImageJ", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (rval != JOptionPane.YES_OPTION) return; // do not quit
-		}
-		catch (HeadlessException exc) {
-			// in a headless environment, assume quit is OK
-		}
-		// TODO - save existing data
-		// TODO - close windows
-		System.exit(0);
+		// TODO
 	}
 
 }

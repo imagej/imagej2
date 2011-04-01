@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui;
 
 import imagej.module.ModuleItem;
+import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
@@ -93,6 +94,12 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 			final ParamDetails details =
 				new ParamDetails(inputPanel, module, name, type, param);
 
+			final boolean message = param.visibility() == ParamVisibility.MESSAGE;
+			if (message) {
+				addMessage(inputPanel, details);
+				continue;
+			}
+
 			final boolean required = param.required();
 			final boolean persist = param.persist();
 			final String persistKey = param.persistKey();
@@ -150,6 +157,12 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 	}
 
 	// -- Helper methods - input panel population --
+
+	private void addMessage(final InputPanel inputPanel,
+		final ParamDetails details)
+	{
+		inputPanel.addMessage(details.getValue().toString());
+	}
 
 	private void addNumber(final InputPanel inputPanel,
 		final ParamDetails details, final Number initialValue)

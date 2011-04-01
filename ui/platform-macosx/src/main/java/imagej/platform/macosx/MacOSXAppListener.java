@@ -110,6 +110,7 @@ public class MacOSXAppListener implements AboutHandler,
 	@Override
 	public void handleQuitRequestWith(final QuitEvent e, final QuitResponse r) {
 		Events.publish(new AppQuitEvent());
+		r.cancelQuit();
 	}
 
 	// -- UserSessionListener methods --
