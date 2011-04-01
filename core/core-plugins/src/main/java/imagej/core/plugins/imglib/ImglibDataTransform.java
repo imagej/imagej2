@@ -62,11 +62,11 @@ public class ImglibDataTransform {
 
 	/** run the plugin and assign output */
 	public void run() {
-		if (this.algorithm == null) throw new IllegalStateException(
-			"algorithm reference is null");
+		if (this.algorithm == null)
+			throw new IllegalStateException("algorithm reference is null");
 
-		if (!algorithm.checkInput() || !algorithm.process()) throw new IllegalStateException(
-			algorithm.getErrorMessage());
+		if (!algorithm.checkInput() || !algorithm.process())
+			throw new IllegalStateException(algorithm.getErrorMessage());
 
 		dataset.setImage(algorithm.getResult());
 	}
