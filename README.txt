@@ -67,7 +67,9 @@ The following menu commands are working. Unlisted commands do not work.
     - Image > Transform > Flip Horizontally
     - Image > Transform > Flip Vertically
     - Image > Transform > Rotate 90 Degrees Left
+      + sometimes window shape is not updated
     - Image > Transform > Rotate 90 Degrees Right
+      + sometimes window shape is not updated
     - Image > Transform > Rotate
     - Image > Transform > Translate
 
