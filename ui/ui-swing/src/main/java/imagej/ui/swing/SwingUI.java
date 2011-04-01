@@ -54,10 +54,14 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,51 +151,87 @@ public class SwingUI implements UserInterface {
 		readmeFrame.setTitle("ImageJ v" + VERSION + " - " + README_FILE);
 		readmeFrame.pack();
 
-		final List<String> readmeStrings = loadReadmeFile();
-
-		for (int i = 0; i < readmeStrings.size(); i++)
-			text.append(readmeStrings.get(i) + "\n");
+		final String readmeText = loadReadmeFile();
+		text.setText(readmeText);
 
 		readmeFrame.setVisible(true);
 	}
 
-	private List<String> loadReadmeFile() {
-		Log.debug("current working dir = " + new File(".").getAbsolutePath());
-
-		// determine path to README file
-
-		// path to README file is in base ImageJ installation directory
-		String pathToBaseInstallation;
-
-		// when not run inside Eclipse must set path to the installation
-		//   directory of application. We will assume application shell script
-		//   always changes directory into imagej base installation directory.
-		pathToBaseInstallation = "./";
-
-		// TODO - HACK to allow development in Eclipse. From within
-		// Eclipse path is relative to this UI's run path
-		pathToBaseInstallation = "../../";
-
-		final List<String> stringsList = new ArrayList<String>();
+	private String loadReadmeFile() {
+		final File baseDir = getBaseDirectory();
+		final File readmeFile = new File(baseDir, README_FILE);
 
 		try {
-			String lineOfText;
-			final BufferedReader br =
-				new BufferedReader(
-					new FileReader(pathToBaseInstallation + README_FILE));
-			while ((lineOfText = br.readLine()) != null) {
-				stringsList.add(lineOfText);
-			}
+			final DataInputStream in =
+				new DataInputStream(new FileInputStream(readmeFile));
+			final int len = (int) readmeFile.length();
+			final byte[] bytes = new byte[len];
+			in.readFully(bytes);
+			in.close();
+			return new String(bytes);
 		}
 		catch (FileNotFoundException e) {
-			throw new IllegalArgumentException(README_FILE + " not found at " +
-				new File(pathToBaseInstallation).getAbsolutePath());
+			throw new IllegalArgumentException(README_FILE +
+				" not found at " + baseDir.getAbsolutePath());
 		}
 		catch (IOException e) {
 			throw new IllegalStateException(e.getMessage());
 		}
+	}
 
-		return stringsList;
+	private File getBaseDirectory() {
+		final File pathToClass = getPathToClass();
+		final String path = pathToClass.getPath();
+
+		final File baseDir;
+		if (path.endsWith(".class")) {
+			// assume class is in a subfolder of Maven target
+			File dir = pathToClass;
+			while (dir != null && !dir.getName().equals("target")) dir = up(dir);
+			baseDir = up(up(up(dir)));
+		}
+		else if (path.endsWith(".jar")) {
+			// assume class is in a library folder of the distribution
+			final File dir = pathToClass.getParentFile();
+			baseDir = up(dir);
+		}
+		else baseDir = null;
+
+		// not sure; return current working directory
+		return baseDir == null ? new File(".") : baseDir;
+	}
+
+	/**
+	 * Gets the file on disk containing this class.
+	 * <p>
+	 * This could be a jar archive, or a standalone class file.
+	 * </p>
+	 */
+	private File getPathToClass() {
+		final Class<?> c = getClass();
+		final String className = c.getSimpleName();
+		String path = getClass().getResource(className + ".class").toString();
+		path = path.replaceAll("^jar:", "");
+		path = path.replaceAll("^file:", "");
+		path = path.replaceAll("^/*/", "/");
+		path = path.replaceAll("^/([A-Z]:)", "$1");
+		path = path.replaceAll("!.*", "");
+		try {
+			path = URLDecoder.decode(path, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String slash = File.separator;
+		if (slash.equals("\\")) slash = "\\\\";
+		path = path.replaceAll("/", slash);
+		return new File(path);
+	}
+
+	private File up(final File file) {
+		if (file == null) return null;
+		return file.getParentFile();
 	}
 
 }
