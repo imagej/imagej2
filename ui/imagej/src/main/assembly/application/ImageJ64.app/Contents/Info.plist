@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.imagejdev.ImageJ</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>text.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>ImageJ Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>****</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+	<key>CFBundleGetInfoString</key>
+	<string>http://imagejdev.org</string>
+	<key>CFBundleIconFile</key>
+	<string>ImageJ.icns</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>ImageJ</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>imgJ</string>
+	<key>CFBundleVersion</key>
+	<string>10.2</string>
+	<key>Java</key>
+	<dict>
+		<key>JVMArchs</key>
+		<array>
+			<string>x86_64</string>
+			<string>i386</string>
+			<string>ppc</string>
+		</array>
+		<key>ClassPath</key>
+		<string>$APP_PACKAGE/../plugins:$APP_PACKAGE/../plugins/*:$APP_PACKAGE/../jar/*:/System/Library/Java/Extensions/QTJava.zip</string>
+		<key>JVMVersion</key>
+		<string>1.6+</string>
+		<key>MainClass</key>
+		<string>ij.ImageJ</string>
+		<key>Properties</key>
+		<dict>
+			<key>apple.awt.Antialiasing</key>
+			<string>false</string>
+			<key>apple.awt.brushMetalLook</key>
+			<string>false</string>
+			<key>com.apple.hwaccel</key>
+			<string>false</string>
+			<key>com.apple.macos.useScreenMenuBar</key>
+			<string>false</string>
+			<key>com.apple.mrj.application.growbox.intrudes</key>
+			<string>false</string>
+			<key>com.apple.mrj.application.live-resize</key>
+			<string>true</string>
+			<key>com.apple.smallTabs</key>
+			<string>true</string>
+		</dict>
+		<key>VMOptions</key>
+		<string>-Xms128m -Xmx512m</string>
+	</dict>
+</dict>
+</plist>
