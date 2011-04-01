@@ -63,6 +63,7 @@ The following menu commands are working. Unlisted commands do not work.
       + option values can be set but their values are ignored internally
 
   * Image menu:
+    - Image > Duplicate
     - Image > Transform > Flip Horizontally
     - Image > Transform > Flip Vertically
     - Image > Transform > Rotate 90 Degrees Left
