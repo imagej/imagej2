@@ -34,14 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
+import imagej.plugin.MenuEntry;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.process.PluginPreprocessor;
 import imagej.plugin.ui.AbstractInputHarvester;
 import imagej.plugin.ui.InputPanel;
-import imagej.plugin.process.PluginPreprocessor;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -69,6 +72,8 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		final JOptionPane optionPane = new JOptionPane(null);
 		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 		final JDialog dialog = optionPane.createDialog(module.getInfo().getLabel());
+		final String title = getTitle(module);
+		dialog.setTitle(title);
 		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
 		final JPanel widgetPane = (JPanel) mainPane.getComponent(0);
 		// TODO - use JScrollPane in case there are many widgets
@@ -79,6 +84,21 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		dialog.setVisible(true);
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval != null && rval == JOptionPane.OK_OPTION;
+	}
+
+	private String getTitle(final PluginModule<?> module) {
+		final PluginModuleInfo<?> moduleInfo = module.getInfo();
+		final String label = moduleInfo.getLabel();
+		if (label != null && !label.isEmpty()) return label;
+		final List<MenuEntry> menuPath = moduleInfo.getPluginEntry().getMenuPath();
+		if (menuPath != null && menuPath.size() > 0) {
+			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
+			final String menuName = menuEntry.getName();
+			if (menuName != null && !menuName.isEmpty()) return menuName;
+		}
+		final String name = moduleInfo.getName();
+		if (name != null && !name.isEmpty()) return name;
+		return "Choose Parameters";
 	}
 
 	private void ensureDialogSizeReasonable(final JDialog dialog) {
