@@ -128,10 +128,10 @@ public class SwingUI implements UserInterface {
 		Prefs.put(getClass(), PREF_FIRST_RUN, false);
 
 		final JFrame readmeFrame = new JFrame();
-		final JTextArea text = new JTextArea(25, 80);
+		final JTextArea text = new JTextArea();
 		text.setEditable(false);
 		final JScrollPane scrollPane = new JScrollPane(text);
-		scrollPane.setPreferredSize(new Dimension(800, 600));
+		scrollPane.setPreferredSize(new Dimension(600, 500));
 		readmeFrame.setLayout(new BorderLayout());
 		readmeFrame.add(scrollPane, BorderLayout.CENTER);
 		readmeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
