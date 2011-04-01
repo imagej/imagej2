@@ -48,11 +48,15 @@
 			<string>ppc</string>
 		</array>
 		<key>ClassPath</key>
-		<string>$APP_PACKAGE/../plugins:$APP_PACKAGE/../plugins/*:$APP_PACKAGE/../jar/*:/System/Library/Java/Extensions/QTJava.zip</string>
+		<array>
+			<string>$APP_PACKAGE/../plugins</string>
+			<string>$APP_PACKAGE/../jar/imagej-2.0-SNAPSHOT.jar</string>
+			<string>/System/Library/Java/Extensions/QTJava.zip</string>
+		</array>
 		<key>JVMVersion</key>
 		<string>1.6+</string>
 		<key>MainClass</key>
-		<string>ij.ImageJ</string>
+		<string>imagej.ImageJ</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>
