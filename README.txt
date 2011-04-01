@@ -85,6 +85,7 @@ The following menu commands are working. Unlisted commands do not work.
     - Image > Stacks > Z Project
     - Image > Stacks > 3d Project
     - Image > Stacks > Plot Z Axis Profile
+    - Image > Stacks > Tools > Make Substack
     - Image > Transform > Flip Horizontally
     - Image > Transform > Flip Vertically
     - Image > Transform > Rotate 90 Degrees Left
