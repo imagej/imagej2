@@ -137,4 +137,13 @@ public class Metadata {
 		return axes;
 	}
 
+	/**
+	 * set this Metatdata's values from another Metadata object
+	 */
+	public void copyFrom(Metadata other) {
+		String newName = other.getName();
+		AxisLabel[] newAxes = other.getAxes().clone();
+		setName(newName);
+		setAxes(newAxes);
+	}
 }
