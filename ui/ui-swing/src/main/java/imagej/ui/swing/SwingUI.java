@@ -46,23 +46,19 @@ import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
-import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -197,7 +193,7 @@ public class SwingUI implements UserInterface {
 		}
 		else baseDir = null;
 
-		// not sure; return current working directory
+		// return current working directory if not found
 		return baseDir == null ? new File(".") : baseDir;
 	}
 
