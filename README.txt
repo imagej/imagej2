@@ -80,6 +80,11 @@ The following menu commands are working. Unlisted commands do not work.
 
   * Image menu:
     - Image > Duplicate
+    - Image > Stacks > Make Montage
+    - Image > Stacks > Reslice
+    - Image > Stacks > Z Project
+    - Image > Stacks > 3d Project
+    - Image > Stacks > Plot Z Axis Profile
     - Image > Transform > Flip Horizontally
     - Image > Transform > Flip Vertically
     - Image > Transform > Rotate 90 Degrees Left
