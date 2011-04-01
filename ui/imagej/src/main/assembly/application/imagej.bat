@@ -1,2 +1,2 @@
 @echo off
-java -mx512m -cp "jar\*" imagej.ImageJ $@
+java -mx512m -cp "plugins;plugins\*;jar\*" imagej.ImageJ %*
