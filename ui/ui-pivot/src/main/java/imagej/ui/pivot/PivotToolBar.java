@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// PivotToolBar.java
 //
 
 /*
@@ -32,21 +32,39 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.ui.pivot;
+
+import imagej.manager.Managers;
+import imagej.tool.ToolManager;
+import imagej.ui.ToolBar;
+
+import org.apache.pivot.wtk.BoxPane;
 
 /**
- * An end-user ImageJ application.
+ * Pivot tool bar implementation.
  *
  * @author Curtis Rueden
  */
-public interface UserInterface {
+public class PivotToolBar extends BoxPane implements ToolBar {
 
-	void initialize();
+	private ToolManager toolManager;
 
-	void processArgs(final String[] args);
+	public PivotToolBar() {
+		toolManager = Managers.get(ToolManager.class);
+		populateToolBar();
+	}
 
-	ToolBar getToolBar();
+	// -- ToolBar methods --
 
-	StatusBar getStatusBar();
+	@Override
+	public ToolManager getToolManager() {
+		return toolManager;
+	}
+
+	// -- Helper methods --
+
+	private void populateToolBar() {
+		// TODO
+	}
 
 }

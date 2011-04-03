@@ -119,6 +119,16 @@ public class SwingUI implements UserInterface {
 		// TODO
 	}
 
+	@Override
+	public SwingToolBar getToolBar() {
+		return toolBar;
+	}
+
+	@Override
+	public SwingStatusBar getStatusBar() {
+		return statusBar;
+	}
+
 	// -- Helper methods --
 
 	private void createMenuBar() {

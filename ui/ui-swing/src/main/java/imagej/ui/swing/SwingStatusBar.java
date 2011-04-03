@@ -37,6 +37,7 @@ package imagej.ui.swing;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.ui.StatusBar;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
@@ -51,7 +52,7 @@ import javax.swing.JProgressBar;
  * @author Curtis Rueden
  */
 public class SwingStatusBar extends JPanel
-	implements EventSubscriber<StatusEvent>
+	implements StatusBar, EventSubscriber<StatusEvent>
 {
 
 	private final JProgressBar progressBar;
@@ -73,10 +74,14 @@ public class SwingStatusBar extends JPanel
 		});
 	}
 
+	// -- StatusBar methods --
+
+	@Override
 	public void setStatus(final String message) {
 		progressBar.setString(message == null ? "" : message);
 	}
 
+	@Override
 	public void setProgress(final int val, final int max) {
 		if (val >= 0 && val < max) {
 			progressBar.setValue(val);

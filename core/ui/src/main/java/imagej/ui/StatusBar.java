@@ -1,5 +1,5 @@
 //
-// AWTImagePanel.java
+// StatusBar.java
 //
 
 /*
@@ -32,12 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.awt.display;
+package imagej.ui;
 
-import java.awt.Panel;
+/**
+ * Common interface for status bars.
+ *
+ * @author Curtis Rueden
+ */
+public interface StatusBar {
 
-public class AWTImagePanel extends Panel {
+	void setStatus(final String message);
 
-	// TODO
+	void setProgress(final int val, final int max);
 
 }

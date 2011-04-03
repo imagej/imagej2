@@ -36,6 +36,7 @@ package imagej.ui.pivot;
 
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.ui.StatusBar;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
@@ -47,7 +48,7 @@ import org.apache.pivot.wtk.Meter;
  * @author Curtis Rueden
  */
 public final class PivotStatusBar extends BoxPane
-	implements EventSubscriber<StatusEvent>
+	implements StatusBar, EventSubscriber<StatusEvent>
 {
 
 	private final Label label;
@@ -60,10 +61,14 @@ public final class PivotStatusBar extends BoxPane
 		add(meter);
 	}
 
+	// -- StatusBar methods --
+
+	@Override
 	public void setStatus(final String message) {
 		label.setText(message == null ? "" : message);
 	}
 
+	@Override
 	public void setProgress(final int val, final int max) {
 		if (val >= 0 && val < max) {
 			meter.setPercentage((double) val / max);
@@ -72,6 +77,8 @@ public final class PivotStatusBar extends BoxPane
 			meter.setPercentage(0);
 		}
 	}
+	
+	// -- EventSubscriber methods --
 
 	@Override
 	public void onEvent(final StatusEvent event) {

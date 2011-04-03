@@ -50,14 +50,13 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	implements SliderValueListener
 {
 
-	private final ParamDetails details;
 	private final Slider slider;
 	private final Label label;
 
 	public PivotNumberSliderWidget(final ParamDetails details,
-		final Number min, final Number max, final Number stepSize)
+		final Number min, final Number max)
 	{
-		this.details = details;
+		super(details);
 
 		slider = new Slider();
 		slider.setRange(min.intValue(), max.intValue());

@@ -45,7 +45,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -55,16 +54,15 @@ import javax.swing.event.DocumentListener;
  *
  * @author Curtis Rueden
  */
-public class SwingFileWidget extends JPanel
+public class SwingFileWidget extends SwingInputWidget
 	implements ActionListener, DocumentListener, FileWidget
 {
 
-	private ParamDetails details;
 	private JTextField path;
 	private JButton browse;
 
 	public SwingFileWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 

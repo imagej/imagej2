@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.awt;
 
 import imagej.data.AxisLabel;
 import imagej.data.Dataset;
@@ -62,10 +62,10 @@ public class AWTDisplayController implements DisplayController {
 	private int xIndex, yIndex;
 	private int[] pos;
 	private final ImageDisplayWindow imgWindow;
-	private final SimpleImageDisplay display;
+	private final AWTDisplay display;
 	private Object currentPlane;
 
-	public AWTDisplayController(final SimpleImageDisplay display) {
+	public AWTDisplayController(final AWTDisplay display) {
 		this.display = display;
 		imgWindow = display.getImageDisplayWindow();
 		setDataset(display.getDataset());
@@ -133,13 +133,14 @@ public class AWTDisplayController implements DisplayController {
 		//FIXME - disabled. make this UI call in SimpleImageDisplay to
 		// avoid incorrectly calculating image canvas dimensions.
 		// Reenable if actually needed.
-		display.getImageDisplayWindow().pack();
-		
+//		display.getImageDisplayWindow().pack();
+
 		// TODO
-		// maybe the best way to handle a change in Dataset, rather than pack() everytime,
-		// would be to fire an event here that says my Dataset has changed. the display
-		// that owns this Dataset could subscribe to Dataset changed events and it can
-		// decide whether its appropriate for the frame to be repacked.
+		// maybe the best way to handle a change in Dataset, rather than pack()
+		// everytime, would be to fire an event here that says my Dataset has
+		// changed. the display that owns this Dataset could subscribe to Dataset
+		// changed events and it can decide whether its appropriate for the frame
+		// to be repacked.
 	}
 
 	@Override

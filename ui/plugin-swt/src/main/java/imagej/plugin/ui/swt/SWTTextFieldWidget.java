@@ -45,16 +45,16 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @author Curtis Rueden
  */
-public class SWTTextFieldWidget extends Composite implements TextFieldWidget {
+public class SWTTextFieldWidget extends SWTInputWidget
+	implements TextFieldWidget
+{
 
-	private final ParamDetails details;
 	private final Text text;
 
 	public SWTTextFieldWidget(final Composite parent,
 		final ParamDetails details, final int columns)
 	{
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 
 		text = new Text(this, 0);
 		text.setTextLimit(columns);

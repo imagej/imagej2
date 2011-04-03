@@ -46,17 +46,15 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTObjectWidget extends Composite implements ObjectWidget {
+public class SWTObjectWidget extends SWTInputWidget implements ObjectWidget {
 
-	private final ParamDetails details;
 	private final Combo combo;
 	private final Object[] items;
 
 	public SWTObjectWidget(final Composite parent, final ParamDetails details,
 		final Object[] items)
 	{
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 		this.items = items;
 
 		combo = new Combo(this, SWT.DROP_DOWN);

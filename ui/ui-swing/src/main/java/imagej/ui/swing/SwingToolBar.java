@@ -43,6 +43,7 @@ import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
+import imagej.ui.ToolBar;
 import imagej.util.Log;
 
 import java.awt.event.MouseAdapter;
@@ -67,7 +68,7 @@ import javax.swing.event.ChangeListener;
  * @author Curtis Rueden
  */
 public class SwingToolBar extends JToolBar
-	implements EventSubscriber<ToolActivatedEvent>
+	implements ToolBar, EventSubscriber<ToolActivatedEvent>
 {
 
 	protected static final Border ACTIVE_BORDER =
@@ -86,9 +87,14 @@ public class SwingToolBar extends JToolBar
 		populateToolBar();
 	}
 
+	// -- ToolBar methods --
+
+	@Override
 	public ToolManager getToolManager() {
 		return toolManager;
 	}
+
+	// -- Helper methods --
 
 	private void populateToolBar() {
 		final ButtonGroup buttonGroup = new ButtonGroup();

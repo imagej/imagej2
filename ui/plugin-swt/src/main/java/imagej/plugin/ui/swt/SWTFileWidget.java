@@ -50,15 +50,13 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author Curtis Rueden
  */
-public class SWTFileWidget extends Composite implements FileWidget {
+public class SWTFileWidget extends SWTInputWidget implements FileWidget {
 
-	private ParamDetails details;
 	private Text path;
 	private Button browse;
 
 	public SWTFileWidget(final Composite parent, final ParamDetails details) {
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 
 		setLayout(new MigLayout());
 

@@ -1,5 +1,5 @@
 //
-// NavigableImagePanel.java
+// SwingNavigableImageCanvas.java
 //
 
 /*
@@ -34,9 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.awt.AWTCursors;
+import imagej.awt.AWTEventDispatcher;
+import imagej.awt.AWTNavigableImageCanvas;
 import imagej.display.EventDispatcher;
 import imagej.display.MouseCursor;
-import imagej.display.NavigableImageCanvas;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -68,152 +70,31 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-/**
- * <p>
- * <code>NavigableImagePanel</code> is a lightweight container displaying an
- * image that can be zoomed in and out and panned with ease and simplicity,
- * using an adaptive rendering for high quality display and satisfactory
- * performance.
- * </p>
- * <p>
- * <h3>Image</h3>
- * <p>
- * An image is loaded either via a constructor:
- * </p>
- * 
- * <pre>
- * 
- * 
- * 
- * 
- * 
- * 
- * NavigableImagePanel panel = new NavigableImagePanel(image);
- * </pre>
- * 
- * or using a setter:
- * 
- * <pre>
- * NavigableImagePanel panel = new NavigableImagePanel();
- * panel.setImage(image);
- * </pre>
- * 
- * When an image is set, it is initially painted centered in the component, at
- * the largest possible size, fully visible, with its aspect ratio is preserved.
- * This is defined as 100% of the image size and its corresponding zoom level is
- * 1.0. </p> <h3>Zooming</h3>
- * <p>
- * Zooming can be controlled interactively, using either the mouse scroll wheel
- * (default) or the mouse two buttons, or programmatically, allowing the
- * programmer to implement other custom zooming methods. If the mouse does not
- * have a scroll wheel, set the zooming device to mouse buttons:
- * 
- * <pre>
- * panel.setZoomDevice(ZoomDevice.MOUSE_BUTTON);
- * </pre>
- * 
- * The left mouse button works as a toggle switch between zooming in and zooming
- * out modes, and the right button zooms an image by one increment (default is
- * 20%). You can change the zoom increment value by:
- * 
- * <pre>
- * panel.setZoomIncrement(newZoomIncrement);
- * </pre>
- * 
- * If you intend to provide programmatic zoom control, set the zoom device to
- * none to disable both the mouse wheel and buttons for zooming purposes:
- * 
- * <pre>
- * panel.setZoomDevice(ZoomDevice.NONE);
- * </pre>
- * 
- * and use <code>setZoom()</code> to change the zoom level.
- * </p>
- * <p>
- * Zooming is always around the point the mouse pointer is currently at, so that
- * this point (called a zooming center) remains stationary ensuring that the
- * area of an image we are zooming into does not disappear off the screen. The
- * zooming center stays at the same location on the screen and all other points
- * move radially away from it (when zooming in), or towards it (when zooming
- * out). For programmatically controlled zooming the zooming center is either
- * specified when <code>setZoom()</code> is called:
- * 
- * <pre>
- * panel.setZoom(newZoomLevel, newZoomingCenter);
- * </pre>
- * 
- * or assumed to be the point of an image which is the closest to the center of
- * the panel, if no zooming center is specified:
- * 
- * <pre>
- * panel.setZoom(newZoomLevel);
- * </pre>
- * 
- * </p>
- * <p>
- * There are no lower or upper zoom level limits.
- * </p>
- * <h3>Navigation</h3>
- * <p>
- * <code>NavigableImagePanel</code> does not use scroll bars for navigation, but
- * relies on a navigation image located in the upper left corner of the panel.
- * The navigation image is a small replica of the image displayed in the panel.
- * When you click on any point of the navigation image that part of the image is
- * displayed in the panel, centered. The navigation image can also be zoomed in
- * the same way as the main image.
- * </p>
- * <p>
- * In order to adjust the position of an image in the panel, it can be dragged
- * with the mouse, using the left button.
- * </p>
- * <p>
- * For programmatic image navigation, disable the navigation image:
- * 
- * <pre>
- * panel.setNavigationImageEnabled(false)
- * </pre>
- * 
- * and use <code>getImageOrigin()</code> and <code>setImageOrigin()</code> to
- * move the image around the panel.
- * </p>
- * <h3>Rendering</h3>
- * <p>
- * <code>NavigableImagePanel</code> uses the Nearest Neighbor interpolation for
- * image rendering (default in Java). When the scaled image becomes larger than
- * the original image, the Bilinear interpolation is applied, but only to the
- * part of the image which is displayed in the panel. This interpolation change
- * threshold can be controlled by adjusting the value of
- * <code>HIGH_QUALITY_RENDERING_SCALE_THRESHOLD</code>.
- * </p>
- * 
- * @see <a
- *      href="http://today.java.net/article/2007/03/23/navigable-image-panel">A
- *      Navigable Image Panel</a>
- * @author Slav Boleslawski
- * @author Romain Guy
- */
+// TODO: Break out the NavigationImage from the panel
 
-/*
- * Feb/Mar 2011
- * Curtis & Grant added Pan controlled by Pan Tool
- * GBH: 
- * TODO: Break out the NavigationImage from the panel
- * TODO: Change firePropertyChanges to emit Events on EventBus.
- *  (BDZ - this was done in the zoom changing cases : see below ... ZoomEvents)
- * TODO: the navigation preview is disabled. Also its zoom scaling has not
- *  been updated to mirror the overall image zoom scaling.
- * TODO: finish phasing out zoomIncrement and utilizing zoomFactor. May require
- *  changes to base classes/interfaces.
+// TODO: Change firePropertyChanges to emit Events on EventBus.
+// (BDZ - this was done in the zoom changing cases : see below ... ZoomEvents)
+
+// TODO: the navigation preview is disabled. Also its zoom scaling has not
+// been updated to mirror the overall image zoom scaling.
+
+// TODO: finish phasing out zoomIncrement and utilizing zoomFactor. May require
+// changes to base classes/interfaces.
+
+/**
+ * A Swing implementation of the navigable image canvas.
+ *
+ * <p>
+ * This code is based on
+ * <a href="http://today.java.net/article/2007/03/23/navigable-image-panel">
+ * Slav Boleslawski's NavigableImagePanel</a>.
+ * </p>
  * 
- * Rearranged code into sections: ZoomDevice, NavigationImage, ...
- *
- * Extracted an interface....
- *
- * Also see: Romain Guy's ZoomableImagePanel was my starting point to write NavigableImagePanel,
- * http://weblogs.java.net/blog/gfx/archive/2005/09/zoom_pictures_w.html
+ * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class NavigableImagePanel extends JPanel implements
-	NavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
+public class SwingNavigableImageCanvas extends JPanel implements
+	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
 {
 
 	// Rendering...
@@ -239,7 +120,7 @@ public class NavigableImagePanel extends JPanel implements
 	 * scroll wheel as the zooming device.
 	 * </p>
 	 */
-	public NavigableImagePanel() {
+	public SwingNavigableImageCanvas() {
 		setOpaque(false);
 		addResizeListener();
 		addMouseListeners();
@@ -253,7 +134,7 @@ public class NavigableImagePanel extends JPanel implements
 	 * scroll wheel as the zooming device.
 	 * </p>
 	 */
-	public NavigableImagePanel(final BufferedImage image) {
+	public SwingNavigableImageCanvas(final BufferedImage image) {
 		this();
 		setImage(image);
 	}
@@ -349,6 +230,7 @@ public class NavigableImagePanel extends JPanel implements
 	 * 
 	 * @param newImage an image to be set in the panel
 	 */
+	@Override
 	public void setImage(final BufferedImage newImage) {
 		final BufferedImage oldImage = image;
 		image = toCompatibleImage(newImage);
@@ -359,6 +241,7 @@ public class NavigableImagePanel extends JPanel implements
 		repaint();
 	}
 
+	@Override
 	public BufferedImage getImage() {
 		return image;
 	}

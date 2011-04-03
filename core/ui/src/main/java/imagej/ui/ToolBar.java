@@ -1,5 +1,5 @@
 //
-// NavigationImage.java
+// ToolBar.java
 //
 
 /*
@@ -32,13 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.ui;
+
+import imagej.tool.ToolManager;
 
 /**
- * NavigationImage - associated with a zoom-able/pan-able NavigableImagePanel
+ * Common interface for tool bars.
  *
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class NavigationImage {
-	// TODO
+public interface ToolBar {
+
+	ToolManager getToolManager();
+
 }

@@ -92,6 +92,16 @@ public class AWTUI implements UserInterface {
 		// TODO
 	}
 
+	@Override
+	public AWTToolBar getToolBar() {
+		return toolBar;
+	}
+
+	@Override
+	public AWTStatusBar getStatusBar() {
+		return statusBar;
+	}
+
 	// -- Helper methods --
 
 	private void createMenuBar() {

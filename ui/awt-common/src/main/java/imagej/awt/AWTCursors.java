@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// AWTCursors.java
 //
 
 /*
@@ -32,21 +32,58 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.awt;
+
+import imagej.display.MouseCursor;
+
+import java.awt.Cursor;
 
 /**
- * An end-user ImageJ application.
- *
- * @author Curtis Rueden
+ * TODO To decouple Cursors from GUI toolkit March 19: Not used yet
+ * 
+ * @author Grant Harris
  */
-public interface UserInterface {
+public final class AWTCursors {
 
-	void initialize();
+	private AWTCursors() {
+		// prevent instantiation of utility class
+	}
 
-	void processArgs(final String[] args);
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+	public static int getCursorCode(final MouseCursor cursorCode) {
+		switch (cursorCode) {
+			default:
+				return Cursor.DEFAULT_CURSOR;
+			case DEFAULT:
+				return Cursor.DEFAULT_CURSOR;
+			case OFF:
+				return Cursor.CUSTOM_CURSOR;
+			case HAND:
+				return Cursor.HAND_CURSOR;
+			case CROSSHAIR:
+				return Cursor.CROSSHAIR_CURSOR;
+			case MOVE:
+				return Cursor.MOVE_CURSOR;
+			case TEXT:
+				return Cursor.TEXT_CURSOR;
+			case WAIT:
+				return Cursor.WAIT_CURSOR;
+			case N_RESIZE:
+				return Cursor.N_RESIZE_CURSOR;
+			case S_RESIZE:
+				return Cursor.S_RESIZE_CURSOR;
+			case W_RESIZE:
+				return Cursor.W_RESIZE_CURSOR;
+			case E_RESIZE:
+				return Cursor.E_RESIZE_CURSOR;
+			case NW_RESIZE:
+				return Cursor.NW_RESIZE_CURSOR;
+			case NE_RESIZE:
+				return Cursor.NE_RESIZE_CURSOR;
+			case SW_RESIZE:
+				return Cursor.SW_RESIZE_CURSOR;
+			case SE_RESIZE:
+				return Cursor.SE_RESIZE_CURSOR;
+		}
+	}
 
 }

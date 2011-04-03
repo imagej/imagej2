@@ -1,5 +1,5 @@
 //
-// ToolEnabled.java
+// PivotInputWidget.java
 //
 
 /*
@@ -32,35 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.plugin.ui.pivot;
+
+import imagej.plugin.ui.InputWidget;
+import imagej.plugin.ui.ParamDetails;
+
+import org.apache.pivot.wtk.BoxPane;
 
 /**
- * TODO
- * 
- * @author Grant Harris
+ * Common superclass for Pivot-based input widgets.
+ *
+ * @author Curtis Rueden
  */
-public interface ToolEnabled {
+public abstract class PivotInputWidget extends BoxPane implements InputWidget {
 
-	void subscribeToToolEvents();
+	protected ParamDetails details;
 
-	/*
-		final EventSubscriber<ToolActivatedEvent> toolSubscriber =
-			new EventSubscriber<ToolActivatedEvent>()
-			{
-			@Override
-			public void onEvent(final ToolActivatedEvent event) {
-				if(getActiveTool()!=null) getActiveTool().onKeyUp(event);
-			}
-		};
-	 	Events.subscribe(ToolActivatedEvent.class, toolSubscriber);
-	 *
-	 */
+	public PivotInputWidget(final ParamDetails details) {
+		this.details = details;
+	}
 
-	void setCursor(MouseCursor cursor);
+	@Override
+	public ParamDetails getModel() {
+		return details;
+	}
 
-	/* 
-	 on JPanel:
-	 setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-
-	 */
 }

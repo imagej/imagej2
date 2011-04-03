@@ -38,7 +38,6 @@ import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.TextFieldWidget;
 
 import java.awt.BorderLayout;
-import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
@@ -48,15 +47,14 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTTextFieldWidget extends Panel implements TextFieldWidget,
-	TextListener
+public class AWTTextFieldWidget extends AWTInputWidget
+	implements TextFieldWidget, TextListener
 {
 
-	private ParamDetails details;
 	private TextField textField;
 
 	public AWTTextFieldWidget(final ParamDetails details, final int columns) {
-		this.details = details;
+		super(details);
 
 		textField = new TextField("", columns);
 		textField.addTextListener(this);

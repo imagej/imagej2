@@ -42,7 +42,7 @@ import imagej.util.RealCoords;
  * 
  * @author Grant Harris
  */
-public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
+public interface NavigableImageCanvas extends ImageCanvas {
 
 	/***
 	 * This is an interface extracted from NavigableImagePanel GBH, March 17, 2011
@@ -231,4 +231,9 @@ public interface NavigableImageCanvas extends ImageCanvas, ToolEnabled {
 
 	// Converts the original image coordinates into this panel's coordinates
 	RealCoords imageToPanelCoords(RealCoords p);
+
+	void setCursor(MouseCursor cursor);
+
+	void subscribeToToolEvents();
+
 }

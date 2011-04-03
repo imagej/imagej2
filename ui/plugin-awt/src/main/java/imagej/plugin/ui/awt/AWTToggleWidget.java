@@ -39,20 +39,18 @@ import imagej.plugin.ui.ToggleWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
-import java.awt.Panel;
 
 /**
  * AWT implementation of boolean toggle widget.
  *
  * @author Curtis Rueden
  */
-public class AWTToggleWidget extends Panel implements ToggleWidget {
+public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
 
-	private ParamDetails details;
 	private Checkbox checkbox;
 
 	public AWTToggleWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		checkbox = new Checkbox("");
 		add(checkbox, BorderLayout.CENTER);

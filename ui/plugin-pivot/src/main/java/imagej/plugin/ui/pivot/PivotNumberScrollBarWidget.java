@@ -50,14 +50,13 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget
 	implements ScrollBarValueListener
 {
 
-	private final ParamDetails details;
 	private final ScrollBar scrollBar;
 	private final Label label;
 
 	public PivotNumberScrollBarWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
-		this.details = details;
+		super(details);
 
 		scrollBar = new ScrollBar();
 		scrollBar.setRange(min.intValue(), max.intValue());

@@ -37,7 +37,6 @@ package imagej.plugin.ui.pivot;
 import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.ToggleWidget;
 
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Checkbox;
 
 /**
@@ -45,13 +44,13 @@ import org.apache.pivot.wtk.Checkbox;
  * 
  * @author Curtis Rueden
  */
-public class PivotToggleWidget extends BoxPane implements ToggleWidget {
+public class PivotToggleWidget extends PivotInputWidget implements ToggleWidget
+{
 
-	private final ParamDetails details;
 	private final Checkbox checkbox;
 
 	public PivotToggleWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		checkbox = new Checkbox();
 		add(checkbox);

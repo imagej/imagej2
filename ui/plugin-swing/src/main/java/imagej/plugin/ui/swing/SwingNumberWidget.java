@@ -39,20 +39,17 @@ import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
-import javax.swing.JPanel;
-
 /**
  * Swing implementation of number chooser widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class SwingNumberWidget extends JPanel implements NumberWidget
+public abstract class SwingNumberWidget extends SwingInputWidget
+	implements NumberWidget
 {
-	
-	protected ParamDetails details;
 
 	public SwingNumberWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 	}
 
 	public static SwingNumberWidget create(final ParamDetails details,

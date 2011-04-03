@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// AWTDisplay.java
 //
 
 /*
@@ -32,21 +32,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.awt;
+
+import imagej.display.Display;
 
 /**
- * An end-user ImageJ application.
+ * TODO
  *
  * @author Curtis Rueden
  */
-public interface UserInterface {
+public interface AWTDisplay extends Display {
 
-	void initialize();
-
-	void processArgs(final String[] args);
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+	@Override
+	AWTNavigableImageCanvas getImageCanvas();
 
 }
