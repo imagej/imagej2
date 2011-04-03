@@ -39,7 +39,6 @@ import imagej.plugin.ui.TextFieldWidget;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -49,15 +48,14 @@ import javax.swing.event.DocumentListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingTextFieldWidget extends JPanel
+public class SwingTextFieldWidget extends SwingInputWidget
 	implements DocumentListener, TextFieldWidget
 {
 
-	private final ParamDetails details;
 	private final JTextField textField;
 
 	public SwingTextFieldWidget(final ParamDetails details, final int columns) {
-		this.details = details;
+		super(details);
 
 		textField = new JTextField("", columns);
 		add(textField, BorderLayout.CENTER);

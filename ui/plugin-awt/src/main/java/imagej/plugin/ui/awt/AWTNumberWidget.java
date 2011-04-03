@@ -39,7 +39,6 @@ import imagej.plugin.ui.ParamDetails;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
-import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.AdjustmentEvent;
@@ -52,18 +51,17 @@ import java.awt.event.TextListener;
  *
  * @author Curtis Rueden
  */
-public class AWTNumberWidget extends Panel
+public class AWTNumberWidget extends AWTInputWidget
 	implements NumberWidget, AdjustmentListener, TextListener
 {
 
-	private ParamDetails details;
 	private Scrollbar scrollBar;
 	private TextField textField;
 
 	public AWTNumberWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
-		this.details = details;
+		super(details);
 
 		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);

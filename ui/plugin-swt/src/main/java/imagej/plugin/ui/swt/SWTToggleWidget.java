@@ -46,14 +46,12 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTToggleWidget extends Composite implements ToggleWidget {
+public class SWTToggleWidget extends SWTInputWidget implements ToggleWidget {
 
-	private final ParamDetails details;
 	private final Button checkbox;
 
 	public SWTToggleWidget(final Composite parent, final ParamDetails details) {
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 
 		checkbox = new Button(this, SWT.CHECK);
 

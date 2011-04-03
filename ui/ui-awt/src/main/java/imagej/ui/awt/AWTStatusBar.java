@@ -37,6 +37,7 @@ package imagej.ui.awt;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.ui.StatusBar;
 
 import java.awt.Graphics;
 import java.awt.Label;
@@ -47,7 +48,7 @@ import java.awt.Label;
  * @author Curtis Rueden
  */
 public class AWTStatusBar extends Label
-	implements EventSubscriber<StatusEvent>
+	implements StatusBar, EventSubscriber<StatusEvent>
 {
 
 	private int value;
@@ -56,6 +57,8 @@ public class AWTStatusBar extends Label
 	public AWTStatusBar() {
 		Events.subscribe(StatusEvent.class, this);
 	}
+
+	// -- Component methods --
 
 	@Override
 	public void paint(Graphics g) {
@@ -69,15 +72,21 @@ public class AWTStatusBar extends Label
 		super.paint(g);
 	}
 
+	// -- StatusBar methods --
+
+	@Override
 	public void setStatus(final String message) {
 		setText(message);
 	}
 
+	@Override
 	public void setProgress(final int val, final int max) {
 		value = val;
 		maximum = max;
 		repaint();
 	}
+
+	// -- EventSubscriber methods --
 
 	@Override
 	public void onEvent(final StatusEvent event) {

@@ -1,5 +1,5 @@
 //
-// AWTCursors.java
+// SwingInputWidget.java
 //
 
 /*
@@ -32,58 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.plugin.ui.swing;
 
-import imagej.display.MouseCursor;
+import imagej.plugin.ui.InputWidget;
+import imagej.plugin.ui.ParamDetails;
 
-import java.awt.Cursor;
+import javax.swing.JPanel;
 
 /**
- * TODO To decouple Cursors from GUI toolkit March 19: Not used yet
- * 
- * @author Grant Harris
+ * Common superclass for Swing-based input widgets.
+ *
+ * @author Curtis Rueden
  */
-public final class AWTCursors {
+public abstract class SwingInputWidget extends JPanel implements InputWidget {
 
-	private AWTCursors() {
-		// prevent instantiation of utility class
+	protected ParamDetails details;
+
+	public SwingInputWidget(final ParamDetails details) {
+		this.details = details;
 	}
 
-	public static int getCursorCode(final MouseCursor cursorCode) {
-		switch (cursorCode) {
-			default:
-				return Cursor.DEFAULT_CURSOR;
-			case DEFAULT:
-				return Cursor.DEFAULT_CURSOR;
-			case OFF:
-				return Cursor.CUSTOM_CURSOR;
-			case HAND:
-				return Cursor.HAND_CURSOR;
-			case CROSSHAIR:
-				return Cursor.CROSSHAIR_CURSOR;
-			case MOVE:
-				return Cursor.MOVE_CURSOR;
-			case TEXT:
-				return Cursor.TEXT_CURSOR;
-			case WAIT:
-				return Cursor.WAIT_CURSOR;
-			case N_RESIZE:
-				return Cursor.N_RESIZE_CURSOR;
-			case S_RESIZE:
-				return Cursor.S_RESIZE_CURSOR;
-			case W_RESIZE:
-				return Cursor.W_RESIZE_CURSOR;
-			case E_RESIZE:
-				return Cursor.E_RESIZE_CURSOR;
-			case NW_RESIZE:
-				return Cursor.NW_RESIZE_CURSOR;
-			case NE_RESIZE:
-				return Cursor.NE_RESIZE_CURSOR;
-			case SW_RESIZE:
-				return Cursor.SW_RESIZE_CURSOR;
-			case SE_RESIZE:
-				return Cursor.SE_RESIZE_CURSOR;
-		}
+	@Override
+	public ParamDetails getModel() {
+		return details;
 	}
 
 }

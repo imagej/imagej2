@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import java.awt.Dimension;
-import java.util.Arrays;
-
+import imagej.awt.AWTDisplay;
+import imagej.awt.AWTDisplayController;
+import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayController;
@@ -45,22 +45,24 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
 
+import java.util.Arrays;
+
 /**
- * TODO
+ * A simple Swing image display plugin.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class SimpleImageDisplay implements Display {
+public class SwingImageDisplay implements AWTDisplay {
 
-	private NavigableImageFrame imgWindow;
-	private NavigableImagePanel imgCanvas;
+	private SwingImageDisplayWindow imgWindow;
+	private SwingNavigableImageCanvas imgCanvas;
 	private Dataset theDataset;
 	private DisplayController controller;
 	private int[] lastKnownDimensions;
 
-	public SimpleImageDisplay() {
+	public SwingImageDisplay() {
 		Events.publish(new DisplayCreatedEvent(this));
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
@@ -77,8 +79,8 @@ public class SimpleImageDisplay implements Display {
 		theDataset = dataset;
 		lastKnownDimensions = dataset.getImage().getDimensions();
 		// imgCanvas = new ImageCanvasSwing();
-		imgCanvas = new NavigableImagePanel();
-		imgWindow = new NavigableImageFrame(imgCanvas);
+		imgCanvas = new SwingNavigableImageCanvas();
+		imgWindow = new SwingImageDisplayWindow(imgCanvas);
 		controller = new AWTDisplayController(this);
 		imgWindow.setDisplayController(controller);
 		// FIXME - this is a second call to set the Dataset. An earlier call is
@@ -117,12 +119,12 @@ public class SimpleImageDisplay implements Display {
 	}
 
 	@Override
-	public NavigableImageFrame getImageDisplayWindow() {
+	public SwingImageDisplayWindow getImageDisplayWindow() {
 		return imgWindow;
 	}
 
 	@Override
-	public NavigableImagePanel getImageCanvas() {
+	public SwingNavigableImageCanvas getImageCanvas() {
 		return imgCanvas;
 	}
 

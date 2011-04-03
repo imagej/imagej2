@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// AWTInputWidget.java
 //
 
 /*
@@ -32,21 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.plugin.ui.awt;
+
+import imagej.plugin.ui.InputWidget;
+import imagej.plugin.ui.ParamDetails;
+
+import java.awt.Panel;
 
 /**
- * An end-user ImageJ application.
+ * Common superclass for AWT-based input widgets.
  *
  * @author Curtis Rueden
  */
-public interface UserInterface {
+public abstract class AWTInputWidget extends Panel implements InputWidget {
 
-	void initialize();
+	protected ParamDetails details;
 
-	void processArgs(final String[] args);
+	public AWTInputWidget(final ParamDetails details) {
+		this.details = details;
+	}
 
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+	@Override
+	public ParamDetails getModel() {
+		return details;
+	}
 
 }

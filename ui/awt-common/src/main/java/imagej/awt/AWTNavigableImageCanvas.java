@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// AWTNavigableImageCanvas.java
 //
 
 /*
@@ -32,21 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.awt;
+
+import imagej.display.NavigableImageCanvas;
+
+import java.awt.image.BufferedImage;
 
 /**
- * An end-user ImageJ application.
+ * An AWT-based {@link NavigableImageCanvas}, which provides the ability
+ * to set the displayed image as a {@link BufferedImage}.
  *
  * @author Curtis Rueden
  */
-public interface UserInterface {
+public interface AWTNavigableImageCanvas extends NavigableImageCanvas {
 
-	void initialize();
+	void setImage(final BufferedImage newImage);
 
-	void processArgs(final String[] args);
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+	BufferedImage getImage();
 
 }

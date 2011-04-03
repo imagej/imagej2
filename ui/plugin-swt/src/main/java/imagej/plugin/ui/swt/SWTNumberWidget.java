@@ -46,16 +46,14 @@ import org.eclipse.swt.widgets.Slider;
  * 
  * @author Curtis Rueden
  */
-public class SWTNumberWidget extends Composite implements NumberWidget {
+public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
 
-	private final ParamDetails details;
 	private final Slider slider;
 
 	public SWTNumberWidget(final Composite parent, final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 
 		slider = new Slider(this, SWT.HORIZONTAL);
 		slider.setValues(min.intValue(), min.intValue(), max.intValue(),

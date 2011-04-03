@@ -39,6 +39,7 @@ import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
+import imagej.ui.ToolBar;
 import imagej.util.Log;
 
 import java.io.IOException;
@@ -60,7 +61,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author Curtis Rueden
  */
-public class SWTToolBar extends Composite {
+public class SWTToolBar extends Composite implements ToolBar {
 
 	private final Display display;
 	private final ToolManager toolManager;
@@ -75,9 +76,14 @@ public class SWTToolBar extends Composite {
 		populateToolBar();
 	}
 
+	// -- ToolBar methods --
+
+	@Override
 	public ToolManager getToolManager() {
 		return toolManager;
 	}
+
+	// -- Helper methods --
 
 	private void populateToolBar() {
 		for (final ToolEntry entry : toolManager.getToolEntries()) {

@@ -41,8 +41,8 @@ import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.pivot.PivotMenuCreator;
-import imagej.ui.UserInterface;
 import imagej.ui.UI;
+import imagej.ui.UserInterface;
 
 import java.util.List;
 
@@ -64,6 +64,7 @@ public class PivotUI implements Application, UserInterface {
 
 	private Frame frame;
 	private BoxPane contentPane;
+	private PivotToolBar toolBar;
 	private PivotStatusBar statusBar;
 
 	// -- Application methods --
@@ -73,7 +74,7 @@ public class PivotUI implements Application, UserInterface {
 		final Map<String, String> properties)
 	{
 		frame = new Frame();
-//		toolBar = new PivotToolBar();
+		toolBar = new PivotToolBar();
 		statusBar = new PivotStatusBar();
 
 		contentPane = new BoxPane();
@@ -81,6 +82,7 @@ public class PivotUI implements Application, UserInterface {
 		frame.setContent(contentPane);
 		createMenuBar();
 
+		contentPane.add(toolBar);
 		contentPane.add(statusBar);
 
 		frame.setTitle("ImageJ");
@@ -115,6 +117,16 @@ public class PivotUI implements Application, UserInterface {
 	@Override
 	public void processArgs(final String[] args) {
 		// TODO
+	}
+
+	@Override
+	public PivotToolBar getToolBar() {
+		return toolBar;
+	}
+
+	@Override
+	public PivotStatusBar getStatusBar() {
+		return statusBar;
 	}
 
 	// -- Helper methods --

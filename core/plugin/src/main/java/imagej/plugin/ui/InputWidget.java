@@ -44,4 +44,7 @@ public interface InputWidget {
 	/** Refreshes the widget to reflect the latest model value(s). */
 	void refresh();
 
+	/** Gets the model object backing this widget. */
+	ParamDetails getModel();
+
 }

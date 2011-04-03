@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
+ * TODO
+ *
  * @author Grant Harris
  */
 public interface ImageDisplayWindow {

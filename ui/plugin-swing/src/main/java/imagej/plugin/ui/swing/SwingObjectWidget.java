@@ -42,22 +42,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 
 /**
  * Swing implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
-public class SwingObjectWidget extends JPanel
+public class SwingObjectWidget extends SwingInputWidget
 	implements ActionListener, ObjectWidget
 {
 
-	private final ParamDetails details;
 	private final JComboBox comboBox;
 
 	public SwingObjectWidget(final ParamDetails details, final Object[] items) {
-		this.details = details;
+		super(details);
 
 		comboBox = new JComboBox(items);
 		add(comboBox, BorderLayout.CENTER);

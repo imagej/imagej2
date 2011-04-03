@@ -41,7 +41,6 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,16 +53,15 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public class AWTFileWidget extends Panel
+public class AWTFileWidget extends AWTInputWidget
 	implements FileWidget, ActionListener, TextListener
 {
 
-	private ParamDetails details;
 	private TextField path;
 	private Button browse;
 
 	public AWTFileWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		setLayout(new BorderLayout());
 

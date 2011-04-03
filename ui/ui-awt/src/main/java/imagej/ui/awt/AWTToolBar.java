@@ -41,6 +41,7 @@ import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
+import imagej.ui.ToolBar;
 import imagej.util.Log;
 
 import java.awt.Button;
@@ -63,7 +64,7 @@ import java.util.Map;
  *
  * @author Curtis Rueden
  */
-public class AWTToolBar extends Panel {
+public class AWTToolBar extends Panel implements ToolBar {
 
 	private ToolManager toolManager;
 
@@ -76,9 +77,14 @@ public class AWTToolBar extends Panel {
 		populateToolBar();
 	}
 
+	// -- ToolBar methods --
+
+	@Override
 	public ToolManager getToolManager() {
 		return toolManager;
 	}
+
+	// -- Helper methods --
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;

@@ -99,8 +99,4 @@ public class SWTInputHarvester extends AbstractInputHarvester {
 		return true;
 	}
 
-	private void ensureSizeReasonable(final Shell shell) {
-		// TODO
-	}
-
 }

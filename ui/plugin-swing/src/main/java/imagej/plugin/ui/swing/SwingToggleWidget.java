@@ -40,7 +40,6 @@ import imagej.plugin.ui.ToggleWidget;
 import java.awt.BorderLayout;
 
 import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -49,15 +48,14 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Curtis Rueden
  */
-public class SwingToggleWidget extends JPanel
+public class SwingToggleWidget extends SwingInputWidget
 	implements ChangeListener, ToggleWidget
 {
 
-	private final ParamDetails details;
 	private final JCheckBox checkBox;
 
 	public SwingToggleWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		checkBox = new JCheckBox("");
 		add(checkBox, BorderLayout.CENTER);

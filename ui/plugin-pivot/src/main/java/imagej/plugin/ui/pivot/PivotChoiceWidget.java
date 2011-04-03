@@ -38,7 +38,6 @@ import imagej.plugin.ui.ChoiceWidget;
 import imagej.plugin.ui.ParamDetails;
 
 import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.ListButton;
 
 /**
@@ -46,13 +45,14 @@ import org.apache.pivot.wtk.ListButton;
  * 
  * @author Curtis Rueden
  */
-public class PivotChoiceWidget extends BoxPane implements ChoiceWidget {
+public class PivotChoiceWidget extends PivotInputWidget
+	implements ChoiceWidget
+{
 
-	private final ParamDetails details;
 	private final ListButton listButton;
 
 	public PivotChoiceWidget(final ParamDetails details, final String[] items) {
-		this.details = details;
+		super(details);
 
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));

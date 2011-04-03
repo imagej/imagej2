@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * TODO
+ * A UI-independent enumeration of mouse cursors.
  * 
  * @author Grant Harris
  * @author Curtis Rueden

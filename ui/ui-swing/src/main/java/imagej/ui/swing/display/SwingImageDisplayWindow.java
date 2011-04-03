@@ -1,5 +1,5 @@
 //
-// NavigableImageFrame.java
+// SwingImageDisplayWindow.java
 //
 
 /*
@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.awt.AWTEventDispatcher;
 import imagej.data.AxisLabel;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
@@ -62,24 +63,24 @@ import javax.swing.border.LineBorder;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * TODO
+ * Swing implementation of image display window.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public class NavigableImageFrame extends JFrame
+public class SwingImageDisplayWindow extends JFrame
 	implements ImageDisplayWindow, EventSubscriber<ZoomEvent>
 {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 
 	private final JLabel imageLabel;
-	private final NavigableImagePanel imgCanvas;
+	private final SwingNavigableImageCanvas imgCanvas;
 	private JPanel sliders;
 
 	protected DisplayController controller;
 
-	public NavigableImageFrame(final NavigableImagePanel imgCanvas) {
+	public SwingImageDisplayWindow(final SwingNavigableImageCanvas imgCanvas) {
 		this.imgCanvas = imgCanvas;
 
 		imageLabel = new JLabel(" ");

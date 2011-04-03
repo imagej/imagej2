@@ -60,6 +60,8 @@ import javax.swing.JPanel;
 @Plugin(type = PluginPreprocessor.class)
 public class SwingInputHarvester extends AbstractInputHarvester {
 
+	// -- InputHarvester methods --
+
 	@Override
 	public SwingInputPanel createInputPanel() {
 		return new SwingInputPanel();
@@ -85,6 +87,8 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
+
+	// -- Helper methods --
 
 	private String getTitle(final PluginModule<?> module) {
 		final PluginModuleInfo<?> moduleInfo = module.getInfo();

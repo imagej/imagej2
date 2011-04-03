@@ -62,6 +62,7 @@ public class SWTUI implements UserInterface, Runnable {
 
 	private Display display;
 	private Shell shell;
+	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
 
 	// -- UserInterface methods --
@@ -73,7 +74,7 @@ public class SWTUI implements UserInterface, Runnable {
 		shell = new Shell(display, 0);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText("ImageJ");
-		new SWTToolBar(display, shell);
+		toolBar = new SWTToolBar(display, shell);
 		statusBar = new SWTStatusBar(shell);
 		createMenuBar();
 
@@ -86,6 +87,16 @@ public class SWTUI implements UserInterface, Runnable {
 	@Override
 	public void processArgs(final String[] args) {
 		// TODO
+	}
+
+	@Override
+	public SWTToolBar getToolBar() {
+		return toolBar;
+	}
+
+	@Override
+	public SWTStatusBar getStatusBar() {
+		return statusBar;
 	}
 
 	// -- Runnable methods --

@@ -47,13 +47,12 @@ import org.apache.pivot.wtk.content.NumericSpinnerData;
  */
 public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
-	private final ParamDetails details;
 	private final Spinner spinner;
 
 	public PivotNumberSpinnerWidget(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize)
 	{
-		this.details = details;
+		super(details);
 
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);

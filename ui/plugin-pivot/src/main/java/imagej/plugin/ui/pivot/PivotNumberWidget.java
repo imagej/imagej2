@@ -39,16 +39,18 @@ import imagej.plugin.ui.ParamDetails;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
-import org.apache.pivot.wtk.BoxPane;
-
 /**
  * Pivot implementation of number chooser widget.
  *
  * @author Curtis Rueden
  */
 public abstract class PivotNumberWidget
-	extends BoxPane implements NumberWidget
+	extends PivotInputWidget implements NumberWidget
 {
+
+	public PivotNumberWidget(final ParamDetails details) {
+		super(details);
+	}
 
 	public static PivotNumberWidget create(final ParamDetails details,
 		final Number min, final Number max, final Number stepSize,
@@ -58,7 +60,7 @@ public abstract class PivotNumberWidget
 			return new PivotNumberScrollBarWidget(details, min, max, stepSize);
 		}
 		if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new PivotNumberSliderWidget(details, min, max, stepSize);
+			return new PivotNumberSliderWidget(details, min, max);
 		}
 		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
 			Log.warn("Ignoring unsupported widget style: " + style);

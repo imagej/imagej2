@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-awt-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -77,11 +82,6 @@
 			<artifactId>miglayout</artifactId>
 			<version>3.7.3.1</version>
 			<classifier>swing</classifier>
-		</dependency>
-		<dependency>
-			<groupId>loci</groupId>
-			<artifactId>bio-formats</artifactId>
-			<version>${bio-formats.version}</version>
 		</dependency>
 	</dependencies>
 

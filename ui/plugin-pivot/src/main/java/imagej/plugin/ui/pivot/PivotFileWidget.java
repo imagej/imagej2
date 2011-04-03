@@ -39,7 +39,6 @@ import imagej.plugin.ui.ParamDetails;
 
 import java.io.File;
 
-import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.FileBrowserSheet;
@@ -52,16 +51,15 @@ import org.apache.pivot.wtk.TextInput;
  * 
  * @author Curtis Rueden
  */
-public class PivotFileWidget extends BoxPane implements FileWidget,
-	ButtonPressListener
+public class PivotFileWidget extends PivotInputWidget
+	implements FileWidget, ButtonPressListener
 {
 
-	private final ParamDetails details;
 	private final TextInput path;
 	private final PushButton browse;
 
 	public PivotFileWidget(final ParamDetails details) {
-		this.details = details;
+		super(details);
 
 		path = new TextInput();
 		add(path);

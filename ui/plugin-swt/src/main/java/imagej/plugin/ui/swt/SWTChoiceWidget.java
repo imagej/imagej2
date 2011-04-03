@@ -46,16 +46,14 @@ import org.eclipse.swt.widgets.Composite;
  * 
  * @author Curtis Rueden
  */
-public class SWTChoiceWidget extends Composite implements ChoiceWidget {
+public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
 
-	private final ParamDetails details;
 	private final Combo combo;
 
 	public SWTChoiceWidget(final Composite parent, final ParamDetails details,
 		final String[] items)
 	{
-		super(parent, 0);
-		this.details = details;
+		super(parent, details);
 
 		combo = new Combo(this, SWT.DROP_DOWN);
 		combo.setItems(items);

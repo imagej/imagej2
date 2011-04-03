@@ -39,7 +39,6 @@ import imagej.plugin.ui.ParamDetails;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
-import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -48,15 +47,14 @@ import java.awt.event.ItemListener;
  *
  * @author Curtis Rueden
  */
-public class AWTChoiceWidget extends Panel
+public class AWTChoiceWidget extends AWTInputWidget
 	implements ChoiceWidget, ItemListener
 {
 
-	private final ParamDetails details;
 	private Choice choice;
 
 	public AWTChoiceWidget(final ParamDetails details, final String[] items) {
-		this.details = details;
+		super(details);
 
 		choice = new Choice();
 		for (final String item : items) choice.add(item);

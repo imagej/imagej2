@@ -1,5 +1,5 @@
 //
-// AWTImageFrame.java
+// SWTInputWidget.java
 //
 
 /*
@@ -32,20 +32,30 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.awt.display;
+package imagej.plugin.ui.swt;
 
-import imagej.data.Dataset;
+import org.eclipse.swt.widgets.Composite;
 
-import java.awt.Frame;
+import imagej.plugin.ui.InputWidget;
+import imagej.plugin.ui.ParamDetails;
 
-public class AWTImageFrame extends Frame {
+/**
+ * Common superclass for SWT-based input widgets.
+ *
+ * @author Curtis Rueden
+ */
+public abstract class SWTInputWidget extends Composite implements InputWidget {
 
-	public AWTImagePanel getPanel() {
-		return null;
+	protected ParamDetails details;
+
+	public SWTInputWidget(final Composite parent, final ParamDetails details) {
+		super(parent, 0);
+		this.details = details;
 	}
 
-	public void setDataset(final Dataset dataset) {
-		// TODO
+	@Override
+	public ParamDetails getModel() {
+		return details;
 	}
 
 }

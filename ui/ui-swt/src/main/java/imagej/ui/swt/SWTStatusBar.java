@@ -37,6 +37,7 @@ package imagej.ui.swt;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.ui.StatusBar;
 
 import net.miginfocom.swt.MigLayout;
 
@@ -50,7 +51,7 @@ import org.eclipse.swt.widgets.ProgressBar;
  * @author Curtis Rueden
  */
 public class SWTStatusBar extends Composite
-	implements EventSubscriber<StatusEvent>
+	implements StatusBar, EventSubscriber<StatusEvent>
 {
 
 	private final Label label;
@@ -64,10 +65,12 @@ public class SWTStatusBar extends Composite
 		Events.subscribe(StatusEvent.class, this);
 	}
 
+	@Override
 	public void setStatus(final String message) {
 		label.setText(message);
 	}
 
+	@Override
 	public void setProgress(final int val, final int max) {
 		progressBar.setSelection(val);
 		progressBar.setMaximum(max);

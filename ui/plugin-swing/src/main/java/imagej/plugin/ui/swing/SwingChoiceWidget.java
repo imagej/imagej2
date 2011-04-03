@@ -42,22 +42,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 
 /**
  * Swing implementation of multiple choice selector widget.
  * 
  * @author Curtis Rueden
  */
-public class SwingChoiceWidget extends JPanel
+public class SwingChoiceWidget extends SwingInputWidget
 	implements ActionListener, ChoiceWidget
 {
 
-	private final ParamDetails details;
 	private final JComboBox comboBox;
 
 	public SwingChoiceWidget(final ParamDetails details, final String[] items) {
-		this.details = details;
+		super(details);
 
 		comboBox = new JComboBox(items);
 		add(comboBox, BorderLayout.CENTER);
