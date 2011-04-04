@@ -114,6 +114,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		if (!Arrays.equals(lastKnownDimensions, currDimensions)) {
 			lastKnownDimensions = currDimensions;
 			controller.setDataset(theDataset);
+			imgCanvas.setZoom(1.0);
 			imgCanvas.resetImageOrigin();
 		}
 		controller.update();
