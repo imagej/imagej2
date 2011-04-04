@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.roi.omero;
 
-import imagej.Log;
+import imagej.util.Log;
 
 import java.io.Externalizable;
 import java.io.IOException;

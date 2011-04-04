@@ -1,5 +1,5 @@
 package imagej.roi.gui.jhotdraw;
-import imagej.Log;
+import imagej.util.Log;
 
 import javax.swing.JToolBar;
 

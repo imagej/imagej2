@@ -11,7 +11,7 @@ import org.jhotdraw.figures.AttributeFigure;
 import org.jhotdraw.framework.Figure;
 import org.jhotdraw.framework.FigureAttributeConstant;
 
-import imagej.Log;
+import imagej.util.Log;
 import imagej.roi.ImageJROI;
 import imagej.roi.gui.jhotdraw.AbstractJHotDrawROIAdapter;
 import imagej.roi.gui.jhotdraw.IJHotDrawROIAdapter;
