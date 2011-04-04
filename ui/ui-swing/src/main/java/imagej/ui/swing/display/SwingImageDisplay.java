@@ -38,10 +38,12 @@ import imagej.awt.AWTDisplay;
 import imagej.awt.AWTDisplayController;
 import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
 import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
+import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
 
@@ -54,7 +56,9 @@ import java.util.Arrays;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class SwingImageDisplay implements AWTDisplay {
+public class SwingImageDisplay implements AWTDisplay,
+	EventSubscriber<DatasetChangedEvent>
+{
 
 	private SwingImageDisplayWindow imgWindow;
 	private SwingNavigableImageCanvas imgCanvas;
@@ -64,6 +68,7 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	public SwingImageDisplay() {
 		Events.publish(new DisplayCreatedEvent(this));
+		Events.subscribe(DatasetChangedEvent.class, this);
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
@@ -111,6 +116,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void update() {
 		// did the shape of the dataset change?
 		int[] currDimensions = theDataset.getImage().getDimensions();
+		// TODO - maybe this should be handled in the onEvent(DatasetChangedEvent) handler
 		if (!Arrays.equals(lastKnownDimensions, currDimensions)) {
 			lastKnownDimensions = currDimensions;
 			controller.setDataset(theDataset);
@@ -179,6 +185,13 @@ public class SwingImageDisplay implements AWTDisplay {
 	public float getZoom() {
 		return 1f;
 		// throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void onEvent(DatasetChangedEvent event) {
+		if (theDataset == event.getObject()) {
+			update();
+		}
 	}
 
 }
