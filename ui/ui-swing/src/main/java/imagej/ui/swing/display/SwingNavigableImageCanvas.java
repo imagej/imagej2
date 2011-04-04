@@ -301,6 +301,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return new IntCoords(originX, originY);
 	}
 
+	public void resetImageOrigin() {
+		originX = 0;
+		originY = 0;
+	}
+	
 	/**
 	 * <p>
 	 * Sets the image origin.
