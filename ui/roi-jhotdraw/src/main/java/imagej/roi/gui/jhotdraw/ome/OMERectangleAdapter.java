@@ -142,6 +142,6 @@ public class OMERectangleAdapter extends BaseShapeAdapter {
 
 	@Override
 	public String getIconName() {
-		return "/CH/ifa/draw/images/RECT";
+		return "/org/jhotdraw/images/RECT";
 	}
 }

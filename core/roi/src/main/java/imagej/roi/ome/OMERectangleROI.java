@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.roi.ome;
 
 import imagej.roi.ImageJROI;
+import mpicbg.imglib.roi.AbstractIterableRegionOfInterest;
 import mpicbg.imglib.roi.AbstractRegionOfInterest;
 import mpicbg.imglib.roi.RegionOfInterest;
 import ome.xml.model.Rectangle;
@@ -53,7 +54,7 @@ public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI
 	public OMERectangleROI() {
 		omeShape = new Rectangle();
 	}
-	class ORRegionOfInterest extends AbstractRegionOfInterest {
+	class ORRegionOfInterest extends AbstractIterableRegionOfInterest {
 
 		protected ORRegionOfInterest() {
 			super(2);
