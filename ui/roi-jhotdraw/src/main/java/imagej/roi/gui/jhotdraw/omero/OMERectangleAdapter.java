@@ -32,7 +32,7 @@ package imagej.roi.gui.jhotdraw.omero;
 import java.awt.Point;
 
 import ome.xml.model.Rectangle;
-import imagej.Log;
+import imagej.util.Log;
 import imagej.roi.ImageJROI;
 import imagej.roi.gui.jhotdraw.JHotDrawROIAdapter;
 import imagej.roi.omero.OmeroRectangleROI;

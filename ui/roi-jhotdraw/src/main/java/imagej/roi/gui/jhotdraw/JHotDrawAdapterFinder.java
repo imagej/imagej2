@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.roi.gui.jhotdraw;
 
-import imagej.Log;
+import imagej.util.Log;
 import imagej.roi.ImageJROI;
 
 import java.util.ArrayList;
