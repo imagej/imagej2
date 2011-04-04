@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
+			<artifactId>imglib1</artifactId>
 			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>
@@ -46,7 +46,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.imglib</packageName>
+							<packageName>imagej.data</packageName>
 						</manifest>
 					</archive>
 				</configuration>
