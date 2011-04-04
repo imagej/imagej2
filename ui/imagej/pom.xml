@@ -68,6 +68,18 @@
 		</profile>
 
 		<profile>
+			<id>headless</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-headless</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>pivot</id>
 			<dependencies>
 				<dependency>
