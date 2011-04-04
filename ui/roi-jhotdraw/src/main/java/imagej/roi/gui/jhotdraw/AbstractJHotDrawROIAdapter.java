@@ -1,6 +1,7 @@
-/**
- * 
- */
+//
+// AbstractJHotDrawROIAdapter.java
+//
+
 package imagej.roi.gui.jhotdraw;
 
 import java.util.HashMap;
@@ -12,10 +13,9 @@ import org.jhotdraw.framework.FigureChangeEvent;
 import org.jhotdraw.framework.FigureChangeListener;
 
 /**
- * @author leek
+ * An abstract class that gives default behavior for the IJHotDrawROIAdapter interface
  *
- *An abstract class that gives default behavior for the IJHotDrawROIAdapter interface
- *
+ * @author Lee Kamentsky
  */
 public abstract class AbstractJHotDrawROIAdapter implements IJHotDrawROIAdapter, FigureChangeListener {
 

@@ -1,4 +1,8 @@
-/* OmeroRectangleROI.java
+//
+// OMERectangleROI.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,25 +31,26 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.roi.omero;
 
-import ome.xml.model.Rectangle;
+package imagej.roi.ome;
+
+import imagej.roi.ImageJROI;
 import mpicbg.imglib.roi.AbstractRegionOfInterest;
 import mpicbg.imglib.roi.RegionOfInterest;
-import imagej.roi.ImageJROI;
+import ome.xml.model.Rectangle;
 
 /**
  * @author leek
  *ImageJ ROI corresponding to the Omero rectangle ROI.
  */
-public class OmeroRectangleROI extends OmeroShapeROI<Rectangle> implements ImageJROI {
+public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5766648749200171813L;
 
-	public OmeroRectangleROI() {
+	public OMERectangleROI() {
 		omeShape = new Rectangle();
 	}
 	class ORRegionOfInterest extends AbstractRegionOfInterest {
