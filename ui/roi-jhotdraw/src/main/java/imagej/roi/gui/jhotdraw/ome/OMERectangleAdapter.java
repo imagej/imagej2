@@ -27,15 +27,17 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.roi.gui.jhotdraw.omero;
+package imagej.roi.gui.jhotdraw.ome;
+
+import imagej.roi.ImageJROI;
+import imagej.roi.gui.jhotdraw.JHotDrawROIAdapter;
+import imagej.roi.ome.OMERectangleROI;
+import imagej.util.Log;
 
 import java.awt.Point;
 
 import ome.xml.model.Rectangle;
-import imagej.util.Log;
-import imagej.roi.ImageJROI;
-import imagej.roi.gui.jhotdraw.JHotDrawROIAdapter;
-import imagej.roi.omero.OmeroRectangleROI;
+
 import org.jhotdraw.figures.AttributeFigure;
 import org.jhotdraw.figures.RectangleFigure;
 import org.jhotdraw.framework.Figure;
@@ -53,7 +55,7 @@ public class OMERectangleAdapter extends BaseShapeAdapter {
 	 */
 	@Override
 	public boolean supports(ImageJROI roi) {
-		return roi instanceof OmeroRectangleROI;
+		return roi instanceof OMERectangleROI;
 	}
 
 	/* (non-Javadoc)
@@ -74,10 +76,10 @@ public class OMERectangleAdapter extends BaseShapeAdapter {
 	}
 	
 	static private Rectangle getOmeroRectangle(ImageJROI roi) {
-		if (! ( roi instanceof OmeroRectangleROI)) {
+		if (! ( roi instanceof OMERectangleROI)) {
 			throw new UnsupportedOperationException("Can't adapt to " + roi.getClass().getName());
 		}
-		return ((OmeroRectangleROI) roi).getOMEShape();
+		return ((OMERectangleROI) roi).getOMEShape();
 	}
 	
 	static private RectangleFigure getRectangleFigure(Figure f) {
@@ -127,7 +129,7 @@ public class OMERectangleAdapter extends BaseShapeAdapter {
 	@Override
 	public ImageJROI createNewROI(String name) {
 		if (name.equals(TYPE_NAME)) {
-			OmeroRectangleROI roi = new OmeroRectangleROI();
+			OMERectangleROI roi = new OMERectangleROI();
 			Rectangle r = roi.getOMEShape();
 			r.setX(0.);
 			r.setY(0.);

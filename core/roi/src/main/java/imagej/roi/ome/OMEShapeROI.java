@@ -1,4 +1,8 @@
-/* OmeroShapeROI.java
+//
+// OMEShapeROI.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,7 +31,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.roi.omero;
+
+package imagej.roi.ome;
 
 import imagej.util.Log;
 
@@ -49,10 +54,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.w3c.dom.Document;
-
 import ome.xml.model.Shape;
 import ome.xml.model.enums.EnumerationException;
+
+import org.w3c.dom.Document;
 
 /**
  * @author leek
@@ -60,7 +65,7 @@ import ome.xml.model.enums.EnumerationException;
  *and handles serialization, deserialization and presentation of
  *the represented class to the outside world.
  */
-public class OmeroShapeROI<T extends Shape> implements Externalizable {
+public class OMEShapeROI<T extends Shape> implements Externalizable {
 	protected T omeShape;
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {

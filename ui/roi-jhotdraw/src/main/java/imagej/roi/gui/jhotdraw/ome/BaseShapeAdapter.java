@@ -1,24 +1,27 @@
-package imagej.roi.gui.jhotdraw.omero;
+//
+// BaseShapeAdapter.java
+//
+
+package imagej.roi.gui.jhotdraw.ome;
+
+import imagej.roi.ImageJROI;
+import imagej.roi.gui.jhotdraw.AbstractJHotDrawROIAdapter;
+import imagej.roi.ome.OMEShapeROI;
+import imagej.util.Log;
 
 import java.awt.Color;
 import java.awt.Font;
 
 import ome.xml.model.Shape;
-import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.FontStyle;
 import ome.xml.model.primitives.NonNegativeInteger;
+
 import org.jhotdraw.figures.AttributeFigure;
 import org.jhotdraw.framework.Figure;
 import org.jhotdraw.framework.FigureAttributeConstant;
 
-import imagej.util.Log;
-import imagej.roi.ImageJROI;
-import imagej.roi.gui.jhotdraw.AbstractJHotDrawROIAdapter;
-import imagej.roi.gui.jhotdraw.IJHotDrawROIAdapter;
-import imagej.roi.omero.OmeroShapeROI;
+public abstract class BaseShapeAdapter extends AbstractJHotDrawROIAdapter {
 
-public abstract class BaseShapeAdapter extends AbstractJHotDrawROIAdapter
-	implements IJHotDrawROIAdapter {
 	/**
 	 * Get the JHotDraw figure that represents the ROI.
 	 * @param roi - ROI in question
@@ -27,11 +30,11 @@ public abstract class BaseShapeAdapter extends AbstractJHotDrawROIAdapter
 	abstract protected AttributeFigure getFigure(ImageJROI roi);
 	
 	static private Shape getROIShape(ImageJROI roi) {
-		if (! (roi instanceof OmeroShapeROI<?>)) {
+		if (! (roi instanceof OMEShapeROI<?>)) {
 			Log.error(roi.getClass().getName() + " is not an Omero shape");
 			return null;
 		}
-		OmeroShapeROI<?> shapeROI = (OmeroShapeROI<?>)roi;
+		OMEShapeROI<?> shapeROI = (OMEShapeROI<?>)roi;
 		return  shapeROI.getOMEShape();
 	}
 	/* (non-Javadoc)
