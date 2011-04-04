@@ -31,37 +31,39 @@
 		<profile>
 			<id>all</id>
 			<modules>
-				<module>ui-awt</module>
-				<module>ui-headless</module>
-				<module>ui-pivot</module>
-				<module>ui-swing</module>
-				<module>ui-swt</module>
+				<module>awt-common</module>
 				<module>plugin-awt</module>
 				<module>plugin-headless</module>
 				<module>plugin-pivot</module>
 				<module>plugin-swing</module>
 				<module>plugin-swt</module>
+				<module>ui-awt</module>
+				<module>ui-headless</module>
+				<module>ui-pivot</module>
+				<module>ui-swing</module>
+				<module>ui-swt</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>awt</id>
 			<modules>
-				<module>ui-awt</module>
+				<module>awt-common</module>
 				<module>plugin-awt</module>
+				<module>ui-awt</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>headless</id>
 			<modules>
-				<module>ui-headless</module>
 				<module>plugin-headless</module>
+				<module>ui-headless</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>pivot</id>
 			<modules>
-				<module>ui-pivot</module>
 				<module>plugin-pivot</module>
+				<module>ui-pivot</module>
 			</modules>
 		</profile>
 		<profile>
@@ -70,15 +72,16 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>ui-swing</module>
+				<module>awt-common</module>
 				<module>plugin-swing</module>
+				<module>ui-swing</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>swt</id>
 			<modules>
-				<module>ui-swt</module>
 				<module>plugin-swt</module>
+				<module>ui-swt</module>
 			</modules>
 		</profile>
 	</profiles>
