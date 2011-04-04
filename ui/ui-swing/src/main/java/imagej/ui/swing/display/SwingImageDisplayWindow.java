@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.awt.AWTEventDispatcher;
+import imagej.awt.AWTImageDisplayWindow;
 import imagej.data.AxisLabel;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
-import imagej.display.ImageDisplayWindow;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -69,7 +69,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  */
 public class SwingImageDisplayWindow extends JFrame
-	implements ImageDisplayWindow, EventSubscriber<ZoomEvent>
+	implements AWTImageDisplayWindow, EventSubscriber<ZoomEvent>
 {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.

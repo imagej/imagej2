@@ -133,7 +133,7 @@ public class AWTDisplayController implements DisplayController {
 		//FIXME - disabled. make this UI call in SimpleImageDisplay to
 		// avoid incorrectly calculating image canvas dimensions.
 		// Reenable if actually needed.
-//		display.getImageDisplayWindow().pack();
+		display.getImageDisplayWindow().pack();
 
 		// TODO
 		// maybe the best way to handle a change in Dataset, rather than pack()

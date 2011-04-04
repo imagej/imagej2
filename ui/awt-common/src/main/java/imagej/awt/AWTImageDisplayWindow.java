@@ -1,5 +1,5 @@
 //
-// AWTDisplay.java
+// AWTImageDisplayWindow.java
 //
 
 /*
@@ -34,19 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.awt;
 
-import imagej.display.Display;
+import imagej.display.ImageDisplayWindow;
 
 /**
- * TODO
+ * An AWT-based {@link ImageDisplayWindow}.
  *
  * @author Curtis Rueden
  */
-public interface AWTDisplay extends Display {
+public interface AWTImageDisplayWindow extends ImageDisplayWindow {
 
-	@Override
-	AWTImageDisplayWindow getImageDisplayWindow();
-
-	@Override
-	AWTNavigableImageCanvas getImageCanvas();
+	void pack();
 
 }
