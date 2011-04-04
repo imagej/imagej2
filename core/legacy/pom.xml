@@ -19,12 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib</artifactId>
+			<artifactId>imglib1</artifactId>
 			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-ij</artifactId>
+			<artifactId>imglib1-ij</artifactId>
 			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>

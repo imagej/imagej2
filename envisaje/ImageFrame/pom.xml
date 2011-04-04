@@ -24,7 +24,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${imglib.groupId}</groupId>
-			<artifactId>imglib-io</artifactId>
+			<artifactId>imglib1-io</artifactId>
 			<version>${imglib.version}</version>
 		</dependency>
 		<dependency>
