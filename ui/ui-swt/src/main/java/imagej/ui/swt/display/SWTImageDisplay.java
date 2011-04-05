@@ -131,4 +131,9 @@ public class SWTImageDisplay implements Display {
 		throw new UnsupportedOperationException("TODO");
 	}
 
+	@Override
+	public int[] getCurrentPlanePosition() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
 }
