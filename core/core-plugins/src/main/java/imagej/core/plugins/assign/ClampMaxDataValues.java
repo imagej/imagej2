@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -59,9 +61,6 @@ public class ClampMaxDataValues implements ImageJPlugin {
 	@Parameter
 	Dataset input;
 
-	@Parameter(output = true)
-	Dataset output;
-
 	@Parameter(label = "Value")
 	private double constant;
 
@@ -74,6 +73,7 @@ public class ClampMaxDataValues implements ImageJPlugin {
 	public void run() {
 		UnaryOperator op = new Max(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
-		output = transform.run();
+		transform.run();
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

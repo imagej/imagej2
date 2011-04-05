@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -68,9 +70,6 @@ public class CropImage implements ImageJPlugin {
 	@Parameter
 	Dataset input;
 
-	@Parameter(output = true)
-	Dataset output;
-
 	@Parameter
 	private int minX;
 
@@ -91,7 +90,7 @@ public class CropImage implements ImageJPlugin {
 		OutputAlgorithm algorithm = new CropAlgorithm();
 		ImglibDataTransform runner =
 			new ImglibDataTransform(input, algorithm);
-		output = input;
+		runner.run();
 	}
 
 	// -- private interface --

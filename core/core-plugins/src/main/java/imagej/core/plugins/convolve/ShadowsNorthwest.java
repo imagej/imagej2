@@ -56,9 +56,6 @@ public class ShadowsNorthwest implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -66,6 +63,6 @@ public class ShadowsNorthwest implements ImageJPlugin {
 		Convolve3x3Operation operation =
 			new Convolve3x3Operation(input,
 				new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 });
-		output = operation.run();
+		operation.run();
 	}
 }
