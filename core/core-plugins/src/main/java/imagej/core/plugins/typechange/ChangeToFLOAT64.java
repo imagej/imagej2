@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "64-bit float", weight = 11) })
+	@Menu(label = "64-bit float", weight = 7) })
 public class ChangeToFLOAT64 implements ImageJPlugin {
 
 	@Parameter

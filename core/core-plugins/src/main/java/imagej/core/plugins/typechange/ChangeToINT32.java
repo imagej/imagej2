@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "32-bit signed", weight = 8) })
+	@Menu(label = "32-bit signed", weight = 10) })
 public class ChangeToINT32 implements ImageJPlugin {
 
 	@Parameter
