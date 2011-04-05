@@ -56,9 +56,9 @@ import imagej.data.Dataset;
  * @author bdezonia
  *
  */
-public class ImageCreator {
+public class PopulatedImageCreator {
 	
-	private ImageCreator() {
+	private PopulatedImageCreator() {
 		// noninstantiable
 	}
 	
