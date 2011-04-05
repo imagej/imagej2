@@ -37,6 +37,8 @@ package imagej.core.plugins.neigh;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetChangedEvent;
 import imagej.event.Events;
+import imagej.util.Index;
+import imagej.util.Log;
 import imagej.util.Rect;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
@@ -87,27 +89,39 @@ public class Neighborhood3x3Operation {
 	/**
 	 * make sure we have an input image and that it's dimensionality is correct
 	 */
-	public void checkInput() {
+	private void checkInput() {
 		if (input == null)
 			throw new IllegalArgumentException("input Dataset is null");
 		
 		if (input.getImage() == null)
 			throw new IllegalArgumentException("input Image is null");
 
-		if (input.getImage().getNumDimensions() != 2)
-			throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().getNumDimensions() + " dimensions");
+		//if (input.getImage().getNumDimensions() != 2)
+		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().getNumDimensions() + " dimensions");
 	}
 
 
-	public void setupWorkingData()
+	private void setupWorkingData()
 	{
 		inputImage = input.getImage();
 		inputImageCopy = inputImage.clone();
 		selection = input.getSelection();
 	}
 
-	public void runAssignment()
+	private void runAssignment()
 	{
+		int[] planeDims = new int[inputImage.getDimensions().length - 2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = inputImage.getDimension(i+2);
+		int totalPlanes = Index.getRasterLength(planeDims);
+		for (int plane = 0; plane < totalPlanes; plane++) {
+			int[] planeIndex = Index.rasterToPosition(planeDims, plane);
+			applyOperationToPlane(planeIndex);
+		}
+		Events.publish(new DatasetChangedEvent(input));
+	}
+	
+	private void applyOperationToPlane(int[] planeIndex) {
 		LocalizableByDimCursor<? extends RealType<?>> outputCursor =
 			(LocalizableByDimCursor<? extends RealType<?>>) inputImage
 				.createLocalizableByDimCursor();
@@ -115,12 +129,16 @@ public class Neighborhood3x3Operation {
 		int[] origin = inputImage.createPositionArray();
 		origin[0] = selection.x;
 		origin[1] = selection.y;
+		for (int i = 2; i < origin.length; i++)
+			origin[i] = planeIndex[i-2];
 		
 		int[] span = inputImage.getDimensions();
 		if (selection.width > 0)
 			span[0] = selection.width;
 		if (selection.height > 0)
 			span[1] = selection.height;
+		for (int i = 2; i < span.length; i++)
+			span[i] = 1;
 		
 		OutOfBoundsStrategyFactory factory =
 			new OutOfBoundsStrategyMirrorFactory();
@@ -150,8 +168,10 @@ public class Neighborhood3x3Operation {
 			
 			// NOTE - inputPosition is in relative coordinates of neigh cursor.
 			//  Must translate to input coord space.
-			for (int i = 0; i < inputPosition.length; i++)
+			for (int i = 0; i < inputPosition.length; i++) {
 				inputPosition[i] += origin[i];
+				localInputPosition[i] = inputPosition[i];
+			}
 			
 			// let watcher know we are visiting a new neighborhood
 			watcher.initializeNeighborhood(inputPosition);
@@ -185,7 +205,5 @@ public class Neighborhood3x3Operation {
 		neighCursor.close();
 		inputCursor.close();
 		outputCursor.close();
-
-		Events.publish(new DatasetChangedEvent(input));
 	}
 }
