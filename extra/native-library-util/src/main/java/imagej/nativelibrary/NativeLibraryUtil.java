@@ -49,6 +49,11 @@ import com.wapmx.nativeutils.jniloader.JniExtractor;
  * @author Aivar Grislis
  */
 public class NativeLibraryUtil {
+    public static enum Architecture
+            { UNKNOWN, LINUX_32, LINUX_64, WINDOWS_32, WINDOWS_64, OSX_32, OSX_64, };
+    private static Architecture s_architecture = Architecture.UNKNOWN;
+    private static final String DELIM = File.pathSeparator;
+
     private static final String USER_TMPDIR = "java.library.tmpdir";
     private static final String JAVA_TMPDIR = "java.io.tmpdir";
     private static final String JAVA_PATH = "java.library.path";
@@ -57,6 +62,193 @@ public class NativeLibraryUtil {
     private static final String CURRENT_DIRECTORY = ".";
     private static boolean s_skipHack = false;
     private static String s_writableDirectory = null;
+
+    public static String getOsArchString() {
+        String returnValue = null;
+        String name = System.getProperty("os.name").toLowerCase();
+        String arch = System.getProperty("os.arch").toLowerCase();
+        if (name.indexOf("mac") > 0) {
+            returnValue = "osx";
+        }
+        else if (name.indexOf("win") > 0) {
+            returnValue = "windows";
+
+        }
+        else if (name.indexOf("nix") > 0 || name.indexOf("nux") > 0) {
+            returnValue = "linux";
+        }
+        if (null != returnValue) {
+            // Note that this is actually the architecture of the installed JVM.
+            if (arch.indexOf("86") > 0 || arch.indexOf("amd") > 0) {
+                int bits = 32;
+                if (arch.indexOf("64") > 0) {
+                    bits = 64;
+                }
+                returnValue += Integer.toString(bits);
+            }
+            else {
+                returnValue = null;
+            }
+        }
+        return returnValue;
+    }
+
+    /**
+     * Determines the underlying hardward platform and architecture.
+     *
+     * @return enumerated architecture value
+     */
+    public static Architecture getArchitecture() {
+        if (Architecture.UNKNOWN == s_architecture) {
+            int bits = 0;
+            // Note that this is actually the architecture of the installed JVM.
+            String arch = System.getProperty("os.arch").toLowerCase();
+            if (arch.indexOf("86") > 0 || arch.indexOf("amd") > 0) {
+                bits = 32;
+                if (arch.indexOf("64") > 0) {
+                    bits = 64;
+                }
+            }
+            if (bits > 0) {
+                String name = System.getProperty("os.name").toLowerCase();
+                if (name.indexOf("nix") > 0 || name.indexOf("nux") > 0) {
+                    s_architecture = (32 == bits) 
+                            ? Architecture.LINUX_32
+                            : Architecture.LINUX_64;
+                }
+                else if (name.indexOf("win") > 0) {
+                    s_architecture = (32 == bits) 
+                            ? Architecture.WINDOWS_32
+                            : Architecture.WINDOWS_64;
+                }
+                else if (name.indexOf("mac") > 0) {
+                    s_architecture = (32 == bits) 
+                            ? Architecture.OSX_32
+                            : Architecture.OSX_64;
+                }
+            }   
+        }
+        return s_architecture;
+    }
+
+    /**
+     * Returns the path to the native library.
+     *
+     * @return path
+     */
+    public static String getPlatformLibraryPath() {
+        String path = "lib" + DELIM;
+        switch (getArchitecture()) {
+            case LINUX_32:
+            case LINUX_64:
+                path += "i386-Linux-g++";
+                break;
+            case WINDOWS_32:
+            case WINDOWS_64:
+                path += "x86-Windows-msvc";
+                break;
+            case OSX_32:
+                path += "x86_32-MacOSX-gpp";
+                break;
+            case OSX_64:
+                path += "x86_64-MacOSX-gpp";
+                break;
+        }
+        return path + DELIM;
+    }
+
+    /**
+     * Returns the full file name (without path) of the native library.
+     *
+     * @param libName
+     * @return file name
+     */
+    public static String getPlatformLibraryName(String libName) {
+        libName = getVersionedLibraryName(libName);
+        String name = null;
+        switch (getArchitecture()) {
+            case LINUX_32:
+            case LINUX_64:
+                name = libName + ".so";
+                break;
+            case WINDOWS_32:
+            case WINDOWS_64:
+                name = libName + ".dll";
+                break;
+            case OSX_32:
+            case OSX_64:
+                name = "lib" + libName + ".dylib";
+                break;
+        }
+        return name;
+    }
+
+    /**
+     * Returns the Maven-versioned file name of the native library.
+     *
+     * Note: With the Nar Plugin the class NarSystem.java is built for the
+     * client of this native library and takes care of this versioning
+     * hardcoding.  If the client is "-1.0-SNAPSHOT" so should the native
+     * library be the same version.
+     *
+     * @param libName
+     * @return
+     */
+    //TODO This shouldn't be hardcoded in the general-purpose utility class.
+    //TODO Couldn't we just get rid of this version label altogether?
+    public static String getVersionedLibraryName(String libName) {
+        return libName + "-1.0-SNAPSHOT";
+    }
+
+    /**
+     * Loads the native library.
+     *
+     * @param libraryJarClass class within the jar that has the library
+     * @param libName name of library
+     * @return whether or not successful
+     */
+    public static boolean loadNativeLibrary(Class libraryJarClass, String libName) {
+        boolean success = false;
+
+        if (Architecture.UNKNOWN == getArchitecture()) {
+            System.out.println("No native library available for this platform");
+        }
+        else {
+            try
+            {
+                // extract library to temporary directory
+                String tmpDirectory = System.getProperty(JAVA_TMPDIR);
+                JniExtractor jniExtractor =
+                    new DefaultJniExtractor(libraryJarClass, tmpDirectory);
+
+                String fullLibPathName =
+                        getPlatformLibraryPath()
+                        + getPlatformLibraryName(libName);
+
+                // do extraction
+                File extractedFile = jniExtractor.extractJni(fullLibPathName);
+
+                // load extracted library
+                System.load(extractedFile.getPath());
+
+                success = true;
+            }
+            catch (IOException e)
+            {
+                System.out.println("IOException creating DefaultJniExtractor " + e.getMessage());
+            }
+            catch (SecurityException e)
+            {
+                System.out.println("Can't load dynamic library " + e.getMessage());
+            }
+            catch (UnsatisfiedLinkError e)
+            {
+                System.out.println("Libary does not exists " + e.getMessage());
+            }
+
+        }
+        return success;
+    }
 
     /**
      * Loads the native library specified by the libname argument.
