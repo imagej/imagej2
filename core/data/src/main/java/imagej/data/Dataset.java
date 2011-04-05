@@ -136,9 +136,9 @@ public class Dataset implements Comparable<Dataset> {
 		final Type<?> type = image.createType();
 		String pixelType = type.getClass().getSimpleName();
 		pixelType = pixelType.replaceAll("Type", "");
-		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");
 		pixelType = pixelType.replaceAll("Byte", "8-bit");
 		pixelType = pixelType.replaceAll("([0-9]+)Bit", "$1-bit"); // e.g., 12Bit
+		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");  // must follow prev line
 		pixelType = pixelType.replaceAll("Short", "16-bit");
 		pixelType = pixelType.replaceAll("Int", "32-bit");
 		pixelType = pixelType.replaceAll("Long", "64-bit");
