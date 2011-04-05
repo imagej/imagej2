@@ -59,6 +59,8 @@ public interface Display extends BasePlugin {
 
 	Object getCurrentPlane();
 
+	int[] getCurrentPlanePosition();
+	
 	// -- Pan methods --
 
 	void pan(float x, float y);
