@@ -55,3 +55,11 @@ ij.plugin.filter.ImageMath("reciprocal")  # Process>Math>Reciprocal
 ij.plugin.filter.ImageMath("nan")         # Process>Math>Set Background To NaN
 ij.plugin.filter.ImageMath("abs")         # Process>Math>Abs
 ij.plugin.ImageCalculator                 # Process>Image Calculator
+ij.plugin.Converter("8-bit")              # Image>Type>8-bit
+ij.plugin.Converter("16-bit")             # Image>Type>16-bit
+ij.plugin.Converter("32-bit")             # Image>Type>32-bit
+###### PHASE THESE OUT SOON
+#ij.plugin.Converter("8-bit Color")        # Image>Type>8-bit Color
+#ij.plugin.Converter("RGB Color")          # Image>Type>RGB Color
+#ij.plugin.Converter("RGB Stack")          # Image>Type>RGB Stack
+#ij.plugin.Converter("HSB Stack")          # Image>Type>HSB Stack
