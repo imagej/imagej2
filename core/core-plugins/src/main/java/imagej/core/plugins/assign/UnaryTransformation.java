@@ -80,7 +80,7 @@ public class UnaryTransformation {
 		operation.setOutputRegion(origin, span);
 	}
 	
-	public Dataset run() {
-		return operation.run();
+	public void run() {
+		operation.run();
 	}
 }

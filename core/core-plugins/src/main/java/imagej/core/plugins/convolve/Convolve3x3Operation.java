@@ -41,8 +41,8 @@ import imagej.data.Dataset;
 /**
  * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3
  * kernel as input. Kernel is actually stored as a 1-D array such that
- * {0,1,2,3,4,5,6,7,8} implies this shape: {{0,1,2},{3,4,5},{6,7,8}}. This class
- * is used by the various Shadow implementations, SharpenDataValues,
+ * {0,1,2,3,4,5,6,7,8} implies this shape: {{0,1,2},{3,4,5},{6,7,8}}. This
+ * class is used by the various Shadow implementations, SharpenDataValues,
  * SmoothDataValues, etc.
  * 
  * @author Barry DeZonia
@@ -58,7 +58,7 @@ public class Convolve3x3Operation {
 	 * the 3x3 operation that will run on the input Dataset and call back this
 	 * class as needed
 	 */
-	private Neighborhood3x3Operation operation;
+	private Neighborhood3x3Operation neighOperation;
 
 	// -- constructor --
 
@@ -68,7 +68,8 @@ public class Convolve3x3Operation {
 	 */
 	public Convolve3x3Operation(Dataset input, double[] kernel) {
 		this.kernel = kernel;
-		this.operation = new Neighborhood3x3Operation(input, new ConvolveWatcher());
+		this.neighOperation =
+			new Neighborhood3x3Operation(input, new ConvolveWatcher());
 
 		if (kernel.length != 9) throw new IllegalArgumentException(
 			"kernel must contain nine elements (shaped 3x3)");
@@ -77,11 +78,10 @@ public class Convolve3x3Operation {
 	// -- public interface --
 
 	/**
-	 * runs the convolution and returns the output Dataset containing the
-	 * convolved values
+	 * runs the convolution and replaces pixels in place with convolved values
 	 */
-	public Dataset run() {
-		return operation.run();
+	public void run() {
+		neighOperation.run();
 	}
 
 	// -- private interface --

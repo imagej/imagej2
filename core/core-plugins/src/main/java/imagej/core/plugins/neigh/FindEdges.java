@@ -56,9 +56,6 @@ public class FindEdges implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	/** sets the output Dataset to the result of the find edges operation */
@@ -66,7 +63,7 @@ public class FindEdges implements ImageJPlugin {
 	public void run() {
 		Neighborhood3x3Operation operation =
 			new Neighborhood3x3Operation(input, new FindEdgesWatcher());
-		output = operation.run();
+		operation.run();
 	}
 
 	// -- private interface --

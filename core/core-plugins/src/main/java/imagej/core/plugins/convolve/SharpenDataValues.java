@@ -55,9 +55,6 @@ public class SharpenDataValues implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -65,6 +62,6 @@ public class SharpenDataValues implements ImageJPlugin {
 		Convolve3x3Operation operation =
 			new Convolve3x3Operation(input,
 				new double[] { -1, -1, -1, -1, 12, -1, -1, -1, -1 });
-		output = operation.run();
+		operation.run();
 	}
 }

@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -63,9 +65,6 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	@Parameter(label =
 		"TODO - should use current threshold - for now ask - Low threshold")
 	private double loThreshold;
@@ -86,8 +85,8 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 			setupWorkingData();
 			assignPixels();
 			cleanup();
+			Events.publish(new DatasetChangedEvent(input));
 		}
-		output = input;
 	}
 	
 	// -- private interface --

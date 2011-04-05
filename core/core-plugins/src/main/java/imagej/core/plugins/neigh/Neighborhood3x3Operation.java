@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.neigh;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.util.Rect;
 import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
@@ -73,12 +75,11 @@ public class Neighborhood3x3Operation {
 
 	// -- public interface --
 
-	public Dataset run()
+	public void run()
 	{
 		checkInput();
 		setupWorkingData();
 		runAssignment();
-		return input;
 	}
 
 	// -- private interface --
@@ -184,5 +185,7 @@ public class Neighborhood3x3Operation {
 		neighCursor.close();
 		inputCursor.close();
 		outputCursor.close();
+
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

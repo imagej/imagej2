@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -60,9 +62,6 @@ public class GammaDataValues implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
 	private double constant;
 
@@ -76,6 +75,7 @@ public class GammaDataValues implements ImageJPlugin {
 	public void run() {
 		UnaryOperator op = new Gamma(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
-		output = transform.run();
+		transform.run();
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

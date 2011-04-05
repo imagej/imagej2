@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -60,9 +62,6 @@ public class ReciprocalDataValues implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -71,6 +70,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 		if (!input.isFloat()) // This is similar to what IJ1 does
 			op = new Copy();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
-		output = transform.run();
+		transform.run();
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

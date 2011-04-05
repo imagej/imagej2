@@ -40,6 +40,8 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -63,9 +65,6 @@ public class FlipVertically implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -74,7 +73,6 @@ public class FlipVertically implements ImageJPlugin {
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
-		output = input;
 	}
 
 	// -- private interface --

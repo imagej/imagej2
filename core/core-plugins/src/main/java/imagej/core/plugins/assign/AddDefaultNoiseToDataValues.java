@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -57,9 +59,6 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 	@Parameter
 	Dataset input;
 
-	@Parameter(output = true)
-	Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -67,6 +66,7 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 		AddNoiseToDataValues noiseAdder = new AddNoiseToDataValues(input);
 		noiseAdder.setOutput(input);
 		noiseAdder.setStdDev(25.0);
-		output = noiseAdder.run();
+		noiseAdder.run();
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

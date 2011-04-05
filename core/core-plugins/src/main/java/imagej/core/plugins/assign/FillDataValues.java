@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -58,9 +60,6 @@ public class FillDataValues implements ImageJPlugin {
 	private Dataset input; // TODO - does this make sense? used for dimensions
 	// only I think. Or do we want in place changing?
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	@Parameter(label = "TODO - later use current FG color but for now ask - Value")
 	private double constant;
 
@@ -70,6 +69,7 @@ public class FillDataValues implements ImageJPlugin {
 	public void run() {
 		UnaryOperator op = new Constant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
-		output = transform.run();
+		transform.run();
+		Events.publish(new DatasetChangedEvent(input));
 	}
 }

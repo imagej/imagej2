@@ -43,6 +43,8 @@ import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -67,9 +69,6 @@ public class SaltAndPepper implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- other instance variables --
 	
 	private Rect selection;
@@ -85,7 +84,7 @@ public class SaltAndPepper implements ImageJPlugin {
 		setupWorkingData();
 		assignPixels();
 		cleanup();
-		output = input;
+		Events.publish(new DatasetChangedEvent(input));
 	}
 
 	// -- private interface --

@@ -38,8 +38,8 @@ import mpicbg.imglib.algorithm.OutputAlgorithm;
 import imagej.data.Dataset;
 
 /**
- * Runs an Imglib OutputAlgorithm and returns the algorithm's output Image
- * wrapped in a Dataset.
+ * Runs an Imglib OutputAlgorithm, takes the created image, and assigns it
+ * to the input Dataset.
  * 
  * @author Barry DeZonia
  */

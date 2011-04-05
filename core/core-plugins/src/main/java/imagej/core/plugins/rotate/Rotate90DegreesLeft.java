@@ -37,6 +37,8 @@ package imagej.core.plugins.rotate;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -61,9 +63,6 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 	@Parameter
 	private Dataset input;
 
-	@Parameter(output = true)
-	private Dataset output;
-
 	// -- public interface --
 
 	@Override
@@ -72,7 +71,6 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
 		ImglibDataTransform runner = new ImglibDataTransform(input, flipper);
 		runner.run();
-		output = input;
 	}
 
 	// -- private interface --

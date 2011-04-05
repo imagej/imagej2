@@ -105,14 +105,14 @@ public class AddNoiseToDataValues {
 	}
 
 	/** runs the operation and returns the Dataset that contains the output data */
-	public Dataset run() {
+	public void run() {
 		calcTypeMinAndMax();
 
 		UnaryOperator op = new AddNoise(rangeMin, rangeMax, rangeStdDev);
 
 		UnaryTransformation transform = new UnaryTransformation(input, output, op);
 
-		return transform.run();
+		transform.run();
 	}
 
 	// -- private interface --
