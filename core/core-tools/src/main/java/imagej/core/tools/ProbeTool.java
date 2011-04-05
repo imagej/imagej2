@@ -48,8 +48,6 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
- * TODO
- * 
  * @author Rick Lentz
  * @author Grant Harris
  * @author Barry DeZonia
@@ -68,31 +66,33 @@ public class ProbeTool extends BaseTool {
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 		final Dataset dataset = evt.getDisplay().getDataset();
-		final Image<? extends RealType<?>> image =
-			(Image<? extends RealType<?>>) dataset.getImage();
-		LocalizableByDimCursor<? extends RealType<?>> cursor =
-			(LocalizableByDimCursor<? extends RealType<?>>)
-				image.createLocalizableByDimCursor();
 		final int x = evt.getX();
 		final int y = evt.getY();
 		final IntCoords mousePos = new IntCoords(x, y);
 		final RealCoords coords =
 			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
+		// mouse not in image ?
 		if ( ! evt.getDisplay().getImageCanvas().isInImage(mousePos) )
 			Events.publish(new StatusEvent(""));
-		else {
+		else {  // mouse is over image
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
+			final Image<? extends RealType<?>> image =
+				(Image<? extends RealType<?>>) dataset.getImage();
+			LocalizableByDimCursor<? extends RealType<?>> cursor =
+				(LocalizableByDimCursor<? extends RealType<?>>)
+					image.createLocalizableByDimCursor();
 			// TODO - another performance bottleneck - many array allocations
 			final int[] position = cursor.createPositionArray();
 			final int[] currPlanePos = evt.getDisplay().getCurrentPlanePosition();
 			// FIXME - assumes x & y axes are first two
-			position[0] = x;
-			position[1] = y;
+			position[0] = cx;
+			position[1] = cy;
 			for (int i = 2; i < position.length; i++)
 				position[i] = currPlanePos[i-2];
 			cursor.setPosition(position);
-			double doubleValue = cursor.getType().getRealDouble();
+			final double doubleValue = cursor.getType().getRealDouble();
+			cursor.close();
 			String s = "";
 			if (dataset.isFloat())
 				s = "" + doubleValue;
@@ -101,7 +101,6 @@ public class ProbeTool extends BaseTool {
 			Events.publish(
 				new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
 		}
-		cursor.close();
 	}
 
 	@Override
