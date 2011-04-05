@@ -50,7 +50,7 @@ public class DatasetTypeChanger {
 			Image<? extends RealType<?>> currImageData = 
 				(Image<? extends RealType<?>>) input.getImage();
 			Image<T> newImageData =
-				ImageCreator.createPopulatedImage(currImageData, newType);
+				PopulatedImageCreator.createPopulatedImage(currImageData, newType);
 		input.setImage(newImageData);
 	}
 
