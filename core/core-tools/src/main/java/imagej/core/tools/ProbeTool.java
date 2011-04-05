@@ -34,6 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import mpicbg.imglib.cursor.LocalizableByDimCursor;
+import mpicbg.imglib.image.Image;
+import mpicbg.imglib.type.numeric.RealType;
+import imagej.data.Dataset;
 import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
@@ -48,6 +52,7 @@ import imagej.util.RealCoords;
  * 
  * @author Rick Lentz
  * @author Grant Harris
+ * @author Barry DeZonia
  */
 @Tool(name = "Probe", iconPath = "/tools/probe.png",
 	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
@@ -57,59 +62,46 @@ public class ProbeTool extends BaseTool {
 
 	// -- ITool methods --
 
+	// TODO - this hatches cursors over and over - very expensive!
+	//   Dataset should have thread local cursors for pulling values
+	//   out of a Dataset.
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		final Object plane = evt.getDisplay().getCurrentPlane();
+		final Dataset dataset = evt.getDisplay().getDataset();
+		final Image<? extends RealType<?>> image =
+			(Image<? extends RealType<?>>) dataset.getImage();
+		LocalizableByDimCursor<? extends RealType<?>> cursor =
+			(LocalizableByDimCursor<? extends RealType<?>>)
+				image.createLocalizableByDimCursor();
 		final int x = evt.getX();
 		final int y = evt.getY();
 		final IntCoords mousePos = new IntCoords(x, y);
 		final RealCoords coords =
 			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
-		final int imageWidth = evt.getDisplay().getImageCanvas().getImageWidth();
-		if (evt.getDisplay().getImageCanvas().isInImage(mousePos)) {
-			String s = "";
+		if ( ! evt.getDisplay().getImageCanvas().isInImage(mousePos) )
+			Events.publish(new StatusEvent(""));
+		else {
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
-			final int offset = cx + imageWidth * cy;
-			// TODO - remove case logic; rework in favor of planar 2D display
-			// architecture, probing dataset for values instead of extracting from
-			// cooked plane object
-			final boolean signed = evt.getDisplay().getDataset().isSigned();
-			if (plane instanceof byte[]) {
-				final byte value = ((byte[]) plane)[offset];
-				if (signed) s = "" + value;
-				else s = "" + (value & 0xff);
-			}
-			else if (plane instanceof short[]) {
-				final short value = ((short[]) plane)[offset];
-				if (signed) s = "" + value;
-				else s = "" + (value & 0xffff);
-			}
-			else if (plane instanceof int[]) {
-				final int value = ((int[]) plane)[offset];
-				if (signed) s = "" + value;
-				else s = "" + (value & 0xffffffff);
-			}
-			else if (plane instanceof long[]) {
-				// NB: no "uint64" yet
-				s = "" + ((long[]) plane)[offset];
-			}
-			else if (plane instanceof float[]) {
-				s = "" + ((float[]) plane)[offset];
-			}
-			else if (plane instanceof double[]) {
-				s = "" + ((double[]) plane)[offset];
-			}
-			else {
-				throw new IllegalStateException("Unknown data type: " +
-					plane.getClass().getName());
-			}
-			Events
-				.publish(new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
+			// TODO - another performance bottleneck - many array allocations
+			final int[] position = cursor.createPositionArray();
+			final int[] currPlanePos = evt.getDisplay().getCurrentPlanePosition();
+			// FIXME - assumes x & y axes are first two
+			position[0] = x;
+			position[1] = y;
+			for (int i = 2; i < position.length; i++)
+				position[i] = currPlanePos[i-2];
+			cursor.setPosition(position);
+			double doubleValue = cursor.getType().getRealDouble();
+			String s = "";
+			if (dataset.isFloat())
+				s = "" + doubleValue;
+			else
+				s = "" + ((long) doubleValue);
+			Events.publish(
+				new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
 		}
-		else {
-			Events.publish(new StatusEvent(""));
-		}
+		cursor.close();
 	}
 
 	@Override
