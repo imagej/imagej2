@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "64-bit signed", weight = 9) })
+	@Menu(label = "64-bit signed", weight = 11) })
 public class ChangeToINT64 implements ImageJPlugin {
 
 	@Parameter

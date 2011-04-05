@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "8-bit signed", weight = 3) })
+	@Menu(label = "8-bit signed", weight = 8) })
 public class ChangeToINT8 implements ImageJPlugin {
 
 	@Parameter

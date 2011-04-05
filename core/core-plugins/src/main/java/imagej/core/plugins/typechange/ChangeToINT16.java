@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "16-bit signed", weight = 6) })
+	@Menu(label = "16-bit signed", weight = 9) })
 public class ChangeToINT16 implements ImageJPlugin {
 
 	@Parameter

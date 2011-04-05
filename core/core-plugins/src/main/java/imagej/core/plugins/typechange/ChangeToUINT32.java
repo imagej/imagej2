@@ -57,7 +57,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "32-bit unsigned", weight = 7) })
+	@Menu(label = "32-bit unsigned", weight = 5) })
 public class ChangeToUINT32 implements ImageJPlugin {
 
 	@Parameter
