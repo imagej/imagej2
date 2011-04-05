@@ -142,6 +142,11 @@ public class SwingImageDisplay implements AWTDisplay,
 	}
 
 	@Override
+	public int[] getCurrentPlanePosition() {
+		return controller.getPos();
+	}
+
+	@Override
 	public void pan(final float x, final float y) {
 		imgCanvas.pan((int) x, (int) y);
 	}
