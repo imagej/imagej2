@@ -109,13 +109,15 @@ public class ProbeTool extends BaseTool {
 
 	// -- private interface --
 	
-	// TODO - If someone positions the mouse over an Image and then they close
-	//   it via any means other than using the mouse then this method will not
-	//   get called. This leaves a cursor open and thus an Image reference may
-	//   be kept around. This could keep some memory from freeing up. Test and
-	//   if so figure out a workaround. Maybe it could subscribe to an event
-	//   that is fired when images are closed. That event handler could just
-	//   call this method.
+	// TODO - If someone positions the probe over an image and then they close
+	//   the image via any means other than using the mouse then this method
+	//   will not get called. This leaves a cursor open and thus an Image
+	//   reference may be kept around. This could keep some memory from freeing
+	//   up. Test and if so figure out a workaround. Maybe it could subscribe
+	//   to an event that is fired when images are closed. That event handler
+	//   could just call this method. (Note that this might be a case to not
+	//   worry about. If the Probe is moved after the image close it should
+	//   clean up unless there are no displays open at all).
 
 	private void clearWorkingVariables() {
 		currentPosition = null;
