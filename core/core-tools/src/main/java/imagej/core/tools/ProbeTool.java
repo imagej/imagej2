@@ -38,7 +38,9 @@ import mpicbg.imglib.cursor.LocalizableByDimCursor;
 import mpicbg.imglib.image.Image;
 import mpicbg.imglib.type.numeric.RealType;
 import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.display.MouseCursor;
+import imagej.display.NavigableImageCanvas;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
@@ -48,58 +50,55 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
+ * @author Barry DeZonia
  * @author Rick Lentz
  * @author Grant Harris
- * @author Barry DeZonia
  */
 @Tool(name = "Probe", iconPath = "/tools/probe.png",
 	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
 public class ProbeTool extends BaseTool {
 
+	// -- constants --
+	
 	public static final int PRIORITY = 204;
 
+	// -- private instance variables --
+	
+	private Dataset currentDataset;
+	private LocalizableByDimCursor<? extends RealType<?>> currentCursor;
+	private int[] currentPosition;
+	
 	// -- ITool methods --
 
-	// TODO - this hatches cursors over and over - very expensive!
-	//   Dataset should have thread local cursors for pulling values
-	//   out of a Dataset.
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		final Dataset dataset = evt.getDisplay().getDataset();
+		final Display display = evt.getDisplay();
+		final Dataset dataset = display.getDataset();
+		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final int x = evt.getX();
 		final int y = evt.getY();
 		final IntCoords mousePos = new IntCoords(x, y);
-		final RealCoords coords =
-			evt.getDisplay().getImageCanvas().panelToImageCoords(mousePos);
+		final RealCoords coords = canvas.panelToImageCoords(mousePos);
 		// mouse not in image ?
-		if ( ! evt.getDisplay().getImageCanvas().isInImage(mousePos) )
+		if ( ! canvas.isInImage(mousePos) ) {
+			clearWorkingVariables();
 			Events.publish(new StatusEvent(""));
+		}
 		else {  // mouse is over image
+			setWorkingVariables(display.getDataset());
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
-			final Image<? extends RealType<?>> image =
-				(Image<? extends RealType<?>>) dataset.getImage();
-			LocalizableByDimCursor<? extends RealType<?>> cursor =
-				(LocalizableByDimCursor<? extends RealType<?>>)
-					image.createLocalizableByDimCursor();
-			// TODO - another performance bottleneck - many array allocations
-			final int[] position = cursor.createPositionArray();
-			final int[] currPlanePos = evt.getDisplay().getCurrentPlanePosition();
-			// FIXME - assumes x & y axes are first two
-			position[0] = cx;
-			position[1] = cy;
-			for (int i = 2; i < position.length; i++)
-				position[i] = currPlanePos[i-2];
-			cursor.setPosition(position);
-			final double doubleValue = cursor.getType().getRealDouble();
-			cursor.close();
-			String s = "";
+			final int[] currPlanePos = display.getCurrentPlanePosition();
+			fillCurrentPosition(cx, cy, currPlanePos);
+			currentCursor.setPosition(currentPosition);
+			final double doubleValue = currentCursor.getType().getRealDouble();
+			String valString;
 			if (dataset.isFloat())
-				s = "" + doubleValue;
+				valString = "" + doubleValue;
 			else
-				s = "" + ((long) doubleValue);
+				valString = "" + ((long) doubleValue);
 			Events.publish(
-				new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + s));
+				new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + valString));
 		}
 	}
 
@@ -108,4 +107,41 @@ public class ProbeTool extends BaseTool {
 		return MouseCursor.CROSSHAIR;
 	}
 
+	// -- private interface --
+	
+	// TODO - If someone positions the mouse over an Image and then they close
+	//   it via any means other than using the mouse then this method will not
+	//   get called. This leaves a cursor open and thus an Image reference may
+	//   be kept around. This could keep some memory from freeing up. Test and
+	//   if so figure out a workaround. Maybe it could subscribe to an event
+	//   that is fired when images are closed. That event handler could just
+	//   call this method.
+
+	private void clearWorkingVariables() {
+		currentPosition = null;
+		if (currentCursor != null) {
+			currentCursor.close();
+			currentCursor = null;
+		}
+		currentDataset = null;
+	}
+	
+	private void setWorkingVariables(Dataset dataset) {
+		if (dataset != currentDataset) {
+			clearWorkingVariables();
+			currentDataset = dataset;
+			final Image<? extends RealType<?>> image =
+				(Image<? extends RealType<?>>) dataset.getImage();
+			currentCursor = image.createLocalizableByDimCursor();
+			currentPosition = currentCursor.createPositionArray();
+		}
+	}
+	
+	private void fillCurrentPosition(int x, int y, int[] planePos) {
+		// TODO - FIXME - assumes x & y axes are first two
+		currentPosition[0] = x;
+		currentPosition[1] = y;
+		for (int i = 2; i < currentPosition.length; i++)
+			currentPosition[i] = planePos[i-2];
+	}
 }
