@@ -73,12 +73,8 @@ public class ProbeTool extends BaseTool {
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 		final Display display = evt.getDisplay();
-		final Dataset dataset = display.getDataset();
 		final NavigableImageCanvas canvas = display.getImageCanvas();
-		final int x = evt.getX();
-		final int y = evt.getY();
-		final IntCoords mousePos = new IntCoords(x, y);
-		final RealCoords coords = canvas.panelToImageCoords(mousePos);
+		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if ( ! canvas.isInImage(mousePos) ) {
 			clearWorkingVariables();
@@ -86,14 +82,15 @@ public class ProbeTool extends BaseTool {
 		}
 		else {  // mouse is over image
 			setWorkingVariables(display.getDataset());
+			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
 			final int[] currPlanePos = display.getCurrentPlanePosition();
 			fillCurrentPosition(cx, cy, currPlanePos);
 			currentCursor.setPosition(currentPosition);
 			final double doubleValue = currentCursor.getType().getRealDouble();
-			String valString;
-			if (dataset.isFloat())
+			final String valString;
+			if (currentDataset.isFloat())
 				valString = "" + doubleValue;
 			else
 				valString = "" + ((long) doubleValue);
