@@ -89,13 +89,14 @@ public class ProbeTool extends BaseTool {
 			fillCurrentPosition(cx, cy, currPlanePos);
 			currentCursor.setPosition(currentPosition);
 			final double doubleValue = currentCursor.getType().getRealDouble();
-			final String valString;
+			String statusMessage;
 			if (currentDataset.isFloat())
-				valString = "" + doubleValue;
+				statusMessage =
+					String.format("x=%d, y=%d, value=%f", cx, cy, doubleValue);
 			else
-				valString = "" + ((long) doubleValue);
-			Events.publish(
-				new StatusEvent("x=" + cx + ", y=" + cy + ", value=" + valString));
+				statusMessage =
+					String.format("x=%d, y=%d, value=%d", cx, cy, (long)doubleValue);
+			Events.publish(new StatusEvent(statusMessage));
 		}
 	}
 
