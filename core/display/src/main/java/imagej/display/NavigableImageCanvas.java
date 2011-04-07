@@ -53,19 +53,6 @@ public interface NavigableImageCanvas extends ImageCanvas {
 
 	/**
 	 * <p>
-	 * Identifies a change to the zoom increment.
-	 * </p>
-	 */
-	String ZOOM_INCREMENT_CHANGED_PROPERTY = "zoomIncrement";
-	/**
-	 * <p>
-	 * Identifies a change to the zoom level.
-	 * </p>
-	 */
-	String ZOOM_LEVEL_CHANGED_PROPERTY = "zoomLevel";
-
-	/**
-	 * <p>
 	 * Gets the image origin.
 	 * </p>
 	 * <p>
@@ -93,15 +80,6 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * </p>
 	 */
 	// ZoomDevice getZoomDevice();
-
-	/**
-	 * <p>
-	 * Gets the current zoom increment.
-	 * </p>
-	 * 
-	 * @return the current zoom increment
-	 */
-	double getZoomIncrement();
 
 	/**
 	 * <p>
@@ -216,13 +194,15 @@ public interface NavigableImageCanvas extends ImageCanvas {
 
 	/**
 	 * <p>
-	 * Sets a new zoom increment value.
+	 * Sets a new zooming scale factor value.
 	 * </p>
 	 * 
-	 * @param newZoomIncrement new zoom increment value
+	 * @param newZoomFactor new zoom factor value
 	 */
-	void setZoomIncrement(double newZoomIncrement);
+	void setZoomFactor(double newZoomFactor);
 
+	double getZoomFactor();
+	
 	// Is this point in the image as displayed in the panel
 	boolean isInImage(IntCoords p);
 

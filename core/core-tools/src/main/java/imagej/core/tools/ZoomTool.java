@@ -87,7 +87,7 @@ public class ZoomTool extends BaseTool {
 	private void zoomIn(final Display display, final IntCoords zoomCenter) {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final double currentZoom = canvas.getZoom();
-		final double newZoom = currentZoom * canvas.getZoomIncrement();
+		final double newZoom = currentZoom * canvas.getZoomFactor();
 		if (zoomCenter == null) canvas.setZoom(newZoom);
 		else canvas.setZoom(newZoom, zoomCenter);
 	}
@@ -95,7 +95,7 @@ public class ZoomTool extends BaseTool {
 	private void zoomOut(final Display display, final IntCoords zoomCenter) {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final double currentZoom = canvas.getZoom();
-		final double newZoom = currentZoom / canvas.getZoomIncrement();
+		final double newZoom = currentZoom / canvas.getZoomFactor();
 		if (zoomCenter == null) canvas.setZoom(newZoom);
 		else canvas.setZoom(newZoom, zoomCenter);
 	}

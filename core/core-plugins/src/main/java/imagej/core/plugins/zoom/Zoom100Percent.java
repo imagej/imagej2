@@ -45,6 +45,13 @@ import imagej.plugin.Plugin;
 import imagej.ui.UIManager;
 
 
+// TODO - general zoom issues
+//  there is a slight pan error after zooming 100%
+//  it is possible to zoom in/out wheel (and click?), resize, and then the
+//    following zooms all keep the same zoom ceneter locked no matter what
+//  can shrink window, view 100%, have it zoom with image panned offscreen,
+//    and can no longer find image
+
 /** zooms the currently displayed image to 100% resolution 
  *  
  * @author bdezonia
