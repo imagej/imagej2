@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.headless;
 
+import imagej.display.Display;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
@@ -155,6 +156,16 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 	@Override
 	public StatusBar getStatusBar() {
 		return null;
+	}
+
+	@Override
+	public Display getActiveDisplay() {
+		return null;
+	}
+
+	@Override
+	public void setActiveDisplay(Display display) {
+		// do nothing
 	}
 
 	// -- EventSubscriber methods --

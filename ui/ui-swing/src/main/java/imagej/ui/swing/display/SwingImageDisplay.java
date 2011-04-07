@@ -43,11 +43,18 @@ import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.manager.Managers;
 import imagej.plugin.Plugin;
+import imagej.ui.UIManager;
+import imagej.util.IntCoords;
+import imagej.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple Swing image display plugin.
@@ -56,22 +63,48 @@ import java.util.Arrays;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class SwingImageDisplay implements AWTDisplay,
-	EventSubscriber<DatasetChangedEvent>
+public class SwingImageDisplay implements AWTDisplay
 {
-
 	private SwingImageDisplayWindow imgWindow;
 	private SwingNavigableImageCanvas imgCanvas;
 	private Dataset theDataset;
 	private DisplayController controller;
 	private int[] lastKnownDimensions;
+	private List<EventSubscriber<?>> subscribers;
 
 	public SwingImageDisplay() {
-		Events.publish(new DisplayCreatedEvent(this));
-		Events.subscribe(DatasetChangedEvent.class, this);
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
+		subscribers = new ArrayList<EventSubscriber<?>>();
+		
+		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
+			new EventSubscriber<DatasetChangedEvent>() {
+				@Override
+				public void onEvent(DatasetChangedEvent event) {
+					if (theDataset == event.getObject()) {
+						update();
+					}
+				}
+			};
+		EventSubscriber<WinActivatedEvent> windowSubscriber = 
+			new EventSubscriber<WinActivatedEvent>() {
+				@Override
+				public void onEvent(WinActivatedEvent event) {
+					Managers.get(UIManager.class).getUI().setActiveDisplay(event.getDisplay());
+					Log.debug("**** active window changed ****");
+				}
+			};
+			
+		subscribers.add(dsChangeSubscriber);
+		subscribers.add(windowSubscriber);
+		
+		Events.subscribe(DatasetChangedEvent.class, dsChangeSubscriber);
+		Events.subscribe(WinActivatedEvent.class, windowSubscriber);
+		
+		Events.publish(new DisplayCreatedEvent(this));
+
+		Managers.get(UIManager.class).getUI().setActiveDisplay(this);
 	}
 
 	@Override
@@ -168,7 +201,7 @@ public class SwingImageDisplay implements AWTDisplay,
 	public void setZoom(final float factor, final float centerX,
 		final float centerY)
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		imgCanvas.setZoom(factor, new IntCoords((int)centerX, (int)centerY));
 	}
 
 	@Override
@@ -191,12 +224,4 @@ public class SwingImageDisplay implements AWTDisplay,
 		return 1f;
 		// throw new UnsupportedOperationException("Not supported yet.");
 	}
-
-	@Override
-	public void onEvent(DatasetChangedEvent event) {
-		if (theDataset == event.getObject()) {
-			update();
-		}
-	}
-
 }
