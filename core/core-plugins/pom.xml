@@ -39,6 +39,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-display</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-manager</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -50,6 +55,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
