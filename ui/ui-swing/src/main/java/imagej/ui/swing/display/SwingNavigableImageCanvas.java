@@ -78,9 +78,6 @@ import javax.swing.SwingUtilities;
 // TODO: the navigation preview is disabled. Also its zoom scaling has not
 // been updated to mirror the overall image zoom scaling.
 
-// TODO: finish phasing out zoomIncrement and utilizing zoomFactor. May require
-// changes to base classes/interfaces.
-
 /**
  * A Swing implementation of the navigable image canvas.
  *
@@ -96,14 +93,11 @@ import javax.swing.SwingUtilities;
 public class SwingNavigableImageCanvas extends JPanel implements
 	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
 {
-
-	// Rendering...
-
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
 		RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 	private boolean highQualityRenderingEnabled = true;
-	private double zoomFactor = 1.2; // 1.0 + getZoomIncrement();
+	private double zoomFactor = 1.2;
 	private BufferedImage image;
 	private double initialScale = 0.0;
 	private double scale = 0.0;
@@ -112,7 +106,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private int originY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
-	private double zoomIncrement = 0.2;  // TODO - finish phasing this out
 
 	/**
 	 * <p>
@@ -600,10 +593,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		setZoom(newZoom, zoomingCenter);
 	}
 
-	public double getZoomMultiplier() {
-		return zoomFactor;
-	}
-	
 	/**
 	 * <p>
 	 * Sets the zoom level used to display the image, and the zooming center,
@@ -649,40 +638,26 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		repaint();
 	}
 
-	// TODO - allow the increment to be a function
-
 	/**
 	 * <p>
-	 * Gets the current zoom increment.
+	 * Sets a new zooming scale factor value.
 	 * </p>
 	 * 
-	 * @return the current zoom increment
+	 * @param newZoomFactor new zoom factor value
 	 */
 	@Override
-	public double getZoomIncrement() {  // TODO - fix callers of this
+	public void setZoomFactor(double newZoomFactor) {
+		if (newZoomFactor <= 1)
+			throw new IllegalArgumentException("zoom factor must be > 1");
+		
+		zoomFactor = newZoomFactor;
+	}
+
+	@Override
+	public double getZoomFactor() {
 		return zoomFactor;
-		// OLD - increment was additive and factor is multiplicative
-		//return zoomIncrement;
 	}
-
-	/**
-	 * <p>
-	 * Sets a new zoom increment value.
-	 * </p>
-	 * 
-	 * @param newZoomIncrement new zoom increment value
-	 */
-	@Override
-	public void setZoomIncrement(final double newZoomIncrement) {
-		throw new UnsupportedOperationException("not supported at the moment");
-		/*
-		final double oldZoomIncrement = zoomIncrement;
-		zoomIncrement = newZoomIncrement;
-		firePropertyChange(ZOOM_INCREMENT_CHANGED_PROPERTY, new Double(
-			oldZoomIncrement), new Double(zoomIncrement));
-			*/
-	}
-
+	
 	private boolean scaleOutOfBounds(double desiredScale) {
 		// check if trying to zoom in too close
 		if (desiredScale > scale)
@@ -734,7 +709,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's
 																															// width
 	private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
-	private double navZoomFactor = 1.0 + zoomIncrement;
+	private double navZoomFactor = 1.2;
 	private double navScale = 0.0;
 	private boolean navigationImageEnabled = false;  // TODO - enable with a hotkey?????
 	private BufferedImage navigationImage;
@@ -1000,22 +975,19 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		public void mouseWheelMoved(final MouseWheelEvent e) {
 			final Point p = e.getPoint();
 			final boolean zoomIn = (e.getWheelRotation() < 0);
+
 			if (isInNavigationImage(p)) {
-				if (zoomIn) {
-					navZoomFactor = 1.0 + zoomIncrement;
-				}
-				else {
-					navZoomFactor = 1.0 - zoomIncrement;
-				}
+				if (zoomIn)
+					navZoomFactor = 1.2;
+				else
+					navZoomFactor = 0.8;
 				zoomNavigationImage();
 			}
 			else if (isInImage(ptToCoords(p))) {
-				if (zoomIn) {
+				if (zoomIn)
 					newScale *= zoomFactor;
-				}
-				else {
+				else
 					newScale /= zoomFactor;
-				}
 				zoomImage();
 			}
 		}
@@ -1028,25 +1000,21 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		@Override
 		public void mouseClicked(final MouseEvent e) {
 			final Point p = e.getPoint();
-			if (SwingUtilities.isRightMouseButton(e)) {
-				if (isInNavigationImage(p)) {
-					navZoomFactor = 1.0 - zoomIncrement;
-					zoomNavigationImage();
-				}
-				else if (isInImage(ptToCoords(p))) {
-					newScale /= zoomFactor;
-					zoomImage();
-				}
+			final boolean zoomIn = SwingUtilities.isLeftMouseButton(e);
+			
+			if (isInNavigationImage(p)) {
+				if (zoomIn)
+					navZoomFactor = 1.2;
+				else
+					navZoomFactor = 0.8;
+				zoomNavigationImage();
 			}
-			else {
-				if (isInNavigationImage(p)) {
-					navZoomFactor = 1.0 + zoomIncrement;
-					zoomNavigationImage();
-				}
-				else if (isInImage(ptToCoords(p))) {
+			else if (isInImage(ptToCoords(p))) {
+				if (zoomIn)
 					newScale *= zoomFactor;
-					zoomImage();
-				}
+				else
+					newScale /= zoomFactor;
+				zoomImage();
 			}
 		}
 
