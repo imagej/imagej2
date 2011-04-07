@@ -64,6 +64,7 @@ public class SWTUI implements UserInterface, Runnable {
 	private Shell shell;
 	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
+	private imagej.display.Display activeDisplay;
 
 	// -- UserInterface methods --
 
@@ -97,6 +98,16 @@ public class SWTUI implements UserInterface, Runnable {
 	@Override
 	public SWTStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public imagej.display.Display getActiveDisplay() {
+		return activeDisplay;
+	}
+
+	@Override
+	public void setActiveDisplay(imagej.display.Display display) {
+		activeDisplay = display;
 	}
 
 	// -- Runnable methods --

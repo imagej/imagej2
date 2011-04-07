@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
+import imagej.display.Display;
 import imagej.event.Events;
 import imagej.manager.Managers;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -62,6 +63,7 @@ public class AWTUI implements UserInterface {
 	private Frame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
+	private Display activeDisplay;
 
 	// -- UserInterface methods --
 
@@ -100,6 +102,16 @@ public class AWTUI implements UserInterface {
 	@Override
 	public AWTStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public Display getActiveDisplay() {
+		return activeDisplay;
+	}
+
+	@Override
+	public void setActiveDisplay(Display display) {
+		activeDisplay = display;
 	}
 
 	// -- Helper methods --

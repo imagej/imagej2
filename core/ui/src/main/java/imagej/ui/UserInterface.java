@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
+import imagej.display.Display;
+
 /**
  * An end-user ImageJ application.
  *
@@ -48,5 +50,8 @@ public interface UserInterface {
 	ToolBar getToolBar();
 
 	StatusBar getStatusBar();
+	
+	Display getActiveDisplay();
 
+	void setActiveDisplay(Display display);
 }

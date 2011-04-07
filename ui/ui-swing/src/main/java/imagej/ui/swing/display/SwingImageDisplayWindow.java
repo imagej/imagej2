@@ -50,6 +50,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -67,16 +68,17 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  * @author Grant Harris
+ * @author Barry DeZonia
  */
 public class SwingImageDisplayWindow extends JFrame
-	implements AWTImageDisplayWindow, EventSubscriber<ZoomEvent>
+	implements AWTImageDisplayWindow
 {
-
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 
 	private final JLabel imageLabel;
 	private final SwingNavigableImageCanvas imgCanvas;
 	private JPanel sliders;
+	private ArrayList<EventSubscriber<?>> subscribers;
 
 	protected DisplayController controller;
 
@@ -105,7 +107,7 @@ public class SwingImageDisplayWindow extends JFrame
 		pane.add(graphicPane, BorderLayout.CENTER);
 		pane.add(sliders, BorderLayout.SOUTH);
 
-		subscribeToZoomEvents();
+		setupEventSubscriptions();
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
@@ -172,27 +174,44 @@ public class SwingImageDisplayWindow extends JFrame
 
 	}
 
-	private void subscribeToZoomEvents() {
-		Events.subscribe(ZoomEvent.class, this);
-	}
-	
-	/*
-	 * Handles setting the title to the current dataset name and zoom level
-	 */
-	@Override
-	public void onEvent(ZoomEvent event) {
-		if (event.getCanvas() != imgCanvas)
-			return;
-		String datasetName = "";
-		if (this.controller != null)
-			datasetName = this.controller.getDataset().getMetadata().getName();
-		double zoom = event.getNewZoom();
-		if (zoom == 1.0)  // exactly
-			setTitle(datasetName);
-		else
-		{
-			String percentZoom = String.format("%.2f", zoom*100);
-			setTitle(datasetName+ " (" + percentZoom + "%)");
-		}
+	private void setupEventSubscriptions() {
+		
+		subscribers = new ArrayList<EventSubscriber<?>>();
+		
+		/*
+		EventSubscriber<MsClickedEvent> msClickSubscriber = 
+			new EventSubscriber<MsClickedEvent>() {
+				@Override
+				public void onEvent(MsClickedEvent event) {
+					Managers.get(UIManager.class).getUI().setActiveDisplay(event.getDisplay());
+					Log.debug("**** mouse clicked in display ****");
+				}
+			};
+		subscribers.add(msClickSubscriber);
+		Events.subscribe(MsClickedEvent.class, msClickSubscriber);
+		*/
+
+		EventSubscriber<ZoomEvent> zoomSubscriber = 
+			new EventSubscriber<ZoomEvent>() {
+				@Override
+				public void onEvent(ZoomEvent event) {
+					if (event.getCanvas() != imgCanvas)
+						return;
+					String datasetName = "";
+					if (controller != null)
+						datasetName = controller.getDataset().getMetadata().getName();
+					double zoom = event.getNewZoom();
+					if (zoom == 1.0)  // exactly
+						setTitle(datasetName);
+					else
+					{
+						String infoString =
+							String.format("%s (%.2f%%)", datasetName, zoom*100);
+						setTitle(infoString);
+					}
+				}
+			};
+		subscribers.add(zoomSubscriber);
+		Events.subscribe(ZoomEvent.class, zoomSubscriber);
 	}
 }
