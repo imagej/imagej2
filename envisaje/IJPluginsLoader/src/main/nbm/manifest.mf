@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Install: imagej/envisaje/ijpluginsloader/Installer.class
+OpenIDE-Module-Localizing-Bundle: imagej/envisaje/envisaje/Bundle.properties
+OpenIDE-Module-Layer: imagej/envisaje/envisaje/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager

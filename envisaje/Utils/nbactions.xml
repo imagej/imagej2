@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>package</goal>
+            <goal>nbm:cluster</goal>
+            <goal>nbm:run-ide</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>package</goal>
+            <goal>nbm:cluster</goal>
+            <goal>nbm:run-ide</goal>
+        </goals>
+        <properties>
+            <jpda.listen>true</jpda.listen>
+            <netbeans.run.params>-J-Xdebug -J-Xnoagent -J-Xrunjdwp:transport=dt_socket,suspend=n,server=n,address=${jpda.address}</netbeans.run.params>
+        </properties>
+    </action>
+</actions>

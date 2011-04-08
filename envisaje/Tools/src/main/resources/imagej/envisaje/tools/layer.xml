@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="brushes">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="imagej.envisaje.tools.Bundle" />
+
+        <file name="imagej-envisaje-tools-brushes-StandardBrush.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/standardbrush.png"/>
+        </file>
+    </folder>
+    <folder name="fills">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="imagej.envisaje.tools.Bundle" />
+	    
+        <file name="imagej-envisaje-tools-fills-SolidColorFill.instance">
+            <attr name="SystemFileSystem.localizingBundle" 
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/solidfill.png"/>
+        </file>
+        <file name="imagej-envisaje-tools-fills-GradientFill.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/gradientfill.png"/>
+        </file>
+        
+        <file name="TestFill.instance" url="resources/smudge.png">
+            <attr name="SystemFileSystem.icon" urlvalue="nbfs:/SystemFileSystem/fills/TestFill.instance"/>
+            <attr name="instanceClass" stringvalue="imagej.envisaje.tools.fills.PatternFill"/>
+            <attr name="instanceCreate" methodvalue="imagej.envisaje.tools.fills.PatternFill.create"/>
+        </file>
+        
+    </folder>
+    
+    <folder name="brushtips">
+	<attr name="SystemFileSystem.localizingBundle"
+	    stringvalue="imagej.envisaje.tools.Bundle" />
+	<file name="imagej-envisaje-tools-brushes-tips-RoundBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/roundbrushtip.png"/>
+	</file>
+	<file name="imagej-envisaje-tools-brushes-tips-FunkyBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/funkybrushtip.png"/>
+	</file>
+	<file name="imagej-envisaje-tools-brushes-tips-TriangleBrushTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/trianglebrushtip.png"/>
+	</file>
+	<file name="imagej-envisaje-tools-brushes-tips-MultiPointTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/roundbrushtip.png"/>
+	</file>
+	<file name="imagej-envisaje-tools-brushes-tips-HashTip.instance">
+            <attr name="SystemFileSystem.localizingBundle"
+                stringvalue="imagej.envisaje.tools.Bundle" />
+            <attr name="SystemFileSystem.icon" urlvalue=
+	        "nbresloc:/imagej/envisaje/tools/resources/roundbrushtip.png"/>
+	</file>
+    </folder>
+    
+    <folder name="tools">
+        <folder name="raster">
+            <file name="imagej-envisaje-tools-BrushTool.instance"/>
+            <file name="imagej-envisaje-tools-DrawTool.instance"/>
+            <file name="imagej-envisaje-tools-EraserTool.instance"/>
+            <file name="imagej-envisaje-tools-ImageTool.instance"/>
+            <file name="imagej-envisaje-tools-LineTool.instance"/>
+            <file name="imagej-envisaje-tools-MoveTool.instance"/>
+            <file name="imagej-envisaje-tools-OvalTool.instance"/>
+            <file name="imagej-envisaje-tools-PencilTool.instance"/>
+            <file name="imagej-envisaje-tools-RectangleTool.instance"/>
+            <file name="imagej-envisaje-tools-RoundRectTool.instance"/>
+            <file name="imagej-envisaje-tools-TextTool.instance"/>
+<!--            <file name="imagej-envisaje-tools-selectiontools-MagicWandSelectionTool.instance"/> -->
+            <file name="imagej-envisaje-tools-selectiontools-RectangularSelectionTool.instance"/>
+            <file name="imagej-envisaje-tools-selectiontools-OvalSelectionTool.instance"/>
+        </folder>
+        <folder name="vector">
+            <file name="imagej-envisaje-tools-EraserTool.instance"/>
+            <file name="imagej-envisaje-tools-ImageTool.instance"/>
+            <file name="imagej-envisaje-tools-LineTool.instance"/>
+            <file name="imagej-envisaje-tools-MoveTool.instance"/>
+            <file name="imagej-envisaje-tools-OvalTool.instance"/>
+            <file name="imagej-envisaje-tools-RectangleTool.instance"/>
+            <file name="imagej-envisaje-tools-RoundRectTool.instance"/>
+            <file name="imagej-envisaje-tools-TextTool.instance"/>
+            <file name="imagej-envisaje-tools-selectiontools-MagicWandSelectionTool.instance"/>
+            <file name="imagej-envisaje-tools-selectiontools-RectangularSelectionTool.instance"/>
+            <file name="imagej-envisaje-tools-selectiontools-OvalSelectionTool.instance"/>
+        </folder>
+    </folder>
+</filesystem>

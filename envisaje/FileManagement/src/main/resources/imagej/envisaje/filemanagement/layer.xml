@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="File">
+            <file name="imagej-envisaje-filemanagement-MRUFilesAction.instance">
+                <attr name="instanceClass"
+                    stringvalue="imagej.envisaje.filemanagement.MRUFilesAction"/>
+            </file>
+        </folder>
+        <folder name="View">
+            <file name="imagej-envisaje-filemanagement-browser-ShowDiskExplorerAction.instance">
+                <attr name="instanceClass" stringvalue="imagej.envisaje.filemanagement.browser.ShowDiskExplorerAction"/>
+            </file>
+        </folder>
+        <folder name="Window">
+            <file name="imagej-envisaje-filemanagement-browser-FileAction.instance">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="imagej.envisaje.filemanagement.browser.Bundle"/>
+                <attr name="component" methodvalue="imagej.envisaje.filemanagement.browser.FileTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="imagej.envisaje.filemanagement.browser.Bundle#CTL_FileAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="imagej-envisaje-filemanagement-MRUFilesAction.shadow">
+                <attr name="originalFile"
+                    stringvalue="Actions/File/imagej-envisaje-filemanagement-MRUFilesAction.instance"/>
+                <attr name="position" intvalue="300"/>
+            </file>
+        </folder>
+        <folder name="View">
+            <file name="imagej-envisaje-filemanagement-browser-ShowDiskExplorerAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/View/imagej-envisaje-filemanagement-browser-ShowDiskExplorerAction.instance"/>
+            </file>
+        </folder>
+        <folder name="Tools">
+            <file name="FileAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-filemanagement-browser-FileAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="FileTopComponent.settings" url="browser/FileTopComponentSettings.xml"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="editor">
+                <file name="FileTopComponent.wstcref" url="browser/FileTopComponentWstcref.xml"/>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>

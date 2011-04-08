@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.1//EN" "http://www.netbeans.org/dtds/filesystem-1_1.dtd">
+<filesystem>
+    <folder name="Loaders">
+        <folder name="image">
+            <folder name="x-ImageFile">*
+                <folder name="Actions">
+<!-- 
+	This sets the default actions available when you right-click on a ImageFileNode (or more 
+	technically, I think it is a Node created when the ImageFileLoader loads a ImageFileDataObject). This can be 
+	overridden in the getAction() method of the ImageFileNode class.
+ -->
+                   <folder name="Actions">
+                        <file name="org-openide-actions-OpenAction.instance"/>
+                        <attr name="org-openide-actions-OpenAction.instance/org-openide-actions-FileSystemAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-FileSystemAction.instance"/>
+                        <attr name="org-openide-actions-FileSystemAction.instance/sep-1.instance" boolvalue="true"/>
+                        <file name="sep-1.instance">
+                            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                        </file>
+                        <attr name="sep-1.instance/org-openide-actions-CutAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-CutAction.instance"/>
+                        <attr name="org-openide-actions-CutAction.instance/org-openide-actions-CopyAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-CopyAction.instance"/>
+                        <attr name="org-openide-actions-CopyAction.instance/sep-2.instance" boolvalue="true"/>
+                        <file name="sep-2.instance">
+                            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                        </file>
+                        <attr name="sep-2.instance/org-openide-actions-DeleteAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-DeleteAction.instance"/>
+                        <attr name="org-openide-actions-DeleteAction.instance/org-openide-actions-RenameAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-RenameAction.instance"/>
+                        <attr name="org-openide-actions-RenameAction.instance/sep-3.instance" boolvalue="true"/>
+                        <file name="sep-3.instance">
+                            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                        </file>
+                        <attr name="sep-3.instance/org-openide-actions-SaveAsTemplateAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-SaveAsTemplateAction.instance"/>
+                        <attr name="org-openide-actions-SaveAsTemplateAction.instance/sep-4.instance" boolvalue="true"/>
+                        <file name="sep-4.instance">
+                            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                        </file>
+                        <attr name="sep-4.instance/org-openide-actions-ToolsAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-ToolsAction.instance"/>
+                        <attr name="org-openide-actions-ToolsAction.instance/org-openide-actions-PropertiesAction.instance" boolvalue="true"/>
+                        <file name="org-openide-actions-PropertiesAction.instance"/>
+                    </folder>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
+    <folder name="Services">
+        <folder name="MIMEResolver">
+            <file name="ImageFileresolver.xml" url="ImageFileresolver.xml">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="imagej.envisaje.imagefiletypes.resources.Bundle"/>
+            </file>
+        </folder>
+    </folder>
+
+    <!-- this sets up the template for the new (empty) ImageFile file -->
+    <folder name="Templates">
+        <folder name="Other">
+           <!-- 
+               the name attribute is 'virtual' and must match what is in the resource bundle
+               the url attribute is the relative path to the file used when the a new file 
+               of this type is created from the wizard.
+               
+               The instantiatingWizardURL attribute specifies the path to the HTML file
+               that provides the description shown in the wizard.
+           -->
+           
+            <file name="emptyImageFile.ImageFile" url="templates/ImageFileTemplate.template">
+                <attr name="template" boolvalue="true"/>
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="imagej.envisaje.imagefiletypes.resources.Bundle"/>
+                <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/imagej/envisaje/imagefiletypes/resources/ImageFileicon.gif"/>
+                <attr name="instantiatingWizardURL" urlvalue="nbresloc:/imagej/envisaje/imagefiletypes/resources/templates/emptyImageFile.html"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>
