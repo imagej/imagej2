@@ -158,16 +158,6 @@ public class HeadlessUI implements UserInterface, EventSubscriber<StatusEvent>
 		return null;
 	}
 
-	@Override
-	public Display getActiveDisplay() {
-		return null;
-	}
-
-	@Override
-	public void setActiveDisplay(Display display) {
-		// do nothing
-	}
-
 	// -- EventSubscriber methods --
 
 	@Override

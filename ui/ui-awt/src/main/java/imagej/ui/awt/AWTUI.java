@@ -104,16 +104,6 @@ public class AWTUI implements UserInterface {
 		return statusBar;
 	}
 
-	@Override
-	public Display getActiveDisplay() {
-		return activeDisplay;
-	}
-
-	@Override
-	public void setActiveDisplay(Display display) {
-		activeDisplay = display;
-	}
-
 	// -- Helper methods --
 
 	private void createMenuBar() {

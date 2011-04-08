@@ -39,6 +39,7 @@ import imagej.awt.AWTDisplayController;
 import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetChangedEvent;
+import imagej.display.ActiveDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
@@ -46,9 +47,7 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.plugin.Plugin;
-import imagej.ui.UIManager;
 import imagej.util.IntCoords;
 import imagej.util.Log;
 
@@ -91,7 +90,7 @@ public class SwingImageDisplay implements AWTDisplay
 			new EventSubscriber<WinActivatedEvent>() {
 				@Override
 				public void onEvent(WinActivatedEvent event) {
-					Managers.get(UIManager.class).getUI().setActiveDisplay(event.getDisplay());
+					ActiveDisplay.set(event.getDisplay());
 					Log.debug("**** active window changed ****");
 				}
 			};
@@ -104,7 +103,7 @@ public class SwingImageDisplay implements AWTDisplay
 		
 		Events.publish(new DisplayCreatedEvent(this));
 
-		Managers.get(UIManager.class).getUI().setActiveDisplay(this);
+		ActiveDisplay.set(this);
 	}
 
 	@Override
