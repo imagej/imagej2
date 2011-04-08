@@ -60,7 +60,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "View 100%", accelerator = "control 5") })
+	@Menu(label = "View 100%", accelerator = "control 5", weight = 4) })
 public class Zoom100Percent implements ImageJPlugin {
 
 	@Override

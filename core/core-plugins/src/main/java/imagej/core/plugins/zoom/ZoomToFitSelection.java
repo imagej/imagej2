@@ -52,7 +52,7 @@ import imagej.util.Rect;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "To Selection") })
+	@Menu(label = "To Selection", weight = 5) })
 public class ZoomToFitSelection implements ImageJPlugin {
 
 	@Override

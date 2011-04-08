@@ -22,6 +22,13 @@ ij.plugin.filter.Transformer("fliph")     # Image>Transform>Flip Horizontally
 ij.plugin.filter.Transformer("flipv")     # Image>Transform>Flip Vertically
 ij.plugin.filter.Transformer("left")      # Image>Transform>Rotate 90 Degrees Left
 ij.plugin.filter.Transformer("right")     # Image>Transform>Rotate 90 Degrees Right
+ij.plugin.Zoom("in")                      # Image>Zoom>In
+ij.plugin.Zoom("out")                     # Image>Zoom>Out
+ij.plugin.Zoom("orig")                    # Image>Zoom>Original Scale
+ij.plugin.Zoom("100%")                    # Image>Zoom>View 100%
+ij.plugin.Zoom("to")                      # Image>Zoom>To Selection
+ij.plugin.Zoom("set")                     # Image>Zoom>Set...
+ij.plugin.Zoom("max")                     # possible Image > Zoom command
 ij.plugin.filter.Filters("smooth")        # Process>Smooth
 ij.plugin.filter.Filters("sharpen")       # Process>Sharpen
 ij.plugin.filter.Filters("edge")          # Process>Find Edges
