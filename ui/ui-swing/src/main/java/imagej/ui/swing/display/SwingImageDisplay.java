@@ -39,15 +39,16 @@ import imagej.awt.AWTDisplayController;
 import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetChangedEvent;
-import imagej.display.ActiveDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayController;
+import imagej.display.DisplayManager;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.manager.Managers;
 import imagej.plugin.Plugin;
 import imagej.util.IntCoords;
 import imagej.util.Log;
@@ -77,6 +78,8 @@ public class SwingImageDisplay implements AWTDisplay
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
 		
+		final DisplayManager displayManager = Managers.get(DisplayManager.class);
+		
 		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
 			new EventSubscriber<DatasetChangedEvent>() {
 				@Override
@@ -90,7 +93,7 @@ public class SwingImageDisplay implements AWTDisplay
 			new EventSubscriber<WinActivatedEvent>() {
 				@Override
 				public void onEvent(WinActivatedEvent event) {
-					ActiveDisplay.set(event.getDisplay());
+					displayManager.setActiveDisplay(event.getDisplay());
 					Log.debug("**** active display set to "+event.getDisplay()+" ****");
 				}
 			};
@@ -98,7 +101,7 @@ public class SwingImageDisplay implements AWTDisplay
 			new EventSubscriber<WinClosedEvent>() {
 				@Override
 				public void onEvent(WinClosedEvent event) {
-					ActiveDisplay.set(null);
+					displayManager.setActiveDisplay(null);
 					Log.debug("**** active display set to null ****");
 				}
 			};
@@ -114,7 +117,7 @@ public class SwingImageDisplay implements AWTDisplay
 		
 		Events.publish(new DisplayCreatedEvent(this));
 
-		ActiveDisplay.set(this);
+		displayManager.setActiveDisplay(this);
 	}
 
 	@Override
