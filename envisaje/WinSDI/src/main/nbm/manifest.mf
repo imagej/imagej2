@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: imagej/envisaje/winsdi/Bundle.properties
+OpenIDE-Module-Layer: imagej/envisaje/winsdi/layer.xml
+OpenIDE-Module-Provides: org.openide.windows.WindowManager
+ 

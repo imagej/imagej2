@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+	
+	<!-- Register Action Catagories and Top-level Menus -->
+	<folder name="Actions">
+		<folder name="ImageJ">
+			<folder name="Image"> </folder>
+			<folder name="Process"> </folder>
+			<folder name="Analysis"> </folder>
+			<folder name="Plugin"> </folder>
+		</folder>
+
+    </folder>
+	
+	<folder name="Menu">
+		
+		<!-- Adds ImageJ2-specific top-level menus to the menubar -->
+		<folder name="Image">
+			<attr name="position" intvalue="200"/>
+		</folder>
+		<folder name="Process"> 
+			<attr name="position" intvalue="210"/>
+		</folder>
+		<folder name="Analysis"> 
+			<attr name="position" intvalue="220"/>
+		</folder>
+		<folder name="Plugins"> 
+			<attr name="position" intvalue="230"/>
+		</folder>
+		<!-- End of adding ImageJ2-specific menus -->
+    </folder>
+</filesystem>

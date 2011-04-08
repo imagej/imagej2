@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
+<filesystem>
+	<folder name="Actions">
+		<folder name="Window">
+			<file name="imagej-envisaje-diagnostics-sfsviewer-SFSAction.instance"/>
+		</folder>
+	</folder>
+	<folder name="Menu">
+		<folder name="Window">
+			<file name="sep1.instance">
+				<attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+				<attr name="position" intvalue="200"/>
+			</file>
+			<file name="SFSAction.shadow">
+				<attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-diagnostics-sfsviewer-SFSAction.instance"/>
+				<attr name="position" intvalue="201"/>
+			</file>
+			<file name="sep1.instance">
+				<attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+				<attr name="position" intvalue="210"/>
+			</file>
+		</folder>
+	</folder>
+	<folder name="Windows2">
+		<folder name="Components">
+			<file name="SFSTopComponent.settings" url="sfsviewer/SFSTopComponentSettings.xml"/>
+		</folder>
+		<folder name="Modes">
+			<folder name="editor">
+				<file name="SFSTopComponent.wstcref" url="sfsviewer/SFSTopComponentWstcref.xml"/>
+			</folder>
+		</folder>
+	</folder>
+	    <folder name="UI">
+        <folder name="Runtime">
+            <file name="org.myorg.systemproperties.AllPropsNode.instance" />
+        </folder>
+    </folder>
+    
+</filesystem>

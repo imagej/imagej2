@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="MacRoman"?>
+<jardesc>
+<jar path="/Users/bricolage1/Desktop/ColorPicker-src.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/GradientSlider/src/com/bric/swing/ColorPicker-src.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" mainClassHandleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorPicker.java[ColorPicker" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.awt"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_es.properties"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_nl.properties"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorPickerPanel.java"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_fr.properties"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker.properties"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorPickerDialog.java"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_en_GB.properties"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_de.properties"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ImageTransferable.java"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorPickerSliderUI.java"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorPicker.java"/>
+<javaElement handleIdentifier="=GradientSlider/src&lt;com.bric.swing{ColorSwatch.java"/>
+<file path="/GradientSlider/src/com/bric/swing/ColorPicker_sp.properties"/>
+</selectedElements>
+</jardesc>

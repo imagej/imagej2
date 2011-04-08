@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>Utils</artifactId>
+		<groupId>imagej.envisaje</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	
+	<!-- This module is part of the Utils module suite -->
+	
+	<artifactId>Utils-Output</artifactId>
+	<packaging>nbm</packaging>
+
+	<name>Utils-Output</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+        <!--
+        Repository hosting NetBeans modules, especially APIs.
+        Versions are based on IDE releases, e.g.: RELEASE691
+        To create your own repository, use: nbm:populate-repository
+        -->
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-netbeans-api-annotations-common</artifactId>
+			<version>${netbeans.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-openide-awt</artifactId>
+			<version>${netbeans.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-openide-dialogs</artifactId>
+			<version>${netbeans.version}</version>
+			<type>jar</type>
+		</dependency>
+	 <dependency>
+	  <artifactId>org-openide-util</artifactId>
+	  <groupId>org.netbeans.api</groupId>
+	  <type>jar</type>
+	  <version>RELEASE70-BETA</version>
+	 </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>nbm-maven-plugin</artifactId>
+				<extensions>true</extensions>
+			 <configuration>
+			  <publicPackages>
+			   <publicPackage>imagej.envisaje.utils.output</publicPackage>
+			  </publicPackages>
+			 </configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+                    <!-- to have the jar plugin pickup the nbm generated manifest -->
+					<useDefaultManifestFile>true</useDefaultManifestFile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
