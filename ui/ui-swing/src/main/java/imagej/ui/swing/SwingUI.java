@@ -241,14 +241,4 @@ public class SwingUI implements UserInterface {
 		if (file == null) return null;
 		return file.getParentFile();
 	}
-
-	@Override
-	public Display getActiveDisplay() {
-		return activeDisplay;
-	}
-
-	@Override
-	public void setActiveDisplay(Display display) {
-		activeDisplay = display;
-	}
 }

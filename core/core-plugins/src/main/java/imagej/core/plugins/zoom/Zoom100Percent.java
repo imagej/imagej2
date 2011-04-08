@@ -37,12 +37,11 @@ package imagej.core.plugins.zoom;
 import mpicbg.imglib.image.Image;
 
 import imagej.data.Dataset;
+import imagej.display.ActiveDisplay;
 import imagej.display.Display;
-import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
-import imagej.ui.UIManager;
 
 
 // TODO - general zoom issues
@@ -66,7 +65,7 @@ public class Zoom100Percent implements ImageJPlugin {
 	@Override
 	public void run() {
 
-		Display display = Managers.get(UIManager.class).getUI().getActiveDisplay();
+		Display display = ActiveDisplay.get();
 		
 		if (display == null)  // headless UI or no open images
 			return;
@@ -77,11 +76,6 @@ public class Zoom100Percent implements ImageJPlugin {
 		int h = image.getDimension(1);
 		
 		display.setZoom(1.0f, w/2.0f, h/2.0f);
-
-		//int w = display.getImageDisplayWindow().getImageCanvas().getImageWidth();
-		//int h = display.getImageDisplayWindow().getImageCanvas().getImageHeight();
-
-		//display.zoomToFit(w,h);
 	}
 
 }

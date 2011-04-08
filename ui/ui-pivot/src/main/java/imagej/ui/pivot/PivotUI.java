@@ -130,16 +130,6 @@ public class PivotUI implements Application, UserInterface {
 		return statusBar;
 	}
 
-	@Override
-	public imagej.display.Display getActiveDisplay() {
-		return activeDisplay;
-	}
-
-	@Override
-	public void setActiveDisplay(imagej.display.Display display) {
-		activeDisplay = display;
-	}
-
 	// -- Helper methods --
 
 	private void createMenuBar() {

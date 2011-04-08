@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// ActiveDisplay.java
 //
 
 /*
@@ -32,22 +32,30 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui;
+package imagej.display;
 
-import imagej.display.Display;
 
 /**
- * An end-user ImageJ application.
+ * Simple static access to the currently active display. Can be used by
+ * plugins that need to know this information. In the case of headless
+ * user interfaces it is possible for the active display to be null.
+ * 
+ * @author Barry DeZonia
  *
- * @author Curtis Rueden
  */
-public interface UserInterface {
-
-	void initialize();
-
-	void processArgs(final String[] args);
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+public class ActiveDisplay {
+	
+	private static Display activeDisplay;
+	
+	private ActiveDisplay() {
+		// make noninstantiable
+	}
+	
+	public static Display get() {
+		return activeDisplay;
+	}
+	
+	public static void set(Display display) {
+		activeDisplay = display;
+	}
 }
