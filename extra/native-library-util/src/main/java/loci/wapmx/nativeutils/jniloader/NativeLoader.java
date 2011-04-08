@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // Copyright 2006 MX Telecom Ltd
 
-package com.wapmx.nativeutils.jniloader;
+package loci.wapmx.nativeutils.jniloader;
 
 import java.io.IOException;
 
@@ -111,7 +111,7 @@ public class NativeLoader {
      *             loading of the specified dynamic library
      */
     public static void loadLibrary(String libname) throws IOException {
-        System.load(jniExtractor.extractJni(libname).getAbsolutePath());
+        System.load(jniExtractor.extractJni("", libname).getAbsolutePath()); //TODO pass in library path or get rid of this method
     }
 
     /**
