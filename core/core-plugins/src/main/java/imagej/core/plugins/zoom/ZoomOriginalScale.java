@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Original Scale", accelerator = "control 4") })
+	@Menu(label = "Original Scale", accelerator = "control 4", weight = 3) })
 public class ZoomOriginalScale implements ImageJPlugin {
 
 	@Override

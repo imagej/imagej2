@@ -53,7 +53,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Set...") })
+	@Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined implements ImageJPlugin {
 
 	@Parameter(label="Zoom (%) :")
