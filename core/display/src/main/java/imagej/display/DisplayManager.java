@@ -1,5 +1,5 @@
 //
-// ActiveDisplay.java
+// DisplayManager.java
 //
 
 /*
@@ -34,28 +34,32 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.manager.Manager;
+import imagej.manager.ManagerComponent;
+import imagej.manager.Managers;
 
 /**
- * Simple static access to the currently active display. Can be used by
- * plugins that need to know this information. In the case of headless
- * user interfaces it is possible for the active display to be null.
- * 
- * @author Barry DeZonia
+ * Manager component for tracking the active display
  *
+ * @author Barry DeZonia
  */
-public class ActiveDisplay {
-	
-	private static Display activeDisplay;
-	
-	private ActiveDisplay() {
-		// make noninstantiable
+@Manager(priority = Managers.NORMAL_PRIORITY)
+public final class DisplayManager implements ManagerComponent {
+
+	private Display activeDisplay;
+
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
+		activeDisplay = null;
 	}
-	
-	public static Display get() {
+
+	public Display getActiveDisplay() {
 		return activeDisplay;
 	}
-	
-	public static void set(Display display) {
+
+	public void setActiveDisplay(Display display) {
 		activeDisplay = display;
 	}
 }

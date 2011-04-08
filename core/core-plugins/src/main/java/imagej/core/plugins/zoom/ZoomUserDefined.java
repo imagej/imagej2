@@ -34,25 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import mpicbg.imglib.image.Image;
 
-import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 
-// TODO - general zoom issues
-//  there is a slight pan error after zooming 100%
-//  it is possible to zoom in/out wheel (and click?), resize, and then the
-//    following zooms all keep the same zoom ceneter locked no matter what
-//  can shrink window, view 100%, have it zoom with image panned offscreen,
-//    and can no longer find image
-
-/** zooms the currently displayed image to 100% resolution 
+/** zooms in on the center of the image at the user specified magnification
+ *  level.
  *  
  * @author Barry DeZonia
  *
@@ -60,9 +53,12 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "View 100%", accelerator = "control 5") })
-public class Zoom100Percent implements ImageJPlugin {
+	@Menu(label = "Set...") })
+public class ZoomUserDefined implements ImageJPlugin {
 
+	@Parameter(label="Zoom (%) :")
+	int userDefinedScale;
+	
 	@Override
 	public void run() {
 
@@ -72,13 +68,8 @@ public class Zoom100Percent implements ImageJPlugin {
 		
 		if (display == null)  // headless UI or no open images
 			return;
-		
-		Dataset ds = display.getDataset();
-		Image<?> image = ds.getImage();
-		int w = image.getDimension(0);
-		int h = image.getDimension(1);
-		
-		display.setZoom(1.0f, w/2.0f, h/2.0f);
+
+		//display.setZoom(userDefinedScale / 100.0);
 	}
 
 }

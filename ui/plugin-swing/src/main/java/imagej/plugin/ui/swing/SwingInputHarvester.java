@@ -83,7 +83,16 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		dialog.setModal(true);
 		dialog.pack();
 		ensureDialogSizeReasonable(dialog);
+		// TODO - open IJ2 from within Eclipse. Give any app focus. Then close
+		//   IJ2 app via red close box in its left corner. Quit dialog comes
+		//   up behind the other app. Is there a window event we should track
+		//   in IJ2 that could pull dialog in front of the other app?
+		// #1 attempted fix of visibility/focus issue
+		//dialog.setAlwaysOnTop(true);
 		dialog.setVisible(true);
+		// #2 attempted fix of visibility/focus issue
+		//if (!dialog.hasFocus())
+		//	dialog.requestFocus();
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
