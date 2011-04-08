@@ -45,6 +45,7 @@ import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
+import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
@@ -75,7 +76,6 @@ public class SwingImageDisplay implements AWTDisplay
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
-		subscribers = new ArrayList<EventSubscriber<?>>();
 		
 		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
 			new EventSubscriber<DatasetChangedEvent>() {
@@ -86,20 +86,31 @@ public class SwingImageDisplay implements AWTDisplay
 					}
 				}
 			};
-		EventSubscriber<WinActivatedEvent> windowSubscriber = 
+		EventSubscriber<WinActivatedEvent> winActSubscriber = 
 			new EventSubscriber<WinActivatedEvent>() {
 				@Override
 				public void onEvent(WinActivatedEvent event) {
 					ActiveDisplay.set(event.getDisplay());
-					Log.debug("**** active window changed ****");
+					Log.debug("**** active display set to "+event.getDisplay()+" ****");
+				}
+			};
+		EventSubscriber<WinClosedEvent> winCloseSubscriber = 
+			new EventSubscriber<WinClosedEvent>() {
+				@Override
+				public void onEvent(WinClosedEvent event) {
+					ActiveDisplay.set(null);
+					Log.debug("**** active display set to null ****");
 				}
 			};
 			
+		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribers.add(dsChangeSubscriber);
-		subscribers.add(windowSubscriber);
+		subscribers.add(winActSubscriber);
+		subscribers.add(winCloseSubscriber);
 		
 		Events.subscribe(DatasetChangedEvent.class, dsChangeSubscriber);
-		Events.subscribe(WinActivatedEvent.class, windowSubscriber);
+		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
+		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
 		
 		Events.publish(new DisplayCreatedEvent(this));
 
