@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // Copyright 2006 MX Telecom Ltd
 
-package com.wapmx.nativeutils.jniloader;
+package loci.wapmx.nativeutils.jniloader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,7 +50,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
-import com.wapmx.nativeutils.MxSysInfo;
+import ij.IJ;
+
+import loci.wapmx.nativeutils.MxSysInfo;
 
 /**
  * @author Richard van der Hoff <richardv@mxtelecom.com>
@@ -109,9 +111,10 @@ public abstract class BaseJniExtractor implements JniExtractor {
     public abstract File getJniDir();
 
     /** {@inheritDoc} */
-    public File extractJni(String libname) throws IOException {
-        String mappedlib = System.mapLibraryName(libname);
-        System.out.println("mappedLib is " + mappedlib);
+    public File extractJni(String libPath, String libname) throws IOException {
+        IJ.log("extractJni, path " + libPath + " lib " + libname);
+        String mappedlibName = System.mapLibraryName(libname);
+        System.out.println("mappedLib is " + mappedlibName);
         /*
          * On Darwin, the default mapping is to .jnilib; but we use .dylibs so that library interdependencies are
          * handled correctly. if we don't find a .jnilib, try .dylib instead.
@@ -123,34 +126,30 @@ public abstract class BaseJniExtractor implements JniExtractor {
             libraryJarClass = this.getClass();
         }
 
-        for (int i = 0; i < nativeResourcePaths.length; i++) {
-            System.out.println("nativeResourcesPaths[" + i + "] is " + nativeResourcePaths[i]);
-            lib = libraryJarClass.getClassLoader().getResource(nativeResourcePaths[i] + mappedlib);
-            if (lib != null)
-                break;
-            if (mappedlib.endsWith(".jnilib")) {
+        lib = libraryJarClass.getClassLoader().getResource(libPath + mappedlibName);
+        if (null == lib) {
+            if (mappedlibName.endsWith(".jnilib")) {
+                IJ.log("try dylib");
                 lib = this.getClass().getClassLoader().getResource(
-                        nativeResourcePaths[i] + mappedlib.substring(0, mappedlib.length() - 7) + ".dylib");
-                if (lib != null) {
-                    mappedlib = mappedlib.substring(0, mappedlib.length() - 7) + ".dylib";
-                    break;
+                        libPath + mappedlibName.substring(0, mappedlibName.length() - 7) + ".dylib");
+                if (null != lib) {
+                    mappedlibName = mappedlibName.substring(0, mappedlibName.length() - 7) + ".dylib";
                 }
             }
+
         }
+
+        System.out.println("jni dir is " + getJniDir().toString());
+        IJ.log("jni dir is " + getJniDir().toString());
 
         if (null != lib) {
             System.out.println("URL is " + lib.toString());
             System.out.println("URL path is " + lib.getPath());
-        }
-        System.out.println("jni dir is " + getJniDir().toString());
-
-   // THis is a protected method:     System.out.println("ClassLoader.finLibrary returns " + this.getClass().getClassLoader().findLibrary(mappedlib));
-
-        if (lib != null) {
-            return extractResource(getJniDir(), lib, mappedlib);
+            return extractResource(getJniDir(), lib, mappedlibName);
         }
         else {
-            throw new IOException("Couldn't find jni library " + mappedlib + " on the classpath");
+            IJ.log("Couldn't find resource " + libPath + " " + mappedlibName);
+            throw new IOException("Couldn't find resource " + libPath + " " + mappedlibName);
         }
     }
 

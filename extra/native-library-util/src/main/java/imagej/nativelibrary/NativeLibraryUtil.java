@@ -40,9 +40,11 @@ import java.lang.IllegalAccessException;
 import java.lang.NoSuchFieldException;
 import java.lang.reflect.Field;
 
-import com.wapmx.nativeutils.MxSysInfo;
-import com.wapmx.nativeutils.jniloader.DefaultJniExtractor;
-import com.wapmx.nativeutils.jniloader.JniExtractor;
+import ij.IJ;
+
+import loci.wapmx.nativeutils.MxSysInfo;
+import loci.wapmx.nativeutils.jniloader.DefaultJniExtractor;
+import loci.wapmx.nativeutils.jniloader.JniExtractor;
 
 /**
  *
@@ -52,7 +54,7 @@ public class NativeLibraryUtil {
     public static enum Architecture
             { UNKNOWN, LINUX_32, LINUX_64, WINDOWS_32, WINDOWS_64, OSX_32, OSX_64, };
     private static Architecture s_architecture = Architecture.UNKNOWN;
-    private static final String DELIM = File.pathSeparator;
+    private static final String DELIM = "/";
 
     private static final String USER_TMPDIR = "java.library.tmpdir";
     private static final String JAVA_TMPDIR = "java.io.tmpdir";
@@ -111,17 +113,17 @@ public class NativeLibraryUtil {
             }
             if (bits > 0) {
                 String name = System.getProperty("os.name").toLowerCase();
-                if (name.indexOf("nix") > 0 || name.indexOf("nux") > 0) {
+                if (name.indexOf("nix") >= 0 || name.indexOf("nux") > 0) {
                     s_architecture = (32 == bits) 
                             ? Architecture.LINUX_32
                             : Architecture.LINUX_64;
                 }
-                else if (name.indexOf("win") > 0) {
+                else if (name.indexOf("win") >= 0) {
                     s_architecture = (32 == bits) 
                             ? Architecture.WINDOWS_32
                             : Architecture.WINDOWS_64;
                 }
-                else if (name.indexOf("mac") > 0) {
+                else if (name.indexOf("mac") >= 0) {
                     s_architecture = (32 == bits) 
                             ? Architecture.OSX_32
                             : Architecture.OSX_64;
@@ -137,7 +139,7 @@ public class NativeLibraryUtil {
      * @return path
      */
     public static String getPlatformLibraryPath() {
-        String path = "lib" + DELIM;
+        String path = "META-INF" + DELIM + "lib" + DELIM;
         switch (getArchitecture()) {
             case LINUX_32:
             case LINUX_64:
@@ -203,7 +205,7 @@ public class NativeLibraryUtil {
     /**
      * Loads the native library.
      *
-     * @param libraryJarClass class within the jar that has the library
+     * @param libraryJarClass any class within the library-containing jar
      * @param libName name of library
      * @return whether or not successful
      */
@@ -211,39 +213,38 @@ public class NativeLibraryUtil {
         boolean success = false;
 
         if (Architecture.UNKNOWN == getArchitecture()) {
-            System.out.println("No native library available for this platform");
+            IJ.log("No native library available for this platform.");
         }
         else {
             try
             {
-                // extract library to temporary directory
+                // will extract library to temporary directory
                 String tmpDirectory = System.getProperty(JAVA_TMPDIR);
                 JniExtractor jniExtractor =
                     new DefaultJniExtractor(libraryJarClass, tmpDirectory);
 
-                String fullLibPathName =
-                        getPlatformLibraryPath()
-                        + getPlatformLibraryName(libName);
-
                 // do extraction
-                File extractedFile = jniExtractor.extractJni(fullLibPathName);
+                File extractedFile = jniExtractor.extractJni
+                        (getPlatformLibraryPath(), getVersionedLibraryName(libName));
 
-                // load extracted library
+                IJ.log("extracted, now do a System.load of " + extractedFile.getPath());
+
+                // load extracted library from temporary directory
                 System.load(extractedFile.getPath());
 
                 success = true;
             }
             catch (IOException e)
             {
-                System.out.println("IOException creating DefaultJniExtractor " + e.getMessage());
+                IJ.log("IOException creating DefaultJniExtractor " + e.getMessage());
             }
             catch (SecurityException e)
             {
-                System.out.println("Can't load dynamic library " + e.getMessage());
+                IJ.log("Can't load dynamic library " + e.getMessage());
             }
             catch (UnsatisfiedLinkError e)
             {
-                System.out.println("Libary does not exists " + e.getMessage());
+                IJ.log("Libary does not exists " + e.getMessage());
             }
 
         }
@@ -310,7 +311,7 @@ public class NativeLibraryUtil {
                     JniExtractor jniExtractor =
                             new DefaultJniExtractor(libraryJarClass, directory);
 
-                    File extractedFile = jniExtractor.extractJni(libname);
+                    File extractedFile = jniExtractor.extractJni("", libname); //TODO pass in libary path or get rid of this method
 
                     success = true;
                 }
