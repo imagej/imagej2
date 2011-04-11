@@ -34,19 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.event.Events;
 import imagej.manager.Managers;
+import imagej.plugin.event.PluginCanceledEvent;
+import imagej.plugin.event.PluginFinishedEvent;
+import imagej.plugin.event.PluginPostprocessEvent;
+import imagej.plugin.event.PluginPreprocessEvent;
+import imagej.plugin.event.PluginRunEvent;
+import imagej.plugin.event.PluginStartedEvent;
 import imagej.plugin.process.PluginPostprocessor;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.Log;
 
 /**
  * Executes a runnable plugin.
- *
+ * 
  * @author Curtis Rueden
  */
 public class PluginRunner<T extends RunnablePlugin> {
 
-	private PluginEntry<T> entry;
+	private final PluginEntry<T> entry;
 
 	public PluginRunner(final PluginEntry<T> entry) {
 		this.entry = entry;
@@ -64,10 +71,17 @@ public class PluginRunner<T extends RunnablePlugin> {
 		final T plugin = module.getPlugin();
 
 		// execute plugin
-		boolean ok = preProcess(module);
-		if (!ok) return null; // execution canceled
+		Events.publish(new PluginStartedEvent(module));
+		final boolean ok = preProcess(module);
+		if (!ok) {
+			// execution canceled
+			Events.publish(new PluginCanceledEvent(module));
+			return null;
+		}
 		plugin.run();
+		Events.publish(new PluginRunEvent(module));
 		postProcess(module);
+		Events.publish(new PluginFinishedEvent(module));
 
 		return plugin;
 	}
@@ -80,6 +94,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 			try {
 				final PluginPreprocessor processor = p.createInstance();
 				processor.process(module);
+				Events.publish(new PluginPreprocessEvent(module, processor));
 				if (processor.canceled()) return false;
 			}
 			catch (final PluginException e) {
@@ -96,7 +111,8 @@ public class PluginRunner<T extends RunnablePlugin> {
 		{
 			try {
 				final PluginPostprocessor processor = p.createInstance();
-				processor.process(module);			
+				processor.process(module);
+				Events.publish(new PluginPostprocessEvent(module, processor));
 			}
 			catch (final PluginException e) {
 				Log.error(e);
