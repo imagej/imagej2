@@ -94,6 +94,9 @@ public class ToolManager implements ManagerComponent {
 	public void setActiveTool(final ITool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do
 		assert this.activeTool != null;
+		if (activeTool == null) {
+			throw new IllegalArgumentException("Active tool cannot be null");
+		}
 
 		// deactivate old tool
 		this.activeTool.deactivate();

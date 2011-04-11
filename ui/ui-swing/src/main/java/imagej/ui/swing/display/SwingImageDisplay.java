@@ -64,11 +64,11 @@ import java.util.List;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class SwingImageDisplay implements AWTDisplay
-{
+public class SwingImageDisplay implements AWTDisplay {
+	protected Dataset theDataset;
+
 	private SwingImageDisplayWindow imgWindow;
 	private SwingNavigableImageCanvas imgCanvas;
-	private Dataset theDataset;
 	private DisplayController controller;
 	private int[] lastKnownDimensions;
 	private List<EventSubscriber<?>> subscribers;
