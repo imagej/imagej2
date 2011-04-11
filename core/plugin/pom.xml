@@ -19,6 +19,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-event</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-manager</artifactId>
 			<version>${project.version}</version>
 		</dependency>
