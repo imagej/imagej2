@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Out", accelerator = "control -", weight = 2) })
+	@Menu(label = "Out", accelerator = "control MINUS", weight = 2) })
 public class ZoomOut implements ImageJPlugin {
 
 	@Override
