@@ -111,6 +111,11 @@ public class PivotInputPanel extends AbstractInputPanel {
 		// TODO create ObjectWidget and add here
 	}
 
+	@Override
+	public boolean hasWidgets() {
+		return pane.getRows().getLength() > 0;
+	}
+
 	// -- Helper methods --
 
 	private void addField(final String label, final Container component) {

@@ -74,11 +74,9 @@ public abstract class AbstractInputHarvester
 
 	@Override
 	public void process(final PluginModule<?> module) {
-		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
-		if (!inputs.iterator().hasNext()) return; // no inputs to harvest
-
 		final InputPanel inputPanel = createInputPanel();
 		buildPanel(inputPanel, module);
+		if (!inputPanel.hasWidgets()) return; // no inputs left to harvest
 		final boolean ok = harvestInputs(inputPanel, module);
 		if (ok) processResults(inputPanel, module);
 		else canceled = true;

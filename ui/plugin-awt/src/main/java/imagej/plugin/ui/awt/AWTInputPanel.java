@@ -120,6 +120,11 @@ public class AWTInputPanel extends AbstractInputPanel {
 		objectWidgets.put(details.getName(), objectWidget);
 	}
 
+	@Override
+	public boolean hasWidgets() {
+		return panel.getComponentCount() > 0;
+	}
+
 	// -- Helper methods --
 
 	private void addField(final String label, final Component component) {
