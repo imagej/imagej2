@@ -40,7 +40,7 @@ import imagej.plugin.PluginModule;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public interface InputHarvester {
@@ -49,8 +49,13 @@ public interface InputHarvester {
 
 	void buildPanel(InputPanel inputPanel, PluginModule<?> module);
 
-	boolean showDialog(InputPanel inputPanel, PluginModule<?> module);
+	/**
+	 * Gathers input values from the user or other source. For example, a
+	 * graphical user interface could present a dialog box.
+	 */
+	boolean harvestInputs(InputPanel inputPanel, PluginModule<?> module);
 
-	void harvestResults(InputPanel inputPanel, PluginModule<?> module);
+	/** Does any needed processing, after input values have been harvested. */
+	void processResults(InputPanel inputPanel, PluginModule<?> module);
 
 }

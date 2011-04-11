@@ -62,4 +62,5 @@ public final class DisplayManager implements ManagerComponent {
 	public void setActiveDisplay(Display display) {
 		activeDisplay = display;
 	}
+
 }

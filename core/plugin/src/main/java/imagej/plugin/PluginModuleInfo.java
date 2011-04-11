@@ -144,9 +144,10 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	/**
 	 * Recursively parses the given class's declared fields for
 	 * {@link Parameter} annotations.
-	 *
+	 * <p>
 	 * This method (rather than {@link Class#getFields()}) is used to check all
 	 * fields of the given type and ancestor types, including non-public fields.
+	 * </p>
 	 */
 	private void checkFields(final Class<?> type, final T plugin,
 		final boolean includePrivateFields)

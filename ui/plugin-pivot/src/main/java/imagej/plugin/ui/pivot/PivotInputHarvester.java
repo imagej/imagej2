@@ -59,7 +59,7 @@ public class PivotInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean showDialog(final InputPanel inputPanel,
+	public boolean harvestInputs(final InputPanel inputPanel,
 		final PluginModule<?> module)
 	{
 		final Sheet dialog = new Sheet();

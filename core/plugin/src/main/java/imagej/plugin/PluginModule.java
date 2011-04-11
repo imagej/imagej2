@@ -36,6 +36,7 @@ package imagej.plugin;
 
 import imagej.module.Module;
 import imagej.module.ModuleItem;
+import imagej.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -146,9 +147,11 @@ public class PluginModule<T extends BasePlugin> implements Module {
 			field.set(instance, value);
 		}
 		catch (IllegalArgumentException e) {
+			Log.error(e);
 			assert false;
 		}
 		catch (IllegalAccessException e) {
+			Log.error(e);
 			assert false;
 		}
 	}
@@ -159,9 +162,11 @@ public class PluginModule<T extends BasePlugin> implements Module {
 			return field.get(instance);
 		}
 		catch (IllegalArgumentException e) {
+			Log.error(e);
 			return null;
 		}
 		catch (IllegalAccessException e) {
+			Log.error(e);
 			return null;
 		}
 	}
