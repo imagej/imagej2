@@ -131,7 +131,7 @@ public final class ObjectManager implements ManagerComponent {
 			@Override
 			public void onEvent(final ObjectCreatedEvent event) {
 				addObject(event.getObject());
-			}			
+			}
 		};
 		subscribers.add(objectCreatedSubscriber);
 		Events.subscribe(ObjectCreatedEvent.class, objectCreatedSubscriber);
