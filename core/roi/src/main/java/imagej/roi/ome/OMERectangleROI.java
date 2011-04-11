@@ -36,7 +36,6 @@ package imagej.roi.ome;
 
 import imagej.roi.ImageJROI;
 import mpicbg.imglib.roi.AbstractIterableRegionOfInterest;
-import mpicbg.imglib.roi.AbstractRegionOfInterest;
 import mpicbg.imglib.roi.RegionOfInterest;
 import ome.xml.model.Rectangle;
 

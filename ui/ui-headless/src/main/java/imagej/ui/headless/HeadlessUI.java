@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.headless;
 
-import imagej.display.Display;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;

@@ -70,16 +70,17 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingImageDisplayWindow extends JFrame
-	implements AWTImageDisplayWindow
+public class SwingImageDisplayWindow extends JFrame implements
+	AWTImageDisplayWindow
 {
+
 	// TODO - Rework this class to be a JPanel, not a JFrame.
 
 	private final JLabel imageLabel;
-	private final SwingNavigableImageCanvas imgCanvas;
-	private JPanel sliders;
+	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
 
+	protected final SwingNavigableImageCanvas imgCanvas;
 	protected DisplayController controller;
 
 	public SwingImageDisplayWindow(final SwingNavigableImageCanvas imgCanvas) {
@@ -89,12 +90,11 @@ public class SwingImageDisplayWindow extends JFrame
 		final int prefHeight = imageLabel.getPreferredSize().height;
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
-		JPanel graphicPane = new JPanel();
+		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new BorderLayout());
 		graphicPane.setBorder(new LineBorder(Color.black));
 		graphicPane.add(imgCanvas, BorderLayout.CENTER);
 
-		
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
 
@@ -108,7 +108,7 @@ public class SwingImageDisplayWindow extends JFrame
 		pane.add(sliders, BorderLayout.SOUTH);
 
 		setupEventSubscriptions();
-		
+
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
@@ -143,6 +143,7 @@ public class SwingImageDisplayWindow extends JFrame
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, dims[i] + 1);
 			final int posIndex = p;
 			slider.addAdjustmentListener(new AdjustmentListener() {
+
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					controller.updatePosition(posIndex, slider.getValue() - 1);
@@ -171,13 +172,11 @@ public class SwingImageDisplayWindow extends JFrame
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
 		addWindowListener((AWTEventDispatcher) dispatcher);
-
 	}
 
 	private void setupEventSubscriptions() {
-		
 		subscribers = new ArrayList<EventSubscriber<?>>();
-		
+
 		/*
 		EventSubscriber<MsClickedEvent> msClickSubscriber = 
 			new EventSubscriber<MsClickedEvent>() {
@@ -191,22 +190,22 @@ public class SwingImageDisplayWindow extends JFrame
 		Events.subscribe(MsClickedEvent.class, msClickSubscriber);
 		*/
 
-		EventSubscriber<ZoomEvent> zoomSubscriber = 
+		final EventSubscriber<ZoomEvent> zoomSubscriber =
 			new EventSubscriber<ZoomEvent>() {
+
 				@Override
-				public void onEvent(ZoomEvent event) {
-					if (event.getCanvas() != imgCanvas)
-						return;
+				public void onEvent(final ZoomEvent event) {
+					if (event.getCanvas() != imgCanvas) return;
 					String datasetName = "";
-					if (controller != null)
+					if (controller != null) {
 						datasetName = controller.getDataset().getMetadata().getName();
-					double zoom = event.getNewZoom();
-					if (zoom == 1.0)  // exactly
-						setTitle(datasetName);
-					else
-					{
-						String infoString =
-							String.format("%s (%.2f%%)", datasetName, zoom*100);
+					}
+					final double zoom = event.getNewZoom();
+					if (zoom == 1.0) // exactly
+					setTitle(datasetName);
+					else {
+						final String infoString =
+							String.format("%s (%.2f%%)", datasetName, zoom * 100);
 						setTitle(infoString);
 					}
 				}
@@ -214,4 +213,5 @@ public class SwingImageDisplayWindow extends JFrame
 		subscribers.add(zoomSubscriber);
 		Events.subscribe(ZoomEvent.class, zoomSubscriber);
 	}
+
 }
