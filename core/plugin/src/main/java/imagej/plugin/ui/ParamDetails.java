@@ -43,7 +43,7 @@ import imagej.plugin.PluginModule;
 import imagej.util.Log;
 
 /**
- * TODO
+ * The backing data model for a particular {@link InputWidget}.
  *
  * @author Curtis Rueden
  */
