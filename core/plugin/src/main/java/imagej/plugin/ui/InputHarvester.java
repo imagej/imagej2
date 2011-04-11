@@ -36,7 +36,7 @@ package imagej.plugin.ui;
 
 import imagej.plugin.PluginModule;
 
-// TODO - Use Module instead of PluginModule<?>, and move to imagej.module.gui.
+// TODO - Use Module instead of PluginModule<?>, and move to imagej.module.ui.
 
 /**
  * TODO

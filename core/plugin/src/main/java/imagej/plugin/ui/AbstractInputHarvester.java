@@ -49,9 +49,12 @@ import imagej.util.Prefs;
 import java.io.File;
 
 /**
- * InputHarvester is a plugin preprocessor that obtains the input parameters.
- * Parameters are collected using an {@link InputPanel} dialog box.
- * 
+ * Abstract superclass for input harvesters.
+ * <p>
+ * An input harvester is a plugin preprocessor that obtains the input
+ * parameters. Parameters are collected using an {@link InputPanel} dialog box.
+ * </p>
+ *
  * @author Curtis Rueden
  */
 public abstract class AbstractInputHarvester implements PluginPreprocessor,
