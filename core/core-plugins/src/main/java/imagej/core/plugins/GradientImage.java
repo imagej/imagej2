@@ -105,7 +105,8 @@ public class GradientImage implements ImageJPlugin {
 			cursor.fwd();
 			final int x = cursor.getPosition(0);
 			final int y = cursor.getPosition(1);
-			cursor.getType().setReal(x + y);
+			double value = calcRangedValue(x+y, cursor.getType());
+			cursor.getType().setReal(value);
 		}
 		cursor.close();
 	}
@@ -183,4 +184,32 @@ public class GradientImage implements ImageJPlugin {
 		return !bitDepth.equals(DEPTH32) && !bitDepth.equals(DEPTH64);
 	}
 
+	// NOTE
+	//   input "value" assumed to be >= 0.
+	//   if not float data we modulate to fit into type's [range min, range, max]
+	//   note that this behavior is different than before in that it starts from
+	//     the type's minimum value. the difference is apparent for signed data.
+	
+	private double calcRangedValue(double value, RealType<?> type) {
+		final String typeName = type.getClass().getName();
+
+		// TODO - refactor this and Dataset's implementation to a TypeUtils class.
+		//  Or improve when Imglib extended to allow type querying
+		boolean isFloat = typeName.equals("mpicbg.imglib.type.numeric.real.FloatType")
+			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
+		
+		if (isFloat)
+			return value;
+		
+		double rangeMin = type.getMinValue();
+		double rangeMax = type.getMaxValue();
+		double totalRange = rangeMax - rangeMin + 1;
+
+		double newValue = value;
+		while (newValue >= totalRange) {
+			newValue -= totalRange;
+		}
+
+		return rangeMin + newValue;
+	}
 }
