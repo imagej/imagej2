@@ -149,4 +149,7 @@ public interface InputPanel {
 	/** Updates the widgets to reflect the most recent parameter value(s). */
 	void refresh();
 
+	/** Gets whether the input panel has any active widgets. */
+	boolean hasWidgets();
+
 }

@@ -120,6 +120,11 @@ public class SWTInputPanel extends AbstractInputPanel {
 		objectWidgets.put(details.getName(), objectWidget);
 	}
 
+	@Override
+	public boolean hasWidgets() {
+		return panel.getChildren().length > 0;
+	}
+
 	// -- Helper methods --
 
 	private Label addLabel(final String text) {

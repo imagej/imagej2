@@ -89,8 +89,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details, final int columns)
-	{
+	public void addTextField(final ParamDetails details, final int columns) {
 		final SwingTextFieldWidget textFieldWidget =
 			new SwingTextFieldWidget(details, columns);
 		addField(details.getLabel(), textFieldWidget);
@@ -98,8 +97,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String[] items)
-	{
+	public void addChoice(final ParamDetails details, final String[] items) {
 		final SwingChoiceWidget choiceWidget =
 			new SwingChoiceWidget(details, items);
 		addField(details.getLabel(), choiceWidget);
@@ -122,6 +120,11 @@ public class SwingInputPanel extends AbstractInputPanel {
 			new SwingObjectWidget(details, items);
 		addField(details.getLabel(), objectWidget);
 		objectWidgets.put(details.getName(), objectWidget);
+	}
+
+	@Override
+	public boolean hasWidgets() {
+		return panel.getComponentCount() > 0;
 	}
 
 	// -- Helper methods --

@@ -87,6 +87,12 @@ public class HeadlessInputPanel extends AbstractInputPanel {
 		// TODO
 	}
 
+	@Override
+	public boolean hasWidgets() {
+		// TODO
+		return false;
+	}
+
 	// -- InputWidget methods --
 
 	@Override
