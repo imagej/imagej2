@@ -74,11 +74,13 @@ public class Zoom100Percent implements ImageJPlugin {
 			return;
 		
 		Dataset ds = display.getDataset();
+
 		Image<?> image = ds.getImage();
+		
 		int w = image.getDimension(0);
 		int h = image.getDimension(1);
 		
-		display.setZoom(1.0f, w/2.0f, h/2.0f);
+		display.setZoom(1.0, w/2.0, h/2.0);
 	}
 
 }

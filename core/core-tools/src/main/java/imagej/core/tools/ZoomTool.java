@@ -43,6 +43,7 @@ import imagej.display.event.mouse.MsWheelEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
+import imagej.util.RealCoords;
 
 /**
  * Tool for zooming in and out of a display.
@@ -61,7 +62,7 @@ public class ZoomTool extends BaseTool {
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		final Display display = evt.getDisplay();
-		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		final RealCoords center = new RealCoords(evt.getX(), evt.getY());
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) zoomIn(display, center);
 		else zoomOut(display, center);
 	}
@@ -77,27 +78,27 @@ public class ZoomTool extends BaseTool {
 	@Override
 	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display display = evt.getDisplay();
-		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		final RealCoords center = new RealCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() > 0) zoomIn(display, center);
 		else zoomOut(display, center);
 	}
 
 	// -- Helper methods --
 
-	private void zoomIn(final Display display, final IntCoords zoomCenter) {
+	private void zoomIn(final Display display, final RealCoords zoomCenter) {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final double currentZoom = canvas.getZoom();
 		final double newZoom = currentZoom * canvas.getZoomFactor();
 		if (zoomCenter == null) canvas.setZoom(newZoom);
-		else canvas.setZoom(newZoom, zoomCenter);
+		else canvas.setZoom(newZoom, zoomCenter.x, zoomCenter.y);
 	}
 
-	private void zoomOut(final Display display, final IntCoords zoomCenter) {
+	private void zoomOut(final Display display, final RealCoords zoomCenter) {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final double currentZoom = canvas.getZoom();
 		final double newZoom = currentZoom / canvas.getZoomFactor();
 		if (zoomCenter == null) canvas.setZoom(newZoom);
-		else canvas.setZoom(newZoom, zoomCenter);
+		else canvas.setZoom(newZoom, zoomCenter.x, zoomCenter.y);
 	}
 
 }

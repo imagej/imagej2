@@ -63,22 +63,33 @@ public interface Display extends BasePlugin {
 	
 	// -- Pan methods --
 
-	void pan(float x, float y);
+	void pan(double x, double y);
+	
+	void panReset();
 
-	float getPanX();
+	double getPanX();
 
-	float getPanY();
+	double getPanY();
 
 	// -- Zoom methods --
 
-	void setZoom(float factor, float centerX, float centerY);
+	void setZoom(double factor);
+	
+	void setZoom(double factor, double centerX, double centerY);
 
-	void zoomIn(float centerX, float centerY);
+	void zoomIn();
+	
+	void zoomIn(double centerX, double centerY);
+	
+	void zoomOut();
 
-	void zoomOut(float centerX, float centerY);
+	void zoomOut(double centerX, double centerY);
 
-	void zoomToFit(int w, int h); // in pixels
+	void zoomToFit(int w, int h);  // in pixels - not data units
 
-	float getZoom();
+	double getZoomFactor();
 
+	double getZoomCtrX();
+
+	double getZoomCtrY();
 }

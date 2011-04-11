@@ -64,7 +64,7 @@ public class ZoomOut implements ImageJPlugin {
 		if (display == null)  // headless UI or no open images
 			return;
 
-		//display.zoomOut();
+		display.zoomOut();
 	}
 
 }

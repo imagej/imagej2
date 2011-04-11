@@ -65,11 +65,11 @@ public class ZoomToFitSelection implements ImageJPlugin {
 		if (display == null)  // headless UI or no open images
 			return;
 
-		//Dataset dataset = display.getDataset();
+		Dataset dataset = display.getDataset();
 		
-		//Rect selection = dataset.getSelection();
+		Rect selection = dataset.getSelection();
 		
-		//display.setZoomOnRect(selection);
+		display.zoomToFit(selection.width, selection.height);
 	}
 
 }

@@ -67,32 +67,37 @@ public class SWTImageDisplay implements Display {
 	}
 
 	@Override
-	public void pan(float x, float y) {
+	public void pan(double x, double y) {
 		// TODO
 	}
 
 	@Override
-	public float getPanX() {
+	public void panReset() {
+		// TODO
+	}
+
+	@Override
+	public double getPanX() {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	public float getPanY() {
+	public double getPanY() {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	public void setZoom(float factor, float centerX, float centerY) {
+	public void setZoom(double factor, double centerX, double centerY) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	public void zoomIn(float centerX, float centerY) {
+	public void zoomIn(double centerX, double centerY) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	public void zoomOut(float centerX, float centerY) {
+	public void zoomOut(double centerX, double centerY) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
@@ -102,8 +107,20 @@ public class SWTImageDisplay implements Display {
 	}
 
 	@Override
-	public float getZoom() {
+	public double getZoomFactor() {
 		throw new UnsupportedOperationException("TODO");
+	}
+
+	@Override
+	public double getZoomCtrX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getZoomCtrY() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
@@ -136,4 +153,18 @@ public class SWTImageDisplay implements Display {
 		throw new UnsupportedOperationException("TODO");
 	}
 
+	@Override
+	public void setZoom(double factor) {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	@Override
+	public void zoomIn() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	@Override
+	public void zoomOut() {
+		throw new UnsupportedOperationException("TODO");
+	}
 }
