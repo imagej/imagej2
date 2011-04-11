@@ -78,6 +78,8 @@ import javax.swing.SwingUtilities;
 // TODO: the navigation preview is disabled. Also its zoom scaling has not
 // been updated to mirror the overall image zoom scaling.
 
+// TODO: if an image is too big to completely fit on screen then scale to fit
+// within screen and set initialscale appropriately
 /**
  * A Swing implementation of the navigable image canvas.
  *
@@ -95,15 +97,18 @@ public class SwingNavigableImageCanvas extends JPanel implements
 {
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
-		RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+		// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
 	private boolean highQualityRenderingEnabled = true;
 	private double zoomFactor = 1.2;
 	private BufferedImage image;
-	private double initialScale = 0.0;
-	private double scale = 0.0;
+	private double initialScale = 0;
+	private double scale = 0;
 	private double newScale = 1;
-	private int originX = 0;
-	private int originY = 0;
+	private double originX = 0;
+	private double originY = 0;
+	private double centerX = 0;
+	private double centerY = 0;
 	private Point mousePosition;
 	private Dimension previousPanelSize;
 
@@ -130,8 +135,20 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	public SwingNavigableImageCanvas(final BufferedImage image) {
 		this();
 		setImage(image);
+		setOrigin(0, 0);
+		setCenter(image.getWidth()/2.0, image.getHeight()/2.0);
 	}
 
+	private void setOrigin(double x, double y) {
+		originX = x;
+		originY = y;
+	}
+	
+	private void setCenter(double x, double y) {
+		centerX = x;
+		centerY = y;
+	}
+	
 	private void addMouseListeners() {
 		addMouseListener(new MouseAdapter() {
 
@@ -141,7 +158,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
 				if (SwingUtilities.isLeftMouseButton(e)) {
 					if (isInNavigationImage(e.getPoint())) {
 						final Point p = e.getPoint();
-						displayImageAt(ptToCoords(p));
+						final RealCoords realCoords = ptToCoords(p);
+						final IntCoords intCoords = new IntCoords(realCoords.getIntX(), realCoords.getIntY());
+						displayImageAt(intCoords);
 					}
 				}
 			}
@@ -273,8 +292,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	/** Centers the current image in the panel. */
 	private void centerImage() {
-		originX = (getWidth() - getScreenImageWidth()) / 2;
-		originY = (getHeight() - getScreenImageHeight()) / 2;
+		double newOX = (getWidth() - getScreenImageWidth()) / 2.0;
+		double newOY = (getHeight() - getScreenImageHeight()) / 2.0;
+		centerX += newOX - originX;
+		centerY += newOY - originY;
+		originX = newOX;
+		originY = newOY;
 	}
 
 	/**
@@ -290,15 +313,61 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 *         coordinates system.
 	 */
 	@Override
-	public IntCoords getImageOrigin() {
-		return new IntCoords(originX, originY);
+	public RealCoords getImageOrigin() {
+		return new RealCoords(originX, originY);
 	}
 
-	public void resetImageOrigin() {
+	public void resetPan() {
+		centerX -= originX;
+		centerY -= originY;
 		originX = 0;
 		originY = 0;
 	}
+
+	public double getPanX() {
+		return originX;
+	}
+
+	public double getPanY() {
+		return originY;
+	}
+
+	public double getZoomCtrX() {
+		return centerX;
+	}
+
+	public double getZoomCtrY() {
+		return centerY;
+	}
 	
+	public void zoomIn() {
+		newScale = scale * zoomFactor;
+		zoomOnCenter();
+	}
+
+	public void zoomIn(double newCenterX, double newCenterY) {
+		setCenter(newCenterX, newCenterY);
+		zoomIn();
+	}
+
+	public void zoomOut() {
+		newScale = scale / zoomFactor;
+		zoomOnCenter();
+	}
+
+	public void zoomOut(double newCenterX, double newCenterY) {
+		setCenter(newCenterX, newCenterY);
+		zoomOut();
+	}
+
+	public void zoomToFit(int w, int h) {
+		double xRatio = image.getWidth() / w;
+		double yRatio = image.getHeight() / h;
+		newScale = Math.max(xRatio, yRatio);
+		centerImage();
+		zoomOnCenter();
+	}
+
 	/**
 	 * <p>
 	 * Sets the image origin.
@@ -314,7 +383,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 */
 	@Override
 	public void setImageOrigin(final int x, final int y) {
-		setImageOrigin(new IntCoords(x, y));
+		setImageOrigin(new RealCoords(x, y));
 	}
 
 	/**
@@ -330,7 +399,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * @param newOrigin the value of a new image origin
 	 */
 	@Override
-	public void setImageOrigin(final IntCoords newOrigin) {
+	public void setImageOrigin(final RealCoords newOrigin) {
+		centerX += newOrigin.x - originX;
+		centerY += newOrigin.y - originY;
 		originX = newOrigin.x;
 		originY = newOrigin.y;
 		repaint();
@@ -338,9 +409,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	/** Pans the image by the given (X, Y) amount. */
 	@Override
-	public void pan(final int xDelta, final int yDelta) {
+	public void pan(final double xDelta, final double yDelta) {
 		originX += xDelta;
 		originY += yDelta;
+		centerX += xDelta;
+		centerY += yDelta;
 		repaint();
 	}
 
@@ -377,7 +450,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// Converts this panel's coordinates into the original image coordinates
 	@Override
-	public RealCoords panelToImageCoords(final IntCoords p) {
+	public RealCoords panelToImageCoords(final RealCoords p) {
 		return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
 	}
 
@@ -389,7 +462,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// Tests whether a given point in the panel falls within the image boundaries.
 	@Override
-	public boolean isInImage(final IntCoords p) {
+	public boolean isInImage(final RealCoords p) {
 		final RealCoords coords = panelToImageCoords(p);
 		final int x = coords.getIntX();
 		final int y = coords.getIntY();
@@ -446,9 +519,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * image coordinates).
 	 */
 	private Rectangle getImageClipBounds() {
-		final RealCoords startCoords = panelToImageCoords(new IntCoords(0, 0));
+		final RealCoords startCoords = panelToImageCoords(new RealCoords(0, 0));
 		final RealCoords endCoords =
-			panelToImageCoords(new IntCoords(getWidth() - 1, getHeight() - 1));
+			panelToImageCoords(new RealCoords(getWidth() - 1, getHeight() - 1));
 		final int panelX1 = startCoords.getIntX();
 		final int panelY1 = startCoords.getIntY();
 		final int panelX2 = endCoords.getIntX();
@@ -497,12 +570,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 				image.getSubimage(rect.x, rect.y, rect.width, rect.height);
 			final Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, INTERPOLATION_TYPE);
-			g2.drawImage(subimage, Math.max(0, originX), Math.max(0, originY), Math
+			g2.drawImage(subimage, (int)Math.max(0, originX), (int)Math.max(0, originY), Math
 				.min((int) (subimage.getWidth() * scale), getWidth()), Math.min(
 				(int) (subimage.getHeight() * scale), getHeight()), null);
 		}
 		else {
-			g.drawImage(image, originX, originY, getScreenImageWidth(),
+			g.drawImage(image, (int)originX, (int)originY, getScreenImageWidth(),
 				getScreenImageHeight(), null);
 		}
 		drawNavigationImage(g);
@@ -550,6 +623,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private void scaleOrigin() {
 		originX = originX * getWidth() / previousPanelSize.width;
 		originY = originY * getHeight() / previousPanelSize.height;
+		// TODO - center should be unchanged - right?
 		repaint();
 	}
 
@@ -588,9 +662,17 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 */
 	@Override
 	public void setZoom(final double newZoom) {
-		final IntCoords zoomingCenter =
-			new IntCoords(getWidth() / 2, getHeight() / 2);
-		setZoom(newZoom, zoomingCenter);
+		if (newZoom < 0)
+			throw new IllegalArgumentException("zoom cannot be negative");
+		
+		if (newZoom == 0)  // let initial zoom code take care of this
+			repaint();
+		else { // zoom > 0
+			// TODO should these next ones not be prefaced with "image." but just "this." ???
+			double newCenterX = image.getWidth() / 2.0;
+			double newCenterY = image.getHeight() / 2.0;
+			setZoom(newZoom, newCenterX, newCenterY);
+		}
 	}
 
 	/**
@@ -606,7 +688,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
 	@Override
-	public void setZoom(final double newZoom, final IntCoords zoomingCenter) {
+	public void setZoom(final double newZoom, final double ctrX, double ctrY) {
+		final RealCoords zoomingCenter = new RealCoords(ctrX, ctrY);
 		// FIXME - minor issue - in an image that does not have odd number of rows
 		//  or cols the zooming center is truncated and the image will likely
 		//  display a pixel off an edge of the screen. The zoomingCenter should
@@ -634,6 +717,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (correctedP.getIntX() - (int) panelP.x);
 		originY += (correctedP.getIntY() - (int) panelP.y);
+		centerX = imageP.x;
+		centerY = imageP.y;
 		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
 		repaint();
 	}
@@ -684,6 +769,20 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return false;
 	}
 	
+	private void zoomOnCenter() {
+		if (scaleOutOfBounds(newScale))
+		{
+			newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
+			return;  // DO NOT ZOOM ANY FARTHER
+		}
+		final double oldZoom = getZoom();
+		scale = newScale;
+		originX = centerX - (scale * (image.getWidth()/2.0));
+		originY = centerY - (scale * (image.getHeight()/2.0));
+		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
+		repaint();
+	}
+	
 	// Zooms an image in the panel by repainting it at the new zoom level.
 	// The current mouse position is the zooming center.
 	private void zoomImage() {
@@ -698,6 +797,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final RealCoords panelP = imageToPanelCoords(imageP);
 		originX += (mousePosition.x - (int) panelP.x);
 		originY += (mousePosition.y - (int) panelP.y);
+		centerX = imageP.x;
+		centerY = imageP.y;
 		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
 		repaint();
 	}
@@ -710,7 +811,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 																															// width
 	private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
 	private double navZoomFactor = 1.2;
-	private double navScale = 0.0;
+	private double navScale = 0;
 	private boolean navigationImageEnabled = false;  // TODO - enable with a hotkey?????
 	private BufferedImage navigationImage;
 	private int navImageWidth;
@@ -762,11 +863,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final IntCoords scrImagePoint = navToZoomedImageCoords(p);
 		originX = -(scrImagePoint.x - getWidth() / 2);
 		originY = -(scrImagePoint.y - getHeight() / 2);
+		// TODO - fix me for center
 		repaint();
 	}
 
-	private IntCoords ptToCoords(final Point p) {
-		return new IntCoords(p.x, p.y);
+	private RealCoords ptToCoords(final Point p) {
+		return new RealCoords(p.x, p.y);
 	}
 
 	/**
@@ -828,10 +930,10 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		if (isFullImageInPanel()) {
 			return;
 		}
-		final int x =
-			-originX * getScreenNavImageWidth() / getScreenImageWidth();
-		final int y =
-			-originY * getScreenNavImageHeight() / getScreenImageHeight();
+		final int x = (int)
+			(-originX * getScreenNavImageWidth() / getScreenImageWidth());
+		final int y = (int)
+			(-originY * getScreenNavImageHeight() / getScreenImageHeight());
 		final int width =
 			getWidth() * getScreenNavImageWidth() / getScreenImageWidth();
 		final int height =

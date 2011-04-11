@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
@@ -63,7 +62,7 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * @return the point of the upper, left corner of the image in the panel's
 	 *         coordinates system.
 	 */
-	IntCoords getImageOrigin();
+	RealCoords getImageOrigin();
 
 	/**
 	 * <p>
@@ -102,7 +101,7 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	/**
 	 * Pans the image by the given (X, Y) amount.
 	 */
-	void pan(int xDelta, int yDelta);
+	void pan(double xDelta, double yDelta);
 
 	/**
 	 * <p>
@@ -140,7 +139,7 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * 
 	 * @param newOrigin the value of a new image origin
 	 */
-	void setImageOrigin(IntCoords newOrigin);
+	void setImageOrigin(RealCoords newOrigin);
 
 	/**
 	 * <p>
@@ -181,7 +180,7 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * 
 	 * @param newZoom the zoom level used to display this panel's image.
 	 */
-	void setZoom(double newZoom, IntCoords zoomingCenter);
+	void setZoom(double newZoom, double centerX, double centerY);
 
 	/**
 	 * <p>
@@ -204,10 +203,10 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	double getZoomFactor();
 	
 	// Is this point in the image as displayed in the panel
-	boolean isInImage(IntCoords p);
+	boolean isInImage(RealCoords p);
 
 	// Converts this panel's coordinates into the original image coordinates
-	RealCoords panelToImageCoords(IntCoords p);
+	RealCoords panelToImageCoords(RealCoords p);
 
 	// Converts the original image coordinates into this panel's coordinates
 	RealCoords imageToPanelCoords(RealCoords p);

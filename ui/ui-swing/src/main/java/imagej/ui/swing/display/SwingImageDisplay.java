@@ -50,7 +50,6 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
-import imagej.util.IntCoords;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -167,7 +166,7 @@ public class SwingImageDisplay implements AWTDisplay {
 			lastKnownDimensions = currDimensions;
 			controller.setDataset(theDataset);
 			imgCanvas.setZoom(1.0);
-			imgCanvas.resetImageOrigin();
+			imgCanvas.resetPan();
 		}
 		controller.update();
 	}
@@ -193,48 +192,75 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public void pan(final float x, final float y) {
-		imgCanvas.pan((int) x, (int) y);
+	public void pan(final double x, final double y) {
+		imgCanvas.pan(x, y);
 	}
 
+	@Override
+	public void panReset() {
+		imgCanvas.resetPan();
+	}
+	
 	// TODO
 	@Override
-	public float getPanX() {
-		return 0f;
-		// throw new UnsupportedOperationException("Not supported yet.");
+	public double getPanX() {
+		return imgCanvas.getPanX();
 	}
 
 	@Override
-	public float getPanY() {
-		return 0f;
-		// throw new UnsupportedOperationException("Not supported yet.");
+	public double getPanY() {
+		return imgCanvas.getPanY();
+	}
+
+
+	@Override
+	public void setZoom(double newZoom) {
+		imgCanvas.setZoom(newZoom);
+	}
+	
+	@Override
+	public void setZoom(final double newZoom, final double centerX,
+			final double centerY) {
+		imgCanvas.setZoom(newZoom, centerX, centerY);
 	}
 
 	@Override
-	public void setZoom(final float factor, final float centerX,
-		final float centerY)
-	{
-		imgCanvas.setZoom(factor, new IntCoords((int)centerX, (int)centerY));
+	public void zoomIn() {
+		imgCanvas.zoomIn();
+	}
+	
+	@Override
+	public void zoomIn(final double centerX, final double centerY) {
+		imgCanvas.zoomIn(centerX, centerY);
 	}
 
 	@Override
-	public void zoomIn(final float centerX, final float centerY) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public void zoomOut() {
+		imgCanvas.zoomOut();
 	}
-
+	
 	@Override
-	public void zoomOut(final float centerX, final float centerY) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public void zoomOut(final double centerX, final double centerY) {
+		imgCanvas.zoomOut(centerX, centerY);
 	}
 
 	@Override
 	public void zoomToFit(final int w, final int h) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		imgCanvas.zoomToFit(w,h);
 	}
 
 	@Override
-	public float getZoom() {
-		return 1f;
-		// throw new UnsupportedOperationException("Not supported yet.");
+	public double getZoomFactor() {
+		return imgCanvas.getZoom();
+	}
+	
+	@Override
+	public double getZoomCtrX() {
+		return imgCanvas.getZoomCtrX();
+	}
+	
+	@Override
+	public double getZoomCtrY() {
+		return imgCanvas.getZoomCtrY();
 	}
 }
