@@ -47,6 +47,7 @@ public class PluginModuleItem implements ModuleItem {
 
 	private Field field;
 	private Object defaultValue;
+	private boolean resolved;
 
 	public PluginModuleItem(final Field field, final Object defaultValue) {
 		this.field = field;
@@ -59,6 +60,22 @@ public class PluginModuleItem implements ModuleItem {
 
 	public Parameter getParameter() {
 		return field.getAnnotation(Parameter.class);
+	}
+
+	/**
+	 * Sets the item's resolution status. A "resolved" item is known to have a
+	 * final, valid value for use with the module.
+	 */
+	public void setResolved(final boolean resolved) {
+		this.resolved = resolved;
+	}
+
+	/**
+	 * Gets the item's resolution status. A "resolved" item is known to have a
+	 * final, valid value for use with the module.
+	 */
+	public boolean isResolved() {
+		return resolved;
 	}
 
 	// -- ModuleItem methods --

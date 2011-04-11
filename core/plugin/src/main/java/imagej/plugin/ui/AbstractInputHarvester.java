@@ -57,13 +57,20 @@ import java.io.File;
  *
  * @author Curtis Rueden
  */
-public abstract class AbstractInputHarvester implements PluginPreprocessor,
-	InputHarvester
+public abstract class AbstractInputHarvester
+	implements PluginPreprocessor, InputHarvester
 {
 
 	private boolean canceled;
 
 	// -- PluginPreprocessor methods --
+
+	@Override
+	public boolean canceled() {
+		return canceled;
+	}
+
+	// -- PluginProcessor methods --
 
 	@Override
 	public void process(final PluginModule<?> module) {
@@ -72,14 +79,9 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 
 		final InputPanel inputPanel = createInputPanel();
 		buildPanel(inputPanel, module);
-		final boolean ok = showDialog(inputPanel, module);
-		if (ok) harvestResults(inputPanel, module);
+		final boolean ok = harvestInputs(inputPanel, module);
+		if (ok) processResults(inputPanel, module);
 		else canceled = true;
-	}
-
-	@Override
-	public boolean canceled() {
-		return canceled;
 	}
 
 	// -- InputHarvester methods --
@@ -91,9 +93,13 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
 		for (final ModuleItem item : inputs) {
+			final PluginModuleItem pmi = (PluginModuleItem) item;
+			final boolean resolved = pmi.isResolved();
+			if (resolved) continue; // skip resolved inputs
+			final Parameter param = pmi.getParameter();
+
 			final String name = item.getName();
 			final Class<?> type = item.getType();
-			final Parameter param = ((PluginModuleItem) item).getParameter();
 			final ParamDetails details =
 				new ParamDetails(inputPanel, module, name, type, param);
 
@@ -140,13 +146,16 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 	}
 
 	@Override
-	public void harvestResults(final InputPanel inputPanel,
+	public void processResults(final InputPanel inputPanel,
 		final PluginModule<?> module)
 	{
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
 		for (final ModuleItem item : inputs) {
-			final Parameter param = ((PluginModuleItem) item).getParameter();
+			final PluginModuleItem pmi = (PluginModuleItem) item;
+			pmi.setResolved(true);
+			final Parameter param = pmi.getParameter();
+
 			final boolean persist = param.persist();
 			if (!persist) continue;
 

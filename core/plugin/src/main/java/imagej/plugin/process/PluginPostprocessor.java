@@ -40,6 +40,6 @@ package imagej.plugin.process;
  * @author Curtis Rueden
  */
 public interface PluginPostprocessor extends PluginProcessor {
-	// PluginPostprocessor trivially extends IPluginProcessor to differentiate
+	// PluginPostprocessor trivially extends PluginProcessor to differentiate
 	// preprocessors from postprocessors while sharing the same contract.
 }

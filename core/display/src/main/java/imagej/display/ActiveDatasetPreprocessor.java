@@ -1,5 +1,5 @@
 //
-// HeadlessInputHarvester.java
+// ActiveDatasetPreprocessor.java
 //
 
 /*
@@ -32,34 +32,63 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.ui.headless;
+package imagej.display;
 
+import imagej.data.Dataset;
+import imagej.manager.Managers;
+import imagej.module.ModuleItem;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
+import imagej.plugin.PluginModuleItem;
 import imagej.plugin.process.PluginPreprocessor;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
 
 /**
- * HeadlessInputHarvester is a plugin preprocessor that collects input
- * parameter values from the user over an input stream (typically System.in).
+ * Assigns the active {@link Dataset} when there is one single unresolved
+ * {@link Dataset} parameter.
  *
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class)
-public class HeadlessInputHarvester extends AbstractInputHarvester {
+@Plugin(type = PluginPreprocessor.class, priority = 0)
+public class ActiveDatasetPreprocessor implements PluginPreprocessor {
+
+	// -- PluginPreprocessor methods --
 
 	@Override
-	public HeadlessInputPanel createInputPanel() {
-		return new HeadlessInputPanel();
+	public boolean canceled() {
+		return false;
 	}
 
+	// -- PluginProcessor methods --
+
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
-	{
-		// TODO
-		return true;
+	public void process(final PluginModule<?> module) {
+		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
+
+		final PluginModuleItem item = getSingleDatasetInput(inputs);
+		if (item == null) return; // no single Dataset input to assign
+
+		final DisplayManager displayManager = Managers.get(DisplayManager.class);
+		final Display activeDisplay = displayManager.getActiveDisplay();
+		if (activeDisplay == null) return; // no active display
+		final Dataset value = activeDisplay.getDataset();
+		if (value == null) return; // no associated dataset
+		module.setInput(item.getName(), value);
+		item.setResolved(true);
+	}
+
+	// -- Helper methods --
+
+	private PluginModuleItem getSingleDatasetInput(Iterable<ModuleItem> inputs) {
+		PluginModuleItem result = null;
+		for (final ModuleItem item : inputs) {
+			final PluginModuleItem pmi = (PluginModuleItem) item;
+			final boolean resolved = pmi.isResolved();
+			if (resolved) continue; // skip resolved inputs
+			if (!Dataset.class.isAssignableFrom(item.getType())) continue;
+			if (result != null) return null; // there are multiple Dataset inputs
+			result = pmi;
+		}
+		return result;
 	}
 
 }

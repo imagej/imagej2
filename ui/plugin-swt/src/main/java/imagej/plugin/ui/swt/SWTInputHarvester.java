@@ -67,7 +67,7 @@ public class SWTInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean showDialog(final InputPanel inputPanel,
+	public boolean harvestInputs(final InputPanel inputPanel,
 		final PluginModule<?> module)
 	{
 		// TODO - obtain handle on parent SWTMainFrame somehow

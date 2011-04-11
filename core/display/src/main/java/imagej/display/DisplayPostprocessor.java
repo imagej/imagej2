@@ -50,8 +50,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
- * 
+ * Displays output {@link Dataset}s upon completion of a plugin execution.
+ *
  * @author Curtis Rueden
  */
 @Plugin(type = PluginPostprocessor.class)

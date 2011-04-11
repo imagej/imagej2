@@ -64,7 +64,7 @@ public class AWTInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean showDialog(final InputPanel inputPanel,
+	public boolean harvestInputs(final InputPanel inputPanel,
 		final PluginModule<?> module)
 	{
 		final JOptionPane optionPane = new JOptionPane(null);

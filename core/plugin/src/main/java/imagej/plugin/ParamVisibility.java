@@ -47,6 +47,9 @@ package imagej.plugin;
  * data provenance, and also excluded as a parameter when recording scripts.
  * This option should only be used for parameters with no effect on the final
  * output, such as a "verbose" flag.</li>
+ * <li>MESSAGE: as INVISIBLE, and further indicating that the parameter value is
+ * intended as a message to the user (e.g., in the input harvester panel) rather
+ * than an actual parameter to the plugin execution.</li>
  * </ul>
  * 
  * @author Curtis Rueden
