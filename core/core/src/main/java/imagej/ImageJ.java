@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.manager;
+package imagej;
 
 import imagej.util.Log;
 
@@ -48,21 +48,16 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Utility class for working with ImageJ manager components.
+ * Top-level application context for ImageJ, which initializes and maintains a
+ * list of manager components.
  * 
  * @author Curtis Rueden
  */
-public final class Managers {
-
-	public static final float FIRST_PRIORITY = 0;
-	public static final float HIGH_PRIORITY = 25;
-	public static final float NORMAL_PRIORITY = 50;
-	public static final float LOW_PRIORITY = 75;
-	public static final float LAST_PRIORITY = 100;
+public final class ImageJ {
 
 	// TODO - decide if singleton pattern is really best here
 
-	private static Managers instance;
+	private static ImageJ instance;
 
 	/** Initializes all available ImageJ manager components. */
 	public static void initialize() {
@@ -70,8 +65,8 @@ public final class Managers {
 	}
 
 	/** Gets the singleton Managers instance. */
-	public static Managers getInstance() {
-		if (instance == null) new Managers();
+	public static ImageJ getInstance() {
+		if (instance == null) new ImageJ();
 		return instance;
 	}
 
@@ -105,7 +100,7 @@ public final class Managers {
 	private final Map<Class<?>, ManagerComponent> managers;
 	private final Set<Class<? extends ManagerComponent>> initializedManagers;
 
-	private Managers() {
+	private ImageJ() {
 		instance = this;
 		managers = new ConcurrentHashMap<Class<?>, ManagerComponent>();
 		initializedManagers = new HashSet<Class<? extends ManagerComponent>>();

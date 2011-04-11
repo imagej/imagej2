@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-manager</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

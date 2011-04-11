@@ -18,13 +18,13 @@
 	<description>Core ImageJ projects.</description>
 
 	<modules>
+		<module>core</module>
 		<module>core-plugins</module>
 		<module>core-tools</module>
 		<module>data</module>
 		<module>display</module>
 		<module>event</module>
 		<module>legacy</module>
-		<module>manager</module>
 		<module>module</module>
 		<module>object</module>
 		<module>platform</module>

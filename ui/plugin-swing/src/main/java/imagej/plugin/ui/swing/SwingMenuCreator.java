@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.manager.Managers;
+import imagej.ImageJ;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
 import imagej.plugin.PluginManager;
@@ -152,7 +152,7 @@ public abstract class SwingMenuCreator<T> extends
 				@SuppressWarnings("unchecked")
 				final PluginEntry<? extends RunnablePlugin> runnableEntry =
 					(PluginEntry<? extends RunnablePlugin>) entry;
-				final PluginManager pluginManager = Managers.get(PluginManager.class);
+				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 				pluginManager.run(runnableEntry);
 			}
 		});

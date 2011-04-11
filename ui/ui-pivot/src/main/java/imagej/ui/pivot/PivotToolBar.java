@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.pivot;
 
-import imagej.manager.Managers;
+import imagej.ImageJ;
 import imagej.tool.ToolManager;
 import imagej.ui.ToolBar;
 
@@ -50,7 +50,7 @@ public class PivotToolBar extends BoxPane implements ToolBar {
 	private ToolManager toolManager;
 
 	public PivotToolBar() {
-		toolManager = Managers.get(ToolManager.class);
+		toolManager = ImageJ.get(ToolManager.class);
 		populateToolBar();
 	}
 

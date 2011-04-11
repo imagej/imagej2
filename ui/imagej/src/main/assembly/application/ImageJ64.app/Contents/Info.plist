@@ -56,7 +56,7 @@
 		<key>JVMVersion</key>
 		<string>1.6+</string>
 		<key>MainClass</key>
-		<string>imagej.ImageJ</string>
+		<string>imagej.Main</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>

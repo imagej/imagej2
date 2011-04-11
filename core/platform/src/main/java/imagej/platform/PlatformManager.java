@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.manager.Manager;
-import imagej.manager.Managers;
-import imagej.manager.ManagerComponent;
+import imagej.ImageJ;
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.LOW_PRIORITY)
+@Manager(priority = Manager.LOW_PRIORITY)
 public final class PlatformManager implements ManagerComponent {
 
 	// -- ManagerComponent methods --

@@ -34,9 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.manager.Manager;
-import imagej.manager.Managers;
-import imagej.manager.ManagerComponent;
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.LAST_PRIORITY)
+@Manager(priority = Manager.LAST_PRIORITY)
 public final class UIManager implements ManagerComponent {
 
 	/** The active user interface. */

@@ -34,13 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import ij.ImageJ;
 import ij.ImagePlus;
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.data.Dataset;
 import imagej.legacy.plugin.LegacyPlugin;
-import imagej.manager.Manager;
-import imagej.manager.Managers;
-import imagej.manager.ManagerComponent;
 
 /**
  * Manager component for working with legacy ImageJ 1.x.
@@ -61,7 +59,7 @@ import imagej.manager.ManagerComponent;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.HIGH_PRIORITY)
+@Manager(priority = Manager.HIGH_PRIORITY)
 public final class LegacyManager implements ManagerComponent {
 
 	static {
@@ -115,7 +113,7 @@ public final class LegacyManager implements ManagerComponent {
 		imageMap = new LegacyImageMap();
 
 		// initialize legacy ImageJ application
-		new ImageJ(ImageJ.NO_SHOW);
+		new ij.ImageJ(ij.ImageJ.NO_SHOW);
 	}
 
 }

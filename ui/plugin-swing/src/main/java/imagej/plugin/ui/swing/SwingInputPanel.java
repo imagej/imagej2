@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.manager.Managers;
+import imagej.ImageJ;
 import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamDetails;
@@ -114,7 +114,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	@Override
 	public void addObject(final ParamDetails details) {
 		final Class<?> type = details.getType();
-		final ObjectManager objectManager = Managers.get(ObjectManager.class);
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		final SwingObjectWidget objectWidget =
 			new SwingObjectWidget(details, items);

@@ -34,16 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.manager.Manager;
-import imagej.manager.ManagerComponent;
-import imagej.manager.Managers;
+import imagej.Manager;
+import imagej.ManagerComponent;
 
 /**
  * Manager component for tracking the active display
  *
  * @author Barry DeZonia
  */
-@Manager(priority = Managers.NORMAL_PRIORITY)
+@Manager(priority = Manager.NORMAL_PRIORITY)
 public final class DisplayManager implements ManagerComponent {
 
 	private Display activeDisplay;

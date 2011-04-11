@@ -34,9 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.manager.Manager;
-import imagej.manager.ManagerComponent;
-import imagej.manager.Managers;
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 import imagej.util.Log;
@@ -55,7 +54,7 @@ import net.java.sezpoz.IndexItem;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.NORMAL_PRIORITY)
+@Manager(priority = Manager.NORMAL_PRIORITY)
 public class PluginManager implements ManagerComponent {
 
 	/** The complete list of known plugins. */

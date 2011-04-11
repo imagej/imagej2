@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.manager.Managers;
 import imagej.module.ModuleItem;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
@@ -67,7 +67,7 @@ public class ActiveDatasetPreprocessor implements PluginPreprocessor {
 		final PluginModuleItem item = getSingleDatasetInput(inputs);
 		if (item == null) return; // no single Dataset input to assign
 
-		final DisplayManager displayManager = Managers.get(DisplayManager.class);
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display activeDisplay = displayManager.getActiveDisplay();
 		if (activeDisplay == null) return; // no active display
 		final Dataset value = activeDisplay.getDataset();

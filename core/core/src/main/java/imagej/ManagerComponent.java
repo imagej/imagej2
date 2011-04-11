@@ -1,5 +1,5 @@
 //
-// Manager.java
+// ManagerComponent.java
 //
 
 /*
@@ -32,25 +32,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.manager;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+package imagej;
 
 /**
- * Annotation indicating a discoverable manager component.
+ * An ImageJ manager component, for a particular area of functionality.
  *
  * @author Curtis Rueden
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type=ManagerComponent.class)
-public @interface Manager {
+public interface ManagerComponent {
 
-	float priority() default Managers.NORMAL_PRIORITY;
+	void initialize();
 
 }
