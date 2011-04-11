@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-manager</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -149,7 +149,7 @@
 					<archive>
 						<manifest>
 							<packageName>imagej</packageName>
-							<mainClass>imagej.ImageJ</mainClass>
+							<mainClass>imagej.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -163,7 +163,7 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath/>
-						<argument>imagej.ImageJ</argument>
+						<argument>imagej.Main</argument>
 					</arguments>
 				</configuration>
 				<executions>

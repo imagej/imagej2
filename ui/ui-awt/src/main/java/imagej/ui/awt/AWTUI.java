@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
+import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
@@ -107,7 +107,7 @@ public class AWTUI implements UserInterface {
 	// -- Helper methods --
 
 	private void createMenuBar() {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final MenuBar menuBar = new MenuBar();

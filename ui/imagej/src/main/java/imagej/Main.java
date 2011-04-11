@@ -1,5 +1,5 @@
 //
-// ManagerComponent.java
+// Main.java
 //
 
 /*
@@ -32,15 +32,24 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.manager;
+package imagej;
+
+import imagej.ImageJ;
+import imagej.ui.UIManager;
 
 /**
- * An ImageJ manager component, for a particular area of functionality.
- *
+ * Launches ImageJ.
+ * 
  * @author Curtis Rueden
  */
-public interface ManagerComponent {
+public final class Main {
 
-	void initialize();
+	private Main() {
+		// prevent instantiation of utility class
+	}
+
+	public static void main(String[] args) {
+		ImageJ.get(UIManager.class).processArgs(args);
+	}
 
 }

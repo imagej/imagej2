@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.ImageJ;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.plugin.event.PluginCanceledEvent;
 import imagej.plugin.event.PluginFinishedEvent;
 import imagej.plugin.event.PluginPostprocessEvent;
@@ -87,7 +87,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 	}
 
 	public boolean preProcess(final PluginModule<T> module) {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPreprocessor> p :
 			pluginManager.getPlugins(PluginPreprocessor.class))
 		{
@@ -105,7 +105,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 	}
 
 	public void postProcess(final PluginModule<T> module) {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPostprocessor> p :
 			pluginManager.getPlugins(PluginPostprocessor.class))
 		{

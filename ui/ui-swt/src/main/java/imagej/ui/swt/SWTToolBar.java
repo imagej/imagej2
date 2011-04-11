@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swt;
 
-import imagej.manager.Managers;
+import imagej.ImageJ;
 import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
@@ -70,7 +70,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 	public SWTToolBar(final Display display, final Composite parent) {
 		super(parent, 0);
 		this.display = display;
-		toolManager = Managers.get(ToolManager.class);
+		toolManager = ImageJ.get(ToolManager.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
 		populateToolBar();

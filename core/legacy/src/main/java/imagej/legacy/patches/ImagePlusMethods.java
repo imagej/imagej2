@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.patches;
 
 import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.legacy.LegacyManager;
-import imagej.manager.Managers;
 import imagej.util.Log;
 
 /**
@@ -53,7 +53,7 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
-		final LegacyManager legacyManager = Managers.get(LegacyManager.class);
+		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		legacyManager.legacyImageChanged(obj);
 	}
 

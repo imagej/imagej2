@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.manager.Managers;
+import imagej.ImageJ;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class PluginDiscovery {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugins:");
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> plugins = pluginManager.getPlugins();
 		System.out.println("Discovered plugins:");
 		for (final PluginEntry<?> plugin : plugins) {

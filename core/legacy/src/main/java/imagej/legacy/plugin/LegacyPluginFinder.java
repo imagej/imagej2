@@ -35,10 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.plugin;
 
 import ij.IJ;
-import ij.ImageJ;
 import ij.Menus;
+import imagej.ImageJ;
 import imagej.legacy.LegacyManager;
-import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
@@ -74,16 +73,16 @@ import javax.swing.KeyStroke;
  * To accomplish this, we must crawl the (invisible) ImageJ 1.x AWT menu,
  * because IJ1 does not store the list of commands in any other data structure.
  * </p>
- *
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 @PluginFinder
 public class LegacyPluginFinder implements IPluginFinder {
 
-	private static final String LEGACY_PLUGIN_CLASS =
-		LegacyPlugin.class.getName();
-	
+	private static final String LEGACY_PLUGIN_CLASS = LegacyPlugin.class
+		.getName();
+
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
 
@@ -92,12 +91,12 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	public LegacyPluginFinder() {
 		blacklist = new HashSet<String>();
-		
+
 		// load blacklist items from data file
 		try {
 			readBlacklistFile(blacklist, PLUGIN_BLACKLIST);
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			Log.error("Error reading blacklist", e);
 		}
 	}
@@ -105,9 +104,9 @@ public class LegacyPluginFinder implements IPluginFinder {
 	// -- IPluginFinder methods --
 
 	@Override
-	public void findPlugins(List<PluginEntry<?>> plugins) {
-		Managers.get(LegacyManager.class); // ensure ImageJ v1.x is initialized
-		final ImageJ ij = IJ.getInstance();
+	public void findPlugins(final List<PluginEntry<?>> plugins) {
+		ImageJ.get(LegacyManager.class); // ensure ImageJ v1.x is initialized
+		final ij.ImageJ ij = IJ.getInstance();
 		assert ij != null;
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
@@ -137,8 +136,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		r.close();
 	}
 
-	private PluginEntry<ImageJPlugin> createEntry(
-		final Object key, final Hashtable<?, ?> commands,
+	private PluginEntry<ImageJPlugin> createEntry(final Object key,
+		final Hashtable<?, ?> commands,
 		final Map<String, List<MenuEntry>> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
@@ -168,7 +167,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 	}
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */
-	private Map<String, List<MenuEntry>> parseMenus(ImageJ ij) {
+	private Map<String, List<MenuEntry>> parseMenus(final ij.ImageJ ij) {
 		final Map<String, List<MenuEntry>> menuTable =
 			new HashMap<String, List<MenuEntry>>();
 		final MenuBar menubar = ij.getMenuBar();
@@ -180,8 +179,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		return menuTable;
 	}
 
-	private void parseMenu(final MenuItem menuItem,
-		final double weight, final ArrayList<MenuEntry> path,
+	private void parseMenu(final MenuItem menuItem, final double weight,
+		final ArrayList<MenuEntry> path,
 		final Map<String, List<MenuEntry>> menuTable)
 	{
 		// build menu entry

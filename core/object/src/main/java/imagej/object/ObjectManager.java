@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.manager.Manager;
-import imagej.manager.ManagerComponent;
-import imagej.manager.Managers;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 
@@ -53,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.FIRST_PRIORITY)
+@Manager(priority = Manager.FIRST_PRIORITY)
 public final class ObjectManager implements ManagerComponent {
 
 	/**

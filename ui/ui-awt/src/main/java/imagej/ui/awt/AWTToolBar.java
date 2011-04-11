@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.awt;
 
+import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.manager.Managers;
 import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
@@ -71,7 +71,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 	private Map<String, Button> toolButtons;
 
 	public AWTToolBar() {
-		toolManager = Managers.get(ToolManager.class);
+		toolManager = ImageJ.get(ToolManager.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new FlowLayout());
 		populateToolBar();

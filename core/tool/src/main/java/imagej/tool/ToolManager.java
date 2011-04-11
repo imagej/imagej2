@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;
@@ -43,9 +45,6 @@ import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.manager.Manager;
-import imagej.manager.Managers;
-import imagej.manager.ManagerComponent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 
@@ -63,7 +62,7 @@ import net.java.sezpoz.IndexItem;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.HIGH_PRIORITY)
+@Manager(priority = Manager.HIGH_PRIORITY)
 public class ToolManager implements ManagerComponent {
 
 	private List<ToolEntry> toolEntries;

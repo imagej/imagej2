@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
+import imagej.ImageJ;
+import imagej.Manager;
+import imagej.ManagerComponent;
 import imagej.core.plugins.app.AboutImageJ;
 import imagej.core.plugins.app.QuitProgram;
 import imagej.core.plugins.app.ShowPrefs;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.manager.Manager;
-import imagej.manager.ManagerComponent;
-import imagej.manager.Managers;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -55,7 +55,7 @@ import java.util.List;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Managers.LAST_PRIORITY)
+@Manager(priority = Manager.LAST_PRIORITY)
 public final class CorePluginManager implements ManagerComponent {
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
@@ -71,7 +71,7 @@ public final class CorePluginManager implements ManagerComponent {
 	// -- Helper methods --
 
 	private void subscribeToEvents() {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<AppAboutEvent> appAboutSubscriber =

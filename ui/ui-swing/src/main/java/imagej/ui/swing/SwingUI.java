@@ -36,9 +36,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
+import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.plugin.PluginEntry;
@@ -134,7 +134,7 @@ public class SwingUI implements UserInterface {
 	// -- Helper methods --
 
 	private void createMenuBar() {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final JMenuBar menuBar = new JMenuBar();

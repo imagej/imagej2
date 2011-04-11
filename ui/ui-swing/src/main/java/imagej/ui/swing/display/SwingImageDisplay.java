@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.awt.AWTDisplay;
 import imagej.awt.AWTDisplayController;
 import imagej.awt.AWTEventDispatcher;
@@ -48,7 +49,6 @@ import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.plugin.Plugin;
 import imagej.util.IntCoords;
 import imagej.util.Log;
@@ -78,7 +78,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
 		
-		final DisplayManager displayManager = Managers.get(DisplayManager.class);
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		
 		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
 			new EventSubscriber<DatasetChangedEvent>() {

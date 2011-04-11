@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.patches;
 
 import ij.gui.ImageWindow;
+import imagej.ImageJ;
 import imagej.legacy.LegacyManager;
-import imagej.manager.Managers;
 import imagej.util.Log;
 
 /**
@@ -54,7 +54,7 @@ public final class ImageWindowMethods {
 	public static void setVisible(ImageWindow obj, boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
-		final LegacyManager legacyManager = Managers.get(LegacyManager.class);
+		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		legacyManager.legacyImageChanged(obj.getImagePlus());
 	}
 

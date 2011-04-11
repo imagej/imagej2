@@ -1,5 +1,5 @@
 //
-// ImageJ.java
+// Manager.java
 //
 
 /*
@@ -34,23 +34,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej;
 
-import imagej.manager.Managers;
-import imagej.ui.UIManager;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import net.java.sezpoz.Indexable;
 
 /**
- * Launches ImageJ.
- * 
+ * Annotation indicating a discoverable manager component.
+ *
  * @author Curtis Rueden
  */
-public final class ImageJ {
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Indexable(type=ManagerComponent.class)
+public @interface Manager {
 
-	private ImageJ() {
-		// prevent instantiation of utility class
-	}
+	float FIRST_PRIORITY = 0;
+	float HIGH_PRIORITY = 25;
+	float NORMAL_PRIORITY = 50;
+	float LOW_PRIORITY = 75;
+	float LAST_PRIORITY = 100;
 
-	public static void main(String[] args) {
-		Managers.initialize();
-		Managers.get(UIManager.class).processArgs(args);
-	}
+	float priority() default NORMAL_PRIORITY;
 
 }

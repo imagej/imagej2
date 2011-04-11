@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.manager.Managers;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
@@ -89,7 +89,7 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		// DatasetChangedEvents and for the displays to subscribe to them,
 		// then update themselves.
 
-		final ObjectManager objectManager = Managers.get(ObjectManager.class);
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final List<Display> displays = objectManager.getObjects(Display.class);
 		Log.debug("Checking " + displays.size() + " existing displays...");//TEMP
 
@@ -106,7 +106,7 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 
 	private void displayDataset(final Dataset dataset) {
 		// get available display plugins from the plugin manager
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<Display>> plugins =
 			pluginManager.getPlugins(Display.class);
 

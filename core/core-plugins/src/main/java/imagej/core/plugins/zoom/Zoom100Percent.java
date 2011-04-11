@@ -36,10 +36,10 @@ package imagej.core.plugins.zoom;
 
 import mpicbg.imglib.image.Image;
 
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
-import imagej.manager.Managers;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
@@ -66,7 +66,7 @@ public class Zoom100Percent implements ImageJPlugin {
 	@Override
 	public void run() {
 
-		DisplayManager manager = Managers.get(DisplayManager.class);
+		DisplayManager manager = ImageJ.get(DisplayManager.class);
 		
 		Display display = manager.getActiveDisplay();
 		
