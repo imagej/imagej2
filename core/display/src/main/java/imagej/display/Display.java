@@ -93,4 +93,5 @@ public interface Display extends BasePlugin {
 	double getZoomCtrX();
 
 	double getZoomCtrY();
+
 }
