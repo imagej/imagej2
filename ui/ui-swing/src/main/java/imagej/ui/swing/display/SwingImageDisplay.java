@@ -51,6 +51,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
+import imagej.util.Rect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class SwingImageDisplay implements AWTDisplay {
 				@Override
 				public void onEvent(WinActivatedEvent event) {
 					displayManager.setActiveDisplay(event.getDisplay());
-					Log.debug("**** active display set to "+event.getDisplay()+" ****");
+					//Log.debug("**** active display set to "+event.getDisplay()+" ****");
 				}
 			};
 		EventSubscriber<WinClosedEvent> winCloseSubscriber = 
@@ -101,7 +102,7 @@ public class SwingImageDisplay implements AWTDisplay {
 				@Override
 				public void onEvent(WinClosedEvent event) {
 					displayManager.setActiveDisplay(null);
-					Log.debug("**** active display set to null ****");
+					//Log.debug("**** active display set to null ****");
 				}
 			};
 			
@@ -166,7 +167,7 @@ public class SwingImageDisplay implements AWTDisplay {
 			lastKnownDimensions = currDimensions;
 			controller.setDataset(theDataset);
 			imgCanvas.setZoom(1.0);
-			imgCanvas.resetPan();
+			imgCanvas.setPan(0,0);
 		}
 		controller.update();
 	}
@@ -198,10 +199,9 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public void panReset() {
-		imgCanvas.resetPan();
+		imgCanvas.setPan(0,0);
 	}
 	
-	// TODO
 	@Override
 	public double getPanX() {
 		return imgCanvas.getPanX();
@@ -211,7 +211,6 @@ public class SwingImageDisplay implements AWTDisplay {
 	public double getPanY() {
 		return imgCanvas.getPanY();
 	}
-
 
 	@Override
 	public void setZoom(double newZoom) {
@@ -245,8 +244,8 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public void zoomToFit(final int w, final int h) {
-		imgCanvas.zoomToFit(w,h);
+	public void zoomToFit(final Rect rect) {
+		imgCanvas.zoomToFit(rect);
 	}
 
 	@Override

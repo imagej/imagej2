@@ -39,6 +39,7 @@ import imagej.display.Display;
 import imagej.display.ImageDisplayWindow;
 import imagej.display.NavigableImageCanvas;
 import imagej.plugin.Plugin;
+import imagej.util.Rect;
 
 /**
  * TODO
@@ -102,7 +103,7 @@ public class SWTImageDisplay implements Display {
 	}
 
 	@Override
-	public void zoomToFit(int w, int h) {
+	public void zoomToFit(Rect rect) {
 		throw new UnsupportedOperationException("TODO");
 	}
 

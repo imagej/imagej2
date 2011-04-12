@@ -36,6 +36,7 @@ package imagej.display;
 
 import imagej.data.Dataset;
 import imagej.plugin.BasePlugin;
+import imagej.util.Rect;
 
 /**
  * TODO
@@ -85,7 +86,7 @@ public interface Display extends BasePlugin {
 
 	void zoomOut(double centerX, double centerY);
 
-	void zoomToFit(int w, int h);  // in pixels - not data units
+	void zoomToFit(Rect rect);  // in pixels - not data units
 
 	double getZoomFactor();
 

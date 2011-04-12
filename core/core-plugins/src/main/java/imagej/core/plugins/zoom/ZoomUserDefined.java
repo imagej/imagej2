@@ -70,6 +70,7 @@ public class ZoomUserDefined implements ImageJPlugin {
 			return;
 
 		display.setZoom(userDefinedScale / 100.0);
+		display.panReset();
 	}
 
 }
