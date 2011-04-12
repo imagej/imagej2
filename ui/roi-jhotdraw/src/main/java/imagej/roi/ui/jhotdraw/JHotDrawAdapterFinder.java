@@ -1,4 +1,8 @@
-/* JHotDrawAdapterFinder.java
+//
+// JHotDrawAdapterFinder.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,10 +31,11 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.roi.gui.jhotdraw;
 
-import imagej.util.Log;
+package imagej.roi.ui.jhotdraw;
+
 import imagej.roi.ImageJROI;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,58 +45,65 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * @author leek
- *The JHotDrawAdapterFinder finds all JHotDrawAdapters that can adapt
- *to a particular ROI.
+ * The JHotDrawAdapterFinder finds all JHotDrawAdapters that can adapt to a
+ * particular ROI.
+ * 
+ * @author Lee Kamentsky
  */
 public class JHotDrawAdapterFinder {
-	static private JHotDrawAdapterFinder theFinder;
-	private JHotDrawAdapterFinder() {
-		
-	}
+
+	private static JHotDrawAdapterFinder theFinder;
+
 	private ArrayList<IJHotDrawROIAdapter> adapters;
-	
+
+	private JHotDrawAdapterFinder() {
+		// NB: prevent instantiation of utility class.
+	}
+
 	private void initialize() {
-		Index<JHotDrawROIAdapter, IJHotDrawROIAdapter> index = Index.load(
-				JHotDrawROIAdapter.class, IJHotDrawROIAdapter.class);
 		adapters = new ArrayList<IJHotDrawROIAdapter>();
-		for (IndexItem<JHotDrawROIAdapter, IJHotDrawROIAdapter> indexItem : index) {
+		for (final IndexItem<JHotDrawROIAdapter, IJHotDrawROIAdapter> indexItem :
+			Index.load(JHotDrawROIAdapter.class, IJHotDrawROIAdapter.class))
+		{
 			try {
 				final IJHotDrawROIAdapter adapter = indexItem.instance();
 				adapters.add(adapter);
 				Log.debug("Found adapter: " + adapter);
-			} catch (InstantiationException e) {
-				Log.warn("Failed to load "+indexItem.className(), e);
+			}
+			catch (final InstantiationException e) {
+				Log.warn("Failed to load " + indexItem.className(), e);
 			}
 		}
 	}
-	
+
 	/**
-	 * Return all adapters capable of handling a given ROI
+	 * Returns all adapters capable of handling a given ROI.
+	 * 
 	 * @param roi - the ROI to be adapted to the JHotDraw GUI
 	 * @return collection of valid adapters
 	 */
-	static public Collection<IJHotDrawROIAdapter> getAdaptersForROI(ImageJROI roi) {
+	public static Collection<IJHotDrawROIAdapter> getAdaptersForROI(
+		final ImageJROI roi)
+	{
 		if (theFinder == null) {
 			theFinder = new JHotDrawAdapterFinder();
 			theFinder.initialize();
 		}
-		ArrayList<IJHotDrawROIAdapter> result = new ArrayList<IJHotDrawROIAdapter>();
-		for (IJHotDrawROIAdapter adapter : theFinder.adapters) {
-			if (adapter.supports(roi))
-				result.add(adapter);
+		final ArrayList<IJHotDrawROIAdapter> result =
+			new ArrayList<IJHotDrawROIAdapter>();
+		for (final IJHotDrawROIAdapter adapter : theFinder.adapters) {
+			if (adapter.supports(roi)) result.add(adapter);
 		}
 		return result;
 	}
-	/**
-	 * Get all of the discovered adapters.
-	 * @return
-	 */
-	static public Collection<IJHotDrawROIAdapter> getAllAdapters() {
+
+	/** Gets all of the discovered adapters. */
+	public static Collection<IJHotDrawROIAdapter> getAllAdapters() {
 		if (theFinder == null) {
 			theFinder = new JHotDrawAdapterFinder();
 			theFinder.initialize();
 		}
 		return Collections.unmodifiableCollection(theFinder.adapters);
 	}
+
 }
