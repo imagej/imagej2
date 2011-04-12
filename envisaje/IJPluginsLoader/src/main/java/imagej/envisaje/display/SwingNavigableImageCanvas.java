@@ -44,6 +44,7 @@ import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+import imagej.util.Rect;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -271,71 +272,33 @@ public class SwingNavigableImageCanvas extends JPanel implements
         originY = (getHeight() - getScreenImageHeight()) / 2;
     }
 
-    /**
-     * <p>
-     * Gets the image origin.
-     * </p>
-     * <p>
-     * Image origin is defined as the upper, left corner of the image in the
-     * panel's coordinate system.
-     * </p>
-     * 
-     * @return the point of the upper, left corner of the image in the panel's
-     *         coordinates system.
-     */
-    @Override
-    public IntCoords getImageOrigin() {
-        return new IntCoords(originX, originY);
-    }
+		@Override
+		public double getPanX() {
+			return originX;
+		}
+
+		@Override
+		public double getPanY() {
+			return originY;
+		}
+
+		@Override
+		public void pan(double xDelta, double yDelta) {
+      originX += xDelta;
+      originY += yDelta;
+      repaint();
+		}
+
+		@Override
+		public void setPan(double x, double y) {
+      originX = (int) x;
+      originY = (int) y;
+      repaint();
+		}
 
     public void resetImageOrigin() {
         originX = 0;
         originY = 0;
-    }
-
-    /**
-     * <p>
-     * Sets the image origin.
-     * </p>
-     * <p>
-     * Image origin is defined as the upper, left corner of the image in the
-     * panel's coordinate system. After a new origin is set, the image is
-     * repainted. This method is used for programmatic image navigation.
-     * </p>
-     * 
-     * @param x the x coordinate of the new image origin
-     * @param y the y coordinate of the new image origin
-     */
-    @Override
-    public void setImageOrigin(final int x, final int y) {
-        setImageOrigin(new IntCoords(x, y));
-    }
-
-    /**
-     * <p>
-     * Sets the image origin.
-     * </p>
-     * <p>
-     * Image origin is defined as the upper, left corner of the image in the
-     * panel's coordinate system. After a new origin is set, the image is
-     * repainted. This method is used for programmatic image navigation.
-     * </p>
-     * 
-     * @param newOrigin the value of a new image origin
-     */
-    @Override
-    public void setImageOrigin(final IntCoords newOrigin) {
-        originX = newOrigin.x;
-        originY = newOrigin.y;
-        repaint();
-    }
-
-    /** Pans the image by the given (X, Y) amount. */
-    @Override
-    public void pan(final int xDelta, final int yDelta) {
-        originX += xDelta;
-        originY += yDelta;
-        repaint();
     }
 
 // </editor-fold>
@@ -368,10 +331,10 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 // <editor-fold defaultstate="collapsed" desc=" <<< Coordinate XForms, Origin >>> ">
     // Converts this panel's coordinates into the original image coordinates
-    @Override
-    public RealCoords panelToImageCoords(final IntCoords p) {
-        return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
-    }
+		@Override
+		public RealCoords panelToImageCoords(final RealCoords p) {
+      return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
+		}
 
     // Converts the original image coordinates into this panel's coordinates
     @Override
@@ -380,8 +343,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
     }
 
     // Tests whether a given point in the panel falls within the image boundaries.
-    @Override
-    public boolean isInImage(final IntCoords p) {
+		@Override
+		public boolean isInImage(final RealCoords p) {
         final RealCoords coords = panelToImageCoords(p);
         final int x = coords.getIntX();
         final int y = coords.getIntY();
@@ -434,9 +397,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
      * image coordinates).
      */
     private Rectangle getImageClipBounds() {
-        final RealCoords startCoords = panelToImageCoords(new IntCoords(0, 0));
+        final RealCoords startCoords = panelToImageCoords(new RealCoords(0, 0));
         final RealCoords endCoords =
-                panelToImageCoords(new IntCoords(getWidth() - 1, getHeight() - 1));
+                panelToImageCoords(new RealCoords(getWidth() - 1, getHeight() - 1));
         final int panelX1 = startCoords.getIntX();
         final int panelY1 = startCoords.getIntY();
         final int panelX2 = endCoords.getIntX();
@@ -567,12 +530,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
      */
     @Override
     public void setZoom(final double newZoom) {
-        final IntCoords zoomingCenter =
-                new IntCoords(getWidth() / 2, getHeight() / 2);
-        setZoom(newZoom, zoomingCenter);
+        setZoom(newZoom, getWidth() / 2, getHeight() / 2);
     }
 
-    public double getZoomMultiplier() {
+    @Override
+		public double getZoomMultiplier() {
         return zoomFactor;
     }
 
@@ -589,12 +551,13 @@ public class SwingNavigableImageCanvas extends JPanel implements
      * @param newZoom the zoom level used to display this panel's image.
      */
     @Override
-    public void setZoom(final double newZoom, final IntCoords zoomingCenter) {
+    public void setZoom(final double newZoom, double centerX, double centerY) {
         // FIXME - minor issue - in an image that does not have odd number of rows
         //  or cols the zooming center is truncated and the image will likely
         //  display a pixel off an edge of the screen. The zoomingCenter should
         //  be RealCoords and all later calcs should utilze floating point math.
-        final RealCoords imageP = panelToImageCoords(zoomingCenter);
+        final RealCoords imageP = panelToImageCoords(
+        	new RealCoords((int) centerX, (int) centerY));
         if (imageP.x < 0.0) {
             imageP.x = 0.0;
         }
@@ -622,38 +585,15 @@ public class SwingNavigableImageCanvas extends JPanel implements
         repaint();
     }
 
-    // TODO - allow the increment to be a function
-    /**
-     * <p>
-     * Gets the current zoom increment.
-     * </p>
-     * 
-     * @return the current zoom increment
-     */
-    @Override
-    public double getZoomIncrement() {  // TODO - fix callers of this
-        return zoomFactor;
-        // OLD - increment was additive and factor is multiplicative
-        //return zoomIncrement;
-    }
+		@Override
+		public void zoomToFit(Rect rectangle) {
+			throw new UnsupportedOperationException("Unimplemented");
+		}
 
-    /**
-     * <p>
-     * Sets a new zoom increment value.
-     * </p>
-     * 
-     * @param newZoomIncrement new zoom increment value
-     */
-    @Override
-    public void setZoomIncrement(final double newZoomIncrement) {
-        throw new UnsupportedOperationException("not supported at the moment");
-        /*
-        final double oldZoomIncrement = zoomIncrement;
-        zoomIncrement = newZoomIncrement;
-        firePropertyChange(ZOOM_INCREMENT_CHANGED_PROPERTY, new Double(
-        oldZoomIncrement), new Double(zoomIncrement));
-         */
-    }
+		@Override
+		public void setZoomMultiplier(double newZoomMultiplier) {
+			throw new UnsupportedOperationException("Unimplemented");
+		}
 
     private boolean scaleOutOfBounds(double desiredScale) {
         // check if trying to zoom in too close
@@ -742,24 +682,24 @@ public class SwingNavigableImageCanvas extends JPanel implements
     }
 
     // Converts the navigation image coordinates into the zoomed image coordinates
-    private IntCoords navToZoomedImageCoords(final IntCoords p) {
-        final int x = p.x * getScreenImageWidth() / getScreenNavImageWidth();
-        final int y = p.y * getScreenImageHeight() / getScreenNavImageHeight();
-        return new IntCoords(x, y);
+    private RealCoords navToZoomedImageCoords(final RealCoords p) {
+        final double x = p.x * getScreenImageWidth() / getScreenNavImageWidth();
+        final double y = p.y * getScreenImageHeight() / getScreenNavImageHeight();
+        return new RealCoords(x, y);
     }
 
     // The user clicked within the navigation image and this part of the image
     // is displayed in the panel. The clicked point of the image is centered in
     // the panel.
-    private void displayImageAt(final IntCoords p) {
-        final IntCoords scrImagePoint = navToZoomedImageCoords(p);
-        originX = -(scrImagePoint.x - getWidth() / 2);
-        originY = -(scrImagePoint.y - getHeight() / 2);
+    private void displayImageAt(final RealCoords p) {
+        final RealCoords scrImagePoint = navToZoomedImageCoords(p);
+        originX = (int) -(scrImagePoint.x - getWidth() / 2);
+        originY = (int) -(scrImagePoint.y - getHeight() / 2);
         repaint();
     }
 
-    private IntCoords ptToCoords(final Point p) {
-        return new IntCoords(p.x, p.y);
+    private RealCoords ptToCoords(final Point p) {
+        return new RealCoords(p.x, p.y);
     }
 
     /**
@@ -999,4 +939,5 @@ public class SwingNavigableImageCanvas extends JPanel implements
         }
     }
 // </editor-fold>
+
 }
