@@ -33,8 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 package imagej.envisaje.ijpluginsloader;
 
+import imagej.ImageJ;
 import imagej.envisaje.utils.output.DialogUtil;
-import imagej.manager.Managers;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
 import imagej.plugin.PluginManager;
@@ -43,17 +43,14 @@ import imagej.plugin.ui.ShadowMenu;
 import imagej.util.Log;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.regex.Pattern;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+
 import org.openide.windows.IOProvider;
 
 /**
@@ -230,7 +227,7 @@ public class NBMenuCreator {
                 @SuppressWarnings("unchecked")
                 final PluginEntry<? extends RunnablePlugin> runnableEntry =
                         (PluginEntry<? extends RunnablePlugin>) entry;
-                final PluginManager pluginManager = Managers.get(PluginManager.class);
+                final PluginManager pluginManager = ImageJ.get(PluginManager.class);
                 pluginManager.run(runnableEntry);
             }
         };

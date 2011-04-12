@@ -4,13 +4,14 @@
  */
 package imagej.envisaje.ijpluginsloader;
 
+import imagej.ImageJ;
 import imagej.envisaje.utils.output.DialogUtil;
-import imagej.manager.Managers;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
 
 import java.util.List;
+
 import org.openide.modules.ModuleInstall;
 import org.openide.windows.IOProvider;
 
@@ -26,7 +27,7 @@ public class Installer extends ModuleInstall {
         //final List<PluginEntry<?>> entries = ImageJPluginFinder.findPlugins();
         //DialogUtil.info("Discovered " + entries.size() + " plugins");
         DialogUtil.plain("In Installed of Plugins...");
-        Managers.initialize();
+        ImageJ.initialize();
         createMenus();
 //		final ShadowMenu rootMenu = new ShadowMenu(entries);
 //		final JMenuBar menuBar = new JMenuBar();
@@ -37,7 +38,7 @@ public class Installer extends ModuleInstall {
     }
 
     private void createMenus() {
-        final PluginManager pluginManager = Managers.get(PluginManager.class);
+        final PluginManager pluginManager = ImageJ.get(PluginManager.class);
         final List<PluginEntry<?>> entries = pluginManager.getPlugins();
         final ShadowMenu rootMenu = new ShadowMenu(entries);
         NBMenuCreator creator = new NBMenuCreator();

@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.envisaje.ijpluginsloader.ui;
 
+import imagej.ImageJ;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.manager.Managers;
 import imagej.plugin.PluginException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
@@ -82,7 +82,7 @@ public class SwingToolBar extends JToolBar
 	private Map<String, AbstractButton> toolButtons;
 
 	public SwingToolBar() {
-		toolManager = Managers.get(ToolManager.class);
+		toolManager = ImageJ.get(ToolManager.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 	}

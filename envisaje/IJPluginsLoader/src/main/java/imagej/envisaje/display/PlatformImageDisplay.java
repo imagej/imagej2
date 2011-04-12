@@ -46,6 +46,7 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
+import imagej.util.Rect;
 
 import java.util.Arrays;
 import org.openide.windows.WindowManager;
@@ -153,53 +154,78 @@ public class PlatformImageDisplay implements AWTDisplay,
     }
 
     @Override
-    public void pan(final float x,
-            final float y) {
+    public void pan(final double x, final double y) {
         imgCanvas.pan((int) x, (int) y);
     }
-
-    // TODO
+    
     @Override
-    public float getPanX() {
-        return 0f;
+    public void panReset() {
+    	// TODO Auto-generated method stub
+    	
+    }
+
+    @Override
+    public double getPanX() {
+        return 0;
         // throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public float getPanY() {
-        return 0f;
+    public double getPanY() {
+        return 0;
         // throw new UnsupportedOperationException("Not supported yet.");
     }
 
+		@Override
+		public void setZoom(double factor) {
+      throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void setZoom(double factor, double centerX, double centerY) {
+      throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void zoomIn() {
+      throw new UnsupportedOperationException("Not supported yet.");
+		}
+
     @Override
-    public void setZoom(final float factor,
-            final float centerX,
-            final float centerY) {
+    public void zoomIn(final double centerX, final double centerY) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void zoomIn(final float centerX,
-            final float centerY) {
+    public void zoomOut() {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public void zoomOut(final double centerX, final double centerY) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void zoomOut(final float centerX,
-            final float centerY) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void zoomToFit(Rect rect) {
+      throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
-    public void zoomToFit(final int w,
-            final int h) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public double getZoomFactor() {
+    	return 1;
     }
-
+    
     @Override
-    public float getZoom() {
-        return 1f;
-        // throw new UnsupportedOperationException("Not supported yet.");
+    public double getZoomCtrX() {
+    	// TODO Auto-generated method stub
+    	return 0;
+    }
+    
+    @Override
+    public double getZoomCtrY() {
+    	// TODO Auto-generated method stub
+    	return 0;
     }
 
     @Override
@@ -208,4 +234,5 @@ public class PlatformImageDisplay implements AWTDisplay,
             update();
         }
     }
+
 }

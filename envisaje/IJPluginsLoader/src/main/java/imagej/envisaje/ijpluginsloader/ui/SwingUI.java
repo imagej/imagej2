@@ -36,15 +36,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.envisaje.ijpluginsloader.ui;
 
+import imagej.ImageJ;
 import imagej.event.Events;
-import imagej.manager.Managers;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
 import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swing.JMenuBarCreator;
-import imagej.ui.UI;
 import imagej.ui.UserInterface;
 import imagej.util.Prefs;
 
@@ -132,7 +131,7 @@ public class SwingUI implements UserInterface {
 	// -- Helper methods --
 
 	private void createMenuBar() {
-		final PluginManager pluginManager = Managers.get(PluginManager.class);
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
 		final ShadowMenu rootMenu = new ShadowMenu(entries);
 		final JMenuBar menuBar = new JMenuBar();
