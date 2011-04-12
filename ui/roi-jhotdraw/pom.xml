@@ -33,9 +33,9 @@
 			<version>${sezpoz.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.concord.external</groupId>
+			<groupId>org.jhotdraw</groupId>
 			<artifactId>jhotdraw</artifactId>
-			<version>6.0</version>
+			<version>7.6.0</version>
 		</dependency>
 	</dependencies>
 
@@ -63,13 +63,6 @@
 		<repository>
 			<id>imagej.snapshots</id>
 			<url>http://dev.imagejdev.org/maven2/snapshots</url>
-		</repository>
-
-		<!-- TODO - migrate JHotDraw artifacts into ImageJDev repository -->
-		<repository>
-			<name>Concord Consortium</name>
-			<id>org.concord.external</id>
-			<url>http://source.concord.org/maven2/thirdparty</url>
 		</repository>
 	</repositories>
 
