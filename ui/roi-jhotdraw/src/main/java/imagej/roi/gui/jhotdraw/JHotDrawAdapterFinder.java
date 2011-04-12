@@ -57,7 +57,9 @@ public class JHotDrawAdapterFinder {
 		adapters = new ArrayList<IJHotDrawROIAdapter>();
 		for (IndexItem<JHotDrawROIAdapter, IJHotDrawROIAdapter> indexItem : index) {
 			try {
-				adapters.add(indexItem.instance());
+				final IJHotDrawROIAdapter adapter = indexItem.instance();
+				adapters.add(adapter);
+				Log.debug("Found adapter: " + adapter);
 			} catch (InstantiationException e) {
 				Log.warn("Failed to load "+indexItem.className(), e);
 			}
