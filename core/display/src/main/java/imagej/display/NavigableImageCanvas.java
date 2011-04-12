@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.util.RealCoords;
+import imagej.util.Rect;
 
 /**
  * TODO
@@ -50,20 +51,10 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	// set EventDispatcher as event listener on this - esp. for key, mouse events
 	void addEventDispatcher(EventDispatcher dispatcher);
 
-	/**
-	 * <p>
-	 * Gets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system.
-	 * </p>
-	 * 
-	 * @return the point of the upper, left corner of the image in the panel's
-	 *         coordinates system.
-	 */
-	RealCoords getImageOrigin();
-
+	double getPanX();
+	
+	double getPanY();
+	
 	/**
 	 * <p>
 	 * Gets the current zoom level.
@@ -114,35 +105,6 @@ public interface NavigableImageCanvas extends ImageCanvas {
 
 	/**
 	 * <p>
-	 * Sets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system. After a new origin is set, the image is
-	 * repainted. This method is used for programmatic image navigation.
-	 * </p>
-	 * 
-	 * @param x the x coordinate of the new image origin
-	 * @param y the y coordinate of the new image origin
-	 */
-	void setImageOrigin(int x, int y);
-
-	/**
-	 * <p>
-	 * Sets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system. After a new origin is set, the image is
-	 * repainted. This method is used for programmatic image navigation.
-	 * </p>
-	 * 
-	 * @param newOrigin the value of a new image origin
-	 */
-	void setImageOrigin(RealCoords newOrigin);
-
-	/**
-	 * <p>
 	 * Enables/disables navigation with the navigation image.
 	 * </p>
 	 * <p>
@@ -153,6 +115,8 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * @param enabled true when navigation image is enabled, false otherwise.
 	 */
 	void setNavigationImageEnabled(boolean enabled);
+
+	void setPan(double x, double y);
 
 	/**
 	 * <p>
@@ -182,6 +146,8 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 */
 	void setZoom(double newZoom, double centerX, double centerY);
 
+	void zoomToFit(Rect rectangle);
+	
 	/**
 	 * <p>
 	 * Sets a new zoom device.
@@ -198,9 +164,9 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * 
 	 * @param newZoomFactor new zoom factor value
 	 */
-	void setZoomFactor(double newZoomFactor);
+	void setZoomMultiplier(double newZoomMultiplier);
 
-	double getZoomFactor();
+	double getZoomMultiplier();
 	
 	// Is this point in the image as displayed in the panel
 	boolean isInImage(RealCoords p);

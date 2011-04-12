@@ -45,6 +45,7 @@ import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+import imagej.util.Rect;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -79,7 +80,8 @@ import javax.swing.SwingUtilities;
 // been updated to mirror the overall image zoom scaling.
 
 // TODO: if an image is too big to completely fit on screen then scale to fit
-// within screen and set initialscale appropriately
+// within screen and set initialScale appropriately
+
 /**
  * A Swing implementation of the navigable image canvas.
  *
@@ -91,6 +93,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class SwingNavigableImageCanvas extends JPanel implements
 	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
@@ -98,13 +101,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
 		// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;  // this is like IJ1
 	private boolean highQualityRenderingEnabled = true;
-	private double zoomFactor = 1.2;
+	private double zoomMultiplier = 1.2;
 	private BufferedImage image;
 	private double initialScale = 0;
 	private double scale = 0;
-	private double newScale = 1;
 	private double originX = 0;
 	private double originY = 0;
 	private double centerX = 0;
@@ -147,6 +149,264 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private void setCenter(double x, double y) {
 		centerX = x;
 		centerY = y;
+	}
+
+	// -- BASIC ACCESSORS --
+	
+	@Override
+	public int getImageWidth() {
+		return image.getWidth();
+	}
+
+	@Override
+	public int getImageHeight() {
+		return image.getHeight();
+	}
+
+	// -- PRIVATE HELPERS -- 
+	
+	private int getScreenImageWidth() {
+		return (int) (scale * image.getWidth());
+	}
+
+	private int getScreenImageHeight() {
+		return (int) (scale * image.getHeight());
+	}
+
+	// Called from paintComponent() when a new image is set.
+	private void initializeParams() {
+		final double imgWidth = image.getWidth();
+		final double imgHeight = image.getWidth();
+		final double xScale = getWidth() / imgWidth;
+		final double yScale = getHeight() / imgHeight;
+		initialScale = Math.min(xScale, yScale);
+		scale = initialScale;
+		setOrigin(0,0);
+		setCenter(imgWidth / 2.0, imgHeight / 2.0);
+
+		if (isNavigationImageEnabled()) {
+			createNavigationImage();
+		}
+	}
+
+	/** Centers the current image in the panel. */
+	private void centerImage() {
+		double newCenterX = getWidth() / 2.0;
+		double newCenterY = getHeight() / 2.0;
+		setCenter(newCenterX, newCenterY);
+		double newOriginX = newCenterX - (getScreenImageWidth() / 2.0);
+		double newOriginY = newCenterY - (getScreenImageHeight() / 2.0);
+		setOrigin(newOriginX, newOriginY);
+	}
+
+	private void clipToImageBoundaries(RealCoords coords) {
+		if (coords.x < 0.0) {
+			coords.x = 0.0;
+		}
+		if (coords.y < 0.0) {
+			coords.y = 0.0;
+		}
+		if (coords.x >= image.getWidth()) {
+			coords.x = image.getWidth() - 1.0;
+		}
+		if (coords.y >= image.getHeight()) {
+			coords.y = image.getHeight() - 1.0;
+		}
+	}
+	
+	// -- PRIVATE ZOOM CODE HELPERS --
+	
+	/** Converts the specified zoom level to scale. */
+	private double zoomToScale(final double zoom) {
+		return initialScale * zoom;
+	}
+
+	private boolean scaleOutOfBounds(double desiredScale) {
+		// check if trying to zoom in too close
+		if (desiredScale > scale)
+		{
+			int maxDimension = Math.max(image.getWidth(), image.getHeight());
+
+			// if zooming the image would show less than one pixel of image data
+			if ((maxDimension / getZoom()) < 1)
+				return true;
+		}
+		
+		// check if trying to zoom out too far
+		if (desiredScale < scale)
+		{
+			// get boundaries of image in panel coords
+			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
+			final RealCoords farCorner = imageToPanelCoords(new RealCoords(image.getWidth(),image.getHeight()));
+
+			// if boundaries take up less than 25 pixels in either dimension 
+			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y) < 25))
+				return true;
+		}
+		
+		return false;
+	}
+
+	private void doZoom(double newScale, double ctrX, double ctrY) {
+		if (scaleOutOfBounds(newScale))
+			return;  // DO NOT ZOOM ANY FARTHER
+		final double oldZoom = getZoom();
+		scale = newScale;
+		setCenter(ctrX, ctrY);
+		double newOriginX = centerX - (scale * (image.getWidth()/2.0));  // TODO - divide by scale ???? 
+		double newOriginY = centerY - (scale * (image.getHeight()/2.0)); 
+		setOrigin(newOriginX, newOriginY);
+		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
+		repaint();
+	}
+	
+	// Zooms an image in the panel by repainting it at the new zoom level.
+	// The current mouse position is the zooming center.
+	private void zoomOverMousePoint(double newScale) {
+		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+		doZoom(newScale, imageP.x, imageP.y);
+	}
+
+	// -- PUBLIC ZOOM CODE METHODS --
+
+	public double getZoomCtrX() {
+		return centerX;
+	}
+
+	public double getZoomCtrY() {
+		return centerY;
+	}
+
+	/**
+	 * <p>
+	 * Gets the current zoom level.
+	 * </p>
+	 * 
+	 * @return the current zoom level
+	 */
+	@Override
+	public double getZoom() {
+		return scale / initialScale;
+	}
+
+	@Override
+	public double getZoomMultiplier() {
+		return zoomMultiplier;
+	}
+
+	/**
+	 * <p>
+	 * Sets a new zooming scale multiplier value.
+	 * </p>
+	 * 
+	 * @param newZoomMultiplier new zoom multiplier value
+	 */
+	@Override
+	public void setZoomMultiplier(double newZoomMultiplier) {
+		if (newZoomMultiplier <= 1)
+			throw new IllegalArgumentException("zoom multiplier must be > 1");
+		
+		zoomMultiplier = newZoomMultiplier;
+	}
+
+	public void zoomIn() {
+		doZoom(scale * zoomMultiplier, centerX, centerY);
+	}
+
+	public void zoomIn(double newCenterX, double newCenterY) {
+		doZoom(scale * zoomMultiplier, newCenterX, newCenterY);
+	}
+
+	public void zoomOut() {
+		doZoom(scale / zoomMultiplier, centerX, centerY);
+	}
+
+	public void zoomOut(double newCenterX, double newCenterY) {
+		doZoom(scale / zoomMultiplier, newCenterX, newCenterY);
+	}
+
+	@Override
+	public void zoomToFit(Rect region) {
+		double xRatio = image.getWidth() / region.width;
+		double yRatio = image.getHeight() / region.height;
+		double newScale = Math.max(xRatio, yRatio);
+		double newCtrX = region.x + 0.5 * region.width;
+		double newCtrY = region.y + 0.5 * region.height;
+		doZoom(newScale, newCtrX, newCtrY);
+	}
+
+	/**
+	 * <p>
+	 * Sets the zoom level used to display the image.
+	 * </p>
+	 * <p>
+	 * This method is used in programmatic zooming. The zooming center is the
+	 * point of the image closest to the center of the panel. After a new zoom
+	 * level is set the image is repainted.
+	 * </p>
+	 * 
+	 * @param newZoom the zoom level used to display this panel's image.
+	 */
+	@Override
+	public void setZoom(final double newZoom) {
+		if (newZoom < 0)
+			throw new IllegalArgumentException("zoom cannot be negative");
+		
+		double newCenterX = image.getWidth() / 2.0;
+		double newCenterY = image.getHeight() / 2.0;
+		
+		double zoom = newZoom;
+		if (newZoom == 0)
+			zoom = initialScale;
+		
+		setZoom(zoom, newCenterX, newCenterY);
+	}
+
+	/**
+	 * <p>
+	 * Sets the zoom level used to display the image, and the zooming center,
+	 * around which zooming is done.
+	 * </p>
+	 * <p>
+	 * This method is used in programmatic zooming. After a new zoom level is set
+	 * the image is repainted.
+	 * </p>
+	 * 
+	 * @param newZoom the zoom level used to display this panel's image.
+	 */
+	@Override
+	public void setZoom(final double newZoom, final double ctrX, double ctrY) {
+		final RealCoords zoomingCenter = new RealCoords(ctrX, ctrY);
+		RealCoords imageP = panelToImageCoords(zoomingCenter);
+		clipToImageBoundaries(imageP); 
+		//double calculatedScale = zoomToScale(newZoom);
+		//doZoom(calculatedScale, imageP.x, imageP.y);
+		doZoom(newZoom, imageP.x, imageP.y);
+	}
+
+	// -- PAN CODE --
+	
+	@Override
+	public double getPanX() {
+		return originX;
+	}
+
+	@Override
+	public double getPanY() {
+		return originY;
+	}
+
+	/** Pans the image by the given (X, Y) amount. */
+	@Override
+	public void pan(final double xDelta, final double yDelta) {
+		setOrigin(originX + xDelta, originY + yDelta);
+		setCenter(centerX + xDelta, centerY + yDelta);
+		repaint();
+	}
+
+	@Override
+	public void setPan(double ox, double oy) {
+		pan(ox - originX, oy - originY);
 	}
 	
 	private void addMouseListeners() {
@@ -210,33 +470,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return "" + alpha + ", " + red + ", " + green + ", " + blue;
 	}
 
-	// Called from paintComponent() when a new image is set.
-	private void initializeParams() {
-		final double xScale = (double) getWidth() / image.getWidth();
-		final double yScale = (double) getHeight() / image.getHeight();
-		initialScale = Math.min(xScale, yScale);
-		scale = initialScale;
-		newScale = scale;
-
-		// An image is initially centered
-		centerImage();
-
-		if (isNavigationImageEnabled()) {
-			createNavigationImage();
-		}
-		// setSize(image.getWidth(), image.getHeight());
-	}
-
-	@Override
-	public int getImageWidth() {
-		return image.getWidth();
-	}
-
-	@Override
-	public int getImageHeight() {
-		return image.getHeight();
-	}
-
 	/**
 	 * Sets an image for display in the panel.
 	 * 
@@ -280,145 +513,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 			.getDefaultConfiguration();
 
-	private int getScreenImageWidth() {
-		return (int) (scale * image.getWidth());
-	}
-
-	private int getScreenImageHeight() {
-		return (int) (scale * image.getHeight());
-	}
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Position / Panning >>> ">
-
-	/** Centers the current image in the panel. */
-	private void centerImage() {
-		double newOX = (getWidth() - getScreenImageWidth()) / 2.0;
-		double newOY = (getHeight() - getScreenImageHeight()) / 2.0;
-		centerX += newOX - originX;
-		centerY += newOY - originY;
-		originX = newOX;
-		originY = newOY;
-	}
-
-	/**
-	 * <p>
-	 * Gets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system.
-	 * </p>
-	 * 
-	 * @return the point of the upper, left corner of the image in the panel's
-	 *         coordinates system.
-	 */
-	@Override
-	public RealCoords getImageOrigin() {
-		return new RealCoords(originX, originY);
-	}
-
-	public void resetPan() {
-		centerX -= originX;
-		centerY -= originY;
-		originX = 0;
-		originY = 0;
-	}
-
-	public double getPanX() {
-		return originX;
-	}
-
-	public double getPanY() {
-		return originY;
-	}
-
-	public double getZoomCtrX() {
-		return centerX;
-	}
-
-	public double getZoomCtrY() {
-		return centerY;
-	}
-	
-	public void zoomIn() {
-		newScale = scale * zoomFactor;
-		zoomOnCenter();
-	}
-
-	public void zoomIn(double newCenterX, double newCenterY) {
-		setCenter(newCenterX, newCenterY);
-		zoomIn();
-	}
-
-	public void zoomOut() {
-		newScale = scale / zoomFactor;
-		zoomOnCenter();
-	}
-
-	public void zoomOut(double newCenterX, double newCenterY) {
-		setCenter(newCenterX, newCenterY);
-		zoomOut();
-	}
-
-	public void zoomToFit(int w, int h) {
-		double xRatio = image.getWidth() / w;
-		double yRatio = image.getHeight() / h;
-		newScale = Math.max(xRatio, yRatio);
-		centerImage();
-		zoomOnCenter();
-	}
-
-	/**
-	 * <p>
-	 * Sets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system. After a new origin is set, the image is
-	 * repainted. This method is used for programmatic image navigation.
-	 * </p>
-	 * 
-	 * @param x the x coordinate of the new image origin
-	 * @param y the y coordinate of the new image origin
-	 */
-	@Override
-	public void setImageOrigin(final int x, final int y) {
-		setImageOrigin(new RealCoords(x, y));
-	}
-
-	/**
-	 * <p>
-	 * Sets the image origin.
-	 * </p>
-	 * <p>
-	 * Image origin is defined as the upper, left corner of the image in the
-	 * panel's coordinate system. After a new origin is set, the image is
-	 * repainted. This method is used for programmatic image navigation.
-	 * </p>
-	 * 
-	 * @param newOrigin the value of a new image origin
-	 */
-	@Override
-	public void setImageOrigin(final RealCoords newOrigin) {
-		centerX += newOrigin.x - originX;
-		centerY += newOrigin.y - originY;
-		originX = newOrigin.x;
-		originY = newOrigin.y;
-		repaint();
-	}
-
-	/** Pans the image by the given (X, Y) amount. */
-	@Override
-	public void pan(final double xDelta, final double yDelta) {
-		originX += xDelta;
-		originY += yDelta;
-		centerX += xDelta;
-		centerY += yDelta;
-		repaint();
-	}
-
-// </editor-fold>
-
 	@Override
 	public void updateImage() {
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -445,8 +539,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final int cursorCode = AWTCursors.getCursorCode(cursor);
 		setCursor(Cursor.getPredefinedCursor(cursorCode));
 	}
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Coordinate XForms, Origin >>> ">
 
 	// Converts this panel's coordinates into the original image coordinates
 	@Override
@@ -475,9 +567,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			originY >= 0 && (originY + getScreenImageHeight()) < getHeight());
 	}
 
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="<<< Rendering Quality >>>">
 
 	/**
 	 * <p>
@@ -509,10 +598,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private boolean isHighQualityRendering() {
 		return (highQualityRenderingEnabled && scale > HIGH_QUALITY_RENDERING_SCALE_THRESHOLD);
 	}
-
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Paint >>> ">
 
 	/**
 	 * Gets the bounds of the image area currently displayed in the panel (in
@@ -581,10 +666,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		drawNavigationImage(g);
 	}
 
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Resizing >>> ">
-
 	private void addResizeListener() {
 		// Handle component resizing
 		addComponentListener(new ComponentAdapter() {
@@ -621,191 +702,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// Used when the panel is resized
 	private void scaleOrigin() {
-		originX = originX * getWidth() / previousPanelSize.width;
-		originY = originY * getHeight() / previousPanelSize.height;
-		// TODO - center should be unchanged - right?
+		double newOriginX = originX * getWidth() / previousPanelSize.width;
+		double newOriginY = originY * getHeight() / previousPanelSize.height;
+		setOrigin(newOriginX, newOriginY);
 		repaint();
 	}
-
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Zooming >>> ">
-
-	/** Converts the specified zoom level to scale. */
-	private double zoomToScale(final double zoom) {
-		return initialScale * zoom;
-	}
-
-	/**
-	 * <p>
-	 * Gets the current zoom level.
-	 * </p>
-	 * 
-	 * @return the current zoom level
-	 */
-	@Override
-	public double getZoom() {
-		return scale / initialScale;
-	}
-
-	/**
-	 * <p>
-	 * Sets the zoom level used to display the image.
-	 * </p>
-	 * <p>
-	 * This method is used in programmatic zooming. The zooming center is the
-	 * point of the image closest to the center of the panel. After a new zoom
-	 * level is set the image is repainted.
-	 * </p>
-	 * 
-	 * @param newZoom the zoom level used to display this panel's image.
-	 */
-	@Override
-	public void setZoom(final double newZoom) {
-		if (newZoom < 0)
-			throw new IllegalArgumentException("zoom cannot be negative");
-		
-		if (newZoom == 0)  // let initial zoom code take care of this
-			repaint();
-		else { // zoom > 0
-			// TODO should these next ones not be prefaced with "image." but just "this." ???
-			double newCenterX = image.getWidth() / 2.0;
-			double newCenterY = image.getHeight() / 2.0;
-			setZoom(newZoom, newCenterX, newCenterY);
-		}
-	}
-
-	/**
-	 * <p>
-	 * Sets the zoom level used to display the image, and the zooming center,
-	 * around which zooming is done.
-	 * </p>
-	 * <p>
-	 * This method is used in programmatic zooming. After a new zoom level is set
-	 * the image is repainted.
-	 * </p>
-	 * 
-	 * @param newZoom the zoom level used to display this panel's image.
-	 */
-	@Override
-	public void setZoom(final double newZoom, final double ctrX, double ctrY) {
-		final RealCoords zoomingCenter = new RealCoords(ctrX, ctrY);
-		// FIXME - minor issue - in an image that does not have odd number of rows
-		//  or cols the zooming center is truncated and the image will likely
-		//  display a pixel off an edge of the screen. The zoomingCenter should
-		//  be RealCoords and all later calcs should utilze floating point math.
-		final RealCoords imageP = panelToImageCoords(zoomingCenter);
-		if (imageP.x < 0.0) {
-			imageP.x = 0.0;
-		}
-		if (imageP.y < 0.0) {
-			imageP.y = 0.0;
-		}
-		if (imageP.x >= image.getWidth()) {
-			imageP.x = image.getWidth() - 1.0;
-		}
-		if (imageP.y >= image.getHeight()) {
-			imageP.y = image.getHeight() - 1.0;
-		}
-		final RealCoords correctedP = imageToPanelCoords(imageP);
-		final double oldZoom = getZoom();
-		double calculatedScale = zoomToScale(newZoom);
-		if (scaleOutOfBounds(calculatedScale))
-			return;
-		newScale = calculatedScale;
-		scale = newScale;
-		final RealCoords panelP = imageToPanelCoords(imageP);
-		originX += (correctedP.getIntX() - (int) panelP.x);
-		originY += (correctedP.getIntY() - (int) panelP.y);
-		centerX = imageP.x;
-		centerY = imageP.y;
-		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
-		repaint();
-	}
-
-	/**
-	 * <p>
-	 * Sets a new zooming scale factor value.
-	 * </p>
-	 * 
-	 * @param newZoomFactor new zoom factor value
-	 */
-	@Override
-	public void setZoomFactor(double newZoomFactor) {
-		if (newZoomFactor <= 1)
-			throw new IllegalArgumentException("zoom factor must be > 1");
-		
-		zoomFactor = newZoomFactor;
-	}
-
-	@Override
-	public double getZoomFactor() {
-		return zoomFactor;
-	}
-	
-	private boolean scaleOutOfBounds(double desiredScale) {
-		// check if trying to zoom in too close
-		if (desiredScale > scale)
-		{
-			int maxDimension = Math.max(image.getWidth(), image.getHeight());
-
-			// if zooming the image would show less than one pixel of image data
-			if ((maxDimension / getZoom()) < 1)
-				return true;
-		}
-		
-		// check if trying to zoom out too far
-		if (desiredScale < scale)
-		{
-			// get boundaries of image in panel coords
-			final RealCoords nearCorner = imageToPanelCoords(new RealCoords(0,0));
-			final RealCoords farCorner = imageToPanelCoords(new RealCoords(image.getWidth(),image.getHeight()));
-
-			// if boundaries take up less than 25 pixels in either dimension 
-			if (((farCorner.x - nearCorner.x) < 25) || ((farCorner.y - nearCorner.y < 25)))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	private void zoomOnCenter() {
-		if (scaleOutOfBounds(newScale))
-		{
-			newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
-			return;  // DO NOT ZOOM ANY FARTHER
-		}
-		final double oldZoom = getZoom();
-		scale = newScale;
-		originX = centerX - (scale * (image.getWidth()/2.0));
-		originY = centerY - (scale * (image.getHeight()/2.0));
-		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
-		repaint();
-	}
-	
-	// Zooms an image in the panel by repainting it at the new zoom level.
-	// The current mouse position is the zooming center.
-	private void zoomImage() {
-		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
-		if (scaleOutOfBounds(newScale))
-		{
-			newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
-			return;  // DO NOT ZOOM ANY FARTHER
-		}
-		final double oldZoom = getZoom();
-		scale = newScale;
-		final RealCoords panelP = imageToPanelCoords(imageP);
-		originX += (mousePosition.x - (int) panelP.x);
-		originY += (mousePosition.y - (int) panelP.y);
-		centerX = imageP.x;
-		centerY = imageP.y;
-		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
-		repaint();
-	}
-
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc=" <<< NavigationImage >>> ">
 
 	private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's
 																															// width
@@ -941,10 +842,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		g.setColor(Color.white);
 		g.drawRect(x, y, width, height);
 	}
-
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc=" <<< Zoom Device >>> ">
 
 	// -- Zooming --
 
@@ -1086,11 +983,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 				zoomNavigationImage();
 			}
 			else if (isInImage(ptToCoords(p))) {
+				double newScale;
 				if (zoomIn)
-					newScale *= zoomFactor;
+					newScale = scale * zoomMultiplier;
 				else
-					newScale /= zoomFactor;
-				zoomImage();
+					newScale = scale / zoomMultiplier;
+				zoomOverMousePoint(newScale);
 			}
 		}
 
@@ -1112,16 +1010,14 @@ public class SwingNavigableImageCanvas extends JPanel implements
 				zoomNavigationImage();
 			}
 			else if (isInImage(ptToCoords(p))) {
+				double newScale;
 				if (zoomIn)
-					newScale *= zoomFactor;
+					newScale = scale * zoomMultiplier;
 				else
-					newScale /= zoomFactor;
-				zoomImage();
+					newScale = scale / zoomMultiplier;
+				zoomOverMousePoint(newScale);
 			}
 		}
 
 	}
-
-// </editor-fold>
-
 }
