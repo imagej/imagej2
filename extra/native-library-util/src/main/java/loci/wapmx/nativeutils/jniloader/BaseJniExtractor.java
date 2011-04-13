@@ -51,6 +51,7 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import ij.IJ;
+import java.io.FilenameFilter;
 
 import loci.wapmx.nativeutils.MxSysInfo;
 
@@ -58,6 +59,7 @@ import loci.wapmx.nativeutils.MxSysInfo;
  * @author Richard van der Hoff <richardv@mxtelecom.com>
  */
 public abstract class BaseJniExtractor implements JniExtractor {
+    private static final String JAVA_TMPDIR = "java.io.tmpdir";
     private static boolean debug = false;
     static {
         // initialise the debug switch
@@ -112,7 +114,6 @@ public abstract class BaseJniExtractor implements JniExtractor {
 
     /** {@inheritDoc} */
     public File extractJni(String libPath, String libname) throws IOException {
-        IJ.log("extractJni, path " + libPath + " lib " + libname);
         String mappedlibName = System.mapLibraryName(libname);
         System.out.println("mappedLib is " + mappedlibName);
         /*
@@ -129,7 +130,6 @@ public abstract class BaseJniExtractor implements JniExtractor {
         lib = libraryJarClass.getClassLoader().getResource(libPath + mappedlibName);
         if (null == lib) {
             if (mappedlibName.endsWith(".jnilib")) {
-                IJ.log("try dylib");
                 lib = this.getClass().getClassLoader().getResource(
                         libPath + mappedlibName.substring(0, mappedlibName.length() - 7) + ".dylib");
                 if (null != lib) {
@@ -138,9 +138,6 @@ public abstract class BaseJniExtractor implements JniExtractor {
             }
 
         }
-
-        System.out.println("jni dir is " + getJniDir().toString());
-        IJ.log("jni dir is " + getJniDir().toString());
 
         if (null != lib) {
             System.out.println("URL is " + lib.toString());
@@ -191,20 +188,77 @@ public abstract class BaseJniExtractor implements JniExtractor {
      * @return the extracted file
      * @throws IOException
      */
-    File extractResource(File dir, URL resource, String outputname) throws IOException {
+    File extractResource(File dir, URL resource, String outputName) throws IOException {
+
         InputStream in = resource.openStream(); //TODO there's also a getResourceAsStream
-        File outfile = new File(dir, outputname);
-        // Create a new file rather than writing into old file
-        File outfiletemp = File.createTempFile(outputname, null, getJniDir());
+
+        // create a temporary file with same suffix (i.e. ".dylib")
+        String prefix = outputName;
+        String suffix = null;
+        int lastDotIndex = outputName.lastIndexOf('.');
+        if (-1 != lastDotIndex) {
+            prefix = outputName.substring(0, lastDotIndex);
+            suffix = outputName.substring(lastDotIndex);
+        }
+        
+        // clean up leftover libraries from previous runs
+        deleteLeftoverFiles(prefix, suffix);
+
+        // make a temporary file with ".tmp" suffix
+        File outfile = File.createTempFile(prefix, null);
         if (debug)
             System.err.println("Extracting '" + resource + "' to '" + outfile.getAbsolutePath() + "'");
-        FileOutputStream out = new FileOutputStream(outfiletemp);
+
+        // copy resource stream to temporary file
+        FileOutputStream out = new FileOutputStream(outfile);
         copy(in, out);
         out.close();
         in.close();
-        outfiletemp.renameTo(outfile);
+
+        // rename temporary file with our suffix
+        // (necessary because createTempFile only guarantees three chars of suffix)
+        File tmpDirectory = new File(System.getProperty(JAVA_TMPDIR));
+        outfile.renameTo(new File(tmpDirectory, prefix + suffix));
+
+        // note that this doesn't always work:
         outfile.deleteOnExit();
+        
         return outfile;
+    }
+
+    /**
+     * Looks in the temporary directory for leftover versions of temporary shared
+     * libraries.
+     * <p>
+     * If a temporary shared library is in use by another instance it won't delete.
+     * <p>
+     * There is a very unlikely race condition if another instance created a
+     * temporary shared library and now I delete it just before it tries to load
+     * it.
+     * <p>
+     * Another issue is that createTempFile only guarantees to use the first
+     * three characters of the prefix, so I could delete a similarly-named
+     * temporary shared library if I haven't loaded it yet.
+     *
+     * @param prefix
+     * @param suffix
+     */
+    void deleteLeftoverFiles(final String prefix, final String suffix) {
+        File tmpDirectory = new File(System.getProperty(JAVA_TMPDIR));
+        File[] files = tmpDirectory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith(prefix) && name.endsWith(suffix);
+            }
+        });
+        for (File file : files) {
+            // attempt to delete
+            try {
+                file.delete();
+            }
+            catch (SecurityException e) {
+                // not likely
+            }
+        }
     }
 
     /**
