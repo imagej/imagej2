@@ -226,8 +226,7 @@ public class NativeLibraryUtil {
                 // do extraction
                 File extractedFile = jniExtractor.extractJni
                         (getPlatformLibraryPath(), getVersionedLibraryName(libName));
-
-                IJ.log("extracted, now do a System.load of " + extractedFile.getPath());
+                extractedFile.deleteOnExit();
 
                 // load extracted library from temporary directory
                 System.load(extractedFile.getPath());
