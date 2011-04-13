@@ -36,13 +36,10 @@ package imagej.nativelibrary;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.IllegalAccessException;
-import java.lang.NoSuchFieldException;
 import java.lang.reflect.Field;
 
 import ij.IJ;
 
-import loci.wapmx.nativeutils.MxSysInfo;
 import loci.wapmx.nativeutils.jniloader.DefaultJniExtractor;
 import loci.wapmx.nativeutils.jniloader.JniExtractor;
 
@@ -55,7 +52,6 @@ public class NativeLibraryUtil {
             { UNKNOWN, LINUX_32, LINUX_64, WINDOWS_32, WINDOWS_64, OSX_32, OSX_64, };
     private static Architecture s_architecture = Architecture.UNKNOWN;
     private static final String DELIM = "/";
-
     private static final String USER_TMPDIR = "java.library.tmpdir";
     private static final String JAVA_TMPDIR = "java.io.tmpdir";
     private static final String JAVA_PATH = "java.library.path";
@@ -226,7 +222,6 @@ public class NativeLibraryUtil {
                 // do extraction
                 File extractedFile = jniExtractor.extractJni
                         (getPlatformLibraryPath(), getVersionedLibraryName(libName));
-                extractedFile.deleteOnExit();
 
                 // load extracted library from temporary directory
                 System.load(extractedFile.getPath());
