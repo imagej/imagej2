@@ -204,8 +204,12 @@ public abstract class BaseJniExtractor implements JniExtractor {
         // clean up leftover libraries from previous runs
         deleteLeftoverFiles(prefix, suffix);
 
-        // make a temporary file with ".tmp" suffix
-        File outfile = File.createTempFile(prefix, null);
+        // make a temporary file with our prefix and suffix
+        //
+        // (CreateTempFile javadoc only guarantees 3 characters of suffix [due
+        // to 8.3 filename legacy issues].  Theoretically a problem for ".dylib",
+        // but not in practice.)
+        File outfile = File.createTempFile(prefix, suffix);
         if (debug)
             System.err.println("Extracting '" + resource + "' to '" + outfile.getAbsolutePath() + "'");
 
@@ -214,11 +218,6 @@ public abstract class BaseJniExtractor implements JniExtractor {
         copy(in, out);
         out.close();
         in.close();
-
-        // rename temporary file with our suffix
-        // (necessary because createTempFile only guarantees three chars of suffix)
-        File tmpDirectory = new File(System.getProperty(JAVA_TMPDIR));
-        outfile.renameTo(new File(tmpDirectory, prefix + suffix));
 
         // note that this doesn't always work:
         outfile.deleteOnExit();
