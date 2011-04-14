@@ -83,6 +83,15 @@ import javax.swing.SwingUtilities;
 // TODO: if an image is too big to completely fit on screen then scale to fit
 // within screen and set initialScale appropriately
 
+// TODO: make sure coordinate spaces are not getting mixed up
+//   All pan and zoom public methods should take and return canvas coord
+//   space points. Check this is the case and determine when to work
+//   relative to panel width and when to work relative to image width
+//   (as an example problem area).
+//   Other examples: zoomIn(scale,ctr) and zoomOut(scale,ctr). currently ctr
+//   treated like image coords I think when in reality it is probably panel
+//   coords.
+
 /**
  * A Swing implementation of the navigable image canvas.
  *
@@ -243,6 +252,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return false;
 	}
 
+	// ctrX and ctrY in canvas/panel coord space
 	private void doZoom(double newScale, double ctrX, double ctrY) {
 		if (scaleOutOfBounds(newScale))
 			return;  // DO NOT ZOOM ANY FARTHER
@@ -256,15 +266,55 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		repaint();
 	}
 	
+/*  old version that seemed to work
+      // Zooms an image in the panel by repainting it at the new zoom level.
+688	        // The current mouse position is the zooming center.
+689	        private void zoomImage() {
+690	                final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+691	                if (scaleOutOfBounds(newScale))
+692	                {
+693	                        newScale = scale;  // reset so that mouse wheel does not alter scale incorrectly
+694	                        return;  // DO NOT ZOOM ANY FARTHER
+695	                }
+696	                final double oldZoom = getZoom();
+697	                scale = newScale;
+698	                final RealCoords panelP = imageToPanelCoords(imageP);
+699	                originX += (mousePosition.x - (int) panelP.x);
+700	                originY += (mousePosition.y - (int) panelP.y);
+701	                Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
+702	                repaint();
+703	        }
+ */
 	// Zooms an image in the panel by repainting it at the new zoom level.
 	// The current mouse position is the zooming center.
 	private void zoomOverMousePoint(double newScale) {
-		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
-		Log.debug("zooming over mouse ("+mousePosition.x+","+mousePosition.y+") panel ("+imageP.x+","+imageP.y+")");
-		doZoom(newScale, imageP.x, imageP.y);
 		// HACK attempt that always zooms over center no matter where mouse is (pans it as needed)
 		//Log.debug("zooming out over mouse ("+mousePosition.x+","+mousePosition.y+")");
 		//doZoom(newScale, mousePosition.x, mousePosition.y);
+		
+		/* first implementation - wrong
+		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+		Log.debug("zooming over mouse ("+mousePosition.x+","+mousePosition.y+") panel ("+imageP.x+","+imageP.y+")");
+		doZoom(newScale, imageP.x, imageP.y);
+		// CURRENTLY this centers the current mouse pos to appear at center of window.
+		//   But the mouse position has not changed. So further zoom in will bounce the
+		//   image around. This is quite apparent when zoomed out a lot and trying to
+		//   zoom back in.
+		*/
+		
+		// What needs to be done: when zooming in keep the point under the current
+		// mouse position to appear on next level zoomed image in the same spot. So
+		// the mouse cursor still points at same spot. And scrolling in on a point
+		// works predictably.
+		
+		RealCoords mousePosImgCoords = panelToImageCoords(ptToCoords(mousePosition));
+		double dx = centerX - mousePosImgCoords.x;
+		double dy = centerY - mousePosImgCoords.y;
+		double newDx = dx * (scale / newScale);
+		double newDy = dy * (scale / newScale);
+		double newCtrX = mousePosImgCoords.x + newDx;
+		double newCtrY = mousePosImgCoords.y + newDy;
+		doZoom(newScale, newCtrX, newCtrY);
 	}
 
 	// -- PUBLIC ZOOM CODE METHODS --
@@ -352,14 +402,14 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		if (newZoom < 0)
 			throw new IllegalArgumentException("zoom cannot be negative");
 		
-		double newCenterX = image.getWidth() / 2.0;
-		double newCenterY = image.getHeight() / 2.0;
-		
 		double zoom = newZoom;
-		if (newZoom == 0)
-			zoom = initialScale;
+		if (zoom == 0)
+			zoom = 1;
 		
-		setZoom(zoom, newCenterX, newCenterY);
+		double newCenterX = getWidth() / 2.0;
+		double newCenterY = getHeight() / 2.0;
+		
+		doZoom(zoom, newCenterX, newCenterY);
 	}
 
 	/**
