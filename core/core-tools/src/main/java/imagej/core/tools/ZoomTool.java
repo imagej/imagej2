@@ -38,14 +38,12 @@ import imagej.display.Display;
 import imagej.display.NavigableImageCanvas;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsButtonEvent;
-import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 import imagej.util.Rect;
 
 /**
