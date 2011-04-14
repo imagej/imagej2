@@ -67,7 +67,8 @@ public class ZoomToFitSelection implements ImageJPlugin {
 
 		Dataset dataset = display.getDataset();
 		
-		Rect selection = dataset.getSelection();  // NOTE - must be in pixel coords!
+	  // NOTE - must be in panel/canvas coords!
+		Rect selection = dataset.getSelection();
 		
 		if ((selection.width > 0) && (selection.height > 0))
 			display.zoomToFit(selection);

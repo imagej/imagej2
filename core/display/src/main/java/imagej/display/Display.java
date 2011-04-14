@@ -62,7 +62,7 @@ public interface Display extends BasePlugin {
 
 	int[] getCurrentPlanePosition();
 	
-	// -- Pan methods --
+	// -- Pan methods -- x's & y's in canvas coord space
 
 	void pan(double x, double y);
 	
@@ -72,7 +72,7 @@ public interface Display extends BasePlugin {
 
 	double getPanY();
 
-	// -- Zoom methods --
+	// -- Zoom methods -- x's, y's, & Rect's in canvas coord space
 
 	void setZoom(double factor);
 	
