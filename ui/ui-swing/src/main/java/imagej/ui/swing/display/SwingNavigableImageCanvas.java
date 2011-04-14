@@ -44,6 +44,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.util.IntCoords;
+import imagej.util.Log;
 import imagej.util.RealCoords;
 import imagej.util.Rect;
 
@@ -138,7 +139,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		this();
 		setImage(image);
 		setOrigin(0, 0);
-		setCenter(image.getWidth()/2.0, image.getHeight()/2.0);
+		setCenter(getWidth()/2.0, getHeight()/2.0);
 	}
 
 	private void setOrigin(double x, double y) {
@@ -176,7 +177,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	// Called from paintComponent() when a new image is set.
 	private void initializeParams() {
 		final double imgWidth = image.getWidth();
-		final double imgHeight = image.getWidth();
+		final double imgHeight = image.getHeight();
 		final double xScale = getWidth() / imgWidth;
 		final double yScale = getHeight() / imgHeight;
 		initialScale = Math.min(xScale, yScale);
@@ -191,7 +192,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	/** Centers the current image in the panel. */
 	private void centerImage() {
-		double newCenterX = getWidth() / 2.0;
+		double newCenterX = getWidth() / 2.0;  // image.getWidth() rather than getWidth()? Trying it show the answer to be NO
 		double newCenterY = getHeight() / 2.0;
 		setCenter(newCenterX, newCenterY);
 		double newOriginX = newCenterX - (getScreenImageWidth() / 2.0);
@@ -216,11 +217,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	
 	// -- PRIVATE ZOOM CODE HELPERS --
 	
-	/** Converts the specified zoom level to scale. */
-	private double zoomToScale(final double zoom) {
-		return initialScale * zoom;
-	}
-
 	private boolean scaleOutOfBounds(double desiredScale) {
 		// check if trying to zoom in too close
 		if (desiredScale > scale)
@@ -253,7 +249,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final double oldZoom = getZoom();
 		scale = newScale;
 		setCenter(ctrX, ctrY);
-		double newOriginX = centerX - (scale * (image.getWidth()/2.0));  // TODO - divide by scale ???? 
+		double newOriginX = centerX - (scale * (image.getWidth()/2.0)); 
 		double newOriginY = centerY - (scale * (image.getHeight()/2.0)); 
 		setOrigin(newOriginX, newOriginY);
 		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
@@ -264,7 +260,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	// The current mouse position is the zooming center.
 	private void zoomOverMousePoint(double newScale) {
 		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
+		Log.debug("zooming over mouse ("+mousePosition.x+","+mousePosition.y+") panel ("+imageP.x+","+imageP.y+")");
 		doZoom(newScale, imageP.x, imageP.y);
+		// HACK attempt that always zooms over center no matter where mouse is (pans it as needed)
+		//Log.debug("zooming out over mouse ("+mousePosition.x+","+mousePosition.y+")");
+		//doZoom(newScale, mousePosition.x, mousePosition.y);
 	}
 
 	// -- PUBLIC ZOOM CODE METHODS --
@@ -379,8 +379,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final RealCoords zoomingCenter = new RealCoords(ctrX, ctrY);
 		RealCoords imageP = panelToImageCoords(zoomingCenter);
 		clipToImageBoundaries(imageP); 
-		//double calculatedScale = zoomToScale(newZoom);
-		//doZoom(calculatedScale, imageP.x, imageP.y);
 		doZoom(newZoom, imageP.x, imageP.y);
 	}
 
