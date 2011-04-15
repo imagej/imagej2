@@ -46,58 +46,76 @@ public interface NavigableImageCanvas extends ImageCanvas {
 
 	/***
 	 * This is an interface extracted from NavigableImagePanel GBH, March 17, 2011
+	 * Modified later by BDZ
 	 */
 
 	// set EventDispatcher as event listener on this - esp. for key, mouse events
 	void addEventDispatcher(EventDispatcher dispatcher);
 
+	/** get the x coordinate of the image space point currently displayed in
+	 * the upper left corner of the window. Unlike the setters these results are
+	 * in image coordinate space.
+	 */
 	double getPanX();
 	
+	/** get the y coordinate of the image space point currently displayed in
+	 * the upper left corner of the window. Unlike the setters these results are
+	 * in image coordinate space.
+	 */
 	double getPanY();
 	
+	/** get the x coordinate of the image space point currently displayed in
+	 * the center of the window. Unlike the setters these results are
+	 * in image coordinate space.
+	 */
+	double getZoomCtrX();
+	
+	/** get the y coordinate of the image space point currently displayed in
+	 * the center of the window. Unlike the setters these results are
+	 * in image coordinate space.
+	 */
+	double getZoomCtrY();
+
 	/**
-	 * <p>
 	 * Gets the current zoom level.
-	 * </p>
 	 * 
 	 * @return the current zoom level
 	 */
 	double getZoom();
 
 	/**
-	 * <p>
 	 * Gets the current zoom device.
-	 * </p>
 	 */
 	// ZoomDevice getZoomDevice();
 
 	/**
-	 * <p>
 	 * Indicates whether the high quality rendering feature is enabled.
-	 * </p>
 	 * 
 	 * @return true if high quality rendering is enabled, false otherwise.
 	 */
 	boolean isHighQualityRenderingEnabled();
 
 	/**
-	 * <p>
 	 * Indicates whether navigation image is enabled.
-	 * <p>
 	 * 
 	 * @return true when navigation image is enabled, false otherwise.
 	 */
 	boolean isNavigationImageEnabled();
 
 	/**
-	 * Pans the image by the given (X, Y) amount.
+	 * Pans the image by the given (X, Y) amount. Note that X & Y are in
+	 * panel coordinate space (pixels).
 	 */
 	void pan(double xDelta, double yDelta);
 
 	/**
-	 * <p>
+	 * Pans the image to the given (X, Y). Note that X & Y are in
+	 * panel coordinate space (pixels).
+	 */
+	void setPan(double x, double y);
+
+	/**
 	 * Enables/disables high quality rendering.
-	 * </p>
 	 * 
 	 * @param enabled enables/disables high quality rendering
 	 */
@@ -115,8 +133,6 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	 * @param enabled true when navigation image is enabled, false otherwise.
 	 */
 	void setNavigationImageEnabled(boolean enabled);
-
-	void setPan(double x, double y);
 
 	/**
 	 * <p>
@@ -149,18 +165,14 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	void zoomToFit(Rect rectangle);
 	
 	/**
-	 * <p>
 	 * Sets a new zoom device.
-	 * </p>
 	 * 
 	 * @param newZoomDevice specifies the type of a new zoom device.
 	 */
 	// void setZoomDevice(ZoomDevice newZoomDevice);
 
 	/**
-	 * <p>
 	 * Sets a new zooming scale factor value.
-	 * </p>
 	 * 
 	 * @param newZoomFactor new zoom factor value
 	 */
