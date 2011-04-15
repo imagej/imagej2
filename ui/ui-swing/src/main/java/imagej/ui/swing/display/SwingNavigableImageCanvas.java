@@ -59,6 +59,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -79,9 +80,6 @@ import javax.swing.SwingUtilities;
 
 // TODO: the navigation preview is disabled. Also its zoom scaling has not
 // been updated to mirror the overall image zoom scaling.
-
-// TODO: if an image is too big to completely fit on screen then scale to fit
-// within screen and set initialScale appropriately
 
 // TODO: make sure coordinate spaces are not getting mixed up
 //   All pan and zoom public methods should take and return canvas coord
@@ -108,6 +106,7 @@ import javax.swing.SwingUtilities;
 public class SwingNavigableImageCanvas extends JPanel implements
 	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
 {
+	private static final double MAX_SCREEN_PROPORTION = 0.85;
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
 		// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
@@ -185,23 +184,42 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// Called from paintComponent() when a new image is set.
 	private void initializeParams() {
-		final double imgWidth = image.getWidth();
-		final double imgHeight = image.getHeight();
-		final double xScale = getWidth() / imgWidth;
-		final double yScale = getHeight() / imgHeight;
-		initialScale = Math.min(xScale, yScale);
+		final double imageWidth = image.getWidth();
+		final double imageHeight = image.getHeight();
+		final Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
+		double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
+		double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
+		// is image too big to comfortably fit on screen??
+		if ((imageWidth > maxAllowedWidth) ||	(imageHeight > maxAllowedHeight)) {
+			double windowAspect = maxAllowedWidth / maxAllowedHeight;
+			double imageAspect = imageWidth / imageHeight;
+			if (imageAspect > windowAspect) {
+				// width is the problem dimension
+				initialScale = maxAllowedWidth / imageWidth;
+			}
+			else { // imageAspect <= windowAspect
+				// height is the problem dimension
+				initialScale = maxAllowedHeight / imageHeight;
+			}
+		}
+		else {  // image fits on screen just fine at 1:1
+			initialScale = 1;
+		}
 		scale = initialScale;
 		setOrigin(0,0);
-		setCenter(imgWidth / 2.0, imgHeight / 2.0);
+		setCenter(imageWidth / 2.0, imageHeight / 2.0);
 
 		if (isNavigationImageEnabled()) {
 			createNavigationImage();
 		}
+		
+		Events.publish(new ZoomEvent(this, 0, initialScale));
 	}
 
 	/** Centers the current image in the panel. */
 	private void centerImage() {
-		double newCenterX = getWidth() / 2.0;  // image.getWidth() rather than getWidth()? Trying it show the answer to be NO
+	  // image.getWidth() rather than getWidth()? Trying it show the answer to be NO
+		double newCenterX = getWidth() / 2.0;
 		double newCenterY = getHeight() / 2.0;
 		setCenter(newCenterX, newCenterY);
 		double newOriginX = newCenterX - (getScreenImageWidth() / 2.0);
@@ -336,7 +354,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 */
 	@Override
 	public double getZoom() {
-		return scale / initialScale;
+		return scale; //  / initialScale;
 	}
 
 	@Override
@@ -404,7 +422,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		
 		double zoom = newZoom;
 		if (zoom == 0)
-			zoom = 1;
+			zoom = initialScale;
 		
 		double newCenterX = getWidth() / 2.0;
 		double newCenterY = getHeight() / 2.0;
@@ -527,9 +545,27 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	public void setImage(final BufferedImage newImage) {
 		final BufferedImage oldImage = image;
 		image = toCompatibleImage(newImage);
-		int imageW = image.getWidth();
-		int imageH = image.getHeight();
-		setPreferredSize(new Dimension(imageW, imageH));
+		double imageWidth = image.getWidth();
+		double imageHeight = image.getHeight();
+		Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
+		double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
+		double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
+		// if image is too big to fit on screen comfortably
+		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
+			double windowAspect = maxAllowedWidth / maxAllowedHeight;
+			double imageAspect = imageWidth / imageHeight;
+			if (imageAspect > windowAspect) {
+				// width is the problem dimension
+				imageHeight *= maxAllowedWidth / imageWidth;
+				imageWidth = maxAllowedWidth;
+			}
+			else { // imageAspect <= windowAspect
+				// height is the problem dimension
+				imageWidth *= maxAllowedHeight / imageHeight;
+				imageHeight = maxAllowedHeight;
+			}
+		}
+		setPreferredSize(new Dimension((int)Math.ceil(imageWidth), (int)Math.ceil(imageHeight)));
 		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 		repaint();
 	}
@@ -684,25 +720,28 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	@Override
 	protected void paintComponent(final Graphics g) {
 		super.paintComponent(g); // Paints the background
-		if (image == null) {
+		
+		if (image == null)
 			return;
-		}
-		if (scale == 0.0) {
+		
+		if (scale == 0.0)
 			initializeParams();
-		}
+		
 		if (isHighQualityRendering()) {
 			final Rectangle rect = getImageClipBounds();
-			if (rect == null || rect.width == 0 || rect.height == 0) { // no part of
-																																	// image is
-																																	// displayed
-																																	// in the
-																																	// panel
+
+			// if no part of image is displayed in the panel
+			if (rect == null || rect.width == 0 || rect.height == 0) {
 				return;
 			}
+			
 			final BufferedImage subimage =
 				image.getSubimage(rect.x, rect.y, rect.width, rect.height);
+			
 			final Graphics2D g2 = (Graphics2D) g;
+			
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, INTERPOLATION_TYPE);
+			
 			g2.drawImage(subimage, (int)Math.max(0, originX), (int)Math.max(0, originY), Math
 				.min((int) (subimage.getWidth() * scale), getWidth()), Math.min(
 				(int) (subimage.getHeight() * scale), getHeight()), null);
