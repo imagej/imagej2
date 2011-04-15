@@ -585,10 +585,18 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 */
 	@Override
 	public void setZoom(final double newZoom, final double ctrX, double ctrY) {
+		if (newZoom < 0)
+			throw new IllegalArgumentException("zoom cannot be negative");
+
+		double zoom = newZoom;
+		if (zoom == 0)
+			zoom = initialScale;
+
 		final RealCoords zoomingCenter = new RealCoords(ctrX, ctrY);
 		RealCoords imageP = panelToImageCoords(zoomingCenter);
 		clipToImageBoundaries(imageP); 
-		doZoom(newZoom, imageP.x, imageP.y);
+
+		doZoom(zoom, imageP.x, imageP.y);
 	}
 
 	public void zoomIn() {
