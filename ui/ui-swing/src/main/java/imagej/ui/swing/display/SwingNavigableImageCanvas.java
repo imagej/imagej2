@@ -83,12 +83,10 @@ import javax.swing.SwingUtilities;
 
 // TODO: make sure coordinate spaces are not getting mixed up
 //   All pan and zoom public methods should take and return canvas coord
-//   space points. Check this is the case and determine when to work
+//   space points. Check this is the case. Also determine when to work
 //   relative to panel width and when to work relative to image width
-//   (as an example problem area).
-//   Other examples: zoomIn(scale,ctr) and zoomOut(scale,ctr). currently ctr
-//   treated like image coords I think when in reality it is probably panel
-//   coords.
+//   (as an example problem area). And note the setpan() and pan() routines
+//   are expecting image coord space values as input. Probably bad.
 
 /**
  * A Swing implementation of the navigable image canvas.
@@ -174,12 +172,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// -- PRIVATE HELPERS -- 
 	
-	private int getScreenImageWidth() {
-		return (int) (scale * image.getWidth());
+	private double getScreenImageWidth() {
+		return (scale * image.getWidth());
 	}
 
-	private int getScreenImageHeight() {
-		return (int) (scale * image.getHeight());
+	private double getScreenImageHeight() {
+		return (scale * image.getHeight());
 	}
 
 	// Called from paintComponent() when a new image is set.
@@ -243,6 +241,15 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	}
 	
 	// -- PRIVATE ZOOM CODE HELPERS --
+
+	private boolean centerOutOfBounds(double ctrX, double ctrY) {
+		// TODO - implement
+		//   It seems using ZoomTool mouse clicking to zoom far out
+		//   and then clicking to zoom in causes major image jumping.
+		//   Origin is getting set negative. Might be related to this
+		//   bounds check needed.
+		return false;
+	}
 	
 	private boolean scaleOutOfBounds(double desiredScale) {
 		// check if trying to zoom in too close
@@ -272,7 +279,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// ctrX and ctrY in canvas/panel coord space
 	private void doZoom(double newScale, double ctrX, double ctrY) {
-		if (scaleOutOfBounds(newScale))
+		if ((centerOutOfBounds(ctrX, ctrY)) || (scaleOutOfBounds(newScale)))
 			return;  // DO NOT ZOOM ANY FARTHER
 		final double oldZoom = getZoom();
 		scale = newScale;
@@ -337,10 +344,14 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// -- PUBLIC ZOOM CODE METHODS --
 
+	// IN IMAGE COORDS
+	@Override
 	public double getZoomCtrX() {
 		return centerX;
 	}
 
+	// IN IMAGE COORDS
+	@Override
 	public double getZoomCtrY() {
 		return centerY;
 	}
@@ -382,7 +393,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	}
 
 	public void zoomIn(double newCenterX, double newCenterY) {
-		doZoom(scale * zoomMultiplier, newCenterX, newCenterY);
+		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
+		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
+		doZoom(scale * zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
 	}
 
 	public void zoomOut() {
@@ -390,16 +403,27 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	}
 
 	public void zoomOut(double newCenterX, double newCenterY) {
-		doZoom(scale / zoomMultiplier, newCenterX, newCenterY);
+		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
+		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
+		doZoom(scale / zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
 	}
 
+	// TODO - this can be tested via dragging an invisible window
+	//   when the zoom tool is activated. Note that it looks
+	//   incorrect at the moment. Debug later.
 	@Override
 	public void zoomToFit(Rect region) {
-		double xRatio = image.getWidth() / region.width;
-		double yRatio = image.getHeight() / region.height;
+		// region is in panel coords
+		// calc new scale & center from image coord space values
+		RealCoords regionOrigin = new RealCoords(region.x, region.y);
+		RealCoords regionOriginImageCoords = panelToImageCoords(regionOrigin);
+		RealCoords regionSize = new RealCoords(region.width, region.height);
+		RealCoords regionSizeImageCoords = panelToImageCoords(regionSize);
+		double xRatio = image.getWidth() / regionSizeImageCoords.x;
+		double yRatio = image.getHeight() / regionSizeImageCoords.y;
 		double newScale = Math.max(xRatio, yRatio);
-		double newCtrX = region.x + 0.5 * region.width;
-		double newCtrY = region.y + 0.5 * region.height;
+		double newCtrX = regionOriginImageCoords.x + 0.5*regionSizeImageCoords.x;
+		double newCtrY = regionOriginImageCoords.y + 0.5*regionSizeImageCoords.y;
 		doZoom(newScale, newCtrX, newCtrY);
 	}
 
@@ -452,27 +476,41 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// -- PAN CODE --
 	
+	// IN IMAGE COORDS
 	@Override
 	public double getPanX() {
 		return originX;
 	}
 
+	// IN IMAGE COORDS
 	@Override
 	public double getPanY() {
 		return originY;
 	}
 
+	// TODO - which coord space this should be working in is not clear
+	//   Coming from PanTool it looks like these are in steps of 10 panel units
 	/** Pans the image by the given (X, Y) amount. */
 	@Override
 	public void pan(final double xDelta, final double yDelta) {
-		setOrigin(originX + xDelta, originY + yDelta);
-		setCenter(centerX + xDelta, centerY + yDelta);
+		RealCoords panelCoords = new RealCoords(xDelta, yDelta);
+		RealCoords imageCoords = panelToImageCoords(panelCoords);
+		setOrigin(originX + imageCoords.x, originY + imageCoords.y);
+		setCenter(centerX + imageCoords.x, centerY + imageCoords.y);
 		repaint();
 	}
 
+	// TODO - which coord space this should be working in is not clear
+	//   Coming from PanTool it looks like these are in steps of 10 panel units
 	@Override
 	public void setPan(double ox, double oy) {
-		pan(ox - originX, oy - originY);
+		RealCoords panelCoords = new RealCoords(ox, oy);
+		RealCoords imageCoords = panelToImageCoords(panelCoords);
+		setCenter(
+			centerX + (imageCoords.x - originX),
+			centerY + (imageCoords.y - originY));
+		setOrigin(imageCoords.x, imageCoords.y);
+		repaint();
 	}
 	
 	private void addMouseListeners() {
@@ -745,10 +783,18 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			g2.drawImage(subimage, (int)Math.max(0, originX), (int)Math.max(0, originY), Math
 				.min((int) (subimage.getWidth() * scale), getWidth()), Math.min(
 				(int) (subimage.getHeight() * scale), getHeight()), null);
+			
+			Log.debug("HIGH QUALITY CASE");
 		}
 		else {
-			g.drawImage(image, (int)originX, (int)originY, getScreenImageWidth(),
-				getScreenImageHeight(), null);
+			g.drawImage(
+				image,
+				(int) originX,
+				(int) originY,
+				(int) getScreenImageWidth(),
+				(int) getScreenImageHeight(),
+				null);
+			Log.debug("LOW QUALITY CASE origin("+originX+","+originY+")  extent("+getScreenImageWidth()+","+getScreenImageHeight()+")");
 		}
 		drawNavigationImage(g);
 	}
@@ -839,8 +885,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 
 	// Converts the navigation image coordinates into the zoomed image coordinates
 	private IntCoords navToZoomedImageCoords(final IntCoords p) {
-		final int x = p.x * getScreenImageWidth() / getScreenNavImageWidth();
-		final int y = p.y * getScreenImageHeight() / getScreenNavImageHeight();
+		final int x = (int) (p.x * getScreenImageWidth() / getScreenNavImageWidth());
+		final int y = (int) (p.y * getScreenImageHeight() / getScreenNavImageHeight());
 		return new IntCoords(x, y);
 	}
 
@@ -922,10 +968,10 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			(-originX * getScreenNavImageWidth() / getScreenImageWidth());
 		final int y = (int)
 			(-originY * getScreenNavImageHeight() / getScreenImageHeight());
-		final int width =
-			getWidth() * getScreenNavImageWidth() / getScreenImageWidth();
-		final int height =
-			getHeight() * getScreenNavImageHeight() / getScreenImageHeight();
+		final int width = (int)
+			(getWidth() * getScreenNavImageWidth() / getScreenImageWidth());
+		final int height = (int)
+			(getHeight() * getScreenNavImageHeight() / getScreenImageHeight());
 		g.setColor(Color.white);
 		g.drawRect(x, y, width, height);
 	}
