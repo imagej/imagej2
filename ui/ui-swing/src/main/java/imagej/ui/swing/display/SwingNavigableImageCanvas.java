@@ -109,6 +109,9 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	private static final Object INTERPOLATION_TYPE =
 		// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;  // this is like IJ1
+	private static final GraphicsConfiguration CONFIGURATION =
+		GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+			.getDefaultConfiguration();
 	private boolean highQualityRenderingEnabled = true;
 	private double zoomMultiplier = 1.2;
 	private BufferedImage image;
@@ -148,6 +151,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		setCenter(getWidth()/2.0, getHeight()/2.0);
 	}
 
+	// -- PRIVATE HELPERS -- 
+	
 	private void setOrigin(double x, double y) {
 		originX = x;
 		originY = y;
@@ -158,26 +163,153 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		centerY = y;
 	}
 
-	// -- BASIC ACCESSORS --
-	
-	@Override
-	public int getImageWidth() {
-		return image.getWidth();
+	private void addMouseListeners()
+	{
+		addMouseListener(
+			new MouseAdapter()
+			{
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void mousePressed(final MouseEvent e)
+				{
+					if (SwingUtilities.isLeftMouseButton(e))
+					{
+						if (isInNavigationImage(e.getPoint()))
+						{
+							final Point p = e.getPoint();
+							final RealCoords realCoords = ptToCoords(p);
+							final IntCoords intCoords = new IntCoords(realCoords.getIntX(), realCoords.getIntY());
+							displayImageAt(intCoords);
+						}
+					}
+				}
+
+			}
+		);
+
+		addMouseMotionListener(
+			new MouseMotionListener()
+			{
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void mouseDragged(final MouseEvent e)
+				{
+					if (SwingUtilities.isLeftMouseButton(e) &&
+							!isInNavigationImage(e.getPoint()))
+					{
+					// TODO - clean up this section, to fully remove pan support
+					// in favor of the pan tool way of doing things
+//	  				Point p = e.getPoint();
+//	  				moveImage(p);
+					}
+				}
+
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void mouseMoved(final MouseEvent e)
+				{
+				// we need the mouse position so that after zooming
+				// that position of the image is maintained
+					mousePosition = e.getPoint();
+//				Coords coord = panelToImageCoords(mousePosition);
+//
+//				// Display current pixel value in StatusBar
+//				//sampleImage.getRaster().getDataBuffer(). .getPixel(coord.getIntX(), coord.getIntY(), dArray)
+//				if (isInImage(mousePosition)) {
+//					int value = image.getRGB(coord.getIntX(), coord.getIntY());
+//					Events.publish(new StatusEvent("Pixel: (" + coord.getIntX() + "," + coord.getIntY() + ") "
+//							+ pixelARGBtoString(value)));
+//				}
+				}
+			}
+		);
 	}
 
-	@Override
-	public int getImageHeight() {
-		return image.getHeight();
+	private void addResizeListener() {
+		// Handle component resizing
+		addComponentListener(new ComponentAdapter() {
+
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void componentResized(final ComponentEvent e) {
+				if (scale > 0.0) {
+					if (isFullImageInPanel()) {
+						centerImage();
+					}
+					else if (isImageEdgeInPanel()) {
+						scaleOrigin();
+					}
+					if (isNavigationImageEnabled()) {
+						createNavigationImage();
+					}
+					repaint();
+				}
+				previousPanelSize = getSize();
+			}
+
+		});
 	}
 
-	// -- PRIVATE HELPERS -- 
+	/** Centers the current image in the panel. */
+	private void centerImage() {
+	  // image.getWidth() rather than getWidth()? Trying it show the answer to be NO
+		double newCenterX = getWidth() / 2.0;
+		double newCenterY = getHeight() / 2.0;
+		setCenter(newCenterX, newCenterY);
+		double newOriginX = newCenterX - (getScreenImageWidth() / 2.0);
+		double newOriginY = newCenterY - (getScreenImageHeight() / 2.0);
+		setOrigin(newOriginX, newOriginY);
+	}
+
+	private void clipToImageBoundaries(RealCoords coords) {
+		if (coords.x < 0.0) {
+			coords.x = 0.0;
+		}
+		if (coords.y < 0.0) {
+			coords.y = 0.0;
+		}
+		if (coords.x >= image.getWidth()) {
+			coords.x = image.getWidth() - 1.0;
+		}
+		if (coords.y >= image.getHeight()) {
+			coords.y = image.getHeight() - 1.0;
+		}
+	}
 	
-	private double getScreenImageWidth() {
-		return (scale * image.getWidth());
+	/**
+	 * Gets the bounds of the image area currently displayed in the panel (in
+	 * image coordinates).
+	 */
+	private Rectangle getImageClipBounds() {
+		final RealCoords startCoords = panelToImageCoords(new RealCoords(0, 0));
+		final RealCoords endCoords =
+			panelToImageCoords(new RealCoords(getWidth() - 1, getHeight() - 1));
+		final int panelX1 = startCoords.getIntX();
+		final int panelY1 = startCoords.getIntY();
+		final int panelX2 = endCoords.getIntX();
+		final int panelY2 = endCoords.getIntY();
+		// No intersection?
+		if (panelX1 >= image.getWidth() || panelX2 < 0 ||
+			panelY1 >= image.getHeight() || panelY2 < 0)
+		{
+			return null;
+		}
+
+		final int x1 = (panelX1 < 0) ? 0 : panelX1;
+		final int y1 = (panelY1 < 0) ? 0 : panelY1;
+		final int x2 =
+			(panelX2 >= image.getWidth()) ? image.getWidth() - 1 : panelX2;
+		final int y2 =
+			(panelY2 >= image.getHeight()) ? image.getHeight() - 1 : panelY2;
+		return new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 	}
 
 	private double getScreenImageHeight() {
 		return (scale * image.getHeight());
+	}
+
+	private double getScreenImageWidth() {
+		return (scale * image.getWidth());
 	}
 
 	// Called from paintComponent() when a new image is set.
@@ -214,40 +346,79 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		Events.publish(new ZoomEvent(this, 0, initialScale));
 	}
 
-	/** Centers the current image in the panel. */
-	private void centerImage() {
-	  // image.getWidth() rather than getWidth()? Trying it show the answer to be NO
-		double newCenterX = getWidth() / 2.0;
-		double newCenterY = getHeight() / 2.0;
-		setCenter(newCenterX, newCenterY);
-		double newOriginX = newCenterX - (getScreenImageWidth() / 2.0);
-		double newOriginY = newCenterY - (getScreenImageHeight() / 2.0);
-		setOrigin(newOriginX, newOriginY);
+	// Tests whether the image is displayed in its entirety in the panel.
+	private boolean isFullImageInPanel() {
+		return (originX >= 0 && (originX + getScreenImageWidth()) < getWidth() &&
+			originY >= 0 && (originY + getScreenImageHeight()) < getHeight());
 	}
 
-	private void clipToImageBoundaries(RealCoords coords) {
-		if (coords.x < 0.0) {
-			coords.x = 0.0;
-		}
-		if (coords.y < 0.0) {
-			coords.y = 0.0;
-		}
-		if (coords.x >= image.getWidth()) {
-			coords.x = image.getWidth() - 1.0;
-		}
-		if (coords.y >= image.getHeight()) {
-			coords.y = image.getHeight() - 1.0;
-		}
+	// High quality rendering kicks in when when a scaled image is larger
+	// than the original image. In other words,
+	// when image decimation stops and interpolation starts.
+	private boolean isHighQualityRendering() {
+		return (highQualityRenderingEnabled && scale > HIGH_QUALITY_RENDERING_SCALE_THRESHOLD);
 	}
-	
+
+	// Used when the image is resized.
+	private boolean isImageEdgeInPanel() {
+		if (previousPanelSize == null) {
+			return false;
+		}
+		return (originX > 0 && originX < previousPanelSize.width || originY > 0 &&
+			originY < previousPanelSize.height);
+	}
+
+	// Used when the panel is resized
+	private void scaleOrigin() {
+		double newOriginX = originX * getWidth() / previousPanelSize.width;
+		double newOriginY = originY * getHeight() / previousPanelSize.height;
+		setOrigin(newOriginX, newOriginY);
+		repaint();
+	}
+
+	private static BufferedImage toCompatibleImage(final BufferedImage image) {
+		if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
+			return image;
+		}
+		final BufferedImage compatibleImage =
+			CONFIGURATION.createCompatibleImage(image.getWidth(), image.getHeight(),
+				image.getTransparency());
+		final Graphics g = compatibleImage.getGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return compatibleImage;
+	}
+
 	// -- PRIVATE ZOOM CODE HELPERS --
 
+	// ctrX and ctrY in image coord space
+	private void doZoom(double newScale, double ctrX, double ctrY) {
+		if ((centerOutOfBounds(ctrX, ctrY)) || (scaleOutOfBounds(newScale)))
+			return;  // DO NOT ZOOM ANY FARTHER
+		final double oldZoom = getZoom();
+		scale = newScale;
+		setCenter(ctrX, ctrY);
+		double newOriginX = centerX - (scale * (image.getWidth()/2.0)); 
+		double newOriginY = centerY - (scale * (image.getHeight()/2.0)); 
+		setOrigin(newOriginX, newOriginY);
+		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
+		repaint();
+		Log.debug("---------------------------------------------------");
+		Log.debug("doZoom()");
+		Log.debug("  origin "+originX+","+originY);
+		Log.debug("  ctr "+centerX+","+centerY);
+		Log.debug("  screen extent "+getScreenImageWidth()+" X "+getScreenImageHeight());
+		Log.debug("  scale "+scale);
+		Log.debug("  initialScale "+initialScale);
+		Log.debug("---------------------------------------------------");
+	}
+	
 	private boolean centerOutOfBounds(double ctrX, double ctrY) {
 		// TODO - implement
 		//   It seems using ZoomTool mouse clicking to zoom far out
 		//   and then clicking to zoom in causes major image jumping.
 		//   Origin is getting set negative. Might be related to this
-		//   bounds check needed.
+		//   bounds check needed. But maybe not.
 		return false;
 	}
 	
@@ -277,21 +448,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return false;
 	}
 
-	// ctrX and ctrY in canvas/panel coord space
-	private void doZoom(double newScale, double ctrX, double ctrY) {
-		if ((centerOutOfBounds(ctrX, ctrY)) || (scaleOutOfBounds(newScale)))
-			return;  // DO NOT ZOOM ANY FARTHER
-		final double oldZoom = getZoom();
-		scale = newScale;
-		setCenter(ctrX, ctrY);
-		double newOriginX = centerX - (scale * (image.getWidth()/2.0)); 
-		double newOriginY = centerY - (scale * (image.getHeight()/2.0)); 
-		setOrigin(newOriginX, newOriginY);
-		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
-		repaint();
-	}
-	
-/*  old version that seemed to work
+/*  old version of zooming over mouse cursor that seemed to work
       // Zooms an image in the panel by repainting it at the new zoom level.
 688	        // The current mouse position is the zooming center.
 689	        private void zoomImage() {
@@ -310,23 +467,10 @@ public class SwingNavigableImageCanvas extends JPanel implements
 702	                repaint();
 703	        }
  */
+
 	// Zooms an image in the panel by repainting it at the new zoom level.
 	// The current mouse position is the zooming center.
 	private void zoomOverMousePoint(double newScale) {
-		// HACK attempt that always zooms over center no matter where mouse is (pans it as needed)
-		//Log.debug("zooming out over mouse ("+mousePosition.x+","+mousePosition.y+")");
-		//doZoom(newScale, mousePosition.x, mousePosition.y);
-		
-		/* first implementation - wrong
-		final RealCoords imageP = panelToImageCoords(ptToCoords(mousePosition));
-		Log.debug("zooming over mouse ("+mousePosition.x+","+mousePosition.y+") panel ("+imageP.x+","+imageP.y+")");
-		doZoom(newScale, imageP.x, imageP.y);
-		// CURRENTLY this centers the current mouse pos to appear at center of window.
-		//   But the mouse position has not changed. So further zoom in will bounce the
-		//   image around. This is quite apparent when zoomed out a lot and trying to
-		//   zoom back in.
-		*/
-		
 		// What needs to be done: when zooming in keep the point under the current
 		// mouse position to appear on next level zoomed image in the same spot. So
 		// the mouse cursor still points at same spot. And scrolling in on a point
@@ -342,7 +486,33 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		doZoom(newScale, newCtrX, newCtrY);
 	}
 
+	// --------------------------------------------------------------------
+	// -- PUBLIC INTERFACE FOLLOWS --
+	// --------------------------------------------------------------------
+
+	// -- BASIC ACCESSORS --
+	
+	@Override
+	public int getImageWidth() {
+		return image.getWidth();
+	}
+
+	@Override
+	public int getImageHeight() {
+		return image.getHeight();
+	}
+
 	// -- PUBLIC ZOOM CODE METHODS --
+
+	/**
+	 * Gets the current zoom level.
+	 * 
+	 * @return the current zoom level
+	 */
+	@Override
+	public double getZoom() {
+		return scale; //  / initialScale;
+	}
 
 	// IN IMAGE COORDS
 	@Override
@@ -356,27 +526,13 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return centerY;
 	}
 
-	/**
-	 * <p>
-	 * Gets the current zoom level.
-	 * </p>
-	 * 
-	 * @return the current zoom level
-	 */
-	@Override
-	public double getZoom() {
-		return scale; //  / initialScale;
-	}
-
 	@Override
 	public double getZoomMultiplier() {
 		return zoomMultiplier;
 	}
 
 	/**
-	 * <p>
 	 * Sets a new zooming scale multiplier value.
-	 * </p>
 	 * 
 	 * @param newZoomMultiplier new zoom multiplier value
 	 */
@@ -386,45 +542,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			throw new IllegalArgumentException("zoom multiplier must be > 1");
 		
 		zoomMultiplier = newZoomMultiplier;
-	}
-
-	public void zoomIn() {
-		doZoom(scale * zoomMultiplier, centerX, centerY);
-	}
-
-	public void zoomIn(double newCenterX, double newCenterY) {
-		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
-		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
-		doZoom(scale * zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
-	}
-
-	public void zoomOut() {
-		doZoom(scale / zoomMultiplier, centerX, centerY);
-	}
-
-	public void zoomOut(double newCenterX, double newCenterY) {
-		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
-		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
-		doZoom(scale / zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
-	}
-
-	// TODO - this can be tested via dragging an invisible window
-	//   when the zoom tool is activated. Note that it looks
-	//   incorrect at the moment. Debug later.
-	@Override
-	public void zoomToFit(Rect region) {
-		// region is in panel coords
-		// calc new scale & center from image coord space values
-		RealCoords regionOrigin = new RealCoords(region.x, region.y);
-		RealCoords regionOriginImageCoords = panelToImageCoords(regionOrigin);
-		RealCoords regionSize = new RealCoords(region.width, region.height);
-		RealCoords regionSizeImageCoords = panelToImageCoords(regionSize);
-		double xRatio = image.getWidth() / regionSizeImageCoords.x;
-		double yRatio = image.getHeight() / regionSizeImageCoords.y;
-		double newScale = Math.max(xRatio, yRatio);
-		double newCtrX = regionOriginImageCoords.x + 0.5*regionSizeImageCoords.x;
-		double newCtrY = regionOriginImageCoords.y + 0.5*regionSizeImageCoords.y;
-		doZoom(newScale, newCtrX, newCtrY);
 	}
 
 	/**
@@ -474,6 +591,45 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		doZoom(newZoom, imageP.x, imageP.y);
 	}
 
+	public void zoomIn() {
+		doZoom(scale * zoomMultiplier, centerX, centerY);
+	}
+
+	public void zoomIn(double newCenterX, double newCenterY) {
+		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
+		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
+		doZoom(scale * zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
+	}
+
+	public void zoomOut() {
+		doZoom(scale / zoomMultiplier, centerX, centerY);
+	}
+
+	public void zoomOut(double newCenterX, double newCenterY) {
+		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
+		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
+		doZoom(scale / zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
+	}
+
+	// TODO - this can be tested via dragging an invisible window
+	//   when the zoom tool is activated. Note that it looks
+	//   incorrect at the moment. Debug later.
+	@Override
+	public void zoomToFit(Rect region) {
+		// region is in panel coords
+		// calc new scale & center from image coord space values
+		RealCoords regionOrigin = new RealCoords(region.x, region.y);
+		RealCoords regionOriginImageCoords = panelToImageCoords(regionOrigin);
+		RealCoords regionSize = new RealCoords(region.width, region.height);
+		RealCoords regionSizeImageCoords = panelToImageCoords(regionSize);
+		double xRatio = image.getWidth() / regionSizeImageCoords.x;
+		double yRatio = image.getHeight() / regionSizeImageCoords.y;
+		double newScale = Math.max(xRatio, yRatio);
+		double newCtrX = regionOriginImageCoords.x + 0.5*regionSizeImageCoords.x;
+		double newCtrY = regionOriginImageCoords.y + 0.5*regionSizeImageCoords.y;
+		doZoom(newScale, newCtrX, newCtrY);
+	}
+
 	// -- PAN CODE --
 	
 	// IN IMAGE COORDS
@@ -488,82 +644,130 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		return originY;
 	}
 
-	// TODO - which coord space this should be working in is not clear
-	//   Coming from PanTool it looks like these are in steps of 10 panel units
-	/** Pans the image by the given (X, Y) amount. */
+	/** Pans the image by the given (X, Y) amount (in panel coords). */
 	@Override
 	public void pan(final double xDelta, final double yDelta) {
 		RealCoords panelCoords = new RealCoords(xDelta, yDelta);
 		RealCoords imageCoords = panelToImageCoords(panelCoords);
-		setOrigin(originX + imageCoords.x, originY + imageCoords.y);
-		setCenter(centerX + imageCoords.x, centerY + imageCoords.y);
-		repaint();
+		doZoom(scale,
+			centerX + imageCoords.x,
+			centerY + imageCoords.y);
 	}
 
-	// TODO - which coord space this should be working in is not clear
-	//   Coming from PanTool it looks like these are in steps of 10 panel units
+	/** Sets the image origin to the given (X, Y) values (in panel coords). */
 	@Override
 	public void setPan(double ox, double oy) {
 		RealCoords panelCoords = new RealCoords(ox, oy);
 		RealCoords imageCoords = panelToImageCoords(panelCoords);
-		setCenter(
-			centerX + (imageCoords.x - originX),
-			centerY + (imageCoords.y - originY));
-		setOrigin(imageCoords.x, imageCoords.y);
-		repaint();
+		doZoom(scale,
+			centerX - originX + imageCoords.x,
+			centerY - originY + imageCoords.y);
 	}
+
+	// -- MISC. METHODS --
 	
-	private void addMouseListeners() {
-		addMouseListener(new MouseAdapter() {
+	@Override
+	public void addEventDispatcher(final EventDispatcher dispatcher) {
+		addKeyListener((AWTEventDispatcher) dispatcher);
+		addMouseListener((AWTEventDispatcher) dispatcher);
+		addMouseMotionListener((AWTEventDispatcher) dispatcher);
+		addMouseWheelListener((AWTEventDispatcher) dispatcher);
+	}
 
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void mousePressed(final MouseEvent e) {
-				if (SwingUtilities.isLeftMouseButton(e)) {
-					if (isInNavigationImage(e.getPoint())) {
-						final Point p = e.getPoint();
-						final RealCoords realCoords = ptToCoords(p);
-						final IntCoords intCoords = new IntCoords(realCoords.getIntX(), realCoords.getIntY());
-						displayImageAt(intCoords);
-					}
-				}
-			}
+	@Override
+	public BufferedImage getImage() {
+		return image;
+	}
 
-		});
+	// Converts the original image coordinates into this panel's coordinates
+	@Override
+	public RealCoords imageToPanelCoords(final RealCoords p) {
+		return new RealCoords((p.x * scale) + originX, (p.y * scale) + originY);
+	}
 
-		addMouseMotionListener(new MouseMotionListener() {
+	/**
+	 * <p>
+	 * Indicates whether the high quality rendering feature is enabled.
+	 * </p>
+	 * 
+	 * @return true if high quality rendering is enabled, false otherwise.
+	 */
+	@Override
+	public boolean isHighQualityRenderingEnabled() {
+		return highQualityRenderingEnabled;
+	}
 
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void mouseDragged(final MouseEvent e) {
-				if (SwingUtilities.isLeftMouseButton(e) &&
-					!isInNavigationImage(e.getPoint()))
-				{
-					// TODO - clean up this section, to fully remove pan support
-					// in favor of the pan tool way of doing things
-//	  				Point p = e.getPoint();
-//	  				moveImage(p);
-				}
-			}
+	// Tests whether a given point in the panel falls within the image boundaries.
+	@Override
+	public boolean isInImage(final RealCoords p) {
+		final RealCoords coords = panelToImageCoords(p);
+		final int x = coords.getIntX();
+		final int y = coords.getIntY();
+		return (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight());
+	}
 
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void mouseMoved(final MouseEvent e) {
-				// we need the mouse position so that after zooming
-				// that position of the image is maintained
-				mousePosition = e.getPoint();
-//				Coords coord = panelToImageCoords(mousePosition);
-//
-//				// Display current pixel value in StatusBar
-//				//sampleImage.getRaster().getDataBuffer(). .getPixel(coord.getIntX(), coord.getIntY(), dArray)
-//				if (isInImage(mousePosition)) {
-//					int value = image.getRGB(coord.getIntX(), coord.getIntY());
-//					Events.publish(new StatusEvent("Pixel: (" + coord.getIntX() + "," + coord.getIntY() + ") "
-//							+ pixelARGBtoString(value)));
-//				}
-			}
+	/** Tests whether an image uses the standard RGB color space. */
+	public static boolean isStandardRGBImage(final BufferedImage bImage) {
+		return bImage.getColorModel().getColorSpace().isCS_sRGB();
+	}
 
-		});
+	/**
+	 * Paints the panel and its image at the current zoom level, location, and
+	 * interpolation method dependent on the image scale.</p>
+	 * 
+	 * @param g the <code>Graphics</code> context for painting
+	 */
+	@Override
+	protected void paintComponent(final Graphics g) {
+		super.paintComponent(g); // Paints the background
+		
+		if (image == null)
+			return;
+		
+		if (scale == 0.0)
+			initializeParams();
+		
+		if (isHighQualityRendering()) {
+			final Rectangle rect = getImageClipBounds();
+
+			// if no part of image is displayed in the panel
+			if (rect == null || rect.width == 0 || rect.height == 0)
+				return;
+			
+			final BufferedImage subimage =
+				image.getSubimage(rect.x, rect.y, rect.width, rect.height);
+			
+			final Graphics2D g2 = (Graphics2D) g;
+			
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, INTERPOLATION_TYPE);
+			
+			g2.drawImage(
+				subimage, 
+				(int) Math.max(0, originX),
+				(int) Math.max(0, originY),
+				Math.min((int) (subimage.getWidth() * scale), getWidth()),
+				Math.min((int) (subimage.getHeight() * scale), getHeight()),
+				null);
+			
+			Log.debug("HIGH QUALITY CASE");
+		}
+		else {
+			g.drawImage(
+				image,
+				(int) originX,
+				(int) originY,
+				(int) getScreenImageWidth(),
+				(int) getScreenImageHeight(),
+				null);
+			Log.debug("LOW QUALITY CASE origin("+originX+","+originY+")  extent("+getScreenImageWidth()+","+getScreenImageHeight()+")");
+		}
+		drawNavigationImage(g);
+	}
+
+	// Converts this panel's coordinates into the original image coordinates
+	@Override
+	public RealCoords panelToImageCoords(final RealCoords p) {
+		return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
 	}
 
 	public String pixelARGBtoString(final int pixel) {
@@ -572,6 +776,27 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		final int green = (pixel >> 8) & 0xff;
 		final int blue = (pixel) & 0xff;
 		return "" + alpha + ", " + red + ", " + green + ", " + blue;
+	}
+
+	/*
+	 * Handles setting of the cursor depending on the activated tool
+	 */
+	@Override
+	public void setCursor(final MouseCursor cursor) {
+		final int cursorCode = AWTCursors.getCursorCode(cursor);
+		setCursor(Cursor.getPredefinedCursor(cursorCode));
+	}
+
+	/**
+	 * <p>
+	 * Enables/disables high quality rendering.
+	 * </p>
+	 * 
+	 * @param enabled enables/disables high quality rendering
+	 */
+	@Override
+	public void setHighQualityRenderingEnabled(final boolean enabled) {
+		highQualityRenderingEnabled = enabled;
 	}
 
 	/**
@@ -609,238 +834,19 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	}
 
 	@Override
-	public BufferedImage getImage() {
-		return image;
+	public void subscribeToToolEvents() {
+		Events.subscribe(ToolActivatedEvent.class, this);
 	}
-
-	/** Tests whether an image uses the standard RGB color space. */
-	public static boolean isStandardRGBImage(final BufferedImage bImage) {
-		return bImage.getColorModel().getColorSpace().isCS_sRGB();
-	}
-
-	private static BufferedImage toCompatibleImage(final BufferedImage image) {
-		if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
-			return image;
-		}
-		final BufferedImage compatibleImage =
-			CONFIGURATION.createCompatibleImage(image.getWidth(), image.getHeight(),
-				image.getTransparency());
-		final Graphics g = compatibleImage.getGraphics();
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-		return compatibleImage;
-	}
-
-	private static final GraphicsConfiguration CONFIGURATION =
-		GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-			.getDefaultConfiguration();
 
 	@Override
 	public void updateImage() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		addKeyListener((AWTEventDispatcher) dispatcher);
-		addMouseListener((AWTEventDispatcher) dispatcher);
-		addMouseMotionListener((AWTEventDispatcher) dispatcher);
-		addMouseWheelListener((AWTEventDispatcher) dispatcher);
-	}
-
-	/*
-	 * Handles setting of the cursor depending on the activated tool
-	 */
-	@Override
-	public void subscribeToToolEvents() {
-		Events.subscribe(ToolActivatedEvent.class, this);
-	}
-
-	@Override
-	public void setCursor(final MouseCursor cursor) {
-		final int cursorCode = AWTCursors.getCursorCode(cursor);
-		setCursor(Cursor.getPredefinedCursor(cursorCode));
-	}
-
-	// Converts this panel's coordinates into the original image coordinates
-	@Override
-	public RealCoords panelToImageCoords(final RealCoords p) {
-		return new RealCoords((p.x - originX) / scale, (p.y - originY) / scale);
-	}
-
-	// Converts the original image coordinates into this panel's coordinates
-	@Override
-	public RealCoords imageToPanelCoords(final RealCoords p) {
-		return new RealCoords((p.x * scale) + originX, (p.y * scale) + originY);
-	}
-
-	// Tests whether a given point in the panel falls within the image boundaries.
-	@Override
-	public boolean isInImage(final RealCoords p) {
-		final RealCoords coords = panelToImageCoords(p);
-		final int x = coords.getIntX();
-		final int y = coords.getIntY();
-		return (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight());
-	}
-
-	// Tests whether the image is displayed in its entirety in the panel.
-	private boolean isFullImageInPanel() {
-		return (originX >= 0 && (originX + getScreenImageWidth()) < getWidth() &&
-			originY >= 0 && (originY + getScreenImageHeight()) < getHeight());
-	}
-
-
-	/**
-	 * <p>
-	 * Indicates whether the high quality rendering feature is enabled.
-	 * </p>
-	 * 
-	 * @return true if high quality rendering is enabled, false otherwise.
-	 */
-	@Override
-	public boolean isHighQualityRenderingEnabled() {
-		return highQualityRenderingEnabled;
-	}
-
-	/**
-	 * <p>
-	 * Enables/disables high quality rendering.
-	 * </p>
-	 * 
-	 * @param enabled enables/disables high quality rendering
-	 */
-	@Override
-	public void setHighQualityRenderingEnabled(final boolean enabled) {
-		highQualityRenderingEnabled = enabled;
-	}
-
-	// High quality rendering kicks in when when a scaled image is larger
-	// than the original image. In other words,
-	// when image decimation stops and interpolation starts.
-	private boolean isHighQualityRendering() {
-		return (highQualityRenderingEnabled && scale > HIGH_QUALITY_RENDERING_SCALE_THRESHOLD);
-	}
-
-	/**
-	 * Gets the bounds of the image area currently displayed in the panel (in
-	 * image coordinates).
-	 */
-	private Rectangle getImageClipBounds() {
-		final RealCoords startCoords = panelToImageCoords(new RealCoords(0, 0));
-		final RealCoords endCoords =
-			panelToImageCoords(new RealCoords(getWidth() - 1, getHeight() - 1));
-		final int panelX1 = startCoords.getIntX();
-		final int panelY1 = startCoords.getIntY();
-		final int panelX2 = endCoords.getIntX();
-		final int panelY2 = endCoords.getIntY();
-		// No intersection?
-		if (panelX1 >= image.getWidth() || panelX2 < 0 ||
-			panelY1 >= image.getHeight() || panelY2 < 0)
-		{
-			return null;
-		}
-
-		final int x1 = (panelX1 < 0) ? 0 : panelX1;
-		final int y1 = (panelY1 < 0) ? 0 : panelY1;
-		final int x2 =
-			(panelX2 >= image.getWidth()) ? image.getWidth() - 1 : panelX2;
-		final int y2 =
-			(panelY2 >= image.getHeight()) ? image.getHeight() - 1 : panelY2;
-		return new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
-	}
-
-	/**
-	 * Paints the panel and its image at the current zoom level, location, and
-	 * interpolation method dependent on the image scale.</p>
-	 * 
-	 * @param g the <code>Graphics</code> context for painting
-	 */
-	@Override
-	protected void paintComponent(final Graphics g) {
-		super.paintComponent(g); // Paints the background
-		
-		if (image == null)
-			return;
-		
-		if (scale == 0.0)
-			initializeParams();
-		
-		if (isHighQualityRendering()) {
-			final Rectangle rect = getImageClipBounds();
-
-			// if no part of image is displayed in the panel
-			if (rect == null || rect.width == 0 || rect.height == 0) {
-				return;
-			}
-			
-			final BufferedImage subimage =
-				image.getSubimage(rect.x, rect.y, rect.width, rect.height);
-			
-			final Graphics2D g2 = (Graphics2D) g;
-			
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, INTERPOLATION_TYPE);
-			
-			g2.drawImage(subimage, (int)Math.max(0, originX), (int)Math.max(0, originY), Math
-				.min((int) (subimage.getWidth() * scale), getWidth()), Math.min(
-				(int) (subimage.getHeight() * scale), getHeight()), null);
-			
-			Log.debug("HIGH QUALITY CASE");
-		}
-		else {
-			g.drawImage(
-				image,
-				(int) originX,
-				(int) originY,
-				(int) getScreenImageWidth(),
-				(int) getScreenImageHeight(),
-				null);
-			Log.debug("LOW QUALITY CASE origin("+originX+","+originY+")  extent("+getScreenImageWidth()+","+getScreenImageHeight()+")");
-		}
-		drawNavigationImage(g);
-	}
-
-	private void addResizeListener() {
-		// Handle component resizing
-		addComponentListener(new ComponentAdapter() {
-
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void componentResized(final ComponentEvent e) {
-				if (scale > 0.0) {
-					if (isFullImageInPanel()) {
-						centerImage();
-					}
-					else if (isImageEdgeInPanel()) {
-						scaleOrigin();
-					}
-					if (isNavigationImageEnabled()) {
-						createNavigationImage();
-					}
-					repaint();
-				}
-				previousPanelSize = getSize();
-			}
-
-		});
-	}
-
-	// Used when the image is resized.
-	private boolean isImageEdgeInPanel() {
-		if (previousPanelSize == null) {
-			return false;
-		}
-		return (originX > 0 && originX < previousPanelSize.width || originY > 0 &&
-			originY < previousPanelSize.height);
-	}
-
-	// Used when the panel is resized
-	private void scaleOrigin() {
-		double newOriginX = originX * getWidth() / previousPanelSize.width;
-		double newOriginY = originY * getHeight() / previousPanelSize.height;
-		setOrigin(newOriginX, newOriginY);
-		repaint();
-	}
-
+	// --------------------------------------------------------------------
+	// -- NAVIGATION IMAGE CODE --
+	// --------------------------------------------------------------------
+	
 	private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's
 																															// width
 	private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
