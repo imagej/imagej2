@@ -191,50 +191,6 @@ public class AWTDisplayController implements DisplayController {
 		return makeImage();
 	}
 	
-	/*
-	// TODO - make type info always available in Imglib and not repeatedly
-	// hatch cursor. good workaround would be to set for Dataset once.
-	// TODO - make numBits (which represents the number of bits of data
-	// this type is represented as in memory. For example, 12-bit data is
-	// stored in a big int[] packed 12 bits at a time. So need to know I have
-	// 12-bits of info storedin an int[]. But if we chose to put 12-bit ints
-	// into 16-bit shorts with no packing we'd want to be able to represent
-	// that. Notice that its still not genral enough. Image 3 bits per pixel
-	// stored in bytes. Either the 3rd pixel will straddle two bytes or they
-	// could only be encoded to use the first six bits of each byte.
-	private int getNumBits(Dataset ds) {
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) ds.getImage().createCursor();
-		RealType<?> type = cursor.getType();
-		cursor.close();
-		// FIXME - temp hacky way to get this working for now
-		if (type instanceof BitType)
-			return 1;
-		else if (type instanceof ByteType)
-			return 8;
-		else if (type instanceof UnsignedByteType)
-			return 8;
-		else if (type instanceof Unsigned12BitType)
-			return 12;
-		else if (type instanceof ShortType)
-			return 16;
-		else if (type instanceof UnsignedShortType)
-			return 16;
-		else if (type instanceof IntType)
-			return 32;
-		else if (type instanceof UnsignedIntType)
-			return 32;
-		else if (type instanceof FloatType)
-			return 32;
-		else if (type instanceof LongType)
-			return 64;
-		else if (type instanceof DoubleType)
-			return 64;
-		
-		return 0;
-	}
-	*/
-
 	/** 
 	 * <p>
 	 * creates a BufferedImage of the plane of data referenced by the current
@@ -251,9 +207,6 @@ public class AWTDisplayController implements DisplayController {
 	 * as 12-bit packings within an int[]). This assumption is bad.
 	 * </p>
 	 */
-	// TODO - notice that ProbeTool also makes assumption that plane of data does
-	// not have any encoded types like 1-bit or 12-bit etc. The whole concept of
-	// getting the current plane is broken.
 	private BufferedImage makeImage() {
 		int w = dataset.getImage().getDimension(xIndex);
 		int h = dataset.getImage().getDimension(yIndex);
