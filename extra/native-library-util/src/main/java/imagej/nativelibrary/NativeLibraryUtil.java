@@ -102,6 +102,7 @@ public class NativeLibraryUtil {
                 }
             }   
         }
+        //IJ.log("architectures is " + s_architecture + " os.name is " + System.getProperty("os.name").toLowerCase());
         return s_architecture;
     }
 
@@ -127,6 +128,7 @@ public class NativeLibraryUtil {
             }
             processor = (32 == bits) ? Processor.INTEL_32 : Processor.INTEL_64;
         }
+        //IJ.log("processor is " + processor + " os.arch is " + System.getProperty("os.arch").toLowerCase());
         return processor;
     }
 
@@ -246,7 +248,7 @@ public class NativeLibraryUtil {
             }
             catch (UnsatisfiedLinkError e)
             {
-                IJ.log("Libary does not exists " + e.getMessage());
+                IJ.log("Problem with library " + e.getMessage());
             }
 
         }
