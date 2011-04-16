@@ -145,8 +145,10 @@ public class NativeLibraryUtil {
                 path += "x86_64-Linux-g++";
                 break;
             case WINDOWS_32:
-            case WINDOWS_64:
                 path += "x86-Windows-msvc";
+                break;
+            case WINDOWS_64:
+                path += "x86_64-Windows-msvc";
                 break;
             case OSX_32:
                 path += "i386-MacOSX-gpp";
