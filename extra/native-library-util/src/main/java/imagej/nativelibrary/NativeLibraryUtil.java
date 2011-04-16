@@ -49,7 +49,9 @@ import loci.wapmx.nativeutils.jniloader.JniExtractor;
  */
 public class NativeLibraryUtil {
     public static enum Architecture
-            { UNKNOWN, LINUX_32, LINUX_64, WINDOWS_32, WINDOWS_64, OSX_32, OSX_64, };
+        { UNKNOWN, LINUX_32, LINUX_64, WINDOWS_32, WINDOWS_64, OSX_32, OSX_64, OSX_PPC };
+    private static enum Processor
+        { UNKNOWN, INTEL_32, INTEL_64, PPC };
     private static Architecture s_architecture = Architecture.UNKNOWN;
     private static final String DELIM = "/";
     private static final String USER_TMPDIR = "java.library.tmpdir";
@@ -61,36 +63,6 @@ public class NativeLibraryUtil {
     private static boolean s_skipHack = false;
     private static String s_writableDirectory = null;
 
-    public static String getOsArchString() {
-        String returnValue = null;
-        String name = System.getProperty("os.name").toLowerCase();
-        String arch = System.getProperty("os.arch").toLowerCase();
-        if (name.indexOf("mac") > 0) {
-            returnValue = "osx";
-        }
-        else if (name.indexOf("win") > 0) {
-            returnValue = "windows";
-
-        }
-        else if (name.indexOf("nix") > 0 || name.indexOf("nux") > 0) {
-            returnValue = "linux";
-        }
-        if (null != returnValue) {
-            // Note that this is actually the architecture of the installed JVM.
-            if (arch.indexOf("86") > 0 || arch.indexOf("amd") > 0) {
-                int bits = 32;
-                if (arch.indexOf("64") > 0) {
-                    bits = 64;
-                }
-                returnValue += Integer.toString(bits);
-            }
-            else {
-                returnValue = null;
-            }
-        }
-        return returnValue;
-    }
-
     /**
      * Determines the underlying hardward platform and architecture.
      *
@@ -98,35 +70,64 @@ public class NativeLibraryUtil {
      */
     public static Architecture getArchitecture() {
         if (Architecture.UNKNOWN == s_architecture) {
-            int bits = 0;
-            // Note that this is actually the architecture of the installed JVM.
-            String arch = System.getProperty("os.arch").toLowerCase();
-            if (arch.indexOf("86") > 0 || arch.indexOf("amd") > 0) {
-                bits = 32;
-                if (arch.indexOf("64") > 0) {
-                    bits = 64;
-                }
-            }
-            if (bits > 0) {
+            Processor processor = getProcessor();
+            if (Processor.UNKNOWN != processor) {
                 String name = System.getProperty("os.name").toLowerCase();
-                if (name.indexOf("nix") >= 0 || name.indexOf("nux") > 0) {
-                    s_architecture = (32 == bits) 
-                            ? Architecture.LINUX_32
-                            : Architecture.LINUX_64;
+                if (name.indexOf("nix") >= 0 || name.indexOf("nux") >= 0) {
+                    if (Processor.INTEL_32 == processor) {
+                        s_architecture = Architecture.LINUX_32;
+                    }
+                    else if (Processor.INTEL_64 == processor) {
+                        s_architecture = Architecture.LINUX_64;
+                    }
                 }
                 else if (name.indexOf("win") >= 0) {
-                    s_architecture = (32 == bits) 
-                            ? Architecture.WINDOWS_32
-                            : Architecture.WINDOWS_64;
+                    if (Processor.INTEL_32 == processor) {
+                        s_architecture = Architecture.WINDOWS_32;
+                    }
+                    else if (Processor.INTEL_64 == processor) {
+                        s_architecture = Architecture.WINDOWS_64;
+                    }
                 }
                 else if (name.indexOf("mac") >= 0) {
-                    s_architecture = (32 == bits) 
-                            ? Architecture.OSX_32
-                            : Architecture.OSX_64;
+                    if (Processor.INTEL_32 == processor) {
+                        s_architecture = Architecture.OSX_32;
+                    }
+                    else if (Processor.INTEL_64 == processor) {
+                        s_architecture = Architecture.OSX_64;
+                    }
+                    else if (Processor.PPC == processor) {
+                        s_architecture = Architecture.OSX_PPC;
+                    }
                 }
             }   
         }
         return s_architecture;
+    }
+
+    /**
+     * Determines what processor is in use.
+     *
+     * @return
+     */
+    private static Processor getProcessor() {
+        Processor processor = Processor.UNKNOWN;
+        int bits;
+
+        // Note that this is actually the architecture of the installed JVM.
+        String arch = System.getProperty("os.arch").toLowerCase();
+
+        if (arch.indexOf("ppc") >= 0) {
+            processor = Processor.PPC;
+        }
+        else if (arch.indexOf("86") >= 0 || arch.indexOf("amd") >= 0) {
+            bits = 32;
+            if (arch.indexOf("64") >= 0) {
+                bits = 64;
+            }
+            processor = (32 == bits) ? Processor.INTEL_32 : Processor.INTEL_64;
+        }
+        return processor;
     }
 
     /**
@@ -138,18 +139,23 @@ public class NativeLibraryUtil {
         String path = "META-INF" + DELIM + "lib" + DELIM;
         switch (getArchitecture()) {
             case LINUX_32:
-            case LINUX_64:
                 path += "i386-Linux-g++";
+                break;
+            case LINUX_64:
+                path += "x86_64-Linux-g++";
                 break;
             case WINDOWS_32:
             case WINDOWS_64:
                 path += "x86-Windows-msvc";
                 break;
             case OSX_32:
-                path += "x86_32-MacOSX-gpp";
+                path += "i386-MacOSX-gpp";
                 break;
             case OSX_64:
                 path += "x86_64-MacOSX-gpp";
+                break;
+            case OSX_PPC:
+                path += "ppc-MacOSX-gpp";
                 break;
         }
         return path + DELIM;
