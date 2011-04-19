@@ -34,6 +34,15 @@
 		<module>util</module>
 	</modules>
 
+	<profiles>
+		<profile>
+			<id>all</id>
+			<modules>
+				<module>roi</module>
+			</modules>
+		</profile>
+	</profiles>
+
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>

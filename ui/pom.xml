@@ -37,6 +37,7 @@
 				<module>plugin-pivot</module>
 				<module>plugin-swing</module>
 				<module>plugin-swt</module>
+				<module>roi-jhotdraw</module>
 				<module>ui-awt</module>
 				<module>ui-headless</module>
 				<module>ui-pivot</module>
