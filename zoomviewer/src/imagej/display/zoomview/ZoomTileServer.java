@@ -49,7 +49,7 @@ public class ZoomTileServer {
         for (String furtherDims : getFurtherDims(dim)) {
             System.out.println("furtherDims is " + furtherDims);
             ZoomView zoomView = new ZoomView();
-            m_levels = 7;
+            m_levels = 8;
             zoomView.init(tileCache, factory, new Dimension(dim[0], dim[1]), m_levels);
             m_viewerMap.put(furtherDims, zoomView);
             System.out.println("put " + furtherDims + " zoom view " + zoomView);
