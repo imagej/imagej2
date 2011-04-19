@@ -53,28 +53,8 @@ public class ImgZoomPanel extends JPanel {
     private ZoomTileServer m_zoomTileServer;
     private BufferedImage m_bufferedImage;
 
-    public ImgZoomPanel() {
-        //TODO the following lines of code setting up the zoom viewer could
-        // happen elsewhere
-
-        //TODO share a cache
-        TileCache tileCache = new TileCache(1000);
-
-        ITileFactory factory = new MyTileFactory(new File("/Users/aivar/Sites/Deep Zoom/temp/image_files/14/"));
-// 13600 x 6000
-        // simulate a 1GP image
-        //int dim[] = { 33000, 33000 };
-
-        // gigapizel on even boundaries 4096 MB (on my 3MB mac)
-        //int dim[] = { 32 * 1024, 32 * 1024 };
-
-        int dim[] = { 64 * 1024, 64 * 1024 }; // 4 gigapixel
-
-        //int dim[] = {10000, 10000 }; // 100 megapixel
-        // int dim[] = { 4000, 3000 };
-        m_zoomTileServer = new ZoomTileServer();
-        m_zoomTileServer.init(tileCache, factory, dim);
-
+    public ImgZoomPanel(ZoomTileServer zoomTileServer) {
+        m_zoomTileServer = zoomTileServer;
         m_levels = m_zoomTileServer.getLevels();
 
         // Get the size of the default screen
