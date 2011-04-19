@@ -95,8 +95,6 @@
         <imagej.groupId>imagej</imagej.groupId>
         <imagej.version>2.0-SNAPSHOT</imagej.version>
         <imagej1.version>1.44o</imagej1.version>
-        <imglib.groupId>mpicbg</imglib.groupId>
-        <imglib.version>2.0-SNAPSHOT</imglib.version>
         <jetty.version>8.0.0.M1</jetty.version>
         <netbeans.hint.license>bsd</netbeans.hint.license>
 		<!-- NB: Avoid platform encoding warning when copying resources. -->
