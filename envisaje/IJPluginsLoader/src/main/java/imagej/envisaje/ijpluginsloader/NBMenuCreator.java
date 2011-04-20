@@ -96,9 +96,10 @@ public class NBMenuCreator {
                 addSeparatorToMenu(target);
             }
             lastWeight = weight;
+			
             if (child.isLeaf()) {
                 addLeafToMenu(child, target);
-            } else {
+            } else 	{
                 //final JMenu nonLeaf = 
                 final String nonLeaf = addNonLeafToMenu(child, target);
                 populateMenu(child, nonLeaf);
