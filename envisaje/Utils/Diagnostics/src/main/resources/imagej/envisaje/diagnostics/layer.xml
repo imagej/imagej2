@@ -16,7 +16,7 @@
 				<attr name="originalFile" stringvalue="Actions/Window/imagej-envisaje-diagnostics-sfsviewer-SFSAction.instance"/>
 				<attr name="position" intvalue="201"/>
 			</file>
-			<file name="sep1.instance">
+			<file name="sep2.instance">
 				<attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
 				<attr name="position" intvalue="210"/>
 			</file>

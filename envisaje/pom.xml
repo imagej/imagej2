@@ -1,127 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>imagej.envisaje</groupId>
-    <artifactId>envisaje</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+	<groupId>imagej.envisaje</groupId>
+	<artifactId>envisaje</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <name>Envisaje - NB App Parent</name>
+	<name>Envisaje - NB App Parent</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>nbm-maven-plugin</artifactId>
-                    <version>3.5</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <brandingToken>${brandingToken}</brandingToken>
-                        <cluster>${brandingToken}</cluster>
-                    </configuration>
-                </plugin>
-                <plugin>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>nbm-maven-plugin</artifactId>
+					<version>3.5</version>
+					<extensions>true</extensions>
+					<configuration>
+						<brandingToken>${brandingToken}</brandingToken>
+						<cluster>${brandingToken}</cluster>
+					</configuration>
+				</plugin>
+				<plugin>
                     <!-- NetBeans 6.9+ requires JDK 6 -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.1</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-    <modules>
-        <module>branding</module>
-        <module>application</module>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<modules>
+		<module>branding</module>
+		<module>application</module>
 		<!-- imagine -->
-        <module>PaintAPI</module>
-        <module>PaintUI</module>
-        <module>ImageNIO</module>
-        <module>ImageCacheDiagnostics</module>
-        <module>ColorPicker</module>
-        <module>Splines</module>
-        <module>Tools</module>
-        <module>ToolsUI</module>
-        <module>ToolConfigUI</module>
-        <module>ToolCustomizers</module>
-        <module>Effects</module>
-        <module>EffectsUI</module>
-        <module>LayersUI</module>
-        <module>RasterLayer</module>
-        <module>VectorLayers</module>
-        <module>VectorPrimitives</module>
+		<module>PaintAPI</module>
+		<module>PaintUI</module>
+		<module>ImageNIO</module>
+		<module>ImageCacheDiagnostics</module>
+		<module>ColorPicker</module>
+		<module>Splines</module>
+		<module>Tools</module>
+		<module>ToolsUI</module>
+		<module>ToolConfigUI</module>
+		<module>ToolCustomizers</module>
+		<module>Effects</module>
+		<module>EffectsUI</module>
+		<module>LayersUI</module>
+		<module>RasterLayer</module>
+		<module>VectorLayers</module>
+		<module>VectorPrimitives</module>
 		<!-- Imaging --> 
-        <module>ImageExplorer</module>
-        <module>ImageFileTypes</module>
+		<module>ImageExplorer</module>
+		<module>ImageFileTypes</module>
 		<!-- <module>ImageFrame</module> -->
 		<!-- ImageJ -->
 		<!-- <module>PluginFinder</module> -->
-        <module>IJPluginsLoader</module>
+		<module>IJPluginsLoader</module>
 		<!-- Utils -->
-        <module>Utils</module>
+		<module>Utils</module>
 		<!-- <module>FileManagement</module>
 		<module>Utils-Output</module>
 		<module>Diagnostics</module>
 		<module>MiscComponents</module>
 		--> 
 		<!-- Tests... -->
-        <module>tests</module>
+		<module>tests</module>
 		<!-- <module>WinSDI</module> -->
-    </modules>
+		<module>ImageNB</module>
+	</modules>
 
-    <properties>
-        <netbeans.version>RELEASE70-BETA2</netbeans.version>
-        <brandingToken>envisaje</brandingToken>
-        <bio-formats.version>5.0-SNAPSHOT</bio-formats.version>
-        <imagej.groupId>imagej</imagej.groupId>
-        <imagej.version>2.0-SNAPSHOT</imagej.version>
-        <imagej1.version>1.44o</imagej1.version>
-        <jetty.version>8.0.0.M1</jetty.version>
-        <netbeans.hint.license>bsd</netbeans.hint.license>
+	<properties>
+		<bio-formats.version>5.0-SNAPSHOT</bio-formats.version>
+		<imagej.groupId>imagej</imagej.groupId>
+		<imagej.version>2.0-SNAPSHOT</imagej.version>
+		<imagej1.version>1.44o</imagej1.version>
+		<jetty.version>8.0.0.M1</jetty.version>
+		<!-- NetBeans Platform -->
+		<netbeans.version>RELEASE70-BETA2</netbeans.version>
+		<brandingToken>envisaje</brandingToken>
+		<netbeans.hint.license>bsd</netbeans.hint.license>
 		<!-- NB: Avoid platform encoding warning when copying resources. -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 	
-    <repositories>
+	<repositories>
 		<!-- NB: for loci projects -->
-        <repository>
-            <id>loci.releases</id>
-            <url>http://dev.loci.wisc.edu/maven2/releases</url>
-        </repository>
-        <repository>
-            <id>loci.snapshots</id>
-            <url>http://dev.loci.wisc.edu/maven2/snapshots</url>
-        </repository>
+		<repository>
+			<id>loci.releases</id>
+			<url>http://dev.loci.wisc.edu/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>loci.snapshots</id>
+			<url>http://dev.loci.wisc.edu/maven2/snapshots</url>
+		</repository>
 		<!-- NB: for various dependencies -->
-        <repository>
-            <id>imagej.thirdparty</id>
-            <url>http://dev.imagejdev.org/maven2/thirdparty</url>
-        </repository>
+		<repository>
+			<id>imagej.thirdparty</id>
+			<url>http://dev.imagejdev.org/maven2/thirdparty</url>
+		</repository>
 		<!-- NB: for jai_core -->
-        <repository>
-            <id>geotools</id>
-            <url>http://download.osgeo.org/webdav/geotools</url>
-        </repository>
+		<repository>
+			<id>geotools</id>
+			<url>http://download.osgeo.org/webdav/geotools</url>
+		</repository>
 		
 		<!-- NB: for netcdf-java -->
 		<!--
@@ -131,46 +133,46 @@
 		</repository>
 		-->
 		<!-- NB: for sezpoz -->
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
+		<repository>
+			<id>java.net</id>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
 		<!-- NB: for netbeans -->
-        <repository>
-            <id>netbeans</id>
-            <name>Repository for hosting NetBeans API artifacts</name>
-            <url>http://bits.netbeans.org/maven2</url>
-        </repository>
-        <repository>
-            <id>imagej.releases</id>
-            <url>http://dev.imagejdev.org/maven2/releases</url>
-        </repository>
-        <repository>
-            <id>imagej.snapshots</id>
-            <url>http://dev.imagejdev.org/maven2/snapshots</url>
-        </repository>
-    </repositories>
+		<repository>
+			<id>netbeans</id>
+			<name>Repository for hosting NetBeans API artifacts</name>
+			<url>http://bits.netbeans.org/maven2</url>
+		</repository>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://dev.imagejdev.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>imagej.snapshots</id>
+			<url>http://dev.imagejdev.org/maven2/snapshots</url>
+		</repository>
+	</repositories>
 	
-    <pluginRepositories>
-        <pluginRepository>
-            <id>mvnplugins.fusesource.org</id>
-            <url>http://mvnplugins.fusesource.org/repo/release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mvnplugins.fusesource.org</id>
+			<url>http://mvnplugins.fusesource.org/repo/release</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
-    <distributionManagement>
-        <repository>
-            <id>imagej.releases</id>
-            <name>ImageJ Releases Repository</name>
-            <url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>imagej.snapshots</id>
-            <name>ImageJ Snapshots Repository</name>
-            <url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>imagej.releases</id>
+			<name>ImageJ Releases Repository</name>
+			<url>dav:http://dev.imagejdev.org:8081/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>imagej.snapshots</id>
+			<name>ImageJ Snapshots Repository</name>
+			<url>dav:http://dev.imagejdev.org:8081/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

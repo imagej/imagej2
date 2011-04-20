@@ -176,6 +176,7 @@ class RasterSurfaceImpl extends SurfaceImplementation implements RepaintHandle {
 		}
 	}
 
+	@Override
 	public Graphics2D getGraphics() {
 		unhibernateImmediately();
 		Point p = getLocation();
