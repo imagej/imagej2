@@ -71,6 +71,7 @@ public class DiskExplorerTopComponent extends CloneableTopComponent implements E
 
     public DiskExplorerTopComponent() {
         super();
+		
         m_manager = new ExplorerManager();
         m_btv = new BeanTreeView();
         m_btv.setDragSource(true);
@@ -89,10 +90,11 @@ public class DiskExplorerTopComponent extends CloneableTopComponent implements E
 
         m_rootNode = new RootNode();
         m_manager.setRootContext(m_rootNode);
+		setName("DiskExplorer");
     }
 
     public Image getIcon() {
-        return Utilities.loadImage("org/netbeans/modules/diskexplorer/resources/explorer16.gif");
+        return Utilities.loadImage("imagej/envisaje/filemanagement/resources/folder.png");
     }
 
     public void open() {

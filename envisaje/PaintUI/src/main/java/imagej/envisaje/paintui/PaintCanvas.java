@@ -148,6 +148,7 @@ class PaintCanvas extends JComponent implements RepaintHandle, ChangeListener, P
     }
     
     private Rectangle imageBounds = new Rectangle();
+	
     private Rectangle getImageAreaBounds() {
         Dimension d = getPreferredSize();
         int x = 0;
@@ -165,6 +166,7 @@ class PaintCanvas extends JComponent implements RepaintHandle, ChangeListener, P
     AffineTransform scratchAt1 = AffineTransform.getTranslateInstance(0, 0);
     AffineTransform scratchAt2 = AffineTransform.getTranslateInstance(0, 0);
     AffineTransform scratchAt3 = AffineTransform.getTranslateInstance(0, 0);
+	
     private AffineTransform getCurrentTransform() {
         Rectangle r = getImageAreaBounds();
         Point p = getLocation();
@@ -219,7 +221,7 @@ class PaintCanvas extends JComponent implements RepaintHandle, ChangeListener, P
         }
         g2d.setTransform(old);
         g2d.setClip(clip);
-//	g2d.dispose();
+		//	g2d.dispose();
     }
     
     public void repaintArea(int x, int y, int w, int h) {
