@@ -16,7 +16,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<netbeans.run.params.ide/>
-		<netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
+		<netbeans.run.params>${netbeans.run.params.ide} -J-da</netbeans.run.params>
+		<!-- add command line parameters in prev. line -->
 	</properties>
 
 	<dependencies>
@@ -185,6 +186,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ImageNB</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>IJPluginsLoader</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -194,6 +200,12 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>nbm-maven-plugin</artifactId>
+					<!--
+					<extensions>true</extensions>
+					<configuration>
+						<etcConfFile>src/main/resources/my.conf</etcConfFile>
+					</configuration>
+					-->
 			</plugin>
             <!-- To run NbModuleSuite in integration-test phase:
             <plugin>
