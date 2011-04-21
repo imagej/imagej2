@@ -37,10 +37,10 @@ package imagej.core.plugins.assign;
 import imagej.data.Dataset;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.AddNoise;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 /**
  * Fills an output Dataset by applying random noise to an input Dataset. This

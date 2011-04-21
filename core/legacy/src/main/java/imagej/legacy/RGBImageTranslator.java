@@ -39,8 +39,8 @@ import ij.ImageStack;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
 import imagej.data.Metadata;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Translates between legacy and modern ImageJ image structures for RGB data.

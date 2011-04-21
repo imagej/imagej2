@@ -58,9 +58,9 @@ import imglib.ops.operator.binary.Xor;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 // NOTE - attempted to use the ImageCalculator in Imglib using
 // ImglibOutputAlgorithmRunner but could not solve compiler errors and
@@ -152,9 +152,9 @@ public class ImageMath implements ImageJPlugin {
 
 /*
  * 
- * import mpicbg.imglib.algorithm.OutputAlgorithm; import
- * mpicbg.imglib.algorithm.math.ImageCalculator; import
- * mpicbg.imglib.function.Function; import mpicbg.imglib.type.numeric.RealType;
+ * import net.imglib2.algorithm.OutputAlgorithm; import
+ * net.imglib2.algorithm.math.ImageCalculator; import
+ * net.imglib2.function.Function; import net.imglib2.type.numeric.RealType;
  * 
  * public class ImageMath extends ImglibOutputAlgorithmPlugin {
  * 

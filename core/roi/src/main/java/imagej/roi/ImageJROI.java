@@ -32,7 +32,7 @@ package imagej.roi;
 
 import java.io.Serializable;
 
-import mpicbg.imglib.roi.RegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 
 /**
  * @author leek

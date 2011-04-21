@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.MouseCursor;

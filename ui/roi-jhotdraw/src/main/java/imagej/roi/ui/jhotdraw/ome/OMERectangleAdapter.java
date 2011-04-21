@@ -120,7 +120,7 @@ public class OMERectangleAdapter extends AbstractOMEShapeAdapter {
 
 	@Override
 	public String getIconName() {
-		return "edit.createRectangle";
+		return "/org/jhotdraw/images/RECT";
 	}
 
 	// -- Helper methods --

@@ -45,9 +45,9 @@ import java.io.File;
 import java.io.IOException;
 
 import loci.formats.FormatException;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.io.ImageOpener;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.img.Img;
+import net.imglib2.io.ImgOpener;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO

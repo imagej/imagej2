@@ -40,12 +40,12 @@ import imagej.event.Events;
 import imagej.util.Index;
 import imagej.util.Log;
 import imagej.util.Rect;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyFactory;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyMirrorFactory;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.cursor.special.RegionOfInterestCursor;
+import net.imglib2.img.Img;
+import net.imglib2.outofbounds.OutOfBoundsStrategyFactory;
+import net.imglib2.outofbounds.OutOfBoundsStrategyMirrorFactory;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation
@@ -113,9 +113,9 @@ public class Neighborhood3x3Operation {
 		int[] planeDims = new int[inputImage.getDimensions().length - 2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.getDimension(i+2);
-		int totalPlanes = Index.getRasterLength(planeDims);
+		int totalPlanes = Index.getTotalLength(planeDims);
 		for (int plane = 0; plane < totalPlanes; plane++) {
-			int[] planeIndex = Index.rasterToPosition(planeDims, plane);
+			int[] planeIndex = Index.index1DtoND(planeDims, plane);
 			applyOperationToPlane(planeIndex);
 		}
 		Events.publish(new DatasetChangedEvent(input));

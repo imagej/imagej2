@@ -1,8 +1,8 @@
 package imagej.roi.ome;
 
 import imagej.roi.ImageJROI;
-import mpicbg.imglib.roi.AbstractIterableRegionOfInterest;
-import mpicbg.imglib.roi.RegionOfInterest;
+import net.imglib2.roi.AbstractIterableRegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 import ome.xml.model.Ellipse;
 
 public class OMEEllipseROI extends OMEShapeROI<Ellipse> implements ImageJROI {

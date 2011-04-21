@@ -44,9 +44,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 //import loci.formats.gui.AWTImageTools;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
@@ -57,13 +56,13 @@ import mpicbg.imglib.type.numeric.RealType;
 public class AWTDisplayController implements DisplayController {
 
 	private Dataset dataset;
-	private Image<?> image;
-	private int[] dims;
-	private int[] planeDims;
+	private Img<?> image;
+	private long[] dims;
+	private long[] planeDims;
 	private AxisLabel[] dimLabels;
 	private String imageName;
 	private int xIndex, yIndex;
-	private int[] pos;
+	private long[] pos;
 	private final ImageDisplayWindow imgWindow;
 	private final AWTDisplay display;
 	private Object currentPlane;
@@ -85,12 +84,12 @@ public class AWTDisplayController implements DisplayController {
 	}
 
 	@Override
-	public int[] getDims() {
+	public long[] getDims() {
 		return dims;
 	}
 
 	@Override
-	public int[] getPos() {
+	public long[] getPos() {
 		return pos;
 	}
 
@@ -103,7 +102,8 @@ public class AWTDisplayController implements DisplayController {
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 		image = dataset.getImage();
-		dims = image.getDimensions();
+		dims = new long[image.numDimensions()];
+		image.dimensions(dims);
 		dimLabels = dataset.getMetadata().getAxes();
 		imageName = dataset.getMetadata().getName();
 		// extract width and height
@@ -122,16 +122,15 @@ public class AWTDisplayController implements DisplayController {
 		if (yIndex < 0) {
 			throw new IllegalArgumentException("No Y dimension");
 		}
-		planeDims = new int[dims.length-2];
+		planeDims = new long[dims.length-2];
 		int d = 0;
 		for (int i = 0; i < dims.length; i++) {
-			if ((i == xIndex) || (i == yIndex))
-				continue;
+			if ((i == xIndex) || (i == yIndex)) continue;
 			planeDims[d++] = dims[i];
 		}
 		imgWindow.setTitle(imageName);
 		// display first image plane
-		pos = new int[dims.length - 2];
+		pos = new long[dims.length - 2];
 		update();
 		//FIXME - disabled. make this UI call in SimpleImageDisplay to
 		// avoid incorrectly calculating image canvas dimensions.
@@ -185,7 +184,7 @@ public class AWTDisplayController implements DisplayController {
 
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final int no = Index.positionToRaster(planeDims, pos);
+		final int no = Index.indexNDto1D(planeDims, pos);
 		final Object plane = dataset.getPlane(no);
 		currentPlane = plane;
 		return makeImage();

@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.roi.ome;
 
 import imagej.roi.ImageJROI;
-import mpicbg.imglib.roi.AbstractIterableRegionOfInterest;
-import mpicbg.imglib.roi.RegionOfInterest;
+import net.imglib2.roi.AbstractIterableRegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 import ome.xml.model.Rectangle;
 
 /**
@@ -99,7 +99,7 @@ public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI
 		}
 		
 		/* (non-Javadoc)
-		 * @see mpicbg.imglib.roi.AbstractRegionOfInterest#size()
+		 * @see net.imglib2.roi.AbstractRegionOfInterest#size()
 		 */
 		@Override
 		protected long size() {
@@ -107,7 +107,7 @@ public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI
 		}
 
 		/* (non-Javadoc)
-		 * @see mpicbg.imglib.roi.AbstractRegionOfInterest#jumpFwd(long, long[], long[])
+		 * @see net.imglib2.roi.AbstractRegionOfInterest#jumpFwd(long, long[], long[])
 		 */
 		@Override
 		protected boolean jumpFwd(long steps, long[] position, long[] end) {
@@ -123,7 +123,7 @@ public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI
 		}
 
 		/* (non-Javadoc)
-		 * @see mpicbg.imglib.roi.AbstractRegionOfInterest#getExtrema(long[], long[])
+		 * @see net.imglib2.roi.AbstractRegionOfInterest#getExtrema(long[], long[])
 		 */
 		@Override
 		protected void getExtrema(long[] minima, long[] maxima) {
@@ -134,7 +134,7 @@ public class OMERectangleROI extends OMEShapeROI<Rectangle> implements ImageJROI
 		}
 
 		/* (non-Javadoc)
-		 * @see mpicbg.imglib.roi.AbstractRegionOfInterest#getRealExtrema(double[], double[])
+		 * @see net.imglib2.roi.AbstractRegionOfInterest#getRealExtrema(double[], double[])
 		 */
 		@Override
 		protected void getRealExtrema(double[] minima, double[] maxima) {

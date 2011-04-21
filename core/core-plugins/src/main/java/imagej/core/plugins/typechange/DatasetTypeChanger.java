@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 
 /** changes an input Dataset's underlying imglib data to a
  * user specified type.
