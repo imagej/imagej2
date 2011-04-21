@@ -39,89 +39,97 @@ import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
 import imagej.util.Rect;
-import net.imglib2.container.Container;
-import net.imglib2.container.basictypecontainer.PlanarAccess;
-import net.imglib2.container.basictypecontainer.array.ArrayDataAccess;
-import net.imglib2.container.basictypecontainer.array.ByteArray;
-import net.imglib2.container.basictypecontainer.array.DoubleArray;
-import net.imglib2.container.basictypecontainer.array.FloatArray;
-import net.imglib2.container.basictypecontainer.array.IntArray;
-import net.imglib2.container.basictypecontainer.array.LongArray;
-import net.imglib2.container.basictypecontainer.array.ShortArray;
-import net.imglib2.container.planar.PlanarContainerFactory;
-import net.imglib2.cursor.LocalizableByDimCursor;
-import net.imglib2.img.ImgFactory;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.type.Type;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
+import net.imglib2.img.planar.PlanarImg;
+import net.imglib2.img.planar.PlanarImgFactory;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 public class Dataset implements Comparable<Dataset> {
 
-	private Img<?> image;
+	private Img<? extends RealType<?>> img;
 	private final Metadata metadata;
 	private boolean isRgbMerged;
-	
+
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
-	//   here for plugin testing purposes. Really should be viewcentric.
+	// here for plugin testing purposes. Really should be viewcentric.
 	private Rect selection;
-	public void setSelection(int minX, int minY, int maxX, int maxY)
+
+	public void setSelection(final int minX, final int minY, final int maxX,
+		final int maxY)
 	{
 		selection.x = minX;
 		selection.y = minY;
-		selection.width = maxX-minX+1;
-		selection.height = maxY-minY+1;
+		selection.width = maxX - minX + 1;
+		selection.height = maxY - minY + 1;
 	}
-	public Rect getSelection()
-	{
+
+	public Rect getSelection() {
 		return selection;
 	}
+
 	// END FIXME TEMP
 
-	public Dataset(final Img<?> image) {
+	public Dataset(final Img<? extends RealType<?>> image) {
 		this(image, Metadata.createMetadata(image));
 	}
 
-	public Dataset(final Img<?> image, final Metadata metadata) {
+	public Dataset(final Img<? extends RealType<?>> img, final Metadata metadata) {
 		if (metadata == null) {
 			throw new IllegalArgumentException("Metadata must not be null");
 		}
-		this.image = image;
+		this.img = img;
 		this.metadata = metadata;
 		this.isRgbMerged = false;
 		this.selection = new Rect();
 		Events.publish(new DatasetCreatedEvent(this));
 	}
 
-	/** to be used in legacy layer only. allows the various legacy layer image translators to support color images correctly. */
-	public void setIsRgbMerged(boolean value) {
+	/**
+	 * to be used in legacy layer only. allows the various legacy layer image
+	 * translators to support color images correctly.
+	 */
+	public void setIsRgbMerged(final boolean value) {
 		this.isRgbMerged = value;
 	}
-	
-	/** to be used in legacy layer only. allows the various legacy layer image translators to support color images correctly. */
+
+	/**
+	 * to be used in legacy layer only. allows the various legacy layer image
+	 * translators to support color images correctly.
+	 */
 	public boolean isRgbMerged() {
 		return isRgbMerged;
 	}
-	
+
 	public Img<?> getImage() {
-		return image;
+		return img;
 	}
 
-	public void setImage(Img<?> newImageData) {
-		
-		if (image.numDimensions() != newImageData.numDimensions())
-			throw new IllegalArgumentException("new image data has to have the same number of dimensions as the internal image");
-		
-		this.image = newImageData;
+	public void setImage(final Img<? extends RealType<?>> newImageData) {
+		if (img.numDimensions() != newImageData.numDimensions()) {
+			throw new IllegalArgumentException("Invalid dimensionality: expected " +
+				img.numDimensions() + " but was " + newImageData.numDimensions());
+		}
+		this.img = newImageData;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 		this.selection = new Rect();
-		
+
 		Events.publish(new DatasetChangedEvent(this));
 	}
 
@@ -133,12 +141,12 @@ public class Dataset implements Comparable<Dataset> {
 	public String getPixelType() {
 		// HACK: Since type.toString() isn't nice, we use crazy logic here.
 		// TODO: Eliminate this, by improving type.toString() in ImgLib2.
-		final Type<?> type = image.createType();
+		final Object type = getType();
 		String pixelType = type.getClass().getSimpleName();
 		pixelType = pixelType.replaceAll("Type", "");
 		pixelType = pixelType.replaceAll("Byte", "8-bit");
 		pixelType = pixelType.replaceAll("([0-9]+)Bit", "$1-bit"); // e.g., 12Bit
-		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");  // must follow prev line
+		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");
 		pixelType = pixelType.replaceAll("Short", "16-bit");
 		pixelType = pixelType.replaceAll("Int", "32-bit");
 		pixelType = pixelType.replaceAll("Long", "64-bit");
@@ -149,71 +157,73 @@ public class Dataset implements Comparable<Dataset> {
 		return pixelType;
 	}
 
+	@SuppressWarnings("rawtypes")
+	private RealType getType() {
+		return img.cursor().get();
+	}
+
 	public Object getPlane(final int no) {
-		final Container<?> container = image.getContainer();
-		if (!(container instanceof PlanarAccess)) return null;
-		final Object plane = ((PlanarAccess<?>) container).getPlane(no);
+		if (!(img instanceof PlanarAccess)) return null;
+		// TODO - extract a copy the plane if it cannot be obtained by reference
+		final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
+		final Object plane = planarAccess.getPlane(no);
 		if (!(plane instanceof ArrayDataAccess)) return null;
 		return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
 	}
 
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlane(final int no, final Object plane) {
-		final Container<?> container = image.getContainer();
-		if (!(container instanceof PlanarAccess)) return;
-		final PlanarAccess planarAccess = (PlanarAccess) container;
+		if (!(img instanceof PlanarAccess)) return; // cannot set by reference
+		// TODO - copy the plane if it cannot be set by reference
+		final PlanarAccess planarAccess = (PlanarAccess) img;
 		ArrayDataAccess<?> array = null;
 		if (plane instanceof byte[]) {
 			array = new ByteArray((byte[]) plane);
 		}
-		else if (plane instanceof short[] ) {
+		else if (plane instanceof short[]) {
 			array = new ShortArray((short[]) plane);
 		}
-		else if (plane instanceof int[] ) {
+		else if (plane instanceof int[]) {
 			array = new IntArray((int[]) plane);
 		}
-		else if (plane instanceof float[] ) {
+		else if (plane instanceof float[]) {
 			array = new FloatArray((float[]) plane);
 		}
-		else if (plane instanceof long[] ) {
+		else if (plane instanceof long[]) {
 			array = new LongArray((long[]) plane);
 		}
-		else if (plane instanceof double[] ) {
+		else if (plane instanceof double[]) {
 			array = new DoubleArray((double[]) plane);
 		}
 		planarAccess.setPlane(no, array);
 	}
 
-	public double getDoubleValue(final int[] pos) {
+	public double getDoubleValue(final long[] pos) {
 		// NB: This method is slow... will change anyway with ImgLib2.
-		@SuppressWarnings("unchecked")
-		final LocalizableByDimCursor<? extends RealType<?>> cursor =
-			(LocalizableByDimCursor<? extends RealType<?>>)
-			image.createLocalizableByDimCursor();
+		final RandomAccess<? extends RealType<?>> cursor = img.randomAccess();
 		cursor.setPosition(pos);
-		final double value = cursor.getType().getRealDouble();
-		cursor.close();
+		final double value = cursor.get().getRealDouble();
 		return value;
 	}
 
 	// TEMP
 	public boolean isSigned() {
 		// HACK - imglib needs a way to query RealTypes for signedness
-		final String typeName = image.createType().getClass().getName();
+		final String typeName = getType().getClass().getName();
 		return !typeName.startsWith("net.imglib2.type.numeric.integer.Unsigned");
 	}
 
 	// TEMP
 	public boolean isFloat() {
 		// HACK - imglib needs a way to query RealTypes for integer vs. float
-		final String typeName = image.createType().getClass().getName();
-		return typeName.equals("net.imglib2.type.numeric.real.FloatType")
-			|| typeName.equals("net.imglib2.type.numeric.real.DoubleType");
+		final String typeName = getType().getClass().getName();
+		return typeName.equals("net.imglib2.type.numeric.real.FloatType") ||
+			typeName.equals("net.imglib2.type.numeric.real.DoubleType");
 	}
 
 	/**
-	 * Deletes the given dataset, cleaning up resources
-	 * and removing it from the object manager.
+	 * Deletes the given dataset, cleaning up resources and removing it from the
+	 * object manager.
 	 */
 	public void delete() {
 		Events.publish(new DatasetDeletedEvent(this));
@@ -226,31 +236,33 @@ public class Dataset implements Comparable<Dataset> {
 	public String toString() {
 		return this.metadata.getName();
 	}
+
 	// -- Comparable methods --
 
 	@Override
-	public int compareTo(Dataset dataset) {
+	public int compareTo(final Dataset dataset) {
 		return getMetadata().getName().compareTo(dataset.getMetadata().getName());
 	}
 
 	// -- Static utility methods --
 
-	// TODO - relocate this when its clear where it should go
-	public static <T extends RealType<T>> Img<T> createPlanarImage(final String name, final T type, final int[] dims)
+	// TODO - relocate this when it's clear where it should go
+	public static <T extends RealType<T> & NativeType<T>> Img<T> createPlanarImage(
+		final T type, final long[] dims)
 	{
-		final PlanarContainerFactory pcf = new PlanarContainerFactory();
-		final ImageFactory<T> imageFactory = new ImageFactory<T>(type, pcf);
-		return imageFactory.createImage(dims, name);
+		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
+		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
+		return planarImg;
 	}
-	
-	public static <T extends RealType<T>> Dataset create(final String name,
-		final T type, final int[] dims, final AxisLabel[] axes)
+
+	public static <T extends RealType<T> & NativeType<T>> Dataset create(
+		final String name, final T type, final long[] dims, final AxisLabel[] axes)
 	{
-		Img<T> image = createPlanarImage(name, type, dims);
+		final Img<T> planarImg = createPlanarImage(type, dims);
 		final Metadata metadata = new Metadata();
 		metadata.setName(name);
 		metadata.setAxes(axes);
-		return new Dataset(image, metadata);
+		return new Dataset(planarImg, metadata);
 	}
 
 }
