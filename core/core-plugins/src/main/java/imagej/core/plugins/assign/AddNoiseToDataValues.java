@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.AddNoise;
-import net.imglib2.cursor.Cursor;
+import net.imglib2.Cursor;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.AddNoise;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -123,10 +123,9 @@ public class AddNoiseToDataValues {
 	 */
 	private void calcTypeMinAndMax() {
 		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) input.getImage().createCursor();
-		rangeMin = cursor.getType().getMinValue();
-		rangeMax = cursor.getType().getMaxValue();
-		cursor.close();
+			(Cursor<? extends RealType<?>>) input.getImage().cursor();
+		rangeMin = cursor.get().getMinValue();
+		rangeMax = cursor.get().getMaxValue();
 	}
 
 }

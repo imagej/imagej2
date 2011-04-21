@@ -41,9 +41,9 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Invert;
-import net.imglib2.cursor.Cursor;
+import net.imglib2.Cursor;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.Invert;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -91,7 +91,7 @@ public class InvertDataValues implements ImageJPlugin {
 		max = -Double.MAX_VALUE;
 
 		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) (input.getImage().createCursor());
+			(Cursor<? extends RealType<?>>) (input.getImage().cursor());
 
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
@@ -99,8 +99,6 @@ public class InvertDataValues implements ImageJPlugin {
 			if (value < min) min = value;
 			if (value > max) max = value;
 		}
-
-		cursor.close();
 	}
 
 }
