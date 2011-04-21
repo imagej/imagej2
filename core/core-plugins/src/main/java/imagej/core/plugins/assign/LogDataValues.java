@@ -41,8 +41,8 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Log;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.Log;
 
 /**
  * Fills an output Dataset by taking the log of an input Dataset.

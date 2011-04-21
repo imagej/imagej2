@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
 import imagej.util.Rect;
-import imglib.ops.function.p1.UnaryOperatorFunction;
-import imglib.ops.operator.UnaryOperator;
+import net.imglib2.ops.function.p1.UnaryOperatorFunction;
+import net.imglib2.ops.operator.UnaryOperator;
 
 /**
  * helper class for use by many plugins that apply a UnaryOperator to some input
@@ -59,19 +59,21 @@ public class UnaryTransformation {
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
 		Rect selection = input.getSelection();
-		int[] dimensions = input.getImage().getDimensions();
+		long[] dimensions = new long[input.getImage().numDimensions()];
+		for (int i = 0; i < dimensions.length; i++)
+			dimensions[i] = input.getImage().dimension(i);
 		setRegion(dimensions, selection);
 	}
 
 	// -- public interface --
 
-	public void setRegion(int[] fullDimensions, Rect selection)
+	public void setRegion(long[] fullDimensions, Rect selection)
 	{
 		if (selection == null) return;
-		int[] origin = new int[fullDimensions.length];
+		long[] origin = new long[fullDimensions.length];
 		origin[0] = selection.x;
 		origin[1] = selection.y;
-		int[] span = fullDimensions.clone();
+		long[] span = fullDimensions.clone();
 		if (selection.width > 0)
 			span[0] = selection.width;
 		if (selection.height > 0)

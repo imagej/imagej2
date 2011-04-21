@@ -36,8 +36,8 @@ package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
 
-import imglib.ops.function.RealFunction;
-import imglib.ops.operation.AssignOperation;
+import net.imglib2.ops.function.RealFunction;
+import net.imglib2.ops.operation.AssignOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +74,8 @@ public class NAryOperation {
 	private RealFunction function;
 
 	/** subregion information used to support working on subregions of inputs */
-	private int[] outputOrigin, outputSpan;
-	private int[][] inputOrigins, inputSpans;
+	private long[] outputOrigin, outputSpan;
+	private long[][] inputOrigins, inputSpans;
 	
 	// -- constructors --
 
@@ -131,13 +131,13 @@ public class NAryOperation {
 		this.output = output;
 	}
 
-	public void setOutputRegion(int[] origin, int[] span)
+	public void setOutputRegion(long[] origin, long[] span)
 	{
 		outputOrigin = origin;
 		outputSpan = span;
 	}
 	
-	public void setInputRegion(int i, int[] origin, int[] span)
+	public void setInputRegion(int i, long[] origin, long[] span)
 	{
 		inputOrigins[i] = origin;
 		inputSpans[i] = span;
@@ -152,13 +152,13 @@ public class NAryOperation {
 			"NAryOperation::run() - function reference is improperly initialized (null)");
 
 		// @SuppressWarnings("unchecked")
-		final Image[] inputImages = new Image[inputs.size()];
+		final Img[] inputImages = new Img[inputs.size()];
 
 		for (int i = 0; i < inputImages.length; i++) {
 			inputImages[i] = imageFromDataset(inputs.get(i));
 		}
 
-		final Image outputImage;
+		final Img outputImage;
 		if (output != null) outputImage = imageFromDataset(output);
 		else outputImage = zeroDataImageWithSameAttributes(inputImages[0]);
 		// TODO - must be given at least one input image or prev line will throw
@@ -187,7 +187,10 @@ public class NAryOperation {
 
 	/** make an image that has same type, container, and dimensions as refImage */
 	private Img zeroDataImageWithSameAttributes(Img refImage) {
-		return refImage.createNewImage(refImage.getDimensions());
+		long[] dimensions = new long[refImage.numDimensions()];
+		for (int i = 0; i < dimensions.length; i++)
+			dimensions[i] = refImage.dimension(i);
+		return refImage.factory().create(dimensions, refImage.firstElement());
 	}
 
 	/** make a Dataset from an Image */
@@ -198,16 +201,21 @@ public class NAryOperation {
 	/** sets up subregion variables to default values */
 	private void initializeSubregionVariables()
 	{
+		Img<?> image = inputs.get(0).getImage();
+		outputOrigin = new long[image.numDimensions()];
+		outputSpan = new long[image.numDimensions()];
+		for (int i = 0; i < outputSpan.length; i++)
+			outputSpan[i] = image.dimension(i);
 		int numInputs = inputs.size();
-		outputOrigin = new int[inputs.get(0).getImage().getNumDimensions()];
-		outputSpan = inputs.get(0).getImage().getDimensions();
-		inputOrigins = new int[numInputs][];
-		inputSpans = new int[numInputs][];
+		inputOrigins = new long[numInputs][];
+		inputSpans = new long[numInputs][];
 		for (int i = 0; i < numInputs; i++)
 		{
-			Image<?> image = inputs.get(i).getImage();
-			inputOrigins[i] = new int[image.getNumDimensions()];
-			inputSpans[i] = image.getDimensions();
+			image = inputs.get(i).getImage();
+			inputOrigins[i] = new long[image.numDimensions()];
+			inputSpans[i] = new long[image.numDimensions()];
+			for (int j = 0; j < inputSpans[i].length; j++)
+				inputSpans[i][j] = image.dimension(j);
 		}
 	}
 }

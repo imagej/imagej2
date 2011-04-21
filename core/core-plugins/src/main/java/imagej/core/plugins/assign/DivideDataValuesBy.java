@@ -41,8 +41,8 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.DivideByConstant;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.DivideByConstant;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
