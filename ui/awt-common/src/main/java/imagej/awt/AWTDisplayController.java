@@ -44,8 +44,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 //import loci.formats.gui.AWTImageTools;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
@@ -56,7 +54,6 @@ import net.imglib2.type.numeric.RealType;
 public class AWTDisplayController implements DisplayController {
 
 	private Dataset dataset;
-	private Img<?> image;
 	private long[] dims;
 	private long[] planeDims;
 	private AxisLabel[] dimLabels;
@@ -101,9 +98,7 @@ public class AWTDisplayController implements DisplayController {
 	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
-		image = dataset.getImage();
-		dims = new long[image.numDimensions()];
-		image.dimensions(dims);
+		dims = dataset.getDims();
 		dimLabels = dataset.getMetadata().getAxes();
 		imageName = dataset.getMetadata().getName();
 		// extract width and height
@@ -184,7 +179,7 @@ public class AWTDisplayController implements DisplayController {
 
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final int no = Index.indexNDto1D(planeDims, pos);
+		final long no = Index.indexNDto1D(planeDims, pos);
 		final Object plane = dataset.getPlane(no);
 		currentPlane = plane;
 		return makeImage();
