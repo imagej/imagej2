@@ -39,21 +39,21 @@ import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
 import imagej.util.Rect;
-import mpicbg.imglib.container.Container;
-import mpicbg.imglib.container.basictypecontainer.PlanarAccess;
-import mpicbg.imglib.container.basictypecontainer.array.ArrayDataAccess;
-import mpicbg.imglib.container.basictypecontainer.array.ByteArray;
-import mpicbg.imglib.container.basictypecontainer.array.DoubleArray;
-import mpicbg.imglib.container.basictypecontainer.array.FloatArray;
-import mpicbg.imglib.container.basictypecontainer.array.IntArray;
-import mpicbg.imglib.container.basictypecontainer.array.LongArray;
-import mpicbg.imglib.container.basictypecontainer.array.ShortArray;
-import mpicbg.imglib.container.planar.PlanarContainerFactory;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.type.Type;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.container.Container;
+import net.imglib2.container.basictypecontainer.PlanarAccess;
+import net.imglib2.container.basictypecontainer.array.ArrayDataAccess;
+import net.imglib2.container.basictypecontainer.array.ByteArray;
+import net.imglib2.container.basictypecontainer.array.DoubleArray;
+import net.imglib2.container.basictypecontainer.array.FloatArray;
+import net.imglib2.container.basictypecontainer.array.IntArray;
+import net.imglib2.container.basictypecontainer.array.LongArray;
+import net.imglib2.container.basictypecontainer.array.ShortArray;
+import net.imglib2.container.planar.PlanarContainerFactory;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.Img;
+import net.imglib2.type.Type;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
@@ -63,7 +63,7 @@ import mpicbg.imglib.type.numeric.RealType;
  */
 public class Dataset implements Comparable<Dataset> {
 
-	private Image<?> image;
+	private Img<?> image;
 	private final Metadata metadata;
 	private boolean isRgbMerged;
 	
@@ -83,11 +83,11 @@ public class Dataset implements Comparable<Dataset> {
 	}
 	// END FIXME TEMP
 
-	public Dataset(final Image<?> image) {
+	public Dataset(final Img<?> image) {
 		this(image, Metadata.createMetadata(image));
 	}
 
-	public Dataset(final Image<?> image, final Metadata metadata) {
+	public Dataset(final Img<?> image, final Metadata metadata) {
 		if (metadata == null) {
 			throw new IllegalArgumentException("Metadata must not be null");
 		}
@@ -108,13 +108,13 @@ public class Dataset implements Comparable<Dataset> {
 		return isRgbMerged;
 	}
 	
-	public Image<?> getImage() {
+	public Img<?> getImage() {
 		return image;
 	}
 
-	public void setImage(Image<?> newImageData) {
+	public void setImage(Img<?> newImageData) {
 		
-		if (image.getNumDimensions() != newImageData.getNumDimensions())
+		if (image.numDimensions() != newImageData.numDimensions())
 			throw new IllegalArgumentException("new image data has to have the same number of dimensions as the internal image");
 		
 		this.image = newImageData;
@@ -200,15 +200,15 @@ public class Dataset implements Comparable<Dataset> {
 	public boolean isSigned() {
 		// HACK - imglib needs a way to query RealTypes for signedness
 		final String typeName = image.createType().getClass().getName();
-		return !typeName.startsWith("mpicbg.imglib.type.numeric.integer.Unsigned");
+		return !typeName.startsWith("net.imglib2.type.numeric.integer.Unsigned");
 	}
 
 	// TEMP
 	public boolean isFloat() {
 		// HACK - imglib needs a way to query RealTypes for integer vs. float
 		final String typeName = image.createType().getClass().getName();
-		return typeName.equals("mpicbg.imglib.type.numeric.real.FloatType")
-			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
+		return typeName.equals("net.imglib2.type.numeric.real.FloatType")
+			|| typeName.equals("net.imglib2.type.numeric.real.DoubleType");
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class Dataset implements Comparable<Dataset> {
 	// -- Static utility methods --
 
 	// TODO - relocate this when its clear where it should go
-	public static <T extends RealType<T>> Image<T> createPlanarImage(final String name, final T type, final int[] dims)
+	public static <T extends RealType<T>> Img<T> createPlanarImage(final String name, final T type, final int[] dims)
 	{
 		final PlanarContainerFactory pcf = new PlanarContainerFactory();
 		final ImageFactory<T> imageFactory = new ImageFactory<T>(type, pcf);
@@ -246,7 +246,7 @@ public class Dataset implements Comparable<Dataset> {
 	public static <T extends RealType<T>> Dataset create(final String name,
 		final T type, final int[] dims, final AxisLabel[] axes)
 	{
-		Image<T> image = createPlanarImage(name, type, dims);
+		Img<T> image = createPlanarImage(name, type, dims);
 		final Metadata metadata = new Metadata();
 		metadata.setName(name);
 		metadata.setAxes(axes);

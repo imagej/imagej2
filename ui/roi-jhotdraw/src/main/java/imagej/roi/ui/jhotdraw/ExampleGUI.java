@@ -34,23 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.roi.ui.jhotdraw;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.JToolBar;
 
-import org.jhotdraw.app.Application;
-import org.jhotdraw.app.DefaultApplicationModel;
 import org.jhotdraw.app.MDIApplication;
-import org.jhotdraw.app.View;
 import org.jhotdraw.draw.DefaultDrawingEditor;
-import org.jhotdraw.draw.DefaultDrawingView;
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.action.ButtonFactory;
 import org.jhotdraw.draw.tool.CreationTool;
-import org.jhotdraw.samples.draw.DrawView;
 import org.jhotdraw.util.ResourceBundleUtil;
 
 /**
@@ -63,24 +56,9 @@ public class ExampleGUI {
 	public static void main(final String[] args) {
 		final MDIApplication app = new MDIApplication();
 		final DrawingEditor editor = new DefaultDrawingEditor();
-		DefaultApplicationModel dam = new DefaultApplicationModel() {
-			@Override
-			public List<JToolBar> createToolBars(Application app, View p) {
-				List<JToolBar> tbList = new ArrayList<JToolBar>(super.createToolBars(app, p));
-				tbList.add(ExampleGUI.createToolBar(editor));
-				return tbList;
-			}
-
-			@Override
-			public View createView() {
-				DrawView v = new DrawView();
-				v.setEditor(editor);
-				return v;
-			}
-			
-		};
-		app.setModel(dam);
-		app.launch(new String [0]);
+		final JToolBar toolBar = createToolBar(editor);
+		// TODO - finish hooking things up
+		app.start(null);
 	}
 
 	public static JToolBar createToolBar(final DrawingEditor editor) {
@@ -106,7 +84,7 @@ public class ExampleGUI {
 			for (final String typeName : adapter.getROITypeNames()) {
 				final CreationTool creationTool =
 					new IJCreationTool(adapter, typeName);
-				ButtonFactory.addToolTo(toolBar, editor, creationTool, adapter.getIconName(),
+				ButtonFactory.addToolTo(toolBar, editor, creationTool, typeName,
 					labels);
 			}
 		}

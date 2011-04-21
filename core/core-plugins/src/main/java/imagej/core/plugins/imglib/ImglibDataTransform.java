@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import mpicbg.imglib.algorithm.OutputAlgorithm;
+import net.imglib2.algorithm.OutputAlgorithm;
 import imagej.data.Dataset;
 
 /**

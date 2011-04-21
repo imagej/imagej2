@@ -41,9 +41,9 @@ import imagej.data.Metadata;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImagePlusAdapter;
-import mpicbg.imglib.image.display.imagej.ImageJFunctions;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlusAdapter;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 
 
 /**

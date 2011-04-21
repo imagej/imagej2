@@ -41,11 +41,11 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.real.FloatType;
+import net.imglib2.algorithm.OutputAlgorithm;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * Fills an output Dataset with the values of an input Dataset. All the values

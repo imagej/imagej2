@@ -36,12 +36,12 @@ package imagej.core.plugins.rotate;
 
 import imagej.data.Dataset;
 import imagej.util.Rect;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.algorithm.OutputAlgorithm;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 // TODO - in IJ1 this flips single plane in active window. do we want to extend to all planes???
 

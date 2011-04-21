@@ -39,19 +39,19 @@ import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import mpicbg.imglib.cursor.LocalizableCursor;
-import mpicbg.imglib.type.logic.BitType;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.ByteType;
-import mpicbg.imglib.type.numeric.integer.IntType;
-import mpicbg.imglib.type.numeric.integer.LongType;
-import mpicbg.imglib.type.numeric.integer.ShortType;
-import mpicbg.imglib.type.numeric.integer.Unsigned12BitType;
-import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedIntType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.DoubleType;
-import mpicbg.imglib.type.numeric.real.FloatType;
+import net.imglib2.cursor.LocalizableCursor;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.ByteType;
+import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.type.numeric.integer.ShortType;
+import net.imglib2.type.numeric.integer.Unsigned12BitType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.integer.UnsignedIntType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * A demonstration plugin that generates a gradient image.
@@ -195,8 +195,8 @@ public class GradientImage implements ImageJPlugin {
 
 		// TODO - refactor this and Dataset's implementation to a TypeUtils class.
 		//  Or improve when Imglib extended to allow type querying
-		boolean isFloat = typeName.equals("mpicbg.imglib.type.numeric.real.FloatType")
-			|| typeName.equals("mpicbg.imglib.type.numeric.real.DoubleType");
+		boolean isFloat = typeName.equals("net.imglib2.type.numeric.real.FloatType")
+			|| typeName.equals("net.imglib2.type.numeric.real.DoubleType");
 		
 		if (isFloat)
 			return value;

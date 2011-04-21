@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import mpicbg.imglib.type.numeric.integer.ByteType;
+import net.imglib2.type.numeric.integer.ByteType;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetChangedEvent;
 import imagej.event.Events;

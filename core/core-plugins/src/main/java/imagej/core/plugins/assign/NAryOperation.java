@@ -42,9 +42,8 @@ import imglib.ops.operation.AssignOperation;
 import java.util.ArrayList;
 import java.util.List;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 /**
  * Assigns an output Dataset's values by applying a RealFunction to a number of
@@ -181,18 +180,18 @@ public class NAryOperation {
 	// -- private interface --
 
 	/** make an image that has same type and dimensions as Dataset */
-	private Image imageFromDataset(Dataset dataset) {
+	private Img imageFromDataset(Dataset dataset) {
 		// @SuppressWarnings("unchecked")
 		return dataset.getImage();
 	}
 
 	/** make an image that has same type, container, and dimensions as refImage */
-	private Image zeroDataImageWithSameAttributes(Image refImage) {
+	private Img zeroDataImageWithSameAttributes(Img refImage) {
 		return refImage.createNewImage(refImage.getDimensions());
 	}
 
 	/** make a Dataset from an Image */
-	private Dataset datasetFromImage(Image image) {
+	private Dataset datasetFromImage(Img image) {
 		return new Dataset(image);
 	}
 

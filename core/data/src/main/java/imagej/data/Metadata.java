@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import mpicbg.imglib.image.Image;
+import net.imglib2.img.Img;
 
 /**
  * TODO
- *
+ * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
@@ -46,74 +46,46 @@ public class Metadata {
 
 	private String name;
 	private AxisLabel[] axes;
-	
+
 	public Metadata() {
 		this.name = "Untitled";
 		this.axes = new AxisLabel[0];
 	}
-	
+
 	/** Gets the name of dataset. */
-	public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 
 	/** Sets the name of dataset. */
-	public void setName(final String name) { this.name = name; }
+	public void setName(final String name) {
+		this.name = name;
+	}
 
 	/** Returns the order of the axes. */
-	public AxisLabel[] getAxes() { return axes; }
+	public AxisLabel[] getAxes() {
+		return axes;
+	}
 
 	/** Sets the order of the axes. */
-	public void setAxes(final AxisLabel[] axes) { this.axes = axes; }
+	public void setAxes(final AxisLabel[] axes) {
+		this.axes = axes;
+	}
 
-	/**
-	 * Extracts metadata, including axis types,
-	 * from the given encoded image name.
-	 */
-	public static Metadata createMetadata(final Image<?> img) {
-		final String name = decodeName(img);
-		final AxisLabel[] axes = decodeTypes(img);
+	/** Creates default metadata for the given image. */
+	public static Metadata createMetadata(final Img<?> img) {
+		final AxisLabel[] axes = createAxes(img);
 		final Metadata md = new Metadata();
-		md.setName(name);
+		md.setName(img.toString());
 		md.setAxes(axes);
 		return md;
 	}
 
-	// CTR TODO - Code below is partially duplicated from imglib-io ImageOpener.
-	// This functionality should live in a common utility place somewhere instead.
-
-	/** Converts the given image's encoded name back to just the name. */
-	public static String decodeName(final Image<?> img) {
-		final String name = img.getName();
-		final int lBracket = name.lastIndexOf(" [");
-		if (lBracket < 0) return name;
-		return name.substring(0, lBracket);
-	}
-
-	/**
-	 * Converts the given image's encoded name back to a list of
-	 * dimensional axis types.
-	 *
-	 * If the name is not encoded, returns some default type assignments.
-	 */
-	public static AxisLabel[] decodeTypes(final Image<?> img) {
-		final String name = img.getName();
-
-		// extract axis labels from encoded name
-		final int lBracket = name.lastIndexOf(" [");
-		if (lBracket >= 0) {
-			final int rBracket = name.lastIndexOf("]");
-			if (rBracket >= lBracket) {
-				final String[] tokens = name.substring(lBracket + 2, rBracket).split(" ");
-				final AxisLabel[] axes = new AxisLabel[tokens.length];
-				for (int i=0; i<tokens.length; i++) {
-					axes[i] = AxisLabel.getAxisLabel(tokens[i]);
-				}
-				return axes;
-			}
-		}
-
+	/** Creates default axis labels for the given image. */
+	public static AxisLabel[] createAxes(final Img<?> img) {
 		// axes were not encoded in the name; return default axis order
-		final AxisLabel[] axes = new AxisLabel[img.getNumDimensions()];
-		for (int i=0; i<axes.length; i++) {
+		final AxisLabel[] axes = new AxisLabel[img.numDimensions()];
+		for (int i = 0; i < axes.length; i++) {
 			switch (i) {
 				case 0:
 					axes[i] = AxisLabel.X;
@@ -137,13 +109,12 @@ public class Metadata {
 		return axes;
 	}
 
-	/**
-	 * set this Metatdata's values from another Metadata object
-	 */
-	public void copyFrom(Metadata other) {
-		String newName = other.getName();
-		AxisLabel[] newAxes = other.getAxes().clone();
+	/** Sets this Metadata's values from another Metadata object. */
+	public void copyFrom(final Metadata other) {
+		final String newName = other.getName();
+		final AxisLabel[] newAxes = other.getAxes().clone();
 		setName(newName);
 		setAxes(newAxes);
 	}
+
 }

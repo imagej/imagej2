@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;

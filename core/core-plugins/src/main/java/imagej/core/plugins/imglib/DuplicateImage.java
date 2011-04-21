@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import mpicbg.imglib.image.Image;
+import net.imglib2.img.Img;
 import imagej.data.AxisLabel;
 import imagej.data.Dataset;
 import imagej.data.Metadata;

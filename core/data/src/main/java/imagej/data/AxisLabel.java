@@ -38,7 +38,7 @@ import java.util.Hashtable;
 
 // TODO - unify this enum with the axis labels used in
 // Bio-Formats (loci.formats.FormatTools) and
-// imglib-io (mpicbg.imglib.io.ImageOpener).
+// imglib-io (net.imglib2.io.ImgOpener).
 
 /**
  * TODO

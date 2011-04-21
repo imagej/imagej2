@@ -49,9 +49,9 @@ public interface DisplayController {
 
 	AxisLabel[] getDimLabels();
 
-	int[] getDims();
+	long[] getDims();
 
-	int[] getPos();
+	long[] getPos();
 
 	Dataset getDataset();
 	

@@ -41,12 +41,12 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.algorithm.OutputAlgorithm;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 // TODO - minX, minY, maxX, maxY are treated as harvested variables (for simple testing). Should make them passed
 //        in parameters to constructor

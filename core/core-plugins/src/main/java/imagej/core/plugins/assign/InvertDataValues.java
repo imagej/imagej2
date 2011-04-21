@@ -43,8 +43,8 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imglib.ops.operator.UnaryOperator;
 import imglib.ops.operator.unary.Invert;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.cursor.Cursor;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data

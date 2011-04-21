@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import mpicbg.imglib.container.ContainerFactory;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.*;
-import mpicbg.imglib.type.numeric.real.*;
-import mpicbg.imglib.type.logic.*;
+import net.imglib2.container.ContainerFactory;
+import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.*;
+import net.imglib2.type.numeric.real.*;
+import net.imglib2.type.logic.*;
 import imagej.data.Dataset;
 
 // NOTE that Imglib does not do any range clamping while moving between image
