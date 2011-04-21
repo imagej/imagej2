@@ -64,7 +64,7 @@ public final class ImageJ {
 		getInstance();
 	}
 
-	/** Gets the singleton Managers instance. */
+	/** Gets the singleton ImageJ instance. */
 	public static ImageJ getInstance() {
 		if (instance == null) new ImageJ();
 		return instance;
