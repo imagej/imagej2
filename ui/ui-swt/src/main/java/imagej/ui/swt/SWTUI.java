@@ -64,7 +64,6 @@ public class SWTUI implements UserInterface, Runnable {
 	private Shell shell;
 	private SWTToolBar toolBar;
 	private SWTStatusBar statusBar;
-	private imagej.display.Display activeDisplay;
 
 	// -- UserInterface methods --
 

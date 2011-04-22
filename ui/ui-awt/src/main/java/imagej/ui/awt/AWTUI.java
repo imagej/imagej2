@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.awt;
 
 import imagej.ImageJ;
-import imagej.display.Display;
 import imagej.event.Events;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.plugin.PluginEntry;
@@ -63,7 +62,6 @@ public class AWTUI implements UserInterface {
 	private Frame frame;
 	private AWTToolBar toolBar;
 	private AWTStatusBar statusBar;
-	private Display activeDisplay;
 
 	// -- UserInterface methods --
 
