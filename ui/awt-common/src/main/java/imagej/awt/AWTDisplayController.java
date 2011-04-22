@@ -43,13 +43,15 @@ import imagej.util.Index;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-//import loci.formats.gui.AWTImageTools;
+import net.imglib2.RandomAccess;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
  * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class AWTDisplayController implements DisplayController {
 
@@ -94,7 +96,7 @@ public class AWTDisplayController implements DisplayController {
 	public Dataset getDataset() {
 		return dataset;
 	}
-	
+
 	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
@@ -117,7 +119,7 @@ public class AWTDisplayController implements DisplayController {
 		if (yIndex < 0) {
 			throw new IllegalArgumentException("No Y dimension");
 		}
-		planeDims = new long[dims.length-2];
+		planeDims = new long[dims.length - 2];
 		int d = 0;
 		for (int i = 0; i < dims.length; i++) {
 			if ((i == xIndex) || (i == yIndex)) continue;
@@ -127,7 +129,7 @@ public class AWTDisplayController implements DisplayController {
 		// display first image plane
 		pos = new long[dims.length - 2];
 		update();
-		//FIXME - disabled. make this UI call in SimpleImageDisplay to
+		// FIXME - disabled. make this UI call in SimpleImageDisplay to
 		// avoid incorrectly calculating image canvas dimensions.
 		// Reenable if actually needed.
 		display.getImageDisplayWindow().pack();
@@ -169,8 +171,7 @@ public class AWTDisplayController implements DisplayController {
 			if (dims[i] == 1) {
 				continue;
 			}
-			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] +
-				"; ");
+			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getPixelType());
@@ -180,59 +181,67 @@ public class AWTDisplayController implements DisplayController {
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
 		final long no = Index.indexNDto1D(planeDims, pos);
-		final Object plane = dataset.getPlane(no);
+		if (no < 0 || no > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Plane out of range: " + no);
+		}
+		final Object plane = dataset.getPlane((int) no);
 		currentPlane = plane;
 		return makeImage();
 	}
-	
-	/** 
+
+	/**
+	 * Creates a BufferedImage of the plane of data referenced by the current
+	 * position index. For now it only creates BufferedImages of 16-bit gray type.
+	 * Represents data values graphically by scaling data to 16-bit unsigned
+	 * range.
 	 * <p>
-	 * creates a BufferedImage of the plane of data referenced by the current
-	 * position index. For now it only creates BufferedImages of 16-bit gray
-	 * type. Represents data values graphically by scaling data to 16-bit
-	 * unsigned range.
-	 * </p>
-	 * 
-	 * <p>
-	 * rewritten to not use AWTTools::makeImage(). That code could not support
+	 * Rewritten to not use AWTTools::makeImage(). That code could not support
 	 * 1-bit, 12-bit, and 64-bit data. For 64-bit data AWT does not support it
-	 * internally as a type. For the other two AWTTools assume the input plane
-	 * is a primitive type and not an encoded type (i.e. 12-bit is represented
-	 * as 12-bit packings within an int[]). This assumption is bad.
+	 * internally as a type. For the other two AWTTools assume the input plane is
+	 * a primitive type and not an encoded type (i.e. 12-bit is represented as
+	 * 12-bit packings within an int[]). This assumption is bad.
 	 * </p>
 	 */
 	private BufferedImage makeImage() {
-		int w = dataset.getImage().getDimension(xIndex);
-		int h = dataset.getImage().getDimension(yIndex);
-		BufferedImage bImage = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
-		int[] dataInShortRangeEncodedAsInts = new int[w*h];
-		int[] position = dims.clone();
+		final long width = dataset.getImage().dimension(xIndex);
+		if (width < 0 || width > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Width out of range: " + width);
+		}
+		final int w = (int) width;
+		final long height = dataset.getImage().dimension(yIndex);
+		if (height < 0 || height > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Height out of range: " + height);
+		}
+		final int h = (int) height;
+		final BufferedImage bImage =
+			new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+		final int[] dataInShortRangeEncodedAsInts = new int[w * h];
+		final long[] position = dims.clone();
 		int p = 0;
 		for (int i = 0; i < position.length; i++) {
-			if ((i == xIndex) || (i == yIndex))
-				continue;
+			if ((i == xIndex) || (i == yIndex)) continue;
 			position[i] = pos[p++];
 		}
-		LocalizableByDimCursor<? extends RealType<?>> cursor =
-			(LocalizableByDimCursor<? extends RealType<?>>)
-			dataset.getImage().createLocalizableByDimCursor();
+		final RandomAccess<? extends RealType<?>> randomAccess =
+			dataset.getImage().randomAccess();
 		// create a grayscale image representation of data
 		// TODO - broken for float types - may need to range of actual pixel values
-		double rangeMin = cursor.getType().getMinValue();
-		double rangeMax = cursor.getType().getMaxValue();
+		final double rangeMin = randomAccess.get().getMinValue();
+		final double rangeMax = randomAccess.get().getMaxValue();
 		for (int y = 0; y < h; y++) {
 			position[yIndex] = y;
 			for (int x = 0; x < w; x++) {
 				position[xIndex] = x;
-				cursor.setPosition(position);
-				double value = cursor.getType().getRealDouble();
-				int shortVal = (int) (0xffff * ((value - rangeMin) / (rangeMax - rangeMin)));
-				dataInShortRangeEncodedAsInts[y*w + x] = shortVal;
+				randomAccess.setPosition(position);
+				final double value = randomAccess.get().getRealDouble();
+				final int shortVal =
+					(int) (0xffff * ((value - rangeMin) / (rangeMax - rangeMin)));
+				dataInShortRangeEncodedAsInts[y * w + x] = shortVal;
 			}
 		}
-		cursor.close();
-		WritableRaster raster = bImage.getRaster();
+		final WritableRaster raster = bImage.getRaster();
 		raster.setPixels(0, 0, w, h, dataInShortRangeEncodedAsInts);
 		return bImage;
 	}
+
 }

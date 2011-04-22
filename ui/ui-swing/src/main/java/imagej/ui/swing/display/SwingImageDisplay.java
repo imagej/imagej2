@@ -194,7 +194,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public int[] getCurrentPlanePosition() {
+	public long[] getCurrentPlanePosition() {
 		return controller.getPos();
 	}
 
