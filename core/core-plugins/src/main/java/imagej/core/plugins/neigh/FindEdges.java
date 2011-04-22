@@ -81,7 +81,7 @@ public class FindEdges implements ImageJPlugin {
 
 		/** at each new neighborhood start tracking neighbor 0 */
 		@Override
-		public void initializeNeighborhood(int[] position) {
+		public void initializeNeighborhood(long[] position) {
 			// nothing to do
 		}
 
