@@ -39,24 +39,14 @@ import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import net.imglib2.cursor.LocalizableCursor;
-import net.imglib2.type.logic.BitType;
+import net.imglib2.Cursor;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.ByteType;
-import net.imglib2.type.numeric.integer.IntType;
-import net.imglib2.type.numeric.integer.LongType;
-import net.imglib2.type.numeric.integer.ShortType;
-import net.imglib2.type.numeric.integer.Unsigned12BitType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.integer.UnsignedIntType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * A demonstration plugin that generates a gradient image.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(menuPath = "Process>Gradient")
 public class GradientImage implements ImageJPlugin {
@@ -69,13 +59,13 @@ public class GradientImage implements ImageJPlugin {
 	public static final String DEPTH64 = "64-bit";
 
 	@Parameter(min = "1")
-	private int width = 512;
+	private final int width = 512;
 
 	@Parameter(min = "1")
-	private int height = 512;
+	private final int height = 512;
 
-	@Parameter(callback = "bitDepthChanged",
-		choices = { DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
+	@Parameter(callback = "bitDepthChanged", choices = { DEPTH1, DEPTH8,
+		DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
 	private String bitDepth = DEPTH8;
 
 	@Parameter(callback = "signedChanged")
@@ -87,28 +77,27 @@ public class GradientImage implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset dataset;
 
+	// -- RunnablePlugin methods --
+
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
 		// create the dataset
 		final String name = "Gradient Image";
-		final RealType type = makeType();
-		final int[] dims = { width, height };
+		final int bitsPerPixel = getBitsPerPixel();
+		final long[] dims = { width, height };
 		final AxisLabel[] axes = { AxisLabel.X, AxisLabel.Y };
-		dataset = Dataset.create(name, type, dims, axes);
+		dataset = Dataset.create(name, dims, axes, bitsPerPixel, signed, floating);
 
 		// fill in the diagonal gradient
-		final LocalizableCursor<? extends RealType<?>> cursor =
-			(LocalizableCursor<? extends RealType<?>>)
-			dataset.getImage().createLocalizableCursor();
+		final Cursor<? extends RealType<?>> cursor = dataset.getImage().cursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			final int x = cursor.getPosition(0);
-			final int y = cursor.getPosition(1);
-			double value = calcRangedValue(x+y, cursor.getType());
-			cursor.getType().setReal(value);
+			final long x = cursor.getLongPosition(0);
+			final long y = cursor.getLongPosition(1);
+			final RealType<?> type = cursor.get();
+			final double value = calcRangedValue(x + y, type);
+			type.setReal(value);
 		}
-		cursor.close();
 	}
 
 	// -- Parameter callback methods --
@@ -133,40 +122,9 @@ public class GradientImage implements ImageJPlugin {
 
 	// -- Helper methods --
 
-	private RealType<? extends RealType<?>> makeType() {
-		if (bitDepth.equals(DEPTH1)) {
-			assert !signed && !floating;
-			return new BitType();
-		}
-		if (bitDepth.equals(DEPTH8)) {
-			assert !floating;
-			if (signed) return new ByteType();
-			return new UnsignedByteType();
-		}
-		if (bitDepth.equals(DEPTH12)) {
-			assert !signed && !floating;
-			return new Unsigned12BitType();
-		}
-		if (bitDepth.equals(DEPTH16)) {
-			assert !floating;
-			if (signed) return new ShortType();
-			return new UnsignedShortType();
-		}
-		if (bitDepth.equals(DEPTH32)) {
-			if (floating) {
-				assert signed;
-				return new FloatType();
-			}
-			if (signed) return new IntType();
-			return new UnsignedIntType();
-		}
-		if (bitDepth.equals(DEPTH64)) {
-			assert signed;
-			if (floating) return new DoubleType();
-			return new LongType();
-		}
-		throw new IllegalStateException("Invalid parameters: bitDepth=" +
-			bitDepth + ", signed=" + signed + ", floating=" + floating);
+	private int getBitsPerPixel() {
+		final int dash = bitDepth.indexOf("-");
+		return Integer.parseInt(bitDepth.substring(0, dash));
 	}
 
 	private boolean signedForbidden() {
@@ -185,25 +143,17 @@ public class GradientImage implements ImageJPlugin {
 	}
 
 	// NOTE
-	//   input "value" assumed to be >= 0.
-	//   if not float data we modulate to fit into type's [range min, range, max]
-	//   note that this behavior is different than before in that it starts from
-	//     the type's minimum value. the difference is apparent for signed data.
-	
-	private double calcRangedValue(double value, RealType<?> type) {
-		final String typeName = type.getClass().getName();
+	// input "value" assumed to be >= 0.
+	// if not float data we modulate to fit into type's [range min, range, max]
+	// note that this behavior is different than before in that it starts from
+	// the type's minimum value. the difference is apparent for signed data.
 
-		// TODO - refactor this and Dataset's implementation to a TypeUtils class.
-		//  Or improve when Imglib extended to allow type querying
-		boolean isFloat = typeName.equals("net.imglib2.type.numeric.real.FloatType")
-			|| typeName.equals("net.imglib2.type.numeric.real.DoubleType");
-		
-		if (isFloat)
-			return value;
-		
-		double rangeMin = type.getMinValue();
-		double rangeMax = type.getMaxValue();
-		double totalRange = rangeMax - rangeMin + 1;
+	private double calcRangedValue(final double value, final RealType<?> type) {
+		if (floating) return value;
+
+		final double rangeMin = type.getMinValue();
+		final double rangeMax = type.getMaxValue();
+		final double totalRange = rangeMax - rangeMin + 1;
 
 		double newValue = value;
 		while (newValue >= totalRange) {

@@ -52,7 +52,18 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.ByteType;
+import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.type.numeric.integer.ShortType;
+import net.imglib2.type.numeric.integer.Unsigned12BitType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.integer.UnsignedIntType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * TODO
@@ -89,7 +100,8 @@ public class Dataset implements Comparable<Dataset> {
 		this(image, Metadata.createMetadata(image));
 	}
 
-	public Dataset(final Img<? extends RealType<?>> img, final Metadata metadata) {
+	public Dataset(final Img<? extends RealType<?>> img, final Metadata metadata)
+	{
 		if (metadata == null) {
 			throw new IllegalArgumentException("Metadata must not be null");
 		}
@@ -116,7 +128,7 @@ public class Dataset implements Comparable<Dataset> {
 		return isRgbMerged;
 	}
 
-	public Img<?> getImage() {
+	public Img<? extends RealType<?>> getImage() {
 		return img;
 	}
 
@@ -247,22 +259,68 @@ public class Dataset implements Comparable<Dataset> {
 	// -- Static utility methods --
 
 	// TODO - relocate this when it's clear where it should go
-	public static <T extends RealType<T> & NativeType<T>> Img<T> createPlanarImage(
-		final T type, final long[] dims)
+	public static <T extends RealType<T> & NativeType<T>> Img<T>
+		createPlanarImage(final T type, final long[] dims)
 	{
 		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
 		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
 		return planarImg;
 	}
 
+	public static Dataset create(final String name, final long[] dims,
+		final AxisLabel[] axes, final int bitsPerPixel, final boolean signed,
+		final boolean floating)
+	{
+		if (bitsPerPixel == 1) {
+			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
+			return create(name, dims, axes, new BitType());
+		}
+		if (bitsPerPixel == 8) {
+			if (floating) invalidParams(bitsPerPixel, signed, floating);
+			if (signed) return create(name, dims, axes, new ByteType());
+			return create(name, dims, axes, new UnsignedByteType());
+		}
+		if (bitsPerPixel == 12) {
+			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
+			return create(name, dims, axes, new Unsigned12BitType());
+		}
+		if (bitsPerPixel == 16) {
+			if (floating) invalidParams(bitsPerPixel, signed, floating);
+			if (signed) return create(name, dims, axes, new ShortType());
+			return create(name, dims, axes, new UnsignedShortType());
+		}
+		if (bitsPerPixel == 32) {
+			if (floating) {
+				if (!signed) invalidParams(bitsPerPixel, signed, floating);
+				return create(name, dims, axes, new FloatType());
+			}
+			if (signed) return create(name, dims, axes, new IntType());
+			return create(name, dims, axes, new UnsignedIntType());
+		}
+		if (bitsPerPixel == 64) {
+			if (!signed) invalidParams(bitsPerPixel, signed, floating);
+			if (floating) return create(name, dims, axes, new DoubleType());
+			return create(name, dims, axes, new LongType());
+		}
+		invalidParams(bitsPerPixel, signed, floating);
+		return null;
+	}
+
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
-		final String name, final T type, final long[] dims, final AxisLabel[] axes)
+		final String name, final long[] dims, final AxisLabel[] axes, final T type)
 	{
 		final Img<T> planarImg = createPlanarImage(type, dims);
 		final Metadata metadata = new Metadata();
 		metadata.setName(name);
 		metadata.setAxes(axes);
 		return new Dataset(planarImg, metadata);
+	}
+
+	private static void invalidParams(final int bitsPerPixel,
+		final boolean signed, final boolean floating)
+	{
+		throw new IllegalStateException("Invalid parameters: bitsPerPixel=" +
+			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
 	}
 
 }
