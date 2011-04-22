@@ -65,7 +65,7 @@ public class ChangeToUINT16 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new UnsignedShortType());
+		TypeChanger.changeType(input, new UnsignedShortType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

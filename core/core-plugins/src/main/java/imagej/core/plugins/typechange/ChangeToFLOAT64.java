@@ -65,7 +65,7 @@ public class ChangeToFLOAT64 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new DoubleType());
+		TypeChanger.changeType(input, new DoubleType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

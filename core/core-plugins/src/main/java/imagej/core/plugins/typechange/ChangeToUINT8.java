@@ -65,7 +65,7 @@ public class ChangeToUINT8 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new UnsignedByteType());
+		TypeChanger.changeType(input, new UnsignedByteType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

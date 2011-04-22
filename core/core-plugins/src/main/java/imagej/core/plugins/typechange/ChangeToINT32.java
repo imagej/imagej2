@@ -65,7 +65,7 @@ public class ChangeToINT32 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new IntType());
+		TypeChanger.changeType(input, new IntType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 
