@@ -34,12 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
-import imagej.data.AxisLabel;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -85,7 +86,7 @@ public class GradientImage implements ImageJPlugin {
 		final String name = "Gradient Image";
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
-		final AxisLabel[] axes = { AxisLabel.X, AxisLabel.Y };
+		final Axis[] axes = { Axes.X, Axes.Y };
 		dataset = Dataset.create(name, dims, axes, bitsPerPixel, signed, floating);
 
 		// fill in the diagonal gradient
