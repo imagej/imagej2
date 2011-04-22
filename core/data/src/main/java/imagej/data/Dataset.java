@@ -169,9 +169,15 @@ public class Dataset implements Comparable<Dataset> {
 		return pixelType;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private RealType getType() {
+	private RealType<?> getType() {
 		return img.cursor().get();
+	}
+
+	/** Gets the dimensional extents of the dataset. */
+	public long[] getDims() {
+		final long[] dims = new long[img.numDimensions()];
+		img.dimensions(dims);
+		return dims;
 	}
 
 	public Object getPlane(final int no) {
@@ -241,9 +247,7 @@ public class Dataset implements Comparable<Dataset> {
 		Events.publish(new DatasetDeletedEvent(this));
 	}
 
-	/**
-	 * displays the Dataset as a string (for now simply its name)
-	 */
+	/** Displays the Dataset as a string (for now simply its name). */
 	@Override
 	public String toString() {
 		return this.metadata.getName();
