@@ -154,5 +154,6 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 
 	private void cleanup() {
+		// nothing to do
 	}
 }
