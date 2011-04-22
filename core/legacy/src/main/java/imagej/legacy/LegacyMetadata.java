@@ -35,8 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.data.AxisLabel;
 import imagej.data.Metadata;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 
 /**
  * Utility methods for {@link Metadata} for a legacy image.
@@ -50,8 +51,8 @@ public final class LegacyMetadata {
 	}
 
 	public static Metadata create(final ImagePlus imp) {
-		final AxisLabel[] axes = {
-			AxisLabel.X, AxisLabel.Y, AxisLabel.CHANNEL, AxisLabel.Z, AxisLabel.TIME
+		final Axis[] axes = {
+			Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME
 		};
 		final Metadata metadata = new Metadata();
 		metadata.setName(imp.getTitle());

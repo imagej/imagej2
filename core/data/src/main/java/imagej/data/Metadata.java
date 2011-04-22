@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 
 /**
@@ -45,11 +47,11 @@ import net.imglib2.img.Img;
 public class Metadata {
 
 	private String name;
-	private AxisLabel[] axes;
+	private Axis[] axes;
 
 	public Metadata() {
 		this.name = "Untitled";
-		this.axes = new AxisLabel[0];
+		this.axes = new Axis[0];
 	}
 
 	/** Gets the name of dataset. */
@@ -63,18 +65,18 @@ public class Metadata {
 	}
 
 	/** Returns the order of the axes. */
-	public AxisLabel[] getAxes() {
+	public Axis[] getAxes() {
 		return axes;
 	}
 
 	/** Sets the order of the axes. */
-	public void setAxes(final AxisLabel[] axes) {
+	public void setAxes(final Axis[] axes) {
 		this.axes = axes;
 	}
 
 	/** Creates default metadata for the given image. */
 	public static Metadata createMetadata(final Img<?> img) {
-		final AxisLabel[] axes = createAxes(img);
+		final Axis[] axes = createAxes(img);
 		final Metadata md = new Metadata();
 		md.setName(img.toString());
 		md.setAxes(axes);
@@ -82,28 +84,27 @@ public class Metadata {
 	}
 
 	/** Creates default axis labels for the given image. */
-	public static AxisLabel[] createAxes(final Img<?> img) {
-		// axes were not encoded in the name; return default axis order
-		final AxisLabel[] axes = new AxisLabel[img.numDimensions()];
+	public static Axis[] createAxes(final Img<?> img) {
+		final Axis[] axes = new Axis[img.numDimensions()];
 		for (int i = 0; i < axes.length; i++) {
 			switch (i) {
 				case 0:
-					axes[i] = AxisLabel.X;
+					axes[i] = Axes.X;
 					break;
 				case 1:
-					axes[i] = AxisLabel.Y;
+					axes[i] = Axes.Y;
 					break;
 				case 2:
-					axes[i] = AxisLabel.Z;
+					axes[i] = Axes.Z;
 					break;
 				case 3:
-					axes[i] = AxisLabel.TIME;
+					axes[i] = Axes.TIME;
 					break;
 				case 4:
-					axes[i] = AxisLabel.CHANNEL;
+					axes[i] = Axes.CHANNEL;
 					break;
 				default:
-					axes[i] = AxisLabel.OTHER;
+					axes[i] = Axes.UNKNOWN;
 			}
 		}
 		return axes;
@@ -112,7 +113,7 @@ public class Metadata {
 	/** Sets this Metadata's values from another Metadata object. */
 	public void copyFrom(final Metadata other) {
 		final String newName = other.getName();
-		final AxisLabel[] newAxes = other.getAxes().clone();
+		final Axis[] newAxes = other.getAxes().clone();
 		setName(newName);
 		setAxes(newAxes);
 	}

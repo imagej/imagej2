@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.awt;
 
-import imagej.data.AxisLabel;
 import imagej.data.Dataset;
 import imagej.display.DisplayController;
 import imagej.display.ImageDisplayWindow;
@@ -44,6 +43,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -58,7 +59,7 @@ public class AWTDisplayController implements DisplayController {
 	private Dataset dataset;
 	private long[] dims;
 	private long[] planeDims;
-	private AxisLabel[] dimLabels;
+	private Axis[] dimLabels;
 	private String imageName;
 	private int xIndex, yIndex;
 	private long[] pos;
@@ -78,7 +79,7 @@ public class AWTDisplayController implements DisplayController {
 	}
 
 	@Override
-	public AxisLabel[] getDimLabels() {
+	public Axis[] getDimLabels() {
 		return dimLabels;
 	}
 
@@ -106,19 +107,11 @@ public class AWTDisplayController implements DisplayController {
 		// extract width and height
 		xIndex = yIndex = -1;
 		for (int i = 0; i < dimLabels.length; i++) {
-			if (dimLabels[i] == AxisLabel.X) {
-				xIndex = i;
-			}
-			if (dimLabels[i] == AxisLabel.Y) {
-				yIndex = i;
-			}
+			if (dimLabels[i] == Axes.X) xIndex = i;
+			else if (dimLabels[i] == Axes.Y) yIndex = i;
 		}
-		if (xIndex < 0) {
-			throw new IllegalArgumentException("No X dimension");
-		}
-		if (yIndex < 0) {
-			throw new IllegalArgumentException("No Y dimension");
-		}
+		if (xIndex < 0) throw new IllegalArgumentException("No X dimension");
+		if (yIndex < 0) throw new IllegalArgumentException("No Y dimension");
 		planeDims = new long[dims.length - 2];
 		int d = 0;
 		for (int i = 0; i < dims.length; i++) {
@@ -164,7 +157,7 @@ public class AWTDisplayController implements DisplayController {
 	private String makeLabel() {
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (AxisLabel.isXY(dimLabels[i])) {
+			if (Axes.isXY(dimLabels[i])) {
 				continue;
 			}
 			p++;
