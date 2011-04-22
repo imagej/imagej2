@@ -44,7 +44,6 @@ import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * Fills an output Dataset with the values of an input Dataset. All the values
@@ -120,5 +119,6 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	}
 	
 	private void cleanup() {
+		// nothing to do
 	}
 }
