@@ -115,7 +115,7 @@ public class SwingImageDisplayWindow extends JFrame implements
 	@Override
 	public void setDisplayController(final DisplayController controller) {
 		this.controller = controller;
-		final int[] dims = controller.getDims();
+		final long[] dims = controller.getDims();
 		final AxisLabel[] dimLabels = controller.getDimLabels();
 		createSliders(dims, dimLabels);
 		sliders.setVisible(dims.length > 2);
@@ -130,7 +130,7 @@ public class SwingImageDisplayWindow extends JFrame implements
 		return imgCanvas;
 	}
 
-	private void createSliders(final int[] dims, final AxisLabel[] dimLabels) {
+	private void createSliders(final long[] dims, final AxisLabel[] dimLabels) {
 		sliders.removeAll();
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (AxisLabel.isXY(dimLabels[i])) continue;
@@ -139,8 +139,13 @@ public class SwingImageDisplayWindow extends JFrame implements
 
 			final JLabel label = new JLabel(dimLabels[i].toString());
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
+			final long max = dims[i] + 1;
+			if (max < 1 || max > Integer.MAX_VALUE) {
+				throw new IllegalArgumentException("Dimension #" +
+					i + " out of range: " + max);
+			}
 			final JScrollBar slider =
-				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, dims[i] + 1);
+				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
 			final int posIndex = p;
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
