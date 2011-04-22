@@ -101,7 +101,7 @@ public class XYFlipper implements OutputAlgorithm {
 	/** makes sure input is okay and creates output image */
 	@Override
 	public boolean checkInput() {
-		Img inputImage = input.getImage();
+		Img inputImage = input.getImage();  // TODO - raw type required here
 		
 		long[] inputDimensions = new long[inputImage.numDimensions()];
 
@@ -134,8 +134,7 @@ public class XYFlipper implements OutputAlgorithm {
 	 */
 	@Override
 	public boolean process() {
-		Img<? extends RealType<?>> inputImage =
-			(Img<? extends RealType<?>>) input.getImage();
+		Img<? extends RealType<?>> inputImage = input.getImage();
 
 		RandomAccess<? extends RealType<?>> inputAccessor =
 			inputImage.randomAccess();

@@ -75,6 +75,10 @@ public class Rotate90DegreesRight implements ImageJPlugin {
 
 	private class NinetyRightTransformer implements FlipCoordinateTransformer {
 
+		public NinetyRightTransformer(){
+			// nothing to do
+		}
+
 		@Override
 		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
 			long[] outputPosition)
