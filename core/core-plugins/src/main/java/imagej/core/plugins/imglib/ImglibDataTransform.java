@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import net.imglib2.algorithm.OutputAlgorithm;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 
 /**
@@ -48,7 +49,7 @@ public class ImglibDataTransform {
 	// -- instance variables --
 
 	private Dataset dataset;
-	private OutputAlgorithm algorithm;
+	private OutputAlgorithm<Img<? extends RealType<?>>> algorithm;
 
 	// -- constructor --
 
@@ -62,7 +63,7 @@ public class ImglibDataTransform {
 
 	/** run the plugin and assign output */
 	public void run() {
-		if (this.algorithm == null)
+		if (algorithm == null)
 			throw new IllegalStateException("algorithm reference is null");
 
 		if (!algorithm.checkInput() || !algorithm.process())

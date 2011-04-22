@@ -35,18 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import net.imglib2.algorithm.OutputAlgorithm;
-import net.imglib2.cursor.Cursor;
-import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 // TODO - minX, minY, maxX, maxY are treated as harvested variables (for simple testing). Should make them passed
 //        in parameters to constructor
@@ -102,8 +98,8 @@ public class CropImage implements ImageJPlugin {
 	private class CropAlgorithm implements OutputAlgorithm {
 
 		private String errMessage = "No error";
-		private Image<? extends RealType<?>> inputImage;
-		private Image<? extends RealType<?>> outputImage;
+		private Img inputImage;  // TODO - had to make this raw to avoid compiler errors
+		private Img<? extends RealType<?>> outputImage;
 
 		/**
 		 * returns false if there is any problem with the input data. returns true
@@ -111,14 +107,17 @@ public class CropImage implements ImageJPlugin {
 		 */
 		@Override
 		public boolean checkInput() {
-			inputImage = (Image<? extends RealType<?>>) input.getImage();
+			inputImage = input.getImage();
 
-			int[] newDimensions = inputImage.getDimensions().clone();
+			long[] newDimensions = new long[inputImage.numDimensions()];
 
 			newDimensions[0] = maxX - minX + 1;
 			newDimensions[1] = maxY - minY + 1;
+			for (int i = 2; i < newDimensions.length; i++)
+				newDimensions[i] = inputImage.dimension(i);
 
-			outputImage = inputImage.createNewImage(newDimensions);
+			// TODO - in inputImage not a raw type this won't compile
+			outputImage = inputImage.factory().create(newDimensions,inputImage.firstElement());
 
 			return true;
 		}
@@ -132,30 +131,28 @@ public class CropImage implements ImageJPlugin {
 		/** runs the cropping process */
 		@Override
 		public boolean process() {
-			LocalizableByDimCursor<? extends RealType<?>> inputCursor =
-				inputImage.createLocalizableByDimCursor();
-			LocalizableByDimCursor<? extends RealType<?>> outputCursor =
-				outputImage.createLocalizableByDimCursor();
+			RandomAccess<? extends RealType<?>> inputAccess =
+				inputImage.randomAccess();
+			Cursor<? extends RealType<?>> outputCursor =
+				outputImage.cursor();
 
-			int[] tmpPosition = outputImage.createPositionArray();
+			long[] tmpPosition = new long[outputImage.numDimensions()];
 
 			while (outputCursor.hasNext()) {
 				outputCursor.next();
 
-				outputCursor.getPosition(tmpPosition);
+				for (int i = 0; i < tmpPosition.length; i++)
+					tmpPosition[i] = outputCursor.getLongPosition(i);
 
 				tmpPosition[0] += minX;
 				tmpPosition[1] += minY;
 
-				inputCursor.setPosition(tmpPosition);
+				inputAccess.setPosition(tmpPosition);
 
-				double value = inputCursor.getType().getRealDouble();
+				double value = inputAccess.get().getRealDouble();
 
-				outputCursor.getType().setReal(value);
+				outputCursor.get().setReal(value);
 			}
-
-			inputCursor.close();
-			outputCursor.close();
 
 			return true;
 		}
@@ -165,7 +162,7 @@ public class CropImage implements ImageJPlugin {
 		 * process() have been called.
 		 */
 		@Override
-		public Image<?> getResult() {
+		public Img<? extends RealType<?>> getResult() {
 			return outputImage;
 		}
 

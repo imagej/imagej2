@@ -36,9 +36,7 @@ package imagej.core.plugins.imglib;
 
 import java.util.Random;
 
-import net.imglib2.algorithm.OutputAlgorithm;
-import net.imglib2.cursor.Cursor;
-import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -49,12 +47,13 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.Index;
 import imagej.util.Rect;
 
 /**
  * Implements the same functionality as IJ1's Salt and Pepper plugin. Assigns
  * random pixels to 255 or 0. 0 and 255 assignments are each evenly balanced at
- * 2.5% of the image.
+ * 2.5% of the image. Currently only works on 2d images.
  * 
  * @author Barry DeZonia
  */
@@ -72,8 +71,8 @@ public class SaltAndPepper implements ImageJPlugin {
 	// -- other instance variables --
 	
 	private Rect selection;
-	private Image<?> inputImage;
-	private LocalizableByDimCursor<? extends RealType<?>> cursor;
+	private Img<? extends RealType<?>> inputImage;
+	private RandomAccess<? extends RealType<?>> accessor;
 	private int[] position;
 	
 	// -- public interface --
@@ -96,19 +95,17 @@ public class SaltAndPepper implements ImageJPlugin {
 		if (input.getImage() == null)
 			throw new IllegalArgumentException("input Image is null");
 
-		if (input.getImage().getNumDimensions() != 2)
+		if (input.getImage().numDimensions() != 2)
 			throw new IllegalArgumentException(
 				"input image is not 2d but has " + 
-				input.getImage().getNumDimensions() + " dimensions");
+				input.getImage().numDimensions() + " dimensions");
 	}
 
 	private void setupWorkingData() {
 		inputImage = input.getImage();
 		selection = input.getSelection();
-		position = new int[inputImage.getNumDimensions()];
-		cursor =
-			(LocalizableByDimCursor<? extends RealType<?>>)
-				inputImage.createLocalizableByDimCursor();
+		position = new int[inputImage.numDimensions()];
+		accessor = inputImage.randomAccess();
 	}
 	
 	private void assignPixels() {
@@ -118,15 +115,19 @@ public class SaltAndPepper implements ImageJPlugin {
 
 		double percentToChange = 0.05;
 
-		long numPixels = (long) (inputImage.getNumPixels() * percentToChange);
+		long[] dimensions = new long[inputImage.numDimensions()];
+		for (int i = 0; i < dimensions.length; i++)
+			dimensions[i] = inputImage.dimension(i);
+		
+		long numPixels = (long) (Index.getTotalLength(dimensions) * percentToChange);
 
 		int ox = selection.x;
 		int oy = selection.y;
 		int w = selection.width;
 		int h = selection.height;
 		
-		if (w <= 0) w = inputImage.getDimension(0);
-		if (h <= 0) h = inputImage.getDimension(1);
+		if (w <= 0) w = (int) inputImage.dimension(0);
+		if (h <= 0) h = (int) inputImage.dimension(1);
 		
 		for (long p = 0; p < numPixels / 2; p++) {
 			int randomX, randomY;
@@ -141,10 +142,6 @@ public class SaltAndPepper implements ImageJPlugin {
 		}
 	}
 
-	private void cleanup() {
-		cursor.close(); // FINALLY close working cursor
-	}
-	
 	/**
 	 * sets a value at a specific (x,y) location in the image to a given value
 	 */
@@ -152,8 +149,11 @@ public class SaltAndPepper implements ImageJPlugin {
 		position[0] = x;
 		position[1] = y;
 
-		cursor.setPosition(position);
+		accessor.setPosition(position);
 
-		cursor.getType().setReal(value);
+		accessor.get().setReal(value);
+	}
+
+	private void cleanup() {
 	}
 }

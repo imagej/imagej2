@@ -41,8 +41,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import net.imglib2.algorithm.OutputAlgorithm;
-import net.imglib2.cursor.Cursor;
+import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -73,7 +72,7 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 		"TODO - should use current threshold - for now ask - High threshold")
 	private double hiThreshold;
 
-	private Image<?> inputImage;
+	private Img<? extends RealType<?>> inputImage;
 	
 	// -- public interface --
 
@@ -108,19 +107,16 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	}
 	
 	private void assignPixels() {
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) inputImage.createCursor();
+		Cursor<? extends RealType<?>> cursor = inputImage.cursor();
 
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			
-			double inputValue = cursor.getType().getRealDouble();
+			double inputValue = cursor.get().getRealDouble();
 
 			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-				cursor.getType().setReal(Double.NaN);
+				cursor.get().setReal(Double.NaN);
 		}
-
-		cursor.close();
 	}
 	
 	private void cleanup() {
