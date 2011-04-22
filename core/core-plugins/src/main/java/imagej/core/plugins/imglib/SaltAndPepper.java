@@ -115,8 +115,7 @@ public class SaltAndPepper implements ImageJPlugin {
 		double percentToChange = 0.05;
 
 		long[] dimensions = new long[inputImage.numDimensions()];
-		for (int i = 0; i < dimensions.length; i++)
-			dimensions[i] = inputImage.dimension(i);
+		inputImage.dimensions(dimensions);
 		
 		long numPixels = (long) (Index.getTotalLength(dimensions) * percentToChange);
 
@@ -125,8 +124,8 @@ public class SaltAndPepper implements ImageJPlugin {
 		int w = selection.width;
 		int h = selection.height;
 		
-		if (w <= 0) w = (int) inputImage.dimension(0);
-		if (h <= 0) h = (int) inputImage.dimension(1);
+		if (w <= 0) w = (int) dimensions[0];
+		if (h <= 0) h = (int) dimensions[1];
 		
 		for (long p = 0; p < numPixels / 2; p++) {
 			int randomX, randomY;

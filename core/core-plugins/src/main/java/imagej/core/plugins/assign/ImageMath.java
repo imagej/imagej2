@@ -130,12 +130,10 @@ public class ImageMath implements ImageJPlugin {
 	@Override
 	public void run() {
 		long[] img1Dims = new long[input1.getImage().numDimensions()];
-		for (int i = 0; i < img1Dims.length; i++)
-			img1Dims[i] = input1.getImage().dimension(i);
+		input1.getImage().dimensions(img1Dims);
 
 		long[] img2Dims = new long[input2.getImage().numDimensions()];
-		for (int i = 0; i < img1Dims.length; i++)
-			img1Dims[i] = input2.getImage().dimension(i);
+		input2.getImage().dimensions(img2Dims);
 
 		if (!Arrays.equals(img1Dims, img2Dims)) throw new IllegalArgumentException(
 			"ImageMath requires the two input images to have the same dimensions");

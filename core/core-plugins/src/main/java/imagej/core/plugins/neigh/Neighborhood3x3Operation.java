@@ -124,8 +124,7 @@ public class Neighborhood3x3Operation {
 	private void applyOperationToPlane(long[] planeIndex) {
 
 		long[] imageDims = new long[inputImage.numDimensions()];
-		for (int i = 0; i < imageDims.length; i++)
-			imageDims[i] = inputImage.dimension(i);
+		inputImage.dimensions(imageDims);
 		
 		if (selection.width == 0)
 			selection.height = (int) imageDims[0];
@@ -183,8 +182,7 @@ public class Neighborhood3x3Operation {
 		//  For now copy data by hand
 		
 		long[] dimensions = new long[image.numDimensions()];
-		for (int i = 0; i < dimensions.length; i++)
-			dimensions[i] = image.dimension(i);
+		image.dimensions(dimensions);
 		
 		Img<? extends RealType<?>> copyOfImg =
 			image.factory().create(dimensions, image.firstElement());

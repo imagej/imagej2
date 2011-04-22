@@ -188,8 +188,7 @@ public class NAryOperation {
 	/** make an image that has same type, container, and dimensions as refImage */
 	private Img zeroDataImageWithSameAttributes(Img refImage) {
 		long[] dimensions = new long[refImage.numDimensions()];
-		for (int i = 0; i < dimensions.length; i++)
-			dimensions[i] = refImage.dimension(i);
+		refImage.dimensions(dimensions);
 		return refImage.factory().create(dimensions, refImage.firstElement());
 	}
 
@@ -204,8 +203,7 @@ public class NAryOperation {
 		Img<?> image = inputs.get(0).getImage();
 		outputOrigin = new long[image.numDimensions()];
 		outputSpan = new long[image.numDimensions()];
-		for (int i = 0; i < outputSpan.length; i++)
-			outputSpan[i] = image.dimension(i);
+		image.dimensions(outputSpan);
 		int numInputs = inputs.size();
 		inputOrigins = new long[numInputs][];
 		inputSpans = new long[numInputs][];
@@ -214,8 +212,7 @@ public class NAryOperation {
 			image = inputs.get(i).getImage();
 			inputOrigins[i] = new long[image.numDimensions()];
 			inputSpans[i] = new long[image.numDimensions()];
-			for (int j = 0; j < inputSpans[i].length; j++)
-				inputSpans[i][j] = image.dimension(j);
+			image.dimensions(inputSpans[i]);
 		}
 	}
 }

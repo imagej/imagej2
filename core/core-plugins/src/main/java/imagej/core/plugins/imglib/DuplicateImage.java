@@ -86,8 +86,7 @@ public class DuplicateImage implements ImageJPlugin {
 		//  For now copy data by hand
 		
 		long[] dimensions = new long[image.numDimensions()];
-		for (int i = 0; i < dimensions.length; i++)
-			dimensions[i] = image.dimension(i);
+		image.dimensions(dimensions);
 		
 		Img<? extends RealType<?>> copyOfImg =
 			image.factory().create(dimensions, image.firstElement());
