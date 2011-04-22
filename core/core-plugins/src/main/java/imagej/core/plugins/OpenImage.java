@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
-import imagej.data.AxisLabel;
 import imagej.data.Dataset;
 import imagej.data.Metadata;
 import imagej.plugin.ImageJPlugin;
@@ -82,7 +81,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>>
 			final ImgPlus<T> img = imageOpener.openImg(id);
 			final Metadata metadata = new Metadata();
 			metadata.setName(img.getName());
-			metadata.setAxes(createAxisLabels(img.getAxes()));
+			metadata.setAxes(img.getAxes());
 			dataset = new Dataset(img, metadata);
 		}
 		catch (final ImgIOException e) {
@@ -91,14 +90,6 @@ public class OpenImage<T extends RealType<T> & NativeType<T>>
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
-	}
-
-	private AxisLabel[] createAxisLabels(final String[] axes) {
-		final AxisLabel[] axisLabels = new AxisLabel[axes.length];
-		for (int i = 0; i < axes.length; i++) {
-			axisLabels[i] = AxisLabel.getAxisLabel(axes[i]);
-		}
-		return axisLabels;
 	}
 
 	public File getInputFile() {
