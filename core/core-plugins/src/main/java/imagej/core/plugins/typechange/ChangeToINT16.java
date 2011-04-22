@@ -65,7 +65,7 @@ public class ChangeToINT16 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new ShortType());
+		TypeChanger.changeType(input, new ShortType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

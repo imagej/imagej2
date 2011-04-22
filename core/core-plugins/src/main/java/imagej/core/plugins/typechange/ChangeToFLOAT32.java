@@ -65,7 +65,7 @@ public class ChangeToFLOAT32 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new FloatType());
+		TypeChanger.changeType(input, new FloatType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

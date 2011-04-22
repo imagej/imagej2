@@ -65,7 +65,7 @@ public class ChangeToUINT12 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new Unsigned12BitType());
+		TypeChanger.changeType(input, new Unsigned12BitType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

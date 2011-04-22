@@ -65,7 +65,7 @@ public class ChangeToINT64 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new LongType());
+		TypeChanger.changeType(input, new LongType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 

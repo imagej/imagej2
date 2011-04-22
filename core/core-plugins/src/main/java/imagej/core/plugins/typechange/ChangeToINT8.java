@@ -65,7 +65,7 @@ public class ChangeToINT8 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new ByteType());
+		TypeChanger.changeType(input, new ByteType());
 		Events.publish(new DatasetChangedEvent(input));
 	}
 
