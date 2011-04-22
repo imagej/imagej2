@@ -40,6 +40,7 @@ import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
 import imagej.util.Rect;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
@@ -66,7 +67,11 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * TODO
+ * Dataset is the primary image data structure in ImageJ. A Dataset wraps an
+ * ImgLib {@link Img} together with some descriptive {@link Metadata}. It also
+ * provides a number of convenience methods, such as the ability to access
+ * pixels on a plane-by-plane basis, and create new Datasets of various types
+ * easily.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -247,7 +252,6 @@ public class Dataset implements Comparable<Dataset> {
 		Events.publish(new DatasetDeletedEvent(this));
 	}
 
-	/** Displays the Dataset as a string (for now simply its name). */
 	@Override
 	public String toString() {
 		return this.metadata.getName();
@@ -260,7 +264,7 @@ public class Dataset implements Comparable<Dataset> {
 		return getMetadata().getName().compareTo(dataset.getMetadata().getName());
 	}
 
-	// -- Static utility methods --
+	// -- Utility methods --
 
 	// TODO - relocate this when it's clear where it should go
 	public static <T extends RealType<T> & NativeType<T>> Img<T>
@@ -271,8 +275,22 @@ public class Dataset implements Comparable<Dataset> {
 		return planarImg;
 	}
 
+	/**
+	 * Creates a new dataset.
+	 * 
+	 * @param name The dataset's name.
+	 * @param dims The dataset's dimensional extents.
+	 * @param axes The dataset's dimensional axis labels.
+	 * @param bitsPerPixel The dataset's bit depth. Currently supported bit depths
+	 *          include 1, 8, 12, 16, 32 and 64.
+	 * @param signed Whether the dataset's pixels can have negative values.
+	 * @param floating Whether the dataset's pixels can have non-integer values.
+	 * @return The newly created dataset.
+	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
+	 *           and floating parameters do not form a valid data type.
+	 */
 	public static Dataset create(final String name, final long[] dims,
-		final AxisLabel[] axes, final int bitsPerPixel, final boolean signed,
+		final Axis[] axes, final int bitsPerPixel, final boolean signed,
 		final boolean floating)
 	{
 		if (bitsPerPixel == 1) {
@@ -310,8 +328,18 @@ public class Dataset implements Comparable<Dataset> {
 		return null;
 	}
 
+	/**
+	 * Creates a new dataset.
+	 * 
+	 * @param <T> The type of the dataset.
+	 * @param name The dataset's name.
+	 * @param dims The dataset's dimensional extents.
+	 * @param axes The dataset's dimensional axis labels.
+	 * @param type The type of the dataset.
+	 * @return The newly created dataset.
+	 */
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
-		final String name, final long[] dims, final AxisLabel[] axes, final T type)
+		final String name, final long[] dims, final Axis[] axes, final T type)
 	{
 		final Img<T> planarImg = createPlanarImage(type, dims);
 		final Metadata metadata = new Metadata();
@@ -319,6 +347,8 @@ public class Dataset implements Comparable<Dataset> {
 		metadata.setAxes(axes);
 		return new Dataset(planarImg, metadata);
 	}
+
+	// -- Helper methods --
 
 	private static void invalidParams(final int bitsPerPixel,
 		final boolean signed, final boolean floating)
