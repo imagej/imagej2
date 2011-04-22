@@ -60,8 +60,7 @@ public class UnaryTransformation {
 		operation.setOutput(output);
 		Rect selection = input.getSelection();
 		long[] dimensions = new long[input.getImage().numDimensions()];
-		for (int i = 0; i < dimensions.length; i++)
-			dimensions[i] = input.getImage().dimension(i);
+		input.getImage().dimensions(dimensions);
 		setRegion(dimensions, selection);
 	}
 

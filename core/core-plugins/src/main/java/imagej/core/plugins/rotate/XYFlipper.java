@@ -110,8 +110,7 @@ public class XYFlipper implements OutputAlgorithm {
 			return false;
 		}
 
-		for (int i = 0; i < inputDimensions.length; i++)
-			inputDimensions[i] = inputImage.dimension(i);
+		inputImage.dimensions(inputDimensions);
 		
 		long[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
 
@@ -142,8 +141,7 @@ public class XYFlipper implements OutputAlgorithm {
 			outputImage.randomAccess();
 
 		long[] inputDimensions = new long[inputImage.numDimensions()];
-		for (int i = 0; i < inputDimensions.length; i++)
-			inputDimensions[i] = inputImage.dimension(i);
+		inputImage.dimensions(inputDimensions);
 
 		long width = inputDimensions[0];
 		long height = inputDimensions[1];

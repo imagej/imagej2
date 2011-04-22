@@ -111,10 +111,9 @@ public class CropImage implements ImageJPlugin {
 
 			long[] newDimensions = new long[inputImage.numDimensions()];
 
+			inputImage.dimensions(newDimensions);
 			newDimensions[0] = maxX - minX + 1;
 			newDimensions[1] = maxY - minY + 1;
-			for (int i = 2; i < newDimensions.length; i++)
-				newDimensions[i] = inputImage.dimension(i);
 
 			// TODO - in inputImage not a raw type this won't compile
 			outputImage = inputImage.factory().create(newDimensions,inputImage.firstElement());
