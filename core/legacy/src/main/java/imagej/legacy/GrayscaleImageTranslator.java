@@ -42,9 +42,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlusAdapter;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-
+import net.imglib2.image.ImagePlusAdapter;
+import net.imglib2.image.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Translates between legacy and modern ImageJ image structures for
@@ -55,14 +55,15 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
 		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
-		final Image<?> img;
+		final Img<? extends RealType<?>> img;
 		try {
 			final Method m =
 				ImagePlusAdapter.class.getMethod("wrap", ImagePlus.class);
-			img = (Image<?>) m.invoke(null, imp);
+			img = (Img<? extends RealType<?>>) m.invoke(null, imp); 
 		}
 		catch (final NoSuchMethodException exc) {
 			return null;
@@ -83,7 +84,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		return ImageJFunctions.displayAsVirtualStack(dataset.getImage());
+		return ImageJFunctions.displayAsVirtualStack(dataset.getImage(),
+			dataset.getMetadata().getName());
 	}
 
 }
