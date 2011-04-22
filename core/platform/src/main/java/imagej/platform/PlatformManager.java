@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.ImageJ;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.util.Log;

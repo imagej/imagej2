@@ -37,7 +37,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.display.Display;
 import imagej.event.Events;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -85,7 +84,6 @@ public class SwingUI implements UserInterface {
 	private JFrame frame;
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
-	private Display activeDisplay;
 
 	// -- UserInterface methods --
 

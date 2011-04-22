@@ -37,14 +37,14 @@ package imagej.util;
  */
 public class Rect {
 
-  // -- Fields --
+	// -- Fields --
 
 	public int x;
 	public int y;
 	public int width;
 	public int height;
 
-  // -- Constructor --
+	// -- Constructor --
 
 	public Rect() {
 		// default constructor - allow all instance vars to be initialized to 0
@@ -57,7 +57,7 @@ public class Rect {
 		this.height = height;
 	}
 
-  // -- Rect API methods --
+	// -- Rect API methods --
 
 	/** Returns true if this rect intersects the given rect. */
 	public boolean intersects(final Rect r) {
@@ -76,8 +76,8 @@ public class Rect {
 		rh += ry;
 		tw += tx;
 		th += ty;
-		final boolean rtn =
-			((rw < rx || rw > tx) && (rh < ry || rh > ty) && (tw < tx || tw > rx) && (th < ty || th > ry));
+		final boolean rtn = (rw < rx || rw > tx) && (rh < ry || rh > ty) &&
+			(tw < tx || tw > rx) && (th < ty || th > ry);
 		return rtn;
 	}
 
@@ -109,6 +109,16 @@ public class Rect {
 		final Rect that = (Rect) o;
 		return this.x == that.x && this.y == that.y && this.width == that.width &&
 			this.height == that.height;
+	}
+
+	@Override
+	public int hashCode() {
+		// combine 8 least significant bits of x, y, width and height
+		final int b1 = x & 0xff;
+		final int b2 = y & 0xff;
+		final int b3 = width & 0xff;
+		final int b4 = height & 0xff;
+		return b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
 	}
 
 }
