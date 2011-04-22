@@ -87,7 +87,7 @@ public class GradientImage implements ImageJPlugin {
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
 		final Axis[] axes = { Axes.X, Axes.Y };
-		dataset = Dataset.create(name, dims, axes, bitsPerPixel, signed, floating);
+		dataset = Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		// fill in the diagonal gradient
 		final Cursor<? extends RealType<?>> cursor = dataset.getImage().cursor();

@@ -266,20 +266,11 @@ public class Dataset implements Comparable<Dataset> {
 
 	// -- Utility methods --
 
-	// TODO - relocate this when it's clear where it should go
-	public static <T extends RealType<T> & NativeType<T>> Img<T>
-		createPlanarImage(final T type, final long[] dims)
-	{
-		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
-		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
-		return planarImg;
-	}
-
 	/**
 	 * Creates a new dataset.
 	 * 
-	 * @param name The dataset's name.
 	 * @param dims The dataset's dimensional extents.
+	 * @param name The dataset's name.
 	 * @param axes The dataset's dimensional axis labels.
 	 * @param bitsPerPixel The dataset's bit depth. Currently supported bit depths
 	 *          include 1, 8, 12, 16, 32 and 64.
@@ -289,40 +280,40 @@ public class Dataset implements Comparable<Dataset> {
 	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
 	 *           and floating parameters do not form a valid data type.
 	 */
-	public static Dataset create(final String name, final long[] dims,
+	public static Dataset create(final long[] dims, final String name,
 		final Axis[] axes, final int bitsPerPixel, final boolean signed,
 		final boolean floating)
 	{
 		if (bitsPerPixel == 1) {
 			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(name, dims, axes, new BitType());
+			return create(new BitType(), dims, name, axes);
 		}
 		if (bitsPerPixel == 8) {
 			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(name, dims, axes, new ByteType());
-			return create(name, dims, axes, new UnsignedByteType());
+			if (signed) return create(new ByteType(), dims, name, axes);
+			return create(new UnsignedByteType(), dims, name, axes);
 		}
 		if (bitsPerPixel == 12) {
 			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(name, dims, axes, new Unsigned12BitType());
+			return create(new Unsigned12BitType(), dims, name, axes);
 		}
 		if (bitsPerPixel == 16) {
 			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(name, dims, axes, new ShortType());
-			return create(name, dims, axes, new UnsignedShortType());
+			if (signed) return create(new ShortType(), dims, name, axes);
+			return create(new UnsignedShortType(), dims, name, axes);
 		}
 		if (bitsPerPixel == 32) {
 			if (floating) {
 				if (!signed) invalidParams(bitsPerPixel, signed, floating);
-				return create(name, dims, axes, new FloatType());
+				return create(new FloatType(), dims, name, axes);
 			}
-			if (signed) return create(name, dims, axes, new IntType());
-			return create(name, dims, axes, new UnsignedIntType());
+			if (signed) return create(new IntType(), dims, name, axes);
+			return create(new UnsignedIntType(), dims, name, axes);
 		}
 		if (bitsPerPixel == 64) {
 			if (!signed) invalidParams(bitsPerPixel, signed, floating);
-			if (floating) return create(name, dims, axes, new DoubleType());
-			return create(name, dims, axes, new LongType());
+			if (floating) return create(new DoubleType(), dims, name, axes);
+			return create(new LongType(), dims, name, axes);
 		}
 		invalidParams(bitsPerPixel, signed, floating);
 		return null;
@@ -332,19 +323,35 @@ public class Dataset implements Comparable<Dataset> {
 	 * Creates a new dataset.
 	 * 
 	 * @param <T> The type of the dataset.
-	 * @param name The dataset's name.
-	 * @param dims The dataset's dimensional extents.
-	 * @param axes The dataset's dimensional axis labels.
 	 * @param type The type of the dataset.
+	 * @param dims The dataset's dimensional extents.
+	 * @param name The dataset's name.
+	 * @param axes The dataset's dimensional axis labels.
 	 * @return The newly created dataset.
 	 */
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
-		final String name, final long[] dims, final Axis[] axes, final T type)
+		final T type, final long[] dims, final String name, final Axis[] axes)
 	{
-		final Img<T> planarImg = createPlanarImage(type, dims);
 		final Metadata metadata = new Metadata();
 		metadata.setName(name);
 		metadata.setAxes(axes);
+		return create(type, dims, metadata);
+	}
+
+	/**
+	 * Creates a new dataset.
+	 * 
+	 * @param <T> The type of the dataset.
+	 * @param type The type of the dataset.
+	 * @param dims The dataset's dimensional extents.
+	 * @param metadata Metadata associated with the dataset.
+	 * @return The newly created dataset.
+	 */
+	public static <T extends RealType<T> & NativeType<T>> Dataset create(
+		final T type, final long[] dims, final Metadata metadata)
+	{
+		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
+		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
 		return new Dataset(planarImg, metadata);
 	}
 

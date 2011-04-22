@@ -39,7 +39,6 @@ import ij.ImageStack;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
 import imagej.data.Metadata;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
@@ -51,7 +50,8 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 public class RGBImageTranslator implements ImageTranslator {
 
 	/**
-	 * Expects input {@link ImagePlus} to be of type COLOR_RGB with one channel.
+	 * Expects input {@link ImagePlus} to be of type {@link ImagePlus#COLOR_RGB}
+	 * with one channel.
 	 */
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
@@ -62,7 +62,7 @@ public class RGBImageTranslator implements ImageTranslator {
 
 		if (imp.getNChannels() != 1) {
 			throw new IllegalArgumentException(
-				"expected color image to have a single channel of argb data");
+				"expected color image to have a single channel of ARGB data");
 		}
 
 		final int w = imp.getWidth();
@@ -73,11 +73,9 @@ public class RGBImageTranslator implements ImageTranslator {
 
 		final long[] imageDims = new long[] { w, h, c, z, t };
 
-		final Img<UnsignedByteType> image =
-			Dataset.createPlanarImage(new UnsignedByteType(), imageDims);
-
 		final Metadata metadata = LegacyMetadata.create(imp);
-		final Dataset dataset = new Dataset(image, metadata);
+		final Dataset dataset =
+			Dataset.create(new UnsignedByteType(), imageDims, metadata);
 
 		final int totPixels = w * h;
 
@@ -107,8 +105,10 @@ public class RGBImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		if (!dataset.isRgbMerged()) throw new IllegalArgumentException(
-			"A merged dataset is required for this operation");
+		if (!dataset.isRgbMerged()) {
+			throw new IllegalArgumentException(
+				"A merged dataset is required for this operation");
+		}
 
 		final long[] dims = dataset.getDims();
 		if (dims.length != 5) {

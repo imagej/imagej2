@@ -37,55 +37,63 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 import imagej.data.Metadata;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import net.imglib2.img.Img;
-import net.imglib2.image.ImagePlusAdapter;
-import net.imglib2.image.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.RealType;
+import imagej.util.Dimensions;
+import net.imglib2.img.Axis;
 
 /**
- * Translates between legacy and modern ImageJ image structures for
- * non-RGB data.
- *
+ * Translates between legacy and modern ImageJ image structures for non-RGB
+ * data.
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
-		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
-		final Img<? extends RealType<?>> img;
-		try {
-			final Method m =
-				ImagePlusAdapter.class.getMethod("wrap", ImagePlus.class);
-			img = (Img<? extends RealType<?>>) m.invoke(null, imp); 
-		}
-		catch (final NoSuchMethodException exc) {
-			return null;
-		}
-		catch (final IllegalArgumentException e) {
-			return null;
-		}
-		catch (final IllegalAccessException e) {
-			return null;
-		}
-		catch (final InvocationTargetException e) {
-			return null;
-		}
+		final int w = imp.getWidth();
+		final int h = imp.getHeight();
+		final int c = imp.getNChannels();
+		final int z = imp.getNSlices();
+		final int t = imp.getNFrames();
+		final long[] dims = new long[] { w, h, c, z, t };
 		final Metadata metadata = LegacyMetadata.create(imp);
-		final Dataset dataset = new Dataset(img, metadata);
+		final int bitsPerPixel = imp.getBitDepth();
+		final boolean signed = isSigned(imp);
+		final boolean floating = isFloating(imp);
+		final String name = metadata.getName();
+		final Axis[] axes = metadata.getAxes();
+		final Dataset dataset =
+			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+
+		// copy planes by reference
+		long planeCount = Dimensions.getTotalPlanes(dataset.getDims());
+		for (int p = 0; p < planeCount; p++) {
+			final Object plane = imp.getStack().getPixels(p + 1);
+			dataset.setPlane(p, plane);
+		}
+
 		return dataset;
 	}
 
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		return ImageJFunctions.displayAsVirtualStack(dataset.getImage(),
-			dataset.getMetadata().getName());
+//		return ImageJFunctions.displayAsVirtualStack(dataset.getImage(),
+//			dataset.getMetadata().getName());
+		// FIXME
+		return null;
+	}
+
+	// -- Helper methods --
+
+	private boolean isSigned(final ImagePlus imp) {
+		final int type = imp.getType();
+		return type == ImagePlus.GRAY32;
+	}
+
+	private boolean isFloating(final ImagePlus imp) {
+		final int type = imp.getType();
+		return type == ImagePlus.GRAY16;
 	}
 
 }
