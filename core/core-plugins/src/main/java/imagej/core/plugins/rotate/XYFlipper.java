@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
+import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.util.Rect;
-import net.imglib2.algorithm.OutputAlgorithm;
-import net.imglib2.cursor.Cursor;
-import net.imglib2.cursor.LocalizableByDimCursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 // TODO - in IJ1 this flips single plane in active window. do we want to extend to all planes???
 
@@ -61,7 +59,7 @@ public class XYFlipper implements OutputAlgorithm {
 
 	private String errMessage = "No error";
 
-	private Image<? extends RealType<?>> outputImage;
+	private Img<? extends RealType<?>> outputImage;
 
 	private FlipCoordinateTransformer flipper;
 
@@ -76,14 +74,14 @@ public class XYFlipper implements OutputAlgorithm {
 		/**
 		 * maps an input image's dimensions to the output image's coordinate space
 		 */
-		int[] calcOutputDimensions(int[] inputDimensions);
+		long[] calcOutputDimensions(long[] inputDimensions);
 
 		/**
 		 * maps a position within an input image's coordinate space to the output
 		 * image's coordinate space
 		 */
-		void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
-			int[] outputPosition);
+		void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
+			long[] outputPosition);
 		
 		/**
 		 * returns if this transformation does not reorder X & Y axes
@@ -103,18 +101,21 @@ public class XYFlipper implements OutputAlgorithm {
 	/** makes sure input is okay and creates output image */
 	@Override
 	public boolean checkInput() {
-		int[] inputDimensions = input.getImage().getDimensions();
+		Img inputImage = input.getImage();
+		
+		long[] inputDimensions = new long[inputImage.numDimensions()];
 
-		if (input.getImage().getNumDimensions() != 2) {
+		if (inputDimensions.length != 2) {
 			errMessage = "Flipping only works on a 2d plane of XY data";
 			return false;
 		}
 
-		int[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
+		for (int i = 0; i < inputDimensions.length; i++)
+			inputDimensions[i] = inputImage.dimension(i);
+		
+		long[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
 
-		outputImage =
-			(Image<? extends RealType<?>>) input.getImage().createNewImage(
-				outputDimensions);
+		outputImage = inputImage.factory().create(outputDimensions, inputImage.firstElement());
 
 		return true;
 	}
@@ -133,21 +134,23 @@ public class XYFlipper implements OutputAlgorithm {
 	 */
 	@Override
 	public boolean process() {
-		Image<? extends RealType<?>> inputImage =
-			(Image<? extends RealType<?>>) input.getImage();
+		Img<? extends RealType<?>> inputImage =
+			(Img<? extends RealType<?>>) input.getImage();
 
-		LocalizableByDimCursor<? extends RealType<?>> inputCursor =
-			inputImage.createLocalizableByDimCursor();
-		LocalizableByDimCursor<? extends RealType<?>> outputCursor =
-			outputImage.createLocalizableByDimCursor();
+		RandomAccess<? extends RealType<?>> inputAccessor =
+			inputImage.randomAccess();
+		RandomAccess<? extends RealType<?>> outputAccessor =
+			outputImage.randomAccess();
 
-		int[] inputDimensions = inputImage.getDimensions();
+		long[] inputDimensions = new long[inputImage.numDimensions()];
+		for (int i = 0; i < inputDimensions.length; i++)
+			inputDimensions[i] = inputImage.dimension(i);
 
-		int width = inputDimensions[0];
-		int height = inputDimensions[1];
+		long width = inputDimensions[0];
+		long height = inputDimensions[1];
 		
-		int[] inputPosition = inputImage.createPositionArray();
-		int[] outputPosition = outputImage.createPositionArray();
+		long[] inputPosition = new long[inputDimensions.length];
+		long[] outputPosition = new long[inputDimensions.length];
 
 		Rect selectedRegion = input.getSelection();
 		
@@ -164,8 +167,8 @@ public class XYFlipper implements OutputAlgorithm {
 		else {
 			rx = 0;
 			ry = 0;
-			rw = width;
-			rh = height;
+			rw = (int)width;
+			rh = (int)height;
 		}
 		
 		for (int y = ry; y < rh; y++) {
@@ -177,24 +180,21 @@ public class XYFlipper implements OutputAlgorithm {
 				flipper.calcOutputPosition(inputDimensions, inputPosition,
 					outputPosition);
 
-				inputCursor.setPosition(inputPosition);
-				outputCursor.setPosition(outputPosition);
+				inputAccessor.setPosition(inputPosition);
+				outputAccessor.setPosition(outputPosition);
 
-				double value = inputCursor.getType().getRealDouble();
+				double value = inputAccessor.get().getRealDouble();
 
-				outputCursor.getType().setReal(value);
+				outputAccessor.get().setReal(value);
 			}
 		}
-
-		inputCursor.close();
-		outputCursor.close();
 
 		return true;
 	}
 
 	/** returns the resulting output image */
 	@Override
-	public Image<?> getResult() {
+	public Img<? extends RealType<?>> getResult() {
 		return outputImage;
 	}
 }
