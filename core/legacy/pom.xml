@@ -23,11 +23,6 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-ij</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij</artifactId>
 			<version>${imagej1.version}</version>
