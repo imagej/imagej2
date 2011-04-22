@@ -323,7 +323,7 @@ public class Dataset implements Comparable<Dataset> {
 	private static void invalidParams(final int bitsPerPixel,
 		final boolean signed, final boolean floating)
 	{
-		throw new IllegalStateException("Invalid parameters: bitsPerPixel=" +
+		throw new IllegalArgumentException("Invalid parameters: bitsPerPixel=" +
 			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
 	}
 
