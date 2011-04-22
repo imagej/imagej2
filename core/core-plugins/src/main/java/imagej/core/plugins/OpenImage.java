@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
+import imagej.data.AxisLabel;
 import imagej.data.Dataset;
+import imagej.data.Metadata;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -42,15 +44,16 @@ import imagej.plugin.Plugin;
 import imagej.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 
-import loci.formats.FormatException;
-import net.imglib2.img.Img;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgOpener;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * Opens the selected file as a {@link Dataset}.
  * 
  * @author Curtis Rueden
  */
@@ -59,7 +62,9 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Import", mnemonic = 'i', weight = 2),
 	@Menu(label = "Bio-Formats...", mnemonic = 'b',
 		accelerator = "control shift O") })
-public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
+public class OpenImage<T extends RealType<T> & NativeType<T>>
+	implements ImageJPlugin
+{
 
 	@Parameter(label = "File to open")
 	private File inputFile;
@@ -72,17 +77,28 @@ public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 		final String id = inputFile.getAbsolutePath();
 
 		// open image
-		final ImageOpener imageOpener = new ImageOpener();
+		final ImgOpener imageOpener = new ImgOpener();
 		try {
-			final Image<T> img = imageOpener.openImage(id);
-			dataset = new Dataset(img);
+			final ImgPlus<T> img = imageOpener.openImg(id);
+			final Metadata metadata = new Metadata();
+			metadata.setName(img.getName());
+			metadata.setAxes(createAxisLabels(img.getAxes()));
+			dataset = new Dataset(img, metadata);
 		}
-		catch (FormatException e) {
+		catch (final ImgIOException e) {
 			Log.error(e);
 		}
-		catch (IOException e) {
+		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
+	}
+
+	private AxisLabel[] createAxisLabels(final String[] axes) {
+		final AxisLabel[] axisLabels = new AxisLabel[axes.length];
+		for (int i = 0; i < axes.length; i++) {
+			axisLabels[i] = AxisLabel.getAxisLabel(axes[i]);
+		}
+		return axisLabels;
 	}
 
 	public File getInputFile() {
