@@ -34,8 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import imagej.data.AxisLabel;
+import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.data.Metadata;
 import imagej.plugin.ImageJPlugin;
@@ -70,10 +72,41 @@ public class DuplicateImage implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		Image<?> image = input.getImage().clone();
+		Img<? extends RealType<?>> image = cloneImage(input.getImage());
 		Metadata metadata = new Metadata();
 		metadata.copyFrom(input.getMetadata());
 		metadata.setName(outputFilename);
 		output = new Dataset(image, metadata);
+	}
+	
+	// -- private interface --
+	
+	private Img<? extends RealType<?>> cloneImage(Img image) {
+		// TODO - used to be able to call Image::clone()
+		//  For now copy data by hand
+		
+		long[] dimensions = new long[image.numDimensions()];
+		for (int i = 0; i < dimensions.length; i++)
+			dimensions[i] = image.dimension(i);
+		
+		Img<? extends RealType<?>> copyOfImg =
+			image.factory().create(dimensions, image.firstElement());
+		
+		long[] position = new long[dimensions.length];
+		
+		Cursor<? extends RealType<?>> cursor = image.cursor();
+
+		RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
+		
+		while (cursor.hasNext()) {
+			cursor.next();
+			double currValue = cursor.get().getRealDouble();
+			for (int i = 0; i < position.length; i++)
+				position[i] = cursor.getLongPosition(i);
+			access.setPosition(position);
+			access.get().setReal(currValue);
+		}
+		
+		return copyOfImg;
 	}
 }
