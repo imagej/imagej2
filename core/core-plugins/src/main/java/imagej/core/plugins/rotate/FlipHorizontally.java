@@ -34,19 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import net.imglib2.cursor.Cursor;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Log;
 import imagej.util.Rect;
 
 /**
@@ -80,25 +74,25 @@ public class FlipHorizontally implements ImageJPlugin {
 
 	private class HorzFlipTransformer implements FlipCoordinateTransformer {
 
-		private int maxX;
+		private long maxX;
 		
 		HorzFlipTransformer(Dataset input) {
-			maxX = input.getImage().getDimension(0);
+			maxX = input.getImage().dimension(0);
 			Rect currentSelection = input.getSelection();
 			if (currentSelection.width > 0)
 				maxX = currentSelection.x + currentSelection.width;
 		}
 		
 		@Override
-		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
-			int[] outputPosition)
+		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
+			long[] outputPosition)
 		{
 			outputPosition[0] = maxX - inputPosition[0] - 1;
 			outputPosition[1] = inputPosition[1];
 		}
 
 		@Override
-		public int[] calcOutputDimensions(int[] inputDimensions) {
+		public long[] calcOutputDimensions(long[] inputDimensions) {
 			return inputDimensions.clone();
 		}
 		

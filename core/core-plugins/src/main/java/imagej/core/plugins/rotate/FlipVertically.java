@@ -34,14 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.rotate;
 
-import net.imglib2.cursor.Cursor;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -79,25 +74,25 @@ public class FlipVertically implements ImageJPlugin {
 
 	private class VertFlipTransformer implements FlipCoordinateTransformer {
 
-		private int maxY;
+		private long maxY;
 		
 		VertFlipTransformer(Dataset input) {
-			maxY = input.getImage().getDimension(1);
+			maxY = input.getImage().dimension(1);
 			Rect currentSelection = input.getSelection();
 			if (currentSelection.height > 0)
 				maxY = currentSelection.y + currentSelection.height;
 		}
 		
 		@Override
-		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
-			int[] outputPosition)
+		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
+			long[] outputPosition)
 		{
 			outputPosition[0] = inputPosition[0];
 			outputPosition[1] = maxY - inputPosition[1] - 1;
 		}
 
 		@Override
-		public int[] calcOutputDimensions(int[] inputDimensions) {
+		public long[] calcOutputDimensions(long[] inputDimensions) {
 			return inputDimensions.clone();
 		}
 		
