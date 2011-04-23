@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -75,18 +73,16 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	
 	// -- public interface --
 
-	/** runs this plugin */
 	@Override
 	public void run() {
-		if (input.isFloat()) {
-			checkInput();
-			setupWorkingData();
-			assignPixels();
-			cleanup();
-			Events.publish(new DatasetChangedEvent(input));
-		}
+		if (input.isInteger()) return; // FIXME: show error message
+		checkInput();
+		setupWorkingData();
+		assignPixels();
+		cleanup();
+		input.update();
 	}
-	
+
 	// -- private interface --
 
 	private void checkInput() {

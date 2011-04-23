@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.data.Dataset;
-import imagej.data.Metadata;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -79,10 +78,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>>
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
 			final ImgPlus<T> img = imageOpener.openImg(id);
-			final Metadata metadata = new Metadata();
-			metadata.setName(img.getName());
-			metadata.setAxes(img.getAxes());
-			dataset = new Dataset(img, metadata);
+			dataset = new Dataset(img);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);

@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -77,7 +75,7 @@ public class InvertDataValues implements ImageJPlugin {
 		UnaryOperator op = new Invert(min, max);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 
 	// -- private interface --
@@ -90,8 +88,7 @@ public class InvertDataValues implements ImageJPlugin {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) (input.getImage().cursor());
+		Cursor<? extends RealType<?>> cursor = input.getImage().cursor();
 
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();

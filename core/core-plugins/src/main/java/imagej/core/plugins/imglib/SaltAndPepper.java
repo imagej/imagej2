@@ -34,20 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import java.util.Random;
-
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.Index;
 import imagej.util.Rect;
+
+import java.util.Random;
+
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Implements the same functionality as IJ1's Salt and Pepper plugin. Assigns
@@ -82,7 +81,7 @@ public class SaltAndPepper implements ImageJPlugin {
 		setupWorkingData();
 		assignPixels();
 		cleanup();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 
 	// -- private interface --

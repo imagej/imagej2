@@ -38,7 +38,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
-import imagej.data.Metadata;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
@@ -73,9 +74,10 @@ public class RGBImageTranslator implements ImageTranslator {
 
 		final long[] imageDims = new long[] { w, h, c, z, t };
 
-		final Metadata metadata = LegacyMetadata.create(imp);
+		final String name = imp.getTitle();
+		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 		final Dataset dataset =
-			Dataset.create(new UnsignedByteType(), imageDims, metadata);
+			Dataset.create(new UnsignedByteType(), imageDims, name, axes);
 
 		final int totPixels = w * h;
 
@@ -160,7 +162,7 @@ public class RGBImageTranslator implements ImageTranslator {
 			}
 		}
 
-		return new ImagePlus(dataset.getMetadata().getName(), stack);
+		return new ImagePlus(dataset.getName(), stack);
 	}
 
 }

@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import net.imglib2.type.numeric.integer.ByteType;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import net.imglib2.type.numeric.integer.ByteType;
 
 
 /** changes an input Dataset's underlying imglib data to be of
@@ -66,7 +64,7 @@ public class ChangeToINT8 implements ImageJPlugin {
 	@Override
 	public void run() {
 		TypeChanger.changeType(input, new ByteType());
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 
 }

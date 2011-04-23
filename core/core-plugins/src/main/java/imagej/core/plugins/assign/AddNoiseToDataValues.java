@@ -38,9 +38,7 @@ import imagej.data.Dataset;
 import net.imglib2.Cursor;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.AddNoise;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 /**
  * Fills an output Dataset by applying random noise to an input Dataset. This
@@ -122,8 +120,7 @@ public class AddNoiseToDataValues {
 	 * upon its underlying data type
 	 */
 	private void calcTypeMinAndMax() {
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) input.getImage().cursor();
+		Cursor<? extends RealType<?>> cursor = input.getImage().cursor();
 		rangeMin = cursor.get().getMinValue();
 		rangeMax = cursor.get().getMaxValue();
 	}
