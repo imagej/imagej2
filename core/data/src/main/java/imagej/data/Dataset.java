@@ -38,6 +38,7 @@ import imagej.data.event.DatasetChangedEvent;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
+import imagej.util.Log;
 import imagej.util.Rect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -161,9 +162,14 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlane(final int no, final Object plane) {
-		if (!(img instanceof PlanarAccess)) return; // cannot set by reference
+		final Img<? extends RealType<?>> wrappedImg = img.getImg();
+		if (!(wrappedImg instanceof PlanarAccess)) {
+			// cannot set by reference
+			Log.error("Cannot set plane for non-planar image");
+			return;
+		}
 		// TODO - copy the plane if it cannot be set by reference
-		final PlanarAccess planarAccess = (PlanarAccess) img;
+		final PlanarAccess planarAccess = (PlanarAccess) wrappedImg;
 		ArrayDataAccess<?> array = null;
 		if (plane instanceof byte[]) {
 			array = new ByteArray((byte[]) plane);
@@ -208,6 +214,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	/** Gets a string description of the dataset's pixel type. */
 	public String getTypeLabel() {
+		if (isRgbMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
 		final String category = isInteger() ?
 			isSigned() ? "signed" : "unsigned" : "real";
