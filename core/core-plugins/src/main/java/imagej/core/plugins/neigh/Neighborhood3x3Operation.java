@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.neigh;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.util.Index;
 import imagej.util.Rect;
 import net.imglib2.Cursor;
@@ -93,10 +91,10 @@ public class Neighborhood3x3Operation {
 			throw new IllegalArgumentException("input Dataset is null");
 		
 		if (input.getImage() == null)
-			throw new IllegalArgumentException("input Image is null");
+			throw new IllegalArgumentException("input Img is null");
 
-		//if (input.getImage().getNumDimensions() != 2)
-		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().getNumDimensions() + " dimensions");
+		//if (input.getImage().numDimensions() != 2)
+		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().numDimensions() + " dimensions");
 	}
 
 
@@ -118,7 +116,7 @@ public class Neighborhood3x3Operation {
 			Index.index1DtoND(planeDims, plane, planeIndex);
 			applyOperationToPlane(planeIndex);
 		}
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 	
 	private void applyOperationToPlane(long[] planeIndex) {

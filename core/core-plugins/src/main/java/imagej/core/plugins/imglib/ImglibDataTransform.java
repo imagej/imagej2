@@ -1,5 +1,5 @@
 //
-// ImglibOutputAlgorithmRunner.java
+// ImglibDataTransform.java
 //
 
 /*
@@ -34,41 +34,42 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * Runs an Imglib OutputAlgorithm, takes the created image, and assigns it
- * to the input Dataset.
+ * Runs an ImgLib {@link OutputAlgorithm}, assigning the created image to the
+ * input Dataset.
  * 
  * @author Barry DeZonia
  */
-public class ImglibDataTransform {
+public class ImglibDataTransform implements Runnable {
 
 	// -- instance variables --
 
-	private Dataset dataset;
-	private OutputAlgorithm<Img<? extends RealType<?>>> algorithm;
+	private final Dataset dataset;
+	private final OutputAlgorithm<Img<? extends RealType<?>>> algorithm;
 
 	// -- constructor --
 
-	/** preferred constructor */
-	public ImglibDataTransform(Dataset dataset, OutputAlgorithm algorithm) {
+	public ImglibDataTransform(final Dataset dataset,
+		final OutputAlgorithm<Img<? extends RealType<?>>> algorithm)
+	{
 		this.dataset = dataset;
 		this.algorithm = algorithm;
 	}
 
-	// -- public interface --
+	// -- Runnable methods --
 
-	/** run the plugin and assign output */
+	@Override
 	public void run() {
-		if (algorithm == null)
-			throw new IllegalStateException("algorithm reference is null");
-
-		if (!algorithm.checkInput() || !algorithm.process())
+		if (!algorithm.checkInput() || !algorithm.process()) {
 			throw new IllegalStateException(algorithm.getErrorMessage());
+		}
 
-		dataset.setImage(algorithm.getResult());
+		dataset.setImage(ImgPlus.wrap(algorithm.getResult()));
 	}
+
 }

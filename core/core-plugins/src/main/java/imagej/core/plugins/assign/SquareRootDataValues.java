@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -68,6 +66,6 @@ public class SquareRootDataValues implements ImageJPlugin {
 		UnaryOperator op = new Sqrt();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 }

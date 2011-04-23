@@ -39,9 +39,12 @@ import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.event.Events;
 import imagej.util.Rect;
+import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.img.Metadata;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
@@ -54,6 +57,7 @@ import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -68,18 +72,16 @@ import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * Dataset is the primary image data structure in ImageJ. A Dataset wraps an
- * ImgLib {@link Img} together with some descriptive {@link Metadata}. It also
- * provides a number of convenience methods, such as the ability to access
- * pixels on a plane-by-plane basis, and create new Datasets of various types
- * easily.
+ * ImgLib {@link ImgPlus}. It also provides a number of convenience methods,
+ * such as the ability to access pixels on a plane-by-plane basis, and create
+ * new Datasets of various types easily.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset implements Comparable<Dataset> {
+public class Dataset implements Comparable<Dataset>, Metadata {
 
-	private Img<? extends RealType<?>> img;
-	private final Metadata metadata;
+	private ImgPlus<? extends RealType<?>> img;
 	private boolean isRgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
@@ -101,43 +103,34 @@ public class Dataset implements Comparable<Dataset> {
 
 	// END FIXME TEMP
 
-	public Dataset(final Img<? extends RealType<?>> image) {
-		this(image, Metadata.createMetadata(image));
-	}
-
-	public Dataset(final Img<? extends RealType<?>> img, final Metadata metadata)
-	{
-		if (metadata == null) {
-			throw new IllegalArgumentException("Metadata must not be null");
-		}
+	public Dataset(final ImgPlus<? extends RealType<?>> img) {
 		this.img = img;
-		this.metadata = metadata;
 		this.isRgbMerged = false;
 		this.selection = new Rect();
 		Events.publish(new DatasetCreatedEvent(this));
 	}
 
 	/**
-	 * to be used in legacy layer only. allows the various legacy layer image
-	 * translators to support color images correctly.
+	 * For use in legacy layer only, this flag allows the various legacy layer
+	 * image translators to support color images correctly.
 	 */
 	public void setIsRgbMerged(final boolean value) {
 		this.isRgbMerged = value;
 	}
 
 	/**
-	 * to be used in legacy layer only. allows the various legacy layer image
-	 * translators to support color images correctly.
+	 * For use in legacy layer only, this flag allows the various legacy layer
+	 * image translators to support color images correctly.
 	 */
 	public boolean isRgbMerged() {
 		return isRgbMerged;
 	}
 
-	public Img<? extends RealType<?>> getImage() {
+	public ImgPlus<? extends RealType<?>> getImage() {
 		return img;
 	}
 
-	public void setImage(final Img<? extends RealType<?>> newImageData) {
+	public void setImage(final ImgPlus<? extends RealType<?>> newImageData) {
 		if (img.numDimensions() != newImageData.numDimensions()) {
 			throw new IllegalArgumentException("Invalid dimensionality: expected " +
 				img.numDimensions() + " but was " + newImageData.numDimensions());
@@ -147,35 +140,7 @@ public class Dataset implements Comparable<Dataset> {
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 		this.selection = new Rect();
 
-		Events.publish(new DatasetChangedEvent(this));
-	}
-
-	public Metadata getMetadata() {
-		return metadata;
-	}
-
-	/** Gets a string description of the dataset's pixel type. */
-	public String getPixelType() {
-		// HACK: Since type.toString() isn't nice, we use crazy logic here.
-		// TODO: Eliminate this, by improving type.toString() in ImgLib2.
-		final Object type = getType();
-		String pixelType = type.getClass().getSimpleName();
-		pixelType = pixelType.replaceAll("Type", "");
-		pixelType = pixelType.replaceAll("Byte", "8-bit");
-		pixelType = pixelType.replaceAll("([0-9]+)Bit", "$1-bit"); // e.g., 12Bit
-		pixelType = pixelType.replaceAll("Bit", "1-bit (unsigned)");
-		pixelType = pixelType.replaceAll("Short", "16-bit");
-		pixelType = pixelType.replaceAll("Int", "32-bit");
-		pixelType = pixelType.replaceAll("Long", "64-bit");
-		pixelType = pixelType.replaceAll("Float", "32-bit (real)");
-		pixelType = pixelType.replaceAll("Double", "64-bit (real)");
-		pixelType = pixelType.replaceAll("Unsigned(.*)", "$1 (unsigned)");
-		if (pixelType.indexOf("(") < 0) pixelType = pixelType + " (signed)";
-		return pixelType;
-	}
-
-	private RealType<?> getType() {
-		return img.cursor().get();
+		update();
 	}
 
 	/** Gets the dimensional extents of the dataset. */
@@ -229,19 +194,59 @@ public class Dataset implements Comparable<Dataset> {
 		return value;
 	}
 
-	// TEMP
-	public boolean isSigned() {
-		// HACK - imglib needs a way to query RealTypes for signedness
-		final String typeName = getType().getClass().getName();
-		return !typeName.startsWith("net.imglib2.type.numeric.integer.Unsigned");
+	public RealType<?> getType() {
+		return img.firstElement();
 	}
 
-	// TEMP
-	public boolean isFloat() {
-		// HACK - imglib needs a way to query RealTypes for integer vs. float
-		final String typeName = getType().getClass().getName();
-		return typeName.equals("net.imglib2.type.numeric.real.FloatType") ||
-			typeName.equals("net.imglib2.type.numeric.real.DoubleType");
+	public boolean isSigned() {
+		return getType().getMinValue() < 0;
+	}
+
+	public boolean isInteger() {
+		return getType() instanceof IntegerType;
+	}
+
+	/** Gets a string description of the dataset's pixel type. */
+	public String getTypeLabel() {
+		final int bitsPerPixel = getType().getBitsPerPixel();
+		final String category = isInteger() ?
+			isSigned() ? "signed" : "unsigned" : "real";
+		return bitsPerPixel + "-bit (" + category + ")";
+	}
+
+	/** Creates a copy of the dataset. */
+	public Dataset duplicate() {
+		final Dataset d = duplicateBlank();
+		copyInto(d);
+		return d;
+	}
+
+	/** Creates a copy of the dataset, but without copying any pixel values. */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Dataset duplicateBlank() {
+		final ImgPlus untypedImg = img;
+		return new Dataset(createBlankCopy(untypedImg));
+	}
+
+	/** Copies the dataset's pixels into the given target dataset. */
+	public void copyInto(final Dataset target) {
+		final Cursor<? extends RealType<?>> in = img.localizingCursor();
+		final RandomAccess<? extends RealType<?>> out =
+			target.getImage().randomAccess();
+		final long[] position = new long[img.numDimensions()];
+
+		while (in.hasNext()) {
+			in.next();
+			final double value = in.get().getRealDouble();
+			in.localize(position);
+			out.setPosition(position);
+			out.get().setReal(value);
+		}
+	}
+
+	/** Informs interested parties that the dataset has changed somehow. */
+	public void update() {		
+		Events.publish(new DatasetChangedEvent(this));
 	}
 
 	/**
@@ -254,14 +259,36 @@ public class Dataset implements Comparable<Dataset> {
 
 	@Override
 	public String toString() {
-		return this.metadata.getName();
+		return img.getName();
 	}
 
 	// -- Comparable methods --
 
 	@Override
 	public int compareTo(final Dataset dataset) {
-		return getMetadata().getName().compareTo(dataset.getMetadata().getName());
+		return img.getName().compareTo(dataset.img.getName());
+	}
+
+	// -- Metadata methods --
+
+	@Override
+	public String getName() {
+		return img.getName();
+	}
+
+	@Override
+	public Axis[] getAxes() {
+		return img.getAxes();
+	}
+
+	@Override
+	public int getAxisIndex(final Axis axis) {
+		return img.getAxisIndex(axis);
+	}
+
+	@Override
+	public float[] getCalibration() {
+		return img.getCalibration();
 	}
 
 	// -- Utility methods --
@@ -332,27 +359,10 @@ public class Dataset implements Comparable<Dataset> {
 	public static <T extends RealType<T> & NativeType<T>> Dataset create(
 		final T type, final long[] dims, final String name, final Axis[] axes)
 	{
-		final Metadata metadata = new Metadata();
-		metadata.setName(name);
-		metadata.setAxes(axes);
-		return create(type, dims, metadata);
-	}
-
-	/**
-	 * Creates a new dataset.
-	 * 
-	 * @param <T> The type of the dataset.
-	 * @param type The type of the dataset.
-	 * @param dims The dataset's dimensional extents.
-	 * @param metadata Metadata associated with the dataset.
-	 * @return The newly created dataset.
-	 */
-	public static <T extends RealType<T> & NativeType<T>> Dataset create(
-		final T type, final long[] dims, final Metadata metadata)
-	{
 		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
 		final PlanarImg<T, ?> planarImg = imgFactory.create(dims, type);
-		return new Dataset(planarImg, metadata);
+		final ImgPlus<T> imgPlus = new ImgPlus<T>(planarImg, name, axes, null);
+		return new Dataset(imgPlus);
 	}
 
 	// -- Helper methods --
@@ -362,6 +372,17 @@ public class Dataset implements Comparable<Dataset> {
 	{
 		throw new IllegalArgumentException("Invalid parameters: bitsPerPixel=" +
 			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
+	}
+
+	/** Makes an image that has same type, container, and dimensions as refImage. */
+	private static <T extends RealType<T>> ImgPlus<T> createBlankCopy(
+		final ImgPlus<T> img)
+	{
+		final long[] dimensions = new long[img.numDimensions()];
+		img.dimensions(dimensions);
+		final Img<T> blankImg = img.factory().create(dimensions,
+			img.firstElement());
+		return new ImgPlus<T>(blankImg, img);
 	}
 
 }

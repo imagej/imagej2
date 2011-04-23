@@ -92,13 +92,13 @@ public class ProbeTool extends BaseTool {
 			randomAccess.setPosition(position);
 			final double doubleValue = randomAccess.get().getRealDouble();
 			final String statusMessage;
-			if (dataset.isFloat()) {
+			if (dataset.isInteger()) {
 				statusMessage =
-					String.format("x=%d, y=%d, value=%f", cx, cy, doubleValue);
+					String.format("x=%d, y=%d, value=%d", cx, cy, (long) doubleValue);
 			}
 			else {
 				statusMessage =
-					String.format("x=%d, y=%d, value=%d", cx, cy, (long) doubleValue);
+					String.format("x=%d, y=%d, value=%f", cx, cy, doubleValue);
 			}
 			Events.publish(new StatusEvent(statusMessage));
 		}

@@ -102,8 +102,8 @@ public class AWTDisplayController implements DisplayController {
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 		dims = dataset.getDims();
-		dimLabels = dataset.getMetadata().getAxes();
-		imageName = dataset.getMetadata().getName();
+		dimLabels = dataset.getAxes();
+		imageName = dataset.getName();
 		// extract width and height
 		xIndex = yIndex = -1;
 		for (int i = 0; i < dimLabels.length; i++) {
@@ -167,7 +167,7 @@ public class AWTDisplayController implements DisplayController {
 			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		sb.append(dataset.getPixelType());
+		sb.append(dataset.getTypeLabel());
 		return sb.toString();
 	}
 

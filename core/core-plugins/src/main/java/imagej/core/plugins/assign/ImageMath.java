@@ -58,9 +58,6 @@ import net.imglib2.ops.operator.binary.Xor;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-
 // NOTE - attempted to use the ImageCalculator in Imglib using
 // ImglibOutputAlgorithmRunner but could not solve compiler errors and
 // warnings. That test implementation saved below commented out. For now

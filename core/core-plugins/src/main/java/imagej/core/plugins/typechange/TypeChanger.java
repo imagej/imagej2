@@ -39,13 +39,14 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.ImgPlus;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Utility methods for transforming {@link Dataset}s and {@link Img}s between
- * types.
+ * Utility methods for transforming {@link Dataset}s and {@link ImgPlus}s
+ * between types.
  * <p>
  * Note that ImgLib does not do any range clamping while moving between image
  * types. So translations may not always be nice (i.e. narrowing cases) but best
@@ -68,7 +69,7 @@ public final class TypeChanger {
 	public static <T extends RealType<T> & NativeType<T>> void changeType(
 		final Dataset dataset, final T newType)
 	{
-		final Img<? extends RealType<?>> inputImg = dataset.getImage();
+		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImage();
 		dataset.setImage(copyToType(inputImg, newType));
 	}
 
@@ -77,8 +78,8 @@ public final class TypeChanger {
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
 	 * different data type). No range clamping of data is done.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> Img<T> copyToType(
-		final Img<? extends RealType<?>> inputImg, final T newType)
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
+		final ImgPlus<? extends RealType<?>> inputImg, final T newType)
 	{
 		return copyToType(inputImg, newType, new PlanarImgFactory<T>());
 	}
@@ -89,8 +90,8 @@ public final class TypeChanger {
 	 * input {@link Img} (which is likely of a different data type). No range
 	 * clamping of data is done.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> Img<T> copyToType(
-		final Img<? extends RealType<?>> inputImg, final T newType,
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
+		final ImgPlus<? extends RealType<?>> inputImg, final T newType,
 		final ImgFactory<T> imgFactory)
 	{
 		final long[] dims = new long[inputImg.numDimensions()];
@@ -109,7 +110,7 @@ public final class TypeChanger {
 			out.get().setReal(value);
 		}
 
-		return outputImg;
+		return new ImgPlus<T>(outputImg, inputImg);
 	}
 
 }
