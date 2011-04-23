@@ -58,14 +58,11 @@ import java.util.List;
 /**
  * A simple Swing image display plugin.
  * 
- *  Instantiated by imagej.display.DisplayPostprocessor.displayDataset(dataset)
- * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-
 @Plugin(type = Display.class)
-public class SwingImageDisplay implements AWTDisplay {
+public class SwingImageDisplay2 implements AWTDisplay {
 	protected Dataset theDataset;
 	private long[] lastKnownDimensions;
 
@@ -74,7 +71,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	private DisplayController controller;
 	private List<EventSubscriber<?>> subscribers;
 
-	public SwingImageDisplay() {
+	public SwingImageDisplay2() {
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
@@ -129,6 +126,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
+		// dataset.getImgPlus()... 
 		lastKnownDimensions = new long[dataset.getImage().numDimensions()];
 		dataset.getImage().dimensions(lastKnownDimensions);
 		// imgCanvas = new ImageCanvasSwing();
