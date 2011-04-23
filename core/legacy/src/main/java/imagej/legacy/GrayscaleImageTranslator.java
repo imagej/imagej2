@@ -39,6 +39,7 @@ import ij.ImageStack;
 import imagej.data.Dataset;
 import imagej.util.Dimensions;
 import imagej.util.Index;
+import imagej.util.Log;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -71,6 +72,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final long planeCount = Dimensions.getTotalPlanes(dataset.getDims());
 		for (int p = 0; p < planeCount; p++) {
 			final Object plane = imp.getStack().getPixels(p + 1);
+			if (plane == null) {
+				Log.error("Could not extract plane from ImageStack: " + p);
+			}
 			dataset.setPlane(p, plane);
 		}
 
@@ -111,14 +115,15 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Too many planes: c=" + cCount +
-				", z=" + zCount + ", t=" + tCount);
+			throw new IllegalArgumentException(message("Too many planes", cCount,
+				zCount, tCount));
 		}
 
 		final ImageStack stack = new ImageStack(w, h);
 
 		final long[] planeDims = new long[dims.length - 2];
-		for (int i = 0; i < planeDims.length; i++) planeDims[i] = dims[i + 2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = dims[i + 2];
 		final long[] planePos = new long[planeDims.length];
 
 		for (long t = 0; t < tCount; t++) {
@@ -129,9 +134,14 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
 					final long no = Index.indexNDto1D(planeDims, planePos);
 					if (no > Integer.MAX_VALUE) {
-						throw new IllegalArgumentException("Plane out of range: " + no);
+						throw new IllegalArgumentException(message("Plane out of range",
+							c, z, t) +
+							", no=" + no);
 					}
 					final Object plane = dataset.getPlane((int) no);
+					if (plane == null) {
+						Log.error(message("Could not extract plane from Dataset", c, z, t));
+					}
 					stack.addSlice(null, plane);
 				}
 			}
@@ -150,6 +160,12 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	private boolean isFloating(final ImagePlus imp) {
 		final int type = imp.getType();
 		return type == ImagePlus.GRAY16;
+	}
+
+	private String message(final String message, final long c, final long z,
+		final long t)
+	{
+		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
 }
