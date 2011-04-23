@@ -90,7 +90,11 @@ public class GradientImage implements ImageJPlugin {
 		dataset = Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
 
 		// fill in the diagonal gradient
-		final Cursor<? extends RealType<?>> cursor = dataset.getImage().cursor();
+		final Cursor<? extends RealType<?>> cursor =
+			dataset.getImage().localizingCursor();
+		// TODO - Calling cursor() instead of localizingCursor() doesn't work;
+		// must be a bug in ImgLib2. Of course we do want localizingCursor() here,
+		// but cursor() should work too (just slower). Investigate further!
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			final long x = cursor.getLongPosition(0);
