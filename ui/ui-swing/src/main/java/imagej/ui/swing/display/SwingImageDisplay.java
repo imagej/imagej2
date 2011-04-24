@@ -50,11 +50,9 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
-import imagej.util.Log;
 import imagej.util.Rect;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -66,11 +64,11 @@ import java.util.List;
 @Plugin(type = Display.class)
 public class SwingImageDisplay implements AWTDisplay {
 	protected Dataset theDataset;
+	private long[] lastKnownDimensions;
 
 	private SwingImageDisplayWindow imgWindow;
 	private SwingNavigableImageCanvas imgCanvas;
 	private DisplayController controller;
-	private int[] lastKnownDimensions;
 	private List<EventSubscriber<?>> subscribers;
 
 	public SwingImageDisplay() {
@@ -128,7 +126,9 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
-		lastKnownDimensions = dataset.getImage().getDimensions();
+		// dataset.getImgPlus()... 
+		lastKnownDimensions = new long[dataset.getImage().numDimensions()];
+		dataset.getImage().dimensions(lastKnownDimensions);
 		// imgCanvas = new ImageCanvasSwing();
 		imgCanvas = new SwingNavigableImageCanvas();
 		imgWindow = new SwingImageDisplayWindow(imgCanvas);
@@ -161,10 +161,17 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public void update() {
 		// did the shape of the dataset change?
-		int[] currDimensions = theDataset.getImage().getDimensions();
+		boolean changed = false;
+		for (int i=0; i<theDataset.getImage().numDimensions(); i++) {
+			final long dim = theDataset.getImage().dimension(i);
+			if (dim != lastKnownDimensions[i]) {
+				changed = true;
+				break;
+			}
+		}
 		// TODO - maybe this should be handled in the onEvent(DatasetChangedEvent) handler
-		if (!Arrays.equals(lastKnownDimensions, currDimensions)) {
-			lastKnownDimensions = currDimensions;
+		if (changed) {
+			theDataset.getImage().dimensions(lastKnownDimensions);
 			controller.setDataset(theDataset);
 			imgCanvas.setZoom(1.0);
 			imgCanvas.setPan(0,0);
@@ -188,7 +195,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public int[] getCurrentPlanePosition() {
+	public long[] getCurrentPlanePosition() {
 		return controller.getPos();
 	}
 

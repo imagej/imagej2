@@ -18,6 +18,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-data</artifactId>
 			<version>${project.version}</version>

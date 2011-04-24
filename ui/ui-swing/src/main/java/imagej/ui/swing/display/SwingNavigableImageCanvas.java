@@ -742,8 +742,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			if (rect == null || rect.width == 0 || rect.height == 0)
 				return;
 			
-			final BufferedImage subimage =
-				image.getSubimage(rect.x, rect.y, rect.width, rect.height);
+			final BufferedImage subimage = image.getSubimage(rect.x, rect.y, rect.width, rect.height);
 			
 			final Graphics2D g2 = (Graphics2D) g;
 			

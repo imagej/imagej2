@@ -35,17 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.neigh;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.util.Index;
-import imagej.util.Log;
 import imagej.util.Rect;
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.cursor.special.RegionOfInterestCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyFactory;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyMirrorFactory;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation
@@ -59,8 +56,8 @@ public class Neighborhood3x3Operation {
 	// -- instance variables --
 
 	private Dataset input;
-	private Image<?> inputImage;
-	private Image<?> inputImageCopy;
+	private Img<? extends RealType<?>> inputImage;
+	private Img<? extends RealType<?>> inputImageCopy;
 	private Rect selection;
 	private Neighborhood3x3Watcher watcher;
 
@@ -94,116 +91,115 @@ public class Neighborhood3x3Operation {
 			throw new IllegalArgumentException("input Dataset is null");
 		
 		if (input.getImage() == null)
-			throw new IllegalArgumentException("input Image is null");
+			throw new IllegalArgumentException("input Img is null");
 
-		//if (input.getImage().getNumDimensions() != 2)
-		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().getNumDimensions() + " dimensions");
+		//if (input.getImage().numDimensions() != 2)
+		//	throw new IllegalArgumentException("input image is not 2d but has " + input.getImage().numDimensions() + " dimensions");
 	}
 
 
 	private void setupWorkingData()
 	{
 		inputImage = input.getImage();
-		inputImageCopy = inputImage.clone();
+		inputImageCopy = cloneImage(inputImage);
 		selection = input.getSelection();
 	}
 
 	private void runAssignment()
 	{
-		int[] planeDims = new int[inputImage.getDimensions().length - 2];
+		long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = inputImage.getDimension(i+2);
-		int totalPlanes = Index.getRasterLength(planeDims);
-		for (int plane = 0; plane < totalPlanes; plane++) {
-			int[] planeIndex = Index.rasterToPosition(planeDims, plane);
+			planeDims[i] = inputImage.dimension(i+2);
+		long[] planeIndex = new long[planeDims.length];
+		long totalPlanes = Index.getTotalLength(planeDims);
+		for (long plane = 0; plane < totalPlanes; plane++) {
+			Index.index1DtoND(planeDims, plane, planeIndex);
 			applyOperationToPlane(planeIndex);
 		}
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 	
-	private void applyOperationToPlane(int[] planeIndex) {
-		LocalizableByDimCursor<? extends RealType<?>> outputCursor =
-			(LocalizableByDimCursor<? extends RealType<?>>) inputImage
-				.createLocalizableByDimCursor();
+	private void applyOperationToPlane(long[] planeIndex) {
 
-		int[] origin = inputImage.createPositionArray();
-		origin[0] = selection.x;
-		origin[1] = selection.y;
-		for (int i = 2; i < origin.length; i++)
-			origin[i] = planeIndex[i-2];
+		long[] imageDims = new long[inputImage.numDimensions()];
+		inputImage.dimensions(imageDims);
 		
-		int[] span = inputImage.getDimensions();
-		if (selection.width > 0)
-			span[0] = selection.width;
-		if (selection.height > 0)
-			span[1] = selection.height;
-		for (int i = 2; i < span.length; i++)
-			span[i] = 1;
-		
-		OutOfBoundsStrategyFactory factory =
-			new OutOfBoundsStrategyMirrorFactory();
-		
-		LocalizableByDimCursor<? extends RealType<?>> inputCursor =
-			(LocalizableByDimCursor<? extends RealType<?>>) inputImageCopy
-				.createLocalizableByDimCursor(factory);
+		if (selection.width == 0)
+			selection.height = (int) imageDims[0];
 
-		RegionOfInterestCursor<? extends RealType<?>> neighCursor =
-			new RegionOfInterestCursor(inputCursor, origin, span);
-		
-		int[] inputPosition = new int[inputCursor.getNumDimensions()];
-		int[] localInputPosition = new int[inputCursor.getNumDimensions()];
+		if (selection.height == 0)
+			selection.height = (int) imageDims[1];
+
+		// output is done by changin input image in place
+		RandomAccess<? extends RealType<?>> outputAccessor =
+			inputImage.randomAccess();
+
+		// input is a copy of the original data with out of bounds access enabled
+		RandomAccessible<? extends RealType<?>> inputInterval =
+			Views.extend(inputImageCopy);
+
+		RandomAccess<? extends RealType<?>> extendedInput =
+			inputInterval.randomAccess();
 
 		// initialize the watcher
 		watcher.setup();
-
-		// walk the selected region of the input image copy
 		
-		while (neighCursor.hasNext()) {
-			
-			// locate input cursor on next location
-			neighCursor.fwd();
+		long[] inputPosition = new long[imageDims.length];
+		long[] localInputPosition = new long[imageDims.length];
 
-			// remember the location so that the input image cursor can use it
-			neighCursor.getPosition(inputPosition);
-			
-			// NOTE - inputPosition is in relative coordinates of neigh cursor.
-			//  Must translate to input coord space.
-			for (int i = 0; i < inputPosition.length; i++) {
-				inputPosition[i] += origin[i];
-				localInputPosition[i] = inputPosition[i];
-			}
-			
-			// let watcher know we are visiting a new neighborhood
-			watcher.initializeNeighborhood(inputPosition);
-
-			// iterate over the 3x3 neighborhood
-			for (int dy = -1; dy <= 1; dy++) {
-
-				localInputPosition[1] = inputPosition[1] + dy;
-				
-				for (int dx = -1; dx <= 1; dx++) {
-
-					localInputPosition[0] = inputPosition[0] + dx;
-
-					// move the input cursor there
-					inputCursor.setPosition(localInputPosition);
-
-					// update watcher about the position and value of the
-					// subneighborhood location
-					double localValue = inputCursor.getType().getRealDouble();
-					
-					watcher.visitLocation(dx, dy, localValue);
-				}
-			}
-
-			// assign output
-			outputCursor.setPosition(inputPosition);
-			
-			outputCursor.getType().setReal(watcher.calcOutputValue());
+		for (int i = 2; i < inputPosition.length; i++) {
+			inputPosition[i] = planeIndex[i-2];
+			localInputPosition[i] = planeIndex[i-2];
 		}
 
-		neighCursor.close();
-		inputCursor.close();
-		outputCursor.close();
+		for (long y = selection.y; y < selection.height; y++) {
+			inputPosition[1] = y;
+			for (long x = selection.x; x < selection.width; x++) {
+				inputPosition[0] = x;
+				watcher.initializeNeighborhood(inputPosition);
+	
+				for (int dy = -1; dy <= 1; dy++) {
+					localInputPosition[1] = inputPosition[1] + dy;
+					for (int dx = -1; dx <= 1; dx++) {
+						localInputPosition[0] = inputPosition[0] + dx;
+						extendedInput.setPosition(localInputPosition);
+						double localValue = extendedInput.get().getRealDouble();
+						watcher.visitLocation(dx, dy, localValue);
+					}
+				}
+				// assign output
+				outputAccessor.setPosition(inputPosition);
+				outputAccessor.get().setReal(watcher.calcOutputValue());
+			}
+		}
+	}
+	
+	// TODO - eliminate when Imglib allows ability to duplicate/clone an Img
+	private Img<? extends RealType<?>> cloneImage(Img image) {
+		// TODO - used to be able to call Image::clone()
+		//  For now copy data by hand
+		
+		long[] dimensions = new long[image.numDimensions()];
+		image.dimensions(dimensions);
+		
+		Img<? extends RealType<?>> copyOfImg =
+			image.factory().create(dimensions, image.firstElement());
+		
+		long[] position = new long[dimensions.length];
+		
+		Cursor<? extends RealType<?>> cursor = image.cursor();
+
+		RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
+		
+		while (cursor.hasNext()) {
+			cursor.next();
+			double currValue = cursor.get().getRealDouble();
+			for (int i = 0; i < position.length; i++)
+				position[i] = cursor.getLongPosition(i);
+			access.setPosition(position);
+			access.get().setReal(currValue);
+		}
+		
+		return copyOfImg;
 	}
 }

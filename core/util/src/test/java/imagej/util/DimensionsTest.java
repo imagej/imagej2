@@ -39,103 +39,187 @@ import imagej.util.Dimensions;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Dimensions}.
+ * 
+ * @author Barry DeZonia
+ */
 public class DimensionsTest {
+
+	// -- Test methods --
+
+	@Test
+	public void testgetDims3AndGreater() {
+		getDims3AndGreaterShouldFail(new long[]{});
+		getDims3AndGreaterShouldFail(new long[]{1});
+		assertArrayEquals(new long[]{}, Dimensions.getDims3AndGreater(new long[]{1,2}));
+		assertArrayEquals(new long[]{3}, Dimensions.getDims3AndGreater(new long[]{1,2,3}));
+		assertArrayEquals(new long[]{3,4}, Dimensions.getDims3AndGreater(new long[]{1,2,3,4}));
+		assertArrayEquals(new long[]{3,4,5}, Dimensions.getDims3AndGreater(new long[]{1,2,3,4,5}));
+	}
 
 	@Test
 	public void testGetDims3AndGreater()
 	{
 		try {
-			Dimensions.getDims3AndGreater(new int[]{});
+			Dimensions.getDims3AndGreater(new long[]{});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 		try {
-			Dimensions.getDims3AndGreater(new int[]{1});
+			Dimensions.getDims3AndGreater(new long[]{1});
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
-		assertArrayEquals(new int[]{}, Dimensions.getDims3AndGreater(new int[]{1,2}));
-		assertArrayEquals(new int[]{3}, Dimensions.getDims3AndGreater(new int[]{1,2,3}));
-		assertArrayEquals(new int[]{3,4}, Dimensions.getDims3AndGreater(new int[]{1,2,3,4}));
-		assertArrayEquals(new int[]{3,4,5}, Dimensions.getDims3AndGreater(new int[]{1,2,3,4,5}));
-		assertArrayEquals(new int[]{3,4,5,6}, Dimensions.getDims3AndGreater(new int[]{1,2,3,4,5,6}));
+		assertArrayEquals(new long[]{},
+			Dimensions.getDims3AndGreater(new long[]{1,2}));
+		assertArrayEquals(new long[]{3},
+			Dimensions.getDims3AndGreater(new long[]{1,2,3}));
+		assertArrayEquals(new long[]{3,4},
+			Dimensions.getDims3AndGreater(new long[]{1,2,3,4}));
+		assertArrayEquals(new long[]{3,4,5},
+			Dimensions.getDims3AndGreater(new long[]{1,2,3,4,5}));
+		assertArrayEquals(new long[]{3,4,5,6},
+			Dimensions.getDims3AndGreater(new long[]{1,2,3,4,5,6}));
 	}
 
 	@Test
-	public void testGetTotalSamples()
-	{
-		assertEquals(0, Dimensions.getTotalSamples(new int[]{}));
-		assertEquals(1, Dimensions.getTotalSamples(new int[]{1}));
-		assertEquals(7, Dimensions.getTotalSamples(new int[]{7}));
-		assertEquals(0, Dimensions.getTotalSamples(new int[]{1,0}));
-		assertEquals(6, Dimensions.getTotalSamples(new int[]{2,3}));
-		assertEquals(24, Dimensions.getTotalSamples(new int[]{4,3,2}));
-		assertEquals(105, Dimensions.getTotalSamples(new int[]{1,3,5,7}));
-		assertEquals(4294836225L, Dimensions.getTotalSamples(new int[]{0xffff,0xffff}));
+	public void testGetTotalPlanes() {
+		assertEquals(0, Dimensions.getTotalPlanes(new long[]{}));
+		assertEquals(0, Dimensions.getTotalPlanes(new long[]{0}));
+		assertEquals(0, Dimensions.getTotalPlanes(new long[]{1}));
+		assertEquals(0, Dimensions.getTotalPlanes(new long[]{8}));
+		assertEquals(1, Dimensions.getTotalPlanes(new long[]{1,0}));  // NOTE - nonintuitive but I thinks mathematically its correct
+		assertEquals(1, Dimensions.getTotalPlanes(new long[]{1,1}));
+		assertEquals(1, Dimensions.getTotalPlanes(new long[]{2,3}));
+		assertEquals(1, Dimensions.getTotalPlanes(new long[]{2,5}));
+		assertEquals(4, Dimensions.getTotalPlanes(new long[]{2,3,4}));
+		assertEquals(2, Dimensions.getTotalPlanes(new long[]{4,3,2}));
+		assertEquals(35, Dimensions.getTotalPlanes(new long[]{1,3,5,7}));
+		assertEquals(360, Dimensions.getTotalPlanes(new long[]{1,2,3,4,5,6}));
+		assertEquals(65535, Dimensions.getTotalPlanes(new long[]{65535, 65535, 65535}));
 	}
 
-	@Test
-	public void testGetTotalPlanes()
-	{
-		assertEquals(0, Dimensions.getTotalPlanes(new int[]{}));
-		assertEquals(0, Dimensions.getTotalPlanes(new int[]{1}));
-		assertEquals(1, Dimensions.getTotalPlanes(new int[]{1,0}));  // NOTE - nonintuitive but I thinks mathematically its correct
-		assertEquals(1, Dimensions.getTotalPlanes(new int[]{2,3}));
-		assertEquals(2, Dimensions.getTotalPlanes(new int[]{4,3,2}));
-		assertEquals(35, Dimensions.getTotalPlanes(new int[]{1,3,5,7}));
-		assertEquals(0xffff, Dimensions.getTotalPlanes(new int[]{0xffff,0xffff, 0xffff}));
-	}
-
-	private void shouldFail(int[] imageDims, int[] origin, int[] span)
-	{
-		try {
-			Dimensions.verifyDimensions(imageDims, origin, span);
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
-		}
-	}
-	
-	private void shouldSucceed(int[] imageDims, int[] origin, int[] span)
-	{
-		try {
-			Dimensions.verifyDimensions(imageDims, origin, span);
-			assertTrue(true);
-		} catch (IllegalArgumentException e) {
-			fail();
-		}
-	}
-	
 	@Test
 	public void testVerifyDimensions()
 	{
 		// fail if span dims don't match origin dims
-		shouldFail(new int[]{1,2,3}, new int[]{0,0,0}, new int[]{1,1});
+		shouldFail(new long[]{1,2,3}, new long[]{0,0,0}, new long[]{1,1});
 
 		// fail if origin/span dimensions don't match image dimensions
-		shouldFail(new int[]{1,2,3}, new int[]{0,0}, new int[]{1,1});
+		shouldFail(new long[]{1,2,3}, new long[]{0,0}, new long[]{1,1});
 
 		// fail if origin outside the bounds of source image
-		shouldFail(new int[]{1,2,3}, new int[]{1,0,0}, new int[]{1,1,1});
+		shouldFail(new long[]{1,2,3}, new long[]{1,0,0}, new long[]{1,1,1});
 
 		// fail if any span dim < 1
-		shouldFail(new int[]{1,2,3}, new int[]{0,0,0}, new int[]{0,1,1});
+		shouldFail(new long[]{1,2,3}, new long[]{0,0,0}, new long[]{0,1,1});
 
 		// fail if origin + span outside the bounds of the input image
-		shouldFail(new int[]{1,2,3}, new int[]{0,0,0}, new int[]{2,0,0});
+		shouldFail(new long[]{1,2,3}, new long[]{0,0,0}, new long[]{2,0,0});
 
 		// succeed for any other case
 		
 		// full size span
-		shouldSucceed(new int[]{2,3,4}, new int[]{0,0,0}, new int[]{2,3,4});
+		shouldSucceed(new long[]{2,3,4}, new long[]{0,0,0}, new long[]{2,3,4});
 		
 		// partial size span
-		shouldSucceed(new int[]{2,3,4}, new int[]{0,0,0}, new int[]{1,1,1});
+		shouldSucceed(new long[]{2,3,4}, new long[]{0,0,0}, new long[]{1,1,1});
 		
 		// complete subset of original
-		shouldSucceed(new int[]{2,3,4}, new int[]{1,1,1}, new int[]{1,1,2});
+		shouldSucceed(new long[]{2,3,4}, new long[]{1,1,1}, new long[]{1,1,2});
 	}
 
+	@Test
+	public void testVerifyDimensions2() {
+		final boolean FAIL = true;
+
+		// origin len != span len
+		verifyDims(FAIL, new long[]{1}, new long[]{0}, new long[]{1,1});
+
+		// origin len != dim len
+		verifyDims(FAIL, new long[]{1}, new long[]{0,0}, new long[]{1,1});
+
+		// dim len != span len
+		verifyDims(FAIL, new long[]{1,2}, new long[]{0,0}, new long[]{1});
+
+		// origin outside image in some dim
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,0,-1}, new long[]{1,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,0,3}, new long[]{1,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,-1,0}, new long[]{1,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,2,0}, new long[]{1,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{-1,0,0}, new long[]{1,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{1,0,0}, new long[]{1,1,1});
+
+		// span <= 0 in some dim
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,0,-1}, new long[]{0,1,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,0,3}, new long[]{1,0,1});
+		verifyDims(FAIL, new long[]{1,2,3}, new long[]{0,-1,0}, new long[]{1,1,0});
+
+		// origin + span outside image in some dim
+		verifyDims(FAIL, new long[]{1}, new long[]{0}, new long[]{2});
+		verifyDims(FAIL, new long[]{2,2}, new long[]{0,1}, new long[]{2,2});
+		verifyDims(FAIL, new long[]{2,2}, new long[]{1,0}, new long[]{2,2});
+
+		// all other cases should succeed
+
+		final boolean SUCCEED = false;
+
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,0}, new long[]{2,2});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,0}, new long[]{1,1});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,0}, new long[]{1,2});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,0}, new long[]{2,1});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{1,0}, new long[]{1,1});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{1,0}, new long[]{1,2});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,1}, new long[]{1,1});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{0,1}, new long[]{2,1});
+		verifyDims(SUCCEED, new long[]{2,2}, new long[]{1,1}, new long[]{1,1});
+	}
+
+	// -- Helper methods --
+
+	private void getDims3AndGreaterShouldFail(long[] dims) {
+		try {
+			Dimensions.getDims3AndGreater(dims);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+
+	private void verifyDims(boolean shouldFail, long[] dims, long[] origin, long[] span) {
+		try {
+			Dimensions.verifyDimensions(dims, origin, span);
+			if (shouldFail)
+				fail();
+			else
+				assertTrue(true);
+		} catch (IllegalArgumentException e) {
+			if (shouldFail)
+				assertTrue(true);
+			else
+				fail();
+		}
+	}
+
+	private void shouldFail(long[] imageDims, long[] origin, long[] span) {
+		try {
+			Dimensions.verifyDimensions(imageDims, origin, span);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
+	private void shouldSucceed(long[] imageDims, long[] origin, long[] span) {
+		try {
+			Dimensions.verifyDimensions(imageDims, origin, span);
+			assertTrue(true);
+		} catch (IllegalArgumentException e) {
+			fail();
+		}
+	}
+	
 }

@@ -109,7 +109,7 @@ public class Convolve3x3Operation {
 
 		/** at each new neighborhood reset it's value sum to 0 */
 		@Override
-		public void initializeNeighborhood(int[] position) {
+		public void initializeNeighborhood(long[] position) {
 			sum = 0;
 		}
 

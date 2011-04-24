@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 
 /** changes an input Dataset's underlying imglib data to be of
@@ -65,8 +63,8 @@ public class ChangeToUINT8 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new UnsignedByteType());
-		Events.publish(new DatasetChangedEvent(input));
+		TypeChanger.changeType(input, new UnsignedByteType());
+		input.update();
 	}
 
 }

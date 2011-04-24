@@ -36,15 +36,14 @@ package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
 
-import imglib.ops.function.RealFunction;
-import imglib.ops.operation.AssignOperation;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.ops.function.RealFunction;
+import net.imglib2.ops.operation.AssignOperation;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Assigns an output Dataset's values by applying a RealFunction to a number of
@@ -55,7 +54,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class NAryOperation {
+public class NAryOperation<T extends RealType<T>> {
 
 	// -- instance variables --
 
@@ -63,7 +62,7 @@ public class NAryOperation {
 	 * the list of input Datasets that will be fed as input to the user supplied
 	 * function
 	 */
-	private List<Dataset> inputs;
+	private final List<Dataset> inputs;
 
 	/**
 	 * the output Dataset that will be filled with computation of user supplied
@@ -72,19 +71,19 @@ public class NAryOperation {
 	private Dataset output;
 
 	/** The imglib-ops function to execute. */
-	private RealFunction function;
+	private final RealFunction<T> function;
 
 	/** subregion information used to support working on subregions of inputs */
-	private int[] outputOrigin, outputSpan;
-	private int[][] inputOrigins, inputSpans;
-	
+	private long[] outputOrigin, outputSpan;
+	private long[][] inputOrigins, inputSpans;
+
 	// -- constructors --
 
 	/**
 	 * this constructor a convenience for those plugins that work from a single
 	 * input Dataset
 	 */
-	public NAryOperation(Dataset input, RealFunction function) {
+	public NAryOperation(final Dataset input, final RealFunction<T> function) {
 		this.inputs = new ArrayList<Dataset>();
 		this.inputs.add(input);
 		this.function = function;
@@ -99,7 +98,9 @@ public class NAryOperation {
 	 * this constructor a convenience for those plugins that work from a two input
 	 * Datasets
 	 */
-	public NAryOperation(Dataset input1, Dataset input2, RealFunction function) {
+	public NAryOperation(final Dataset input1, final Dataset input2,
+		final RealFunction<T> function)
+	{
 		this.inputs = new ArrayList<Dataset>();
 		this.inputs.add(input1);
 		this.inputs.add(input2);
@@ -110,10 +111,12 @@ public class NAryOperation {
 	}
 
 	/**
-	 * takes a List of Datasets as input, a Dataset to store results in (can be
-	 * null) and a function to be applied
+	 * Takes a List of {@link Dataset}s as input, a {@link Dataset} to store
+	 * results in (can be null) and a function to be applied.
 	 */
-	public NAryOperation(List<Dataset> inputs, RealFunction function) {
+	public NAryOperation(final List<Dataset> inputs,
+		final RealFunction<T> function)
+	{
 		this.inputs = inputs;
 		this.function = function;
 		this.output = null;
@@ -124,91 +127,78 @@ public class NAryOperation {
 
 	// -- public interface --
 
-	/**
-	 * helper method that allows output Dataset of an operation to be set or
-	 * changed
-	 */
-	public void setOutput(Dataset output) {
+	/** Sets the output {@link Dataset} of an operation. */
+	public void setOutput(final Dataset output) {
 		this.output = output;
 	}
 
-	public void setOutputRegion(int[] origin, int[] span)
-	{
+	public void setOutputRegion(final long[] origin, final long[] span) {
 		outputOrigin = origin;
 		outputSpan = span;
 	}
-	
-	public void setInputRegion(int i, int[] origin, int[] span)
+
+	public void setInputRegion(final int i, final long[] origin,
+		final long[] span)
 	{
 		inputOrigins[i] = origin;
 		inputSpans[i] = span;
 	}
 
 	/**
-	 * runs the plugin applying the operation's function to the input and
-	 * assigning it to the output
+	 * Runs the plugin applying the operation's function to the input and
+	 * assigning it to the output.
 	 */
 	public Dataset run() {
-		if (function == null) throw new IllegalStateException(
-			"NAryOperation::run() - function reference is improperly initialized (null)");
-
-		// @SuppressWarnings("unchecked")
-		final Image[] inputImages = new Image[inputs.size()];
-
-		for (int i = 0; i < inputImages.length; i++) {
-			inputImages[i] = imageFromDataset(inputs.get(i));
+		if (function == null) {
+			throw new NullPointerException("function reference is null");
 		}
 
-		final Image outputImage;
-		if (output != null) outputImage = imageFromDataset(output);
-		else outputImage = zeroDataImageWithSameAttributes(inputImages[0]);
-		// TODO - must be given at least one input image or prev line will throw
-		// null ptr exception
+		final List<Img<T>> inputImages = new ArrayList<Img<T>>();
 
-		final AssignOperation operation =
-			new AssignOperation(inputImages, outputImage, function);
+		for (int i = 0; i < inputs.size(); i++) {
+			final Dataset dataset = inputs.get(i);
+
+			@SuppressWarnings("unchecked")
+			final ImgPlus<T> typedImg = (ImgPlus<T>) dataset.getImage();
+			inputImages.add(typedImg);
+		}
+
+		// TODO - must be given at least one input image or next line will fail
+		if (output == null) output = inputs.get(0).duplicateBlank();
+
+		@SuppressWarnings("unchecked")
+		final ImgPlus<T> outputImage = (ImgPlus<T>) output.getImage();
+
+		final AssignOperation<T> operation =
+			new AssignOperation<T>(inputImages, outputImage, function);
 
 		operation.setOutputRegion(outputOrigin, outputSpan);
-		for (int i = 0; i < inputImages.length; i++)
+		for (int i = 0; i < inputImages.size(); i++) {
 			operation.setInputRegion(i, inputOrigins[i], inputSpans[i]);
-		
+		}
+
 		operation.execute();
 
-		if (output != null) return output;
-		else return datasetFromImage(outputImage);
+		return output;
 	}
 
 	// -- private interface --
 
-	/** make an image that has same type and dimensions as Dataset */
-	private Image imageFromDataset(Dataset dataset) {
-		// @SuppressWarnings("unchecked")
-		return dataset.getImage();
-	}
-
-	/** make an image that has same type, container, and dimensions as refImage */
-	private Image zeroDataImageWithSameAttributes(Image refImage) {
-		return refImage.createNewImage(refImage.getDimensions());
-	}
-
-	/** make a Dataset from an Image */
-	private Dataset datasetFromImage(Image image) {
-		return new Dataset(image);
-	}
-
-	/** sets up subregion variables to default values */
-	private void initializeSubregionVariables()
-	{
-		int numInputs = inputs.size();
-		outputOrigin = new int[inputs.get(0).getImage().getNumDimensions()];
-		outputSpan = inputs.get(0).getImage().getDimensions();
-		inputOrigins = new int[numInputs][];
-		inputSpans = new int[numInputs][];
-		for (int i = 0; i < numInputs; i++)
-		{
-			Image<?> image = inputs.get(i).getImage();
-			inputOrigins[i] = new int[image.getNumDimensions()];
-			inputSpans[i] = image.getDimensions();
+	/** Sets up subregion variables to default values. */
+	private void initializeSubregionVariables() {
+		ImgPlus<? extends RealType<?>> image = inputs.get(0).getImage();
+		outputOrigin = new long[image.numDimensions()];
+		outputSpan = new long[image.numDimensions()];
+		image.dimensions(outputSpan);
+		final int numInputs = inputs.size();
+		inputOrigins = new long[numInputs][];
+		inputSpans = new long[numInputs][];
+		for (int i = 0; i < numInputs; i++) {
+			image = inputs.get(i).getImage();
+			inputOrigins[i] = new long[image.numDimensions()];
+			inputSpans[i] = new long[image.numDimensions()];
+			image.dimensions(inputSpans[i]);
 		}
 	}
+
 }

@@ -34,10 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.imglib;
 
-import mpicbg.imglib.image.Image;
-import imagej.data.AxisLabel;
 import imagej.data.Dataset;
-import imagej.data.Metadata;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -53,7 +50,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Duplicate...", accelerator="shift control D")})
 public class DuplicateImage implements ImageJPlugin {
 
-	// -- instance variables that are Parameters --
+	// -- Plugin parameters --
 
 	@Parameter
 	private Dataset input;
@@ -61,19 +58,17 @@ public class DuplicateImage implements ImageJPlugin {
 	@Parameter(output = true)
 	private Dataset output;
 
-	@Parameter(label="Output filename")
-	private String outputFilename;
+	// -- DuplicateImage methods --
 
-	// TODO - make a parameter field called file extension with predefined choices?
-	
-	// -- public interface --
+	public Dataset getOutput() {
+		return output;
+	}
+
+	// -- RunnablePlugin methods --
 
 	@Override
 	public void run() {
-		Image<?> image = input.getImage().clone();
-		Metadata metadata = new Metadata();
-		metadata.copyFrom(input.getMetadata());
-		metadata.setName(outputFilename);
-		output = new Dataset(image, metadata);
+		output = input.duplicate();
 	}
+	
 }

@@ -16,7 +16,7 @@ public interface Neighborhood3x3Watcher {
 	 * called once each time a neighborhood is visited for the first time to
 	 * allow implementer to initialize local neighborhood state
 	 */
-	void initializeNeighborhood(int[] position);
+	void initializeNeighborhood(long[] position);
 
 	/**
 	 * called 9 times (3x3), once for each value at a location so implementer

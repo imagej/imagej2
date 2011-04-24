@@ -35,21 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import imagej.data.Dataset;
-import imagej.data.Metadata;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImagePlusAdapter;
-import mpicbg.imglib.image.display.imagej.ImageJFunctions;
-
+import imagej.util.Dimensions;
+import imagej.util.Index;
+import imagej.util.Log;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 
 /**
- * Translates between legacy and modern ImageJ image structures for
- * non-RGB data.
- *
+ * Translates between legacy and modern ImageJ image structures for non-RGB
+ * data.
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
@@ -57,33 +54,118 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
-		// HACK - avoid ImagePlusAdapter.wrap method's use of generics
-		final Image<?> img;
-		try {
-			final Method m =
-				ImagePlusAdapter.class.getMethod("wrap", ImagePlus.class);
-			img = (Image<?>) m.invoke(null, imp);
+		final int w = imp.getWidth();
+		final int h = imp.getHeight();
+		final int c = imp.getNChannels();
+		final int z = imp.getNSlices();
+		final int t = imp.getNFrames();
+		final long[] dims = new long[] { w, h, c, z, t };
+		final String name = imp.getTitle();
+		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		final int bitsPerPixel = imp.getBitDepth();
+		final boolean signed = isSigned(imp);
+		final boolean floating = isFloating(imp);
+		final Dataset dataset =
+			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+
+		// copy planes by reference
+		final long planeCount = Dimensions.getTotalPlanes(dataset.getDims());
+		for (int p = 0; p < planeCount; p++) {
+			final Object plane = imp.getStack().getPixels(p + 1);
+			if (plane == null) {
+				Log.error("Could not extract plane from ImageStack: " + p);
+			}
+			dataset.setPlane(p, plane);
 		}
-		catch (final NoSuchMethodException exc) {
-			return null;
-		}
-		catch (final IllegalArgumentException e) {
-			return null;
-		}
-		catch (final IllegalAccessException e) {
-			return null;
-		}
-		catch (final InvocationTargetException e) {
-			return null;
-		}
-		final Metadata metadata = LegacyMetadata.create(imp);
-		final Dataset dataset = new Dataset(img, metadata);
+
 		return dataset;
 	}
 
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		return ImageJFunctions.displayAsVirtualStack(dataset.getImage());
+		final long[] dims = dataset.getDims();
+
+		// check width
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		if (xIndex != 0) {
+			throw new IllegalArgumentException("Expected X as dimension #0");
+		}
+		final long width = dims[xIndex];
+		if (width > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Width out of range: " + width);
+		}
+		final int w = (int) width;
+
+		// check height
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		if (yIndex != 1) {
+			throw new IllegalArgumentException("Expected Y as dimension #1");
+		}
+		final long height = dims[yIndex];
+		if (height > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Height out of range: " + height);
+		}
+		final int h = (int) height;
+
+		// check channels, slices and frames
+		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = dataset.getAxisIndex(Axes.Z);
+		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
+		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
+		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(message("Too many planes", cCount,
+				zCount, tCount));
+		}
+
+		final ImageStack stack = new ImageStack(w, h);
+
+		final long[] planeDims = new long[dims.length - 2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = dims[i + 2];
+		final long[] planePos = new long[planeDims.length];
+
+		for (long t = 0; t < tCount; t++) {
+			if (tIndex >= 0) planePos[tIndex - 2] = t;
+			for (long z = 0; z < zCount; z++) {
+				if (zIndex >= 0) planePos[zIndex - 2] = z;
+				for (long c = 0; c < cCount; c++) {
+					if (cIndex >= 0) planePos[cIndex - 2] = c;
+					final long no = Index.indexNDto1D(planeDims, planePos);
+					if (no > Integer.MAX_VALUE) {
+						throw new IllegalArgumentException(message("Plane out of range",
+							c, z, t) +
+							", no=" + no);
+					}
+					final Object plane = dataset.getPlane((int) no);
+					if (plane == null) {
+						Log.error(message("Could not extract plane from Dataset", c, z, t));
+					}
+					stack.addSlice(null, plane);
+				}
+			}
+		}
+
+		return new ImagePlus(dataset.getName(), stack);
+	}
+
+	// -- Helper methods --
+
+	private boolean isSigned(final ImagePlus imp) {
+		final int type = imp.getType();
+		return type == ImagePlus.GRAY32;
+	}
+
+	private boolean isFloating(final ImagePlus imp) {
+		final int type = imp.getType();
+		return type == ImagePlus.GRAY16;
+	}
+
+	private String message(final String message, final long c, final long z,
+		final long t)
+	{
+		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
 }

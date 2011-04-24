@@ -35,14 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Abs;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.Abs;
 
 /**
  * Fills an output Dataset by applying the absolute value function to an input
@@ -68,6 +66,6 @@ public class AbsDataValues implements ImageJPlugin {
 		UnaryOperator op = new Abs();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 }

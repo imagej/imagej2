@@ -41,11 +41,16 @@ import imagej.util.Span;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link Span}.
+ * 
+ * @author Barry DeZonia
+ */
 public class SpanTest {
 
 	@Test
 	public void testCreateInt() {
-		int[] vals;
+		long[] vals;
 		
 		try {
 			vals = Span.create(-1);
@@ -55,38 +60,38 @@ public class SpanTest {
 		}
 
 		vals = Span.create(0);
-		assertArrayEquals(new int[]{},vals);
+		assertArrayEquals(new long[]{},vals);
 		
 		vals = Span.create(1);
-		assertArrayEquals(new int[]{0},vals);
+		assertArrayEquals(new long[]{0},vals);
 		
 		vals = Span.create(2);
-		assertArrayEquals(new int[]{0,0},vals);
+		assertArrayEquals(new long[]{0,0},vals);
 		
 		vals = Span.create(3);
-		assertArrayEquals(new int[]{0,0,0},vals);
+		assertArrayEquals(new long[]{0,0,0},vals);
 	}
 
 	@Test
 	public void testCreateIntArray() {
-		int[] vals;
+		long[] vals;
 		
-		vals = Span.create(new int[]{});
-		assertArrayEquals(new int[]{},vals);
+		vals = Span.create(new long[]{});
+		assertArrayEquals(new long[]{},vals);
 		
-		vals = Span.create(new int[]{4});
-		assertArrayEquals(new int[]{4},vals);
+		vals = Span.create(new long[]{4});
+		assertArrayEquals(new long[]{4},vals);
 		
-		vals = Span.create(new int[]{1,7});
-		assertArrayEquals(new int[]{1,7},vals);
+		vals = Span.create(new long[]{1,7});
+		assertArrayEquals(new long[]{1,7},vals);
 		
-		vals = Span.create(new int[]{1,2,3,4,5,6,7,8,9});
-		assertArrayEquals(new int[]{1,2,3,4,5,6,7,8,9},vals);
+		vals = Span.create(new long[]{1,2,3,4,5,6,7,8,9});
+		assertArrayEquals(new long[]{1,2,3,4,5,6,7,8,9},vals);
 	}
 
 	@Test
 	public void testSinglePlane() {
-		int[] vals;
+		long[] vals;
 		
 		int width, height, totalDims;
 		
@@ -125,23 +130,23 @@ public class SpanTest {
 		
 		width = 19; height = 5005; totalDims = 2;
 		vals = Span.singlePlane(width, height, totalDims);
-		assertArrayEquals(new int[]{19,5005},vals);
+		assertArrayEquals(new long[]{19,5005},vals);
 		
 		width = 86; height = 161; totalDims = 3;
 		vals = Span.singlePlane(width, height, totalDims);
-		assertArrayEquals(new int[]{86,161,1},vals);
+		assertArrayEquals(new long[]{86,161,1},vals);
 		
 		width = 658; height = 476; totalDims = 6;
 		vals = Span.singlePlane(width, height, totalDims);
-		assertArrayEquals(new int[]{658,476,1,1,1,1},vals);
+		assertArrayEquals(new long[]{658,476,1,1,1,1},vals);
 	}
 	
 	@Test
 	public void testSpanWholeRange()
 	{
-		int[] inputDims = new int[]{1,2,3,4,5,6,7,8,9};
+		long[] inputDims = new long[]{1,2,3,4,5,6,7,8,9};
 		
-		assertArrayEquals(new int[]{1,2,3,4,5,6,7,8,9}, Span.wholeRange(inputDims));
+		assertArrayEquals(new long[]{1,2,3,4,5,6,7,8,9}, Span.wholeRange(inputDims));
 	}
 
 }

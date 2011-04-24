@@ -60,7 +60,7 @@ public interface Display extends BasePlugin {
 
 	Object getCurrentPlane();
 
-	int[] getCurrentPlanePosition();
+	long[] getCurrentPlanePosition();
 	
 	// -- Pan methods -- x's & y's in canvas coord space
 

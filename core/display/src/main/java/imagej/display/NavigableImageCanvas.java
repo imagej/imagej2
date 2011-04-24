@@ -174,7 +174,7 @@ public interface NavigableImageCanvas extends ImageCanvas {
 	/**
 	 * Sets a new zooming scale factor value.
 	 * 
-	 * @param newZoomFactor new zoom factor value
+	 * @param newZoomMultiplier new zoom factor value
 	 */
 	void setZoomMultiplier(double newZoomMultiplier);
 

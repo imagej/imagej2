@@ -18,19 +18,19 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${imglib1.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib1.version}</version>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib1.groupId}</groupId>
-			<artifactId>imglib-io</artifactId>
-			<version>${imglib1.version}</version>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-io</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib1.groupId}</groupId>
-			<artifactId>imglib-ops</artifactId>
-			<version>${imglib1.version}</version>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-ops</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
