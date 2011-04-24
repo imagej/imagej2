@@ -24,7 +24,7 @@
 		<module>data</module>
 		<module>display</module>
 		<module>event</module>
-		<!-- <module>legacy</module> -->
+		<module>legacy</module>
 		<module>module</module>
 		<module>object</module>
 		<module>platform</module>
