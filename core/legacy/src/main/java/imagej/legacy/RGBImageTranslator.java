@@ -38,19 +38,21 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
-import imagej.data.Metadata;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Translates between legacy and modern ImageJ image structures for RGB data.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public class RGBImageTranslator implements ImageTranslator {
 
 	/**
-	 * Expects input {@link ImagePlus} to be of type COLOR_RGB with one channel.
+	 * Expects input {@link ImagePlus} to be of type {@link ImagePlus#COLOR_RGB}
+	 * with one channel.
 	 */
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
@@ -61,7 +63,7 @@ public class RGBImageTranslator implements ImageTranslator {
 
 		if (imp.getNChannels() != 1) {
 			throw new IllegalArgumentException(
-				"expected color image to have a single channel of argb data");
+				"expected color image to have a single channel of ARGB data");
 		}
 
 		final int w = imp.getWidth();
@@ -70,15 +72,12 @@ public class RGBImageTranslator implements ImageTranslator {
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
 
-		final int[] imageDims = new int[] { w, h, c, z, t };
+		final long[] imageDims = new long[] { w, h, c, z, t };
 
-		final Image<UnsignedByteType> image =
-			Dataset.createPlanarImage(imp.getTitle(), new UnsignedByteType(),
-				imageDims);
-
-		final Metadata metadata = LegacyMetadata.create(imp);
-
-		final Dataset dataset = new Dataset(image, metadata);
+		final String name = imp.getTitle();
+		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		final Dataset dataset =
+			Dataset.create(new UnsignedByteType(), imageDims, name, axes);
 
 		final int totPixels = w * h;
 
@@ -108,25 +107,51 @@ public class RGBImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		if (!dataset.isRgbMerged()) throw new IllegalArgumentException(
-			"a merged dataset is required for this operation");
+		if (!dataset.isRgbMerged()) {
+			throw new IllegalArgumentException(
+				"A merged dataset is required for this operation");
+		}
 
-		if (dataset.getImage().getDimension(2) != 3) {
-			throw new IllegalArgumentException("expected dataset to have "
+		final long[] dims = dataset.getDims();
+		if (dims.length != 5) {
+			throw new IllegalArgumentException(
+				"Expected dataset to have 5 dimensions");
+		}
+
+		// check width
+		final long width = dims[0];
+		if (width > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Width out of range: " + width);
+		}
+		final int w = (int) width;
+
+		// check height
+		final long height = dims[1];
+		if (height > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Height out of range: " + height);
+		}
+		final int h = (int) height;
+
+		// check channels
+		final long c = dims[2];
+		if (c != 3) {
+			throw new IllegalArgumentException("Expected dataset to have "
 				+ "channel dimension be the 3rd dimension with value of 3");
 		}
 
-		final int w = dataset.getImage().getDimension(0);
-		final int h = dataset.getImage().getDimension(1);
-		// c == 3 is already known
-		final int z = dataset.getImage().getDimension(3);
-		final int t = dataset.getImage().getDimension(4);
+		// check slices and frames
+		final long z = dims[3];
+		final long t = dims[4];
+		if (c * z * t > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Too many planes: z=" + z + ", t=" +
+				t);
+		}
 
 		final ImageStack stack = new ImageStack(w, h);
 
 		int planeIndex = 0;
-		for (int tIndex = 0; tIndex < t; tIndex++) {
-			for (int zIndex = 0; zIndex < z; zIndex++) {
+		for (long tIndex = 0; tIndex < t; tIndex++) {
+			for (long zIndex = 0; zIndex < z; zIndex++) {
 				final byte[] rValues = (byte[]) dataset.getPlane(planeIndex + 0);
 				final byte[] gValues = (byte[]) dataset.getPlane(planeIndex + 1);
 				final byte[] bValues = (byte[]) dataset.getPlane(planeIndex + 2);
@@ -137,7 +162,7 @@ public class RGBImageTranslator implements ImageTranslator {
 			}
 		}
 
-		return new ImagePlus(dataset.getMetadata().getName(), stack);
+		return new ImagePlus(dataset.getName(), stack);
 	}
 
 }

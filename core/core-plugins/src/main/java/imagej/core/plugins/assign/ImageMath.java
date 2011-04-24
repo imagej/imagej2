@@ -39,28 +39,24 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.function.p2.BinaryOperatorFunction;
-import imglib.ops.operator.BinaryOperator;
-import imglib.ops.operator.binary.Add;
-import imglib.ops.operator.binary.And;
-import imglib.ops.operator.binary.Average;
-import imglib.ops.operator.binary.Copy;
-import imglib.ops.operator.binary.CopyTransparentZero;
-import imglib.ops.operator.binary.Difference;
-import imglib.ops.operator.binary.Divide;
-import imglib.ops.operator.binary.Max;
-import imglib.ops.operator.binary.Min;
-import imglib.ops.operator.binary.Multiply;
-import imglib.ops.operator.binary.Or;
-import imglib.ops.operator.binary.Subtract;
-import imglib.ops.operator.binary.Xor;
+import net.imglib2.ops.function.p2.BinaryOperatorFunction;
+import net.imglib2.ops.operator.BinaryOperator;
+import net.imglib2.ops.operator.binary.Add;
+import net.imglib2.ops.operator.binary.And;
+import net.imglib2.ops.operator.binary.Average;
+import net.imglib2.ops.operator.binary.Copy;
+import net.imglib2.ops.operator.binary.CopyTransparentZero;
+import net.imglib2.ops.operator.binary.Difference;
+import net.imglib2.ops.operator.binary.Divide;
+import net.imglib2.ops.operator.binary.Max;
+import net.imglib2.ops.operator.binary.Min;
+import net.imglib2.ops.operator.binary.Multiply;
+import net.imglib2.ops.operator.binary.Or;
+import net.imglib2.ops.operator.binary.Subtract;
+import net.imglib2.ops.operator.binary.Xor;
 
 import java.util.Arrays;
 import java.util.HashMap;
-
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 
 // NOTE - attempted to use the ImageCalculator in Imglib using
 // ImglibOutputAlgorithmRunner but could not solve compiler errors and
@@ -130,9 +126,11 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		int[] img1Dims = input1.getImage().getDimensions();
+		long[] img1Dims = new long[input1.getImage().numDimensions()];
+		input1.getImage().dimensions(img1Dims);
 
-		int[] img2Dims = input2.getImage().getDimensions();
+		long[] img2Dims = new long[input2.getImage().numDimensions()];
+		input2.getImage().dimensions(img2Dims);
 
 		if (!Arrays.equals(img1Dims, img2Dims)) throw new IllegalArgumentException(
 			"ImageMath requires the two input images to have the same dimensions");
@@ -152,9 +150,9 @@ public class ImageMath implements ImageJPlugin {
 
 /*
  * 
- * import mpicbg.imglib.algorithm.OutputAlgorithm; import
- * mpicbg.imglib.algorithm.math.ImageCalculator; import
- * mpicbg.imglib.function.Function; import mpicbg.imglib.type.numeric.RealType;
+ * import net.imglib2.algorithm.OutputAlgorithm; import
+ * net.imglib2.algorithm.math.ImageCalculator; import
+ * net.imglib2.function.Function; import net.imglib2.type.numeric.RealType;
  * 
  * public class ImageMath extends ImglibOutputAlgorithmPlugin {
  * 

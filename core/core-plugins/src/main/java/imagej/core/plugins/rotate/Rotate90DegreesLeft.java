@@ -37,8 +37,6 @@ package imagej.core.plugins.rotate;
 import imagej.core.plugins.imglib.ImglibDataTransform;
 import imagej.core.plugins.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -76,18 +74,22 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 	// -- private interface --
 
 	private class NinetyLeftTransformer implements FlipCoordinateTransformer {
+		
+		public NinetyLeftTransformer(){
+			// nothing to do
+		}
 
 		@Override
-		public void calcOutputPosition(int[] inputDimensions, int[] inputPosition,
-			int[] outputPosition)
+		public void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
+			long[] outputPosition)
 		{
 			outputPosition[1] = inputDimensions[0] - inputPosition[0] - 1;
 			outputPosition[0] = inputPosition[1];
 		}
 
 		@Override
-		public int[] calcOutputDimensions(int[] inputDimensions) {
-			int[] outputDims = inputDimensions.clone();
+		public long[] calcOutputDimensions(long[] inputDimensions) {
+			long[] outputDims = inputDimensions.clone();
 
 			outputDims[0] = inputDimensions[1];
 			outputDims[1] = inputDimensions[0];

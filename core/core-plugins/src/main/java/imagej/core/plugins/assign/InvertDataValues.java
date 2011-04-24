@@ -35,16 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.Invert;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.Cursor;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.Invert;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset by applying an inversion to an input Dataset's data
@@ -77,7 +75,7 @@ public class InvertDataValues implements ImageJPlugin {
 		UnaryOperator op = new Invert(min, max);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 
 	// -- private interface --
@@ -90,8 +88,7 @@ public class InvertDataValues implements ImageJPlugin {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) (input.getImage().createCursor());
+		Cursor<? extends RealType<?>> cursor = input.getImage().cursor();
 
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
@@ -99,8 +96,6 @@ public class InvertDataValues implements ImageJPlugin {
 			if (value < min) min = value;
 			if (value > max) max = value;
 		}
-
-		cursor.close();
 	}
 
 }

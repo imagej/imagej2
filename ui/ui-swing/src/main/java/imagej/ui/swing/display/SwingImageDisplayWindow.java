@@ -36,7 +36,6 @@ package imagej.ui.swing.display;
 
 import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTImageDisplayWindow;
-import imagej.data.AxisLabel;
 import imagej.display.DisplayController;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
@@ -61,6 +60,8 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -70,8 +71,8 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingImageDisplayWindow extends JFrame implements
-	AWTImageDisplayWindow
+public class SwingImageDisplayWindow extends JFrame
+	implements AWTImageDisplayWindow
 {
 
 	// TODO - Rework this class to be a JPanel, not a JFrame.
@@ -115,8 +116,8 @@ public class SwingImageDisplayWindow extends JFrame implements
 	@Override
 	public void setDisplayController(final DisplayController controller) {
 		this.controller = controller;
-		final int[] dims = controller.getDims();
-		final AxisLabel[] dimLabels = controller.getDimLabels();
+		final long[] dims = controller.getDims();
+		final Axis[] dimLabels = controller.getDimLabels();
 		createSliders(dims, dimLabels);
 		sliders.setVisible(dims.length > 2);
 	}
@@ -130,17 +131,22 @@ public class SwingImageDisplayWindow extends JFrame implements
 		return imgCanvas;
 	}
 
-	private void createSliders(final int[] dims, final AxisLabel[] dimLabels) {
+	private void createSliders(final long[] dims, final Axis[] dimLabels) {
 		sliders.removeAll();
 		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (AxisLabel.isXY(dimLabels[i])) continue;
+			if (Axes.isXY(dimLabels[i])) continue;
 			p++;
 			if (dims[i] == 1) continue;
 
 			final JLabel label = new JLabel(dimLabels[i].toString());
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
+			final long max = dims[i] + 1;
+			if (max < 1 || max > Integer.MAX_VALUE) {
+				throw new IllegalArgumentException("Dimension #" + i +
+					" out of range: " + max);
+			}
 			final JScrollBar slider =
-				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, dims[i] + 1);
+				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
 			final int posIndex = p;
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
@@ -177,19 +183,6 @@ public class SwingImageDisplayWindow extends JFrame implements
 	private void setupEventSubscriptions() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		/*
-		EventSubscriber<MsClickedEvent> msClickSubscriber = 
-			new EventSubscriber<MsClickedEvent>() {
-				@Override
-				public void onEvent(MsClickedEvent event) {
-					Managers.get(UIManager.class).getUI().setActiveDisplay(event.getDisplay());
-					Log.debug("**** mouse clicked in display ****");
-				}
-			};
-		subscribers.add(msClickSubscriber);
-		Events.subscribe(MsClickedEvent.class, msClickSubscriber);
-		*/
-
 		final EventSubscriber<ZoomEvent> zoomSubscriber =
 			new EventSubscriber<ZoomEvent>() {
 
@@ -198,7 +191,7 @@ public class SwingImageDisplayWindow extends JFrame implements
 					if (event.getCanvas() != imgCanvas) return;
 					String datasetName = "";
 					if (controller != null) {
-						datasetName = controller.getDataset().getMetadata().getName();
+						datasetName = controller.getDataset().getName();
 					}
 					final double zoom = event.getNewZoom();
 					if (zoom == 1.0) // exactly

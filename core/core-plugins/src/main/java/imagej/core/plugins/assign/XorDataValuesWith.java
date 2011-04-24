@@ -35,14 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imglib.ops.operator.UnaryOperator;
-import imglib.ops.operator.unary.XorConstant;
+import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.XorConstant;
 
 /**
  * Fills an output Dataset by XORing an input Dataset with a user defined
@@ -74,6 +72,6 @@ public class XorDataValuesWith implements ImageJPlugin {
 		UnaryOperator op = new XorConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		Events.publish(new DatasetChangedEvent(input));
+		input.update();
 	}
 }

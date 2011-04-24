@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.data.AxisLabel;
 import imagej.data.Dataset;
+import net.imglib2.img.Axis;
 
 /**
  * TODO
@@ -47,11 +47,11 @@ public interface DisplayController {
 
 	Object getCurrentPlane();
 
-	AxisLabel[] getDimLabels();
+	Axis[] getDimLabels();
 
-	int[] getDims();
+	long[] getDims();
 
-	int[] getPos();
+	long[] getPos();
 
 	Dataset getDataset();
 	

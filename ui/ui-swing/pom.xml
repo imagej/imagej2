@@ -18,9 +18,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${imglib1.groupId}</groupId>
-			<artifactId>imglib</artifactId>
-			<version>${imglib1.version}</version>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -82,6 +82,19 @@
 			<artifactId>miglayout</artifactId>
 			<version>3.7.3.1</version>
 			<classifier>swing</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-io</artifactId>
+			<version>${imglib2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>loci</groupId>
+			<artifactId>loci-common</artifactId>
+			<version>${bio-formats.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

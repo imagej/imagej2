@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import mpicbg.imglib.cursor.LocalizableByDimCursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.MouseCursor;
@@ -47,26 +44,32 @@ import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 import imagej.util.RealCoords;
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 
 /**
+ * TODO
+ * 
  * @author Barry DeZonia
  * @author Rick Lentz
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 @Tool(name = "Probe", iconPath = "/tools/probe.png",
 	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
 public class ProbeTool extends BaseTool {
 
 	// -- constants --
-	
+
 	public static final int PRIORITY = 204;
 
 	// -- private instance variables --
-	
-	private Dataset currentDataset;
-	private LocalizableByDimCursor<? extends RealType<?>> currentCursor;
-	private int[] currentPosition;
-	
+
+	private Dataset dataset;
+	private RandomAccess<? extends RealType<?>> randomAccess;
+	private long[] position;
+
 	// -- ITool methods --
 
 	@Override
@@ -75,26 +78,28 @@ public class ProbeTool extends BaseTool {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		final RealCoords mousePos = new RealCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
-		if ( ! canvas.isInImage(mousePos) ) {
+		if (!canvas.isInImage(mousePos)) {
 			clearWorkingVariables();
 			Events.publish(new StatusEvent(""));
 		}
-		else {  // mouse is over image
+		else { // mouse is over image
 			setWorkingVariables(display.getDataset());
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
-			final int[] currPlanePos = display.getCurrentPlanePosition();
+			final long[] currPlanePos = display.getCurrentPlanePosition();
 			fillCurrentPosition(cx, cy, currPlanePos);
-			currentCursor.setPosition(currentPosition);
-			final double doubleValue = currentCursor.getType().getRealDouble();
-			String statusMessage;
-			if (currentDataset.isFloat())
+			randomAccess.setPosition(position);
+			final double doubleValue = randomAccess.get().getRealDouble();
+			final String statusMessage;
+			if (dataset.isInteger()) {
+				statusMessage =
+					String.format("x=%d, y=%d, value=%d", cx, cy, (long) doubleValue);
+			}
+			else {
 				statusMessage =
 					String.format("x=%d, y=%d, value=%f", cx, cy, doubleValue);
-			else
-				statusMessage =
-					String.format("x=%d, y=%d, value=%d", cx, cy, (long)doubleValue);
+			}
 			Events.publish(new StatusEvent(statusMessage));
 		}
 	}
@@ -105,42 +110,43 @@ public class ProbeTool extends BaseTool {
 	}
 
 	// -- private interface --
-	
+
 	// TODO - If someone positions the probe over an image and then they close
-	//   the image via any means other than using the mouse then this method
-	//   will not get called. This leaves a cursor open and thus an Image
-	//   reference may be kept around. This could keep some memory from freeing
-	//   up. Test and if so figure out a workaround. Maybe it could subscribe
-	//   to an event that is fired when images are closed. That event handler
-	//   could just call this method. (Note that this might be a case to not
-	//   worry about. If the Probe is moved after the image close it should
-	//   clean up unless there are no displays open at all).
+	// the image via any means other than using the mouse then this method
+	// will not get called. This leaves a cursor open and thus an Image
+	// reference may be kept around. This could keep some memory from freeing
+	// up. Test and if so figure out a workaround. Maybe it could subscribe
+	// to an event that is fired when images are closed. That event handler
+	// could just call this method. (Note that this might be a case to not
+	// worry about. If the Probe is moved after the image close it should
+	// clean up unless there are no displays open at all).
 
 	private void clearWorkingVariables() {
-		currentPosition = null;
-		if (currentCursor != null) {
-			currentCursor.close();
-			currentCursor = null;
-		}
-		currentDataset = null;
+		position = null;
+		randomAccess = null;
+		dataset = null;
 	}
-	
-	private void setWorkingVariables(Dataset dataset) {
-		if (dataset != currentDataset) {
+
+	private void setWorkingVariables(final Dataset d) {
+		if (d != dataset) {
 			clearWorkingVariables();
-			currentDataset = dataset;
-			final Image<? extends RealType<?>> image =
-				(Image<? extends RealType<?>>) dataset.getImage();
-			currentCursor = image.createLocalizableByDimCursor();
-			currentPosition = currentCursor.createPositionArray();
+			dataset = d;
+			final Img<? extends RealType<?>> image = d.getImage();
+			randomAccess = image.randomAccess();
+			position = new long[image.numDimensions()];
+			randomAccess.localize(position);
 		}
 	}
-	
-	private void fillCurrentPosition(int x, int y, int[] planePos) {
+
+	private void fillCurrentPosition(final long x, final long y,
+		final long[] planePos)
+	{
 		// TODO - FIXME - assumes x & y axes are first two
-		currentPosition[0] = x;
-		currentPosition[1] = y;
-		for (int i = 2; i < currentPosition.length; i++)
-			currentPosition[i] = planePos[i-2];
+		position[0] = x;
+		position[1] = y;
+		for (int i = 2; i < position.length; i++) {
+			position[i] = planePos[i - 2];
+		}
 	}
+
 }

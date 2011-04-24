@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import mpicbg.imglib.type.numeric.integer.LongType;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import net.imglib2.type.numeric.integer.LongType;
 
 
 /** changes an input Dataset's underlying imglib data to be of
@@ -65,8 +63,8 @@ public class ChangeToINT64 implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-		DatasetTypeChanger.changeType(input, new LongType());
-		Events.publish(new DatasetChangedEvent(input));
+		TypeChanger.changeType(input, new LongType());
+		input.update();
 	}
 
 }

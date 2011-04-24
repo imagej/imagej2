@@ -35,17 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
-import imagej.event.Events;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import mpicbg.imglib.algorithm.OutputAlgorithm;
-import mpicbg.imglib.cursor.Cursor;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.real.FloatType;
+import net.imglib2.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Fills an output Dataset with the values of an input Dataset. All the values
@@ -73,22 +69,20 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 		"TODO - should use current threshold - for now ask - High threshold")
 	private double hiThreshold;
 
-	private Image<?> inputImage;
+	private Img<? extends RealType<?>> inputImage;
 	
 	// -- public interface --
 
-	/** runs this plugin */
 	@Override
 	public void run() {
-		if (input.isFloat()) {
-			checkInput();
-			setupWorkingData();
-			assignPixels();
-			cleanup();
-			Events.publish(new DatasetChangedEvent(input));
-		}
+		if (input.isInteger()) return; // FIXME: show error message
+		checkInput();
+		setupWorkingData();
+		assignPixels();
+		cleanup();
+		input.update();
 	}
-	
+
 	// -- private interface --
 
 	private void checkInput() {
@@ -108,21 +102,19 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	}
 	
 	private void assignPixels() {
-		Cursor<? extends RealType<?>> cursor =
-			(Cursor<? extends RealType<?>>) inputImage.createCursor();
+		Cursor<? extends RealType<?>> cursor = inputImage.cursor();
 
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			
-			double inputValue = cursor.getType().getRealDouble();
+			double inputValue = cursor.get().getRealDouble();
 
 			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-				cursor.getType().setReal(Double.NaN);
+				cursor.get().setReal(Double.NaN);
 		}
-
-		cursor.close();
 	}
 	
 	private void cleanup() {
+		// nothing to do
 	}
 }

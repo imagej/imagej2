@@ -42,15 +42,16 @@ import imagej.plugin.Plugin;
 import imagej.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 
-import loci.formats.FormatException;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.io.ImageOpener;
-import mpicbg.imglib.type.numeric.RealType;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.io.ImgIOException;
+import net.imglib2.io.ImgOpener;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * Opens the selected file as a {@link Dataset}.
  * 
  * @author Curtis Rueden
  */
@@ -59,7 +60,9 @@ import mpicbg.imglib.type.numeric.RealType;
 	@Menu(label = "Import", mnemonic = 'i', weight = 2),
 	@Menu(label = "Bio-Formats...", mnemonic = 'b',
 		accelerator = "control shift O") })
-public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
+public class OpenImage<T extends RealType<T> & NativeType<T>>
+	implements ImageJPlugin
+{
 
 	@Parameter(label = "File to open")
 	private File inputFile;
@@ -72,15 +75,15 @@ public class OpenImage<T extends RealType<T>> implements ImageJPlugin {
 		final String id = inputFile.getAbsolutePath();
 
 		// open image
-		final ImageOpener imageOpener = new ImageOpener();
+		final ImgOpener imageOpener = new ImgOpener();
 		try {
-			final Image<T> img = imageOpener.openImage(id);
+			final ImgPlus<T> img = imageOpener.openImg(id);
 			dataset = new Dataset(img);
 		}
-		catch (FormatException e) {
+		catch (final ImgIOException e) {
 			Log.error(e);
 		}
-		catch (IOException e) {
+		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
 	}
