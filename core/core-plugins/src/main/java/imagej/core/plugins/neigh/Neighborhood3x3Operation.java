@@ -125,7 +125,7 @@ public class Neighborhood3x3Operation {
 		inputImage.dimensions(imageDims);
 		
 		if (selection.width == 0)
-			selection.height = (int) imageDims[0];
+			selection.width = (int) imageDims[0];
 
 		if (selection.height == 0)
 			selection.height = (int) imageDims[1];
