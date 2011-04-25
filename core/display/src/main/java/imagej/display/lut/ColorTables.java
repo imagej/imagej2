@@ -36,6 +36,8 @@ package imagej.display.lut;
 
 import java.awt.Color;
 
+import net.imglib2.display.ColorTable8;
+
 /**
  * Built-in lookup tables.
  * 

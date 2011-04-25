@@ -42,6 +42,7 @@ import imagej.util.Log;
 import imagej.util.Rect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
@@ -223,8 +224,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	public String getTypeLabel() {
 		if (isRgbMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category = isInteger() ?
-			isSigned() ? "signed" : "unsigned" : "real";
+		final String category =
+			isInteger() ? isSigned() ? "signed" : "unsigned" : "real";
 		return bitsPerPixel + "-bit (" + category + ")";
 	}
 
@@ -259,7 +260,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	/** Informs interested parties that the dataset has changed somehow. */
-	public void update() {		
+	public void update() {
 		Events.publish(new DatasetChangedEvent(this));
 	}
 
@@ -291,10 +292,15 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	@Override
+	public void setName(final String name) {
+		imgPlus.setName(name);
+	}
+
+	@Override
 	public int getAxisIndex(final Axis axis) {
 		return imgPlus.getAxisIndex(axis);
 	}
-	
+
 	@Override
 	public Axis axis(final int d) {
 		return imgPlus.axis(d);
@@ -306,6 +312,11 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	@Override
+	public void setAxis(final Axis axis, final int d) {
+		imgPlus.setAxis(axis, d);
+	}
+
+	@Override
 	public double calibration(final int d) {
 		return imgPlus.calibration(d);
 	}
@@ -313,6 +324,46 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	@Override
 	public void calibration(final double[] cal) {
 		imgPlus.calibration(cal);
+	}
+
+	@Override
+	public void setCalibration(final double cal, final int d) {
+		imgPlus.setCalibration(cal, d);
+	}
+
+	@Override
+	public int getValidBits() {
+		return imgPlus.getValidBits();
+	}
+
+	@Override
+	public void setValidBits(final int bits) {
+		imgPlus.setValidBits(bits);
+	}
+
+	@Override
+	public int getCompositeChannelCount() {
+		return imgPlus.getCompositeChannelCount();
+	}
+
+	@Override
+	public void setCompositeChannelCount(final int count) {
+		imgPlus.setCompositeChannelCount(count);
+	}
+
+	@Override
+	public ColorTable8 getColorTable8(final int no) {
+		return imgPlus.getColorTable8(no);
+	}
+
+	@Override
+	public void setColorTable(final ColorTable8 lut, final int no) {
+		imgPlus.setColorTable(lut, no);
+	}
+
+	@Override
+	public void setColorTableCount(final int count) {
+		imgPlus.setColorTableCount(count);
 	}
 
 	// -- Utility methods --
@@ -404,8 +455,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	{
 		final long[] dimensions = new long[img.numDimensions()];
 		img.dimensions(dimensions);
-		final Img<T> blankImg = img.factory().create(dimensions,
-			img.firstElement());
+		final Img<T> blankImg =
+			img.factory().create(dimensions, img.firstElement());
 		return new ImgPlus<T>(blankImg, img);
 	}
 

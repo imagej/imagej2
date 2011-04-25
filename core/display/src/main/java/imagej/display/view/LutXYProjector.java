@@ -27,13 +27,12 @@
  */
 package imagej.display.view;
 
-import imagej.display.lut.ColorTable8;
-import java.util.ArrayList;
 import net.imglib2.Cursor;
+import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
-import net.imglib2.IterableInterval;
 import net.imglib2.converter.Converter;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.Img;
 
