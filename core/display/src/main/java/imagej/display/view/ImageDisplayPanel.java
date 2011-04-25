@@ -44,6 +44,7 @@ import java.awt.Image;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -58,6 +59,7 @@ public class ImageDisplayPanel extends JPanel implements EventSubscriber<Dataset
 	
 	public ImageDisplayPanel(ImgDisplayController ctrl) {
 		this.ctrl = ctrl;
+		//setBorder(new TitledBorder(view.getImg().getName()));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		//setLayout(new BorderLayout());
 		imgPanel = new ImagePanel();
@@ -112,7 +114,7 @@ public class ImageDisplayPanel extends JPanel implements EventSubscriber<Dataset
 		@Override
 		public void paint(Graphics g) {
 			for (final DatasetView view : ctrl.getViews()) {
-				System.out.println("Painting in ImagePanel...");
+				// System.out.println("Painting in ImagePanel...");
 				final Image image = view.getScreenImage().image();
 				g.drawImage(image, view.getPositionX(), view.getPositionY(), this);
 			}

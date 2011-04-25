@@ -41,7 +41,6 @@ import java.awt.event.AdjustmentListener;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -55,15 +54,16 @@ public class DimensionSliderPanel extends JPanel {
 	 */
 
 	public DimensionSliderPanel(final DatasetView view) {
-		setBorder(new TitledBorder(view.getImg().getName()));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setPreferredSize(new Dimension(200, 18));
+		//setPreferredSize(new Dimension(200, 18));
 		// add one slider per dimension beyond the first two
-		for (int d = 3; d < view.getImg().numDimensions(); d++) {
+		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
+		for (int d = 2; d < view.getImg().numDimensions(); d++) {
 			final int dim = d;
+			// System.out.println("d = " + d);
 			final int dimLength = (int) view.getImg().dimension(d);
 			final JScrollBar bar = new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
-			bar.setPreferredSize(new Dimension(500,32));
+			//bar.setPreferredSize(new Dimension(500,32));
 			bar.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
@@ -71,7 +71,7 @@ public class DimensionSliderPanel extends JPanel {
 					final int value = bar.getValue();
 					//System.out.println("dim #" + dim + ": value->" + value);//TEMP
 					view.setPosition(value, dim);
-					view.project();
+					//view.project();
 				}
 			});
 			add(bar);
