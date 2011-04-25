@@ -1,5 +1,5 @@
 //
-// ImgDisplayController.java
+// ColorTable8.java
 //
 
 /*
@@ -32,32 +32,62 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.view;
+package imagej.display.lut;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.imglib2.type.numeric.ARGBType;
 
 /**
- *
- * @author GBH
+ * 8-bit color lookup table.
+ * 
+ * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class ImgDisplayController {
-	
-	protected List<DatasetView> views = new ArrayList<DatasetView>();
+public class ColorTable8 {
 
-	public List<DatasetView> getViews() {
-		return views;
+	private final byte[][] values;
+
+	public ColorTable8(final byte[]... values) {
+		this.values = values;
 	}
 
-	public void addView(DatasetView view) {
-		views.add(view);
+	public int getComponentCount() {
+		return values.length;
 	}
-	
-	public void reMapAll() {
-		for (int i = 0; i < views.size(); i++) {
-			DatasetView view = views.get(i);
-			view.getProjector().map();
-		}
+
+	public int getLength() {
+		return values[0].length;
+	}
+
+	public int get(final int c, final int i) {
+		return values[c][i] & 0xff;
+	}
+
+	public int argb(final int i) {
+		final int r = values[0][i];
+		final int g = values[1][i];
+		final int b = values[2][i];
+		final int a = values.length > 2 ? values[3][i] : 0xff;
+		return ARGBType.rgba(r, g, b, a);
+	}
+
+	public byte[][] getValues() {
+		return values.clone();
+	}
+
+	public byte[] getReds() {
+		return values.length > 0 ? values[0].clone() : null;
+	}
+
+	public byte[] getGreens() {
+		return values.length > 1 ? values[1].clone() : null;
+	}
+
+	public byte[] getBlues() {
+		return values.length > 2 ? values[2].clone() : null;
+	}
+
+	public byte[] getAlphas() {
+		return values.length > 3 ? values[3].clone() : null;
 	}
 
 }
