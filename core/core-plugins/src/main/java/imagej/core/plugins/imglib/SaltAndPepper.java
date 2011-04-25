@@ -71,7 +71,7 @@ public class SaltAndPepper implements ImageJPlugin {
 	private Rect selection;
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
-	private int[] position;
+	private long[] position;
 	
 	// -- public interface --
 
@@ -92,17 +92,12 @@ public class SaltAndPepper implements ImageJPlugin {
 		
 		if (input.getImgPlus() == null)
 			throw new IllegalArgumentException("input Image is null");
-
-		if (input.getImgPlus().numDimensions() != 2)
-			throw new IllegalArgumentException(
-				"input image is not 2d but has " + 
-				input.getImgPlus().numDimensions() + " dimensions");
 	}
 
 	private void setupWorkingData() {
 		inputImage = input.getImgPlus();
 		selection = input.getSelection();
-		position = new int[inputImage.numDimensions()];
+		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 	}
 	
@@ -110,6 +105,21 @@ public class SaltAndPepper implements ImageJPlugin {
 		Random rng = new Random();
 
 		rng.setSeed(System.currentTimeMillis());
+
+		long[] planeDims = new long[inputImage.numDimensions() - 2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = inputImage.dimension(i+2);
+		long[] planeIndex = new long[planeDims.length];
+		long totalPlanes = Index.getTotalLength(planeDims);
+		for (long plane = 0; plane < totalPlanes; plane++) {
+			Index.index1DtoND(planeDims, plane, planeIndex);
+			assignPixelsInXYPlane(planeIndex, rng);
+		}
+	}
+
+	private void assignPixelsInXYPlane(long[] planeIndex, Random rng) {
+		for (int i = 2; i < position.length; i++)
+			position[i] = planeIndex[i-2];
 
 		double percentToChange = 0.05;
 
@@ -138,7 +148,7 @@ public class SaltAndPepper implements ImageJPlugin {
 			setPixel(randomX, randomY, 0);
 		}
 	}
-
+	
 	/**
 	 * sets a value at a specific (x,y) location in the image to a given value
 	 */
