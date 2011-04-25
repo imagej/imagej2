@@ -17,9 +17,27 @@ import net.imglib2.img.ImgPlus;
 public class DatasetViewBuilder {
 
 	/*
+	 * Grayscale view - no ColorTable
+	 */
+	public static DatasetView createView(final String name, final ImgPlus img) {
+		Dataset dataset = new Dataset(img);
+		return createView(name, new Dataset(img));
+	}
+
+	public static DatasetView createView(final String name, final Dataset dataset) {
+		final DatasetView view = new DatasetView(name, dataset, -1, null, false);
+		return view;
+	}
+	
+	/*
 	 * // create an RGB 3-channel Compositeview
 	 */
 	public static DatasetView createCompositeRGBView(final String name, final ImgPlus img) {
+		return createCompositeRGBView(name, new Dataset(img));
+	}
+
+	public static DatasetView createCompositeRGBView(final String name, final Dataset dataset) {
+		ImgPlus img = dataset.getImgPlus();
 		ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
 		lutList.add(ColorTables.RED);
 		lutList.add(ColorTables.GREEN);
@@ -32,22 +50,20 @@ public class DatasetViewBuilder {
 		if (channels != 3) {
 			System.err.println("Creating RBG composite, but not 3 channels");
 		}
-		Dataset dataset = new Dataset(img);
 		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, true);
-
 		return view;
+
 	}
 
-	/*
-	 * Grayscale view
-	 */
-	public static DatasetView createView(final String name, final ImgPlus img) {
-		Dataset dataset = new Dataset(img);
-		final DatasetView view = new DatasetView(name, dataset, -1, null, false);
-		return view;
-	}
-
+	// Composite
+	//
 	public static DatasetView createCompositeView(final String name, final ImgPlus img) {
+		Dataset dataset = new Dataset(img);
+		return createCompositeView(name, new Dataset(img));
+	}
+
+	public static DatasetView createCompositeView(final String name, final Dataset dataset) {
+		ImgPlus img = dataset.getImgPlus();
 		// create a multichannel Compositeview, up to 6 channels
 		int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
 		ArrayList<ColorTable8> lutList = defaultLutList(channels);
@@ -55,20 +71,26 @@ public class DatasetViewBuilder {
 		if (channelDimIndex < 0) {
 			//"No Channel dimension."
 		}
-		Dataset dataset = new Dataset(img);
 		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, true);
 		return view;
 	}
 
+	// Multichannel, not composite
+	//
 	public static DatasetView createMultichannelView(final String name, final ImgPlus img) {
+		Dataset dataset = new Dataset(img);
+		return createMultichannelView(name, new Dataset(img));
+	}
+
+	public static DatasetView createMultichannelView(final String name, final Dataset dataset) {
 		// create a multichannel Compositeview, up to 6 channels
+		ImgPlus img = dataset.getImgPlus();
 		int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
 		ArrayList<ColorTable8> lutList = defaultLutList(channels);
 		int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
 		if (channelDimIndex < 0) {
 			//"No Channel dimension."
 		}
-		Dataset dataset = new Dataset(img);
 		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, false);
 		return view;
 	}

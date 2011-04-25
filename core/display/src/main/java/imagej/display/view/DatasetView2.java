@@ -35,12 +35,12 @@ package imagej.display.view;
 
 import imagej.data.Dataset;
 import imagej.display.ImageCanvas;
+import imagej.display.lut.ColorTable8;
 
 import java.util.ArrayList;
 
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ARGBScreenImage;
-import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealARGBConverter;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.ImgPlus;
@@ -53,7 +53,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Grant Harris
  */
-public class DatasetView {
+public class DatasetView2 {
 
 	private final Dataset dataset;
 	private final ARGBScreenImage screenImage;
@@ -65,55 +65,58 @@ public class DatasetView {
 	private final ImgPlus<? extends RealType<?>> img;
 	private ImageCanvas imgCanvas;
 	private ArrayList<ColorTable8> luts;
-
 	int channelDimIndex;
 	private final boolean composite;
 
-	public DatasetView(final String name, final Dataset dataset,
-		final int channelDimIndex, final ArrayList<ColorTable8> luts, boolean composite) {
-
+	public DatasetView2(final String name, final Dataset dataset,
+			ArrayList<Converter<? extends RealType<?>, ARGBType>> converters,
+			XYProjector<? extends RealType<?>, ARGBType> projector,
+			ARGBScreenImage screenImage, int channelDimIndex, boolean composite)	 {
 		this.dataset = dataset;
 		this.img = dataset.getImgPlus();
-		this.channelDimIndex = channelDimIndex;
-		this.luts = luts;
-		screenImage =
-			new ARGBScreenImage((int) img.dimension(0), (int) img.dimension(1));
-		final int min = 0, max = 255;
+		this.screenImage = screenImage;
+		this.projector = projector;
 		this.composite = composite;
-
-		if (channelDimIndex < 0) { // No channels
-			if (luts != null) { // single channel, use lut for display.
-				projector =
-					new XYProjector(img, screenImage, new RealLUTConverter(min, max,
-					luts.get(0)));
-			} else {
-				projector =
-					new XYProjector(img, screenImage, new RealARGBConverter(min, max));
-			}
-		} else {
-
-			if (composite) { // multichannel composite
-				for (int i = 0; i < luts.size(); i++) {
-					ColorTable8 lut = luts.get(i);
-					converters.add(new CompositeLUTConverter(min, max, lut));
-				}
-				projector = new CompositeXYProjector(img, screenImage, converters, channelDimIndex);
-			} else { // multichannel with sep. ColorTable8 for each
-				projector = new LutXYProjector(img, screenImage, new RealLUTConverter(min, max, luts.get(0)));
-			}
-		}
+		this.channelDimIndex = channelDimIndex;
 		projector.map();
 	}
-	
-	
-	public int getChannelDimIndex() {
-		return channelDimIndex;
-	}
+			
+//	public DatasetView2(final String name, final Dataset dataset,
+//		final int channelDimIndex, final ArrayList<ColorTable8> luts, boolean composite) {
+//
+//		this.dataset = dataset;
+//		this.img = dataset.getImage();
+//		this.channelDimIndex = channelDimIndex;
+//		this.luts = luts;
+//		screenImage =
+//			new ARGBScreenImage((int) img.dimension(0), (int) img.dimension(1));
+//		final int min = 0, max = 255;
+//		this.composite = composite;
+//
+//		if (channelDimIndex < 0) { // No channels
+//			if (luts != null) { // single channel, use lut for display.
+//				projector =
+//					new XYProjector(img, screenImage, new RealLUTConverter(min, max,
+//					luts.get(0)));
+//			} else {
+//				projector =
+//					new XYProjector(img, screenImage, new RealARGBConverter(min, max));
+//			}
+//		} else {
+//
+//			if (composite) { // multichannel composite
+//				for (int i = 0; i < luts.size(); i++) {
+//					ColorTable8 lut = luts.get(i);
+//					converters.add(new CompositeLUTConverter(min, max, lut));
+//				}
+//				projector = new CompositeXYProjector(img, screenImage, converters, channelDimIndex);
+//			} else { // multichannel with sep. ColorTable8 for each
+//				projector = new LutXYProjector(img, screenImage, new RealLUTConverter(min, max, luts.get(0)));
+//			}
+//		}
+//		projector.map();
+//	}
 
-	public ArrayList<ColorTable8> getLuts() {
-		return luts;
-	}
-	
 	public void setImgCanvas(final ImageCanvas imgCanvas) {
 		this.imgCanvas = imgCanvas;
 	}

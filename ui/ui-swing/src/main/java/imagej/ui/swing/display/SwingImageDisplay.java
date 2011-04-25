@@ -123,10 +123,11 @@ public class SwingImageDisplay implements AWTDisplay {
 		return true;
 	}
 
+
+	
 	@Override
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
-		// dataset.getImgPlus()... 
 		lastKnownDimensions = new long[dataset.getImgPlus().numDimensions()];
 		dataset.getImgPlus().dimensions(lastKnownDimensions);
 		// imgCanvas = new ImageCanvasSwing();
