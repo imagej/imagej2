@@ -42,6 +42,7 @@ import imagej.util.Log;
 import imagej.util.Rect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
@@ -84,7 +85,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class Dataset implements Comparable<Dataset>, Metadata {
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
-	private boolean isRgbMerged;
+	private boolean rgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	// here for plugin testing purposes. Really should be viewcentric.
@@ -107,8 +108,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	public Dataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
-		this.isRgbMerged = false;
-		this.selection = new Rect();
+		rgbMerged = false;
+		selection = new Rect();
 		Events.publish(new DatasetCreatedEvent(this));
 	}
 
@@ -116,16 +117,16 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.
 	 */
-	public void setIsRgbMerged(final boolean value) {
-		this.isRgbMerged = value;
+	public void setRGBMerged(final boolean rgbMerged) {
+		this.rgbMerged = rgbMerged;
 	}
 
 	/**
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.
 	 */
-	public boolean isRgbMerged() {
-		return isRgbMerged;
+	public boolean isRGBMerged() {
+		return rgbMerged;
 	}
 
 	public ImgPlus<? extends RealType<?>> getImgPlus() {
@@ -140,7 +141,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		this.imgPlus = imgPlus;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
-		this.selection = new Rect();
+		selection = new Rect();
 
 		update();
 	}
@@ -222,7 +223,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	/** Gets a string description of the dataset's pixel type. */
 	public String getTypeLabel() {
-		if (isRgbMerged()) return "RGB";
+		if (isRGBMerged()) return "RGB";
 		final int bitsPerPixel = getType().getBitsPerPixel();
 		final String category =
 			isInteger() ? isSigned() ? "signed" : "unsigned" : "real";
@@ -240,7 +241,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Dataset duplicateBlank() {
 		final ImgPlus untypedImg = imgPlus;
-		return new Dataset(createBlankCopy(untypedImg));
+		final Dataset d = new Dataset(createBlankCopy(untypedImg));
+		d.setRGBMerged(isRGBMerged());
+		return d;
 	}
 
 	/** Copies the dataset's pixels into the given target dataset. */
@@ -358,6 +361,16 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	@Override
 	public void setColorTable(final ColorTable8 lut, final int no) {
+		imgPlus.setColorTable(lut, no);
+	}
+
+	@Override
+	public ColorTable16 getColorTable16(int no) {
+		return imgPlus.getColorTable16(no);
+	}
+
+	@Override
+	public void setColorTable(ColorTable16 lut, int no) {
 		imgPlus.setColorTable(lut, no);
 	}
 

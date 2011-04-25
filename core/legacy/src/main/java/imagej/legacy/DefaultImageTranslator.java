@@ -59,7 +59,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {		
-		if (dataset.isRgbMerged()) {
+		if (dataset.isRGBMerged()) {
 			return rgbTranslator.createLegacyImage(dataset);
 		}
 

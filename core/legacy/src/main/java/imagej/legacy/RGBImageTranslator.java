@@ -97,7 +97,7 @@ public class RGBImageTranslator implements ImageTranslator {
 			}
 		}
 
-		dataset.setIsRgbMerged(true);
+		dataset.setRGBMerged(true);
 
 		return dataset;
 	}
@@ -107,7 +107,7 @@ public class RGBImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
-		if (!dataset.isRgbMerged()) {
+		if (!dataset.isRGBMerged()) {
 			throw new IllegalArgumentException(
 				"A merged dataset is required for this operation");
 		}
