@@ -151,6 +151,13 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		return dims;
 	}
 
+	/** Gets the dimensional extents of the dataset. */
+	public Axis[] getAxes() {
+		final Axis[] axes = new Axis[imgPlus.numDimensions()];
+		axes(axes);
+		return axes;
+	}
+
 	public Object getPlane(final int no) {
 		if (!(imgPlus instanceof PlanarAccess)) return null;
 		// TODO - extract a copy the plane if it cannot be obtained by reference
@@ -284,18 +291,28 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	@Override
-	public Axis[] getAxes() {
-		return imgPlus.getAxes();
-	}
-
-	@Override
 	public int getAxisIndex(final Axis axis) {
 		return imgPlus.getAxisIndex(axis);
 	}
+	
+	@Override
+	public Axis axis(final int d) {
+		return imgPlus.axis(d);
+	}
 
 	@Override
-	public float[] getCalibration() {
-		return imgPlus.getCalibration();
+	public void axes(final Axis[] axes) {
+		imgPlus.axes(axes);
+	}
+
+	@Override
+	public double calibration(final int d) {
+		return imgPlus.calibration(d);
+	}
+
+	@Override
+	public void calibration(final double[] cal) {
+		imgPlus.calibration(cal);
 	}
 
 	// -- Utility methods --
