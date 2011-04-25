@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.display.lut.ColorTable8;
 import imagej.display.lut.ColorTables;
 
 import java.awt.Color;
@@ -51,6 +50,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import net.imglib2.display.ColorTable8;
 
 /**
  * A widget for displaying a {@link ColorTable8} bar.

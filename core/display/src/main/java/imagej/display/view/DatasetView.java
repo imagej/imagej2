@@ -35,12 +35,12 @@ package imagej.display.view;
 
 import imagej.data.Dataset;
 import imagej.display.ImageCanvas;
-import imagej.display.lut.ColorTable8;
 
 import java.util.ArrayList;
 
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealARGBConverter;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.ImgPlus;

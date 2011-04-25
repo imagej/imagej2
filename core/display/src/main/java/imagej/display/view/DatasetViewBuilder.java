@@ -1,9 +1,11 @@
 package imagej.display.view;
 
 import imagej.data.Dataset;
-import imagej.display.lut.ColorTable8;
 import imagej.display.lut.ColorTables;
+
 import java.util.ArrayList;
+
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 
