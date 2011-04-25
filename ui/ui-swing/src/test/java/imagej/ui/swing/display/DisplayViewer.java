@@ -30,13 +30,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package imagej.ui.swing.display;
 
 import imagej.display.view.DatasetView;
 import imagej.display.view.DimensionSliderPanel;
-import imagej.display.view.DisplayViewBuilder;
+import imagej.display.view.DatasetViewBuilder;
 import imagej.display.view.ImageDisplayPanel;
 import imagej.display.view.ImgDisplayController;
 import java.awt.Dimension;
@@ -62,9 +61,9 @@ import net.imglib2.type.numeric.RealType;
  *
  * @author Grant Harris
  */
-public class DisplayViewer <T extends RealType<T> & NativeType<T>> {
+public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 
-		private static void center(final Window win) {
+	private static void center(final Window win) {
 		final Dimension size = win.getSize();
 		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		final int w = (screen.width - size.width) / 2;
@@ -75,8 +74,18 @@ public class DisplayViewer <T extends RealType<T> & NativeType<T>> {
 	public void buildDisplay() {
 		final String[] urls = {
 			//"file:///C:/TestImages/TestImages/MyoblastCells.tif"
-			"http://loci.wisc.edu/files/software/data/mitosis-test.zip"
-			//"http://loci.wisc.edu/files/software/ome-tiff/z-series.zip"
+			"file:///C:/testimages/testData/OME-TIFF_Tests/"
+			+ //"4D-series.ome.tif"
+			"multi-channel-4D-series.ome.tif"
+//			"multi-channel-time-series.ome.tif"
+//			"multi-channel-z-series.ome.tif"
+//			"multi-channel.ome.tif"
+//			"multi-image-pixels.ome.tif"
+//			"single-channel.ome.tif"
+//			"time-series.ome.tif"
+//			"z-series.ome.tif"
+//			"http://loci.wisc.edu/files/software/data/mitosis-test.zip"
+		//"http://loci.wisc.edu/files/software/ome-tiff/z-series.zip"
 		};
 		final JFrame frame = new JFrame("ImgPanel Test Frame");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,20 +98,44 @@ public class DisplayViewer <T extends RealType<T> & NativeType<T>> {
 			final ImgPlus<T> img = loadImage(url);
 			//img.getAxes(Metadata
 			// is it multichannel ??
-			DatasetView view = null;
+			// Diagnostics...
+			System.out.println("numDimensions = " + img.numDimensions());
 			if (img.getAxisIndex(Axes.CHANNEL) > 0) {
-				if (img.dimension(img.getAxisIndex(Axes.CHANNEL)) == 3) {
-					// If 3 channels, probably an RGB image
-					view = DisplayViewBuilder.createCompositeRGBView(url, img);
+				int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
+				System.out.println("channels = " + channels);
+			}
+			if (img.getAxisIndex(Axes.Z) > 0) {
+				int sections = (int) img.dimension(img.getAxisIndex(Axes.Z));
+				System.out.println("sections = " + sections);
+			}
+			if (img.getAxisIndex(Axes.TIME) > 0) {
+				int timepoints = (int) img.dimension(img.getAxisIndex(Axes.TIME));
+				System.out.println("timepoints = " + timepoints);
+			}
+			boolean composite = false;
 
+			DatasetView view = null;
+			if (img.getAxisIndex(Axes.CHANNEL) > 0 && img.dimension(img.getAxisIndex(Axes.CHANNEL)) < 7) {
+				if (composite) {
+					if (img.dimension(img.getAxisIndex(Axes.CHANNEL)) == 3) {
+						// If 3 channels, probably an RGB image
+						view = DatasetViewBuilder.createCompositeRGBView(url, img);
+						System.out.println("created CompositeRGBView");
+
+					} else {
+						view = DatasetViewBuilder.createCompositeView(url, img);
+						System.out.println("created CompositeView");
+						// more than 3 channels
+						// default luts up to 7
+						// > 7, gray
+					}
 				} else {
-					view = DisplayViewBuilder.createView(url, img);
-					// more than 3 channels
-					// default luts up to 7
-					// > 7, gray
+					view = DatasetViewBuilder.createMultichannelView(url, img);
+					System.out.println("created MultichannelView");
 				}
 			} else {
-				view = DisplayViewBuilder.createView(url, img);
+				view = DatasetViewBuilder.createView(url, img);
+				System.out.println("created simple view");
 			}
 			if (view != null) {
 				view.setPositionX(positionX);
@@ -117,18 +150,19 @@ public class DisplayViewer <T extends RealType<T> & NativeType<T>> {
 				positionY += 32;
 			}
 		}
-		imgPanel.resetSize();
+		//imgPanel.resetSize();
 
 		frame.setContentPane(imgPanel);
 		frame.pack();
 		center(frame);
 		frame.setVisible(true);
-		
+
 	}
 
 	public static final void main(final String[] args) {
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
+
 				@SuppressWarnings("rawtypes")
 				@Override
 				public void run() {
@@ -144,18 +178,19 @@ public class DisplayViewer <T extends RealType<T> & NativeType<T>> {
 	 * 	- to load a file (on Windows): "file:///C:/TestImages/TestImages/MyoblastCells.tif"
 	 * 	- to load from a URL: "http://loci.wisc.edu/files/software/data/mitosis-test.zip"
 	 */
-
-		public  static <T extends RealType<T> & NativeType<T>> ImgPlus<T> loadImage(final String url) {
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> loadImage(final String url) {
 		try {
 			System.out.println("Downloading " + url);
 			final String id = ImgIOUtils.cacheId(url);
 			System.out.println("Opening " + id);
 			final ImgOpener imgOpener = new ImgOpener();
 			imgOpener.addStatusListener(new StatusListener() {
+
 				@Override
 				public void statusUpdated(StatusEvent e) {
 					System.out.println(e.getStatusMessage());
 				}
+
 			});
 			return imgOpener.openImg(id);
 		} catch (final IncompatibleTypeException e) {

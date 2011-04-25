@@ -64,6 +64,10 @@ public class RealLUTConverter<R extends RealType<R>> extends
 		this.lut = lut;
 	}
 
+	public void setLut(ColorTable8 lut) {
+		this.lut = lut;
+	}
+
 	@Override
 	public void convert(final R input, final ARGBType output) {
 		final double a = input.getRealDouble();
