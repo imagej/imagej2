@@ -67,26 +67,26 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 		final Dimension size = win.getSize();
 		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		final int w = (screen.width - size.width) / 2;
-		final int h = (screen.height - size.height) / 2;
+		int h = (screen.height - size.height) / 2;
+		if(h< 32) h= 32;
 		win.setLocation(w, h);
 	}
 
-	public void buildDisplay() {
-		final String[] urls = {
-			//"file:///C:/TestImages/TestImages/MyoblastCells.tif"
-			"file:///C:/testimages/testData/OME-TIFF_Tests/"
-			+ //"4D-series.ome.tif"
-			"multi-channel-4D-series.ome.tif"
-//			"multi-channel-time-series.ome.tif"
-//			"multi-channel-z-series.ome.tif"
-//			"multi-channel.ome.tif"
-//			"multi-image-pixels.ome.tif"
-//			"single-channel.ome.tif"
-//			"time-series.ome.tif"
-//			"z-series.ome.tif"
-//			"http://loci.wisc.edu/files/software/data/mitosis-test.zip"
-		//"http://loci.wisc.edu/files/software/ome-tiff/z-series.zip"
-		};
+	private void buildDisplay(final String[] urls, final boolean composite) {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					buildDisplayOnEDT(urls, composite);
+
+				}
+
+			});
+		}
+	}
+
+	private void buildDisplayOnEDT(String[] urls, boolean composite) {
+
 		final JFrame frame = new JFrame("ImgPanel Test Frame");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ImgDisplayController ctrl = new ImgDisplayController();
@@ -112,8 +112,6 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 				int timepoints = (int) img.dimension(img.getAxisIndex(Axes.TIME));
 				System.out.println("timepoints = " + timepoints);
 			}
-			boolean composite = false;
-
 			DatasetView view = null;
 			if (img.getAxisIndex(Axes.CHANNEL) > 0 && img.dimension(img.getAxisIndex(Axes.CHANNEL)) < 7) {
 				if (composite) {
@@ -160,17 +158,18 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 	}
 
 	public static final void main(final String[] args) {
-		if (!SwingUtilities.isEventDispatchThread()) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@SuppressWarnings("rawtypes")
-				@Override
-				public void run() {
-					new DisplayViewer().buildDisplay();
-				}
-
-			});
-		}
+		String path = "file:///C:/testimages/testData/OME-TIFF_Tests/";
+		new DisplayViewer().buildDisplay(new String[]{"file:///C:/TestImages/TestImages/MyoblastCells.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "4D-series.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-4D-series.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-time-series.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-z-series.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel.ome.tif"}, true);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "multi-image-pixels.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "single-channel.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "time-series.ome.tif"}, false);
+//		new DisplayViewer().buildDisplay(new String[]{path + "z-series.ome.tif"}, false);
 	}
 
 	/*
