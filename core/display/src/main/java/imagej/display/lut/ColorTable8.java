@@ -66,7 +66,7 @@ public class ColorTable8 {
 		final int r = values[0][i];
 		final int g = values[1][i];
 		final int b = values[2][i];
-		final int a = values.length > 2 ? values[3][i] : 0xff;
+		final int a = values.length > 3 ? values[3][i] : 0xff;
 		return ARGBType.rgba(r, g, b, a);
 	}
 

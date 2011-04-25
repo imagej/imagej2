@@ -35,12 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display.view;
 
 import java.awt.Adjustable;
-import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import net.imglib2.img.Axis;
 
 /**
  *
@@ -58,10 +58,13 @@ public class DimensionSliderPanel extends JPanel {
 		//setPreferredSize(new Dimension(200, 18));
 		// add one slider per dimension beyond the first two
 		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
+		Axis[] a = view.getImg().getAxes();
 		for (int d = 2; d < view.getImg().numDimensions(); d++) {
 			final int dim = d;
+			String label = a[d].getLabel();
 			// System.out.println("d = " + d);
 			final int dimLength = (int) view.getImg().dimension(d);
+			
 			final JScrollBar bar = new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
 			//bar.setPreferredSize(new Dimension(500,32));
 			bar.addAdjustmentListener(new AdjustmentListener() {
