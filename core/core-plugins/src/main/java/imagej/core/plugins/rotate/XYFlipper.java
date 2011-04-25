@@ -36,6 +36,7 @@ package imagej.core.plugins.rotate;
 
 import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
+import imagej.util.Index;
 import imagej.util.Rect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -105,11 +106,6 @@ public class XYFlipper implements OutputAlgorithm {
 		
 		long[] inputDimensions = new long[inputImage.numDimensions()];
 
-		if (inputDimensions.length != 2) {
-			errMessage = "Flipping only works on a 2d plane of XY data";
-			return false;
-		}
-
 		inputImage.dimensions(inputDimensions);
 		
 		long[] outputDimensions = flipper.calcOutputDimensions(inputDimensions);
@@ -167,25 +163,38 @@ public class XYFlipper implements OutputAlgorithm {
 			rw = (int)width;
 			rh = (int)height;
 		}
-		
-		for (int y = ry; y < rh; y++) {
-			inputPosition[1] = y;
 
-			for (int x = rx; x < rw; x++) {
-				inputPosition[0] = x;
+		long[] planeDims = new long[inputImage.numDimensions()-2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = inputDimensions[i+2];
 
-				flipper.calcOutputPosition(inputDimensions, inputPosition,
-					outputPosition);
+		long totalPlanes = Index.getTotalLength(planeDims);
 
-				inputAccessor.setPosition(inputPosition);
-				outputAccessor.setPosition(outputPosition);
-
-				double value = inputAccessor.get().getRealDouble();
-
-				outputAccessor.get().setReal(value);
+		for (long pNum = 0; pNum < totalPlanes; pNum++) {
+			long[] planeIndex = Index.index1DtoND(planeDims,pNum);
+			
+			for (int i = 2; i < inputPosition.length; i++)
+				inputPosition[i] = planeIndex[i-2];
+			
+			for (int y = ry; y < rh; y++) {
+				inputPosition[1] = y;
+	
+				for (int x = rx; x < rw; x++) {
+					inputPosition[0] = x;
+	
+					flipper.calcOutputPosition(inputDimensions, inputPosition,
+						outputPosition);
+	
+					inputAccessor.setPosition(inputPosition);
+					outputAccessor.setPosition(outputPosition);
+	
+					double value = inputAccessor.get().getRealDouble();
+	
+					outputAccessor.get().setReal(value);
+				}
 			}
 		}
-
+		
 		return true;
 	}
 

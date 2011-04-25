@@ -85,6 +85,8 @@ public class Rotate90DegreesLeft implements ImageJPlugin {
 		{
 			outputPosition[1] = inputDimensions[0] - inputPosition[0] - 1;
 			outputPosition[0] = inputPosition[1];
+			for (int i = 2; i < inputDimensions.length; i++)
+				outputPosition[i] = inputPosition[i];
 		}
 
 		@Override

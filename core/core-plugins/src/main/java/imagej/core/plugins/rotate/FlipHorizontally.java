@@ -89,6 +89,8 @@ public class FlipHorizontally implements ImageJPlugin {
 		{
 			outputPosition[0] = maxX - inputPosition[0] - 1;
 			outputPosition[1] = inputPosition[1];
+			for (int i = 2; i < inputDimensions.length; i++)
+				outputPosition[i] = inputPosition[i];
 		}
 
 		@Override
