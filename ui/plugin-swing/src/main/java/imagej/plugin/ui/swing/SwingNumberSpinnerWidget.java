@@ -39,7 +39,6 @@ import imagej.plugin.ui.ParamDetails;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.JComponent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -64,8 +63,8 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(min,
 			(Comparable<?>) min, (Comparable<?>) max, stepSize);
 		spinner = new JSpinner(spinnerModel);
-		limitWidth(spinner, 300);
 		add(spinner, BorderLayout.CENTER);
+		limitWidth(250);
 		spinner.addChangeListener(this);
 
 		refresh();
@@ -100,10 +99,17 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 	 * an issue with Double-based spinners that attempt to size themselves very
 	 * large (presumably to match Double.MAX_VALUE).
 	 */
-	private void limitWidth(final JComponent c, final int maxWidth) {
-		final Dimension prefSize = c.getPreferredSize();
-		if (prefSize.width > maxWidth) prefSize.width = maxWidth;
-		c.setMaximumSize(prefSize);
+	private void limitWidth(final int maxWidth) {
+		final Dimension spinnerSize = spinner.getPreferredSize();
+		if (spinnerSize.width > maxWidth) {
+			spinnerSize.width = maxWidth;
+			spinner.setPreferredSize(spinnerSize);
+			spinner.setMaximumSize(spinnerSize);
+			final Dimension widgetSize = getPreferredSize();
+			widgetSize.width = spinnerSize.width;
+			setPreferredSize(widgetSize);
+			setMaximumSize(widgetSize);
+		}
 	}
 
 }
