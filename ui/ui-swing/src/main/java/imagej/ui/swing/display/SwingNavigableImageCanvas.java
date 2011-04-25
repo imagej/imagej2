@@ -814,7 +814,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	@Override
 	public void setImage(final BufferedImage newImage) {
 		final BufferedImage oldImage = image;
-		image = toCompatibleImage(newImage);
+		//image = toCompatibleImage(newImage);
+		image = newImage;
 		double imageWidth = image.getWidth();
 		double imageHeight = image.getHeight();
 		Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();

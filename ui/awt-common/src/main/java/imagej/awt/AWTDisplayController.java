@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the names of the ImageJDev.org developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+ * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+ * Neither the names of the ImageJDev.org developers nor the
+names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,17 +30,20 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package imagej.awt;
 
 import imagej.data.Dataset;
 import imagej.display.DisplayController;
 import imagej.display.ImageDisplayWindow;
+import imagej.display.view.DatasetView;
+import imagej.display.view.DatasetViewBuilder;
+import imagej.display.view.LutXYProjector;
 import imagej.util.Index;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import javax.swing.SwingUtilities;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
@@ -98,24 +101,41 @@ public class AWTDisplayController implements DisplayController {
 		return dataset;
 	}
 
+	DatasetView view;
+	boolean composite = false;
+
 	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
+		//dataset.getImgPlus();
+		composite = false;
+		//view = DatasetViewBuilder.createView(dataset.getName(), dataset);
+		//view = DatasetViewBuilder.createCompositeView(dataset.getName(), dataset);
+		view = DatasetViewBuilder.createMultichannelView(dataset.getName(), dataset);
 		dims = dataset.getDims();
 		dimLabels = dataset.getAxes();
 		imageName = dataset.getName();
 		// extract width and height
 		xIndex = yIndex = -1;
 		for (int i = 0; i < dimLabels.length; i++) {
-			if (dimLabels[i] == Axes.X) xIndex = i;
-			else if (dimLabels[i] == Axes.Y) yIndex = i;
+			if (dimLabels[i] == Axes.X) {
+				xIndex = i;
+			} else if (dimLabels[i] == Axes.Y) {
+				yIndex = i;
+			}
 		}
-		if (xIndex < 0) throw new IllegalArgumentException("No X dimension");
-		if (yIndex < 0) throw new IllegalArgumentException("No Y dimension");
+		if (xIndex < 0) {
+			throw new IllegalArgumentException("No X dimension");
+		}
+		if (yIndex < 0) {
+			throw new IllegalArgumentException("No Y dimension");
+		}
 		planeDims = new long[dims.length - 2];
 		int d = 0;
 		for (int i = 0; i < dims.length; i++) {
-			if ((i == xIndex) || (i == yIndex)) continue;
+			if ((i == xIndex) || (i == yIndex)) {
+				continue;
+			}
 			planeDims[d++] = dims[i];
 		}
 		imgWindow.setTitle(imageName);
@@ -137,43 +157,63 @@ public class AWTDisplayController implements DisplayController {
 
 	@Override
 	public void updatePosition(final int posIndex, final int newValue) {
-		pos[posIndex] = newValue;
+		int projDimIndex = posIndex+2;  // convert from planar dims (adjust for x,y dims)
+		if (!composite) {
+			view.getProjector().setPosition(newValue, projDimIndex);
+
+			if (view.getChannelDimIndex() > 0) {
+				if (projDimIndex == view.getChannelDimIndex()) {
+					((LutXYProjector) view.getProjector()).setLut(view.getLuts().get(newValue));
+				}
+			}
+		} else { // is composite
+			// if more than one channel, and the dim changed is the Channel dim, change the lut.
+			// values needs to increment n, where n = number of channels 
+			view.getProjector().setPosition(newValue, projDimIndex);
+		}
 		update();
 	}
 
+//	@Override
+//	public void updatePosition(final int posIndex, final int newValue) {
+//		pos[posIndex] = newValue;
+//		view.setPosition(newValue, xIndex);
+//		update();
+//	}
 	@Override
 	public void update() {
-		final BufferedImage bImage = getImagePlane();
-		if (bImage != null) {
-			display.getImageCanvas().setImage(bImage);
-		}
+		view.getProjector().map();
+		// tell display components to repaint
+//		
+//		if (!SwingUtilities.isEventDispatchThread()) {
+//			SwingUtilities.invokeLater(new Runnable() {
+//
+//				public void run() {
+		BufferedImage bi = (BufferedImage) view.getScreenImage().image();
+		display.getImageCanvas().setImage(bi);
+//				}
+
+//			});
+//		}
 		// this is ugly... just trying it out.
 		// imgPanel.setNavigationImageEnabled(true);
 		imgWindow.setLabel(makeLabel());
 	}
 
+//		@Override
+//	public void update() {
+//		final BufferedImage bImage = getImagePlane();
+//		if (bImage != null) {
+//			display.getImageCanvas().setImage(bImage);
+//		}
+//		// this is ugly... just trying it out.
+//		// imgPanel.setNavigationImageEnabled(true);
+//		imgWindow.setLabel(makeLabel());
+//	}
 	// -- Helper methods --
-
-	private String makeLabel() {
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (Axes.isXY(dimLabels[i])) {
-				continue;
-			}
-			p++;
-			if (dims[i] == 1) {
-				continue;
-			}
-			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
-		}
-		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
-		sb.append(dataset.getTypeLabel());
-		return sb.toString();
-	}
-
 	private BufferedImage getImagePlane() {
 		// FIXME - how to get a subset with different axes?
-		final long no = Index.indexNDto1D(planeDims, pos);
+		final long no = Index.indexNDto1D(planeDims, pos); // <<<<<<<<<<<<<--------------
 		if (no < 0 || no > Integer.MAX_VALUE) {
 			throw new IllegalStateException("Plane out of range: " + no);
 		}
@@ -207,16 +247,18 @@ public class AWTDisplayController implements DisplayController {
 		}
 		final int h = (int) height;
 		final BufferedImage bImage =
-			new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+				new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
 		final int[] dataInShortRangeEncodedAsInts = new int[w * h];
 		final long[] position = dims.clone();
 		int p = 0;
 		for (int i = 0; i < position.length; i++) {
-			if ((i == xIndex) || (i == yIndex)) continue;
+			if ((i == xIndex) || (i == yIndex)) {
+				continue;
+			}
 			position[i] = pos[p++];
 		}
 		final RandomAccess<? extends RealType<?>> randomAccess =
-			dataset.getImgPlus().randomAccess();
+				dataset.getImgPlus().randomAccess();
 		// create a grayscale image representation of data
 		// TODO - broken for float types - may need to range of actual pixel values
 		final double rangeMin = randomAccess.get().getMinValue();
@@ -228,13 +270,30 @@ public class AWTDisplayController implements DisplayController {
 				randomAccess.setPosition(position);
 				final double value = randomAccess.get().getRealDouble();
 				final int shortVal =
-					(int) (0xffff * ((value - rangeMin) / (rangeMax - rangeMin)));
+						(int) (0xffff * ((value - rangeMin) / (rangeMax - rangeMin)));
 				dataInShortRangeEncodedAsInts[y * w + x] = shortVal;
 			}
 		}
 		final WritableRaster raster = bImage.getRaster();
 		raster.setPixels(0, 0, w, h, dataInShortRangeEncodedAsInts);
 		return bImage;
+	}
+
+	private String makeLabel() {
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (Axes.isXY(dimLabels[i])) {
+				continue;
+			}
+			p++;
+			if (dims[i] == 1) {
+				continue;
+			}
+			sb.append(dimLabels[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
+		}
+		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		sb.append(dataset.getTypeLabel());
+		return sb.toString();
 	}
 
 }

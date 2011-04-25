@@ -89,6 +89,7 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 
 		final JFrame frame = new JFrame("ImgPanel Test Frame");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		ImgDisplayController ctrl = new ImgDisplayController();
 		final ImageDisplayPanel imgPanel = new ImageDisplayPanel(ctrl);
 		int positionX = 0;
