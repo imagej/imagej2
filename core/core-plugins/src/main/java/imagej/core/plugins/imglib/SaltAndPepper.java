@@ -90,17 +90,17 @@ public class SaltAndPepper implements ImageJPlugin {
 		if (input == null)
 			throw new IllegalArgumentException("input Dataset is null");
 		
-		if (input.getImage() == null)
+		if (input.getImgPlus() == null)
 			throw new IllegalArgumentException("input Image is null");
 
-		if (input.getImage().numDimensions() != 2)
+		if (input.getImgPlus().numDimensions() != 2)
 			throw new IllegalArgumentException(
 				"input image is not 2d but has " + 
-				input.getImage().numDimensions() + " dimensions");
+				input.getImgPlus().numDimensions() + " dimensions");
 	}
 
 	private void setupWorkingData() {
-		inputImage = input.getImage();
+		inputImage = input.getImgPlus();
 		selection = input.getSelection();
 		position = new int[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();

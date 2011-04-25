@@ -69,7 +69,7 @@ public class ImglibDataTransform implements Runnable {
 			throw new IllegalStateException(algorithm.getErrorMessage());
 		}
 
-		dataset.setImage(ImgPlus.wrap(algorithm.getResult()));
+		dataset.setImgPlus(ImgPlus.wrap(algorithm.getResult()));
 	}
 
 }

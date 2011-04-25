@@ -59,8 +59,8 @@ public class UnaryTransformation {
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
 		Rect selection = input.getSelection();
-		long[] dimensions = new long[input.getImage().numDimensions()];
-		input.getImage().dimensions(dimensions);
+		long[] dimensions = new long[input.getImgPlus().numDimensions()];
+		input.getImgPlus().dimensions(dimensions);
 		setRegion(dimensions, selection);
 	}
 

@@ -159,7 +159,7 @@ public class NAryOperation<T extends RealType<T>> {
 			final Dataset dataset = inputs.get(i);
 
 			@SuppressWarnings("unchecked")
-			final ImgPlus<T> typedImg = (ImgPlus<T>) dataset.getImage();
+			final ImgPlus<T> typedImg = (ImgPlus<T>) dataset.getImgPlus();
 			inputImages.add(typedImg);
 		}
 
@@ -167,7 +167,7 @@ public class NAryOperation<T extends RealType<T>> {
 		if (output == null) output = inputs.get(0).duplicateBlank();
 
 		@SuppressWarnings("unchecked")
-		final ImgPlus<T> outputImage = (ImgPlus<T>) output.getImage();
+		final ImgPlus<T> outputImage = (ImgPlus<T>) output.getImgPlus();
 
 		final AssignOperation<T> operation =
 			new AssignOperation<T>(inputImages, outputImage, function);
@@ -186,7 +186,7 @@ public class NAryOperation<T extends RealType<T>> {
 
 	/** Sets up subregion variables to default values. */
 	private void initializeSubregionVariables() {
-		ImgPlus<? extends RealType<?>> image = inputs.get(0).getImage();
+		ImgPlus<? extends RealType<?>> image = inputs.get(0).getImgPlus();
 		outputOrigin = new long[image.numDimensions()];
 		outputSpan = new long[image.numDimensions()];
 		image.dimensions(outputSpan);
@@ -194,7 +194,7 @@ public class NAryOperation<T extends RealType<T>> {
 		inputOrigins = new long[numInputs][];
 		inputSpans = new long[numInputs][];
 		for (int i = 0; i < numInputs; i++) {
-			image = inputs.get(i).getImage();
+			image = inputs.get(i).getImgPlus();
 			inputOrigins[i] = new long[image.numDimensions()];
 			inputSpans[i] = new long[image.numDimensions()];
 			image.dimensions(inputSpans[i]);

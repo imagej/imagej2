@@ -69,8 +69,8 @@ public final class TypeChanger {
 	public static <T extends RealType<T> & NativeType<T>> void changeType(
 		final Dataset dataset, final T newType)
 	{
-		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImage();
-		dataset.setImage(copyToType(inputImg, newType));
+		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
+		dataset.setImgPlus(copyToType(inputImg, newType));
 	}
 
 	/**
