@@ -108,6 +108,8 @@ public class NAryOperation<T extends RealType<T>> {
 		this.output = null;
 		if (!function.canAccept(2)) throw new IllegalArgumentException(
 			"NAryOperation constructor - given function cannot accept two inputs");
+
+		initializeSubregionVariables();
 	}
 
 	/**
@@ -123,6 +125,8 @@ public class NAryOperation<T extends RealType<T>> {
 		if (!function.canAccept(inputs.size())) throw new IllegalArgumentException(
 			"NAryOperation constructor - given function cannot accept " +
 				inputs.size() + " inputs");
+
+		initializeSubregionVariables();
 	}
 
 	// -- public interface --
