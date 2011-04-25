@@ -37,14 +37,15 @@ package imagej.display.view;
 import java.awt.Adjustable;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import net.imglib2.img.Axis;
 
 /**
+ * TODO
  *
- * @author GBH
+ * @author Grant Harris
  */
 public class DimensionSliderPanel extends JPanel {
 	/*
@@ -58,10 +59,9 @@ public class DimensionSliderPanel extends JPanel {
 		//setPreferredSize(new Dimension(200, 18));
 		// add one slider per dimension beyond the first two
 		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
-		Axis[] a = view.getImg().getAxes();
 		for (int d = 2; d < view.getImg().numDimensions(); d++) {
 			final int dim = d;
-			String label = a[d].getLabel();
+			String label = view.getImg().axis(d).getLabel();
 			// System.out.println("d = " + d);
 			final int dimLength = (int) view.getImg().dimension(d);
 			
