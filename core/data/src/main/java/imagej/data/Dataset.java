@@ -82,7 +82,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class Dataset implements Comparable<Dataset>, Metadata {
 
-	private ImgPlus<? extends RealType<?>> img;
+	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean isRgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
@@ -104,8 +104,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	// END FIXME TEMP
 
-	public Dataset(final ImgPlus<? extends RealType<?>> img) {
-		this.img = img;
+	public Dataset(final ImgPlus<? extends RealType<?>> imgPlus) {
+		this.imgPlus = imgPlus;
 		this.isRgbMerged = false;
 		this.selection = new Rect();
 		Events.publish(new DatasetCreatedEvent(this));
@@ -127,16 +127,16 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		return isRgbMerged;
 	}
 
-	public ImgPlus<? extends RealType<?>> getImage() {
-		return img;
+	public ImgPlus<? extends RealType<?>> getImgPlus() {
+		return imgPlus;
 	}
 
-	public void setImage(final ImgPlus<? extends RealType<?>> newImageData) {
-		if (img.numDimensions() != newImageData.numDimensions()) {
+	public void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus) {
+		if (this.imgPlus.numDimensions() != imgPlus.numDimensions()) {
 			throw new IllegalArgumentException("Invalid dimensionality: expected " +
-				img.numDimensions() + " but was " + newImageData.numDimensions());
+				this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
 		}
-		this.img = newImageData;
+		this.imgPlus = imgPlus;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 		this.selection = new Rect();
@@ -146,15 +146,15 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	/** Gets the dimensional extents of the dataset. */
 	public long[] getDims() {
-		final long[] dims = new long[img.numDimensions()];
-		img.dimensions(dims);
+		final long[] dims = new long[imgPlus.numDimensions()];
+		imgPlus.dimensions(dims);
 		return dims;
 	}
 
 	public Object getPlane(final int no) {
-		if (!(img instanceof PlanarAccess)) return null;
+		if (!(imgPlus instanceof PlanarAccess)) return null;
 		// TODO - extract a copy the plane if it cannot be obtained by reference
-		final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
+		final PlanarAccess<?> planarAccess = (PlanarAccess<?>) imgPlus;
 		final Object plane = planarAccess.getPlane(no);
 		if (!(plane instanceof ArrayDataAccess)) return null;
 		return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
@@ -162,7 +162,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlane(final int no, final Object plane) {
-		final Img<? extends RealType<?>> wrappedImg = img.getImg();
+		final Img<? extends RealType<?>> wrappedImg = imgPlus.getImg();
 		if (!(wrappedImg instanceof PlanarAccess)) {
 			// cannot set by reference
 			Log.error("Cannot set plane for non-planar image");
@@ -194,14 +194,14 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	public double getDoubleValue(final long[] pos) {
 		// NB: This method is slow... will change anyway with ImgLib2.
-		final RandomAccess<? extends RealType<?>> cursor = img.randomAccess();
+		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
 		final double value = cursor.get().getRealDouble();
 		return value;
 	}
 
 	public RealType<?> getType() {
-		return img.firstElement();
+		return imgPlus.firstElement();
 	}
 
 	public boolean isSigned() {
@@ -231,16 +231,16 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	/** Creates a copy of the dataset, but without copying any pixel values. */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Dataset duplicateBlank() {
-		final ImgPlus untypedImg = img;
+		final ImgPlus untypedImg = imgPlus;
 		return new Dataset(createBlankCopy(untypedImg));
 	}
 
 	/** Copies the dataset's pixels into the given target dataset. */
 	public void copyInto(final Dataset target) {
-		final Cursor<? extends RealType<?>> in = img.localizingCursor();
+		final Cursor<? extends RealType<?>> in = imgPlus.localizingCursor();
 		final RandomAccess<? extends RealType<?>> out =
-			target.getImage().randomAccess();
-		final long[] position = new long[img.numDimensions()];
+			target.getImgPlus().randomAccess();
+		final long[] position = new long[imgPlus.numDimensions()];
 
 		while (in.hasNext()) {
 			in.next();
@@ -266,36 +266,36 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	@Override
 	public String toString() {
-		return img.getName();
+		return imgPlus.getName();
 	}
 
 	// -- Comparable methods --
 
 	@Override
 	public int compareTo(final Dataset dataset) {
-		return img.getName().compareTo(dataset.img.getName());
+		return imgPlus.getName().compareTo(dataset.imgPlus.getName());
 	}
 
 	// -- Metadata methods --
 
 	@Override
 	public String getName() {
-		return img.getName();
+		return imgPlus.getName();
 	}
 
 	@Override
 	public Axis[] getAxes() {
-		return img.getAxes();
+		return imgPlus.getAxes();
 	}
 
 	@Override
 	public int getAxisIndex(final Axis axis) {
-		return img.getAxisIndex(axis);
+		return imgPlus.getAxisIndex(axis);
 	}
 
 	@Override
 	public float[] getCalibration() {
-		return img.getCalibration();
+		return imgPlus.getCalibration();
 	}
 
 	// -- Utility methods --

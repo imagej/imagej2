@@ -107,7 +107,7 @@ public class CropImage implements ImageJPlugin {
 		 */
 		@Override
 		public boolean checkInput() {
-			inputImage = input.getImage();
+			inputImage = input.getImgPlus();
 
 			long[] newDimensions = new long[inputImage.numDimensions()];
 

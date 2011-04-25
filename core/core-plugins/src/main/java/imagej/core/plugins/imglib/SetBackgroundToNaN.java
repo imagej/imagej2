@@ -89,7 +89,7 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 		if (input == null)
 			throw new IllegalArgumentException("input Dataset is null");
 		
-		if (input.getImage() == null)
+		if (input.getImgPlus() == null)
 			throw new IllegalArgumentException("input Image is null");
 			
 		if (loThreshold > hiThreshold)
@@ -98,7 +98,7 @@ public class SetBackgroundToNaN implements ImageJPlugin {
 	}
 	
 	private void setupWorkingData() {
-		inputImage = input.getImage();
+		inputImage = input.getImgPlus();
 	}
 	
 	private void assignPixels() {

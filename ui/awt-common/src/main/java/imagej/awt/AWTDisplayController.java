@@ -196,12 +196,12 @@ public class AWTDisplayController implements DisplayController {
 	 * </p>
 	 */
 	private BufferedImage makeImage() {
-		final long width = dataset.getImage().dimension(xIndex);
+		final long width = dataset.getImgPlus().dimension(xIndex);
 		if (width < 0 || width > Integer.MAX_VALUE) {
 			throw new IllegalStateException("Width out of range: " + width);
 		}
 		final int w = (int) width;
-		final long height = dataset.getImage().dimension(yIndex);
+		final long height = dataset.getImgPlus().dimension(yIndex);
 		if (height < 0 || height > Integer.MAX_VALUE) {
 			throw new IllegalStateException("Height out of range: " + height);
 		}
@@ -216,7 +216,7 @@ public class AWTDisplayController implements DisplayController {
 			position[i] = pos[p++];
 		}
 		final RandomAccess<? extends RealType<?>> randomAccess =
-			dataset.getImage().randomAccess();
+			dataset.getImgPlus().randomAccess();
 		// create a grayscale image representation of data
 		// TODO - broken for float types - may need to range of actual pixel values
 		final double rangeMin = randomAccess.get().getMinValue();

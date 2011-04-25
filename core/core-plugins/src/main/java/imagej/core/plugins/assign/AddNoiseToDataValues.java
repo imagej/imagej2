@@ -120,7 +120,7 @@ public class AddNoiseToDataValues {
 	 * upon its underlying data type
 	 */
 	private void calcTypeMinAndMax() {
-		Cursor<? extends RealType<?>> cursor = input.getImage().cursor();
+		Cursor<? extends RealType<?>> cursor = input.getImgPlus().cursor();
 		rangeMin = cursor.get().getMinValue();
 		rangeMax = cursor.get().getMaxValue();
 	}

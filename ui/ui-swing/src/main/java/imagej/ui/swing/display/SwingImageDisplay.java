@@ -127,8 +127,8 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
 		// dataset.getImgPlus()... 
-		lastKnownDimensions = new long[dataset.getImage().numDimensions()];
-		dataset.getImage().dimensions(lastKnownDimensions);
+		lastKnownDimensions = new long[dataset.getImgPlus().numDimensions()];
+		dataset.getImgPlus().dimensions(lastKnownDimensions);
 		// imgCanvas = new ImageCanvasSwing();
 		imgCanvas = new SwingNavigableImageCanvas();
 		imgWindow = new SwingImageDisplayWindow(imgCanvas);
@@ -162,8 +162,8 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void update() {
 		// did the shape of the dataset change?
 		boolean changed = false;
-		for (int i=0; i<theDataset.getImage().numDimensions(); i++) {
-			final long dim = theDataset.getImage().dimension(i);
+		for (int i=0; i<theDataset.getImgPlus().numDimensions(); i++) {
+			final long dim = theDataset.getImgPlus().dimension(i);
 			if (dim != lastKnownDimensions[i]) {
 				changed = true;
 				break;
@@ -171,7 +171,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		}
 		// TODO - maybe this should be handled in the onEvent(DatasetChangedEvent) handler
 		if (changed) {
-			theDataset.getImage().dimensions(lastKnownDimensions);
+			theDataset.getImgPlus().dimensions(lastKnownDimensions);
 			controller.setDataset(theDataset);
 			imgCanvas.setZoom(1.0);
 			imgCanvas.setPan(0,0);

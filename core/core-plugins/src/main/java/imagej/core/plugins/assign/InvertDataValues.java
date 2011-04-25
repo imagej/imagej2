@@ -88,7 +88,7 @@ public class InvertDataValues implements ImageJPlugin {
 		min = Double.MAX_VALUE;
 		max = -Double.MAX_VALUE;
 
-		Cursor<? extends RealType<?>> cursor = input.getImage().cursor();
+		Cursor<? extends RealType<?>> cursor = input.getImgPlus().cursor();
 
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();

@@ -77,7 +77,7 @@ public class FlipHorizontally implements ImageJPlugin {
 		private long maxX;
 		
 		HorzFlipTransformer(Dataset input) {
-			maxX = input.getImage().dimension(0);
+			maxX = input.getImgPlus().dimension(0);
 			Rect currentSelection = input.getSelection();
 			if (currentSelection.width > 0)
 				maxX = currentSelection.x + currentSelection.width;

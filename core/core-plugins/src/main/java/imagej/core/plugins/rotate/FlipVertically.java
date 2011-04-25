@@ -77,7 +77,7 @@ public class FlipVertically implements ImageJPlugin {
 		private long maxY;
 		
 		VertFlipTransformer(Dataset input) {
-			maxY = input.getImage().dimension(1);
+			maxY = input.getImgPlus().dimension(1);
 			Rect currentSelection = input.getSelection();
 			if (currentSelection.height > 0)
 				maxY = currentSelection.y + currentSelection.height;

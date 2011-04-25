@@ -131,7 +131,7 @@ public class ProbeTool extends BaseTool {
 		if (d != dataset) {
 			clearWorkingVariables();
 			dataset = d;
-			final Img<? extends RealType<?>> image = d.getImage();
+			final Img<? extends RealType<?>> image = d.getImgPlus();
 			randomAccess = image.randomAccess();
 			position = new long[image.numDimensions()];
 			randomAccess.localize(position);

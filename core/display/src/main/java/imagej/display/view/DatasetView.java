@@ -72,7 +72,7 @@ public class DatasetView {
 		final int channelDimIndex, final ArrayList<ColorTable8> luts, boolean composite) {
 
 		this.dataset = dataset;
-		this.img = dataset.getImage();
+		this.img = dataset.getImgPlus();
 		this.channelDimIndex = channelDimIndex;
 		this.luts = luts;
 		screenImage =

@@ -90,7 +90,7 @@ public class Neighborhood3x3Operation {
 		if (input == null)
 			throw new IllegalArgumentException("input Dataset is null");
 		
-		if (input.getImage() == null)
+		if (input.getImgPlus() == null)
 			throw new IllegalArgumentException("input Img is null");
 
 		//if (input.getImage().numDimensions() != 2)
@@ -100,7 +100,7 @@ public class Neighborhood3x3Operation {
 
 	private void setupWorkingData()
 	{
-		inputImage = input.getImage();
+		inputImage = input.getImgPlus();
 		inputImageCopy = cloneImage(inputImage);
 		selection = input.getSelection();
 	}
