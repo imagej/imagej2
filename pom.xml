@@ -31,8 +31,6 @@
 		<imglib2.version>2.0-SNAPSHOT</imglib2.version>
 		<jetty.version>8.0.0.M1</jetty.version>
 		<junit.version>4.8.1</junit.version>
-		<netbeans.hint.license>bsd</netbeans.hint.license>
-		<netbeans.version>RELEASE691</netbeans.version>
 		<!-- NB: Avoid platform encoding warning when copying resources. -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -329,12 +327,6 @@
 		<repository>
 			<id>java.net</id>
 			<url>http://download.java.net/maven/2</url>
-		</repository>
-		<!-- NB: for netbeans -->
-		<repository>
-			<id>netbeans</id>
-			<name>Repository for hosting NetBeans API artifacts</name>
-			<url>http://bits.netbeans.org/maven2</url>
 		</repository>
 	</repositories>
 
