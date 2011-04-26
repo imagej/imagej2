@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Builder of DatasetViews...
@@ -49,11 +50,10 @@ import net.imglib2.img.ImgPlus;
  */
 public class DatasetViewBuilder {
 
-	/*
-	 * Grayscale view - no ColorTable
-	 */
-	public static DatasetView createView(final String name, final ImgPlus img) {
-		final Dataset dataset = new Dataset(img);
+	/** Creates a grayscale view with no color table. */
+	public static DatasetView createView(final String name,
+		final ImgPlus<? extends RealType<?>> img)
+	{
 		return createView(name, new Dataset(img));
 	}
 
@@ -64,11 +64,9 @@ public class DatasetViewBuilder {
 		return view;
 	}
 
-	/*
-	 * // create an RGB 3-channel Compositeview
-	 */
+	/** Creates an RGB 3-channel composite view. */
 	public static DatasetView createCompositeRGBView(final String name,
-		final ImgPlus img)
+		final ImgPlus<? extends RealType<?>> img)
 	{
 		return createCompositeRGBView(name, new Dataset(img));
 	}
@@ -76,7 +74,7 @@ public class DatasetViewBuilder {
 	public static DatasetView createCompositeRGBView(final String name,
 		final Dataset dataset)
 	{
-		final ImgPlus img = dataset.getImgPlus();
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 		final ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
 		lutList.add(ColorTables.RED);
 		lutList.add(ColorTables.GREEN);
@@ -98,16 +96,15 @@ public class DatasetViewBuilder {
 	// Composite
 	//
 	public static DatasetView createCompositeView(final String name,
-		final ImgPlus img)
+		final ImgPlus<? extends RealType<?>> img)
 	{
-		final Dataset dataset = new Dataset(img);
 		return createCompositeView(name, new Dataset(img));
 	}
 
 	public static DatasetView createCompositeView(final String name,
 		final Dataset dataset)
 	{
-		final ImgPlus img = dataset.getImgPlus();
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 		// create a multichannel Compositeview, up to 6 channels
 		final int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
 		final ArrayList<ColorTable8> lutList = defaultLutList(channels);
@@ -123,9 +120,8 @@ public class DatasetViewBuilder {
 	// Multichannel, not composite
 	//
 	public static DatasetView createMultichannelView(final String name,
-		final ImgPlus img)
+		final ImgPlus<? extends RealType<?>> img)
 	{
-		final Dataset dataset = new Dataset(img);
 		return createMultichannelView(name, new Dataset(img));
 	}
 
@@ -133,7 +129,7 @@ public class DatasetViewBuilder {
 		final Dataset dataset)
 	{
 		// create a multichannel Compositeview, up to 6 channels
-		final ImgPlus img = dataset.getImgPlus();
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 		final int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
 		final ArrayList<ColorTable8> lutList = defaultLutList(channels);
 		final int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);

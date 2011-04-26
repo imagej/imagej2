@@ -42,9 +42,12 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * RealLUTConverter contains a {@link ColorTable8}, through which samples are
+ * filtered. Sample values are interpreted as indices into the color table.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
+ * @see CompositeXYProjector
  * @see RealARGBConverter for the code upon which this class was based.
  */
 public class RealLUTConverter<R extends RealType<R>> extends
@@ -64,7 +67,7 @@ public class RealLUTConverter<R extends RealType<R>> extends
 		this.lut = lut;
 	}
 
-	public void setLut(ColorTable8 lut) {
+	public void setLut(final ColorTable8 lut) {
 		this.lut = lut;
 	}
 
@@ -74,6 +77,7 @@ public class RealLUTConverter<R extends RealType<R>> extends
 		final int b =
 			Math.min(255, roundPositive(Math.max(0, ((a - min) / scale * 255.0))));
 		final int argb = lut.argb(b);
+		// TODO - was "new ARGBType(argb)" for CompositeLUTConverter
 		output.set(argb);
 	}
 

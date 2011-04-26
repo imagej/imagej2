@@ -40,21 +40,24 @@ import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.converter.Converter;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.Img;
 
 /**
- * Creates a composite image from multi-channel source. Takes a list of
- * {@link Converter}s to apply a LUT for each channel.
+ * Creates a composite image from across multiple dimensional positions along an
+ * axis (typically, but not necessarily, channels). Takes a list of
+ * {@link Converter}s to apply a {@link ColorTable8} for each channel.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  * @see XYProjector for the code upon which this class was based.
  */
 public class CompositeXYProjector<A, B> extends XYProjector<A, B> {
 
 	final protected ArrayList<Converter<A, B>> converters;
-	private final int channelDimIndex;
-	private final int numChannels;
+	private final int dimIndex;
+	private final long positionCount;
 
 	public CompositeXYProjector(final Img<A> source,
 		final IterableInterval<B> target,
@@ -62,13 +65,14 @@ public class CompositeXYProjector<A, B> extends XYProjector<A, B> {
 	{
 		super(source, target, null);
 		this.converters = converters;
-		this.channelDimIndex = channelDimIndex;
-		// check that there is a converter for each channel
-		numChannels = converters.size();
-		System.out.println("source.dimension(channelDimIndex)=" +
-			source.dimension(channelDimIndex));
-		if (numChannels != source.dimension(channelDimIndex)) {
-			throw new IllegalArgumentException();
+		this.dimIndex = channelDimIndex;
+
+		// check that there is one converter per dimensional position
+		positionCount = source.dimension(channelDimIndex);
+		final int converterCount = converters.size();
+		if (positionCount != converterCount) {
+			throw new IllegalArgumentException("Expected " + positionCount +
+				" converters but got " + converterCount);
 		}
 	}
 
@@ -76,9 +80,8 @@ public class CompositeXYProjector<A, B> extends XYProjector<A, B> {
 	public void map() {
 		final Cursor<B> targetCursor = target.cursor();
 		final RandomAccess<A> sourceRandomAccess = source.randomAccess();
-		for (int i = 0; i < numChannels; i++) {
-			System.out.println("channel: " + i);
-			position[channelDimIndex] = i;
+		for (int i = 0; i < positionCount; i++) {
+			position[dimIndex] = i;
 			sourceRandomAccess.setPosition(position);
 			targetCursor.reset();
 			while (targetCursor.hasNext()) {

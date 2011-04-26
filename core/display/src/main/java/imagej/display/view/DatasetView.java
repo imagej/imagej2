@@ -99,7 +99,7 @@ public class DatasetView {
 			if (composite) { // multichannel composite
 				for (int i = 0; i < luts.size(); i++) {
 					final ColorTable8 lut = luts.get(i);
-					converters.add(new CompositeLUTConverter(min, max, lut));
+					converters.add(new RealLUTConverter(min, max, lut));
 				}
 				projector =
 					new CompositeXYProjector(img, screenImage, converters,

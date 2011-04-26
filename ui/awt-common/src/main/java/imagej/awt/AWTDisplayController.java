@@ -104,14 +104,23 @@ public class AWTDisplayController implements DisplayController {
 	DatasetView view;
 	boolean composite = false;
 
+	boolean displayAsComposite(final Dataset dataset) {
+		boolean isComposite = false;
+		int compositeChannelCount = dataset.getImgPlus().getCompositeChannelCount();
+		// return 1-N channels, usually 1 or N
+		isComposite = compositeChannelCount > 1;
+		System.out.println("compositeChannelCount = " + compositeChannelCount);
+		return isComposite;
+	}
+
 	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 		//dataset.getImgPlus();
-		composite = false;
+		composite = true;
 		//view = DatasetViewBuilder.createView(dataset.getName(), dataset);
-		//view = DatasetViewBuilder.createCompositeView(dataset.getName(), dataset);
-		view = DatasetViewBuilder.createMultichannelView(dataset.getName(), dataset);
+		view = DatasetViewBuilder.createCompositeView(dataset.getName(), dataset);
+		//view = DatasetViewBuilder.createMultichannelView(dataset.getName(), dataset);
 		dims = dataset.getDims();
 		dimLabels = dataset.getAxes();
 		imageName = dataset.getName();

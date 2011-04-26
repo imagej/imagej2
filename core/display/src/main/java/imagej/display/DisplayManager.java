@@ -38,7 +38,7 @@ import imagej.Manager;
 import imagej.ManagerComponent;
 
 /**
- * Manager component for tracking the active display
+ * Manager component for working with {@link Display}s.
  *
  * @author Barry DeZonia
  */

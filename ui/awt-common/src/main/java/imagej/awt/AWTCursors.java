@@ -39,7 +39,7 @@ import imagej.display.MouseCursor;
 import java.awt.Cursor;
 
 /**
- * TODO To decouple Cursors from GUI toolkit March 19: Not used yet
+ * Translates ImageJ {@link MouseCursor}s into AWT cursor codes.
  * 
  * @author Grant Harris
  */
