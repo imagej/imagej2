@@ -42,12 +42,15 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
+//TODO - eliminate dependencies on AWT and Swing
+
 /**
  * TODO
- *
+ * 
  * @author Grant Harris
  */
 public class DimensionSliderPanel extends JPanel {
+
 	/*
 	 * CompositeSliderPanel
 	 * If there is a channel dimension is displayed as a composite, 
@@ -56,25 +59,26 @@ public class DimensionSliderPanel extends JPanel {
 
 	public DimensionSliderPanel(final DatasetView view) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		//setPreferredSize(new Dimension(200, 18));
+		// setPreferredSize(new Dimension(200, 18));
 		// add one slider per dimension beyond the first two
 		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
 		for (int d = 2; d < view.getImg().numDimensions(); d++) {
 			final int dim = d;
-			String label = view.getImg().axis(d).getLabel();
+			final String label = view.getImg().axis(d).getLabel();
 			// System.out.println("d = " + d);
 			final int dimLength = (int) view.getImg().dimension(d);
-			
-			final JScrollBar bar = new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
-			//bar.setPreferredSize(new Dimension(500,32));
+
+			final JScrollBar bar =
+				new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
+			// bar.setPreferredSize(new Dimension(500,32));
 			bar.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
-				public void adjustmentValueChanged(AdjustmentEvent e) {
+				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					final int value = bar.getValue();
-					//System.out.println("dim #" + dim + ": value->" + value);//TEMP
+					// System.out.println("dim #" + dim + ": value->" + value);//TEMP
 					view.setPosition(value, dim);
-					//view.project();
+					// view.project();
 				}
 			});
 			add(bar);

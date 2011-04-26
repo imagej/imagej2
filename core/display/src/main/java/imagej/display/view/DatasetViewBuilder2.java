@@ -1,9 +1,44 @@
+//
+// DatasetViewBuilder2.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.display.view;
 
 import imagej.data.Dataset;
 import imagej.display.ImageCanvas;
-import imagej.display.lut.ColorTables;
+
 import java.util.ArrayList;
+
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
@@ -16,7 +51,7 @@ import net.imglib2.type.numeric.RealType;
 /**
  * Builder of DatasetViews...
  * 
- * @author GBH
+ * @author Grant Harris
  */
 public class DatasetViewBuilder2 {
 
@@ -27,30 +62,36 @@ public class DatasetViewBuilder2 {
 //		this.img = dataset.getImage();
 //		this.channelDimIndex = channelDimIndex;
 //		this.luts = luts;
-	
-	public static DatasetView2 createView(final String name, final ImgPlus img, boolean composite) {
-		return createView(name, img, (int) img.dimension(0), (int) img.dimension(1), composite);
-		
+
+	public static DatasetView2 createView(final String name, final ImgPlus img,
+		final boolean composite)
+	{
+		return createView(name, img, (int) img.dimension(0), (int) img
+			.dimension(1), composite);
+
 	}
-	public static DatasetView2 createView(final String name, final 
-			ImgPlus imgIn, int scrnImgW, int scrnImgH, boolean composite) {
-		
-		Dataset dataset = null;
+
+	public static DatasetView2 createView(final String name,
+		final ImgPlus imgIn, final int scrnImgW, final int scrnImgH,
+		final boolean composite)
+	{
+
+		final Dataset dataset = null;
 		ARGBScreenImage screenImage;
-		ArrayList<Converter<? extends RealType<?>, ARGBType>> converters =
-				new ArrayList<Converter<? extends RealType<?>, ARGBType>>();
-		XYProjector<? extends RealType<?>, ARGBType> projector = null;
-		int positionX;
-		int positionY;
-		ImgPlus<? extends RealType<?>> imgP;
-		ImageCanvas imgCanvas;
-		ArrayList<ColorTable8> luts;
-		int channelDimIndex = -1;
-		
+		final ArrayList<Converter<? extends RealType<?>, ARGBType>> converters =
+			new ArrayList<Converter<? extends RealType<?>, ARGBType>>();
+		final XYProjector<? extends RealType<?>, ARGBType> projector = null;
+		final int positionX;
+		final int positionY;
+		final ImgPlus<? extends RealType<?>> imgP;
+		final ImageCanvas imgCanvas;
+		final ArrayList<ColorTable8> luts;
+		final int channelDimIndex = -1;
+
 		screenImage = new ARGBScreenImage(scrnImgW, scrnImgH);
-		
+
 		final int min = 0, max = 255;
-		
+
 //
 //		if (channelDimIndex < 0) { // No channels
 //			if (luts != null) { // single channel, use lut for display.
@@ -75,29 +116,33 @@ public class DatasetViewBuilder2 {
 //		}
 //		projector.map();
 //	}
-		
-		return new DatasetView2( name, dataset, converters, projector, screenImage, channelDimIndex, composite);
+
+		return new DatasetView2(name, dataset, converters, projector, screenImage,
+			channelDimIndex, composite);
 	}
 
 	/*
 	 * // create an RGB 3-channel Compositeview
 	 */
 
-	public static DatasetView createCompositeRGBView(final String name, final ImgPlus img) {
-		ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
+	public static DatasetView createCompositeRGBView(final String name,
+		final ImgPlus img)
+	{
+		final ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
 		lutList.add(ColorTables.RED);
 		lutList.add(ColorTables.GREEN);
 		lutList.add(ColorTables.BLUE);
-		int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
+		final int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
 		if (channelDimIndex < 0) {
 			System.err.println("No Channel dimension.");
 		}
-		int channels = (int) img.dimension(channelDimIndex);
+		final int channels = (int) img.dimension(channelDimIndex);
 		if (channels != 3) {
 			System.err.println("Creating RBG composite, but not 3 channels");
 		}
-		Dataset dataset = new Dataset(img);
-		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, true);
+		final Dataset dataset = new Dataset(img);
+		final DatasetView view =
+			new DatasetView(name, dataset, channelDimIndex, lutList, true);
 
 		return view;
 	}
@@ -106,39 +151,45 @@ public class DatasetViewBuilder2 {
 	 * Grayscale view
 	 */
 	public static DatasetView createView(final String name, final ImgPlus img) {
-		Dataset dataset = new Dataset(img);
+		final Dataset dataset = new Dataset(img);
 		final DatasetView view = new DatasetView(name, dataset, -1, null, false);
 		return view;
 	}
 
-	public static DatasetView createCompositeView(final String name, final ImgPlus img) {
+	public static DatasetView createCompositeView(final String name,
+		final ImgPlus img)
+	{
 		// create a multichannel Compositeview, up to 6 channels
-		int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
-		ArrayList<ColorTable8> lutList = defaultLutList(channels);
-		int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
+		final int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
+		final ArrayList<ColorTable8> lutList = defaultLutList(channels);
+		final int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
 		if (channelDimIndex < 0) {
-			//"No Channel dimension."
+			// "No Channel dimension."
 		}
-		Dataset dataset = new Dataset(img);
-		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, true);
+		final Dataset dataset = new Dataset(img);
+		final DatasetView view =
+			new DatasetView(name, dataset, channelDimIndex, lutList, true);
 		return view;
 	}
 
-	public static DatasetView createMultichannelView(final String name, final ImgPlus img) {
+	public static DatasetView createMultichannelView(final String name,
+		final ImgPlus img)
+	{
 		// create a multichannel Compositeview, up to 6 channels
-		int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
-		ArrayList<ColorTable8> lutList = defaultLutList(channels);
-		int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
+		final int channels = (int) img.dimension(img.getAxisIndex(Axes.CHANNEL));
+		final ArrayList<ColorTable8> lutList = defaultLutList(channels);
+		final int channelDimIndex = img.getAxisIndex(Axes.CHANNEL);
 		if (channelDimIndex < 0) {
-			//"No Channel dimension."
+			// "No Channel dimension."
 		}
-		Dataset dataset = new Dataset(img);
-		final DatasetView view = new DatasetView(name, dataset, channelDimIndex, lutList, false);
+		final Dataset dataset = new Dataset(img);
+		final DatasetView view =
+			new DatasetView(name, dataset, channelDimIndex, lutList, false);
 		return view;
 	}
 
-	private static ArrayList<ColorTable8> defaultLutList(int channels) {
-		ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
+	private static ArrayList<ColorTable8> defaultLutList(final int channels) {
+		final ArrayList<ColorTable8> lutList = new ArrayList<ColorTable8>();
 		lutList.add(ColorTables.RED);
 		if (channels > 1) {
 			lutList.add(ColorTables.GREEN);

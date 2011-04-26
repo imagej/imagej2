@@ -32,11 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.lut;
+package imagej.display.view;
 
 import java.awt.Color;
 
 import net.imglib2.display.ColorTable8;
+
+// TODO - eliminate AWT dependency
 
 /**
  * Built-in lookup tables.

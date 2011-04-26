@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,7 +30,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.display.view;
 
 import imagej.data.Dataset;
@@ -41,15 +42,14 @@ import java.util.ArrayList;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.display.RealARGBConverter;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Composite color image with arbitrary number of channels, each with a ColorTable8 A
- * View into a a Dataset
+ * A view into a {@link Dataset}, consisting of a omposite color image with
+ * arbitrary number of channels, each with a {@link ColorTable8}.
  * 
  * @author Grant Harris
  */
@@ -59,7 +59,7 @@ public class DatasetView2 {
 	private final ARGBScreenImage screenImage;
 	private final ArrayList<Converter<? extends RealType<?>, ARGBType>> converters =
 		new ArrayList<Converter<? extends RealType<?>, ARGBType>>();
-	private XYProjector<? extends RealType<?>, ARGBType> projector;
+	private final XYProjector<? extends RealType<?>, ARGBType> projector;
 	private int positionX;
 	private int positionY;
 	private final ImgPlus<? extends RealType<?>> img;
@@ -69,9 +69,11 @@ public class DatasetView2 {
 	private final boolean composite;
 
 	public DatasetView2(final String name, final Dataset dataset,
-			ArrayList<Converter<? extends RealType<?>, ARGBType>> converters,
-			XYProjector<? extends RealType<?>, ARGBType> projector,
-			ARGBScreenImage screenImage, int channelDimIndex, boolean composite)	 {
+		final ArrayList<Converter<? extends RealType<?>, ARGBType>> converters,
+		final XYProjector<? extends RealType<?>, ARGBType> projector,
+		final ARGBScreenImage screenImage, final int channelDimIndex,
+		final boolean composite)
+	{
 		this.dataset = dataset;
 		this.img = dataset.getImgPlus();
 		this.screenImage = screenImage;
@@ -80,7 +82,7 @@ public class DatasetView2 {
 		this.channelDimIndex = channelDimIndex;
 		projector.map();
 	}
-			
+
 //	public DatasetView2(final String name, final Dataset dataset,
 //		final int channelDimIndex, final ArrayList<ColorTable8> luts, boolean composite) {
 //
@@ -146,7 +148,8 @@ public class DatasetView2 {
 		return screenImage;
 	}
 
-	public ArrayList<Converter<? extends RealType<?>, ARGBType>> getConverters() {
+	public ArrayList<Converter<? extends RealType<?>, ARGBType>> getConverters()
+	{
 		return converters;
 	}
 
@@ -154,8 +157,7 @@ public class DatasetView2 {
 		return projector;
 	}
 
-	void project() {
-	}
+	void project() {}
 
 	public void setPosition(final int value, final int dim) {
 		if (!composite) {
@@ -165,9 +167,11 @@ public class DatasetView2 {
 					((LutXYProjector) projector).setLut(luts.get(value));
 				}
 			}
-		} else { // is composite
-			// if more than one channel, and the dim changed is the Channel dim, change the lut.
-			// values needs to increment n, where n = number of channels 
+		}
+		else { // is composite
+			// if more than one channel, and the dim changed is the Channel dim,
+			// change the lut.
+			// values needs to increment n, where n = number of channels
 			projector.setPosition(value, dim);
 		}
 		projector.map();

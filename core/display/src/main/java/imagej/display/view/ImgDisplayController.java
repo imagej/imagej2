@@ -38,8 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * TODO
  *
- * @author GBH
+ * @author Grant Harris
  */
 public class ImgDisplayController {
 	
