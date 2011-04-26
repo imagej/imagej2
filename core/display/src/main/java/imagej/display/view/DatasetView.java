@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,7 +30,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.display.view;
 
 import imagej.data.Dataset;
@@ -48,8 +49,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Composite color image with arbitrary number of channels, each with a ColorTable8 A
- * View into a a Dataset
+ * A view into a {@link Dataset}, for use with a {@link Display}.
  * 
  * @author Grant Harris
  */
@@ -64,13 +64,15 @@ public class DatasetView {
 	private int positionY;
 	private final ImgPlus<? extends RealType<?>> img;
 	private ImageCanvas imgCanvas;
-	private ArrayList<ColorTable8> luts;
+	private final ArrayList<ColorTable8> luts;
 
 	int channelDimIndex;
 	private final boolean composite;
 
 	public DatasetView(final String name, final Dataset dataset,
-		final int channelDimIndex, final ArrayList<ColorTable8> luts, boolean composite) {
+		final int channelDimIndex, final ArrayList<ColorTable8> luts,
+		final boolean composite)
+	{
 
 		this.dataset = dataset;
 		this.img = dataset.getImgPlus();
@@ -85,27 +87,33 @@ public class DatasetView {
 			if (luts != null) { // single channel, use lut for display.
 				projector =
 					new XYProjector(img, screenImage, new RealLUTConverter(min, max,
-					luts.get(0)));
-			} else {
+						luts.get(0)));
+			}
+			else {
 				projector =
 					new XYProjector(img, screenImage, new RealARGBConverter(min, max));
 			}
-		} else {
+		}
+		else {
 
 			if (composite) { // multichannel composite
 				for (int i = 0; i < luts.size(); i++) {
-					ColorTable8 lut = luts.get(i);
+					final ColorTable8 lut = luts.get(i);
 					converters.add(new CompositeLUTConverter(min, max, lut));
 				}
-				projector = new CompositeXYProjector(img, screenImage, converters, channelDimIndex);
-			} else { // multichannel with sep. ColorTable8 for each
-				projector = new LutXYProjector(img, screenImage, new RealLUTConverter(min, max, luts.get(0)));
+				projector =
+					new CompositeXYProjector(img, screenImage, converters,
+						channelDimIndex);
+			}
+			else { // multichannel with sep. ColorTable8 for each
+				projector =
+					new LutXYProjector(img, screenImage, new RealLUTConverter(min, max,
+						luts.get(0)));
 			}
 		}
 		projector.map();
 	}
-	
-	
+
 	public int getChannelDimIndex() {
 		return channelDimIndex;
 	}
@@ -113,7 +121,7 @@ public class DatasetView {
 	public ArrayList<ColorTable8> getLuts() {
 		return luts;
 	}
-	
+
 	public void setImgCanvas(final ImageCanvas imgCanvas) {
 		this.imgCanvas = imgCanvas;
 	}
@@ -143,7 +151,8 @@ public class DatasetView {
 		return screenImage;
 	}
 
-	public ArrayList<Converter<? extends RealType<?>, ARGBType>> getConverters() {
+	public ArrayList<Converter<? extends RealType<?>, ARGBType>> getConverters()
+	{
 		return converters;
 	}
 
@@ -151,8 +160,7 @@ public class DatasetView {
 		return projector;
 	}
 
-	void project() {
-	}
+	void project() {}
 
 	public void setPosition(final int value, final int dim) {
 		if (!composite) {
@@ -162,9 +170,11 @@ public class DatasetView {
 					((LutXYProjector) projector).setLut(luts.get(value));
 				}
 			}
-		} else { // is composite
-			// if more than one channel, and the dim changed is the Channel dim, change the lut.
-			// values needs to increment n, where n = number of channels 
+		}
+		else { // is composite
+			// if more than one channel, and the dim changed is the Channel dim,
+			// change the lut.
+			// values needs to increment n, where n = number of channels
 			projector.setPosition(value, dim);
 		}
 		projector.map();

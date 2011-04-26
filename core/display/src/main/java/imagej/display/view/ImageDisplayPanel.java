@@ -37,42 +37,49 @@ package imagej.display.view;
 import imagej.data.event.DatasetChangedEvent;
 import imagej.display.ImageCanvas;
 import imagej.event.EventSubscriber;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
+
+// TODO - eliminate dependencies on AWT and Swing
 
 /**
- *
- * @author GBH
+ * TODO
+ * 
+ * @author Grant Harris
  */
-public class ImageDisplayPanel extends JPanel implements EventSubscriber<DatasetChangedEvent>, ImageCanvas {
+public class ImageDisplayPanel extends JPanel implements
+	EventSubscriber<DatasetChangedEvent>, ImageCanvas
+{
 
 	protected int maxWidth = 0, maxHeight = 0;
 	ImgDisplayController ctrl;
 	ImagePanel imgPanel;
-	//JPanel controlPanel = new JPanel();
-	
-	public ImageDisplayPanel(ImgDisplayController ctrl) {
+
+	// JPanel controlPanel = new JPanel();
+
+	public ImageDisplayPanel(final ImgDisplayController ctrl) {
 		this.ctrl = ctrl;
-		//setBorder(new TitledBorder(view.getImg().getName()));
+		// setBorder(new TitledBorder(view.getImg().getName()));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		//setLayout(new BorderLayout());
+		// setLayout(new BorderLayout());
 		imgPanel = new ImagePanel();
 		add(imgPanel, BorderLayout.CENTER);
-		//add(imgPanel, BorderLayout.CENTER);
-		//add(controlPanel, BorderLayout.SOUTH);
-		//controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-		
+		// add(imgPanel, BorderLayout.CENTER);
+		// add(controlPanel, BorderLayout.SOUTH);
+		// controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+
 	}
 
-	public void setMaxDimension(DatasetView view) {
-		int width = (int) view.getImg().dimension(0) + view.getPositionX();
-		int height = (int) view.getImg().dimension(1) + view.getPositionY();
+	public void setMaxDimension(final DatasetView view) {
+		final int width = (int) view.getImg().dimension(0) + view.getPositionX();
+		final int height = (int) view.getImg().dimension(1) + view.getPositionY();
 		if (width > maxWidth) {
 			maxWidth = width;
 		}
@@ -86,7 +93,7 @@ public class ImageDisplayPanel extends JPanel implements EventSubscriber<Dataset
 	}
 
 	@Override
-	public void onEvent(DatasetChangedEvent event) {
+	public void onEvent(final DatasetChangedEvent event) {
 		imgPanel.repaint();
 	}
 
@@ -104,15 +111,15 @@ public class ImageDisplayPanel extends JPanel implements EventSubscriber<Dataset
 	public void updateImage() {
 		imgPanel.repaint();
 	}
-	
-	public void addToControlPanel(JComponent component) {
-		//controlPanel.add(component);
+
+	public void addToControlPanel(final JComponent component) {
+		// controlPanel.add(component);
 	}
 
 	class ImagePanel extends JPanel {
 
 		@Override
-		public void paint(Graphics g) {
+		public void paint(final Graphics g) {
 			for (final DatasetView view : ctrl.getViews()) {
 				// System.out.println("Painting in ImagePanel...");
 				final Image image = view.getScreenImage().image();
