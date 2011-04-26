@@ -38,7 +38,7 @@ import imagej.display.ImageCanvas;
 import imagej.event.ImageJEvent;
 
 /**
- * An event indicating something has happened to an ImageCanvas.
+ * An event indicating something has happened to an {@link ImageCanvas}.
  *
  * @author Barry DeZonia
  */

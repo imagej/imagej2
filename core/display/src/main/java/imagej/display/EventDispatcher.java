@@ -35,7 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * TODO
+ * Top-level interface for classes responsible for rebroadcasting events from
+ * some UI framework (e.g., AWT) into {@ImageJEvent}s.
  * 
  * @author Grant Harris
  */

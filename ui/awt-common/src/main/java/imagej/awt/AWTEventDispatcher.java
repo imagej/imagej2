@@ -56,6 +56,7 @@ import imagej.display.event.window.WinDeiconifiedEvent;
 import imagej.display.event.window.WinIconifiedEvent;
 import imagej.display.event.window.WinOpenedEvent;
 import imagej.event.Events;
+import imagej.event.ImageJEvent;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -68,7 +69,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * TODO
+ * Rebroadcasts AWT events as {@link ImageJEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris

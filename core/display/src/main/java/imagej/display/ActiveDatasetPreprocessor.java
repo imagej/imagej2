@@ -44,8 +44,12 @@ import imagej.plugin.process.PluginPreprocessor;
 
 /**
  * Assigns the active {@link Dataset} when there is one single unresolved
- * {@link Dataset} parameter.
- *
+ * {@link Dataset} parameter. Hence, rather than a dialog prompting the user to
+ * choose a {@link Dataset}, the active {@link Dataset} is used automatically.
+ * In the case of more than one {@link Dataset} parameter, the active
+ * {@link Dataset} is not used and instead the user must select. This behavior
+ * is consistent with ImageJ v1.x.
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = PluginPreprocessor.class, priority = 0)
@@ -78,7 +82,9 @@ public class ActiveDatasetPreprocessor implements PluginPreprocessor {
 
 	// -- Helper methods --
 
-	private PluginModuleItem getSingleDatasetInput(Iterable<ModuleItem> inputs) {
+	private PluginModuleItem getSingleDatasetInput(
+		final Iterable<ModuleItem> inputs)
+	{
 		PluginModuleItem result = null;
 		for (final ModuleItem item : inputs) {
 			final PluginModuleItem pmi = (PluginModuleItem) item;
