@@ -34,13 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
-import imagej.display.view.ColorTables;
+import imagej.awt.AWTImageTools;
+import imagej.display.ColorTables;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -68,11 +67,7 @@ public final class SwingColorBar extends JPanel {
 		length = lut.getLength();
 
 		// create compatible image
-		final GraphicsEnvironment env =
-			GraphicsEnvironment.getLocalGraphicsEnvironment();
-		final GraphicsConfiguration config =
-			env.getDefaultScreenDevice().getDefaultConfiguration();
-		final BufferedImage bi = config.createCompatibleImage(length + 2, height);
+		final BufferedImage bi = AWTImageTools.createImage(length + 2, height);
 
 		// paint color table onto image
 		final Graphics gfx = bi.getGraphics();

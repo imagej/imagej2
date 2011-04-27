@@ -36,10 +36,11 @@ package imagej.display;
 
 import imagej.Manager;
 import imagej.ManagerComponent;
+import imagej.data.Dataset;
 
 /**
  * Manager component for working with {@link Display}s.
- *
+ * 
  * @author Barry DeZonia
  */
 @Manager(priority = Manager.NORMAL_PRIORITY)
@@ -47,19 +48,28 @@ public final class DisplayManager implements ManagerComponent {
 
 	private Display activeDisplay;
 
-	// -- ManagerComponent methods --
-
-	@Override
-	public void initialize() {
-		activeDisplay = null;
-	}
+	// -- DisplayManager methods --
 
 	public Display getActiveDisplay() {
 		return activeDisplay;
 	}
 
-	public void setActiveDisplay(Display display) {
+	public void setActiveDisplay(final Display display) {
 		activeDisplay = display;
+	}
+
+	public Dataset getActiveDataset() {
+		if (activeDisplay == null) return null;
+		final DisplayView activeView = activeDisplay.getActiveView();
+		if (activeView == null) return null;
+		return activeView.getDataset();
+	}
+
+	// -- ManagerComponent methods --
+
+	@Override
+	public void initialize() {
+		activeDisplay = null;
 	}
 
 }

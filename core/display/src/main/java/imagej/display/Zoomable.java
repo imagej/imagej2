@@ -1,5 +1,5 @@
 //
-// DimensionSliderPanel.java
+// Zoomable.java
 //
 
 /*
@@ -32,57 +32,69 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.view;
+package imagej.display;
 
-import java.awt.Adjustable;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-
-//TODO - eliminate dependencies on AWT and Swing
+import imagej.util.Rect;
 
 /**
- * TODO
+ * Defines methods needed to adjust the zoom of a {@link Display} or
+ * {@link ImageCanvas}.
  * 
+ * @author Barry DeZonia
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class DimensionSliderPanel extends JPanel {
+public interface Zoomable {
 
-	/*
-	 * CompositeSliderPanel
-	 * If there is a channel dimension is displayed as a composite, 
-	 * a slider for that dim should not be added.
+	/**
+	 * Sets the zoom level used to display the image.
+	 * <p>
+	 * This method is used in programmatic zooming. The zooming center is the
+	 * point of the image closest to the center of the panel. After a new zoom
+	 * level is set the image is repainted.
+	 * </p>
+	 * 
+	 * @param factor the zoom level used to display this panel's image.
 	 */
+	void setZoom(double factor);
 
-	public DimensionSliderPanel(final DatasetView view) {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		// setPreferredSize(new Dimension(200, 18));
-		// add one slider per dimension beyond the first two
-		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
-		for (int d = 2; d < view.getImgPlus().numDimensions(); d++) {
-			final int dim = d;
-			final String label = view.getImgPlus().axis(d).getLabel();
-			// System.out.println("d = " + d);
-			final int dimLength = (int) view.getImgPlus().dimension(d);
+	/**
+	 * Sets the zoom level used to display the image, and the zooming center,
+	 * around which zooming is done.
+	 * <p>
+	 * This method is used in programmatic zooming. After a new zoom level is set
+	 * the image is repainted.
+	 * </p>
+	 * 
+	 * @param factor the zoom level used to display this panel's image.
+	 */
+	void setZoom(double factor, double centerX, double centerY);
 
-			final JScrollBar bar =
-				new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
-			// bar.setPreferredSize(new Dimension(500,32));
-			bar.addAdjustmentListener(new AdjustmentListener() {
+	void zoomIn();
 
-				@Override
-				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					final int value = bar.getValue();
-					// System.out.println("dim #" + dim + ": value->" + value);//TEMP
-					view.setPosition(value, dim);
-					// view.project();
-				}
-			});
-			add(bar);
-		}
-	}
+	void zoomIn(double centerX, double centerY);
+
+	void zoomOut();
+
+	void zoomOut(double centerX, double centerY);
+
+	void zoomToFit(Rect rect); // in pixels - not data units
+
+	/** Gets the current zoom level. */
+	double getZoomFactor();
+
+	/**
+	 * Gets the X coordinate of the image space point currently displayed in the
+	 * center of the window. Unlike the setters these results are in image
+	 * coordinate space.
+	 */
+	double getZoomCtrX();
+
+	/**
+	 * Gets the Y coordinate of the image space point currently displayed in the
+	 * center of the window. Unlike the setters these results are in image
+	 * coordinate space.
+	 */
+	double getZoomCtrY();
 
 }

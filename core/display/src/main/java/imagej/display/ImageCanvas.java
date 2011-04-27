@@ -34,20 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.util.RealCoords;
+
 /**
- * TODO
+ * A canvas upon which a {@link Display} paints output image planes.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface ImageCanvas {
-
-	/**
-	 * <p>
-	 * Identifies that the image in the panel has changed.
-	 * </p>
-	 * (from extracted from NavigableImagePanel)
-	 */
-	String IMAGE_CHANGED_PROPERTY = "image";
+public interface ImageCanvas extends Pannable, Zoomable {
 
 	/** Gets the width of the current image. */
 	int getImageWidth();
@@ -55,7 +50,54 @@ public interface ImageCanvas {
 	/** Gets the height of the current image. */
 	int getImageHeight();
 
-	/** Forces a repaint when the image data buffer is changed. */
-	void updateImage();
+	// set EventDispatcher as event listener on this - esp. for key, mouse events
+	void addEventDispatcher(EventDispatcher dispatcher);
+
+	/**
+	 * Indicates whether the high quality rendering feature is enabled.
+	 * 
+	 * @return true if high quality rendering is enabled, false otherwise.
+	 */
+	boolean isHighQualityRenderingEnabled();
+
+	/**
+	 * Indicates whether navigation image is enabled.
+	 * 
+	 * @return true when navigation image is enabled, false otherwise.
+	 */
+	boolean isNavigationImageEnabled();
+
+	/**
+	 * Enables/disables high quality rendering.
+	 * 
+	 * @param enabled enables/disables high quality rendering
+	 */
+	void setHighQualityRenderingEnabled(boolean enabled);
+
+	/**
+	 * <p>
+	 * Enables/disables navigation with the navigation image.
+	 * </p>
+	 * <p>
+	 * Navigation image should be disabled when custom, programmatic navigation is
+	 * implemented.
+	 * </p>
+	 * 
+	 * @param enabled true when navigation image is enabled, false otherwise.
+	 */
+	void setNavigationImageEnabled(boolean enabled);
+
+	// Is this point in the image as displayed in the panel
+	boolean isInImage(RealCoords p);
+
+	// Converts this panel's coordinates into the original image coordinates
+	RealCoords panelToImageCoords(RealCoords p);
+
+	// Converts the original image coordinates into this panel's coordinates
+	RealCoords imageToPanelCoords(RealCoords p);
+
+	void setCursor(MouseCursor cursor);
+
+	void subscribeToToolEvents();
 
 }

@@ -1,5 +1,5 @@
 //
-// ChangeToFLOAT32.java
+// Zoom100Percent.java
 //
 
 /*
@@ -41,27 +41,22 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
-/** zooms the currently displayed image to 100% resolution 
- *  
+/**
+ * Zooms the currently displayed image to 100% resolution.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "View 100%", accelerator = "control 5", weight = 4) })
 public class Zoom100Percent implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		final DisplayManager manager = ImageJ.get(DisplayManager.class);
+		final Display display = manager.getActiveDisplay();
+		if (display == null) return; // headless UI or no open images
 
-		DisplayManager manager = ImageJ.get(DisplayManager.class);
-		
-		Display display = manager.getActiveDisplay();
-		
-		if (display == null)  // headless UI or no open images
-			return;
-		
 		display.setZoom(1.0);
 	}
 

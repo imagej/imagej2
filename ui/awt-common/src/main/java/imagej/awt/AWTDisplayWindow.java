@@ -1,5 +1,5 @@
 //
-// DisplayController.java
+// AWTImageDisplayWindow.java
 //
 
 /*
@@ -32,33 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.awt;
 
-import imagej.data.Dataset;
-import net.imglib2.img.Axis;
+import imagej.display.DisplayWindow;
 
 /**
- * TODO
- * 
- * @author Grant Harris
+ * An AWT-based {@link DisplayWindow}.
+ *
  * @author Curtis Rueden
  */
-public interface DisplayController {
+public interface AWTDisplayWindow extends DisplayWindow {
 
-	Object getCurrentPlane();
-
-	Axis[] getDimLabels();
-
-	long[] getDims();
-
-	long[] getPos();
-
-	Dataset getDataset();
-	
-	void setDataset(final Dataset dataset);
-
-	void updatePosition(final int posIndex, final int newValue);
-
-	void update();
+	void pack();
 
 }

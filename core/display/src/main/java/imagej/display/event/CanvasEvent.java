@@ -39,12 +39,12 @@ import imagej.event.ImageJEvent;
 
 /**
  * An event indicating something has happened to an {@link ImageCanvas}.
- *
+ * 
  * @author Barry DeZonia
  */
 public class CanvasEvent extends ImageJEvent {
 
-	private ImageCanvas canvas;
+	private final ImageCanvas canvas;
 
 	public CanvasEvent(final ImageCanvas canvas) {
 		this.canvas = canvas;

@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.awt.AWTDisplayWindow;
 import imagej.awt.AWTEventDispatcher;
-import imagej.awt.AWTImageDisplayWindow;
-import imagej.display.DisplayController;
+import imagej.data.Dataset;
+import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
-import imagej.display.ImageCanvas;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -71,21 +71,18 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingImageDisplayWindow extends JFrame
-	implements AWTImageDisplayWindow
-{
+public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
-	// TODO - Rework this class to be a JPanel, not a JFrame.
+	// TODO - Rework internal logic to use a JPanel, not a JFrame.
+	// In this way, the GUI components could be used in other contexts.
 
+	private final SwingImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
 
-	protected final NavigableImagePanel_1 imgCanvas;
-	protected DisplayController controller;
-
-	public SwingImageDisplayWindow(final NavigableImagePanel_1 imgCanvas) {
-		this.imgCanvas = imgCanvas;
+	public SwingDisplayWindow(final SwingImageDisplay display) {
+		this.display = display;
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
@@ -94,7 +91,7 @@ public class SwingImageDisplayWindow extends JFrame
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new BorderLayout());
 		graphicPane.setBorder(new LineBorder(Color.black));
-		graphicPane.add(imgCanvas, BorderLayout.CENTER);
+		graphicPane.add(display.getImageCanvas(), BorderLayout.CENTER);
 
 		sliders = new JPanel();
 		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
@@ -108,18 +105,43 @@ public class SwingImageDisplayWindow extends JFrame
 		pane.add(graphicPane, BorderLayout.CENTER);
 		pane.add(sliders, BorderLayout.SOUTH);
 
-		setupEventSubscriptions();
-
+		subscribeToEvents();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		redoLayout();
+	}
+
+	// -- DisplayWindow methods --
+
+	@Override
+	public SwingImageDisplay getDisplay() {
+		return display;
 	}
 
 	@Override
-	public void setDisplayController(final DisplayController controller) {
-		this.controller = controller;
-		final long[] dims = controller.getDims();
-		final Axis[] dimLabels = controller.getDimLabels();
-		createSliders(dims, dimLabels);
-		sliders.setVisible(dims.length > 2);
+	public void update() {
+		setLabel(makeLabel());
+	}
+
+	@Override
+	public void redoLayout() {
+		for (final DisplayView view : display.getViews()) {
+			final Dataset dataset = view.getDataset();
+			if (dataset == null) continue;
+
+			createSliders(view);
+			sliders.setVisible(sliders.getComponentCount() > 0);
+
+			setTitle(dataset.getName());
+
+			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
+			// But most of the infrastructure is in place to support multiple views.
+			// We just need to do something more intelligent here regarding the
+			// slider panel (i.e., multiple groups of sliders), then expose the
+			// multi-view capabilities in the UI.
+			break;
+		}
+		pack();
+		setVisible(true);
 	}
 
 	@Override
@@ -127,18 +149,49 @@ public class SwingImageDisplayWindow extends JFrame
 		imageLabel.setText(s);
 	}
 
-	public ImageCanvas getPanel() {
-		return imgCanvas;
+	@Override
+	public void addEventDispatcher(final EventDispatcher dispatcher) {
+		addWindowListener((AWTEventDispatcher) dispatcher);
 	}
 
-	private void createSliders(final long[] dims, final Axis[] dimLabels) {
+	// -- Helper methods --
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		final EventSubscriber<ZoomEvent> zoomSubscriber =
+			new EventSubscriber<ZoomEvent>()
+		{
+			@Override
+			public void onEvent(final ZoomEvent event) {
+				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
+				// CTR TODO - Fix zoom label to show beyond just the active view.
+				final DisplayView activeView = getDisplay().getActiveView();
+				final String datasetName = activeView.getDataset().getName();
+				final double zoom = event.getScale();
+				if (zoom == 1.0) setTitle(datasetName); // exactly 100% zoom
+				else {
+					final String infoString =
+						String.format("%s (%.2f%%)", datasetName, zoom * 100);
+					setTitle(infoString);
+				}
+			}
+		};
+		subscribers.add(zoomSubscriber);
+		Events.subscribe(ZoomEvent.class, zoomSubscriber);
+	}
+
+	private void createSliders(final DisplayView view) {
+		final Dataset dataset = view.getDataset();
+		final long[] dims = dataset.getDims();
+		final Axis[] axes = dataset.getAxes();
+
 		sliders.removeAll();
-		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (Axes.isXY(dimLabels[i])) continue;
-			p++;
+		for (int i = 0; i < dims.length; i++) {
+			if (Axes.isXY(axes[i])) continue;
 			if (dims[i] == 1) continue;
 
-			final JLabel label = new JLabel(dimLabels[i].toString());
+			final JLabel label = new JLabel(axes[i].getLabel());
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
 			final long max = dims[i] + 1;
 			if (max < 1 || max > Integer.MAX_VALUE) {
@@ -147,12 +200,13 @@ public class SwingImageDisplayWindow extends JFrame
 			}
 			final JScrollBar slider =
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
-			final int posIndex = p;
+			final int posIndex = i;
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					controller.updatePosition(posIndex, slider.getValue() - 1);
+					view.setPosition(posIndex, slider.getValue() - 1);
+					update();
 				}
 			});
 			sliders.add(label);
@@ -160,51 +214,27 @@ public class SwingImageDisplayWindow extends JFrame
 		}
 	}
 
-	@Override
-	public void setImageCanvas(final ImageCanvas canvas) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+	private String makeLabel() {
+		// CTR TODO - Fix window label to show beyond just the active view.
+		final DisplayView view = display.getActiveView();
+		final Dataset dataset = view.getDataset();
 
-	@Override
-	public ImageCanvas getImageCanvas() {
-		return imgCanvas;
-	}
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final long[] dims = dataset.getDims();
+		final Axis[] axes = dataset.getAxes();
+		final long[] pos = view.getPlanePosition();
 
-	@Override
-	public void updateImage() {
-		imgCanvas.updateImage();
-	}
-
-	@Override
-	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		addWindowListener((AWTEventDispatcher) dispatcher);
-	}
-
-	private void setupEventSubscriptions() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<ZoomEvent> zoomSubscriber =
-			new EventSubscriber<ZoomEvent>() {
-
-				@Override
-				public void onEvent(final ZoomEvent event) {
-					if (event.getCanvas() != imgCanvas) return;
-					String datasetName = "";
-					if (controller != null) {
-						datasetName = controller.getDataset().getName();
-					}
-					final double zoom = event.getScale();
-					if (zoom == 1.0) // exactly
-					setTitle(datasetName);
-					else {
-						final String infoString =
-							String.format("%s (%.2f%%)", datasetName, zoom * 100);
-						setTitle(infoString);
-					}
-				}
-			};
-		subscribers.add(zoomSubscriber);
-		Events.subscribe(ZoomEvent.class, zoomSubscriber);
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0, p = -1; i < dims.length; i++) {
+			if (Axes.isXY(axes[i])) continue;
+			p++;
+			if (dims[i] == 1) continue;
+			sb.append(axes[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
+		}
+		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
+		sb.append(dataset.getTypeLabel());
+		return sb.toString();
 	}
 
 }

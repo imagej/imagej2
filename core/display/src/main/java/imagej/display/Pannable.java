@@ -1,5 +1,5 @@
 //
-// LayeredDisplay.java
+// Pannable.java
 //
 
 /*
@@ -35,22 +35,42 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * TODO
+ * Defines methods needed to adjust the pan position of a {@link Display} or
+ * {@link ImageCanvas}.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface LayeredDisplay extends Display {
+public interface Pannable {
 
-	void addView(DisplayView view);
+	/**
+	 * Adjusts the pan by the given (X, Y) amount. Note that X & Y are in panel
+	 * coordinate space (pixels).
+	 */
+	void pan(double xDelta, double yDelta);
 
-	void removeView(DisplayView view);
+	/**
+	 * Pans the image to the given absolute (X, Y) position. Note that X & Y are
+	 * in panel coordinate space (pixels).
+	 */
+	void setPan(double x, double y);
 
-	void removeAllViews();
+	/** Resets the pan to the origin (0, 0). */
+	void panReset();
 
-	DisplayView[] getViews();
+	/**
+	 * Gets the x coordinate of the image space point currently displayed in the
+	 * upper left corner of the window. Unlike the setters these results are in
+	 * image coordinate space.
+	 */
+	double getPanX();
 
-	DisplayView getView(int n);
-
-	DisplayView getActiveView();
+	/**
+	 * Gets the y coordinate of the image space point currently displayed in the
+	 * upper left corner of the window. Unlike the setters these results are in
+	 * image coordinate space.
+	 */
+	double getPanY();
 
 }

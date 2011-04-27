@@ -1,5 +1,5 @@
 //
-// ChangeToFLOAT32.java
+// ZoomToFitSelection.java
 //
 
 /*
@@ -43,35 +43,30 @@ import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 import imagej.util.Rect;
 
-
-/** zooms in on the currently selected region.
- *  
+/**
+ * Zooms in on the currently selected region.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "To Selection", weight = 5) })
 public class ZoomToFitSelection implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Display display = displayManager.getActiveDisplay();
+		if (display == null) return; // headless UI or no open images
 
-		DisplayManager manager = ImageJ.get(DisplayManager.class);
-		
-		Display display = manager.getActiveDisplay();
-		
-		if (display == null)  // headless UI or no open images
-			return;
+		final Dataset dataset = displayManager.getActiveDataset();
 
-		Dataset dataset = display.getDataset();
-		
-	  // NOTE - must be in panel/canvas coords!
-		Rect selection = dataset.getSelection();
-		
-		if ((selection.width > 0) && (selection.height > 0))
+		// NOTE - must be in panel/canvas coords!
+		final Rect selection = dataset.getSelection();
+
+		if (selection.width > 0 && selection.height > 0) {
 			display.zoomToFit(selection);
+		}
 	}
 
 }

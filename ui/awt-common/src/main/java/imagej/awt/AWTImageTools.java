@@ -1,5 +1,5 @@
 //
-// ImgDisplayController.java
+// AWTImageTools.java
 //
 
 /*
@@ -32,33 +32,36 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.view;
+package imagej.awt;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
- * TODO
- *
- * @author Grant Harris
+ * Convenience methods for working with AWT {@link Image}s.
+ * 
+ * @author Curtis Rueden
  */
-public class ImgDisplayController {
-	
-	protected List<DatasetView> views = new ArrayList<DatasetView>();
+public final class AWTImageTools {
 
-	public List<DatasetView> getViews() {
-		return views;
+	private AWTImageTools() {
+		// prevent instantiation of utility class
 	}
 
-	public void addView(DatasetView view) {
-		views.add(view);
-	}
-	
-	public void reMapAll() {
-		for (int i = 0; i < views.size(); i++) {
-			DatasetView view = views.get(i);
-			view.getProjector().map();
-		}
+	/**
+	 * Creates a {@link BufferedImage} compatible with the graphics environment.
+	 * 
+	 * @param width The width of the image to create.
+	 * @param height The height of the image to create.
+	 */
+	public static BufferedImage createImage(final int width, final int height) {
+		final GraphicsEnvironment env =
+			GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsConfiguration config =
+			env.getDefaultScreenDevice().getDefaultConfiguration();
+		return config.createCompatibleImage(width, height);
 	}
 
 }

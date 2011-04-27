@@ -31,17 +31,18 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
 import imagej.awt.AWTDisplay;
-import imagej.awt.AWTDisplayController;
 import imagej.awt.AWTEventDispatcher;
+import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
+import imagej.display.DatasetView;
 import imagej.display.Display;
-import imagej.display.DisplayController;
 import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
@@ -49,87 +50,55 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
+import imagej.util.Log;
 import imagej.util.Rect;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import net.imglib2.display.ARGBScreenImage;
+
 /**
- * A simple Swing image display plugin.
- * 
- * 
+ * A Swing image display plugin, which displays 2D planes in grayscale or
+ * composite color.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-
-/* April 27
- * Changed to use NavigableImagePanel_1, rather than SwingNavigagleImagePanel
- * TODO: rename things
- */
 @Plugin(type = Display.class)
 public class SwingImageDisplay implements AWTDisplay {
-	//
 
-	protected Dataset theDataset;
-	private long[] lastKnownDimensions;
-	private SwingImageDisplayWindow imgWindow;
-	private NavigableImagePanel_1 imgCanvas;
-	private DisplayController controller;
-	private List<EventSubscriber<?>> subscribers;
+	private final ArrayList<DisplayView> views;
+	private final List<EventSubscriber<?>> subscribers;
+
+	private SwingImageCanvas imgCanvas;
+	private SwingDisplayWindow imgWindow;
 
 	public SwingImageDisplay() {
-		// CTR FIXME - listen for imgWindow windowClosing and send
-		// DisplayDeletedEvent. Think about how best this should work...
-		// Is a display always deleted when its window is closed?
+		views = new ArrayList<DisplayView>();
+		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		displayManager.setActiveDisplay(this);
+		subscribeToEvents(displayManager);
 
-		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
-				new EventSubscriber<DatasetChangedEvent>() {
+		imgCanvas = new SwingImageCanvas();
+		imgCanvas.subscribeToToolEvents();
 
-					@Override
-					public void onEvent(DatasetChangedEvent event) {
-						if (theDataset == event.getObject()) {
-							update();
-						}
-					}
+		imgWindow = new SwingDisplayWindow(this);
 
-				};
-		EventSubscriber<WinActivatedEvent> winActSubscriber =
-				new EventSubscriber<WinActivatedEvent>() {
-
-					@Override
-					public void onEvent(WinActivatedEvent event) {
-						displayManager.setActiveDisplay(event.getDisplay());
-						//Log.debug("**** active display set to "+event.getDisplay()+" ****");
-					}
-
-				};
-		EventSubscriber<WinClosedEvent> winCloseSubscriber =
-				new EventSubscriber<WinClosedEvent>() {
-
-					@Override
-					public void onEvent(WinClosedEvent event) {
-						displayManager.setActiveDisplay(null);
-						//Log.debug("**** active display set to null ****");
-					}
-
-				};
-
-		subscribers = new ArrayList<EventSubscriber<?>>();
-		subscribers.add(dsChangeSubscriber);
-		subscribers.add(winActSubscriber);
-		subscribers.add(winCloseSubscriber);
-
-		Events.subscribe(DatasetChangedEvent.class, dsChangeSubscriber);
-		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
-		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
+		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
+		imgCanvas.addEventDispatcher(eventDispatcher);
+		imgWindow.addEventDispatcher(eventDispatcher);
 
 		Events.publish(new DisplayCreatedEvent(this));
-
-		displayManager.setActiveDisplay(this);
 	}
+
+	// -- Display methods --
 
 	@Override
 	public boolean canDisplay(final Dataset dataset) {
@@ -138,85 +107,91 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public void display(final Dataset dataset) {
-		theDataset = dataset;
-		lastKnownDimensions = new long[dataset.getImgPlus().numDimensions()];
-		dataset.getImgPlus().dimensions(lastKnownDimensions);
-		// imgCanvas = new ImageCanvasSwing();
-		imgCanvas = new NavigableImagePanel_1();
-		imgWindow = new SwingImageDisplayWindow(imgCanvas);
-		controller = new AWTDisplayController(this);
-		imgWindow.setDisplayController(controller);
-		// FIXME - this is a second call to set the Dataset. An earlier call is
-		// contained in the AWTDisplayController constructor. If the Dataset not
-		// reset here then image width will not fill the zoom window. Will debug
-		// further but patch for now in preparation of release of alpha 1.
-		controller.setDataset(dataset);
-		// FIXME - this pack() call an experiment to avoid it in
-		//   imgWindow.setDisplayController(). Works but controller probably
-		//   should pack.
-		//imgWindow.pack();
-		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
-		imgCanvas.addEventDispatcher(dispatcher);
-		imgCanvas.subscribeToToolEvents();
-		((NavigableImagePanel_1)imgCanvas).initializeParams();
-		imgWindow.addEventDispatcher(dispatcher);
-		// TODO - use DisplayView instead of Dataset directly
-		// imageFrame.setDataset(dataset);
-		// ((NavigableImageJFrame)imgWindow).pack();
-		imgWindow.setVisible(true);
-	}
-
-	@Override
-	public Dataset getDataset() {
-		return theDataset;
+		addView(new DatasetView(this, dataset));
 	}
 
 	@Override
 	public void update() {
-		// did the shape of the dataset change?
-		boolean changed = false;
-		for (int i = 0; i < theDataset.getImgPlus().numDimensions(); i++) {
-			final long dim = theDataset.getImgPlus().dimension(i);
-			if (dim != lastKnownDimensions[i]) {
-				changed = true;
-				break;
+		// compute width and height needed to contain all view images
+		int width = 0, height = 0;
+		for (final DisplayView view : views) {
+			final int w = view.getImageWidth();
+			final int h = view.getImageHeight();
+			if (w > width) width = w;
+			if (h > height) height = h;
+		}
+
+		// paint view images onto result image
+		final BufferedImage result = AWTImageTools.createImage(width, height);
+		final Graphics gfx = result.getGraphics();
+		for (final DisplayView view : views) {
+			final Object image = view.getImage();
+			// TODO - Fix this hack. Perhaps AWTDisplayView could extend DisplayView
+			// and narrow the getImage() method to return a java.awt.Image?
+			if (!(image instanceof ARGBScreenImage)) {
+				Log.warn("Unsupported DisplayView: " + view);
+				continue;
 			}
+			final Image awtImage = ((ARGBScreenImage) image).image();
+			gfx.drawImage(awtImage, 0, 0, null);
 		}
-		// TODO - maybe this should be handled in the onEvent(DatasetChangedEvent) handler
-		if (changed) {
-			theDataset.getImgPlus().dimensions(lastKnownDimensions);
-			controller.setDataset(theDataset);
-			// TODO may need to imgCanvas.initializeParams()... but not in ImageCanvas interface yet
-			imgCanvas.setZoom(1.0);
-			imgCanvas.setPan(0, 0);
-		} else {
-			controller.update();
-		}
+		gfx.dispose();
+		imgCanvas.setImage(result);
+		imgWindow.update();
 	}
 
 	@Override
-	public SwingImageDisplayWindow getImageDisplayWindow() {
+	public void addView(final DisplayView view) {
+		views.add(view);
+		update();
+		imgWindow.redoLayout();
+	}
+
+	@Override
+	public void removeView(final DisplayView view) {
+		views.remove(view);
+		update();
+		imgWindow.redoLayout();
+	}
+
+	@Override
+	public void removeAllViews() {
+		views.clear();
+		update();
+		imgWindow.redoLayout();
+	}
+
+	@Override
+	public List<DisplayView> getViews() {
+		return Collections.unmodifiableList(views);
+	}
+
+	@Override
+	public DisplayView getActiveView() {
+		// CTR TODO - do better than hardcoding first view
+		return views.get(0);
+	}
+
+	@Override
+	public SwingDisplayWindow getDisplayWindow() {
 		return imgWindow;
 	}
 
 	@Override
-	public NavigableImagePanel_1 getImageCanvas() {
+	public SwingImageCanvas getImageCanvas() {
 		return imgCanvas;
 	}
 
-	@Override
-	public Object getCurrentPlane() {
-		return controller.getCurrentPlane();
-	}
-
-	@Override
-	public long[] getCurrentPlanePosition() {
-		return controller.getPos();
-	}
+	// -- Pannable methods --
 
 	@Override
 	public void pan(final double x, final double y) {
 		imgCanvas.pan(x, y);
+	}
+
+	@Override
+	public void setPan(double x, double y) {
+		imgCanvas.setPan(x, y);
 	}
 
 	@Override
@@ -234,14 +209,17 @@ public class SwingImageDisplay implements AWTDisplay {
 		return imgCanvas.getPanY();
 	}
 
+	// -- Zoomable methods --
+
 	@Override
-	public void setZoom(double newZoom) {
+	public void setZoom(final double newZoom) {
 		imgCanvas.setZoom(newZoom);
 	}
 
 	@Override
 	public void setZoom(final double newZoom, final double centerX,
-			final double centerY) {
+		final double centerY)
+	{
 		imgCanvas.setZoom(newZoom, centerX, centerY);
 	}
 
@@ -272,7 +250,7 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public double getZoomFactor() {
-		return imgCanvas.getZoom();
+		return imgCanvas.getZoomFactor();
 	}
 
 	@Override
@@ -283,6 +261,38 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public double getZoomCtrY() {
 		return imgCanvas.getZoomCtrY();
+	}
+
+	// -- Helper methods --
+
+	private DisplayManager subscribeToEvents(final DisplayManager displayManager)
+	{
+		// CTR TODO - listen for imgWindow windowClosing and send
+		// DisplayDeletedEvent. Think about how best this should work...
+		// Is a display always deleted when its window is closed?
+
+		final EventSubscriber<WinActivatedEvent> winActSubscriber =
+			new EventSubscriber<WinActivatedEvent>()
+		{
+			@Override
+			public void onEvent(final WinActivatedEvent event) {
+				displayManager.setActiveDisplay(event.getDisplay());
+			}
+		};
+		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
+		subscribers.add(winActSubscriber);
+
+		final EventSubscriber<WinClosedEvent> winCloseSubscriber =
+			new EventSubscriber<WinClosedEvent>()
+		{
+			@Override
+			public void onEvent(final WinClosedEvent event) {
+				displayManager.setActiveDisplay(null);
+			}
+		};
+		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
+		subscribers.add(winCloseSubscriber);
+		return displayManager;
 	}
 
 }

@@ -35,21 +35,23 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 /**
- * TODO
- *
+ * A user interface window containing a {@link Display}.
+ * 
  * @author Grant Harris
  */
-public interface ImageDisplayWindow {
+public interface DisplayWindow {
 
-	void setDisplayController(DisplayController controller);
+	Display getDisplay();
 
-	// void addControls(DisplayController controller);
+	/** Updates the display window to reflect the display's current position. */
+	void update();
 
-	void setImageCanvas(ImageCanvas canvas);
-
-	ImageCanvas getImageCanvas();
-
-	void updateImage();
+	/**
+	 * Rebuilds the display window to reflect the display's current views,
+	 * dimensional lengths, etc. The window may change size, and hence may repack
+	 * itself.
+	 */
+	void redoLayout();
 
 	void setLabel(String s);
 

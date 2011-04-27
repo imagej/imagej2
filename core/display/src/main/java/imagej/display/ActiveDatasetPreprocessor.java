@@ -72,9 +72,7 @@ public class ActiveDatasetPreprocessor implements PluginPreprocessor {
 		if (item == null) return; // no single Dataset input to assign
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Display activeDisplay = displayManager.getActiveDisplay();
-		if (activeDisplay == null) return; // no active display
-		final Dataset value = activeDisplay.getDataset();
+		final Dataset value = displayManager.getActiveDataset();
 		if (value == null) return; // no associated dataset
 		module.setInput(item.getName(), value);
 		item.setResolved(true);

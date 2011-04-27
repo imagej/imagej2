@@ -36,62 +36,56 @@ package imagej.display;
 
 import imagej.data.Dataset;
 import imagej.plugin.BasePlugin;
-import imagej.util.Rect;
+
+import java.util.List;
 
 /**
- * TODO
+ * A display is a special kind of ImageJ plugin for visualizing data.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
+ * @author Grant Harris
  */
-public interface Display extends BasePlugin {
+public interface Display extends BasePlugin, Pannable, Zoomable {
 
+	/**
+	 * Tests whether the display is capable of visualizing the given
+	 * {@link Dataset}.
+	 */
 	boolean canDisplay(Dataset dataset);
 
+	/**
+	 * Displays the given {@link Dataset} in this display. Typically, this is a
+	 * shortcut for calling
+	 * <code>addView(new DatasetView(display, dataset))</code>.
+	 */
 	void display(Dataset dataset);
 
-	Dataset getDataset();
-
+	/** Updates and redraws the display onscreen. */
 	void update();
 
-	ImageDisplayWindow getImageDisplayWindow();
+	/**
+	 * Adds a view to this display.
+	 * 
+	 * @see DisplayView
+	 */
+	void addView(DisplayView view);
 
-	NavigableImageCanvas getImageCanvas();
+	/** Removes a view from this display. */
+	void removeView(DisplayView view);
 
-	Object getCurrentPlane();
+	/** Removes all views from this display. */
+	void removeAllViews();
 
-	long[] getCurrentPlanePosition();
-	
-	// -- Pan methods -- x's & y's in canvas coord space
+	/** Gets a list of views linked to the display. */
+	List<DisplayView> getViews();
 
-	void pan(double x, double y);
-	
-	void panReset();
+	/** Gets the view currently designated as active. */
+	DisplayView getActiveView();
 
-	double getPanX();
+	/** Gets the top-level window containing this display. */
+	DisplayWindow getDisplayWindow();
 
-	double getPanY();
-
-	// -- Zoom methods -- x's, y's, & Rect's in canvas coord space
-
-	void setZoom(double factor);
-	
-	void setZoom(double factor, double centerX, double centerY);
-
-	void zoomIn();
-	
-	void zoomIn(double centerX, double centerY);
-	
-	void zoomOut();
-
-	void zoomOut(double centerX, double centerY);
-
-	void zoomToFit(Rect rect);  // in pixels - not data units
-
-	double getZoomFactor();
-
-	double getZoomCtrX();
-
-	double getZoomCtrY();
+	/** Gets the image canvas upon which this display's output is painted. */
+	ImageCanvas getImageCanvas();
 
 }
