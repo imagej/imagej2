@@ -58,8 +58,15 @@ import java.util.List;
 /**
  * A simple Swing image display plugin.
  * 
+ * 
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
+ */
+
+/* April 27
+ * Changed to use NavigableImagePanel_1, rather than SwingNavigagleImagePanel
+ * TODO: rename things
  */
 @Plugin(type = Display.class)
 public class SwingImageDisplay implements AWTDisplay {
@@ -67,7 +74,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	private long[] lastKnownDimensions;
 
 	private SwingImageDisplayWindow imgWindow;
-	private SwingNavigableImageCanvas imgCanvas;
+	private NavigableImagePanel_1 imgCanvas;
 	private DisplayController controller;
 	private List<EventSubscriber<?>> subscribers;
 
@@ -131,7 +138,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		lastKnownDimensions = new long[dataset.getImgPlus().numDimensions()];
 		dataset.getImgPlus().dimensions(lastKnownDimensions);
 		// imgCanvas = new ImageCanvasSwing();
-		imgCanvas = new SwingNavigableImageCanvas();
+		imgCanvas = new NavigableImagePanel_1();
 		imgWindow = new SwingImageDisplayWindow(imgCanvas);
 		controller = new AWTDisplayController(this);
 		imgWindow.setDisplayController(controller);
@@ -186,7 +193,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public SwingNavigableImageCanvas getImageCanvas() {
+	public NavigableImagePanel_1 getImageCanvas() {
 		return imgCanvas;
 	}
 

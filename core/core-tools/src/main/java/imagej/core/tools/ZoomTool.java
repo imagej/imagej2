@@ -1,7 +1,6 @@
 //
 // ZoomTool.java
 //
-
 /*
 ImageJ software for multidimensional image processing and analysis.
 
@@ -35,16 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.display.Display;
-import imagej.display.NavigableImageCanvas;
 import imagej.display.event.key.KyPressedEvent;
-import imagej.display.event.mouse.MsButtonEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
-import imagej.tool.BaseTool;
-import imagej.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.Rect;
+import imagej.tool.Tool;
+import imagej.tool.BaseTool;
 
 /**
  * Tool for zooming in and out of a display.
@@ -54,15 +51,56 @@ import imagej.util.Rect;
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",
 	iconPath = "/tools/zoom.png", priority = ZoomTool.PRIORITY)
+//
 public class ZoomTool extends BaseTool {
 
 	public static final int PRIORITY = 202;
 	
-	private IntCoords origCenter;
+	private IntCoords startPt;
+	private final int minMouseDrag = 8;
 
 	// -- ITool methods --
 
 	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		startPt = new IntCoords(evt.getX(), evt.getY());
+	}
+
+	@Override
+	public void onMouseUp(final MsReleasedEvent evt) {
+		final Display display = evt.getDisplay();
+		IntCoords endPt = new IntCoords(evt.getX(), evt.getY());
+		// mouse moved more than a lot - a rectangle was dragged
+		if ((Math.abs(endPt.x-startPt.x) > minMouseDrag) || 
+				(Math.abs(endPt.y-startPt.y) > minMouseDrag)) {
+			int ox = Math.min(endPt.x, startPt.x);
+			int oy = Math.min(endPt.y, startPt.y);
+			int w =  Math.abs(endPt.x - startPt.x) + 1;
+			int h =  Math.abs(endPt.y - startPt.y) + 1;
+			Rect dragRegion = new Rect(ox,oy,w,h);
+			display.zoomToFit(dragRegion);
+		}
+	}
+	
+	@Override
+	public void onKeyDown(final KyPressedEvent evt) {
+		final Display display = evt.getDisplay();
+		final char c = evt.getCharacter();
+		if (c == '=' || c == '+') display.zoomIn();
+		else if (c == '-') display.zoomOut();
+	}
+
+	@Override
+	public void onMouseWheel(final MsWheelEvent evt) {
+		final Display display = evt.getDisplay();
+		//final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		if (evt.getWheelRotation() > 0) display.zoomIn(evt.getX(), evt.getY());
+		else display.zoomOut(evt.getX(), evt.getY());
+	}
+
+
+	/* Old ...
+	 * 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		origCenter = new IntCoords(evt.getX(), evt.getY());
 	}
@@ -70,21 +108,21 @@ public class ZoomTool extends BaseTool {
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
 		final Display display = evt.getDisplay();
-		IntCoords newPt = new IntCoords(evt.getX(), evt.getY());
+		IntCoords endPt = new IntCoords(evt.getX(), evt.getY());
 		// mouse moved a lot - a rectangle was dragged
-		if ((Math.abs(newPt.x-origCenter.x) > 5) || (Math.abs(newPt.y-origCenter.y) > 5)) {
-			int ox = Math.min(newPt.x, origCenter.x);
-			int oy = Math.min(newPt.y, origCenter.y);
-			int w = Math.abs(newPt.x - origCenter.x) + 1;
-			int h = Math.abs(newPt.y - origCenter.y) + 1;
+		if ((Math.abs(endPt.x-origCenter.x) > 5) || (Math.abs(endPt.y-origCenter.y) > 5)) {
+			int ox = Math.min(endPt.x, origCenter.x);
+			int oy = Math.min(endPt.y, origCenter.y);
+			int w = Math.abs(endPt.x - origCenter.x) + 1;
+			int h = Math.abs(endPt.y - origCenter.y) + 1;
 			Rect dragRegion = new Rect(ox,oy,w,h);
 			zoomToFit(display, dragRegion);
 		}
 		else { // mouse barely moved : just zoom
 			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON)
-				zoomIn(display, origCenter);  // or newPt??
+				zoomIn(display, origCenter);  // or endPt??
 			else
-				zoomOut(display, origCenter);  // or newPt??
+				zoomOut(display, origCenter);  // or endPt??
 		}
 	}
 	
@@ -115,7 +153,9 @@ public class ZoomTool extends BaseTool {
 	}
 
 	private void zoomOut(final Display display, final IntCoords zoomCenter) {
+		display.zoomIn(PRIORITY, PRIORITY);
 		final NavigableImageCanvas canvas = display.getImageCanvas();
+		
 		final double currentZoom = canvas.getZoom();
 		final double newZoom = currentZoom / canvas.getZoomMultiplier();
 		if (zoomCenter == null) canvas.setZoom(newZoom);
@@ -126,4 +166,5 @@ public class ZoomTool extends BaseTool {
 		final NavigableImageCanvas canvas = display.getImageCanvas();
 		canvas.zoomToFit(dragRect);
 	}
+	 */
 }
