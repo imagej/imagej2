@@ -32,13 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display.view;
+package imagej.display;
 
 import java.awt.Color;
 
 import net.imglib2.display.ColorTable8;
-
-// TODO - eliminate AWT dependency
 
 /**
  * Built-in lookup tables.
@@ -98,6 +96,7 @@ public final class ColorTables {
 	private static ColorTable8 spectrum() {
 		final byte[] r = new byte[256], g = new byte[256], b = new byte[256];
 		for (int i = 0; i < 256; i++) {
+			// TODO - eliminate AWT dependency
 			final Color c = Color.getHSBColor(i / 255f, 1f, 1f);
 			r[i] = (byte) c.getRed();
 			g[i] = (byte) c.getGreen();

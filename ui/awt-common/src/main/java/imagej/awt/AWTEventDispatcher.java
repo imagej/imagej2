@@ -78,7 +78,7 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 	MouseListener, MouseMotionListener, MouseWheelListener, WindowListener
 {
 
-	Display display;
+	private final Display display;
 
 	public AWTEventDispatcher(final Display display) {
 		this.display = display;
@@ -151,8 +151,8 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
-		Events.publish(new MsWheelEvent(display, e.getX(), e.getY(), e
-			.getWheelRotation()));
+		Events.publish(new MsWheelEvent(display, e.getX(), e.getY(),
+			e.getWheelRotation()));
 	}
 
 	// -- WindowListener methods --

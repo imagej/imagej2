@@ -36,8 +36,9 @@ package imagej.core.tools;
 
 import imagej.data.Dataset;
 import imagej.display.Display;
+import imagej.display.DisplayView;
+import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
-import imagej.display.NavigableImageCanvas;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
@@ -75,7 +76,7 @@ public class ProbeTool extends BaseTool {
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
 		final Display display = evt.getDisplay();
-		final NavigableImageCanvas canvas = display.getImageCanvas();
+		final ImageCanvas canvas = display.getImageCanvas();
 		final RealCoords mousePos = new RealCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if (!canvas.isInImage(mousePos)) {
@@ -83,12 +84,14 @@ public class ProbeTool extends BaseTool {
 			Events.publish(new StatusEvent(""));
 		}
 		else { // mouse is over image
-			setWorkingVariables(display.getDataset());
+			// CTR TODO - update tool to probe more than just the active view
+			final DisplayView activeView = display.getActiveView();
+			setWorkingVariables(activeView.getDataset());
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
-			final long[] currPlanePos = display.getCurrentPlanePosition();
-			fillCurrentPosition(cx, cy, currPlanePos);
+			final long[] planePos = activeView.getPlanePosition();
+			fillCurrentPosition(cx, cy, planePos);
 			randomAccess.setPosition(position);
 			final double doubleValue = randomAccess.get().getRealDouble();
 			final String statusMessage;

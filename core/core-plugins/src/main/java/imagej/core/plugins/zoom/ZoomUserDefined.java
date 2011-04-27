@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
@@ -43,31 +42,24 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-
-/** zooms in on the center of the image at the user specified magnification
- *  level.
- *  
+/**
+ * Zooms in on the center of the image at the user-specified magnification
+ * level.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "Set...", weight = 6) })
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined implements ImageJPlugin {
 
-	@Parameter(label="Zoom (%) :")
-	int userDefinedScale;
-	
+	@Parameter(label = "Zoom (%) :")
+	private int userDefinedScale;
+
 	@Override
 	public void run() {
-
-		DisplayManager manager = ImageJ.get(DisplayManager.class);
-		
-		Display display = manager.getActiveDisplay();
-		
-		if (display == null)  // headless UI or no open images
-			return;
+		final DisplayManager manager = ImageJ.get(DisplayManager.class);
+		final Display display = manager.getActiveDisplay();
+		if (display == null) return; // headless UI or no open images
 
 		display.setZoom(userDefinedScale / 100.0);
 		display.panReset();

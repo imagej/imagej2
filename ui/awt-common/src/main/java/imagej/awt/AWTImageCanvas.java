@@ -1,5 +1,5 @@
 //
-// AWTImageDisplayWindow.java
+// AWTImageCanvas.java
 //
 
 /*
@@ -34,15 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.awt;
 
-import imagej.display.ImageDisplayWindow;
+import imagej.display.ImageCanvas;
+
+import java.awt.image.BufferedImage;
 
 /**
- * An AWT-based {@link ImageDisplayWindow}.
+ * An AWT-based {@link ImageCanvas}, which provides the ability
+ * to set the displayed image as a {@link BufferedImage}.
  *
  * @author Curtis Rueden
  */
-public interface AWTImageDisplayWindow extends ImageDisplayWindow {
+public interface AWTImageCanvas extends ImageCanvas {
 
-	void pack();
+	void setImage(final BufferedImage newImage);
+
+	BufferedImage getImage();
 
 }

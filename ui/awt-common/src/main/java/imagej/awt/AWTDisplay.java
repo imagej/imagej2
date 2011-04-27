@@ -37,16 +37,16 @@ package imagej.awt;
 import imagej.display.Display;
 
 /**
- * TODO
+ * An AWT-based {@link Display}.
  *
  * @author Curtis Rueden
  */
 public interface AWTDisplay extends Display {
 
 	@Override
-	AWTImageDisplayWindow getImageDisplayWindow();
+	AWTDisplayWindow getDisplayWindow();
 
 	@Override
-	AWTNavigableImageCanvas getImageCanvas();
+	AWTImageCanvas getImageCanvas();
 
 }

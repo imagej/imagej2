@@ -1,5 +1,5 @@
 //
-// ChangeToFLOAT32.java
+// ZoomIn.java
 //
 
 /*
@@ -41,30 +41,23 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
-
-/** zooms in on the currently displayed image. zoom multiplier is
- * taken from the current Display's zoom factor value.
- *  
+/**
+ * Zooms in on the currently displayed image. Zoom multiplier is taken from the
+ * current Display's zoom factor value.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "In", accelerator = "control PLUS", weight = 1) }
-)
+	@Menu(label = "In", accelerator = "control PLUS", weight = 1) })
 public class ZoomIn implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		final DisplayManager manager = ImageJ.get(DisplayManager.class);
+		final Display display = manager.getActiveDisplay();
+		if (display == null) return; // headless UI or no open images
 
-		DisplayManager manager = ImageJ.get(DisplayManager.class);
-		
-		Display display = manager.getActiveDisplay();
-		
-		if (display == null)  // headless UI or no open images
-			return;
-		
 		display.zoomIn();
 	}
 

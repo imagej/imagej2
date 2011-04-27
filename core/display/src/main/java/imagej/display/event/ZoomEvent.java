@@ -38,15 +38,17 @@ import imagej.display.ImageCanvas;
 
 /**
  * An event indicating a zoom change has happened to an ImageCanvas.
- *
+ * 
  * @author Barry DeZonia
  */
 public class ZoomEvent extends CanvasEvent {
 
-	private double scale;
-	private int centerX, centerY;
+	private final double scale;
+	private final int centerX, centerY;
 
-	public ZoomEvent(ImageCanvas canvas, double scale, int centerX, int centerY) {
+	public ZoomEvent(final ImageCanvas canvas, final double scale,
+		final int centerX, final int centerY)
+	{
 		super(canvas);
 		this.scale = scale;
 		this.centerX = centerX;

@@ -51,7 +51,7 @@ import java.util.Map;
 
 /**
  * Displays output {@link Dataset}s upon completion of a plugin execution.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = PluginPostprocessor.class)
@@ -84,19 +84,20 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 
 	/** Updates displays that are currently rendering the dataset. */
 	private int updateDisplays(final Dataset dataset) {
-		// CTR FIXME - Instead of this postprocessor updating the displays,
+		// CTR TODO - Instead of this postprocessor updating the displays,
 		// it would make much more sense for the datasets to publish
 		// DatasetChangedEvents and for the displays to subscribe to them,
 		// then update themselves.
 
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final List<Display> displays = objectManager.getObjects(Display.class);
-		Log.debug("Checking " + displays.size() + " existing displays...");//TEMP
 
 		int numUpdated = 0;
 		for (final Display display : displays) {
-			Log.debug("Checking display: " + display);//TEMP
-			if (dataset == display.getDataset()) {
+			final DisplayView activeView = display.getActiveView();
+			final Dataset activeDataset =
+				activeView == null ? null : activeView.getDataset();
+			if (dataset == activeDataset) {
 				display.update();
 				numUpdated++;
 			}

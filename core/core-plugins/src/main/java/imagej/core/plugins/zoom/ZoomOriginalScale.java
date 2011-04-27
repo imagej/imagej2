@@ -1,5 +1,5 @@
 //
-// ChangeToFLOAT32.java
+// ZoomOriginalScale.java
 //
 
 /*
@@ -41,28 +41,21 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
-
-/** zooms the currently displayed image at the scale it was originally
- * viewed at.
- *  
+/**
+ * Zooms the currently displayed image at the scale it was originally viewed at.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
-	@Menu(label = "Image", mnemonic = 'i'),
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "Original Scale", accelerator = "control 4", weight = 3) })
 public class ZoomOriginalScale implements ImageJPlugin {
 
 	@Override
 	public void run() {
-
-		DisplayManager manager = ImageJ.get(DisplayManager.class);
-		
-		Display display = manager.getActiveDisplay();
-		
-		if (display == null)  // headless UI or no open images
-			return;
+		final DisplayManager manager = ImageJ.get(DisplayManager.class);
+		final Display display = manager.getActiveDisplay();
+		if (display == null) return; // headless UI or no open images
 
 		display.setZoom(0);
 	}

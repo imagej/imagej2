@@ -1,5 +1,5 @@
 //
-// SwingNavigableImageCanvas.java
+// SwingImageCanvas.java
 //
 
 /*
@@ -36,8 +36,9 @@ package imagej.ui.swing.display;
 
 import imagej.awt.AWTCursors;
 import imagej.awt.AWTEventDispatcher;
-import imagej.awt.AWTNavigableImageCanvas;
+import imagej.awt.AWTImageCanvas;
 import imagej.display.EventDispatcher;
+import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
@@ -88,7 +89,7 @@ import javax.swing.SwingUtilities;
 //   (as an example problem area).
 
 /**
- * A Swing implementation of the navigable image canvas.
+ * A Swing implementation of {@link ImageCanvas}.
  *
  * <p>
  * This code is based on
@@ -100,17 +101,14 @@ import javax.swing.SwingUtilities;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class SwingNavigableImageCanvas extends JPanel implements
-	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
+public class SwingImageCanvas extends JPanel implements
+	AWTImageCanvas, EventSubscriber<ToolActivatedEvent>
 {
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
 		// TODO - put this back?? //RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 		RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;  // this is like IJ1
-	private static final GraphicsConfiguration CONFIGURATION =
-		GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-			.getDefaultConfiguration();
 	private boolean highQualityRenderingEnabled = true;
 	private double zoomMultiplier = 1.2;
 	private BufferedImage image;
@@ -129,7 +127,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * scroll wheel as the zooming device.
 	 * </p>
 	 */
-	public SwingNavigableImageCanvas() {
+	public SwingImageCanvas() {
 		setOpaque(false);
 		addResizeListener();
 		addMouseListeners();
@@ -143,7 +141,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * scroll wheel as the zooming device.
 	 * </p>
 	 */
-	public SwingNavigableImageCanvas(final BufferedImage image) {
+	public SwingImageCanvas(final BufferedImage image) {
 		this();
 		setImage(image);
 		setOrigin(0, 0);
@@ -375,19 +373,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		repaint();
 	}
 
-	private static BufferedImage toCompatibleImage(final BufferedImage image) {
-		if (image.getColorModel().equals(CONFIGURATION.getColorModel())) {
-			return image;
-		}
-		final BufferedImage compatibleImage =
-			CONFIGURATION.createCompatibleImage(image.getWidth(), image.getHeight(),
-				image.getTransparency());
-		final Graphics g = compatibleImage.getGraphics();
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-		return compatibleImage;
-	}
-
 	// -- PRIVATE ZOOM CODE HELPERS --
 
 	// ctrX and ctrY in image coord space
@@ -537,7 +522,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * 
 	 * @return the current zoom level
 	 */
-	@Override
+//	@Override
 	public double getZoom() {
 		return scale; //  / initialScale;
 	}
@@ -555,7 +540,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	}
 
 	@Override
-	public double getZoomMultiplier() {
+	public double getZoomFactor() {
 		return zoomMultiplier;
 	}
 
@@ -564,8 +549,8 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 * 
 	 * @param newZoomMultiplier new zoom multiplier value
 	 */
-	@Override
-	public void setZoomMultiplier(double newZoomMultiplier) {
+//	@Override
+	public void setZoomFactor(double newZoomMultiplier) {
 		if (newZoomMultiplier <= 1)
 			throw new IllegalArgumentException("zoom multiplier must be > 1");
 		
@@ -627,22 +612,26 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		doZoom(zoom, imageP.x, imageP.y);
 	}
 
+	@Override
 	public void zoomIn() {
 		doZoom(scale * zoomMultiplier, centerX, centerY);
 	}
 
 	/** newCenter X&Y in panel coords called from ZoomTool or equivalent */
+	@Override
 	public void zoomIn(double newCenterX, double newCenterY) {
 		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
 		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
 		doZoom(scale * zoomMultiplier, ctrInImageCoords.x, ctrInImageCoords.y);
 	}
 
+	@Override
 	public void zoomOut() {
 		doZoom(scale / zoomMultiplier, centerX, centerY);
 	}
 
 	/** newCenter X&Y in panel coords called from ZoomTool or equivalent */
+	@Override
 	public void zoomOut(double newCenterX, double newCenterY) {
 		RealCoords ctrInPanelCoords = new RealCoords(newCenterX, newCenterY);
 		RealCoords ctrInImageCoords = panelToImageCoords(ctrInPanelCoords);
@@ -713,6 +702,11 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		doZoom(scale,
 			centerX - originX + imageCoords.x,
 			centerY - originY + imageCoords.y);
+	}
+
+	@Override
+	public void panReset() {
+		setPan(0, 0);
 	}
 
 	// -- MISC. METHODS --
@@ -856,8 +850,6 @@ public class SwingNavigableImageCanvas extends JPanel implements
 	 */
 	@Override
 	public void setImage(final BufferedImage newImage) {
-		final BufferedImage oldImage = image;
-		//image = toCompatibleImage(newImage);
 		image = newImage;
 		double imageWidth = image.getWidth();
 		double imageHeight = image.getHeight();
@@ -880,18 +872,12 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			}
 		}
 		setPreferredSize(new Dimension((int)Math.ceil(imageWidth), (int)Math.ceil(imageHeight)));
-		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 		repaint();
 	}
 
 	@Override
 	public void subscribeToToolEvents() {
 		Events.subscribe(ToolActivatedEvent.class, this);
-	}
-
-	@Override
-	public void updateImage() {
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// --------------------------------------------------------------------
@@ -1210,4 +1196,5 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		}
 
 	}
+
 }
