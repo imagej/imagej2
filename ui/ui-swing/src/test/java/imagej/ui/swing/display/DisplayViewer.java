@@ -75,12 +75,10 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 	private void buildDisplay(final String[] urls, final boolean composite) {
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
-
+				@Override
 				public void run() {
 					buildDisplayOnEDT(urls, composite);
-
 				}
-
 			});
 		}
 	}
@@ -118,27 +116,27 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 				if (composite) {
 					if (img.dimension(img.getAxisIndex(Axes.CHANNEL)) == 3) {
 						// If 3 channels, probably an RGB image
-						view = DatasetViewBuilder.createCompositeRGBView(url, img);
+						view = DatasetViewBuilder.createCompositeRGBView(img);
 						System.out.println("created CompositeRGBView");
 
 					} else {
-						view = DatasetViewBuilder.createCompositeView(url, img);
+						view = DatasetViewBuilder.createCompositeView(img);
 						System.out.println("created CompositeView");
 						// more than 3 channels
 						// default luts up to 7
 						// > 7, gray
 					}
 				} else {
-					view = DatasetViewBuilder.createMultichannelView(url, img);
+					view = DatasetViewBuilder.createMultichannelView(img);
 					System.out.println("created MultichannelView");
 				}
 			} else {
-				view = DatasetViewBuilder.createView(url, img);
+				view = DatasetViewBuilder.createView(img);
 				System.out.println("created simple view");
 			}
 			if (view != null) {
-				view.setPositionX(positionX);
-				view.setPositionY(positionY);
+				view.setOffsetX(positionX);
+				view.setOffsetY(positionY);
 				view.setImgCanvas(imgPanel);
 				ctrl.addView(view);
 				imgPanel.setMaxDimension(view);
@@ -158,19 +156,11 @@ public class DisplayViewer<T extends RealType<T> & NativeType<T>> {
 
 	}
 
-	public static final void main(final String[] args) {
-		String path = "file:///C:/testimages/testData/OME-TIFF_Tests/";
-		new DisplayViewer().buildDisplay(new String[]{"file:///C:/TestImages/TestImages/MyoblastCells.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "4D-series.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-4D-series.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-time-series.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel-z-series.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel.ome.tif"}, true);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-channel.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "multi-image-pixels.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "single-channel.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "time-series.ome.tif"}, false);
-//		new DisplayViewer().buildDisplay(new String[]{path + "z-series.ome.tif"}, false);
+	public static final <T extends RealType<T> & NativeType<T>> void main(
+		final String[] args)
+	{
+		String path = "http://loci.wisc.edu/files/software/data/mitosis-test.zip";
+		new DisplayViewer<T>().buildDisplay(new String[] {path}, false);
 	}
 
 	/*

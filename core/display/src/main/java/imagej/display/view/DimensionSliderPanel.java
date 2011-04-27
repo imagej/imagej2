@@ -62,11 +62,11 @@ public class DimensionSliderPanel extends JPanel {
 		// setPreferredSize(new Dimension(200, 18));
 		// add one slider per dimension beyond the first two
 		// System.out.println("Adding sliders, " + view.getImg().numDimensions());
-		for (int d = 2; d < view.getImg().numDimensions(); d++) {
+		for (int d = 2; d < view.getImgPlus().numDimensions(); d++) {
 			final int dim = d;
-			final String label = view.getImg().axis(d).getLabel();
+			final String label = view.getImgPlus().axis(d).getLabel();
 			// System.out.println("d = " + d);
-			final int dimLength = (int) view.getImg().dimension(d);
+			final int dimLength = (int) view.getImgPlus().dimension(d);
 
 			final JScrollBar bar =
 				new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, dimLength);
