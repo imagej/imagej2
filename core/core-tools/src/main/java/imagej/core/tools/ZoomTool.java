@@ -66,6 +66,7 @@ public class ZoomTool extends BaseTool {
 
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
+		System.out.println("onMouseUp");
 		final Display display = evt.getDisplay();
 		IntCoords endPt = new IntCoords(evt.getX(), evt.getY());
 		// mouse moved more than a lot - a rectangle was dragged
@@ -79,6 +80,7 @@ public class ZoomTool extends BaseTool {
 			display.zoomToFit(dragRegion);
 		} else { // mouse barely moved : just zoom
 			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
+				
 				display.zoomIn(evt.getX(), evt.getY());
 			} else {
 				display.zoomOut(evt.getX(), evt.getY());

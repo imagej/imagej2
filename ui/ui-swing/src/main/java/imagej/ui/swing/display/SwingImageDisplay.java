@@ -158,6 +158,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		final EventDispatcher dispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(dispatcher);
 		imgCanvas.subscribeToToolEvents();
+		((NavigableImagePanel_1)imgCanvas).initializeParams();
 		imgWindow.addEventDispatcher(dispatcher);
 		// TODO - use DisplayView instead of Dataset directly
 		// imageFrame.setDataset(dataset);
