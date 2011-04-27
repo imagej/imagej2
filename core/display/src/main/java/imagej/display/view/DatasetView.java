@@ -35,14 +35,17 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display.view;
 
 import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.display.ImageCanvas;
+import imagej.util.Dimensions;
+import imagej.util.Index;
 
 import java.util.ArrayList;
 
-import net.imglib2.converter.Converter;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.display.RealARGBConverter;
+import net.imglib2.display.CompositeXYProjector;
+import net.imglib2.display.RealLUTConverter;
 import net.imglib2.display.XYProjector;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.ARGBType;
@@ -56,62 +59,43 @@ import net.imglib2.type.numeric.RealType;
 public class DatasetView {
 
 	private final Dataset dataset;
-	private final ARGBScreenImage screenImage;
-	private final ArrayList<Converter<? extends RealType<?>, ARGBType>> converters =
-		new ArrayList<Converter<? extends RealType<?>, ARGBType>>();
-	private XYProjector<? extends RealType<?>, ARGBType> projector;
-	private int positionX;
-	private int positionY;
-	private final ImgPlus<? extends RealType<?>> img;
-	private ImageCanvas imgCanvas;
+	private final int channelDimIndex;
 	private final ArrayList<ColorTable8> luts;
-
-	int channelDimIndex;
 	private final boolean composite;
 
-	public DatasetView(final String name, final Dataset dataset,
-		final int channelDimIndex, final ArrayList<ColorTable8> luts,
-		final boolean composite)
-	{
+	private final ARGBScreenImage screenImage;
+	private final XYProjector<? extends RealType<?>, ARGBType> projector;
+	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
+		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
+	private final long[] dims, planeDims;
+	private final long[] position, planePos;
+
+	private int offsetX, offsetY;
+	private ImageCanvas imgCanvas;
+
+	public DatasetView(final Dataset dataset, final int channelDimIndex,
+		final ArrayList<ColorTable8> luts, final boolean composite)
+	{
 		this.dataset = dataset;
-		this.img = dataset.getImgPlus();
 		this.channelDimIndex = channelDimIndex;
 		this.luts = luts;
-		screenImage =
-			new ARGBScreenImage((int) img.dimension(0), (int) img.dimension(1));
-		final int min = 0, max = 255;
 		this.composite = composite;
 
-		if (channelDimIndex < 0) { // No channels
-			if (luts != null) { // single channel, use lut for display.
-				projector =
-					new XYProjector(img, screenImage, new RealLUTConverter(min, max,
-						luts.get(0)));
-			}
-			else {
-				projector =
-					new XYProjector(img, screenImage, new RealARGBConverter(min, max));
-			}
-		}
-		else {
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
+		final int width = (int) img.dimension(0);
+		final int height = (int) img.dimension(1);
+		screenImage = new ARGBScreenImage(width, height);
+		final int min = 0, max = 255;
 
-			if (composite) { // multichannel composite
-				for (int i = 0; i < luts.size(); i++) {
-					final ColorTable8 lut = luts.get(i);
-					converters.add(new RealLUTConverter(min, max, lut));
-				}
-				projector =
-					new CompositeXYProjector(img, screenImage, converters,
-						channelDimIndex);
-			}
-			else { // multichannel with sep. ColorTable8 for each
-				projector =
-					new LutXYProjector(img, screenImage, new RealLUTConverter(min, max,
-						luts.get(0)));
-			}
-		}
+		projector = createProjector(min, max);
 		projector.map();
+
+		dims = new long[img.numDimensions()];
+		img.dimensions(dims);
+		planeDims = Dimensions.getDims3AndGreater(dims);
+		position = new long[dims.length];
+		planePos = new long[planeDims.length];
 	}
 
 	public int getChannelDimIndex() {
@@ -126,64 +110,94 @@ public class DatasetView {
 		this.imgCanvas = imgCanvas;
 	}
 
-	public int getPositionX() {
-		return positionX;
+	public int getOffsetX() {
+		return offsetX;
 	}
 
-	public void setPositionX(final int positionX) {
-		this.positionX = positionX;
+	public void setOffsetX(final int offsetX) {
+		this.offsetX = offsetX;
 	}
 
-	public int getPositionY() {
-		return positionY;
+	public int getOffsetY() {
+		return offsetY;
 	}
 
-	public void setPositionY(final int positionY) {
-		this.positionY = positionY;
+	public void setOffsetY(final int offsetY) {
+		this.offsetY = offsetY;
 	}
 
-	//
-	public ImgPlus<? extends RealType<?>> getImg() {
-		return img;
+	public ImgPlus<? extends RealType<?>> getImgPlus() {
+		return dataset.getImgPlus();
 	}
 
 	public ARGBScreenImage getScreenImage() {
 		return screenImage;
 	}
 
-	public ArrayList<Converter<? extends RealType<?>, ARGBType>> getConverters()
-	{
+	public ArrayList<RealLUTConverter<? extends RealType<?>>> getConverters() {
 		return converters;
 	}
 
-	public XYProjector getProjector() {
+	public XYProjector<? extends RealType<?>, ARGBType> getProjector() {
 		return projector;
 	}
 
-	void project() {}
-
 	public void setPosition(final int value, final int dim) {
-		if (!composite) {
-			projector.setPosition(value, dim);
-			if (channelDimIndex > 0) {
-				if (dim == channelDimIndex) {
-					((LutXYProjector) projector).setLut(luts.get(value));
-				}
+		projector.setPosition(value, dim);
+		projector.localize(position);
+		for (int i = 0; i < planePos.length; i++) planePos[i] = position[i + 2];
+
+		// update color tables
+		if (dim != channelDimIndex) {
+			final int channelCount = (int) dims[channelDimIndex];
+			for (int c = 0; c < channelCount; c++) {
+				final ColorTable8 lut = getCurrentLUT(c);
+				converters.get(c).setLUT(lut);
 			}
 		}
-		else { // is composite
-			// if more than one channel, and the dim changed is the Channel dim,
-			// change the lut.
-			// values needs to increment n, where n = number of channels
-			projector.setPosition(value, dim);
-		}
+
 		projector.map();
-		// tell display components to repaint
-		if (imgCanvas != null) {
-			imgCanvas.updateImage();
+		if (imgCanvas != null) imgCanvas.updateImage();
+	}
+
+	// -- Helper methods --
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private XYProjector<? extends RealType<?>, ARGBType> createProjector(
+		final int min, final int max)
+	{
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
+
+		if (channelDimIndex < 0) {
+			// no channels dimension
+			final RealLUTConverter<? extends RealType<?>> converter;
+			if (luts == null) {
+				// no LUTs available
+				converter = new RealLUTConverter(min, max, null);
+			}
+			else {
+				// use LUT for display
+				converter = new RealLUTConverter(min, max, luts.get(0));
+			}
+			converters.add(converter);
+			return new XYProjector(img, screenImage, converter);
 		}
 
-		// Dataset emits a DatasetChangedEvent;
+		// channels dimension exists
+		for (int i = 0; i < luts.size(); i++) {
+			final ColorTable8 lut = luts.get(i);
+			converters.add(new RealLUTConverter(min, max, lut));
+		}
+		final CompositeXYProjector proj =
+			new CompositeXYProjector(img, screenImage, converters, channelDimIndex);
+		proj.setComposite(composite);
+		return proj;
+	}
+
+	private ColorTable8 getCurrentLUT(final int cPos) {
+		planePos[channelDimIndex - 2] = cPos;
+		final int no = (int) Index.indexNDto1D(planeDims, planePos);
+		return dataset.getColorTable8(no);
 	}
 
 }

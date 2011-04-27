@@ -78,8 +78,8 @@ public class ImageDisplayPanel extends JPanel implements
 	}
 
 	public void setMaxDimension(final DatasetView view) {
-		final int width = (int) view.getImg().dimension(0) + view.getPositionX();
-		final int height = (int) view.getImg().dimension(1) + view.getPositionY();
+		final int width = (int) view.getImgPlus().dimension(0) + view.getOffsetX();
+		final int height = (int) view.getImgPlus().dimension(1) + view.getOffsetY();
 		if (width > maxWidth) {
 			maxWidth = width;
 		}
@@ -123,7 +123,7 @@ public class ImageDisplayPanel extends JPanel implements
 			for (final DatasetView view : ctrl.getViews()) {
 				// System.out.println("Painting in ImagePanel...");
 				final Image image = view.getScreenImage().image();
-				g.drawImage(image, view.getPositionX(), view.getPositionY(), this);
+				g.drawImage(image, view.getOffsetX(), view.getOffsetY(), this);
 			}
 		}
 

@@ -38,12 +38,10 @@ import imagej.display.DisplayController;
 import imagej.display.ImageDisplayWindow;
 import imagej.display.view.DatasetView;
 import imagej.display.view.DatasetViewBuilder;
-import imagej.display.view.LutXYProjector;
 import imagej.util.Index;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import javax.swing.SwingUtilities;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
@@ -118,9 +116,9 @@ public class AWTDisplayController implements DisplayController {
 		this.dataset = dataset;
 		//dataset.getImgPlus();
 		composite = true;
-		//view = DatasetViewBuilder.createView(dataset.getName(), dataset);
-		view = DatasetViewBuilder.createCompositeView(dataset.getName(), dataset);
-		//view = DatasetViewBuilder.createMultichannelView(dataset.getName(), dataset);
+		//view = DatasetViewBuilder.createView(dataset);
+		view = DatasetViewBuilder.createCompositeView(dataset);
+		//view = DatasetViewBuilder.createMultichannelView(dataset);
 		dims = dataset.getDims();
 		dimLabels = dataset.getAxes();
 		imageName = dataset.getName();
@@ -167,19 +165,7 @@ public class AWTDisplayController implements DisplayController {
 	@Override
 	public void updatePosition(final int posIndex, final int newValue) {
 		int projDimIndex = posIndex+2;  // convert from planar dims (adjust for x,y dims)
-		if (!composite) {
-			view.getProjector().setPosition(newValue, projDimIndex);
-
-			if (view.getChannelDimIndex() > 0) {
-				if (projDimIndex == view.getChannelDimIndex()) {
-					((LutXYProjector) view.getProjector()).setLut(view.getLuts().get(newValue));
-				}
-			}
-		} else { // is composite
-			// if more than one channel, and the dim changed is the Channel dim, change the lut.
-			// values needs to increment n, where n = number of channels 
-			view.getProjector().setPosition(newValue, projDimIndex);
-		}
+		view.getProjector().setPosition(newValue, projDimIndex);
 		update();
 	}
 
