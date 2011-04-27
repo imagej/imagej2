@@ -102,7 +102,7 @@ import javax.swing.SwingUtilities;
  * @author Barry DeZonia
  */
 public class SwingNavigableImageCanvas extends JPanel implements
-	AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent>
+		AWTNavigableImageCanvas, EventSubscriber<ToolActivatedEvent> 
 {
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;

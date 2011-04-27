@@ -81,10 +81,10 @@ public class SwingImageDisplayWindow extends JFrame
 	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
 
-	protected final SwingNavigableImageCanvas imgCanvas;
+	protected final NavigableImagePanel_1 imgCanvas;
 	protected DisplayController controller;
 
-	public SwingImageDisplayWindow(final SwingNavigableImageCanvas imgCanvas) {
+	public SwingImageDisplayWindow(final NavigableImagePanel_1 imgCanvas) {
 		this.imgCanvas = imgCanvas;
 
 		imageLabel = new JLabel(" ");

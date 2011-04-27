@@ -112,6 +112,11 @@ public class SwingUI implements UserInterface {
 		frame.setVisible(true);
 
 		displayReadme();
+		
+		// testing this...
+		EveryEventListener eel = new EveryEventListener();
+		
+				
 	}
 
 	@Override
