@@ -316,6 +316,7 @@ public class NavigableImagePanel_1 extends JPanel implements
 		RealCoords regionOrigin = new RealCoords(region.x, region.y);
 		RealCoords regionOriginImageCoords = panelToImageCoords(regionOrigin);
 		RealCoords regionSize = new RealCoords(region.width, region.height);
+		
 		RealCoords regionSizeImageCoords = panelToImageCoords(regionSize);
 		double xRatio = image.getWidth() / regionSizeImageCoords.x;
 		double yRatio = image.getHeight() / regionSizeImageCoords.y;
@@ -734,6 +735,7 @@ public class NavigableImagePanel_1 extends JPanel implements
 
 	void zoomIn(double centerX, double centerY) {
 		zoomFactor = 1.0 + zoomIncrement;
+		
 		setZoom(zoomFactor, new Point((int) centerX, (int) centerY));
 	}
 
@@ -866,7 +868,7 @@ public class NavigableImagePanel_1 extends JPanel implements
 
 	private double navZoomFactor = 1.0 + zoomIncrement;
 	private double navScale = 0.0;
-	private boolean navigationImageEnabled = true;
+	private boolean navigationImageEnabled = false;
 	private BufferedImage navigationImage;
 	private int navImageWidth;
 	private int navImageHeight;
