@@ -421,7 +421,7 @@ public class SwingImageCanvas extends JPanel implements
 		Log.debug("    initialScale "+initialScale);
 		Log.debug("    current scale "+scale);
 		Log.debug("---------------------------------------------------");
-		Events.publish(new ZoomEvent(this, getZoom(), (int) centerX, (int) centerY));
+		Events.publish(new ZoomEvent(this, getZoomFactor(), (int) centerX, (int) centerY));
 		repaint();
 	}
 	
@@ -441,7 +441,7 @@ public class SwingImageCanvas extends JPanel implements
 			int maxDimension = Math.max(image.getWidth(), image.getHeight());
 
 			// if zooming the image would show less than one pixel of image data
-			if ((maxDimension / getZoom()) < 1)
+			if ((maxDimension / getZoomFactor()) < 1)
 				return true;
 		}
 		
@@ -522,9 +522,9 @@ public class SwingImageCanvas extends JPanel implements
 	 * 
 	 * @return the current zoom level
 	 */
-//	@Override
-	public double getZoom() {
-		return scale; //  / initialScale;
+	@Override
+	public double getZoomFactor() {
+		return scale;
 	}
 
 	// IN IMAGE COORDS
@@ -539,8 +539,7 @@ public class SwingImageCanvas extends JPanel implements
 		return centerY;
 	}
 
-	@Override
-	public double getZoomFactor() {
+	public double getZoomStep() {
 		return zoomMultiplier;
 	}
 
@@ -549,8 +548,7 @@ public class SwingImageCanvas extends JPanel implements
 	 * 
 	 * @param newZoomMultiplier new zoom multiplier value
 	 */
-//	@Override
-	public void setZoomFactor(double newZoomMultiplier) {
+	public void setZoomStep(double newZoomMultiplier) {
 		if (newZoomMultiplier <= 1)
 			throw new IllegalArgumentException("zoom multiplier must be > 1");
 		
