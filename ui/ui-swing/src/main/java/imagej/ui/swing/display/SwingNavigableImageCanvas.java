@@ -343,7 +343,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 			createNavigationImage();
 		}
 		
-		Events.publish(new ZoomEvent(this, 0, initialScale));
+		Events.publish(new ZoomEvent(this, initialScale, (int)centerX, (int)centerY));
 	}
 
 	// Tests whether the image is displayed in its entirety in the panel.
@@ -401,7 +401,7 @@ public class SwingNavigableImageCanvas extends JPanel implements
 		double newOriginX = centerX - (scale * (image.getWidth()/2.0)); 
 		double newOriginY = centerY - (scale * (image.getHeight()/2.0)); 
 		setOrigin(newOriginX, newOriginY);
-		Events.publish(new ZoomEvent(this, oldZoom, getZoom()));
+		Events.publish(new ZoomEvent(this, getZoom(), (int)centerX, (int)centerY));
 		repaint();
 		Log.debug("---------------------------------------------------");
 		Log.debug("doZoom()");

@@ -31,7 +31,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
@@ -70,9 +69,10 @@ import java.util.List;
  */
 @Plugin(type = Display.class)
 public class SwingImageDisplay implements AWTDisplay {
+	//
+
 	protected Dataset theDataset;
 	private long[] lastKnownDimensions;
-
 	private SwingImageDisplayWindow imgWindow;
 	private NavigableImagePanel_1 imgCanvas;
 	private DisplayController controller;
@@ -82,44 +82,50 @@ public class SwingImageDisplay implements AWTDisplay {
 		// CTR FIXME - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
-		
+
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		
+
 		EventSubscriber<DatasetChangedEvent> dsChangeSubscriber =
-			new EventSubscriber<DatasetChangedEvent>() {
-				@Override
-				public void onEvent(DatasetChangedEvent event) {
-					if (theDataset == event.getObject()) {
-						update();
+				new EventSubscriber<DatasetChangedEvent>() {
+
+					@Override
+					public void onEvent(DatasetChangedEvent event) {
+						if (theDataset == event.getObject()) {
+							update();
+						}
 					}
-				}
-			};
-		EventSubscriber<WinActivatedEvent> winActSubscriber = 
-			new EventSubscriber<WinActivatedEvent>() {
-				@Override
-				public void onEvent(WinActivatedEvent event) {
-					displayManager.setActiveDisplay(event.getDisplay());
-					//Log.debug("**** active display set to "+event.getDisplay()+" ****");
-				}
-			};
-		EventSubscriber<WinClosedEvent> winCloseSubscriber = 
-			new EventSubscriber<WinClosedEvent>() {
-				@Override
-				public void onEvent(WinClosedEvent event) {
-					displayManager.setActiveDisplay(null);
-					//Log.debug("**** active display set to null ****");
-				}
-			};
-			
+
+				};
+		EventSubscriber<WinActivatedEvent> winActSubscriber =
+				new EventSubscriber<WinActivatedEvent>() {
+
+					@Override
+					public void onEvent(WinActivatedEvent event) {
+						displayManager.setActiveDisplay(event.getDisplay());
+						//Log.debug("**** active display set to "+event.getDisplay()+" ****");
+					}
+
+				};
+		EventSubscriber<WinClosedEvent> winCloseSubscriber =
+				new EventSubscriber<WinClosedEvent>() {
+
+					@Override
+					public void onEvent(WinClosedEvent event) {
+						displayManager.setActiveDisplay(null);
+						//Log.debug("**** active display set to null ****");
+					}
+
+				};
+
 		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribers.add(dsChangeSubscriber);
 		subscribers.add(winActSubscriber);
 		subscribers.add(winCloseSubscriber);
-		
+
 		Events.subscribe(DatasetChangedEvent.class, dsChangeSubscriber);
 		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
 		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
-		
+
 		Events.publish(new DisplayCreatedEvent(this));
 
 		displayManager.setActiveDisplay(this);
@@ -130,8 +136,6 @@ public class SwingImageDisplay implements AWTDisplay {
 		return true;
 	}
 
-
-	
 	@Override
 	public void display(final Dataset dataset) {
 		theDataset = dataset;
@@ -170,7 +174,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void update() {
 		// did the shape of the dataset change?
 		boolean changed = false;
-		for (int i=0; i<theDataset.getImgPlus().numDimensions(); i++) {
+		for (int i = 0; i < theDataset.getImgPlus().numDimensions(); i++) {
 			final long dim = theDataset.getImgPlus().dimension(i);
 			if (dim != lastKnownDimensions[i]) {
 				changed = true;
@@ -181,10 +185,12 @@ public class SwingImageDisplay implements AWTDisplay {
 		if (changed) {
 			theDataset.getImgPlus().dimensions(lastKnownDimensions);
 			controller.setDataset(theDataset);
+			// TODO may need to imgCanvas.initializeParams()... but not in ImageCanvas interface yet
 			imgCanvas.setZoom(1.0);
-			imgCanvas.setPan(0,0);
+			imgCanvas.setPan(0, 0);
+		} else {
+			controller.update();
 		}
-		controller.update();
 	}
 
 	@Override
@@ -214,9 +220,9 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public void panReset() {
-		imgCanvas.setPan(0,0);
+		imgCanvas.setPan(0, 0);
 	}
-	
+
 	@Override
 	public double getPanX() {
 		return imgCanvas.getPanX();
@@ -231,7 +237,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void setZoom(double newZoom) {
 		imgCanvas.setZoom(newZoom);
 	}
-	
+
 	@Override
 	public void setZoom(final double newZoom, final double centerX,
 			final double centerY) {
@@ -242,7 +248,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void zoomIn() {
 		imgCanvas.zoomIn();
 	}
-	
+
 	@Override
 	public void zoomIn(final double centerX, final double centerY) {
 		imgCanvas.zoomIn(centerX, centerY);
@@ -252,7 +258,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	public void zoomOut() {
 		imgCanvas.zoomOut();
 	}
-	
+
 	@Override
 	public void zoomOut(final double centerX, final double centerY) {
 		imgCanvas.zoomOut(centerX, centerY);
@@ -267,14 +273,15 @@ public class SwingImageDisplay implements AWTDisplay {
 	public double getZoomFactor() {
 		return imgCanvas.getZoom();
 	}
-	
+
 	@Override
 	public double getZoomCtrX() {
 		return imgCanvas.getZoomCtrX();
 	}
-	
+
 	@Override
 	public double getZoomCtrY() {
 		return imgCanvas.getZoomCtrY();
 	}
+
 }

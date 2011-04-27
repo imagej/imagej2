@@ -39,6 +39,7 @@ import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTNavigableImageCanvas;
 import imagej.display.EventDispatcher;
 import imagej.display.MouseCursor;
+import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
@@ -220,6 +221,8 @@ public class NavigableImagePanel_1 extends JPanel implements
 	private Point mousePosition;
 	private Dimension previousPanelSize;
 	private boolean highQualityRenderingEnabled = true;
+	private int maxAllowedWidth, maxAllowedHeight;
+	private int imageWidth, imageHeight;
 
 	/**
 	 * <p>Creates a new navigable image panel with no default image and
@@ -288,21 +291,22 @@ public class NavigableImagePanel_1 extends JPanel implements
 
 	@Override
 	public void pan(double xDelta, double yDelta) {
-		pan((int)xDelta, (int)yDelta);
+		pan((int) xDelta, (int) yDelta);
 	}
 
 	@Override
 	public void setPan(double x, double y) {
-		this.setImageOrigin((int)x, (int)y);
+		this.setImageOrigin((int) x, (int) y);
 	}
 
 	@Override
 	public void setZoom(double newZoom, double centerX, double centerY) {
 		Point p = new Point((int) centerX, (int) centerY);
 		this.setZoom(newZoom, p);
+		Events.publish(new ZoomEvent(this, scale, (int) centerX, (int) centerY));
 	}
 
-		// TODO - this can be tested via dragging an invisible window
+	// TODO - this can be tested via dragging an invisible window
 	//   when the zoom tool is activated. Note that it looks
 	//   incorrect at the moment. Debug later.
 	@Override
@@ -316,11 +320,10 @@ public class NavigableImagePanel_1 extends JPanel implements
 		double xRatio = image.getWidth() / regionSizeImageCoords.x;
 		double yRatio = image.getHeight() / regionSizeImageCoords.y;
 		double newScale = Math.max(xRatio, yRatio);
-		double newCtrX = regionOriginImageCoords.x + 0.5*regionSizeImageCoords.x;
-		double newCtrY = regionOriginImageCoords.y + 0.5*regionSizeImageCoords.y;
+		double newCtrX = regionOriginImageCoords.x + 0.5 * regionSizeImageCoords.x;
+		double newCtrY = regionOriginImageCoords.y + 0.5 * regionSizeImageCoords.y;
 		setZoom(newScale, newCtrX, newCtrY);
 	}
-
 
 	@Override
 	public void setZoomMultiplier(double newZoomMultiplier) {
@@ -334,7 +337,7 @@ public class NavigableImagePanel_1 extends JPanel implements
 
 	@Override
 	public boolean isInImage(RealCoords p) {
-		return isInImage(new Point((int)p.x, (int)p.y));
+		return isInImage(new Point((int) p.x, (int) p.y));
 	}
 	// Converts this panel's coordinates into the original image coordinates
 
@@ -436,20 +439,77 @@ public class NavigableImagePanel_1 extends JPanel implements
 		});
 	}
 
-	//Called from paintComponent() when a new image is set.
-	private void initializeParams() {
-		double xScale = (double) getWidth() / image.getWidth();
-		double yScale = (double) getHeight() / image.getHeight();
-		initialScale = Math.min(xScale, yScale);
+	public void initializeParams() {
+		calcMaxAllowed();
+		setInitialScale();
 		scale = initialScale;
-
-		//An image is initially centered
-		centerImage();
+		setPrefSize();
+		//
+		originX = 0;
+		originY = 0;
+				
 		if (isNavigationImageEnabled()) {
 			createNavigationImage();
 		}
+		setPreferredSize(new Dimension((int) Math.ceil(imageWidth), (int) Math.ceil(imageHeight)));
+
+//		double xScale = (double) getWidth() / image.getWidth();
+//		double yScale = (double) getHeight() / image.getHeight();
+//		initialScale = Math.min(xScale, yScale);
+//		scale = initialScale;
+//
+//		//An image is initially centered
+//		centerImage();
+//		if (isNavigationImageEnabled()) {
+//			createNavigationImage();
+//		}
 	}
 
+	
+	//Called from paintComponent() when a new image is set.
+	private void setInitialScale() {
+		// is image too big to comfortably fit on screen??
+		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
+			double windowAspect = maxAllowedWidth / maxAllowedHeight;
+			double imageAspect = imageWidth / imageHeight;
+			if (imageAspect > windowAspect) {
+				// width is the problem dimension
+				initialScale = maxAllowedWidth / imageWidth;
+			} else { // imageAspect <= windowAspect
+				// height is the problem dimension
+				initialScale = maxAllowedHeight / imageHeight;
+			}
+		} else {  // image fits on screen just fine at 1:1
+			initialScale = 1;
+		}
+	}
+
+	private void calcMaxAllowed() {
+		imageWidth = image.getWidth();
+		imageHeight = image.getHeight();
+		final Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
+		maxAllowedWidth = (int)(MAX_SCREEN_PROPORTION * screenDims.width);
+		maxAllowedHeight = (int)(MAX_SCREEN_PROPORTION * screenDims.height);
+	}
+
+		private void setPrefSize() {
+		// if image is too big to fit on screen comfortably
+		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
+			double windowAspect = maxAllowedWidth / maxAllowedHeight;
+			double imageAspect = imageWidth / imageHeight;
+			if (imageAspect > windowAspect) {
+				// width is the problem dimension
+				imageHeight *= maxAllowedWidth / imageWidth;
+				imageWidth = maxAllowedWidth;
+			} else { // imageAspect <= windowAspect
+				// height is the problem dimension
+				imageWidth *= maxAllowedHeight / imageHeight;
+				imageHeight = maxAllowedHeight;
+			}
+		}
+		setPreferredSize(new Dimension((int) Math.ceil(imageWidth), (int) Math.ceil(imageHeight)));
+	}
+	
 	//Centers the current image in the panel.
 	private void centerImage() {
 		originX = (getWidth() - getScreenImageWidth()) / 2;
@@ -466,26 +526,6 @@ public class NavigableImagePanel_1 extends JPanel implements
 		final BufferedImage oldImage = image;
 		//image = toCompatibleImage(newImage);
 		image = newImage;
-		double imageWidth = image.getWidth();
-		double imageHeight = image.getHeight();
-		Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
-		double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
-		double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
-		// if image is too big to fit on screen comfortably
-		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
-			double windowAspect = maxAllowedWidth / maxAllowedHeight;
-			double imageAspect = imageWidth / imageHeight;
-			if (imageAspect > windowAspect) {
-				// width is the problem dimension
-				imageHeight *= maxAllowedWidth / imageWidth;
-				imageWidth = maxAllowedWidth;
-			} else { // imageAspect <= windowAspect
-				// height is the problem dimension
-				imageWidth *= maxAllowedHeight / imageHeight;
-				imageHeight = maxAllowedHeight;
-			}
-		}
-		setPreferredSize(new Dimension((int) Math.ceil(imageWidth), (int) Math.ceil(imageHeight)));
 		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 		repaint();
 	}
@@ -503,7 +543,6 @@ public class NavigableImagePanel_1 extends JPanel implements
 //		firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
 //		repaint();
 //	}
-
 	/**
 	 * <p>Tests whether an image uses the standard RGB color space.</p>
 	 */
@@ -650,8 +689,7 @@ public class NavigableImagePanel_1 extends JPanel implements
 		Coords panelP = imageToPanelCoords(imageP);
 		originX += (correctedP.getIntX() - (int) panelP.x);
 		originY += (correctedP.getIntY() - (int) panelP.y);
-		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),
-				new Double(getZoom()));
+		firePropertyChange(ZOOM_LEVEL_CHANGED_PROPERTY, new Double(oldZoom),new Double(getZoom()));
 		repaint();
 	}
 

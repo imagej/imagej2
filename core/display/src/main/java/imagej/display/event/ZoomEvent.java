@@ -43,16 +43,25 @@ import imagej.display.ImageCanvas;
  */
 public class ZoomEvent extends CanvasEvent {
 
-	private double oldZoom;
-	private double newZoom;
-	
-	public ZoomEvent(ImageCanvas canvas, double oldZoom, double newZoom) {
-		super(canvas);
-		this.oldZoom = oldZoom;
-		this.newZoom = newZoom;
-	}
-	
-	public double getOldZoom() { return oldZoom; }
+	private double scale;
+	private int centerX, centerY;
 
-	public double getNewZoom() { return newZoom; }
+	public ZoomEvent(ImageCanvas canvas, double scale, int centerX, int centerY) {
+		super(canvas);
+		this.scale = scale;
+		this.centerX = centerX;
+		this.centerY = centerY;
+	}
+
+	public int getCenterX() {
+		return centerX;
+	}
+
+	public int getCenterY() {
+		return centerY;
+	}
+
+	public double getScale() {
+		return scale;
+	}
 }

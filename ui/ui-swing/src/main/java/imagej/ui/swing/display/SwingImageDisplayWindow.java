@@ -193,7 +193,7 @@ public class SwingImageDisplayWindow extends JFrame
 					if (controller != null) {
 						datasetName = controller.getDataset().getName();
 					}
-					final double zoom = event.getNewZoom();
+					final double zoom = event.getScale();
 					if (zoom == 1.0) // exactly
 					setTitle(datasetName);
 					else {

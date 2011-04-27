@@ -111,6 +111,8 @@ public class AWTDisplayController implements DisplayController {
 		return isComposite;
 	}
 
+	// a plugin could change the dimensions (eg. rotate) of the image, so...
+	// Boolean dimensionsChanged;
 	@Override
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
@@ -169,27 +171,14 @@ public class AWTDisplayController implements DisplayController {
 		update();
 	}
 
-//	@Override
-//	public void updatePosition(final int posIndex, final int newValue) {
-//		pos[posIndex] = newValue;
-//		view.setPosition(newValue, xIndex);
-//		update();
-//	}
 	@Override
 	public void update() {
 		view.getProjector().map();
 		// tell display components to repaint
-//		
-//		if (!SwingUtilities.isEventDispatchThread()) {
-//			SwingUtilities.invokeLater(new Runnable() {
-//
-//				public void run() {
+
 		BufferedImage bi = (BufferedImage) view.getScreenImage().image();
 		display.getImageCanvas().setImage(bi);
-//				}
 
-//			});
-//		}
 		// this is ugly... just trying it out.
 		// imgPanel.setNavigationImageEnabled(true);
 		imgWindow.setLabel(makeLabel());
