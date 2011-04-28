@@ -41,6 +41,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.util.IntCoords;
 
 import java.awt.event.KeyEvent;
 
@@ -57,9 +58,9 @@ public class PanTool extends BaseTool {
 
 	public static final int PRIORITY = 203;
 
-	private static final float PAN_AMOUNT = 10;
+	private static final int PAN_AMOUNT = 10;
 
-	// @todo: Add customization to set pan amount
+	// TODO - Add customization to set pan amount
 
 	private int lastX, lastY;
 
@@ -70,16 +71,16 @@ public class PanTool extends BaseTool {
 		// to do so, need GUI-agnostic Key enum with all key codes...
 		switch (evt.getCode()) {
 			case KeyEvent.VK_UP:
-				display.pan(0, -PAN_AMOUNT);
+				display.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_DOWN:
-				display.pan(0, -PAN_AMOUNT);
+				display.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_LEFT:
-				display.pan(-PAN_AMOUNT, 0);
+				display.getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
 				break;
 			case KeyEvent.VK_RIGHT:
-				display.pan(PAN_AMOUNT, 0);
+				display.getImageCanvas().pan(new IntCoords(PAN_AMOUNT, 0));
 				break;
 		}
 	}
@@ -93,7 +94,8 @@ public class PanTool extends BaseTool {
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		final Display display = evt.getDisplay();
-		display.pan(evt.getX() - lastX, evt.getY() - lastY);
+		display.getImageCanvas().pan(
+			new IntCoords(evt.getX() - lastX, evt.getY() - lastY));
 		lastX = evt.getX();
 		lastY = evt.getY();
 	}

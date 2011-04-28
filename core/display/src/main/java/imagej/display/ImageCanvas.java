@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
@@ -50,7 +51,10 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Gets the height of the current image. */
 	int getImageHeight();
 
-	// set EventDispatcher as event listener on this - esp. for key, mouse events
+	/**
+	 * Adds the given {@link EventDispatcher} as an event handler; e.g., for key
+	 * and mouse events.
+	 */
 	void addEventDispatcher(EventDispatcher dispatcher);
 
 	/**
@@ -61,13 +65,6 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	boolean isHighQualityRenderingEnabled();
 
 	/**
-	 * Indicates whether navigation image is enabled.
-	 * 
-	 * @return true when navigation image is enabled, false otherwise.
-	 */
-	boolean isNavigationImageEnabled();
-
-	/**
 	 * Enables/disables high quality rendering.
 	 * 
 	 * @param enabled enables/disables high quality rendering
@@ -75,27 +72,19 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	void setHighQualityRenderingEnabled(boolean enabled);
 
 	/**
-	 * <p>
-	 * Enables/disables navigation with the navigation image.
-	 * </p>
-	 * <p>
-	 * Navigation image should be disabled when custom, programmatic navigation is
-	 * implemented.
-	 * </p>
+	 * Tests whether a given point in the panel falls within the image boundaries.
 	 * 
-	 * @param enabled true when navigation image is enabled, false otherwise.
+	 * @param point The point to check, in panel coordinates (pixels).
 	 */
-	void setNavigationImageEnabled(boolean enabled);
+	boolean isInImage(IntCoords point);
 
-	// Is this point in the image as displayed in the panel
-	boolean isInImage(RealCoords p);
+	/** Converts the given panel coordinates into original image coordinates. */
+	RealCoords panelToImageCoords(IntCoords panelCoords);
 
-	// Converts this panel's coordinates into the original image coordinates
-	RealCoords panelToImageCoords(RealCoords p);
+	/** Converts the given original image coordinates into panel coordinates. */
+	IntCoords imageToPanelCoords(RealCoords imageCoords);
 
-	// Converts the original image coordinates into this panel's coordinates
-	RealCoords imageToPanelCoords(RealCoords p);
-
+	/** Handles setting of the cursor depending on the activated tool. */
 	void setCursor(MouseCursor cursor);
 
 	void subscribeToToolEvents();

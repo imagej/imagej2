@@ -44,6 +44,7 @@ import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -77,7 +78,7 @@ public class ProbeTool extends BaseTool {
 	public void onMouseMove(final MsMovedEvent evt) {
 		final Display display = evt.getDisplay();
 		final ImageCanvas canvas = display.getImageCanvas();
-		final RealCoords mousePos = new RealCoords(evt.getX(), evt.getY());
+		final IntCoords mousePos = new IntCoords(evt.getX(), evt.getY());
 		// mouse not in image ?
 		if (!canvas.isInImage(mousePos)) {
 			clearWorkingVariables();

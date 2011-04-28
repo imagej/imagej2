@@ -46,8 +46,14 @@ import java.awt.image.BufferedImage;
  */
 public interface AWTImageCanvas extends ImageCanvas {
 
+	/**
+	 * Sets an image for display in the panel.
+	 * 
+	 * @param newImage an image to be set in the panel
+	 */
 	void setImage(final BufferedImage newImage);
 
+	/** Gets the image currently being displayed in the panel. */
 	BufferedImage getImage();
 
 }

@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.util.IntCoords;
+
 /**
  * Defines methods needed to adjust the pan position of a {@link Display} or
  * {@link ImageCanvas}.
@@ -45,32 +47,28 @@ package imagej.display;
 public interface Pannable {
 
 	/**
-	 * Adjusts the pan by the given (X, Y) amount. Note that X & Y are in panel
-	 * coordinate space (pixels).
+	 * Adjusts the pan by the given (X, Y) amount.
+	 * 
+	 * @param delta Pan modifier, in panel coordinate space (pixels).
 	 */
-	void pan(double xDelta, double yDelta);
+	void pan(IntCoords delta);
 
 	/**
-	 * Pans the image to the given absolute (X, Y) position. Note that X & Y are
-	 * in panel coordinate space (pixels).
+	 * Pans the image to the given absolute (X, Y) position.
+	 * 
+	 * @param origin Absolute coordinates, in panel coordinate space (pixels).
 	 */
-	void setPan(double x, double y);
+	void setPan(IntCoords origin);
 
-	/** Resets the pan to the origin (0, 0). */
+	/** Resets the pan origin to (0, 0). */
 	void panReset();
 
 	/**
-	 * Gets the x coordinate of the image space point currently displayed in the
-	 * upper left corner of the window. Unlike the setters these results are in
-	 * image coordinate space.
+	 * Gets the X coordinate of the image space point currently displayed in the
+	 * upper left corner of the window.
+	 * 
+	 * @return Pan origin coordinates, in panel coordinate space (pixels).
 	 */
-	double getPanX();
-
-	/**
-	 * Gets the y coordinate of the image space point currently displayed in the
-	 * upper left corner of the window. Unlike the setters these results are in
-	 * image coordinate space.
-	 */
-	double getPanY();
+	IntCoords getPanOrigin();
 
 }

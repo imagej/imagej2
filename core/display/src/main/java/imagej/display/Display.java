@@ -45,7 +45,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface Display extends BasePlugin, Pannable, Zoomable {
+public interface Display extends BasePlugin {
 
 	/**
 	 * Tests whether the display is capable of visualizing the given

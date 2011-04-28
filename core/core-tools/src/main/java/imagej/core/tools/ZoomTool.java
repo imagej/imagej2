@@ -36,13 +36,13 @@ package imagej.core.tools;
 import imagej.display.Display;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsButtonEvent;
+import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
-import imagej.util.Rect;
 
 /**
  * Tool for zooming in and out of a display.
@@ -56,65 +56,85 @@ import imagej.util.Rect;
 public class ZoomTool extends BaseTool {
 
 	public static final int PRIORITY = 202;
-	private IntCoords startPt;
-	private final int minMouseDrag = 8;
+
+	private static final int DRAG_THRESHOLD = 8;
+
+	private IntCoords mousePos = new IntCoords(0, 0);
+	private IntCoords mouseDown = new IntCoords(0, 0);
+	private IntCoords mouseUp = new IntCoords(0, 0);
 
 	// -- ITool methods --
-
-	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		startPt = new IntCoords(evt.getX(), evt.getY());
-	}
-
-	@Override
-	public void onMouseUp(final MsReleasedEvent evt) {
-		System.out.println("onMouseUp");
-		final Display display = evt.getDisplay();
-		final IntCoords endPt = new IntCoords(evt.getX(), evt.getY());
-
-		// mouse moved more than a lot - a rectangle was dragged
-		if ((Math.abs(endPt.x - startPt.x) > minMouseDrag) ||
-			(Math.abs(endPt.y - startPt.y) > minMouseDrag))
-		{
-			final int ox = Math.min(endPt.x, startPt.x);
-			final int oy = Math.min(endPt.y, startPt.y);
-			final int w = Math.abs(endPt.x - startPt.x) + 1;
-			final int h = Math.abs(endPt.y - startPt.y) + 1;
-			final Rect dragRegion = new Rect(ox, oy, w, h);
-			display.zoomToFit(dragRegion);
-		}
-		else {
-			// mouse barely moved : just zoom
-			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
-				display.zoomIn(evt.getX(), evt.getY());
-			}
-			else {
-				display.zoomOut(evt.getX(), evt.getY());
-			}
-		}
-	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display display = evt.getDisplay();
 		final char c = evt.getCharacter();
 		if (c == '=' || c == '+') {
-			display.zoomIn();
+			display.getImageCanvas().zoomIn(mousePos);
 		}
 		else if (c == '-') {
-			display.zoomOut();
+			display.getImageCanvas().zoomOut(mousePos);
 		}
+	}
+
+	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		mouseDown.x = evt.getX();
+		mouseDown.y = evt.getY();
+	}
+
+	@Override
+	public void onMouseUp(final MsReleasedEvent evt) {
+		final Display display = evt.getDisplay();
+		mouseUp.x = evt.getX();
+		mouseUp.y = evt.getY();
+		final int xDist = Math.abs(mouseUp.x - mouseDown.x);
+		final int yDist = Math.abs(mouseUp.y - mouseDown.y);
+
+		// ensure mouse movement exceeds threshold
+		if (xDist > DRAG_THRESHOLD || yDist > DRAG_THRESHOLD)
+		{
+			// over threshold: zoom to rectangle
+			if (mouseUp.x < mouseDown.x) {
+				// swap X coordinates
+				final int x = mouseUp.x;
+				mouseUp.x = mouseDown.x;
+				mouseDown.x = x;
+			}
+			if (mouseUp.y < mouseDown.y) {
+				// swap Y coordinates
+				final int y = mouseUp.y;
+				mouseUp.y = mouseDown.y;
+				mouseDown.y = y;
+			}
+			display.getImageCanvas().zoomToFit(mouseDown, mouseUp);
+		}
+		else {
+			// under threshold: just zoom
+			if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
+				display.getImageCanvas().zoomIn(mouseDown);
+			}
+			else {
+				display.getImageCanvas().zoomOut(mouseDown);
+			}
+		}
+	}
+
+	@Override
+	public void onMouseMove(MsMovedEvent evt) {
+		mousePos.x = evt.getX();
+		mousePos.y = evt.getY();
 	}
 
 	@Override
 	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display display = evt.getDisplay();
-		// final IntCoords center = new IntCoords(evt.getX(), evt.getY());
+		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
 		if (evt.getWheelRotation() > 0) {
-			display.zoomIn(evt.getX(), evt.getY());
+			display.getImageCanvas().zoomIn(center);
 		}
 		else {
-			display.zoomOut(evt.getX(), evt.getY());
+			display.getImageCanvas().zoomOut(center);
 		}
 	}
 

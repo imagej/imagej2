@@ -58,7 +58,7 @@ public class ZoomIn implements ImageJPlugin {
 		final Display display = manager.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
 
-		display.zoomIn();
+		display.getImageCanvas().zoomIn();
 	}
 
 }

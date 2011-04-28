@@ -51,7 +51,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
-import imagej.util.Rect;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -180,87 +179,6 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public SwingImageCanvas getImageCanvas() {
 		return imgCanvas;
-	}
-
-	// -- Pannable methods --
-
-	@Override
-	public void pan(final double x, final double y) {
-		imgCanvas.pan(x, y);
-	}
-
-	@Override
-	public void setPan(double x, double y) {
-		imgCanvas.setPan(x, y);
-	}
-
-	@Override
-	public void panReset() {
-		imgCanvas.setPan(0, 0);
-	}
-
-	@Override
-	public double getPanX() {
-		return imgCanvas.getPanX();
-	}
-
-	@Override
-	public double getPanY() {
-		return imgCanvas.getPanY();
-	}
-
-	// -- Zoomable methods --
-
-	@Override
-	public void setZoom(final double newZoom) {
-		imgCanvas.setZoom(newZoom);
-	}
-
-	@Override
-	public void setZoom(final double newZoom, final double centerX,
-		final double centerY)
-	{
-		imgCanvas.setZoom(newZoom, centerX, centerY);
-	}
-
-	@Override
-	public void zoomIn() {
-		imgCanvas.zoomIn();
-	}
-
-	@Override
-	public void zoomIn(final double centerX, final double centerY) {
-		imgCanvas.zoomIn(centerX, centerY);
-	}
-
-	@Override
-	public void zoomOut() {
-		imgCanvas.zoomOut();
-	}
-
-	@Override
-	public void zoomOut(final double centerX, final double centerY) {
-		imgCanvas.zoomOut(centerX, centerY);
-	}
-
-	@Override
-	public void zoomToFit(final Rect rect) {
-		imgCanvas.zoomToFit(rect);
-	}
-
-	@Override
-	public double getZoomFactor() {
-		return imgCanvas.getZoomFactor();
-	}
-
-	@Override
-	public double getZoomCtrX() {
-		return imgCanvas.getZoomCtrX();
-	}
-
-	@Override
-	public double getZoomCtrY() {
-		return imgCanvas.getZoomCtrY();
 	}
 
 	// -- Helper methods --
