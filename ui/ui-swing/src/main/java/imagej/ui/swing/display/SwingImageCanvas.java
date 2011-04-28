@@ -273,10 +273,13 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
-		if (scaleOutOfBounds(factor)) return;
+		double desiredScale = factor;
+		if (desiredScale == 0)
+			desiredScale = initialScale;
+		if (scaleOutOfBounds(desiredScale)) return;
 		final RealCoords imageCenter = panelToImageCoords(center);
 		clipToImageBoundaries(imageCenter);
-		scale = factor == 0 ? initialScale : factor;
+		scale = desiredScale;
 
 		// We know:
 		//   panel = scale * image + offset
@@ -464,7 +467,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		initialScale = calcInitialScale();
 		scale = initialScale;
 		offset.x = offset.y = 0;
-		// must publish a zoom event so that initial scale reported in titlebar
+		// must publish an initial zoom event
 		Events.publish(new ZoomEvent(this, scale, getWidth()/2, getHeight()/2));
 	}
 
