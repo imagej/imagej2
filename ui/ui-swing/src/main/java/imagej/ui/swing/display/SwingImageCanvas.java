@@ -76,7 +76,6 @@ import javax.swing.JPanel;
 public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	EventSubscriber<ToolActivatedEvent>
 {
-
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
@@ -169,29 +168,10 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	@Override
 	public void setImage(final BufferedImage newImage) {
 		image = newImage;
-		// CTR FIXME - logic should be split out
-		double imageWidth = image.getWidth();
-		double imageHeight = image.getHeight();
-		final Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
-		final double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
-		final double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
-		// if image is too big to fit on screen comfortably
-		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
-			final double windowAspect = maxAllowedWidth / maxAllowedHeight;
-			final double imageAspect = imageWidth / imageHeight;
-			if (imageAspect > windowAspect) {
-				// width is the problem dimension
-				imageHeight *= maxAllowedWidth / imageWidth;
-				imageWidth = maxAllowedWidth;
-			}
-			else { // imageAspect <= windowAspect
-				// height is the problem dimension
-				imageWidth *= maxAllowedHeight / imageHeight;
-				imageHeight = maxAllowedHeight;
-			}
-		}
-		setPreferredSize(new Dimension((int) Math.ceil(imageWidth),
-			(int) Math.ceil(imageHeight)));
+		Dimension maxDims = calcMaxAllowableDimensions();
+		Dimension dimensions =
+			calcReasonableDimensions(maxDims, image.getWidth(), image.getHeight());
+		setPreferredSize(dimensions);
 		repaint();
 	}
 
@@ -481,33 +461,11 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 
 	/** Called from {@link #paintComponent} when a new image is set. */
 	private void initializeParams() {
-		// CTR FIXME - logic should be split out
-		final double imageWidth = image.getWidth();
-		final double imageHeight = image.getHeight();
-		final Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
-		final double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
-		final double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
-		// is image too big to comfortably fit on screen??
-		if ((imageWidth > maxAllowedWidth) || (imageHeight > maxAllowedHeight)) {
-			final double windowAspect = maxAllowedWidth / maxAllowedHeight;
-			final double imageAspect = imageWidth / imageHeight;
-			if (imageAspect > windowAspect) {
-				// width is the problem dimension
-				initialScale = maxAllowedWidth / imageWidth;
-			}
-			else { // imageAspect <= windowAspect
-				// height is the problem dimension
-				initialScale = maxAllowedHeight / imageHeight;
-			}
-		}
-		else { // image fits on screen just fine at 1:1
-			initialScale = 1;
-		}
+		initialScale = calcInitialScale();
 		scale = initialScale;
 		offset.x = offset.y = 0;
-
-//		Events.publish(new ZoomEvent(this, initialScale, (int) zoomCenter.x,
-//			(int) zoomCenter.y));
+		// must publish a zoom event so that initial scale reported in titlebar
+		Events.publish(new ZoomEvent(this, scale, getWidth()/2, getHeight()/2));
 	}
 
 	/**
@@ -521,7 +479,10 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	}
 
 	private boolean scaleOutOfBounds(final double desiredScale) {
-		if (desiredScale <= 0) return true;
+		if (desiredScale <= 0) {
+			Log.debug("*********** BAD SCALE !!!!!! ********************************");
+			return true;
+		}
 
 		// check if trying to zoom in too close
 		if (desiredScale > scale) {
@@ -546,4 +507,65 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		return false;
 	}
 
+	private Dimension calcMaxAllowableDimensions() {
+		final Dimension screenDims = Toolkit.getDefaultToolkit().getScreenSize();
+		final double maxAllowedWidth = MAX_SCREEN_PROPORTION * screenDims.width;
+		final double maxAllowedHeight = MAX_SCREEN_PROPORTION * screenDims.height;
+		return new Dimension((int)maxAllowedWidth, (int)maxAllowedHeight);
+	}
+	
+	private enum ImageShape {TOO_WIDE, TOO_TALL, FITS_FINE}
+	
+	private ImageShape checkImageShape(Dimension maxDims, int width, int height) {
+		// is image too big to comfortably fit on screen??
+		if ((width > maxDims.width) || (height > maxDims.height)) {
+			final double windowAspect = ((double)maxDims.width) / maxDims.height;
+			final double imageAspect = ((double)width) / height;
+			if (imageAspect > windowAspect) {
+				// width is the problem dimension
+				return ImageShape.TOO_WIDE;
+			}
+			// else imageAspect <= windowAspect
+			// height is the problem dimension
+			return ImageShape.TOO_TALL;
+		}
+
+		return ImageShape.FITS_FINE;
+	}
+
+	private Dimension calcReasonableDimensions(Dimension maxDims, int imageWidth, int imageHeight) {
+		int reasonableWidth, reasonableHeight;
+		switch (checkImageShape(maxDims, imageWidth, imageHeight)) {
+			case TOO_TALL:
+				reasonableHeight = maxDims.height;
+				reasonableWidth =
+					(int) ((double)imageWidth * maxDims.height / imageHeight);
+				break;
+			case TOO_WIDE:
+				reasonableWidth = maxDims.width;
+				reasonableHeight =
+					(int) ((double)imageHeight * maxDims.width / imageWidth);
+				break;
+			default:  // fits fine
+				reasonableWidth = imageWidth;
+				reasonableHeight = imageHeight;
+				break;
+		}
+		return new Dimension(reasonableWidth, reasonableHeight);
+	}
+
+	private double calcInitialScale() {
+		int imageWidth = image.getWidth();
+		int imageHeight = image.getHeight();
+		Dimension maxDims = calcMaxAllowableDimensions();
+		switch (checkImageShape(maxDims, imageWidth, imageHeight)) {
+			case TOO_WIDE:
+				return ((double)maxDims.width) / imageWidth;
+			case TOO_TALL:
+				return ((double)maxDims.height) / imageHeight;
+			default: // fits fine
+				return 1.0;
+		}
+	}
+	
 }
