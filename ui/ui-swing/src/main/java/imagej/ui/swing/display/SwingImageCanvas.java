@@ -520,7 +520,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	}
 
 	private boolean scaleOutOfBounds(final double desiredScale) {
-		if (desiredScale <= 0) return false;
+		if (desiredScale <= 0) return true;
 
 		// check if trying to zoom in too close
 		if (desiredScale > scale) {
