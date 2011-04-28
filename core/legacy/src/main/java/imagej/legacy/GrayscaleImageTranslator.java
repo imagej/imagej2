@@ -134,9 +134,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
 					final long no = Index.indexNDto1D(planeDims, planePos);
 					if (no > Integer.MAX_VALUE) {
-						throw new IllegalArgumentException(message("Plane out of range",
-							c, z, t) +
-							", no=" + no);
+						throw new IllegalArgumentException(
+							message("Plane out of range", c, z, t) + ", no=" + no);
 					}
 					final Object plane = dataset.getPlane((int) no);
 					if (plane == null) {
