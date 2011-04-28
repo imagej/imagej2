@@ -339,9 +339,10 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		final int height = bottomRight.y - topLeft.y;
 		final IntCoords size = new IntCoords(width, height);
 
-		final RealCoords imageSize = panelToImageCoords(size);
-		final double xZoom = getWidth() / imageSize.x;
-		final double yZoom = getHeight() / imageSize.y;
+		final double imageSizeX = size.x / scale;
+		final double imageSizeY = size.y / scale;
+		final double xZoom = getWidth() / imageSizeX;
+		final double yZoom = getHeight() / imageSizeY;
 		final double factor = Math.min(xZoom, yZoom);
 
 		final int centerX = topLeft.x + size.x / 2;
