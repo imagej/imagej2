@@ -161,9 +161,10 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	public Object getPlane(final int no) {
-		if (!(imgPlus instanceof PlanarAccess)) return null;
+		final Img<? extends RealType<?>> img = imgPlus.getImg();
+		if (!(img instanceof PlanarAccess)) return null;
 		// TODO - extract a copy the plane if it cannot be obtained by reference
-		final PlanarAccess<?> planarAccess = (PlanarAccess<?>) imgPlus;
+		final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
 		final Object plane = planarAccess.getPlane(no);
 		if (!(plane instanceof ArrayDataAccess)) return null;
 		return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
