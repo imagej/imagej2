@@ -80,9 +80,11 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private final JLabel imageLabel;
 	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
+	private double currentZoom;
 
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
+		this.currentZoom = 1;
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
@@ -131,7 +133,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			createSliders(view);
 			sliders.setVisible(sliders.getComponentCount() > 0);
 
-			setTitle(dataset.getName());
+			setTitle(makeTitle(dataset));
 
 			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
 			// But most of the infrastructure is in place to support multiple views.
@@ -165,16 +167,10 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			@Override
 			public void onEvent(final ZoomEvent event) {
 				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
+				currentZoom = event.getScale();
 				// CTR TODO - Fix zoom label to show beyond just the active view.
 				final DisplayView activeView = getDisplay().getActiveView();
-				final String datasetName = activeView.getDataset().getName();
-				final double zoom = event.getScale();
-				if (zoom == 1.0) setTitle(datasetName); // exactly 100% zoom
-				else {
-					final String infoString =
-						String.format("%s (%.2f%%)", datasetName, zoom * 100);
-					setTitle(infoString);
-				}
+				setTitle(makeTitle(activeView.getDataset()));
 			}
 		};
 		subscribers.add(zoomSubscriber);
@@ -237,4 +233,15 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return sb.toString();
 	}
 
+	private String makeTitle(Dataset dataset) {
+		final String datasetName = dataset.getName();
+		
+		if (currentZoom == 1.0)
+			return datasetName; // exactly 100% zoom
+
+		final String infoString =
+			String.format("%s (%.2f%%)", datasetName, currentZoom * 100);
+		
+		return infoString;
+	}
 }
