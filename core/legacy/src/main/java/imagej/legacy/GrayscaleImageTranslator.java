@@ -157,7 +157,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	private boolean isFloating(final ImagePlus imp) {
 		final int type = imp.getType();
-		return type == ImagePlus.GRAY16;
+		return type == ImagePlus.GRAY32;
 	}
 
 	private String message(final String message, final long c, final long z,
