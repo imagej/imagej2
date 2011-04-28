@@ -144,7 +144,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 			g2.drawImage(subImage, x, y, width, height, this);
 
 			Log.debug("HIGH QUALITY CASE: origin=(" + x + ", " + y +
-				"), size=" + width + ", " + height + ")");
+				"), size=(" + width + ", " + height + ")");
 		}
 		else {
 			final int x = offset.x;
@@ -154,7 +154,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 			g.drawImage(image, x, y, width, height, null);
 
 			Log.debug("LOW QUALITY CASE: origin=(" + x + ", " + y +
-				"), size=" + width + ", " + height + ")");
+				"), size=(" + width + ", " + height + ")");
 		}
 	}
 
