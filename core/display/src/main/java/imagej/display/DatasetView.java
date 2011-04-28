@@ -61,7 +61,9 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class DatasetView implements DisplayView, EventSubscriber<DatasetChangedEvent> {
+public class DatasetView implements DisplayView,
+	EventSubscriber<DatasetChangedEvent>
+{
 
 	private final Display display;
 	private final Dataset dataset;
@@ -206,13 +208,13 @@ public class DatasetView implements DisplayView, EventSubscriber<DatasetChangedE
 
 	@Override
 	public int getImageHeight() {
-		return screenImage.image().getHeight(null);		
+		return screenImage.image().getHeight(null);
 	}
 
 	// -- EventSubscriber methods --
 
 	@Override
-	public void onEvent(DatasetChangedEvent event) {
+	public void onEvent(final DatasetChangedEvent event) {
 		if (event.getObject() == dataset) {
 			display.update();
 		}
