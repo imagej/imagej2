@@ -58,6 +58,7 @@ public class ZoomOriginalScale implements ImageJPlugin {
 		if (display == null) return; // headless UI or no open images
 
 		display.getImageCanvas().setZoom(0);
+		display.getImageCanvas().panReset();
 	}
 
 }

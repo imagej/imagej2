@@ -52,8 +52,8 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined implements ImageJPlugin {
 
-	@Parameter(label = "Zoom (%) :")
-	private int userDefinedScale;
+	@Parameter(label = "Zoom (%) :",min= "0.1", max = "10000000")
+	private double userDefinedScale;
 
 	@Override
 	public void run() {
