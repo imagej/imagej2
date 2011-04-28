@@ -112,8 +112,6 @@ public class DatasetView implements DisplayView,
 		projector = createProjector(min, max, composite);
 		projector.map();
 
-		display.addView(this);
-
 		// update display when linked dataset changes
 		Events.subscribe(DatasetChangedEvent.class, this);
 	}
