@@ -302,10 +302,10 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		//   panel = scale * image + offset
 		// Hence:
 		//   offset = panel - scale * image
-		// Desired panel coordinates are centered
+		// Desired panel coordinates should remain unchanged
 
-		final int panelX = getWidth() / 2;
-		final int panelY = getHeight() / 2;
+		final int panelX = center.x;
+		final int panelY = center.y;
 		offset.x = (int) (panelX - scale * imageCenter.x);
 		offset.y = (int) (panelY - scale * imageCenter.y);
 

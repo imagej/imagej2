@@ -43,6 +43,7 @@ import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
+import imagej.display.event.mouse.MsWheelEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
@@ -213,6 +214,17 @@ public class ToolManager implements ManagerComponent {
 		};
 		subscribers.add(msDraggedSubscriber);
 		Events.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
+		
+		final EventSubscriber<MsWheelEvent> msWheelSubscriber =
+			new EventSubscriber<MsWheelEvent>()
+		{
+			@Override
+			public void onEvent(final MsWheelEvent event) {
+				getActiveTool().onMouseWheel(event);
+			}
+		};
+		subscribers.add(msWheelSubscriber);
+		Events.subscribe(MsWheelEvent.class, msWheelSubscriber);
 	}
 
 }
