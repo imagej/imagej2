@@ -115,10 +115,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(message("Too many planes", cCount,
-				zCount, tCount));
+			throw new IllegalArgumentException(
+				message("Too many planes", cCount, zCount, tCount));
 		}
-
 		final ImageStack stack = new ImageStack(w, h);
 
 		final long[] planeDims = new long[dims.length - 2];
