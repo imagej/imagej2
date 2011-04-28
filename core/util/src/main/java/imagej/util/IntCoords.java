@@ -36,7 +36,7 @@ package imagej.util;
 
 /**
  * This class represents an (X, Y) coordinate pair in integer coordinates.
- * It mainly exists to avoid AWT references to java.awt.Point.
+ * It mainly exists to avoid AWT references to {@link java.awt.Point}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
