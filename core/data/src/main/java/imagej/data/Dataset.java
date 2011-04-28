@@ -172,14 +172,14 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlane(final int no, final Object plane) {
-		final Img<? extends RealType<?>> wrappedImg = imgPlus.getImg();
-		if (!(wrappedImg instanceof PlanarAccess)) {
+		final Img<? extends RealType<?>> img = imgPlus.getImg();
+		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
 			Log.error("Cannot set plane for non-planar image");
 			return;
 		}
 		// TODO - copy the plane if it cannot be set by reference
-		final PlanarAccess planarAccess = (PlanarAccess) wrappedImg;
+		final PlanarAccess planarAccess = (PlanarAccess) img;
 		ArrayDataAccess<?> array = null;
 		if (plane instanceof byte[]) {
 			array = new ByteArray((byte[]) plane);
