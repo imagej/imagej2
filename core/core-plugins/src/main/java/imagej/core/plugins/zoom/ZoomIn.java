@@ -49,7 +49,7 @@ import imagej.plugin.Plugin;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "In", accelerator = "control PLUS", weight = 1) })
+	@Menu(label = "In", accelerator = "control EQUALS", weight = 1) })
 public class ZoomIn implements ImageJPlugin {
 
 	@Override
