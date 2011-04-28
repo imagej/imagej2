@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.util.Rect;
+import imagej.util.IntCoords;
 
 /**
  * Defines methods needed to adjust the zoom of a {@link Display} or
@@ -67,34 +67,39 @@ public interface Zoomable {
 	 * </p>
 	 * 
 	 * @param factor the zoom level used to display this panel's image.
+	 * @param center the zoom center, in panel coordinates (pixels).
 	 */
-	void setZoom(double factor, double centerX, double centerY);
+	void setZoom(double factor, IntCoords center);
 
+	/** Zooms in by the default amount, centered around the panel's middle. */
 	void zoomIn();
 
-	void zoomIn(double centerX, double centerY);
+	/**
+	 * Zooms in by the default amount, centered around the given coordinates.
+	 * 
+	 * @param center The zoom center, in panel coordinates (pixels).
+	 */
+	void zoomIn(IntCoords center);
 
+	/** Zooms out by the default amount, centered around the panel's middle. */
 	void zoomOut();
 
-	void zoomOut(double centerX, double centerY);
+	/**
+	 * Zooms out by the default amount, centered around the given coordinates.
+	 * 
+	 * @param center The zoom center, in panel coordinates (pixels).
+	 */
+	void zoomOut(IntCoords center);
 
-	void zoomToFit(Rect rect); // in pixels - not data units
+	void zoomToFit(IntCoords topLeft, IntCoords bottomRight);
 
 	/** Gets the current zoom level. */
 	double getZoomFactor();
 
-	/**
-	 * Gets the X coordinate of the image space point currently displayed in the
-	 * center of the window. Unlike the setters these results are in image
-	 * coordinate space.
-	 */
-	double getZoomCtrX();
+	/** Sets the amount zoomed in/out per operation. */
+	void setZoomStep(double zoomStep);
 
-	/**
-	 * Gets the Y coordinate of the image space point currently displayed in the
-	 * center of the window. Unlike the setters these results are in image
-	 * coordinate space.
-	 */
-	double getZoomCtrY();
+	/** Gets the amount zoomed in/out per operation. */
+	double getZoomStep();
 
 }

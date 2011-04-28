@@ -41,6 +41,7 @@ import imagej.display.DisplayManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
+import imagej.util.IntCoords;
 import imagej.util.Rect;
 
 /**
@@ -62,10 +63,13 @@ public class ZoomToFitSelection implements ImageJPlugin {
 		final Dataset dataset = displayManager.getActiveDataset();
 
 		// NOTE - must be in panel/canvas coords!
-		final Rect selection = dataset.getSelection();
+		final Rect sel = dataset.getSelection();
 
-		if (selection.width > 0 && selection.height > 0) {
-			display.zoomToFit(selection);
+		if (sel.width > 0 && sel.height > 0) {
+			final IntCoords topLeft = new IntCoords(sel.x, sel.y);
+			final IntCoords bottomRight =
+				new IntCoords(sel.x + sel.width, sel.y + sel.height);
+			display.getImageCanvas().zoomToFit(topLeft, bottomRight);
 		}
 	}
 

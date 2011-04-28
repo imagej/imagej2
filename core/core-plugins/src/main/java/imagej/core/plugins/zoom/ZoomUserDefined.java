@@ -61,8 +61,8 @@ public class ZoomUserDefined implements ImageJPlugin {
 		final Display display = manager.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
 
-		display.setZoom(userDefinedScale / 100.0);
-		display.panReset();
+		display.getImageCanvas().setZoom(userDefinedScale / 100.0);
+		display.getImageCanvas().panReset();
 	}
 
 }
