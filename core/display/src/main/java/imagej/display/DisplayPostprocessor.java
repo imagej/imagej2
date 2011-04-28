@@ -36,6 +36,8 @@ package imagej.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetChangedEvent;
+import imagej.event.Events;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
@@ -72,8 +74,10 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		}
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
-			final int numUpdated = updateDisplays(dataset);
-			if (numUpdated == 0) displayDataset(dataset);
+			if (isDisplayed(dataset)) {
+				Events.publish(new DatasetChangedEvent(dataset));
+			}
+			else displayDataset(dataset);
 		}
 		else {
 			// ignore non-Dataset output
@@ -82,27 +86,17 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 
 	// -- Helper methods --
 
-	/** Updates displays that are currently rendering the dataset. */
-	private int updateDisplays(final Dataset dataset) {
-		// CTR TODO - Instead of this postprocessor updating the displays,
-		// it would make much more sense for the datasets to publish
-		// DatasetChangedEvents and for the displays to subscribe to them,
-		// then update themselves.
-
+	/** Determines whether the given dataset is currently displayed onscreen. */
+	private boolean isDisplayed(final Dataset dataset) {
+		// TODO: Keep a reference count instead of manually counting here?
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final List<Display> displays = objectManager.getObjects(Display.class);
-
-		int numUpdated = 0;
 		for (final Display display : displays) {
-			final DisplayView activeView = display.getActiveView();
-			final Dataset activeDataset =
-				activeView == null ? null : activeView.getDataset();
-			if (dataset == activeDataset) {
-				display.update();
-				numUpdated++;
+			for (final DisplayView view : display.getViews()) {
+				if (dataset == view.getDataset()) return true;
 			}
 		}
-		return numUpdated;
+		return false;
 	}
 
 	private void displayDataset(final Dataset dataset) {

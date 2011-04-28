@@ -216,6 +216,7 @@ public class DatasetView implements DisplayView,
 	@Override
 	public void onEvent(final DatasetChangedEvent event) {
 		if (event.getObject() == dataset) {
+			projector.map();
 			display.update();
 		}
 	}
