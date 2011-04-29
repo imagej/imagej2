@@ -54,6 +54,8 @@ import imagej.util.Log;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,6 +93,15 @@ public class SwingImageDisplay implements AWTDisplay {
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
 		imgCanvas.addEventDispatcher(eventDispatcher);
 		imgWindow.addEventDispatcher(eventDispatcher);
+
+		imgWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				for (DisplayView view : getViews()) {
+					view.dispose();
+				}
+			}
+		});
 
 		Events.publish(new DisplayCreatedEvent(this));
 	}

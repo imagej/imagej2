@@ -75,4 +75,7 @@ public interface DisplayView {
 	/** Gets the height of the currently displayed image. */
 	int getImageHeight();
 
+	/** Discards the view, performing any needed cleanup. */
+	void dispose();
+
 }

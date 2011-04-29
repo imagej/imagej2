@@ -73,6 +73,9 @@ public class DatasetView implements DisplayView,
 	private final long[] dims, planeDims;
 	private final long[] position, planePos;
 
+	/** Indicates the view is no longer in use. */
+	private boolean disposed;
+
 	/**
 	 * Default color tables, one per channel, used when the {@link Dataset} 
 	 * doesn't have one for a particular plane.
@@ -89,6 +92,7 @@ public class DatasetView implements DisplayView,
 	public DatasetView(final Display display, final Dataset dataset) {
 		this.display = display;
 		this.dataset = dataset;
+		dataset.incrementReferences();
 
 		channelDimIndex = getChannelDimIndex(dataset);
 
@@ -207,6 +211,13 @@ public class DatasetView implements DisplayView,
 	@Override
 	public int getImageHeight() {
 		return screenImage.image().getHeight(null);
+	}
+
+	@Override
+	public void dispose() {
+		if (disposed) return;
+		disposed = true;
+		dataset.decrementReferences();
 	}
 
 	// -- EventSubscriber methods --
