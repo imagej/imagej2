@@ -1,5 +1,5 @@
 //
-// DisplayView.java
+// DatasetRestructuredEvent.java
 //
 
 /*
@@ -32,56 +32,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.data.event;
 
+import net.imglib2.img.ImgPlus;
 import imagej.data.Dataset;
 
 /**
- * A linkage between a piece of data (such as a {@link Dataset}) and a
- * {@link Display}. The view takes care of mapping the N-dimensional data into a
- * representation suitable for showing onscreen.
- * <p>
- * For example, a typical 2D display may have a number of sliders enabling a
- * user to select a particular plane of a {@link Dataset} for display. The
- * DisplayView keeps track of the current position and provides access the
- * resultant plane.
- * </p>
+ * An event indicating a dataset's dimensional extents may have changed.
+ * This occurs, for example, if the dataset's linked {@link ImgPlus} changes.
  * 
  * @author Curtis Rueden
  */
-public interface DisplayView {
+public class DatasetRestructuredEvent extends DatasetChangedEvent {
 
-	/** Gets the {@link Display} containing this view. */
-	Display getDisplay();
-
-	/** Gets the {@link Dataset} represented by this view. */
-	Dataset getDataset();
-
-	/** Gets the N-dimensional plane position of this view. */
-	long[] getPlanePosition();
-
-	/** Gets the 1-dimensional plane index of this view. */
-	long getPlaneIndex();
-
-	/** Sets the position of the given dimensional axis. */
-	void setPosition(final int value, final int dim);
-
-	/** Gets the currently displayed image. */
-	Object getImage();
-
-	/** Gets the width of the currently displayed image. */
-	int getImageWidth();
-
-	/** Gets the height of the currently displayed image. */
-	int getImageHeight();
-
-	/**
-	 * Recreates the view. This operation is useful in case the {@link Dataset}
-	 * has changed structurally somehow.
-	 */
-	void rebuild();
-
-	/** Discards the view, performing any needed cleanup. */
-	void dispose();
+	public DatasetRestructuredEvent(final Dataset dataset) {
+		super(dataset);
+	}
 
 }
