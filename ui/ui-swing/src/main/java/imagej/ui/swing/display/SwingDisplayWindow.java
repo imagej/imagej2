@@ -130,7 +130,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			createSliders(view);
 			sliders.setVisible(sliders.getComponentCount() > 0);
 
-			setTitle(makeTitle(dataset,1.0));
+			setTitle(makeTitle(dataset, 1.0));
 
 			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
 			// But most of the infrastructure is in place to support multiple views.
@@ -200,7 +200,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					int position = slider.getValue()-1;
+					final int position = slider.getValue() - 1;
 					view.setPosition(position, axisNumber);
 					update();
 				}
@@ -233,15 +233,15 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return sb.toString();
 	}
 
-	private String makeTitle(Dataset dataset, double scale) {
+	private String makeTitle(final Dataset dataset, final double scale) {
 		final String datasetName = dataset.getName();
-		
-		if (scale == 1.0)
-			return datasetName; // exactly 100% zoom
+
+		if (scale == 1.0) return datasetName; // exactly 100% zoom
 
 		final String infoString =
 			String.format("%s (%.2f%%)", datasetName, scale * 100);
-		
+
 		return infoString;
 	}
+
 }
