@@ -77,8 +77,8 @@ public class OpenImage<T extends RealType<T> & NativeType<T>>
 		// open image
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
-			final ImgPlus<T> img = imageOpener.openImg(id);
-			dataset = new Dataset(img);
+			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
+			dataset = new Dataset(imgPlus);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
