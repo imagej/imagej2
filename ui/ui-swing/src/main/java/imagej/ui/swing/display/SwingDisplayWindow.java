@@ -200,7 +200,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					view.setPosition(posIndex, slider.getValue() - 1);
+					view.setPosition(slider.getValue()-1, posIndex);
 					update();
 				}
 			});
