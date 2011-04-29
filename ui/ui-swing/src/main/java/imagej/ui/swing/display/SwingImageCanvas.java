@@ -105,6 +105,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	public SwingImageCanvas() {
 		setOpaque(false);
 		addResizeListener();
+		Events.subscribe(ToolActivatedEvent.class, this);
 	}
 
 	/** Creates an image canvas with the specified image. */
@@ -233,11 +234,6 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	public void setCursor(final MouseCursor cursor) {
 		final int cursorCode = AWTCursors.getCursorCode(cursor);
 		setCursor(Cursor.getPredefinedCursor(cursorCode));
-	}
-
-	@Override
-	public void subscribeToToolEvents() {
-		Events.subscribe(ToolActivatedEvent.class, this);
 	}
 
 	// -- Pannable methods --

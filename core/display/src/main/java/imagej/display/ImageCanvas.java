@@ -87,6 +87,4 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Handles setting of the cursor depending on the activated tool. */
 	void setCursor(MouseCursor cursor);
 
-	void subscribeToToolEvents();
-
 }
