@@ -35,7 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
+import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.util.Dimensions;
@@ -61,66 +62,84 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class DatasetView implements DisplayView,
-	EventSubscriber<DatasetChangedEvent>
-{
+public class DatasetView implements DisplayView {
 
 	private final Display display;
 	private final Dataset dataset;
 
-	private final int channelDimIndex;
+	/** List of event subscribers, to avoid garbage collection. */
+	private final List<EventSubscriber<?>> subscribers =
+		new ArrayList<EventSubscriber<?>>();
 
-	private final long[] dims, planeDims;
-	private final long[] position, planePos;
+	/** The dimensional index representing channels, for compositing. */
+	private int channelDimIndex;
 
-	/** Indicates the view is no longer in use. */
-	private boolean disposed;
+	private long[] dims, planeDims;
+	private long[] position, planePos;
 
 	/**
 	 * Default color tables, one per channel, used when the {@link Dataset} 
 	 * doesn't have one for a particular plane.
 	 */
-	private final ArrayList<ColorTable8> defaultLUTs;
+	private ArrayList<ColorTable8> defaultLUTs;
 
-	private final ARGBScreenImage screenImage;
-	private final CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
-	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
+	private ARGBScreenImage screenImage;
+	private CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
+	private ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
 	private int offsetX, offsetY;
+
+	/** Indicates the view is no longer in use. */
+	private boolean disposed;
 
 	public DatasetView(final Display display, final Dataset dataset) {
 		this.display = display;
 		this.dataset = dataset;
 		dataset.incrementReferences();
 
-		channelDimIndex = getChannelDimIndex(dataset);
+		rebuild();
 
-		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
-
-		dims = new long[img.numDimensions()];
-		img.dimensions(dims);
-		planeDims = Dimensions.getDims3AndGreater(dims);
-		position = new long[dims.length];
-		planePos = new long[planeDims.length];
-
-		defaultLUTs = new ArrayList<ColorTable8>();
-		initializeDefaultLUTs();
-
-		final int width = (int) img.dimension(0);
-		final int height = (int) img.dimension(1);
-		screenImage = new ARGBScreenImage(width, height);
-
-		final int min = 0, max = 255;
-		final boolean composite = isComposite(dataset);
-		projector = createProjector(min, max, composite);
-		projector.map();
-
-		// update display when linked dataset changes
-		Events.subscribe(DatasetChangedEvent.class, this);
+		subscribeToEvents();
 	}
 
 	// -- DatasetView methods --
+
+	/** Updates the display when the linked dataset changes. */
+	private void subscribeToEvents() {
+		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DatasetUpdatedEvent>()
+		{
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void onEvent(final DatasetUpdatedEvent event) {
+				if (event.getObject() != dataset) return;
+				projector.map();
+				display.update();
+			}
+		};
+		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		subscribers.add(updateSubscriber);
+
+		// TODO - perhaps it would be better for the display to listen for
+		// DatasetRestructuredEvents, compare the dataset to all of its views,
+		// and call rebuild() on itself (only once). This would avoid a potential
+		// issue where multiple views linked to the same dataset will currently
+		// result in multiple rebuilds.
+		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DatasetRestructuredEvent>()
+		{
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void onEvent(final DatasetRestructuredEvent event) {
+				if (event.getObject() != dataset) return;
+				rebuild();
+				display.update();
+			}
+		};
+		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		subscribers.add(restructureSubscriber);
+	}
 
 	public int getCompositeDimIndex() {
 		return channelDimIndex;
@@ -199,6 +218,31 @@ public class DatasetView implements DisplayView,
 	}
 
 	@Override
+	public void rebuild() {
+		channelDimIndex = getChannelDimIndex(dataset);
+
+		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
+
+		dims = new long[img.numDimensions()];
+		img.dimensions(dims);
+		planeDims = Dimensions.getDims3AndGreater(dims);
+		position = new long[dims.length];
+		planePos = new long[planeDims.length];
+
+		defaultLUTs = new ArrayList<ColorTable8>();
+		initializeDefaultLUTs();
+
+		final int width = (int) img.dimension(0);
+		final int height = (int) img.dimension(1);
+		screenImage = new ARGBScreenImage(width, height);
+
+		final int min = 0, max = 255;
+		final boolean composite = isComposite(dataset);
+		projector = createProjector(min, max, composite);
+		projector.map();
+	}
+
+	@Override
 	public ARGBScreenImage getImage() {
 		return screenImage;
 	}
@@ -218,16 +262,6 @@ public class DatasetView implements DisplayView,
 		if (disposed) return;
 		disposed = true;
 		dataset.decrementReferences();
-	}
-
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final DatasetChangedEvent event) {
-		if (event.getObject() == dataset) {
-			projector.map();
-			display.update();
-		}
 	}
 
 	// -- Helper methods --
@@ -283,13 +317,13 @@ public class DatasetView implements DisplayView,
 	private CompositeXYProjector<? extends RealType<?>, ARGBType>
 		createProjector(final int min, final int max, final boolean composite)
 	{
-		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
+		converters.clear();
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			converters.add(new RealLUTConverter(min, max, null));
 		}
-		final CompositeXYProjector proj =
-			new CompositeXYProjector(img, screenImage, converters, channelDimIndex);
+		final CompositeXYProjector proj = new CompositeXYProjector(
+			dataset.getImgPlus(), screenImage, converters, channelDimIndex);
 		proj.setComposite(composite);
 		updateLUTs();
 		return proj;

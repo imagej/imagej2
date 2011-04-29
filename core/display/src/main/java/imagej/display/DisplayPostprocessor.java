@@ -36,7 +36,7 @@ package imagej.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetChangedEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.Events;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
@@ -75,7 +75,8 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
 			if (isDisplayed(dataset)) {
-				Events.publish(new DatasetChangedEvent(dataset));
+				// TODO - what if the dataset changed structurally?
+				Events.publish(new DatasetUpdatedEvent(dataset));
 			}
 			else displayDataset(dataset);
 		}

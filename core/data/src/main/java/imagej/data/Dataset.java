@@ -34,9 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
-import imagej.data.event.DatasetChangedEvent;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
+import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.Events;
 import imagej.util.Log;
 import imagej.util.Rect;
@@ -128,7 +129,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 		selection = new Rect();
 
-		update();
+		rebuild();
 	}
 
 	/** Gets the dimensional extents of the dataset. */
@@ -247,9 +248,20 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		}
 	}
 
-	/** Informs interested parties that the dataset has changed somehow. */
+	/**
+	 * Informs interested parties that the dataset has undergone a non-structural
+	 * change, such as sample values being updated.
+	 */
 	public void update() {
-		Events.publish(new DatasetChangedEvent(this));
+		Events.publish(new DatasetUpdatedEvent(this));
+	}
+
+	/**
+	 * Informs interested parties that the dataset has undergone a major change,
+	 * such as the dimensional extents changing.
+	 */
+	public void rebuild() {
+		Events.publish(new DatasetRestructuredEvent(this));
 	}
 
 	/**
