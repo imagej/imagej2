@@ -86,8 +86,6 @@ public class SwingImageDisplay implements AWTDisplay {
 		subscribeToEvents(displayManager);
 
 		imgCanvas = new SwingImageCanvas();
-		imgCanvas.subscribeToToolEvents();
-
 		imgWindow = new SwingDisplayWindow(this);
 
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
