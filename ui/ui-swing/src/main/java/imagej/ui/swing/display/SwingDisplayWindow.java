@@ -107,7 +107,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 		subscribeToEvents();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		redoLayout();
 	}
 
 	// -- DisplayWindow methods --
