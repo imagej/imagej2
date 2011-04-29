@@ -153,7 +153,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
-		addWindowListener((AWTEventDispatcher) dispatcher);
+		final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
+		addKeyListener(awtDispatcher);
+		addWindowListener(awtDispatcher);
 	}
 
 	// -- Helper methods --
@@ -164,6 +166,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final EventSubscriber<ZoomEvent> zoomSubscriber =
 			new EventSubscriber<ZoomEvent>()
 		{
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void onEvent(final ZoomEvent event) {
 				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
