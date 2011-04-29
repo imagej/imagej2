@@ -80,11 +80,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private final JLabel imageLabel;
 	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
-	private double currentZoom;
 
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
-		this.currentZoom = 1;
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
@@ -133,7 +131,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			createSliders(view);
 			sliders.setVisible(sliders.getComponentCount() > 0);
 
-			setTitle(makeTitle(dataset));
+			setTitle(makeTitle(dataset,1.0));
 
 			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
 			// But most of the infrastructure is in place to support multiple views.
@@ -170,10 +168,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			@Override
 			public void onEvent(final ZoomEvent event) {
 				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
-				currentZoom = event.getScale();
 				// CTR TODO - Fix zoom label to show beyond just the active view.
 				final DisplayView activeView = getDisplay().getActiveView();
-				setTitle(makeTitle(activeView.getDataset()));
+				setTitle(makeTitle(activeView.getDataset(), event.getScale()));
 			}
 		};
 		subscribers.add(zoomSubscriber);
@@ -236,14 +233,14 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return sb.toString();
 	}
 
-	private String makeTitle(Dataset dataset) {
+	private String makeTitle(Dataset dataset, double scale) {
 		final String datasetName = dataset.getName();
 		
-		if (currentZoom == 1.0)
+		if (scale == 1.0)
 			return datasetName; // exactly 100% zoom
 
 		final String infoString =
-			String.format("%s (%.2f%%)", datasetName, currentZoom * 100);
+			String.format("%s (%.2f%%)", datasetName, scale * 100);
 		
 		return infoString;
 	}

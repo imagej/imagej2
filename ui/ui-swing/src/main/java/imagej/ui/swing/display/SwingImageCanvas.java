@@ -76,6 +76,7 @@ import javax.swing.JPanel;
 public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	EventSubscriber<ToolActivatedEvent>
 {
+	private static final int MIN_ALLOWED_VIEW_SIZE = 25;
 	private static final double MAX_SCREEN_PROPORTION = 0.85;
 	private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
 	private static final Object INTERPOLATION_TYPE =
@@ -502,9 +503,9 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 			final IntCoords farCorner =
 				imageToPanelCoords(new RealCoords(image.getWidth(), image.getHeight()));
 
-			// if boundaries take up less than 25 pixels in either dimension
-			if (((farCorner.x - nearCorner.x) < 25) ||
-				((farCorner.y - nearCorner.y) < 25)) return true;
+			// if boundaries take up less than min allowed pixels in either dimension
+			if (((farCorner.x - nearCorner.x) < MIN_ALLOWED_VIEW_SIZE) ||
+				((farCorner.y - nearCorner.y) < MIN_ALLOWED_VIEW_SIZE)) return true;
 		}
 
 		return false;
