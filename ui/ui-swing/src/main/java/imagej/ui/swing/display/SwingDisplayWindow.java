@@ -195,12 +195,13 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			}
 			final JScrollBar slider =
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
-			final int posIndex = i;
+			final int axisNumber = i;
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					view.setPosition(slider.getValue()-1, posIndex);
+					int position = slider.getValue()-1;
+					view.setPosition(position, axisNumber);
 					update();
 				}
 			});
