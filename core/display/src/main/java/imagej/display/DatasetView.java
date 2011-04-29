@@ -233,7 +233,7 @@ public class DatasetView implements DisplayView,
 	// -- Helper methods --
 
 	private static boolean isComposite(final Dataset dataset) {
-		return dataset.getCompositeChannelCount() > 1;
+		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
 	}
 
 	private static int getChannelDimIndex(final Dataset dataset) {
