@@ -397,8 +397,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	@Override
-	public void setColorTableCount(final int count) {
-		imgPlus.setColorTableCount(count);
+	public void initializeColorTables(final int count) {
+		imgPlus.initializeColorTables(count);
 	}
 
 	// -- Utility methods --

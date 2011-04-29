@@ -304,7 +304,7 @@ public class DatasetView implements DisplayView,
 	}
 
 	private ColorTable8 getCurrentLUT(final int cPos) {
-		planePos[channelDimIndex - 2] = cPos;
+		if (channelDimIndex >= 0) planePos[channelDimIndex - 2] = cPos;
 		final int no = (int) Index.indexNDto1D(planeDims, planePos);
 		final ColorTable8 lut = dataset.getColorTable8(no);
 		if (lut != null) return lut; // return dataset-specific LUT
