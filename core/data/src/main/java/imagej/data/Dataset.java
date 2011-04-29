@@ -85,6 +85,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class Dataset implements Comparable<Dataset>, Metadata {
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
+	private int refs;
 	private boolean rgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
@@ -111,22 +112,6 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		rgbMerged = false;
 		selection = new Rect();
 		Events.publish(new DatasetCreatedEvent(this));
-	}
-
-	/**
-	 * For use in legacy layer only, this flag allows the various legacy layer
-	 * image translators to support color images correctly.
-	 */
-	public void setRGBMerged(final boolean rgbMerged) {
-		this.rgbMerged = rgbMerged;
-	}
-
-	/**
-	 * For use in legacy layer only, this flag allows the various legacy layer
-	 * image translators to support color images correctly.
-	 */
-	public boolean isRGBMerged() {
-		return rgbMerged;
 	}
 
 	public ImgPlus<? extends RealType<?>> getImgPlus() {
@@ -203,7 +188,6 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	public double getDoubleValue(final long[] pos) {
-		// NB: This method is slow... will change anyway with ImgLib2.
 		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
 		final double value = cursor.get().getRealDouble();
@@ -275,6 +259,43 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	public void delete() {
 		Events.publish(new DatasetDeletedEvent(this));
 	}
+
+	/**
+	 * Adds to the dataset's reference count. Typically this is called when the
+	 * dataset is added to a display.
+	 */
+	public void incrementReferences() {
+		refs++;
+	}
+
+	/**
+	 * Subtracts from the dataset's reference count. Typically this is called when
+	 * the dataset is removed from a display. If the reference count reaches zero,
+	 * {@link #delete()} is called to notify interested parties that the dataset
+	 * is no longer in use.
+	 */
+	public void decrementReferences() {
+		refs--;
+		if (refs == 0) delete();
+	}
+
+	/**
+	 * For use in legacy layer only, this flag allows the various legacy layer
+	 * image translators to support color images correctly.
+	 */
+	public void setRGBMerged(final boolean rgbMerged) {
+		this.rgbMerged = rgbMerged;
+	}
+
+	/**
+	 * For use in legacy layer only, this flag allows the various legacy layer
+	 * image translators to support color images correctly.
+	 */
+	public boolean isRGBMerged() {
+		return rgbMerged;
+	}
+
+	// -- Object methods --
 
 	@Override
 	public String toString() {
@@ -366,12 +387,12 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	@Override
-	public ColorTable16 getColorTable16(int no) {
+	public ColorTable16 getColorTable16(final int no) {
 		return imgPlus.getColorTable16(no);
 	}
 
 	@Override
-	public void setColorTable(ColorTable16 lut, int no) {
+	public void setColorTable(final ColorTable16 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 	}
 
