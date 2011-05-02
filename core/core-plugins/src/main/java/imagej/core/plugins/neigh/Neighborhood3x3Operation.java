@@ -136,7 +136,7 @@ public class Neighborhood3x3Operation {
 
 		// input is a copy of the original data with out of bounds access enabled
 		RandomAccessible<? extends RealType<?>> inputInterval =
-			Views.extend(inputImageCopy);
+			Views.extendMirrorSingle(inputImageCopy);
 
 		RandomAccess<? extends RealType<?>> extendedInput =
 			inputInterval.randomAccess();
@@ -173,12 +173,14 @@ public class Neighborhood3x3Operation {
 			}
 		}
 	}
-	
+
 	// TODO - eliminate when Imglib allows ability to duplicate/clone an Img
+	// TODO - find a way to eliminate use of raw types here
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Img<? extends RealType<?>> cloneImage(Img image) {
 		// TODO - used to be able to call Image::clone()
 		//  For now copy data by hand
-		
+
 		long[] dimensions = new long[image.numDimensions()];
 		image.dimensions(dimensions);
 		
