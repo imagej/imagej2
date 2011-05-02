@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.TextFieldWidget;
 
 import java.awt.BorderLayout;
@@ -54,8 +54,8 @@ public class SwingTextFieldWidget extends SwingInputWidget
 
 	private final JTextField textField;
 
-	public SwingTextFieldWidget(final ParamDetails details, final int columns) {
-		super(details);
+	public SwingTextFieldWidget(final ParamModel model, final int columns) {
+		super(model);
 
 		textField = new JTextField("", columns);
 		add(textField, BorderLayout.CENTER);
@@ -92,13 +92,13 @@ public class SwingTextFieldWidget extends SwingInputWidget
 
 	@Override
 	public void refresh() {
-		textField.setText(details.getValue().toString());
+		textField.setText(model.getValue().toString());
 	}
 
 	// -- Helper methods --
 
 	private void documentUpdate() {
-		details.setValue(textField.getText());
+		model.setValue(textField.getText());
 	}
 
 }

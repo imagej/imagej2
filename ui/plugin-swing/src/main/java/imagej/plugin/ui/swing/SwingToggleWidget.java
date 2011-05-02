@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.ToggleWidget;
 
 import java.awt.BorderLayout;
@@ -54,8 +54,8 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	private final JCheckBox checkBox;
 
-	public SwingToggleWidget(final ParamDetails details) {
-		super(details);
+	public SwingToggleWidget(final ParamModel model) {
+		super(model);
 
 		checkBox = new JCheckBox("");
 		add(checkBox, BorderLayout.CENTER);
@@ -68,7 +68,7 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	@Override
 	public void stateChanged(final ChangeEvent e) {
-		details.setValue(checkBox.isSelected());
+		model.setValue(checkBox.isSelected());
 	}
 
 	// -- ToggleWidget methods --
@@ -82,7 +82,7 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	@Override
 	public void refresh() {
-		final boolean value = (Boolean) details.getValue();
+		final boolean value = (Boolean) model.getValue();
 		checkBox.setSelected(value);
 	}
 

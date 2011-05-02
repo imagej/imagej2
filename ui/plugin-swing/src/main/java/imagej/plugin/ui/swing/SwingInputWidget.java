@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import javax.swing.JPanel;
 
@@ -46,15 +46,15 @@ import javax.swing.JPanel;
  */
 public abstract class SwingInputWidget extends JPanel implements InputWidget {
 
-	protected ParamDetails details;
+	protected ParamModel model;
 
-	public SwingInputWidget(final ParamDetails details) {
-		this.details = details;
+	public SwingInputWidget(final ParamModel model) {
+		this.model = model;
 	}
 
 	@Override
-	public ParamDetails getModel() {
-		return details;
+	public ParamModel getModel() {
+		return model;
 	}
 
 }

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,8 +61,8 @@ public class SwingFileWidget extends SwingInputWidget
 	private JTextField path;
 	private JButton browse;
 
-	public SwingFileWidget(final ParamDetails details) {
-		super(details);
+	public SwingFileWidget(final ParamModel model) {
+		super(model);
 
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
@@ -123,14 +123,14 @@ public class SwingFileWidget extends SwingInputWidget
 
 	@Override
 	public void refresh() {
-		final File value = (File) details.getValue();
+		final File value = (File) model.getValue();
 		path.setText(value == null ? "" : value.toString());
 	}
 
 	// -- Helper methods --
 
 	private void documentUpdate() {
-		details.setValue(new File(path.getText()));
+		model.setValue(new File(path.getText()));
 	}
 
 }

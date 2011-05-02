@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.plugin.ui.ObjectWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -51,10 +51,10 @@ public class SWTObjectWidget extends SWTInputWidget implements ObjectWidget {
 	private final Combo combo;
 	private final Object[] items;
 
-	public SWTObjectWidget(final Composite parent, final ParamDetails details,
+	public SWTObjectWidget(final Composite parent, final ParamModel model,
 		final Object[] items)
 	{
-		super(parent, details);
+		super(parent, model);
 		this.items = items;
 
 		combo = new Combo(this, SWT.DROP_DOWN);
@@ -74,7 +74,7 @@ public class SWTObjectWidget extends SWTInputWidget implements ObjectWidget {
 
 	@Override
 	public void refresh() {
-		final Object value = details.getValue();
+		final Object value = model.getValue();
 		for (int i = 0; i < items.length; i++) {
 			final Object item = items[i];
 			if (item == value) {

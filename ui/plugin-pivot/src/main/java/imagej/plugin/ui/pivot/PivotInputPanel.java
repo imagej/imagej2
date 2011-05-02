@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.Label;
@@ -66,48 +66,48 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details,
+	public void addNumber(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final PivotNumberWidget numberWidget =
-			PivotNumberWidget.create(details, min, max, stepSize,
-			details.getStyle());
-		addField(details.getLabel(), numberWidget);
-		numberWidgets.put(details.getName(), numberWidget);
+			PivotNumberWidget.create(model, min, max, stepSize,
+				model.getStyle());
+		addField(model.getLabel(), numberWidget);
+		numberWidgets.put(model.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details) {
-		final PivotToggleWidget toggleWidget = new PivotToggleWidget(details);
-		addField(details.getLabel(), toggleWidget);
-		toggleWidgets.put(details.getName(), toggleWidget);
+	public void addToggle(final ParamModel model) {
+		final PivotToggleWidget toggleWidget = new PivotToggleWidget(model);
+		addField(model.getLabel(), toggleWidget);
+		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details, final int columns) {
+	public void addTextField(final ParamModel model, final int columns) {
 		final PivotTextFieldWidget textFieldWidget =
-			new PivotTextFieldWidget(details);
-		addField(details.getLabel(), textFieldWidget);
-		textFieldWidgets.put(details.getName(), textFieldWidget);
+			new PivotTextFieldWidget(model);
+		addField(model.getLabel(), textFieldWidget);
+		textFieldWidgets.put(model.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String[] items) {
+	public void addChoice(final ParamModel model, final String[] items) {
 		final PivotChoiceWidget choiceWidget =
-			new PivotChoiceWidget(details, items);
-		addField(details.getLabel(), choiceWidget);
-		choiceWidgets.put(details.getName(), choiceWidget);
+			new PivotChoiceWidget(model, items);
+		addField(model.getLabel(), choiceWidget);
+		choiceWidgets.put(model.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details) {
-		final PivotFileWidget fileWidget = new PivotFileWidget(details);
-		addField(details.getLabel(), fileWidget);
-		fileWidgets.put(details.getName(), fileWidget);
+	public void addFile(final ParamModel model) {
+		final PivotFileWidget fileWidget = new PivotFileWidget(model);
+		addField(model.getLabel(), fileWidget);
+		fileWidgets.put(model.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details) {
+	public void addObject(final ParamModel model) {
 		// TODO create ObjectWidget and add here
 	}
 

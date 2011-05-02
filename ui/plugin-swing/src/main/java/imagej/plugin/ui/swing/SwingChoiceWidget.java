@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -54,8 +54,8 @@ public class SwingChoiceWidget extends SwingInputWidget
 
 	private final JComboBox comboBox;
 
-	public SwingChoiceWidget(final ParamDetails details, final String[] items) {
-		super(details);
+	public SwingChoiceWidget(final ParamModel model, final String[] items) {
+		super(model);
 
 		comboBox = new JComboBox(items);
 		add(comboBox, BorderLayout.CENTER);
@@ -68,7 +68,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		details.setValue(comboBox.getSelectedItem());
+		model.setValue(comboBox.getSelectedItem());
 	}
 
 	// -- ChoiceWidget methods --
@@ -96,7 +96,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 		final int itemCount = comboBox.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final Object value = details.getValue();
+		final Object value = model.getValue();
 		for (int i = 0; i < itemCount; i++) {
 			final Object item = comboBox.getItemAt(i);
 			if (value == item) return value;
@@ -104,7 +104,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final Object validValue = comboBox.getItemAt(0);
-		details.setValue(validValue);
+		model.setValue(validValue);
 		return validValue;
 	}
 

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.headless;
 
 import imagej.plugin.ui.ObjectWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 /**
  * Headless implementation of object selector widget.
@@ -48,9 +48,9 @@ public class HeadlessObjectWidget extends HeadlessInputWidget
 
 	private final Object[] items;
 
-	public HeadlessObjectWidget(final ParamDetails details, final Object[] items)
+	public HeadlessObjectWidget(final ParamModel model, final Object[] items)
 	{
-		super(details);
+		super(model);
 		this.items = items;
 	}
 

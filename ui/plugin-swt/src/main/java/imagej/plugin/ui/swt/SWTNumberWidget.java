@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -50,10 +50,10 @@ public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
 
 	private final Slider slider;
 
-	public SWTNumberWidget(final Composite parent, final ParamDetails details,
+	public SWTNumberWidget(final Composite parent, final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(parent, details);
+		super(parent, model);
 
 		slider = new Slider(this, SWT.HORIZONTAL);
 		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
@@ -73,7 +73,7 @@ public class SWTNumberWidget extends SWTInputWidget implements NumberWidget {
 
 	@Override
 	public void refresh() {
-		final Number value = (Number) details.getValue();
+		final Number value = (Number) model.getValue();
 		slider.setSelection(value.intValue());
 	}
 

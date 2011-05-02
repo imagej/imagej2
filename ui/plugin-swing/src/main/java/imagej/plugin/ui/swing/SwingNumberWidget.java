@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
@@ -48,24 +48,24 @@ public abstract class SwingNumberWidget extends SwingInputWidget
 	implements NumberWidget
 {
 
-	public SwingNumberWidget(final ParamDetails details) {
-		super(details);
+	public SwingNumberWidget(final ParamModel model) {
+		super(model);
 	}
 
-	public static SwingNumberWidget create(final ParamDetails details,
+	public static SwingNumberWidget create(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		final WidgetStyle style = details.getStyle();
+		final WidgetStyle style = model.getStyle();
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new SwingNumberScrollBarWidget(details, min, max, stepSize);
+			return new SwingNumberScrollBarWidget(model, min, max, stepSize);
 		}
 		if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new SwingNumberSliderWidget(details, min, max, stepSize);
+			return new SwingNumberSliderWidget(model, min, max, stepSize);
 		}
 		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
 			Log.warn("Ignoring unsupported widget style: " + style);
 		}
-		return new SwingNumberSpinnerWidget(details, min, max, stepSize);
+		return new SwingNumberSpinnerWidget(model, min, max, stepSize);
 	}
 
 }

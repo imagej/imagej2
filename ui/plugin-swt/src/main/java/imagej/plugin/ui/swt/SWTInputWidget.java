@@ -37,7 +37,7 @@ package imagej.plugin.ui.swt;
 import org.eclipse.swt.widgets.Composite;
 
 import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 /**
  * Common superclass for SWT-based input widgets.
@@ -46,16 +46,16 @@ import imagej.plugin.ui.ParamDetails;
  */
 public abstract class SWTInputWidget extends Composite implements InputWidget {
 
-	protected ParamDetails details;
+	protected ParamModel model;
 
-	public SWTInputWidget(final Composite parent, final ParamDetails details) {
+	public SWTInputWidget(final Composite parent, final ParamModel model) {
 		super(parent, 0);
-		this.details = details;
+		this.model = model;
 	}
 
 	@Override
-	public ParamDetails getModel() {
-		return details;
+	public ParamModel getModel() {
+		return model;
 	}
 
 }

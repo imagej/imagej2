@@ -98,12 +98,12 @@ public abstract class AbstractInputHarvester
 
 			final String name = item.getName();
 			final Class<?> type = item.getType();
-			final ParamDetails details =
-				new ParamDetails(inputPanel, module, name, type, param);
+			final ParamModel model =
+				new ParamModel(inputPanel, module, name, type, param);
 
 			final boolean message = param.visibility() == ParamVisibility.MESSAGE;
 			if (message) {
-				addMessage(inputPanel, details);
+				addMessage(inputPanel, model);
 				continue;
 			}
 
@@ -118,27 +118,27 @@ public abstract class AbstractInputHarvester
 			if (ClassUtils.isNumber(type)) {
 				final Number initialValue =
 					getInitialNumberValue(prefValue, defaultValue, type);
-				addNumber(inputPanel, details, initialValue);
+				addNumber(inputPanel, model, initialValue);
 			}
 			else if (ClassUtils.isText(type)) {
 				final String initialValue =
 					getInitialStringValue(prefValue, defaultValue);
-				addTextField(inputPanel, details, initialValue);
+				addTextField(inputPanel, model, initialValue);
 			}
 			else if (ClassUtils.isBoolean(type)) {
 				boolean initialValue =
 					getInitialBooleanValue(prefValue, defaultValue);
-				addToggle(inputPanel, details, initialValue);
+				addToggle(inputPanel, model, initialValue);
 			}
 			else if (File.class.isAssignableFrom(type)) {
 				final File initialValue =
 					getInitialFileValue(prefValue, defaultValue);
-				addFile(inputPanel, details, initialValue);
+				addFile(inputPanel, model, initialValue);
 			}
 			else {
 				final Object initialValue =
 					getInitialObjectValue(prefValue, defaultValue);
-				addObject(inputPanel, details, initialValue);
+				addObject(inputPanel, model, initialValue);
 			}
 		}
 	}
@@ -169,16 +169,16 @@ public abstract class AbstractInputHarvester
 	// -- Helper methods - input panel population --
 
 	private void addMessage(final InputPanel inputPanel,
-		final ParamDetails details)
+		final ParamModel model)
 	{
-		inputPanel.addMessage(details.getValue().toString());
+		inputPanel.addMessage(model.getValue().toString());
 	}
 
 	private void addNumber(final InputPanel inputPanel,
-		final ParamDetails details, final Number initialValue)
+		final ParamModel model, final Number initialValue)
 	{
-		final Class<?> type = details.getType();
-		final Parameter param = details.getParameter();
+		final Class<?> type = model.getType();
+		final Parameter param = model.getParameter();
 		Number min = ClassUtils.toNumber(param.min(), type);
 		if (min == null) min = ClassUtils.getMinimumNumber(type);
 		Number max = ClassUtils.toNumber(param.max(), type);
@@ -186,46 +186,46 @@ public abstract class AbstractInputHarvester
 		Number stepSize = ClassUtils.toNumber(param.stepSize(), type);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
 		final Number iValue = clampToRange(initialValue, min, max);
-		details.setValue(iValue);
-		inputPanel.addNumber(details, min, max, stepSize);
+		model.setValue(iValue);
+		inputPanel.addNumber(model, min, max, stepSize);
 	}
 
 	private void addTextField(final InputPanel inputPanel,
-		final ParamDetails details, final String initialValue)
+		final ParamModel model, final String initialValue)
 	{
-		final String[] choices = details.getParameter().choices();
+		final String[] choices = model.getParameter().choices();
 		if (choices.length > 0) {
 			final String iValue = initialValue == null ? choices[0] : initialValue;
-			details.setValue(iValue);
-			inputPanel.addChoice(details, choices);
+			model.setValue(iValue);
+			inputPanel.addChoice(model, choices);
 		}
 		else {
 			final String iValue = initialValue == null ? "" : initialValue;
-			final int columns = details.getParameter().columns();
-			details.setValue(iValue);
-			inputPanel.addTextField(details, columns);
+			final int columns = model.getParameter().columns();
+			model.setValue(iValue);
+			inputPanel.addTextField(model, columns);
 		}
 	}
 
 	private void addToggle(final InputPanel inputPanel,
-		final ParamDetails details, final Boolean initialValue)
+		final ParamModel model, final Boolean initialValue)
 	{
-		details.setValue(initialValue);
-		inputPanel.addToggle(details);
+		model.setValue(initialValue);
+		inputPanel.addToggle(model);
 	}
 
 	private void addFile(final InputPanel inputPanel,
-		final ParamDetails details, final File initialValue)
+		final ParamModel model, final File initialValue)
 	{
-		details.setValue(initialValue);
-		inputPanel.addFile(details);
+		model.setValue(initialValue);
+		inputPanel.addFile(model);
 	}
 
 	private void addObject(final InputPanel inputPanel, 
-		final ParamDetails details, final Object initialValue)
+		final ParamModel model, final Object initialValue)
 	{
-		details.setValue(initialValue);
-		inputPanel.addObject(details);
+		model.setValue(initialValue);
+		inputPanel.addObject(model);
 	}
 
 	// -- Helper methods - initial value computation --

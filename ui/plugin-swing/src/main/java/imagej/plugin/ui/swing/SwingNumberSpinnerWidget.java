@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -55,10 +55,10 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 
 	private final JSpinner spinner;
 
-	public SwingNumberSpinnerWidget(final ParamDetails details,
+	public SwingNumberSpinnerWidget(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(details);
+		super(model);
 
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(min,
 			(Comparable<?>) min, (Comparable<?>) max, stepSize);
@@ -81,7 +81,7 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 
 	@Override
 	public void refresh() {
-		final Object value = details.getValue();
+		final Object value = model.getValue();
 		if (value != null) spinner.setValue(value);
 	}
 
@@ -89,7 +89,7 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 
 	@Override
 	public void stateChanged(final ChangeEvent e) {
-		details.setValue(spinner.getValue());
+		model.setValue(spinner.getValue());
 	}
 
 	// -- Helper methods --

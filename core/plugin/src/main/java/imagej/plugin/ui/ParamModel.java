@@ -1,5 +1,5 @@
 //
-// ParamDetails.java
+// ParamModel.java
 //
 
 /*
@@ -47,7 +47,7 @@ import imagej.util.Log;
  *
  * @author Curtis Rueden
  */
-public class ParamDetails {
+public class ParamModel {
 
 	private final InputPanel inputPanel;
 	private final PluginModule<?> module;
@@ -62,7 +62,7 @@ public class ParamDetails {
 
 	private final Method callbackMethod;
 
-	public ParamDetails(final InputPanel inputPanel,
+	public ParamModel(final InputPanel inputPanel,
 		final PluginModule<?> module, final String name,
 		final Class<?> type, final Parameter param)
 	{

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.TextFieldWidget;
 
 import org.eclipse.swt.widgets.Composite;
@@ -52,9 +52,9 @@ public class SWTTextFieldWidget extends SWTInputWidget
 	private final Text text;
 
 	public SWTTextFieldWidget(final Composite parent,
-		final ParamDetails details, final int columns)
+		final ParamModel model, final int columns)
 	{
-		super(parent, details);
+		super(parent, model);
 
 		text = new Text(this, 0);
 		text.setTextLimit(columns);
@@ -73,7 +73,7 @@ public class SWTTextFieldWidget extends SWTInputWidget
 
 	@Override
 	public void refresh() {
-		text.setText(details.getValue().toString());
+		text.setText(model.getValue().toString());
 	}
 
 }

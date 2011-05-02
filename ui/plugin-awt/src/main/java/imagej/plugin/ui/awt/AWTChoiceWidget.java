@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
@@ -53,8 +53,8 @@ public class AWTChoiceWidget extends AWTInputWidget
 
 	private Choice choice;
 
-	public AWTChoiceWidget(final ParamDetails details, final String[] items) {
-		super(details);
+	public AWTChoiceWidget(final ParamModel model, final String[] items) {
+		super(model);
 
 		choice = new Choice();
 		for (final String item : items) choice.add(item);
@@ -87,7 +87,7 @@ public class AWTChoiceWidget extends AWTInputWidget
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		details.setValue(choice.getSelectedItem());
+		model.setValue(choice.getSelectedItem());
 	}
 
 	// -- Helper methods --
@@ -96,7 +96,7 @@ public class AWTChoiceWidget extends AWTInputWidget
 		final int itemCount = choice.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final String value = details.getValue().toString();
+		final String value = model.getValue().toString();
 		for (int i = 0; i < itemCount; i++) {
 			final String item = choice.getItem(i);
 			if (value == item) return value;
@@ -104,7 +104,7 @@ public class AWTChoiceWidget extends AWTInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final String validValue = choice.getItem(0);
-		details.setValue(validValue);
+		model.setValue(validValue);
 		return validValue;
 	}
 

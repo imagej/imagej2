@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.ToggleWidget;
 
 /**
@@ -46,8 +46,8 @@ public class HeadlessToggleWidget extends HeadlessInputWidget
 	implements ToggleWidget
 {
 
-	public HeadlessToggleWidget(final ParamDetails details) {
-		super(details);
+	public HeadlessToggleWidget(final ParamModel model) {
+		super(model);
 	}
 
 	// -- ToggleWidget methods --
