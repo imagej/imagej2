@@ -77,7 +77,6 @@ import javax.swing.WindowConstants;
 @UI
 public class SwingUI implements UserInterface {
 
-	public static final String VERSION = "2.0.0-alpha1";
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-2.0.0-alpha1";
 
@@ -154,7 +153,7 @@ public class SwingUI implements UserInterface {
 		readmeFrame.setLayout(new BorderLayout());
 		readmeFrame.add(scrollPane, BorderLayout.CENTER);
 		readmeFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		readmeFrame.setTitle("ImageJ v" + VERSION + " - " + README_FILE);
+		readmeFrame.setTitle("ImageJ v" + ImageJ.VERSION + " - " + README_FILE);
 		readmeFrame.pack();
 
 		final String readmeText = loadReadmeFile();
@@ -239,4 +238,5 @@ public class SwingUI implements UserInterface {
 		if (file == null) return null;
 		return file.getParentFile();
 	}
+
 }
