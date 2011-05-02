@@ -37,7 +37,7 @@ package imagej.plugin.ui.awt;
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.Component;
 import java.awt.Label;
@@ -71,53 +71,53 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details,
+	public void addNumber(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final AWTNumberWidget numberWidget =
-			new AWTNumberWidget(details, min, max, stepSize);
-		addField(details.getLabel(), numberWidget);
-		numberWidgets.put(details.getName(), numberWidget);
+			new AWTNumberWidget(model, min, max, stepSize);
+		addField(model.getLabel(), numberWidget);
+		numberWidgets.put(model.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details) {
-		final AWTToggleWidget toggleWidget = new AWTToggleWidget(details);
-		addField(details.getLabel(), toggleWidget);
-		toggleWidgets.put(details.getName(), toggleWidget);
+	public void addToggle(final ParamModel model) {
+		final AWTToggleWidget toggleWidget = new AWTToggleWidget(model);
+		addField(model.getLabel(), toggleWidget);
+		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details, final int columns) {
+	public void addTextField(final ParamModel model, final int columns) {
 		final AWTTextFieldWidget textFieldWidget =
-			new AWTTextFieldWidget(details, columns);
-		addField(details.getLabel(), textFieldWidget);
-		textFieldWidgets.put(details.getName(), textFieldWidget);
+			new AWTTextFieldWidget(model, columns);
+		addField(model.getLabel(), textFieldWidget);
+		textFieldWidgets.put(model.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String[] items) {
+	public void addChoice(final ParamModel model, final String[] items) {
 		final AWTChoiceWidget choiceWidget =
-			new AWTChoiceWidget(details, items);
-		addField(details.getLabel(), choiceWidget);
-		choiceWidgets.put(details.getName(), choiceWidget);
+			new AWTChoiceWidget(model, items);
+		addField(model.getLabel(), choiceWidget);
+		choiceWidgets.put(model.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details) {
-		final AWTFileWidget fileWidget = new AWTFileWidget(details);
-		addField(details.getLabel(), fileWidget);
-		fileWidgets.put(details.getName(), fileWidget);
+	public void addFile(final ParamModel model) {
+		final AWTFileWidget fileWidget = new AWTFileWidget(model);
+		addField(model.getLabel(), fileWidget);
+		fileWidgets.put(model.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details) {
-		final Class<?> type = details.getType();
+	public void addObject(final ParamModel model) {
+		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
-		final AWTObjectWidget objectWidget = new AWTObjectWidget(details, items);
-		addField(details.getLabel(), objectWidget);
-		objectWidgets.put(details.getName(), objectWidget);
+		final AWTObjectWidget objectWidget = new AWTObjectWidget(model, items);
+		addField(model.getLabel(), objectWidget);
+		objectWidgets.put(model.getName(), objectWidget);
 	}
 
 	@Override

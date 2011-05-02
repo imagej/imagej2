@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.BorderLayout;
 
@@ -51,10 +51,10 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 
 	private JSlider slider;
 
-	public SwingNumberSliderWidget(final ParamDetails details,
+	public SwingNumberSliderWidget(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(details);
+		super(model);
 
 		slider = new JSlider(min.intValue(), max.intValue(), min.intValue());
 		slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
@@ -71,7 +71,7 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		details.setValue(slider.getValue());
+		model.setValue(slider.getValue());
 	}
 
 	// -- NumberWidget methods --
@@ -85,7 +85,7 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 
 	@Override
 	public void refresh() {
-		final Number value = (Number) details.getValue();
+		final Number value = (Number) model.getValue();
 		slider.setValue(value.intValue());
 	}
 

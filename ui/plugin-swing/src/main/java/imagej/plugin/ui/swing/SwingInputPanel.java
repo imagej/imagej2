@@ -37,7 +37,7 @@ package imagej.plugin.ui.swing;
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -71,55 +71,55 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details,
+	public void addNumber(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
-			SwingNumberWidget.create(details, min, max, stepSize);
-		addField(details.getLabel(), numberWidget);
-		numberWidgets.put(details.getName(), numberWidget);
+			SwingNumberWidget.create(model, min, max, stepSize);
+		addField(model.getLabel(), numberWidget);
+		numberWidgets.put(model.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details) {
+	public void addToggle(final ParamModel model) {
 		final SwingToggleWidget toggleWidget =
-			new SwingToggleWidget(details);
-		addField(details.getLabel(), toggleWidget);
-		toggleWidgets.put(details.getName(), toggleWidget);
+			new SwingToggleWidget(model);
+		addField(model.getLabel(), toggleWidget);
+		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details, final int columns) {
+	public void addTextField(final ParamModel model, final int columns) {
 		final SwingTextFieldWidget textFieldWidget =
-			new SwingTextFieldWidget(details, columns);
-		addField(details.getLabel(), textFieldWidget);
-		textFieldWidgets.put(details.getName(), textFieldWidget);
+			new SwingTextFieldWidget(model, columns);
+		addField(model.getLabel(), textFieldWidget);
+		textFieldWidgets.put(model.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String[] items) {
+	public void addChoice(final ParamModel model, final String[] items) {
 		final SwingChoiceWidget choiceWidget =
-			new SwingChoiceWidget(details, items);
-		addField(details.getLabel(), choiceWidget);
-		choiceWidgets.put(details.getName(), choiceWidget);
+			new SwingChoiceWidget(model, items);
+		addField(model.getLabel(), choiceWidget);
+		choiceWidgets.put(model.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details) {
-		final SwingFileWidget fileWidget = new SwingFileWidget(details);
-		addField(details.getLabel(), fileWidget);
-		fileWidgets.put(details.getName(), fileWidget);
+	public void addFile(final ParamModel model) {
+		final SwingFileWidget fileWidget = new SwingFileWidget(model);
+		addField(model.getLabel(), fileWidget);
+		fileWidgets.put(model.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details) {
-		final Class<?> type = details.getType();
+	public void addObject(final ParamModel model) {
+		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		final SwingObjectWidget objectWidget =
-			new SwingObjectWidget(details, items);
-		addField(details.getLabel(), objectWidget);
-		objectWidgets.put(details.getName(), objectWidget);
+			new SwingObjectWidget(model, items);
+		addField(model.getLabel(), objectWidget);
+		objectWidgets.put(model.getName(), objectWidget);
 	}
 
 	@Override

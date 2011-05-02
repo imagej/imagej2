@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -58,10 +58,10 @@ public class AWTNumberWidget extends AWTInputWidget
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final ParamDetails details,
+	public AWTNumberWidget(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(details);
+		super(model);
 
 		scrollBar = new Scrollbar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
@@ -87,7 +87,7 @@ public class AWTNumberWidget extends AWTInputWidget
 
 	@Override
 	public void refresh() {
- 		final Number value = (Number) details.getValue();
+ 		final Number value = (Number) model.getValue();
 		scrollBar.setValue(value.intValue());
 		textField.setText(value.toString());
 	}

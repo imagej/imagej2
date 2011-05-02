@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -60,10 +60,10 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 
 	private boolean textFieldUpdating;
 
-	public SwingNumberScrollBarWidget(final ParamDetails details,
+	public SwingNumberScrollBarWidget(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(details);
+		super(model);
 
 		scrollBar = new JScrollBar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
@@ -89,7 +89,7 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 
 	@Override
 	public void refresh() {
- 		final Number value = (Number) details.getValue();
+ 		final Number value = (Number) model.getValue();
 		scrollBar.setValue(value.intValue());
 		textField.setText(value.toString());
 	}
@@ -99,7 +99,7 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent e) {
 		if (!textFieldUpdating) textField.setText("" + scrollBar.getValue());
-		details.setValue(scrollBar.getValue());
+		model.setValue(scrollBar.getValue());
 	}
 
 	// -- DocumentListener methods --

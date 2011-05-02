@@ -52,50 +52,50 @@ public interface InputPanel {
 	/**
 	 * Adds a numeric field.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 * @param min minimum allowed value
 	 * @param max maximum allowed value
 	 * @param stepSize distance between steps when operating widget
 	 */
-	void addNumber(ParamDetails details,
+	void addNumber(ParamModel model,
 		Number min, Number max, Number stepSize);
 
 	/**
 	 * Adds a checkbox field.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 */
-	void addToggle(ParamDetails details);
+	void addToggle(ParamModel model);
 
 	/**
 	 * Adds a text field.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 * @param columns width of field in characters
 	 */
-	void addTextField(ParamDetails details, int columns);
+	void addTextField(ParamModel model, int columns);
 
 	/**
 	 * Adds a multiple choice text field.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 * @param items the choices
 	 */
-	void addChoice(ParamDetails details, String[] items);
+	void addChoice(ParamModel model, String[] items);
 
 	/**
 	 * Adds a file selector.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 */
-	void addFile(ParamDetails details);
+	void addFile(ParamModel model);
 
 	/**
 	 * Adds an object selector.
 	 * 
-	 * @param details basic parameter details (e.g., name, label, description)
+	 * @param model backing data model containing parameter details
 	 */
-	void addObject(ParamDetails details);
+	void addObject(ParamModel model);
 
 	/**
 	 * Returns the contents of the given numeric field.

@@ -37,7 +37,7 @@ package imagej.plugin.ui.swt;
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
 import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;
@@ -70,54 +70,54 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamDetails details,
+	public void addNumber(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		addLabel(details.getLabel());
+		addLabel(model.getLabel());
 		final SWTNumberWidget numberWidget =
-			new SWTNumberWidget(panel, details, min, max, stepSize);
-		numberWidgets.put(details.getName(), numberWidget);
+			new SWTNumberWidget(panel, model, min, max, stepSize);
+		numberWidgets.put(model.getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamDetails details) {
-		addLabel(details.getLabel());
+	public void addToggle(final ParamModel model) {
+		addLabel(model.getLabel());
 		final SWTToggleWidget toggleWidget =
-			new SWTToggleWidget(panel, details);
-		toggleWidgets.put(details.getName(), toggleWidget);
+			new SWTToggleWidget(panel, model);
+		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamDetails details, final int columns) {
-		addLabel(details.getLabel());
+	public void addTextField(final ParamModel model, final int columns) {
+		addLabel(model.getLabel());
 		final SWTTextFieldWidget textFieldWidget =
-			new SWTTextFieldWidget(panel, details, columns);
-		textFieldWidgets.put(details.getName(), textFieldWidget);
+			new SWTTextFieldWidget(panel, model, columns);
+		textFieldWidgets.put(model.getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamDetails details, final String[] items) {
-		addLabel(details.getLabel());
+	public void addChoice(final ParamModel model, final String[] items) {
+		addLabel(model.getLabel());
 		final SWTChoiceWidget choiceWidget =
-			new SWTChoiceWidget(panel, details, items);
-		choiceWidgets.put(details.getName(), choiceWidget);
+			new SWTChoiceWidget(panel, model, items);
+		choiceWidgets.put(model.getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamDetails details) {
-		addLabel(details.getLabel());
-		final SWTFileWidget fileWidget = new SWTFileWidget(panel, details);
-		fileWidgets.put(details.getName(), fileWidget);
+	public void addFile(final ParamModel model) {
+		addLabel(model.getLabel());
+		final SWTFileWidget fileWidget = new SWTFileWidget(panel, model);
+		fileWidgets.put(model.getName(), fileWidget);
 	}
 
 	@Override
-	public void addObject(final ParamDetails details) {
-		final Class<?> type = details.getType();
+	public void addObject(final ParamModel model) {
+		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		final SWTObjectWidget objectWidget =
-			new SWTObjectWidget(panel, details, items);
-		objectWidgets.put(details.getName(), objectWidget);
+			new SWTObjectWidget(panel, model, items);
+		objectWidgets.put(model.getName(), objectWidget);
 	}
 
 	@Override

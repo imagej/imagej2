@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.TextFieldWidget;
 
 import org.apache.pivot.wtk.TextInput;
@@ -50,8 +50,8 @@ public class PivotTextFieldWidget extends PivotInputWidget
 
 	private final TextInput textInput;
 
-	public PivotTextFieldWidget(final ParamDetails details) {
-		super(details);
+	public PivotTextFieldWidget(final ParamModel model) {
+		super(model);
 
 		textInput = new TextInput();
 
@@ -69,7 +69,7 @@ public class PivotTextFieldWidget extends PivotInputWidget
 
 	@Override
 	public void refresh() {
-		textInput.setText(details.getValue().toString());
+		textInput.setText(model.getValue().toString());
 	}
 
 }

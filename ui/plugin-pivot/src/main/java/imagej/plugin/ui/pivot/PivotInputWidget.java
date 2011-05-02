@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 import org.apache.pivot.wtk.BoxPane;
 
@@ -46,15 +46,15 @@ import org.apache.pivot.wtk.BoxPane;
  */
 public abstract class PivotInputWidget extends BoxPane implements InputWidget {
 
-	protected ParamDetails details;
+	protected ParamModel model;
 
-	public PivotInputWidget(final ParamDetails details) {
-		this.details = details;
+	public PivotInputWidget(final ParamModel model) {
+		this.model = model;
 	}
 
 	@Override
-	public ParamDetails getModel() {
-		return details;
+	public ParamModel getModel() {
+		return model;
 	}
 
 }

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.TextFieldWidget;
 
 /**
@@ -46,8 +46,8 @@ public class HeadlessTextFieldWidget extends HeadlessInputWidget
 	implements TextFieldWidget
 {
 
-	public HeadlessTextFieldWidget(final ParamDetails details) {
-		super(details);
+	public HeadlessTextFieldWidget(final ParamModel model) {
+		super(model);
 	}
 
 	// -- TextFieldWidget methods --

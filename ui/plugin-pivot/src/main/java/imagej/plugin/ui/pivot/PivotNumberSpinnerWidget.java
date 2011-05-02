@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.util.ClassUtils;
 
 import org.apache.pivot.wtk.Spinner;
@@ -49,10 +49,10 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 
 	private final Spinner spinner;
 
-	public PivotNumberSpinnerWidget(final ParamDetails details,
+	public PivotNumberSpinnerWidget(final ParamModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
-		super(details);
+		super(model);
 
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);
@@ -68,14 +68,14 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 	@Override
 	public Number getValue() {
 		final String value = spinner.getSelectedItem().toString();
-		return ClassUtils.toNumber(value, details.getType());
+		return ClassUtils.toNumber(value, model.getType());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		final Number value = (Number) details.getValue();
+		final Number value = (Number) model.getValue();
 		spinner.setSelectedItem(value.intValue());
 	}
 

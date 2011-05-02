@@ -45,6 +45,6 @@ public interface InputWidget {
 	void refresh();
 
 	/** Gets the model object backing this widget. */
-	ParamDetails getModel();
+	ParamModel getModel();
 
 }

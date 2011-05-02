@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.ToggleWidget;
 
 import java.awt.BorderLayout;
@@ -49,8 +49,8 @@ public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
 
 	private Checkbox checkbox;
 
-	public AWTToggleWidget(final ParamDetails details) {
-		super(details);
+	public AWTToggleWidget(final ParamModel model) {
+		super(model);
 
 		checkbox = new Checkbox("");
 		add(checkbox, BorderLayout.CENTER);
@@ -69,7 +69,7 @@ public class AWTToggleWidget extends AWTInputWidget implements ToggleWidget {
 
 	@Override
 	public void refresh() {
-		final boolean value = (Boolean) details.getValue();
+		final boolean value = (Boolean) model.getValue();
 		checkbox.setState(value);
 	}
 

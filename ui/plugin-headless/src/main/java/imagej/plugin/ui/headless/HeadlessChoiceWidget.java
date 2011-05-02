@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.headless;
 
 import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 
 /**
  * Headless implementation of multiple choice selector widget.
@@ -48,9 +48,9 @@ public class HeadlessChoiceWidget extends HeadlessInputWidget
 
 	private String[] items;
 
-	public HeadlessChoiceWidget(final ParamDetails details, final String[] items)
+	public HeadlessChoiceWidget(final ParamModel model, final String[] items)
 	{
-		super(details);
+		super(model);
 		this.items = items;
 	}
 

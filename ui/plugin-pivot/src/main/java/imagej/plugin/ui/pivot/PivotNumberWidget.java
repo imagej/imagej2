@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamDetails;
+import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
@@ -48,24 +48,24 @@ public abstract class PivotNumberWidget
 	extends PivotInputWidget implements NumberWidget
 {
 
-	public PivotNumberWidget(final ParamDetails details) {
-		super(details);
+	public PivotNumberWidget(final ParamModel model) {
+		super(model);
 	}
 
-	public static PivotNumberWidget create(final ParamDetails details,
+	public static PivotNumberWidget create(final ParamModel model,
 		final Number min, final Number max, final Number stepSize,
 		final WidgetStyle style)
 	{
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new PivotNumberScrollBarWidget(details, min, max, stepSize);
+			return new PivotNumberScrollBarWidget(model, min, max, stepSize);
 		}
 		if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new PivotNumberSliderWidget(details, min, max);
+			return new PivotNumberSliderWidget(model, min, max);
 		}
 		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
 			Log.warn("Ignoring unsupported widget style: " + style);
 		}
-		return new PivotNumberSpinnerWidget(details, min, max, stepSize);
+		return new PivotNumberSpinnerWidget(model, min, max, stepSize);
 	}
 
 }
