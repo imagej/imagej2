@@ -19,12 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-roi</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util</artifactId>
+			<artifactId>ij-roi</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

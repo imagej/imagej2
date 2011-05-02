@@ -28,11 +28,6 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
 			<version>${sezpoz.version}</version>

@@ -14,18 +14,38 @@
 	<artifactId>ij-core</artifactId>
 
 	<name>ImageJ Core Classes</name>
-	<description>ImageJ application framework.</description>
+	<description>ImageJ application framework and core utility classes.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
 			<version>${sezpoz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.10</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -36,7 +56,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.manager</packageName>
+							<packageName>imagej</packageName>
 						</manifest>
 					</archive>
 				</configuration>

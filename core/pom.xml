@@ -31,7 +31,6 @@
 		<module>plugin</module>
 		<module>tool</module>
 		<module>ui</module>
-		<module>util</module>
 	</modules>
 
 	<profiles>
