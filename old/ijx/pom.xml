@@ -39,12 +39,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util</artifactId>
+			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
