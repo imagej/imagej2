@@ -36,6 +36,7 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.measure.Calibration;
 import imagej.data.Dataset;
 import imagej.util.Dimensions;
 import imagej.util.Index;
@@ -54,12 +55,12 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
-		final int w = imp.getWidth();
-		final int h = imp.getHeight();
+		final int x = imp.getWidth();
+		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
-		final long[] dims = new long[] { w, h, c, z, t };
+		final long[] dims = new long[] { x, y, c, z, t };
 		final String name = imp.getTitle();
 		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 		final int bitsPerPixel = imp.getBitDepth();
@@ -78,6 +79,14 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			dataset.setPlane(p, plane);
 		}
 
+		// copy calibration info where possible
+		Calibration cal = imp.getCalibration();
+		dataset.setCalibration(cal.pixelWidth, 0);
+		dataset.setCalibration(cal.pixelHeight, 1);
+		dataset.setCalibration(1, 2);
+		dataset.setCalibration(cal.pixelDepth, 3);
+		dataset.setCalibration(1, 4);
+		
 		return dataset;
 	}
 
@@ -118,6 +127,17 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			throw new IllegalArgumentException(
 				message("Too many planes", cCount, zCount, tCount));
 		}
+		
+		// make sure there are not any other axis types present
+		int ijCompatAxesPresent = 2;
+		if (cIndex >= 0) ijCompatAxesPresent++;
+		if (zIndex >= 0) ijCompatAxesPresent++;
+		if (tIndex >= 0) ijCompatAxesPresent++;
+		if (ijCompatAxesPresent != dims.length)
+			throw new IllegalArgumentException(
+				"Dataset has one or more axes that can not be classified as"+
+				" X, Y, Z, C, or T");
+		
 		final ImageStack stack = new ImageStack(w, h);
 
 		final long[] planeDims = new long[dims.length - 2];
@@ -145,7 +165,16 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			}
 		}
 
-		return new ImagePlus(dataset.getName(), stack);
+		ImagePlus imp = new ImagePlus(dataset.getName(), stack);
+		
+		Calibration cal = imp.getCalibration();
+		
+		cal.pixelWidth = dataset.calibration(xIndex);
+		cal.pixelHeight = dataset.calibration(yIndex);
+		if (zIndex >= 0)
+			cal.pixelDepth = dataset.calibration(zIndex);
+		
+		return imp;
 	}
 
 	// -- Helper methods --
