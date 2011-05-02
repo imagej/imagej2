@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
+import imagej.ImageJ;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
@@ -44,15 +45,15 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin
+@Plugin(label = "About ImageJ")
 public class AboutImageJ implements ImageJPlugin {
 
 	@Parameter(visibility = ParamVisibility.MESSAGE)
-	public final String message = "Unimplemented";
+	public final String message = "ImageJ v" + ImageJ.VERSION;
 
 	@Override
 	public void run() {
-		// TODO
+		// no action needed
 	}
 
 }
