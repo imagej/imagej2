@@ -15,7 +15,7 @@ structures.
 
 The most significant advancement for 2.0.0-alpha2 is its use of the ImgLib2
 image processing library, developed at MPI-CBG by Stephan Saalfeld, Stephan
-Priebisch, Tobias Pietzsch and others. Development of ImgLib2 received a major
+Preibisch, Tobias Pietzsch and others. Development of ImgLib2 received a major
 boost at the recent Madison Fiji hackathon, and the library is now at a point
 where it is usable within ImageJ2. Use of ImgLib2 has enabled ImageJ2 to
 display composite color images with individual color lookup tables, similar to
