@@ -172,11 +172,9 @@ public class RGBImageTranslator implements ImageTranslator {
 
 		// check total count of planes
 		if (c * z * t > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Too many planes: z=" + z + ", t=" +
-				t);
+			throw new IllegalArgumentException(
+				"Too many planes: z=" + z + ", t=" + t);
 		}
-
-		//System.out.println("xyczt = "+w+" "+h+" "+c+" "+z+" "+t);
 
 		// make sure there are not any other axis types present
 		int ijCompatAxesPresent = 0;
