@@ -190,14 +190,16 @@ public class RGBImageTranslator implements ImageTranslator {
 		final ImageStack stack = new ImageStack(w, h);
 		long[] position = new long[ijCompatAxesPresent];
 		for (int ti = 0; ti < t; ti++) {
+			if (tIndex >= 0)
+				position[tIndex] = ti;
 			for (int zi = 0; zi < z; zi++) {
 				ColorProcessor proc = new ColorProcessor(w, h);
+				if (zIndex >= 0)
+					position[zIndex] = zi;
 				for (int yi = 0; yi < h; yi++) {
+					position[yIndex] = yi;
 					for (int xi = 0; xi < w; xi++) {
 						position[xIndex] = xi;
-						position[yIndex] = yi;
-						if (zIndex >= 0) position[zIndex] = zi;
-						if (tIndex >= 0) position[tIndex] = ti;
 						
 						position[cIndex] = 0;
 						int rValue = (int) dataset.getDoubleValue(position);
