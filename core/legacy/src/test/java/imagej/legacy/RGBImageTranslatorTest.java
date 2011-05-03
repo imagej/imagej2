@@ -235,8 +235,28 @@ public class RGBImageTranslatorTest {
 	
 	@Test
 	public void testProblemImagePluses() {
+		ImagePlus imp;
+		
 		// channels not == 1
+		imp = NewImage.createRGBImage("rgb image", 10, 10, 8, NewImage.FILL_RAMP);
+		imp.setDimensions(2, 4, 1);  // c == 2, z == 4
+		try {
+			translator.createDataset(imp);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
 		// type not == RGB
+		imp = NewImage.createByteImage("byte image", 10, 10, 3, NewImage.FILL_RAMP);
+		imp.setDimensions(3, 1, 1);  // c == 3
+		try {
+			translator.createDataset(imp);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+		
 	}
 	
 	@Test
