@@ -113,6 +113,7 @@ public class RGBImageTranslatorTest {
 		// axes
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		assertEquals(ds.axis(0), Axes.X);
@@ -131,8 +132,11 @@ public class RGBImageTranslatorTest {
 		Calibration cal = imp.getCalibration();
 		assertEquals(ds.calibration(xIndex), cal.pixelWidth, 0);
 		assertEquals(ds.calibration(yIndex), cal.pixelHeight, 0);
+		assertEquals(ds.calibration(cIndex), 1, 0);
 		if (zIndex >= 0)
 			assertEquals(ds.calibration(zIndex), cal.pixelDepth, 0);
+		if (tIndex >= 0)
+			assertEquals(ds.calibration(tIndex), cal.frameInterval, 0);
 		
 		// name
 		assertEquals(ds.getName(), imp.getTitle());

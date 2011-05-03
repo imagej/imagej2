@@ -89,7 +89,7 @@ public class GrayscaleImageTranslatorTest {
 		assertEquals(ds.calibration(1), cal.pixelHeight, 0);
 		assertEquals(ds.calibration(2), 1, 0);
 		assertEquals(ds.calibration(3), cal.pixelDepth, 0);
-		assertEquals(ds.calibration(4), 1, 0);
+		assertEquals(ds.calibration(4), cal.frameInterval, 0);
 		
 		// name
 		assertEquals(ds.getName(), imp.getTitle());

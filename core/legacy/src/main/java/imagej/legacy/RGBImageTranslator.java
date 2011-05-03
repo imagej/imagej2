@@ -102,7 +102,9 @@ public class RGBImageTranslator implements ImageTranslator {
 		Calibration cal = imp.getCalibration();
 		dataset.setCalibration(cal.pixelWidth, 0);
 		dataset.setCalibration(cal.pixelHeight, 1);
+		dataset.setCalibration(1, 2);
 		dataset.setCalibration(cal.pixelDepth, 3);
+		dataset.setCalibration(cal.frameInterval, 4);
 
 		dataset.setRGBMerged(true);
 		
@@ -227,6 +229,8 @@ public class RGBImageTranslator implements ImageTranslator {
 		cal.pixelHeight = dataset.calibration(yIndex);
 		if (zIndex >= 0)
 			cal.pixelDepth = dataset.calibration(zIndex);
+		if (tIndex >= 0)
+			cal.frameInterval = dataset.calibration(tIndex);
 		
 		return imp;
 	}
