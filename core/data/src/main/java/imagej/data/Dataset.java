@@ -518,13 +518,19 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 				(width*height)+" entries (MAX == "+Integer.MAX_VALUE+")");
 		switch (getType().getBitsPerPixel()) {
 			case 8:
-				if (isSigned())
-					return new SignedByteWriter((int)width, (int)height);
-				return new UnsignedByteWriter((int)width, (int)height);
+				if (isInteger()) {
+					if (isSigned())
+						return new SignedByteWriter((int)width, (int)height);
+					return new UnsignedByteWriter((int)width, (int)height);
+				}
+				throw new IllegalArgumentException("8 bit floating types not supported");
 			case 16:
-				if (isSigned())
-					return new SignedShortWriter((int)width, (int)height);
-				return new UnsignedShortWriter((int)width, (int)height);
+				if (isInteger()) {
+					if (isSigned())
+						return new SignedShortWriter((int)width, (int)height);
+					return new UnsignedShortWriter((int)width, (int)height);
+				}
+				throw new IllegalArgumentException("16 bit floating types not supported");
 			case 32:
 				if (isInteger()) {
 					if (isSigned())
@@ -536,7 +542,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 				if (isInteger()) {
 					if (isSigned())
 						return new SignedLongWriter((int)width, (int)height);
-					throw new IllegalStateException("unsigned long data not supported");
+					throw new IllegalStateException("64 bit unsigned integer types not supported");
 				}
 				return new DoubleWriter((int)width, (int)height);
 			default:
