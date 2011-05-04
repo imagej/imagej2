@@ -565,10 +565,8 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 				accessor.move(1, 0);
 			}
 			accessor.move(-maxX, 0);
-			accessor.move(1, 1);
-			// NB - using acc.move() minimally instead of acc.setPosition() once
-			// is the speedy way to do things. Notice that the very last call to
-			// move(1,1) moves the Y position out of bounds. This should be allowed.
+			if (y != maxY)
+				accessor.move(1, 1);
 		}
 		return writer.getPlane();
 	}
@@ -577,6 +575,7 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 
 	// NB - data clamping code may not be necessary if these classes stay
 	// private. Otherwise it becomes important if these classes broken out.
+  // They impose a performance penalty right now.
 	
 	private interface PlaneWriter {
 		Object getPlane();
