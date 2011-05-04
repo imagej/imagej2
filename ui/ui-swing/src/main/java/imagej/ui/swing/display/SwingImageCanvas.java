@@ -536,15 +536,15 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		int reasonableWidth, reasonableHeight;
 		double aspectRatio;
 		switch (checkImageShape(maxDims, imageWidth, imageHeight)) {
-			case TOO_TALL:
-				aspectRatio = ((double)imageWidth / imageHeight);
-				reasonableHeight = maxDims.height;
-				reasonableWidth = (int) (aspectRatio * maxDims.height);
-				break;
 			case TOO_WIDE:
 				aspectRatio = ((double)imageHeight / imageWidth);
 				reasonableWidth = maxDims.width;
 				reasonableHeight = (int) (aspectRatio * maxDims.width);
+				break;
+			case TOO_TALL:
+				aspectRatio = ((double)imageWidth / imageHeight);
+				reasonableHeight = maxDims.height;
+				reasonableWidth = (int) (aspectRatio * maxDims.height);
 				break;
 			default:  // fits fine
 				reasonableWidth = imageWidth;
