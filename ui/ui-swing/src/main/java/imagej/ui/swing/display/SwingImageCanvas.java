@@ -317,16 +317,15 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	public void zoomToFit(final IntCoords topLeft, final IntCoords bottomRight) {
 		final int width = bottomRight.x - topLeft.x;
 		final int height = bottomRight.y - topLeft.y;
-		final IntCoords size = new IntCoords(width, height);
 
-		final double imageSizeX = size.x / scale;
-		final double imageSizeY = size.y / scale;
+		final double imageSizeX = width / scale;
+		final double imageSizeY = height / scale;
 		final double xZoom = getWidth() / imageSizeX;
 		final double yZoom = getHeight() / imageSizeY;
 		final double factor = Math.min(xZoom, yZoom);
 
-		final int centerX = topLeft.x + size.x / 2;
-		final int centerY = topLeft.y + size.y / 2;
+		final int centerX = topLeft.x + width / 2;
+		final int centerY = topLeft.y + height / 2;
 
 		setZoom(factor, new IntCoords(centerX, centerY));
 	}
@@ -535,16 +534,17 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 
 	private Dimension calcReasonableDimensions(Dimension maxDims, int imageWidth, int imageHeight) {
 		int reasonableWidth, reasonableHeight;
+		double aspectRatio;
 		switch (checkImageShape(maxDims, imageWidth, imageHeight)) {
 			case TOO_TALL:
+				aspectRatio = ((double)imageWidth / imageHeight);
 				reasonableHeight = maxDims.height;
-				reasonableWidth =
-					(int) ((double)imageWidth * maxDims.height / imageHeight);
+				reasonableWidth = (int) (aspectRatio * maxDims.height);
 				break;
 			case TOO_WIDE:
+				aspectRatio = ((double)imageHeight / imageWidth);
 				reasonableWidth = maxDims.width;
-				reasonableHeight =
-					(int) ((double)imageHeight * maxDims.width / imageWidth);
+				reasonableHeight = (int) (aspectRatio * maxDims.width);
 				break;
 			default:  // fits fine
 				reasonableWidth = imageWidth;
