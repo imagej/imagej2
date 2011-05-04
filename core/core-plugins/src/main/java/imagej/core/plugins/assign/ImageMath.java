@@ -132,9 +132,6 @@ public class ImageMath implements ImageJPlugin {
 		long[] img2Dims = new long[input2.getImgPlus().numDimensions()];
 		input2.getImgPlus().dimensions(img2Dims);
 
-		if (!Arrays.equals(img1Dims, img2Dims)) throw new IllegalArgumentException(
-			"ImageMath requires the two input images to have the same dimensions");
-
 		BinaryOperator binOp = operators.get(operatorName);
 
 		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
