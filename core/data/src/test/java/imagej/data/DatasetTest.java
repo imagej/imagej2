@@ -20,7 +20,7 @@ public class DatasetTest {
 	private static final int CPLANES = 2;
 	private static final int ZPLANES = 3;
 	private static final int TPLANES = 4;
-	private static final long[] DIMENSIONS = {1,1,CPLANES,ZPLANES,TPLANES};
+	private static final long[] DIMENSIONS = {4,4,CPLANES,ZPLANES,TPLANES};
 
 	private Dataset createDataset(ImgFactory<IntType> factory) {
 		Img<IntType> img = factory.create(DIMENSIONS, new IntType());
@@ -44,14 +44,16 @@ public class DatasetTest {
 		// test planar container backed case : get by reference
 		Dataset ds = createPlanarDataset();
 
+		int planeSize = (int) (DIMENSIONS[0]*DIMENSIONS[1]);
 		int[][][][] planes = new int[TPLANES][][][];
 		for (int t = 0; t < TPLANES; t++) {
 			planes[t] = new int[ZPLANES][][];
 			for (int z = 0; z < ZPLANES; z++) {
 				planes[t][z] = new int[CPLANES][];
 				for (int c = 0; c < CPLANES; c++) {
-					planes[t][z][c] = new int[1];
-					planes[t][z][c][0] = planeValue(c,z,t);
+					planes[t][z][c] = new int[planeSize];
+					for (int i = 0; i < planeSize; i++)
+						planes[t][z][c][i] = planeValue(c,z,t);
 				}
 			}
 		}
@@ -71,7 +73,8 @@ public class DatasetTest {
 				for (int c = 0; c < CPLANES; c++) {
 					int[] plane = (int[]) ds.getPlane(planeNum++);
 					assertSame(plane, planes[t][z][c]);
-					assertEquals(planeValue(c,z,t), plane[0]);
+					for (int i = 0; i < planeSize; i++)
+						assertEquals(planeValue(c,z,t), plane[i]);
 				}
 			}
 		}
@@ -89,9 +92,15 @@ public class DatasetTest {
 				pos[3] = z;
 				for (int c = 0; c < CPLANES; c++) {
 					pos[2] = c;
-					accessor.setPosition(pos);
-					accessor.get().setReal(planeValue(c,z,t));
-					assertEquals(planeValue(c,z,t), accessor.get().getRealDouble(), 0);
+					for (int y = 0; y < DIMENSIONS[1]; y++) {
+						pos[1] = y;
+						for (int x = 0; x < DIMENSIONS[0]; x++) {
+							pos[0] = x;
+							accessor.setPosition(pos);
+							accessor.get().setReal(planeValue(c,z,t));
+							assertEquals(planeValue(c,z,t), accessor.get().getRealDouble(), 0);
+						}
+					}
 				}
 			}
 		}
@@ -102,8 +111,10 @@ public class DatasetTest {
 					int[] plane1 = (int[]) ds.getPlane(planeNum);
 					int[] plane2 = (int[]) ds.getPlane(planeNum);
 					assertNotSame(plane1, plane2);
-					assertEquals(planeValue(c,z,t), plane1[0]);
-					assertEquals(planeValue(c,z,t), plane2[0]);
+					for (int i = 0; i < DIMENSIONS[0]*DIMENSIONS[1]; i++) {
+						assertEquals(planeValue(c,z,t), plane1[i]);
+						assertEquals(planeValue(c,z,t), plane2[i]);
+					}
 					planeNum++;
 				}
 			}
