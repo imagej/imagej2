@@ -51,6 +51,9 @@ import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.Metadata;
+import net.imglib2.img.NativeImgFactory;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
@@ -510,317 +513,53 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		return new ImgPlus<T>(blankImg, img);
 	}
 
-	private PlaneWriter constructWriter() {
-		long width = imgPlus.dimension(0);
-		long height = imgPlus.dimension(1);
-		if (width*height > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("Cannot create a plane of "+
-				(width*height)+" entries (MAX == "+Integer.MAX_VALUE+")");
-		switch (getType().getBitsPerPixel()) {
-			case 8:
-				if (isInteger()) {
-					if (isSigned())
-						return new SignedByteWriter((int)width, (int)height);
-					return new UnsignedByteWriter((int)width, (int)height);
-				}
-				throw new IllegalArgumentException("8 bit floating types not supported");
-			case 16:
-				if (isInteger()) {
-					if (isSigned())
-						return new SignedShortWriter((int)width, (int)height);
-					return new UnsignedShortWriter((int)width, (int)height);
-				}
-				throw new IllegalArgumentException("16 bit floating types not supported");
-			case 32:
-				if (isInteger()) {
-					if (isSigned())
-						return new SignedIntWriter((int)width, (int)height);
-					return new UnsignedIntWriter((int)width, (int)height);
-				}
-				return new FloatWriter((int)width, (int)height);
-			case 64:
-				if (isInteger()) {
-					if (isSigned())
-						return new SignedLongWriter((int)width, (int)height);
-					throw new IllegalStateException("64 bit unsigned integer types not supported");
-				}
-				return new DoubleWriter((int)width, (int)height);
-			default:  // 1, 12, etc.
-				throw new IllegalArgumentException(getType().getBitsPerPixel() +
-					" bit depth not supportable as an array of primitive data");
-		}
-	}
-
-	/*
-
-	 // way that could maybe support 1-bit & 12-bit
-	 // not yet compilable
-
+	// NB - non imglib implementation available in SVN revision 2812
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private Object copyOfPlane(int planeNum) {
-		ArrayImgFactory factory = new ArrayImgFactory();
-		ArrayImg<? extends RealType<?> & NativeType<?>,?> img =
-			(ArrayImg< extends RealType<?> & NativeType<?>,?>)
-			 factory.create(new long[]{5,5}, (NativeType) getType());
-		RandomAccess accessor = img.randomAccess();
-		accessor.setPosition(new long[]{2,2});
-		accessor.get().setReal(7);
-		//somehow:
-		ArrayDataAccess store = img.getArrayDataAccess();
-		return store.getCurrentStorageArray();
-	}
-	
-	*/
-	
-	private Object copyOfPlane(int planeNum) {
-		PlaneWriter writer = constructWriter();
-		RandomAccess<? extends RealType<?>> accessor = imgPlus.randomAccess();
-		long[] dimensions = new long[imgPlus.numDimensions()];
+		final long[] dimensions = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dimensions);
-		long[] planeIndexSpans = Dimensions.getDims3AndGreater(dimensions);
-		long[] planePos = Index.index1DtoND(planeIndexSpans, planeNum);
-		long[] position = new long[dimensions.length];
+		final long w = dimensions[0];
+		final long h = dimensions[1];
+		if (w*h > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("cannot create a plane of "+
+				(w*h)+" entities (MAX = "+Integer.MAX_VALUE+")");
+		}
+		final NativeType<?> nativeType = (NativeType<?>) getType();
+		final NativeImgFactory storageFactory = new ArrayImgFactory();
+		final ArrayImg<?,?> container = (ArrayImg<?,?>)
+			nativeType.createSuitableNativeImg(storageFactory, new long[]{w,h});
+		final RandomAccess<? extends RealType<?>> input = imgPlus.randomAccess();
+		final RandomAccess<? extends RealType<?>> output =
+			(RandomAccess<? extends RealType<?>>) container.randomAccess();
+		final long[] planeIndexSpans = Dimensions.getDims3AndGreater(dimensions);
+		final long[] planePos = Index.index1DtoND(planeIndexSpans, planeNum);
+		final long[] inputPos = new long[dimensions.length];
 		for (int i = 2; i < dimensions.length; i++)
-			position[i] = planePos[i-2];
-		final int maxX = (int) (dimensions[0] - 1);
-		final int maxY = (int) (dimensions[1] - 1);
-		accessor.setPosition(position);
+			inputPos[i] = planePos[i-2];
+		final long[] outputPos = new long[2];
+		input.setPosition(inputPos);
+		output.setPosition(outputPos);
+		final RealType<?> inputRef = input.get();
+		final RealType<?> outputRef = output.get();
+		final int maxX = (int) (w - 1);
+		final int maxY = (int) (h - 1);
 		for (int y = 0; y <= maxY; y++) {
 			for (int x = 0; x <= maxX; x++) {
-				double value = accessor.get().getRealDouble();
-				writer.writeValue(x, y, value);
-				accessor.move(1, 0);
+				double value = inputRef.getRealDouble();
+				outputRef.setReal(value);
+				if (x != maxX) {
+					input.move(1, 0);
+					output.move(1, 0);
+				}
 			}
-			accessor.move(-maxX, 0);
-			if (y != maxY)
-				accessor.move(1, 1);
+			if (y != maxY) {
+				input.move(-maxX, 0);
+				output.move(-maxX, 0);
+				input.move(1, 1);
+				output.move(1, 1);
+			}
 		}
-		return writer.getPlane();
+		final ArrayDataAccess<?> store = (ArrayDataAccess<?>) container.update(null);
+		return store.getCurrentStorageArray();
 	}
-	
-	// -- Helper classes --
-
-	// NB - data clamping code not necessary if these classes stay private as we
-	// know the data ranges will not be exceeded since we control which one is
-	// called. Otherwise the clamping becomes necessary if these classes get
-	// broken out. To avoid a performance hit they are commented out right now.
-	
-	private interface PlaneWriter {
-		Object getPlane();
-		void writeValue(int x, int y, double value);
-	}
-
-	private class SignedByteWriter implements PlaneWriter {
-		private final int w, h;
-		private final byte[] data;
-		
-		public SignedByteWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new byte[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < Byte.MIN_VALUE) value = Byte.MIN_VALUE;
-			//if (value > Byte.MAX_VALUE) value = Byte.MAX_VALUE;
-			data[index] = (byte) value;
-		}
-	}
-	
-	private class UnsignedByteWriter implements PlaneWriter {
-		private final int w, h;
-		private final byte[] data;
-		
-		public UnsignedByteWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new byte[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < 0) value = 0;
-			//if (value > 0xff) value = 0xff;
-			data[index] = (byte) (int) value;
-		}
-	}
-	
-	private class SignedShortWriter implements PlaneWriter {
-		private final int w, h;
-		private final short[] data;
-		
-		public SignedShortWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new short[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < Short.MIN_VALUE) value = Short.MIN_VALUE;
-			//if (value > Short.MAX_VALUE) value = Short.MAX_VALUE;
-			data[index] = (short) value;
-		}
-	}
-	
-	private class UnsignedShortWriter implements PlaneWriter {
-		private final int w, h;
-		private final short[] data;
-		
-		public UnsignedShortWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new short[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < 0) value = 0;
-			//if (value > 0xffff) value = 0xffff;
-			data[index] = (short) (int) value;
-		}
-	}
-	
-	private class SignedIntWriter implements PlaneWriter {
-		private final int w, h;
-		private final int[] data;
-		
-		public SignedIntWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new int[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < Integer.MIN_VALUE) value = Integer.MIN_VALUE;
-			//if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
-			data[index] = (int) value;
-		}
-	}
-	
-	private class UnsignedIntWriter implements PlaneWriter {
-		private final int w, h;
-		private final int[] data;
-		
-		public UnsignedIntWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new int[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < 0) value = 0;
-			//if (value > 0xffffffffL) value = 0xffffffffL;
-			data[index] = (int) (long) value;
-		}
-	}
-	
-	private class SignedLongWriter implements PlaneWriter {
-		private final int w, h;
-		private final long[] data;
-		
-		public SignedLongWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new long[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < Long.MIN_VALUE) value = Long.MIN_VALUE;
-			//if (value > Long.MAX_VALUE) value = Long.MAX_VALUE;
-			data[index] = (long) value;
-		}
-	}
-	
-	private class FloatWriter implements PlaneWriter {
-		private final int w, h;
-		private final float[] data;
-		
-		public FloatWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new float[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			//if (value < -Float.MAX_VALUE) value = -Float.MAX_VALUE;
-			//if (value > Float.MAX_VALUE) value = Float.MAX_VALUE;
-			data[index] = (float) value;
-		}
-	}
-	
-	private class DoubleWriter implements PlaneWriter {
-		private final int w, h;
-		private final double[] data;
-		
-		public DoubleWriter(int width, int height) {
-			w = width;
-			h = height;
-			data = new double[w * h];
-		}
-		
-		@Override
-		public Object getPlane() {
-			return data;
-		}
-		
-		@Override
-		public void writeValue(final int x, final int y, final double value) {
-			final int index = y*w + x;
-			data[index] = value;
-		}
-	}
-	
 }
