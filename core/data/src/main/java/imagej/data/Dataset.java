@@ -545,11 +545,31 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 					throw new IllegalStateException("64 bit unsigned integer types not supported");
 				}
 				return new DoubleWriter((int)width, (int)height);
-			default:
+			default:  // 1, 12, etc.
 				throw new IllegalArgumentException(getType().getBitsPerPixel() +
 					" bit depth not supportable as an array of primitive data");
 		}
 	}
+
+	/*
+
+	 // way that could maybe support 1-bit & 12-bit
+	 // not yet compilable
+
+	private Object copyOfPlane(int planeNum) {
+		ArrayImgFactory factory = new ArrayImgFactory();
+		ArrayImg<? extends RealType<?> & NativeType<?>,?> img =
+			(ArrayImg< extends RealType<?> & NativeType<?>,?>)
+			 factory.create(new long[]{5,5}, (NativeType) getType());
+		RandomAccess accessor = img.randomAccess();
+		accessor.setPosition(new long[]{2,2});
+		accessor.get().setReal(7);
+		//somehow:
+		ArrayDataAccess store = img.getArrayDataAccess();
+		return store.getCurrentStorageArray();
+	}
+	
+	*/
 	
 	private Object copyOfPlane(int planeNum) {
 		PlaneWriter writer = constructWriter();
@@ -576,12 +596,13 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		}
 		return writer.getPlane();
 	}
-
+	
 	// -- Helper classes --
 
-	// NB - data clamping code may not be necessary if these classes stay
-	// private. Otherwise it becomes important if these classes broken out.
-  // They impose a performance penalty right now.
+	// NB - data clamping code not necessary if these classes stay private as we
+	// know the data ranges will not be exceeded since we control which one is
+	// called. Otherwise the clamping becomes necessary if these classes get
+	// broken out. To avoid a performance hit they are commented out right now.
 	
 	private interface PlaneWriter {
 		Object getPlane();
@@ -606,10 +627,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < Byte.MIN_VALUE) clampedValue = Byte.MIN_VALUE;
-			if (value > Byte.MAX_VALUE) clampedValue = Byte.MAX_VALUE;
-			data[index] = (byte) clampedValue;
+			//if (value < Byte.MIN_VALUE) value = Byte.MIN_VALUE;
+			//if (value > Byte.MAX_VALUE) value = Byte.MAX_VALUE;
+			data[index] = (byte) value;
 		}
 	}
 	
@@ -631,10 +651,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < 0) clampedValue = 0;
-			if (value > 0xff) clampedValue = 0xff;
-			data[index] = (byte) (int) clampedValue;
+			//if (value < 0) value = 0;
+			//if (value > 0xff) value = 0xff;
+			data[index] = (byte) (int) value;
 		}
 	}
 	
@@ -656,10 +675,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < Short.MIN_VALUE) clampedValue = Short.MIN_VALUE;
-			if (value > Short.MAX_VALUE) clampedValue = Short.MAX_VALUE;
-			data[index] = (short) clampedValue;
+			//if (value < Short.MIN_VALUE) value = Short.MIN_VALUE;
+			//if (value > Short.MAX_VALUE) value = Short.MAX_VALUE;
+			data[index] = (short) value;
 		}
 	}
 	
@@ -681,10 +699,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < 0) clampedValue = 0;
-			if (value > 0xffff) clampedValue = 0xffff;
-			data[index] = (short) (int) clampedValue;
+			//if (value < 0) value = 0;
+			//if (value > 0xffff) value = 0xffff;
+			data[index] = (short) (int) value;
 		}
 	}
 	
@@ -706,10 +723,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < Integer.MIN_VALUE) clampedValue = Integer.MIN_VALUE;
-			if (value > Integer.MAX_VALUE) clampedValue = Integer.MAX_VALUE;
-			data[index] = (int) clampedValue;
+			//if (value < Integer.MIN_VALUE) value = Integer.MIN_VALUE;
+			//if (value > Integer.MAX_VALUE) value = Integer.MAX_VALUE;
+			data[index] = (int) value;
 		}
 	}
 	
@@ -731,10 +747,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < 0) clampedValue = 0;
-			if (value > 0xffffffffL) clampedValue = 0xffffffffL;
-			data[index] = (int) (long) clampedValue;
+			//if (value < 0) value = 0;
+			//if (value > 0xffffffffL) value = 0xffffffffL;
+			data[index] = (int) (long) value;
 		}
 	}
 	
@@ -756,10 +771,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < Long.MIN_VALUE) clampedValue = Long.MIN_VALUE;
-			if (value > Long.MAX_VALUE) clampedValue = Long.MAX_VALUE;
-			data[index] = (long) clampedValue;
+			//if (value < Long.MIN_VALUE) value = Long.MIN_VALUE;
+			//if (value > Long.MAX_VALUE) value = Long.MAX_VALUE;
+			data[index] = (long) value;
 		}
 	}
 	
@@ -781,10 +795,9 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 		@Override
 		public void writeValue(final int x, final int y, final double value) {
 			final int index = y*w + x;
-			double clampedValue = value;
-			if (value < -Float.MAX_VALUE) clampedValue = -Float.MAX_VALUE;
-			if (value > Float.MAX_VALUE) clampedValue = Float.MAX_VALUE;
-			data[index] = (float) clampedValue;
+			//if (value < -Float.MAX_VALUE) value = -Float.MAX_VALUE;
+			//if (value > Float.MAX_VALUE) value = Float.MAX_VALUE;
+			data[index] = (float) value;
 		}
 	}
 	
