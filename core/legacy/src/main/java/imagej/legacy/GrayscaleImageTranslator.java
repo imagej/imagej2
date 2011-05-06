@@ -126,15 +126,11 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		}
 		
 		// make sure there are not any other axis types present
-		int ijCompatAxesPresent = 2;
-		if (cIndex >= 0) ijCompatAxesPresent++;
-		if (zIndex >= 0) ijCompatAxesPresent++;
-		if (tIndex >= 0) ijCompatAxesPresent++;
-		if (ijCompatAxesPresent != dims.length)
+		if (LegacyUtils.hasNonIJ1Axes(dataset.getImgPlus()))
 			throw new IllegalArgumentException(
 				"Dataset has one or more axes that can not be classified as"+
 				" X, Y, Z, C, or T");
-		
+
 		final ImageStack stack = new ImageStack(w, h);
 
 		final long[] planeDims = new long[dims.length - 2];
@@ -155,7 +151,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 					}
 					final Object plane = dataset.getPlane((int) no);
 					if (plane == null) {
-						Log.error(message("Could not extract plane from Dataset", c, z, t));
+						Log.error(message("Couldn't extract plane from Dataset", c, z, t));
 					}
 					stack.addSlice(null, plane);
 				}

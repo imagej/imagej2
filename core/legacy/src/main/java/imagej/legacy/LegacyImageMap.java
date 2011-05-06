@@ -45,7 +45,6 @@ import java.util.WeakHashMap;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -127,22 +126,6 @@ public class LegacyImageMap {
 		return value != 1;
 	}
 
-	// TODO - make this public somewhere in legacy layer
-	
-	private boolean hasNonIJ1Dimensions(ImgPlus<?> imgPlus) {
-		Axes[] axes = new Axes[imgPlus.numDimensions()];
-		imgPlus.axes(axes);
-		for (Axis axis : axes) {
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.CHANNEL) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
-			return true;
-		}
-		return false;
-	}
-	
 	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
 		ImgPlus<?> imgPlus = ds.getImgPlus();
 
@@ -154,14 +137,15 @@ public class LegacyImageMap {
 			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
 		
 		if ( ! different )
-			if ( hasNonIJ1Dimensions(imgPlus) )
-				throw new IllegalStateException("Dataset associated with ImagePlus has dimensions incompatible with IJ1");
+			if ( LegacyUtils.hasNonIJ1Axes(imgPlus) )
+				throw new IllegalStateException(
+					"Dataset associated with ImagePlus has axes incompatible with IJ1");
 		
 		return different;
 	}
 
 	// TODO - this belongs in a public place. Maybe Imglib has a method
-	// I should be using instead.
+	// I should be using instead. Do an AssignOperation?
 	private void copyData(ImgPlus<? extends RealType<?>> input,
 		ImgPlus<? extends RealType<?>> output)
 	{
@@ -177,6 +161,7 @@ public class LegacyImageMap {
 		}
 	}
 	
+	@SuppressWarnings({"unchecked","rawtypes"})
 	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
 		Dataset hatchedDs = imageTranslator.createDataset(imp);
 		long[] dimensions = hatchedDs.getDims();
@@ -204,7 +189,7 @@ public class LegacyImageMap {
 		// is our dataset not sharing planes with the ImagePlus by reference?
 		// if so assume any change possible and thus rebuild all
 		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
-			rebuildNonplanarData(ds, imp);  // TODO - or copy data pixel by pixel???
+			rebuildNonplanarData(ds, imp);
 			return;
 		}
 
