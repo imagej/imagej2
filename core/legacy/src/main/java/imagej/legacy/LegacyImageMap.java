@@ -42,10 +42,15 @@ import imagej.data.Dataset;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
@@ -55,6 +60,8 @@ import net.imglib2.img.basictypeaccess.PlanarAccess;
  */
 public class LegacyImageMap {
 
+	// -- instance variables --
+	
 	private Map<ImagePlus, Dataset> imageTable =
 		new WeakHashMap<ImagePlus, Dataset>();
 
@@ -63,6 +70,8 @@ public class LegacyImageMap {
 	private LegacyMetadataTranslator metadataTranslator =
 		new LegacyMetadataTranslator();
 
+	// -- public interface --
+	
 	/**
 	 * Ensures that the given legacy image has a corresponding dataset.
 	 *
@@ -151,18 +160,47 @@ public class LegacyImageMap {
 		return different;
 	}
 
+	// TODO - this belongs in a public place. Maybe Imglib has a method
+	// I should be using instead.
+	private void copyData(ImgPlus<? extends RealType<?>> input,
+		ImgPlus<? extends RealType<?>> output)
+	{
+		long[] position = new long[input.numDimensions()];
+		Cursor<? extends RealType<?>> inputCur = input.cursor();
+		RandomAccess<? extends RealType<?>> outputAcc = output.randomAccess();
+		while (inputCur.hasNext()) {
+			inputCur.localize(position);
+			outputAcc.setPosition(position);
+			double value = inputCur.get().getRealDouble();
+			outputAcc.get().setReal(value);
+		}
+	}
+	
+	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
+		Dataset tmp = imageTranslator.createDataset(imp);
+		long[] dimensions = tmp.getDims();
+		ImgPlus<? extends RealType<?>> legacyImgPlus = tmp.getImgPlus();
+		ImgFactory factory = ds.getImgPlus().factory();
+		Img<? extends RealType<?>> newImg =
+			factory.create(dimensions, ds.getType());
+		ImgPlus<? extends RealType<?>> newImgPlus = new ImgPlus(newImg,ds);
+		copyData(legacyImgPlus, newImgPlus);
+		ds.setImgPlus(newImgPlus);
+		ds.rebuild();
+	}
+	
 	private void rebuildData(Dataset ds, ImagePlus imp) {
 		Dataset tmp = imageTranslator.createDataset(imp);
 		ds.setImgPlus(tmp.getImgPlus());
 		ds.rebuild();
 	}
-	
+
 	private void reconcileDifferences(Dataset ds, ImagePlus imp) {
 		
 		// is our dataset not sharing planes with the ImagePlus by reference?
 		// if so assume any change possible and thus rebuild all
 		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
-			rebuildData(ds, imp);  // TODO - or copy data pixel by pixel???
+			rebuildNonplanarData(ds, imp);  // TODO - or copy data pixel by pixel???
 			return;
 		}
 
