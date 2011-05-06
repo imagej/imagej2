@@ -121,7 +121,8 @@ public class RGBImageTranslator implements ImageTranslator {
 		}
 
 		if ( ! (dataset.getType() instanceof UnsignedByteType) )
-			throw new IllegalArgumentException("Expected a dataset of unsigned byte data type");
+			throw new IllegalArgumentException(
+				"Expected a dataset of unsigned byte data type");
 			
 		final long[] dims = dataset.getDims();
 
@@ -176,18 +177,15 @@ public class RGBImageTranslator implements ImageTranslator {
 		}
 
 		// make sure there are not any other axis types present
-		int ijCompatAxesPresent = 0;
-		if (xIndex >= 0) ijCompatAxesPresent++;
-		if (yIndex >= 0) ijCompatAxesPresent++;
-		if (cIndex >= 0) ijCompatAxesPresent++;
-		if (zIndex >= 0) ijCompatAxesPresent++;
-		if (tIndex >= 0) ijCompatAxesPresent++;
-		if (ijCompatAxesPresent != dims.length)
-			throw new IllegalArgumentException("Some dimension other than X, Y, C, Z, or T present in Dataset");
+		if (LegacyUtils.hasNonIJ1Axes(dataset.getImgPlus()))
+			throw new IllegalArgumentException(
+				"Some dimension other than X, Y, C, Z, or T present in Dataset");
 
 		// set the data values in the ImagePlus
 		final ImageStack stack = new ImageStack(w, h);
-		long[] position = new long[ijCompatAxesPresent];
+		int axesPresent =
+			LegacyUtils.ij1AxisCount(xIndex, yIndex, cIndex, zIndex, tIndex);
+		long[] position = new long[axesPresent];
 		for (int ti = 0; ti < t; ti++) {
 			if (tIndex >= 0)
 				position[tIndex] = ti;
@@ -225,5 +223,4 @@ public class RGBImageTranslator implements ImageTranslator {
 		
 		return imp;
 	}
-
 }

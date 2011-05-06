@@ -1,16 +1,19 @@
 package imagej.legacy;
 
 import static org.junit.Assert.*;
+
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.measure.Calibration;
 import imagej.data.Dataset;
 
+import net.imglib2.Cursor;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.cell.CellImg;
 import net.imglib2.img.cell.CellImgFactory;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.junit.Test;
@@ -18,8 +21,12 @@ import org.junit.Test;
 
 public class LegacyImageMapTest {
 
+	// -- instance variables --
+	
 	private LegacyImageMap map = new LegacyImageMap();
 
+	// -- private interface --
+	
 	private void testMetadataSame(Dataset ds, ImagePlus imp) {
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
@@ -125,14 +132,59 @@ public class LegacyImageMapTest {
 		testMetadataSame(ds, imp);
 	}
 	
+	private void fill(Dataset ds) {
+		Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
+		int val = 0;
+		while(cursor.hasNext()) {
+			cursor.next();
+			cursor.get().setReal(val++ % 256);
+		}
+	}
+	
+	// -- public tests --
+	
 	@Test
-	public void testRegisterLegacyImage() {
-		// pass it a COLOR_RGB
-		assertTrue(true);
+	public void testRegisterDataset() {
+		Dataset ds0;
+		ImagePlus imp1, imp2;
+		Axis[] axes = new Axis[]{ Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+
+		// register a gray dataset
+		ds0 = Dataset.create(new long[]{1,2,3,4,5}, "temp", axes, 16, false, false);
+		fill(ds0);
+		ds0.getImgPlus().setCalibration(5,0);
+		ds0.getImgPlus().setCalibration(6,1);
+		ds0.getImgPlus().setCalibration(1,2);
+		ds0.getImgPlus().setCalibration(7,3);
+		ds0.getImgPlus().setCalibration(8,4);
+		imp1 = map.registerDataset(ds0);
+		testSame(ds0, imp1);
+		
+		// try again
+		imp2 = map.registerDataset(ds0);
+		assertSame(imp1, imp2);
+		testSame(ds0, imp2);
+		
+		// register a color dataset
+		ds0 = Dataset.create(new long[]{1,2,3,4,5}, "temp", axes, 8, false, false);
+		fill(ds0);
+		ds0.getImgPlus().setCalibration(5,0);
+		ds0.getImgPlus().setCalibration(6,1);
+		ds0.getImgPlus().setCalibration(1,2);
+		ds0.getImgPlus().setCalibration(7,3);
+		ds0.getImgPlus().setCalibration(8,4);
+		ds0.setRGBMerged(true);
+		imp1 = map.registerDataset(ds0);
+		testColorSame(ds0, imp1);
+
+		// try again
+		imp2 = map.registerDataset(ds0);
+		assertSame(imp1, imp2);
+		testColorSame(ds0, imp2);
 	}
 
 	@Test
-	public void testRegisterDataset() {
+	public void testRegisterLegacyImage() {
 		ImagePlus imp;
 		Dataset ds0,ds1;
 		ImgPlus<?> imgPlus0;
