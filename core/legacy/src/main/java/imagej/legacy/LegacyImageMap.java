@@ -109,12 +109,16 @@ public class LegacyImageMap {
 		return imp;
 	}
 
+	// -- private helpers -- 
+	
 	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
 		if (axis >= 0)
 			return imgPlus.dimension(axis) != value;
 		// axis < 0 : not present in imgPlus
-		return value == 1;
+		return value != 1;
 	}
+
+	// TODO - make this public somewhere in legacy layer
 	
 	private boolean hasNonIJ1Dimensions(ImgPlus<?> imgPlus) {
 		Axes[] axes = new Axes[imgPlus.numDimensions()];
@@ -158,7 +162,7 @@ public class LegacyImageMap {
 		// is our dataset not sharing planes with the ImagePlus by reference?
 		// if so assume any change possible and thus rebuild all
 		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
-			rebuildData(ds, imp);
+			rebuildData(ds, imp);  // TODO - or copy data pixel by pixel???
 			return;
 		}
 
