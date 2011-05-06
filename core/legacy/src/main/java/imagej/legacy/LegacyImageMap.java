@@ -36,15 +36,22 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.WindowManager;
+
 import imagej.data.Dataset;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
+
 /**
  * TODO
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class LegacyImageMap {
 
@@ -52,6 +59,9 @@ public class LegacyImageMap {
 		new WeakHashMap<ImagePlus, Dataset>();
 
 	private ImageTranslator imageTranslator = new DefaultImageTranslator();
+
+	private LegacyMetadataTranslator metadataTranslator =
+		new LegacyMetadataTranslator();
 
 	/**
 	 * Ensures that the given legacy image has a corresponding dataset.
@@ -65,6 +75,9 @@ public class LegacyImageMap {
 				// mirror image window to dataset
 				dataset = imageTranslator.createDataset(imp);
 				imageTable.put(imp, dataset);
+			}
+			else {  // dataset was already existing
+				reconcileDifferences(dataset, imp);
 			}
 			return dataset;
 		}
@@ -96,4 +109,81 @@ public class LegacyImageMap {
 		return imp;
 	}
 
+	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
+		if (axis >= 0)
+			return imgPlus.dimension(axis) != value;
+		// axis < 0 : not present in imgPlus
+		return value == 1;
+	}
+	
+	private boolean hasNonIJ1Dimensions(ImgPlus<?> imgPlus) {
+		Axes[] axes = new Axes[imgPlus.numDimensions()];
+		imgPlus.axes(axes);
+		for (Axis axis : axes) {
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if (axis == Axes.CHANNEL) continue;
+			if (axis == Axes.Z) continue;
+			if (axis == Axes.TIME) continue;
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
+		ImgPlus<?> imgPlus = ds.getImgPlus();
+
+		boolean different =
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
+		
+		if ( ! different )
+			if ( hasNonIJ1Dimensions(imgPlus) )
+				throw new IllegalStateException("Dataset associated with ImagePlus has dimensions incompatible with IJ1");
+		
+		return different;
+	}
+
+	private void rebuildData(Dataset ds, ImagePlus imp) {
+		Dataset tmp = imageTranslator.createDataset(imp);
+		ds.setImgPlus(tmp.getImgPlus());
+		ds.rebuild();
+	}
+	
+	private void reconcileDifferences(Dataset ds, ImagePlus imp) {
+		
+		// is our dataset not sharing planes with the ImagePlus by reference?
+		// if so assume any change possible and thus rebuild all
+		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
+			rebuildData(ds, imp);
+			return;
+		}
+
+		// was a slice added or deleted?
+		if (dimensionsDifferent(ds, imp)) {
+			rebuildData(ds, imp);
+			return;
+		}
+
+		// color data is not shared by reference
+		// any change to plane data must somehow be copied back
+		// the easiest way to copy back is via new creation
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			rebuildData(ds, imp);
+			return;
+		}
+
+		// make sure metatdata accurately updated
+		metadataTranslator.setDatasetMetadata(ds,imp);
+		
+		// other data changes
+		// TODO - anything need to be done?
+		//   Or since we store planes by reference its okay?
+		//   Do we really store planes by reference?
+		
+		ds.update();
+	}
 }

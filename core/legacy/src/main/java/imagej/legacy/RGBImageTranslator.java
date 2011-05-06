@@ -36,7 +36,6 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.measure.Calibration;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
 import net.imglib2.img.Axes;
@@ -51,6 +50,9 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
  */
 public class RGBImageTranslator implements ImageTranslator {
 
+	private LegacyMetadataTranslator metadataTranslator =
+		new LegacyMetadataTranslator();
+	
 	/**
 	 * Expects input {@link ImagePlus} to be of type {@link ImagePlus#COLOR_RGB}
 	 * with one channel.
@@ -98,13 +100,8 @@ public class RGBImageTranslator implements ImageTranslator {
 			}
 		}
 
-		// copy calibration data
-		Calibration cal = imp.getCalibration();
-		dataset.setCalibration(cal.pixelWidth, 0);
-		dataset.setCalibration(cal.pixelHeight, 1);
-		dataset.setCalibration(1, 2);
-		dataset.setCalibration(cal.pixelDepth, 3);
-		dataset.setCalibration(cal.frameInterval, 4);
+		// set metadata
+		metadataTranslator.setDatasetMetadata(dataset, imp);
 
 		dataset.setRGBMerged(true);
 		
@@ -221,14 +218,8 @@ public class RGBImageTranslator implements ImageTranslator {
 		ImagePlus imp = new ImagePlus(dataset.getName(), stack);
 		imp.setDimensions(1, (int)z, (int)t);
 
-		// copy calibration data
-		Calibration cal = imp.getCalibration();
-		cal.pixelWidth = dataset.calibration(xIndex);
-		cal.pixelHeight = dataset.calibration(yIndex);
-		if (zIndex >= 0)
-			cal.pixelDepth = dataset.calibration(zIndex);
-		if (tIndex >= 0)
-			cal.frameInterval = dataset.calibration(tIndex);
+		// set metadata
+		metadataTranslator.setImagePlusMetadata(dataset, imp);
 		
 		return imp;
 	}
