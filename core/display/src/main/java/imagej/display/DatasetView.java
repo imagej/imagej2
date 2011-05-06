@@ -189,7 +189,7 @@ public class DatasetView implements DisplayView {
 	}
 
 	@Override
-	public Dataset getDataset() {
+	public Dataset getDataObject() {
 		return dataset;
 	}
 

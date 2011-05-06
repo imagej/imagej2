@@ -36,6 +36,7 @@ package imagej.ui.swing.display;
 
 import imagej.awt.AWTDisplayWindow;
 import imagej.awt.AWTEventDispatcher;
+import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
@@ -124,7 +125,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void redoLayout() {
 		for (final DisplayView view : display.getViews()) {
-			final Dataset dataset = view.getDataset();
+			final Dataset dataset = getDataset(view);
 			if (dataset == null) continue;
 
 			createSliders(view);
@@ -169,7 +170,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
 				// CTR TODO - Fix zoom label to show beyond just the active view.
 				final DisplayView activeView = getDisplay().getActiveView();
-				setTitle(makeTitle(activeView.getDataset(), event.getScale()));
+				final Dataset dataset = getDataset(activeView);
+				setTitle(makeTitle(dataset, event.getScale()));
 			}
 		};
 		subscribers.add(zoomSubscriber);
@@ -177,7 +179,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	}
 
 	private void createSliders(final DisplayView view) {
-		final Dataset dataset = view.getDataset();
+		final Dataset dataset = getDataset(view);
 		final long[] dims = dataset.getDims();
 		final Axis[] axes = dataset.getAxes();
 
@@ -213,7 +215,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private String makeLabel() {
 		// CTR TODO - Fix window label to show beyond just the active view.
 		final DisplayView view = display.getActiveView();
-		final Dataset dataset = view.getDataset();
+		final Dataset dataset = getDataset(view);
 
 		final int xIndex = dataset.getAxisIndex(Axes.X);
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
@@ -244,4 +246,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return infoString;
 	}
 
+	private Dataset getDataset(final DisplayView view) {
+		final DataObject dataObject = view.getDataObject();
+		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
+	}
 }

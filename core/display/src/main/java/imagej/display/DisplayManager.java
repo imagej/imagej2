@@ -36,6 +36,7 @@ package imagej.display;
 
 import imagej.Manager;
 import imagej.ManagerComponent;
+import imagej.data.DataObject;
 import imagej.data.Dataset;
 
 /**
@@ -62,7 +63,9 @@ public final class DisplayManager implements ManagerComponent {
 		if (activeDisplay == null) return null;
 		final DisplayView activeView = activeDisplay.getActiveView();
 		if (activeView == null) return null;
-		return activeView.getDataset();
+		final DataObject dataObject = activeView.getDataObject();
+		if (dataObject instanceof Dataset) return (Dataset) dataObject;
+		return null;
 	}
 
 	// -- ManagerComponent methods --

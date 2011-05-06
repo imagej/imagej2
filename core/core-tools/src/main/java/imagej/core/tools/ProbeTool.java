@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayView;
@@ -87,7 +88,10 @@ public class ProbeTool extends BaseTool {
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
 			final DisplayView activeView = display.getActiveView();
-			setWorkingVariables(activeView.getDataset());
+			final DataObject dataObject = activeView.getDataObject();
+			final Dataset d = dataObject instanceof Dataset ?
+				(Dataset) dataObject : null;
+			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
