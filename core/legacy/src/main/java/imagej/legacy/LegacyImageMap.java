@@ -177,14 +177,17 @@ public class LegacyImageMap {
 	}
 	
 	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
-		Dataset tmp = imageTranslator.createDataset(imp);
-		long[] dimensions = tmp.getDims();
-		ImgPlus<? extends RealType<?>> legacyImgPlus = tmp.getImgPlus();
+		Dataset hatchedDs = imageTranslator.createDataset(imp);
+		long[] dimensions = hatchedDs.getDims();
+		ImgPlus<? extends RealType<?>> hatchedImgPlus = hatchedDs.getImgPlus();
 		ImgFactory factory = ds.getImgPlus().factory();
 		Img<? extends RealType<?>> newImg =
 			factory.create(dimensions, ds.getType());
-		ImgPlus<? extends RealType<?>> newImgPlus = new ImgPlus(newImg,ds);
-		copyData(legacyImgPlus, newImgPlus);
+		double[] hatchedCal = new double[dimensions.length];
+		hatchedDs.calibration(hatchedCal);
+		ImgPlus<? extends RealType<?>> newImgPlus =
+			new ImgPlus(newImg, ds.getName(), hatchedDs.getAxes(), hatchedCal);
+		copyData(hatchedImgPlus, newImgPlus);
 		ds.setImgPlus(newImgPlus);
 		ds.rebuild();
 	}
@@ -204,12 +207,6 @@ public class LegacyImageMap {
 			return;
 		}
 
-		// was a slice added or deleted?
-		if (dimensionsDifferent(ds, imp)) {
-			rebuildData(ds, imp);
-			return;
-		}
-
 		// color data is not shared by reference
 		// any change to plane data must somehow be copied back
 		// the easiest way to copy back is via new creation
@@ -218,13 +215,18 @@ public class LegacyImageMap {
 			return;
 		}
 
-		// make sure metatdata accurately updated
+		// was a slice added or deleted?
+		if (dimensionsDifferent(ds, imp)) {
+			rebuildData(ds, imp);
+			return;
+		}
+
+		// make sure metadata accurately updated
 		metadataTranslator.setDatasetMetadata(ds,imp);
 		
-		// other data changes
-		// TODO - anything need to be done?
-		//   Or since we store planes by reference its okay?
-		//   Do we really store planes by reference?
+		// TODO - any other cases?
+
+		// Since we are storing planes by reference we're done
 		
 		ds.update();
 	}
