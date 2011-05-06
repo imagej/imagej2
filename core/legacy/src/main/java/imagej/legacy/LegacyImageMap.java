@@ -169,6 +169,7 @@ public class LegacyImageMap {
 		Cursor<? extends RealType<?>> inputCur = input.cursor();
 		RandomAccess<? extends RealType<?>> outputAcc = output.randomAccess();
 		while (inputCur.hasNext()) {
+			inputCur.next();
 			inputCur.localize(position);
 			outputAcc.setPosition(position);
 			double value = inputCur.get().getRealDouble();

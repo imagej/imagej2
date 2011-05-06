@@ -164,6 +164,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 		ImagePlus imp = new ImagePlus(dataset.getName(), stack);
 		
+		imp.setDimensions( (int) cCount, (int) zCount, (int) tCount);
+		
 		// set metadata
 		metadataTranslator.setImagePlusMetadata(dataset, imp);
 		

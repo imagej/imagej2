@@ -87,8 +87,10 @@ public class RGBImageTranslator implements ImageTranslator {
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
 			for (int zIndex = 0; zIndex < z; zIndex++) {
-				final ColorProcessor proc =
-					(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
+				imp.setPosition(1, zIndex+1, tIndex+1);
+				final ColorProcessor proc = (ColorProcessor) imp.getProcessor();
+				//final ColorProcessor proc =
+				//	(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
 				final byte[] rValues = new byte[totPixels];
 				final byte[] gValues = new byte[totPixels];
 				final byte[] bValues = new byte[totPixels];
