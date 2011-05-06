@@ -1,5 +1,5 @@
 //
-// DisplayView.java
+// DataObject.java
 //
 
 /*
@@ -32,58 +32,45 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
-
-import imagej.data.DataObject;
-import imagej.data.Dataset;
-import imagej.data.Overlay;
+package imagej.data;
 
 /**
- * A linkage between a {@link DataObject} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link Display}. The view takes care of mapping the
- * N-dimensional data into a representation suitable for showing onscreen.
- * <p>
- * For example, a typical 2D display may have a number of sliders enabling a
- * user to select a particular plane of a {@link Dataset} for display. The
- * DisplayView keeps track of the current position and provides access the
- * resultant plane.
- * </p>
+ * TODO
  * 
  * @author Curtis Rueden
  */
-public interface DisplayView {
-
-	/** Gets the {@link Display} containing this view. */
-	Display getDisplay();
-
-	/** Gets the {@link DataObject} represented by this view. */
-	DataObject getDataObject();
-
-	/** Gets the N-dimensional plane position of this view. */
-	long[] getPlanePosition();
-
-	/** Gets the 1-dimensional plane index of this view. */
-	long getPlaneIndex();
-
-	/** Sets the position of the given dimensional axis. */
-	void setPosition(final int value, final int dim);
-
-	/** Gets the currently displayed image. */
-	Object getImage();
-
-	/** Gets the width of the currently displayed image. */
-	int getImageWidth();
-
-	/** Gets the height of the currently displayed image. */
-	int getImageHeight();
+public interface DataObject {
 
 	/**
-	 * Recreates the view. This operation is useful in case the {@link Dataset}
-	 * has changed structurally somehow.
+	 * Informs interested parties that the data object has undergone a
+	 * non-structural change, such as sample values being updated.
+	 */
+	void update();
+
+	/**
+	 * Informs interested parties that the data object has undergone a major
+	 * change, such as the dimensional extents changing.
 	 */
 	void rebuild();
 
-	/** Discards the view, performing any needed cleanup. */
-	void dispose();
+	/**
+	 * Informs interested parties that the data object is no longer relevant and
+	 * should be deleted.
+	 */
+	public void delete();
+
+	/**
+	 * Adds to the data object's reference count. Typically this is called when
+	 * the data object is added to a display.
+	 */
+	void incrementReferences();
+
+	/**
+	 * Subtracts from the data object's reference count. Typically this is called
+	 * when the data object is removed from a display. If the reference count
+	 * reaches zero, {@link #delete()} is called to notify interested parties that
+	 * the data object is no longer in use.
+	 */
+	void decrementReferences();
 
 }

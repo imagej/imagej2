@@ -88,10 +88,9 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset implements Comparable<Dataset>, Metadata {
+public class Dataset extends AbstractDataObject implements Comparable<Dataset>, Metadata {
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
-	private int refs;
 	private boolean rgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
@@ -255,49 +254,6 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	}
 
 	/**
-	 * Informs interested parties that the dataset has undergone a non-structural
-	 * change, such as sample values being updated.
-	 */
-	public void update() {
-		Events.publish(new DatasetUpdatedEvent(this));
-	}
-
-	/**
-	 * Informs interested parties that the dataset has undergone a major change,
-	 * such as the dimensional extents changing.
-	 */
-	public void rebuild() {
-		Events.publish(new DatasetRestructuredEvent(this));
-	}
-
-	/**
-	 * Deletes the given dataset, cleaning up resources and removing it from the
-	 * object manager.
-	 */
-	public void delete() {
-		Events.publish(new DatasetDeletedEvent(this));
-	}
-
-	/**
-	 * Adds to the dataset's reference count. Typically this is called when the
-	 * dataset is added to a display.
-	 */
-	public void incrementReferences() {
-		refs++;
-	}
-
-	/**
-	 * Subtracts from the dataset's reference count. Typically this is called when
-	 * the dataset is removed from a display. If the reference count reaches zero,
-	 * {@link #delete()} is called to notify interested parties that the dataset
-	 * is no longer in use.
-	 */
-	public void decrementReferences() {
-		refs--;
-		if (refs == 0) delete();
-	}
-
-	/**
 	 * For use in legacy layer only, this flag allows the various legacy layer
 	 * image translators to support color images correctly.
 	 */
@@ -311,6 +267,23 @@ public class Dataset implements Comparable<Dataset>, Metadata {
 	 */
 	public boolean isRGBMerged() {
 		return rgbMerged;
+	}
+
+	// -- DataObject methods --
+
+	@Override
+	public void update() {
+		Events.publish(new DatasetUpdatedEvent(this));
+	}
+
+	@Override
+	public void rebuild() {
+		Events.publish(new DatasetRestructuredEvent(this));
+	}
+
+	@Override
+	public void delete() {
+		Events.publish(new DatasetDeletedEvent(this));
 	}
 
 	// -- Object methods --

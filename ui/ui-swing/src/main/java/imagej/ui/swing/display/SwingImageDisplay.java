@@ -39,11 +39,13 @@ import imagej.awt.AWTDisplay;
 import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
+import imagej.data.Overlay;
 import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
+import imagej.display.OverlayView;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
@@ -116,6 +118,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public void display(final Dataset dataset) {
 		addView(new DatasetView(this, dataset));
+//		addView(new OverlayView(this, new Overlay()));
 	}
 
 	@Override
@@ -136,11 +139,18 @@ public class SwingImageDisplay implements AWTDisplay {
 			final Object image = view.getImage();
 			// TODO - Fix this hack. Perhaps AWTDisplayView could extend DisplayView
 			// and narrow the getImage() method to return a java.awt.Image?
-			if (!(image instanceof ARGBScreenImage)) {
+			final Image awtImage;
+			if (image instanceof Image) {
+				awtImage = (Image) image;
+			}
+			else if (image instanceof ARGBScreenImage) {
+				awtImage = ((ARGBScreenImage) image).image();
+			}
+			else {
+				awtImage = null;
 				Log.warn("Unsupported DisplayView: " + view);
 				continue;
 			}
-			final Image awtImage = ((ARGBScreenImage) image).image();
 			gfx.drawImage(awtImage, 0, 0, null);
 		}
 		gfx.dispose();

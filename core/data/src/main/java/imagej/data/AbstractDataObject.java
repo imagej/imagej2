@@ -1,5 +1,5 @@
 //
-// DisplayView.java
+// AbstractDataObject.java
 //
 
 /*
@@ -32,58 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
-
-import imagej.data.DataObject;
-import imagej.data.Dataset;
-import imagej.data.Overlay;
+package imagej.data;
 
 /**
- * A linkage between a {@link DataObject} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link Display}. The view takes care of mapping the
- * N-dimensional data into a representation suitable for showing onscreen.
- * <p>
- * For example, a typical 2D display may have a number of sliders enabling a
- * user to select a particular plane of a {@link Dataset} for display. The
- * DisplayView keeps track of the current position and provides access the
- * resultant plane.
- * </p>
+ * TODO
  * 
  * @author Curtis Rueden
  */
-public interface DisplayView {
+public abstract class AbstractDataObject implements DataObject {
 
-	/** Gets the {@link Display} containing this view. */
-	Display getDisplay();
+	private int refs = 0;
 
-	/** Gets the {@link DataObject} represented by this view. */
-	DataObject getDataObject();
+	@Override
+	public void incrementReferences() {
+		refs++;
+	}
 
-	/** Gets the N-dimensional plane position of this view. */
-	long[] getPlanePosition();
-
-	/** Gets the 1-dimensional plane index of this view. */
-	long getPlaneIndex();
-
-	/** Sets the position of the given dimensional axis. */
-	void setPosition(final int value, final int dim);
-
-	/** Gets the currently displayed image. */
-	Object getImage();
-
-	/** Gets the width of the currently displayed image. */
-	int getImageWidth();
-
-	/** Gets the height of the currently displayed image. */
-	int getImageHeight();
-
-	/**
-	 * Recreates the view. This operation is useful in case the {@link Dataset}
-	 * has changed structurally somehow.
-	 */
-	void rebuild();
-
-	/** Discards the view, performing any needed cleanup. */
-	void dispose();
+	@Override
+	public void decrementReferences() {
+		refs--;
+		if (refs == 0) delete();
+	}
 
 }

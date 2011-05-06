@@ -94,7 +94,7 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		final List<Display> displays = objectManager.getObjects(Display.class);
 		for (final Display display : displays) {
 			for (final DisplayView view : display.getViews()) {
-				if (dataset == view.getDataset()) return true;
+				if (dataset == view.getDataObject()) return true;
 			}
 		}
 		return false;
