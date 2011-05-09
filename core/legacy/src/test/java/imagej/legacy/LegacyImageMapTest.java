@@ -65,7 +65,7 @@ public class LegacyImageMapTest {
 			pos[tIndex] = t;
 			for (int z = 0; z < dimensions[zIndex]; z++) {
 				pos[zIndex] = z;
-				imp.setPosition(1, z+1, t+1);
+				imp.setPositionWithoutUpdate(1, z+1, t+1);
 				for (int y = 0; y < dimensions[yIndex]; y++) {
 					pos[yIndex] = y;
 					for (int x = 0; x < dimensions[xIndex]; x++) {
@@ -115,7 +115,7 @@ public class LegacyImageMapTest {
 				pos[cIndex] = c;
 				for (int z = 0; z < dimensions[zIndex]; z++) {
 					pos[zIndex] = z;
-					imp.setPosition(c+1, z+1, t+1);
+					imp.setPositionWithoutUpdate(c+1, z+1, t+1);
 					for (int y = 0; y < dimensions[yIndex]; y++) {
 						pos[yIndex] = y;
 						for (int x = 0; x < dimensions[xIndex]; x++) {

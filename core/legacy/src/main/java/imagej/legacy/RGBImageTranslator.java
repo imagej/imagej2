@@ -87,10 +87,14 @@ public class RGBImageTranslator implements ImageTranslator {
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
 			for (int zIndex = 0; zIndex < z; zIndex++) {
-				imp.setPosition(1, zIndex+1, tIndex+1);
-				final ColorProcessor proc = (ColorProcessor) imp.getProcessor();
-				//final ColorProcessor proc =
-				//	(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
+				// The following should work but it will blow up with infinite recursion (out of memory)
+				//     imp.setPositionWithoutUpdate(1, zIndex+1, tIndex+1);
+				//     final ColorProcessor proc = (ColorProcessor) imp.getProcessor();
+				//   It turns out setSlice() calls updateAndDraw() even if you say no update please.
+				//   Reported to Wayne as a bug 5-9-11
+				// alternate way that works also
+				final ColorProcessor proc =
+					(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
 				final byte[] rValues = new byte[totPixels];
 				final byte[] gValues = new byte[totPixels];
 				final byte[] bValues = new byte[totPixels];
