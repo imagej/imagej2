@@ -154,12 +154,17 @@ public abstract class AbstractInputHarvester
 			pmi.setResolved(true);
 			final Parameter param = pmi.getParameter();
 
-			final boolean persist = param.persist();
-			if (!persist) continue;
-
 			final String name = item.getName();
 			final Object value = module.getInput(name);
-			if (value == null) continue;
+
+			if (value == null) {
+				if (param.required())
+					canceled = true;
+				continue;
+			}
+
+			final boolean persist = param.persist();
+			if (!persist) continue;
 
 			final String persistKey = param.persistKey();
 			setPrefValue(module, item, persistKey, value);
