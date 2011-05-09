@@ -170,14 +170,18 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	// -- Helper methods --
 
-	private boolean isSigned(final ImagePlus imp) {
+	private boolean isGray32(final ImagePlus imp) {
 		final int type = imp.getType();
 		return type == ImagePlus.GRAY32;
 	}
+	
+	private boolean isSigned(final ImagePlus imp) {
+	  // TODO - ignores IJ1's support of signed 16 bit. OK?
+		return isGray32(imp);
+	}
 
 	private boolean isFloating(final ImagePlus imp) {
-		final int type = imp.getType();
-		return type == ImagePlus.GRAY32;
+		return isGray32(imp);
 	}
 
 	private String message(final String message, final long c, final long z,
