@@ -49,6 +49,7 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.Metadata;
 import net.imglib2.img.NativeImgFactory;
@@ -466,6 +467,32 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		return new Dataset(imgPlus);
 	}
 
+	/** Changes a Dataset's internal data and metadata to match that from
+	 *  a given Dataset. Only it's name stays the same. Written to allow
+	 *  nonplanar representations to copy data from other Datasets as needed
+	 *  to get around the fact that its data is not being shared by reference. 
+	 */
+	@SuppressWarnings({"unchecked","rawtypes"})
+	public void copyDataFrom(Dataset other) {
+		// create a new img to hold data using our own factory
+		ImgFactory factory = getImgPlus().getImg().factory();
+		Img<? extends RealType<?>> newImg =
+			factory.create(other.getDims(), other.getType());
+
+		// copy the data into the new img
+		copyDataValues(other.getImgPlus().getImg(), newImg);
+		
+		// create new imgplus to contain data using the current name
+		double[] calib = new double[other.getDims().length];
+		other.calibration(calib);
+		ImgPlus<? extends RealType<?>> newImgPlus =
+			new ImgPlus(newImg, getName(), other.getAxes(), calib);
+
+		// set my instance vars to the new values
+		setRGBMerged(other.isRGBMerged());
+		setImgPlus(newImgPlus);
+	}
+	
 	// -- Helper methods --
 
 	private static void invalidParams(final int bitsPerPixel,
@@ -535,4 +562,21 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		final ArrayDataAccess<?> store = (ArrayDataAccess<?>) container.update(null);
 		return store.getCurrentStorageArray();
 	}
+
+	// NB - assumes the two images are of the exact same dimensions
+	private void copyDataValues(
+		Img<? extends RealType<?>> input, Img<? extends RealType<?>> output)
+	{
+		long[] position = new long[output.numDimensions()];
+		Cursor<? extends RealType<?>> outputCursor = output.cursor();
+		RandomAccess<? extends RealType<?>> inputAccessor = input.randomAccess();
+		while (outputCursor.hasNext()) {
+			outputCursor.next();
+			outputCursor.localize(position);
+			inputAccessor.setPosition(position);
+			double value = inputAccessor.get().getRealDouble();
+			outputCursor.get().setReal(value);
+		}
+	}
+	
 }

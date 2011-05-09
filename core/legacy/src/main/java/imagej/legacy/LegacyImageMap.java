@@ -119,71 +119,6 @@ public class LegacyImageMap {
 
 	// -- private helpers -- 
 	
-	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
-		if (axis >= 0)
-			return imgPlus.dimension(axis) != value;
-		// axis < 0 : not present in imgPlus
-		return value != 1;
-	}
-
-	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-
-		boolean different =
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
-		
-		if ( ! different )
-			if ( LegacyUtils.hasNonIJ1Axes(imgPlus) )
-				throw new IllegalStateException(
-					"Dataset associated with ImagePlus has axes incompatible with IJ1");
-		
-		return different;
-	}
-
-	// TODO - this belongs in a public place. Maybe Imglib has a method
-	// I should be using instead. Do an AssignOperation?
-	private void copyData(ImgPlus<? extends RealType<?>> input,
-		ImgPlus<? extends RealType<?>> output)
-	{
-		long[] position = new long[input.numDimensions()];
-		Cursor<? extends RealType<?>> inputCur = input.cursor();
-		RandomAccess<? extends RealType<?>> outputAcc = output.randomAccess();
-		while (inputCur.hasNext()) {
-			inputCur.next();
-			inputCur.localize(position);
-			outputAcc.setPosition(position);
-			double value = inputCur.get().getRealDouble();
-			outputAcc.get().setReal(value);
-		}
-	}
-	
-	@SuppressWarnings({"unchecked","rawtypes"})
-	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
-		Dataset hatchedDs = imageTranslator.createDataset(imp);
-		long[] dimensions = hatchedDs.getDims();
-		ImgPlus<? extends RealType<?>> hatchedImgPlus = hatchedDs.getImgPlus();
-		ImgFactory factory = ds.getImgPlus().factory();
-		Img<? extends RealType<?>> newImg =
-			factory.create(dimensions, ds.getType());
-		double[] hatchedCal = new double[dimensions.length];
-		hatchedDs.calibration(hatchedCal);
-		ImgPlus<? extends RealType<?>> newImgPlus =
-			new ImgPlus(newImg, ds.getName(), hatchedDs.getAxes(), hatchedCal);
-		copyData(hatchedImgPlus, newImgPlus);
-		ds.setImgPlus(newImgPlus);
-		ds.rebuild();
-	}
-	
-	private void rebuildData(Dataset ds, ImagePlus imp) {
-		Dataset tmp = imageTranslator.createDataset(imp);
-		ds.setImgPlus(tmp.getImgPlus());
-		ds.rebuild();
-	}
-
 	private void reconcileDifferences(Dataset ds, ImagePlus imp) {
 		
 		// is our dataset not sharing planes with the ImagePlus by reference?
@@ -216,4 +151,40 @@ public class LegacyImageMap {
 		
 		ds.update();
 	}
+
+	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
+		Dataset tmpDs = imageTranslator.createDataset(imp);
+		ds.copyDataFrom(tmpDs);
+	}
+	
+	private void rebuildData(Dataset ds, ImagePlus imp) {
+		Dataset tmpDs = imageTranslator.createDataset(imp);
+		ds.setImgPlus(tmpDs.getImgPlus());
+	}
+
+	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
+		ImgPlus<?> imgPlus = ds.getImgPlus();
+
+		boolean different =
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
+		
+		if ( ! different )
+			if ( LegacyUtils.hasNonIJ1Axes(imgPlus) )
+				throw new IllegalStateException(
+					"Dataset associated with ImagePlus has axes incompatible with IJ1");
+		
+		return different;
+	}
+
+	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
+		if (axis >= 0)
+			return imgPlus.dimension(axis) != value;
+		// axis < 0 : not present in imgPlus
+		return value != 1;
+	}
+
 }
