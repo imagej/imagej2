@@ -130,25 +130,24 @@ public class CropImage implements ImageJPlugin {
 		/** runs the cropping process */
 		@Override
 		public boolean process() {
-			RandomAccess<? extends RealType<?>> inputAccess =
+			RandomAccess<? extends RealType<?>> inputAccessor =
 				inputImage.randomAccess();
-			Cursor<? extends RealType<?>> outputCursor =
-				outputImage.cursor();
+
+			Cursor<? extends RealType<?>> outputCursor = outputImage.cursor();
 
 			long[] tmpPosition = new long[outputImage.numDimensions()];
 
 			while (outputCursor.hasNext()) {
 				outputCursor.next();
 
-				for (int i = 0; i < tmpPosition.length; i++)
-					tmpPosition[i] = outputCursor.getLongPosition(i);
+				outputCursor.localize(tmpPosition);
 
 				tmpPosition[0] += minX;
 				tmpPosition[1] += minY;
 
-				inputAccess.setPosition(tmpPosition);
+				inputAccessor.setPosition(tmpPosition);
 
-				double value = inputAccess.get().getRealDouble();
+				double value = inputAccessor.get().getRealDouble();
 
 				outputCursor.get().setReal(value);
 			}
