@@ -76,10 +76,10 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
 
-	@Parameter
+	@Parameter(required = true)
 	private Dataset input1;
 
-	@Parameter
+	@Parameter(required = true)
 	private Dataset input2;
 
 	@Parameter(output = true)
@@ -126,11 +126,13 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		long[] img1Dims = new long[input1.getImgPlus().numDimensions()];
-		input1.getImgPlus().dimensions(img1Dims);
+		//if ((input1 == null) || (input2 == null)
+		//		return;
+		//long[] img1Dims = new long[input1.getImgPlus().numDimensions()];
+		//input1.getImgPlus().dimensions(img1Dims);
 
-		long[] img2Dims = new long[input2.getImgPlus().numDimensions()];
-		input2.getImgPlus().dimensions(img2Dims);
+		//long[] img2Dims = new long[input2.getImgPlus().numDimensions()];
+		//input2.getImgPlus().dimensions(img2Dims);
 
 		BinaryOperator binOp = operators.get(operatorName);
 
