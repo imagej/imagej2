@@ -126,14 +126,6 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		//if ((input1 == null) || (input2 == null)
-		//		return;
-		//long[] img1Dims = new long[input1.getImgPlus().numDimensions()];
-		//input1.getImgPlus().dimensions(img1Dims);
-
-		//long[] img2Dims = new long[input2.getImgPlus().numDimensions()];
-		//input2.getImgPlus().dimensions(img2Dims);
-
 		BinaryOperator binOp = operators.get(operatorName);
 
 		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
