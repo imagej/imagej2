@@ -39,13 +39,12 @@ import imagej.awt.AWTDisplay;
 import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
-import imagej.data.Overlay;
+import imagej.data.event.DatasetRestructuredEvent;
 import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
-import imagej.display.OverlayView;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
@@ -80,6 +79,8 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	private SwingImageCanvas imgCanvas;
 	private SwingDisplayWindow imgWindow;
+	
+	private boolean mustRebuildImgWindow = false;
 
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
@@ -154,8 +155,17 @@ public class SwingImageDisplay implements AWTDisplay {
 			gfx.drawImage(awtImage, 0, 0, null);
 		}
 		gfx.dispose();
-		imgCanvas.setImage(result);
-		imgWindow.update();
+		if (mustRebuildImgWindow) {
+			imgCanvas.setZoom(0);
+			imgCanvas.panReset();
+			imgCanvas.setImage(result);
+			imgWindow.redoLayout();
+			mustRebuildImgWindow = false;
+		}
+		else {
+			imgCanvas.setImage(result);
+			imgWindow.update();
+		}
 	}
 
 	@Override
@@ -202,6 +212,7 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	// -- Helper methods --
 
+	@SuppressWarnings("synthetic-access")
 	private DisplayManager subscribeToEvents(final DisplayManager displayManager)
 	{
 		// CTR TODO - listen for imgWindow windowClosing and send
@@ -229,6 +240,23 @@ public class SwingImageDisplay implements AWTDisplay {
 		};
 		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
 		subscribers.add(winCloseSubscriber);
+
+		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DatasetRestructuredEvent>()
+		{
+			@Override
+			public void onEvent(DatasetRestructuredEvent event) {
+				Dataset dataset = event.getObject();
+				for (DisplayView view : views) {
+					if (dataset == view.getDataObject()) {
+						mustRebuildImgWindow = true;
+					}
+				}
+			}
+		};
+		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		subscribers.add(restructureSubscriber);
+		
 		return displayManager;
 	}
 
