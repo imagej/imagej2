@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.patches;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.legacy.LegacyManager;
 import imagej.util.Log;
@@ -57,4 +58,23 @@ public final class ImagePlusMethods {
 		legacyManager.legacyImageChanged(obj);
 	}
 
+	/** Appends {@link ImagePlus#repaintWindow()}. */
+	public static void repaintWindow(ImagePlus obj) {
+		Log.debug("ImagePlus.repaintWindow(): " + obj);
+		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
+		legacyManager.legacyImageChanged(obj);
+	}
+
+	// to catch Add/Delete slice events. (obsolete - repaintWindow() can handle)
+	// FIXME - setSlice() might get called from inside an ImagePlus constructor.
+	//   Seems like we'd have an ImagePlus ref here of an incomplete Object.
+	//   Probably unworkable.
+	/** Appends {@link ImagePlus#setStack(String title, ImageStack newStack)}. */
+	/*
+  public void setStack(ImagePlus obj, String title, ImageStack newStack) {
+		Log.debug("ImagePlus.setStack(): " + obj);
+		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
+		legacyManager.legacyImageChanged(obj);
+  }
+  */
 }
