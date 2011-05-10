@@ -35,9 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.WindowManager;
 
 import imagej.data.Dataset;
+import imagej.util.Index;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -142,6 +144,13 @@ public class LegacyImageMap {
 			return;
 		}
 
+		// if here we know we have planar backing
+		// the plane references could have changed in some way:
+		//   - setPixels, setProcessor, stack rearrangement, etc.
+		// its easier to always reassign them rather than
+		//   calculate exactly what to do
+		assignPlaneReferences(ds, imp);
+		
 		// make sure metadata accurately updated
 		metadataTranslator.setDatasetMetadata(ds,imp);
 		
@@ -187,4 +196,37 @@ public class LegacyImageMap {
 		return value != 1;
 	}
 
+	private void assignPlaneReferences(Dataset ds, ImagePlus imp) {
+		ImageStack stack = imp.getStack();
+		if (stack == null) {  // just a 2d image
+			Object pixels = imp.getProcessor().getPixels();
+			ds.setPlane(0, pixels);
+			return;
+		}
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
+		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
+		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		long[] planeDims = new long[ds.getImgPlus().numDimensions()-2];
+		if (zIndex >= 0) planeDims[zIndex-2] = z;
+		if (cIndex >= 0) planeDims[cIndex-2] = c;
+		if (tIndex >= 0) planeDims[tIndex-2] = t;
+		long[] planePos = new long[planeDims.length];
+		int imagejPlaneNumber = 1;
+		for (int ti = 0; ti < t; ti++) {
+			if (tIndex >= 0) planePos[tIndex-2] = ti;
+			for (int zi = 0; zi < z; zi++) {
+				if (zIndex >= 0) planePos[zIndex-2] = zi;
+				for (int ci = 0; ci < c; ci++) {
+					if (cIndex >= 0) planePos[cIndex-2] = ci;
+					long imglibPlaneNumber = Index.indexNDto1D(planeDims, planePos);
+					Object plane = stack.getPixels(imagejPlaneNumber);
+					ds.setPlane((int)imglibPlaneNumber, plane);
+					imagejPlaneNumber++;
+				}
+			}
+		}
+	}
 }
