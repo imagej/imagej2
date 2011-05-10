@@ -68,17 +68,17 @@ public class RevertImage<T extends RealType<T> & NativeType<T>>	implements Image
 
 		final Dataset currDataset = (Dataset) display.getActiveView().getDataObject();
 
-		// TODO - I think this will not work for sample images that come from a URL
-		//   as the opener does not remember the URL.
+		// TODO - enable this in ImgLib
+		//final String id = currDataset.getImgPlus().getSource();
+		//if (id == null)
+		//	throw new IllegalArgumentException("Dataset "+currDataset.getName()+" does not have an external source");
+		final String id = null; // do nothing right now
 		
-		final String id = currDataset.getName();
-
 		// open image
-		Dataset newDataset = null;
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			newDataset = new Dataset(imgPlus);
+			currDataset.setImgPlus(imgPlus);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
@@ -86,8 +86,5 @@ public class RevertImage<T extends RealType<T> & NativeType<T>>	implements Image
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
-
-		if (newDataset != null)
-			currDataset.setImgPlus(newDataset.getImgPlus());
 	}
 }
