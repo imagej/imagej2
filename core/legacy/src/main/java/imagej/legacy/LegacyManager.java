@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
@@ -77,6 +78,11 @@ public final class LegacyManager implements ManagerComponent {
 
 		// override behavior of ij.ImagePlus
 		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
+		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
+		// commented out hacker.insertAfter...() line kills LegacyManager initialization
+		//   during load of SwingInputHarvester???
+		//hacker.insertAfterMethod("ij.ImagePlus", "public void setStack(String title, ImageStack newStack)");
+		// note: adding repaintWindow() above probably eliminates need for setStack() hacking
 		hacker.loadClass("ij.ImagePlus");
 
 		// override behavior of ij.gui.ImageWindow
