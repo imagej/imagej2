@@ -235,11 +235,10 @@ public class SwingImageDisplay implements AWTDisplay {
 			@Override
 			public void onEvent(final WinActivatedEvent event) {
 				displayManager.setActiveDisplay(event.getDisplay());
-				if (event.getDisplay() == thisDisplay) {
-					UserInterface ui = ImageJ.get(UIManager.class).getUI();
-					ToolManager toolMgr = ui.getToolBar().getToolManager();
-					imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
-				}
+				if (event.getDisplay() != thisDisplay) return;
+				UserInterface ui = ImageJ.get(UIManager.class).getUI();
+				ToolManager toolMgr = ui.getToolBar().getToolManager();
+				imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
 			}
 		};
 		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
