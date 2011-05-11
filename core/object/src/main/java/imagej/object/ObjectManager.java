@@ -49,6 +49,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manager component for keeping track of registered objects.
+ * Automatically registers new objects from {@link ObjectCreatedEvent}s,
+ * and removes objects from {@link ObjectDeletedEvent}s.
+ * <p>
+ * This is useful to retrieve available objects of a particular type,
+ * such as the list of datasets upon which a user can choose to operate.
+ * </p>
  *
  * @author Curtis Rueden
  */
@@ -62,18 +68,23 @@ public final class ObjectManager implements ManagerComponent {
 	 */
 	private Map<Class<?>, List<?>> hoard;
 
-	/** Maintain list of subscribers, to avoid garbage collection. */
+	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
+	// -- ObjectManager methods --
+
+	/** Gets a list of all registered objects compatible with the given type. */
 	public <T> List<T> getObjects(final Class<T> type) {
 		final List<T> list = getList(type);
 		return Collections.unmodifiableList(list);
 	}
 
+	/** Registers an object with the object manager. */
 	public void addObject(final Object obj) {
 		addObject(obj, obj.getClass());
 	}
 
+	/** Deregisters an object with the object manager. */
 	public void removeObject(final Object obj) {
 		removeObject(obj, obj.getClass());
 	}

@@ -38,13 +38,13 @@ import imagej.data.Dataset;
 import imagej.object.event.ObjectChangedEvent;
 
 /**
- * An event indicating a dataset has been changed somehow.
- *
+ * An event indicating a {@link Dataset} has been changed somehow.
+ * 
  * @author Curtis Rueden
  */
 public class DatasetChangedEvent extends ObjectChangedEvent {
 
-	private Dataset dataset;
+	private final Dataset dataset;
 
 	public DatasetChangedEvent(final Dataset dataset) {
 		super(dataset);

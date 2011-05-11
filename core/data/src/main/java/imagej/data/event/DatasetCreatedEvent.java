@@ -38,13 +38,13 @@ import imagej.data.Dataset;
 import imagej.object.event.ObjectCreatedEvent;
 
 /**
- * An event indicating a new dataset has been created.
- *
+ * An event indicating a new {@link Dataset} has been created.
+ * 
  * @author Curtis Rueden
  */
 public class DatasetCreatedEvent extends ObjectCreatedEvent {
 
-	private Dataset dataset;
+	private final Dataset dataset;
 
 	public DatasetCreatedEvent(final Dataset dataset) {
 		super(dataset);
