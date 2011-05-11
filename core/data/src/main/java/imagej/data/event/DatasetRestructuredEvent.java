@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import net.imglib2.img.ImgPlus;
 import imagej.data.Dataset;
+import net.imglib2.img.ImgPlus;
 
 /**
- * An event indicating a dataset's dimensional extents may have changed.
+ * An event indicating a {@link Dataset}'s dimensional extents may have changed.
  * This occurs, for example, if the dataset's linked {@link ImgPlus} changes.
  * 
  * @author Curtis Rueden

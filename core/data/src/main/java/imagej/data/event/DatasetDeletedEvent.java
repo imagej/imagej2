@@ -38,7 +38,7 @@ import imagej.data.Dataset;
 import imagej.object.event.ObjectDeletedEvent;
 
 /**
- * An event indicating a dataset has been deleted.
+ * An event indicating a {@link Dataset} has been deleted.
  *
  * @author Curtis Rueden
  */
