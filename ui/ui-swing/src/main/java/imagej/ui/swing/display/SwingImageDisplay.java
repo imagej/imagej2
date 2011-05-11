@@ -51,6 +51,9 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
+import imagej.tool.*;
+import imagej.ui.UIManager;
+import imagej.ui.UserInterface;
 import imagej.util.Log;
 
 import java.awt.Graphics;
@@ -82,6 +85,8 @@ public class SwingImageDisplay implements AWTDisplay {
 	
 	private boolean willRebuildImgWindow;
 
+	private Display copyOfThis;
+	
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
 		subscribers = new ArrayList<EventSubscriber<?>>();
@@ -107,6 +112,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		});
 		
 		willRebuildImgWindow = false;
+		copyOfThis = this;
 		
 		Events.publish(new DisplayCreatedEvent(this));
 	}
@@ -229,6 +235,11 @@ public class SwingImageDisplay implements AWTDisplay {
 			@Override
 			public void onEvent(final WinActivatedEvent event) {
 				displayManager.setActiveDisplay(event.getDisplay());
+				if (event.getDisplay() == copyOfThis) {
+					UserInterface ui = ImageJ.get(UIManager.class).getUI();
+					ToolManager toolMgr = ui.getToolBar().getToolManager();
+					imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
+				}
 			}
 		};
 		Events.subscribe(WinActivatedEvent.class, winActSubscriber);
@@ -261,7 +272,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		};
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 		subscribers.add(restructureSubscriber);
-		
+			
 		return displayManager;
 	}
 
