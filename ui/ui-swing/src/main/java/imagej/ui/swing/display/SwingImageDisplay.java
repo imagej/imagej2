@@ -85,7 +85,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	
 	private boolean willRebuildImgWindow;
 
-	private Display copyOfThis;
+	private Display thisDisplay;
 	
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
@@ -112,7 +112,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		});
 		
 		willRebuildImgWindow = false;
-		copyOfThis = this;
+		thisDisplay = this;
 		
 		Events.publish(new DisplayCreatedEvent(this));
 	}
@@ -235,7 +235,7 @@ public class SwingImageDisplay implements AWTDisplay {
 			@Override
 			public void onEvent(final WinActivatedEvent event) {
 				displayManager.setActiveDisplay(event.getDisplay());
-				if (event.getDisplay() == copyOfThis) {
+				if (event.getDisplay() == thisDisplay) {
 					UserInterface ui = ImageJ.get(UIManager.class).getUI();
 					ToolManager toolMgr = ui.getToolBar().getToolManager();
 					imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
