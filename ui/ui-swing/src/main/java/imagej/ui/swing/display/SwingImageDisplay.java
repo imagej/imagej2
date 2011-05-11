@@ -80,7 +80,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	private SwingImageCanvas imgCanvas;
 	private SwingDisplayWindow imgWindow;
 	
-	private boolean mustRebuildImgWindow = false;
+	private boolean willRebuildImgWindow;
 
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
@@ -105,7 +105,9 @@ public class SwingImageDisplay implements AWTDisplay {
 				}
 			}
 		});
-
+		
+		willRebuildImgWindow = false;
+		
 		Events.publish(new DisplayCreatedEvent(this));
 	}
 
@@ -155,16 +157,18 @@ public class SwingImageDisplay implements AWTDisplay {
 			gfx.drawImage(awtImage, 0, 0, null);
 		}
 		gfx.dispose();
-		if (mustRebuildImgWindow) {
-			imgCanvas.setZoom(0);
-			imgCanvas.panReset();
-			imgCanvas.setImage(result);
-			imgWindow.redoLayout();
-			mustRebuildImgWindow = false;
-		}
-		else {
-			imgCanvas.setImage(result);
+		imgCanvas.setImage(result);
+		if ( ! willRebuildImgWindow ) {
 			imgWindow.update();
+		}
+		else { // rebuild image window
+		  // NB - if pan to be reset below we'll be zoomed on wrong part of image 
+			imgCanvas.setZoom(0);  // original scale
+		  // NB - if x or y dims change without this image panned incorrectly
+			//   Must happen after setZoom() call
+			imgCanvas.panReset();
+			imgWindow.redoLayout();
+			willRebuildImgWindow = false;
 		}
 	}
 
@@ -249,7 +253,8 @@ public class SwingImageDisplay implements AWTDisplay {
 				Dataset dataset = event.getObject();
 				for (DisplayView view : views) {
 					if (dataset == view.getDataObject()) {
-						mustRebuildImgWindow = true;
+						willRebuildImgWindow = true;
+						return;
 					}
 				}
 			}
