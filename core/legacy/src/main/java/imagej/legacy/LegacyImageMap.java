@@ -121,6 +121,7 @@ public class LegacyImageMap {
 
 	// -- private helpers -- 
 	
+	/** changes the data within a Dataset to match data in an ImagePlus */
 	private void reconcileDifferences(Dataset ds, ImagePlus imp) {
 		
 		// is our dataset not sharing planes with the ImagePlus by reference?
@@ -137,6 +138,10 @@ public class LegacyImageMap {
 			rebuildData(ds, imp);
 			return;
 		}
+		
+		// if here we know its not a RGB imp. If we were a color Dataset
+		// then forget that fact now.
+		ds.setRGBMerged(false);
 
 		// was a slice added or deleted?
 		if (dimensionsDifferent(ds, imp)) {
@@ -161,16 +166,19 @@ public class LegacyImageMap {
 		ds.update();
 	}
 
+	/** fills a nonplanar Dataset's values with data from an ImagePlus */
 	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
 		Dataset tmpDs = imageTranslator.createDataset(imp);
 		ds.copyDataFrom(tmpDs);
 	}
 	
+	/** fills a Dataset's values with data from an ImagePlus */
 	private void rebuildData(Dataset ds, ImagePlus imp) {
 		Dataset tmpDs = imageTranslator.createDataset(imp);
 		ds.setImgPlus(tmpDs.getImgPlus());
 	}
 
+	/** determines whether a Dataset and an ImagePlus have different dimensionality */
 	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
 		ImgPlus<?> imgPlus = ds.getImgPlus();
 
@@ -189,6 +197,8 @@ public class LegacyImageMap {
 		return different;
 	}
 
+	/** determines whether a single dimension in an ImgPlus differs from
+	 *  a given value */ 
 	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
 		if (axis >= 0)
 			return imgPlus.dimension(axis) != value;
@@ -196,6 +206,9 @@ public class LegacyImageMap {
 		return value != 1;
 	}
 
+	/** assigns the plane references of a planar Dataset to match the plane
+	 *  references of a given ImagePlus
+	 */
 	private void assignPlaneReferences(Dataset ds, ImagePlus imp) {
 		ImageStack stack = imp.getStack();
 		if (stack == null) {  // just a 2d image
