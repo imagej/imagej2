@@ -35,14 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.event;
 
 import imagej.data.Dataset;
-import imagej.object.event.ObjectCreatedEvent;
 
 /**
  * An event indicating a new {@link Dataset} has been created.
  * 
  * @author Curtis Rueden
  */
-public class DatasetCreatedEvent extends ObjectCreatedEvent {
+public class DatasetCreatedEvent extends DataObjectCreatedEvent {
 
 	private final Dataset dataset;
 

@@ -35,14 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.event;
 
 import imagej.data.Dataset;
-import imagej.object.event.ObjectChangedEvent;
 
 /**
  * An event indicating a {@link Dataset} has been changed somehow.
  * 
  * @author Curtis Rueden
  */
-public class DatasetChangedEvent extends ObjectChangedEvent {
+public class DatasetChangedEvent extends DataObjectChangedEvent {
 
 	private final Dataset dataset;
 
