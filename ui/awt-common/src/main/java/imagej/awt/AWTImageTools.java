@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.awt;
 
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -62,6 +63,22 @@ public final class AWTImageTools {
 		final GraphicsConfiguration config =
 			env.getDefaultScreenDevice().getDefaultConfiguration();
 		return config.createCompatibleImage(width, height);
+	}
+
+	/**
+	 * Ensures that the given {@link Image} is a {@link BufferedImage}, converting
+	 * if necessary.
+	 */
+	public static BufferedImage makeBuffered(final Image image) {
+		if (image instanceof BufferedImage) {
+			return (BufferedImage) image;
+		}
+		final BufferedImage result =
+			createImage(image.getWidth(null), image.getHeight(null));
+		final Graphics g = result.getGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return result;
 	}
 
 }
