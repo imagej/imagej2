@@ -34,29 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.Dataset;
+import imagej.data.DataObject;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
+ * An event indicating a {@link DataObject}'s data has been updated. This means
  * that sample values may have changed, but the dimensional structure is the
  * same as before.
  * 
  * @author Curtis Rueden
  */
-public class DatasetUpdatedEvent extends DataObjectUpdatedEvent {
+public class DataObjectUpdatedEvent extends DataObjectChangedEvent {
 
-	private final Dataset dataset;
-
-	public DatasetUpdatedEvent(final Dataset dataset) {
-		super(dataset);
-		this.dataset = dataset;
-	}
-
-	// -- ObjectEvent methods --
-
-	@Override
-	public Dataset getObject() {
-		return dataset;
+	public DataObjectUpdatedEvent(final DataObject dataObject) {
+		super(dataObject);
 	}
 
 }

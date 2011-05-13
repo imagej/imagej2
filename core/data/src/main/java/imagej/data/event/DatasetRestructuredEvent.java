@@ -43,10 +43,20 @@ import net.imglib2.img.ImgPlus;
  * 
  * @author Curtis Rueden
  */
-public class DatasetRestructuredEvent extends DatasetChangedEvent {
+public class DatasetRestructuredEvent extends DataObjectRestructuredEvent {
+
+	private final Dataset dataset;
 
 	public DatasetRestructuredEvent(final Dataset dataset) {
 		super(dataset);
+		this.dataset = dataset;
+	}
+
+	// -- ObjectEvent methods --
+
+	@Override
+	public Dataset getObject() {
+		return dataset;
 	}
 
 }

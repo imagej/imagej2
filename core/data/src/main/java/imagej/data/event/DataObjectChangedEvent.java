@@ -1,5 +1,5 @@
 //
-// DatasetUpdatedEvent.java
+// DataObjectChangedEvent.java
 //
 
 /*
@@ -34,29 +34,28 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.event;
 
-import imagej.data.Dataset;
+import imagej.data.DataObject;
+import imagej.object.event.ObjectChangedEvent;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
+ * An event indicating a {@link DataObject} has changed somehow.
  * 
  * @author Curtis Rueden
  */
-public class DatasetUpdatedEvent extends DataObjectUpdatedEvent {
+public class DataObjectChangedEvent extends ObjectChangedEvent {
 
-	private final Dataset dataset;
+	private final DataObject dataObject;
 
-	public DatasetUpdatedEvent(final Dataset dataset) {
-		super(dataset);
-		this.dataset = dataset;
+	public DataObjectChangedEvent(final DataObject dataObject) {
+		super(dataObject);
+		this.dataObject = dataObject;
 	}
 
 	// -- ObjectEvent methods --
 
 	@Override
-	public Dataset getObject() {
-		return dataset;
+	public DataObject getObject() {
+		return dataObject;
 	}
 
 }

@@ -35,16 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.event;
 
 import imagej.data.Dataset;
-import imagej.object.event.ObjectDeletedEvent;
 
 /**
  * An event indicating a {@link Dataset} has been deleted.
- *
+ * 
  * @author Curtis Rueden
  */
-public class DatasetDeletedEvent extends ObjectDeletedEvent {
+public class DatasetDeletedEvent extends DataObjectDeletedEvent {
 
-	private Dataset dataset;
+	private final Dataset dataset;
 
 	public DatasetDeletedEvent(final Dataset dataset) {
 		super(dataset);
