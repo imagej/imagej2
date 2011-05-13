@@ -1,5 +1,5 @@
 //
-// FreehandTool.java
+// LineTool.java
 //
 
 /*
@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.ui.swing.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
@@ -42,11 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Freehand", iconPath = "/tools/freehand.png",
-	priority = FreehandTool.PRIORITY, enabled = false)
-public class FreehandTool extends BaseTool {
+@Tool(name = "Line", iconPath = "/tools/line.png",
+	priority = LineTool.PRIORITY, enabled = false)
+public class LineTool extends BaseTool {
 
-	public static final int PRIORITY = 103;
+	public static final int PRIORITY = 104;
 
 	// TODO
 

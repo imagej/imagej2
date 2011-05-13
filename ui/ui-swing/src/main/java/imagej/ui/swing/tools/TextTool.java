@@ -1,5 +1,5 @@
 //
-// PolygonTool.java
+// TextTool.java
 //
 
 /*
@@ -32,8 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.ui.swing.tools;
 
+import imagej.display.MouseCursor;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
@@ -42,11 +43,16 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Polygon", iconPath = "/tools/polygon.png",
-	priority = PolygonTool.PRIORITY, enabled = false)
-public class PolygonTool extends BaseTool {
+@Tool(name = "Text", iconPath = "/tools/text.png", description = "Text",
+	priority = TextTool.PRIORITY, enabled = false)
+public class TextTool extends BaseTool {
 
-	public static final int PRIORITY = 102;
+	public static final int PRIORITY = 201;
+
+	@Override
+	public MouseCursor getCursor() {
+		return MouseCursor.TEXT;
+	}
 
 	// TODO
 
