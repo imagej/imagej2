@@ -203,6 +203,30 @@ public class LegacyImageMapTest {
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
+	}
+
+	@Test
+	public void testReconciliation() {
+		ImagePlus imp;
+		Dataset ds0,ds1;
+		ImgPlus<?> imgPlus0;
+		int c,z,t;
+		
+		// dataset that was not existing
+		c = 3; z = 4; t = 5;
+		imp = NewImage.createShortImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
+		imp.setDimensions(c, z, t);
+		ds0 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds0, imp);
+		testSame(ds0,imp);
+		
+		// dataset that exists and no changes
+		imgPlus0 = ds0.getImgPlus();
+		ds1 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds1, imp);
+		assertSame(ds0,ds1);
+		assertSame(imgPlus0,ds1.getImgPlus());
+		testSame(ds1,imp);
 
 		// dataset exists and some changes
 		
@@ -214,11 +238,13 @@ public class LegacyImageMapTest {
 		ImgPlus<UnsignedByteType> cellImgPlus = new ImgPlus<UnsignedByteType>(cellImg,"temp",ij1Axes,new double[]{4,5,1,7,8});
 		ds0 = new Dataset(cellImgPlus);
 		imp = map.registerDataset(ds0);
+		//map.reconcileDifferences(ds0, imp);
 		testSame(ds0,imp);
 		assertFalse(0xff == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 0xff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		
@@ -227,11 +253,13 @@ public class LegacyImageMapTest {
 		imp = NewImage.createRGBImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds0, imp);
 		testColorSame(ds0,imp);
 		assertFalse(0xffffffff == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 0xffffffff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		testColorSame(ds1,imp);
@@ -241,11 +269,13 @@ public class LegacyImageMapTest {
 		imp = NewImage.createFloatImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds0, imp);
 		testSame(ds0,imp);
 		imp.getStack().deleteLastSlice();  // MAKE THE CHANGE
 		imp.setStack(imp.getStack());
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
@@ -255,10 +285,12 @@ public class LegacyImageMapTest {
 		imp = NewImage.createByteImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds0, imp);
 		testSame(ds0,imp);
 		imp.getCalibration().pixelDepth = 99;  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
@@ -268,16 +300,15 @@ public class LegacyImageMapTest {
 		imp = NewImage.createByteImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
+		//map.reconcileDifferences(ds0, imp);
 		testSame(ds0,imp);
 		assertFalse(100 == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 100);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
-		
-		// TODO - what if slices were reordered??? caught???
 	}
-
 }

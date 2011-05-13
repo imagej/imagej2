@@ -48,6 +48,7 @@ import imagej.data.Dataset;
 public class LegacyMetadataTranslator {
 	
 	public void setDatasetMetadata(Dataset ds, ImagePlus imp) {
+		ds.setName(imp.getTitle());
 		// copy calibration info where possible
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
@@ -68,6 +69,7 @@ public class LegacyMetadataTranslator {
 	}
 	
 	public void setImagePlusMetadata(Dataset ds, ImagePlus imp) {
+		imp.setTitle(ds.getName());
 		// copy calibration info where possible
 		Calibration cal = imp.getCalibration();
 		int xIndex = ds.getAxisIndex(Axes.X);
