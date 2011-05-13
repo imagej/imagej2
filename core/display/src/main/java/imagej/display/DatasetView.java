@@ -35,10 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
-import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.event.DatasetUpdatedEvent;
-import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.util.Dimensions;
 import imagej.util.Index;
 
@@ -62,20 +58,12 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class DatasetView implements DisplayView {
+public abstract class DatasetView extends AbstractDisplayView {
 
-	private final Display display;
 	private final Dataset dataset;
-
-	/** List of event subscribers, to avoid garbage collection. */
-	private final List<EventSubscriber<?>> subscribers =
-		new ArrayList<EventSubscriber<?>>();
 
 	/** The dimensional index representing channels, for compositing. */
 	private int channelDimIndex;
-
-	private long[] dims, planeDims;
-	private long[] position, planePos;
 
 	/**
 	 * Default color tables, one per channel, used when the {@link Dataset} 
@@ -90,55 +78,15 @@ public class DatasetView implements DisplayView {
 
 	private int offsetX, offsetY;
 
-	/** Indicates the view is no longer in use. */
-	private boolean disposed;
-
 	public DatasetView(final Display display, final Dataset dataset) {
-		this.display = display;
+		super(display, dataset);
 		this.dataset = dataset;
-		dataset.incrementReferences();
-
-		rebuild();
-
-		subscribeToEvents();
 	}
 
 	// -- DatasetView methods --
 
-	/** Updates the display when the linked dataset changes. */
-	private void subscribeToEvents() {
-		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
-			new EventSubscriber<DatasetUpdatedEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(final DatasetUpdatedEvent event) {
-				if (event.getObject() != dataset) return;
-				projector.map();
-				display.update();
-			}
-		};
-		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
-		subscribers.add(updateSubscriber);
-
-		// TODO - perhaps it would be better for the display to listen for
-		// DatasetRestructuredEvents, compare the dataset to all of its views,
-		// and call rebuild() on itself (only once). This would avoid a potential
-		// issue where multiple views linked to the same dataset will currently
-		// result in multiple rebuilds.
-		final EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(final DatasetRestructuredEvent event) {
-				if (event.getObject() != dataset) return;
-				rebuild();
-				display.update();
-			}
-		};
-		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-		subscribers.add(restructureSubscriber);
+	public ARGBScreenImage getScreenImage() {
+		return screenImage;
 	}
 
 	public int getCompositeDimIndex() {
@@ -184,37 +132,20 @@ public class DatasetView implements DisplayView {
 	// -- DisplayView methods --
 
 	@Override
-	public Display getDisplay() {
-		return display;
-	}
-
-	@Override
 	public Dataset getDataObject() {
 		return dataset;
 	}
 
 	@Override
-	public long[] getPlanePosition() {
-		return planePos;
-	}
-
-	@Override
-	public long getPlaneIndex() {
-		return Index.indexNDto1D(planeDims, planePos);
-	}
-
-	@Override
 	public void setPosition(final int value, final int dim) {
 		projector.setPosition(value, dim);
-		projector.localize(position);
-		for (int i = 0; i < planePos.length; i++)
-			planePos[i] = position[i + 2];
 
 		// update color tables
 		if (dim != channelDimIndex) updateLUTs();
 
 		projector.map();
-		display.update();
+
+		super.setPosition(value, dim);
 	}
 
 	@Override
@@ -240,28 +171,6 @@ public class DatasetView implements DisplayView {
 		final boolean composite = isComposite(dataset);
 		projector = createProjector(min, max, composite);
 		projector.map();
-	}
-
-	@Override
-	public ARGBScreenImage getImage() {
-		return screenImage;
-	}
-
-	@Override
-	public int getImageWidth() {
-		return screenImage.image().getWidth(null);
-	}
-
-	@Override
-	public int getImageHeight() {
-		return screenImage.image().getHeight(null);
-	}
-
-	@Override
-	public void dispose() {
-		if (disposed) return;
-		disposed = true;
-		dataset.decrementReferences();
 	}
 
 	// -- Helper methods --

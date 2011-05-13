@@ -36,11 +36,11 @@ package imagej.display;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
-import imagej.data.Overlay;
+import imagej.data.roi.AbstractOverlay;
 
 /**
  * A linkage between a {@link DataObject} (such as a {@link Dataset} or
- * {@link Overlay}) and a {@link Display}. The view takes care of mapping the
+ * {@link AbstractOverlay}) and a {@link Display}. The view takes care of mapping the
  * N-dimensional data into a representation suitable for showing onscreen.
  * <p>
  * For example, a typical 2D display may have a number of sliders enabling a
@@ -68,18 +68,18 @@ public interface DisplayView {
 	/** Sets the position of the given dimensional axis. */
 	void setPosition(final int value, final int dim);
 
-	/** Gets the currently displayed image. */
-	Object getImage();
+	/** Gets the view's ideal width in pixels. */
+	int getPreferredWidth();
 
-	/** Gets the width of the currently displayed image. */
-	int getImageWidth();
+	/** Gets the view's ideal height in pixels. */
+	int getPreferredHeight();
 
-	/** Gets the height of the currently displayed image. */
-	int getImageHeight();
+	/** Updates and redraws the view onscreen. */
+	void update();
 
 	/**
-	 * Recreates the view. This operation is useful in case the {@link Dataset}
-	 * has changed structurally somehow.
+	 * Recreates the view. This operation is useful in case the linked
+	 * {@link DataObject} has changed structurally somehow.
 	 */
 	void rebuild();
 

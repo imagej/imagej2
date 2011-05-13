@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
+import imagej.data.roi.AbstractOverlay;
 import imagej.plugin.BasePlugin;
 
 import java.util.List;
@@ -59,6 +60,13 @@ public interface Display extends BasePlugin {
 	 * <code>addView(new DatasetView(display, dataset))</code>.
 	 */
 	void display(Dataset dataset);
+
+	/**
+	 * Displays the given {@link AbstractOverlay} in this display. Typically, this is a
+	 * shortcut for calling
+	 * <code>addView(new OverlayView(display, overlay))</code>.
+	 */
+	void display(AbstractOverlay overlay);
 
 	/** Updates and redraws the display onscreen. */
 	void update();

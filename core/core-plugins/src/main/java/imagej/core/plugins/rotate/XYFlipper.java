@@ -37,7 +37,7 @@ package imagej.core.plugins.rotate;
 import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
 import imagej.util.Index;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
@@ -145,7 +145,7 @@ public class XYFlipper implements OutputAlgorithm {
 		long[] inputPosition = new long[inputDimensions.length];
 		long[] outputPosition = new long[inputDimensions.length];
 
-		Rect selectedRegion = input.getSelection();
+		IntRect selectedRegion = input.getSelection();
 		
 		int rx, ry, rw, rh;
 		

@@ -42,7 +42,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 import imagej.util.IntCoords;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 
 /**
  * Zooms in on the currently selected region.
@@ -63,7 +63,7 @@ public class ZoomToFitSelection implements ImageJPlugin {
 		final Dataset dataset = displayManager.getActiveDataset();
 
 		// NOTE - must be in panel/canvas coords!
-		final Rect sel = dataset.getSelection();
+		final IntRect sel = dataset.getSelection();
 
 		if (sel.width > 0 && sel.height > 0) {
 			final IntCoords topLeft = new IntCoords(sel.x, sel.y);

@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// OverlayRestructuredEvent.java
 //
 
 /*
@@ -32,28 +32,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.data.event;
 
-import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * An event indicating an {@link Overlay}'s dimensional extents may have
+ * changed.
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public class OverlayRestructuredEvent extends DataObjectRestructuredEvent {
 
-	private final AbstractOverlay overlay;
+	private final Overlay overlay;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
-		super(display, overlay);
+	public OverlayRestructuredEvent(final Overlay overlay) {
+		super(overlay);
 		this.overlay = overlay;
 	}
 
-	// -- DisplayView methods --
+	// -- ObjectEvent methods --
 
 	@Override
-	public AbstractOverlay getDataObject() {
+	public Overlay getObject() {
 		return overlay;
 	}
 

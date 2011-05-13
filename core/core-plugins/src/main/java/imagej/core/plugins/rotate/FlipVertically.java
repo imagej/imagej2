@@ -41,7 +41,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 
 /**
  * Creates an output Dataset that is a duplicate of an input Dataset flipped
@@ -78,7 +78,7 @@ public class FlipVertically implements ImageJPlugin {
 		
 		VertFlipTransformer(Dataset input) {
 			maxY = input.getImgPlus().dimension(1);
-			Rect currentSelection = input.getSelection();
+			IntRect currentSelection = input.getSelection();
 			if (currentSelection.height > 0)
 				maxY = currentSelection.y + currentSelection.height;
 		}

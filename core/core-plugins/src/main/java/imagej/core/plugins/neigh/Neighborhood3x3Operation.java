@@ -36,7 +36,7 @@ package imagej.core.plugins.neigh;
 
 import imagej.data.Dataset;
 import imagej.util.Index;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
@@ -58,7 +58,7 @@ public class Neighborhood3x3Operation {
 	private Dataset input;
 	private Img<? extends RealType<?>> inputImage;
 	private Img<? extends RealType<?>> inputImageCopy;
-	private Rect selection;
+	private IntRect selection;
 	private Neighborhood3x3Watcher watcher;
 
 	// -- constructor --

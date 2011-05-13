@@ -1,5 +1,5 @@
 //
-// SwingImageDisplayWindow.java
+// SwingDisplayWindow.java
 //
 
 /*
@@ -67,7 +67,7 @@ import net.imglib2.img.Axis;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * Swing implementation of image display window.
+ * Swing implementation of display window.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
@@ -91,12 +91,14 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		imageLabel.setPreferredSize(new Dimension(0, prefHeight));
 
 		final JPanel graphicPane = new JPanel();
-		graphicPane.setLayout(new BorderLayout());
+		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
+//		graphicPane.setLayout(new BorderLayout());
 		graphicPane.setBorder(new LineBorder(Color.black));
-		graphicPane.add(display.getImageCanvas(), BorderLayout.CENTER);
+//		graphicPane.add(display.getImageCanvas(), BorderLayout.CENTER);
+		graphicPane.add(display.getImageCanvas());
 
 		sliders = new JPanel();
-		sliders.setLayout(new MigLayout("fillx, wrap 2", "[right|fill,grow]"));
+		sliders.setLayout(new MigLayout("fillx,wrap 2", "[right|fill,grow]"));
 
 		final JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
