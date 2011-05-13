@@ -104,11 +104,8 @@ public final class LegacyManager implements ManagerComponent {
 	}
 
 	public void legacyImageChanged(final ImagePlus imp) {
-		// register image with legacy manager
-		final Dataset dataset = imageMap.registerLegacyImage(imp);
-
-		// record resultant dataset as a legacy plugin output
-		LegacyPlugin.getOutputSet().add(dataset);
+		// record resultant ImagePlus as a legacy plugin output
+		LegacyPlugin.getOutputs().add(imp);
 	}
 
 	// -- ManagerComponent methods --
@@ -116,7 +113,6 @@ public final class LegacyManager implements ManagerComponent {
 	@Override
 	public void initialize() {
 		imageMap = new LegacyImageMap();
-
 		// initialize legacy ImageJ application
 		new ij.ImageJ(ij.ImageJ.NO_SHOW);
 	}

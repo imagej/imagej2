@@ -35,7 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy.plugin;
 
 import ij.IJ;
+import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.legacy.LegacyImageMap;
+import imagej.legacy.LegacyManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 
@@ -62,24 +66,29 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final Set<Dataset> outputSet = LegacyPlugin.getOutputSet();
+		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap(); 
+		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
 		outputSet.clear();
 		IJ.runPlugIn(className, arg);
-		outputs = new ArrayList<Dataset>(outputSet);
+		outputs = new ArrayList<Dataset>();
+		for (ImagePlus imp : outputSet) {
+			Dataset ds = map.findDataset(imp);
+			if (ds == null)
+				ds = map.registerLegacyImage(imp);
+			else
+				map.reconcileDifferences(ds, imp);
+			outputs.add(ds);
+		}
 		outputSet.clear();
-	}
-
-	public List<Dataset> getOutputs() {
-		return outputs;
 	}
 
 	/** Used to provide one list of datasets per calling thread. */
-	private static ThreadLocal<Set<Dataset>> outputDatasets =
-		new ThreadLocal<Set<Dataset>>()
+	private static ThreadLocal<Set<ImagePlus>> outputImps =
+		new ThreadLocal<Set<ImagePlus>>()
 	{
 		@Override
-		protected synchronized Set<Dataset> initialValue() {
-			return new HashSet<Dataset>();
+		protected synchronized Set<ImagePlus> initialValue() {
+			return new HashSet<ImagePlus>();
 		}
 	};
 
@@ -87,8 +96,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	 * Gets a list for storing output parameter values.
 	 * This method is thread-safe, because it uses a separate map per thread.
 	 */
-	public static Set<Dataset> getOutputSet() {
-		return outputDatasets.get();
+	public static Set<ImagePlus> getOutputs() {
+		return outputImps.get();
 	}
 
 }

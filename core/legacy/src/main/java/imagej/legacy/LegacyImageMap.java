@@ -68,6 +68,10 @@ public class LegacyImageMap {
 
 	// -- public interface --
 	
+	public Dataset findDataset(ImagePlus imp) {
+		return imageTable.get(imp);
+	}
+
 	/**
 	 * Ensures that the given legacy image has a corresponding dataset.
 	 *
@@ -82,7 +86,7 @@ public class LegacyImageMap {
 				imageTable.put(imp, dataset);
 			}
 			else {  // dataset was already existing
-				reconcileDifferences(dataset, imp);
+				// do nothing
 			}
 			return dataset;
 		}
@@ -114,10 +118,8 @@ public class LegacyImageMap {
 		return imp;
 	}
 
-	// -- private helpers -- 
-	
 	/** changes the data within a Dataset to match data in an ImagePlus */
-	private void reconcileDifferences(Dataset ds, ImagePlus imp) {
+	public void reconcileDifferences(Dataset ds, ImagePlus imp) {
 		
 		// is our dataset not sharing planes with the ImagePlus by reference?
 		// if so assume any change possible and thus rebuild all
@@ -161,6 +163,8 @@ public class LegacyImageMap {
 		ds.update();
 	}
 
+	// -- private helpers -- 
+	
 	/** fills a nonplanar Dataset's values with data from an ImagePlus */
 	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
 		Dataset tmpDs = imageTranslator.createDataset(imp);
