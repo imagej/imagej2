@@ -37,6 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.display.Display;
+import imagej.display.DisplayWindow;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -46,6 +50,7 @@ import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
+import imagej.ui.swing.display.SwingDisplayWindow;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -75,7 +80,9 @@ import javax.swing.WindowConstants;
  * @author Barry DeZonia
  */
 @UI
-public class SwingUI implements UserInterface {
+public class SwingUI implements UserInterface,
+	EventSubscriber<DisplayCreatedEvent>
+{
 
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-2.0.0-alpha1";
@@ -84,6 +91,8 @@ public class SwingUI implements UserInterface {
 	private SwingToolBar toolBar;
 	private SwingStatusBar statusBar;
 
+	private ShadowMenu rootMenu;
+
 	// -- UserInterface methods --
 
 	@Override
@@ -91,7 +100,9 @@ public class SwingUI implements UserInterface {
 		frame = new JFrame("ImageJ");
 		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
-		createMenuBar();
+		initializeMenus();
+
+		Events.subscribe(DisplayCreatedEvent.class, this);
 
 		final JPanel pane = new JPanel();
 		frame.setContentPane(pane);
@@ -128,16 +139,40 @@ public class SwingUI implements UserInterface {
 		return statusBar;
 	}
 
+	// -- EventSubscriber methods --
+
+	@Override
+	public void onEvent(final DisplayCreatedEvent event) {
+		final Display display = event.getObject();
+		final DisplayWindow window = display.getDisplayWindow();
+		if (!(window instanceof SwingDisplayWindow)) return;
+		final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+		// add a copy of the JMenuBar to the new display
+		createMenuBar(swingWindow);
+	}
+
 	// -- Helper methods --
 
-	private void createMenuBar() {
+	/**
+	 * Creates the master {@link ShadowMenu} structure from which
+	 * {@link JMenuBar}s are generated.
+	 */
+	private void initializeMenus() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		rootMenu = new ShadowMenu(entries);
+		createMenuBar(frame);
+		Events.publish(new AppMenusCreatedEvent(frame.getJMenuBar()));
+	}
+
+	/**
+	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure,
+	 * and adds it to the given {@link JFrame}.
+	 */
+	private void createMenuBar(final JFrame f) {
 		final JMenuBar menuBar = new JMenuBar();
 		new JMenuBarCreator().createMenus(rootMenu, menuBar);
-		frame.setJMenuBar(menuBar);
-		Events.publish(new AppMenusCreatedEvent(menuBar));
+		f.setJMenuBar(menuBar);
 	}
 
 	private void displayReadme() {
@@ -175,11 +210,11 @@ public class SwingUI implements UserInterface {
 			in.close();
 			return new String(bytes);
 		}
-		catch (FileNotFoundException e) {
-			throw new IllegalArgumentException(README_FILE +
-				" not found at " + baseDir.getAbsolutePath());
+		catch (final FileNotFoundException e) {
+			throw new IllegalArgumentException(README_FILE + " not found at " +
+				baseDir.getAbsolutePath());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new IllegalStateException(e.getMessage());
 		}
 	}
@@ -192,7 +227,9 @@ public class SwingUI implements UserInterface {
 		if (path.endsWith(".class")) {
 			// assume class is in a subfolder of Maven target
 			File dir = pathToClass;
-			while (dir != null && !dir.getName().equals("target")) dir = up(dir);
+			while (dir != null && !dir.getName().equals("target")) {
+				dir = up(dir);
+			}
 			baseDir = up(up(up(dir)));
 		}
 		else if (path.endsWith(".jar")) {
@@ -224,7 +261,7 @@ public class SwingUI implements UserInterface {
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
 		}
-		catch (UnsupportedEncodingException e) {
+		catch (final UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
