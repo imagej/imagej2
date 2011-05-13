@@ -39,9 +39,10 @@ import imagej.display.MouseCursor;
 import java.awt.Cursor;
 
 /**
- * Translates ImageJ {@link MouseCursor}s into AWT cursor codes.
+ * Translates ImageJ {@link MouseCursor}s into AWT {@link Cursor}s.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
 public final class AWTCursors {
 
@@ -49,10 +50,20 @@ public final class AWTCursors {
 		// prevent instantiation of utility class
 	}
 
+	/**
+	 * Gets the AWT {@link Cursor} corresponding to the given ImageJ
+	 * {@link MouseCursor}.
+	 */
+	public static Cursor getCursor(final MouseCursor cursorCode) {
+		return Cursor.getPredefinedCursor(getCursorCode(cursorCode));
+	}
+
+	/**
+	 * Gets the AWT cursor code corresponding to the given ImageJ
+	 * {@link MouseCursor}.
+	 */
 	public static int getCursorCode(final MouseCursor cursorCode) {
 		switch (cursorCode) {
-			default:
-				return Cursor.DEFAULT_CURSOR;
 			case DEFAULT:
 				return Cursor.DEFAULT_CURSOR;
 			case OFF:
@@ -83,6 +94,8 @@ public final class AWTCursors {
 				return Cursor.SW_RESIZE_CURSOR;
 			case SE_RESIZE:
 				return Cursor.SE_RESIZE_CURSOR;
+			default:
+				return Cursor.DEFAULT_CURSOR;
 		}
 	}
 
