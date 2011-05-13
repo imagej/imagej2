@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
