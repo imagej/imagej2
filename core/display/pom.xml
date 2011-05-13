@@ -52,12 +52,6 @@
 			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- CTR TEMP - JHotDraw dependency for initial development only -->
-		<dependency>
-			<groupId>org.jhotdraw</groupId>
-			<artifactId>jhotdraw</artifactId>
-			<version>7.6.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>
