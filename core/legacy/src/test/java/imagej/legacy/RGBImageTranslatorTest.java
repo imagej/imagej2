@@ -318,18 +318,8 @@ public class RGBImageTranslatorTest {
 			assertTrue(true);
 		}
 
-		// to IJ1 : C Axis not present
-		ds = Dataset.create(new long[]{2,3,4,5}, "zoompa", new Axes[]{Axes.X,Axes.Y,Axes.Z,Axes.TIME}, 8, false, false);
-		ds.setRGBMerged(true);
-		try {
-			translator.createLegacyImage(ds);
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(true);
-		}
-
 		// to IJ1 : non XYCZT index present
-		ds = Dataset.create(new long[]{1,2,3,4,5}, "zoompa", new Axes[]{Axes.X,Axes.Y,Axes.Z,Axes.FREQUENCY}, 8, false, false);
+		ds = Dataset.create(new long[]{1,2,3,4,5}, "zoompa", new Axes[]{Axes.X,Axes.Y,Axes.CHANNEL,Axes.Z,Axes.FREQUENCY}, 8, false, false);
 		ds.setRGBMerged(true);
 		try {
 			translator.createLegacyImage(ds);
