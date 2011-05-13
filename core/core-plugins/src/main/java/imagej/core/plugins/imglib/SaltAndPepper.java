@@ -40,7 +40,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.Index;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 
 import java.util.Random;
 
@@ -68,7 +68,7 @@ public class SaltAndPepper implements ImageJPlugin {
 
 	// -- other instance variables --
 	
-	private Rect selection;
+	private IntRect selection;
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;

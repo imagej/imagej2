@@ -38,12 +38,18 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 /**
- * A canvas upon which a {@link Display} paints output image planes.
+ * A canvas upon which a {@link Display} draws its output.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
  */
 public interface ImageCanvas extends Pannable, Zoomable {
+
+	/** Gets the actual width of the canvas. */
+	int getWidth();
+	
+	/** Gets the actual height of the canvas. */
+	int getHeight();
 
 	/** Gets the width of the current image. */
 	int getImageWidth();
@@ -58,20 +64,6 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	void addEventDispatcher(EventDispatcher dispatcher);
 
 	/**
-	 * Indicates whether the high quality rendering feature is enabled.
-	 * 
-	 * @return true if high quality rendering is enabled, false otherwise.
-	 */
-	boolean isHighQualityRenderingEnabled();
-
-	/**
-	 * Enables/disables high quality rendering.
-	 * 
-	 * @param enabled enables/disables high quality rendering
-	 */
-	void setHighQualityRenderingEnabled(boolean enabled);
-
-	/**
 	 * Tests whether a given point in the panel falls within the image boundaries.
 	 * 
 	 * @param point The point to check, in panel coordinates (pixels).
@@ -84,7 +76,7 @@ public interface ImageCanvas extends Pannable, Zoomable {
 	/** Converts the given original image coordinates into panel coordinates. */
 	IntCoords imageToPanelCoords(RealCoords imageCoords);
 
-	/** Handles setting of the cursor depending on the activated tool. */
+	/** Sets the mouse to the given {@link MouseCursor} type. */
 	void setCursor(MouseCursor cursor);
 
 }

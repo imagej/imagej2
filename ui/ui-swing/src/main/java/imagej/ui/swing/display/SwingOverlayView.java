@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// SwingOverlayView.java
 //
 
 /*
@@ -32,29 +32,78 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.ui.swing.display;
 
 import imagej.data.roi.AbstractOverlay;
+import imagej.display.OverlayView;
+import imagej.util.Index;
+
+import org.jhotdraw.draw.Drawing;
+import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.RectangleFigure;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * TODO
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public class SwingOverlayView extends OverlayView {
 
-	private final AbstractOverlay overlay;
+	private final SwingImageDisplay display;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
+	/** JHotDraw {@link Figure} linked to the associated {@link AbstractOverlay}. */
+	private final Figure figure;
+
+	public SwingOverlayView(final SwingImageDisplay display,
+		final AbstractOverlay overlay)
+	{
 		super(display, overlay);
-		this.overlay = overlay;
+		this.display = display;
+
+		final double x = 20 * Math.random(), y = 20 * Math.random();
+		final double w = 50 * Math.random() + 20, h = 50 * Math.random() + 20;
+		figure = new RectangleFigure(x, y, w, h);
 	}
 
 	// -- DisplayView methods --
 
 	@Override
-	public AbstractOverlay getDataObject() {
-		return overlay;
+	public void setPosition(final int value, final int dim) {
+		// CTR FIXME
+		// 1. test if new position is MY position
+		// 2. if so, add my figure to the drawing
+		// 3. if not, but I was previously, remove my figure from the drawing
+		final JHotDrawImageCanvas canvas = display.getImageCanvas();
+		final Drawing drawing = canvas.getDrawing();
+		final int oldIndex = (int) Index.indexNDto1D(planeDims, planePos);
+		super.setPosition(value, dim);
+		final int newIndex = (int) Index.indexNDto1D(planeDims, planePos);
+		drawing.remove(figure);
+		drawing.add(figure);
+	}
+
+	@Override
+	public int getPreferredWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getPreferredHeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void rebuild() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

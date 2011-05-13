@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// OverlayUpdatedEvent.java
 //
 
 /*
@@ -32,28 +32,30 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.data.event;
 
-import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * An event indicating an {@link Overlay}'s data has been updated. This means
+ * that coordinates may have changed, but the dimensional structure is the
+ * same as before.
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public class OverlayUpdatedEvent extends DataObjectUpdatedEvent {
 
-	private final AbstractOverlay overlay;
+	private final Overlay overlay;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
-		super(display, overlay);
+	public OverlayUpdatedEvent(final Overlay overlay) {
+		super(overlay);
 		this.overlay = overlay;
 	}
 
-	// -- DisplayView methods --
+	// -- ObjectEvent methods --
 
 	@Override
-	public AbstractOverlay getDataObject() {
+	public Overlay getObject() {
 		return overlay;
 	}
 

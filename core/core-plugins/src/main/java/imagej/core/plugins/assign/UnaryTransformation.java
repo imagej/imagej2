@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 import net.imglib2.ops.function.p1.UnaryOperatorFunction;
 import net.imglib2.ops.operator.UnaryOperator;
 
@@ -58,7 +58,7 @@ public class UnaryTransformation {
 		UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
-		Rect selection = input.getSelection();
+		IntRect selection = input.getSelection();
 		long[] dimensions = new long[input.getImgPlus().numDimensions()];
 		input.getImgPlus().dimensions(dimensions);
 		setRegion(dimensions, selection);
@@ -66,7 +66,7 @@ public class UnaryTransformation {
 
 	// -- public interface --
 
-	public void setRegion(long[] fullDimensions, Rect selection)
+	public void setRegion(long[] fullDimensions, IntRect selection)
 	{
 		if (selection == null) return;
 		long[] origin = new long[fullDimensions.length];

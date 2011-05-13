@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// SwingDatasetView.java
 //
 
 /*
@@ -32,29 +32,60 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.ui.swing.display;
 
-import imagej.data.roi.AbstractOverlay;
+import imagej.awt.AWTImageTools;
+import imagej.data.Dataset;
+import imagej.display.DatasetView;
+
+import java.awt.Image;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+import org.jhotdraw.draw.Drawing;
+import org.jhotdraw.draw.ImageFigure;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * TODO
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public class SwingDatasetView extends DatasetView {
 
-	private final AbstractOverlay overlay;
+	private final ImageFigure figure;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
-		super(display, overlay);
-		this.overlay = overlay;
+	public SwingDatasetView(final SwingImageDisplay display,
+		final Dataset dataset)
+	{
+		super(display, dataset);
+		final JHotDrawImageCanvas canvas = display.getImageCanvas();
+		final Drawing drawing = canvas.getDrawing();
+		figure = new ImageFigure();
+		figure.setSelectable(false);
+		figure.setTransformable(false);
+		drawing.add(figure);
+		rebuild();
 	}
 
 	// -- DisplayView methods --
 
 	@Override
-	public AbstractOverlay getDataObject() {
-		return overlay;
+	public int getPreferredWidth() {
+		return getScreenImage().image().getWidth(null);
+	}
+
+	@Override
+	public int getPreferredHeight() {
+		return getScreenImage().image().getHeight(null);
+	}
+
+	@Override
+	public void update() {
+		final Image image = getScreenImage().image();
+		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
+		figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
+			bufImage.getHeight()));
+		figure.setBufferedImage(bufImage);
 	}
 
 }

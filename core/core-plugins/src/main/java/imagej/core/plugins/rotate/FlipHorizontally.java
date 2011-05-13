@@ -41,7 +41,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 
 /**
  * Creates an output Dataset that is a duplicate of an input Dataset flipped
@@ -78,7 +78,7 @@ public class FlipHorizontally implements ImageJPlugin {
 		
 		HorzFlipTransformer(Dataset input) {
 			maxX = input.getImgPlus().dimension(0);
-			Rect currentSelection = input.getSelection();
+			IntRect currentSelection = input.getSelection();
 			if (currentSelection.width > 0)
 				maxX = currentSelection.x + currentSelection.width;
 		}

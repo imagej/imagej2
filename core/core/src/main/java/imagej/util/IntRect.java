@@ -1,5 +1,5 @@
 //
-// Rect.java
+// IntRect.java
 //
 
 /*
@@ -35,11 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.util;
 
 /**
- * A class for representing a rectangular region. This class is very similar to
- * {@link java.awt.Rectangle}; it mainly exists to avoid problems with AWT, JNI
- * and headless operation. Adapted from BioFormats' Region class.
+ * A class for representing a rectangular region, in integer coordinates. This
+ * class is very similar to {@link java.awt.Rectangle}; it mainly exists to
+ * avoid problems with AWT, JNI and headless operation. Adapted from BioFormats'
+ * Region class.
+ * 
+ * @author Barry DeZonia
  */
-public class Rect {
+public class IntRect {
 
 	// -- Fields --
 
@@ -50,21 +53,21 @@ public class Rect {
 
 	// -- Constructor --
 
-	public Rect() {
+	public IntRect() {
 		// default constructor - allow all instance vars to be initialized to 0
 	}
 
-	public Rect(final int x, final int y, final int width, final int height) {
+	public IntRect(final int x, final int y, final int width, final int height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
 
-	// -- Rect API methods --
+	// -- IntRect methods --
 
 	/** Returns true if this rect intersects the given rect. */
-	public boolean intersects(final Rect r) {
+	public boolean intersects(final IntRect r) {
 		int tw = this.width;
 		int th = this.height;
 		int rw = r.width;
@@ -80,7 +83,8 @@ public class Rect {
 		rh += ry;
 		tw += tx;
 		th += ty;
-		final boolean rtn = (rw < rx || rw > tx) && (rh < ry || rh > ty) &&
+		final boolean rtn =
+			(rw < rx || rw > tx) && (rh < ry || rh > ty) &&
 			(tw < tx || tw > rx) && (th < ty || th > ry);
 		return rtn;
 	}
@@ -89,7 +93,7 @@ public class Rect {
 	 * Returns a Rect representing the intersection of this Rect with the given
 	 * Rect. If the two Rects do not intersect, the result is an empty Rect.
 	 */
-	public Rect intersection(final Rect r) {
+	public IntRect intersection(final IntRect r) {
 		final int newX = Math.max(this.x, r.x);
 		final int newY = Math.max(this.y, r.y);
 		int newW = Math.min(this.x + this.width, r.x + r.width) - x;
@@ -98,7 +102,7 @@ public class Rect {
 		if (newW < 0) newW = 0;
 		if (newH < 0) newH = 0;
 
-		return new Rect(newX, newY, newW, newH);
+		return new IntRect(newX, newY, newW, newH);
 	}
 
 	@Override
@@ -108,11 +112,11 @@ public class Rect {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (!(o instanceof Rect)) return false;
+		if (!(o instanceof IntRect)) return false;
 
-		final Rect that = (Rect) o;
-		return this.x == that.x && this.y == that.y && this.width == that.width &&
-			this.height == that.height;
+		final IntRect rect = (IntRect) o;
+		return x == rect.x && y == rect.y && width == rect.width &&
+			height == rect.height;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 //
-// Overlay.java
+// AbstractOverlay.java
 //
 
 /*
@@ -32,35 +32,52 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.data;
+package imagej.data.roi;
 
-import imagej.data.event.DatasetDeletedEvent;
-import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.event.DatasetUpdatedEvent;
+import imagej.data.AbstractDataObject;
+import imagej.data.Dataset;
+import imagej.data.event.OverlayCreatedEvent;
+import imagej.data.event.OverlayDeletedEvent;
+import imagej.data.event.OverlayRestructuredEvent;
+import imagej.data.event.OverlayUpdatedEvent;
 import imagej.event.Events;
+import net.imglib2.roi.RegionOfInterest;
 
 /**
- * TODO
+ * Abstract superclass of {@link Overlay} implementations.
  * 
  * @author Curtis Rueden
  */
-public class Overlay extends AbstractDataObject {
+public class AbstractOverlay extends AbstractDataObject implements Overlay {
+
+	/** Creates an overlay. */
+	public AbstractOverlay() {
+		Events.publish(new OverlayCreatedEvent(this));
+	}
+
+	// -- Overlay methods --
+
+	@Override
+	public RegionOfInterest getRegionOfInterest() {
+		// NB: By default, no associated region of interest.
+		return null;
+	}
 
 	// -- DataObject methods --
 
 	@Override
 	public void update() {
-//		Events.publish(new OverlayUpdatedEvent(this));		
+		Events.publish(new OverlayUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
-//		Events.publish(new OverlayRestructuredEvent(this));		
+		Events.publish(new OverlayRestructuredEvent(this));
 	}
 
 	@Override
 	public void delete() {
-//		Events.publish(new OverlayDeletedEvent(this));
+		Events.publish(new OverlayDeletedEvent(this));
 	}
 
 }

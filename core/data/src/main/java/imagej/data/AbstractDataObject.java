@@ -34,10 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.data.roi.Overlay;
+
 /**
- * TODO
+ * Base implementation of {@link DataObject}.
  * 
  * @author Curtis Rueden
+ * @see Dataset
+ * @see Overlay
  */
 public abstract class AbstractDataObject implements DataObject {
 

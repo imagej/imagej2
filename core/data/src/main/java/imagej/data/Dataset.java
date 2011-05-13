@@ -42,7 +42,7 @@ import imagej.event.Events;
 import imagej.util.Dimensions;
 import imagej.util.Index;
 import imagej.util.Log;
-import imagej.util.Rect;
+import imagej.util.IntRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable16;
@@ -89,14 +89,16 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class Dataset extends AbstractDataObject implements Comparable<Dataset>, Metadata {
+public class Dataset extends AbstractDataObject implements
+	Comparable<Dataset>, Metadata
+{
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	// here for plugin testing purposes. Really should be viewcentric.
-	private Rect selection;
+	private IntRect selection;
 
 	public void setSelection(final int minX, final int minY, final int maxX,
 		final int maxY)
@@ -107,7 +109,7 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		selection.height = maxY - minY + 1;
 	}
 
-	public Rect getSelection() {
+	public IntRect getSelection() {
 		return selection;
 	}
 
@@ -116,7 +118,7 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 	public Dataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
-		selection = new Rect();
+		selection = new IntRect();
 		Events.publish(new DatasetCreatedEvent(this));
 	}
 
@@ -132,7 +134,7 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		this.imgPlus = imgPlus;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
-		selection = new Rect();
+		selection = new IntRect();
 
 		rebuild();
 	}
@@ -156,8 +158,8 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		if (img instanceof PlanarAccess) {
 			final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
 			final Object plane = planarAccess.getPlane(planeNumber);
-			if (plane instanceof ArrayDataAccess)
-				return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
+			if (plane instanceof ArrayDataAccess) return ((ArrayDataAccess<?>) plane)
+				.getCurrentStorageArray();
 		}
 		return copyOfPlane(planeNumber);
 	}
@@ -467,32 +469,33 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		return new Dataset(imgPlus);
 	}
 
-	/** Changes a Dataset's internal data and metadata to match that from
-	 *  a given Dataset. Only it's name stays the same. Written to allow
-	 *  nonplanar representations to copy data from other Datasets as needed
-	 *  to get around the fact that its data is not being shared by reference. 
+	/**
+	 * Changes a Dataset's internal data and metadata to match that from a given
+	 * Dataset. Only it's name stays the same. Written to allow nonplanar
+	 * representations to copy data from other Datasets as needed to get around
+	 * the fact that its data is not being shared by reference.
 	 */
-	@SuppressWarnings({"unchecked","rawtypes"})
-	public void copyDataFrom(Dataset other) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void copyDataFrom(final Dataset other) {
 		// create a new img to hold data using our own factory
-		ImgFactory factory = getImgPlus().getImg().factory();
-		Img<? extends RealType<?>> newImg =
+		final ImgFactory factory = getImgPlus().getImg().factory();
+		final Img<? extends RealType<?>> newImg =
 			factory.create(other.getDims(), other.getType());
 
 		// copy the data into the new img
 		copyDataValues(other.getImgPlus().getImg(), newImg);
-		
+
 		// create new imgplus to contain data using the current name
-		double[] calib = new double[other.getDims().length];
+		final double[] calib = new double[other.getDims().length];
 		other.calibration(calib);
-		ImgPlus<? extends RealType<?>> newImgPlus =
+		final ImgPlus<? extends RealType<?>> newImgPlus =
 			new ImgPlus(newImg, getName(), other.getAxes(), calib);
 
 		// set my instance vars to the new values
 		setRGBMerged(other.isRGBMerged());
 		setImgPlus(newImgPlus);
 	}
-	
+
 	// -- Helper methods --
 
 	private static void invalidParams(final int bitsPerPixel,
@@ -514,20 +517,21 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 	}
 
 	// NB - non imglib implementation available in SVN revision 2812
-	@SuppressWarnings({"rawtypes","unchecked"})
-	private Object copyOfPlane(int planeNum) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Object copyOfPlane(final int planeNum) {
 		final long[] dimensions = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dimensions);
 		final long w = dimensions[0];
 		final long h = dimensions[1];
-		if (w*h > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("cannot create a plane of "+
-				(w*h)+" entities (MAX = "+Integer.MAX_VALUE+")");
+		if (w * h > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("cannot create a plane of " +
+				(w * h) + " entities (MAX = " + Integer.MAX_VALUE + ")");
 		}
 		final NativeType<?> nativeType = (NativeType<?>) getType();
 		final NativeImgFactory storageFactory = new ArrayImgFactory();
-		final ArrayImg<?,?> container = (ArrayImg<?,?>)
-			nativeType.createSuitableNativeImg(storageFactory, new long[]{w,h});
+		final ArrayImg<?, ?> container =
+			(ArrayImg<?, ?>) nativeType.createSuitableNativeImg(storageFactory,
+				new long[] { w, h });
 		final RandomAccess<? extends RealType<?>> input = imgPlus.randomAccess();
 		final RandomAccess<? extends RealType<?>> output =
 			(RandomAccess<? extends RealType<?>>) container.randomAccess();
@@ -535,7 +539,7 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		final long[] planePos = Index.index1DtoND(planeIndexSpans, planeNum);
 		final long[] inputPos = new long[dimensions.length];
 		for (int i = 2; i < dimensions.length; i++)
-			inputPos[i] = planePos[i-2];
+			inputPos[i] = planePos[i - 2];
 		final long[] outputPos = new long[2];
 		input.setPosition(inputPos);
 		output.setPosition(outputPos);
@@ -545,7 +549,7 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 		final int maxY = (int) (h - 1);
 		for (int y = 0; y <= maxY; y++) {
 			for (int x = 0; x <= maxX; x++) {
-				double value = inputRef.getRealDouble();
+				final double value = inputRef.getRealDouble();
 				outputRef.setReal(value);
 				if (x != maxX) {
 					input.move(1, 0);
@@ -559,24 +563,26 @@ public class Dataset extends AbstractDataObject implements Comparable<Dataset>, 
 				output.move(1, 1);
 			}
 		}
-		final ArrayDataAccess<?> store = (ArrayDataAccess<?>) container.update(null);
+		final ArrayDataAccess<?> store =
+			(ArrayDataAccess<?>) container.update(null);
 		return store.getCurrentStorageArray();
 	}
 
 	// NB - assumes the two images are of the exact same dimensions
-	private void copyDataValues(
-		Img<? extends RealType<?>> input, Img<? extends RealType<?>> output)
+	private void copyDataValues(final Img<? extends RealType<?>> input,
+		final Img<? extends RealType<?>> output)
 	{
-		long[] position = new long[output.numDimensions()];
-		Cursor<? extends RealType<?>> outputCursor = output.cursor();
-		RandomAccess<? extends RealType<?>> inputAccessor = input.randomAccess();
+		final long[] position = new long[output.numDimensions()];
+		final Cursor<? extends RealType<?>> outputCursor = output.cursor();
+		final RandomAccess<? extends RealType<?>> inputAccessor =
+			input.randomAccess();
 		while (outputCursor.hasNext()) {
 			outputCursor.next();
 			outputCursor.localize(position);
 			inputAccessor.setPosition(position);
-			double value = inputAccessor.get().getRealDouble();
+			final double value = inputAccessor.get().getRealDouble();
 			outputCursor.get().setReal(value);
 		}
 	}
-	
+
 }

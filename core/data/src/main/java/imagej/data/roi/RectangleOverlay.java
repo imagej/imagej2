@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// RectangleOverlay.java
 //
 
 /*
@@ -32,29 +32,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.display;
+package imagej.data.roi;
 
-import imagej.data.roi.AbstractOverlay;
+import imagej.util.RealRect;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * Rectangle overlay, with edges orthogonal to XY axes.
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public class RectangleOverlay extends AbstractOverlay {
 
-	private final AbstractOverlay overlay;
+	private final RealRect bounds;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
-		super(display, overlay);
-		this.overlay = overlay;
+	public RectangleOverlay(final RealRect bounds) {
+		this.bounds = bounds;
 	}
 
-	// -- DisplayView methods --
-
-	@Override
-	public AbstractOverlay getDataObject() {
-		return overlay;
+	public RealRect getBounds() {
+		return bounds;
 	}
 
 }

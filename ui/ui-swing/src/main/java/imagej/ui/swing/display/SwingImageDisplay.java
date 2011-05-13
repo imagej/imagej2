@@ -37,10 +37,9 @@ package imagej.ui.swing.display;
 import imagej.ImageJ;
 import imagej.awt.AWTDisplay;
 import imagej.awt.AWTEventDispatcher;
-import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
-import imagej.display.DatasetView;
+import imagej.data.roi.AbstractOverlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -51,21 +50,15 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
-import imagej.tool.*;
+import imagej.tool.ToolManager;
 import imagej.ui.UIManager;
 import imagej.ui.UserInterface;
-import imagej.util.Log;
 
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.imglib2.display.ARGBScreenImage;
 
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
@@ -80,13 +73,13 @@ public class SwingImageDisplay implements AWTDisplay {
 	private final ArrayList<DisplayView> views;
 	private final List<EventSubscriber<?>> subscribers;
 
-	private SwingImageCanvas imgCanvas;
-	private SwingDisplayWindow imgWindow;
-	
+	private final JHotDrawImageCanvas imgCanvas;
+	private final SwingDisplayWindow imgWindow;
+
 	private boolean willRebuildImgWindow;
 
-	private Display thisDisplay;
-	
+	private final Display thisDisplay;
+
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
 		subscribers = new ArrayList<EventSubscriber<?>>();
@@ -95,7 +88,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		displayManager.setActiveDisplay(this);
 		subscribeToEvents(displayManager);
 
-		imgCanvas = new SwingImageCanvas();
+		imgCanvas = new JHotDrawImageCanvas();
 		imgWindow = new SwingDisplayWindow(this);
 
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
@@ -104,16 +97,16 @@ public class SwingImageDisplay implements AWTDisplay {
 
 		imgWindow.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosed(WindowEvent e) {
-				for (DisplayView view : getViews()) {
+			public void windowClosed(final WindowEvent e) {
+				for (final DisplayView view : getViews()) {
 					view.dispose();
 				}
 			}
 		});
-		
+
 		willRebuildImgWindow = false;
 		thisDisplay = this;
-		
+
 		Events.publish(new DisplayCreatedEvent(this));
 	}
 
@@ -126,52 +119,30 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public void display(final Dataset dataset) {
-		addView(new DatasetView(this, dataset));
-//		addView(new OverlayView(this, new Overlay()));
+		addView(new SwingDatasetView(this, dataset));
+		update();
+	}
+
+	@Override
+	public void display(final AbstractOverlay overlay) {
+		addView(new SwingOverlayView(this, overlay));		
+		update();
 	}
 
 	@Override
 	public void update() {
-		// compute width and height needed to contain all view images
-		int width = 0, height = 0;
 		for (final DisplayView view : views) {
-			final int w = view.getImageWidth();
-			final int h = view.getImageHeight();
-			if (w > width) width = w;
-			if (h > height) height = h;
+			view.update();
 		}
 
-		// paint view images onto result image
-		final BufferedImage result = AWTImageTools.createImage(width, height);
-		final Graphics gfx = result.getGraphics();
-		for (final DisplayView view : views) {
-			final Object image = view.getImage();
-			// TODO - Fix this hack. Perhaps AWTDisplayView could extend DisplayView
-			// and narrow the getImage() method to return a java.awt.Image?
-			final Image awtImage;
-			if (image instanceof Image) {
-				awtImage = (Image) image;
-			}
-			else if (image instanceof ARGBScreenImage) {
-				awtImage = ((ARGBScreenImage) image).image();
-			}
-			else {
-				awtImage = null;
-				Log.warn("Unsupported DisplayView: " + view);
-				continue;
-			}
-			gfx.drawImage(awtImage, 0, 0, null);
-		}
-		gfx.dispose();
-		imgCanvas.setImage(result);
-		if ( ! willRebuildImgWindow ) {
+		if (!willRebuildImgWindow) {
 			imgWindow.update();
 		}
 		else { // rebuild image window
-		  // NB - if pan to be reset below we'll be zoomed on wrong part of image 
-			imgCanvas.setZoom(0);  // original scale
-		  // NB - if x or y dims change without this image panned incorrectly
-			//   Must happen after setZoom() call
+			// NB - if pan to be reset below we'll be zoomed on wrong part of image
+			imgCanvas.setZoom(0); // original scale
+			// NB - if x or y dims change without this image panned incorrectly
+			// Must happen after setZoom() call
 			imgCanvas.panReset();
 			imgWindow.redoLayout();
 			willRebuildImgWindow = false;
@@ -207,7 +178,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public DisplayView getActiveView() {
 		// CTR TODO - do better than hardcoding first view
-		return views.get(0);
+		return views.size() > 0 ? views.get(0) : null;
 	}
 
 	@Override
@@ -216,14 +187,15 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public SwingImageCanvas getImageCanvas() {
+	public JHotDrawImageCanvas getImageCanvas() {
 		return imgCanvas;
 	}
 
 	// -- Helper methods --
 
 	@SuppressWarnings("synthetic-access")
-	private DisplayManager subscribeToEvents(final DisplayManager displayManager)
+	private DisplayManager
+		subscribeToEvents(final DisplayManager displayManager)
 	{
 		// CTR TODO - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
@@ -236,8 +208,8 @@ public class SwingImageDisplay implements AWTDisplay {
 			public void onEvent(final WinActivatedEvent event) {
 				displayManager.setActiveDisplay(event.getDisplay());
 				if (event.getDisplay() != thisDisplay) return;
-				UserInterface ui = ImageJ.get(UIManager.class).getUI();
-				ToolManager toolMgr = ui.getToolBar().getToolManager();
+				final UserInterface ui = ImageJ.get(UIManager.class).getUI();
+				final ToolManager toolMgr = ui.getToolBar().getToolManager();
 				imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
 			}
 		};
@@ -259,9 +231,9 @@ public class SwingImageDisplay implements AWTDisplay {
 			new EventSubscriber<DatasetRestructuredEvent>()
 		{
 			@Override
-			public void onEvent(DatasetRestructuredEvent event) {
-				Dataset dataset = event.getObject();
-				for (DisplayView view : views) {
+			public void onEvent(final DatasetRestructuredEvent event) {
+				final Dataset dataset = event.getObject();
+				for (final DisplayView view : views) {
 					if (dataset == view.getDataObject()) {
 						willRebuildImgWindow = true;
 						return;
@@ -271,7 +243,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		};
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 		subscribers.add(restructureSubscriber);
-			
+
 		return displayManager;
 	}
 
