@@ -1,5 +1,5 @@
 //
-// OvalTool.java
+// RectangleTool.java
 //
 
 /*
@@ -32,22 +32,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.ui.swing.tools;
 
+import imagej.ImageJ;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.ui.swing.display.JHotDrawImageCanvas;
+import imagej.ui.swing.display.SwingImageDisplay;
+
+import org.jhotdraw.draw.RectangleFigure;
+import org.jhotdraw.draw.tool.CreationTool;
 
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Oval", iconPath = "/tools/oval.png",
-	priority = OvalTool.PRIORITY, enabled = false)
-public class OvalTool extends BaseTool {
+@Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
+	priority = RectangleTool.PRIORITY, enabled = true)
+public class RectangleTool extends BaseTool {
 
-	public static final int PRIORITY = 101;
+	public static final int PRIORITY = 100;
 
-	// TODO
+	@Override
+	public void activate() {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);		
+		final Display display = displayManager.getActiveDisplay();
+		final SwingImageDisplay swingDisplay = (SwingImageDisplay) display; // TEMP -- horrible
+		// FIXME - Change architecture to call tool.activate() every time a display is set to active.
+		final JHotDrawImageCanvas canvas = swingDisplay.getImageCanvas();
+		canvas.getDrawingEditor().setTool(new CreationTool(new RectangleFigure()));
+	}
+
+	@Override
+	public void deactivate() {
+//		canvas.getDrawingEditor().setTool(dummyTool);
+	}
 
 }

@@ -1,5 +1,5 @@
 //
-// PointTool.java
+// PolygonTool.java
 //
 
 /*
@@ -32,9 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.ui.swing.tools;
 
-import imagej.display.MouseCursor;
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
@@ -43,16 +42,11 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Point", iconPath = "/tools/point.png", description = "Point",
-	priority = PointTool.PRIORITY, enabled = false)
-public class PointTool extends BaseTool {
+@Tool(name = "Polygon", iconPath = "/tools/polygon.png",
+	priority = PolygonTool.PRIORITY, enabled = false)
+public class PolygonTool extends BaseTool {
 
-	public static final int PRIORITY = 105;
-
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.CROSSHAIR;
-	}
+	public static final int PRIORITY = 102;
 
 	// TODO
 
