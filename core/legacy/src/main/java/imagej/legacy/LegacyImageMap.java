@@ -137,9 +137,9 @@ public class LegacyImageMap {
 		}
 		
 		// if here we know its not a RGB imp. If we were a color Dataset
-		// then forget that fact now.
+		// then we no longer are.
 		ds.setRGBMerged(false);
-
+		
 		// was a slice added or deleted?
 		if (dimensionsDifferent(ds, imp)) {
 			rebuildData(ds, imp);
