@@ -297,7 +297,8 @@ public abstract class DatasetView extends AbstractDisplayView {
 			new EventSubscriber<DatasetUpdatedEvent>() {
 				@Override
 				public void onEvent(DatasetUpdatedEvent event) {
-					projector.map();
+					if (dataset == event.getObject())
+						projector.map();
 					Log.debug("DATASET UPDATE CAUGHT");
 				}
 		};
