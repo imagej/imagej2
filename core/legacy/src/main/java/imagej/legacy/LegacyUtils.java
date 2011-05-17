@@ -60,7 +60,7 @@ public class LegacyUtils {
 	}
 	
 
-	public static int ij1AxisCount(int xIndex, int yIndex, int cIndex,
+	public static int countIJ1Axes(int xIndex, int yIndex, int cIndex,
 		int zIndex, int tIndex)
 	{
 		int total = 0;

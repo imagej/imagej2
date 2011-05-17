@@ -188,15 +188,13 @@ public class RGBImageTranslator implements ImageTranslator {
 		// set the data values in the ImagePlus
 		final ImageStack stack = new ImageStack(w, h);
 		int axesPresent =
-			LegacyUtils.ij1AxisCount(xIndex, yIndex, cIndex, zIndex, tIndex);
+			LegacyUtils.countIJ1Axes(xIndex, yIndex, cIndex, zIndex, tIndex);
 		long[] position = new long[axesPresent];
 		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0)
-				position[tIndex] = ti;
+			if (tIndex >= 0) position[tIndex] = ti;
 			for (int zi = 0; zi < z; zi++) {
 				ColorProcessor proc = new ColorProcessor(w, h);
-				if (zIndex >= 0)
-					position[zIndex] = zi;
+				if (zIndex >= 0) position[zIndex] = zi;
 				for (int yi = 0; yi < h; yi++) {
 					position[yIndex] = yi;
 					for (int xi = 0; xi < w; xi++) {
