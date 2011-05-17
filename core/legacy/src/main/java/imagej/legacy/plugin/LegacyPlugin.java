@@ -38,6 +38,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
 import imagej.plugin.ImageJPlugin;
@@ -66,7 +67,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap(); 
+		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
+		final DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
 		outputSet.clear();
 		IJ.runPlugIn(className, arg);
@@ -76,7 +78,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			if (ds == null)
 				ds = map.registerLegacyImage(imp);
 			else
-				map.reconcileDifferences(ds, imp);
+				harmonizer.harmonize(ds, imp);
 			outputs.add(ds);
 		}
 		outputSet.clear();

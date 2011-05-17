@@ -58,16 +58,16 @@ public class LegacyImageMap {
 
 	// -- instance variables --
 	
-	private Map<ImagePlus, Dataset> imageTable =
-		new WeakHashMap<ImagePlus, Dataset>();
-
-	private ImageTranslator imageTranslator = new DefaultImageTranslator();
-
-	private LegacyMetadataTranslator metadataTranslator =
-		new LegacyMetadataTranslator();
+	private Map<ImagePlus, Dataset> imageTable;
+	private ImageTranslator imageTranslator;
 
 	// -- public interface --
-	
+
+	public LegacyImageMap() {
+		imageTable = new WeakHashMap<ImagePlus, Dataset>();
+		imageTranslator = new DefaultImageTranslator();
+	}
+
 	public Dataset findDataset(ImagePlus imp) {
 		return imageTable.get(imp);
 	}
@@ -117,130 +117,8 @@ public class LegacyImageMap {
 		WindowManager.setTempCurrentImage(imp);
 		return imp;
 	}
-
-	/** changes the data within a Dataset to match data in an ImagePlus */
-	public void reconcileDifferences(Dataset ds, ImagePlus imp) {
-		
-		// is our dataset not sharing planes with the ImagePlus by reference?
-		// if so assume any change possible and thus rebuild all
-		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
-			rebuildNonplanarData(ds, imp);
-			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
-			return;
-		}
-
-		// color data is not shared by reference
-		// any change to plane data must somehow be copied back
-		// the easiest way to copy back is via new creation
-		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			rebuildData(ds, imp);
-			ds.setRGBMerged(true);
-			return;
-		}
-		
-		// if here we know its not a RGB imp. If we were a color Dataset
-		// then we no longer are.
-		ds.setRGBMerged(false);
-		
-		// was a slice added or deleted?
-		if (dimensionsDifferent(ds, imp)) {
-			rebuildData(ds, imp);
-			return;
-		}
-
-		// if here we know we have planar backing
-		// the plane references could have changed in some way:
-		//   - setPixels, setProcessor, stack rearrangement, etc.
-		// its easier to always reassign them rather than
-		//   calculate exactly what to do
-		assignPlaneReferences(ds, imp);
-		
-		// make sure metadata accurately updated
-		metadataTranslator.setDatasetMetadata(ds,imp);
-		
-		// TODO - any other cases?
-
-		// Since we are storing planes by reference we're done
-		
-		ds.update();
-	}
-
-	// -- private helpers -- 
 	
-	/** fills a nonplanar Dataset's values with data from an ImagePlus */
-	private void rebuildNonplanarData(Dataset ds, ImagePlus imp) {
-		Dataset tmpDs = imageTranslator.createDataset(imp);
-		ds.copyDataFrom(tmpDs);
-	}
-	
-	/** fills a Dataset's values with data from an ImagePlus */
-	private void rebuildData(Dataset ds, ImagePlus imp) {
-		Dataset tmpDs = imageTranslator.createDataset(imp);
-		ds.setImgPlus(tmpDs.getImgPlus());
-	}
-
-	/** determines whether a Dataset and an ImagePlus have different dimensionality */
-	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-
-		boolean different =
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
-		
-		if ( ! different )
-			if ( LegacyUtils.hasNonIJ1Axes(imgPlus) )
-				throw new IllegalStateException(
-					"Dataset associated with ImagePlus has axes incompatible with IJ1");
-		
-		return different;
-	}
-
-	/** determines whether a single dimension in an ImgPlus differs from
-	 *  a given value */ 
-	private boolean dimensionDifferent(ImgPlus<?> imgPlus, int axis, int value) {
-		if (axis >= 0)
-			return imgPlus.dimension(axis) != value;
-		// axis < 0 : not present in imgPlus
-		return value != 1;
-	}
-
-	/** assigns the plane references of a planar Dataset to match the plane
-	 *  references of a given ImagePlus
-	 */
-	private void assignPlaneReferences(Dataset ds, ImagePlus imp) {
-		ImageStack stack = imp.getStack();
-		if (stack == null) {  // just a 2d image
-			Object pixels = imp.getProcessor().getPixels();
-			ds.setPlane(0, pixels);
-			return;
-		}
-		int zIndex = ds.getAxisIndex(Axes.Z);
-		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		int tIndex = ds.getAxisIndex(Axes.TIME);
-		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
-		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
-		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
-		long[] planeDims = new long[ds.getImgPlus().numDimensions()-2];
-		if (zIndex >= 0) planeDims[zIndex-2] = z;
-		if (cIndex >= 0) planeDims[cIndex-2] = c;
-		if (tIndex >= 0) planeDims[tIndex-2] = t;
-		long[] planePos = new long[planeDims.length];
-		int imagejPlaneNumber = 1;
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) planePos[tIndex-2] = ti;
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) planePos[zIndex-2] = zi;
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) planePos[cIndex-2] = ci;
-					long imglibPlaneNumber = Index.indexNDto1D(planeDims, planePos);
-					Object plane = stack.getPixels(imagejPlaneNumber);
-					ds.setPlane((int)imglibPlaneNumber, plane);
-					imagejPlaneNumber++;
-				}
-			}
-		}
+	public ImageTranslator getTranslator() {
+		return imageTranslator;
 	}
 }

@@ -207,6 +207,7 @@ public class LegacyImageMapTest {
 
 	@Test
 	public void testReconciliation() {
+		DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
 		ImagePlus imp;
 		Dataset ds0,ds1;
 		ImgPlus<?> imgPlus0;
@@ -244,7 +245,7 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 0xff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
-		map.reconcileDifferences(ds1, imp);
+		harmonizer.harmonize(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		
@@ -259,7 +260,7 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 0xffffffff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
-		map.reconcileDifferences(ds1, imp);
+		harmonizer.harmonize(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		testColorSame(ds1,imp);
@@ -275,7 +276,7 @@ public class LegacyImageMapTest {
 		imp.setStack(imp.getStack());
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
-		map.reconcileDifferences(ds1, imp);
+		harmonizer.harmonize(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
@@ -290,7 +291,7 @@ public class LegacyImageMapTest {
 		imp.getCalibration().pixelDepth = 99;  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
-		map.reconcileDifferences(ds1, imp);
+		harmonizer.harmonize(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
@@ -306,7 +307,7 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 100);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
-		map.reconcileDifferences(ds1, imp);
+		harmonizer.harmonize(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
 		testSame(ds1,imp);
