@@ -37,6 +37,7 @@ package imagej.display;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.util.Dimensions;
@@ -274,7 +275,7 @@ public abstract class DatasetView extends AbstractDisplayView {
 				public void onEvent(DatasetTypeChangedEvent event) {
 					if (dataset == event.getObject())
 						rebuild();
-					Log.debug("TYPE CHANGE CAUGHT");
+					Log.debug("DATASET TYPE CHANGE CAUGHT");
 				}
 		};
 		subscribers.add(typeChangeSubscriber);
@@ -286,10 +287,22 @@ public abstract class DatasetView extends AbstractDisplayView {
 				public void onEvent(DatasetRGBChangedEvent event) {
 					if (dataset == event.getObject())
 						rebuild();
-					Log.debug("COLOR CHANGE CAUGHT");
+					Log.debug("DATASET COLOR CHANGE CAUGHT");
 				}
 		};
 		subscribers.add(rgbChangeSubscriber);
 		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
+
+		EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DatasetUpdatedEvent>() {
+				@Override
+				public void onEvent(DatasetUpdatedEvent event) {
+					projector.map();
+					Log.debug("DATASET UPDATE CAUGHT");
+				}
+		};
+		subscribers.add(updateSubscriber);
+		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+
 	}
 }
