@@ -35,8 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetRGBChangedEvent;
+import imagej.data.event.DatasetTypeChangedEvent;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
 import imagej.util.Dimensions;
 import imagej.util.Index;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,12 +80,13 @@ public abstract class DatasetView extends AbstractDisplayView {
 	private CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
 	private ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
-
+	private ArrayList<EventSubscriber<?>> subscribers;
 	private int offsetX, offsetY;
 
 	public DatasetView(final Display display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
+		subscribeToEvents();
 	}
 
 	// -- DatasetView methods --
@@ -258,4 +264,32 @@ public abstract class DatasetView extends AbstractDisplayView {
 		return channelDimIndex < 0 ? 1 : dims[channelDimIndex];
 	}
 
+	@SuppressWarnings("synthetic-access")
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
+			new EventSubscriber<DatasetTypeChangedEvent>() {
+				@Override
+				public void onEvent(DatasetTypeChangedEvent event) {
+					if (dataset == event.getObject())
+						rebuild();
+					Log.debug("TYPE CHANGE CAUGHT");
+				}
+		};
+		subscribers.add(typeChangeSubscriber);
+		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
+
+		EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
+			new EventSubscriber<DatasetRGBChangedEvent>() {
+				@Override
+				public void onEvent(DatasetRGBChangedEvent event) {
+					if (dataset == event.getObject())
+						rebuild();
+					Log.debug("COLOR CHANGE CAUGHT");
+				}
+		};
+		subscribers.add(rgbChangeSubscriber);
+		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
+	}
 }

@@ -36,7 +36,9 @@ package imagej.data;
 
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
+import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.Events;
 import imagej.util.Dimensions;
@@ -131,6 +133,12 @@ public class Dataset extends AbstractDataObject implements
 			throw new IllegalArgumentException("Invalid dimensionality: expected " +
 				this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
 		}
+
+		// are types different
+		if (imgPlus.getImg().cursor().get().getClass() !=
+			this.imgPlus.getImg().cursor().get().getClass())
+			typeChange();
+		
 		this.imgPlus = imgPlus;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
@@ -261,6 +269,8 @@ public class Dataset extends AbstractDataObject implements
 	 * image translators to support color images correctly.
 	 */
 	public void setRGBMerged(final boolean rgbMerged) {
+		if (rgbMerged != this.rgbMerged)
+			rgbChange();
 		this.rgbMerged = rgbMerged;
 	}
 
@@ -270,6 +280,14 @@ public class Dataset extends AbstractDataObject implements
 	 */
 	public boolean isRGBMerged() {
 		return rgbMerged;
+	}
+
+	public void typeChange() {
+		Events.publish(new DatasetTypeChangedEvent(this));
+	}
+
+	public void rgbChange() {
+		Events.publish(new DatasetRGBChangedEvent(this));
 	}
 
 	// -- DataObject methods --
