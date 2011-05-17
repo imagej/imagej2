@@ -125,6 +125,7 @@ public class LegacyImageMap {
 		// if so assume any change possible and thus rebuild all
 		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
 			rebuildNonplanarData(ds, imp);
+			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
 			return;
 		}
 
