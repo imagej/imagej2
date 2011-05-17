@@ -133,6 +133,7 @@ public class LegacyImageMap {
 		// the easiest way to copy back is via new creation
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			rebuildData(ds, imp);
+			ds.setRGBMerged(true);
 			return;
 		}
 		
