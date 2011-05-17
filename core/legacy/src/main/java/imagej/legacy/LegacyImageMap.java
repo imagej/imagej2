@@ -35,18 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.WindowManager;
 
 import imagej.data.Dataset;
-import imagej.util.Index;
 
 import java.util.Map;
 import java.util.WeakHashMap;
-
-import net.imglib2.img.Axes;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
 
 /**
  * TODO
