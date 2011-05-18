@@ -1,4 +1,8 @@
-/* IROIContainer.java
+//
+// AbstractLineROIAdapter.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,66 +31,27 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+package imagej.ui.swing.tools.roi;
 
-package imagej.roi;
+import imagej.data.roi.AbstractLineOverlay;
 
-import java.util.Collection;
+import org.jhotdraw.draw.AbstractAttributedFigure;
+import org.jhotdraw.draw.AttributeKeys;
 
 /**
  * @author leek
- *
- *The IROIContainer interface captures the idea of a possibly
- *hierarchical tree of collections of ROIs, for instance
- *the collection available for picking by the user or
- *the set that are applied to a particular image.
- *
- *The interface can be applied to objects that, by nature
- *are a collection of ROIs instead of containing a collection
- *of ROIs. A segmentation / labeling is one of these: the
- *ROIs correspond to labels in the underlying matrix.
+ * The AbstractLineROIAdapter adds mechanisms to populate the line attributes
+ * of an AbstractLineROI from an AbstractAttributedFigure and vice-versa
  */
-public interface IROIContainer {
-	/**
-	 * The number of ROIs in the container
-	 * @return - a count of ROIs
-	 */
-	public int getROICount();
-	
-	/**
-	 * @return the names of the ROIs in the container (but not the sub-containers)
-	 */
-	public Collection<String> getROINames();
-	
-	/**
-	 * @return the ROIs in the container
-	 */
-	public Collection<ImageJROI> getROIs();
-	
-	/**
-	 * Retrieve a ROI by name
-	 * @param name
-	 * @return
-	 */
-	public ImageJROI getROI(String name);
+public abstract class AbstractLineOverlayAdapter<F extends AbstractAttributedFigure> extends AbstractJHotDrawOverlayAdapter {
 
-	/**
-	 * @return the number of sub-containers within this one
-	 */
-	public int getSubContainerCount();
+	protected void setFigureLineProperties(AbstractLineOverlay roi, F figure) {
+		figure.set(AttributeKeys.STROKE_COLOR, roi.getLineColor());
+		figure.set(AttributeKeys.STROKE_WIDTH, roi.getLineWidth());
+	}
 	
-	/**
-	 * @return the names of all sub-containers
-	 */
-	public Collection<String> getSubContainerNames();
-	
-	/**
-	 * @return all sub-containers
-	 */
-	public Collection<IROIContainer> getSubContainers();
-	
-	/**
-	 * @param name the name of the container to retrieve
-	 * @return the sub-container with the given name
-	 */
-	public IROIContainer getSubContainer(String name);
+	protected void setROILineProperties(F figure, AbstractLineOverlay roi) {
+		roi.setLineColor(figure.get(AttributeKeys.STROKE_COLOR));
+		roi.setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
+	}
 }

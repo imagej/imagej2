@@ -1,4 +1,8 @@
-/* ROIContainer.java
+//
+// AbstractShapeROI.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,80 +31,72 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+package imagej.data.roi;
 
-package imagej.roi;
+import java.awt.Color;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import net.imglib2.roi.RegionOfInterest;
+
 
 /**
  * @author leek
- *The default container for ROIs
+ *
+ * The shape ROI represents a region of interest with an interior.
+ *
+ * @param <T> - the region of interest type returned by getShapeRegionOfInterest
  */
-public class ROIContainer implements IMutableROIContainer {
+public abstract class AbstractShapeOverlay <T extends RegionOfInterest>extends AbstractLineOverlay {
 
-	protected Map<String, ImageJROI> roiMap = new HashMap<String, ImageJROI>();
-	protected Map<String, IROIContainer> containerMap = new HashMap<String, IROIContainer>();
-	@Override
-	public int getROICount() {
-		return roiMap.size();
+	private static final long serialVersionUID = 1L;
+	
+	protected Color fillColor = new Color(255,255,255);
+
+	protected double opacity = 1.0;
+
+	/**
+	 * @return the color to be used to paint the interior of the shape
+	 */
+	public Color getFillColor() {
+		return fillColor;
 	}
 
-	@Override
-	public Collection<String> getROINames() {
-		return Collections.unmodifiableSet(roiMap.keySet());
+	/**
+	 * @param fillColor the color of the interior of the shape
+	 */
+	public void setFillColor(Color fillColor) {
+		this.fillColor = fillColor;
 	}
 
-	@Override
-	public Collection<ImageJROI> getROIs() {
-		return Collections.unmodifiableCollection(roiMap.values());
+	/**
+	 * @return the opacity of the fill (0 = transparent, 1 = opaque
+	 */
+	public double getOpacity() {
+		return opacity;
 	}
 
-	@Override
-	public ImageJROI getROI(String name) {
-		return roiMap.get(name);
+	/**
+	 * @param opacity the opacity of the fill (0 = transparent, 1 = opaque
+	 */
+	public void setOpacity(double opacity) {
+		this.opacity = opacity;
 	}
+	
+	/**
+	 * @return the region of interest cast to the derived type.
+	 */
+	abstract protected T getShapeRegionOfInterest();
 
-	@Override
-	public int getSubContainerCount() {
-		return containerMap.size();
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(fillColor);
+		out.writeDouble(opacity);
 	}
-
-	@Override
-	public Collection<String> getSubContainerNames() {
-		return Collections.unmodifiableSet(containerMap.keySet());
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		super.readExternal(in);
+		fillColor = (Color)in.readObject();
+		opacity = in.readDouble();
 	}
-
-	@Override
-	public Collection<IROIContainer> getSubContainers() {
-		return Collections.unmodifiableCollection(containerMap.values());
-	}
-
-	@Override
-	public IROIContainer getSubContainer(String name) {
-		return containerMap.get(name);
-	}
-
-	@Override
-	public void addROI(ImageJROI roi, String name) {
-		roiMap.put(name, roi);
-	}
-
-	@Override
-	public void removeROI(String name) {
-		roiMap.remove(name);
-	}
-
-	@Override
-	public void addSubContainer(IROIContainer container, String name) {
-		containerMap.put(name, container);
-	}
-
-	@Override
-	public void removeSubContainer(String name) {
-		containerMap.remove(name);
-	}
-
 }

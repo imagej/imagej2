@@ -1,4 +1,8 @@
-/* IMutableROIContainer.java
+//
+// IJHotDrawROIAdapter.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -28,38 +32,55 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.roi;
+package imagej.ui.swing.tools.roi;
+
+import imagej.data.roi.Overlay;
+
+import org.jhotdraw.draw.Figure;
 
 /**
- * @author leek
- * A ROI container where you can add and remove ROIs and sub-containers
+ * Implement the IJHotDrawROIAdapter to create an adapter that lets JHotDraw
+ * edit ImageJ ROIs.
+ * 
+ * @author Lee Kamentsky
  */
-public interface IMutableROIContainer extends IROIContainer {
+public interface IJHotDrawOverlayAdapter {
+
 	/**
-	 * Add a ROI to the container. Insert if there is not a
-	 * ROI with the same name, replace if there is a ROI with the same name.
+	 * Determines whether the adapter can handle a particular roi
+	 * 
+	 * @param roi - a ROI that might be editable
+	 */
+	boolean supports(Overlay roi);
+
+	/**
+	 * Creates a new ROI of the type indicated by the given name. The name must be
+	 * from those returned by getROITypeNames
+	 * 
+	 * @param name the name of a ROI that this adapter can create
+	 * @return a ROI of the associated type in the default initial state
+	 */
+	Overlay createNewOverlay();
+
+	/** Creates a default figure of the type handled by this adapter. */
+	Figure createDefaultFigure();
+
+	/**
+	 * Creates an appropriate figure for the ROI and attach the adapter to it. The
+	 * adapter should manage changes to the figure's model by propagating them to
+	 * the ROI.
 	 * 
 	 * @param roi
-	 * @param name - user-visible name of the ROI
 	 */
-	public void addROI(ImageJROI roi, String name);
-	
+	Figure attachFigureToOverlay(Overlay overlay);
+
 	/**
-	 * Remove a ROI by name
-	 * @param name
+	 * The figure and ROI are separated as the editing session ends. This may be a
+	 * place where incompleteness in the ROI is reconciled, such as connecting the
+	 * final line in a polygon.
+	 * 
+	 * @param figure
 	 */
-	public void removeROI(String name);
-	
-	/**
-	 * Add a sub-container to this one
-	 * @param container
-	 * @param name - the name of the container, for retrieval
-	 */
-	public void addSubContainer(IROIContainer container, String name);
-	
-	/**
-	 * Remove a sub-container by name
-	 * @param name
-	 */
-	public void removeSubContainer(String name);
+	void detachFigureFromOverlay(Figure figure);
+
 }

@@ -1,5 +1,5 @@
 //
-// JHotDrawROIAdapter.java
+// SelectionTool.java
 //
 
 /*
@@ -31,25 +31,31 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+package imagej.ui.swing.tools;
 
-package imagej.roi.ui.jhotdraw;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
+import imagej.tool.BaseTool;
+import imagej.tool.Tool;
 
 /**
- * Add this annotation to any ImageJHotDrawROIAdapter and SezPoz will make it
- * available to ImageJ and let people use JHotDraw to edit it.
- * 
- * @author Lee Kamentsky
+ * @author leek
+ *
+ *The selection tool allows the user to switch to JHotDraw's
+ *DelegationSelectionTool which lets the user move and stretch their overlays.
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type = IJHotDrawROIAdapter.class)
-public @interface JHotDrawROIAdapter {
-	// NB: No attributes.
+@Tool(name = SelectionTool.NAME, iconPath = "/tools/selection.png",
+		priority = SelectionTool.PRIORITY,
+		label = "Selection tool",
+		description = "This tool lets you select an overlay, move it and adjust its shape using its handles.",
+		enabled = true)
+
+public class SelectionTool extends BaseTool {
+
+	final public static int PRIORITY = 100;
+	final public static String NAME = "Selection";
+	
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
 }

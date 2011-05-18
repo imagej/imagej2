@@ -32,9 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.roi.ui.jhotdraw;
+package imagej.ui.swing.tools.roi;
 
-import imagej.roi.ImageJROI;
+import imagej.data.roi.Overlay;
+import imagej.tool.BaseTool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,24 +50,24 @@ import org.jhotdraw.draw.event.FigureListener;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawROIAdapter implements
-	IJHotDrawROIAdapter, FigureListener
+public abstract class AbstractJHotDrawOverlayAdapter extends BaseTool implements
+	IJHotDrawOverlayAdapter, FigureListener
 {
 
-	protected Map<Figure, ImageJROI> map = new HashMap<Figure, ImageJROI>();
+	protected Map<Figure, Overlay> map = new HashMap<Figure, Overlay>();
 
 	// -- IJHotDrawROIAdapter methods --
 
 	@Override
-	public Figure attachFigureToROI(final ImageJROI roi) {
-		final Figure figure = createFigureForROI(roi);
+	public Figure attachFigureToOverlay(final Overlay roi) {
+		final Figure figure = createFigureForOverlay(roi);
 		map.put(figure, roi);
 		figure.addFigureListener(this);
 		return figure;
 	}
 
 	@Override
-	public void detachFigureFromROI(final Figure figure) {
+	public void detachFigureFromOverlay(final Figure figure) {
 		figure.removeFigureListener(this);
 	}
 
@@ -75,7 +76,7 @@ public abstract class AbstractJHotDrawROIAdapter implements
 	@Override
 	public void figureChanged(final FigureEvent event) {
 		final Figure figure = event.getFigure();
-		updateROIModel(figure, map.get(figure));
+		updateOverlayModel(figure, map.get(figure));
 	}
 
 	@Override
@@ -115,7 +116,7 @@ public abstract class AbstractJHotDrawROIAdapter implements
 	 * 
 	 * @param roi
 	 */
-	protected abstract Figure createFigureForROI(ImageJROI roi);
+	protected abstract Figure createFigureForOverlay(Overlay roi);
 
 	/**
 	 * The implementer should update the ROI model to reflect the data in the
@@ -124,6 +125,6 @@ public abstract class AbstractJHotDrawROIAdapter implements
 	 * @param figure
 	 * @param roi
 	 */
-	protected abstract void updateROIModel(Figure figure, ImageJROI roi);
+	protected abstract void updateOverlayModel(Figure figure, Overlay roi);
 
 }

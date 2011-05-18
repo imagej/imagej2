@@ -1,4 +1,8 @@
-/* ImageJROI.java
+//
+// AbstractLineOverlay.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,26 +31,64 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+package imagej.data.roi;
 
-package imagej.roi;
-
+import java.awt.Color;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 
-import net.imglib2.roi.RegionOfInterest;
 
 /**
  * @author leek
  *
- * An ImageJROI is ImageJ's idea of a region of interest.
- * It also can be an annotation for an image or can be
- * a combination of annotation and region
+ * The AbstractLineROI represents an overlay that has line properties
+ * such as line color and line width.
  */
-public interface ImageJROI extends Serializable {
+public abstract class AbstractLineOverlay extends AbstractOverlay implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	protected Color lineColor = new Color(0, 0, 0);
+	
+	protected double lineWidth = 1.0;
+	
 	/**
-	 * Retrieve the imglib region of interest, if any, that
-	 * knows how to determine whether a pixel is in the ROI. 
-	 * @return the region of interest or null if none supported.
+	 * @return the color to be used to paint lines or shape borders
 	 */
-	public RegionOfInterest getRegionOfInterest();
+	public Color getLineColor() {
+		return lineColor;
+	}
+
+	/**
+	 * @param lineColor the color to be used to paint lines and shape borders
+	 */
+	public void setLineColor(Color lineColor) {
+		this.lineColor = lineColor;
+	}
+
+	/**
+	 * @return the width to be used when painting lines and shape borders, in pixels.
+	 */
+	public double getLineWidth() {
+		return lineWidth;
+	}
+
+	/**
+	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
+	 */
+	public void setLineWidth(double lineWidth) {
+		this.lineWidth = lineWidth;
+	}
+	
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(lineColor);
+		out.writeDouble(lineWidth);
+	}
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		lineColor = (Color)in.readObject();
+		lineWidth = in.readDouble();
+	}
 
 }
