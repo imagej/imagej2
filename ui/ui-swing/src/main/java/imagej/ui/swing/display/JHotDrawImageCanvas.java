@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.ImageJ;
 import imagej.awt.AWTCursors;
 import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTImageCanvas;
@@ -41,6 +42,15 @@ import imagej.display.CanvasHelper;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
+import imagej.tool.DummyTool;
+import imagej.tool.ITool;
+import imagej.tool.ToolManager;
+import imagej.tool.event.ToolActivatedEvent;
+import imagej.ui.swing.tools.SelectionTool;
+import imagej.ui.swing.tools.roi.IJCreationTool;
+import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -57,6 +67,10 @@ import org.jhotdraw.draw.DefaultDrawingEditor;
 import org.jhotdraw.draw.DefaultDrawingView;
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.DrawingEditor;
+import org.jhotdraw.draw.event.ToolAdapter;
+import org.jhotdraw.draw.event.ToolEvent;
+import org.jhotdraw.draw.event.ToolListener;
+import org.jhotdraw.draw.tool.CreationTool;
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
@@ -74,6 +88,16 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	private final DrawingEditor drawingEditor;
 
 	private final JScrollPane scrollPane;
+	
+	private final EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
+		new EventSubscriber<ToolActivatedEvent>() {
+
+			@Override
+			public void onEvent(ToolActivatedEvent event) {
+				onToolActivatedEvent(event);
+			}
+		
+	}; 
 
 	public JHotDrawImageCanvas() {
 		canvasHelper = new CanvasHelper(this);
@@ -90,8 +114,33 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		scrollPane = new JScrollPane(drawingView);
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
+		
+		Events.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
 	}
+	
+	protected void onToolActivatedEvent(ToolActivatedEvent event) {
+		ITool iTool = event.getTool();
+		if (iTool instanceof IJHotDrawOverlayAdapter) {
+			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter)iTool;
+			final CreationTool creationTool = new IJCreationTool(adapter);
+			//
+			// Listen for toolDone from the creation tool. This means that
+			// we finished using the JHotDraw tool and we deactivate it
+			//
+			creationTool.addToolListener(new ToolAdapter() {
 
+				@Override
+				public void toolDone(ToolEvent event) {
+					ToolManager toolManager = ImageJ.get(ToolManager.class);
+					toolManager.setActiveTool(new SelectionTool());
+				}
+
+			});
+			drawingEditor.setTool(creationTool);
+		} else if (iTool instanceof SelectionTool) {
+			drawingEditor.setTool(new DelegationSelectionTool());
+		}
+	}
 	// -- JHotDrawImageCanvas methods --
 
 	public Drawing getDrawing() {

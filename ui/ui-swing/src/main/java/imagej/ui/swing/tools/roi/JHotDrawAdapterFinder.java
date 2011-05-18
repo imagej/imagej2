@@ -32,9 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.roi.ui.jhotdraw;
+package imagej.ui.swing.tools.roi;
 
-import imagej.roi.ImageJROI;
+import imagej.data.roi.Overlay;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -54,19 +54,19 @@ public class JHotDrawAdapterFinder {
 
 	private static JHotDrawAdapterFinder theFinder;
 
-	private ArrayList<IJHotDrawROIAdapter> adapters;
+	private ArrayList<IJHotDrawOverlayAdapter> adapters;
 
 	private JHotDrawAdapterFinder() {
 		// NB: prevent instantiation of utility class.
 	}
 
 	private void initialize() {
-		adapters = new ArrayList<IJHotDrawROIAdapter>();
-		for (final IndexItem<JHotDrawROIAdapter, IJHotDrawROIAdapter> indexItem :
-			Index.load(JHotDrawROIAdapter.class, IJHotDrawROIAdapter.class))
+		adapters = new ArrayList<IJHotDrawOverlayAdapter>();
+		for (final IndexItem<JHotDrawOverlayAdapter, IJHotDrawOverlayAdapter> indexItem :
+			Index.load(JHotDrawOverlayAdapter.class, IJHotDrawOverlayAdapter.class))
 		{
 			try {
-				final IJHotDrawROIAdapter adapter = indexItem.instance();
+				final IJHotDrawOverlayAdapter adapter = indexItem.instance();
 				adapters.add(adapter);
 				Log.debug("Found adapter: " + adapter);
 			}
@@ -82,23 +82,23 @@ public class JHotDrawAdapterFinder {
 	 * @param roi - the ROI to be adapted to the JHotDraw GUI
 	 * @return collection of valid adapters
 	 */
-	public static Collection<IJHotDrawROIAdapter> getAdaptersForROI(
-		final ImageJROI roi)
+	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForROI(
+		final Overlay roi)
 	{
 		if (theFinder == null) {
 			theFinder = new JHotDrawAdapterFinder();
 			theFinder.initialize();
 		}
-		final ArrayList<IJHotDrawROIAdapter> result =
-			new ArrayList<IJHotDrawROIAdapter>();
-		for (final IJHotDrawROIAdapter adapter : theFinder.adapters) {
+		final ArrayList<IJHotDrawOverlayAdapter> result =
+			new ArrayList<IJHotDrawOverlayAdapter>();
+		for (final IJHotDrawOverlayAdapter adapter : theFinder.adapters) {
 			if (adapter.supports(roi)) result.add(adapter);
 		}
 		return result;
 	}
 
 	/** Gets all of the discovered adapters. */
-	public static Collection<IJHotDrawROIAdapter> getAllAdapters() {
+	public static Collection<IJHotDrawOverlayAdapter> getAllAdapters() {
 		if (theFinder == null) {
 			theFinder = new JHotDrawAdapterFinder();
 			theFinder.initialize();

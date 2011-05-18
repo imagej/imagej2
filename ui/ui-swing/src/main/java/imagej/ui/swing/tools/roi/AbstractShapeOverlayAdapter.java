@@ -1,4 +1,8 @@
-/* ROI.java
+//
+// AbstractShapeROIAdapter.java
+//
+
+/*
 ImageJ software for multidimensional image processing and analysis.
 
 Copyright (c) 2010, ImageJDev.org.
@@ -27,22 +31,35 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.roi;
+package imagej.ui.swing.tools.roi;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import net.java.sezpoz.Indexable;
+import net.imglib2.roi.RegionOfInterest;
+
+import org.jhotdraw.draw.AbstractAttributedFigure;
+import org.jhotdraw.draw.AttributeKeys;
+
+import imagej.data.roi.AbstractShapeOverlay;
+
 
 /**
  * @author leek
- * The ROI annotation marks a class as a type of region of interest.
+ *
+ * The AbstractShapeROIAdapter adds mechanisms for populating the
+ * line and fill attributes of the AbstractShapeROI from an AbstractAttributedFigure
+ * and vice-versa
+ * 
+ * @param T - the derived RegionOfInterest type exposed by the AbstractShapeROI adapted by this adapter.
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Indexable(type=ImageJROI.class)
-
-public @interface ROI {
-
+public abstract class AbstractShapeOverlayAdapter <F extends AbstractAttributedFigure, T extends RegionOfInterest> extends AbstractLineOverlayAdapter<F> {
+	protected void setFigureShapeProperties(AbstractShapeOverlay<T> roi, F figure) {
+		figure.set(AttributeKeys.FILL_COLOR, roi.getFillColor());
+		figure.set(AttributeKeys.CANVAS_FILL_OPACITY, roi.getOpacity());
+		super.setFigureLineProperties(roi, figure);
+	}
+	
+	protected void getShapeROIProperties(F figure, AbstractShapeOverlay<T> roi) {
+		roi.setFillColor(figure.get(AttributeKeys.FILL_COLOR));
+		roi.setOpacity(figure.get(AttributeKeys.CANVAS_FILL_OPACITY));
+		super.setROILineProperties(figure, roi);
+	}
 }

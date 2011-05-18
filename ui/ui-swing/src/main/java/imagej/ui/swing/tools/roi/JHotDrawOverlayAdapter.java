@@ -1,5 +1,5 @@
 //
-// RectangleROI.java
+// JHotDrawOverlayAdapter.java
 //
 
 /*
@@ -31,55 +31,25 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-package imagej.data.roi;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+package imagej.ui.swing.tools.roi;
 
-import net.imglib2.roi.RectangleRegionOfInterest;
-import net.imglib2.roi.RegionOfInterest;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import net.java.sezpoz.Indexable;
 
 /**
- * @author leek
- *
- * A rectangular region of interest
+ * Add this annotation to any ImageJHotDrawROIAdapter and SezPoz will make it
+ * available to ImageJ and let people use JHotDraw to edit it.
+ * 
+ * @author Lee Kamentsky
  */
-public class RectangleOverlay extends AbstractShapeOverlay<RectangleRegionOfInterest> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	final protected RectangleRegionOfInterest roi;
-	public RectangleOverlay() {
-		roi = new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0});
-	}
-	/* (non-Javadoc)
-	 * @see imagej.roi.ImageJROI#getRegionOfInterest()
-	 */
-	@Override
-	public RegionOfInterest getRegionOfInterest() {
-		return roi;
-	}
-
-	@Override
-	public RectangleRegionOfInterest getShapeRegionOfInterest() {
-		return roi;
-	}
-	public void writeExternal(ObjectOutput out) throws IOException {
-		super.writeExternal(out);
-		out.writeDouble(roi.getOrigin(0));
-		out.writeDouble(roi.getOrigin(1));
-		out.writeDouble(roi.getExtent(0));
-		out.writeDouble(roi.getExtent(1));
-	}
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		super.readExternal(in);
-		roi.setOrigin(in.readDouble(), 0);
-		roi.setOrigin(in.readDouble(), 1);
-		roi.setExtent(in.readDouble(), 0);
-		roi.setExtent(in.readDouble(), 1);
-	}
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Indexable(type = IJHotDrawOverlayAdapter.class)
+public @interface JHotDrawOverlayAdapter {
+	// NB: No attributes.
 }

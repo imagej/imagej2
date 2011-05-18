@@ -1,5 +1,0 @@
-#Sun Jan 23 14:27:51 CST 2011
-eclipse.preferences.version=1
-org.eclipse.jdt.apt.aptEnabled=true
-org.eclipse.jdt.apt.genSrcDir=target/classes
-org.eclipse.jdt.apt.reconcileEnabled=false

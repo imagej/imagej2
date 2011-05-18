@@ -32,9 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.roi.ui.jhotdraw;
+package imagej.ui.swing.tools.roi;
 
-import imagej.roi.ImageJROI;
+import imagej.data.roi.Overlay;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;
@@ -46,20 +46,18 @@ import org.jhotdraw.draw.tool.CreationTool;
  */
 public class IJCreationTool extends CreationTool {
 
-	private final IJHotDrawROIAdapter adapter;
-	private final String roiName;
+	private final IJHotDrawOverlayAdapter adapter;
 
-	public IJCreationTool(final IJHotDrawROIAdapter adapter, final String roiName)
+	public IJCreationTool(final IJHotDrawOverlayAdapter adapter)
 	{
 		super(adapter.createDefaultFigure());
 		this.adapter = adapter;
-		this.roiName = roiName;
 	}
 
 	@Override
 	protected Figure createFigure() {
-		final ImageJROI roi = adapter.createNewROI(roiName);
-		final Figure figure = adapter.attachFigureToROI(roi);
+		final Overlay roi = adapter.createNewOverlay();
+		final Figure figure = adapter.attachFigureToOverlay(roi);
 		return figure;
 	}
 
