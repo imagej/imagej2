@@ -37,6 +37,7 @@ package imagej.legacy;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import imagej.data.Dataset;
@@ -69,7 +70,9 @@ public class DatasetHarmonizer {
 		// if so assume any change possible and thus rebuild all
 		if ( ! (ds.getImgPlus().getImg() instanceof PlanarAccess) ) {
 			rebuildNonplanarData(ds, imp);
+			// NB - as RGBImageTranslator defined RGBMerged doesn't need to be planar
 			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
+			setCompositeChannels(ds, imp);
 			return;
 		}
 
@@ -79,12 +82,22 @@ public class DatasetHarmonizer {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			rebuildData(ds, imp);
 			ds.setRGBMerged(true);
+			setCompositeChannels(ds, imp);
 			return;
 		}
 		
 		// if here we know its not a RGB imp. If we were a color Dataset
 		// then we no longer are.
 		ds.setRGBMerged(false);
+
+		/*
+		* TODO - if you always set ds.setCompositeChannelCount() here to the number
+		* of channels then an HSB stack from clown is displayed as colorized.
+		* Otherwise its displayed as first channel image only (in red). Is there a
+		* way to get three separate colors depending upon c slider value? Or else
+		* just all gray with multiple channels? Updated ticket #513 on 5-18-11.
+		*/
+		setCompositeChannels(ds, imp);
 		
 		// was a slice added or deleted?
 		if (dimensionsDifferent(ds, imp)) {
@@ -123,6 +136,18 @@ public class DatasetHarmonizer {
 		ds.setImgPlus(tmpDs.getImgPlus());
 	}
 
+	/** sets the Dataset's number of composite channels to display simultaneously
+	 * based on an input ImagePlus' makeup */
+	private void setCompositeChannels(Dataset ds, ImagePlus imp) {
+		if ((imp instanceof CompositeImage) &&
+				(((CompositeImage)imp).getMode() == CompositeImage.COMPOSITE))
+			ds.setCompositeChannelCount(imp.getNChannels());
+		else if (imp.getType() == ImagePlus.COLOR_RGB)
+			ds.setCompositeChannelCount(3);
+		else
+			ds.setCompositeChannelCount(1);
+	}
+	
 	/** determines whether a Dataset and an ImagePlus have different dimensionality */
 	private boolean dimensionsDifferent(Dataset ds, ImagePlus imp) {
 		ImgPlus<?> imgPlus = ds.getImgPlus();
