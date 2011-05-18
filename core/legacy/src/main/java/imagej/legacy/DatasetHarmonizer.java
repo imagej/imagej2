@@ -90,13 +90,7 @@ public class DatasetHarmonizer {
 		// then we no longer are.
 		ds.setRGBMerged(false);
 
-		/*
-		* TODO - if you always set ds.setCompositeChannelCount() here to the number
-		* of channels then an HSB stack from clown is displayed as colorized.
-		* Otherwise its displayed as first channel image only (in red). Is there a
-		* way to get three separate colors depending upon c slider value? Or else
-		* just all gray with multiple channels? Updated ticket #513 on 5-18-11.
-		*/
+		// set num compos channels to display at once based on makeup of ImagePlus
 		setCompositeChannels(ds, imp);
 		
 		// was a slice added or deleted?
