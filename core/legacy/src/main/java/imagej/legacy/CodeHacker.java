@@ -303,10 +303,12 @@ public class CodeHacker {
 			newCode.append("this");
 			firstArg = false;
 		}
+		int counter = 1;
 		for (String arg : argNames) {
 			if (firstArg) firstArg = false;
 			else newCode.append(", ");
-			newCode.append(arg);
+			newCode.append("$" + counter);
+			counter++;
 		}
 		newCode.append(");");
 
