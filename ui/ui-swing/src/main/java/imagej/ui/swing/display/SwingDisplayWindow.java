@@ -92,9 +92,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-//		graphicPane.setLayout(new BorderLayout());
 		graphicPane.setBorder(new LineBorder(Color.black));
-//		graphicPane.add(display.getImageCanvas(), BorderLayout.CENTER);
 		graphicPane.add(display.getImageCanvas());
 
 		sliders = new JPanel();
@@ -123,6 +121,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void update() {
 		setLabel(makeLabel());
+		for (final DisplayView view : display.getViews()) view.update();
 	}
 
 	@Override
@@ -218,7 +217,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
 			final int axisNumber = i;
 			slider.addAdjustmentListener(new AdjustmentListener() {
-
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					final int position = slider.getValue() - 1;
