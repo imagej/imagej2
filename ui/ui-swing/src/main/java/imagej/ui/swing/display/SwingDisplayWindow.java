@@ -121,7 +121,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void update() {
 		setLabel(makeLabel());
-		for (final DisplayView view : display.getViews()) view.update();
+		for (final DisplayView view : display.getViews())
+			view.update();
 	}
 
 	@Override
