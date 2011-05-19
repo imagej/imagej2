@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.roi;
 
 import imagej.data.AbstractDataObject;
-import imagej.data.Dataset;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;

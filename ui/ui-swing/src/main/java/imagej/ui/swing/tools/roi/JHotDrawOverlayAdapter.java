@@ -51,5 +51,5 @@ import net.java.sezpoz.Indexable;
 @Target(ElementType.TYPE)
 @Indexable(type = IJHotDrawOverlayAdapter.class)
 public @interface JHotDrawOverlayAdapter {
-	// NB: No attributes.
+	int priority() default 0;
 }

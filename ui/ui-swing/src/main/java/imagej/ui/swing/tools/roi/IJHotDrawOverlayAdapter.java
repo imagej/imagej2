@@ -47,11 +47,27 @@ import org.jhotdraw.draw.Figure;
 public interface IJHotDrawOverlayAdapter {
 
 	/**
-	 * Determines whether the adapter can handle a particular roi
-	 * 
-	 * @param roi - a ROI that might be editable
+	 * @return the priority of this adapter: higher priority adapters will be chosen over lower
 	 */
-	boolean supports(Overlay roi);
+	public int getPriority();
+	
+	/**
+	 * Set the adapter's priority
+	 * @param priority
+	 */
+	public void setPriority(int priority);
+	/**
+	 * Determines whether the adapter can handle a particular 
+	 * overlay, or overlay / figure combination.
+	 * 
+	 * @param overlay - an overlay that might be editable
+	 * @param figure - a figure that will be either updated by
+	 *                 the overlay or will update the overlay.
+	 *                 The figure can be null: this indicates
+	 *                 that the adapter is capable of creating
+	 *                 the figure associated with the overlay/
+	 */
+	boolean supports(Overlay overlay, Figure figure);
 
 	/**
 	 * Creates a new ROI of the type indicated by the given name. The name must be
@@ -66,21 +82,16 @@ public interface IJHotDrawOverlayAdapter {
 	Figure createDefaultFigure();
 
 	/**
-	 * Creates an appropriate figure for the ROI and attach the adapter to it. The
-	 * adapter should manage changes to the figure's model by propagating them to
-	 * the ROI.
-	 * 
-	 * @param roi
+	 * Update the overlay to match the appearance of the figure
+	 * @param figure the figure that holds the current correct appearance
+	 * @param overlay the overlay that needs to be changed to bring it in-sync with the figure.
 	 */
-	Figure attachFigureToOverlay(Overlay overlay);
-
+	void updateOverlay(Figure figure, Overlay overlay);
+	
 	/**
-	 * The figure and ROI are separated as the editing session ends. This may be a
-	 * place where incompleteness in the ROI is reconciled, such as connecting the
-	 * final line in a polygon.
-	 * 
-	 * @param figure
+	 * Update the appearance of the figure to match the overlay
+	 * @param overlay the overlay to be represented by the figure
+	 * @param figure the figure that is to be made to look like the overlay
 	 */
-	void detachFigureFromOverlay(Figure figure);
-
+	void updateFigure(Overlay overlay, Figure figure);
 }

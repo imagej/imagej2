@@ -34,13 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import java.util.Collection;
+
 import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 import imagej.display.OverlayView;
+import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
 import imagej.util.Index;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
+import org.jhotdraw.draw.event.FigureAdapter;
+import org.jhotdraw.draw.event.FigureEvent;
 
 /**
  * TODO
@@ -54,15 +61,56 @@ public class SwingOverlayView extends OverlayView {
 	/** JHotDraw {@link Figure} linked to the associated {@link AbstractOverlay}. */
 	private final Figure figure;
 
+	
+	/**
+	 * Constructor to use to discover the figure to use for an overlay
+	 * @param display - hook to this display
+	 * @param overlay - represent this overlay
+	 */
+	public SwingOverlayView(final SwingImageDisplay display, final Overlay overlay) {
+		this(display, overlay, null);
+	}
+	
+	/**
+	 * Constructor to use if the figure already exists, for instance if it
+	 * was created using the CreationTool
+	 * 
+	 * @param display - hook to this display
+	 * @param overlay - represent this overlay
+	 * @param figure - draw using this figure
+	 */
 	public SwingOverlayView(final SwingImageDisplay display,
-		final AbstractOverlay overlay)
+		final Overlay overlay, Figure figure)
 	{
 		super(display, overlay);
 		this.display = display;
+		final IJHotDrawOverlayAdapter adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
+		if (figure == null) {
+			this.figure = adapter.createDefaultFigure();
+		} else {
+			this.figure = figure;
+		}
+		adapter.updateFigure(overlay, figure);
+		figure.addFigureListener(new FigureAdapter() {
 
-		final double x = 20 * Math.random(), y = 20 * Math.random();
-		final double w = 50 * Math.random() + 20, h = 50 * Math.random() + 20;
-		figure = new RectangleFigure(x, y, w, h);
+			@Override
+			public void attributeChanged(FigureEvent e) {
+				adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+				overlay.update();
+			}
+
+			@Override
+			public void figureChanged(FigureEvent e) {
+				adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+				overlay.rebuild();
+			}
+
+			@Override
+			public void figureRemoved(FigureEvent e) {
+				overlay.delete();
+			}
+			
+		});
 	}
 
 	// -- DisplayView methods --

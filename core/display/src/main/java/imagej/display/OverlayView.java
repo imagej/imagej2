@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 
 /**
  * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
@@ -43,9 +43,9 @@ import imagej.data.roi.AbstractOverlay;
  */
 public abstract class OverlayView extends AbstractDisplayView {
 
-	private final AbstractOverlay overlay;
+	private final Overlay overlay;
 
-	public OverlayView(final Display display, final AbstractOverlay overlay) {
+	public OverlayView(final Display display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
 	}
@@ -53,7 +53,7 @@ public abstract class OverlayView extends AbstractDisplayView {
 	// -- DisplayView methods --
 
 	@Override
-	public AbstractOverlay getDataObject() {
+	public Overlay getDataObject() {
 		return overlay;
 	}
 
