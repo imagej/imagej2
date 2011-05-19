@@ -145,6 +145,8 @@ public abstract class DatasetView extends AbstractDisplayView {
 
 	@Override
 	public void setPosition(final int value, final int dim) {
+		final int currentValue = projector.getIntPosition(dim);
+		if (value == currentValue) return; // no change
 		projector.setPosition(value, dim);
 
 		// update color tables
