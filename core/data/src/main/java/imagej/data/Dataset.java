@@ -413,6 +413,11 @@ public class Dataset extends AbstractDataObject implements
 		imgPlus.initializeColorTables(count);
 	}
 
+	@Override
+	public int getColorTableCount() {
+		return imgPlus.getColorTableCount();
+	}
+
 	// -- Utility methods --
 
 	/**
