@@ -191,7 +191,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	@Override
 	public void setZoomStep(final double zoomStep) {
 		if (zoomStep <= 1) {
-			throw new IllegalArgumentException("zoom step must be > 1");
+			throw new IllegalArgumentException("Zoom step must be > 1");
 		}
 		this.zoomStep = zoomStep;
 	}
@@ -203,7 +203,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	
 	public void setInitialScale(double value) {
 		if (value <= 0)
-			throw new IllegalArgumentException("Initial scale must be greater than 0");
+			throw new IllegalArgumentException("Initial scale must be > 0");
 		
 		this.initialScale = value;
 	}
@@ -232,8 +232,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	private boolean scaleOutOfBounds(final double desiredScale) {
 		if (desiredScale <= 0) {
-			Log
-				.debug("*********** BAD SCALE !!!!!! ********************************");
+			Log.debug("*********** BAD SCALE in CanvasHelper *******************");
 			return true;
 		}
 
@@ -251,12 +250,13 @@ public class CanvasHelper implements Pannable, Zoomable {
 			// get boundaries of image in panel coords
 			final IntCoords nearCorner = imageToPanelCoords(new RealCoords(0, 0));
 			final IntCoords farCorner =
-				imageToPanelCoords(new RealCoords(canvas.getImageWidth(), canvas
-					.getImageHeight()));
+				imageToPanelCoords(new RealCoords(canvas.getImageWidth(),
+					canvas.getImageHeight()));
 
 			// if boundaries take up less than min allowed pixels in either dimension
 			if (((farCorner.x - nearCorner.x) < MIN_ALLOWED_VIEW_SIZE) ||
-				((farCorner.y - nearCorner.y) < MIN_ALLOWED_VIEW_SIZE)) return true;
+				((farCorner.y - nearCorner.y) < MIN_ALLOWED_VIEW_SIZE))
+				return true;
 		}
 
 		return false;
