@@ -134,6 +134,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			createSliders(view);
 			sliders.setVisible(sliders.getComponentCount() > 0);
 
+			// NOTICE single title set over and over with different Datasets
 			setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
 			setLabel(makeLabel());
 
@@ -166,33 +167,33 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<ZoomEvent> zoomSubscriber =
-			new EventSubscriber<ZoomEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(final ZoomEvent event) {
-				if (event.getCanvas() != getDisplay().getImageCanvas()) return;
-				// CTR TODO - Fix zoom label to show beyond just the active view.
-				final DisplayView activeView = getDisplay().getActiveView();
-				final Dataset dataset = getDataset(activeView);
-				setTitle(makeTitle(dataset, event.getScale()));
-			}
-		};
+			new EventSubscriber<ZoomEvent>() {
+
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void onEvent(final ZoomEvent event) {
+					if (event.getCanvas() != getDisplay().getImageCanvas()) return;
+					// CTR TODO - Fix zoom label to show beyond just the active view.
+					final DisplayView activeView = getDisplay().getActiveView();
+					final Dataset dataset = getDataset(activeView);
+					setTitle(makeTitle(dataset, event.getScale()));
+				}
+			};
 		subscribers.add(zoomSubscriber);
 		Events.subscribe(ZoomEvent.class, zoomSubscriber);
 
 		final EventSubscriber<DatasetRestructuredEvent> dsRestructuredSubscriber =
-			new EventSubscriber<DatasetRestructuredEvent>()
-		{
-			@SuppressWarnings("synthetic-access")
-			@Override
-			public void onEvent(DatasetRestructuredEvent event) {
-				DisplayView view = getDisplay().getActiveView();
-				final Dataset ds = getDataset(view); 
-				if (event.getObject() != ds) return;
-				createSliders(view);
-			}
-		};
+			new EventSubscriber<DatasetRestructuredEvent>() {
+
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void onEvent(DatasetRestructuredEvent event) {
+					DisplayView view = getDisplay().getActiveView();
+					final Dataset ds = getDataset(view);
+					if (event.getObject() != ds) return;
+					createSliders(view);
+				}
+			};
 		subscribers.add(dsRestructuredSubscriber);
 		Events.subscribe(DatasetRestructuredEvent.class, dsRestructuredSubscriber);
 	}
@@ -218,6 +219,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
 			final int axisNumber = i;
 			slider.addAdjustmentListener(new AdjustmentListener() {
+
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					final int position = slider.getValue() - 1;
