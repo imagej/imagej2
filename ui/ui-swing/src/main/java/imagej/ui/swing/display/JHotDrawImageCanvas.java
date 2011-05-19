@@ -139,6 +139,7 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 			creationTool.addOverlayCreatedListener(
 				new IJCreationTool.OverlayCreatedListener()
 			{
+				@SuppressWarnings("synthetic-access")
 				@Override
 				public void overlayCreated(final OverlayCreatedEvent e) {
 					final SwingOverlayView v = new SwingOverlayView(display,
