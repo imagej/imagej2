@@ -37,7 +37,7 @@ package imagej.display;
 import imagej.data.roi.Overlay;
 
 /**
- * A view into an {@link AbstractOverlay}, for use with a {@link Display}.
+ * A view into an {@link Overlay}, for use with a {@link Display}.
  * 
  * @author Curtis Rueden
  */
