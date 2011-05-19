@@ -338,7 +338,6 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
 		final Point viewPos = scrollPane.getViewport().getViewPosition();
 		final IntCoords origin = canvasHelper.getPanOrigin();
 		if (viewPos.x == origin.x && viewPos.y == origin.y) return; // no change
-		Log.debug("===> syncPan: origin => " + origin);
 		scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
 	}
 
