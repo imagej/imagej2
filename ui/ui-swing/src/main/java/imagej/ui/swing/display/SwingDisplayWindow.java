@@ -134,7 +134,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			createSliders(view);
 			sliders.setVisible(sliders.getComponentCount() > 0);
 
-			setTitle(makeTitle(dataset, 1.0));
+			setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
 			setLabel(makeLabel());
 
 			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
