@@ -197,10 +197,10 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {
 		final AWTEventDispatcher awtDispatcher = (AWTEventDispatcher) dispatcher;
-		addKeyListener(awtDispatcher);
-		addMouseListener(awtDispatcher);
-		addMouseMotionListener(awtDispatcher);
-		addMouseWheelListener(awtDispatcher);
+		drawingView.addKeyListener(awtDispatcher);
+		drawingView.addMouseListener(awtDispatcher);
+		drawingView.addMouseMotionListener(awtDispatcher);
+		drawingView.addMouseWheelListener(awtDispatcher);
 	}
 
 	@Override
