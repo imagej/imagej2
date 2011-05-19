@@ -52,10 +52,14 @@ import imagej.ui.swing.tools.roi.IJCreationTool;
 import imagej.ui.swing.tools.roi.IJCreationTool.OverlayCreatedEvent;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.util.IntCoords;
+import imagej.util.Log;
 import imagej.util.RealCoords;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
@@ -69,6 +73,7 @@ import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.event.ToolAdapter;
 import org.jhotdraw.draw.event.ToolEvent;
+import org.jhotdraw.draw.tool.AbstractTool;
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
@@ -78,7 +83,9 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
+public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
+	AdjustmentListener
+{
 
 	private final CanvasHelper canvasHelper;
 
@@ -88,7 +95,7 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 
 	private final SwingImageDisplay display;
 	private final JScrollPane scrollPane;
-	
+
 	private final EventSubscriber<ToolActivatedEvent> toolActivatedSubscriber =
 		new EventSubscriber<ToolActivatedEvent>()
 	{
@@ -114,10 +121,13 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		scrollPane = new JScrollPane(drawingView);
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
-		
+
+		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
+
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
 	}
-	
+
 	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
 		final ITool iTool = event.getTool();
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
@@ -148,10 +158,21 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 				}
 			});
 			drawingEditor.setTool(creationTool);
-		} else if (iTool instanceof SelectionTool) {
+		}
+		else if (iTool instanceof SelectionTool) {
 			drawingEditor.setTool(new DelegationSelectionTool());
 		}
+		else {
+			// use a dummy tool so that JHotDraw ignores input events
+			drawingEditor.setTool(new AbstractTool() {
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					// do nothing
+				}
+			});
+		}
 	}
+
 	// -- JHotDrawImageCanvas methods --
 
 	public Drawing getDrawing() {
@@ -230,13 +251,13 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public void pan(final IntCoords delta) {
 		canvasHelper.pan(delta);
-		updatePan();
+		syncPan();
 	}
 
 	@Override
 	public void setPan(final IntCoords origin) {
 		canvasHelper.setPan(origin);
-		updatePan();
+		syncPan();
 	}
 
 	@Override
@@ -259,8 +280,8 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
 		canvasHelper.setZoom(factor, center);
-		drawingView.setScaleFactor(factor);
-		updatePan();
+		syncZoom();
+		syncPan();
 	}
 
 	@Override
@@ -303,11 +324,26 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		return canvasHelper.getZoomStep();
 	}
 
+	// -- AdjustmentListener methods --
+
+	@Override
+	public void adjustmentValueChanged(final AdjustmentEvent e) {
+		final Point viewPos = scrollPane.getViewport().getViewPosition();
+		canvasHelper.setPan(new IntCoords(viewPos.x, viewPos.y));
+	}
+
 	// -- Helper methods --
 
-	private void updatePan() {
+	private void syncPan() {
+		final Point viewPos = scrollPane.getViewport().getViewPosition();
 		final IntCoords origin = canvasHelper.getPanOrigin();
+		if (viewPos.x == origin.x && viewPos.y == origin.y) return; // no change
+		Log.debug("===> syncPan: origin => " + origin);
 		scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
+	}
+
+	private void syncZoom() {
+		drawingView.setScaleFactor(canvasHelper.getZoomFactor());
 	}
 
 }
