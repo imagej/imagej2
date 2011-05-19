@@ -91,7 +91,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgWindow = new SwingDisplayWindow(this);
 
-		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
+		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this, false);
 		imgCanvas.addEventDispatcher(eventDispatcher);
 		imgWindow.addEventDispatcher(eventDispatcher);
 
