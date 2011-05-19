@@ -74,7 +74,7 @@ public class PanTool extends BaseTool {
 				display.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_DOWN:
-				display.getImageCanvas().pan(new IntCoords(0, -PAN_AMOUNT));
+				display.getImageCanvas().pan(new IntCoords(0, PAN_AMOUNT));
 				break;
 			case KeyEvent.VK_LEFT:
 				display.getImageCanvas().pan(new IntCoords(-PAN_AMOUNT, 0));
