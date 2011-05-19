@@ -76,6 +76,7 @@ import org.jhotdraw.draw.tool.DelegationSelectionTool;
  * {@link DefaultDrawingView} component to do most of the work.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 
@@ -88,17 +89,16 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	private final SwingImageDisplay display;
 	private final JScrollPane scrollPane;
 	
-	private final EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
-		new EventSubscriber<ToolActivatedEvent>() {
-
-			@Override
-			public void onEvent(ToolActivatedEvent event) {
-				onToolActivatedEvent(event);
-			}
-		
+	private final EventSubscriber<ToolActivatedEvent> toolActivatedSubscriber =
+		new EventSubscriber<ToolActivatedEvent>()
+	{
+		@Override
+		public void onEvent(ToolActivatedEvent event) {
+			onToolActivatedEvent(event);
+		}
 	}; 
 
-	public JHotDrawImageCanvas(SwingImageDisplay display) {
+	public JHotDrawImageCanvas(final SwingImageDisplay display) {
 		this.display = display; 
 		canvasHelper = new CanvasHelper(this);
 
@@ -115,35 +115,34 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
 		
-		Events.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
+		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
 	}
 	
-	protected void onToolActivatedEvent(ToolActivatedEvent event) {
-		ITool iTool = event.getTool();
+	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
+		final ITool iTool = event.getTool();
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter)iTool;
 			final IJCreationTool creationTool = new IJCreationTool(adapter);
-			//
-			// Listen for toolDone from the creation tool. This means that
-			// we finished using the JHotDraw tool and we deactivate it
-			//
-			creationTool.addToolListener(new ToolAdapter() {
 
+			// Listen for toolDone from the creation tool. This means that
+			// we finished using the JHotDraw tool and we deactivate it.
+			creationTool.addToolListener(new ToolAdapter() {
 				@Override
-				public void toolDone(ToolEvent event) {
-					ToolManager toolManager = ImageJ.get(ToolManager.class);
+				public void toolDone(final ToolEvent e) {
+					final ToolManager toolManager = ImageJ.get(ToolManager.class);
 					toolManager.setActiveTool(new SelectionTool());
 				}
-
 			});
-			//
-			// When the tool creates an overlay, add the overlay / figure combo to a SwingOverlayView
-			//
-			creationTool.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener() {
-				
+
+			// When the tool creates an overlay, add the
+			// overlay/figure combo to a SwingOverlayView.
+			creationTool.addOverlayCreatedListener(
+				new IJCreationTool.OverlayCreatedListener()
+			{
 				@Override
-				public void overlayCreated(OverlayCreatedEvent e) {
-					SwingOverlayView v = new SwingOverlayView(display, e.getOverlay(), e.getFigure());
+				public void overlayCreated(final OverlayCreatedEvent e) {
+					final SwingOverlayView v = new SwingOverlayView(display,
+						e.getOverlay(), e.getFigure());
 					display.addView(v);
 				}
 			});
@@ -222,7 +221,7 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 
 	@Override
 	public void setCursor(final MouseCursor cursor) {
-		setCursor(AWTCursors.getCursor(cursor));
+		drawingView.setCursor(AWTCursors.getCursor(cursor));
 	}
 
 	// -- Pannable methods --
@@ -230,12 +229,13 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public void pan(final IntCoords delta) {
 		canvasHelper.pan(delta);
+		updatePan();
 	}
 
 	@Override
 	public void setPan(final IntCoords origin) {
 		canvasHelper.setPan(origin);
-		scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
+		updatePan();
 	}
 
 	@Override
@@ -258,7 +258,8 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
 		canvasHelper.setZoom(factor, center);
-		drawingView.setScaleFactor(factor); //TEMP
+		drawingView.setScaleFactor(factor);
+		updatePan();
 	}
 
 	@Override
@@ -299,6 +300,13 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	@Override
 	public double getZoomStep() {
 		return canvasHelper.getZoomStep();
+	}
+
+	// -- Helper methods --
+
+	private void updatePan() {
+		final IntCoords origin = canvasHelper.getPanOrigin();
+		scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
 	}
 
 }
