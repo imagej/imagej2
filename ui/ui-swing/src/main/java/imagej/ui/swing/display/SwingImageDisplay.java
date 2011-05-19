@@ -39,7 +39,6 @@ import imagej.awt.AWTDisplay;
 import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
