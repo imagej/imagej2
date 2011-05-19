@@ -79,9 +79,41 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 {
 
 	private final Display display;
+	private final boolean relative;
 
+	/**
+	 * Creates an AWT event dispatcher for the given display, which assumes
+	 * viewport mouse coordinates.
+	 */
 	public AWTEventDispatcher(final Display display) {
+		this(display, true);
+	}
+
+	/**
+	 * Creates an AWT event dispatcher for the given display, with mouse
+	 * coordinates interpreted according to the relative flag.
+	 * 
+	 * @param relative If true, coordinates are relative to the entire image
+	 *          canvas rather than just the viewport; hence, the pan offset is
+	 *          already factored in.
+	 */
+	public AWTEventDispatcher(final Display display, final boolean relative) {
 		this.display = display;
+		this.relative = relative;
+	}
+
+	// -- AWTEventDispatcher methods --
+
+	/**
+	 * Gets whether mouse coordinates are provided relative to the unpanned image
+	 * canvas. If true, the coordinates are measured from the top left corner of
+	 * the image canvas, regardless of the current pan. Hence, the coordinate
+	 * values will equal the pan offset plus the viewport coordinate values. If
+	 * false, the coordinates are relative to the canvas's viewport, meaning that
+	 * the pan offset is not lumped into the coordinate values.
+	 */
+	public boolean isRelative() {
+		return relative;
 	}
 
 	// -- KeyListener methods --
@@ -108,19 +140,19 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 
 	@Override
 	public void mouseClicked(final MouseEvent e) {
-		Events.publish(new MsClickedEvent(display, e.getX(), e.getY(),
+		Events.publish(new MsClickedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mousePressed(final MouseEvent e) {
-		Events.publish(new MsPressedEvent(display, e.getX(), e.getY(),
+		Events.publish(new MsPressedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseReleased(final MouseEvent e) {
-		Events.publish(new MsReleasedEvent(display, e.getX(), e.getY(),
+		Events.publish(new MsReleasedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
@@ -128,30 +160,30 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 
 	@Override
 	public void mouseEntered(final MouseEvent e) {
-		Events.publish(new MsEnteredEvent(display, e.getX(), e.getY()));
+		Events.publish(new MsEnteredEvent(display, getX(e), getY(e)));
 	}
 
 	@Override
 	public void mouseExited(final MouseEvent e) {
-		Events.publish(new MsExitedEvent(display, e.getX(), e.getY()));
+		Events.publish(new MsExitedEvent(display, getX(e), getY(e)));
 	}
 
 	@Override
 	public void mouseDragged(final MouseEvent e) {
-		Events.publish(new MsDraggedEvent(display, e.getX(), e.getY(),
+		Events.publish(new MsDraggedEvent(display, getX(e), getY(e),
 			mouseButton(e), e.getClickCount(), e.isPopupTrigger()));
 	}
 
 	@Override
 	public void mouseMoved(final MouseEvent e) {
-		Events.publish(new MsMovedEvent(display, e.getX(), e.getY()));
+		Events.publish(new MsMovedEvent(display, getX(e), getY(e)));
 	}
 
 	// -- MouseWheelListener methods --
 
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
-		Events.publish(new MsWheelEvent(display, e.getX(), e.getY(),
+		Events.publish(new MsWheelEvent(display, getX(e), getY(e),
 			e.getWheelRotation()));
 	}
 
@@ -205,6 +237,18 @@ public class AWTEventDispatcher implements EventDispatcher, KeyListener,
 			default:
 				return -1;
 		}
+	}
+
+	private int getX(final MouseEvent e) {
+		final int x = e.getX();
+		if (relative) return x;
+		return x - display.getImageCanvas().getPanOrigin().x;
+	}
+
+	private int getY(final MouseEvent e) {
+		final int y = e.getY();
+		if (relative) return y;
+		return y - display.getImageCanvas().getPanOrigin().y;
 	}
 
 }
