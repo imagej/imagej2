@@ -58,7 +58,7 @@ public class SwingOverlayView extends OverlayView {
 
 	private final SwingImageDisplay display;
 
-	/** JHotDraw {@link Figure} linked to the associated {@link AbstractOverlay}. */
+	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
 
 	
