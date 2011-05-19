@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import java.util.Collection;
-
-import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.OverlayView;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
@@ -45,7 +42,6 @@ import imagej.util.Index;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.RectangleFigure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
 
@@ -84,15 +80,11 @@ public class SwingOverlayView extends OverlayView {
 	{
 		super(display, overlay);
 		this.display = display;
-		final IJHotDrawOverlayAdapter adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
-		if (figure == null) {
-			this.figure = adapter.createDefaultFigure();
-		} else {
-			this.figure = figure;
-		}
+		final IJHotDrawOverlayAdapter adapter =
+			JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
+		this.figure = figure == null ? adapter.createDefaultFigure() : figure;
 		adapter.updateFigure(overlay, figure);
 		figure.addFigureListener(new FigureAdapter() {
-
 			@Override
 			public void attributeChanged(FigureEvent e) {
 				adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
@@ -109,7 +101,6 @@ public class SwingOverlayView extends OverlayView {
 			public void figureRemoved(FigureEvent e) {
 				overlay.delete();
 			}
-			
 		});
 	}
 
