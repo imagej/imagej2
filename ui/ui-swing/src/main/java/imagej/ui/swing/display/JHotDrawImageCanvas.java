@@ -51,6 +51,7 @@ import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.swing.tools.SelectionTool;
 import imagej.ui.swing.tools.roi.IJCreationTool;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
+import imagej.ui.swing.tools.roi.IJCreationTool.OverlayCreatedEvent;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -87,6 +88,7 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 	private final DefaultDrawingView drawingView;
 	private final DrawingEditor drawingEditor;
 
+	private final SwingImageDisplay display;
 	private final JScrollPane scrollPane;
 	
 	private final EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
@@ -99,7 +101,8 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		
 	}; 
 
-	public JHotDrawImageCanvas() {
+	public JHotDrawImageCanvas(SwingImageDisplay display) {
+		this.display = display; 
 		canvasHelper = new CanvasHelper(this);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
@@ -122,7 +125,7 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 		ITool iTool = event.getTool();
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter)iTool;
-			final CreationTool creationTool = new IJCreationTool(adapter);
+			final IJCreationTool creationTool = new IJCreationTool(adapter);
 			//
 			// Listen for toolDone from the creation tool. This means that
 			// we finished using the JHotDraw tool and we deactivate it
@@ -135,6 +138,17 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas {
 					toolManager.setActiveTool(new SelectionTool());
 				}
 
+			});
+			//
+			// When the tool creates an overlay, add the overlay / figure combo to a SwingOverlayView
+			//
+			creationTool.addOverlayCreatedListener(new IJCreationTool.OverlayCreatedListener() {
+				
+				@Override
+				public void overlayCreated(OverlayCreatedEvent e) {
+					SwingOverlayView v = new SwingOverlayView(display, e.getOverlay(), e.getFigure());
+					display.addView(v);
+				}
 			});
 			drawingEditor.setTool(creationTool);
 		} else if (iTool instanceof SelectionTool) {

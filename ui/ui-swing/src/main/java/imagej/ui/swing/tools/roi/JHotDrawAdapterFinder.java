@@ -40,6 +40,9 @@ import imagej.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+
+import org.jhotdraw.draw.Figure;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -67,6 +70,7 @@ public class JHotDrawAdapterFinder {
 		{
 			try {
 				final IJHotDrawOverlayAdapter adapter = indexItem.instance();
+				adapter.setPriority(indexItem.annotation().priority());
 				adapters.add(adapter);
 				Log.debug("Found adapter: " + adapter);
 			}
@@ -77,13 +81,71 @@ public class JHotDrawAdapterFinder {
 	}
 
 	/**
-	 * Returns all adapters capable of handling a given ROI.
+	 * Get some adapter for the given overlay
 	 * 
-	 * @param roi - the ROI to be adapted to the JHotDraw GUI
+	 * @param overlay - the overlay that requires an adapter
+	 * @return any adapter that supports the overlay
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	public static IJHotDrawOverlayAdapter getAdapterForOverlay(final Overlay overlay) throws UnsupportedOperationException {
+		ArrayList<IJHotDrawOverlayAdapter> c = new ArrayList<IJHotDrawOverlayAdapter>(getAdaptersForOverlay(overlay));
+		if (c.isEmpty())
+			throw new UnsupportedOperationException("Could not find adapter for " + overlay.getClass().getName());
+		Collections.sort(c, new Comparator<IJHotDrawOverlayAdapter>() {
+
+			@Override
+			public int compare(IJHotDrawOverlayAdapter o1,
+					IJHotDrawOverlayAdapter o2) {
+				// Sort in reverse order
+				return new Integer(o2.getPriority()).compareTo(o1.getPriority());
+			}
+		});
+		return c.get(0);
+	}
+	/**
+	 * Get some adapter for the given overlay
+	 * 
+	 * @param overlay - the overlay that requires an adapter
+	 * @param figure - the figure to be adapted to the overlay
+	 * @return any adapter that supports the overlay adapted to the figure
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	public static IJHotDrawOverlayAdapter getAdapterForOverlay(final Overlay overlay, final Figure figure) throws UnsupportedOperationException {
+		ArrayList<IJHotDrawOverlayAdapter> c = new ArrayList<IJHotDrawOverlayAdapter>(getAdaptersForOverlay(overlay, figure));
+		if (c.isEmpty())
+			throw new UnsupportedOperationException("Could not find adapter for " + overlay.getClass().getName());
+		Collections.sort(c, new Comparator<IJHotDrawOverlayAdapter>() {
+
+			@Override
+			public int compare(IJHotDrawOverlayAdapter o1,
+					IJHotDrawOverlayAdapter o2) {
+				// Sort in reverse order
+				return new Integer(o2.getPriority()).compareTo(o1.getPriority());
+			}
+		});
+		return c.get(0);
+	}
+	/**
+	 * Get the adapters capable of handling a given overlay
+	 * 
+	 * @param overlay - the overlay to adapt
+	 * @return a collection of all adapters capable of handling the overlay
+	 */
+	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForOverlay(
+			final Overlay overlay) {
+		return getAdaptersForOverlay(overlay, null);
+	}
+	/**
+	 * Returns all adapters capable of handling a given overlay / figure combination.
+	 * 
+	 * @param overlay - the overlay to be adapted to the JHotDraw GUI
+	 * @param figure - the figure to be associated with the overlay
 	 * @return collection of valid adapters
 	 */
-	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForROI(
-		final Overlay roi)
+	public static Collection<IJHotDrawOverlayAdapter> getAdaptersForOverlay(
+		final Overlay overlay, final Figure figure)
 	{
 		if (theFinder == null) {
 			theFinder = new JHotDrawAdapterFinder();
@@ -92,7 +154,7 @@ public class JHotDrawAdapterFinder {
 		final ArrayList<IJHotDrawOverlayAdapter> result =
 			new ArrayList<IJHotDrawOverlayAdapter>();
 		for (final IJHotDrawOverlayAdapter adapter : theFinder.adapters) {
-			if (adapter.supports(roi)) result.add(adapter);
+			if (adapter.supports(overlay, figure)) result.add(adapter);
 		}
 		return result;
 	}

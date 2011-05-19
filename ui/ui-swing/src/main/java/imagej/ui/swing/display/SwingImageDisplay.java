@@ -40,6 +40,7 @@ import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -88,7 +89,7 @@ public class SwingImageDisplay implements AWTDisplay {
 		displayManager.setActiveDisplay(this);
 		subscribeToEvents(displayManager);
 
-		imgCanvas = new JHotDrawImageCanvas();
+		imgCanvas = new JHotDrawImageCanvas(this);
 		imgWindow = new SwingDisplayWindow(this);
 
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this);
@@ -124,7 +125,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	}
 
 	@Override
-	public void display(final AbstractOverlay overlay) {
+	public void display(final Overlay overlay) {
 		addView(new SwingOverlayView(this, overlay));		
 		update();
 	}

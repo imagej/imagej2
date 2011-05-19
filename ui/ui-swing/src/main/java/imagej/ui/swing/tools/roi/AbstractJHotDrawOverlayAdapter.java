@@ -34,15 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import imagej.data.roi.Overlay;
 import imagej.tool.BaseTool;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.event.FigureEvent;
-import org.jhotdraw.draw.event.FigureListener;
 
 /**
  * An abstract class that gives default behavior for the IJHotDrawROIAdapter
@@ -50,81 +43,25 @@ import org.jhotdraw.draw.event.FigureListener;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter extends BaseTool implements
-	IJHotDrawOverlayAdapter, FigureListener
+public abstract class AbstractJHotDrawOverlayAdapter extends BaseTool implements IJHotDrawOverlayAdapter
 {
 
-	protected Map<Figure, Overlay> map = new HashMap<Figure, Overlay>();
-
-	// -- IJHotDrawROIAdapter methods --
-
-	@Override
-	public Figure attachFigureToOverlay(final Overlay roi) {
-		final Figure figure = createFigureForOverlay(roi);
-		map.put(figure, roi);
-		figure.addFigureListener(this);
-		return figure;
-	}
-
-	@Override
-	public void detachFigureFromOverlay(final Figure figure) {
-		figure.removeFigureListener(this);
-	}
-
-	// -- FigureListener methods --
-
-	@Override
-	public void figureChanged(final FigureEvent event) {
-		final Figure figure = event.getFigure();
-		updateOverlayModel(figure, map.get(figure));
-	}
-
-	@Override
-	public void areaInvalidated(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	@Override
-	public void attributeChanged(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	@Override
-	public void figureAdded(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	@Override
-	public void figureHandlesChanged(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	@Override
-	public void figureRemoved(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	@Override
-	public void figureRequestRemove(final FigureEvent event) {
-		// NB: No action needed.
-	}
-
-	// -- Internal API methods --
-
-	/**
-	 * Create the appropriate figure for the given ROI.
-	 * 
-	 * @param roi
+	private int priority;
+	/* (non-Javadoc)
+	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#getPriority()
 	 */
-	protected abstract Figure createFigureForOverlay(Overlay roi);
+	@Override
+	public int getPriority() {
+		return priority;
+	}
 
-	/**
-	 * The implementer should update the ROI model to reflect the data in the
-	 * figure.
-	 * 
-	 * @param figure
-	 * @param roi
+	/* (non-Javadoc)
+	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#setPriority(int)
 	 */
-	protected abstract void updateOverlayModel(Figure figure, Overlay roi);
+	@Override
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+	
 
 }

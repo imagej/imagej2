@@ -34,7 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import java.util.EventListener;
+
+import javax.swing.event.EventListenerList;
+
 import imagej.data.roi.Overlay;
+import imagej.event.ImageJEvent;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;
@@ -45,20 +50,79 @@ import org.jhotdraw.draw.tool.CreationTool;
  * @author Lee Kamentsky
  */
 public class IJCreationTool extends CreationTool {
+	/**
+	 * @author leek
+	 *
+	 *An event that tells the listener that an overlay has
+	 *been created, associated with a figure.
+	 */
+	public class OverlayCreatedEvent extends ImageJEvent {
+		final protected Overlay overlay;
+		final protected Figure figure;
+		OverlayCreatedEvent(Overlay overlay, Figure figure) {
+			this.overlay = overlay;
+			this.figure = figure;
+		}
+		/**
+		 * @return the overlay
+		 */
+		public Overlay getOverlay() {
+			return overlay;
+		}
+		/**
+		 * @return the figure
+		 */
+		public Figure getFigure() {
+			return figure;
+		}
+	}
+	
+	public interface OverlayCreatedListener extends EventListener {
+		public void overlayCreated(OverlayCreatedEvent e);
+	}
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final IJHotDrawOverlayAdapter adapter;
+	private final EventListenerList listeners = new EventListenerList();
 
 	public IJCreationTool(final IJHotDrawOverlayAdapter adapter)
 	{
 		super(adapter.createDefaultFigure());
 		this.adapter = adapter;
 	}
+	
+	public void addOverlayCreatedListener(OverlayCreatedListener listener) {
+		listeners.add(OverlayCreatedListener.class, listener);
+	}
+	
+	public void removeOverlayCreatedListener(OverlayCreatedListener listener) {
+		listeners.remove(OverlayCreatedListener.class, listener);
+	}
 
+	protected void fireOverlayCreatedEvent(Overlay overlay, Figure figure) {
+		OverlayCreatedEvent e = new OverlayCreatedEvent(overlay, figure);
+		for (OverlayCreatedListener listener: listeners.getListeners(OverlayCreatedListener.class)) {
+			listener.overlayCreated(e);
+		}
+	}
+	
 	@Override
 	protected Figure createFigure() {
-		final Overlay roi = adapter.createNewOverlay();
-		final Figure figure = adapter.attachFigureToOverlay(roi);
-		return figure;
+		return adapter.createDefaultFigure();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jhotdraw.draw.tool.CreationTool#creationFinished(org.jhotdraw.draw.Figure)
+	 */
+	@Override
+	protected void creationFinished(Figure createdFigure) {
+		super.creationFinished(createdFigure);
+		Overlay overlay = adapter.createNewOverlay();
+		adapter.updateOverlay(createdFigure, overlay);
+		fireOverlayCreatedEvent(overlay, createdFigure);
 	}
 
 }

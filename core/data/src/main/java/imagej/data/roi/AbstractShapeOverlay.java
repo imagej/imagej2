@@ -48,7 +48,7 @@ import net.imglib2.roi.RegionOfInterest;
  *
  * @param <T> - the region of interest type returned by getShapeRegionOfInterest
  */
-public abstract class AbstractShapeOverlay <T extends RegionOfInterest>extends AbstractLineOverlay {
+public abstract class AbstractShapeOverlay <T extends RegionOfInterest> extends AbstractLineOverlay {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -87,7 +87,15 @@ public abstract class AbstractShapeOverlay <T extends RegionOfInterest>extends A
 	/**
 	 * @return the region of interest cast to the derived type.
 	 */
-	abstract protected T getShapeRegionOfInterest();
+	abstract public T getShapeRegionOfInterest();
+	
+	/* (non-Javadoc)
+	 * @see imagej.roi.ImageJROI#getRegionOfInterest()
+	 */
+	@Override
+	public RegionOfInterest getRegionOfInterest() {
+		return getShapeRegionOfInterest();
+	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);

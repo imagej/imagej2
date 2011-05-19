@@ -38,7 +38,6 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.roi.RectangleRegionOfInterest;
-import net.imglib2.roi.RegionOfInterest;
 
 /**
  * @author leek
@@ -55,13 +54,6 @@ public class RectangleOverlay extends AbstractShapeOverlay<RectangleRegionOfInte
 	final protected RectangleRegionOfInterest roi;
 	public RectangleOverlay() {
 		roi = new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0});
-	}
-	/* (non-Javadoc)
-	 * @see imagej.roi.ImageJROI#getRegionOfInterest()
-	 */
-	@Override
-	public RegionOfInterest getRegionOfInterest() {
-		return roi;
 	}
 
 	@Override
