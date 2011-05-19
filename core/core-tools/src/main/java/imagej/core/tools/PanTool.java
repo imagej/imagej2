@@ -94,8 +94,9 @@ public class PanTool extends BaseTool {
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		final Display display = evt.getDisplay();
-		display.getImageCanvas().pan(
-			new IntCoords(evt.getX() - lastX, evt.getY() - lastY));
+		final int xDelta = evt.getX() - lastX;
+		final int yDelta = evt.getY() - lastY;
+		display.getImageCanvas().pan(new IntCoords(xDelta, yDelta));
 		lastX = evt.getX();
 		lastY = evt.getY();
 	}
