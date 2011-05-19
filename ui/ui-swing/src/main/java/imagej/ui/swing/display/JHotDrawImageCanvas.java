@@ -44,14 +44,13 @@ import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.tool.DummyTool;
 import imagej.tool.ITool;
 import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.swing.tools.SelectionTool;
 import imagej.ui.swing.tools.roi.IJCreationTool;
-import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.IJCreationTool.OverlayCreatedEvent;
+import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
@@ -70,8 +69,6 @@ import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.event.ToolAdapter;
 import org.jhotdraw.draw.event.ToolEvent;
-import org.jhotdraw.draw.event.ToolListener;
-import org.jhotdraw.draw.tool.CreationTool;
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 
 /**
