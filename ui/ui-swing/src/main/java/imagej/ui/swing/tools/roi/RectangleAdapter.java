@@ -53,7 +53,7 @@ import imagej.tool.Tool;
 @Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
 		priority = RectangleAdapter.PRIORITY, enabled = true)
 public class RectangleAdapter extends AbstractShapeOverlayAdapter<RectangleFigure, RectangleRegionOfInterest> {
-	public static final int PRIORITY = 100;
+	public static final int PRIORITY = 50;
 	
 	static protected RectangleOverlay downcastROI(Overlay roi) {
 		assert(roi instanceof RectangleOverlay);
