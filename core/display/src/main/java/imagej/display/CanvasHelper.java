@@ -57,7 +57,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	/** Scale factor, for zooming. */
 	private double scale = 1;
 
-	/** Initial scale factor, for resetting zoom */
+	/** Initial scale factor, for resetting zoom. */
 	private double initialScale = 1;
 	
 	/** Offset from top left, in panel coordinates (pixels). */
@@ -125,8 +125,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
 		double desiredScale = factor;
-		if (factor == 0)
-			desiredScale = initialScale;
+		if (factor == 0) desiredScale = initialScale;
 		if (scaleOutOfBounds(desiredScale)) return;
 		final RealCoords imageCenter = panelToImageCoords(center);
 		clipToImageBoundaries(imageCenter);
