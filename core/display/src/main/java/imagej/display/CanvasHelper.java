@@ -55,8 +55,11 @@ public class CanvasHelper implements Pannable, Zoomable {
 	private final ImageCanvas canvas;
 
 	/** Scale factor, for zooming. */
-	private double scale = 0;
+	private double scale = 1;
 
+	/** Initial scale factor, for resetting zoom */
+	private double initialScale = 1;
+	
 	/** Offset from top left, in panel coordinates (pixels). */
 	private IntCoords offset = new IntCoords(0, 0);
 
@@ -121,10 +124,13 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void setZoom(final double factor, final IntCoords center) {
-		if (scaleOutOfBounds(factor)) return;
+		double desiredScale = factor;
+		if (factor == 0)
+			desiredScale = initialScale;
+		if (scaleOutOfBounds(desiredScale)) return;
 		final RealCoords imageCenter = panelToImageCoords(center);
 		clipToImageBoundaries(imageCenter);
-		scale = factor;
+		scale = desiredScale;
 
 		// We know:
 		// panel = scale * image + offset
@@ -194,7 +200,18 @@ public class CanvasHelper implements Pannable, Zoomable {
 	public double getZoomStep() {
 		return zoomStep;
 	}
+	
+	public void setInitialScale(double value) {
+		if (value <= 0)
+			throw new IllegalArgumentException("Initial scale must be greater than 0");
+		
+		this.initialScale = value;
+	}
 
+	public double getInitialScale() {
+		return initialScale;
+	}
+	
 	// -- Helper methods --
 
 	/** Gets the zoom center to use when none is specified. */
