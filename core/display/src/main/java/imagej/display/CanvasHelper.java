@@ -104,7 +104,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	@Override
 	public void panReset() {
-		setPan(new IntCoords(0, 0));
+		canvas.setPan(new IntCoords(0, 0));
 	}
 
 	@Override
