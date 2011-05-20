@@ -50,35 +50,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A plugin to change the line color of the selected overlays.
+ * A plugin to change the properties (e.g., line color, line width) of the
+ * selected overlays.
  * 
  * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Overlays", mnemonic = 'o'),
-	@Menu(label = "Line color", mnemonic = 'c') })
-public class LineColor implements ImageJPlugin {
+	@Menu(label = "Properties...", mnemonic = 'p') })
+public class OverlayProperties implements ImageJPlugin {
 
 	@Parameter
 	private ColorRGB lineColor;
 
-	public LineColor() {
-		// set default value to line color of first selected overlay
+	@Parameter(min = "0.1")
+	private double lineWidth;
+
+	public OverlayProperties() {
+		// set default values to match the first selected overlay
 		final List<AbstractLineOverlay> selected = getSelectedOverlays();
-		if (selected.size() > 0) lineColor = selected.get(0).getLineColor();
+		if (selected.size() > 0) {
+			AbstractLineOverlay overlay = selected.get(0);
+			lineColor = overlay.getLineColor();
+			lineWidth = overlay.getLineWidth();
+		}
 	}
 
 	@Override
 	public void run() {
-		// change line color of all selected overlays
+		// change properties of all selected overlays
 		final List<AbstractLineOverlay> selected = getSelectedOverlays();
 		for (final AbstractLineOverlay overlay : selected) {
 			overlay.setLineColor(lineColor);
+			overlay.setLineWidth(lineWidth);
 		}
 	}
 
 	public ColorRGB getLineColor() {
 		return lineColor;
+	}
+
+	public double getLineWidth() {
+		return lineWidth;
 	}
 
 	private List<AbstractLineOverlay> getSelectedOverlays() {
