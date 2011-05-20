@@ -196,8 +196,7 @@ public class Neighborhood3x3Operation {
 		while (cursor.hasNext()) {
 			cursor.next();
 			double currValue = cursor.get().getRealDouble();
-			for (int i = 0; i < position.length; i++)
-				position[i] = cursor.getLongPosition(i);
+			cursor.localize(position);
 			access.setPosition(position);
 			access.get().setReal(currValue);
 		}
