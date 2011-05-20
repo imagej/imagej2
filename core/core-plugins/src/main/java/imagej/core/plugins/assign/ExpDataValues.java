@@ -65,6 +65,5 @@ public class ExpDataValues implements ImageJPlugin {
 		UnaryOperator op = new Exp();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

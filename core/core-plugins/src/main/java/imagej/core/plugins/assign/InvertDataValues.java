@@ -75,7 +75,6 @@ public class InvertDataValues implements ImageJPlugin {
 		UnaryOperator op = new Invert(min, max);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 
 	// -- private interface --

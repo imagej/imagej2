@@ -69,7 +69,6 @@ public class ReciprocalDataValues implements ImageJPlugin {
 			op = new Copy();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 
 }

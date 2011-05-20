@@ -66,6 +66,5 @@ public class SquareRootDataValues implements ImageJPlugin {
 		UnaryOperator op = new Sqrt();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

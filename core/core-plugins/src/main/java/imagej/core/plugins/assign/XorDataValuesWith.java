@@ -72,6 +72,5 @@ public class XorDataValuesWith implements ImageJPlugin {
 		UnaryOperator op = new XorConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

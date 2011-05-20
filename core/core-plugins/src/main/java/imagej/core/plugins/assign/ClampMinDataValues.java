@@ -72,6 +72,5 @@ public class ClampMinDataValues implements ImageJPlugin {
 		UnaryOperator op = new Min(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }
