@@ -40,28 +40,33 @@ import imagej.util.ColorRGB;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
 /**
  * Swing implementation of file selector widget.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingColorWidget extends SwingInputWidget
-	implements ActionListener, ColorWidget
+public class SwingColorWidget extends SwingInputWidget implements
+	ActionListener, ColorWidget
 {
 
-	private JButton choose;
+	private static final int SWATCH_WIDTH = 16, SWATCH_HEIGHT = 16;
+
+	private final JButton choose;
 	private Color color;
 
 	public SwingColorWidget(final ParamModel model) {
 		super(model);
 
-		choose = new JButton(" ");
+		choose = new JButton();
 		add(choose, BorderLayout.CENTER);
 		choose.addActionListener(this);
 
@@ -71,11 +76,12 @@ public class SwingColorWidget extends SwingInputWidget
 	// -- ActionListener methods --
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		Color choice = JColorChooser.showDialog(choose, "Select a color", color);
+	public void actionPerformed(final ActionEvent e) {
+		final Color choice =
+			JColorChooser.showDialog(choose, "Select a color", color);
 		if (choice == null) return;
-		color = choice;
-		choose.setBackground(color);
+		model.setValue(color);
+		refresh();
 	}
 
 	// -- ColorWidget methods --
@@ -89,8 +95,15 @@ public class SwingColorWidget extends SwingInputWidget
 
 	@Override
 	public void refresh() {
-		final Color value = (Color) model.getValue();
-		choose.setBackground(value);
+		color = (Color) model.getValue();
+		final BufferedImage image = new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT,
+			BufferedImage.TYPE_INT_RGB);
+		final Graphics g = image.getGraphics();
+		g.setColor(color);
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g.dispose();
+		final ImageIcon icon = new ImageIcon(image);
+		choose.setIcon(icon);
 	}
 
 }

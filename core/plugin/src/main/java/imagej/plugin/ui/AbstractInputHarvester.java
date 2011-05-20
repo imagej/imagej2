@@ -43,6 +43,7 @@ import imagej.plugin.PluginModule;
 import imagej.plugin.PluginModuleItem;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.ClassUtils;
+import imagej.util.ColorRGB;
 import imagej.util.Log;
 import imagej.util.Prefs;
 
@@ -135,6 +136,11 @@ public abstract class AbstractInputHarvester
 					getInitialFileValue(prefValue, defaultValue);
 				addFile(inputPanel, model, initialValue);
 			}
+			else if (ColorRGB.class.isAssignableFrom(type)) {
+				final ColorRGB initialValue =
+					getInitialColorValue(prefValue, defaultValue);
+				addColor(inputPanel, model, initialValue);
+			}
 			else {
 				final Object initialValue =
 					getInitialObjectValue(prefValue, defaultValue);
@@ -226,6 +232,13 @@ public abstract class AbstractInputHarvester
 		inputPanel.addFile(model);
 	}
 
+	private void addColor(final InputPanel inputPanel,
+		final ParamModel model, final ColorRGB initialValue)
+	{
+		model.setValue(initialValue);
+		inputPanel.addColor(model);
+	}
+
 	private void addObject(final InputPanel inputPanel, 
 		final ParamModel model, final Object initialValue)
 	{
@@ -266,6 +279,14 @@ public abstract class AbstractInputHarvester
 	{
 		if (prefValue != null) return new File(prefValue);
 		if (defaultValue != null) return new File(defaultValue.toString());
+		return null;
+	}
+
+	private ColorRGB getInitialColorValue(final String prefValue,
+		final Object defaultValue)
+	{
+		if (prefValue != null) return new ColorRGB(prefValue);
+		if (defaultValue != null) return new ColorRGB(defaultValue.toString());
 		return null;
 	}
 
