@@ -113,6 +113,7 @@ public class DatasetHarmonizer {
 
 		// Since we are storing planes by reference we're done
 		
+		// assume plugin changed ImagePlus in some way and report Dataset changed 
 		ds.update();
 	}
 
