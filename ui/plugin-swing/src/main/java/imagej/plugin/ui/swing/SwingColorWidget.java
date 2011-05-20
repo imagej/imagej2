@@ -1,5 +1,5 @@
 //
-// HeadlessInputPanel.java
+// SwingColorWidget.java
 //
 
 /*
@@ -32,77 +32,65 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.ui.headless;
+package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.AbstractInputPanel;
+import imagej.plugin.ui.ColorWidget;
 import imagej.plugin.ui.ParamModel;
+import imagej.util.ColorRGB;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
 
 /**
- * TODO
- * 
+ * Swing implementation of file selector widget.
+ *
  * @author Curtis Rueden
  */
-public class HeadlessInputPanel extends AbstractInputPanel {
+public class SwingColorWidget extends SwingInputWidget
+	implements ActionListener, ColorWidget
+{
 
-	public HeadlessInputPanel() {
-		// TODO
+	private JButton choose;
+	private Color color;
+
+	public SwingColorWidget(final ParamModel model) {
+		super(model);
+
+		choose = new JButton(" ");
+		add(choose, BorderLayout.CENTER);
+		choose.addActionListener(this);
+
+		refresh();
 	}
 
-	// -- InputPanel methods --
+	// -- ActionListener methods --
 
 	@Override
-	public void addMessage(final String text) {
-		// TODO
+	public void actionPerformed(ActionEvent e) {
+		Color choice = JColorChooser.showDialog(choose, "Select a color", color);
+		if (choice == null) return;
+		color = choice;
+		choose.setBackground(color);
 	}
 
-	@Override
-	public void addNumber(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		// TODO
-	}
+	// -- ColorWidget methods --
 
 	@Override
-	public void addToggle(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addTextField(final ParamModel model, final int columns) {
-		// TODO
-	}
-
-	@Override
-	public void addChoice(final ParamModel model, final String[] items) {
-		// TODO
-	}
-
-	@Override
-	public void addFile(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addColor(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addObject(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public boolean hasWidgets() {
-		// TODO
-		return false;
+	public ColorRGB getColor() {
+		return new ColorRGB(color.getRed(), color.getGreen(), color.getBlue());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		// NB: No action needed.
+		final Color value = (Color) model.getValue();
+		choose.setBackground(value);
 	}
 
 }

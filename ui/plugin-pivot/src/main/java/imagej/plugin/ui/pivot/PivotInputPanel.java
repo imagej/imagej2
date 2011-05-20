@@ -107,8 +107,13 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
+	public void addColor(final ParamModel model) {
+		// TODO create PivotColorWidget and add here
+	}
+
+	@Override
 	public void addObject(final ParamModel model) {
-		// TODO create ObjectWidget and add here
+		// TODO create PivotObjectWidget and add here
 	}
 
 	@Override

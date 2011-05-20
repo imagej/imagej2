@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
+import imagej.util.ColorRGB;
+
 import java.io.File;
 
 /**
@@ -91,6 +93,13 @@ public interface InputPanel {
 	void addFile(ParamModel model);
 
 	/**
+	 * Adds a color chooser.
+	 * 
+	 * @param model backing data model containing parameter details
+	 */
+	void addColor(ParamModel model);
+
+	/**
 	 * Adds an object selector.
 	 * 
 	 * @param model backing data model containing parameter details
@@ -138,6 +147,13 @@ public interface InputPanel {
 	 * @param name unique name identifying this field
 	 */
 	File getFile(String name);
+
+	/**
+	 * Returns the value of the given color chooser.
+	 * 
+	 * @param name unique name identifying this field
+	 */
+	ColorRGB getColor(String name);
 
 	/**
 	 * Returns the value of the given object selector.

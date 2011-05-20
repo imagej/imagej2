@@ -111,6 +111,11 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
+	public void addColor(final ParamModel model) {
+		// TODO create AWTColorWidget and add here
+	}
+
+	@Override
 	public void addObject(final ParamModel model) {
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
