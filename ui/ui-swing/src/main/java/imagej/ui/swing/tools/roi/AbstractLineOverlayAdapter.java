@@ -31,27 +31,42 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
 
+import imagej.awt.AWTColors;
 import imagej.data.roi.AbstractLineOverlay;
+import imagej.util.ColorRGB;
+
+import java.awt.Color;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 
 /**
- * @author leek
- * The AbstractLineROIAdapter adds mechanisms to populate the line attributes
- * of an AbstractLineROI from an AbstractAttributedFigure and vice-versa
+ * The AbstractLineROIAdapter adds mechanisms to populate the line attributes of
+ * an AbstractLineROI from an AbstractAttributedFigure and vice-versa.
+ * 
+ * @author Lee Kamentsky
  */
-public abstract class AbstractLineOverlayAdapter<F extends AbstractAttributedFigure> extends AbstractJHotDrawOverlayAdapter {
+public abstract class AbstractLineOverlayAdapter<F extends AbstractAttributedFigure>
+	extends AbstractJHotDrawOverlayAdapter
+{
 
-	protected void setFigureLineProperties(AbstractLineOverlay roi, F figure) {
-		figure.set(AttributeKeys.STROKE_COLOR, roi.getLineColor());
+	protected void setFigureLineProperties(final AbstractLineOverlay roi,
+		final F figure)
+	{
+		final ColorRGB lineColor = roi.getLineColor();
+		figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
 		figure.set(AttributeKeys.STROKE_WIDTH, roi.getLineWidth());
 	}
-	
-	protected void setROILineProperties(F figure, AbstractLineOverlay roi) {
-		roi.setLineColor(figure.get(AttributeKeys.STROKE_COLOR));
+
+	protected void setROILineProperties(final F figure,
+		final AbstractLineOverlay roi)
+	{
+		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
+		roi.setLineColor(AWTColors.getColorRGB(strokeColor));
 		roi.setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
 	}
+
 }
