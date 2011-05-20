@@ -34,12 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.RealType;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.util.Index;
 
@@ -99,12 +102,18 @@ public class DatasetHarmonizer {
 			return;
 		}
 
-		// if here we know we have planar backing
-		// the plane references could have changed in some way:
-		//   - setPixels, setProcessor, stack rearrangement, etc.
-		// its easier to always reassign them rather than
-		//   calculate exactly what to do
-		assignPlaneReferences(ds, imp);
+		// can I not assign plane references?
+		if (planeTypesDifferent(ds, imp)) {
+			assignData(ds, imp);
+		}
+		else {
+			// if here we know we have planar backing of right type.
+			// The plane references could have changed in some way:
+			//   - setPixels, setProcessor, stack rearrangement, etc.
+			// its easier to always reassign them rather than
+			//   calculate exactly what to do
+			assignPlaneReferences(ds, imp);
+		}
 		
 		// make sure metadata accurately updated
 		metadataTranslator.setDatasetMetadata(ds,imp);
@@ -171,6 +180,70 @@ public class DatasetHarmonizer {
 		return value != 1;
 	}
 
+	/** returns true if a planar Dataset and an ImagePlus have different primitive
+	 * array backing.
+	 */
+	private boolean planeTypesDifferent(Dataset ds, ImagePlus imp) {
+		RealType<?> dsType = ds.getType();
+		switch (imp.getType()) {
+			case ImagePlus.GRAY8:
+				if ((dsType.getBitsPerPixel() == 8) &&
+						(ds.isInteger()) &&
+						(!ds.isSigned()))
+						return false;
+				break;
+			case ImagePlus.GRAY16:
+				if ((dsType.getBitsPerPixel() == 16) &&
+						(ds.isInteger()) &&
+						(!ds.isSigned()))
+						return false;
+				break;
+			case ImagePlus.GRAY32:
+				if ((dsType.getBitsPerPixel() == 32) &&
+						(!ds.isInteger()) &&
+						(ds.isSigned()))
+						return false;
+				break;
+		}
+		return true;
+	}
+
+	/** assigns actual pixel values of Dataset. needed for those types that do
+	 * not directly map from IJ1 types.
+	 */
+	private void assignData(Dataset ds, ImagePlus imp) {
+		int x = imp.getWidth();
+		int y = imp.getHeight();
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
+		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
+		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		long[] position = new long[ds.getImgPlus().numDimensions()];
+		int imagejPlaneNumber = 1;
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
+		for (int ti = 0; ti < t; ti++) {
+			if (tIndex >= 0) position[tIndex] = ti;
+			for (int zi = 0; zi < z; zi++) {
+				if (zIndex >= 0) position[zIndex] = zi;
+				for (int ci = 0; ci < c; ci++) {
+					if (cIndex >= 0) position[cIndex] = ci;
+					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
+					for (int yi = 0; yi < y; yi++) {
+						position[1] = yi;
+						for (int xi = 0; xi < x; xi++) {
+							position[0] = xi;
+							accessor.setPosition(position);
+							float value = proc.getf(xi, yi);
+							accessor.get().setReal(value);
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	/** assigns the plane references of a planar Dataset to match the plane
 	 *  references of a given ImagePlus
 	 */
