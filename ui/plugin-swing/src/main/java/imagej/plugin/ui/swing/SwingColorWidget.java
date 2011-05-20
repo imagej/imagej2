@@ -80,7 +80,8 @@ public class SwingColorWidget extends SwingInputWidget implements
 		final Color choice =
 			JColorChooser.showDialog(choose, "Select a color", color);
 		if (choice == null) return;
-		model.setValue(color);
+		color = choice;
+		model.setValue(getColor());
 		refresh();
 	}
 
@@ -88,14 +89,16 @@ public class SwingColorWidget extends SwingInputWidget implements
 
 	@Override
 	public ColorRGB getColor() {
-		return new ColorRGB(color.getRed(), color.getGreen(), color.getBlue());
+		return toColorRGB(color);
 	}
 
 	// -- InputWidget methods --
 
 	@Override
 	public void refresh() {
-		color = (Color) model.getValue();
+		final ColorRGB value = (ColorRGB) model.getValue();
+		color = toColor(value);
+		
 		final BufferedImage image = new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT,
 			BufferedImage.TYPE_INT_RGB);
 		final Graphics g = image.getGraphics();
@@ -104,6 +107,21 @@ public class SwingColorWidget extends SwingInputWidget implements
 		g.dispose();
 		final ImageIcon icon = new ImageIcon(image);
 		choose.setIcon(icon);
+	}
+
+	// -- Helper methods --
+
+	// NB: The following methods also exist in imagej.awt.AWTColors, but
+	// to avoid a dependency on ij-awt-common, we do not use them here.
+
+	private Color toColor(final ColorRGB c) {
+		if (c == null) return null;
+		return new Color(c.getRed(), c.getGreen(), c.getBlue());
+	}
+
+	private ColorRGB toColorRGB(final Color c) {
+		if (c == null) return null;
+		return new ColorRGB(c.getRed(), c.getGreen(), c.getBlue());
 	}
 
 }
