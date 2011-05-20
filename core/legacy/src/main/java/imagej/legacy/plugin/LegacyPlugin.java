@@ -53,6 +53,7 @@ import java.util.Set;
  * Executes an IJ1 plugin.
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class LegacyPlugin implements ImageJPlugin {
 
@@ -65,25 +66,6 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(output=true)
 	private List<Dataset> outputs;
 
-	@Override
-	public void run() {
-		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
-		final DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
-		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
-		outputSet.clear();
-		IJ.runPlugIn(className, arg);
-		outputs = new ArrayList<Dataset>();
-		for (ImagePlus imp : outputSet) {
-			Dataset ds = map.findDataset(imp);
-			if (ds == null)
-				ds = map.registerLegacyImage(imp);
-			else
-				harmonizer.harmonize(ds, imp);
-			outputs.add(ds);
-		}
-		outputSet.clear();
-	}
-
 	/** Used to provide one list of datasets per calling thread. */
 	private static ThreadLocal<Set<ImagePlus>> outputImps =
 		new ThreadLocal<Set<ImagePlus>>()
@@ -93,6 +75,38 @@ public class LegacyPlugin implements ImageJPlugin {
 			return new HashSet<ImagePlus>();
 		}
 	};
+	
+	// -- public interface --
+	
+	@Override
+	public void run() {
+
+		/*
+
+		use current imp as input to harmonize : no
+		
+		
+		a) harmonize all ds (from Obj man)
+		b) set imp of active ds as current image
+				set temp curr im or set curr image
+
+		dirty flag for a ds 1 for harm and 1 for saved
+		image map can track dirty harm and listen events
+		ds can track dirty saved
+
+		*/
+
+		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
+		final DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
+		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
+		outputSet.clear();
+		harmonizeInputs(map, harmonizer);
+		// set current temp image or curr image
+		IJ.runPlugIn(className, arg);
+		harmonizeCurrentImagePlus(map, harmonizer);
+		outputs = harmonizeOutputs(map, harmonizer);
+		outputSet.clear();
+	}
 
 	/**
 	 * Gets a list for storing output parameter values.
@@ -102,4 +116,39 @@ public class LegacyPlugin implements ImageJPlugin {
 		return outputImps.get();
 	}
 
+	// -- helpers --
+
+	private void harmonizeInputs(LegacyImageMap map,
+		DatasetHarmonizer harmonizer)
+	{
+	}
+
+	private void harmonizeCurrentImagePlus(LegacyImageMap map,
+		DatasetHarmonizer harmonizer)
+	{
+		// this plugin may not have any outputs but just changes current ImagePlus
+		// make sure we catch any changes via harmonization
+		ImagePlus currImp = IJ.getImage();
+		Dataset ds = map.findDataset(currImp);
+		if (ds != null)
+			harmonizer.harmonize(ds, currImp);
+	}
+	
+	private List<Dataset> harmonizeOutputs(LegacyImageMap map,
+		DatasetHarmonizer harmonizer)
+	{
+		List<Dataset> datasets = new ArrayList<Dataset>();
+
+		// also harmonize all outputs
+		for (ImagePlus imp : getOutputs()) {
+			Dataset ds = map.findDataset(imp);
+			if (ds == null)
+				ds = map.registerLegacyImage(imp);
+			else
+				harmonizer.harmonize(ds, imp);
+			datasets.add(ds);
+		}
+
+		return datasets;
+	}
 }
