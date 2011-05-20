@@ -66,11 +66,13 @@ public final class OverlayManager implements ManagerComponent {
 	/** Gets a list of {@link Overlay}s linked to the given {@link Display}. */
 	public List<Overlay> getOverlays(final Display display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		for (final DisplayView view : display.getViews()) {
-			final DataObject dataObject = view.getDataObject();
-			if (!(dataObject instanceof Overlay)) continue;
-			final Overlay overlay = (Overlay) dataObject;
-			overlays.add(overlay);
+		if (display != null) {
+			for (final DisplayView view : display.getViews()) {
+				final DataObject dataObject = view.getDataObject();
+				if (!(dataObject instanceof Overlay)) continue;
+				final Overlay overlay = (Overlay) dataObject;
+				overlays.add(overlay);
+			}
 		}
 		return overlays;
 	}
