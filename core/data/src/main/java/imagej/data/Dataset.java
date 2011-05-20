@@ -97,6 +97,7 @@ public class Dataset extends AbstractDataObject implements
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
+	private boolean isDirty;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	// here for plugin testing purposes. Really should be viewcentric.
@@ -120,10 +121,15 @@ public class Dataset extends AbstractDataObject implements
 	public Dataset(final ImgPlus<? extends RealType<?>> imgPlus) {
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
+		isDirty = false;
 		selection = new IntRect();
 		Events.publish(new DatasetCreatedEvent(this));
 	}
 
+	public boolean isDirty() { return isDirty; }
+
+	public void setDirty(boolean value) { isDirty = value; }
+	
 	public ImgPlus<? extends RealType<?>> getImgPlus() {
 		return imgPlus;
 	}
@@ -177,7 +183,7 @@ public class Dataset extends AbstractDataObject implements
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void setPlane(final int no, final Object plane) {
+	public void setPlane(final int no, final Object newPlane) {
 		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (!(img instanceof PlanarAccess)) {
 			// cannot set by reference
@@ -186,26 +192,29 @@ public class Dataset extends AbstractDataObject implements
 		}
 		// TODO - copy the plane if it cannot be set by reference
 		final PlanarAccess planarAccess = (PlanarAccess) img;
+		Object currPlane = planarAccess.getPlane(no);
+		if (newPlane == currPlane) return;
 		ArrayDataAccess<?> array = null;
-		if (plane instanceof byte[]) {
-			array = new ByteArray((byte[]) plane);
+		if (newPlane instanceof byte[]) {
+			array = new ByteArray((byte[]) newPlane);
 		}
-		else if (plane instanceof short[]) {
-			array = new ShortArray((short[]) plane);
+		else if (newPlane instanceof short[]) {
+			array = new ShortArray((short[]) newPlane);
 		}
-		else if (plane instanceof int[]) {
-			array = new IntArray((int[]) plane);
+		else if (newPlane instanceof int[]) {
+			array = new IntArray((int[]) newPlane);
 		}
-		else if (plane instanceof float[]) {
-			array = new FloatArray((float[]) plane);
+		else if (newPlane instanceof float[]) {
+			array = new FloatArray((float[]) newPlane);
 		}
-		else if (plane instanceof long[]) {
-			array = new LongArray((long[]) plane);
+		else if (newPlane instanceof long[]) {
+			array = new LongArray((long[]) newPlane);
 		}
-		else if (plane instanceof double[]) {
-			array = new DoubleArray((double[]) plane);
+		else if (newPlane instanceof double[]) {
+			array = new DoubleArray((double[]) newPlane);
 		}
 		planarAccess.setPlane(no, array);
+		setDirty(true);
 	}
 
 	public double getDoubleValue(final long[] pos) {
@@ -254,18 +263,8 @@ public class Dataset extends AbstractDataObject implements
 
 	/** Copies the dataset's pixels into the given target dataset. */
 	public void copyInto(final Dataset target) {
-		final Cursor<? extends RealType<?>> in = imgPlus.localizingCursor();
-		final RandomAccess<? extends RealType<?>> out =
-			target.getImgPlus().randomAccess();
-		final long[] position = new long[imgPlus.numDimensions()];
-
-		while (in.hasNext()) {
-			in.next();
-			final double value = in.get().getRealDouble();
-			in.localize(position);
-			out.setPosition(position);
-			out.get().setReal(value);
-		}
+		copyDataValues(imgPlus.getImg(), target.getImgPlus().getImg());
+		target.setDirty(true);
 	}
 
 	/**
@@ -287,10 +286,13 @@ public class Dataset extends AbstractDataObject implements
 	}
 
 	public void typeChange() {
+		setDirty(true);
 		Events.publish(new DatasetTypeChangedEvent(this));
 	}
 
 	public void rgbChange() {
+		// TODO - not sure if this needs to be done here
+		// setDirty(true);
 		Events.publish(new DatasetRGBChangedEvent(this));
 	}
 
@@ -298,11 +300,13 @@ public class Dataset extends AbstractDataObject implements
 
 	@Override
 	public void update() {
+		setDirty(true);
 		Events.publish(new DatasetUpdatedEvent(this));
 	}
 
 	@Override
 	public void rebuild() {
+		setDirty(true);
 		Events.publish(new DatasetRestructuredEvent(this));
 	}
 
@@ -335,6 +339,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setName(final String name) {
 		imgPlus.setName(name);
+		setDirty(true);
 	}
 
 	@Override
@@ -355,6 +360,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setAxis(final Axis axis, final int d) {
 		imgPlus.setAxis(axis, d);
+		setDirty(true);
 	}
 
 	@Override
@@ -370,6 +376,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setCalibration(final double cal, final int d) {
 		imgPlus.setCalibration(cal, d);
+		setDirty(true);
 	}
 
 	@Override
@@ -400,6 +407,8 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setColorTable(final ColorTable8 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
+		// TODO - ???
+		//setDirty(true);
 	}
 
 	@Override
@@ -410,6 +419,8 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setColorTable(final ColorTable16 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
+		// TODO - ???
+		//setDirty(true);
 	}
 
 	@Override
@@ -543,7 +554,6 @@ public class Dataset extends AbstractDataObject implements
 		return new ImgPlus<T>(blankImg, img);
 	}
 
-	// NB - non imglib implementation available in SVN revision 2812
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Object copyOfPlane(final int planeNum) {
 		final long[] dimensions = new long[imgPlus.numDimensions()];
