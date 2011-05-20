@@ -56,14 +56,14 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-	@Menu(label = "Overlays", mnemonic = 'o'),
+	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Properties...", mnemonic = 'p') })
 public class OverlayProperties implements ImageJPlugin {
 
-	@Parameter
+	@Parameter(persist = false)
 	private ColorRGB lineColor;
 
-	@Parameter(min = "0.1")
+	@Parameter(persist = false, min = "0.1")
 	private double lineWidth;
 
 	public OverlayProperties() {
