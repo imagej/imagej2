@@ -57,33 +57,20 @@ public class LegacyImageMap {
 
 	// -- public interface --
 
+	/** default constructor */
 	public LegacyImageMap() {
 		imageTable = new WeakHashMap<ImagePlus, Dataset>();
 		imageTranslator = new DefaultImageTranslator();
 	}
 
+	/** returns the result of a lookup for a given ImagePlus */
 	public Dataset findDataset(ImagePlus imp) {
 		return imageTable.get(imp);
 	}
 
-	/**
-	 * Ensures that the given legacy image has a corresponding dataset.
-	 *
-	 * @return the {@link Dataset} object shadowing this legacy image.
-	 */
-	public Dataset registerLegacyImage(ImagePlus imp) {
-		synchronized (imageTable) {
-			Dataset dataset = imageTable.get(imp);
-			if (dataset == null) {
-				// mirror image window to dataset
-				dataset = imageTranslator.createDataset(imp);
-				imageTable.put(imp, dataset);
-			}
-			else {  // dataset was already existing
-				// do nothing
-			}
-			return dataset;
-		}
+	/** returns the ImageTranslator used by the LegacyImageMap */
+	public ImageTranslator getTranslator() {
+		return imageTranslator;
 	}
 
 	/**
@@ -112,7 +99,43 @@ public class LegacyImageMap {
 		return imp;
 	}
 	
-	public ImageTranslator getTranslator() {
-		return imageTranslator;
+	/**
+	 * Ensures that the given legacy image has a corresponding dataset.
+	 *
+	 * @return the {@link Dataset} object shadowing this legacy image.
+	 */
+	public Dataset registerLegacyImage(ImagePlus imp) {
+		synchronized (imageTable) {
+			Dataset dataset = imageTable.get(imp);
+			if (dataset == null) {
+				// mirror image window to dataset
+				dataset = imageTranslator.createDataset(imp);
+				imageTable.put(imp, dataset);
+			}
+			else {  // dataset was already existing
+				// do nothing
+			}
+			return dataset;
+		}
+	}
+
+	/** removes the mapping associated with a given Dataset */
+	public void unregisterDataset(Dataset ds) {
+		synchronized (imageTable) {
+			for (final ImagePlus key : imageTable.keySet()) {
+				final Dataset dataset = imageTable.get(key);
+				if (dataset == ds) {
+					imageTable.remove(key);
+				}
+			}
+		}
+	}
+	
+	// TODO - hatched as maybe useful
+	/** removes the mapping associated with a given ImagePlus */
+	public void unregisterLegacyImage(ImagePlus imp) {
+		synchronized (imageTable) {
+			imageTable.remove(imp);
+		}
 	}
 }
