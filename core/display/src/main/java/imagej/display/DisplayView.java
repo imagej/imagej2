@@ -85,5 +85,16 @@ public interface DisplayView {
 
 	/** Discards the view, performing any needed cleanup. */
 	void dispose();
+	
+	/**
+	 * Set the view's selection state.
+	 * 
+	 * @param isSelected - true if selected, false if not.
+	 */
+	void setSelected(boolean isSelected);
 
+	/**
+	 * @return the view's selection state.
+	 */
+	boolean isSelected();
 }

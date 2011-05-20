@@ -50,7 +50,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * 
  * @author Curtis Rueden
  */
-public class SwingOverlayView extends OverlayView {
+public class SwingOverlayView extends OverlayView implements FigureView {
 
 	private final SwingImageDisplay display;
 
@@ -145,4 +145,17 @@ public class SwingOverlayView extends OverlayView {
 
 	}
 
+	@Override
+	public Figure getFigure() {
+		return figure;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.display.AbstractDisplayView#dispose()
+	 */
+	@Override
+	public void dispose() {
+		figure.requestRemove();
+		super.dispose();
+	}
 }

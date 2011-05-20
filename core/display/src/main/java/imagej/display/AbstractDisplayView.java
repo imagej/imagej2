@@ -37,6 +37,9 @@ package imagej.display;
 import imagej.data.DataObject;
 import imagej.data.event.DataObjectRestructuredEvent;
 import imagej.data.event.DataObjectUpdatedEvent;
+import imagej.display.event.DisplayViewDeselectedEvent;
+import imagej.display.event.DisplayViewSelectedEvent;
+import imagej.display.event.DisplayViewSelectionEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.util.Index;
@@ -63,6 +66,11 @@ public abstract class AbstractDisplayView implements DisplayView {
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
+	
+	/**
+	 * True if view is selected, false if not.
+	 */
+	private boolean selected;
 
 	public AbstractDisplayView(final Display display, final DataObject dataObject) {
 		this.display = display;
@@ -108,6 +116,26 @@ public abstract class AbstractDisplayView implements DisplayView {
 	}
 
 	// -- Helper methods --
+
+	/* (non-Javadoc)
+	 * @see imagej.display.DisplayView#setSelected(boolean)
+	 */
+	@Override
+	public void setSelected(boolean isSelected) {
+		if (selected != isSelected) {
+			selected = isSelected;
+			DisplayViewSelectionEvent event = isSelected? new DisplayViewSelectedEvent(this): new DisplayViewDeselectedEvent(this);
+			Events.publish(event);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.display.DisplayView#isSelected()
+	 */
+	@Override
+	public boolean isSelected() {
+		return selected;
+	}
 
 	/** Updates the display when the linked object changes. */
 	private void subscribeToEvents() {
