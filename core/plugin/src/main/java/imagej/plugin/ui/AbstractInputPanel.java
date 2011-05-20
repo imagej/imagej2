@@ -34,12 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
+import imagej.util.ColorRGB;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO
+ * Abstract superclass of UI-specific {@link InputPanel} implementations.
  *
  * @author Curtis Rueden
  */
@@ -64,6 +66,10 @@ public abstract class AbstractInputPanel implements InputPanel {
 	/** Widget table for files. */
 	protected Map<String, FileWidget> fileWidgets =
 		new HashMap<String, FileWidget>();
+
+	/** Widget table for colors. */
+	protected Map<String, ColorWidget> colorWidgets =
+		new HashMap<String, ColorWidget>();
 
 	/** Widget table for objects. */
 	protected Map<String, ObjectWidget> objectWidgets =
@@ -100,6 +106,11 @@ public abstract class AbstractInputPanel implements InputPanel {
 	}
 
 	@Override
+	public ColorRGB getColor(final String name) {
+		return colorWidgets.get(name).getColor();
+	}
+
+	@Override
 	public Object getObject(final String name) {
 		return objectWidgets.get(name).getObject();
 	}
@@ -111,6 +122,7 @@ public abstract class AbstractInputPanel implements InputPanel {
 		for (final InputWidget w : textFieldWidgets.values()) w.refresh();
 		for (final InputWidget w : choiceWidgets.values()) w.refresh();
 		for (final InputWidget w : fileWidgets.values()) w.refresh();
+		for (final InputWidget w : colorWidgets.values()) w.refresh();
 		for (final InputWidget w : objectWidgets.values()) w.refresh();
 	}
 

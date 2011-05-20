@@ -112,6 +112,13 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
+	public void addColor(final ParamModel model) {
+		final SwingColorWidget colorWidget = new SwingColorWidget(model);
+		addField(model.getLabel(), colorWidget);
+		colorWidgets.put(model.getName(), colorWidget);
+	}
+
+	@Override
 	public void addObject(final ParamModel model) {
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);

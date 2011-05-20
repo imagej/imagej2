@@ -1,5 +1,5 @@
 //
-// HeadlessInputPanel.java
+// ColorWidget.java
 //
 
 /*
@@ -32,77 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.ui.headless;
+package imagej.plugin.ui;
 
-import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamModel;
+import imagej.util.ColorRGB;
 
 /**
- * TODO
- * 
+ * Widget interface for color choosers.
+ *
  * @author Curtis Rueden
  */
-public class HeadlessInputPanel extends AbstractInputPanel {
+public interface ColorWidget extends InputWidget {
 
-	public HeadlessInputPanel() {
-		// TODO
-	}
-
-	// -- InputPanel methods --
-
-	@Override
-	public void addMessage(final String text) {
-		// TODO
-	}
-
-	@Override
-	public void addNumber(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
-	{
-		// TODO
-	}
-
-	@Override
-	public void addToggle(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addTextField(final ParamModel model, final int columns) {
-		// TODO
-	}
-
-	@Override
-	public void addChoice(final ParamModel model, final String[] items) {
-		// TODO
-	}
-
-	@Override
-	public void addFile(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addColor(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public void addObject(final ParamModel model) {
-		// TODO
-	}
-
-	@Override
-	public boolean hasWidgets() {
-		// TODO
-		return false;
-	}
-
-	// -- InputWidget methods --
-
-	@Override
-	public void refresh() {
-		// NB: No action needed.
-	}
+	ColorRGB getColor();
 
 }
