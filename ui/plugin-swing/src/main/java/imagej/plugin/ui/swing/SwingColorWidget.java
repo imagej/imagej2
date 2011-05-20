@@ -50,7 +50,7 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
 /**
- * Swing implementation of file selector widget.
+ * Swing implementation of color chooser widget.
  * 
  * @author Curtis Rueden
  */
