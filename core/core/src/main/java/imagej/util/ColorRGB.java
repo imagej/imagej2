@@ -47,6 +47,14 @@ public class ColorRGB {
 		this.blue = blue;
 	}
 
+	/** Parses a color from a string of the form "r,g,b". */
+	public ColorRGB(final String value) {
+		final String[] tokens = value.split(",");
+		red = Integer.parseInt(tokens[0]);
+		green = Integer.parseInt(tokens[1]);
+		blue = Integer.parseInt(tokens[2]);
+	}
+
 	public int getRed() {
 		return red;
 	}
@@ -73,6 +81,11 @@ public class ColorRGB {
 		final int g = getGreen();
 		final int b = getBlue();
 		return (a << 24) | (r << 16) | (g << 8) | b;
+	}
+
+	@Override
+	public String toString() {
+		return red + "," + green + "," + blue;
 	}
 
 }
