@@ -39,6 +39,7 @@ import imagej.awt.AWTEventDispatcher;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.ZoomEvent;
@@ -196,6 +197,21 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			};
 		subscribers.add(dsRestructuredSubscriber);
 		Events.subscribe(DatasetRestructuredEvent.class, dsRestructuredSubscriber);
+
+		final EventSubscriber<DatasetUpdatedEvent> dsUpdatedSubscriber =
+			new EventSubscriber<DatasetUpdatedEvent>() {
+
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void onEvent(DatasetUpdatedEvent event) {
+					DisplayView view = getDisplay().getActiveView();
+					final Dataset ds = getDataset(view);
+					if (event.getObject() != ds) return;
+					setTitle(makeTitle(ds, getDisplay().getImageCanvas().getZoomFactor()));
+				}
+			};
+		subscribers.add(dsUpdatedSubscriber);
+		Events.subscribe(DatasetUpdatedEvent.class, dsUpdatedSubscriber);
 	}
 
 	private void createSliders(final DisplayView view) {
