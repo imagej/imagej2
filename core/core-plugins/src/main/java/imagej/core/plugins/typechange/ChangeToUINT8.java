@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
  * unexpected values since imglib does the simplest translation
  * it can for efficiency reasons.
  *  
- * @author bdezonia
+ * @author Barry DeZonia
  *
  */
 @Plugin(menu = {
@@ -64,7 +64,6 @@ public class ChangeToUINT8 implements ImageJPlugin {
 	@Override
 	public void run() {
 		TypeChanger.changeType(input, new UnsignedByteType());
-		input.update();
 	}
 
 }
