@@ -135,9 +135,10 @@ public class Dataset extends AbstractDataObject implements
 		}
 
 		// are types different
+		boolean typeChanged = false;
 		if (imgPlus.getImg().cursor().get().getClass() !=
 			this.imgPlus.getImg().cursor().get().getClass())
-			typeChange();
+			typeChanged = true;
 		
 		this.imgPlus = imgPlus;
 		// NB - keeping all the old metadata for now. TODO - revisit this?
@@ -145,6 +146,9 @@ public class Dataset extends AbstractDataObject implements
 		selection = new IntRect();
 
 		rebuild();
+		
+		if (typeChanged)
+			typeChange();
 	}
 
 	/** Gets the dimensional extents of the dataset. */
