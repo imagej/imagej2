@@ -33,7 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.data.roi;
 
-import java.awt.Color;
+import imagej.util.ColorRGB;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -50,21 +51,21 @@ public abstract class AbstractLineOverlay extends AbstractOverlay implements Ser
 
 	private static final long serialVersionUID = 1L;
 	
-	protected Color lineColor = new Color(0, 0, 0);
+	protected ColorRGB lineColor = new ColorRGB(0, 0, 0);
 	
 	protected double lineWidth = 1.0;
 	
 	/**
 	 * @return the color to be used to paint lines or shape borders
 	 */
-	public Color getLineColor() {
+	public ColorRGB getLineColor() {
 		return lineColor;
 	}
 
 	/**
 	 * @param lineColor the color to be used to paint lines and shape borders
 	 */
-	public void setLineColor(Color lineColor) {
+	public void setLineColor(ColorRGB lineColor) {
 		this.lineColor = lineColor;
 	}
 
@@ -87,7 +88,7 @@ public abstract class AbstractLineOverlay extends AbstractOverlay implements Ser
 		out.writeDouble(lineWidth);
 	}
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		lineColor = (Color)in.readObject();
+		lineColor = (ColorRGB) in.readObject();
 		lineWidth = in.readDouble();
 	}
 

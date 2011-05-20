@@ -31,42 +31,44 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
-import java.awt.Color;
+import imagej.util.ColorRGB;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.roi.RegionOfInterest;
 
-
 /**
- * @author leek
- *
  * The shape ROI represents a region of interest with an interior.
- *
- * @param <T> - the region of interest type returned by getShapeRegionOfInterest
+ * 
+ * @param <T> the region of interest type returned by getShapeRegionOfInterest
+ * @author Lee Kamentsky
  */
-public abstract class AbstractShapeOverlay <T extends RegionOfInterest> extends AbstractLineOverlay {
+public abstract class AbstractShapeOverlay<T extends RegionOfInterest> extends
+	AbstractLineOverlay
+{
 
 	private static final long serialVersionUID = 1L;
-	
-	protected Color fillColor = new Color(255,255,255);
+
+	protected ColorRGB fillColor = new ColorRGB(255, 255, 255);
 
 	protected double opacity = 1.0;
 
 	/**
 	 * @return the color to be used to paint the interior of the shape
 	 */
-	public Color getFillColor() {
+	public ColorRGB getFillColor() {
 		return fillColor;
 	}
 
 	/**
 	 * @param fillColor the color of the interior of the shape
 	 */
-	public void setFillColor(Color fillColor) {
+	public void setFillColor(final ColorRGB fillColor) {
 		this.fillColor = fillColor;
 	}
 
@@ -80,31 +82,34 @@ public abstract class AbstractShapeOverlay <T extends RegionOfInterest> extends 
 	/**
 	 * @param opacity the opacity of the fill (0 = transparent, 1 = opaque
 	 */
-	public void setOpacity(double opacity) {
+	public void setOpacity(final double opacity) {
 		this.opacity = opacity;
 	}
-	
+
 	/**
 	 * @return the region of interest cast to the derived type.
 	 */
 	abstract public T getShapeRegionOfInterest();
-	
-	/* (non-Javadoc)
-	 * @see imagej.roi.ImageJROI#getRegionOfInterest()
-	 */
+
 	@Override
 	public RegionOfInterest getRegionOfInterest() {
 		return getShapeRegionOfInterest();
 	}
 
-	public void writeExternal(ObjectOutput out) throws IOException {
+	@Override
+	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		out.writeObject(fillColor);
 		out.writeDouble(opacity);
 	}
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
+	@Override
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
 		super.readExternal(in);
-		fillColor = (Color)in.readObject();
+		fillColor = (ColorRGB) in.readObject();
 		opacity = in.readDouble();
 	}
+
 }

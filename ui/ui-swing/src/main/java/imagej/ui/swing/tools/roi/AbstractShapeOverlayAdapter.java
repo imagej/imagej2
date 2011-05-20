@@ -31,35 +31,49 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools.roi;
+
+import imagej.awt.AWTColors;
+import imagej.data.roi.AbstractShapeOverlay;
+import imagej.util.ColorRGB;
+
+import java.awt.Color;
 
 import net.imglib2.roi.RegionOfInterest;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 
-import imagej.data.roi.AbstractShapeOverlay;
-
-
 /**
- * @author leek
- *
- * The AbstractShapeROIAdapter adds mechanisms for populating the
- * line and fill attributes of the AbstractShapeROI from an AbstractAttributedFigure
- * and vice-versa
+ * The AbstractShapeROIAdapter adds mechanisms for populating the line and fill
+ * attributes of the AbstractShapeROI from an AbstractAttributedFigure and
+ * vice-versa.
  * 
- * @param T - the derived RegionOfInterest type exposed by the AbstractShapeROI adapted by this adapter.
+ * @param <T> the derived RegionOfInterest type exposed by the AbstractShapeROI
+ *          adapted by this adapter.
+ * @author Lee Kamentsky
  */
-public abstract class AbstractShapeOverlayAdapter <F extends AbstractAttributedFigure, T extends RegionOfInterest> extends AbstractLineOverlayAdapter<F> {
-	protected void setFigureShapeProperties(AbstractShapeOverlay<T> roi, F figure) {
-		figure.set(AttributeKeys.FILL_COLOR, roi.getFillColor());
+public abstract class AbstractShapeOverlayAdapter<F extends AbstractAttributedFigure, T extends RegionOfInterest>
+	extends AbstractLineOverlayAdapter<F>
+{
+
+	protected void setFigureShapeProperties(final AbstractShapeOverlay<T> roi,
+		final F figure)
+	{
+		final ColorRGB fillColor = roi.getFillColor();
+		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor));
 		figure.set(AttributeKeys.CANVAS_FILL_OPACITY, roi.getOpacity());
 		super.setFigureLineProperties(roi, figure);
 	}
-	
-	protected void getShapeROIProperties(F figure, AbstractShapeOverlay<T> roi) {
-		roi.setFillColor(figure.get(AttributeKeys.FILL_COLOR));
+
+	protected void getShapeROIProperties(final F figure,
+		final AbstractShapeOverlay<T> roi)
+	{
+		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
+		roi.setFillColor(AWTColors.getColorRGB(fillColor));
 		roi.setOpacity(figure.get(AttributeKeys.CANVAS_FILL_OPACITY));
 		super.setROILineProperties(figure, roi);
 	}
+
 }
