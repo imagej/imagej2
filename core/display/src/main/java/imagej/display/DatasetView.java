@@ -42,7 +42,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.util.Dimensions;
 import imagej.util.Index;
-import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -240,8 +239,9 @@ public abstract class DatasetView extends AbstractDisplayView {
 		for (int c = 0; c < channelCount; c++) {
 			converters.add(new RealLUTConverter(min, max, null));
 		}
-		final CompositeXYProjector proj = new CompositeXYProjector(
-			dataset.getImgPlus(), screenImage, converters, channelDimIndex);
+		final CompositeXYProjector proj =
+			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
+				channelDimIndex);
 		proj.setComposite(composite);
 		updateLUTs();
 		return proj;
@@ -273,37 +273,34 @@ public abstract class DatasetView extends AbstractDisplayView {
 
 		EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
 			new EventSubscriber<DatasetTypeChangedEvent>() {
+
 				@Override
 				public void onEvent(DatasetTypeChangedEvent event) {
-					if (dataset == event.getObject())
-						rebuild();
-					Log.debug("DATASET TYPE CHANGE CAUGHT");
+					if (dataset == event.getObject()) rebuild();
 				}
-		};
+			};
 		subscribers.add(typeChangeSubscriber);
 		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
 
 		EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
 			new EventSubscriber<DatasetRGBChangedEvent>() {
+
 				@Override
 				public void onEvent(DatasetRGBChangedEvent event) {
-					if (dataset == event.getObject())
-						rebuild();
-					Log.debug("DATASET COLOR CHANGE CAUGHT");
+					if (dataset == event.getObject()) rebuild();
 				}
-		};
+			};
 		subscribers.add(rgbChangeSubscriber);
 		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
 
 		EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
+
 				@Override
 				public void onEvent(DatasetUpdatedEvent event) {
-					if (dataset == event.getObject())
-						projector.map();
-					Log.debug("DATASET UPDATE CAUGHT");
+					if (dataset == event.getObject()) projector.map();
 				}
-		};
+			};
 		subscribers.add(updateSubscriber);
 		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 
