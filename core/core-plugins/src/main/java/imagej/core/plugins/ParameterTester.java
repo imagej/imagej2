@@ -49,7 +49,7 @@ import java.io.File;
 import java.math.BigInteger;
 
 /**
- * Test plugin for verifying that many types of parameters work properly.
+ * Test plugin for verifying that various plugin features work properly.
  * 
  * @author Curtis Rueden
  */
@@ -111,8 +111,16 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		min = "0", max = "1000")
 	private int scrollBarNumber;
 
+	@Parameter(label = "x", callback = "xChanged")
+	private float x;
+
+	@Parameter(label = "2x",
+		description = "Demonstrates callback functionality. Equal to double x.",
+		callback = "twoXChanged")
+	private float twoX;
+
 	@Parameter(description = "Demonstrates preview functionality by " +
-		"displaying this message in the ImageJ status bar", columns = 20)
+		"displaying the given message in the ImageJ status bar.", columns = 20)
 	private String message = "Type a status message here.";
 
 	@Override
@@ -135,16 +143,27 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("\tspinner = " + spinnerNumber);
 		Log.info("\tslider = " + sliderNumber);
 		Log.info("\tscroll bar = " + scrollBarNumber);
+		Log.info("\tx = " + x);
+		Log.info("\t2x = " + twoX);
 		Log.info("\tmessage = " + message);
 	}
 
-	private int previewCount = 0;
+	private int previews = 0;
 
 	@Override
 	public void preview() {
-		Log.info("ParameterTester.preview: " +
-			++previewCount + " invocations and counting");
+		Log.info("ParameterTester: " + ++previews + " previews and counting");
 		Events.publish(new StatusEvent(message));
+	}
+
+	@SuppressWarnings("unused")
+	private void xChanged() {
+		twoX = x * 2;
+	}
+
+	@SuppressWarnings("unused")
+	private void twoXChanged() {
+		x = twoX / 2;
 	}
 
 }
