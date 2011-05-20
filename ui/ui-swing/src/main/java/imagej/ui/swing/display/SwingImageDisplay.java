@@ -159,6 +159,7 @@ public class SwingImageDisplay implements AWTDisplay {
 	@Override
 	public void removeView(final DisplayView view) {
 		views.remove(view);
+		view.dispose();
 		update();
 		imgWindow.redoLayout();
 	}

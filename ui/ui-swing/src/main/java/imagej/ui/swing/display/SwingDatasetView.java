@@ -43,14 +43,16 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import org.jhotdraw.draw.Drawing;
+import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
+import org.jhotdraw.draw.event.FigureAdapter;
 
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-public class SwingDatasetView extends DatasetView {
+public class SwingDatasetView extends DatasetView implements FigureView {
 
 	private final ImageFigure figure;
 
@@ -86,6 +88,12 @@ public class SwingDatasetView extends DatasetView {
 		figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
 			bufImage.getHeight()));
 		figure.setBufferedImage(bufImage);
+	}
+	
+	// -- FigureView methods --
+	@Override
+	public Figure getFigure() {
+		return figure;
 	}
 
 }

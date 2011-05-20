@@ -39,9 +39,12 @@ import imagej.awt.AWTCursors;
 import imagej.awt.AWTEventDispatcher;
 import imagej.awt.AWTImageCanvas;
 import imagej.display.CanvasHelper;
+import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
+import imagej.display.event.DisplayViewDeselectedEvent;
+import imagej.display.event.DisplayViewSelectedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.ITool;
@@ -62,6 +65,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -71,6 +75,9 @@ import org.jhotdraw.draw.DefaultDrawingEditor;
 import org.jhotdraw.draw.DefaultDrawingView;
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.DrawingEditor;
+import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.event.FigureSelectionEvent;
+import org.jhotdraw.draw.event.FigureSelectionListener;
 import org.jhotdraw.draw.event.ToolAdapter;
 import org.jhotdraw.draw.event.ToolEvent;
 import org.jhotdraw.draw.tool.AbstractTool;
@@ -103,8 +110,28 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
 		public void onEvent(ToolActivatedEvent event) {
 			onToolActivatedEvent(event);
 		}
-	}; 
+	};
+	
+	private final EventSubscriber<DisplayViewSelectedEvent> displayViewSelectedEvent = 
+		new EventSubscriber<DisplayViewSelectedEvent> () {
 
+			@Override
+			public void onEvent(DisplayViewSelectedEvent event) {
+				onViewSelected(event);
+			}
+		
+	};
+
+	private final EventSubscriber<DisplayViewDeselectedEvent> displayViewDeselectedEvent = 
+		new EventSubscriber<DisplayViewDeselectedEvent> () {
+
+			@Override
+			public void onEvent(DisplayViewDeselectedEvent event) {
+				onViewDeselected(event);
+			}
+		
+	};
+	
 	public JHotDrawImageCanvas(final SwingImageDisplay display) {
 		this.display = display; 
 		canvasHelper = new CanvasHelper(this);
@@ -126,9 +153,62 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedSubscriber);
+		Events.subscribe(DisplayViewSelectedEvent.class, displayViewSelectedEvent);
+		Events.subscribe(DisplayViewDeselectedEvent.class, displayViewDeselectedEvent);
+		
+		drawingView.addFigureSelectionListener(new FigureSelectionListener() {
+			
+			@Override
+			public void selectionChanged(FigureSelectionEvent event) {
+				onFigureSelectionChanged(event);
+			}
+		});
 	}
-
-	protected void onToolActivatedEvent(final ToolActivatedEvent event) {
+	
+	/**
+	 * Respond to the JHotDraw figure selection event by selecting and
+	 * deselecting views whose state has changed
+	 * 
+	 * @param event - event indicating that the figure selections have changed
+	 */
+	protected void onFigureSelectionChanged(FigureSelectionEvent event) {
+		Set<Figure> newSelection = event.getNewSelection();
+		Set<Figure> oldSelection = event.getOldSelection();
+		for (DisplayView view:display.getViews()) {
+			if (view instanceof FigureView) {
+				Figure figure = ((FigureView)view).getFigure();
+				if (newSelection.contains(figure)) {
+					if (! oldSelection.contains(figure)) {
+						view.setSelected(true);
+					}
+				} else if (oldSelection.contains(figure)) {
+					view.setSelected(false);
+				}
+			}
+		}
+	}
+	
+	protected void onViewSelected(DisplayViewSelectedEvent event) {
+		DisplayView view = event.getDisplayView();
+		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
+			Figure figure = ((FigureView)view).getFigure();
+			if (! drawingView.getSelectedFigures().contains(figure)) {
+				drawingView.addToSelection(figure);
+			}
+		}
+	}
+	
+	protected void onViewDeselected(DisplayViewDeselectedEvent event) {
+		DisplayView view = event.getDisplayView();
+		if ((view.getDisplay() == display) && (view instanceof FigureView)) {
+			Figure figure = ((FigureView)view).getFigure();
+			if (drawingView.getSelectedFigures().contains(figure)) {
+				drawingView.removeFromSelection(figure);
+			}
+		}
+	}
+	
+	protected void onToolActivatedEvent(ToolActivatedEvent event) {
 		final ITool iTool = event.getTool();
 		if (iTool instanceof IJHotDrawOverlayAdapter) {
 			final IJHotDrawOverlayAdapter adapter = (IJHotDrawOverlayAdapter)iTool;
@@ -155,6 +235,9 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
 					final SwingOverlayView v = new SwingOverlayView(display,
 						e.getOverlay(), e.getFigure());
 					display.addView(v);
+					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
+						v.setSelected(true);
+					}
 				}
 			});
 			drawingEditor.setTool(creationTool);
