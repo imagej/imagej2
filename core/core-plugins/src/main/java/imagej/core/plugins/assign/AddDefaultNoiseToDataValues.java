@@ -65,6 +65,5 @@ public class AddDefaultNoiseToDataValues implements ImageJPlugin {
 		noiseAdder.setOutput(input);
 		noiseAdder.setStdDev(25.0);
 		noiseAdder.run();
-		input.update();
 	}
 }

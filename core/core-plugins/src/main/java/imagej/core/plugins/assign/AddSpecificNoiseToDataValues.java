@@ -68,6 +68,5 @@ public class AddSpecificNoiseToDataValues implements ImageJPlugin {
 		noiseAdder.setOutput(input);
 		noiseAdder.setStdDev(stdDev);
 		noiseAdder.run();
-		input.update();
 	}
 }
