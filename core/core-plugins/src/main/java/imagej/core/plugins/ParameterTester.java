@@ -39,6 +39,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.ui.WidgetStyle;
+import imagej.util.ColorRGB;
 import imagej.util.Log;
 
 import java.io.File;
@@ -90,6 +91,9 @@ public class ParameterTester implements ImageJPlugin {
 	private File file;
 
 	@Parameter
+	private ColorRGB color;
+
+	@Parameter
 	private Dataset dataset;
 
 	@Parameter(label = "spinner", style = WidgetStyle.NUMBER_SPINNER, min = "0",
@@ -120,6 +124,7 @@ public class ParameterTester implements ImageJPlugin {
 		Log.info("\tmultiple choice = " + choice);
 		Log.info("\tDataset = " + dataset);
 		Log.info("\tFile = " + file);
+		Log.info("\tcolor = " + color);
 		Log.info("\tspinner = " + spinnerNumber);
 		Log.info("\tslider = " + sliderNumber);
 		Log.info("\tscroll bar = " + scrollBarNumber);
