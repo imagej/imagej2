@@ -38,7 +38,12 @@ import ij.ImagePlus;
 import ij.WindowManager;
 
 import imagej.data.Dataset;
+import imagej.data.event.DatasetDeletedEvent;
+import imagej.data.event.DatasetTypeChangedEvent;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -54,6 +59,7 @@ public class LegacyImageMap {
 	
 	private Map<ImagePlus, Dataset> imageTable;
 	private ImageTranslator imageTranslator;
+	private ArrayList<EventSubscriber<?>> subscribers;
 
 	// -- public interface --
 
@@ -61,6 +67,8 @@ public class LegacyImageMap {
 	public LegacyImageMap() {
 		imageTable = new WeakHashMap<ImagePlus, Dataset>();
 		imageTranslator = new DefaultImageTranslator();
+		subscribers = new ArrayList<EventSubscriber<?>>();
+		subscribeToEvents();
 	}
 
 	/** returns the result of a lookup for a given ImagePlus */
@@ -137,5 +145,32 @@ public class LegacyImageMap {
 		synchronized (imageTable) {
 			imageTable.remove(imp);
 		}
+	}
+
+	// -- helpers --
+
+	// TODO - think carefully about which events we need to forget mapping
+	private void subscribeToEvents() {
+		final EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
+			new EventSubscriber<DatasetTypeChangedEvent>() {
+
+				@Override
+				public void onEvent(DatasetTypeChangedEvent event) {
+					unregisterDataset(event.getObject());
+				}
+			};
+		subscribers.add(typeChangeSubscriber);
+		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
+
+		final EventSubscriber<DatasetDeletedEvent> deletionSubscriber =
+			new EventSubscriber<DatasetDeletedEvent>() {
+
+				@Override
+				public void onEvent(DatasetDeletedEvent event) {
+					unregisterDataset(event.getObject());
+				}
+			};
+		subscribers.add(deletionSubscriber);
+		Events.subscribe(DatasetDeletedEvent.class, deletionSubscriber);
 	}
 }
