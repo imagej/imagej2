@@ -34,13 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import imagej.plugin.BasePlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.Log;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * The backing data model for a particular {@link InputWidget}.
@@ -91,6 +92,7 @@ public class ParamModel {
 	public void setValue(final Object value) {
 		module.setInput(name, value);
 		executeCallbackMethod();
+		updatePreview();
 	}
 
 	public String getName() {
@@ -177,6 +179,14 @@ public class ParamModel {
 				": error executing callback method \"" + callback +
 				"\" for parameter " + name, e);
 		}
+	}
+
+	/** Invokes the plugin's preview function, when available. */
+	private void updatePreview() {
+		final BasePlugin plugin = module.getPlugin();
+		if (!(plugin instanceof PreviewPlugin)) return;
+		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		previewPlugin.preview();
 	}
 
 }

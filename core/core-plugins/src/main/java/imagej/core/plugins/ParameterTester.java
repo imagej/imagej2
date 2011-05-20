@@ -35,9 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.data.Dataset;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.PreviewPlugin;
 import imagej.plugin.ui.WidgetStyle;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
@@ -51,7 +54,7 @@ import java.math.BigInteger;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins > Parameter Tester")
-public class ParameterTester implements ImageJPlugin {
+public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
@@ -108,6 +111,10 @@ public class ParameterTester implements ImageJPlugin {
 		min = "0", max = "1000")
 	private int scrollBarNumber;
 
+	@Parameter(description = "Demonstrates preview functionality by " +
+		"displaying this message in the ImageJ status bar", columns = 20)
+	private String message = "Type a status message here.";
+
 	@Override
 	public void run() {
 		Log.info("ParameterTester results:");
@@ -128,6 +135,16 @@ public class ParameterTester implements ImageJPlugin {
 		Log.info("\tspinner = " + spinnerNumber);
 		Log.info("\tslider = " + sliderNumber);
 		Log.info("\tscroll bar = " + scrollBarNumber);
+		Log.info("\tmessage = " + message);
+	}
+
+	private int previewCount = 0;
+
+	@Override
+	public void preview() {
+		Log.info("ParameterTester.preview: " +
+			++previewCount + " invocations and counting");
+		Events.publish(new StatusEvent(message));
 	}
 
 }
