@@ -72,6 +72,5 @@ public class OrDataValuesWith implements ImageJPlugin {
 		UnaryOperator op = new OrConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

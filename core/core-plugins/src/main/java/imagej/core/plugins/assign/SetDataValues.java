@@ -72,6 +72,5 @@ public class SetDataValues implements ImageJPlugin {
 		UnaryOperator op = new Constant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

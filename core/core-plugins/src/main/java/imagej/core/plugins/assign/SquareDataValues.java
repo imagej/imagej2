@@ -66,6 +66,5 @@ public class SquareDataValues implements ImageJPlugin {
 		UnaryOperator op = new Sqr();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

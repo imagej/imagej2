@@ -74,6 +74,5 @@ public class GammaDataValues implements ImageJPlugin {
 		UnaryOperator op = new Gamma(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

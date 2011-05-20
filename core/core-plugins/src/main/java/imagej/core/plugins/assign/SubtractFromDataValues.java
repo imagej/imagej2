@@ -72,6 +72,5 @@ public class SubtractFromDataValues implements ImageJPlugin {
 		UnaryOperator op = new SubtractConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

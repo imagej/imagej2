@@ -183,6 +183,8 @@ public class NAryOperation<T extends RealType<T>> {
 
 		operation.execute();
 
+		output.update();
+
 		return output;
 	}
 

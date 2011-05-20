@@ -72,6 +72,5 @@ public class MultiplyDataValuesBy implements ImageJPlugin {
 		UnaryOperator op = new MultiplyByConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

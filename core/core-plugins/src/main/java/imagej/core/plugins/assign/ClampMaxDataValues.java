@@ -72,6 +72,5 @@ public class ClampMaxDataValues implements ImageJPlugin {
 		UnaryOperator op = new Max(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

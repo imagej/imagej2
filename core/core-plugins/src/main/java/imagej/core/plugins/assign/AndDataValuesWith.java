@@ -72,6 +72,5 @@ public class AndDataValuesWith implements ImageJPlugin {
 		UnaryOperator op = new AndConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

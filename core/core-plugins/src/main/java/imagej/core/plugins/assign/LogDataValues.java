@@ -65,6 +65,5 @@ public class LogDataValues implements ImageJPlugin {
 		UnaryOperator op = new Log();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

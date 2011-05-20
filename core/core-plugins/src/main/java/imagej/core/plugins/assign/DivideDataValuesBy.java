@@ -72,6 +72,5 @@ public class DivideDataValuesBy implements ImageJPlugin {
 		UnaryOperator op = new DivideByConstant(constant);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }

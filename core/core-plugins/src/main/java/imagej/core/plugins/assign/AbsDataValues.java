@@ -66,6 +66,5 @@ public class AbsDataValues implements ImageJPlugin {
 		UnaryOperator op = new Abs();
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
-		input.update();
 	}
 }
