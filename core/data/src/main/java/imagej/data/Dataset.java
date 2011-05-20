@@ -217,6 +217,7 @@ public class Dataset extends AbstractDataObject implements
 		setDirty(true);
 	}
 
+	// TODO - disable??? Highly expensive!!! Make randomAccess ThreadLocal???
 	public double getDoubleValue(final long[] pos) {
 		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
