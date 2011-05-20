@@ -38,8 +38,10 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import imagej.data.Dataset;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
@@ -186,28 +188,27 @@ public class RGBImageTranslator implements ImageTranslator {
 				"Some dimension other than X, Y, C, Z, or T present in Dataset");
 
 		// set the data values in the ImagePlus
+		RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
 		final ImageStack stack = new ImageStack(w, h);
-		int axesPresent =
-			LegacyUtils.countIJ1Axes(xIndex, yIndex, cIndex, zIndex, tIndex);
-		long[] position = new long[axesPresent];
 		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) position[tIndex] = ti;
+			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
 			for (int zi = 0; zi < z; zi++) {
 				ColorProcessor proc = new ColorProcessor(w, h);
-				if (zIndex >= 0) position[zIndex] = zi;
+				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
 				for (int yi = 0; yi < h; yi++) {
-					position[yIndex] = yi;
+					accessor.setPosition(yi, yIndex);
 					for (int xi = 0; xi < w; xi++) {
-						position[xIndex] = xi;
+						accessor.setPosition(xi, xIndex);
+
+						accessor.setPosition(0, cIndex);
+						int rValue = (int) accessor.get().getRealDouble();
 						
-						position[cIndex] = 0;
-						int rValue = (int) dataset.getDoubleValue(position);
+						accessor.setPosition(1, cIndex);
+						int gValue = (int) accessor.get().getRealDouble();
+						accessor.setPosition(2, cIndex);
 						
-						position[cIndex] = 1;
-						int gValue = (int) dataset.getDoubleValue(position);
-						
-						position[cIndex] = 2;
-						int bValue = (int) dataset.getDoubleValue(position);
+						int bValue = (int) accessor.get().getRealDouble();
 						
 						int pixValue = 0xff000000 | (rValue<<16) | (gValue<<8) | bValue;
 						
