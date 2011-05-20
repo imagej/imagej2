@@ -60,10 +60,10 @@ import java.util.List;
 	@Menu(label = "Properties...", mnemonic = 'p') })
 public class OverlayProperties implements ImageJPlugin {
 
-	@Parameter(persist = false)
+	@Parameter(label = "Line color", persist = false)
 	private ColorRGB lineColor;
 
-	@Parameter(persist = false, min = "0.1")
+	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
 
 	public OverlayProperties() {
