@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * unexpected values since imglib does the simplest translation
  * it can for efficiency reasons.
  *  
- * @author bdezonia
+ * @author Barry DeZonia
  *
  */
 @Plugin(menu = {
@@ -64,7 +64,6 @@ public class ChangeToFLOAT32 implements ImageJPlugin {
 	@Override
 	public void run() {
 		TypeChanger.changeType(input, new FloatType());
-		input.update();
 	}
 
 }

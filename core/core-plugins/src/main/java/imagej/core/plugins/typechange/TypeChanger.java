@@ -70,7 +70,10 @@ public final class TypeChanger {
 		final Dataset dataset, final T newType)
 	{
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
-		dataset.setImgPlus(copyToType(inputImg, newType));
+		final Class<?> currTypeClass = inputImg.getImg().cursor().get().getClass();
+		final Class<?> newTypeClass = newType.getClass();
+		if (currTypeClass != newTypeClass)
+			dataset.setImgPlus(copyToType(inputImg, newType));
 	}
 
 	/**
