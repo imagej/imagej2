@@ -37,7 +37,6 @@ package imagej.plugin.ui;
 import imagej.plugin.BasePlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -62,6 +61,8 @@ public class ParamModel {
 	private final WidgetStyle style;
 
 	private final Method callbackMethod;
+
+	private boolean initialized;
 
 	public ParamModel(final InputPanel inputPanel,
 		final PluginModule<?> module, final String name,
@@ -90,9 +91,12 @@ public class ParamModel {
 	}
 
 	public void setValue(final Object value) {
+		if (module.getInput(name) == value) return;
 		module.setInput(name, value);
-		executeCallbackMethod();
-		updatePreview();
+		if (initialized) { 
+			executeCallbackMethod();
+			module.preview();
+		}
 	}
 
 	public String getName() {
@@ -121,6 +125,14 @@ public class ParamModel {
 
 	public WidgetStyle getStyle() {
 		return style;
+	}
+
+	public void setInitialized(final boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	// -- Helper methods --
@@ -179,14 +191,6 @@ public class ParamModel {
 				": error executing callback method \"" + callback +
 				"\" for parameter " + name, e);
 		}
-	}
-
-	/** Invokes the plugin's preview function, when available. */
-	private void updatePreview() {
-		final BasePlugin plugin = module.getPlugin();
-		if (!(plugin instanceof PreviewPlugin)) return;
-		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
-		previewPlugin.preview();
 	}
 
 }
