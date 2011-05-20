@@ -48,6 +48,7 @@ import imagej.util.Log;
 import imagej.util.Prefs;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Abstract superclass for input harvesters.
@@ -91,6 +92,8 @@ public abstract class AbstractInputHarvester
 	{
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
+		final ArrayList<ParamModel> models = new ArrayList<ParamModel>();
+
 		for (final ModuleItem item : inputs) {
 			final PluginModuleItem pmi = (PluginModuleItem) item;
 			final boolean resolved = pmi.isResolved();
@@ -101,6 +104,7 @@ public abstract class AbstractInputHarvester
 			final Class<?> type = item.getType();
 			final ParamModel model =
 				new ParamModel(inputPanel, module, name, type, param);
+			models.add(model);
 
 			final boolean message = param.visibility() == ParamVisibility.MESSAGE;
 			if (message) {
@@ -147,6 +151,12 @@ public abstract class AbstractInputHarvester
 				addObject(inputPanel, model, initialValue);
 			}
 		}
+
+		// mark all models as initialized
+		for (final ParamModel model : models) model.setInitialized(true);
+
+		// compute initial preview
+		module.preview();
 	}
 
 	@Override

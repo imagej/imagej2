@@ -43,9 +43,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Module class for working with a {@link BasePlugin} instance,
- * particularly its {@link Parameter}s.
- *
+ * Module class for working with a {@link BasePlugin} instance, particularly its
+ * {@link Parameter}s.
+ * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
@@ -56,7 +56,7 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	private final T plugin;
 
 	/** Metadata about this plugin. */
-	private PluginModuleInfo<T> info;
+	private final PluginModuleInfo<T> info;
 
 	/** Creates a plugin module for a new instance of the given plugin entry. */
 	public PluginModule(final PluginEntry<T> entry) throws PluginException {
@@ -67,6 +67,16 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	/** Gets the plugin instance handled by this module. */
 	public T getPlugin() {
 		return plugin;
+	}
+
+	/**
+	 * Computes a preview of the plugin's results. For this method to do anything,
+	 * the plugin must implement the {@link PreviewPlugin} interface.
+	 */
+	public void preview() {
+		if (!(plugin instanceof PreviewPlugin)) return; // cannot preview
+		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		previewPlugin.preview();
 	}
 
 	// -- Module methods --
@@ -139,18 +149,18 @@ public class PluginModule<T extends BasePlugin> implements Module {
 
 	// -- Utility methods --
 
-	public static void setValue(final Field field,
-		final Object instance, final Object value)
+	public static void setValue(final Field field, final Object instance,
+		final Object value)
 	{
 		if (instance == null) return;
 		try {
 			field.set(instance, value);
 		}
-		catch (IllegalArgumentException e) {
+		catch (final IllegalArgumentException e) {
 			Log.error(e);
 			assert false;
 		}
-		catch (IllegalAccessException e) {
+		catch (final IllegalAccessException e) {
 			Log.error(e);
 			assert false;
 		}
@@ -161,11 +171,11 @@ public class PluginModule<T extends BasePlugin> implements Module {
 		try {
 			return field.get(instance);
 		}
-		catch (IllegalArgumentException e) {
+		catch (final IllegalArgumentException e) {
 			Log.error(e);
 			return null;
 		}
-		catch (IllegalAccessException e) {
+		catch (final IllegalAccessException e) {
 			Log.error(e);
 			return null;
 		}
