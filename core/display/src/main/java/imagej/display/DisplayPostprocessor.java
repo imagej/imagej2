@@ -74,11 +74,8 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		}
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
-			if (isDisplayed(dataset)) {
-				// TODO - what if the dataset changed structurally?
-				Events.publish(new DatasetUpdatedEvent(dataset));
-			}
-			else displayDataset(dataset);
+			if (!isDisplayed(dataset))
+				displayDataset(dataset);
 		}
 		else {
 			// ignore non-Dataset output
