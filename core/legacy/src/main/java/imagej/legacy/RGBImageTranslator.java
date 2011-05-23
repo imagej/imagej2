@@ -89,12 +89,15 @@ public class RGBImageTranslator implements ImageTranslator {
 		int planeIndex = 0;
 		for (int tIndex = 0; tIndex < t; tIndex++) {
 			for (int zIndex = 0; zIndex < z; zIndex++) {
-				// The following should work but it will blow up with infinite recursion (out of memory)
+				// Trying to get correct ColorProcessor
+				// The following should work but it will blow up with infinite
+				// recursion (out of memory)
 				//     imp.setPositionWithoutUpdate(1, zIndex+1, tIndex+1);
 				//     final ColorProcessor proc = (ColorProcessor) imp.getProcessor();
-				//   It turns out setSlice() calls updateAndDraw() even if you say no update please.
-				//   Reported to Wayne as a bug 5-9-11
-				// alternate way that works also
+				//   It turns out setSlice() calls updateAndDraw() even if you say no
+				//   update please. Reported to Wayne as a bug 5-9-11. Note as of
+				//   5-23-11: Wayne fixed that bug in 1.45h5. 
+				// alternate way that works with earlier versions of IJ1
 				final ColorProcessor proc =
 					(ColorProcessor) imp.getStack().getProcessor(planeIndex + 1);
 				final byte[] rValues = new byte[totPixels];
@@ -206,8 +209,8 @@ public class RGBImageTranslator implements ImageTranslator {
 						
 						accessor.setPosition(1, cIndex);
 						int gValue = (int) accessor.get().getRealDouble();
+
 						accessor.setPosition(2, cIndex);
-						
 						int bValue = (int) accessor.get().getRealDouble();
 						
 						int pixValue = 0xff000000 | (rValue<<16) | (gValue<<8) | bValue;
