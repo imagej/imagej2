@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.plugin.process.PluginPreprocessor;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,35 +44,71 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * TODO
- *
+ * Annotation identifying a plugin, which gets loaded by ImageJ's dynamic plugin
+ * loading mechanism.
+ * 
  * @author Curtis Rueden
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=BasePlugin.class)
+@Indexable(type = BasePlugin.class)
 public @interface Plugin {
 
+	/**
+	 * The type of plugin; e.g., {@link ImageJPlugin} or
+	 * {@link PluginPreprocessor}.
+	 */
 	Class<?> type() default ImageJPlugin.class;
-	
+
+	/** The name of the plugin. */
 	String name() default "";
 
+	/** The human-readable label to use (e.g., in the menu structure). */
 	String label() default "";
 
+	/** A longer description of the plugin (e.g., for use a tool tip). */
 	String description() default "";
 
+	/** Path to the plugin's icon (e.g., shown in the menu structure). */
 	String iconPath() default "";
 
 	/**
-	 * The plugin index returns plugins sorted by priority.
-	 *
-	 * This is useful for @{PluginPreprocessor}s, e.g., to
-	 * control the order of their execution.
+	 * Links a boolean parameter to the plugin as a toggle state. A plugin's
+	 * toggle state (if any) is typically rendered in the menu structure as a
+	 * checkbox or radio button menu item (see {@link #toggleGroup}).
+	 */
+	String toggleParameter() default "";
+
+	/**
+	 * For toggle plugins, specifies a name defining a group of linked plugins,
+	 * only one of which is toggled active at any given time. Typically this is
+	 * rendered in the menu structure as a group of radio button menu items. If no
+	 * group is given, the plugin is assumed to be a standalone toggle, and
+	 * typically rendered as as checkbox menu item.
+	 */
+	String toggleGroup() default "";
+
+	/**
+	 * The plugin index returns plugins sorted by priority. This is useful for
+	 * {@link PluginPreprocessor}s, e.g., to control the order of their execution.
 	 */
 	int priority() default Integer.MAX_VALUE;
 
+	/**
+	 * Abbreviated menu path defining where the plugin is shown in the menu
+	 * structure. Uses greater than signs (>) as a separator; e.g.:
+	 * "Image > Overlay > Properties..." defines a "Properties..." menu item
+	 * within the "Overlay" submenu of the "Image" menu. Use either
+	 * {@link #menuPath} or {@link #menu} but not both.
+	 */
 	String menuPath() default "";
 
+	/**
+	 * Full menu path defining where the plugin is shown in the menu structure.
+	 * This construction allows menus to be fully specified including mnemonics,
+	 * accelerators and icons. Use either {@link #menuPath} or {@link #menu} but
+	 * not both.
+	 */
 	Menu[] menu() default {};
 
 }

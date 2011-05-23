@@ -119,9 +119,9 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		callback = "twoXChanged")
 	private float twoX;
 
-	@Parameter(description = "Demonstrates preview functionality by " +
-		"displaying the given message in the ImageJ status bar.", columns = 20)
-	private String message = "Type a status message here.";
+	@Parameter(description = "Demonstrates preview functionality by "
+		+ "displaying the given message in the ImageJ status bar.", columns = 20)
+	private final String message = "Type a status message here.";
 
 	@Override
 	public void run() {

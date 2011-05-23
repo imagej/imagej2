@@ -38,12 +38,15 @@ package imagej.plugin.ui;
  * Abstract helper class for generating a menu structure.
  * <p>
  * The class differentiates between top-level menu components (such as
- * JMenuBar), and hierarchical menu components (such as JMenu).
+ * {@link javax.swing.JMenuBar}), and hierarchical menu components (such as
+ * {@link javax.swing.JMenu}).
  * </p>
  * 
  * @author Curtis Rueden
- * @param <T> Top-level menu class to populate (e.g., JMenuBar or JMenu)
- * @param <M> Hierarchical menu class (e.g., JMenu or Menu)
+ * @param <T> Top-level menu class to populate (e.g.,
+ *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu})
+ * @param <M> Hierarchical menu class (e.g., {@link javax.swing.JMenu} or
+ *          {@link java.awt.Menu})
  */
 public abstract class AbstractMenuCreator<T, M> implements MenuCreator<T> {
 

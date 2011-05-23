@@ -34,21 +34,33 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
- *
+ * A collection of metadata about a particular plugin. For performance reasons,
+ * the metadata is populated without actually loading the plugin class, by
+ * reading from an efficient binary cache (see {@link PluginManager} for
+ * details). As such, ImageJ can very quickly build a complex menu structure
+ * containing all available plugins without waiting for the Java class loader.
+ * 
  * @author Curtis Rueden
+ * @see ImageJPlugin
+ * @see Plugin
+ * @see PluginManager
  */
 public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
 	private Class<T> pluginType;
+
+	/** Linked boolean parameter; see {@link Plugin#toggleParameter}. */
+	private String toggleParameter;
+
+	/** Toggle plugin's group; see {@link Plugin#toggleGroup}. */
+	private String toggleGroup;
 
 	/** Path to this plugin's suggested position in the menu structure. */
 	private List<MenuEntry> menuPath;
@@ -67,12 +79,28 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 		setPluginModuleFactory(null);
 	}
 
-	public void setPluginType(Class<T> pluginType) {
+	public void setPluginType(final Class<T> pluginType) {
 		this.pluginType = pluginType;
 	}
 
 	public Class<T> getPluginType() {
 		return pluginType;
+	}
+
+	public void setToggleParameter(final String toggleParameter) {
+		this.toggleParameter = toggleParameter;
+	}
+
+	public String getToggleParameter() {
+		return toggleParameter;
+	}
+
+	public void setToggleGroup(final String toggleGroup) {
+		this.toggleGroup = toggleGroup;
+	}
+
+	public String getToggleGroup() {
+		return toggleGroup;
 	}
 
 	public void setMenuPath(final List<MenuEntry> menuPath) {
@@ -115,12 +143,27 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 	}
 
 	/**
-	 * Creates a module to work with this entry,
-	 * using the entry's associated {@link PluginModuleFactory}.
+	 * Creates a module to work with this entry, using the entry's associated
+	 * {@link PluginModuleFactory}.
 	 */
 	public PluginModule<T> createModule() throws PluginException {
 		return factory.createModule(this);
 	}
+
+	/**
+	 * Gets the current toggle state of the plugin. This operation requires the
+	 * plugin to be instantiated, and is potentially expensive.
+	 */
+	public boolean isSelected() throws PluginException {
+		final String tParam = getToggleParameter();
+		if (tParam == null || tParam.isEmpty()) return false;
+		final PluginModule<?> module = createModule();
+		final Object value = module.getInput(tParam);
+		if (!(value instanceof Boolean)) return false;
+		return (Boolean) value;
+	}
+
+	// -- Object methods --
 
 	@Override
 	public String toString() {
@@ -132,40 +175,36 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 		final String name = getName();
 		if (name != null && !name.isEmpty()) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("name = " + name);
 		}
 
 		final String label = getLabel();
 		if (label != null && !label.isEmpty()) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("label = " + label);
 		}
 
 		final String description = getDescription();
 		if (description != null && !description.isEmpty()) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("description = " + description);
 		}
 
+		final String tParam = getToggleParameter();
+		if (tParam != null && !tParam.isEmpty()) {
+			firstField = handleFirst(firstField, sb);
+			sb.append("toggleParameter = " + tParam);
+		}
+
+		final String tGroup = getToggleGroup();
+		if (tGroup != null && !tGroup.isEmpty()) {
+			firstField = handleFirst(firstField, sb);
+			sb.append("toggleGroup = " + tGroup);
+		}
+
 		if (!menuPath.isEmpty()) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("menu = ");
 			boolean firstMenu = true;
 			for (final MenuEntry menu : menuPath) {
@@ -177,37 +216,32 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 		final String iconPath = getIconPath();
 		if (iconPath != null && !iconPath.isEmpty()) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("iconPath = " + iconPath);
 		}
 
 		final int priority = getPriority();
 		if (priority < Integer.MAX_VALUE) {
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			firstField = handleFirst(firstField, sb);
 			sb.append("priority = " + priority);
 		}
 
 		for (final String key : presets.keySet()) {
-			final Object value = presets.get(key); 
-			if (firstField) {
-				sb.append(" [");
-				firstField = false;
-			}
-			else sb.append("; ");
+			final Object value = presets.get(key);
+			firstField = handleFirst(firstField, sb);
 			sb.append(key + " = '" + value + "'");
 		}
 
 		if (!firstField) sb.append("]");
 
 		return sb.toString();
+	}
+
+	// -- Helper methods --
+
+	private boolean handleFirst(final boolean first, final StringBuilder sb) {
+		sb.append(first ? " [" : "; ");
+		return false;
 	}
 
 }

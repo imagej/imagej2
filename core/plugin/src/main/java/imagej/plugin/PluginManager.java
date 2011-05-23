@@ -50,18 +50,20 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for keeping track of available plugins.
- *
+ * Manager component for keeping track of available plugins. Available plugins
+ * are discovered using a library called SezPoz. Loading of the actual plugin
+ * classes can be deferred until a particular plugin's first execution.
+ * 
  * @author Curtis Rueden
  */
 @Manager(priority = Manager.NORMAL_PRIORITY)
 public class PluginManager implements ManagerComponent {
 
 	/** The complete list of known plugins. */
-	private List<PluginEntry<?>> plugins = new ArrayList<PluginEntry<?>>();
+	private final List<PluginEntry<?>> plugins = new ArrayList<PluginEntry<?>>();
 
 	/** Table of plugin lists, organized by plugin type. */
-	private Map<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
+	private final Map<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
 		new ConcurrentHashMap<Class<?>, ArrayList<PluginEntry<?>>>();
 
 	/** Rediscovers all available plugins. */
@@ -77,15 +79,15 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/** Gets a copy of the list of plugins labeled with the given type. */
-	public <T extends BasePlugin> ArrayList<PluginEntry<T>>
-		getPlugins(final Class<T> type)
+	public <T extends BasePlugin> ArrayList<PluginEntry<T>> getPlugins(
+		final Class<T> type)
 	{
 		// TODO - find a way to avoid making a copy of the list here?
 		final ArrayList<PluginEntry<T>> outputList =
 			new ArrayList<PluginEntry<T>>();
 		final ArrayList<PluginEntry<?>> cachedList = pluginLists.get(type);
 		if (cachedList != null) {
-			for (PluginEntry<?> entry : cachedList) {
+			for (final PluginEntry<?> entry : cachedList) {
 				@SuppressWarnings("unchecked")
 				final PluginEntry<T> typedEntry = (PluginEntry<T>) entry;
 				outputList.add(typedEntry);
@@ -95,15 +97,15 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/**
-	 * Searches the plugin index for the {@link PluginEntry} describing the
-	 * given plugin class.
+	 * Searches the plugin index for the {@link PluginEntry} describing the given
+	 * plugin class.
 	 */
-	public <T extends BasePlugin> PluginEntry<T>
-		getPluginEntry(final Class<T> pluginClass)
+	public <T extends BasePlugin> PluginEntry<T> getPluginEntry(
+		final Class<T> pluginClass)
 	{
 		// TODO - Come up with a faster search mechanism.
 		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
-			for (PluginEntry<?> entry : pluginList) {
+			for (final PluginEntry<?> entry : pluginList) {
 				if (entry.getClassName().equals(pluginClass.getName())) {
 					@SuppressWarnings("unchecked")
 					final PluginEntry<T> match = (PluginEntry<T>) entry;
@@ -115,14 +117,15 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/**
-	 * Executes the plugin represented by the given {@link PluginEntry},
-	 * in its own thread.
+	 * Executes the plugin represented by the given {@link PluginEntry}, in its
+	 * own thread.
 	 */
 	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry) {
 		// TODO - Implement a better threading mechanism for launching plugins.
 		// Perhaps a ThreadManager so that the UI can query currently
 		// running plugins and so forth?
 		new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				new PluginRunner<T>(entry).run();
@@ -131,8 +134,7 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/**
-	 * Executes the plugin represented by the given class,
-	 * in its own thread.
+	 * Executes the plugin represented by the given class, in its own thread.
 	 */
 	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
 		run(getPluginEntry(pluginClass));
@@ -150,8 +152,8 @@ public class PluginManager implements ManagerComponent {
 	/** Discovers and invokes all plugin finders. */
 	private void findPlugins() {
 		plugins.clear();
-		for (final IndexItem<PluginFinder, IPluginFinder> item :
-			Index.load(PluginFinder.class, IPluginFinder.class))
+		for (final IndexItem<PluginFinder, IPluginFinder> item : Index.load(
+			PluginFinder.class, IPluginFinder.class))
 		{
 			try {
 				final IPluginFinder finder = item.instance();

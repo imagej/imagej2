@@ -46,22 +46,36 @@ import imagej.util.Log;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 /**
- * TODO
+ * Creates a Swing-based {@link JMenu} structure from a {@link ShadowMenu} tree.
  * 
  * @author Curtis Rueden
  */
 public abstract class SwingMenuCreator<T> extends
 	AbstractMenuCreator<T, JMenu>
 {
+
+	/** Table of button groups for radio button menu items. */
+	private HashMap<String, ButtonGroup> buttonGroups =
+		new HashMap<String, ButtonGroup>();
+
+	@Override
+	public void createMenus(final ShadowMenu root, final T target) {
+		buttonGroups = new HashMap<String, ButtonGroup>();
+		super.createMenus(root, target);
+	}
 
 	@Override
 	protected void addLeafToMenu(final ShadowMenu shadow, final JMenu target) {
@@ -84,7 +98,18 @@ public abstract class SwingMenuCreator<T> extends
 	}
 
 	protected JMenuItem createLeaf(final ShadowMenu shadow) {
-		final JMenuItem menuItem = new JMenuItem(shadow.getMenuEntry().getName());
+		final String name = shadow.getMenuEntry().getName();
+		final JMenuItem menuItem;
+		if (shadow.isCheckBox()) {
+			// NB: Call to isSelected(shadow) instantiates the plugin (slow!).
+			menuItem = new JCheckBoxMenuItem(name, isSelected(shadow));
+		}
+		else if (shadow.isRadioButton()) {
+			// NB: Call to isSelected(shadow) instantiates the plugin (slow!).
+			menuItem = new JRadioButtonMenuItem(name, isSelected(shadow));
+			getButtonGroup(shadow).add(menuItem);
+		}
+		else menuItem = new JMenuItem(name);
 		assignProperties(menuItem, shadow);
 		linkAction(shadow.getPluginEntry(), menuItem);
 		return menuItem;
@@ -97,6 +122,26 @@ public abstract class SwingMenuCreator<T> extends
 	}
 
 	// -- Helper methods --
+
+	private boolean isSelected(final ShadowMenu shadow) {
+		try {
+			return shadow.getPluginEntry().isSelected();
+		}
+		catch (final PluginException exc) {
+			Log.warn(exc);
+			return false;
+		}
+	}
+
+	private ButtonGroup getButtonGroup(final ShadowMenu shadow) {
+		final String tGroup = shadow.getPluginEntry().getToggleGroup();
+		ButtonGroup buttonGroup = buttonGroups.get(tGroup);
+		if (buttonGroup == null) {
+			buttonGroup = new ButtonGroup();
+			buttonGroups.put(tGroup, buttonGroup);
+		}
+		return buttonGroup;
+	}
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
 		String accelerator = shadow.getMenuEntry().getAccelerator();
