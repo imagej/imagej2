@@ -62,6 +62,10 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 	private final IJHotDrawOverlayAdapter adapter;
 	
+	private boolean updatingFigure = false;
+	
+	private boolean updatingOverlay = false;
+	
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
 	 * @param display - hook to this display
@@ -90,14 +94,32 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		figure.addFigureListener(new FigureAdapter() {
 			@Override
 			public void attributeChanged(FigureEvent e) {
-				adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
-				overlay.update();
+				synchronized (SwingOverlayView.this) {
+					if (! updatingFigure) {
+						updatingOverlay = true;
+						try {
+							adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+							overlay.update();
+						} finally {
+							updatingOverlay = false;
+						}
+					}
+				}
 			}
 
 			@Override
 			public void figureChanged(FigureEvent e) {
-				adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
-				overlay.rebuild();
+				synchronized (SwingOverlayView.this) {
+					if (! updatingFigure) {
+						updatingOverlay = true;
+						try {
+							adapter.updateOverlay(SwingOverlayView.this.figure, overlay);
+							overlay.rebuild();
+						} finally {
+							updatingOverlay = false;
+						}
+					}
+				}
 			}
 
 			@Override
@@ -138,14 +160,12 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 	@Override
 	public void update() {
-		adapter.updateFigure(getDataObject(), figure);
-		display.getImageCanvas().getDrawingView().repaint();
+		updateFigure();
 	}
 
 	@Override
 	public void rebuild() {
-		adapter.updateFigure(getDataObject(), figure);
-		display.getImageCanvas().getDrawingView().repaint();
+		updateFigure();
 	}
 
 	@Override
@@ -160,5 +180,18 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	public void dispose() {
 		figure.requestRemove();
 		super.dispose();
+	}
+	
+	private void updateFigure() {
+		synchronized (this) {
+			if (! updatingOverlay) {
+				updatingFigure = true;
+				try {
+					adapter.updateFigure(getDataObject(), figure);
+				} finally {
+					updatingFigure = false;
+				}
+			}
+		}
 	}
 }

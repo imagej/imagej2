@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -42,6 +43,7 @@ import imagej.tool.Tool;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.EllipseRegionOfInterest;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
 
@@ -81,7 +83,9 @@ public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverla
 
 	@Override
 	public Figure createDefaultFigure() {
-		return new EllipseFigure();
+		EllipseFigure figure = new EllipseFigure();
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		return figure;
 	}
 
 	@Override
