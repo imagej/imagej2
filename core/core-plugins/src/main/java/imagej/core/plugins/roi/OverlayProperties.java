@@ -45,6 +45,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
+import imagej.plugin.ui.WidgetStyle;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -71,9 +72,9 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
 
-	@Parameter(label = "Alpha", persist = false, min = "0", max = "255",
-		description = "The opacity or alpha of the interior of the overlay "
-			+ "(0=transparent, 255=opaque)")
+	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
+		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
 
 	public OverlayProperties() {
