@@ -63,6 +63,7 @@ public class SwingNumberSpinnerWidget extends SwingNumberWidget
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(min,
 			(Comparable<?>) min, (Comparable<?>) max, stepSize);
 		spinner = new JSpinner(spinnerModel);
+		setToolTip(spinner);
 		add(spinner, BorderLayout.CENTER);
 		limitWidth(250);
 		spinner.addChangeListener(this);

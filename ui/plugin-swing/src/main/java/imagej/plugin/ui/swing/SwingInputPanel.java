@@ -76,7 +76,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	{
 		final SwingNumberWidget numberWidget =
 			SwingNumberWidget.create(model, min, max, stepSize);
-		addField(model.getLabel(), numberWidget);
+		addField(model, numberWidget);
 		numberWidgets.put(model.getName(), numberWidget);
 	}
 
@@ -84,7 +84,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	public void addToggle(final ParamModel model) {
 		final SwingToggleWidget toggleWidget =
 			new SwingToggleWidget(model);
-		addField(model.getLabel(), toggleWidget);
+		addField(model, toggleWidget);
 		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
@@ -92,7 +92,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	public void addTextField(final ParamModel model, final int columns) {
 		final SwingTextFieldWidget textFieldWidget =
 			new SwingTextFieldWidget(model, columns);
-		addField(model.getLabel(), textFieldWidget);
+		addField(model, textFieldWidget);
 		textFieldWidgets.put(model.getName(), textFieldWidget);
 	}
 
@@ -100,21 +100,21 @@ public class SwingInputPanel extends AbstractInputPanel {
 	public void addChoice(final ParamModel model, final String[] items) {
 		final SwingChoiceWidget choiceWidget =
 			new SwingChoiceWidget(model, items);
-		addField(model.getLabel(), choiceWidget);
+		addField(model, choiceWidget);
 		choiceWidgets.put(model.getName(), choiceWidget);
 	}
 
 	@Override
 	public void addFile(final ParamModel model) {
 		final SwingFileWidget fileWidget = new SwingFileWidget(model);
-		addField(model.getLabel(), fileWidget);
+		addField(model, fileWidget);
 		fileWidgets.put(model.getName(), fileWidget);
 	}
 
 	@Override
 	public void addColor(final ParamModel model) {
 		final SwingColorWidget colorWidget = new SwingColorWidget(model);
-		addField(model.getLabel(), colorWidget);
+		addField(model, colorWidget);
 		colorWidgets.put(model.getName(), colorWidget);
 	}
 
@@ -125,7 +125,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final Object[] items = objectManager.getObjects(type).toArray();
 		final SwingObjectWidget objectWidget =
 			new SwingObjectWidget(model, items);
-		addField(model.getLabel(), objectWidget);
+		addField(model, objectWidget);
 		objectWidgets.put(model.getName(), objectWidget);
 	}
 
@@ -136,8 +136,12 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	// -- Helper methods --
 
-	private void addField(final String label, final JComponent component) {
-		panel.add(new JLabel(label == null ? "" : label));
+	private void addField(final ParamModel model, final JComponent component) {
+		final String label = model.getLabel();
+		final String desc = model.getDescription();
+		final JLabel l = new JLabel(label == null ? "" : label);
+		if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
+		panel.add(l);
 		panel.add(component);
 	}
 

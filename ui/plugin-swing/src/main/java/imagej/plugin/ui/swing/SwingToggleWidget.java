@@ -58,6 +58,7 @@ public class SwingToggleWidget extends SwingInputWidget
 		super(model);
 
 		checkBox = new JCheckBox("");
+		setToolTip(checkBox);
 		add(checkBox, BorderLayout.CENTER);
 		checkBox.addChangeListener(this);
 

@@ -67,6 +67,7 @@ public class SwingColorWidget extends SwingInputWidget implements
 		super(model);
 
 		choose = new JButton();
+		setToolTip(choose);
 		add(choose, BorderLayout.CENTER);
 		choose.addActionListener(this);
 
