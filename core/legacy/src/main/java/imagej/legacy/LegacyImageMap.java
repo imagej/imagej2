@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import ij.WindowManager;
 
 import imagej.data.Dataset;
 import imagej.data.event.DatasetDeletedEvent;
@@ -76,6 +75,15 @@ public class LegacyImageMap {
 		return imageTable.get(imp);
 	}
 
+	/** returns the result of a lookup for a given Dataset */
+	public ImagePlus findImagePlus(Dataset ds) {
+		for (ImagePlus imp : imageTable.keySet()) {
+			if (findDataset(imp) == ds)
+				return imp;
+		}
+		return null;
+	}
+	
 	/** returns the ImageTranslator used by the LegacyImageMap */
 	public ImageTranslator getTranslator() {
 		return imageTranslator;
@@ -103,7 +111,6 @@ public class LegacyImageMap {
 				imageTable.put(imp, dataset);
 			}
 		}
-		WindowManager.setTempCurrentImage(imp);
 		return imp;
 	}
 	

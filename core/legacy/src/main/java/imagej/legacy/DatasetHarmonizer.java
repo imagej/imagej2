@@ -51,23 +51,39 @@ import imagej.util.Index;
  * 
  * @author Barry DeZonia
  *
- * Updates a Dataset's organization, data, and metadata to match
- * a given ImagePlus.
+ * Synchronizes data between a Dataset and a paired ImagePlus. After harmonization
+ * data, and metadata to as closely as possible given differences in pixel types,
+ * and data organization. When possible uses data references to keep data in sync.
  *  
  */
 public class DatasetHarmonizer {
 
-	private LegacyMetadataTranslator metadataTranslator =
-		new LegacyMetadataTranslator();
-
+	private LegacyMetadataTranslator metadataTranslator;
 	private ImageTranslator imageTranslator;
-	
+
+	/** default constructor */
 	public DatasetHarmonizer(ImageTranslator translator) {
 		imageTranslator = translator;
+		metadataTranslator =	new LegacyMetadataTranslator();
+	}
+	
+	/** changes the data within an ImagePlus to match data in a Dataset.
+	 * assumes Dataset has planar primitive access in an IJ1 compatible format */
+	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
+		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
+		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		ImagePlus newImp = imageTranslator.createLegacyImage(ds);
+		imp.setStack(newImp.getStack());
+		imp.setDimensions(c, z, t);
+		metadataTranslator.setImagePlusMetadata(ds, imp);
 	}
 	
 	/** changes the data within a Dataset to match data in an ImagePlus */
-	public void harmonize(Dataset ds, ImagePlus imp) {
+	public void updateDataset(Dataset ds, ImagePlus imp) {
 		
 		// is our dataset not sharing planes with the ImagePlus by reference?
 		// if so assume any change possible and thus rebuild all
@@ -104,7 +120,7 @@ public class DatasetHarmonizer {
 
 		// can I not assign plane references?
 		if (planeTypesDifferent(ds, imp)) {
-			assignData(ds, imp);
+			assignDatasetValues(ds, imp);
 		}
 		else {
 			// if here we know we have planar backing of right type.
@@ -112,7 +128,7 @@ public class DatasetHarmonizer {
 			//   - setPixels, setProcessor, stack rearrangement, etc.
 			// its easier to always reassign them rather than
 			//   calculate exactly what to do
-			assignPlaneReferences(ds, imp);
+			assignDatasetPlaneReferences(ds, imp);
 		}
 		
 		// make sure metadata accurately updated
@@ -185,23 +201,20 @@ public class DatasetHarmonizer {
 	 */
 	private boolean planeTypesDifferent(Dataset ds, ImagePlus imp) {
 		RealType<?> dsType = ds.getType();
+		int bitsPerPixel = dsType.getBitsPerPixel();
+		boolean integer = ds.isInteger();
+		boolean signed = ds.isSigned();
 		switch (imp.getType()) {
 			case ImagePlus.GRAY8:
-				if ((dsType.getBitsPerPixel() == 8) &&
-						(ds.isInteger()) &&
-						(!ds.isSigned()))
+				if ((bitsPerPixel == 8) && (integer) &&	(!signed))
 						return false;
 				break;
 			case ImagePlus.GRAY16:
-				if ((dsType.getBitsPerPixel() == 16) &&
-						(ds.isInteger()) &&
-						(!ds.isSigned()))
+				if ((bitsPerPixel == 16) &&	(integer) && (!signed))
 						return false;
 				break;
 			case ImagePlus.GRAY32:
-				if ((dsType.getBitsPerPixel() == 32) &&
-						(!ds.isInteger()) &&
-						(ds.isSigned()))
+				if ((bitsPerPixel == 32) && (!integer) &&	(signed))
 						return false;
 				break;
 		}
@@ -211,7 +224,7 @@ public class DatasetHarmonizer {
 	/** assigns actual pixel values of Dataset. needed for those types that do
 	 * not directly map from IJ1 types.
 	 */
-	private void assignData(Dataset ds, ImagePlus imp) {
+	private void assignDatasetValues(Dataset ds, ImagePlus imp) {
 		int x = imp.getWidth();
 		int y = imp.getHeight();
 		int zIndex = ds.getAxisIndex(Axes.Z);
@@ -220,21 +233,19 @@ public class DatasetHarmonizer {
 		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
 		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
 		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
-		long[] position = new long[ds.getImgPlus().numDimensions()];
 		int imagejPlaneNumber = 1;
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) position[tIndex] = ti;
+			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
 			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) position[zIndex] = zi;
+				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
 				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) position[cIndex] = ci;
+					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
 					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 					for (int yi = 0; yi < y; yi++) {
-						position[1] = yi;
+						accessor.setPosition(yi, 1);
 						for (int xi = 0; xi < x; xi++) {
-							position[0] = xi;
-							accessor.setPosition(position);
+							accessor.setPosition(xi, 0);
 							float value = proc.getf(xi, yi);
 							accessor.get().setReal(value);
 						}
@@ -247,7 +258,7 @@ public class DatasetHarmonizer {
 	/** assigns the plane references of a planar Dataset to match the plane
 	 *  references of a given ImagePlus
 	 */
-	private void assignPlaneReferences(Dataset ds, ImagePlus imp) {
+	private void assignDatasetPlaneReferences(Dataset ds, ImagePlus imp) {
 		ImageStack stack = imp.getStack();
 		if (stack == null) {  // just a 2d image
 			Object pixels = imp.getProcessor().getPixels();

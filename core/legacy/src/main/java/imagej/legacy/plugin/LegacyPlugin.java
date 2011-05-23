@@ -36,11 +36,15 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
+import imagej.object.ObjectManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 
@@ -48,6 +52,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.imglib2.img.Axes;
+import net.imglib2.img.Img;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * Executes an IJ1 plugin.
@@ -80,31 +89,21 @@ public class LegacyPlugin implements ImageJPlugin {
 	
 	@Override
 	public void run() {
-
 		/*
-
-		use current imp as input to harmonize : no
-		
-		
-		a) harmonize all ds (from Obj man)
-		b) set imp of active ds as current image
-				set temp curr im or set curr image
-
-		dirty flag for a ds 1 for harm and 1 for saved
+		dirty flag for a ds - special one for harmonizer
 		image map can track dirty harm and listen events
-		ds can track dirty saved
-
 		*/
 
+		final Dataset activeDS = ImageJ.get(DisplayManager.class).getActiveDataset();
 		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
 		final DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
 		outputSet.clear();
-		harmonizeInputs(map, harmonizer);
-		// set current temp image or curr image
+		harmonizeInputImagePluses(map, harmonizer);
+		WindowManager.setTempCurrentImage(map.findImagePlus(activeDS));
 		IJ.runPlugIn(className, arg);
 		harmonizeCurrentImagePlus(map, harmonizer);
-		outputs = harmonizeOutputs(map, harmonizer);
+		outputs = harmonizeOutputImagePluses(map, harmonizer);
 		outputSet.clear();
 	}
 
@@ -118,23 +117,37 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- helpers --
 
-	private void harmonizeInputs(LegacyImageMap map,
+	private void harmonizeInputImagePluses(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
+		// TODO - have harmonizer track dataset events and keep a dirty bit. then only
+		//  harmonize thos datasets that have changed. 
+		ObjectManager objMgr = ImageJ.get(ObjectManager.class);
+		for (Dataset ds : objMgr.getObjects(Dataset.class)) {
+			// TODO : when we allow nonplanar images and other primitive types
+			//   to go over to IJ1 world this will need updating
+			if (isIJ1Compatible(ds)) {
+				ImagePlus imp = map.findImagePlus(ds);
+				if (imp == null)
+					map.registerDataset(ds);
+				else
+					harmonizer.updateLegacyImage(ds, imp);
+			}
+		}
 	}
 
 	private void harmonizeCurrentImagePlus(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
-		// this plugin may not have any outputs but just changes current ImagePlus
-		// make sure we catch any changes via harmonization
+		// the IJ1 plugin may not have any outputs but just changes current
+		// ImagePlus make sure we catch any changes via harmonization
 		ImagePlus currImp = IJ.getImage();
 		Dataset ds = map.findDataset(currImp);
 		if (ds != null)
-			harmonizer.harmonize(ds, currImp);
+			harmonizer.updateDataset(ds, currImp);
 	}
 	
-	private List<Dataset> harmonizeOutputs(LegacyImageMap map,
+	private List<Dataset> harmonizeOutputImagePluses(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
 		List<Dataset> datasets = new ArrayList<Dataset>();
@@ -145,10 +158,31 @@ public class LegacyPlugin implements ImageJPlugin {
 			if (ds == null)
 				ds = map.registerLegacyImage(imp);
 			else
-				harmonizer.harmonize(ds, imp);
+				harmonizer.updateDataset(ds, imp);
 			datasets.add(ds);
 		}
 
 		return datasets;
+	}
+	
+	private boolean isIJ1Compatible(Dataset ds) {
+		// for now only allow Datasets that can be represented in a planar
+		// fashion made up of unsigned bytes, unsigned shorts, and float32s
+
+		final Img<? extends RealType<?>> img = ds.getImgPlus().getImg();
+		if (img instanceof PlanarAccess) {
+			int bitsPerPixel = ds.getType().getBitsPerPixel();
+			boolean signed = ds.isSigned();
+			boolean integer = ds.isInteger();
+			boolean color = ds.isRGBMerged();
+			long channels = (ds.getAxisIndex(Axes.CHANNEL) == -1) ? 1 :
+				ds.getImgPlus().dimension(ds.getAxisIndex(Axes.CHANNEL)); 
+			
+			if (signed && !integer && bitsPerPixel == 32) return true;
+			if (!signed && integer && bitsPerPixel == 8) return true;
+			if (!signed && integer && bitsPerPixel == 16) return true;
+			if (color && integer && bitsPerPixel == 8 && channels == 3) return true;
+		}
+		return false;
 	}
 }
