@@ -45,17 +45,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
- *
+ * A tree representing the menu structure independent of any particular user
+ * interface. Each menu item is linked to a corresponding {@link PluginEntry}.
+ * 
  * @author Curtis Rueden
+ * @see MenuCreator
  */
 public class ShadowMenu implements Comparable<ShadowMenu> {
 
-	private PluginEntry<?> pluginEntry;
+	private final PluginEntry<?> pluginEntry;
 
-	private int menuDepth;
+	private final int menuDepth;
 
-	private Map<String, ShadowMenu> children;
+	private final Map<String, ShadowMenu> children;
 
 	/** Constructs an empty root menu node. */
 	public ShadowMenu() {
@@ -65,7 +67,8 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 	/** Constructs a root menu node populated with the given plugin entries. */
 	public ShadowMenu(final List<PluginEntry<?>> entries) {
 		this();
-		for (final PluginEntry<?> entry : entries) addEntry(entry);
+		for (final PluginEntry<?> entry : entries)
+			addEntry(entry);
 	}
 
 	private ShadowMenu(final PluginEntry<?> pluginEntry, final int menuDepth) {
@@ -92,6 +95,24 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 
 	public boolean isLeaf() {
 		return children.isEmpty();
+	}
+
+	public boolean isToggle() {
+		if (pluginEntry == null) return false;
+		final String tParam = pluginEntry.getToggleParameter();
+		return tParam != null && !tParam.isEmpty();
+	}
+
+	public boolean isCheckBox() {
+		if (!isToggle()) return false;
+		final String tGroup = pluginEntry.getToggleGroup();
+		return tGroup == null || tGroup.isEmpty();
+	}
+
+	public boolean isRadioButton() {
+		if (!isToggle()) return false;
+		final String tGroup = pluginEntry.getToggleGroup();
+		return tGroup != null && !tGroup.isEmpty();
 	}
 
 	public void addEntry(final PluginEntry<?> entry) {

@@ -35,11 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui;
 
 /**
- * TODO
- *
+ * A menu builder responsible for translating a {@link ShadowMenu} structure
+ * into a menu for a particular user interface.
+ * 
  * @author Curtis Rueden
- *
- * @param <T> Top-level menu class to populate (e.g., JMenuBar or JMenu)
+ * @param <T> Top-level menu class to populate (e.g.,
+ *          {@link javax.swing.JMenuBar} or {@link javax.swing.JMenu})
  */
 public interface MenuCreator<T> {
 
