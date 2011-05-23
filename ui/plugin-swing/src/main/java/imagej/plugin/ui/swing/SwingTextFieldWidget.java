@@ -58,6 +58,7 @@ public class SwingTextFieldWidget extends SwingInputWidget
 		super(model);
 
 		textField = new JTextField("", columns);
+		setToolTip(textField);
 		add(textField, BorderLayout.CENTER);
 		textField.getDocument().addDocumentListener(this);
 

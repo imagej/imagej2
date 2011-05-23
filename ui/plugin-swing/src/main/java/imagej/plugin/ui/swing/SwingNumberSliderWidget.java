@@ -61,6 +61,7 @@ public class SwingNumberSliderWidget extends SwingNumberWidget implements Change
 		slider.setMinorTickSpacing(stepSize.intValue());
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
+		setToolTip(slider);
 		add(slider, BorderLayout.CENTER);
 		slider.addChangeListener(this);
 

@@ -67,12 +67,14 @@ public class SwingFileWidget extends SwingInputWidget
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		path = new JTextField("", 20);
+		setToolTip(path);
 		add(path);
 		path.getDocument().addDocumentListener(this);
 
 		add(Box.createHorizontalStrut(3));
 
 		browse = new JButton("Browse");
+		setToolTip(browse);
 		add(browse);
 		browse.addActionListener(this);
 

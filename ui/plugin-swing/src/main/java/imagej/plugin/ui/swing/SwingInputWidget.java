@@ -37,11 +37,12 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.InputWidget;
 import imagej.plugin.ui.ParamModel;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
  * Common superclass for Swing-based input widgets.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class SwingInputWidget extends JPanel implements InputWidget {
@@ -55,6 +56,15 @@ public abstract class SwingInputWidget extends JPanel implements InputWidget {
 	@Override
 	public ParamModel getModel() {
 		return model;
+	}
+
+	// -- Helper methods --
+
+	/** Assigns the model's description as the given component's tool tip. */
+	protected void setToolTip(final JComponent c) {
+		final String desc = model.getDescription();
+		if (desc == null || desc.isEmpty()) return;
+		c.setToolTipText(desc);
 	}
 
 }

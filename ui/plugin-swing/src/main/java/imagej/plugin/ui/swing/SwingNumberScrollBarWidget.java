@@ -68,10 +68,12 @@ public class SwingNumberScrollBarWidget extends SwingNumberWidget
 		scrollBar = new JScrollBar(Adjustable.HORIZONTAL,
 			min.intValue(), 1, min.intValue(), max.intValue() + 1);
 		scrollBar.setUnitIncrement(stepSize.intValue());
+		setToolTip(scrollBar);
 		add(scrollBar, BorderLayout.CENTER);
 		scrollBar.addAdjustmentListener(this);
 
 		textField = new JTextField(6);
+		setToolTip(textField);
 		add(textField, BorderLayout.EAST);
 		textField.getDocument().addDocumentListener(this);
 

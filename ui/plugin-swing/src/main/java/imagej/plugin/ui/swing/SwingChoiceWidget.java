@@ -58,6 +58,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 		super(model);
 
 		comboBox = new JComboBox(items);
+		setToolTip(comboBox);
 		add(comboBox, BorderLayout.CENTER);
 		comboBox.addActionListener(this);
 
