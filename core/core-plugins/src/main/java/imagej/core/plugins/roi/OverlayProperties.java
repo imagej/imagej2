@@ -35,12 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.roi;
 
 import imagej.ImageJ;
+import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
-import imagej.display.OverlayManager;
-import imagej.display.OverlayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -121,9 +120,11 @@ public class OverlayProperties implements ImageJPlugin {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display display = displayManager.getActiveDisplay();
 		for (DisplayView view:display.getViews()) {
-			if (view.isSelected() && (view instanceof OverlayView)) {
-				result.add(((OverlayView)view).getDataObject());
-			}
+			if (!view.isSelected()) continue;
+			final DataObject dataObject = view.getDataObject();
+			if (!(dataObject instanceof Overlay)) continue;
+			final Overlay overlay = (Overlay) dataObject;
+			result.add(overlay);
 		}
 		return result;
 	}
