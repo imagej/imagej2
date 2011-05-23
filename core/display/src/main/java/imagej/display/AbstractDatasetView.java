@@ -63,7 +63,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public abstract class DatasetView extends AbstractDisplayView {
+public abstract class AbstractDatasetView extends AbstractDisplayView {
 
 	private final Dataset dataset;
 
@@ -83,7 +83,7 @@ public abstract class DatasetView extends AbstractDisplayView {
 	private ArrayList<EventSubscriber<?>> subscribers;
 	private int offsetX, offsetY;
 
-	public DatasetView(final Display display, final Dataset dataset) {
+	public AbstractDatasetView(final Display display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
 		subscribeToEvents();

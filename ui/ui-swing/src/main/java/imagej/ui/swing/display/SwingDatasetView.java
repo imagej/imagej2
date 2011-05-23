@@ -36,7 +36,7 @@ package imagej.ui.swing.display;
 
 import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
-import imagej.display.DatasetView;
+import imagej.display.AbstractDatasetView;
 
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -45,14 +45,13 @@ import java.awt.image.BufferedImage;
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
-import org.jhotdraw.draw.event.FigureAdapter;
 
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-public class SwingDatasetView extends DatasetView implements FigureView {
+public class SwingDatasetView extends AbstractDatasetView implements FigureView {
 
 	private final ImageFigure figure;
 
@@ -89,8 +88,9 @@ public class SwingDatasetView extends DatasetView implements FigureView {
 			bufImage.getHeight()));
 		figure.setBufferedImage(bufImage);
 	}
-	
+
 	// -- FigureView methods --
+
 	@Override
 	public Figure getFigure() {
 		return figure;
