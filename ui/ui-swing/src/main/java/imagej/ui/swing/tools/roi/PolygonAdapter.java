@@ -50,6 +50,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.BezierNodeEdit;
@@ -66,8 +67,8 @@ import org.jhotdraw.geom.BezierPath.Node;
 @Tool(name = "Polygon", iconPath = "/tools/polygon.png",
 		priority = PolygonAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
-public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, PolygonRegionOfInterest> {
-	final static public int PRIORITY = 150;
+public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverlay> {
+	final static public int PRIORITY = 80;
 
 	static private BezierFigure downcastFigure(Figure figure) {
 		assert figure instanceof BezierFigure;
@@ -128,7 +129,7 @@ public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, Po
 	 */
 	@Override
 	public boolean supports(Overlay overlay, Figure figure) {
-		if ((figure != null) && (!(figure instanceof BezierFigure))) return false;
+		if ((figure != null) && (!(figure instanceof PolygonFigure))) return false;
 		return overlay instanceof PolygonOverlay;
 	}
 
@@ -137,7 +138,8 @@ public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, Po
 	 */
 	@Override
 	public Overlay createNewOverlay() {
-		return new PolygonOverlay();
+		PolygonOverlay o = new PolygonOverlay();
+		return o;
 	}
 
 	/* (non-Javadoc)
@@ -146,6 +148,7 @@ public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, Po
 	@Override
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
+		figure.set(AttributeKeys.CANVAS_FILL_OPACITY, 0.0);
 		return figure;
 	}
 
@@ -154,8 +157,10 @@ public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, Po
 	 */
 	@Override
 	public void updateOverlay(Figure figure, Overlay overlay) {
+		super.updateOverlay(figure, overlay);
 		BezierFigure b = downcastFigure(figure);
-		PolygonRegionOfInterest roi = downcastOverlay(overlay).getShapeRegionOfInterest();
+		PolygonOverlay poverlay = downcastOverlay(overlay);
+		PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
 		int nodeCount = b.getNodeCount();
 		while(roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
@@ -182,8 +187,10 @@ public class PolygonAdapter extends AbstractShapeOverlayAdapter<BezierFigure, Po
 	 */
 	@Override
 	public void updateFigure(Overlay overlay, Figure figure) {
+		super.updateFigure(overlay, figure);
 		BezierFigure b = downcastFigure(figure);
-		PolygonRegionOfInterest roi = downcastOverlay(overlay).getShapeRegionOfInterest();
+		PolygonOverlay pOverlay = downcastOverlay(overlay);
+		PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();
 		int vertexCount = roi.getVertexCount();
 		while(b.getNodeCount() > vertexCount) b.removeNode(vertexCount);
 		for (int i=0; i<vertexCount; i++) {

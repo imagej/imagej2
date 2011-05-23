@@ -44,22 +44,17 @@ import net.imglib2.roi.PolygonRegionOfInterest;
  * @author Lee Kamentsky
  *
  */
-public class PolygonOverlay extends AbstractShapeOverlay<PolygonRegionOfInterest> {
+public class PolygonOverlay extends AbstractROIOverlay<PolygonRegionOfInterest> {
 
-	private static final long serialVersionUID = 1L;
-	
-	final protected PolygonRegionOfInterest roi = new PolygonRegionOfInterest(); 
-
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.AbstractShapeOverlay#getShapeRegionOfInterest()
-	 */
-	@Override
-	public PolygonRegionOfInterest getShapeRegionOfInterest() {
-		return roi;
+	public PolygonOverlay() {
+		super(new PolygonRegionOfInterest());
+		// TODO Auto-generated constructor stub
 	}
+	private static final long serialVersionUID = 1L;
 	
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
+		PolygonRegionOfInterest roi = getRegionOfInterest();
 		final int vertexCount = roi.getVertexCount(); 
 		out.writeInt(vertexCount);
 		for (int i=0; i<vertexCount; i++) {
@@ -70,6 +65,7 @@ public class PolygonOverlay extends AbstractShapeOverlay<PolygonRegionOfInterest
 	}
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
+		PolygonRegionOfInterest roi = getRegionOfInterest();
 		while( roi.getVertexCount() > 0) {
 			roi.removeVertex(0);
 		}

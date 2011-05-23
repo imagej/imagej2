@@ -34,12 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+
 import imagej.data.AbstractDataObject;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
 import imagej.event.Events;
+import imagej.util.ColorRGB;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -47,7 +53,13 @@ import net.imglib2.roi.RegionOfInterest;
  * 
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractDataObject implements Overlay {
+public class AbstractOverlay extends AbstractDataObject implements Overlay, Serializable {
+
+	private static final long serialVersionUID = 1L;
+	protected ColorRGB fillColor = new ColorRGB(255, 255, 255);
+	protected int alpha = 0;
+	protected ColorRGB lineColor = new ColorRGB(0, 0, 0);
+	protected double lineWidth = 1.0;
 
 	/** Creates an overlay. */
 	public AbstractOverlay() {
@@ -77,6 +89,88 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay {
 	@Override
 	public void delete() {
 		Events.publish(new OverlayDeletedEvent(this));
+	}
+
+	/**
+	 * @return the color to be used to paint the interior of the shape
+	 */
+	@Override
+	public ColorRGB getFillColor() {
+		return fillColor;
+	}
+
+	/**
+	 * @param fillColor the color of the interior of the shape
+	 */
+	@Override
+	public void setFillColor(final ColorRGB fillColor) {
+		this.fillColor = fillColor;
+	}
+
+	/**
+	 * @return the alpha of the fill (0-255)
+	 */
+	@Override
+	public int getAlpha() {
+		return alpha;
+	}
+
+	/**
+	 * @param alpha - the alpha of the fill
+	 */
+	@Override
+	public void setAlpha(final int alpha) {
+		this.alpha = alpha;
+	}
+
+	/**
+	 * @return the color to be used to paint lines or shape borders
+	 */
+	@Override
+	public ColorRGB getLineColor() {
+		return lineColor;
+	}
+
+	/**
+	 * @param lineColor the color to be used to paint lines and shape borders
+	 */
+	@Override
+	public void setLineColor(ColorRGB lineColor) {
+		if (! this.lineColor.equals(lineColor)) {
+			this.lineColor = lineColor;
+		}
+	}
+
+	/**
+	 * @return the width to be used when painting lines and shape borders, in pixels.
+	 */
+	public double getLineWidth() {
+		return lineWidth;
+	}
+
+	/**
+	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
+	 */
+	public void setLineWidth(double lineWidth) {
+		if (this.lineWidth != lineWidth) {
+			this.lineWidth = lineWidth;
+		}
+	}
+	
+	public void writeExternal(final ObjectOutput out) throws IOException {
+		out.writeObject(lineColor);
+		out.writeDouble(lineWidth);
+		out.writeObject(fillColor);
+		out.writeInt(alpha);
+	}
+
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
+		lineColor = (ColorRGB) in.readObject();
+		lineWidth = in.readDouble();
+		fillColor = (ColorRGB) in.readObject();
+		alpha = in.readInt();
 	}
 
 }

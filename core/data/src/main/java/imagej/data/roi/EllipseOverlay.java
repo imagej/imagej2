@@ -14,22 +14,17 @@ import net.imglib2.roi.EllipseRegionOfInterest;
  *
  *An ellipse bounded by an axis-aligned rectangle, backed by EllipseRegionOfInterest 
  */
-public class EllipseOverlay extends AbstractShapeOverlay<EllipseRegionOfInterest> {
+public class EllipseOverlay extends AbstractROIOverlay<EllipseRegionOfInterest> {
 
 	
-	private static final long serialVersionUID = 1L;
-	final protected EllipseRegionOfInterest roi = new EllipseRegionOfInterest(2);
-	
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.AbstractShapeOverlay#getShapeRegionOfInterest()
-	 */
-	@Override
-	public EllipseRegionOfInterest getShapeRegionOfInterest() {
-		return roi;
+	public EllipseOverlay() {
+		super(new EllipseRegionOfInterest(2));
 	}
+	private static final long serialVersionUID = 1L;
 	
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
+		EllipseRegionOfInterest roi = getRegionOfInterest();
 		out.writeDouble(roi.getOrigin(0));
 		out.writeDouble(roi.getOrigin(1));
 		out.writeDouble(roi.getRadius(0));
@@ -37,6 +32,7 @@ public class EllipseOverlay extends AbstractShapeOverlay<EllipseRegionOfInterest
 	}
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
+		EllipseRegionOfInterest roi = getRegionOfInterest();
 		roi.setOrigin(in.readDouble(), 0);
 		roi.setOrigin(in.readDouble(), 1);
 		roi.setRadius(in.readDouble(), 0);

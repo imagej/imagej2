@@ -35,11 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.roi;
 
 import imagej.ImageJ;
-import imagej.data.roi.AbstractLineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
 import imagej.display.OverlayManager;
+import imagej.display.OverlayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -65,24 +66,35 @@ public class OverlayProperties implements ImageJPlugin {
 
 	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
-
+	
+	@Parameter(label = "Fill color", persist = false)
+	private ColorRGB fillColor;
+	
+	@Parameter(label = "Alpha", persist = false, min = "0", max = "255", description="The opacity or alpha of the interior of the overlay (0=transparent, 255=opaque)")
+	private int alpha;
+	
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
-		final List<AbstractLineOverlay> selected = getSelectedOverlays();
+		final List<Overlay> selected = getSelectedOverlays();
 		if (selected.size() > 0) {
-			AbstractLineOverlay overlay = selected.get(0);
+			Overlay overlay = selected.get(0);
 			lineColor = overlay.getLineColor();
 			lineWidth = overlay.getLineWidth();
+			fillColor = overlay.getFillColor();
+			alpha = overlay.getAlpha();
 		}
 	}
 
 	@Override
 	public void run() {
 		// change properties of all selected overlays
-		final List<AbstractLineOverlay> selected = getSelectedOverlays();
-		for (final AbstractLineOverlay overlay : selected) {
+		final List<Overlay> selected = getSelectedOverlays();
+		for (final Overlay overlay : selected) {
 			overlay.setLineColor(lineColor);
 			overlay.setLineWidth(lineWidth);
+			overlay.setFillColor(fillColor);
+			overlay.setAlpha(alpha);
+			overlay.update();
 		}
 	}
 
@@ -93,28 +105,25 @@ public class OverlayProperties implements ImageJPlugin {
 	public double getLineWidth() {
 		return lineWidth;
 	}
+	
+	public ColorRGB getFillColor() {
+		return fillColor;
+	}
+	
+	public int getAlpha() {
+		return alpha;
+	}
 
-	private List<AbstractLineOverlay> getSelectedOverlays() {
-		final ArrayList<AbstractLineOverlay> result =
-			new ArrayList<AbstractLineOverlay>();
+	private List<Overlay> getSelectedOverlays() {
+		final ArrayList<Overlay> result =
+			new ArrayList<Overlay>();
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display display = displayManager.getActiveDisplay();
-		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-		final List<Overlay> overlays = overlayManager.getOverlays(display);
-		for (final Overlay overlay : overlays) {
-			// TODO - ignore overlays that aren't selected
-			// if (!overlay.isSelected()) continue;
-
-			// ignore non-line overlays
-			if (!(overlay instanceof AbstractLineOverlay)) continue;
-			// TODO - Add line color to top-level Overlay interface.
-			// It's fine if an overlay subtype doesn't implement it
-			// but better not to need instanceof checks. We probably
-			// don't need the AbstractLineOverlay class at all, actually.
-			final AbstractLineOverlay lineOverlay = (AbstractLineOverlay) overlay;
-
-			result.add(lineOverlay);
+		for (DisplayView view:display.getViews()) {
+			if (view.isSelected() && (view instanceof OverlayView)) {
+				result.add(((OverlayView)view).getDataObject());
+			}
 		}
 		return result;
 	}

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.awt;
 
 import imagej.util.ColorRGB;
+import imagej.util.ColorRGBA;
 
 import java.awt.Color;
 
@@ -56,13 +57,42 @@ public final class AWTColors {
 	public static Color getColor(final ColorRGB color) {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue());
 	}
-
+	
+	/**
+	 * Get a java.awt.Color including the alpha component
+	 * @param color - RGBA color
+	 * @return the AWT color
+	 */
+	public static Color getColorRGBA(final ColorRGBA color) {
+		return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	}
+	
+	/**
+	 * Get a java.awt.Color given an RGB color and an explicit alpha component (0-255)
+	 * @param color - RGB color
+	 * @param alpha - alpha value (0-255)
+	 * @return AWT color
+	 */
+	public static Color getColorRGBA(final ColorRGB color, int alpha) {
+		assert (alpha >=0) && (alpha <=255): String.format("Alpha value of %d is out of range (0-255)", alpha);
+		return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+	}
+	
 	/**
 	 * Gets the ImageJ {@link ColorRGB} corresponding to the given AWT
 	 * {@link Color}.
 	 */
 	public static ColorRGB getColorRGB(final Color color) {
 		return new ColorRGB(color.getRed(), color.getGreen(), color.getBlue());
+	}
+	
+	/**
+	 * Get the color with alpha component
+	 * @param color - java.awt.Color to be translated
+	 * @return the imageJ RGB color
+	 */
+	public static ColorRGBA getColorRGBA(final Color color) {
+		return new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
 }

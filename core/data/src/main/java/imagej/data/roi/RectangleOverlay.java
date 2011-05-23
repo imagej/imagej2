@@ -44,24 +44,20 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  *
  * A rectangular region of interest
  */
-public class RectangleOverlay extends AbstractShapeOverlay<RectangleRegionOfInterest> {
+public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	final protected RectangleRegionOfInterest roi;
 	public RectangleOverlay() {
-		roi = new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0});
+		super(new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0}));
 	}
 
-	@Override
-	public RectangleRegionOfInterest getShapeRegionOfInterest() {
-		return roi;
-	}
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
+		RectangleRegionOfInterest roi = getRegionOfInterest();
 		out.writeDouble(roi.getOrigin(0));
 		out.writeDouble(roi.getOrigin(1));
 		out.writeDouble(roi.getExtent(0));
@@ -69,6 +65,7 @@ public class RectangleOverlay extends AbstractShapeOverlay<RectangleRegionOfInte
 	}
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
+		RectangleRegionOfInterest roi = getRegionOfInterest();
 		roi.setOrigin(in.readDouble(), 0);
 		roi.setOrigin(in.readDouble(), 1);
 		roi.setExtent(in.readDouble(), 0);
