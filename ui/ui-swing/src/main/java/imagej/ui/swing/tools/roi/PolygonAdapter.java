@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.util.Arrays;
@@ -148,7 +149,7 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	@Override
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
-		figure.set(AttributeKeys.CANVAS_FILL_OPACITY, 0.0);
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
 		return figure;
 	}
 

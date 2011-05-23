@@ -33,11 +33,13 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.roi.RectangleRegionOfInterest;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 
@@ -75,7 +77,9 @@ public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOv
 
 	@Override
 	public Figure createDefaultFigure() {
-		return new RectangleFigure();
+		RectangleFigure figure = new RectangleFigure();
+		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		return figure;
 	}
 
 	@Override
