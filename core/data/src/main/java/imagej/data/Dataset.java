@@ -192,7 +192,8 @@ public class Dataset extends AbstractDataObject implements
 		}
 		// TODO - copy the plane if it cannot be set by reference
 		final PlanarAccess planarAccess = (PlanarAccess) img;
-		Object currPlane = planarAccess.getPlane(no);
+		Object currPlane =
+			((ArrayDataAccess<?>)planarAccess.getPlane(no)).getCurrentStorageArray();
 		if (newPlane == currPlane) return;
 		ArrayDataAccess<?> array = null;
 		if (newPlane instanceof byte[]) {
@@ -217,7 +218,7 @@ public class Dataset extends AbstractDataObject implements
 		setDirty(true);
 	}
 
-	// TODO - disable??? Highly expensive!!! Make randomAccess ThreadLocal???
+	// TODO - disable??? Highly expensive!!! Make RandomAccess ThreadLocal???
 	public double getDoubleValue(final long[] pos) {
 		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
