@@ -1,5 +1,5 @@
 //
-// LineColor.java
+// OverlayProperties.java
 //
 
 /*
@@ -44,6 +44,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -54,29 +55,32 @@ import java.util.List;
  * selected overlays.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Properties...", mnemonic = 'p') })
-public class OverlayProperties implements ImageJPlugin {
+public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "Line color", persist = false)
 	private ColorRGB lineColor;
 
 	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
-	
+
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
-	
-	@Parameter(label = "Alpha", persist = false, min = "0", max = "255", description="The opacity or alpha of the interior of the overlay (0=transparent, 255=opaque)")
+
+	@Parameter(label = "Alpha", persist = false, min = "0", max = "255",
+		description = "The opacity or alpha of the interior of the overlay "
+			+ "(0=transparent, 255=opaque)")
 	private int alpha;
-	
+
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
 		if (selected.size() > 0) {
-			Overlay overlay = selected.get(0);
+			final Overlay overlay = selected.get(0);
 			lineColor = overlay.getLineColor();
 			lineWidth = overlay.getLineWidth();
 			fillColor = overlay.getFillColor();
@@ -97,6 +101,11 @@ public class OverlayProperties implements ImageJPlugin {
 		}
 	}
 
+	@Override
+	public void preview() {
+		run();
+	}
+
 	public ColorRGB getLineColor() {
 		return lineColor;
 	}
@@ -104,22 +113,21 @@ public class OverlayProperties implements ImageJPlugin {
 	public double getLineWidth() {
 		return lineWidth;
 	}
-	
+
 	public ColorRGB getFillColor() {
 		return fillColor;
 	}
-	
+
 	public int getAlpha() {
 		return alpha;
 	}
 
 	private List<Overlay> getSelectedOverlays() {
-		final ArrayList<Overlay> result =
-			new ArrayList<Overlay>();
+		final ArrayList<Overlay> result = new ArrayList<Overlay>();
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display display = displayManager.getActiveDisplay();
-		for (DisplayView view:display.getViews()) {
+		for (final DisplayView view : display.getViews()) {
 			if (!view.isSelected()) continue;
 			final DataObject dataObject = view.getDataObject();
 			if (!(dataObject instanceof Overlay)) continue;
