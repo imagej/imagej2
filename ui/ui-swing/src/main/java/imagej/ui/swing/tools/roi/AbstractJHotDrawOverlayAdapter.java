@@ -34,7 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import java.awt.Color;
+
+import org.jhotdraw.draw.AttributeKeys;
+import org.jhotdraw.draw.Figure;
+
+import imagej.awt.AWTColors;
+import imagej.data.roi.AbstractOverlay;
+import imagej.data.roi.Overlay;
 import imagej.tool.BaseTool;
+import imagej.util.ColorRGB;
+import imagej.util.ColorRGBA;
 
 
 /**
@@ -43,9 +53,8 @@ import imagej.tool.BaseTool;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter extends BaseTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends BaseTool implements IJHotDrawOverlayAdapter
 {
-
 	private int priority;
 	/* (non-Javadoc)
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#getPriority()
@@ -62,6 +71,25 @@ public abstract class AbstractJHotDrawOverlayAdapter extends BaseTool implements
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	
 
+	@Override
+	public void updateFigure(final Overlay overlay, final Figure figure) {
+		final ColorRGB lineColor = overlay.getLineColor();
+		figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
+		figure.set(AttributeKeys.STROKE_WIDTH, overlay.getLineWidth());
+		final ColorRGB fillColor = overlay.getFillColor();
+		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColorRGBA(fillColor, overlay.getAlpha()));
+	}
+
+	@Override
+	public void updateOverlay(final Figure figure, final Overlay overlay) {
+		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
+		overlay.setLineColor(AWTColors.getColorRGB(strokeColor));
+		overlay.setLineWidth(figure.get(AttributeKeys.STROKE_WIDTH));
+		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
+		final ColorRGBA imageJColor = AWTColors.getColorRGBA(fillColor); 
+		overlay.setFillColor(imageJColor);
+		overlay.setAlpha(imageJColor.getAlpha());
+	}
+	
 }

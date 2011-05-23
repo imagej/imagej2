@@ -49,9 +49,9 @@ import imagej.plugin.Plugin;
  * Remove all selected views.
  *
  */
-@Plugin(menu = { @Menu(label = "Edit", mnemonic = 'e'),
-		@Menu(label = "Selection", mnemonic = 's'),
-		@Menu(label = "Delete", mnemonic = 'd', weight=4)})
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+		@Menu(label = "Overlay", mnemonic = 'o'),
+		@Menu(label = "Remove Overlay", mnemonic = 'r', weight=4)})
 public class DeleteSelected implements ImageJPlugin {
 
 	@Override

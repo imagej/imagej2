@@ -36,6 +36,7 @@ package imagej.data.roi;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.util.ColorRGB;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
@@ -60,4 +61,48 @@ public interface Overlay extends DataObject {
 	 */
 	RegionOfInterest getRegionOfInterest();
 
+	/**
+	 * Set the color of the outline line of the overlay, if appropriate
+	 *
+	 * @param lineColor
+	 */
+	void setLineColor(ColorRGB lineColor);
+
+	/**
+	 * Set the width of the outline line of the overlay, if appropriate
+	 * 
+	 * @param lineWidth the width in pixels
+	 */
+	void setLineWidth(double lineWidth);
+
+	/**
+	 * @return the color of the outline line of the overlay
+	 */
+	ColorRGB getLineColor();
+
+	/**
+	 * @return the width of the outline line in pixels
+	 */
+	double getLineWidth();
+
+	/**
+	 * @return the fill color for overlays that have an interior
+	 */
+	ColorRGB getFillColor();
+
+	/**
+	 * @param fillColor the fill color for overlays that have an interior
+	 */
+	void setFillColor(ColorRGB fillColor);
+
+	/**
+	 * @return the opacity of the interior of the overlay, from 0-255
+	 */
+	int getAlpha();
+
+	/**
+	 * @param alpha the opacity of the interior of the overlay, from 0-255
+	 */
+	void setAlpha(int alpha);
+	
 }

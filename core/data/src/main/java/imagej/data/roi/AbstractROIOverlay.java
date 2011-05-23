@@ -1,5 +1,5 @@
 //
-// AbstractShapeROIAdapter.java
+// AbstractROIOverlay.java
 //
 
 /*
@@ -31,49 +31,31 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-
-package imagej.ui.swing.tools.roi;
-
-import imagej.awt.AWTColors;
-import imagej.data.roi.AbstractShapeOverlay;
-import imagej.util.ColorRGB;
-
-import java.awt.Color;
+package imagej.data.roi;
 
 import net.imglib2.roi.RegionOfInterest;
 
-import org.jhotdraw.draw.AbstractAttributedFigure;
-import org.jhotdraw.draw.AttributeKeys;
-
 /**
- * The AbstractShapeROIAdapter adds mechanisms for populating the line and fill
- * attributes of the AbstractShapeROI from an AbstractAttributedFigure and
- * vice-versa.
- * 
- * @param <T> the derived RegionOfInterest type exposed by the AbstractShapeROI
- *          adapted by this adapter.
  * @author Lee Kamentsky
+ *
+ *An overlay that has an associated region of interest
  */
-public abstract class AbstractShapeOverlayAdapter<F extends AbstractAttributedFigure, T extends RegionOfInterest>
-	extends AbstractLineOverlayAdapter<F>
-{
+public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends AbstractOverlay {
 
-	protected void setFigureShapeProperties(final AbstractShapeOverlay<T> roi,
-		final F figure)
-	{
-		final ColorRGB fillColor = roi.getFillColor();
-		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor));
-		figure.set(AttributeKeys.CANVAS_FILL_OPACITY, roi.getOpacity());
-		super.setFigureLineProperties(roi, figure);
+	private static final long serialVersionUID = 1L;
+	
+	private final R roi;
+	
+	protected AbstractROIOverlay(R roi) {
+		this.roi = roi;
 	}
 
-	protected void getShapeROIProperties(final F figure,
-		final AbstractShapeOverlay<T> roi)
-	{
-		final Color fillColor = figure.get(AttributeKeys.FILL_COLOR);
-		roi.setFillColor(AWTColors.getColorRGB(fillColor));
-		roi.setOpacity(figure.get(AttributeKeys.CANVAS_FILL_OPACITY));
-		super.setROILineProperties(figure, roi);
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.AbstractOverlay#getRegionOfInterest()
+	 */
+	@Override
+	public R getRegionOfInterest() {
+		return roi;
 	}
-
+	
 }

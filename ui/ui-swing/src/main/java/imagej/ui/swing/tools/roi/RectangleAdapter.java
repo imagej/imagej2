@@ -52,17 +52,12 @@ import imagej.tool.Tool;
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)
 @Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
 		priority = RectangleAdapter.PRIORITY, enabled = true)
-public class RectangleAdapter extends AbstractShapeOverlayAdapter<RectangleFigure, RectangleRegionOfInterest> {
-	public static final int PRIORITY = 50;
+public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOverlay> {
+	public static final int PRIORITY = 60;
 	
-	static protected RectangleOverlay downcastROI(Overlay roi) {
+	static protected RectangleOverlay downcastOverlay(Overlay roi) {
 		assert(roi instanceof RectangleOverlay);
 		return (RectangleOverlay)roi;
-	}
-	
-	static protected RectangleFigure downcastFigure(Figure figure) {
-		assert(figure instanceof RectangleFigure);
-		return (RectangleFigure)figure;
 	}
 	
 	@Override
@@ -84,31 +79,29 @@ public class RectangleAdapter extends AbstractShapeOverlayAdapter<RectangleFigur
 	}
 
 	@Override
-	public void updateFigure(Overlay roi, Figure f) {
-		RectangleOverlay rectangleROI = downcastROI(roi);
-		RectangleFigure figure = downcastFigure(f);
-		setFigureShapeProperties(rectangleROI, figure);
-		RectangleRegionOfInterest imglibROI = rectangleROI.getShapeRegionOfInterest();
-		double x0 = imglibROI.getOrigin(0);
-		double w = imglibROI.getExtent(0);
-		double y0 = imglibROI.getOrigin(1);
-		double h = imglibROI.getExtent(1);
+	public void updateFigure(Overlay overlay, Figure f) {
+		super.updateFigure(overlay, f);
+		RectangleOverlay rectangleOverlay = downcastOverlay(overlay);
+		RectangleRegionOfInterest roi = rectangleOverlay.getRegionOfInterest();
+		double x0 = roi.getOrigin(0);
+		double w = roi.getExtent(0);
+		double y0 = roi.getOrigin(1);
+		double h = roi.getExtent(1);
 		Point2D.Double anchor = new Point2D.Double(x0, y0);
 		Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		figure.setBounds(anchor, lead);
+		f.setBounds(anchor, lead);
 	}
 
 	@Override
-	public void updateOverlay(Figure figure, Overlay roi) {
-		RectangleFigure rFigure = downcastFigure(figure);
-		RectangleOverlay rROI = downcastROI(roi);
-		setROILineProperties(rFigure, rROI);
-		RectangleRegionOfInterest imglibROI = rROI.getShapeRegionOfInterest();
+	public void updateOverlay(Figure figure, Overlay overlay) {
+		super.updateOverlay(figure, overlay);
+		RectangleOverlay rOverlay = downcastOverlay(overlay);
+		RectangleRegionOfInterest roi = rOverlay.getRegionOfInterest();
 		Rectangle2D.Double bounds = figure.getBounds();
-		imglibROI.setOrigin(bounds.getMinX(), 0);
-		imglibROI.setOrigin(bounds.getMinY(), 1);
-		imglibROI.setExtent(bounds.getWidth(), 0);
-		imglibROI.setExtent(bounds.getHeight(), 1);
+		roi.setOrigin(bounds.getMinX(), 0);
+		roi.setOrigin(bounds.getMinY(), 1);
+		roi.setExtent(bounds.getWidth(), 0);
+		roi.setExtent(bounds.getHeight(), 1);
 	}
 
 }

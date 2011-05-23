@@ -52,10 +52,10 @@ import org.jhotdraw.draw.Figure;
 @Tool(name = "Oval", iconPath = "/tools/oval.png",
 		priority = EllipseAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)
-public class EllipseAdapter extends AbstractShapeOverlayAdapter<EllipseFigure, EllipseRegionOfInterest> {
-	final static public int PRIORITY=100;
+public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverlay> {
+	final static public int PRIORITY=70;
 	
-	static protected EllipseOverlay downcastROI(Overlay roi) {
+	static protected EllipseOverlay downcastOverlay(Overlay roi) {
 		assert(roi instanceof EllipseOverlay);
 		return (EllipseOverlay)roi;
 	}
@@ -85,10 +85,11 @@ public class EllipseAdapter extends AbstractShapeOverlayAdapter<EllipseFigure, E
 	}
 
 	@Override
-	public void updateFigure(Overlay roi, Figure f) {
-		EllipseOverlay overlay = downcastROI(roi);
+	public void updateFigure(Overlay o, Figure f) {
+		super.updateFigure(o, f);
+		EllipseOverlay overlay = downcastOverlay(o);
 		EllipseFigure figure = downcastFigure(f);
-		EllipseRegionOfInterest eRoi = overlay.getShapeRegionOfInterest();
+		EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
 		double centerX = eRoi.getOrigin(0);
 		double centerY = eRoi.getOrigin(1);
 		double radiusX = eRoi.getRadius(0);
@@ -101,12 +102,13 @@ public class EllipseAdapter extends AbstractShapeOverlayAdapter<EllipseFigure, E
 
 	@Override
 	public void updateOverlay(Figure figure, Overlay roi) {
-		EllipseOverlay overlay = downcastROI(roi);
+		super.updateOverlay(figure, roi);
+		EllipseOverlay overlay = downcastOverlay(roi);
 		EllipseFigure eFigure = downcastFigure(figure);
 		Rectangle2D.Double r = eFigure.getBounds();
 		RealPoint ptCenter = new RealPoint(
 				new double[] { r.x + r.width/2, r.y + r.height/2 });
-		EllipseRegionOfInterest eRoi = overlay.getShapeRegionOfInterest();
+		EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();
 		eRoi.setOrigin(ptCenter);
 		eRoi.setRadius(r.width / 2, 0);
 		eRoi.setRadius(r.height / 2, 1);

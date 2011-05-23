@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import imagej.data.event.OverlayUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.OverlayView;
+import imagej.event.EventSubscriber;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
+import imagej.ui.swing.tools.roi.JHotDrawOverlayAdapter;
 import imagej.util.Index;
 
 import org.jhotdraw.draw.Drawing;
@@ -57,6 +60,7 @@ public class SwingOverlayView extends OverlayView implements FigureView {
 	/** JHotDraw {@link Figure} linked to the associated {@link Overlay}. */
 	private final Figure figure;
 
+	private final IJHotDrawOverlayAdapter adapter;
 	
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
@@ -80,8 +84,7 @@ public class SwingOverlayView extends OverlayView implements FigureView {
 	{
 		super(display, overlay);
 		this.display = display;
-		final IJHotDrawOverlayAdapter adapter =
-			JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
+		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
 		this.figure = figure == null ? adapter.createDefaultFigure() : figure;
 		adapter.updateFigure(overlay, figure);
 		figure.addFigureListener(new FigureAdapter() {
@@ -135,14 +138,14 @@ public class SwingOverlayView extends OverlayView implements FigureView {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-
+		adapter.updateFigure(getDataObject(), figure);
+		display.getImageCanvas().getDrawingView().repaint();
 	}
 
 	@Override
 	public void rebuild() {
-		// TODO Auto-generated method stub
-
+		adapter.updateFigure(getDataObject(), figure);
+		display.getImageCanvas().getDrawingView().repaint();
 	}
 
 	@Override
