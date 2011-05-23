@@ -41,11 +41,11 @@ import imagej.data.roi.Overlay;
  * 
  * @author Curtis Rueden
  */
-public abstract class OverlayView extends AbstractDisplayView {
+public abstract class AbstractOverlayView extends AbstractDisplayView {
 
 	private final Overlay overlay;
 
-	public OverlayView(final Display display, final Overlay overlay) {
+	public AbstractOverlayView(final Display display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
 	}

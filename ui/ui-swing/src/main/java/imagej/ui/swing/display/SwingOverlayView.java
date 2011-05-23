@@ -36,7 +36,7 @@ package imagej.ui.swing.display;
 
 import imagej.data.event.OverlayUpdatedEvent;
 import imagej.data.roi.Overlay;
-import imagej.display.OverlayView;
+import imagej.display.AbstractOverlayView;
 import imagej.event.EventSubscriber;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
@@ -53,7 +53,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * 
  * @author Curtis Rueden
  */
-public class SwingOverlayView extends OverlayView implements FigureView {
+public class SwingOverlayView extends AbstractOverlayView implements FigureView {
 
 	private final SwingImageDisplay display;
 
