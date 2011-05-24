@@ -83,11 +83,11 @@ public final class OverlayManager implements ManagerComponent {
 	 * An {@link Overlay} is considered "associated" with a {@link Dataset} when
 	 * it is being displayed in the same {@link Display} as the {@link Dataset}.
 	 * <p>
-	 * Note that this method is essentially a big HACK to handle legacy IJ1
-	 * support. The longterm solution will be to create one ImagePlus per display,
-	 * rather than one per dataset, with orphan datasets also getting one
-	 * ImagePlus in the map. Then we can assign the ImagePlus's ROI according to
-	 * the overlays present in only its associated display.
+	 * Note that this method is a big HACK to handle legacy IJ1 support. The
+	 * longterm solution will be to create one ImagePlus per display, rather than
+	 * one per dataset, with orphan datasets also getting one ImagePlus in the
+	 * map. Then we can assign the ImagePlus's ROI according to the overlays
+	 * present in only its associated display.
 	 * </p>
 	 */
 	public List<Overlay> getOverlays(final Dataset dataset) {
@@ -106,7 +106,7 @@ public final class OverlayManager implements ManagerComponent {
 				}
 			}
 			if (!relevant) continue;
-			
+
 			// add this display's overlays to the list
 			for (final DisplayView view : views) {
 				final DataObject dataObject = view.getDataObject();
@@ -116,6 +116,41 @@ public final class OverlayManager implements ManagerComponent {
 			}
 		}
 		return overlays;
+	}
+
+	/**
+	 * Adds the list of {@link Overlay}s to the first {@link Display} containing
+	 * the {@link Dataset}.
+	 * <p>
+	 * Note that this method is a big HACK to handle legacy IJ1 support. The
+	 * longterm solution will be to create one ImagePlus per display, rather than
+	 * one per dataset, with orphan datasets also getting one ImagePlus in the
+	 * map. Then we can assign the ImagePlus's ROI according to the overlays
+	 * present in only its associated display.
+	 * </p>
+	 */
+	public void setOverlays(final Dataset dataset, final List<Overlay> overlays)
+	{
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
+		final List<Display> displays = objectManager.getObjects(Display.class);
+		for (final Display display : displays) {
+			// check whether dataset is present in this display
+			boolean relevant = false;
+			final List<DisplayView> views = display.getViews();
+			for (final DisplayView view : views) {
+				final DataObject dataObject = view.getDataObject();
+				if (dataObject == dataset) {
+					relevant = true;
+					break;
+				}
+			}
+			if (!relevant) continue;
+
+			// add the given overlays to this display and return
+			for (final Overlay overlay : overlays)
+				display.display(overlay);
+			break;
+		}
 	}
 
 	// -- ManagerComponent methods --
