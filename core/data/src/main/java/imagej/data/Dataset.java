@@ -176,8 +176,8 @@ public class Dataset extends AbstractDataObject implements
 		if (img instanceof PlanarAccess) {
 			final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
 			final Object plane = planarAccess.getPlane(planeNumber);
-			if (plane instanceof ArrayDataAccess) return ((ArrayDataAccess<?>) plane)
-				.getCurrentStorageArray();
+			if (plane instanceof ArrayDataAccess)
+				return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
 		}
 		return copyOfPlane(planeNumber);
 	}
@@ -215,11 +215,12 @@ public class Dataset extends AbstractDataObject implements
 			array = new DoubleArray((double[]) newPlane);
 		}
 		planarAccess.setPlane(no, array);
-		setDirty(true);
+		update();
 	}
 
 	// TODO - disable??? Highly expensive!!! Make RandomAccess ThreadLocal???
 	public double getDoubleValue(final long[] pos) {
+		Log.warn("Dataset::getDoubleValue() invoked. This is an expensive operation. Try to avoid using it.");
 		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
 		final double value = cursor.get().getRealDouble();
@@ -266,7 +267,7 @@ public class Dataset extends AbstractDataObject implements
 	/** Copies the dataset's pixels into the given target dataset. */
 	public void copyInto(final Dataset target) {
 		copyDataValues(imgPlus.getImg(), target.getImgPlus().getImg());
-		target.setDirty(true);
+		target.update();
 	}
 
 	/**
@@ -341,7 +342,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setName(final String name) {
 		imgPlus.setName(name);
-		setDirty(true);
+		update();
 	}
 
 	@Override
@@ -362,7 +363,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setAxis(final Axis axis, final int d) {
 		imgPlus.setAxis(axis, d);
-		setDirty(true);
+		update();
 	}
 
 	@Override
@@ -378,7 +379,7 @@ public class Dataset extends AbstractDataObject implements
 	@Override
 	public void setCalibration(final double cal, final int d) {
 		imgPlus.setCalibration(cal, d);
-		setDirty(true);
+		update();
 	}
 
 	@Override
@@ -410,7 +411,7 @@ public class Dataset extends AbstractDataObject implements
 	public void setColorTable(final ColorTable8 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		//setDirty(true);
+		//update();
 	}
 
 	@Override
@@ -422,12 +423,14 @@ public class Dataset extends AbstractDataObject implements
 	public void setColorTable(final ColorTable16 lut, final int no) {
 		imgPlus.setColorTable(lut, no);
 		// TODO - ???
-		//setDirty(true);
+		//update();
 	}
 
 	@Override
 	public void initializeColorTables(final int count) {
 		imgPlus.initializeColorTables(count);
+		// TODO - ???
+		//update();
 	}
 
 	@Override
