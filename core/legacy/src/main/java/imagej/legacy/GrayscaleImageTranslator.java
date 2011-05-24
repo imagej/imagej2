@@ -52,8 +52,8 @@ import net.imglib2.img.Axis;
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
-	private LegacyMetadataTranslator metadataTranslator = 
-		new LegacyMetadataTranslator();
+	private MetadataTranslator metadataTranslator = 
+		new MetadataTranslator();
 	
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {

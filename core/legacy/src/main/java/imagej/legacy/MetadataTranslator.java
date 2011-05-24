@@ -1,5 +1,5 @@
 //
-// LegacyMetadataTranslator.java
+// MetadataTranslator.java
 //
 
 /*
@@ -32,61 +32,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-/**
- * LegacyMetaDataTranslator - moves metadata back and forth between
- * Datasets and ImagePluses.
- * 
- * @author Barry DeZonia
- */
 package imagej.legacy;
 
-import net.imglib2.img.Axes;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import imagej.data.Dataset;
+import net.imglib2.img.Axes;
 
-public class LegacyMetadataTranslator {
-	
-	public void setDatasetMetadata(Dataset ds, ImagePlus imp) {
+/**
+ * MetadataTranslator moves metadata back and forth between {@link Dataset}s and
+ * {@link ImagePlus}es.
+ * 
+ * @author Barry DeZonia
+ */
+public class MetadataTranslator {
+
+	public void setDatasetMetadata(final Dataset ds, final ImagePlus imp) {
 		ds.setName(imp.getTitle());
 		// copy calibration info where possible
-		int xIndex = ds.getAxisIndex(Axes.X);
-		int yIndex = ds.getAxisIndex(Axes.Y);
-		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		int zIndex = ds.getAxisIndex(Axes.Z);
-		int tIndex = ds.getAxisIndex(Axes.TIME);
-		Calibration cal = imp.getCalibration();
-		if (xIndex >= 0)
-			ds.setCalibration(cal.pixelWidth, xIndex);
-		if (yIndex >= 0)
-			ds.setCalibration(cal.pixelHeight, yIndex);
-		if (cIndex >= 0)
-			ds.setCalibration(1, cIndex);
-		if (zIndex >= 0)
-			ds.setCalibration(cal.pixelDepth, zIndex);
-		if (tIndex >= 0)
-			ds.setCalibration(cal.frameInterval, tIndex);
+		final int xIndex = ds.getAxisIndex(Axes.X);
+		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = ds.getAxisIndex(Axes.Z);
+		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final Calibration cal = imp.getCalibration();
+		if (xIndex >= 0) ds.setCalibration(cal.pixelWidth, xIndex);
+		if (yIndex >= 0) ds.setCalibration(cal.pixelHeight, yIndex);
+		if (cIndex >= 0) ds.setCalibration(1, cIndex);
+		if (zIndex >= 0) ds.setCalibration(cal.pixelDepth, zIndex);
+		if (tIndex >= 0) ds.setCalibration(cal.frameInterval, tIndex);
 	}
-	
-	public void setImagePlusMetadata(Dataset ds, ImagePlus imp) {
+
+	public void setImagePlusMetadata(final Dataset ds, final ImagePlus imp) {
 		imp.setTitle(ds.getName());
 		// copy calibration info where possible
-		Calibration cal = imp.getCalibration();
-		int xIndex = ds.getAxisIndex(Axes.X);
-		int yIndex = ds.getAxisIndex(Axes.Y);
-		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		int zIndex = ds.getAxisIndex(Axes.Z);
-		int tIndex = ds.getAxisIndex(Axes.TIME);
-		if (xIndex >= 0)
-			cal.pixelWidth = ds.calibration(xIndex);
-		if (yIndex >= 0)
-			cal.pixelHeight = ds.calibration(yIndex);
+		final Calibration cal = imp.getCalibration();
+		final int xIndex = ds.getAxisIndex(Axes.X);
+		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = ds.getAxisIndex(Axes.Z);
+		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		if (xIndex >= 0) cal.pixelWidth = ds.calibration(xIndex);
+		if (yIndex >= 0) cal.pixelHeight = ds.calibration(yIndex);
 		if (cIndex >= 0) {
 			// nothing to set on IJ1 side
 		}
-		if (zIndex >= 0)
-			cal.pixelDepth = ds.calibration(zIndex);
-		if (tIndex >= 0)
-			cal.frameInterval = ds.calibration(tIndex);
+		if (zIndex >= 0) cal.pixelDepth = ds.calibration(zIndex);
+		if (tIndex >= 0) cal.frameInterval = ds.calibration(tIndex);
 	}
+
 }
