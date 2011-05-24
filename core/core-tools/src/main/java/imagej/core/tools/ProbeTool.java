@@ -34,13 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import java.util.ArrayList;
+
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetDeletedEvent;
+import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
 import imagej.display.event.mouse.MsMovedEvent;
+import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.tool.BaseTool;
@@ -72,7 +78,13 @@ public class ProbeTool extends BaseTool {
 	private Dataset dataset;
 	private RandomAccess<? extends RealType<?>> randomAccess;
 	private long[] position;
-
+	private ArrayList<EventSubscriber<?>> subscribers;
+	
+	// -- constructor --
+	
+	public ProbeTool() {
+		subscribeToEvents();
+	}
 	// -- ITool methods --
 
 	@Override
@@ -119,16 +131,6 @@ public class ProbeTool extends BaseTool {
 
 	// -- private interface --
 
-	// TODO - If someone positions the probe over an image and then they close
-	// the image via any means other than using the mouse then this method
-	// will not get called. This leaves a cursor open and thus an Image
-	// reference may be kept around. This could keep some memory from freeing
-	// up. Test and if so figure out a workaround. Maybe it could subscribe
-	// to an event that is fired when images are closed. That event handler
-	// could just call this method. (Note that this might be a case to not
-	// worry about. If the Probe is moved after the image close it should
-	// clean up unless there are no displays open at all).
-
 	private void clearWorkingVariables() {
 		position = null;
 		randomAccess = null;
@@ -155,6 +157,56 @@ public class ProbeTool extends BaseTool {
 		for (int i = 2; i < position.length; i++) {
 			position[i] = planePos[i - 2];
 		}
+	}
+	
+	private void subscribeToEvents() {
+
+		subscribers = new ArrayList<EventSubscriber<?>>();
+		
+		// it is possible that underlying data is changed in such a way that
+		// probe gets out of sync. force a resync
+		
+		EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DatasetUpdatedEvent>() {
+
+				@Override
+				public void onEvent(DatasetUpdatedEvent event) {
+					if (event.getObject() == dataset) {
+						System.out.println("Dataset update detected");
+						clearWorkingVariables();
+					}
+				}
+		};
+		subscribers.add(updateSubscriber);
+		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
+
+		EventSubscriber<DatasetDeletedEvent> deleteSubscriber =
+			new EventSubscriber<DatasetDeletedEvent>() {
+
+				@Override
+				public void onEvent(DatasetDeletedEvent event) {
+					if (event.getObject() == dataset) {
+						System.out.println("Dataset delete detected");
+						clearWorkingVariables();
+					}
+				}
+		};
+		subscribers.add(deleteSubscriber);
+		Events.subscribe(DatasetDeletedEvent.class, deleteSubscriber);
+
+		EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
+			new EventSubscriber<DatasetRestructuredEvent>() {
+
+				@Override
+				public void onEvent(DatasetRestructuredEvent event) {
+					if (event.getObject() == dataset) {
+						System.out.println("Dataset restructure detected");
+						clearWorkingVariables();
+					}
+				}
+		};
+		subscribers.add(restructureSubscriber);
+		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 	}
 
 }
