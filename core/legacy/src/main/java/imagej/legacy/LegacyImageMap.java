@@ -158,17 +158,6 @@ public class LegacyImageMap {
 
 	// TODO - think carefully about which events we need to forget mapping
 	private void subscribeToEvents() {
-		final EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
-			new EventSubscriber<DatasetTypeChangedEvent>() {
-
-				@Override
-				public void onEvent(DatasetTypeChangedEvent event) {
-					unregisterDataset(event.getObject());
-				}
-			};
-		subscribers.add(typeChangeSubscriber);
-		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
-
 		final EventSubscriber<DatasetDeletedEvent> deletionSubscriber =
 			new EventSubscriber<DatasetDeletedEvent>() {
 
