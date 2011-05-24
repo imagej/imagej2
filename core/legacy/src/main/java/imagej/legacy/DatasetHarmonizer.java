@@ -57,12 +57,14 @@ import net.imglib2.type.numeric.RealType;
  */
 public class DatasetHarmonizer {
 
-	private final MetadataTranslator metadataTranslator;
 	private final ImageTranslator imageTranslator;
+	private final MetadataTranslator metadataTranslator;
+	private final OverlayTranslator overlayTranslator;
 
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
 		metadataTranslator = new MetadataTranslator();
+		overlayTranslator = new OverlayTranslator();
 	}
 
 	/**
@@ -74,13 +76,14 @@ public class DatasetHarmonizer {
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int c = (int) ((cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex));
-		final int z = (int) ((zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex));
-		final int t = (int) ((tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex));
+		final int c = cIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(cIndex);
+		final int z = zIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(zIndex);
+		final int t = tIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(tIndex);
 		final ImagePlus newImp = imageTranslator.createLegacyImage(ds);
 		imp.setStack(newImp.getStack());
 		imp.setDimensions(c, z, t);
 		metadataTranslator.setImagePlusMetadata(ds, imp);
+		overlayTranslator.setImagePlusOverlays(ds, imp);
 	}
 
 	/**
@@ -137,6 +140,7 @@ public class DatasetHarmonizer {
 
 		// make sure metadata accurately updated
 		metadataTranslator.setDatasetMetadata(ds, imp);
+		overlayTranslator.setDatasetOverlays(ds, imp);
 
 		// TODO - any other cases?
 
@@ -165,14 +169,17 @@ public class DatasetHarmonizer {
 
 	/**
 	 * Sets the {@link Dataset}'s number of composite channels to display
-	 * simultaneously based on an input {@link ImagePlus}' makeup.
+	 * simultaneously based on an input {@link ImagePlus}'s makeup.
 	 */
 	private void setCompositeChannels(final Dataset ds, final ImagePlus imp) {
 		if ((imp instanceof CompositeImage) &&
-			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE)) ds
-			.setCompositeChannelCount(imp.getNChannels());
-		else if (imp.getType() == ImagePlus.COLOR_RGB) ds
-			.setCompositeChannelCount(3);
+			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
+		{
+			ds.setCompositeChannelCount(imp.getNChannels());
+		}
+		else if (imp.getType() == ImagePlus.COLOR_RGB) {
+			ds.setCompositeChannelCount(3);
+		}
 		else ds.setCompositeChannelCount(1);
 	}
 
@@ -185,15 +192,15 @@ public class DatasetHarmonizer {
 
 		final boolean different =
 			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
-				dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
-				dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp
-					.getNChannels()) ||
-				dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
-				dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp
-					.getNFrames());
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
+			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
 
-		if (!different) if (LegacyUtils.hasNonIJ1Axes(imgPlus)) throw new IllegalStateException(
-			"Dataset associated with ImagePlus has axes incompatible with IJ1");
+		if (!different && LegacyUtils.hasNonIJ1Axes(imgPlus)) {
+			throw new IllegalStateException(
+				"Dataset associated with ImagePlus has axes incompatible with IJ1");
+		}
 
 		return different;
 	}
@@ -221,13 +228,13 @@ public class DatasetHarmonizer {
 		final boolean signed = ds.isSigned();
 		switch (imp.getType()) {
 			case ImagePlus.GRAY8:
-				if ((bitsPerPixel == 8) && (integer) && (!signed)) return false;
+				if (bitsPerPixel == 8 && integer && !signed) return false;
 				break;
 			case ImagePlus.GRAY16:
-				if ((bitsPerPixel == 16) && (integer) && (!signed)) return false;
+				if (bitsPerPixel == 16 && integer && !signed) return false;
 				break;
 			case ImagePlus.GRAY32:
-				if ((bitsPerPixel == 32) && (!integer) && (signed)) return false;
+				if (bitsPerPixel == 32 && !integer && signed) return false;
 				break;
 		}
 		return true;
