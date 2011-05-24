@@ -98,11 +98,10 @@ public class LegacyPlugin implements ImageJPlugin {
 		final DatasetHarmonizer harmonizer = new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputs();
 		outputSet.clear();
-		harmonizeInputImagePluses(map, harmonizer);
+		prePluginHarmonization(map, harmonizer);
 		WindowManager.setTempCurrentImage(map.findImagePlus(activeDS));
 		IJ.runPlugIn(className, arg);
-		harmonizeCurrentImagePlus(map, harmonizer);
-		outputs = harmonizeOutputImagePluses(map, harmonizer);
+		outputs = postPluginHarmonization(map, harmonizer);
 		outputSet.clear();
 	}
 
@@ -116,7 +115,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- helpers --
 
-	private void harmonizeInputImagePluses(LegacyImageMap map,
+	private void prePluginHarmonization(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
 		// TODO - have LegacyImageMap track dataset events and keep a dirty bit.
@@ -135,7 +134,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 	}
 
-	private void harmonizeCurrentImagePlus(LegacyImageMap map,
+	private List<Dataset> postPluginHarmonization(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
 		// the IJ1 plugin may not have any outputs but just changes current
@@ -144,20 +143,17 @@ public class LegacyPlugin implements ImageJPlugin {
 		Dataset ds = map.findDataset(currImp);
 		if (ds != null)
 			harmonizer.updateDataset(ds, currImp);
-	}
-	
-	private List<Dataset> harmonizeOutputImagePluses(LegacyImageMap map,
-		DatasetHarmonizer harmonizer)
-	{
+
+		// also harmonize any outputs
+
 		List<Dataset> datasets = new ArrayList<Dataset>();
 
-		// also harmonize all outputs
 		for (ImagePlus imp : getOutputs()) {
-			Dataset ds = map.findDataset(imp);
+			ds = map.findDataset(imp);
 			if (ds == null)
 				ds = map.registerLegacyImage(imp);
 			else {
-				if (imp == IJ.getImage()) {
+				if (imp == currImp) {
 					// we harmonized this earlier
 				}
 				else
