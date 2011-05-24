@@ -34,36 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import net.imglib2.type.numeric.integer.IntType;
 
-
-/** changes an input Dataset's underlying imglib data to be of
- * 32-bit signed type. copies the original data as best it can.
- * it does not do any range clamping though this could be easily
- * added if desired. if no then narrowing conversions can have
- * unexpected values since imglib does the simplest translation
- * it can for efficiency reasons.
- *  
+/**
+ * Changes an input Dataset's underlying imglib data to be of 32-bit signed
+ * type.
+ * 
  * @author Barry DeZonia
- *
  */
-@Plugin(menu = {
+@Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "32-bit signed", weight = 10) })
-public class ChangeToINT32 implements ImageJPlugin {
+public class ChangeToINT32 extends TypeChanger implements ImageJPlugin {
 
-	@Parameter
-	Dataset input;
-	
 	@Override
 	public void run() {
-		TypeChanger.changeType(input, new IntType());
+		changeType(new IntType());
 	}
 
 }

@@ -125,7 +125,7 @@ public abstract class SwingMenuCreator<T> extends
 
 	private boolean isSelected(final ShadowMenu shadow) {
 		try {
-			return shadow.getPluginEntry().isSelected();
+			return shadow.getPluginEntry().createModule().isSelected();
 		}
 		catch (final PluginException exc) {
 			Log.warn(exc);
@@ -190,15 +190,15 @@ public abstract class SwingMenuCreator<T> extends
 		linkAction(final PluginEntry<?> entry, final JMenuItem menuItem)
 	{
 		menuItem.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				// TODO - find better solution for typing here
 				@SuppressWarnings("unchecked")
 				final PluginEntry<? extends RunnablePlugin> runnableEntry =
 					(PluginEntry<? extends RunnablePlugin>) entry;
+				final boolean toggleState = menuItem.isSelected();
 				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(runnableEntry);
+				pluginManager.run(runnableEntry, toggleState);
 			}
 		});
 	}
