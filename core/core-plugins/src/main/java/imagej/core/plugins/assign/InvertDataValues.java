@@ -71,7 +71,14 @@ public class InvertDataValues implements ImageJPlugin {
 	/** fills the output image from the input image */
 	@Override
 	public void run() {
-		calcValueRange();
+		// this is similar to IJ1
+		if (input.isInteger() && !input.isSigned() &&
+				input.getType().getBitsPerPixel() == 8) {
+			min = 0;
+			max = 255;
+		}
+		else
+			calcValueRange();
 		UnaryOperator op = new Invert(min, max);
 		UnaryTransformation transform = new UnaryTransformation(input, input, op);
 		transform.run();
