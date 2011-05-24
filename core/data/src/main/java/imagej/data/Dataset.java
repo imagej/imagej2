@@ -220,7 +220,6 @@ public class Dataset extends AbstractDataObject implements
 
 	// TODO - disable??? Highly expensive!!! Make RandomAccess ThreadLocal???
 	public double getDoubleValue(final long[] pos) {
-		Log.warn("Dataset::getDoubleValue() invoked. This is an expensive operation. Try to avoid using it.");
 		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
 		cursor.setPosition(pos);
 		final double value = cursor.get().getRealDouble();
