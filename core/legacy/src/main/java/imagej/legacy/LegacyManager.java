@@ -39,6 +39,7 @@ import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
 import imagej.legacy.plugin.LegacyPlugin;
+import imagej.util.Log;
 
 /**
  * Manager component for working with legacy ImageJ 1.x.
@@ -114,7 +115,12 @@ public final class LegacyManager implements ManagerComponent {
 	public void initialize() {
 		imageMap = new LegacyImageMap();
 		// initialize legacy ImageJ application
-		new ij.ImageJ(ij.ImageJ.NO_SHOW);
+		try {
+			new ij.ImageJ(ij.ImageJ.NO_SHOW);
+		}
+		catch (Throwable t) {
+			Log.warn("Failed to instantiate IJ1.", t);
+		}
 	}
 
 }
