@@ -60,10 +60,10 @@ public class GradientImage implements ImageJPlugin {
 	public static final String DEPTH64 = "64-bit";
 
 	@Parameter(min = "1")
-	private final int width = 512;
+	private int width = 512;
 
 	@Parameter(min = "1")
-	private final int height = 512;
+	private int height = 512;
 
 	@Parameter(callback = "bitDepthChanged", choices = { DEPTH1, DEPTH8,
 		DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
