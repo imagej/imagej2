@@ -39,7 +39,6 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
@@ -120,8 +119,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	private void harmonizeInputImagePluses(LegacyImageMap map,
 		DatasetHarmonizer harmonizer)
 	{
-		// TODO - have harmonizer track dataset events and keep a dirty bit. then only
-		//  harmonize thos datasets that have changed. 
+		// TODO - have LegacyImageMap track dataset events and keep a dirty bit.
+		// then only harmonize those datasets that have changed. 
 		ObjectManager objMgr = ImageJ.get(ObjectManager.class);
 		for (Dataset ds : objMgr.getObjects(Dataset.class)) {
 			// TODO : when we allow nonplanar images and other primitive types
@@ -157,8 +156,13 @@ public class LegacyPlugin implements ImageJPlugin {
 			Dataset ds = map.findDataset(imp);
 			if (ds == null)
 				ds = map.registerLegacyImage(imp);
-			else
-				harmonizer.updateDataset(ds, imp);
+			else {
+				if (imp == IJ.getImage()) {
+					// we harmonized this earlier
+				}
+				else
+					harmonizer.updateDataset(ds, imp);
+			}
 			datasets.add(ds);
 		}
 
