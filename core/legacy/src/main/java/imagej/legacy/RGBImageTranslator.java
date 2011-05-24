@@ -52,8 +52,8 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
  */
 public class RGBImageTranslator implements ImageTranslator {
 
-	private LegacyMetadataTranslator metadataTranslator =
-		new LegacyMetadataTranslator();
+	private MetadataTranslator metadataTranslator =
+		new MetadataTranslator();
 	
 	/**
 	 * Expects input {@link ImagePlus} to be of type {@link ImagePlus#COLOR_RGB}
