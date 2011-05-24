@@ -167,20 +167,30 @@ public class LegacyPlugin implements ImageJPlugin {
 	
 	private boolean isIJ1Compatible(Dataset ds) {
 		// for now only allow Datasets that can be represented in a planar
-		// fashion made up of unsigned bytes, unsigned shorts, and float32s
+		// fashion made up of sign compat bytes, shorts, ints, and float32s
+		// TODO - relax these constraints later
 
 		final Img<? extends RealType<?>> img = ds.getImgPlus().getImg();
+		
 		if (img instanceof PlanarAccess) {
+			
 			int bitsPerPixel = ds.getType().getBitsPerPixel();
 			boolean signed = ds.isSigned();
 			boolean integer = ds.isInteger();
 			boolean color = ds.isRGBMerged();
-			long channels = (ds.getAxisIndex(Axes.CHANNEL) == -1) ? 1 :
-				ds.getImgPlus().dimension(ds.getAxisIndex(Axes.CHANNEL)); 
-			
-			if (signed && !integer && bitsPerPixel == 32) return true;
+			int cAxis = ds.getAxisIndex(Axes.CHANNEL);
+			long channels = (cAxis == -1) ? 1 : ds.getImgPlus().dimension(cAxis); 
+
+			// ByteProcessor compatible
 			if (!signed && integer && bitsPerPixel == 8) return true;
+
+			// ShortProcessor compatible
 			if (!signed && integer && bitsPerPixel == 16) return true;
+
+			// FloatProcessor compatible
+			if (signed && !integer && bitsPerPixel == 32) return true;
+
+			// ColorProcessor compatible
 			if (color && integer && bitsPerPixel == 8 && channels == 3) return true;
 		}
 		return false;
