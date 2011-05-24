@@ -172,7 +172,6 @@ public class ProbeTool extends BaseTool {
 				@Override
 				public void onEvent(DatasetUpdatedEvent event) {
 					if (event.getObject() == dataset) {
-						System.out.println("Dataset update detected");
 						clearWorkingVariables();
 					}
 				}
@@ -186,7 +185,6 @@ public class ProbeTool extends BaseTool {
 				@Override
 				public void onEvent(DatasetDeletedEvent event) {
 					if (event.getObject() == dataset) {
-						System.out.println("Dataset delete detected");
 						clearWorkingVariables();
 					}
 				}
@@ -200,7 +198,6 @@ public class ProbeTool extends BaseTool {
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
 					if (event.getObject() == dataset) {
-						System.out.println("Dataset restructure detected");
 						clearWorkingVariables();
 					}
 				}
