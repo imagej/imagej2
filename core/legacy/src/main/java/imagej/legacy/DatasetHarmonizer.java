@@ -48,26 +48,27 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  * Synchronizes data between a {@link Dataset} and a paired {@link ImagePlus}.
- * After harmonization data, and metadata to as closely as possible given
- * differences in pixel types, and data organization. When possible uses data
- * references to keep data in sync.
+ * After harmonization, data and metadata will match as closely as possible
+ * given differences in pixel types, and data organization. When possible, the
+ * harmonizer uses data by references to avoid additional memory overhead.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public class DatasetHarmonizer {
 
 	private final MetadataTranslator metadataTranslator;
 	private final ImageTranslator imageTranslator;
 
-	/** default constructor */
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
 		metadataTranslator = new MetadataTranslator();
 	}
 
 	/**
-	 * Changes the data within an ImagePlus to match data in a Dataset. Assumes
-	 * Dataset has planar primitive access in an IJ1 compatible format.
+	 * Changes the data within an {@link ImagePlus} to match data in a
+	 * {@link Dataset}. Assumes Dataset has planar primitive access in an IJ1
+	 * compatible format.
 	 */
 	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
@@ -82,7 +83,10 @@ public class DatasetHarmonizer {
 		metadataTranslator.setImagePlusMetadata(ds, imp);
 	}
 
-	/** Changes the data within a Dataset to match data in an ImagePlus. */
+	/**
+	 * Changes the data within a {@link Dataset} to match data in an
+	 * {@link ImagePlus}.
+	 */
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 
 		// is our dataset not sharing planes with the ImagePlus by reference?
@@ -144,21 +148,24 @@ public class DatasetHarmonizer {
 
 	// -- private helpers --
 
-	/** Fills a nonplanar Dataset's values with data from an ImagePlus. */
+	/**
+	 * Fills a non-planar {@link Dataset}'s values with data from an
+	 * {@link ImagePlus}.
+	 */
 	private void rebuildNonplanarData(final Dataset ds, final ImagePlus imp) {
 		final Dataset tmpDs = imageTranslator.createDataset(imp);
 		ds.copyDataFrom(tmpDs);
 	}
 
-	/** Fills a Dataset's values with data from an ImagePlus. */
+	/** Fills a {@link Dataset}'s values with data from an {@link ImagePlus}. */
 	private void rebuildData(final Dataset ds, final ImagePlus imp) {
 		final Dataset tmpDs = imageTranslator.createDataset(imp);
 		ds.setImgPlus(tmpDs.getImgPlus());
 	}
 
 	/**
-	 * Sets the Dataset's number of composite channels to display simultaneously
-	 * based on an input ImagePlus' makeup.
+	 * Sets the {@link Dataset}'s number of composite channels to display
+	 * simultaneously based on an input {@link ImagePlus}' makeup.
 	 */
 	private void setCompositeChannels(final Dataset ds, final ImagePlus imp) {
 		if ((imp instanceof CompositeImage) &&
@@ -170,8 +177,8 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Determines whether a Dataset and an ImagePlus have different
-	 * dimensionality.
+	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
+	 * different dimensionality.
 	 */
 	private boolean dimensionsDifferent(final Dataset ds, final ImagePlus imp) {
 		final ImgPlus<?> imgPlus = ds.getImgPlus();
@@ -204,8 +211,8 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Returns true if a planar Dataset and an ImagePlus have different primitive
-	 * array backing.
+	 * Returns true if a planar {@link Dataset} and an {@link ImagePlus} have
+	 * different primitive array backing.
 	 */
 	private boolean planeTypesDifferent(final Dataset ds, final ImagePlus imp) {
 		final RealType<?> dsType = ds.getType();
@@ -227,8 +234,8 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Assigns actual pixel values of Dataset. Needed for those types that do not
-	 * directly map from IJ1 types.
+	 * Assigns actual pixel values of {@link Dataset}. Needed for those types that
+	 * do not directly map from IJ1 types.
 	 */
 	private void assignDatasetValues(final Dataset ds, final ImagePlus imp) {
 		final int x = imp.getWidth();
@@ -264,8 +271,8 @@ public class DatasetHarmonizer {
 	}
 
 	/**
-	 * Assigns the plane references of a planar Dataset to match the plane
-	 * references of a given ImagePlus.
+	 * Assigns the plane references of a planar {@link Dataset} to match the plane
+	 * references of a given {@link ImagePlus}.
 	 */
 	private void assignDatasetPlaneReferences(final Dataset ds,
 		final ImagePlus imp)

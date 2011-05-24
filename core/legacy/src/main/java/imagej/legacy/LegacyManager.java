@@ -105,7 +105,7 @@ public final class LegacyManager implements ManagerComponent {
 
 	public void legacyImageChanged(final ImagePlus imp) {
 		// record resultant ImagePlus as a legacy plugin output
-		LegacyPlugin.getOutputs().add(imp);
+		LegacyPlugin.getOutputImps().add(imp);
 	}
 
 	// -- ManagerComponent methods --
