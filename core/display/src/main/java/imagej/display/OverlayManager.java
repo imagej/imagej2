@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.DataObject;
+import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.object.ObjectManager;
 
@@ -68,6 +69,46 @@ public final class OverlayManager implements ManagerComponent {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		if (display != null) {
 			for (final DisplayView view : display.getViews()) {
+				final DataObject dataObject = view.getDataObject();
+				if (!(dataObject instanceof Overlay)) continue;
+				final Overlay overlay = (Overlay) dataObject;
+				overlays.add(overlay);
+			}
+		}
+		return overlays;
+	}
+
+	/**
+	 * Gets a list of {@link Overlay}s associated with the given {@link Dataset}.
+	 * An {@link Overlay} is considered "associated" with a {@link Dataset} when
+	 * it is being displayed in the same {@link Display} as the {@link Dataset}.
+	 * <p>
+	 * Note that this method is essentially a big HACK to handle legacy IJ1
+	 * support. The longterm solution will be to create one ImagePlus per display,
+	 * rather than one per dataset, with orphan datasets also getting one
+	 * ImagePlus in the map. Then we can assign the ImagePlus's ROI according to
+	 * the overlays present in only its associated display.
+	 * </p>
+	 */
+	public List<Overlay> getOverlays(final Dataset dataset) {
+		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
+		final List<Display> displays = objectManager.getObjects(Display.class);
+		for (final Display display : displays) {
+			// check whether dataset is present in this display
+			boolean relevant = false;
+			final List<DisplayView> views = display.getViews();
+			for (final DisplayView view : views) {
+				final DataObject dataObject = view.getDataObject();
+				if (dataObject == dataset) {
+					relevant = true;
+					break;
+				}
+			}
+			if (!relevant) continue;
+			
+			// add this display's overlays to the list
+			for (final DisplayView view : views) {
 				final DataObject dataObject = view.getDataObject();
 				if (!(dataObject instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) dataObject;
