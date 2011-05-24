@@ -116,11 +116,29 @@ public class PluginManager implements ManagerComponent {
 		return null; // no match
 	}
 
+	/** Executes the plugin represented by the given class, in its own thread. */
+	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
+		run(getPluginEntry(pluginClass));
+	}
+
 	/**
 	 * Executes the plugin represented by the given {@link PluginEntry}, in its
 	 * own thread.
 	 */
 	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry) {
+		run(entry, false);
+	}
+
+	/**
+	 * Executes the plugin represented by the given {@link PluginEntry}, in its
+	 * own thread. For toggle plugins, the state is assigned to the given value.
+	 * 
+	 * @param entry The {@link PluginEntry} describing the plugin to execute.
+	 * @param state The toggle state to assign to the plugin, if applicable.
+	 */
+	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry,
+		final boolean state)
+	{
 		// TODO - Implement a better threading mechanism for launching plugins.
 		// Perhaps a ThreadManager so that the UI can query currently
 		// running plugins and so forth?
@@ -128,16 +146,11 @@ public class PluginManager implements ManagerComponent {
 
 			@Override
 			public void run() {
-				new PluginRunner<T>(entry).run();
+				final PluginRunner<T> runner = new PluginRunner<T>(entry);
+				runner.getModule().setSelected(state);
+				runner.run();
 			}
 		}, "PluginRunner-" + entry.getClassName()).start();
-	}
-
-	/**
-	 * Executes the plugin represented by the given class, in its own thread.
-	 */
-	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
-		run(getPluginEntry(pluginClass));
 	}
 
 	// -- ManagerComponent methods --

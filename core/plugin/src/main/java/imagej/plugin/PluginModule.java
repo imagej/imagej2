@@ -52,6 +52,9 @@ import java.util.Map;
  */
 public class PluginModule<T extends BasePlugin> implements Module {
 
+	/** The plugin entry describing this module. */
+	private final PluginEntry<T> entry;
+
 	/** The plugin instance handled by this module. */
 	private final T plugin;
 
@@ -60,6 +63,7 @@ public class PluginModule<T extends BasePlugin> implements Module {
 
 	/** Creates a plugin module for a new instance of the given plugin entry. */
 	public PluginModule(final PluginEntry<T> entry) throws PluginException {
+		this.entry = entry;
 		plugin = entry.createInstance();
 		info = new PluginModuleInfo<T>(entry, plugin);
 	}
@@ -67,6 +71,30 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	/** Gets the plugin instance handled by this module. */
 	public T getPlugin() {
 		return plugin;
+	}
+
+	/**
+	 * Gets the current toggle state of the plugin, if any.
+	 * 
+	 * @return The toggle state, or false if not a toggle plugin.
+	 */
+	public boolean isSelected() {
+		final String tParam = entry.getToggleParameter();
+		if (tParam == null || tParam.isEmpty()) return false; // not a toggle plugin
+		final Object value = getInput(tParam);
+		if (!(value instanceof Boolean)) return false; // invalid parameter value
+		return (Boolean) value;
+	}
+
+	/**
+	 * Sets the current toggle state of the plugin. For non-toggle plugins, does
+	 * nothing.
+	 */
+	public void setSelected(final boolean selected) {
+		final String tParam = entry.getToggleParameter();
+		if (tParam == null || tParam.isEmpty()) return; // not a toggle plugin
+		setInput(tParam, selected);
+		info.getInput(tParam).setResolved(true);
 	}
 
 	/**

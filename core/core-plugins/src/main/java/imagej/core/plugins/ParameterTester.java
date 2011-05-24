@@ -53,7 +53,7 @@ import java.math.BigInteger;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins > Parameter Tester")
+@Plugin(toggleParameter = "selected", menuPath = "Plugins > Parameter Tester")
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "boolean")
@@ -123,6 +123,9 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		+ "displaying the given message in the ImageJ status bar.", columns = 20)
 	private final String message = "Type a status message here.";
 
+	@Parameter
+	private boolean selected = true;
+
 	@Override
 	public void run() {
 		Log.info("ParameterTester results:");
@@ -146,6 +149,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("\tx = " + x);
 		Log.info("\t2x = " + twoX);
 		Log.info("\tmessage = " + message);
+		Log.info("\tselected = " + selected);
 	}
 
 	private int previews = 0;

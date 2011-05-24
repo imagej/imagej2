@@ -53,26 +53,28 @@ import imagej.util.Log;
  */
 public class PluginRunner<T extends RunnablePlugin> {
 
-	private final PluginEntry<T> entry;
+	private PluginModule<T> module;
 
 	public PluginRunner(final PluginEntry<T> entry) {
-		this.entry = entry;
-	}
-
-	public T run() {
-		final PluginModule<T> module;
 		try {
 			module = entry.createModule();
 		}
 		catch (final PluginException e) {
 			Log.error(e);
-			return null;
 		}
+	}
+
+	public PluginModule<T> getModule() {
+		return module;
+	}
+
+	public T run() {
+		if (module == null) return null;
 		final T plugin = module.getPlugin();
 
 		// execute plugin
 		Events.publish(new PluginStartedEvent(module));
-		final boolean ok = preProcess(module);
+		final boolean ok = preProcess();
 		if (!ok) {
 			// execution canceled
 			Events.publish(new PluginCanceledEvent(module));
@@ -80,13 +82,13 @@ public class PluginRunner<T extends RunnablePlugin> {
 		}
 		plugin.run();
 		Events.publish(new PluginRunEvent(module));
-		postProcess(module);
+		postProcess();
 		Events.publish(new PluginFinishedEvent(module));
 
 		return plugin;
 	}
 
-	public boolean preProcess(final PluginModule<T> module) {
+	public boolean preProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPreprocessor> p :
 			pluginManager.getPlugins(PluginPreprocessor.class))
@@ -104,7 +106,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 		return true;
 	}
 
-	public void postProcess(final PluginModule<T> module) {
+	public void postProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPostprocessor> p :
 			pluginManager.getPlugins(PluginPostprocessor.class))

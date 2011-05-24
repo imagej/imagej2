@@ -150,19 +150,6 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 		return factory.createModule(this);
 	}
 
-	/**
-	 * Gets the current toggle state of the plugin. This operation requires the
-	 * plugin to be instantiated, and is potentially expensive.
-	 */
-	public boolean isSelected() throws PluginException {
-		final String tParam = getToggleParameter();
-		if (tParam == null || tParam.isEmpty()) return false;
-		final PluginModule<?> module = createModule();
-		final Object value = module.getInput(tParam);
-		if (!(value instanceof Boolean)) return false;
-		return (Boolean) value;
-	}
-
 	// -- Object methods --
 
 	@Override

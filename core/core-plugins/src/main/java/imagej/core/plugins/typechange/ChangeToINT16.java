@@ -34,33 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.typechange;
 
-import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import net.imglib2.type.numeric.integer.ShortType;
 
 /**
  * Changes an input Dataset's underlying imglib data to be of 16-bit signed
- * type. copies the original data as best it can. it does not do any range
- * clamping though this could be easily added if desired. if no then narrowing
- * conversions can have unexpected values since imglib does the simplest
- * translation it can for efficiency reasons.
+ * type.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+@Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
+	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "16-bit signed", weight = 9) })
-public class ChangeToINT16 implements ImageJPlugin {
-
-	@Parameter
-	Dataset input;
+public class ChangeToINT16 extends TypeChanger implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		TypeChanger.changeType(input, new ShortType());
+		changeType(new ShortType());
 	}
 
 }

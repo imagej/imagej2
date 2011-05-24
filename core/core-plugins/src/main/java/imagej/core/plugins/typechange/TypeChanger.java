@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
+import imagej.plugin.Parameter;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -45,8 +46,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Utility methods for transforming {@link Dataset}s and {@link ImgPlus}s
- * between types.
+ * Transforms a {@link Dataset} (and linked {@link ImgPlus}) between types.
  * <p>
  * Note that ImgLib does not do any range clamping while moving between image
  * types. So translations may not always be nice (i.e. narrowing cases) but best
@@ -56,10 +56,18 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public final class TypeChanger {
+public class TypeChanger {
 
-	private TypeChanger() {
-		// prevent instantiation of utility class
+	@Parameter
+	protected boolean selected;
+
+	@Parameter
+	protected Dataset input;
+
+	protected <T extends RealType<T> & NativeType<T>> void changeType(
+		final T newType)
+	{
+		changeType(input, newType);
 	}
 
 	/**
@@ -72,8 +80,8 @@ public final class TypeChanger {
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final Class<?> currTypeClass = dataset.getType().getClass();
 		final Class<?> newTypeClass = newType.getClass();
-		if (currTypeClass != newTypeClass)
-			dataset.setImgPlus(copyToType(inputImg, newType));
+		if (currTypeClass != newTypeClass) dataset.setImgPlus(copyToType(inputImg,
+			newType));
 	}
 
 	/**
