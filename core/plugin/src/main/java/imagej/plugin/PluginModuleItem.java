@@ -34,9 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import java.lang.reflect.Field;
-
 import imagej.module.ModuleItem;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * TODO
@@ -52,6 +53,9 @@ public class PluginModuleItem implements ModuleItem {
 	public PluginModuleItem(final Field field, final Object defaultValue) {
 		this.field = field;
 		this.defaultValue = defaultValue;
+
+		// final fields cannot change, so are marked resolved by default
+		resolved = Modifier.isFinal(field.getModifiers());
 	}
 
 	public Field getField() {
