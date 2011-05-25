@@ -132,13 +132,12 @@ public class LegacyPlugin implements ImageJPlugin {
 		// then only harmonize those datasets that have changed.
 		final ObjectManager objMgr = ImageJ.get(ObjectManager.class);
 		for (final Dataset ds : objMgr.getObjects(Dataset.class)) {
-			// TODO : when we allow nonplanar images and other primitive types
-			// to go over to IJ1 world this will need updating
-			if (isIJ1Compatible(ds)) {
-				final ImagePlus imp = map.findImagePlus(ds);
-				if (imp == null) map.registerDataset(ds);
-				else harmonizer.updateLegacyImage(ds, imp);
-			}
+			ImagePlus imp = map.findImagePlus(ds);
+			if (imp == null)
+				imp = map.registerDataset(ds);
+			else
+				harmonizer.updateLegacyImage(ds, imp);
+			harmonizer.registerType(imp);
 		}
 	}
 
@@ -168,38 +167,6 @@ public class LegacyPlugin implements ImageJPlugin {
 		}
 
 		return datasets;
-	}
-
-	private boolean isIJ1Compatible(final Dataset ds) {
-		// for now only allow Datasets that can be represented in a planar
-		// fashion made up of sign compat bytes, shorts, ints, and float32s
-		// TODO - relax these constraints later
-
-		final Img<? extends RealType<?>> img = ds.getImgPlus().getImg();
-
-		if (img instanceof PlanarAccess) {
-
-			final int bitsPerPixel = ds.getType().getBitsPerPixel();
-			final boolean signed = ds.isSigned();
-			final boolean integer = ds.isInteger();
-			final boolean color = ds.isRGBMerged();
-			final int cAxis = ds.getAxisIndex(Axes.CHANNEL);
-			final long channels =
-				(cAxis == -1) ? 1 : ds.getImgPlus().dimension(cAxis);
-
-			// ByteProcessor compatible
-			if (!signed && integer && bitsPerPixel == 8) return true;
-
-			// ShortProcessor compatible
-			if (!signed && integer && bitsPerPixel == 16) return true;
-
-			// FloatProcessor compatible
-			if (signed && !integer && bitsPerPixel == 32) return true;
-
-			// ColorProcessor compatible
-			if (color && integer && bitsPerPixel == 8 && channels == 3) return true;
-		}
-		return false;
 	}
 
 }
