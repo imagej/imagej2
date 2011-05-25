@@ -36,15 +36,13 @@ package imagej.legacy;
 
 import ij.CompositeImage;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ImageProcessor;
 import imagej.data.Dataset;
-import imagej.util.Index;
-import net.imglib2.RandomAccess;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Synchronizes data between a {@link Dataset} and a paired {@link ImagePlus}.
@@ -57,115 +55,73 @@ import net.imglib2.type.numeric.RealType;
  */
 public class DatasetHarmonizer {
 
-	private final ImageTranslator imageTranslator;
-	private final MetadataTranslator metadataTranslator;
+	private ImageTranslator imageTranslator;
 	private final OverlayTranslator overlayTranslator;
+	private Map<ImagePlus,Integer> typeMap = new HashMap<ImagePlus,Integer>();
 
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
-		metadataTranslator = new MetadataTranslator();
 		overlayTranslator = new OverlayTranslator();
 	}
 
+	public void registerType(ImagePlus imp) {
+		typeMap.put(imp, imp.getType());
+	}
+	
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
 	 * {@link Dataset}. Assumes Dataset has planar primitive access in an IJ1
 	 * compatible format.
 	 */
-	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int c = cIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(cIndex);
-		final int z = zIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(zIndex);
-		final int t = tIndex < 0 ? 1 : (int) ds.getImgPlus().dimension(tIndex);
-		final ImagePlus newImp = imageTranslator.createLegacyImage(ds);
-		imp.setStack(newImp.getStack());
-		imp.setDimensions(c, z, t);
-		metadataTranslator.setImagePlusMetadata(ds, imp);
+	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+		if ( ! LegacyUtils.imagePlusIsNearestType(ds,imp) ) {
+			ImagePlus newImp = imageTranslator.createLegacyImage(ds);
+			imp.setStack(newImp.getStack());
+		}
+		else {
+			if (dimensionsDifferent(ds, imp)) {
+				ImagePlus newImp = imageTranslator.createLegacyImage(ds);
+				imp.setStack(newImp.getStack());
+			}
+			else if (imp.getType() == ImagePlus.COLOR_RGB)
+				LegacyUtils.setImagePlusColorData(ds, imp);
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds))
+				LegacyUtils.setImagePlusPlanes(ds, imp);
+			else
+				LegacyUtils.setImagePlusGrayData(ds, imp);
+		}
+		LegacyUtils.setImagePlusMetadata(ds, imp);
 		overlayTranslator.setImagePlusOverlays(ds, imp);
 	}
-
+	
 	/**
 	 * Changes the data within a {@link Dataset} to match data in an
 	 * {@link ImagePlus}.
 	 */
-	public void updateDataset(final Dataset ds, final ImagePlus imp) {
-
-		// is our dataset not sharing planes with the ImagePlus by reference?
-		// if so assume any change possible and thus rebuild all
-		if (!(ds.getImgPlus().getImg() instanceof PlanarAccess)) {
-			rebuildNonplanarData(ds, imp);
-			// NB - as RGBImageTranslator defined RGBMerged doesn't need to be planar
+	public void updateDataset(Dataset ds, ImagePlus imp) {
+		// did type of ImagePlus change?
+		if (imp.getType() != typeMap.get(imp)) {
+			Dataset tmp = imageTranslator.createDataset(imp);
+			ds.setImgPlus(tmp.getImgPlus());
 			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
-			setCompositeChannels(ds, imp);
-			return;
 		}
-
-		// color data is not shared by reference
-		// any change to plane data must somehow be copied back
-		// the easiest way to copy back is via new creation
-		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			rebuildData(ds, imp);
-			ds.setRGBMerged(true);
-			setCompositeChannels(ds, imp);
-			return;
+		else { // ImagePlus type unchanged
+			if (dimensionsDifferent(ds, imp))
+				LegacyUtils.reshapeDataset(ds, imp);
+			if (imp.getType() == ImagePlus.COLOR_RGB)
+				LegacyUtils.setDatasetColorData(ds, imp);
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds))
+				LegacyUtils.setDatasetPlanes(ds, imp);
+			else
+				LegacyUtils.setDatasetGrayData(ds, imp);
 		}
-
-		// if here we know its not a RGB imp. If we were a color Dataset
-		// then we no longer are.
-		ds.setRGBMerged(false);
-
-		// set num compos channels to display at once based on makeup of ImagePlus
+		LegacyUtils.setDatasetMetadata(ds, imp);
 		setCompositeChannels(ds, imp);
-
-		// was a slice added or deleted?
-		if (dimensionsDifferent(ds, imp)) {
-			rebuildData(ds, imp);
-			return;
-		}
-
-		// can I not assign plane references?
-		if (planeTypesDifferent(ds, imp)) {
-			assignDatasetValues(ds, imp);
-		}
-		else {
-			// if here we know we have planar backing of right type.
-			// The plane references could have changed in some way:
-			// - setPixels, setProcessor, stack rearrangement, etc.
-			// its easier to always reassign them rather than
-			// calculate exactly what to do
-			assignDatasetPlaneReferences(ds, imp);
-		}
-
-		// make sure metadata accurately updated
-		metadataTranslator.setDatasetMetadata(ds, imp);
 		overlayTranslator.setDatasetOverlays(ds, imp);
-
-		// TODO - any other cases?
-
-		// Since we are storing planes by reference we're done
-
-		// assume plugin changed ImagePlus in some way and report Dataset changed
-		ds.update();
+		// NB - make it the lower level methods' job to call ds.update()
 	}
-
+	
 	// -- private helpers --
-
-	/**
-	 * Fills a non-planar {@link Dataset}'s values with data from an
-	 * {@link ImagePlus}.
-	 */
-	private void rebuildNonplanarData(final Dataset ds, final ImagePlus imp) {
-		final Dataset tmpDs = imageTranslator.createDataset(imp);
-		ds.copyDataFrom(tmpDs);
-	}
-
-	/** Fills a {@link Dataset}'s values with data from an {@link ImagePlus}. */
-	private void rebuildData(final Dataset ds, final ImagePlus imp) {
-		final Dataset tmpDs = imageTranslator.createDataset(imp);
-		ds.setImgPlus(tmpDs.getImgPlus());
-	}
 
 	/**
 	 * Sets the {@link Dataset}'s number of composite channels to display
@@ -197,11 +153,11 @@ public class DatasetHarmonizer {
 			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
 			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
 
-		if (!different && LegacyUtils.hasNonIJ1Axes(imgPlus)) {
-			throw new IllegalStateException(
-				"Dataset associated with ImagePlus has axes incompatible with IJ1");
-		}
-
+		if ( ! different )
+			if ( LegacyUtils.hasNonIJ1Axes(ds.getAxes()) )
+				throw new IllegalStateException(
+					"Dataset associated with ImagePlus has axes incompatible with IJ1");
+		
 		return different;
 	}
 
@@ -215,107 +171,6 @@ public class DatasetHarmonizer {
 		if (axis >= 0) return imgPlus.dimension(axis) != value;
 		// axis < 0 : not present in imgPlus
 		return value != 1;
-	}
-
-	/**
-	 * Returns true if a planar {@link Dataset} and an {@link ImagePlus} have
-	 * different primitive array backing.
-	 */
-	private boolean planeTypesDifferent(final Dataset ds, final ImagePlus imp) {
-		final RealType<?> dsType = ds.getType();
-		final int bitsPerPixel = dsType.getBitsPerPixel();
-		final boolean integer = ds.isInteger();
-		final boolean signed = ds.isSigned();
-		switch (imp.getType()) {
-			case ImagePlus.GRAY8:
-				if (bitsPerPixel == 8 && integer && !signed) return false;
-				break;
-			case ImagePlus.GRAY16:
-				if (bitsPerPixel == 16 && integer && !signed) return false;
-				break;
-			case ImagePlus.GRAY32:
-				if (bitsPerPixel == 32 && !integer && signed) return false;
-				break;
-		}
-		return true;
-	}
-
-	/**
-	 * Assigns actual pixel values of {@link Dataset}. Needed for those types that
-	 * do not directly map from IJ1 types.
-	 */
-	private void assignDatasetValues(final Dataset ds, final ImagePlus imp) {
-		final int x = imp.getWidth();
-		final int y = imp.getHeight();
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int z = (int) ((zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex));
-		final int c = (int) ((cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex));
-		final int t = (int) ((tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex));
-		int imagejPlaneNumber = 1;
-		final RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(imagejPlaneNumber++);
-					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, 1);
-						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, 0);
-							final float value = proc.getf(xi, yi);
-							accessor.get().setReal(value);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Assigns the plane references of a planar {@link Dataset} to match the plane
-	 * references of a given {@link ImagePlus}.
-	 */
-	private void assignDatasetPlaneReferences(final Dataset ds,
-		final ImagePlus imp)
-	{
-		final ImageStack stack = imp.getStack();
-		if (stack == null) { // just a 2d image
-			final Object pixels = imp.getProcessor().getPixels();
-			ds.setPlane(0, pixels);
-			return;
-		}
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int z = (int) ((zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex));
-		final int c = (int) ((cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex));
-		final int t = (int) ((tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex));
-		final long[] planeDims = new long[ds.getImgPlus().numDimensions() - 2];
-		if (zIndex >= 0) planeDims[zIndex - 2] = z;
-		if (cIndex >= 0) planeDims[cIndex - 2] = c;
-		if (tIndex >= 0) planeDims[tIndex - 2] = t;
-		final long[] planePos = new long[planeDims.length];
-		int imagejPlaneNumber = 1;
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) planePos[tIndex - 2] = ti;
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) planePos[zIndex - 2] = zi;
-				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) planePos[cIndex - 2] = ci;
-					final long imglibPlaneNumber =
-						Index.indexNDto1D(planeDims, planePos);
-					final Object plane = stack.getPixels(imagejPlaneNumber);
-					ds.setPlane((int) imglibPlaneNumber, plane);
-					imagejPlaneNumber++;
-				}
-			}
-		}
 	}
 
 }

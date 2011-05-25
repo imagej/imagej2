@@ -38,7 +38,6 @@ import ij.ImagePlus;
 
 import imagej.data.Dataset;
 import imagej.data.event.DatasetDeletedEvent;
-import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
