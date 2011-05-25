@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin;
 
 import imagej.module.ModuleItem;
+import imagej.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -55,7 +56,11 @@ public class PluginModuleItem implements ModuleItem {
 		this.defaultValue = defaultValue;
 
 		// final fields cannot change, so are marked resolved by default
-		resolved = Modifier.isFinal(field.getModifiers());
+		boolean isFinal = Modifier.isFinal(field.getModifiers());
+		if (isFinal) {
+			Log.warn("Ignoring final parameter: " + getName());
+			resolved = true;
+		}
 	}
 
 	public Field getField() {
