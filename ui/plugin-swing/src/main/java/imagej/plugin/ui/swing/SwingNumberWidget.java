@@ -37,35 +37,144 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.NumberWidget;
 import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.WidgetStyle;
-import imagej.util.Log;
+
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
+import javax.swing.JComponent;
+import javax.swing.JScrollBar;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Swing implementation of number chooser widget.
  * 
  * @author Curtis Rueden
  */
-public abstract class SwingNumberWidget extends SwingInputWidget
-	implements NumberWidget
+public class SwingNumberWidget extends SwingInputWidget implements
+	NumberWidget, AdjustmentListener, ChangeListener
 {
 
-	public SwingNumberWidget(final ParamModel model) {
-		super(model);
-	}
+	private static final int PREFERRED_WIDTH = 250;
 
-	public static SwingNumberWidget create(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
+	private JScrollBar scrollBar;
+	private JSlider slider;
+	private final JSpinner spinner;
+
+	public SwingNumberWidget(final ParamModel model, final Number min,
+		final Number max, final Number stepSize)
 	{
+		super(model);
+
+		// add optional widgets, if specified
 		final WidgetStyle style = model.getStyle();
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
-			return new SwingNumberScrollBarWidget(model, min, max, stepSize);
+			scrollBar =
+				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1, min
+					.intValue(), max.intValue() + 1);
+			scrollBar.setUnitIncrement(stepSize.intValue());
+			setPreferredWidth(scrollBar);
+			setToolTip(scrollBar);
+			add(scrollBar, BorderLayout.CENTER);
+			scrollBar.addAdjustmentListener(this);
 		}
-		if (style == WidgetStyle.NUMBER_SLIDER) {
-			return new SwingNumberSliderWidget(model, min, max, stepSize);
+		else if (style == WidgetStyle.NUMBER_SLIDER) {
+			slider = new JSlider(min.intValue(), max.intValue(), min.intValue());
+			slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
+			slider.setMinorTickSpacing(stepSize.intValue());
+			slider.setPaintLabels(true);
+			slider.setPaintTicks(true);
+			setPreferredWidth(slider);
+			setToolTip(slider);
+			add(slider, BorderLayout.CENTER);
+			slider.addChangeListener(this);
 		}
-		if (style != WidgetStyle.DEFAULT && style != WidgetStyle.NUMBER_SPINNER) {
-			Log.warn("Ignoring unsupported widget style: " + style);
+
+		final SpinnerNumberModel spinnerModel =
+			new SpinnerNumberModel(min, (Comparable<?>) min, (Comparable<?>) max,
+				stepSize);
+		spinner = new JSpinner(spinnerModel);
+		setToolTip(spinner);
+		add(spinner, BorderLayout.EAST);
+		limitWidth(250);
+		spinner.addChangeListener(this);
+
+		refresh();
+	}
+
+	// -- NumberWidget methods --
+
+	@Override
+	public Number getValue() {
+		return (Number) spinner.getValue();
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refresh() {
+		final Object value = model.getValue();
+		if (value != null) spinner.setValue(value);
+	}
+
+	// -- AdjustmentListener methods --
+
+	@Override
+	public void adjustmentValueChanged(final AdjustmentEvent e) {
+		// sync spinner with scroll bar value
+		final int value = scrollBar.getValue();
+		spinner.setValue(value);
+		model.setValue(spinner.getValue());
+	}
+
+	// -- ChangeListener methods --
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		final Object source = e.getSource();
+		if (source == slider) {
+			// sync spinner with slider value
+			final int value = slider.getValue();
+			spinner.setValue(value);
 		}
-		return new SwingNumberSpinnerWidget(model, min, max, stepSize);
+		else if (source == spinner) {
+			// sync slider and/or scroll bar with spinner value
+			if (slider != null) slider.setValue(getValue().intValue());
+			if (scrollBar != null) scrollBar.setValue(getValue().intValue());
+		}
+		model.setValue(spinner.getValue());
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Limit component width to a certain maximum. This is a HACK to work around
+	 * an issue with Double-based spinners that attempt to size themselves very
+	 * large (presumably to match Double.MAX_VALUE).
+	 */
+	private void limitWidth(final int maxWidth) {
+		final Dimension spinnerSize = spinner.getPreferredSize();
+		if (spinnerSize.width > maxWidth) {
+			spinnerSize.width = maxWidth;
+			spinner.setPreferredSize(spinnerSize);
+			spinner.setMaximumSize(spinnerSize);
+			final Dimension widgetSize = getPreferredSize();
+			widgetSize.width = spinnerSize.width;
+			setPreferredSize(widgetSize);
+			setMaximumSize(widgetSize);
+		}
+	}
+
+	private void setPreferredWidth(final JComponent c) {
+		final Dimension prefSize = c.getPreferredSize();
+		prefSize.width = PREFERRED_WIDTH;
+		c.setPreferredSize(prefSize);
 	}
 
 }

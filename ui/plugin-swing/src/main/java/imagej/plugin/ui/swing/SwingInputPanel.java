@@ -75,7 +75,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 		final Number min, final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
-			SwingNumberWidget.create(model, min, max, stepSize);
+			new SwingNumberWidget(model, min, max, stepSize);
 		addField(model, numberWidget);
 		numberWidgets.put(model.getName(), numberWidget);
 	}
