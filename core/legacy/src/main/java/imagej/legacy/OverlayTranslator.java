@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.roi.EllipseRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
@@ -224,16 +225,67 @@ public class OverlayTranslator {
 			Log.warn("Ignoring unsupported PointRoi: " + roi);
 		}
 		else if (roi instanceof PolygonRoi) {
-			Log.warn("Ignoring unsupported PolygonRoi: " + roi);
+			final PolygonRoi polygonRoi = (PolygonRoi) roi;
+			final PolygonOverlay overlay = new PolygonOverlay();
+			final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+			final int[] xCoords = polygonRoi.getXCoordinates();
+			final int[] yCoords = polygonRoi.getYCoordinates();
+			for (int i = 0; i < xCoords.length; i++) {
+				final double x = xCoords[i], y = yCoords[i];
+				region.addVertex(i, new RealPoint(x, y));
+			}
+			Log.debug("====> Adding polygon overlay: " + overlay);// TEMP
+			overlays.add(overlay);
 		}
 		else if (roi instanceof ShapeRoi) {
-			Log.warn("Ignoring unsupported ShapeRoi: " + roi);
-		}
+			final ShapeRoi shapeRoi = (ShapeRoi) roi;
+			final Roi[] rois = shapeRoi.getRois();
+			for (final Roi r : rois) {
+				createOverlays(r, overlays);
+			}
+ 		}
 		else if (roi instanceof TextRoi) {
 			Log.warn("Ignoring unsupported TextRoi: " + roi);
 		}
 		else { // Roi
-			Log.warn("Ignoring unsupported Roi: " + roi);
+			switch (roi.getType()) {
+				case Roi.ANGLE:
+					Log.warn("Ignoring unsupported ANGLE: " + roi);
+					break;
+				case Roi.COMPOSITE:
+					Log.warn("Ignoring unsupported COMPOSITE: " + roi);
+					break;
+				case Roi.FREELINE:
+					Log.warn("Ignoring unsupported FREELINE: " + roi);
+					break;
+				case Roi.FREEROI:
+					Log.warn("Ignoring unsupported FREEROI: " + roi);
+					break;
+				case Roi.LINE:
+					Log.warn("Ignoring unsupported LINE: " + roi);
+					break;
+				case Roi.RECTANGLE:
+					Log.warn("Ignoring unsupported RECTANGLE: " + roi);
+					break;
+				case Roi.OVAL:
+					Log.warn("Ignoring unsupported OVAL: " + roi);
+					break;
+				case Roi.POINT:
+					Log.warn("Ignoring unsupported POINT: " + roi);
+					break;
+				case Roi.POLYGON:
+					Log.warn("Ignoring unsupported POLYGON: " + roi);
+					break;
+				case Roi.POLYLINE:
+					Log.warn("Ignoring unsupported POLYLINE: " + roi);
+					break;
+				case Roi.TRACED_ROI:
+					Log.warn("Ignoring unsupported TRACE_ROI: " + roi);
+					break;
+				default:
+					Log.warn("Ignoring unsupported Roi: " + roi);						
+					break;
+			}
 		}
 	}
 
