@@ -104,7 +104,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	private int spinnerNumber;
 
 	@Parameter(label = "slider", style = WidgetStyle.NUMBER_SLIDER, min = "0",
-		max = "1000")
+		max = "1000", stepSize = "50")
 	private int sliderNumber;
 
 	@Parameter(label = "scroll bar", style = WidgetStyle.NUMBER_SCROLL_BAR,
