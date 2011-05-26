@@ -53,11 +53,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.imglib2.img.Axes;
-import net.imglib2.img.Img;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
-import net.imglib2.type.numeric.RealType;
-
 /**
  * Executes an IJ1 plugin.
  * 
@@ -131,7 +126,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		final DatasetHarmonizer harmonizer)
 	{
 		// TODO - have LegacyImageMap track dataset events and keep a dirty bit.
-		// then only harmonize those datasets that have changed.
+		// then only harmonize those datasets that have changed. See ticket #546.
 		final ObjectManager objMgr = ImageJ.get(ObjectManager.class);
 		for (final Dataset ds : objMgr.getObjects(Dataset.class)) {
 			ImagePlus imp = map.findImagePlus(ds);
