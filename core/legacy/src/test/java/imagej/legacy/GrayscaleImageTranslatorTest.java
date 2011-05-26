@@ -8,6 +8,7 @@ import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -45,6 +46,8 @@ public class GrayscaleImageTranslatorTest {
 		assertEquals(z, dims[3]);
 		assertEquals(t, dims[4]);
 
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
+		
 		long[] pos = new long[5];
 		
 		for (int ti = 0; ti < t; ti++) {
@@ -59,7 +62,8 @@ public class GrayscaleImageTranslatorTest {
 						pos[1] = yi;
 						for (int xi = 0; xi < x; xi++) {
 							pos[0] = xi;
-							assertEquals(ds.getDoubleValue(pos), proc.getf(xi, yi), 0);
+							accessor.setPosition(pos);
+							assertEquals(accessor.get().getRealDouble(), proc.getf(xi, yi), 0);
 						}
 					}
 				}
