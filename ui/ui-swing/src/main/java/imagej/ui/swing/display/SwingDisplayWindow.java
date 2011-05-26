@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import imagej.awt.AWTDisplayWindow;
-import imagej.awt.AWTEventDispatcher;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
@@ -45,6 +43,8 @@ import imagej.display.EventDispatcher;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ui.common.awt.AWTDisplayWindow;
+import imagej.ui.common.awt.AWTEventDispatcher;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;

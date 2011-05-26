@@ -1,5 +1,5 @@
 //
-// AWTColors.java
+// AWTCursors.java
 //
 
 /*
@@ -32,67 +32,71 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.awt;
+package imagej.ui.common.awt;
 
-import imagej.util.ColorRGB;
-import imagej.util.ColorRGBA;
+import imagej.display.MouseCursor;
 
-import java.awt.Color;
+import java.awt.Cursor;
 
 /**
- * Translates ImageJ {@link ColorRGB}s into AWT {@link Color}s.
+ * Translates ImageJ {@link MouseCursor}s into AWT {@link Cursor}s.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
  */
-public final class AWTColors {
+public final class AWTCursors {
 
-	private AWTColors() {
+	private AWTCursors() {
 		// prevent instantiation of utility class
 	}
 
 	/**
-	 * Gets the AWT {@link Color} corresponding to the given ImageJ
-	 * {@link ColorRGB}.
+	 * Gets the AWT {@link Cursor} corresponding to the given ImageJ
+	 * {@link MouseCursor}.
 	 */
-	public static Color getColor(final ColorRGB color) {
-		return new Color(color.getRed(), color.getGreen(), color.getBlue());
+	public static Cursor getCursor(final MouseCursor cursorCode) {
+		return Cursor.getPredefinedCursor(getCursorCode(cursorCode));
 	}
-	
+
 	/**
-	 * Get a java.awt.Color including the alpha component
-	 * @param color - RGBA color
-	 * @return the AWT color
+	 * Gets the AWT cursor code corresponding to the given ImageJ
+	 * {@link MouseCursor}.
 	 */
-	public static Color getColorRGBA(final ColorRGBA color) {
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	}
-	
-	/**
-	 * Get a java.awt.Color given an RGB color and an explicit alpha component (0-255)
-	 * @param color - RGB color
-	 * @param alpha - alpha value (0-255)
-	 * @return AWT color
-	 */
-	public static Color getColorRGBA(final ColorRGB color, int alpha) {
-		assert (alpha >=0) && (alpha <=255): String.format("Alpha value of %d is out of range (0-255)", alpha);
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-	}
-	
-	/**
-	 * Gets the ImageJ {@link ColorRGB} corresponding to the given AWT
-	 * {@link Color}.
-	 */
-	public static ColorRGB getColorRGB(final Color color) {
-		return new ColorRGB(color.getRed(), color.getGreen(), color.getBlue());
-	}
-	
-	/**
-	 * Get the color with alpha component
-	 * @param color - java.awt.Color to be translated
-	 * @return the imageJ RGB color
-	 */
-	public static ColorRGBA getColorRGBA(final Color color) {
-		return new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	public static int getCursorCode(final MouseCursor cursorCode) {
+		switch (cursorCode) {
+			case DEFAULT:
+				return Cursor.DEFAULT_CURSOR;
+			case OFF:
+				return Cursor.CUSTOM_CURSOR;
+			case HAND:
+				return Cursor.HAND_CURSOR;
+			case CROSSHAIR:
+				return Cursor.CROSSHAIR_CURSOR;
+			case MOVE:
+				return Cursor.MOVE_CURSOR;
+			case TEXT:
+				return Cursor.TEXT_CURSOR;
+			case WAIT:
+				return Cursor.WAIT_CURSOR;
+			case N_RESIZE:
+				return Cursor.N_RESIZE_CURSOR;
+			case S_RESIZE:
+				return Cursor.S_RESIZE_CURSOR;
+			case W_RESIZE:
+				return Cursor.W_RESIZE_CURSOR;
+			case E_RESIZE:
+				return Cursor.E_RESIZE_CURSOR;
+			case NW_RESIZE:
+				return Cursor.NW_RESIZE_CURSOR;
+			case NE_RESIZE:
+				return Cursor.NE_RESIZE_CURSOR;
+			case SW_RESIZE:
+				return Cursor.SW_RESIZE_CURSOR;
+			case SE_RESIZE:
+				return Cursor.SE_RESIZE_CURSOR;
+			default:
+				return Cursor.DEFAULT_CURSOR;
+		}
 	}
 
 }

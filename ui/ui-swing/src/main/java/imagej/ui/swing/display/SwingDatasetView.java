@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import imagej.awt.AWTImageTools;
 import imagej.data.Dataset;
 import imagej.display.AbstractDatasetView;
+import imagej.util.awt.AWTImageTools;
 
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;

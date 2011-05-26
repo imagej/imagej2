@@ -1,5 +1,5 @@
 //
-// AWTImageDisplayWindow.java
+// AWTImageTools.java
 //
 
 /*
@@ -32,17 +32,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.awt;
+package imagej.util.awt;
 
-import imagej.display.DisplayWindow;
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
- * An AWT-based {@link DisplayWindow}.
- *
+ * Convenience methods for working with AWT {@link Image}s.
+ * 
  * @author Curtis Rueden
  */
-public interface AWTDisplayWindow extends DisplayWindow {
+public final class AWTImageTools {
 
-	void pack();
+	private AWTImageTools() {
+		// prevent instantiation of utility class
+	}
+
+	/**
+	 * Creates a {@link BufferedImage} compatible with the graphics environment.
+	 * 
+	 * @param width The width of the image to create.
+	 * @param height The height of the image to create.
+	 */
+	public static BufferedImage createImage(final int width, final int height) {
+		final GraphicsEnvironment env =
+			GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsConfiguration config =
+			env.getDefaultScreenDevice().getDefaultConfiguration();
+		return config.createCompatibleImage(width, height);
+	}
+
+	/**
+	 * Ensures that the given {@link Image} is a {@link BufferedImage}, converting
+	 * if necessary.
+	 */
+	public static BufferedImage makeBuffered(final Image image) {
+		if (image instanceof BufferedImage) {
+			return (BufferedImage) image;
+		}
+		final BufferedImage result =
+			createImage(image.getWidth(null), image.getHeight(null));
+		final Graphics g = result.getGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return result;
+	}
 
 }

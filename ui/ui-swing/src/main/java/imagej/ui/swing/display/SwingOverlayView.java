@@ -34,13 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
-import imagej.data.event.OverlayUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.AbstractOverlayView;
-import imagej.event.EventSubscriber;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
-import imagej.ui.swing.tools.roi.JHotDrawOverlayAdapter;
 import imagej.util.Index;
 
 import org.jhotdraw.draw.Drawing;
