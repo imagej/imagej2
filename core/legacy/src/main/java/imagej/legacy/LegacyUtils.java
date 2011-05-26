@@ -1,3 +1,37 @@
+//
+// LegacyUtils.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.legacy;
 
 import net.imglib2.RandomAccess;
@@ -25,6 +59,11 @@ import imagej.util.Log;
  * Collection of static methods used by the various ImageTranslators and the
  * DatasetHarmonizer. Kept together so that bidirectional translation code is
  * in one place and thus more easily maintained.
+ * 
+ * Note the interfaces have package access to avoid their use outside the
+ * legacy layer.
+ * 
+ * @author Barry DeZonia
  * */
 public class LegacyUtils {
 
@@ -34,9 +73,9 @@ public class LegacyUtils {
 		// utility class: do not instantiate
 	}
 
-	// -- public interface --
+	// -- package interface --
 	
-	public static Dataset makeExactDataset(ImagePlus imp) {
+	static Dataset makeExactDataset(ImagePlus imp) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -57,7 +96,7 @@ public class LegacyUtils {
 	}
 	
 	
-	public static Dataset makeColorDataset(ImagePlus imp) {
+	static Dataset makeColorDataset(ImagePlus imp) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -87,7 +126,7 @@ public class LegacyUtils {
 	}
 
 	// TODO - check that Dataset can be represented exactly
-	public static ImagePlus makeExactImagePlus(Dataset ds) {
+	static ImagePlus makeExactImagePlus(Dataset ds) {
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
@@ -109,12 +148,12 @@ public class LegacyUtils {
 	}
 
 	
-	public static ImagePlus makeNearestTypeGrayImagePlus(Dataset ds) {
+	static ImagePlus makeNearestTypeGrayImagePlus(Dataset ds) {
 		PlaneMaker planeMaker = getPlaneMaker(ds);
 		return makeImagePlus(ds, planeMaker);
 	}
 
-	public static ImagePlus makeColorImagePlus(Dataset ds) {
+	static ImagePlus makeColorImagePlus(Dataset ds) {
 		if ( ! isColorCompatible(ds) )
 			throw new IllegalArgumentException("Dataset is not color compatible");
 		
@@ -139,7 +178,7 @@ public class LegacyUtils {
 	}
 
 	// assumes ds & imp are correct dimensions and not directly mapped
-	public static void setImagePlusGrayData(Dataset ds, ImagePlus imp) {
+	static void setImagePlusGrayData(Dataset ds, ImagePlus imp) {
 		boolean bitData = ds.getType() instanceof BitType;
 		int x = imp.getWidth();
 		int y = imp.getHeight();
@@ -175,7 +214,7 @@ public class LegacyUtils {
 	}
 
 	// assumes ds & imp are correct dimensions and not directly mapped
-	public static void setImagePlusColorData(Dataset ds, ImagePlus imp) {
+	static void setImagePlusColorData(Dataset ds, ImagePlus imp) {
 		int x = imp.getWidth();
 		int y = imp.getHeight();
 		int zIndex = ds.getAxisIndex(Axes.Z);
@@ -214,7 +253,7 @@ public class LegacyUtils {
 	}
 
 	// assumes ds & imp are correct dimensions and not directly mapped
-	public static void setDatasetGrayData(Dataset ds, ImagePlus imp) {
+	static void setDatasetGrayData(Dataset ds, ImagePlus imp) {
 		RealType<?> type = ds.getType();
 		double typeMin = type.getMinValue();
 		double typeMax = type.getMaxValue();
@@ -253,7 +292,7 @@ public class LegacyUtils {
 	}
 
 	// assumes ds & imp are correct dimensions and not directly mapped
-	public static void setDatasetColorData(Dataset ds, ImagePlus imp) {
+	static void setDatasetColorData(Dataset ds, ImagePlus imp) {
 		int x = imp.getWidth();
 		int y = imp.getHeight();
 		int zIndex = ds.getAxisIndex(Axes.Z);
@@ -289,7 +328,7 @@ public class LegacyUtils {
 		ds.update();
 	}
 	
-	public static void setImagePlusPlanes(Dataset ds, ImagePlus imp) {
+	static void setImagePlusPlanes(Dataset ds, ImagePlus imp) {
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
@@ -327,7 +366,7 @@ public class LegacyUtils {
 		}
 	}
 	
-	public static void setDatasetPlanes(Dataset ds, ImagePlus imp) {
+	static void setDatasetPlanes(Dataset ds, ImagePlus imp) {
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
@@ -346,7 +385,7 @@ public class LegacyUtils {
 
 	@SuppressWarnings({"rawtypes","unchecked"})
 	// assumes the data type of the given Dataset is fine as is
-	public static void reshapeDataset(Dataset ds, ImagePlus imp) {
+	static void reshapeDataset(Dataset ds, ImagePlus imp) {
 		long[] newDims = ds.getDims();
 		double[] cal = new double[newDims.length];
 		ds.calibration(cal);
@@ -371,7 +410,7 @@ public class LegacyUtils {
 		ds.setImgPlus((ImgPlus<? extends RealType<?>>) imgPlus);
 	}
 	
-	public static void setDatasetMetadata(Dataset ds, ImagePlus imp) {
+	static void setDatasetMetadata(Dataset ds, ImagePlus imp) {
 		ds.setName(imp.getTitle());
 		// copy calibration info where possible
 		int xIndex = ds.getAxisIndex(Axes.X);
@@ -393,7 +432,7 @@ public class LegacyUtils {
 		// no need to ds.update() - these calls should track that themselves
 	}
 	
-	public static void setImagePlusMetadata(Dataset ds, ImagePlus imp) {
+	static void setImagePlusMetadata(Dataset ds, ImagePlus imp) {
 		imp.setTitle(ds.getName());
 		// copy calibration info where possible
 		Calibration cal = imp.getCalibration();
@@ -415,11 +454,11 @@ public class LegacyUtils {
 			cal.frameInterval = ds.calibration(tIndex);
 	}
 
-	public static boolean datasetIsIJ1Compatible(Dataset ds) {
+	static boolean datasetIsIJ1Compatible(Dataset ds) {
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
 	
-	public static boolean imagePlusIsNearestType(Dataset ds, ImagePlus imp) {
+	static boolean imagePlusIsNearestType(Dataset ds, ImagePlus imp) {
 		int impType = imp.getType();
 		
 		if (impType == ImagePlus.COLOR_RGB) {
@@ -444,7 +483,7 @@ public class LegacyUtils {
 		return impType == ImagePlus.GRAY32;
 	}
 	
-	public static boolean hasNonIJ1Axes(Axis[] axes) {
+	static boolean hasNonIJ1Axes(Axis[] axes) {
 		for (Axis axis : axes) {
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
