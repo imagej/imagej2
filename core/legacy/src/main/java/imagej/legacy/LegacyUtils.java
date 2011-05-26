@@ -138,7 +138,7 @@ public class LegacyUtils {
 		final int z = zIndex < 0 ? 1 : dimValues[zIndex];
 		final int t = tIndex < 0 ? 1 : dimValues[tIndex];
 
-		ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds));
+		ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds), true);
 		
 		setImagePlusPlanes(ds, imp);
 
@@ -150,7 +150,7 @@ public class LegacyUtils {
 	
 	static ImagePlus makeNearestTypeGrayImagePlus(Dataset ds) {
 		PlaneMaker planeMaker = getPlaneMaker(ds);
-		return makeImagePlus(ds, planeMaker);
+		return makeImagePlus(ds, planeMaker, false);
 	}
 
 	static ImagePlus makeColorImagePlus(Dataset ds) {
@@ -540,7 +540,15 @@ public class LegacyUtils {
 		}
 	}
 	
-	private static ImagePlus makeImagePlus(Dataset ds, PlaneMaker planeMaker) {
+	/**
+	 * makes an ImagePlus to be populated with data later
+	 * @param ds - input Dataset to be shape compatible with
+	 * @param planeMaker - a PlaneMaker to use to make type correct image planes 
+	 * @param makeDummyPlanes - save memory by allocating the minimum number of planes
+	 *          for the case that we'll be reassigning the planes immediately. 
+	 * @return an ImagePlus whose dimensions math the input Dataset
+	 */
+	private static ImagePlus makeImagePlus(Dataset ds, PlaneMaker planeMaker, boolean makeDummyPlanes) {
 
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
@@ -560,13 +568,18 @@ public class LegacyUtils {
 			planeDims[i] = ds.getImgPlus().dimension(i+2);
 		final long[] planePos = new long[planeDims.length];
 
+		Object dummyPlane = planeMaker.makePlane(dimValues[0], dimValues[1]);
 		for (long t = 0; t < tCount; t++) {
 			if (tIndex >= 0) planePos[tIndex - 2] = t;
 			for (long z = 0; z < zCount; z++) {
 				if (zIndex >= 0) planePos[zIndex - 2] = z;
 				for (long c = 0; c < cCount; c++) {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
-					Object plane = planeMaker.makePlane(dimValues[0], dimValues[1]);
+					Object plane;
+					if (makeDummyPlanes)
+						plane = dummyPlane;
+					else
+						plane = planeMaker.makePlane(dimValues[0], dimValues[1]);
 					stack.addSlice(null, plane);
 				}
 			}
