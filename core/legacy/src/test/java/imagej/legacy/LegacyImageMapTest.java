@@ -5,9 +5,11 @@ import static org.junit.Assert.*;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.measure.Calibration;
+import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
@@ -60,27 +62,32 @@ public class LegacyImageMapTest {
 		assertEquals(dimensions[zIndex],imp.getNSlices());
 		assertEquals(dimensions[tIndex],imp.getNFrames());
 		
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		long[] pos = new long[dimensions.length];
 		for (int t = 0; t < dimensions[tIndex]; t++) {
 			pos[tIndex] = t;
 			for (int z = 0; z < dimensions[zIndex]; z++) {
 				pos[zIndex] = z;
-				imp.setPositionWithoutUpdate(1, z+1, t+1);
 				for (int y = 0; y < dimensions[yIndex]; y++) {
 					pos[yIndex] = y;
 					for (int x = 0; x < dimensions[xIndex]; x++) {
 						pos[xIndex] = x;
 						
 						pos[cIndex] = 0;
-						int r = (int) ds.getDoubleValue(pos);
+						accessor.setPosition(pos);
+						int r = (int) accessor.get().getRealDouble();
 						
 						pos[cIndex] = 1;
-						int g = (int) ds.getDoubleValue(pos);
+						accessor.setPosition(pos);
+						int g = (int) accessor.get().getRealDouble();
 
 						pos[cIndex] = 2;
-						int b = (int) ds.getDoubleValue(pos);
+						accessor.setPosition(pos);
+						int b = (int) accessor.get().getRealDouble();
 
-						int ij1Value = imp.getProcessor().get(x,y);
+						ImageProcessor proc = imp.getStack().getProcessor((int)(t*dimensions[zIndex]+z+1));
+						
+						int ij1Value = proc.get(x,y);
 						int ij2Value = 0xff000000 |	(r << 16) | (g << 8) | b;
 
 						assertEquals(ij1Value, ij2Value);
@@ -108,20 +115,25 @@ public class LegacyImageMapTest {
 		assertEquals(dimensions[zIndex],imp.getNSlices());
 		assertEquals(dimensions[tIndex],imp.getNFrames());
 		
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
+		int ij1PlaneNumber = 1;
 		long[] pos = new long[dimensions.length];
 		for (int t = 0; t < dimensions[tIndex]; t++) {
 			pos[tIndex] = t;
-			for (int c = 0; c < dimensions[cIndex]; c++) {
-				pos[cIndex] = c;
-				for (int z = 0; z < dimensions[zIndex]; z++) {
-					pos[zIndex] = z;
-					imp.setPositionWithoutUpdate(c+1, z+1, t+1);
+			for (int z = 0; z < dimensions[zIndex]; z++) {
+				pos[zIndex] = z;
+				for (int c = 0; c < dimensions[cIndex]; c++) {
+					pos[cIndex] = c;
+					ImageProcessor proc = imp.getStack().getProcessor(ij1PlaneNumber++);
 					for (int y = 0; y < dimensions[yIndex]; y++) {
 						pos[yIndex] = y;
 						for (int x = 0; x < dimensions[xIndex]; x++) {
 							pos[xIndex] = x;
-							double ij1Value = imp.getProcessor().getf(x,y);
-							double ij2Value = ds.getDoubleValue(pos);
+							accessor.setPosition(pos);
+							double ij1Value = proc.getf(x,y);
+							double ij2Value = accessor.get().getRealDouble();
+							if (Math.abs(ij1Value - ij2Value) > 0.1)
+								System.out.println("x="+x+" y="+y+" c="+c+" z="+z+" t="+t+" && ij1="+ij1Value+" ij2="+ij2Value);
 							assertEquals(ij1Value, ij2Value, 0.0001);
 						}
 					}
@@ -245,9 +257,10 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 0xff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		harmonizer.registerType(imp);
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
-		assertNotSame(imgPlus0,ds1.getImgPlus());
+		//assertNotSame(imgPlus0,ds1.getImgPlus());
 		
 		//   some change and is color
 		c = 1; z = 4; t = 5;
@@ -260,6 +273,7 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 0xffffffff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		harmonizer.registerType(imp);
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
@@ -276,6 +290,7 @@ public class LegacyImageMapTest {
 		imp.setStack(imp.getStack());
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		harmonizer.registerType(imp);
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
@@ -291,6 +306,7 @@ public class LegacyImageMapTest {
 		imp.getCalibration().pixelDepth = 99;  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		harmonizer.registerType(imp);
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
@@ -307,6 +323,7 @@ public class LegacyImageMapTest {
 		imp.getProcessor().set(0, 0, 100);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
+		harmonizer.registerType(imp);
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());

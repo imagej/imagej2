@@ -116,10 +116,12 @@ public class LegacyPlugin implements ImageJPlugin {
 			new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputImps();
 		outputSet.clear();
+		harmonizer.resetTypeTracking();
 		prePluginHarmonization(map, harmonizer);
 		WindowManager.setTempCurrentImage(map.findImagePlus(activeDS));
 		IJ.runPlugIn(className, arg);
 		outputs = postPluginHarmonization(map, harmonizer);
+		harmonizer.resetTypeTracking();
 		outputSet.clear();
 	}
 

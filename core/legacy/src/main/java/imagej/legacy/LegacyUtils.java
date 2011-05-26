@@ -75,9 +75,9 @@ public class LegacyUtils {
 		final long[] dims = new long[] { x, y, 3, z, t };
 		final String name = imp.getTitle();
 		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
-		final int bitsPerPixel = imp.getBitDepth();
-		final boolean signed = isSigned(imp);
-		final boolean floating = isFloating(imp);
+		final int bitsPerPixel = 8;
+		final boolean signed = false;
+		final boolean floating = false;
 		final Dataset ds =
 			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
 		
@@ -608,11 +608,11 @@ public class LegacyUtils {
 		outputIndices[1] = yIndex;
 		outputDims[1] = (int) dims[yIndex];
 		outputIndices[2] = cIndex;
-		outputDims[2] = (int) dims[cIndex];
+		outputDims[2] = (int) cCount;
 		outputIndices[3] = zIndex;
-		outputDims[3] = (int) dims[zIndex];
+		outputDims[3] = (int) zCount;
 		outputIndices[4] = tIndex;
-		outputDims[4] = (int) dims[tIndex];
+		outputDims[4] = (int) tCount;
 	}
 	
 	private static boolean ij1StorageCompatible(Dataset ds) {

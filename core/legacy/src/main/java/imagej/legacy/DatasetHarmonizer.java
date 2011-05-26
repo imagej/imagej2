@@ -68,6 +68,10 @@ public class DatasetHarmonizer {
 		typeMap.put(imp, imp.getType());
 	}
 	
+	public void resetTypeTracking() {
+		typeMap.clear();
+	}
+	
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
 	 * {@link Dataset}. Assumes Dataset has planar primitive access in an IJ1

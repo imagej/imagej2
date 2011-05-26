@@ -218,14 +218,6 @@ public class Dataset extends AbstractDataObject implements
 		update();
 	}
 
-	// TODO - disable??? Highly expensive!!! Make RandomAccess ThreadLocal???
-	public double getDoubleValue(final long[] pos) {
-		final RandomAccess<? extends RealType<?>> cursor = imgPlus.randomAccess();
-		cursor.setPosition(pos);
-		final double value = cursor.get().getRealDouble();
-		return value;
-	}
-
 	public RealType<?> getType() {
 		return imgPlus.firstElement();
 	}

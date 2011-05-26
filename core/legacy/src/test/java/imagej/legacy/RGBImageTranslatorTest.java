@@ -9,6 +9,7 @@ import ij.process.ColorProcessor;
 import imagej.data.Dataset;
 
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -77,7 +78,7 @@ public class RGBImageTranslatorTest {
 		assertEquals(imp.getNFrames(), t);
 		
 		// compare internal data
-		
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		final ImageStack stack = imp.getStack();
 		long[] position = new long[5];
 		int procNum = 1;
@@ -92,13 +93,16 @@ public class RGBImageTranslatorTest {
 						if (tIndex >= 0) position[tIndex] = ti;
 						
 						position[cIndex] = 0;
-						int rValue = (int) ds.getDoubleValue(position);
+						accessor.setPosition(position);
+						int rValue = (int) accessor.get().getRealDouble();
 						
 						position[cIndex] = 1;
-						int gValue = (int) ds.getDoubleValue(position);
+						accessor.setPosition(position);
+						int gValue = (int) accessor.get().getRealDouble();
 						
 						position[cIndex] = 2;
-						int bValue = (int) ds.getDoubleValue(position);
+						accessor.setPosition(position);
+						int bValue = (int) accessor.get().getRealDouble();
 						
 						int pixValue = 0xff000000 | (rValue<<16) | (gValue<<8) | bValue;
 						
