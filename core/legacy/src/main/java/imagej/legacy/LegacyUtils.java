@@ -32,6 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+// TODO - the methods are not entirely consistent on whose responsibility
+// it is to ensure the input data is correct. Either make them all check
+// or all not check. Since the methods are package access we should be
+// able to relax error checking if needed.
+
 package imagej.legacy;
 
 import net.imglib2.RandomAccess;
@@ -75,6 +80,11 @@ public class LegacyUtils {
 
 	// -- package interface --
 	
+	/** Makes a planar {@link Dataset} whose dimensions match a given
+	 *  {@link ImagePlus}. Data is exactly the same as plane references
+	 *  are shared between the Dataset and the ImagePlus. Assumes it will
+	 *  never be called with any kind of color ImagePlus. Does not set
+	 *  metadata of Dataset. */
 	static Dataset makeExactDataset(ImagePlus imp) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
@@ -96,6 +106,12 @@ public class LegacyUtils {
 	}
 	
 	
+	/** Makes a color {@link Dataset} from an {@link ImagePlus}. Color Datasets
+	 *  have isRgbMerged() true, channels == 3, and bitsperPixel == 8. Does not
+	 *  populate the data of the returned Dataset. That is left to other utility
+	 *  methods. Does not set metadata of Dataset.
+	 *  
+	 *  Throws exceptions if input ImagePlus is not single channel RGB. */ 
 	static Dataset makeColorDataset(ImagePlus imp) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
@@ -125,6 +141,16 @@ public class LegacyUtils {
 		return ds;
 	}
 
+	/** Makes an {@link ImagePlus} from a {@link Dataset}. Data is exactly the
+	 * same between them as planes of data are shared by reference. Assumes the
+	 * Dataset can be represented via plane references (thus backled by
+	 * {@link PlanarAccess} and in a type compatible with IJ1). Does not set
+	 * the metadata of the ImagePlus.
+	 * 
+	 * Throws an exception if the Dataset has any axis present that is not IJ1
+	 * compatible. Also throws an exception when Dataset has any axis or total
+	 * number of planes > Integer.MAX_VALUE. 
+	 */
 	// TODO - check that Dataset can be represented exactly
 	static ImagePlus makeExactImagePlus(Dataset ds) {
 		int[] dimIndices = new int[5];
@@ -147,19 +173,33 @@ public class LegacyUtils {
 		return imp;
 	}
 
-	
+	/** Makes an {@link ImagePlus} from a {@link Dataset} whose dimensions match.
+	 * The type of the ImagePlus is an IJ1 type that can best represent the data
+	 * with the least loss of data. Sometimes the IJ1 & IJ2 types are the same
+	 * type and sometimes they are not. The data values and metadata are not
+	 * assigned. Assumes it will never be sent a color Dataset.
+	 */
 	static ImagePlus makeNearestTypeGrayImagePlus(Dataset ds) {
 		PlaneMaker planeMaker = getPlaneMaker(ds);
 		return makeImagePlus(ds, planeMaker, false);
 	}
 
+	/** Makes a color {@link ImagePlus} from a color {@link Dataset}. The
+	 *  ImagePlus will have the same X, Y, Z, & T dimensions. C will be 1.
+	 *  The data values and metadata are not assigned.
+	 * 
+	 *  Throws an exception if the dataset is not color compatible. Throws an
+	 *  exception if the Dataset has any axis present that is not IJ1 compatible.
+	 *  Also throws an exception when Dataset has any axis or total number of
+	 *  planes > Integer.MAX_VALUE. 
+	 */
 	static ImagePlus makeColorImagePlus(Dataset ds) {
 		if ( ! isColorCompatible(ds) )
 			throw new IllegalArgumentException("Dataset is not color compatible");
 		
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
-		getColorImagePlusDims(ds, dimIndices, dimValues);
+		getImagePlusDims(ds, dimIndices, dimValues);
 		int w = dimValues[0];
 		int h = dimValues[1];
 		int z = dimValues[3];
@@ -177,7 +217,14 @@ public class LegacyUtils {
 		return imp;
 	}
 
-	// assumes ds & imp are correct dimensions and not directly mapped
+	/** Assigns the data values of an {@link ImagePlus} from a paired
+	 *  {@link Dataset}. Assumes the Dataset and ImagePlus have the same
+	 *  dimensions and that the data  planes are not directly mapped. If
+	 *  the data values are directly mapped then this code just wastes
+	 *  time. Sets values via {@link ImageProcessor}::setf(). Some special
+	 *  case code is in place to assure that BitType images go to IJ1 as
+	 *  0/255 value images. Does not change the ImagePlus' metadata.
+	 */
 	static void setImagePlusGrayData(Dataset ds, ImagePlus imp) {
 		boolean bitData = ds.getType() instanceof BitType;
 		int x = imp.getWidth();
@@ -213,7 +260,12 @@ public class LegacyUtils {
 		}
 	}
 
-	// assumes ds & imp are correct dimensions and not directly mapped
+	/** Assigns the data values of a color {@link ImagePlus} from a paired
+	 *  {@link Dataset}. Assumes the Dataset and ImagePlus have the same
+	 *  dimensions and that the data planes are not directly mapped. Sets
+	 *  values via {@link ImageProcessor}::set(). Does not change the
+	 *  ImagePlus' metadata.
+	 */
 	static void setImagePlusColorData(Dataset ds, ImagePlus imp) {
 		int x = imp.getWidth();
 		int y = imp.getHeight();
@@ -252,7 +304,14 @@ public class LegacyUtils {
 		}
 	}
 
-	// assumes ds & imp are correct dimensions and not directly mapped
+	/** Assigns the data values of a {@link Dataset} from a paired
+	 *  {@link ImagePlus}. Assumes the Dataset and ImagePlus have the same
+	 *  dimensions and that the data planes are not directly mapped. If the
+	 *  data values are directly mapped then this code just wastes time. Gets
+	 *  values via {@link ImageProcessor}::getf(). In cases where there is a
+	 *  narrowing of types into IJ2 data is range clamped. Does not change
+	 *  the Dataset's metadata.
+	 */
 	static void setDatasetGrayData(Dataset ds, ImagePlus imp) {
 		RealType<?> type = ds.getType();
 		double typeMin = type.getMinValue();
@@ -291,7 +350,11 @@ public class LegacyUtils {
 		ds.update();
 	}
 
-	// assumes ds & imp are correct dimensions and not directly mapped
+	/** Assigns the data values of a color {@link Dataset} from a paired
+	 *  {@link ImagePlus}. Assumes the Dataset and ImagePlus have the same
+	 *  dimensions and are both of type color. Gets values via
+	 *  {@link ImageProcessor}::get(). Does not change the Dataset's metadata.
+	 */
 	static void setDatasetColorData(Dataset ds, ImagePlus imp) {
 		int x = imp.getWidth();
 		int y = imp.getHeight();
@@ -327,7 +390,16 @@ public class LegacyUtils {
 		}
 		ds.update();
 	}
-	
+
+	/**
+	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack}
+	 * to match those of a given {@link Dataset}. Assumes input Dataset and
+	 * ImagePlus match in dimensions and backing type.
+	 * 
+	 * Throws an exception if the Dataset has any axis present that is not IJ1
+	 * compatible. Also throws an exception when Dataset has any axis or total
+	 * number of planes > Integer.MAX_VALUE. 
+	 */
 	static void setImagePlusPlanes(Dataset ds, ImagePlus imp) {
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
@@ -366,6 +438,11 @@ public class LegacyUtils {
 		}
 	}
 	
+	/**
+	 * Assigns a planar {@link Dataset}'s plane references to match those of a
+	 * given {@link ImagePlus}. Assumes input Dataset and ImagePlus match in
+	 * dimensions and backing type.
+	 */
 	static void setDatasetPlanes(Dataset ds, ImagePlus imp) {
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
@@ -383,6 +460,10 @@ public class LegacyUtils {
 		// no need to call ds.update() - setPlane() tracks it
 	}
 
+	/** Changes the shape of an existing {@link Dataset} to match that of an
+	 * {@link ImagePlus}. Assumes that the Dataset type is correct. Does not
+	 * set the data values or change the metadata.
+	 */
 	@SuppressWarnings({"rawtypes","unchecked"})
 	// assumes the data type of the given Dataset is fine as is
 	static void reshapeDataset(Dataset ds, ImagePlus imp) {
@@ -409,7 +490,8 @@ public class LegacyUtils {
 		ImgPlus<?> imgPlus = new ImgPlus(img, ds.getName(), ds.getAxes(), cal);
 		ds.setImgPlus((ImgPlus<? extends RealType<?>>) imgPlus);
 	}
-	
+
+	/** sets a {@link Dataset}'s metadata to match a given {@link ImagePlus} */
 	static void setDatasetMetadata(Dataset ds, ImagePlus imp) {
 		ds.setName(imp.getTitle());
 		// copy calibration info where possible
@@ -432,6 +514,7 @@ public class LegacyUtils {
 		// no need to ds.update() - these calls should track that themselves
 	}
 	
+	/** sets an {@link ImagePlus}' metadata to match a given {@link Dataset} */
 	static void setImagePlusMetadata(Dataset ds, ImagePlus imp) {
 		imp.setTitle(ds.getName());
 		// copy calibration info where possible
@@ -454,10 +537,16 @@ public class LegacyUtils {
 			cal.frameInterval = ds.calibration(tIndex);
 	}
 
+	/** returns true if a {@link Dataset} can be represented by reference in IJ1
+	*/
 	static boolean datasetIsIJ1Compatible(Dataset ds) {
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
-	
+
+	/** returns true if an {@link ImagePlus}' type is the best fit for a given
+	 * {@link Dataset}. Best fit means the IJ1 type that is the best at
+	 * preserving data.
+	 */
 	static boolean imagePlusIsNearestType(Dataset ds, ImagePlus imp) {
 		int impType = imp.getType();
 		
@@ -471,18 +560,22 @@ public class LegacyUtils {
 		boolean isInteger = ds.isInteger();
 		int bitsPerPix = dsType.getBitsPerPixel();
 
-		if ((isSigned) && (!isInteger))
-			return impType == ImagePlus.GRAY32;
-		
 		if ((!isSigned) && (isInteger) && (bitsPerPix <= 8))
 			return impType == ImagePlus.GRAY8;
 			
 		if ((!isSigned) && (isInteger) && (bitsPerPix <= 16))
 			return impType == ImagePlus.GRAY16;
 
+		// Unnecessary
+		//if ((isSigned) && (!isInteger))
+		//	return impType == ImagePlus.GRAY32;
+		
 		return impType == ImagePlus.GRAY32;
 	}
-	
+
+	/** returns true if any of the given Axes cannot be represented
+	 * in an IJ1 ImagePlus.
+	 */
 	static boolean hasNonIJ1Axes(Axis[] axes) {
 		for (Axis axis : axes) {
 			if (axis == Axes.X) continue;
@@ -497,6 +590,11 @@ public class LegacyUtils {
 
 	// -- private helpers --
 
+	/** tests that a given {@link Dataset} can be represented as a color
+	 * {@link ImagePlus}. Some of this test maybe overkill if by definition
+	 * rgbMerged can only be true if channels == 3 and type = ubyte are also
+	 * true. 
+	 */
 	private static boolean isColorCompatible(Dataset ds) {
 		if ( ! ds.isRGBMerged() ) return false;
 		if ( ! (ds.getType() instanceof UnsignedByteType) ) return false;
@@ -506,10 +604,12 @@ public class LegacyUtils {
 		return true;
 	}
 
-		private interface PlaneMaker {
+	/** helper class to simplify the making of planes of different type data */
+	private interface PlaneMaker {
 		Object makePlane(int w, int h);
 	}
-	
+
+	/** makes planes of bytes given width & height */
 	private static class BytePlaneMaker implements PlaneMaker {
 		public BytePlaneMaker() {
 			// nothing to do
@@ -520,6 +620,7 @@ public class LegacyUtils {
 		}
 	}
 	
+	/** makes planes of shorts given width & height */
 	private static class ShortPlaneMaker implements PlaneMaker {
 		public ShortPlaneMaker() {
 			// nothing to do
@@ -530,6 +631,7 @@ public class LegacyUtils {
 		}
 	}
 	
+	/** makes planes of floats given width & height */
 	private static class FloatPlaneMaker implements PlaneMaker {
 		public FloatPlaneMaker() {
 			// nothing to do
@@ -541,7 +643,13 @@ public class LegacyUtils {
 	}
 	
 	/**
-	 * makes an ImagePlus to be populated with data later
+	 * makes an {@link ImagePlus} that matches dimensions of a {@link Dataset}.
+	 * The data values of the ImagePlus to be populated later elsewhere.
+	 *
+	 * Throws an exception if the Dataset has any axis present that is not IJ1
+	 * compatible. Also throws an exception when Dataset has any axis or total
+	 * number of planes > Integer.MAX_VALUE. 
+	 *
 	 * @param ds - input Dataset to be shape compatible with
 	 * @param planeMaker - a PlaneMaker to use to make type correct image planes 
 	 * @param makeDummyPlanes - save memory by allocating the minimum number of planes
@@ -568,7 +676,7 @@ public class LegacyUtils {
 			planeDims[i] = ds.getImgPlus().dimension(i+2);
 		final long[] planePos = new long[planeDims.length];
 
-		Object dummyPlane = planeMaker.makePlane(dimValues[0], dimValues[1]);
+		Object dummyPlane = null;
 		for (long t = 0; t < tCount; t++) {
 			if (tIndex >= 0) planePos[tIndex - 2] = t;
 			for (long z = 0; z < zCount; z++) {
@@ -576,8 +684,11 @@ public class LegacyUtils {
 				for (long c = 0; c < cCount; c++) {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
 					Object plane;
-					if (makeDummyPlanes)
+					if (makeDummyPlanes) {
+						if (dummyPlane == null)
+							dummyPlane = planeMaker.makePlane(dimValues[0], dimValues[1]);
 						plane = dummyPlane;
+					}
 					else
 						plane = planeMaker.makePlane(dimValues[0], dimValues[1]);
 					stack.addSlice(null, plane);
@@ -591,25 +702,30 @@ public class LegacyUtils {
 		
 		return imp;
 	}
-	
+
+	/** finds the best {@link PlaneMaker} for a given {@link Dataset}. The best
+	 *  PlaneMaker is the one that makes planes in the type that can best
+	 *  represent the Dataset's data values in IJ1. */
 	private static PlaneMaker getPlaneMaker(Dataset ds) {
 		boolean signed = ds.isSigned();
+		boolean integer = ds.isInteger();
 		int bitsPerPixel = ds.getType().getBitsPerPixel();
-		if (!signed && bitsPerPixel <= 8)
+		if (!signed && integer && bitsPerPixel <= 8)
 			return new BytePlaneMaker();
-		if (!signed && bitsPerPixel <= 16)
+		if (!signed && integer && bitsPerPixel <= 16)
 				return new ShortPlaneMaker();
 		return new FloatPlaneMaker();
 	}
 	
-	private static void getColorImagePlusDims(Dataset dataset,
-		int[] outputIndices, int[] outputDims)
-	{
-		getImagePlusDims(dataset, outputIndices, outputDims);
-		if (outputDims[2] != 3)
-			throw new IllegalArgumentException("dataset must have three channels");
-	}
-	
+	/** copies a {@link Dataset}'s dimensions and axis indices into provided
+	 *  arrays. The order of dimensions is formatted to be X,Y,C,Z,T. If an
+	 *  axis is not present in the Dataset its value is set to 1 and its index
+	 *  is set to -1.
+	 *  
+	 * Throws an exception if the Dataset has any axis present that is not IJ1
+	 * compatible. Also throws an exception when Dataset has any axis or total
+	 * number of planes > Integer.MAX_VALUE. 
+	 */
 	private static void getImagePlusDims(Dataset dataset,
 		int[] outputIndices, int[] outputDims)
 	{
@@ -666,11 +782,15 @@ public class LegacyUtils {
 		outputIndices[4] = tIndex;
 		outputDims[4] = (int) tCount;
 	}
-	
+
+	/** returns true if a {@link Dataset} is backed by {@link PlanarAccess} */
 	private static boolean ij1StorageCompatible(Dataset ds) {
 		return ds.getImgPlus().getImg() instanceof PlanarAccess;
 	}
 	
+	/** returns true if a {@link Dataset} has a type that can be directly
+	 * represented in an IJ1 ImagePlus. 
+	 */
 	private static boolean ij1TypeCompatible(Dataset ds) {
 		// TODO - rather than direct type comparisons should we reason
 		// here on bitPerPix, sign. integer flags? Which is correct
@@ -682,20 +802,24 @@ public class LegacyUtils {
 		return false;
 	}
 
+	/** returns true if an {@link ImagePlus} is of type GRAY32 */
 	private static boolean isGray32(final ImagePlus imp) {
 		final int type = imp.getType();
 		return type == ImagePlus.GRAY32;
 	}
 	
+	/** returns true if an {@link ImagePlus} is backed by a signed type */ 
 	private static boolean isSigned(final ImagePlus imp) {
 	  // TODO - ignores IJ1's support of signed 16 bit. OK?
 		return isGray32(imp);
 	}
 
+	/** returns true if an {@link ImagePlus} is backed by a floating type */ 
 	private static boolean isFloating(final ImagePlus imp) {
 		return isGray32(imp);
 	}
 
+	/** error message formatting helper */
 	private static String message(final String message, final long c, final long z,
 		final long t)
 	{
