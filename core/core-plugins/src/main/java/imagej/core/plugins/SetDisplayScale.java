@@ -36,12 +36,12 @@ package imagej.core.plugins;
 import java.util.List;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.AbstractDatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.ui.swing.display.SwingDatasetView;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
@@ -70,8 +70,7 @@ public class SetDisplayScale<T extends RealType<T> & NativeType<T>> implements I
 		if (display == null) {
 			return; // headless UI or no open images
 		}
-		final Dataset currDataset = (Dataset) display.getActiveView().getDataObject();
-		SwingDatasetView sdv = (SwingDatasetView) display.getActiveView();
+		AbstractDatasetView sdv =  (AbstractDatasetView) display.getActiveView();
 		List<RealLUTConverter<? extends RealType<?>>> converters = sdv.getConverters();
 		for (RealLUTConverter<? extends RealType<?>> realLUTConverter : converters) {
 			realLUTConverter.setMin(min);
