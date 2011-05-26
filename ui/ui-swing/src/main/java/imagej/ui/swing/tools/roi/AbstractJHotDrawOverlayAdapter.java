@@ -34,17 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
-import java.awt.Color;
-
-import org.jhotdraw.draw.AttributeKeys;
-import org.jhotdraw.draw.Figure;
-
-import imagej.awt.AWTColors;
-import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.tool.BaseTool;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;
+import imagej.util.awt.AWTColors;
+
+import java.awt.Color;
+
+import org.jhotdraw.draw.AttributeKeys;
+import org.jhotdraw.draw.Figure;
 
 
 /**

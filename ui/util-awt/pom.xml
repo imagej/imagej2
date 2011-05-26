@@ -11,20 +11,15 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-awt-common</artifactId>
+	<artifactId>ij-util-awt</artifactId>
 
-	<name>ImageJ Common Classes: AWT</name>
-	<description>Common AWT classes for use with AWT and Swing user interfaces.</description>
+	<name>ImageJ Utility Classes: AWT</name>
+	<description>AWT utility classes for use with AWT and Swing user interfaces.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-display</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-event</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
@@ -36,7 +31,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.awt</packageName>
+							<packageName>imagej.util.awt</packageName>
 						</manifest>
 					</archive>
 				</configuration>

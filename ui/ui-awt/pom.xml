@@ -62,6 +62,16 @@
       <artifactId>ij-ui</artifactId>
       <version>${project.version}</version>
     </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-common-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-util-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

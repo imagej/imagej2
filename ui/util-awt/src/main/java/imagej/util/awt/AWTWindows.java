@@ -1,5 +1,5 @@
 //
-// AWTCursors.java
+// AWTWindows.java
 //
 
 /*
@@ -32,71 +32,44 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.awt;
+package imagej.util.awt;
 
-import imagej.display.MouseCursor;
-
-import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.Window;
 
 /**
- * Translates ImageJ {@link MouseCursor}s into AWT {@link Cursor}s.
+ * Utility methods for working with AWT {@link Window}s.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  */
-public final class AWTCursors {
+public final class AWTWindows {
 
-	private AWTCursors() {
+	private AWTWindows() {
 		// prevent instantiation of utility class
 	}
 
-	/**
-	 * Gets the AWT {@link Cursor} corresponding to the given ImageJ
-	 * {@link MouseCursor}.
-	 */
-	public static Cursor getCursor(final MouseCursor cursorCode) {
-		return Cursor.getPredefinedCursor(getCursorCode(cursorCode));
+	/** Centers the given window on the screen. */
+	public static void centerWindow(final Window window) {
+		final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
+		centerWindow(new Rectangle(0, 0, s.width, s.height), window);
 	}
 
-	/**
-	 * Gets the AWT cursor code corresponding to the given ImageJ
-	 * {@link MouseCursor}.
-	 */
-	public static int getCursorCode(final MouseCursor cursorCode) {
-		switch (cursorCode) {
-			case DEFAULT:
-				return Cursor.DEFAULT_CURSOR;
-			case OFF:
-				return Cursor.CUSTOM_CURSOR;
-			case HAND:
-				return Cursor.HAND_CURSOR;
-			case CROSSHAIR:
-				return Cursor.CROSSHAIR_CURSOR;
-			case MOVE:
-				return Cursor.MOVE_CURSOR;
-			case TEXT:
-				return Cursor.TEXT_CURSOR;
-			case WAIT:
-				return Cursor.WAIT_CURSOR;
-			case N_RESIZE:
-				return Cursor.N_RESIZE_CURSOR;
-			case S_RESIZE:
-				return Cursor.S_RESIZE_CURSOR;
-			case W_RESIZE:
-				return Cursor.W_RESIZE_CURSOR;
-			case E_RESIZE:
-				return Cursor.E_RESIZE_CURSOR;
-			case NW_RESIZE:
-				return Cursor.NW_RESIZE_CURSOR;
-			case NE_RESIZE:
-				return Cursor.NE_RESIZE_CURSOR;
-			case SW_RESIZE:
-				return Cursor.SW_RESIZE_CURSOR;
-			case SE_RESIZE:
-				return Cursor.SE_RESIZE_CURSOR;
-			default:
-				return Cursor.DEFAULT_CURSOR;
-		}
+	/** Centers the given window within the specified parent window. */
+	public static void centerWindow(final Window parent, final Window window) {
+		centerWindow(parent.getBounds(), window);
+	}
+
+	/** Centers the given window within the specified bounds. */
+	public static void centerWindow(final Rectangle bounds, final Window window)
+	{
+		final Dimension w = window.getSize();
+		int x = bounds.x + (bounds.width - w.width) / 2;
+		int y = bounds.y + (bounds.height - w.height) / 2;
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
+		window.setLocation(x, y);
 	}
 
 }

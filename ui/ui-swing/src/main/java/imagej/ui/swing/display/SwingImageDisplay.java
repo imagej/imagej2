@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
-import imagej.awt.AWTDisplay;
-import imagej.awt.AWTEventDispatcher;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
@@ -53,6 +51,8 @@ import imagej.plugin.Plugin;
 import imagej.tool.ToolManager;
 import imagej.ui.UIManager;
 import imagej.ui.UserInterface;
+import imagej.ui.common.awt.AWTDisplay;
+import imagej.ui.common.awt.AWTEventDispatcher;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

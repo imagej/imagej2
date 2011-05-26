@@ -35,9 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
-import imagej.awt.AWTCursors;
-import imagej.awt.AWTEventDispatcher;
-import imagej.awt.AWTImageCanvas;
 import imagej.display.CanvasHelper;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
@@ -50,12 +47,14 @@ import imagej.event.Events;
 import imagej.tool.ITool;
 import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
+import imagej.ui.common.awt.AWTCursors;
+import imagej.ui.common.awt.AWTEventDispatcher;
+import imagej.ui.common.awt.AWTImageCanvas;
 import imagej.ui.swing.tools.SelectionTool;
 import imagej.ui.swing.tools.roi.IJCreationTool;
 import imagej.ui.swing.tools.roi.IJCreationTool.OverlayCreatedEvent;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.util.IntCoords;
-import imagej.util.Log;
 import imagej.util.RealCoords;
 
 import java.awt.BorderLayout;

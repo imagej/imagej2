@@ -1,5 +1,5 @@
 //
-// AWTDisplay.java
+// AWTImageCanvas.java
 //
 
 /*
@@ -32,21 +32,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.awt;
+package imagej.ui.common.awt;
 
-import imagej.display.Display;
+import imagej.display.ImageCanvas;
+
+import java.awt.image.BufferedImage;
 
 /**
- * An AWT-based {@link Display}.
+ * An AWT-based {@link ImageCanvas}, which provides the ability
+ * to set the displayed image as a {@link BufferedImage}.
  *
  * @author Curtis Rueden
  */
-public interface AWTDisplay extends Display {
+public interface AWTImageCanvas extends ImageCanvas {
 
-	@Override
-	AWTDisplayWindow getDisplayWindow();
+	/**
+	 * Sets an image for display in the panel.
+	 * 
+	 * @param newImage an image to be set in the panel
+	 */
+	void setImage(final BufferedImage newImage);
 
-	@Override
-	AWTImageCanvas getImageCanvas();
+	/** Gets the image currently being displayed in the panel. */
+	BufferedImage getImage();
 
 }
