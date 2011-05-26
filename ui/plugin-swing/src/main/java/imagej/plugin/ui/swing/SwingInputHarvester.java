@@ -41,6 +41,7 @@ import imagej.plugin.PluginModuleInfo;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.plugin.ui.AbstractInputHarvester;
 import imagej.plugin.ui.InputPanel;
+import imagej.util.awt.AWTWindows;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -82,6 +83,7 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		widgetPane.add(((SwingInputPanel) inputPanel).getPanel());
 		dialog.setModal(true);
 		dialog.pack();
+		AWTWindows.centerWindow(dialog);
 		ensureDialogSizeReasonable(dialog);
 		// TODO - open IJ2 from within Eclipse. Give any app focus. Then close
 		//   IJ2 app via red close box in its left corner. Quit dialog comes
