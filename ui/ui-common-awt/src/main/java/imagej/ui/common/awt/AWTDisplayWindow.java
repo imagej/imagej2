@@ -1,5 +1,5 @@
 //
-// AWTImageDisplayWindow.java
+// AWTDisplayWindow.java
 //
 
 /*
@@ -37,7 +37,7 @@ package imagej.ui.common.awt;
 import imagej.display.DisplayWindow;
 
 /**
- * An AWT-based {@link DisplayWindow}.
+ * Superinterface for AWT-based {@link DisplayWindow}s (including Swing).
  *
  * @author Curtis Rueden
  */
