@@ -59,15 +59,25 @@ public class DatasetHarmonizer {
 	private final OverlayTranslator overlayTranslator;
 	private Map<ImagePlus,Integer> typeMap = new HashMap<ImagePlus,Integer>();
 
+	/** construct a {@link DatasetHarmonizer} with a given
+	 *  {@link ImageTranslator}. The translator is used to create new Datasets
+	 *  and ImagePluses when necessary.
+	 */
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
 		overlayTranslator = new OverlayTranslator();
 	}
 
+	/** remember the type of an {@link ImagePlus}. This type can be checked
+	 * after a call to a plugin to see if the ImagePlus underwent a type change.
+	 */
 	public void registerType(ImagePlus imp) {
 		typeMap.put(imp, imp.getType());
 	}
 	
+	/** forget the types of all {@link ImagePlus}es. Called before a plugin is
+	 * run to reset the tracking of types.
+	 */
 	public void resetTypeTracking() {
 		typeMap.clear();
 	}

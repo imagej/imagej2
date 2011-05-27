@@ -46,8 +46,9 @@ import imagej.data.Dataset;
 public class RGBImageTranslator implements ImageTranslator {
 
 	/**
-	 * Expects input {@link ImagePlus} to be of type {@link ImagePlus#COLOR_RGB}
-	 * with one channel.
+	 * Creates a color {@link Dataset} from a color {@link ImagePlus}. Expects
+	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
+	 * channel.
 	 */
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
@@ -58,7 +59,9 @@ public class RGBImageTranslator implements ImageTranslator {
 	}
 
 	/**
-	 * Expects input {@link Dataset} to have isRgbMerged() set with 3 channels.
+	 * Creates a color {@link ImagePlus} from a color {@link Dataset}. Expects
+	 * input expects input Dataset to have isRgbMerged() set with 3 channels
+	 * of unsigned byte data.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset ds) {

@@ -155,7 +155,6 @@ public class LegacyImageMap {
 
 	// -- helpers --
 
-	// TODO - think carefully about which events we need to forget mapping
 	private void subscribeToEvents() {
 		final EventSubscriber<DatasetDeletedEvent> deletionSubscriber =
 			new EventSubscriber<DatasetDeletedEvent>() {
