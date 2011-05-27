@@ -35,17 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import ij.gui.Arrow;
-import ij.gui.EllipseRoi;
-import ij.gui.FreehandRoi;
-import ij.gui.ImageRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.gui.TextRoi;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.roi.EllipseOverlay;
@@ -54,7 +49,9 @@ import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.OverlayManager;
 import imagej.util.Log;
+import imagej.util.awt.AWTColors;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +63,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * OverlayTranslator moves regions of interest back and forth between
- * {@link Overlay}s and {@link ImagePlus}es.
+ * {@link Overlay}s and {@link ImagePlus} {@link Roi}s.
  * 
  * @author Curtis Rueden
  */
@@ -142,59 +139,77 @@ public class OverlayTranslator {
 	}
 
 	private ShapeRoi createRectangleROI(final RectangleOverlay overlay) {
-		final RectangleRegionOfInterest roi = overlay.getRegionOfInterest();
-		final int dims = roi.numDimensions();
+		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
+		final int dims = region.numDimensions();
 		final double[] origin = new double[dims];
 		final double[] extent = new double[dims];
-		roi.getOrigin(origin);
-		roi.getExtent(extent);
+		region.getOrigin(origin);
+		region.getExtent(extent);
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) extent[0], h = (int) extent[1];
-		return new ShapeRoi(new Roi(x, y, w, h));
+		final Roi roi = new Roi(x, y, w, h);
+		assignPropertiesToRoi(roi, overlay);
+		return new ShapeRoi(roi);
 	}
 
 	private ShapeRoi createEllipseROI(final EllipseOverlay overlay) {
-		final EllipseRegionOfInterest roi = overlay.getRegionOfInterest();
-		final int dims = roi.numDimensions();
+		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
+		final int dims = region.numDimensions();
 		final double[] origin = new double[dims];
 		final double[] radii = new double[dims];
-		roi.getOrigin(origin);
-		roi.getRadii(radii);
+		region.getOrigin(origin);
+		region.getRadii(radii);
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) radii[0], h = (int) radii[1];
-		return new ShapeRoi(new OvalRoi(x, y, w, h));
+		final Roi roi = new OvalRoi(x, y, w, h);
+		assignPropertiesToRoi(roi, overlay);
+		return new ShapeRoi(roi);
 	}
 
 	private ShapeRoi createPolygonROI(final PolygonOverlay overlay) {
-		final PolygonRegionOfInterest roi = overlay.getRegionOfInterest();
-		final int vertexCount = roi.getVertexCount();
-		if (vertexCount == 1) return createPointROI(roi);
-		if (vertexCount == 2) return createLineROI(roi);
+		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		final int vertexCount = region.getVertexCount();
+		if (vertexCount == 1) return createPointROI(overlay);
+		if (vertexCount == 2) return createLineROI(overlay);
 		final float[] x = new float[vertexCount];
 		final float[] y = new float[vertexCount];
 		for (int v = 0; v < vertexCount; v++) {
-			final RealLocalizable vertex = roi.getVertex(v);
+			final RealLocalizable vertex = region.getVertex(v);
 			x[v] = vertex.getFloatPosition(0);
 			y[v] = vertex.getFloatPosition(1);
 		}
-		return new ShapeRoi(new PolygonRoi(x, y, vertexCount, Roi.POLYGON));
+		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
+		assignPropertiesToRoi(roi, overlay);
+		return new ShapeRoi(roi);
 	}
 
-	private ShapeRoi createPointROI(final PolygonRegionOfInterest roi) {
-		final RealLocalizable point = roi.getVertex(0);
+	private ShapeRoi createPointROI(final PolygonOverlay overlay) {
+		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		final RealLocalizable point = region.getVertex(0);
 		final int x = (int) point.getFloatPosition(0);
 		final int y = (int) point.getFloatPosition(1);
-		return new ShapeRoi(new PointRoi(x, y));
+		final Roi roi = new PointRoi(x, y);
+		assignPropertiesToRoi(roi, overlay);
+		return new ShapeRoi(roi);
 	}
 
-	private ShapeRoi createLineROI(final PolygonRegionOfInterest roi) {
-		final RealLocalizable p1 = roi.getVertex(0);
-		final RealLocalizable p2 = roi.getVertex(1);
+	private ShapeRoi createLineROI(final PolygonOverlay overlay) {
+		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		final RealLocalizable p1 = region.getVertex(0);
+		final RealLocalizable p2 = region.getVertex(1);
 		final double x1 = p1.getDoublePosition(0);
 		final double y1 = p1.getDoublePosition(1);
 		final double x2 = p2.getDoublePosition(0);
 		final double y2 = p2.getDoublePosition(1);
-		return new ShapeRoi(new Line(x1, y1, x2, y2));
+		final Roi roi = new Line(x1, y1, x2, y2);
+		assignPropertiesToRoi(roi, overlay);
+		return new ShapeRoi(roi);
+	}
+
+	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
+		roi.setStrokeWidth((float) overlay.getLineWidth());
+		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
+		roi.setFillColor(AWTColors.getColor(overlay.getFillColor()));
 	}
 
 	// -- Helper methods - IJ2 overlay creation --
@@ -202,91 +217,107 @@ public class OverlayTranslator {
 	private void
 		createOverlays(final Roi roi, final ArrayList<Overlay> overlays)
 	{
-		// TODO
-		if (roi instanceof ImageRoi) {
-			Log.warn("Ignoring unsupported ImageRoi: " + roi);
+		if (roi == null) return;
+
+		Log.warn("====> Roi class = " + roi.getClass().getName());
+		switch (roi.getType()) {
+			case Roi.RECTANGLE:
+				Log.warn("====> RECTANGLE: " + roi);
+				overlays.add(createRectangleOverlay(roi));
+				break;
+			case Roi.OVAL:
+				Log.warn("====> OVAL: " + roi);
+				overlays.add(createEllipseOverlay(roi));
+				break;
+			case Roi.POLYGON:
+				Log.warn("====> POLYGON: " + roi);
+				overlays.add(createPolygonOverlay(roi));
+				break;
+			case Roi.FREEROI:
+				Log.warn("====> FREEROI: " + roi);
+				throw new UnsupportedOperationException("FREEROI unimplemented");
+//				break;
+			case Roi.TRACED_ROI:
+				Log.warn("====> TRACED_ROI: " + roi);
+				throw new UnsupportedOperationException("TRACED_ROI unimplemented");
+//				break;
+			case Roi.LINE:
+				Log.warn("====> LINE: " + roi);
+				throw new UnsupportedOperationException("LINE unimplemented");
+//				break;
+			case Roi.POLYLINE:
+				Log.warn("====> POLYLINE: " + roi);
+				throw new UnsupportedOperationException("POLYLINE unimplemented");
+//				break;
+			case Roi.FREELINE:
+				Log.warn("====> FREELINE: " + roi);
+				throw new UnsupportedOperationException("FREELINE unimplemented");
+//				break;
+			case Roi.ANGLE:
+				Log.warn("====> ANGLE: " + roi);
+				throw new UnsupportedOperationException("ANGLE unimplemented");
+//				break;
+			case Roi.COMPOSITE:
+				Log.warn("====> COMPOSITE: " + roi);
+				final ShapeRoi shapeRoi = (ShapeRoi) roi;
+				final Roi[] rois = shapeRoi.getRois();
+				for (final Roi r : rois)
+					createOverlays(r, overlays);
+				break;
+			case Roi.POINT:
+				Log.warn("====> POINT: " + roi);
+				throw new UnsupportedOperationException("POINT unimplemented");
+//				break;
+			default:
+				Log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
+				throw new UnsupportedOperationException("OTHER unimplemented");
 		}
-		else if (roi instanceof Arrow) {
-			Log.warn("Ignoring unsupported Arrow: " + roi);
+	}
+
+	private RectangleOverlay createRectangleOverlay(final Roi roi) {
+		final RectangleOverlay overlay = new RectangleOverlay();
+		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
+		final Rectangle bounds = roi.getBounds();
+		region.setOrigin(bounds.x, 0);
+		region.setOrigin(bounds.y, 1);
+		region.setExtent(bounds.width, 0);
+		region.setExtent(bounds.height, 1);
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+	}
+
+	private EllipseOverlay createEllipseOverlay(final Roi roi) {
+		final EllipseOverlay overlay = new EllipseOverlay();
+		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
+		final Rectangle bounds = roi.getBounds();
+		region.setOrigin(bounds.x, 0);
+		region.setOrigin(bounds.y, 1);
+		region.setRadius(bounds.width, 0);
+		region.setRadius(bounds.height, 1);
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+	}
+
+	private PolygonOverlay createPolygonOverlay(final Roi roi) {
+		final PolygonRoi polygonRoi = (PolygonRoi) roi;
+
+		final PolygonOverlay overlay = new PolygonOverlay();
+		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		final int[] xCoords = polygonRoi.getXCoordinates();
+		final int[] yCoords = polygonRoi.getYCoordinates();
+		for (int i = 0; i < xCoords.length; i++) {
+			final double x = xCoords[i], y = yCoords[i];
+			region.addVertex(i, new RealPoint(x, y));
 		}
-		else if (roi instanceof Line) {
-			Log.warn("Ignoring unsupported Line: " + roi);
-		}
-		else if (roi instanceof OvalRoi) {
-			Log.warn("Ignoring unsupported OvalRoi: " + roi);
-		}
-		else if (roi instanceof EllipseRoi) {
-			Log.warn("Ignoring unsupported EllipseRoi: " + roi);
-		}
-		else if (roi instanceof FreehandRoi) {
-			Log.warn("Ignoring unsupported FreehandRoi: " + roi);
-		}
-		else if (roi instanceof PointRoi) {
-			Log.warn("Ignoring unsupported PointRoi: " + roi);
-		}
-		else if (roi instanceof PolygonRoi) {
-			final PolygonRoi polygonRoi = (PolygonRoi) roi;
-			final PolygonOverlay overlay = new PolygonOverlay();
-			final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-			final int[] xCoords = polygonRoi.getXCoordinates();
-			final int[] yCoords = polygonRoi.getYCoordinates();
-			for (int i = 0; i < xCoords.length; i++) {
-				final double x = xCoords[i], y = yCoords[i];
-				region.addVertex(i, new RealPoint(x, y));
-			}
-			Log.debug("====> Adding polygon overlay: " + overlay);// TEMP
-			overlays.add(overlay);
-		}
-		else if (roi instanceof ShapeRoi) {
-			final ShapeRoi shapeRoi = (ShapeRoi) roi;
-			final Roi[] rois = shapeRoi.getRois();
-			for (final Roi r : rois) {
-				createOverlays(r, overlays);
-			}
- 		}
-		else if (roi instanceof TextRoi) {
-			Log.warn("Ignoring unsupported TextRoi: " + roi);
-		}
-		else if (roi != null) { // Roi
-			switch (roi.getType()) {
-				case Roi.ANGLE:
-					Log.warn("Ignoring unsupported ANGLE: " + roi);
-					break;
-				case Roi.COMPOSITE:
-					Log.warn("Ignoring unsupported COMPOSITE: " + roi);
-					break;
-				case Roi.FREELINE:
-					Log.warn("Ignoring unsupported FREELINE: " + roi);
-					break;
-				case Roi.FREEROI:
-					Log.warn("Ignoring unsupported FREEROI: " + roi);
-					break;
-				case Roi.LINE:
-					Log.warn("Ignoring unsupported LINE: " + roi);
-					break;
-				case Roi.RECTANGLE:
-					Log.warn("Ignoring unsupported RECTANGLE: " + roi);
-					break;
-				case Roi.OVAL:
-					Log.warn("Ignoring unsupported OVAL: " + roi);
-					break;
-				case Roi.POINT:
-					Log.warn("Ignoring unsupported POINT: " + roi);
-					break;
-				case Roi.POLYGON:
-					Log.warn("Ignoring unsupported POLYGON: " + roi);
-					break;
-				case Roi.POLYLINE:
-					Log.warn("Ignoring unsupported POLYLINE: " + roi);
-					break;
-				case Roi.TRACED_ROI:
-					Log.warn("Ignoring unsupported TRACE_ROI: " + roi);
-					break;
-				default:
-					Log.warn("Ignoring unsupported Roi: " + roi);						
-					break;
-			}
-		}
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+	}
+
+	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
+	{
+		overlay.setLineWidth(roi.getStrokeWidth());
+		overlay.setLineColor(AWTColors.getColorRGB(roi.getStrokeColor()));
+		overlay.setFillColor(AWTColors.getColorRGBA(roi.getFillColor()));
 	}
 
 }
