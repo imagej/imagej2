@@ -43,6 +43,7 @@ import java.awt.Color;
  * Translates ImageJ {@link ColorRGB}s into AWT {@link Color}s.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 public final class AWTColors {
 
@@ -54,45 +55,51 @@ public final class AWTColors {
 	 * Gets the AWT {@link Color} corresponding to the given ImageJ
 	 * {@link ColorRGB}.
 	 */
-	public static Color getColor(final ColorRGB color) {
-		return new Color(color.getRed(), color.getGreen(), color.getBlue());
+	public static Color getColor(final ColorRGB c) {
+		if (c == null) return null;
+		return new Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
 	}
-	
+
 	/**
-	 * Get a java.awt.Color including the alpha component
-	 * @param color - RGBA color
-	 * @return the AWT color
-	 */
-	public static Color getColorRGBA(final ColorRGBA color) {
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	}
-	
-	/**
-	 * Get a java.awt.Color given an RGB color and an explicit alpha component (0-255)
-	 * @param color - RGB color
-	 * @param alpha - alpha value (0-255)
+	 * Get the AWT {@link Color} corresponding to the given ImageJ
+	 * {@link ColorRGB} plus explicit alpha component (0-255).
+	 * 
+	 * @param c RGB color
+	 * @param alpha alpha value (0-255)
 	 * @return AWT color
 	 */
-	public static Color getColorRGBA(final ColorRGB color, int alpha) {
-		assert (alpha >=0) && (alpha <=255): String.format("Alpha value of %d is out of range (0-255)", alpha);
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+	public static Color getColor(final ColorRGB c, final int alpha) {
+		if (c == null) return null;
+		if (alpha < 0 || alpha > 255) {
+			throw new IllegalArgumentException("Alpha value of " + alpha +
+				" is out of range (0-255)");
+		}
+		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
 	}
-	
+
 	/**
 	 * Gets the ImageJ {@link ColorRGB} corresponding to the given AWT
 	 * {@link Color}.
+	 * 
+	 * @param color {@link Color} to be translated
+	 * @return the corresponding ImageJ RGB color
 	 */
 	public static ColorRGB getColorRGB(final Color color) {
+		if (color == null) return null;
 		return new ColorRGB(color.getRed(), color.getGreen(), color.getBlue());
 	}
-	
+
 	/**
-	 * Get the color with alpha component
-	 * @param color - java.awt.Color to be translated
-	 * @return the imageJ RGB color
+	 * Get the ImageJ {@link ColorRGBA} corresponding to the given AWT
+	 * {@link Color}, including alpha component.
+	 * 
+	 * @param color {@link Color} to be translated
+	 * @return the corresponding ImageJ RGBA color
 	 */
 	public static ColorRGBA getColorRGBA(final Color color) {
-		return new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+		if (color == null) return null;
+		return new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(),
+			color.getAlpha());
 	}
 
 }

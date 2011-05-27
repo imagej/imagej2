@@ -77,7 +77,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends 
 		figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
 		figure.set(AttributeKeys.STROKE_WIDTH, overlay.getLineWidth());
 		final ColorRGB fillColor = overlay.getFillColor();
-		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColorRGBA(fillColor, overlay.getAlpha()));
+		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, overlay.getAlpha()));
 	}
 
 	@Override
