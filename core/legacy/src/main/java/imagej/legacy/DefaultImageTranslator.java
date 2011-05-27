@@ -49,6 +49,9 @@ public class DefaultImageTranslator implements ImageTranslator {
 	private GrayscaleImageTranslator grayscaleTranslator =
 		new GrayscaleImageTranslator();
 
+	/** creates a {@link Dataset} from an {@link ImagePlus}. Shares planes of
+	 *  data when possible.
+	 */
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -57,6 +60,9 @@ public class DefaultImageTranslator implements ImageTranslator {
 		return grayscaleTranslator.createDataset(imp);
 	}
 
+	/** creates an {@link ImagePlus} from a {@link Dataset}. Shares planes of
+	 *  data when possible.
+	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {		
 		if (dataset.isRGBMerged()) {

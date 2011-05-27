@@ -41,11 +41,14 @@ import imagej.data.Dataset;
  * Translates between legacy and modern ImageJ image structures for non-RGB
  * data.
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
+	/** creates a {@link Dataset} from an {@link ImagePlus}. The Dataset made
+	 * is planar sharing plane references with the ImagePlus.
+	 */
 	@Override
 	public Dataset createDataset(final ImagePlus imp) {
 		Dataset ds = LegacyUtils.makeExactDataset(imp);
@@ -53,6 +56,9 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		return ds;
 	}
 
+	/** creates an {@link ImagePlus} from a {@link Dataset}. The ImagePlus made
+	 * is shares plane references with the Dataset when possible.
+	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
 		ImagePlus imp;
