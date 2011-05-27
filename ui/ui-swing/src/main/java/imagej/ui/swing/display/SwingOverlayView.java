@@ -87,8 +87,8 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		this.display = display;
 		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
 		this.figure = figure == null ? adapter.createDefaultFigure() : figure;
-		adapter.updateFigure(overlay, figure);
-		figure.addFigureListener(new FigureAdapter() {
+		adapter.updateFigure(overlay, this.figure);
+		this.figure.addFigureListener(new FigureAdapter() {
 			@Override
 			public void attributeChanged(FigureEvent e) {
 				synchronized (SwingOverlayView.this) {
