@@ -34,10 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.ImageJ;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.object.ObjectManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manager component for working with {@link Display}s.
@@ -66,6 +71,29 @@ public final class DisplayManager implements ManagerComponent {
 		final DataObject dataObject = activeView.getDataObject();
 		if (dataObject instanceof Dataset) return (Dataset) dataObject;
 		return null;
+	}
+
+	/** Gets a list of all active {@link Display}s. */
+	public List<Display> getDisplays() {
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
+		return objectManager.getObjects(Display.class);
+	}
+
+	/**
+	 * Gets a list of {@link Display}s containing the given {@link DataObject}.
+	 */
+	public List<Display> getDisplays(final DataObject dataObject) {
+		final ArrayList<Display> displays = new ArrayList<Display>();
+		for (final Display display : getDisplays()) {
+			// check whether data object is present in this display
+			for (final DisplayView view : display.getViews()) {
+				if (dataObject == view.getDataObject()) {
+					displays.add(display);
+					break;
+				}
+			}
+		}
+		return displays;
 	}
 
 	// -- ManagerComponent methods --
