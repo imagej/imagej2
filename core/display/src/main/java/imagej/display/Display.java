@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
-import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.plugin.BasePlugin;
 

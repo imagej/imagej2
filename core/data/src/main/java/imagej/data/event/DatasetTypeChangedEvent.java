@@ -41,20 +41,9 @@ import imagej.data.Dataset;
  * 
  * @author Barry DeZonia
  */
-public class DatasetTypeChangedEvent extends DataObjectChangedEvent {
-
-	private final Dataset dataset;
+public class DatasetTypeChangedEvent extends DatasetUpdatedEvent {
 
 	public DatasetTypeChangedEvent(final Dataset dataset) {
 		super(dataset);
-		this.dataset = dataset;
 	}
-
-	// -- ObjectEvent methods --
-
-	@Override
-	public Dataset getObject() {
-		return dataset;
-	}
-
 }

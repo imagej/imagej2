@@ -36,8 +36,6 @@ package imagej.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetUpdatedEvent;
-import imagej.event.Events;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;

@@ -41,20 +41,9 @@ import imagej.data.Dataset;
  * 
  * @author Barry DeZonia
  */
-public class DatasetRGBChangedEvent extends DataObjectChangedEvent {
-
-	private final Dataset dataset;
+public class DatasetRGBChangedEvent extends DatasetUpdatedEvent {
 
 	public DatasetRGBChangedEvent(final Dataset dataset) {
 		super(dataset);
-		this.dataset = dataset;
 	}
-
-	// -- ObjectEvent methods --
-
-	@Override
-	public Dataset getObject() {
-		return dataset;
-	}
-
 }
