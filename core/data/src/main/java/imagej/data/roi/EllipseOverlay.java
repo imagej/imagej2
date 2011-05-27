@@ -22,6 +22,7 @@ public class EllipseOverlay extends AbstractROIOverlay<EllipseRegionOfInterest> 
 	}
 	private static final long serialVersionUID = 1L;
 	
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		EllipseRegionOfInterest roi = getRegionOfInterest();
@@ -30,6 +31,7 @@ public class EllipseOverlay extends AbstractROIOverlay<EllipseRegionOfInterest> 
 		out.writeDouble(roi.getRadius(0));
 		out.writeDouble(roi.getRadius(1));
 	}
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
 		EllipseRegionOfInterest roi = getRegionOfInterest();

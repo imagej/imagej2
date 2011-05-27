@@ -144,6 +144,7 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 	/**
 	 * @return the width to be used when painting lines and shape borders, in pixels.
 	 */
+	@Override
 	public double getLineWidth() {
 		return lineWidth;
 	}
@@ -151,6 +152,7 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 	/**
 	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
 	 */
+	@Override
 	public void setLineWidth(double lineWidth) {
 		if (this.lineWidth != lineWidth) {
 			this.lineWidth = lineWidth;

@@ -55,6 +55,7 @@ public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfIntere
 		super(new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0}));
 	}
 
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		RectangleRegionOfInterest roi = getRegionOfInterest();
@@ -63,6 +64,8 @@ public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfIntere
 		out.writeDouble(roi.getExtent(0));
 		out.writeDouble(roi.getExtent(1));
 	}
+
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
 		RectangleRegionOfInterest roi = getRegionOfInterest();
