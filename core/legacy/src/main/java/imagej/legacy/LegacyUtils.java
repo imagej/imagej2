@@ -227,11 +227,13 @@ public class LegacyUtils {
 	 */
 	static void setImagePlusGrayData(Dataset ds, ImagePlus imp) {
 		boolean bitData = ds.getType() instanceof BitType;
-		int x = imp.getWidth();
-		int y = imp.getHeight();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
 		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int x = imp.getWidth();
+		int y = imp.getHeight();
 		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
 		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
 		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
@@ -245,9 +247,9 @@ public class LegacyUtils {
 					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
 					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, 1);
+						accessor.setPosition(yi, yIndex);
 						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, 0);
+							accessor.setPosition(xi, xIndex);
 							double value = accessor.get().getRealDouble();
 							if (bitData)
 								if (value > 0)
@@ -262,16 +264,19 @@ public class LegacyUtils {
 
 	/** Assigns the data values of a color {@link ImagePlus} from a paired
 	 *  {@link Dataset}. Assumes the Dataset and ImagePlus have the same
-	 *  dimensions and that the data planes are not directly mapped. Sets
-	 *  values via {@link ImageProcessor}::set(). Does not change the
-	 *  ImagePlus' metadata.
+	 *  dimensions and that the data planes are not directly mapped. Also
+	 *  assumes that the Dataset has isRGBMerged() true. Sets values via
+	 *  {@link ImageProcessor}::set(). Does not change the ImagePlus' metadata.
 	 */
 	static void setImagePlusColorData(Dataset ds, ImagePlus imp) {
-		int x = imp.getWidth();
-		int y = imp.getHeight();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
 		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int x = imp.getWidth();
+		int y = imp.getHeight();
+		//  c is always 3 in this case
 		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
 		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
 		int imagejPlaneNumber = 1;
@@ -282,9 +287,9 @@ public class LegacyUtils {
 				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
 				ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 				for (int yi = 0; yi < y; yi++) {
-					accessor.setPosition(yi, 1);
+					accessor.setPosition(yi, yIndex);
 					for (int xi = 0; xi < x; xi++) {
-						accessor.setPosition(xi, 0);
+						accessor.setPosition(xi, xIndex);
 						
 						accessor.setPosition(0, cIndex);
 						int rValue = ((int) accessor.get().getRealDouble()) & 0xff;
@@ -316,11 +321,13 @@ public class LegacyUtils {
 		RealType<?> type = ds.getType();
 		double typeMin = type.getMinValue();
 		double typeMax = type.getMaxValue();
-		int x = imp.getWidth();
-		int y = imp.getHeight();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
 		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int x = imp.getWidth();
+		int y = imp.getHeight();
 		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
 		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
 		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
@@ -334,9 +341,9 @@ public class LegacyUtils {
 					if (cIndex >= 0) accessor.setPosition(ci, cIndex);
 					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, 1);
+						accessor.setPosition(yi, yIndex);
 						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, 0);
+							accessor.setPosition(xi, xIndex);
 							double value = proc.getf(xi, yi);
 							// NB - always clamp! a little unnecessary work sometimes
 							if (value < typeMin) value = typeMin;
@@ -356,11 +363,14 @@ public class LegacyUtils {
 	 *  {@link ImageProcessor}::get(). Does not change the Dataset's metadata.
 	 */
 	static void setDatasetColorData(Dataset ds, ImagePlus imp) {
-		int x = imp.getWidth();
-		int y = imp.getHeight();
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
 		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int x = imp.getWidth();
+		int y = imp.getHeight();
+		//  c is always 3 in this case
 		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
 		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
 		int imagejPlaneNumber = 1;
@@ -371,9 +381,9 @@ public class LegacyUtils {
 				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
 				ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 				for (int yi = 0; yi < y; yi++) {
-					accessor.setPosition(yi, 1);
+					accessor.setPosition(yi, yIndex);
 					for (int xi = 0; xi < x; xi++) {
-						accessor.setPosition(xi, 0);
+						accessor.setPosition(xi, xIndex);
 						int value = proc.get(xi, yi);
 						int rValue = (value >> 16) & 0xff;
 						int gValue = (value >> 8) & 0xff;
