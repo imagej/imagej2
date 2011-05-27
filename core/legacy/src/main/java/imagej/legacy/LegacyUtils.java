@@ -156,7 +156,8 @@ public class LegacyUtils {
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
-
+		assertXYPlanesCorrectlyOriented(dimIndices);
+		
 		final int cIndex = dimIndices[2];
 		final int zIndex = dimIndices[3];
 		final int tIndex = dimIndices[4];
@@ -414,7 +415,8 @@ public class LegacyUtils {
 		int[] dimIndices = new int[5];
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
-
+		assertXYPlanesCorrectlyOriented(dimIndices);
+		
 		final int cIndex = dimIndices[2];
 		final int zIndex = dimIndices[3];
 		final int tIndex = dimIndices[4];
@@ -750,18 +752,16 @@ public class LegacyUtils {
 
 		// check width
 		final int xIndex = dataset.getAxisIndex(Axes.X);
-		if (xIndex != 0) {
-			throw new IllegalArgumentException("Expected X as dimension #0");
-		}
+		if (xIndex < 0)
+			throw new IllegalArgumentException("missing X axis");
 		if (dims[xIndex] > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Width out of range: " + dims[xIndex]);
 		}
 
 		// check height
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		if (yIndex != 1) {
-			throw new IllegalArgumentException("Expected Y as dimension #1");
-		}
+		if (yIndex < 0)
+			throw new IllegalArgumentException("missing Y axis");
 		if (dims[yIndex] > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Height out of range: " + dims[yIndex]);
 		}
@@ -793,6 +793,14 @@ public class LegacyUtils {
 		outputDims[4] = (int) tCount;
 	}
 
+	/** throws an Exception if the planes of a Dataset are not compatible with IJ1 */
+	private static void assertXYPlanesCorrectlyOriented(int[] dimIndices) {
+		if (dimIndices[0] != 0)
+			throw new IllegalArgumentException("Dataset does not have X as the first axis");
+		if (dimIndices[1] != 1)
+			throw new IllegalArgumentException("Dataset does not have Y as the second axis");
+	}
+	
 	/** returns true if a {@link Dataset} is backed by {@link PlanarAccess} */
 	private static boolean ij1StorageCompatible(Dataset ds) {
 		return ds.getImgPlus().getImg() instanceof PlanarAccess;
