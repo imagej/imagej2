@@ -1,5 +1,5 @@
 //
-// DisplayDeselectedEvent.java
+// DisplayViewDeselectedEvent.java
 //
 
 /*
@@ -31,25 +31,22 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.display.event;
 
-import imagej.display.Display;
 import imagej.display.DisplayView;
 
 /**
+ * An event that indicates that a display view is no longer selected.
+ * 
  * @author Lee Kamentsky
- *
- *An event that indicates that a display view is no longer selected.
  */
 public class DisplayViewDeselectedEvent extends DisplayViewSelectionEvent {
 
-	public DisplayViewDeselectedEvent(DisplayView displayView) {
+	public DisplayViewDeselectedEvent(final DisplayView displayView) {
 		super(displayView);
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.display.event.DisplaySelectionEvent#isSelected()
-	 */
 	@Override
 	public boolean isSelected() {
 		return false;

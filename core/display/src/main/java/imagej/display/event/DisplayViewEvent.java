@@ -31,20 +31,20 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.display.event;
 
-import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.event.ImageJEvent;
 
-
 /**
+ * An event on a display view.
+ * 
  * @author Lee Kamentsky
- *
- * An event on a display view
  */
 public class DisplayViewEvent extends ImageJEvent {
-	private DisplayView displayView;
+
+	private final DisplayView displayView;
 
 	public DisplayViewEvent(final DisplayView displayView) {
 		this.displayView = displayView;

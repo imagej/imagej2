@@ -1,5 +1,5 @@
 //
-// DisplaySelectionEvent.java
+// DisplayViewSelectionEvent.java
 //
 
 /*
@@ -31,25 +31,25 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.display.event;
 
-import imagej.display.Display;
 import imagej.display.DisplayView;
 
 /**
- * @author leek
- *
+ * TODO
+ * 
+ * @author Lee Kamentsky
  */
 public abstract class DisplayViewSelectionEvent extends DisplayViewEvent {
 
-	public DisplayViewSelectionEvent(DisplayView displayView) {
+	public DisplayViewSelectionEvent(final DisplayView displayView) {
 		super(displayView);
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	/**
-	 * 
-	 * @return true if the event signals that the indicated display is selected, false if deselected 
+	 * @return true if the event signals that the indicated display is selected,
+	 *         false if deselected
 	 */
-	abstract public boolean isSelected();
+	public abstract boolean isSelected();
 }
