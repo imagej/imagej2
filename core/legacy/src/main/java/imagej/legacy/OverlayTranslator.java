@@ -247,7 +247,7 @@ public class OverlayTranslator {
 		else if (roi instanceof TextRoi) {
 			Log.warn("Ignoring unsupported TextRoi: " + roi);
 		}
-		else { // Roi
+		else if (roi != null) { // Roi
 			switch (roi.getType()) {
 				case Roi.ANGLE:
 					Log.warn("Ignoring unsupported ANGLE: " + roi);
