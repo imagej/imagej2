@@ -135,7 +135,8 @@ public class OverlayTranslator {
 			return createPolygonROI((PolygonOverlay) overlay);
 		}
 		// TODO: lines, arrows, freehand, text, arbitrary masks
-		return null;
+		throw new UnsupportedOperationException("Translation of " +
+			overlay.getClass().getName() + " is unimplemented");
 	}
 
 	private ShapeRoi createRectangleROI(final RectangleOverlay overlay) {
@@ -147,9 +148,9 @@ public class OverlayTranslator {
 		region.getExtent(extent);
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) extent[0], h = (int) extent[1];
-		final Roi roi = new Roi(x, y, w, h);
+		final ShapeRoi roi = new ShapeRoi(new Roi(x, y, w, h));
 		assignPropertiesToRoi(roi, overlay);
-		return new ShapeRoi(roi);
+		return roi;
 	}
 
 	private ShapeRoi createEllipseROI(final EllipseOverlay overlay) {
@@ -161,9 +162,9 @@ public class OverlayTranslator {
 		region.getRadii(radii);
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) radii[0], h = (int) radii[1];
-		final Roi roi = new OvalRoi(x, y, w, h);
+		final ShapeRoi roi = new ShapeRoi(new OvalRoi(x, y, w, h));
 		assignPropertiesToRoi(roi, overlay);
-		return new ShapeRoi(roi);
+		return roi;
 	}
 
 	private ShapeRoi createPolygonROI(final PolygonOverlay overlay) {
@@ -178,9 +179,10 @@ public class OverlayTranslator {
 			x[v] = vertex.getFloatPosition(0);
 			y[v] = vertex.getFloatPosition(1);
 		}
-		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
+		final ShapeRoi roi =
+			new ShapeRoi(new PolygonRoi(x, y, vertexCount, Roi.POLYGON));
 		assignPropertiesToRoi(roi, overlay);
-		return new ShapeRoi(roi);
+		return roi;
 	}
 
 	private ShapeRoi createPointROI(final PolygonOverlay overlay) {
@@ -188,9 +190,9 @@ public class OverlayTranslator {
 		final RealLocalizable point = region.getVertex(0);
 		final int x = (int) point.getFloatPosition(0);
 		final int y = (int) point.getFloatPosition(1);
-		final Roi roi = new PointRoi(x, y);
+		final ShapeRoi roi = new ShapeRoi(new PointRoi(x, y));
 		assignPropertiesToRoi(roi, overlay);
-		return new ShapeRoi(roi);
+		return roi;
 	}
 
 	private ShapeRoi createLineROI(final PolygonOverlay overlay) {
@@ -201,12 +203,14 @@ public class OverlayTranslator {
 		final double y1 = p1.getDoublePosition(1);
 		final double x2 = p2.getDoublePosition(0);
 		final double y2 = p2.getDoublePosition(1);
-		final Roi roi = new Line(x1, y1, x2, y2);
+		final ShapeRoi roi = new ShapeRoi(new Line(x1, y1, x2, y2));
 		assignPropertiesToRoi(roi, overlay);
-		return new ShapeRoi(roi);
+		return roi;
 	}
 
-	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
+	private void
+		assignPropertiesToRoi(final ShapeRoi roi, final Overlay overlay)
+	{
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
 		roi.setFillColor(AWTColors.getColor(overlay.getFillColor()));
