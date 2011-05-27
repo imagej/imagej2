@@ -130,7 +130,7 @@ public class ZoomTool extends BaseTool {
 	public void onMouseWheel(final MsWheelEvent evt) {
 		final Display display = evt.getDisplay();
 		final IntCoords center = new IntCoords(evt.getX(), evt.getY());
-		if (evt.getWheelRotation() > 0) {
+		if (evt.getWheelRotation() < 0) {
 			display.getImageCanvas().zoomIn(center);
 		}
 		else {
