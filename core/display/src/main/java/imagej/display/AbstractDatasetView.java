@@ -298,6 +298,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 
 				@Override
 				public void onEvent(DatasetUpdatedEvent event) {
+					if (event instanceof DatasetTypeChangedEvent) return;
+					if (event instanceof DatasetRGBChangedEvent) return;
 					if (dataset == event.getObject()) projector.map();
 				}
 			};
