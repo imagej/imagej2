@@ -48,9 +48,6 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.FloatType;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
@@ -609,7 +606,9 @@ public class LegacyUtils {
 	 */
 	private static boolean isColorCompatible(Dataset ds) {
 		if ( ! ds.isRGBMerged() ) return false;
-		if ( ! (ds.getType() instanceof UnsignedByteType) ) return false;
+		if ( ! ds.isInteger() ) return false;
+		if (ds.isSigned()) return false;
+		if (ds.getType().getBitsPerPixel() != 8) return false;
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		if (cIndex < 0) return false;
 		if (ds.getImgPlus().dimension(cIndex) != 3) return false;
@@ -810,13 +809,27 @@ public class LegacyUtils {
 	 * represented in an IJ1 ImagePlus. 
 	 */
 	private static boolean ij1TypeCompatible(Dataset ds) {
-		// TODO - rather than direct type comparisons should we reason
-		// here on bitPerPix, sign. integer flags? Which is correct
-		// both now and in the long run?
 		RealType<?> type = ds.getType();
-		if (type instanceof UnsignedByteType) return true;
-		if (type instanceof UnsignedShortType) return true;
-		if (type instanceof FloatType) return true;
+		int bitsPerPix = type.getBitsPerPixel();
+		boolean integer = ds.isInteger();
+		boolean signed = ds.isSigned();
+		
+		Object plane;
+		if ((bitsPerPix == 8) && !signed && integer) {
+			plane = ds.getPlane(0,false);
+			if ((plane != null) && (plane instanceof byte[]))
+				return true;
+		}
+		else if ((bitsPerPix == 16) && !signed && integer) {
+			plane = ds.getPlane(0,false);
+			if ((plane != null) && (plane instanceof short[]))
+				return true;
+		}
+		else if ((bitsPerPix == 32) && signed && !integer) {
+			plane = ds.getPlane(0,false);
+			if ((plane != null) && (plane instanceof float[]))
+				return true;
+		}
 		return false;
 	}
 
