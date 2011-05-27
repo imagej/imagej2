@@ -58,6 +58,7 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -420,11 +421,23 @@ public class JHotDrawImageCanvas extends JPanel implements AWTImageCanvas,
 		final Point viewPos = scrollPane.getViewport().getViewPosition();
 		final IntCoords origin = canvasHelper.getPanOrigin();
 		if (viewPos.x == origin.x && viewPos.y == origin.y) return; // no change
+		constrainOrigin(origin);
 		scrollPane.getViewport().setViewPosition(new Point(origin.x, origin.y));
 	}
 
 	private void syncZoom() {
 		drawingView.setScaleFactor(canvasHelper.getZoomFactor());
+	}
+
+	private void constrainOrigin(final IntCoords origin) {
+		if (origin.x < 0) origin.x = 0;
+		if (origin.y < 0) origin.y = 0;
+		final Dimension viewportSize = scrollPane.getViewport().getSize();
+		final Dimension canvasSize = drawingView.getSize();
+		final int xMax = canvasSize.width - viewportSize.width;
+		final int yMax = canvasSize.height - viewportSize.height;
+		if (origin.x > xMax) origin.x = xMax;
+		if (origin.y > yMax) origin.y = yMax;
 	}
 
 }
