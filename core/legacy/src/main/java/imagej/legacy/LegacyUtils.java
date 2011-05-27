@@ -428,7 +428,7 @@ public class LegacyUtils {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
 					// NB - getImagePlusDims() removes need to check planeNum range
 					final int planeNum = (int) Index.indexNDto1D(planeDims, planePos);
-					final Object plane = ds.getPlane(planeNum);
+					final Object plane = ds.getPlane(planeNum,false);
 					if (plane == null) {
 						Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
 					}
