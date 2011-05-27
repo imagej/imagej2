@@ -1,5 +1,5 @@
 //
-// SwingImageCanvas.java
+// AWTImageCanvas.java
 //
 
 /*
@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.ui.awt.display;
 
 import imagej.display.CanvasHelper;
 import imagej.display.EventDispatcher;
@@ -43,7 +43,6 @@ import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTEventDispatcher;
-import imagej.ui.common.awt.AWTImageCanvas;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
 import imagej.util.Log;
@@ -52,16 +51,15 @@ import imagej.util.RealCoords;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Panel;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JPanel;
-
 /**
- * A Swing implementation of {@link ImageCanvas}.
+ * An AWT implementation of {@link ImageCanvas}.
  * <p>
  * This code is based on <a
  * href="http://today.java.net/article/2007/03/23/navigable-image-panel">Slav
@@ -72,7 +70,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
+public class AWTImageCanvas extends Panel implements ImageCanvas,
 	EventSubscriber<ToolActivatedEvent>
 {
 
@@ -94,20 +92,20 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 	private Dimension previousPanelSize;
 
 	/** Creates an image canvas with no default image. */
-	public SwingImageCanvas() {
+	public AWTImageCanvas() {
 		canvasHelper = new CanvasHelper(this);
-		setOpaque(false);
+//		setOpaque(false);
 		addResizeListener();
 		Events.subscribe(ToolActivatedEvent.class, this);
 	}
 
 	/** Creates an image canvas with the specified image. */
-	public SwingImageCanvas(final BufferedImage image) {
+	public AWTImageCanvas(final BufferedImage image) {
 		this();
 		setImage(image);
 	}
 
-	// -- SwingImageCanvas methods --
+	// -- AWTImageCanvas methods --
 
 	/**
 	 * Indicates whether the high quality rendering feature is enabled.
@@ -127,11 +125,24 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		highQualityRenderingEnabled = enabled;
 	}
 
-	// -- JComponent methods --
+	public BufferedImage getImage() {
+		return image;
+	}
+
+	public void setImage(final BufferedImage newImage) {
+		image = newImage;
+		final Dimension maxDims = calcMaxAllowableDimensions();
+		final Dimension dimensions =
+			calcReasonableDimensions(maxDims, image.getWidth(), image.getHeight());
+		setPreferredSize(dimensions);
+		repaint();
+	}
+
+	// -- Component methods --
 
 	@Override
-	protected void paintComponent(final Graphics g) {
-		super.paintComponent(g); // paint the background
+	public void paint(final Graphics g) {
+		super.paint(g); // paint the background
 
 		if (image == null) return;
 
@@ -174,23 +185,6 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 			Log.debug("LOW QUALITY CASE: origin=(" + x + ", " + y + "), size=(" +
 				width + ", " + height + ")");
 		}
-	}
-
-	// -- AWTImageCanvas methods --
-
-	@Override
-	public BufferedImage getImage() {
-		return image;
-	}
-
-	@Override
-	public void setImage(final BufferedImage newImage) {
-		image = newImage;
-		final Dimension maxDims = calcMaxAllowableDimensions();
-		final Dimension dimensions =
-			calcReasonableDimensions(maxDims, image.getWidth(), image.getHeight());
-		setPreferredSize(dimensions);
-		repaint();
 	}
 
 	// -- ImageCanvas methods --
@@ -413,7 +407,7 @@ public class SwingImageCanvas extends JPanel implements AWTImageCanvas,
 		return (int) (scale * image.getHeight());
 	}
 
-	/** Called from {@link #paintComponent} when a new image is set. */
+	/** Called from {@link #paint} when a new image is set. */
 	private void initializeParams() {
 		initialScale = calcInitialScale();
 		canvasHelper.setPan(new IntCoords(0, 0));

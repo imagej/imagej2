@@ -37,7 +37,7 @@ package imagej.ui.common.awt;
 import imagej.display.Display;
 
 /**
- * An AWT-based {@link Display}.
+ * Superinterface for AWT-based {@link Display}s (including Swing).
  *
  * @author Curtis Rueden
  */
@@ -45,8 +45,5 @@ public interface AWTDisplay extends Display {
 
 	@Override
 	AWTDisplayWindow getDisplayWindow();
-
-	@Override
-	AWTImageCanvas getImageCanvas();
 
 }
