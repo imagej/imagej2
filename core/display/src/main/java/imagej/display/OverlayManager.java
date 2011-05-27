@@ -92,23 +92,10 @@ public final class OverlayManager implements ManagerComponent {
 	 */
 	public List<Overlay> getOverlays(final Dataset dataset) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		final List<Display> displays = objectManager.getObjects(Display.class);
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final List<Display> displays = displayManager.getDisplays(dataset);
 		for (final Display display : displays) {
-			// check whether dataset is present in this display
-			boolean relevant = false;
-			final List<DisplayView> views = display.getViews();
-			for (final DisplayView view : views) {
-				final DataObject dataObject = view.getDataObject();
-				if (dataObject == dataset) {
-					relevant = true;
-					break;
-				}
-			}
-			if (!relevant) continue;
-
-			// add this display's overlays to the list
-			for (final DisplayView view : views) {
+			for (final DisplayView view : display.getViews()) {
 				final DataObject dataObject = view.getDataObject();
 				if (!(dataObject instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) dataObject;

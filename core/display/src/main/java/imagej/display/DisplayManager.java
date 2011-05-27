@@ -48,6 +48,7 @@ import java.util.List;
  * Manager component for working with {@link Display}s.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Manager(priority = Manager.NORMAL_PRIORITY)
 public final class DisplayManager implements ManagerComponent {
