@@ -52,6 +52,7 @@ public class PolygonOverlay extends AbstractROIOverlay<PolygonRegionOfInterest> 
 	}
 	private static final long serialVersionUID = 1L;
 	
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		PolygonRegionOfInterest roi = getRegionOfInterest();
@@ -63,6 +64,7 @@ public class PolygonOverlay extends AbstractROIOverlay<PolygonRegionOfInterest> 
 			out.writeDouble(vertex.getDoublePosition(1));
 		}
 	}
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
 		PolygonRegionOfInterest roi = getRegionOfInterest();
