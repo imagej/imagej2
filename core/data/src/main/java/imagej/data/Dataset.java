@@ -171,7 +171,7 @@ public class Dataset extends AbstractDataObject implements
 		return axes;
 	}
 
-	public Object getPlane(final int planeNumber) {
+	public Object getPlane(final int planeNumber, boolean copyOK) {
 		final Img<? extends RealType<?>> img = imgPlus.getImg();
 		if (img instanceof PlanarAccess) {
 			final PlanarAccess<?> planarAccess = (PlanarAccess<?>) img;
@@ -179,7 +179,9 @@ public class Dataset extends AbstractDataObject implements
 			if (plane instanceof ArrayDataAccess)
 				return ((ArrayDataAccess<?>) plane).getCurrentStorageArray();
 		}
-		return copyOfPlane(planeNumber);
+		if (copyOK)
+			return copyOfPlane(planeNumber);
+		return null;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

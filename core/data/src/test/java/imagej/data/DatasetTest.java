@@ -71,7 +71,7 @@ public class DatasetTest {
 		for (int t = 0; t < TPLANES; t++) {
 			for (int z = 0; z < ZPLANES; z++) {
 				for (int c = 0; c < CPLANES; c++) {
-					int[] plane = (int[]) ds.getPlane(planeNum++);
+					int[] plane = (int[]) ds.getPlane(planeNum++,false);
 					assertSame(plane, planes[t][z][c]);
 					for (int i = 0; i < planeSize; i++)
 						assertEquals(planeValue(c,z,t), plane[i]);
@@ -108,8 +108,8 @@ public class DatasetTest {
 		for (int t = 0; t < TPLANES; t++) {
 			for (int z = 0; z < ZPLANES; z++) {
 				for (int c = 0; c < CPLANES; c++) {
-					int[] plane1 = (int[]) ds.getPlane(planeNum);
-					int[] plane2 = (int[]) ds.getPlane(planeNum);
+					int[] plane1 = (int[]) ds.getPlane(planeNum,true);
+					int[] plane2 = (int[]) ds.getPlane(planeNum,true);
 					assertNotSame(plane1, plane2);
 					for (int i = 0; i < DIMENSIONS[0]*DIMENSIONS[1]; i++) {
 						assertEquals(planeValue(c,z,t), plane1[i]);
