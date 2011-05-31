@@ -69,6 +69,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			LegacyUtils.setImagePlusGrayData(dataset, imp);
 		}
 		LegacyUtils.setImagePlusMetadata(dataset, imp);
+		LegacyUtils.setViewLuts(dataset, imp);
 		return imp;
 	}
 }

@@ -72,7 +72,7 @@ public class DatasetHarmonizer {
 	 * after a call to a plugin to see if the ImagePlus underwent a type change.
 	 */
 	public void registerType(ImagePlus imp) {
-		typeMap.put(imp, imp.getType());
+		typeMap.put(imp, imp.getBitDepth());
 	}
 	
 	/** forget the types of all {@link ImagePlus}es. Called before a plugin is
@@ -114,7 +114,7 @@ public class DatasetHarmonizer {
 	 */
 	public void updateDataset(Dataset ds, ImagePlus imp) {
 		// did type of ImagePlus change?
-		if (imp.getType() != typeMap.get(imp)) {
+		if (imp.getBitDepth() != typeMap.get(imp)) {
 			Dataset tmp = imageTranslator.createDataset(imp);
 			ds.setImgPlus(tmp.getImgPlus());
 			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
@@ -130,6 +130,7 @@ public class DatasetHarmonizer {
 				LegacyUtils.setDatasetGrayData(ds, imp);
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);
 		setCompositeChannels(ds, imp);
 		overlayTranslator.setDatasetOverlays(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
