@@ -40,6 +40,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import java.awt.image.IndexColorModel;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable8;
@@ -557,7 +559,7 @@ public class LegacyUtils {
 
 	static void setViewLuts(Dataset ds, ImagePlus imp) {
 		boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
-		Object[] colorTables = colorTablesFromImagePlus(imp);
+		List<Object> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(ds, colorTables, sixteenBitLuts);
 	}
 
@@ -881,27 +883,27 @@ public class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
-	private static void assignColorTables(Dataset ds, Object[] colorTables, boolean sixteenBitLuts) {
-		// FIXME - hack - until LegacyLayer maps Displays. grab the first Display
-		//   and set its default channel luts. When we allow multiple views of a
-		//   Dataset this will break. We avoid setting a Dataset's per plane LUTs
-		//   because it would be expensive and also IJ1 LUTs are not model space
-		//   constructs but rather view space constructs.
+	private static void assignColorTables(Dataset ds, List<Object> colorTables, boolean sixteenBitLuts) {
+		// FIXME - hack - for now until legacy layer maps Display <--> ImagePlus.
+		//   grab the first Display and set its default channel luts. When we allow
+		//   multiple views of a Dataset this will break. We avoid setting a
+		//   Dataset's per plane LUTs because it would be expensive and also IJ1
+		//   LUTs are not model space constructs but rather view space constructs.
 		DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
 		for (Display display : dispMgr.getDisplays(ds)) {
 			for (DisplayView view : display.getViews()) {
 				AbstractDatasetView dsView = (AbstractDatasetView)view;
 				if (dsView.getDataObject() != ds) continue;
-				for (int i = 0; i < colorTables.length; i++) {
-					dsView.setColorTable((ColorTable8)colorTables[i], i);
+				for (int i = 0; i < colorTables.size(); i++) {
+					dsView.setColorTable((ColorTable8)colorTables.get(i), i);
 				}
 				return;
 			}
 		}
 	}
 
-	private static Object[] colorTablesFromImagePlus(ImagePlus imp) {
-		Object[] colorTables;
+	private static List<Object> colorTablesFromImagePlus(ImagePlus imp) {
+		List<Object> colorTables = new ArrayList<Object>();
 		LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			IndexColorModel icm =
@@ -911,17 +913,16 @@ public class LegacyUtils {
 			//	cTable = make16BitColorTable(icm);
 			//else  // 8 bit color table
 				cTable = make8BitColorTable(icm);
-			colorTables = new Object[]{cTable};
+			colorTables.add(cTable);
 		}
 		else { // we have multiple LUTs from a CompositeImage, 1 per channel
-			colorTables = new Object[luts.length];
 			Object cTable;
 			for (int i = 0; i < luts.length; i++) {
 				//if (luts[i].getPixelSize() == 16) // is 16 bit table
 				//	cTable = make16BitColorTable(luts[i]);
 				//else // 8 bit color table
 					cTable = make8BitColorTable(luts[i]);
-				colorTables[i] = cTable;
+				colorTables.add(cTable);
 			}
 		}
 
