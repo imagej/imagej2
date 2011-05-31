@@ -89,6 +89,18 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 		subscribeToEvents();
 	}
 
+	// TODO - do the defaultLUTs need synchronized access? Other places we are
+	// wrapping them as unmodifiable
+	public void setColorTable(ColorTable8 colorTable, int channel) {
+		if (channel >= getChannelCount())
+			throw new IllegalArgumentException("given channel number ("+channel+
+				") beyond max channel number ("+(getChannelCount()-1)+")");
+		while (channel >= defaultLUTs.size()) {
+			defaultLUTs.add(null);
+		}
+		defaultLUTs.set(channel, colorTable);
+	}
+	
 	// -- DatasetView methods --
 
 	public ARGBScreenImage getScreenImage() {
@@ -168,8 +180,10 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 		position = new long[dims.length];
 		planePos = new long[planeDims.length];
 
-		defaultLUTs = new ArrayList<ColorTable8>();
-		initializeDefaultLUTs();
+		if ((defaultLUTs == null) || (defaultLUTs.size() != dims[channelDimIndex])) {
+			defaultLUTs = new ArrayList<ColorTable8>();
+			initializeDefaultLUTs();
+		}
 
 		final int width = (int) img.dimension(0);
 		final int height = (int) img.dimension(1);
