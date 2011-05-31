@@ -67,12 +67,12 @@ public class SetDisplayScale implements ImageJPlugin {
 		callback = "updateBrightessContrast")
 	private double max = 255;
 
-	@Parameter(callback = "updateMinMax", style = WidgetStyle.NUMBER_SCROLL_BAR,
-		min = "0", max = "255")
+	@Parameter(callback = "updateMinMax", persist = false,
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int brightness = 128;
 
-	@Parameter(callback = "updateMinMax", style = WidgetStyle.NUMBER_SCROLL_BAR,
-		min = "0", max = "255")
+	@Parameter(callback = "updateMinMax", persist = false,
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int contrast = 128;
 
 	public SetDisplayScale() {
@@ -84,6 +84,7 @@ public class SetDisplayScale implements ImageJPlugin {
 			max = conv.getMax();
 			break; // use only first channel, for now
 		}
+		updateBrightnessContrast();
 	}
 
 	@Override
