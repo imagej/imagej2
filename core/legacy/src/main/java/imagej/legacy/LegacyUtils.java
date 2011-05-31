@@ -39,7 +39,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import java.awt.image.IndexColorModel;
+
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
@@ -52,7 +55,13 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
+import ij.process.LUT;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.AbstractDatasetView;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
 import imagej.util.Index;
 import imagej.util.Log;
 
@@ -546,6 +555,18 @@ public class LegacyUtils {
 			cal.frameInterval = ds.calibration(tIndex);
 	}
 
+	static void setViewLuts(Dataset ds, ImagePlus imp) {
+		boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
+		Object[] colorTables = colorTablesFromImagePlus(imp);
+		assignColorTables(ds, colorTables, sixteenBitLuts);
+	}
+
+	static void setImagePlusLuts(Dataset ds, ImagePlus imp) {
+		// TODO - how to do this? Steal BioFormats Colorizer code
+		//imp.getProcessor().setColorModel(cm);
+		//imp.getStack().setColorModel(cm);
+	}
+	
 	/** returns true if a {@link Dataset} can be represented by reference in IJ1
 	*/
 	static boolean datasetIsIJ1Compatible(Dataset ds) {
@@ -570,7 +591,7 @@ public class LegacyUtils {
 		int bitsPerPix = dsType.getBitsPerPixel();
 
 		if ((!isSigned) && (isInteger) && (bitsPerPix <= 8))
-			return impType == ImagePlus.GRAY8;
+			return ((impType == ImagePlus.GRAY8) || (impType == ImagePlus.COLOR_256));
 			
 		if ((!isSigned) && (isInteger) && (bitsPerPix <= 16))
 			return impType == ImagePlus.GRAY16;
@@ -766,29 +787,32 @@ public class LegacyUtils {
 		}
 
 		if ((dims[xIndex]*dims[yIndex]) > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("plane size has too many elements (" +
+			throw new IllegalArgumentException("too many elements per plane : value(" +
 				(dims[xIndex]*dims[yIndex])+") : max ("+Integer.MAX_VALUE+")");
 		
 		// check channels, slices and frames
 		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = dataset.getAxisIndex(Axes.Z);
 		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+		
 		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+		
 		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("too many planes (" +
+			throw new IllegalArgumentException("too many planes : value(" +
 				(cCount*zCount*tCount)+") : max ("+Integer.MAX_VALUE+")");
 		}
 		outputIndices[0] = xIndex;
-		outputDims[0] = (int) dims[xIndex];
 		outputIndices[1] = yIndex;
-		outputDims[1] = (int) dims[yIndex];
 		outputIndices[2] = cIndex;
-		outputDims[2] = (int) cCount;
 		outputIndices[3] = zIndex;
-		outputDims[3] = (int) zCount;
 		outputIndices[4] = tIndex;
+		
+		outputDims[0] = (int) dims[xIndex];
+		outputDims[1] = (int) dims[yIndex];
+		outputDims[2] = (int) cCount;
+		outputDims[3] = (int) zCount;
 		outputDims[4] = (int) tCount;
 	}
 
@@ -857,4 +881,64 @@ public class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
+	private static void assignColorTables(Dataset ds, Object[] colorTables, boolean sixteenBitLuts) {
+		// FIXME - hack - until LegacyLayer maps Displays. grab the first Display
+		//   and set its default channel luts. When we allow multiple views of a
+		//   Dataset this will break. We avoid setting a Dataset's per plane LUTs
+		//   because it would be expensive and also IJ1 LUTs are not model space
+		//   constructs but rather view space constructs.
+		DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
+		for (Display display : dispMgr.getDisplays(ds)) {
+			for (DisplayView view : display.getViews()) {
+				AbstractDatasetView dsView = (AbstractDatasetView)view;
+				if (dsView.getDataObject() != ds) continue;
+				for (int i = 0; i < colorTables.length; i++) {
+					dsView.setColorTable((ColorTable8)colorTables[i], i);
+				}
+				return;
+			}
+		}
+	}
+
+	private static Object[] colorTablesFromImagePlus(ImagePlus imp) {
+		Object[] colorTables;
+		LUT[] luts = imp.getLuts();
+		if (luts == null) { // not a CompositeImage
+			IndexColorModel icm =
+				(IndexColorModel)imp.getProcessor().getColorModel();
+			Object cTable;
+			//if (icm.getPixelSize() == 16) // is 16 bit table
+			//	cTable = make16BitColorTable(icm);
+			//else  // 8 bit color table
+				cTable = make8BitColorTable(icm);
+			colorTables = new Object[]{cTable};
+		}
+		else { // we have multiple LUTs from a CompositeImage, 1 per channel
+			colorTables = new Object[luts.length];
+			Object cTable;
+			for (int i = 0; i < luts.length; i++) {
+				//if (luts[i].getPixelSize() == 16) // is 16 bit table
+				//	cTable = make16BitColorTable(luts[i]);
+				//else // 8 bit color table
+					cTable = make8BitColorTable(luts[i]);
+				colorTables[i] = cTable;
+			}
+		}
+
+		return colorTables;
+	}
+	
+//	private static ColorTable16 make16BitColorTable(IndexColorModel icm) {
+//		return new ColorTable16();
+//	}
+
+	private static ColorTable8 make8BitColorTable(IndexColorModel icm) {
+		byte[] reds = new byte[256];
+		byte[] greens = new byte[256];
+		byte[] blues = new byte[256];
+		icm.getReds(reds);
+		icm.getGreens(greens);
+		icm.getBlues(blues);
+		return new ColorTable8(reds, greens, blues);
+	}
 }
