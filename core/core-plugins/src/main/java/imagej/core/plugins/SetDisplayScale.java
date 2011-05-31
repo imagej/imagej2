@@ -38,54 +38,116 @@ import imagej.ImageJ;
 import imagej.display.AbstractDatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.ui.WidgetStyle;
 
 import java.util.List;
 
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Plugin that sets the Min and Max for scaling of display values. Sets the same
- * min/max for each channel.
+ * Plugin that sets the minimum and maximum for scaling of display values. Sets
+ * the same min/max for each channel.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-@Plugin(menuPath = "Image>SetDisplayScale")
-//		menu = {
-//	@Menu(label = "Image", mnemonic = 'f'),
-//	@Menu(label = "Set Diplay Scale")})
-public class SetDisplayScale<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
-{
+@Plugin(menuPath = "Image>Set Display Scale")
+public class SetDisplayScale implements ImageJPlugin {
 
-	@Parameter
-	// (min="0", max = "255")
-	private final int max = 255;
+	@Parameter(label = "Minimum", persist = false,
+		callback = "updateBrightnessContrast")
+	private double min = 0;
 
-	@Parameter
-	// (min = "0", max = "255")
-	private final int min = 0;
+	@Parameter(label = "Maximum", persist = false,
+		callback = "updateBrightessContrast")
+	private double max = 255;
+
+	@Parameter(callback = "updateMinMax", style = WidgetStyle.NUMBER_SCROLL_BAR,
+		min = "0", max = "255")
+	private int brightness = 128;
+
+	@Parameter(callback = "updateMinMax", style = WidgetStyle.NUMBER_SCROLL_BAR,
+		min = "0", max = "255")
+	private int contrast = 128;
+
+	public SetDisplayScale() {
+		final AbstractDatasetView view = getActiveDisplayView();
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
+			min = conv.getMin();
+			max = conv.getMax();
+			break; // use only first channel, for now
+		}
+	}
 
 	@Override
 	public void run() {
+		final AbstractDatasetView view = getActiveDisplayView();
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
+			conv.setMin(min);
+			conv.setMax(max);
+		}
+		view.getProjector().map();
+		view.update();
+	}
+
+	public double getMinimum() {
+		return min;
+	}
+
+	public void setMinimum(final double min) {
+		this.min = min;
+	}
+
+	public double getMaximum() {
+		return max;
+	}
+
+	public void setMaximum(final double max) {
+		this.max = max;
+	}
+
+	public int getBrightness() {
+		return brightness;
+	}
+
+	public void setBrightness(final int brightness) {
+		this.brightness = brightness;
+	}
+
+	public int getContrast() {
+		return contrast;
+	}
+
+	public void setContrast(final int contrast) {
+		this.contrast = contrast;
+	}
+
+	protected void updateBrightnessContrast() {
+		// TODO - update brightness/contrast to match current min/max
+	}
+
+	protected void updateMinMax() {
+		// TODO - update min/max to match current brightness/contrast
+	}
+
+	private AbstractDatasetView getActiveDisplayView() {
 		final DisplayManager manager = ImageJ.get(DisplayManager.class);
 		final Display display = manager.getActiveDisplay();
 		if (display == null) {
-			return; // headless UI or no open images
+			return null; // headless UI or no open images
 		}
-		AbstractDatasetView sdv =  (AbstractDatasetView) display.getActiveView();
-		List<RealLUTConverter<? extends RealType<?>>> converters = sdv.getConverters();
-		for (RealLUTConverter<? extends RealType<?>> realLUTConverter : converters) {
-			realLUTConverter.setMin(min);
-			realLUTConverter.setMax(max);
-		}
-		sdv.getProjector().map();
-		sdv.update();
-
+		final DisplayView activeView = display.getActiveView();
+		return activeView instanceof AbstractDatasetView ?
+			(AbstractDatasetView) activeView : null;
 	}
 
 }
