@@ -400,6 +400,26 @@ public class Dataset extends AbstractDataObject implements
 	}
 
 	@Override
+	public double getChannelMinimum(int c) {
+		return imgPlus.getChannelMinimum(c);
+	}
+
+	@Override
+	public void setChannelMinimum(int c, double min) {
+		imgPlus.setChannelMinimum(c, min);
+	}
+
+	@Override
+	public double getChannelMaximum(int c) {
+		return imgPlus.getChannelMaximum(c);
+	}
+
+	@Override
+	public void setChannelMaximum(int c, double max) {
+		imgPlus.setChannelMaximum(c, max);
+	}
+
+	@Override
 	public int getCompositeChannelCount() {
 		return imgPlus.getCompositeChannelCount();
 	}
