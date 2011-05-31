@@ -43,7 +43,7 @@ import imagej.data.DataObject;
  * 
  * @author Curtis Rueden
  */
-public class DataObjectUpdatedEvent extends DataObjectChangedEvent {
+public abstract class DataObjectUpdatedEvent extends DataObjectChangedEvent {
 
 	public DataObjectUpdatedEvent(final DataObject dataObject) {
 		super(dataObject);
