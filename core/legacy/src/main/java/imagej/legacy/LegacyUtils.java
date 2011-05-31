@@ -61,6 +61,7 @@ import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.AbstractDatasetView;
+import imagej.display.ColorTables;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -906,14 +907,21 @@ public class LegacyUtils {
 		List<Object> colorTables = new ArrayList<Object>();
 		LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
-			IndexColorModel icm =
-				(IndexColorModel)imp.getProcessor().getColorModel();
-			Object cTable;
-			//if (icm.getPixelSize() == 16) // is 16 bit table
-			//	cTable = make16BitColorTable(icm);
-			//else  // 8 bit color table
-				cTable = make8BitColorTable(icm);
-			colorTables.add(cTable);
+			if (imp.getType() == ImagePlus.COLOR_RGB) {
+				colorTables.add(ColorTables.RED);
+				colorTables.add(ColorTables.GREEN);
+				colorTables.add(ColorTables.BLUE);
+			}
+			else { // not a direct color model image
+				IndexColorModel icm =
+					(IndexColorModel)imp.getProcessor().getColorModel();
+				Object cTable;
+				//if (icm.getPixelSize() == 16) // is 16 bit table
+				//	cTable = make16BitColorTable(icm);
+				//else  // 8 bit color table
+					cTable = make8BitColorTable(icm);
+				colorTables.add(cTable);
+			}
 		}
 		else { // we have multiple LUTs from a CompositeImage, 1 per channel
 			Object cTable;

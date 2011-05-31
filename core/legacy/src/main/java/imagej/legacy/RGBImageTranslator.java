@@ -68,6 +68,7 @@ public class RGBImageTranslator implements ImageTranslator {
 		ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
 		LegacyUtils.setImagePlusColorData(ds, imp);
 		LegacyUtils.setImagePlusMetadata(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);
 		return imp;
 	}
 }

@@ -130,8 +130,7 @@ public class DatasetHarmonizer {
 				LegacyUtils.setDatasetGrayData(ds, imp);
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
-		if (imp.getType() != ImagePlus.COLOR_RGB)
-			LegacyUtils.setViewLuts(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);
 		setCompositeChannels(ds, imp);
 		overlayTranslator.setDatasetOverlays(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
