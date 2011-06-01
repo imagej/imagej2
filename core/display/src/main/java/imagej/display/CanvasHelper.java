@@ -76,8 +76,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 		final RealCoords imageCoords = panelToImageCoords(point);
 		final int x = imageCoords.getIntX();
 		final int y = imageCoords.getIntY();
-		return x >= 0 && x < canvas.getImageWidth() && y >= 0 &&
-			y < canvas.getImageHeight();
+		return x >= 0 && x < canvas.getCanvasWidth() && y >= 0 &&
+			y < canvas.getCanvasHeight();
 	}
 
 	public RealCoords panelToImageCoords(final IntCoords panelCoords) {
@@ -172,8 +172,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 		final double imageSizeX = width / scale;
 		final double imageSizeY = height / scale;
-		final double xZoom = canvas.getWidth() / imageSizeX;
-		final double yZoom = canvas.getHeight() / imageSizeY;
+		final double xZoom = canvas.getViewportWidth() / imageSizeX;
+		final double yZoom = canvas.getViewportHeight() / imageSizeY;
 		final double factor = Math.min(xZoom, yZoom);
 
 		final int centerX = topLeft.x + width / 2;
@@ -215,17 +215,19 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	/** Gets the zoom center to use when none is specified. */
 	private IntCoords getDefaultZoomCenter() {
-		return new IntCoords(canvas.getWidth() / 2, canvas.getHeight() / 2);
+		final int w = canvas.getViewportWidth();
+		final int h = canvas.getViewportHeight();
+		return new IntCoords(w / 2, h / 2);
 	}
 
 	private void clipToImageBoundaries(final RealCoords coords) {
 		if (coords.x < 0) coords.x = 0;
 		if (coords.y < 0) coords.y = 0;
-		if (coords.x >= canvas.getImageWidth()) {
-			coords.x = canvas.getImageWidth() - 1;
+		if (coords.x >= canvas.getCanvasWidth()) {
+			coords.x = canvas.getCanvasWidth() - 1;
 		}
-		if (coords.y >= canvas.getImageHeight()) {
-			coords.y = canvas.getImageHeight() - 1;
+		if (coords.y >= canvas.getCanvasHeight()) {
+			coords.y = canvas.getCanvasHeight() - 1;
 		}
 	}
 
@@ -238,7 +240,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 		// check if trying to zoom in too close
 		if (desiredScale > scale) {
 			final int maxDimension =
-				Math.max(canvas.getImageWidth(), canvas.getImageHeight());
+				Math.max(canvas.getCanvasWidth(), canvas.getCanvasHeight());
 
 			// if zooming the image would show less than one pixel of image data
 			if ((maxDimension / getZoomFactor()) < 1) return true;
@@ -249,8 +251,8 @@ public class CanvasHelper implements Pannable, Zoomable {
 			// get boundaries of image in panel coords
 			final IntCoords nearCorner = imageToPanelCoords(new RealCoords(0, 0));
 			final IntCoords farCorner =
-				imageToPanelCoords(new RealCoords(canvas.getImageWidth(),
-					canvas.getImageHeight()));
+				imageToPanelCoords(new RealCoords(canvas.getCanvasWidth(),
+					canvas.getCanvasHeight()));
 
 			// if boundaries take up less than min allowed pixels in either dimension
 			if (((farCorner.x - nearCorner.x) < MIN_ALLOWED_VIEW_SIZE) ||

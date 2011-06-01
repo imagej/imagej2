@@ -190,13 +190,23 @@ public class AWTImageCanvas extends Panel implements ImageCanvas,
 	// -- ImageCanvas methods --
 
 	@Override
-	public int getImageWidth() {
+	public int getCanvasWidth() {
 		return image.getWidth();
 	}
 
 	@Override
-	public int getImageHeight() {
+	public int getCanvasHeight() {
 		return image.getHeight();
+	}
+
+	@Override
+	public int getViewportWidth() {
+		return getWidth();
+	}
+
+	@Override
+	public int getViewportHeight() {
+		return getHeight();
 	}
 
 	@Override
