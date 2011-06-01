@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import ij.CompositeImage;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
@@ -130,9 +129,9 @@ public class DatasetHarmonizer {
 				LegacyUtils.setDatasetGrayData(ds, imp);
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		overlayTranslator.setDatasetOverlays(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
 	}
 	
