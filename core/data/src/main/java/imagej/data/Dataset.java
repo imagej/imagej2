@@ -391,7 +391,9 @@ public class Dataset extends AbstractDataObject implements
 
 	@Override
 	public int getValidBits() {
-		return imgPlus.getValidBits();
+		final int validBits = imgPlus.getValidBits();
+		if (validBits > 0) return validBits;
+		return getType().getBitsPerPixel();
 	}
 
 	@Override
