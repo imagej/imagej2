@@ -271,21 +271,26 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 	// -- ImageCanvas methods --
 
 	@Override
-	public int getImageWidth() {
+	public int getCanvasWidth() {
 		// NB: Return *unscaled* canvas width.
 		return (int) (drawingView.getPreferredSize().width / getZoomFactor());
 	}
 
 	@Override
-	public int getImageHeight() {
+	public int getCanvasHeight() {
 		// NB: Return *unscaled* canvas height.
 		return (int) (drawingView.getPreferredSize().height / getZoomFactor());
 	}
 
-	// FIXME - getWidth and getHeight are slightly wrong, because the
-	// scroll bars might contribute to the width & height, but the methods are
-	// intended to return only the viewport size, not the full canvas component.
-	// Best would be to rename those methods to avoid conflict with AWT API.
+	@Override
+	public int getViewportWidth() {
+		return drawingView.getWidth();
+	}
+
+	@Override
+	public int getViewportHeight() {
+		return drawingView.getHeight();
+	}
 
 	@Override
 	public void addEventDispatcher(final EventDispatcher dispatcher) {

@@ -45,17 +45,17 @@ import imagej.util.RealCoords;
  */
 public interface ImageCanvas extends Pannable, Zoomable {
 
-	/** Gets the actual width of the canvas. */
-	int getWidth();
+	/** Gets the unscaled width of the canvas. */
+	int getCanvasWidth();
+
+	/** Gets the unscaled height of the canvas. */
+	int getCanvasHeight();
+
+	/** Gets the current width of the canvas viewport in pixels. */
+	int getViewportWidth();
 	
-	/** Gets the actual height of the canvas. */
-	int getHeight();
-
-	/** Gets the width of the current image. */
-	int getImageWidth();
-
-	/** Gets the height of the current image. */
-	int getImageHeight();
+	/** Gets the current height of the canvas viewport in pixels. */
+	int getViewportHeight();
 
 	/**
 	 * Adds the given {@link EventDispatcher} as an event handler; e.g., for key
