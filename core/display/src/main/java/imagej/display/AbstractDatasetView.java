@@ -164,32 +164,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 			}
 		}
 		else {
-			// use RGBCMY
-			for (int i = 0; i < channelCount; i++) {
-				final ColorTable8 lut;
-				switch (i) {
-					case 0:
-						lut = ColorTables.RED;
-						break;
-					case 1:
-						lut = ColorTables.GREEN;
-						break;
-					case 2:
-						lut = ColorTables.BLUE;
-						break;
-					case 3:
-						lut = ColorTables.CYAN;
-						break;
-					case 4:
-						lut = ColorTables.MAGENTA;
-						break;
-					case 5:
-						lut = ColorTables.YELLOW;
-						break;
-					default:
-						lut = ColorTables.GRAYS;
-				}
-				defaultLUTs.add(lut);
+			for (int c = 0; c < channelCount; c++) {
+				defaultLUTs.add(ColorTables.getDefaultColorTable(c));
 			}
 		}
 		updateLUTs();

@@ -64,6 +64,29 @@ public final class ColorTables {
 		// prevent instantiation of utility class
 	}
 
+	/**
+	 * Gets the color table corresponding to a default channel ordering of RGBCMY.
+	 * Channels beyond the sixth are assigned the grayscale color table.
+	 */
+	public static ColorTable8 getDefaultColorTable(final int c) {
+		switch (c) {
+			case 0:
+				return ColorTables.RED;
+			case 1:
+				return ColorTables.GREEN;
+			case 2:
+				return ColorTables.BLUE;
+			case 3:
+				return ColorTables.CYAN;
+			case 4:
+				return ColorTables.MAGENTA;
+			case 5:
+				return ColorTables.YELLOW;
+			default:
+				return ColorTables.GRAYS;
+		}
+	}
+
 	// -- Helper methods --
 
 	private static ColorTable8 fire() {
