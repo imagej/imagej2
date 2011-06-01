@@ -313,16 +313,6 @@
 			<id>imagej.thirdparty</id>
 			<url>http://dev.imagejdev.org/maven2/thirdparty</url>
 		</repository>
-		<!-- NB: for jai_core -->
-		<repository>
-			<id>geotools</id>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
-		<!-- NB: for netcdf-java -->
-		<repository>
-			<id>unifi.it</id>
-			<url>http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos</url>
-		</repository>
 		<!-- NB: for sezpoz -->
 		<repository>
 			<id>java.net</id>
@@ -331,6 +321,7 @@
 	</repositories>
 
 	<pluginRepositories>
+		<!-- NB: for maven-graph-plugin -->
 		<pluginRepository>
 			<id>mvnplugins.fusesource.org</id>
 			<url>http://mvnplugins.fusesource.org/repo/release</url>
