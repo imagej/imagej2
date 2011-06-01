@@ -1,4 +1,4 @@
-Thanks for trying ImageJ 2.0.0-alpha2!
+Thanks for trying ImageJ 2.0.0-alpha3!
 
 This is an "alpha"-quality release, meaning the code is not finished, nor is
 the design fully stabilized. We are releasing it for early community feedback,
@@ -6,20 +6,22 @@ and to demonstrate project directions and progress.
 
 DO NOT USE THIS RELEASE FOR ANYTHING IMPORTANT.
 
-For this release, like 2.0.0-alpha1, we have tried to model the application
-after ImageJ v1.x as much as is reasonable. However, please be aware that
-version 2.0.0 is essentially a total rewrite of ImageJ from the ground up. It
-provides backward compatibility with older versions of ImageJ by bundling the
-latest v1.x code and translating between "legacy" and "modern" image
-structures.
+For this release, like 2.0.0-alpha1 and 2.0.0-alpha2, we have tried to model
+the application after ImageJ v1.x as much as is reasonable. However, please be
+aware that version 2.0.0 is essentially a total rewrite of ImageJ from the
+ground up. It provides backward compatibility with older versions of ImageJ by
+bundling the latest v1.x code and translating between "legacy" and "modern"
+image structures.
 
-The most significant advancement for 2.0.0-alpha2 is its use of the ImgLib2
-image processing library, developed at MPI-CBG by Stephan Saalfeld, Stephan
-Preibisch, Tobias Pietzsch and others. Development of ImgLib2 received a major
-boost at the recent Madison Fiji hackathon, and the library is now at a point
-where it is usable within ImageJ2. Use of ImgLib2 has enabled ImageJ2 to
-display composite color images with individual color lookup tables, similar to
-ImageJ1's CompositeImage but without the seven-channel limit.
+The most significant advancement for 2.0.0-alpha3 is partial support for
+regions of interest (ROIs), via the JHotDraw library. It is now possible to
+draw rectangles, ellipses and polygons in an ImageJ2 display.
+
+We have also improved the legacy layer so that many ImageJ1 plugins work
+better, although it is still far from perfect. There is partial support for
+preserving both ROIs and color lookup tables (LUTs) between IJ1 and IJ2 plugin
+executions, meaning that you can draw a ROI and then execute an IJ1 plugin, and
+it will operate on only the pixels within the ROI.
 
 For more details on the project, see the ImageJDev web site at:
   http://imagejdev.org/
@@ -38,11 +40,14 @@ KNOWN ISSUES
 
 There are many known issues with this release:
 
-1) The image displays are better than in 2.0.0-alpha1, but still have
-   limitations:
+1) For the most part, the image displays are better than in previous alphas,
+   but still have limitations:
      * Display scaling is hardcoded to 0-255; i.e., no autoscaling is done
        based on actual sample value ranges. For example, 16-bit images may
-       appear washed out.
+       appear washed out. You can manually adjust the min/max using the
+       "Set Display Scale" plugin in the Image menu.
+     * The pixel probe tool is not always accurate.
+     * The zoom tool does not center properly on the mouse cursor.
 
 2) The memory allocated to ImageJ is fixed at 512 MB.
 
@@ -52,12 +57,9 @@ There are many known issues with this release:
 TOOLBAR
 -------
 
-Most toolbar tools are not yet implemented, and hence grayed out.
-The following tools are working:
-
-  * Pan (hand icon)
-  * Zoom (magnifying glass icon)
-  * Probe (crosshairs icon)
+Many toolbar tools are not yet implemented, and hence grayed out. ImageJ
+v2.0.0-alpha3 adds support for some ROI tools (rectangle, ellipse and polygon),
+with more to come.
 
 
 MENUS
