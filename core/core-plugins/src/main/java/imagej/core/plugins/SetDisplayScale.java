@@ -65,7 +65,7 @@ public class SetDisplayScale implements ImageJPlugin, PreviewPlugin {
 	private double min = 0;
 
 	@Parameter(label = "Maximum", persist = false,
-		callback = "updateBrightessContrast")
+		callback = "updateBrightnessContrast")
 	private double max = 255;
 
 	@Parameter(callback = "updateMinMax", persist = false,
