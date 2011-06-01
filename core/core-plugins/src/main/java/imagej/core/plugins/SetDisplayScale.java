@@ -42,6 +42,7 @@ import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.PreviewPlugin;
 import imagej.plugin.ui.WidgetStyle;
 
 import java.util.List;
@@ -57,7 +58,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Image>Set Display Scale")
-public class SetDisplayScale implements ImageJPlugin {
+public class SetDisplayScale implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "Minimum", persist = false,
 		callback = "updateBrightnessContrast")
@@ -98,6 +99,11 @@ public class SetDisplayScale implements ImageJPlugin {
 		}
 		view.getProjector().map();
 		view.update();
+	}
+
+	@Override
+	public void preview() {
+		run();
 	}
 
 	public double getMinimum() {
