@@ -93,7 +93,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 		final JPanel graphicPane = new JPanel();
 		graphicPane.setLayout(new MigLayout("ins 0", "fill,grow", "fill,grow"));
-		graphicPane.setBorder(new LineBorder(Color.black));
 		graphicPane.add(display.getImageCanvas());
 
 		sliders = new JPanel();
