@@ -1,5 +1,5 @@
 //
-// Managers.java
+// ImageJ.java
 //
 
 /*
@@ -55,7 +55,7 @@ import net.java.sezpoz.IndexItem;
  */
 public final class ImageJ {
 
-	public static final String VERSION = "2.0.0-alpha2";
+	public static final String VERSION = "2.0.0-alpha3";
 
 	// TODO - decide if singleton pattern is really best here
 
