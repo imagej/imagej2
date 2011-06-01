@@ -1,5 +1,5 @@
 //
-// DatasetView.java
+// AbstractDatasetView.java
 //
 
 /*
@@ -149,13 +149,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	@Override
 	public void setColorTable(final ColorTable8 colorTable, final int channel) {
-		if (channel >= getChannelCount()) throw new IllegalArgumentException(
-			"given channel number (" + channel + ") beyond max channel number (" +
-				(getChannelCount() - 1) + ")");
-		while (channel >= defaultLUTs.size()) {
-			defaultLUTs.add(null);
-		}
 		defaultLUTs.set(channel, colorTable);
+		updateLUTs();
 	}
 
 	@Override
@@ -197,6 +192,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 				defaultLUTs.add(lut);
 			}
 		}
+		updateLUTs();
 	}
 
 	// -- DisplayView methods --
@@ -275,6 +271,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	private void updateLUTs() {
+		if (converters.size() == 0) return; // converters not yet initialized
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			final ColorTable8 lut = getCurrentLUT(c);
