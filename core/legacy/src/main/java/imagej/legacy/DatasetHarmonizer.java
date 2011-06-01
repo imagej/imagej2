@@ -131,28 +131,12 @@ public class DatasetHarmonizer {
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setViewLuts(ds, imp);
-		setCompositeChannels(ds, imp);
+		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		overlayTranslator.setDatasetOverlays(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
 	}
 	
 	// -- private helpers --
-
-	/**
-	 * Sets the {@link Dataset}'s number of composite channels to display
-	 * simultaneously based on an input {@link ImagePlus}'s makeup.
-	 */
-	private void setCompositeChannels(final Dataset ds, final ImagePlus imp) {
-		if ((imp instanceof CompositeImage) &&
-			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
-		{
-			ds.setCompositeChannelCount(imp.getNChannels());
-		}
-		else if (imp.getType() == ImagePlus.COLOR_RGB) {
-			ds.setCompositeChannelCount(3);
-		}
-		else ds.setCompositeChannelCount(1);
-	}
 
 	/**
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have

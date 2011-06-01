@@ -53,11 +53,13 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	public Dataset createDataset(final ImagePlus imp) {
 		Dataset ds = LegacyUtils.makeExactDataset(imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
+		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		return ds;
 	}
 
 	/** creates an {@link ImagePlus} from a {@link Dataset}. The ImagePlus made
-	 * is shares plane references with the Dataset when possible.
+	 * shares plane references with the Dataset when possible.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Dataset dataset) {
@@ -69,7 +71,6 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			LegacyUtils.setImagePlusGrayData(dataset, imp);
 		}
 		LegacyUtils.setImagePlusMetadata(dataset, imp);
-		LegacyUtils.setViewLuts(dataset, imp);
 		return imp;
 	}
 }

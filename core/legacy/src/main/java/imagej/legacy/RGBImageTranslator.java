@@ -55,6 +55,8 @@ public class RGBImageTranslator implements ImageTranslator {
 		Dataset ds = LegacyUtils.makeColorDataset(imp);
 		LegacyUtils.setDatasetColorData(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
+		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		return ds;
 	}
 
@@ -68,7 +70,6 @@ public class RGBImageTranslator implements ImageTranslator {
 		ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
 		LegacyUtils.setImagePlusColorData(ds, imp);
 		LegacyUtils.setImagePlusMetadata(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp);
 		return imp;
 	}
 }
