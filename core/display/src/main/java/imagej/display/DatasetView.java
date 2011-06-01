@@ -1,5 +1,5 @@
 //
-// SwingDatasetView.java
+// DatasetView.java
 //
 
 /*
@@ -32,70 +32,56 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ui.swing.display;
+package imagej.display;
 
 import imagej.data.Dataset;
-import imagej.display.AbstractDatasetView;
-import imagej.util.awt.AWTImageTools;
 
-import java.awt.Image;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.util.List;
 
-import org.jhotdraw.draw.Drawing;
-import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.ImageFigure;
+import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.display.ColorTable8;
+import net.imglib2.display.CompositeXYProjector;
+import net.imglib2.display.RealLUTConverter;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * A linkage between a {@link Dataset} and a {@link Display}. The view takes
+ * care of mapping the N-dimensional data into a representation suitable for
+ * showing onscreen.
  * 
  * @author Curtis Rueden
  */
-public class SwingDatasetView extends AbstractDatasetView implements
-	FigureView
-{
+public interface DatasetView extends DisplayView {
 
-	private final ImageFigure figure;
+	ARGBScreenImage getScreenImage();
 
-	public SwingDatasetView(final SwingImageDisplay display,
-		final Dataset dataset)
-	{
-		super(display, dataset);
-		final JHotDrawImageCanvas canvas = display.getImageCanvas();
-		final Drawing drawing = canvas.getDrawing();
-		figure = new ImageFigure();
-		figure.setSelectable(false);
-		figure.setTransformable(false);
-		drawing.add(figure);
-		rebuild();
-	}
+	int getCompositeDimIndex();
 
-	// -- DisplayView methods --
+	int getOffsetX();
 
-	@Override
-	public int getPreferredWidth() {
-		return getScreenImage().image().getWidth(null);
-	}
+	void setOffsetX(final int offsetX);
 
-	@Override
-	public int getPreferredHeight() {
-		return getScreenImage().image().getHeight(null);
-	}
+	int getOffsetY();
+
+	void setOffsetY(final int offsetY);
+
+	ImgPlus<? extends RealType<?>> getImgPlus();
+
+	CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector();
+
+	List<RealLUTConverter<? extends RealType<?>>> getConverters();
+
+	void setComposite(final boolean composite);
+
+	List<ColorTable8> getColorTables();
+
+	void setColorTable(final ColorTable8 colorTable, final int channel);
+
+	void resetColorTables(final boolean grayscale);
 
 	@Override
-	public void update() {
-		final Image image = getScreenImage().image();
-		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
-		figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
-			bufImage.getHeight()));
-		figure.setBufferedImage(bufImage);
-	}
-
-	// -- FigureView methods --
-
-	@Override
-	public Figure getFigure() {
-		return figure;
-	}
+	Dataset getDataObject();
 
 }
