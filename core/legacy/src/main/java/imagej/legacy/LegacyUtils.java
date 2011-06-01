@@ -53,6 +53,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
@@ -619,6 +620,22 @@ public class LegacyUtils {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Sets the {@link Dataset}'s number of composite channels to display
+	 * simultaneously based on an input {@link ImagePlus}'s makeup.
+	 */
+	static void setDatasetCompositeVariables(final Dataset ds, final ImagePlus imp) {
+		if ((imp instanceof CompositeImage) &&
+			(((CompositeImage) imp).getMode() == CompositeImage.COMPOSITE))
+		{
+			ds.setCompositeChannelCount(imp.getNChannels());
+		}
+		else if (imp.getType() == ImagePlus.COLOR_RGB) {
+			ds.setCompositeChannelCount(3);
+		}
+		else ds.setCompositeChannelCount(1);
 	}
 
 	// -- private helpers --
