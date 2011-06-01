@@ -67,6 +67,7 @@ import imagej.display.ColorTables;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
+import imagej.util.Dimensions;
 import imagej.util.Index;
 import imagej.util.Log;
 
@@ -427,20 +428,19 @@ public class LegacyUtils {
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
 		assertXYPlanesCorrectlyOriented(dimIndices);
-		
+
 		final int cIndex = dimIndices[2];
 		final int zIndex = dimIndices[3];
 		final int tIndex = dimIndices[4];
-		final int cCount = cIndex < 0 ? 1 : dimValues[cIndex];
-		final int zCount = zIndex < 0 ? 1 : dimValues[zIndex];
-		final int tCount = tIndex < 0 ? 1 : dimValues[tIndex];
+
+		final int cCount = dimValues[2];
+		final int zCount = dimValues[3];
+		final int tCount = dimValues[4];
 
 		ImageStack stack = imp.getStack();
 
-		long[] dims = ds.getDims();
-		final long[] planeDims = new long[dims.length - 2];
-		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = dims[i + 2];
+		final long[] dims = ds.getDims();
+		final long[] planeDims = Dimensions.getDims3AndGreater(dims);
 		final long[] planePos = new long[planeDims.length];
 
 		for (int t = 0; t < tCount; t++) {
@@ -449,9 +449,8 @@ public class LegacyUtils {
 				if (zIndex >= 0) planePos[zIndex - 2] = z;
 				for (int c = 0; c < cCount; c++) {
 					if (cIndex >= 0) planePos[cIndex - 2] = c;
-					// NB - getImagePlusDims() removes need to check planeNum range
 					final int planeNum = (int) Index.indexNDto1D(planeDims, planePos);
-					final Object plane = ds.getPlane(planeNum,false);
+					final Object plane = ds.getPlane(planeNum, false);
 					if (plane == null) {
 						Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
 					}
