@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
@@ -561,7 +562,7 @@ public class LegacyUtils {
 
 	static void setViewLuts(Dataset ds, ImagePlus imp) {
 		boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
-		List<Object> colorTables = colorTablesFromImagePlus(imp);
+		List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(ds, colorTables, sixteenBitLuts);
 	}
 
@@ -901,7 +902,7 @@ public class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
-	private static void assignColorTables(Dataset ds, List<Object> colorTables, boolean sixteenBitLuts) {
+	private static void assignColorTables(Dataset ds, List<ColorTable<?>> colorTables, boolean sixteenBitLuts) {
 		// FIXME - hack - for now until legacy layer maps Display <--> ImagePlus.
 		//   grab the first Display and set its default channel luts. When we allow
 		//   multiple views of a Dataset this will break. We avoid setting a
@@ -920,8 +921,8 @@ public class LegacyUtils {
 		}
 	}
 
-	private static List<Object> colorTablesFromImagePlus(ImagePlus imp) {
-		List<Object> colorTables = new ArrayList<Object>();
+	private static List<ColorTable<?>> colorTablesFromImagePlus(ImagePlus imp) {
+		List<ColorTable<?>> colorTables = new ArrayList<ColorTable<?>>();
 		LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -932,7 +933,7 @@ public class LegacyUtils {
 			else { // not a direct color model image
 				IndexColorModel icm =
 					(IndexColorModel)imp.getProcessor().getColorModel();
-				Object cTable;
+				ColorTable<?> cTable;
 				//if (icm.getPixelSize() == 16) // is 16 bit table
 				//	cTable = make16BitColorTable(icm);
 				//else  // 8 bit color table
@@ -941,7 +942,7 @@ public class LegacyUtils {
 			}
 		}
 		else { // we have multiple LUTs from a CompositeImage, 1 per channel
-			Object cTable;
+			ColorTable<?> cTable;
 			for (int i = 0; i < luts.length; i++) {
 				//if (luts[i].getPixelSize() == 16) // is 16 bit table
 				//	cTable = make16BitColorTable(luts[i]);
