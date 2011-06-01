@@ -120,7 +120,12 @@ public class SwingNumberWidget extends SwingInputWidget implements
 	@Override
 	public void refresh() {
 		final Object value = model.getValue();
-		if (value != null) spinner.setValue(value);
+		if (value != null) {
+			spinner.removeChangeListener(this);
+			spinner.setValue(value);
+			spinner.addChangeListener(this);
+			syncSliders();
+		}
 	}
 
 	// -- AdjustmentListener methods --
@@ -130,7 +135,6 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		// sync spinner with scroll bar value
 		final int value = scrollBar.getValue();
 		spinner.setValue(value);
-		model.setValue(spinner.getValue());
 	}
 
 	// -- ChangeListener methods --
@@ -145,8 +149,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		}
 		else if (source == spinner) {
 			// sync slider and/or scroll bar with spinner value
-			if (slider != null) slider.setValue(getValue().intValue());
-			if (scrollBar != null) scrollBar.setValue(getValue().intValue());
+			syncSliders();
 		}
 		model.setValue(spinner.getValue());
 	}
@@ -175,6 +178,12 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		final Dimension prefSize = c.getPreferredSize();
 		prefSize.width = PREFERRED_WIDTH;
 		c.setPreferredSize(prefSize);
+	}
+
+	/** Sets slider values to match the spinner. */
+	private void syncSliders() {
+		if (slider != null) slider.setValue(getValue().intValue());
+		if (scrollBar != null) scrollBar.setValue(getValue().intValue());
 	}
 
 }
