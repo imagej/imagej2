@@ -39,6 +39,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import ij.CompositeImage;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.measure.Calibration;
+import ij.process.ImageProcessor;
+import ij.process.LUT;
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.display.ColorTables;
+import imagej.display.DatasetView;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
+import imagej.util.Dimensions;
+import imagej.util.Index;
+import imagej.util.Log;
+
 import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,22 +71,6 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import ij.CompositeImage;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.measure.Calibration;
-import ij.process.ImageProcessor;
-import ij.process.LUT;
-import imagej.ImageJ;
-import imagej.data.Dataset;
-import imagej.display.AbstractDatasetView;
-import imagej.display.ColorTables;
-import imagej.display.Display;
-import imagej.display.DisplayManager;
-import imagej.display.DisplayView;
-import imagej.util.Dimensions;
-import imagej.util.Index;
-import imagej.util.Log;
 
 
 /**
@@ -907,13 +908,13 @@ public class LegacyUtils {
 		//   multiple views of a Dataset this will break. We avoid setting a
 		//   Dataset's per plane LUTs because it would be expensive and also IJ1
 		//   LUTs are not model space constructs but rather view space constructs.
-		DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
-		for (Display display : dispMgr.getDisplays(ds)) {
-			for (DisplayView view : display.getViews()) {
-				AbstractDatasetView dsView = (AbstractDatasetView)view;
-				if (dsView.getDataObject() != ds) continue;
+		final DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
+		for (final Display display : dispMgr.getDisplays(ds)) {
+			for (final DisplayView view : display.getViews()) {
+				if (view.getDataObject() != ds) continue;
+				final DatasetView dsView = (DatasetView) view;
 				for (int i = 0; i < colorTables.size(); i++) {
-					dsView.setColorTable((ColorTable8)colorTables.get(i), i);
+					dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 				}
 				return;
 			}

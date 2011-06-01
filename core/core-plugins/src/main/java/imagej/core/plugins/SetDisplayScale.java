@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.ImageJ;
-import imagej.display.AbstractDatasetView;
+import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -77,7 +77,7 @@ public class SetDisplayScale implements ImageJPlugin, PreviewPlugin {
 	private int contrast = 128;
 
 	public SetDisplayScale() {
-		final AbstractDatasetView view = getActiveDisplayView();
+		final DatasetView view = getActiveDisplayView();
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -90,7 +90,7 @@ public class SetDisplayScale implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void run() {
-		final AbstractDatasetView view = getActiveDisplayView();
+		final DatasetView view = getActiveDisplayView();
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -146,15 +146,14 @@ public class SetDisplayScale implements ImageJPlugin, PreviewPlugin {
 		// TODO - update min/max to match current brightness/contrast
 	}
 
-	private AbstractDatasetView getActiveDisplayView() {
+	private DatasetView getActiveDisplayView() {
 		final DisplayManager manager = ImageJ.get(DisplayManager.class);
 		final Display display = manager.getActiveDisplay();
 		if (display == null) {
 			return null; // headless UI or no open images
 		}
 		final DisplayView activeView = display.getActiveView();
-		return activeView instanceof AbstractDatasetView ?
-			(AbstractDatasetView) activeView : null;
+		return activeView instanceof DatasetView ? (DatasetView) activeView : null;
 	}
 
 }

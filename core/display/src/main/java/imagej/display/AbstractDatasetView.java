@@ -51,7 +51,6 @@ import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.display.XYProjector;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.ARGBType;
@@ -63,7 +62,9 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public abstract class AbstractDatasetView extends AbstractDisplayView {
+public abstract class AbstractDatasetView extends AbstractDisplayView
+	implements DatasetView
+{
 
 	private final Dataset dataset;
 
@@ -78,7 +79,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 
 	private ARGBScreenImage screenImage;
 	private CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
-	private ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
+	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 	private ArrayList<EventSubscriber<?>> subscribers;
 	private int offsetX, offsetY;
@@ -89,62 +90,113 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 		subscribeToEvents();
 	}
 
-	// TODO - do the defaultLUTs need synchronized access? Other places we are
-	// wrapping them as unmodifiable
-	public void setColorTable(ColorTable8 colorTable, int channel) {
-		if (channel >= getChannelCount())
-			throw new IllegalArgumentException("given channel number ("+channel+
-				") beyond max channel number ("+(getChannelCount()-1)+")");
+	// -- DatasetView methods --
+
+	@Override
+	public ARGBScreenImage getScreenImage() {
+		return screenImage;
+	}
+
+	@Override
+	public int getCompositeDimIndex() {
+		return channelDimIndex;
+	}
+
+	@Override
+	public int getOffsetX() {
+		return offsetX;
+	}
+
+	@Override
+	public void setOffsetX(final int offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	@Override
+	public int getOffsetY() {
+		return offsetY;
+	}
+
+	@Override
+	public void setOffsetY(final int offsetY) {
+		this.offsetY = offsetY;
+	}
+
+	@Override
+	public ImgPlus<? extends RealType<?>> getImgPlus() {
+		return dataset.getImgPlus();
+	}
+
+	@Override
+	public CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector() {
+		return projector;
+	}
+
+	@Override
+	public List<RealLUTConverter<? extends RealType<?>>> getConverters() {
+		return Collections.unmodifiableList(converters);
+	}
+
+	@Override
+	public void setComposite(final boolean composite) {
+		projector.setComposite(composite);
+	}
+
+	@Override
+	public List<ColorTable8> getColorTables() {
+		return Collections.unmodifiableList(defaultLUTs);
+	}
+
+	@Override
+	public void setColorTable(final ColorTable8 colorTable, final int channel) {
+		if (channel >= getChannelCount()) throw new IllegalArgumentException(
+			"given channel number (" + channel + ") beyond max channel number (" +
+				(getChannelCount() - 1) + ")");
 		while (channel >= defaultLUTs.size()) {
 			defaultLUTs.add(null);
 		}
 		defaultLUTs.set(channel, colorTable);
 	}
-	
-	// -- DatasetView methods --
 
-	public ARGBScreenImage getScreenImage() {
-		return screenImage;
-	}
-
-	public int getCompositeDimIndex() {
-		return channelDimIndex;
-	}
-
-	public int getOffsetX() {
-		return offsetX;
-	}
-
-	public void setOffsetX(final int offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public int getOffsetY() {
-		return offsetY;
-	}
-
-	public void setOffsetY(final int offsetY) {
-		this.offsetY = offsetY;
-	}
-
-	public ImgPlus<? extends RealType<?>> getImgPlus() {
-		return dataset.getImgPlus();
-	}
-
-	public XYProjector<? extends RealType<?>, ARGBType> getProjector() {
-		return projector;
-	}
-
-	public List<RealLUTConverter<? extends RealType<?>>> getConverters() {
-		return Collections.unmodifiableList(converters);
-	}
-
-	public List<ColorTable8> getChannelLUTs() {
-		return Collections.unmodifiableList(defaultLUTs);
-	}
-
-	public void setComposite(final boolean composite) {
-		projector.setComposite(composite);
+	@Override
+	public void resetColorTables(final boolean grayscale) {
+		final int channelCount = (int) getChannelCount();
+		defaultLUTs.clear();
+		defaultLUTs.ensureCapacity(channelCount);
+		if (grayscale || channelCount == 1) {
+			for (int i = 0; i < channelCount; i++) {
+				defaultLUTs.add(ColorTables.GRAYS);
+			}
+		}
+		else {
+			// use RGBCMY
+			for (int i = 0; i < channelCount; i++) {
+				final ColorTable8 lut;
+				switch (i) {
+					case 0:
+						lut = ColorTables.RED;
+						break;
+					case 1:
+						lut = ColorTables.GREEN;
+						break;
+					case 2:
+						lut = ColorTables.BLUE;
+						break;
+					case 3:
+						lut = ColorTables.CYAN;
+						break;
+					case 4:
+						lut = ColorTables.MAGENTA;
+						break;
+					case 5:
+						lut = ColorTables.YELLOW;
+						break;
+					default:
+						lut = ColorTables.GRAYS;
+				}
+				defaultLUTs.add(lut);
+			}
+		}
 	}
 
 	// -- DisplayView methods --
@@ -180,9 +232,9 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 		position = new long[dims.length];
 		planePos = new long[planeDims.length];
 
-		if ((defaultLUTs == null) || (defaultLUTs.size() != dims[channelDimIndex])) {
+		if (defaultLUTs == null || defaultLUTs.size() != dims[channelDimIndex]) {
 			defaultLUTs = new ArrayList<ColorTable8>();
-			initializeDefaultLUTs();
+			resetColorTables(false);
 		}
 
 		final int width = (int) img.dimension(0);
@@ -203,45 +255,6 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 
 	private static int getChannelDimIndex(final Dataset dataset) {
 		return dataset.getAxisIndex(Axes.CHANNEL);
-	}
-
-	private void initializeDefaultLUTs() {
-		final int channelCount = (int) getChannelCount();
-		defaultLUTs.clear();
-		defaultLUTs.ensureCapacity(channelCount);
-		if (channelCount > 1) {
-			// multi-channel: use RGBCMY
-			for (int i = 0; i < channelCount; i++) {
-				final ColorTable8 lut;
-				switch (i) {
-					case 0:
-						lut = ColorTables.RED;
-						break;
-					case 1:
-						lut = ColorTables.GREEN;
-						break;
-					case 2:
-						lut = ColorTables.BLUE;
-						break;
-					case 3:
-						lut = ColorTables.CYAN;
-						break;
-					case 4:
-						lut = ColorTables.MAGENTA;
-						break;
-					case 5:
-						lut = ColorTables.YELLOW;
-						break;
-					default:
-						lut = ColorTables.GRAYS;
-				}
-				defaultLUTs.add(lut);
-			}
-		}
-		else {
-			// single channel: use grayscale
-			defaultLUTs.add(ColorTables.GRAYS);
-		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -285,40 +298,40 @@ public abstract class AbstractDatasetView extends AbstractDisplayView {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
-			new EventSubscriber<DatasetTypeChangedEvent>() {
-
-				@Override
-				public void onEvent(DatasetTypeChangedEvent event) {
-					if (dataset == event.getObject()) rebuild();
-				}
-			};
+		final EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
+			new EventSubscriber<DatasetTypeChangedEvent>()
+		{
+			@Override
+			public void onEvent(final DatasetTypeChangedEvent event) {
+				if (dataset == event.getObject()) rebuild();
+			}
+		};
 		subscribers.add(typeChangeSubscriber);
 		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
 
-		EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
-			new EventSubscriber<DatasetRGBChangedEvent>() {
-
-				@Override
-				public void onEvent(DatasetRGBChangedEvent event) {
-					if (dataset == event.getObject()) rebuild();
-				}
-			};
+		final EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
+			new EventSubscriber<DatasetRGBChangedEvent>()
+		{
+			@Override
+			public void onEvent(final DatasetRGBChangedEvent event) {
+				if (dataset == event.getObject()) rebuild();
+			}
+		};
 		subscribers.add(rgbChangeSubscriber);
 		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
 
-		EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
-			new EventSubscriber<DatasetUpdatedEvent>() {
-
-				@Override
-				public void onEvent(DatasetUpdatedEvent event) {
-					if (event instanceof DatasetTypeChangedEvent) return;
-					if (event instanceof DatasetRGBChangedEvent) return;
-					if (dataset == event.getObject()) projector.map();
-				}
-			};
+		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
+			new EventSubscriber<DatasetUpdatedEvent>()
+		{
+			@Override
+			public void onEvent(final DatasetUpdatedEvent event) {
+				if (event instanceof DatasetTypeChangedEvent) return;
+				if (event instanceof DatasetRGBChangedEvent) return;
+				if (dataset == event.getObject()) projector.map();
+			}
+		};
 		subscribers.add(updateSubscriber);
 		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
-
 	}
+
 }

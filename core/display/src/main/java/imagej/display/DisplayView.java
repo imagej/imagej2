@@ -97,4 +97,5 @@ public interface DisplayView {
 	 * @return the view's selection state.
 	 */
 	boolean isSelected();
+
 }
