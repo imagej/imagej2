@@ -46,6 +46,7 @@ import org.jhotdraw.draw.RectangleFigure;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.tool.Tool;
+import imagej.ui.swing.tools.SelectionTool;
 
 /**
  * @author leek
@@ -55,9 +56,10 @@ import imagej.tool.Tool;
 @Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
 		priority = RectangleAdapter.PRIORITY, enabled = true)
 public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOverlay> {
-	public static final int PRIORITY = 60;
+
+	public static final int PRIORITY = SelectionTool.PRIORITY + 1;
 	
-	static protected RectangleOverlay downcastOverlay(Overlay roi) {
+	protected static RectangleOverlay downcastOverlay(Overlay roi) {
 		assert(roi instanceof RectangleOverlay);
 		return (RectangleOverlay)roi;
 	}

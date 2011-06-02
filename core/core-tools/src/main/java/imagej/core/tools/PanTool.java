@@ -56,7 +56,7 @@ import java.awt.event.KeyEvent;
 	iconPath = "/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends BaseTool {
 
-	public static final int PRIORITY = 203;
+	public static final int PRIORITY = ZoomTool.PRIORITY + 1;
 
 	private static final int PAN_AMOUNT = 10;
 

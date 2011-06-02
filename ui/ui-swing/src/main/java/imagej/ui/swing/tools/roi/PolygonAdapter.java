@@ -69,7 +69,8 @@ import org.jhotdraw.geom.BezierPath.Node;
 		priority = PolygonAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
 public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverlay> {
-	final static public int PRIORITY = 80;
+
+	public static final int PRIORITY = EllipseAdapter.PRIORITY + 1;
 
 	static private BezierFigure downcastFigure(Figure figure) {
 		assert figure instanceof BezierFigure;

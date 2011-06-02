@@ -71,7 +71,7 @@ public class ProbeTool extends BaseTool {
 
 	// -- constants --
 
-	public static final int PRIORITY = 204;
+	public static final int PRIORITY = 200;
 
 	// -- private instance variables --
 

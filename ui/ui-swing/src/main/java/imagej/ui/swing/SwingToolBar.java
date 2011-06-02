@@ -65,41 +65,39 @@ import javax.swing.event.ChangeListener;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingToolBar extends JToolBar
-	implements ToolBar
-{
+public class SwingToolBar extends JToolBar implements ToolBar {
 
-	protected static final Border ACTIVE_BORDER =
-		new BevelBorder(BevelBorder.LOWERED);
+	protected static final Border ACTIVE_BORDER = new BevelBorder(
+		BevelBorder.LOWERED);
 
-	protected static final Border INACTIVE_BORDER =
-		new BevelBorder(BevelBorder.RAISED);
+	protected static final Border INACTIVE_BORDER = new BevelBorder(
+		BevelBorder.RAISED);
 
-	private ToolManager toolManager;
+	private final ToolManager toolManager;
 
-	private Map<String, AbstractButton> toolButtons;
-	
-	private final ButtonGroup buttonGroup = new ButtonGroup();		
+	private final Map<String, AbstractButton> toolButtons;
+
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	final private EventSubscriber<ToolActivatedEvent> toolActivatedEventSubscriber =
-		new EventSubscriber<ToolActivatedEvent>(){
-	
+		new EventSubscriber<ToolActivatedEvent>() {
+
 			@Override
-			public void onEvent(ToolActivatedEvent event) {
+			public void onEvent(final ToolActivatedEvent event) {
 				onToolActivatedEvent(event);
 			}
 		};
-		
+
 	final private EventSubscriber<ToolDeactivatedEvent> toolDeactivatedEventSubscriber =
 		new EventSubscriber<ToolDeactivatedEvent>() {
 
 			@Override
-			public void onEvent(ToolDeactivatedEvent event) {
+			public void onEvent(final ToolDeactivatedEvent event) {
 				onToolDeactivatedEvent(event);
-			
+
 			}
 		};
 
@@ -108,7 +106,8 @@ public class SwingToolBar extends JToolBar
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
-		Events.subscribe(ToolDeactivatedEvent.class, toolDeactivatedEventSubscriber);
+		Events.subscribe(ToolDeactivatedEvent.class,
+			toolDeactivatedEventSubscriber);
 	}
 
 	// -- ToolBar methods --
@@ -124,23 +123,25 @@ public class SwingToolBar extends JToolBar
 		int lastPriority = Integer.MAX_VALUE;
 		for (final ToolEntry entry : toolManager.getToolEntries()) {
 			try {
-				final AbstractButton button = createButton(entry, buttonGroup);
+				final AbstractButton button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
-				add(button);
 
 				// add a separator between tools with clustered priorities
 				final int priority = entry.getPriority();
+				Log.debug("====> PROCESSING TOOL: " + entry.getName() + " -- priority=" + priority + ", lastPriority=" + lastPriority);//TEMP
 				if (priority - lastPriority > 10) addSeparator();
 				lastPriority = priority;
+
+				add(button);
 			}
-			catch (PluginException e) {
+			catch (final PluginException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private AbstractButton createButton(final ToolEntry entry,
-		final ButtonGroup buttonGroup) throws PluginException
+	private AbstractButton createButton(final ToolEntry entry)
+		throws PluginException
 	{
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
@@ -162,7 +163,7 @@ public class SwingToolBar extends JToolBar
 			Log.debug("Loading icon from " + iconURL.toString());
 			button.setIcon(new ImageIcon(iconURL, label));
 		}
-		
+
 		// set tool tip
 		if (label != null && !label.isEmpty()) {
 			button.setToolTipText(label);
@@ -172,6 +173,7 @@ public class SwingToolBar extends JToolBar
 
 		// display description on mouseover
 		button.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
 				Events.publish(new StatusEvent(description));
@@ -180,10 +182,12 @@ public class SwingToolBar extends JToolBar
 
 		// activate tool when button pressed
 		button.addChangeListener(new ChangeListener() {
+
 			boolean active = false;
+
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				boolean selected = button.isSelected();
+			public void stateChanged(final ChangeEvent e) {
+				final boolean selected = button.isSelected();
 				button.setBorder(selected ? ACTIVE_BORDER : INACTIVE_BORDER);
 				if (selected == active) return;
 				active = selected;
@@ -192,7 +196,7 @@ public class SwingToolBar extends JToolBar
 				}
 			}
 		});
-		
+
 		button.setBorder(INACTIVE_BORDER);
 		button.setEnabled(enabled);
 
@@ -206,18 +210,18 @@ public class SwingToolBar extends JToolBar
 		if (button == null) return; // not on toolbar
 		button.setSelected(true);
 		button.setBorder(ACTIVE_BORDER);
-		Log.debug("Selected " + name + " button." );
+		Log.debug("Selected " + name + " button.");
 	}
-	
+
 	public void onToolDeactivatedEvent(final ToolDeactivatedEvent event) {
-		ToolEntry entry = event.getTool().getToolEntry();
+		final ToolEntry entry = event.getTool().getToolEntry();
 		if (entry == null) return;
 		final String name = entry.getName();
 		if (name == null) return; // no name, no button?
 		final AbstractButton button = toolButtons.get(name);
 		if (button == null) return; // not on toolbar
 		button.setBorder(INACTIVE_BORDER);
-		Log.debug("Deactivated " + name + " button." );
+		Log.debug("Deactivated " + name + " button.");
 	}
 
 }

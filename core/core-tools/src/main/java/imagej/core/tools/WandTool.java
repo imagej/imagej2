@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = WandTool.PRIORITY, enabled = false)
 public class WandTool extends BaseTool {
 
-	public static final int PRIORITY = 200;
+	public static final int PRIORITY = 110;
 
 	// TODO
 
