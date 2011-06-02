@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
+import imagej.ImageJ;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
@@ -115,7 +116,7 @@ public class SwingStatusBar extends JPanel
 		final long usedMem = totalMem - freeMem;
 		final long usedMB = usedMem / 1048576;
 		final long maxMB = maxMem / 1048576;
-		return "ImageJ 2.0.0-alpha1; Java " + javaVersion +
+		return "ImageJ " + ImageJ.VERSION + "; Java " + javaVersion +
 			" [" + osArch + "]; " + usedMB + "MB of " + maxMB + "MB";
 	}
 

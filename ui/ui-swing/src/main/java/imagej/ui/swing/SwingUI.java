@@ -85,7 +85,7 @@ public class SwingUI implements UserInterface,
 {
 
 	private static final String README_FILE = "README.txt";
-	private static final String PREF_FIRST_RUN = "firstRun-2.0.0-alpha1";
+	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
 
 	private JFrame frame;
 	private SwingToolBar toolBar;
