@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
+import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -53,7 +54,7 @@ import net.imglib2.roi.RegionOfInterest;
  * 
  * @author Curtis Rueden
  */
-public class AbstractOverlay extends AbstractDataObject implements Overlay, Serializable {
+public class AbstractOverlay extends AbstractDataObject implements Overlay, Externalizable {
 
 	private static final long serialVersionUID = 1L;
 	protected ColorRGB fillColor = new ColorRGB(255, 255, 255);
@@ -68,6 +69,9 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 
 	// -- Overlay methods --
 
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getRegionOfInterest()
+	 */
 	@Override
 	public RegionOfInterest getRegionOfInterest() {
 		// NB: By default, no associated region of interest.
@@ -76,63 +80,72 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 
 	// -- DataObject methods --
 
+	/* (non-Javadoc)
+	 * @see imagej.data.DataObject#update()
+	 */
 	@Override
 	public void update() {
 		Events.publish(new OverlayUpdatedEvent(this));
 	}
 
+	/* (non-Javadoc)
+	 * @see imagej.data.DataObject#rebuild()
+	 */
 	@Override
 	public void rebuild() {
 		Events.publish(new OverlayRestructuredEvent(this));
 	}
 
+	/* (non-Javadoc)
+	 * @see imagej.data.DataObject#delete()
+	 */
 	@Override
 	public void delete() {
 		Events.publish(new OverlayDeletedEvent(this));
 	}
 
-	/**
-	 * @return the color to be used to paint the interior of the shape
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getFillColor()
 	 */
 	@Override
 	public ColorRGB getFillColor() {
 		return fillColor;
 	}
 
-	/**
-	 * @param fillColor the color of the interior of the shape
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setFillColor(imagej.util.ColorRGB)
 	 */
 	@Override
 	public void setFillColor(final ColorRGB fillColor) {
 		this.fillColor = fillColor;
 	}
 
-	/**
-	 * @return the alpha of the fill (0-255)
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getAlpha()
 	 */
 	@Override
 	public int getAlpha() {
 		return alpha;
 	}
 
-	/**
-	 * @param alpha - the alpha of the fill
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setAlpha(int)
 	 */
 	@Override
 	public void setAlpha(final int alpha) {
 		this.alpha = alpha;
 	}
 
-	/**
-	 * @return the color to be used to paint lines or shape borders
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getLineColor()
 	 */
 	@Override
 	public ColorRGB getLineColor() {
 		return lineColor;
 	}
 
-	/**
-	 * @param lineColor the color to be used to paint lines and shape borders
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setLineColor(imagej.util.ColorRGB)
 	 */
 	@Override
 	public void setLineColor(ColorRGB lineColor) {
@@ -141,8 +154,8 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 		}
 	}
 
-	/**
-	 * @return the width to be used when painting lines and shape borders, in pixels.
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getLineWidth()
 	 */
 	@Override
 	public double getLineWidth() {
@@ -152,6 +165,9 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 	/**
 	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
 	 */
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setLineWidth(double)
+	 */
 	@Override
 	public void setLineWidth(double lineWidth) {
 		if (this.lineWidth != lineWidth) {
@@ -159,6 +175,10 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
+	 */
+	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		out.writeObject(lineColor);
 		out.writeDouble(lineWidth);
@@ -166,6 +186,10 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Seri
 		out.writeInt(alpha);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
+	 */
+	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException
 	{
