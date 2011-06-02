@@ -42,6 +42,7 @@ import imagej.util.Index;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.ImageFigure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
 
@@ -86,7 +87,14 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		super(display, overlay);
 		this.display = display;
 		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
-		this.figure = figure == null ? adapter.createDefaultFigure() : figure;
+		if (figure == null) {
+			this.figure = adapter.createDefaultFigure();
+			final JHotDrawImageCanvas canvas = display.getImageCanvas();
+			final Drawing drawing = canvas.getDrawing();
+			drawing.add(this.figure);
+		} else {
+			this.figure = figure;
+		}
 		adapter.updateFigure(overlay, this.figure);
 		this.figure.addFigureListener(new FigureAdapter() {
 			@Override

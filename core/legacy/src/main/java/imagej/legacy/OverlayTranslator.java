@@ -135,8 +135,10 @@ public class OverlayTranslator {
 			return createPolygonROI((PolygonOverlay) overlay);
 		}
 		// TODO: lines, arrows, freehand, text, arbitrary masks
-		throw new UnsupportedOperationException("Translation of " +
+/*		throw new UnsupportedOperationException("Translation of " +
 			overlay.getClass().getName() + " is unimplemented");
+*/
+		return null;
 	}
 
 	private ShapeRoi createRectangleROI(final RectangleOverlay overlay) {
