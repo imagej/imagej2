@@ -61,6 +61,7 @@ ij.plugin.filter.ImageMath("sqrt")        # Process>Math>Sqrt
 ij.plugin.filter.ImageMath("reciprocal")  # Process>Math>Reciprocal
 ij.plugin.filter.ImageMath("nan")         # Process>Math>Set Background To NaN
 ij.plugin.filter.ImageMath("abs")         # Process>Math>Abs
+ij.plugin.frame.ContrastAdjuster          # Image>Adjust>Brightness/Contrast
 ij.plugin.ImageCalculator                 # Process>Image Calculator
 ij.plugin.Converter("8-bit")              # Image>Type>8-bit
 ij.plugin.Converter("16-bit")             # Image>Type>16-bit
