@@ -59,14 +59,6 @@ public interface DatasetView extends DisplayView {
 
 	int getCompositeDimIndex();
 
-	int getOffsetX();
-
-	void setOffsetX(final int offsetX);
-
-	int getOffsetY();
-
-	void setOffsetY(final int offsetY);
-
 	ImgPlus<? extends RealType<?>> getImgPlus();
 
 	CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector();
