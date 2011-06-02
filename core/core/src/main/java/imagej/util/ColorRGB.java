@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.util;
 
-/** A color with red, green and blue color components. */
-public class ColorRGB {
+import java.io.Serializable;
 
+/** A color with red, green and blue color components. */
+public class ColorRGB implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private final int red;
 	private final int green;
 	private final int blue;
@@ -86,6 +89,21 @@ public class ColorRGB {
 	@Override
 	public String toString() {
 		return red + "," + green + "," + blue;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ColorRGB) {
+			ColorRGB other = (ColorRGB)obj;
+			return (getRed() == other.getRed()) && 
+				   (getGreen() == other.getGreen()) && 
+				   (getBlue() == other.getBlue()) && 
+				   (getAlpha() == other.getAlpha());
+		}
+		return super.equals(obj);
 	}
 
 }
