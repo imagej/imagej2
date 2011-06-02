@@ -152,6 +152,19 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		updateLUTs();
 	}
 
+	@Override
+	public ColorMode getColorMode() {
+		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
+			getProjector();
+		final boolean composite = proj.isComposite();
+		if (composite) return ColorMode.COMPOSITE;
+		final List<ColorTable8> colorTables = getColorTables();
+		for (final ColorTable8 colorTable : colorTables) {
+			if (colorTable != ColorTables.GRAYS) return ColorMode.COLOR;
+		}
+		return ColorMode.GRAYSCALE;
+	}
+	
 	// -- DisplayView methods --
 	@Override
 	public Dataset getDataObject() {
