@@ -52,7 +52,7 @@ public class DuplicateImage implements ImageJPlugin {
 
 	// -- Plugin parameters --
 
-	@Parameter
+	@Parameter(required=true)
 	private Dataset input;
 
 	@Parameter(output = true)
