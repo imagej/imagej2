@@ -567,11 +567,19 @@ public class LegacyUtils {
 	}
 
 	static void setImagePlusLuts(Dataset ds, ImagePlus imp) {
-		// TODO - how to do this? Steal BioFormats Colorizer code
-		//imp.getProcessor().setColorModel(cm);
-		//imp.getStack().setColorModel(cm);
+		// TODO - how to do this? Steal BioFormats Colorizer code.
+		// Hack for now:
+		if (imp instanceof CompositeImage) {
+			DatasetView view = getFirstView(ds);
+			if (view == null)
+				setCompositeImageLutsToDefault((CompositeImage)imp);
+			else
+				setCompositeImageLuts(view.getColorTables(), (CompositeImage)imp);
+		}
+		else // regular ImagePlus
+			setImagePlusLutToFirstInDataset(ds, imp);
 	}
-	
+
 	/** returns true if a {@link Dataset} can be represented by reference in IJ1
 	*/
 	static boolean datasetIsIJ1Compatible(Dataset ds) {
@@ -637,6 +645,18 @@ public class LegacyUtils {
 			ds.setCompositeChannelCount(3);
 		}
 		else ds.setCompositeChannelCount(1);
+	}
+	
+	/** makes a {@link CompositeImage} that wraps a given {@link ImagePlus} and
+	 * sets channel LUTs to match how IJ2 displays given paired {@link Dataset}.
+	 * Assumes given ImagePlus has channels in range 2..7 and that if Dataset
+	 * View has ColorTables defined there is one per channel.
+	 */
+	// TODO - last assumption may be bad. If I have a 6 channel Dataset with
+	// compos chann count == 2 then maybe I only have 2 or 3 ColorTables. Is
+	// this configuration even valid. If so then what to do for translation?
+	static CompositeImage makeCompositeImage(final ImagePlus imp) {
+		return new CompositeImage(imp, CompositeImage.COMPOSITE);
 	}
 
 	// -- private helpers --
@@ -902,25 +922,20 @@ public class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
+	/** assigns the color tables of the first view of a Dataset */
 	private static void assignColorTables(Dataset ds, List<ColorTable<?>> colorTables, boolean sixteenBitLuts) {
 		// FIXME - hack - for now until legacy layer maps Display <--> ImagePlus.
 		//   grab the first Display and set its default channel luts. When we allow
 		//   multiple views of a Dataset this will break. We avoid setting a
 		//   Dataset's per plane LUTs because it would be expensive and also IJ1
 		//   LUTs are not model space constructs but rather view space constructs.
-		final DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
-		for (final Display display : dispMgr.getDisplays(ds)) {
-			for (final DisplayView view : display.getViews()) {
-				if (view.getDataObject() != ds) continue;
-				final DatasetView dsView = (DatasetView) view;
-				for (int i = 0; i < colorTables.size(); i++) {
-					dsView.setColorTable((ColorTable8) colorTables.get(i), i);
-				}
-				return;
-			}
-		}
+		DatasetView dsView = getFirstView(ds);
+		if (dsView == null) return;
+		for (int i = 0; i < colorTables.size(); i++)
+			dsView.setColorTable((ColorTable8)colorTables.get(i), i);
 	}
 
+	/** creates a list of ColorTables from an ImagePlus */
 	private static List<ColorTable<?>> colorTablesFromImagePlus(ImagePlus imp) {
 		List<ColorTable<?>> colorTables = new ArrayList<ColorTable<?>>();
 		LUT[] luts = imp.getLuts();
@@ -959,6 +974,9 @@ public class LegacyUtils {
 //		return new ColorTable16();
 //	}
 
+	/** makes a ColorTable8 from an IndexColorModel. Note that IJ1 LUT's are
+	 *  a kind of IndexColorModel.
+	 */
 	private static ColorTable8 make8BitColorTable(IndexColorModel icm) {
 		byte[] reds = new byte[256];
 		byte[] greens = new byte[256];
@@ -967,5 +985,76 @@ public class LegacyUtils {
 		icm.getGreens(greens);
 		icm.getBlues(blues);
 		return new ColorTable8(reds, greens, blues);
+	}
+
+	/** makes an 8-bit LUT from a ColorTable8 */
+	private static LUT make8BitLut(ColorTable8 cTable) {
+		byte[] reds = new byte[256];
+		byte[] greens = new byte[256];
+		byte[] blues = new byte[256];
+
+		for (int i = 0; i < 256; i++) {
+			reds[i]   = (byte) cTable.get(0, i);
+			greens[i] = (byte) cTable.get(1, i);
+			blues[i]  = (byte) cTable.get(2, i);
+		}
+		return new LUT(reds, greens, blues);
+	}
+
+	/** for each channel in CompositeImage set LUT to one from default progression */
+	private static void setCompositeImageLutsToDefault(CompositeImage ci) {
+		List<ColorTable8> cTables = new ArrayList<ColorTable8>();
+		cTables.add(ColorTables.RED);  // TODO - order copied from AbstractDatasetView
+		cTables.add(ColorTables.GREEN);  //  Refactor that code and reuse.
+		cTables.add(ColorTables.BLUE);
+		cTables.add(ColorTables.CYAN);
+		cTables.add(ColorTables.MAGENTA);
+		cTables.add(ColorTables.YELLOW);
+		cTables.add(ColorTables.GRAYS);
+		for (int i = 0; i < ci.getNChannels(); i++) {
+			ColorTable8 cTable = cTables.get(i);
+			LUT lut = make8BitLut(cTable);
+			ci.setChannelLut(lut, i+1);
+		}
+	}
+	
+	/** for each channel in CompositeImage set LUT to one from a given
+	 *  ColorTables */
+	private static void setCompositeImageLuts(List<ColorTable8> cTables,
+		CompositeImage ci)
+	{
+		if ((cTables == null) || (cTables.size() == 0))
+			setCompositeImageLutsToDefault(ci);
+		else {
+			for (int i = 0; i < ci.getNChannels(); i++) {
+				ColorTable8 cTable = cTables.get(i);
+				LUT lut = make8BitLut(cTable);
+				ci.setChannelLut(lut, i+1);
+			}
+		}
+	}
+	
+	/** set the single LUT of an ImagePlus to the first ColorTable of a Dataset */
+	private static void setImagePlusLutToFirstInDataset(Dataset ds, ImagePlus imp) {
+		ColorTable8 cTable = ds.getColorTable8(0);
+		if (cTable == null)
+			cTable = ColorTables.GRAYS;
+		LUT lut = make8BitLut(cTable);
+		imp.getProcessor().setColorModel(lut);
+		//or imp.getStack().setColorModel(lut);
+	}
+	
+	/** gets the first view that displays a given Dataset. Kludge code that
+	 *  should go away when we map Display<-->ImagePlus */
+	private static DatasetView getFirstView(Dataset ds) {
+		DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
+		for (Display display : dispMgr.getDisplays(ds)) {
+			for (DisplayView view : display.getViews()) {
+				DatasetView dsView = (DatasetView)view;
+				if (dsView.getDataObject() == ds)
+					return dsView;
+			}
+		}
+		return null;
 	}
 }

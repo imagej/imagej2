@@ -105,6 +105,7 @@ public class DatasetHarmonizer {
 		}
 		LegacyUtils.setImagePlusMetadata(ds, imp);
 		overlayTranslator.setImagePlusOverlays(ds, imp);
+		LegacyUtils.setImagePlusLuts(ds, imp);
 	}
 	
 	/**
