@@ -69,12 +69,22 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	
 	public EditColors() {
 		final DatasetView view = getActiveDisplayView();
-		colorMode = view.getColorMode();
+		if (view != null)
+			setColorMode(view.getColorMode());
+		else {  // view == null
+			if (modeString.equals(COLOR))
+				setColorMode(ColorMode.COLOR);
+			else if (modeString.equals(COMPOSITE))
+				setColorMode(ColorMode.COMPOSITE);
+			else
+				setColorMode(ColorMode.GRAYSCALE);
+		}
 	}
 
 	@Override
 	public void run() {
 		final DatasetView view = getActiveDisplayView();
+		if (view == null) return;
 		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
 			view.getProjector();
 		view.resetColorTables(colorMode == ColorMode.GRAYSCALE);
