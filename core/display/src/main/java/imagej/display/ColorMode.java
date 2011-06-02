@@ -1,5 +1,5 @@
 //
-// DatasetView.java
+// ColorMode.java
 //
 
 /*
@@ -34,48 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.data.Dataset;
-
-import java.util.List;
-
-import net.imglib2.display.ARGBScreenImage;
-import net.imglib2.display.ColorTable8;
-import net.imglib2.display.CompositeXYProjector;
-import net.imglib2.display.RealLUTConverter;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
 
 /**
- * A linkage between a {@link Dataset} and a {@link Display}. The view takes
- * care of mapping the N-dimensional data into a representation suitable for
- * showing onscreen.
- * 
- * @author Curtis Rueden
+ * The mode to use to display data in a view.
+ *  
+ * @author Barry DeZonia
  */
-public interface DatasetView extends DisplayView {
-
-	ARGBScreenImage getScreenImage();
-
-	int getCompositeDimIndex();
-
-	ImgPlus<? extends RealType<?>> getImgPlus();
-
-	CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector();
-
-	List<RealLUTConverter<? extends RealType<?>>> getConverters();
-
-	void setComposite(final boolean composite);
-
-	List<ColorTable8> getColorTables();
-
-	void setColorTable(final ColorTable8 colorTable, final int channel);
-
-	void resetColorTables(final boolean grayscale);
-
-	@Override
-	Dataset getDataObject();
-	
-	ColorMode getColorMode();
-
+public enum ColorMode {
+	COLOR,
+	COMPOSITE,
+	GRAYSCALE;
 }

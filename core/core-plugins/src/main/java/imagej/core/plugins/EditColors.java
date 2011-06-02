@@ -35,19 +35,16 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.ImageJ;
-import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
+import imagej.display.ColorMode;
 import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
 
-import java.util.List;
-
-import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
@@ -64,13 +61,15 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public static final String COLOR = "Color";
 	public static final String COMPOSITE = "Composite";
 
-	@Parameter(label = "Color mode", persist = false, choices = {
-		EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE })
-	private String colorMode = EditColors.GRAYSCALE;
+	@Parameter(label = "Color mode", persist = false, choices =
+		{EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE})
+	private String modeString = EditColors.GRAYSCALE;
 
+	private ColorMode colorMode;
+	
 	public EditColors() {
 		final DatasetView view = getActiveDisplayView();
-		colorMode = getColorMode(view);
+		colorMode = view.getColorMode();
 	}
 
 	@Override
@@ -78,8 +77,8 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 		final DatasetView view = getActiveDisplayView();
 		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
 			view.getProjector();
-		view.resetColorTables(colorMode.equals(EditColors.GRAYSCALE));
-		proj.setComposite(colorMode.equals(EditColors.COMPOSITE));
+		view.resetColorTables(colorMode == ColorMode.GRAYSCALE);
+		proj.setComposite(colorMode == ColorMode.COMPOSITE);
 		proj.map();
 		view.update();
 	}
@@ -89,11 +88,18 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 		run();
 	}
 
-	public String getColorMode() {
+	public ColorMode getColorMode() {
 		return colorMode;
 	}
 
-	public void setColorMode(final String colorMode) {
+	public void setColorMode(final ColorMode colorMode) {
+		switch (colorMode) {
+			case COLOR: modeString = EditColors.COLOR; break;
+			case COMPOSITE: modeString = EditColors.COMPOSITE; break;
+			case GRAYSCALE: modeString = EditColors.GRAYSCALE; break;
+			default:
+				throw new IllegalStateException("unknown display mode "+colorMode);
+		}
 		this.colorMode = colorMode;
 	}
 
@@ -105,19 +111,6 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 		}
 		final DisplayView activeView = display.getActiveView();
 		return activeView instanceof DatasetView ? (DatasetView) activeView : null;
-	}
-
-	private String getColorMode(final DatasetView view) {
-		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
-			view.getProjector();
-		final boolean composite = proj.isComposite();
-		if (composite) return EditColors.COMPOSITE;
-
-		final List<ColorTable8> colorTables = view.getColorTables();
-		for (final ColorTable8 colorTable : colorTables) {
-			if (colorTable != ColorTables.GRAYS) return EditColors.COLOR;
-		}
-		return EditColors.GRAYSCALE;
 	}
 
 }
