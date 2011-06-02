@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.ImageJ;
-import imagej.display.AbstractDatasetView;
+import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -45,6 +45,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
 import imagej.plugin.ui.WidgetStyle;
+import imagej.util.Log;
 
 import java.util.List;
 
@@ -62,25 +63,27 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Brightness/Contrast", accelerator = "control shift C") })
 public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 
+	private static final int SLIDER_RANGE = 256;
+	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
+
 	@Parameter(label = "Minimum", persist = false, callback = "adjustMinMax")
 	private double min = 0;
-	//
+
 	@Parameter(label = "Maximum", persist = false, callback = "adjustMinMax")
 	private double max = 255;
-	//
+
 	@Parameter(callback = "adjustBrightness", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int brightness = 128;
-	//
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
+	private int brightness = SLIDER_RANGE / 2;
+
 	@Parameter(callback = "adjustContrast", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int contrast = 128;
-	//
-	int sliderRange = 256;
-	double defaultMin, defaultMax;
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
+	private int contrast = SLIDER_RANGE / 2;
+
+	private final double defaultMin, defaultMax;
 
 	public ContrastBrightness() {
-		final AbstractDatasetView view = getActiveDisplayView();
+		final DatasetView view = getActiveDisplayView();
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -90,8 +93,8 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 		}
 		this.defaultMin = min;
 		this.defaultMax = max;
-		System.out.println("ValidBitsOOO: " + view.getDataObject().getValidBits());
-		System.out.println("default min/max= " + defaultMin + "/" + defaultMax);
+		Log.debug("ValidBitsOOO: " + view.getDataObject().getValidBits());
+		Log.debug("default min/max= " + defaultMin + "/" + defaultMax);
 
 //		if (view.getCompositeDimIndex() >= 0) {
 //			int currentChannel = view.getProjector().getIntPosition(view.getCompositeDimIndex());
@@ -102,7 +105,7 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void run() {
-		final AbstractDatasetView view = getActiveDisplayView();
+		final DatasetView view = getActiveDisplayView();
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -119,7 +122,7 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 	}
 
 	void adjustMinMax() {
-//		min = defaultMin + min * (defaultMax - defaultMin) / (sliderRange - 1.0);
+//		min = defaultMin + min * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
 //		if (max > defaultMax) {
 //			max = defaultMax;
 //		}
@@ -131,7 +134,7 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 	}
 
 	void adjustMax() {
-//		max = defaultMin + max * (defaultMax - defaultMin) / (sliderRange - 1.0);
+//		max = defaultMin + max * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
 //		//IJ.log("adjustMax: "+maxvalue+"  "+max);
 //		if (min < defaultMin) {
 //			min = defaultMin;
@@ -147,13 +150,13 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 		double slope;
 		final double center = min + (max - min) / 2.0;
 		final double range = defaultMax - defaultMin;
-		final double mid = sliderRange / 2;
+		final double mid = SLIDER_RANGE / 2;
 		final int cvalue = contrast;
 		if (cvalue <= mid) {
 			slope = cvalue / mid;
 		}
 		else {
-			slope = mid / (sliderRange - cvalue);
+			slope = mid / (SLIDER_RANGE - cvalue);
 		}
 		if (slope > 0.0) {
 			min = (center - (0.5 * range) / slope);
@@ -162,35 +165,32 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 	}
 
 	protected void adjustBrightness() {
-
 		final double brightCenter =
 			defaultMin + (defaultMax - defaultMin) *
-				((float) (sliderRange - brightness) / (float) sliderRange);
+				((float) (SLIDER_RANGE - brightness) / (float) SLIDER_RANGE);
 		final double width = max - min;
 		min = (brightCenter - width / 2.0);
 		max = (brightCenter + width / 2.0);
-		System.out.println("brightness, brightCenter, width, min, max = " +
-			brightness + ", " + brightCenter + ", " + width + ", " + min + ", " +
-			max);
+		Log.debug("brightness, brightCenter, width, min, max = " + brightness +
+			", " + brightCenter + ", " + width + ", " + min + ", " + max);
 	}
 
 	void updateBrightness() {
 		final double level = min + (max - min) / 2.0;
 		final double normalizedLevel =
 			1.0 - (level - defaultMin) / (defaultMax - defaultMin);
-		brightness = ((int) (normalizedLevel * sliderRange));
+		brightness = ((int) (normalizedLevel * SLIDER_RANGE));
 	}
 
 	void updateContrast() {
-		final double mid = sliderRange / 2;
+		final double mid = SLIDER_RANGE / 2;
 		double c = ((defaultMax - defaultMin) / (max - min)) * mid;
 		if (c > mid) {
-			c = sliderRange - ((max - min) / (defaultMax - defaultMin)) * mid;
+			c = SLIDER_RANGE - ((max - min) / (defaultMax - defaultMin)) * mid;
 		}
 		contrast = ((int) c);
 	}
 
-	// ===================================
 	public double getMinimum() {
 		return min;
 	}
@@ -223,14 +223,13 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 		this.contrast = contrast;
 	}
 
-	private AbstractDatasetView getActiveDisplayView() {
+	private DatasetView getActiveDisplayView() {
 		final DisplayManager manager = ImageJ.get(DisplayManager.class);
 		final Display display = manager.getActiveDisplay();
 		if (display == null) {
 			return null; // headless UI or no open images
 		}
 		final DisplayView activeView = display.getActiveView();
-		return activeView instanceof AbstractDatasetView
-			? (AbstractDatasetView) activeView : null;
+		return activeView instanceof DatasetView ? (DatasetView) activeView : null;
 	}
 }
