@@ -53,8 +53,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	public Dataset createDataset(final ImagePlus imp) {
 		Dataset ds = LegacyUtils.makeExactDataset(imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
 		return ds;
 	}
 
@@ -71,6 +71,19 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 			LegacyUtils.setImagePlusGrayData(dataset, imp);
 		}
 		LegacyUtils.setImagePlusMetadata(dataset, imp);
+		if (shouldBeComposite(dataset, imp)) {
+			imp = LegacyUtils.makeCompositeImage(imp);
+		}
+		LegacyUtils.setImagePlusLuts(dataset, imp);
 		return imp;
+	}
+
+	// -- helpers --
+	
+	private boolean shouldBeComposite(Dataset ds, ImagePlus imp) {
+		if (ds.getCompositeChannelCount() == 1) return false;
+		int channels = imp.getNChannels();
+		if ((channels < 2) || (channels > 7)) return false;
+		return true;
 	}
 }
