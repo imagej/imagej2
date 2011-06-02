@@ -50,8 +50,8 @@ import imagej.tool.Tool;
 
 public class SelectionTool extends BaseTool {
 
-	final public static int PRIORITY = 50;
-	final public static String NAME = "Selection";
+	public final static String NAME = "Selection";
+	public final static int PRIORITY = 100;
 	
 	@Override
 	public String getName() {

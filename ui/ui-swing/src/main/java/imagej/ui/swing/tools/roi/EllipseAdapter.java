@@ -55,7 +55,8 @@ import org.jhotdraw.draw.Figure;
 		priority = EllipseAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)
 public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverlay> {
-	final static public int PRIORITY=70;
+
+	public static final int PRIORITY = RectangleAdapter.PRIORITY + 1;
 	
 	static protected EllipseOverlay downcastOverlay(Overlay roi) {
 		assert(roi instanceof EllipseOverlay);

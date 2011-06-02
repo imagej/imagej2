@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.tools;
+package imagej.ui.swing.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
@@ -46,7 +46,7 @@ import imagej.tool.Tool;
 	priority = AngleTool.PRIORITY, enabled = false)
 public class AngleTool extends BaseTool {
 
-	public static final int PRIORITY = 105;
+	public static final int PRIORITY = LineTool.PRIORITY + 1;
 
 	// TODO
 

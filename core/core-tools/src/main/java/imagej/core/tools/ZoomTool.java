@@ -52,10 +52,9 @@ import imagej.util.IntCoords;
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",
 	iconPath = "/tools/zoom.png", priority = ZoomTool.PRIORITY)
-//
 public class ZoomTool extends BaseTool {
 
-	public static final int PRIORITY = 202;
+	public static final int PRIORITY = ProbeTool.PRIORITY + 1;
 
 	private static final int DRAG_THRESHOLD = 8;
 

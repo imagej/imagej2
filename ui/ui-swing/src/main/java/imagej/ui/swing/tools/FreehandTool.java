@@ -36,6 +36,7 @@ package imagej.ui.swing.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.ui.swing.tools.roi.PolygonAdapter;
 
 /**
  * TODO
@@ -46,8 +47,8 @@ import imagej.tool.Tool;
 	priority = FreehandTool.PRIORITY, enabled = false)
 public class FreehandTool extends BaseTool {
 
-	public static final int PRIORITY = 103;
-
+	public static final int PRIORITY = PolygonAdapter.PRIORITY + 1;
+	
 	// TODO
 
 }

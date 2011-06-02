@@ -47,7 +47,7 @@ import imagej.tool.Tool;
 	priority = TextTool.PRIORITY, enabled = false)
 public class TextTool extends BaseTool {
 
-	public static final int PRIORITY = 201;
+	public static final int PRIORITY = 115;
 
 	@Override
 	public MouseCursor getCursor() {
