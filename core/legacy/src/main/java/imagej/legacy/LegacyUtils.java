@@ -1003,16 +1003,8 @@ public class LegacyUtils {
 
 	/** for each channel in CompositeImage set LUT to one from default progression */
 	private static void setCompositeImageLutsToDefault(CompositeImage ci) {
-		List<ColorTable8> cTables = new ArrayList<ColorTable8>();
-		cTables.add(ColorTables.RED);  // TODO - order copied from AbstractDatasetView
-		cTables.add(ColorTables.GREEN);  //  Refactor that code and reuse.
-		cTables.add(ColorTables.BLUE);
-		cTables.add(ColorTables.CYAN);
-		cTables.add(ColorTables.MAGENTA);
-		cTables.add(ColorTables.YELLOW);
-		cTables.add(ColorTables.GRAYS);
 		for (int i = 0; i < ci.getNChannels(); i++) {
-			ColorTable8 cTable = cTables.get(i);
+			ColorTable8 cTable = ColorTables.getDefaultColorTable(i);
 			LUT lut = make8BitLut(cTable);
 			ci.setChannelLut(lut, i+1);
 		}
