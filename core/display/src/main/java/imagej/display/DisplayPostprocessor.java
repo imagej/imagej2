@@ -35,7 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.ImageJ;
+import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.roi.Overlay;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
@@ -75,15 +77,20 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 			if (!isDisplayed(dataset))
 				displayDataset(dataset);
 		}
-		else {
+		else if (value instanceof Overlay) {
+			final Overlay overlay = (Overlay) value;
+			if (! isDisplayed(overlay)) {
+				displayOverlay(overlay);
+			}
+		} else {
 			// ignore non-Dataset output
 		}
 	}
 
 	// -- Helper methods --
 
-	/** Determines whether the given dataset is currently displayed onscreen. */
-	private boolean isDisplayed(final Dataset dataset) {
+	/** Determines whether the given data object is currently displayed onscreen. */
+	private boolean isDisplayed(final DataObject dataset) {
 		// TODO: Keep a reference count instead of manually counting here?
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final List<Display> displays = objectManager.getObjects(Display.class);
@@ -115,6 +122,12 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 				Log.error("Invalid display plugin: " + pe, e);
 			}
 		}
+	}
+	
+	private void displayOverlay(final Overlay overlay) {
+		// Add the overlay to the currently active display
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		displayManager.getActiveDisplay().display(overlay);
 	}
 
 }
