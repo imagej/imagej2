@@ -732,9 +732,6 @@ public class LegacyUtils {
 		int[] dimValues = new int[5];
 		getImagePlusDims(ds, dimIndices, dimValues);
 		
-		final int cIndex = dimIndices[2];
-		final int zIndex = dimIndices[3];
-		final int tIndex = dimIndices[4];
 		final int cCount = dimValues[2];
 		final int zCount = dimValues[3];
 		final int tCount = dimValues[4];
@@ -744,15 +741,11 @@ public class LegacyUtils {
 		final long[] planeDims = new long[ds.getImgPlus().numDimensions()];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = ds.getImgPlus().dimension(i+2);
-		final long[] planePos = new long[planeDims.length];
 
 		Object dummyPlane = null;
 		for (long t = 0; t < tCount; t++) {
-			if (tIndex >= 0) planePos[tIndex - 2] = t;
 			for (long z = 0; z < zCount; z++) {
-				if (zIndex >= 0) planePos[zIndex - 2] = z;
 				for (long c = 0; c < cCount; c++) {
-					if (cIndex >= 0) planePos[cIndex - 2] = c;
 					Object plane;
 					if (makeDummyPlanes) {
 						if (dummyPlane == null)
