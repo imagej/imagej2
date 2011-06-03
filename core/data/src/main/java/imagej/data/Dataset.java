@@ -153,8 +153,13 @@ public class Dataset extends AbstractDataObject implements
 
 		rebuild();
 		
-		if (typeChanged)
+		if (typeChanged) {
+			if (isRGBMerged()) {
+				setRGBMerged(false);
+				setCompositeChannelCount(1);
+			}
 			typeChange();
+		}
 	}
 
 	/** Gets the dimensional extents of the dataset. */
