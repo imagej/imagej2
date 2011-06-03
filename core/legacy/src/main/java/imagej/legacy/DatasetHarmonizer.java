@@ -117,7 +117,7 @@ public class DatasetHarmonizer {
 		if (imp.getBitDepth() != typeMap.get(imp)) {
 			Dataset tmp = imageTranslator.createDataset(imp);
 			ds.setImgPlus(tmp.getImgPlus());
-			ds.setRGBMerged(imp.getType() == ImagePlus.COLOR_RGB);
+			ds.setRGBMerged(tmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
 			if (dimensionsDifferent(ds, imp))
