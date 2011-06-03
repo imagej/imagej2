@@ -571,7 +571,7 @@ public class LegacyUtils {
 			if (view == null)
 				setCompositeImageLutsToDefault(ci);
 			else
-				setCompositeImageLuts(ds, ci, view.getColorTables());
+				setCompositeImageLuts(ci, view.getColorTables());
 		}
 		else // regular ImagePlus
 			setImagePlusLutToFirstInDataset(ds, imp);
@@ -1009,18 +1009,12 @@ public class LegacyUtils {
 	
 	/** for each channel in CompositeImage set LUT to one from a given
 	 *  ColorTables */
-	private static void setCompositeImageLuts(Dataset ds, CompositeImage ci,
+	private static void setCompositeImageLuts(CompositeImage ci,
 		List<ColorTable8> cTables)
 	{
-		int mode = Integer.MIN_VALUE;
-		
-		if (ds.getCompositeChannelCount() > 1)
-			mode = CompositeImage.COMPOSITE;
-		
 		if ((cTables == null) || (cTables.size() == 0)) {
 			setCompositeImageLutsToDefault(ci);
-			if (mode == Integer.MIN_VALUE)
-				mode = CompositeImage.COLOR;
+			ci.setMode(CompositeImage.COMPOSITE);
 		}
 		else {
 			boolean allGreyLuts = true;
@@ -1030,15 +1024,11 @@ public class LegacyUtils {
 				LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i+1);
 			}
-			if (mode == Integer.MIN_VALUE) {
-				if (allGreyLuts)
-					mode  = CompositeImage.GRAYSCALE;
-				else
-					mode = CompositeImage.COLOR;
-			}
+			if (allGreyLuts)
+				ci.setMode(CompositeImage.GRAYSCALE);
+			else
+				ci.setMode(CompositeImage.COLOR);
 		}
-		if (mode != Integer.MIN_VALUE)
-			ci.setMode(mode);
 	}
 	
 	/** set the single LUT of an ImagePlus to the first ColorTable of a Dataset */

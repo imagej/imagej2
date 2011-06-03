@@ -80,6 +80,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 
 	// -- helpers --
 	
+	// TODO - is this logic correct? Specifically is testing compChanCnt sufficient?
 	private boolean shouldBeComposite(Dataset ds, ImagePlus imp) {
 		if (ds.getCompositeChannelCount() == 1) return false;
 		int channels = imp.getNChannels();
