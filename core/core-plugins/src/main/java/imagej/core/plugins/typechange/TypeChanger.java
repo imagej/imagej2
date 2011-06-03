@@ -61,7 +61,7 @@ public class TypeChanger {
 	@Parameter
 	protected boolean selected;
 
-	@Parameter
+	@Parameter(required = true)
 	protected Dataset input;
 
 	protected <T extends RealType<T> & NativeType<T>> void changeType(
