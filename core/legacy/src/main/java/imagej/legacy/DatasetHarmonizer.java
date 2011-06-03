@@ -56,7 +56,7 @@ public class DatasetHarmonizer {
 
 	private ImageTranslator imageTranslator;
 	private final OverlayTranslator overlayTranslator;
-	private Map<ImagePlus,Integer> typeMap = new HashMap<ImagePlus,Integer>();
+	private Map<ImagePlus,Integer> bitDepthMap = new HashMap<ImagePlus,Integer>();
 
 	/** construct a {@link DatasetHarmonizer} with a given
 	 *  {@link ImageTranslator}. The translator is used to create new Datasets
@@ -71,14 +71,14 @@ public class DatasetHarmonizer {
 	 * after a call to a plugin to see if the ImagePlus underwent a type change.
 	 */
 	public void registerType(ImagePlus imp) {
-		typeMap.put(imp, imp.getBitDepth());
+		bitDepthMap.put(imp, imp.getBitDepth());
 	}
 	
 	/** forget the types of all {@link ImagePlus}es. Called before a plugin is
 	 * run to reset the tracking of types.
 	 */
 	public void resetTypeTracking() {
-		typeMap.clear();
+		bitDepthMap.clear();
 	}
 	
 	/**
@@ -87,9 +87,16 @@ public class DatasetHarmonizer {
 	 * compatible format.
 	 */
 	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+		//System.out.println("DatasetHarmonizer::updateLegacyImage() - Dataset "+ds.getName()+"associated with ImagePlus "+imp.getID());
 		if ( ! LegacyUtils.imagePlusIsNearestType(ds,imp) ) {
 			ImagePlus newImp = imageTranslator.createLegacyImage(ds);
 			imp.setStack(newImp.getStack());
+			int c = newImp.getNChannels();
+			int z = newImp.getNSlices();
+			int t = newImp.getNFrames();
+			imp.setDimensions(c, z, t);
+			//System.out.println("imp type "+imp.getType());
+			//System.out.println("from new imp type "+newImp.getType());
 		}
 		else {
 			if (dimensionsDifferent(ds, imp)) {
@@ -113,8 +120,12 @@ public class DatasetHarmonizer {
 	 * {@link ImagePlus}.
 	 */
 	public void updateDataset(Dataset ds, ImagePlus imp) {
+		//System.out.println("DatasetHarmonizer::updateDataset() - Dataset "+ds.getName()+"associated with ImagePlus "+imp.getID());
 		// did type of ImagePlus change?
-		if (imp.getBitDepth() != typeMap.get(imp)) {
+		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
+			//System.out.println("old bit depth = "+bitDepthMap.get(imp));
+			//System.out.println("new bit depth = "+imp.getBitDepth());
+			//System.out.println("new chan count = "+imp.getNChannels());
 			Dataset tmp = imageTranslator.createDataset(imp);
 			ds.setImgPlus(tmp.getImgPlus());
 			ds.setRGBMerged(tmp.isRGBMerged());
