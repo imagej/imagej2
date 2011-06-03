@@ -9,6 +9,7 @@ import imagej.data.Dataset;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Axis;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -211,5 +212,106 @@ public class GrayscaleImageTranslatorTest {
 
 		x = 83; y = 56; c = 7; z = 3; t = 5; 
 		testImageFromIJ2(DataType.FLOAT, x, y, c, z, t);
+	}
+
+	private boolean allNull(Axis[] axes) {
+		for (Axis axis : axes)
+			if (axis != null)
+				return false;
+		return true;
+	}
+	
+	private boolean repeated(Axis[] axes) {
+		int cCount = 0, zCount = 0, tCount = 0;
+		for (Axis axis : axes) {
+			if (axis == Axes.CHANNEL) cCount++;
+			if (axis == Axes.Z) zCount++;
+			if (axis == Axes.TIME) tCount++;
+		}
+		return (cCount > 1 || zCount > 1 || tCount > 1);
+	}
+	
+	private void testOrdering(Axis[] axes) {
+		//System.out.println("Testing order : "+axes[0]+","+axes[1]+","+axes[2]);
+		int nullAxes = 0;
+		for (Axis axis : axes)
+			if (axis == null)
+				nullAxes++;
+		Axis[] fullAxes = new Axis[2 + axes.length - nullAxes];
+		fullAxes[0] = Axes.X;
+		fullAxes[1] = Axes.Y;
+		int axisIndex = 2;
+		for (int i = 0; i < axes.length; i++)
+			if (axes[i] != null)
+				fullAxes[axisIndex++] = axes[i];
+		long[] dims = new long[fullAxes.length];
+		dims[0] = 3;
+		dims[1] = 1;
+		for (int i = 2; i < dims.length; i++)
+			dims[i] = 5 + i*2;
+		Dataset ds = Dataset.create(new UnsignedByteType(), dims, "temp", fullAxes);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		long cCount = (cIndex < 0) ? 1 : dims[cIndex];   
+		long zCount = (zIndex < 0) ? 1 : dims[zIndex];   
+		long tCount = (tIndex < 0) ? 1 : dims[tIndex];
+		long[] position = new long[dims.length];
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
+		for (int t = 0; t < tCount; t++) {
+			if (tIndex >= 0) position[tIndex] = t;
+			for (int z = 0; z < zCount; z++) {
+				if (zIndex >= 0) position[zIndex] = z;
+				for (int c = 0; c < cCount; c++) {
+					if (cIndex >= 0) position[cIndex] = c;
+					position[1] = 0;
+					position[0] = 0;
+					accessor.setPosition(position);
+					accessor.get().setReal(c);
+					position[0] = 1;
+					accessor.setPosition(position);
+					accessor.get().setReal(z);
+					position[0] = 2;
+					accessor.setPosition(position);
+					accessor.get().setReal(t);
+				}
+			}
+		}
+		ImagePlus imp = translator.createLegacyImage(ds);
+		for (int t = 0; t < tCount; t++) {
+			if (tIndex >= 0) position[tIndex] = t;
+			for (int z = 0; z < zCount; z++) {
+				if (zIndex >= 0) position[zIndex] = z;
+				for (int c = 0; c < cCount; c++) {
+					if (cIndex >= 0) position[cIndex] = c;
+					imp.setPositionWithoutUpdate(c+1, z+1, t+1);
+					ImageProcessor proc = imp.getProcessor();
+					position[1] = 0;
+					position[0] = 0;
+					accessor.setPosition(position);
+					assertEquals(accessor.get().getRealDouble(), proc.get(0,0), 0);
+					position[0] = 1;
+					accessor.setPosition(position);
+					assertEquals(accessor.get().getRealDouble(), proc.get(1,0), 0);
+					position[0] = 2;
+					accessor.setPosition(position);
+					assertEquals(accessor.get().getRealDouble(), proc.get(2,0), 0);
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void testAxisOrderingIJ2DatasetToImageJ1() {
+		Axis[] axes = new Axis[]{null, Axes.CHANNEL, Axes.Z, Axes.TIME};
+		for (Axis outer : axes) {
+			for (Axis middle : axes) {
+				for (Axis inner : axes) {
+					if (allNull(new Axis[]{outer,middle,inner})) continue;
+					if (repeated(new Axis[]{outer,middle,inner})) continue;
+					testOrdering(new Axis[]{outer,middle,inner});
+				}
+			}
+		}
 	}
 }
