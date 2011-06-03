@@ -171,12 +171,9 @@ public class LegacyUtils {
 		getImagePlusDims(ds, dimIndices, dimValues);
 		assertXYPlanesCorrectlyOriented(dimIndices);
 		
-		final int cIndex = dimIndices[2];
-		final int zIndex = dimIndices[3];
-		final int tIndex = dimIndices[4];
-		final int c = cIndex < 0 ? 1 : dimValues[cIndex];
-		final int z = zIndex < 0 ? 1 : dimValues[zIndex];
-		final int t = tIndex < 0 ? 1 : dimValues[tIndex];
+		final int c = dimValues[2];
+		final int z = dimValues[3];
+		final int t = dimValues[4];
 
 		ImagePlus imp = makeImagePlus(ds, getPlaneMaker(ds), true);
 		
@@ -455,7 +452,8 @@ public class LegacyUtils {
 					if (plane == null) {
 						Log.error(message("Couldn't extract plane from Dataset ", c, z, t));
 					}
-					stack.setPixels(plane, planeNum+1);
+					int stackPosition = t*zCount*cCount + z*cCount + c + 1;
+					stack.setPixels(plane, stackPosition);
 				}
 			}
 		}
