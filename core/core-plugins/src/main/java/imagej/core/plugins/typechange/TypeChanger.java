@@ -80,8 +80,14 @@ public class TypeChanger {
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final Class<?> currTypeClass = dataset.getType().getClass();
 		final Class<?> newTypeClass = newType.getClass();
-		if (currTypeClass != newTypeClass) dataset.setImgPlus(copyToType(inputImg,
-			newType));
+		if (currTypeClass != newTypeClass) {
+			boolean wasRGBMerged = dataset.isRGBMerged();
+			dataset.setImgPlus(copyToType(inputImg,newType));
+			if (wasRGBMerged) {
+				dataset.setRGBMerged(false);
+				dataset.setCompositeChannelCount(1);
+			}
+		}
 	}
 
 	/**
