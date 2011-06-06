@@ -118,6 +118,42 @@ public class LegacyUtils {
 		return ds;
 	}
 	
+	/** Makes a gray {@link Dataset} from a Color {@link ImagePlus} whose
+	 * channel count > 1. The Dataset will have isRgbMerged() false, 3 times
+	 * as many channels as the input ImagePlus, and bitsperPixel == 8. Does not
+	 *  populate the data of the returned Dataset. That is left to other utility
+	 *  methods. Does not set metadata of Dataset.
+	 *  
+	 *  Throws exceptions if input ImagePlus is not multichannel RGB. */ 
+	static Dataset makeGrayDatasetFromColorImp(ImagePlus imp) {
+		
+		final int x = imp.getWidth();
+		final int y = imp.getHeight();
+		final int c = imp.getNChannels();
+		final int z = imp.getNSlices();
+		final int t = imp.getNFrames();
+
+		if (imp.getType() != ImagePlus.COLOR_RGB)
+			throw new IllegalArgumentException(
+				"this method designed for creating a color Dataset " +
+				"from a multichannel RGB ImagePlus");
+
+		if (c == 1)
+			throw new IllegalArgumentException(
+				"shouldn't make a gray Dataset from a single channel " +
+				"ColorProcessor stack");
+
+		final long[] dims = new long[] { x, y, c*3, z, t };
+		final String name = imp.getTitle();
+		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+		final int bitsPerPixel = 8;
+		final boolean signed = false;
+		final boolean floating = false;
+		final Dataset ds =
+			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+
+		return ds;
+	}
 	
 	/** Makes a color {@link Dataset} from an {@link ImagePlus}. Color Datasets
 	 *  have isRgbMerged() true, channels == 3, and bitsperPixel == 8. Does not
@@ -412,6 +448,52 @@ public class LegacyUtils {
 		ds.update();
 	}
 
+	/** Assigns the data values of a gray {@link Dataset} from a paired
+	 *  multichannel color {@link ImagePlus}. Assumes the Dataset and ImagePlus
+	 *  have the same dimensions. Gets values via {@link ImageProcessor}::get().
+	 *  Does not change the Dataset's metadata.
+	 */
+	static void setDatasetGrayDataFromColorImp(Dataset ds, ImagePlus imp) {
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		int x = imp.getWidth();
+		int y = imp.getHeight();
+		int origC = imp.getNChannels();
+		int z = imp.getNSlices();
+		int t = imp.getNFrames();
+		int imagejPlaneNumber = 1;
+		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
+		for (int ti = 0; ti < t; ti++) {
+			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
+			for (int zi = 0; zi < z; zi++) {
+				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
+				for (int ci = 0; ci < origC; ci++) {
+					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
+					for (int yi = 0; yi < y; yi++) {
+						accessor.setPosition(yi, yIndex);
+						for (int xi = 0; xi < x; xi++) {
+							accessor.setPosition(xi, xIndex);
+							int value = proc.get(xi, yi);
+							int rValue = (value >> 16) & 0xff;
+							int gValue = (value >> 8) & 0xff;
+							int bValue = (value >> 0) & 0xff;
+							accessor.setPosition(ci*3 + 0, cIndex);
+							accessor.get().setReal(rValue);
+							accessor.setPosition(ci*3 + 1, cIndex);
+							accessor.get().setReal(gValue);
+							accessor.setPosition(ci*3 + 2, cIndex);
+							accessor.get().setReal(bValue);
+						}
+					}
+				}
+			}
+		}
+		ds.update();
+	}
+	
 	/**
 	 * Assigns the plane references of an {@link ImagePlus}' {@link ImageStack}
 	 * to match those of a given {@link Dataset}. Assumes input Dataset and
@@ -638,7 +720,7 @@ public class LegacyUtils {
 		{
 			ds.setCompositeChannelCount(imp.getNChannels());
 		}
-		else if (imp.getType() == ImagePlus.COLOR_RGB) {
+		else if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
 			ds.setCompositeChannelCount(3);
 		}
 		else ds.setCompositeChannelCount(1);
@@ -931,9 +1013,11 @@ public class LegacyUtils {
 		LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
-				colorTables.add(ColorTables.RED);
-				colorTables.add(ColorTables.GREEN);
-				colorTables.add(ColorTables.BLUE);
+				for (int i = 0; i < imp.getNChannels(); i++) {
+					colorTables.add(ColorTables.RED);
+					colorTables.add(ColorTables.GREEN);
+					colorTables.add(ColorTables.BLUE);
+				}
 			}
 			else { // not a direct color model image
 				IndexColorModel icm =
