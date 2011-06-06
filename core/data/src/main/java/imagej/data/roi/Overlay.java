@@ -53,30 +53,23 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Curtis Rueden
  */
 public interface Overlay extends DataObject {
-	/**
-	 * 
-	 * @author Lee Kamentsky
-	 *
-	 *The style used to render the bounding line of the overlay
-	 */
+
+	/** The style used to render the bounding line of the overlay. */
 	public enum LineStyle {
-		SOLID,
-		DASH,
-		DOT,
-		DOT_DASH,
-		NONE
+		SOLID, DASH, DOT, DOT_DASH, NONE
 	}
 
 	/**
-	 * Retrieves the ImgLib region of interest, if any, that
-	 * knows how to determine whether a pixel is included in the overlay. 
+	 * Retrieves the ImgLib region of interest, if any, that knows how to
+	 * determine whether a pixel is included in the overlay.
+	 * 
 	 * @return the region of interest or null if none supported.
 	 */
 	RegionOfInterest getRegionOfInterest();
 
 	/**
 	 * Set the color of the outline line of the overlay, if appropriate
-	 *
+	 * 
 	 * @param lineColor
 	 */
 	void setLineColor(ColorRGB lineColor);
@@ -94,13 +87,14 @@ public interface Overlay extends DataObject {
 	 * @return the outline line style.
 	 */
 	LineStyle getLineStyle();
+
 	/**
 	 * Set the style of the outline line of the overlay, if appropriate
 	 * 
 	 * @param style - style of line
 	 */
 	void setLineStyle(LineStyle style);
-	
+
 	/**
 	 * @return the color of the outline line of the overlay
 	 */
@@ -130,5 +124,5 @@ public interface Overlay extends DataObject {
 	 * @param alpha the opacity of the interior of the overlay, from 0-255
 	 */
 	void setAlpha(int alpha);
-	
+
 }

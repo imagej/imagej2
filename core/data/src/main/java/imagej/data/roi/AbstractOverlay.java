@@ -64,9 +64,6 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 
 	// -- Overlay methods --
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getRegionOfInterest()
-	 */
 	@Override
 	public RegionOfInterest getRegionOfInterest() {
 		// NB: By default, no associated region of interest.
