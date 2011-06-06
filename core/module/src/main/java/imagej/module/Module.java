@@ -81,4 +81,16 @@ public interface Module {
 	/** Sets output values according to the given table. */
 	void setOutputs(Map<String, Object> outputs);
 
+	/**
+	 * Gets the resolution status of the input with the given name. A "resolved"
+	 * input is known to have a final, valid value for use with the module.
+	 */
+	boolean isResolved(String name);
+
+	/**
+	 * Sets the resolution status of the input with the given name. A "resolved"
+	 * input is known to have a final, valid value for use with the module.
+	 */
+	void setResolved(String name, boolean resolved);
+
 }

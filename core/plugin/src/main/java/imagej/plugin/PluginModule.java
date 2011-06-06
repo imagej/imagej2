@@ -40,6 +40,7 @@ import imagej.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -61,11 +62,15 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	/** Metadata about this plugin. */
 	private final PluginModuleInfo<T> info;
 
+	/** Table indicating resolved inputs. */
+	private final HashSet<String> resolvedInputs;
+
 	/** Creates a plugin module for a new instance of the given plugin entry. */
 	public PluginModule(final PluginEntry<T> entry) throws PluginException {
 		this.entry = entry;
 		plugin = entry.createInstance();
 		info = new PluginModuleInfo<T>(entry, plugin);
+		resolvedInputs = new HashSet<String>();
 	}
 
 	/** Gets the plugin instance handled by this module. */
@@ -94,7 +99,7 @@ public class PluginModule<T extends BasePlugin> implements Module {
 		final String tParam = entry.getToggleParameter();
 		if (tParam == null || tParam.isEmpty()) return; // not a toggle plugin
 		setInput(tParam, selected);
-		info.getInput(tParam).setResolved(true);
+		setResolved(tParam, true);
 	}
 
 	/**
@@ -160,6 +165,25 @@ public class PluginModule<T extends BasePlugin> implements Module {
 		for (final String name : outputs.keySet()) {
 			setOutput(name, outputs.get(name));
 		}
+	}
+
+	/**
+	 * Gets the item's resolution status. A "resolved" item is known to have a
+	 * final, valid value for use with the module.
+	 */
+	@Override
+	public boolean isResolved(final String name) {
+		return resolvedInputs.contains(name);
+	}
+
+	/**
+	 * Sets the item's resolution status. A "resolved" item is known to have a
+	 * final, valid value for use with the module.
+	 */
+	@Override
+	public void setResolved(final String name, final boolean resolved) {
+		if (resolved) resolvedInputs.add(name);
+		else resolvedInputs.remove(name);
 	}
 
 	// -- Helper methods --

@@ -36,6 +36,7 @@ package imagej.plugin;
 
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -163,6 +164,12 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 
 			final Parameter param = f.getAnnotation(Parameter.class);
 			if (param == null) continue; // not a parameter
+
+			if (Modifier.isFinal(f.getModifiers())) {
+				// NB: Skip final parameters, since they cannot be modified.
+				Log.warn("Ignoring final parameter: " + f);
+				continue;
+			}
 
 			final String name = f.getName();
 			if (presets.containsKey(name)) {
