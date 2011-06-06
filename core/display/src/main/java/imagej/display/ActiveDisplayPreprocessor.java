@@ -1,5 +1,5 @@
 //
-// ActiveDatasetPreprocessor.java
+// ActiveDisplayPreprocessor.java
 //
 
 /*
@@ -36,24 +36,30 @@ package imagej.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModule;
-import imagej.plugin.PluginModuleItem;
 import imagej.plugin.process.PluginPreprocessor;
 
 /**
- * Assigns the active {@link Dataset} when there is one single unresolved
- * {@link Dataset} parameter. Hence, rather than a dialog prompting the user to
- * choose a {@link Dataset}, the active {@link Dataset} is used automatically.
- * In the case of more than one {@link Dataset} parameter, the active
- * {@link Dataset} is not used and instead the user must select. This behavior
+ * Assigns the active {@link Display} when there is one single unresolved
+ * {@link Display} parameter. Hence, rather than a dialog prompting the user to
+ * choose a {@link Display}, the active {@link Display} is used automatically.
+ * <p>
+ * In the case of more than one {@link Display} parameter, the active
+ * {@link Display} is not used and instead the user must select. This behavior
  * is consistent with ImageJ v1.x.
+ * </p>
+ * <p>
+ * The same process is applied for {@link Dataset} parameters, using the active
+ * {@link Display}'s active {@link Dataset}.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = PluginPreprocessor.class, priority = 0)
-public class ActiveDatasetPreprocessor implements PluginPreprocessor {
+public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 
 	// -- PluginPreprocessor methods --
 
@@ -66,31 +72,38 @@ public class ActiveDatasetPreprocessor implements PluginPreprocessor {
 
 	@Override
 	public void process(final PluginModule<?> module) {
-		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
-
-		final PluginModuleItem item = getSingleDatasetInput(inputs);
-		if (item == null) return; // no single Dataset input to assign
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Dataset value = displayManager.getActiveDataset();
-		if (value == null) return; // no associated dataset
-		module.setInput(item.getName(), value);
-		item.setResolved(true);
+
+		// assign active display to single Display input
+		final String displayInput = getSingleInput(module, Display.class);
+		final Display activeDisplay = displayManager.getActiveDisplay();
+		if (displayInput != null && activeDisplay != null) {
+			module.setInput(displayInput, activeDisplay);
+			module.setResolved(displayInput, true);
+		}
+
+		// assign active dataset to single Dataset input
+		final String datasetInput = getSingleInput(module, Dataset.class);
+		final Dataset activeDataset = displayManager.getActiveDataset();
+		if (datasetInput != null && activeDataset != null) {
+			module.setInput(datasetInput, activeDataset);
+			module.setResolved(datasetInput, true);
+		}
 	}
 
 	// -- Helper methods --
 
-	private PluginModuleItem getSingleDatasetInput(
-		final Iterable<ModuleItem> inputs)
-	{
-		PluginModuleItem result = null;
+	private String getSingleInput(final Module module, final Class<?> type) {
+		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
+		String result = null;
 		for (final ModuleItem item : inputs) {
-			final PluginModuleItem pmi = (PluginModuleItem) item;
-			final boolean resolved = pmi.isResolved();
+			final String name = item.getName();
+			final boolean resolved = module.isResolved(name);
 			if (resolved) continue; // skip resolved inputs
-			if (!Dataset.class.isAssignableFrom(item.getType())) continue;
-			if (result != null) return null; // there are multiple Dataset inputs
-			result = pmi;
+			if (!type.isAssignableFrom(item.getType())) continue;
+			if (result != null) return null; // there are multiple matching inputs
+			result = name;
 		}
 		return result;
 	}

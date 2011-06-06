@@ -56,11 +56,11 @@ import java.util.ArrayList;
  * An input harvester is a plugin preprocessor that obtains the input
  * parameters. Parameters are collected using an {@link InputPanel} dialog box.
  * </p>
- *
+ * 
  * @author Curtis Rueden
  */
-public abstract class AbstractInputHarvester
-	implements PluginPreprocessor, InputHarvester
+public abstract class AbstractInputHarvester implements PluginPreprocessor,
+	InputHarvester
 {
 
 	private boolean canceled;
@@ -95,12 +95,13 @@ public abstract class AbstractInputHarvester
 		final ArrayList<ParamModel> models = new ArrayList<ParamModel>();
 
 		for (final ModuleItem item : inputs) {
-			final PluginModuleItem pmi = (PluginModuleItem) item;
-			final boolean resolved = pmi.isResolved();
+			final String name = item.getName();
+			final boolean resolved = module.isResolved(name);
 			if (resolved) continue; // skip resolved inputs
+
+			final PluginModuleItem pmi = (PluginModuleItem) item;
 			final Parameter param = pmi.getParameter();
 
-			final String name = item.getName();
 			final Class<?> type = item.getType();
 			final ParamModel model =
 				new ParamModel(inputPanel, module, name, type, param);
@@ -131,13 +132,12 @@ public abstract class AbstractInputHarvester
 				addTextField(inputPanel, model, initialValue);
 			}
 			else if (ClassUtils.isBoolean(type)) {
-				boolean initialValue =
+				final boolean initialValue =
 					getInitialBooleanValue(prefValue, defaultValue);
 				addToggle(inputPanel, model, initialValue);
 			}
 			else if (File.class.isAssignableFrom(type)) {
-				final File initialValue =
-					getInitialFileValue(prefValue, defaultValue);
+				final File initialValue = getInitialFileValue(prefValue, defaultValue);
 				addFile(inputPanel, model, initialValue);
 			}
 			else if (ColorRGB.class.isAssignableFrom(type)) {
@@ -153,7 +153,8 @@ public abstract class AbstractInputHarvester
 		}
 
 		// mark all models as initialized
-		for (final ParamModel model : models) model.setInitialized(true);
+		for (final ParamModel model : models)
+			model.setInitialized(true);
 
 		// compute initial preview
 		module.preview();
@@ -166,16 +167,15 @@ public abstract class AbstractInputHarvester
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
 		for (final ModuleItem item : inputs) {
+			final String name = item.getName();
+			module.setResolved(name, true);
+
 			final PluginModuleItem pmi = (PluginModuleItem) item;
-			pmi.setResolved(true);
 			final Parameter param = pmi.getParameter();
 
-			final String name = item.getName();
 			final Object value = module.getInput(name);
-
 			if (value == null) {
-				if (param.required())
-					canceled = true;
+				if (param.required()) canceled = true;
 				continue;
 			}
 
@@ -189,14 +189,13 @@ public abstract class AbstractInputHarvester
 
 	// -- Helper methods - input panel population --
 
-	private void addMessage(final InputPanel inputPanel,
-		final ParamModel model)
+	private void addMessage(final InputPanel inputPanel, final ParamModel model)
 	{
 		inputPanel.addMessage(model.getValue().toString());
 	}
 
-	private void addNumber(final InputPanel inputPanel,
-		final ParamModel model, final Number initialValue)
+	private void addNumber(final InputPanel inputPanel, final ParamModel model,
+		final Number initialValue)
 	{
 		final Class<?> type = model.getType();
 		final Parameter param = model.getParameter();
@@ -228,29 +227,29 @@ public abstract class AbstractInputHarvester
 		}
 	}
 
-	private void addToggle(final InputPanel inputPanel,
-		final ParamModel model, final Boolean initialValue)
+	private void addToggle(final InputPanel inputPanel, final ParamModel model,
+		final Boolean initialValue)
 	{
 		model.setValue(initialValue);
 		inputPanel.addToggle(model);
 	}
 
-	private void addFile(final InputPanel inputPanel,
-		final ParamModel model, final File initialValue)
+	private void addFile(final InputPanel inputPanel, final ParamModel model,
+		final File initialValue)
 	{
 		model.setValue(initialValue);
 		inputPanel.addFile(model);
 	}
 
-	private void addColor(final InputPanel inputPanel,
-		final ParamModel model, final ColorRGB initialValue)
+	private void addColor(final InputPanel inputPanel, final ParamModel model,
+		final ColorRGB initialValue)
 	{
 		model.setValue(initialValue);
 		inputPanel.addColor(model);
 	}
 
-	private void addObject(final InputPanel inputPanel, 
-		final ParamModel model, final Object initialValue)
+	private void addObject(final InputPanel inputPanel, final ParamModel model,
+		final Object initialValue)
 	{
 		model.setValue(initialValue);
 		inputPanel.addObject(model);
@@ -349,8 +348,8 @@ public abstract class AbstractInputHarvester
 	// -- Helper methods - other --
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Number clampToRange(final Number value,
-		final Number min, final Number max)
+	private Number clampToRange(final Number value, final Number min,
+		final Number max)
 	{
 		if (value == null) return min;
 		final Class<?> type = value.getClass();
