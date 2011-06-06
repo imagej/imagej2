@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins;
+package imagej.core.plugins.display;
 
 import imagej.ImageJ;
 import imagej.display.DatasetView;
@@ -61,10 +61,13 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Adjust"),
 	@Menu(label = "Brightness/Contrast", accelerator = "control shift C") })
-public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
+public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	private static final int SLIDER_RANGE = 256;
 	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
+
+	// TODO - Use DisplayView (DatasetView?) parameter instead of getting the
+	// active display from the DisplayManager.
 
 	@Parameter(label = "Minimum", persist = false, callback = "adjustMinMax")
 	private double min = 0;
@@ -82,7 +85,7 @@ public class ContrastBrightness implements ImageJPlugin, PreviewPlugin {
 
 	private final double defaultMin, defaultMax;
 
-	public ContrastBrightness() {
+	public BrightnessContrast() {
 		final DatasetView view = getActiveDisplayView();
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
