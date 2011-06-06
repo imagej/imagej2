@@ -42,6 +42,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -63,7 +64,7 @@ public class LegacyImageMap {
 
 	/** default constructor */
 	public LegacyImageMap() {
-		imageTable = new WeakHashMap<ImagePlus, Dataset>();
+		imageTable = Collections.synchronizedMap(new WeakHashMap<ImagePlus, Dataset>());
 		imageTranslator = new DefaultImageTranslator();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribeToEvents();
@@ -96,13 +97,11 @@ public class LegacyImageMap {
 	public ImagePlus registerDataset(Dataset dataset) {
 		// find image window
 		ImagePlus imp = null;
-		synchronized (imageTable) {
-			for (final ImagePlus key : imageTable.keySet()) {
-				final Dataset value = imageTable.get(key);
-				if (dataset == value) {
-					imp = key;
-					break;
-				}
+		for (final ImagePlus key : imageTable.keySet()) {
+			final Dataset value = imageTable.get(key);
+			if (dataset == value) {
+				imp = key;
+				break;
 			}
 			if (imp == null) {
 				// mirror dataset to image window
@@ -119,28 +118,24 @@ public class LegacyImageMap {
 	 * @return the {@link Dataset} object shadowing this legacy image.
 	 */
 	public Dataset registerLegacyImage(ImagePlus imp) {
-		synchronized (imageTable) {
-			Dataset dataset = imageTable.get(imp);
-			if (dataset == null) {
-				// mirror image window to dataset
-				dataset = imageTranslator.createDataset(imp);
-				imageTable.put(imp, dataset);
-			}
-			else {  // dataset was already existing
-				// do nothing
-			}
-			return dataset;
+		Dataset dataset = imageTable.get(imp);
+		if (dataset == null) {
+			// mirror image window to dataset
+			dataset = imageTranslator.createDataset(imp);
+			imageTable.put(imp, dataset);
 		}
+		else {  // dataset was already existing
+			// do nothing
+		}
+		return dataset;
 	}
 
 	/** removes the mapping associated with a given Dataset */
 	public void unregisterDataset(Dataset ds) {
-		synchronized (imageTable) {
-			for (final ImagePlus key : imageTable.keySet()) {
-				final Dataset dataset = imageTable.get(key);
-				if (dataset == ds) {
-					imageTable.remove(key);
-				}
+		for (final ImagePlus key : imageTable.keySet()) {
+			final Dataset dataset = imageTable.get(key);
+			if (dataset == ds) {
+				imageTable.remove(key);
 			}
 		}
 	}
@@ -148,9 +143,7 @@ public class LegacyImageMap {
 	// TODO - hatched as maybe useful
 	/** removes the mapping associated with a given ImagePlus */
 	public void unregisterLegacyImage(ImagePlus imp) {
-		synchronized (imageTable) {
-			imageTable.remove(imp);
-		}
+		imageTable.remove(imp);
 	}
 
 	// -- helpers --
@@ -162,6 +155,10 @@ public class LegacyImageMap {
 				@Override
 				public void onEvent(DatasetDeletedEvent event) {
 					unregisterDataset(event.getObject());
+					//System.out.println("Datasets alive");
+					//for (ImagePlus imp : imageTable.keySet()) {
+					//	System.out.println("  "+imageTable.get(imp));
+					//}
 				}
 			};
 		subscribers.add(deletionSubscriber);
