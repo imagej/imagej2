@@ -1,5 +1,5 @@
 //
-// DefaultImageTranslator.java
+// MixedModeTranslator.java
 //
 
 /*
@@ -37,43 +37,31 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
-/**
- * Translates between legacy and modern ImageJ image structures.
+/** this class used to create Datasets from ImagePluses that are RGB
+ * and yet are not single channel
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
+ *
  */
-public class DefaultImageTranslator implements ImageTranslator {
+public class MixedModeTranslator implements ImageTranslator {
 
-	private RGBImageTranslator rgbTranslator = new RGBImageTranslator();
-	private GrayscaleImageTranslator grayscaleTranslator =
-		new GrayscaleImageTranslator();
-	private MixedModeTranslator mixedModeTranslator =
-		new MixedModeTranslator();
-
-	/** creates a {@link Dataset} from an {@link ImagePlus}. Shares planes of
-	 *  data when possible.
-	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
-		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			if (imp.getNChannels() == 1)
-				return rgbTranslator.createDataset(imp);
-			return mixedModeTranslator.createDataset(imp);
-		}
-		return grayscaleTranslator.createDataset(imp);
+	public Dataset createDataset(ImagePlus imp) {
+		Dataset ds = LegacyUtils.makeGrayDatasetFromColorImp(imp);
+		LegacyUtils.setDatasetGrayDataFromColorImp(ds, imp);
+		LegacyUtils.setDatasetMetadata(ds, imp);
+		LegacyUtils.setDatasetCompositeVariables(ds, imp);
+		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
+		return ds;
 	}
 
-	/** creates an {@link ImagePlus} from a {@link Dataset}. Shares planes of
-	 *  data when possible.
-	 */
+	// TODO - do we need this in the other direction too?? if isRGBMerged == true
+	//   and unsigned byte type and channels evenly divisible by 3. May want to
+	//   not worry about this to phase out ColorProcessor reliance.
 	@Override
-	public ImagePlus createLegacyImage(final Dataset dataset) {		
-		if (dataset.isRGBMerged()) {
-			return rgbTranslator.createLegacyImage(dataset);
-		}
-
-		return grayscaleTranslator.createLegacyImage(dataset);
+	public ImagePlus createLegacyImage(Dataset dataset) {
+		throw new UnsupportedOperationException(
+			"createLegacyImage(Dataset) is not implemented for this translator");
 	}
 
 }
