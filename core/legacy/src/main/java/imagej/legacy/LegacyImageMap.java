@@ -42,9 +42,8 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TODO
@@ -64,7 +63,7 @@ public class LegacyImageMap {
 
 	/** default constructor */
 	public LegacyImageMap() {
-		imageTable = Collections.synchronizedMap(new WeakHashMap<ImagePlus, Dataset>());
+		imageTable = new ConcurrentHashMap<ImagePlus, Dataset>();
 		imageTranslator = new DefaultImageTranslator();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribeToEvents();
@@ -103,11 +102,11 @@ public class LegacyImageMap {
 				imp = key;
 				break;
 			}
-			if (imp == null) {
-				// mirror dataset to image window
-				imp = imageTranslator.createLegacyImage(dataset);
-				imageTable.put(imp, dataset);
-			}
+		}
+		if (imp == null) {
+			// mirror dataset to image window
+			imp = imageTranslator.createLegacyImage(dataset);
+			imageTable.put(imp, dataset);
 		}
 		return imp;
 	}
@@ -155,10 +154,6 @@ public class LegacyImageMap {
 				@Override
 				public void onEvent(DatasetDeletedEvent event) {
 					unregisterDataset(event.getObject());
-					//System.out.println("Datasets alive");
-					//for (ImagePlus imp : imageTable.keySet()) {
-					//	System.out.println("  "+imageTable.get(imp));
-					//}
 				}
 			};
 		subscribers.add(deletionSubscriber);
