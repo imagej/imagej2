@@ -39,9 +39,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.tool.Tool;
@@ -54,15 +51,13 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.event.BezierNodeEdit;
 import org.jhotdraw.draw.handle.BezierNodeHandle;
 import org.jhotdraw.draw.handle.BezierOutlineHandle;
 import org.jhotdraw.draw.handle.Handle;
-import org.jhotdraw.geom.BezierPath;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
- * @author leek
+ * @author Lee Kamentsky
  *
  */
 @Tool(name = "Polygon", iconPath = "/tools/polygon.png",

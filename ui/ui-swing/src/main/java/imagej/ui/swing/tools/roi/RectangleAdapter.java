@@ -49,7 +49,7 @@ import imagej.tool.Tool;
 import imagej.ui.swing.tools.SelectionTool;
 
 /**
- * @author leek
+ * @author Lee Kamentsky
  *
  */
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)

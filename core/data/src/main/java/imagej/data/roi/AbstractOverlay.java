@@ -38,7 +38,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 
 import imagej.data.AbstractDataObject;
 import imagej.data.event.OverlayCreatedEvent;
@@ -61,7 +60,8 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	protected int alpha = 0;
 	protected ColorRGB lineColor = new ColorRGB(0, 0, 0);
 	protected double lineWidth = 1.0;
-
+	protected Overlay.LineStyle lineStyle = Overlay.LineStyle.SOLID;
+	
 	/** Creates an overlay. */
 	public AbstractOverlay() {
 		Events.publish(new OverlayCreatedEvent(this));
@@ -176,12 +176,30 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	}
 	
 	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getLineStyle()
+	 */
+	@Override
+	public LineStyle getLineStyle() {
+		return lineStyle;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setLineStyle(imagej.data.roi.Overlay.LineStyle)
+	 */
+	@Override
+	public void setLineStyle(LineStyle lineStyle) {
+		this.lineStyle = lineStyle;
+	}
+
+	/* (non-Javadoc)
 	 * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
 	 */
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		out.writeObject(lineColor);
 		out.writeDouble(lineWidth);
+		out.writeInt(lineStyle.name().length());
+		out.writeChars(lineStyle.name());
 		out.writeObject(fillColor);
 		out.writeInt(alpha);
 	}
@@ -195,6 +213,9 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	{
 		lineColor = (ColorRGB) in.readObject();
 		lineWidth = in.readDouble();
+		char [] buffer = new char[in.readInt()];
+		for (int i=0; i<buffer.length; i++) buffer[i] = in.readChar();
+		lineStyle = Overlay.LineStyle.valueOf(new String(buffer));
 		fillColor = (ColorRGB) in.readObject();
 		alpha = in.readInt();
 	}

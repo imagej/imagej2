@@ -36,12 +36,15 @@ package imagej.ui.swing.tools.roi;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
 
-import javax.imageio.ImageTypeSpecifier;
 
 import imagej.data.roi.Overlay;
-import imagej.tool.Tool;
 import imagej.util.ColorRGB;
 
 import org.jhotdraw.draw.AttributeKeys;
@@ -87,6 +90,11 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 	 */
 	@Override
 	public void updateFigure(Overlay overlay, Figure figure) {
+		super.updateFigure(overlay, figure);
+		/*
+		 * Override the base: set the fill color to transparent.
+		 */
+		figure.set(AttributeKeys.FILL_COLOR, new Color(0,0,0,0));
 		assert figure instanceof ImageFigure;
 		ImageFigure imgf = (ImageFigure)figure;
 		RegionOfInterest roi = overlay.getRegionOfInterest();
@@ -104,13 +112,24 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 					new byte[] { 0, (byte)color.getGreen()},
 					new byte[] { 0, (byte)color.getBlue() },
 					new byte[] { 0, (byte)overlay.getAlpha() });
-			int icolor = color.getARGB() | (int)0xFF000000;
-			BufferedImage img = new BufferedImage((int)ii.dimension(0), (int)ii.dimension(1), BufferedImage.TYPE_BYTE_INDEXED, cm);
+			int w = (int)ii.dimension(0);
+			int h = (int)ii.dimension(1);
+			long [] min = new long[ii.numDimensions()];
+			ii.min(min);
+			BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_INDEXED, cm);
+			SampleModel sm = new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, w, h, new int [] {1});
+			DataBuffer dbuncast = sm.createDataBuffer();
+			assert dbuncast instanceof DataBufferByte;
+			DataBufferByte db = (DataBufferByte)dbuncast;
+			byte [] bankData = db.getData();
 			while(c.hasNext()) {
 				c.next();
-				img.setRGB(c.getIntPosition(0), c.getIntPosition(1), icolor);
+				int index = (int)(c.getLongPosition(0)-min[0] + (c.getLongPosition(1)-min[1]) * w);
+				bankData[index] = -1;
 			}
-			imgf.setBounds(new Rectangle2D.Double(0,0,ii.dimension(0), ii.dimension(1)));
+			Raster raster = Raster.createRaster(sm, db, new java.awt.Point(0,0));
+			img.setData(raster);
+			imgf.setBounds(new Rectangle2D.Double(ii.min(0),ii.min(1),w, h));
 			imgf.setBufferedImage(img);
 		}
 	}
