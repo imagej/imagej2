@@ -54,10 +54,17 @@ public interface DataObject {
 	void rebuild();
 
 	/**
-	 * Informs interested parties that the data object is no longer relevant and
-	 * should be deleted.
+	 * Informs interested parties that the data object has become relevant and
+	 * should be registered. Called the first time the reference count is
+	 * incremented.
 	 */
-	public void delete();
+	void register();
+
+	/**
+	 * Informs interested parties that the data object is no longer relevant and
+	 * should be deleted. Called when the reference count is decremented to zero.
+	 */
+	void delete();
 
 	/**
 	 * Adds to the data object's reference count. Typically this is called when

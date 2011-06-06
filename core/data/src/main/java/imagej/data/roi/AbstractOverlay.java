@@ -61,11 +61,6 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	protected ColorRGB lineColor = new ColorRGB(0, 0, 0);
 	protected double lineWidth = 1.0;
 	protected Overlay.LineStyle lineStyle = Overlay.LineStyle.SOLID;
-	
-	/** Creates an overlay. */
-	public AbstractOverlay() {
-		Events.publish(new OverlayCreatedEvent(this));
-	}
 
 	// -- Overlay methods --
 
@@ -80,73 +75,51 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 
 	// -- DataObject methods --
 
-	/* (non-Javadoc)
-	 * @see imagej.data.DataObject#update()
-	 */
 	@Override
 	public void update() {
 		Events.publish(new OverlayUpdatedEvent(this));
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.DataObject#rebuild()
-	 */
 	@Override
 	public void rebuild() {
 		Events.publish(new OverlayRestructuredEvent(this));
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.DataObject#delete()
-	 */
+	@Override
+	public void register() {
+		Events.publish(new OverlayCreatedEvent(this));		
+	}
+
 	@Override
 	public void delete() {
 		Events.publish(new OverlayDeletedEvent(this));
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getFillColor()
-	 */
 	@Override
 	public ColorRGB getFillColor() {
 		return fillColor;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setFillColor(imagej.util.ColorRGB)
-	 */
 	@Override
 	public void setFillColor(final ColorRGB fillColor) {
 		this.fillColor = fillColor;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getAlpha()
-	 */
 	@Override
 	public int getAlpha() {
 		return alpha;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setAlpha(int)
-	 */
 	@Override
 	public void setAlpha(final int alpha) {
 		this.alpha = alpha;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getLineColor()
-	 */
 	@Override
 	public ColorRGB getLineColor() {
 		return lineColor;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setLineColor(imagej.util.ColorRGB)
-	 */
 	@Override
 	public void setLineColor(ColorRGB lineColor) {
 		if (! this.lineColor.equals(lineColor)) {
@@ -154,9 +127,6 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getLineWidth()
-	 */
 	@Override
 	public double getLineWidth() {
 		return lineWidth;
@@ -165,9 +135,6 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	/**
 	 * @param lineWidth the width to be used when painting lines and shape borders, in pixels.
 	 */
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setLineWidth(double)
-	 */
 	@Override
 	public void setLineWidth(double lineWidth) {
 		if (this.lineWidth != lineWidth) {
@@ -175,25 +142,16 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#getLineStyle()
-	 */
 	@Override
 	public LineStyle getLineStyle() {
 		return lineStyle;
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.Overlay#setLineStyle(imagej.data.roi.Overlay.LineStyle)
-	 */
 	@Override
 	public void setLineStyle(LineStyle lineStyle) {
 		this.lineStyle = lineStyle;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
-	 */
 	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		out.writeObject(lineColor);
@@ -204,9 +162,6 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 		out.writeInt(alpha);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
-	 */
 	@Override
 	public void readExternal(final ObjectInput in) throws IOException,
 		ClassNotFoundException

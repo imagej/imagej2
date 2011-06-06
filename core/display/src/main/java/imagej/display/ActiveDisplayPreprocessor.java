@@ -52,8 +52,9 @@ import imagej.plugin.process.PluginPreprocessor;
  * is consistent with ImageJ v1.x.
  * </p>
  * <p>
- * The same process is applied for {@link Dataset} parameters, using the active
- * {@link Display}'s active {@link Dataset}.
+ * The same process is applied for {@link DisplayView} and {@link Dataset}
+ * parameters, using the active {@link Display}'s active {@link DisplayView} and
+ * {@link Dataset}, respectively.
  * </p>
  * 
  * @author Curtis Rueden
@@ -72,7 +73,6 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 
 	@Override
 	public void process(final PluginModule<?> module) {
-
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 
 		// assign active display to single Display input
@@ -81,6 +81,15 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 		if (displayInput != null && activeDisplay != null) {
 			module.setInput(displayInput, activeDisplay);
 			module.setResolved(displayInput, true);
+		}
+
+		// assign active display view to single DisplayView input
+		final String viewInput = getSingleInput(module, DisplayView.class);
+		final DisplayView activeView =
+			activeDisplay == null ? null : activeDisplay.getActiveView();
+		if (viewInput != null && activeView != null) {
+			module.setInput(viewInput, activeView);
+			module.setResolved(viewInput, true);
 		}
 
 		// assign active dataset to single Dataset input
