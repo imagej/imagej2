@@ -34,7 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import imagej.data.event.DataObjectCreatedEvent;
+import imagej.data.event.DataObjectDeletedEvent;
 import imagej.data.roi.Overlay;
+import imagej.event.Events;
 
 /**
  * Base implementation of {@link DataObject}.
@@ -48,8 +51,19 @@ public abstract class AbstractDataObject implements DataObject {
 	private int refs = 0;
 
 	@Override
+	public void register() {
+		Events.publish(new DataObjectCreatedEvent(this));
+	}
+
+	@Override
+	public void delete() {
+		Events.publish(new DataObjectDeletedEvent(this));
+	}
+
+	@Override
 	public void incrementReferences() {
 		refs++;
+		if (refs == 1) register();
 	}
 
 	@Override

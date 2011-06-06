@@ -123,7 +123,6 @@ public class Dataset extends AbstractDataObject implements
 		rgbMerged = false;
 		isDirty = false;
 		selection = new IntRect();
-		Events.publish(new DatasetCreatedEvent(this));
 	}
 
 	public boolean isDirty() { return isDirty; }
@@ -318,6 +317,11 @@ public class Dataset extends AbstractDataObject implements
 	public void rebuild() {
 		setDirty(true);
 		Events.publish(new DatasetRestructuredEvent(this));
+	}
+
+	@Override
+	public void register() {
+		Events.publish(new DatasetCreatedEvent(this));
 	}
 
 	@Override
