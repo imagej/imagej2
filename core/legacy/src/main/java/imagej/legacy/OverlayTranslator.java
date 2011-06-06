@@ -117,7 +117,7 @@ public class OverlayTranslator {
 		for (final Overlay overlay : overlays) {
 			final ShapeRoi overlayROI = createROI(overlay);
 			if (roi == null) roi = overlayROI;
-			else roi = roi.or(overlayROI);
+			else if (overlayROI != null) roi = roi.or(overlayROI);
 		}
 		imp.setRoi(roi);
 	}

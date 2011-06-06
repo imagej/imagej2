@@ -1,5 +1,7 @@
 package imagej.core.plugins.roi;
 
+import java.util.Arrays;
+
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -8,6 +10,7 @@ import net.imglib2.img.NativeImg;
 import net.imglib2.img.NativeImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.BitAccess;
+import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -20,8 +23,9 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 
-@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-		@Menu(label = "To binary mask", mnemonic = 'b') })
+@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
+		@Menu(label = "Binary", mnemonic = 'b'),
+		@Menu(label = "Convert to Mask")})
 
 public class ImageToBinaryMask implements ImageJPlugin {
 	@Parameter(
@@ -53,17 +57,42 @@ public class ImageToBinaryMask implements ImageJPlugin {
 		Img<? extends RealType<?>> img = imgplus.getImg();
 		long [] dimensions = new long[img.numDimensions()];
 		long [] position = new long[img.numDimensions()];
-		img.dimensions(dimensions);
-		NativeImg<BitType,BitAccess> mask = new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
-		BitType t = new BitType(mask);
-		mask.setLinkedType(t);
-		RandomAccess<BitType> raMask = mask.randomAccess();
+		long [] min = new long[img.numDimensions()];
+		long [] max = new long[img.numDimensions()];
+		Arrays.fill(min, Long.MAX_VALUE);
+		Arrays.fill(max, Long.MIN_VALUE);
+		/*
+		 * First pass - find minima and maxima so we can use a shrunken image in some cases.
+		 */
 		Cursor<? extends RealType<?>> c = img.localizingCursor();
-		while (c.hasNext()) {
+		while(c.hasNext()) {
 			c.next();
-			c.localize(position);
-			raMask.setPosition(position);
-			raMask.get().set(c.get().getRealDouble() >= threshold);
+			if (c.get().getRealDouble() >= threshold) {
+				for (int i=0; i<img.numDimensions(); i++) {
+					long p = c.getLongPosition(i);
+					if (p < min[i]) min[i] = p;
+					if (p > max[i]) max[i] = p;
+				}
+			}
+		}
+		if (min[0] == Long.MAX_VALUE) {
+			throw new IllegalStateException("The threshold value is lower than that of any pixel");
+		}
+		for (int i=0; i< img.numDimensions(); i++) {
+			dimensions[i] = max[i] - min[i] + 1;
+		}
+		NativeImg<BitType,BitAccess> nativeMask = new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
+		BitType t = new BitType(nativeMask);
+		nativeMask.setLinkedType(t);
+		Img<BitType> mask = new ImgTranslationAdapter<BitType, NativeImg<BitType, BitAccess>>(nativeMask, min);
+		RandomAccess<BitType> raMask = mask.randomAccess();
+		c.reset();
+		while (c.hasNext()) {
+			if (c.next().getRealDouble() >= threshold) {
+				c.localize(position);
+				raMask.setPosition(position);
+				raMask.get().set(true);
+			}
 		}
 		output = new BinaryMaskOverlay(new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
 		output.setAlpha(alpha);

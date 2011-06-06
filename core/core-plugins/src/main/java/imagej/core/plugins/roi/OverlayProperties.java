@@ -37,6 +37,7 @@ package imagej.core.plugins.roi;
 import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
+import imagej.data.roi.Overlay.LineStyle;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -63,12 +64,22 @@ import java.util.List;
 	@Menu(label = "Properties...", mnemonic = 'p') })
 public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 
+	static final protected String solidLineStyle = "Solid";
+	static final protected String dashLineStyle = "Dash";
+	static final protected String dotLineStyle = "Dot";
+	static final protected String dotDashLineStyle = "Dot-dash";
+	static final protected String noneLineStyle = "None";
+	
 	@Parameter(label = "Line color", persist = false)
 	private ColorRGB lineColor;
 
 	@Parameter(label = "Line width", persist = false, min = "0.1")
 	private double lineWidth;
 
+	@Parameter(label = "Line style", persist = false, 
+			choices = {solidLineStyle, dashLineStyle, dotLineStyle, dotDashLineStyle, noneLineStyle	})
+	private String lineStyle = "Solid";
+	
 	@Parameter(label = "Fill color", persist = false)
 	private ColorRGB fillColor;
 
@@ -76,6 +87,7 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
+	
 
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
@@ -86,6 +98,23 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			lineWidth = overlay.getLineWidth();
 			fillColor = overlay.getFillColor();
 			alpha = overlay.getAlpha();
+			switch(overlay.getLineStyle()) {
+			case SOLID:
+				lineStyle = solidLineStyle;
+				break;
+			case DASH:
+				lineStyle = dashLineStyle;
+				break;
+			case DOT:
+				lineStyle = dotLineStyle;
+				break;
+			case DOT_DASH:
+				lineStyle = dotDashLineStyle;
+				break;
+			case NONE:
+				lineStyle = noneLineStyle;
+				break;
+			}
 		}
 	}
 
@@ -98,6 +127,19 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 			overlay.setLineWidth(lineWidth);
 			overlay.setFillColor(fillColor);
 			overlay.setAlpha(alpha);
+			if (lineStyle.equals(solidLineStyle)) {
+				overlay.setLineStyle(LineStyle.SOLID);
+			} else if (lineStyle.equals(dashLineStyle)) {
+				overlay.setLineStyle(LineStyle.DASH);
+			} else if (lineStyle.equals(dotLineStyle)) {
+				overlay.setLineStyle(LineStyle.DOT);
+			} else if (lineStyle.equals(dotDashLineStyle)) {
+				overlay.setLineStyle(LineStyle.DOT_DASH);
+			} else if (lineStyle.equals(noneLineStyle)) {
+				overlay.setLineStyle(LineStyle.NONE);
+			} else {
+				throw new UnsupportedOperationException("Unimplemented style: " + lineStyle);
+			}
 			overlay.update();
 		}
 	}
@@ -122,12 +164,19 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	public int getAlpha() {
 		return alpha;
 	}
+	
+	public Overlay.LineStyle getLineStyle() {
+		return Overlay.LineStyle.valueOf(lineStyle);
+	}
 
 	private List<Overlay> getSelectedOverlays() {
 		final ArrayList<Overlay> result = new ArrayList<Overlay>();
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display display = displayManager.getActiveDisplay();
+		if (display == null) {
+			return result;
+		}
 		for (final DisplayView view : display.getViews()) {
 			if (!view.isSelected()) continue;
 			final DataObject dataObject = view.getDataObject();

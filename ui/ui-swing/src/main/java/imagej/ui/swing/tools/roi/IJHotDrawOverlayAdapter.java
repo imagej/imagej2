@@ -92,6 +92,9 @@ public interface IJHotDrawOverlayAdapter {
 	 * Update the appearance of the figure to match the overlay
 	 * @param overlay the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
+	 * @param planeMap a map of axis to the constant coordinate value for the plane along that axis.
+	 *                 For instance, to look at the plane at z-slice 2, Axis would be the Z axis
+	 *                 and the value would be "2".
 	 */
 	void updateFigure(Overlay overlay, Figure figure);
 }

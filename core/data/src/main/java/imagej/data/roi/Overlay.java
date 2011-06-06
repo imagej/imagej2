@@ -53,6 +53,19 @@ import net.imglib2.roi.RegionOfInterest;
  * @author Curtis Rueden
  */
 public interface Overlay extends DataObject {
+	/**
+	 * 
+	 * @author Lee Kamentsky
+	 *
+	 *The style used to render the bounding line of the overlay
+	 */
+	public enum LineStyle {
+		SOLID,
+		DASH,
+		DOT,
+		DOT_DASH,
+		NONE
+	}
 
 	/**
 	 * Retrieves the ImgLib region of interest, if any, that
@@ -75,6 +88,19 @@ public interface Overlay extends DataObject {
 	 */
 	void setLineWidth(double lineWidth);
 
+	/**
+	 * Get the style of the outline line
+	 * 
+	 * @return the outline line style.
+	 */
+	LineStyle getLineStyle();
+	/**
+	 * Set the style of the outline line of the overlay, if appropriate
+	 * 
+	 * @param style - style of line
+	 */
+	void setLineStyle(LineStyle style);
+	
 	/**
 	 * @return the color of the outline line of the overlay
 	 */
