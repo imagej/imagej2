@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,39 +30,47 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.core.plugins.display;
 
-import java.util.ArrayList;
-
-import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.ArrayList;
+
 /**
- * @author Lee Kamentsky
+ * Removes all selected views.
  * 
- * Remove all selected views.
- *
+ * @author Lee Kamentsky
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
-		@Menu(label = "Overlay", mnemonic = 'o'),
-		@Menu(label = "Remove Overlay", mnemonic = 'r', weight=4)})
+	@Menu(label = "Overlay", mnemonic = 'o'),
+	@Menu(label = "Remove Overlay", mnemonic = 'r', weight = 4) })
 public class DeleteSelected implements ImageJPlugin {
+
+	@Parameter
+	private Display display;
 
 	@Override
 	public void run() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		for (DisplayView view:new ArrayList<DisplayView>(display.getViews())) {
-			if (view.isSelected()) {
-				display.removeView(view);
-			}
+		final ArrayList<DisplayView> views =
+			new ArrayList<DisplayView>(display.getViews());
+		for (final DisplayView view : views) {
+			if (view.isSelected()) display.removeView(view);
 		}
+	}
+
+	public Display getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(final Display display) {
+		this.display = display;
 	}
 
 }

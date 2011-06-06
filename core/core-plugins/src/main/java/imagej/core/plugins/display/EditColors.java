@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins;
+package imagej.core.plugins.display;
 
 import imagej.ImageJ;
 import imagej.display.DatasetView;
@@ -60,6 +60,9 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public static final String GRAYSCALE = "Grayscale";
 	public static final String COLOR = "Color";
 	public static final String COMPOSITE = "Composite";
+
+	// TODO - Use DisplayView (DatasetView?) parameter instead of getting the
+	// active display from the DisplayManager.
 
 	@Parameter(label = "Color mode", persist = false, choices =
 		{EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE})
