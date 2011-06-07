@@ -71,7 +71,7 @@ import java.util.HashMap;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Image Calculator...", weight = 13) })
+	@Menu(label = "IJ2 Image Calculator...", weight = 13) })
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
