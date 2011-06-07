@@ -1,5 +1,5 @@
 //
-// OvalAdapter.java
+// EllipseAdapter.java
 //
 
 /*
