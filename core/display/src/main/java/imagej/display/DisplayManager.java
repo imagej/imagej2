@@ -74,6 +74,13 @@ public final class DisplayManager implements ManagerComponent {
 		return null;
 	}
 
+	public DatasetView getActiveDatasetView() {
+		if (activeDisplay == null) return null;
+		final DisplayView activeView = activeDisplay.getActiveView();
+		if (activeView instanceof DatasetView) return (DatasetView) activeView;
+		return null;
+	}
+
 	/** Gets a list of all active {@link Display}s. */
 	public List<Display> getDisplays() {
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
