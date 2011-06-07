@@ -41,7 +41,7 @@ import imagej.util.Log;
 
 /**
  * Overrides {@link ImagePlus} methods.
- *
+ * 
  * @author Curtis Rueden
  */
 public final class ImagePlusMethods {
@@ -51,29 +51,17 @@ public final class ImagePlusMethods {
 	}
 
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
-	public static void updateAndDraw(ImagePlus obj) {
+	public static void updateAndDraw(final ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		legacyManager.legacyImageChanged(obj);
 	}
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
-	public static void repaintWindow(ImagePlus obj) {
+	public static void repaintWindow(final ImagePlus obj) {
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
 		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		legacyManager.legacyImageChanged(obj);
 	}
 
-	// to catch Add/Delete slice events. (obsolete - repaintWindow() can handle)
-	// FIXME - setSlice() might get called from inside an ImagePlus constructor.
-	//   Seems like we'd have an ImagePlus ref here of an incomplete Object.
-	//   Probably unworkable.
-	/** Appends {@link ImagePlus#setStack(String title, ImageStack newStack)}. */
-	/*
-  public void setStack(ImagePlus obj, String title, ImageStack newStack) {
-		Log.debug("ImagePlus.setStack(): " + obj);
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		legacyManager.legacyImageChanged(obj);
-  }
-  */
 }
