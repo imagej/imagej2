@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.patches;
 
-import ij.IJ;
 import ij.ImageJ;
 import imagej.util.Log;
 
@@ -47,7 +46,7 @@ import java.awt.Point;
  */
 public class ImageJMethods {
 
-	/** Replaces {@link IJ#showProgress(double)}. */
+	/** Replaces {@link ImageJ#getLocationOnScreen()}. */
 	public static Point getLocationOnScreen(
 		@SuppressWarnings("unused") final ImageJ obj)
 	{
