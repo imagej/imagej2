@@ -69,6 +69,7 @@ public final class LegacyManager implements ManagerComponent {
 		// override behavior of ij.ImageJ
 		hacker.insertMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()");
+		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
 		hacker.insertAfterMethod("ij.IJ",
