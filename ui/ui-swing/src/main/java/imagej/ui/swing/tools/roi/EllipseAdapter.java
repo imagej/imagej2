@@ -48,10 +48,11 @@ import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
 
 /**
- * @author leek
- *
+ * TODO
+ * 
+ * @author Lee Kamentsky
  */
-@Tool(name = "Oval", iconPath = "/tools/oval.png",
+@Tool(name = "Oval", iconPath = "/icons/tools/oval.png",
 		priority = EllipseAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = EllipseAdapter.PRIORITY)
 public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverlay> {
