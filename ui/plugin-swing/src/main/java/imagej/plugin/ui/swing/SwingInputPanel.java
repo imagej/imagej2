@@ -36,6 +36,7 @@ package imagej.plugin.ui.swing;
 
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
+import imagej.plugin.PluginException;
 import imagej.plugin.ui.AbstractInputPanel;
 import imagej.plugin.ui.ParamModel;
 
@@ -71,8 +72,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
+	public void addNumber(final ParamModel model, final Number min,
+		final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
 			new SwingNumberWidget(model, min, max, stepSize);
@@ -82,8 +83,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addToggle(final ParamModel model) {
-		final SwingToggleWidget toggleWidget =
-			new SwingToggleWidget(model);
+		final SwingToggleWidget toggleWidget = new SwingToggleWidget(model);
 		addField(model, toggleWidget);
 		toggleWidgets.put(model.getName(), toggleWidget);
 	}
@@ -98,8 +98,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addChoice(final ParamModel model, final String[] items) {
-		final SwingChoiceWidget choiceWidget =
-			new SwingChoiceWidget(model, items);
+		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model, items);
 		addField(model, choiceWidget);
 		choiceWidgets.put(model.getName(), choiceWidget);
 	}
@@ -119,12 +118,15 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addObject(final ParamModel model) {
+	public void addObject(final ParamModel model) throws PluginException {
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
-		final SwingObjectWidget objectWidget =
-			new SwingObjectWidget(model, items);
+		if (items.length == 0) {
+			// no valid objects of the given type
+			throw new PluginException("No objects of type " + type.getName());
+		}
+		final SwingObjectWidget objectWidget = new SwingObjectWidget(model, items);
 		addField(model, objectWidget);
 		objectWidgets.put(model.getName(), objectWidget);
 	}

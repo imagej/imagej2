@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.process;
 
 /**
- * TODO
- *
+ * A plugin postprocessor defines a step that occurs immediately following the
+ * actual execution of a plugin. Typically, a postprocessor does something with
+ * the results of a plugin, such as displaying its outputs on screen.
+ * 
  * @author Curtis Rueden
  */
 public interface PluginPostprocessor extends PluginProcessor {

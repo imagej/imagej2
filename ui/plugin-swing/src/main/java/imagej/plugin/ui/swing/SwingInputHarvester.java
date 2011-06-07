@@ -52,9 +52,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * SwingInputHarvester is a plugin preprocessor that collects input parameter
- * values from the user using a {@link SwingInputPanel} dialog box.
- *
+ * SwingInputHarvester is a {@link PluginPreprocessor} that collects input
+ * parameter values from the user using a {@link SwingInputPanel} dialog box.
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
@@ -74,7 +74,8 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 	{
 		final JOptionPane optionPane = new JOptionPane(null);
 		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = optionPane.createDialog(module.getInfo().getLabel());
+		final JDialog dialog =
+			optionPane.createDialog(module.getInfo().getLabel());
 		final String title = getTitle(module);
 		dialog.setTitle(title);
 		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
@@ -86,15 +87,15 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 		AWTWindows.centerWindow(dialog);
 		ensureDialogSizeReasonable(dialog);
 		// TODO - open IJ2 from within Eclipse. Give any app focus. Then close
-		//   IJ2 app via red close box in its left corner. Quit dialog comes
-		//   up behind the other app. Is there a window event we should track
-		//   in IJ2 that could pull dialog in front of the other app?
+		// IJ2 app via red close box in its left corner. Quit dialog comes
+		// up behind the other app. Is there a window event we should track
+		// in IJ2 that could pull dialog in front of the other app?
 		// #1 attempted fix of visibility/focus issue
-		//dialog.setAlwaysOnTop(true);
+		// dialog.setAlwaysOnTop(true);
 		dialog.setVisible(true);
 		// #2 attempted fix of visibility/focus issue
-		//if (!dialog.hasFocus())
-		//	dialog.requestFocus();
+		// if (!dialog.hasFocus())
+		// dialog.requestFocus();
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
@@ -117,7 +118,7 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 	}
 
 	private void ensureDialogSizeReasonable(final JDialog dialog) {
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();		
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		final Dimension dialogSize = dialog.getSize();
 
 		int newWidth = dialogSize.width;
@@ -131,4 +132,5 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 
 		dialog.setSize(newWidth, newHeight);
 	}
+
 }

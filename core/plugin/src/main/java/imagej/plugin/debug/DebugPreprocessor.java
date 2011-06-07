@@ -41,10 +41,10 @@ import imagej.util.Log;
 
 /**
  * A plugin preprocessor that dumps information to the log.
- *
+ * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class, priority = 0)
+@Plugin(type = PluginPreprocessor.class, priority = Plugin.FIRST_PRIORITY)
 public class DebugPreprocessor implements PluginPreprocessor {
 
 	@Override
@@ -53,6 +53,13 @@ public class DebugPreprocessor implements PluginPreprocessor {
 	}
 
 	@Override
-	public boolean canceled() { return false; }
+	public boolean canceled() {
+		return false;
+	}
+
+	@Override
+	public String getMessage() {
+		return null;
+	}
 
 }

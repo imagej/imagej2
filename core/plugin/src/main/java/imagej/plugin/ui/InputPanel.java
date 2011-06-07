@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
+import imagej.plugin.PluginException;
 import imagej.util.ColorRGB;
 
 import java.io.File;
@@ -103,8 +104,9 @@ public interface InputPanel {
 	 * Adds an object selector.
 	 * 
 	 * @param model backing data model containing parameter details
+	 * @throws PluginException if the object cannot be added to the panel
 	 */
-	void addObject(ParamModel model);
+	void addObject(ParamModel model) throws PluginException;
 
 	/**
 	 * Returns the contents of the given numeric field.

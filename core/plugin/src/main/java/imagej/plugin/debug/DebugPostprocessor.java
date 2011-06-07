@@ -43,10 +43,10 @@ import java.util.Map;
 
 /**
  * A plugin postprocessor that dumps parameter values to the log.
- *
+ * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPostprocessor.class, priority = 0)
+@Plugin(type = PluginPostprocessor.class, priority = Plugin.FIRST_PRIORITY)
 public class DebugPostprocessor implements PluginPostprocessor {
 
 	@Override
@@ -54,14 +54,14 @@ public class DebugPostprocessor implements PluginPostprocessor {
 		// dump input values to log
 		Log.debug("INPUTS:");
 		final Map<String, Object> inputs = module.getInputs();
-		for (String key : inputs.keySet()) {
+		for (final String key : inputs.keySet()) {
 			Log.debug("\t" + key + " = " + inputs.get(key));
 		}
 
 		// dump output values to log
 		Log.debug("OUTPUTS:");
 		final Map<String, Object> outputs = module.getOutputs();
-		for (String key : outputs.keySet()) {
+		for (final String key : outputs.keySet()) {
 			Log.debug("\t" + key + " = " + outputs.get(key));
 		}
 	}

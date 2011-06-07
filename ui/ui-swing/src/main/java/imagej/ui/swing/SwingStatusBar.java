@@ -44,16 +44,17 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
  * Status bar with text area and progress bar, similar to ImageJ 1.x.
- *
+ * 
  * @author Curtis Rueden
  */
-public class SwingStatusBar extends JPanel
-	implements StatusBar, EventSubscriber<StatusEvent>
+public class SwingStatusBar extends JPanel implements StatusBar,
+	EventSubscriber<StatusEvent>
 {
 
 	private final JProgressBar progressBar;
@@ -67,6 +68,7 @@ public class SwingStatusBar extends JPanel
 		Events.subscribe(StatusEvent.class, this);
 
 		progressBar.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mousePressed(final MouseEvent evt) {
 				System.gc();
@@ -101,8 +103,17 @@ public class SwingStatusBar extends JPanel
 		final String message = event.getStatusMessage();
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();
-		setStatus(message);
-		setProgress(val, max);
+		final boolean warning = event.isWarning();
+		if (warning) {
+			// report warning messages to the user in a dialog box
+			JOptionPane.showMessageDialog(this, message, "ImageJ",
+				JOptionPane.WARNING_MESSAGE);
+		}
+		else {
+			// report status updates in the status bar
+			setStatus(message);
+			setProgress(val, max);
+		}
 	}
 
 	// -- Helper methods --
@@ -116,8 +127,8 @@ public class SwingStatusBar extends JPanel
 		final long usedMem = totalMem - freeMem;
 		final long usedMB = usedMem / 1048576;
 		final long maxMB = maxMem / 1048576;
-		return "ImageJ " + ImageJ.VERSION + "; Java " + javaVersion +
-			" [" + osArch + "]; " + usedMB + "MB of " + maxMB + "MB";
+		return "ImageJ " + ImageJ.VERSION + "; Java " + javaVersion + " [" +
+			osArch + "]; " + usedMB + "MB of " + maxMB + "MB";
 	}
 
 }

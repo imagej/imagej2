@@ -54,6 +54,12 @@ import net.java.sezpoz.Indexable;
 @Indexable(type = BasePlugin.class)
 public @interface Plugin {
 
+	int FIRST_PRIORITY = 0;
+	int HIGH_PRIORITY = 25;
+	int NORMAL_PRIORITY = 50;
+	int LOW_PRIORITY = 75;
+	int LAST_PRIORITY = 100;
+
 	/**
 	 * The type of plugin; e.g., {@link ImageJPlugin} or
 	 * {@link PluginPreprocessor}.
@@ -90,9 +96,9 @@ public @interface Plugin {
 
 	/**
 	 * The plugin index returns plugins sorted by priority. This is useful for
-	 * {@link PluginPreprocessor}s, e.g., to control the order of their execution.
+	 * {@link PluginPreprocessor}s to control the order of their execution.
 	 */
-	int priority() default Integer.MAX_VALUE;
+	int priority() default NORMAL_PRIORITY;
 
 	/**
 	 * Abbreviated menu path defining where the plugin is shown in the menu

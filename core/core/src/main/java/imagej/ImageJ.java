@@ -49,7 +49,7 @@ import net.java.sezpoz.IndexItem;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
- * list of manager components.
+ * list of {@link ManagerComponent}s.
  * 
  * @author Curtis Rueden
  */

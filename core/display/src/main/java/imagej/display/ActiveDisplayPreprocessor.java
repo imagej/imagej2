@@ -59,7 +59,7 @@ import imagej.plugin.process.PluginPreprocessor;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class, priority = 0)
+@Plugin(type = PluginPreprocessor.class, priority = Plugin.HIGH_PRIORITY)
 public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 
 	// -- PluginPreprocessor methods --
@@ -67,6 +67,11 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 	@Override
 	public boolean canceled() {
 		return false;
+	}
+
+	@Override
+	public String getMessage() {
+		return null;
 	}
 
 	// -- PluginProcessor methods --

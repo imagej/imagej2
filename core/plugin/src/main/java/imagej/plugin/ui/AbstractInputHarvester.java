@@ -51,10 +51,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Abstract superclass for input harvesters.
+ * Abstract superclass for {@link InputHarvester}s.
  * <p>
- * An input harvester is a plugin preprocessor that obtains the input
- * parameters. Parameters are collected using an {@link InputPanel} dialog box.
+ * An input harvester is a {@link PluginPreprocessor} that obtains input
+ * parameter values. Parameters are collected using an {@link InputPanel} dialog
+ * box.
  * </p>
  * 
  * @author Curtis Rueden
@@ -64,6 +65,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 {
 
 	private boolean canceled;
+	private String cancelMessage;
 
 	// -- PluginPreprocessor methods --
 
@@ -72,23 +74,43 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		return canceled;
 	}
 
+	@Override
+	public String getMessage() {
+		return cancelMessage;
+	}
+
 	// -- PluginProcessor methods --
 
 	@Override
 	public void process(final PluginModule<?> module) {
 		final InputPanel inputPanel = createInputPanel();
-		buildPanel(inputPanel, module);
-		if (!inputPanel.hasWidgets()) return; // no inputs left to harvest
+		try {
+			buildPanel(inputPanel, module);
+		}
+		catch (final PluginException e) {
+			canceled = true;
+			cancelMessage = e.getMessage();
+			return;
+		}
+		if (!inputPanel.hasWidgets()) {
+			// no inputs left to harvest; we're done
+			return;
+		}
+
 		final boolean ok = harvestInputs(inputPanel, module);
-		if (ok) processResults(inputPanel, module);
-		else canceled = true;
+		if (!ok) {
+			canceled = true;
+			return;
+		}
+
+		processResults(inputPanel, module);
 	}
 
 	// -- InputHarvester methods --
 
 	@Override
 	public void buildPanel(final InputPanel inputPanel,
-		final PluginModule<?> module)
+		final PluginModule<?> module) throws PluginException
 	{
 		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
 
@@ -148,7 +170,13 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 			else {
 				final Object initialValue =
 					getInitialObjectValue(prefValue, defaultValue);
-				addObject(inputPanel, model, initialValue);
+				try {
+					addObject(inputPanel, model, initialValue);
+				}
+				catch (final PluginException e) {
+					throw new PluginException("A " + type.getName() +
+						" is required but none exist.", e);
+				}
 			}
 		}
 
@@ -249,7 +277,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 	}
 
 	private void addObject(final InputPanel inputPanel, final ParamModel model,
-		final Object initialValue)
+		final Object initialValue) throws PluginException
 	{
 		model.setValue(initialValue);
 		inputPanel.addObject(model);
@@ -299,10 +327,13 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 		return null;
 	}
 
+	/**
+	 * @param prefValue Ignored for arbitrary objects, since we have no general
+	 *          way to translate a string back to a particular object type.
+	 */
 	private Object getInitialObjectValue(final String prefValue,
 		final Object defaultValue)
 	{
-		if (prefValue != null) return prefValue;
 		return defaultValue;
 	}
 
