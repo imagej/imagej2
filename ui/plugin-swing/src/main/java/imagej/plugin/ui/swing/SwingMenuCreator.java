@@ -159,7 +159,7 @@ public abstract class SwingMenuCreator<T> extends
 	}
 
 	private Icon loadIcon(final ShadowMenu shadow) {
-		final String iconPath = shadow.getMenuEntry().getIcon();
+		final String iconPath = shadow.getMenuEntry().getIconPath();
 		if (iconPath == null || iconPath.isEmpty()) return null;
 		try {
 			final Class<?> c = shadow.getPluginEntry().loadClass();

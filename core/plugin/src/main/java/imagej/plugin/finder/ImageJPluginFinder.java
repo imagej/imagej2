@@ -53,7 +53,7 @@ import net.java.sezpoz.IndexItem;
  * To accomplish this, SezPoz scans the classpath for {@link Plugin}
  * annotations.
  * </p>
- *
+ * 
  * @author Curtis Rueden
  */
 @PluginFinder
@@ -109,7 +109,8 @@ public class ImageJPluginFinder implements IPluginFinder {
 		entry.setName(plugin.name());
 		entry.setLabel(plugin.label());
 		entry.setDescription(plugin.description());
-		entry.setIconPath(plugin.iconPath());
+		final String iconPath = plugin.iconPath();
+		entry.setIconPath(iconPath);
 		entry.setPriority(plugin.priority());
 
 		entry.setToggleParameter(plugin.toggleParameter());
@@ -125,26 +126,33 @@ public class ImageJPluginFinder implements IPluginFinder {
 			final String path = plugin.menuPath();
 			if (!path.isEmpty()) parseMenuPath(menuPath, path);
 		}
+
+		// add default icon if none attached to leaf
+		if (menuPath.size() > 0 && !iconPath.isEmpty()) {
+			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
+			if (menuEntry.getIconPath().isEmpty()) menuEntry.setIconPath(iconPath);
+		}
+
 		entry.setMenuPath(menuPath);
 
 		return entry;
 	}
 
-	private void parseMenuPath(final List<MenuEntry> menuPath,
-		final Menu[] menu)
+	private void
+		parseMenuPath(final List<MenuEntry> menuPath, final Menu[] menu)
 	{
 		for (int i = 0; i < menu.length; i++) {
 			final String name = menu[i].label();
 			final double weight = menu[i].weight();
 			final char mnemonic = menu[i].mnemonic();
-			final String accelerator = menu[i].accelerator();
-			final String icon = menu[i].icon();				
-			menuPath.add(new MenuEntry(name, weight, mnemonic, accelerator, icon));
+			final String accel = menu[i].accelerator();
+			final String iconPath = menu[i].iconPath();
+			menuPath.add(new MenuEntry(name, weight, mnemonic, accel, iconPath));
 		}
 	}
 
-	private void parseMenuPath(final List<MenuEntry> menuPath,
-		final String path)
+	private void
+		parseMenuPath(final List<MenuEntry> menuPath, final String path)
 	{
 		final String[] menuPathTokens = path.split(">");
 		for (final String token : menuPathTokens) {
