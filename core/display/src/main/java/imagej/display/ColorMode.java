@@ -34,14 +34,54 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import java.util.Hashtable;
 
 /**
  * The mode to use to display data in a view.
  *  
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public enum ColorMode {
-	COLOR,
-	COMPOSITE,
-	GRAYSCALE;
+	COLOR("Color"),
+	COMPOSITE("Composite"),
+	GRAYSCALE("Grayscale");
+
+	private static Hashtable<String, ColorMode> colorModes =
+		new Hashtable<String, ColorMode>();
+
+	static {
+		for (final ColorMode colorMode : ColorMode.values()) {
+			colorModes.put(colorMode.getLabel(), colorMode);
+		}
+	}
+
+	public static ColorMode get(final String label) {
+		return colorModes.get(label);
+	}
+
+	public static String[] getLabels() {
+		return colorModes.keySet().toArray(new String[0]);
+	}
+
+	private String label;
+
+	private ColorMode(final String label) {
+		this.label = label;
+	}
+
+	// -- ColorMode methods --
+
+	public String getLabel() {
+		return label;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return label;
+	}
+
+
 }

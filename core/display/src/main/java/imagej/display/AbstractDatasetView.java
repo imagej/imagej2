@@ -154,9 +154,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	@Override
 	public ColorMode getColorMode() {
-		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
-			getProjector();
-		final boolean composite = proj.isComposite();
+		final boolean composite = projector.isComposite();
 		if (composite) return ColorMode.COMPOSITE;
 		final List<ColorTable8> colorTables = getColorTables();
 		for (final ColorTable8 colorTable : colorTables) {
@@ -164,8 +162,16 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		}
 		return ColorMode.GRAYSCALE;
 	}
-	
+
+	@Override
+	public void setColorMode(final ColorMode colorMode) {
+		resetColorTables(colorMode == ColorMode.GRAYSCALE);
+		projector.setComposite(colorMode == ColorMode.COMPOSITE);
+		projector.map();
+	}
+
 	// -- DisplayView methods --
+
 	@Override
 	public Dataset getDataObject() {
 		return dataset;
