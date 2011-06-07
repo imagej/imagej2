@@ -161,7 +161,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		pe.setPresets(presets);
 
 		// flag legacy plugin with special icon
-		menuPath.get(menuPath.size() - 1).setIcon(LEGACY_PLUGIN_ICON);
+		menuPath.get(menuPath.size() - 1).setIconPath(LEGACY_PLUGIN_ICON);
 
 		return pe;
 	}

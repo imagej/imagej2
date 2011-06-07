@@ -46,7 +46,7 @@ public class MenuEntry {
 	private double weight = Menu.DEFAULT_WEIGHT;
 	private char mnemonic;
 	private String accelerator;
-	private String icon;
+	private String iconPath;
 
 	public MenuEntry(String name) {
 		this.name = name;
@@ -58,13 +58,13 @@ public class MenuEntry {
 	}
 
 	public MenuEntry(String name, double weight,
-		char mnemonic, String accelerator, String icon)
+		char mnemonic, String accelerator, String iconPath)
 	{
 		this.name = name;
 		this.weight = weight;
 		this.mnemonic = mnemonic;
 		this.accelerator = accelerator;
-		this.icon = icon;
+		this.iconPath = iconPath;
 	}
 
 	public void setName(String name) {
@@ -99,12 +99,12 @@ public class MenuEntry {
 		return accelerator;
 	}
 
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public void setIconPath(String iconPath) {
+		this.iconPath = iconPath;
 	}
 
-	public String getIcon() {
-		return icon;
+	public String getIconPath() {
+		return iconPath;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class MenuEntry {
 		if (weight == Menu.DEFAULT_WEIGHT) weight = entry.getWeight();
 		if (mnemonic == '\0') mnemonic = entry.getMnemonic();
 		if (accelerator == null) accelerator = entry.getAccelerator();
-		if (icon == null) icon = entry.getIcon();
+		if (iconPath == null) iconPath = entry.getIconPath();
 	}
 
 	@Override
