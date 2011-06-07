@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.integer.LongType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "64-bit signed", weight = 11) })
+	@Menu(label = "Signed 64-bit", weight = 11) })
 public class ChangeToINT64 extends TypeChanger implements ImageJPlugin {
 
 	@Override
