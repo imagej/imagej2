@@ -142,61 +142,74 @@ public class ImageMath implements ImageJPlugin {
 
 }
 
-/*
- * 
- * import net.imglib2.algorithm.OutputAlgorithm; import
- * net.imglib2.algorithm.math.ImageCalculator; import
- * net.imglib2.function.Function; import net.imglib2.type.numeric.RealType;
- * 
- * public class ImageMath extends ImglibOutputAlgorithmPlugin {
- * 
- * @Parameter(label="Operation to do between the two input images",
- * choices={"Add"
- * ,"Subtract","Multiply","Divide","AND","OR","XOR","Min","Max","Average"
- * ,"Difference","Copy","Transparent-zero"}) String operator;
- * 
- * @Parameter Dataset input1;
- * 
- * @Parameter Dataset input2; private ImageCalculator<? extends RealType<?>, ?
- * extends RealType<?>, ? extends RealType<?>> calculator;
- * 
- * @Override public void run() { // TODO - temp hack for testing purposes if (in
- * == null) { //TODO - set in to an arraylist of two datasets backed with same
- * size images of same type }
- * 
- * setupCalculator();
- * 
- * setAlgorithm(calculator);
- * 
- * super.run(); }
- * 
- * private void setupCalculator() { Function function;
- * 
- * if (operator.equals("Add")) function = new BinaryAddFunction(); else if
- * (operator.equals("Subtract")) function = new BinaryAddFunction(); else if
- * (operator.equals("Multiply")) function = new BinaryAddFunction(); else if
- * (operator.equals("Divide")) function = new BinaryAddFunction(); else if
- * (operator.equals("AND")) function = new BinaryAddFunction(); else if
- * (operator.equals("OR")) function = new BinaryAddFunction(); else if
- * (operator.equals("XOR")) function = new BinaryAddFunction(); else if
- * (operator.equals("Min")) function = new BinaryAddFunction(); else if
- * (operator.equals("Max")) function = new BinaryAddFunction(); else if
- * (operator.equals("Average")) function = new BinaryAddFunction(); else if
- * (operator.equals("Difference")) function = new BinaryAddFunction(); else if
- * (operator.equals("Copy")) function = new BinaryAddFunction(); else if
- * (operator.equals("Transparent-zero")) function = new BinaryAddFunction();
- * else throw new IllegalArgumentException("unknown operator type : "+operator);
- * 
- * calculator = new ImageCalculator(input1.getImage(), input2.getImage(),
- * output.getImage(), function); }
- * 
- * private class BinaryAddFunction implements Function<? extends RealType<?>,?
- * extends RealType<?>,? extends RealType<?>> {
- * 
- * @Override public void compute(RealType input1, RealType input2, RealType
- * output) { double value = input1.getRealDouble() + input2.getRealDouble();
- * 
- * output.setReal(value); }
- * 
- * } }
- */
+//import imagej.plugin.Parameter;
+//import net.imglib2.algorithm.OutputAlgorithm;
+//import net.imglib2.algorithm.math.ImageCalculator;
+//import net.imglib2.function.Function;
+//import net.imglib2.type.numeric.RealType;
+//
+//public class ImageMath extends ImglibOutputAlgorithmPlugin {
+//
+//	@Parameter(label = "Operation to do between the two input images",
+//		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
+//			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
+//	String operator;
+//
+//	@Parameter
+//	Dataset input1;
+//
+//	@Parameter
+//	Dataset input2;
+//	private ImageCalculator<? extends RealType<?>, ? extends RealType<?>, ? extends RealType<?>> calculator;
+//
+//	@Override
+//	public void run() {
+//		// TODO - temp hack for testing purposes if (in == null) { //TODO - set in
+//		// to an arraylist of two datasets backed with same final size images of
+//		// final same type
+//		setupCalculator();
+//		setAlgorithm(calculator);
+//		super.run();
+//	}
+//
+//	private void setupCalculator() {
+//		Function function;
+//
+//		if (operator.equals("Add")) function = new BinaryAddFunction();
+//		else if (operator.equals("Subtract")) function = new BinaryAddFunction();
+//		else if (operator.equals("Multiply")) function = new BinaryAddFunction();
+//		else if (operator.equals("Divide")) function = new BinaryAddFunction();
+//		else if (operator.equals("AND")) function = new BinaryAddFunction();
+//		else if (operator.equals("OR")) function = new BinaryAddFunction();
+//		else if (operator.equals("XOR")) function = new BinaryAddFunction();
+//		else if (operator.equals("Min")) function = new BinaryAddFunction();
+//		else if (operator.equals("Max")) function = new BinaryAddFunction();
+//		else if (operator.equals("Average")) function = new BinaryAddFunction();
+//		else if (operator.equals("Difference")) function = new BinaryAddFunction();
+//		else if (operator.equals("Copy")) function = new BinaryAddFunction();
+//		else if (operator.equals("Transparent-zero")) function =
+//			new BinaryAddFunction();
+//		else throw new IllegalArgumentException("unknown operator type : " +
+//			operator);
+//
+//		calculator =
+//			new ImageCalculator(input1.getImage(), input2.getImage(), output
+//				.getImage(), function);
+//	}
+//
+//	private class BinaryAddFunction
+//		implements
+//		Function<? extends RealType<?>, ? extends RealType<?>, ? extends RealType<?>>
+//	{
+//
+//		@Override
+//		public void compute(final RealType input1, final RealType input2,
+//			final RealType output)
+//		{
+//			final double value = input1.getRealDouble() + input2.getRealDouble();
+//
+//			output.setReal(value);
+//		}
+//	}
+//
+//}
