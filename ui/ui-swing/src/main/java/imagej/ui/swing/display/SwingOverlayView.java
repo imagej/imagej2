@@ -130,7 +130,15 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 			@Override
 			public void figureRemoved(FigureEvent e) {
-				overlay.delete();
+				// NB - BDZ
+				// before removing delete() from the DataObject interface
+				//   this was calling overlay.delete() which was wrong
+				// this next line is a replacement but probably also wrong
+				//   since that code done by AbstractDisplayView
+				//overlay.decrementReferences();
+				// Curtis' suggestion:
+			   display.removeView(SwingOverlayView.this);
+			   // TODO - initial testing looks good. Test thoroughly.
 			}
 		});
 	}

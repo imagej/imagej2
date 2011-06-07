@@ -43,6 +43,7 @@ import imagej.event.Events;
  * Base implementation of {@link DataObject}.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  * @see Dataset
  * @see Overlay
  */
@@ -50,26 +51,39 @@ public abstract class AbstractDataObject implements DataObject {
 
 	private int refs = 0;
 
-	@Override
-	public void register() {
+	/**
+	 * Informs interested parties that the data object has become relevant and
+	 * should be registered. Called the first time the reference count is
+	 * incremented. Classes that extend this class may choose to override this
+	 * method to publish more specific events.
+	 */
+	protected void register() {
 		Events.publish(new DataObjectCreatedEvent(this));
 	}
 
-	@Override
-	public void delete() {
+	/**
+	 * Informs interested parties that the data object is no longer relevant and
+	 * should be deleted. Called when the reference count is decremented to zero.
+	 * Classes that extend this class may choose to override this method to
+	 * publish more specific events.
+	 * */
+	protected void delete() {
 		Events.publish(new DataObjectDeletedEvent(this));
 	}
 
+	/** @see DataObject */
 	@Override
 	public void incrementReferences() {
 		refs++;
 		if (refs == 1) register();
 	}
 
+	/** @see DataObject */
 	@Override
 	public void decrementReferences() {
 		if (refs == 0)
-			throw new IllegalArgumentException("should not decrement reference count when there are already 0 references");
+			throw new IllegalArgumentException(
+				"decrementing reference count when it is already 0");
 		refs--;
 		if (refs == 0) delete();
 	}
