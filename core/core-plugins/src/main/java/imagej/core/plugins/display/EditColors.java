@@ -43,9 +43,6 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-import net.imglib2.display.CompositeXYProjector;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Plugin that allows toggling between different color modes.
@@ -65,29 +62,21 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	private DatasetView view = ImageJ.get(DisplayManager.class)
 		.getActiveDatasetView();
 
-	@Parameter(label = "Color mode", persist = false, choices = {
-		EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE })
-	private String modeString = EditColors.GRAYSCALE;
+	// TODO: Add support for enums to plugin framework?
 
-	private ColorMode colorMode;
+	@Parameter(label = "Color mode", persist = false, choices = {
+		GRAYSCALE, COLOR, COMPOSITE })
+	private String modeString = GRAYSCALE;
 
 	public EditColors() {
 		if (view != null) setColorMode(view.getColorMode());
-		else { // view == null
-			if (modeString.equals(COLOR)) setColorMode(ColorMode.COLOR);
-			else if (modeString.equals(COMPOSITE)) setColorMode(ColorMode.COMPOSITE);
-			else setColorMode(ColorMode.GRAYSCALE);
-		}
 	}
 
 	@Override
 	public void run() {
 		if (view == null) return;
-		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
-			view.getProjector();
-		view.resetColorTables(colorMode == ColorMode.GRAYSCALE);
-		proj.setComposite(colorMode == ColorMode.COMPOSITE);
-		proj.map();
+		view.setColorMode(getColorMode());
+		imagej.util.Log.info("===> setting mode: " + getColorMode());//TEMP
 		view.update();
 	}
 
@@ -105,24 +94,11 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	}
 
 	public ColorMode getColorMode() {
-		return colorMode;
+		return ColorMode.get(modeString);
 	}
 
 	public void setColorMode(final ColorMode colorMode) {
-		switch (colorMode) {
-			case COLOR:
-				modeString = EditColors.COLOR;
-				break;
-			case COMPOSITE:
-				modeString = EditColors.COMPOSITE;
-				break;
-			case GRAYSCALE:
-				modeString = EditColors.GRAYSCALE;
-				break;
-			default:
-				throw new IllegalStateException("unknown display mode " + colorMode);
-		}
-		this.colorMode = colorMode;
+		modeString = colorMode.getLabel();
 	}
 
 }

@@ -73,9 +73,11 @@ public interface DatasetView extends DisplayView {
 
 	void resetColorTables(final boolean grayscale);
 
+	ColorMode getColorMode();
+
+	void setColorMode(final ColorMode colorMode);
+
 	@Override
 	Dataset getDataObject();
 	
-	ColorMode getColorMode();
-
 }
