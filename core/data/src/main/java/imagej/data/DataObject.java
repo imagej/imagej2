@@ -54,29 +54,20 @@ public interface DataObject {
 	void rebuild();
 
 	/**
-	 * Informs interested parties that the data object has become relevant and
-	 * should be registered. Called the first time the reference count is
-	 * incremented.
-	 */
-	void register();
-
-	/**
-	 * Informs interested parties that the data object is no longer relevant and
-	 * should be deleted. Called when the reference count is decremented to zero.
-	 */
-	void delete();
-
-	/**
 	 * Adds to the data object's reference count. Typically this is called when
-	 * the data object is added to a display.
+	 * the data object is added to a display. Implementers of this interface may
+	 * want to emit Events when the reference count goes to 1.
+	 * {@link AbstractDataObject} does exactly this to let interested parties
+	 * know that a data object has come into use.
 	 */
 	void incrementReferences();
 
 	/**
 	 * Subtracts from the data object's reference count. Typically this is called
-	 * when the data object is removed from a display. If the reference count
-	 * reaches zero, {@link #delete()} is called to notify interested parties that
-	 * the data object is no longer in use.
+	 * when the data object is removed from a display. Implementers of this
+	 * interface may want to emit Events when the reference count goes to 0.
+	 * {@link AbstractDataObject} does exactly this to let interested parties know
+	 * that the data object is no longer in use.
 	 */
 	void decrementReferences();
 
