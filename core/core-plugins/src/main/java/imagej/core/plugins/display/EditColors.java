@@ -37,9 +37,7 @@ package imagej.core.plugins.display;
 import imagej.ImageJ;
 import imagej.display.ColorMode;
 import imagej.display.DatasetView;
-import imagej.display.Display;
 import imagej.display.DisplayManager;
-import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -63,8 +61,9 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public static final String COLOR = "Color";
 	public static final String COMPOSITE = "Composite";
 
-	// TODO - Use DisplayView (DatasetView?) parameter instead of getting the
-	// active display from the DisplayManager.
+	@Parameter
+	private DatasetView view = ImageJ.get(DisplayManager.class)
+		.getActiveDatasetView();
 
 	@Parameter(label = "Color mode", persist = false, choices = {
 		EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE })
@@ -73,7 +72,6 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	private ColorMode colorMode;
 
 	public EditColors() {
-		final DatasetView view = getActiveDisplayView();
 		if (view != null) setColorMode(view.getColorMode());
 		else { // view == null
 			if (modeString.equals(COLOR)) setColorMode(ColorMode.COLOR);
@@ -84,7 +82,6 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void run() {
-		final DatasetView view = getActiveDisplayView();
 		if (view == null) return;
 		final CompositeXYProjector<? extends RealType<?>, ARGBType> proj =
 			view.getProjector();
@@ -97,6 +94,14 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	@Override
 	public void preview() {
 		run();
+	}
+
+	public DatasetView getView() {
+		return view;
+	}
+
+	public void setView(final DatasetView view) {
+		this.view = view;
 	}
 
 	public ColorMode getColorMode() {
@@ -118,16 +123,6 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 				throw new IllegalStateException("unknown display mode " + colorMode);
 		}
 		this.colorMode = colorMode;
-	}
-
-	private DatasetView getActiveDisplayView() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		if (display == null) {
-			return null; // headless UI or no open images
-		}
-		final DisplayView activeView = display.getActiveView();
-		return activeView instanceof DatasetView ? (DatasetView) activeView : null;
 	}
 
 }
