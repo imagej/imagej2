@@ -69,7 +69,7 @@ public class Convolve3x3Operation {
 	public Convolve3x3Operation(Dataset input, double[] kernel) {
 		this.kernel = kernel;
 		this.neighOperation =
-			new Neighborhood3x3Operation(input, new ConvolveWatcher());
+			new Neighborhood3x3Operation(input, new ConvolveWatcher(input));
 
 		if (kernel.length != 9) throw new IllegalArgumentException(
 			"kernel must contain nine elements (shaped 3x3)");
@@ -97,7 +97,16 @@ public class Convolve3x3Operation {
 
 		private double scale;
 		private double sum;
+		private boolean integerDataset;
+		private double typeMinValue;
+		private double typeMaxValue;
 
+		public ConvolveWatcher(Dataset ds) {
+			integerDataset = ds.isInteger();
+			typeMinValue = ds.getType().getMinValue();
+			typeMaxValue = ds.getType().getMaxValue();
+		}
+		
 		/** precalculates the kernel scale for use later */
 		@Override
 		public void setup() {
@@ -129,7 +138,17 @@ public class Convolve3x3Operation {
 		 */
 		@Override
 		public double calcOutputValue() {
-			return sum / scale;
+			double value;
+			
+			if (integerDataset) {
+				value = (sum + (scale / 2)) / scale;
+				if (value < typeMinValue) value = typeMinValue;
+				if (value > typeMaxValue) value = typeMaxValue;
+			}
+			else {
+				value = sum / scale;
+			}
+			return value;
 		}
 
 	}
