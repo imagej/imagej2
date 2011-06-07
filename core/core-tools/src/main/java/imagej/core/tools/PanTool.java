@@ -53,7 +53,7 @@ import java.awt.event.KeyEvent;
  * @author Curtis Rueden
  */
 @Tool(name = "Pan", description = "Pans the display",
-	iconPath = "/tools/pan.png", priority = PanTool.PRIORITY)
+	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
 public class PanTool extends BaseTool {
 
 	public static final int PRIORITY = ZoomTool.PRIORITY + 1;

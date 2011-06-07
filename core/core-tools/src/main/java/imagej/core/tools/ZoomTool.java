@@ -51,7 +51,7 @@ import imagej.util.IntCoords;
  * @author Barry DeZonia
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",
-	iconPath = "/tools/zoom.png", priority = ZoomTool.PRIORITY)
+	iconPath = "/icons/tools/zoom.png", priority = ZoomTool.PRIORITY)
 public class ZoomTool extends BaseTool {
 
 	public static final int PRIORITY = ProbeTool.PRIORITY + 1;

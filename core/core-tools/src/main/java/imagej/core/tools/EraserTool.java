@@ -44,7 +44,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Eraser", iconPath = "/tools/eraser.png",
+@Tool(name = "Eraser", iconPath = "/icons/tools/eraser.png",
 	priority = EraserTool.PRIORITY, enabled = false)
 public class EraserTool extends BaseTool {
 

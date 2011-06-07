@@ -42,7 +42,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Wand", iconPath = "/tools/wand.png",
+@Tool(name = "Wand", iconPath = "/icons/tools/wand.png",
 	priority = WandTool.PRIORITY, enabled = false)
 public class WandTool extends BaseTool {
 

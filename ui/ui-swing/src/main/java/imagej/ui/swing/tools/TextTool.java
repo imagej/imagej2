@@ -43,7 +43,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Text", iconPath = "/tools/text.png", description = "Text",
+@Tool(name = "Text", iconPath = "/icons/tools/text.png", description = "Text",
 	priority = TextTool.PRIORITY, enabled = false)
 public class TextTool extends BaseTool {
 

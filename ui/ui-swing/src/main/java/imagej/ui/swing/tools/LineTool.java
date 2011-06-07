@@ -42,7 +42,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Line", iconPath = "/tools/line.png",
+@Tool(name = "Line", iconPath = "/icons/tools/line.png",
 	priority = LineTool.PRIORITY, enabled = false)
 public class LineTool extends BaseTool {
 

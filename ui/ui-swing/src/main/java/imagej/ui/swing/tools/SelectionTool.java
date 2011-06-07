@@ -31,28 +31,27 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.ui.swing.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
 
 /**
- * @author leek
- *
- *The selection tool allows the user to switch to JHotDraw's
- *DelegationSelectionTool which lets the user move and stretch their overlays.
+ * The selection tool allows the user to switch to JHotDraw's
+ * DelegationSelectionTool which lets the user move and stretch their overlays.
+ * 
+ * @author Lee Kamentsky
  */
-@Tool(name = SelectionTool.NAME, iconPath = "/tools/selection.png",
-		priority = SelectionTool.PRIORITY,
-		label = "Selection tool",
-		description = "This tool lets you select an overlay, move it and adjust its shape using its handles.",
-		enabled = true)
-
+@Tool(name = SelectionTool.NAME, iconPath = "/icons/tools/selection.png",
+	priority = SelectionTool.PRIORITY, label = "Selection tool",
+	description = "This tool lets you select an overlay, "
+		+ "move it and adjust its shape using its handles.", enabled = true)
 public class SelectionTool extends BaseTool {
 
 	public final static String NAME = "Selection";
 	public final static int PRIORITY = 100;
-	
+
 	@Override
 	public String getName() {
 		return NAME;

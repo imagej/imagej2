@@ -42,8 +42,8 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Angle", iconPath = "/tools/angle.png", description = "Angle",
-	priority = AngleTool.PRIORITY, enabled = false)
+@Tool(name = "Angle", iconPath = "/icons/tools/angle.png",
+	description = "Angle", priority = AngleTool.PRIORITY, enabled = false)
 public class AngleTool extends BaseTool {
 
 	public static final int PRIORITY = LineTool.PRIORITY + 1;

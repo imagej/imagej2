@@ -44,7 +44,7 @@ import imagej.tool.Tool;
  * @author Grant Harris
  */
 @Tool(name = "SprayCan", label = "Spray Can",
-	iconPath = "/tools/spray-can.png", priority = SprayCanTool.PRIORITY,
+	iconPath = "/icons/tools/spray-can.png", priority = SprayCanTool.PRIORITY,
 	enabled = false)
 public class SprayCanTool extends BaseTool {
 
