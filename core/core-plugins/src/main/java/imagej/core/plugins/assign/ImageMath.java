@@ -39,6 +39,9 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
+import java.util.HashMap;
+
 import net.imglib2.ops.function.p2.BinaryOperatorFunction;
 import net.imglib2.ops.operator.BinaryOperator;
 import net.imglib2.ops.operator.binary.Add;
@@ -55,9 +58,6 @@ import net.imglib2.ops.operator.binary.Or;
 import net.imglib2.ops.operator.binary.Subtract;
 import net.imglib2.ops.operator.binary.Xor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 // NOTE - attempted to use the ImageCalculator in Imglib using
 // ImglibOutputAlgorithmRunner but could not solve compiler errors and
 // warnings. That test implementation saved below commented out. For now
@@ -70,8 +70,9 @@ import java.util.HashMap;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "IJ2 Image Calculator...", weight = 13) })
+@Plugin(iconPath = "/icons/plugins/calculator.png", menu = {
+	@Menu(label = "Process", mnemonic = 'p'),
+	@Menu(label = "Image Calculator [IJ2]...", weight = 22) })
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -92,7 +93,7 @@ public class ImageMath implements ImageJPlugin {
 
 	// -- other instance variables --
 
-	private HashMap<String, BinaryOperator> operators;
+	private final HashMap<String, BinaryOperator> operators;
 
 	// -- constructor --
 
@@ -126,11 +127,13 @@ public class ImageMath implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		BinaryOperator binOp = operators.get(operatorName);
+		final BinaryOperator binOp = operators.get(operatorName);
 
-		BinaryOperatorFunction binaryFunction = new BinaryOperatorFunction(binOp);
+		final BinaryOperatorFunction binaryFunction =
+			new BinaryOperatorFunction(binOp);
 
-		NAryOperation operation = new NAryOperation(input1, input2, binaryFunction);
+		final NAryOperation operation =
+			new NAryOperation(input1, input2, binaryFunction);
 
 		operation.setOutput(output);
 

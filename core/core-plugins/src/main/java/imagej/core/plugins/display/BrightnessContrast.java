@@ -59,9 +59,11 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Adjust"),
-	@Menu(label = "Brightness/Contrast", accelerator = "control shift C") },
-	iconPath = "/icons/silk/contrast.png")
+@Plugin(menu = {
+	@Menu(label = "Image"),
+	@Menu(label = "Adjust"),
+	@Menu(label = "Brightness/Contrast", accelerator = "control shift C",
+		weight = 0) }, iconPath = "/icons/plugins/contrast.png")
 public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	private static final int SLIDER_RANGE = 256;

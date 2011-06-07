@@ -40,12 +40,12 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Quits ImageJ.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "File>Quit")
+@Plugin(iconPath = "/icons/plugins/door_in.png", menuPath = "File>Quit")
 public class QuitProgram implements ImageJPlugin {
 
 	@Parameter(visibility = ParamVisibility.MESSAGE)

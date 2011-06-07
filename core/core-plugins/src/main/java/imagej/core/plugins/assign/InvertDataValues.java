@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Invert", accelerator = "shift control I") })
+	@Menu(label = "Invert", weight = 30, accelerator = "shift control I") })
 public class InvertDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --

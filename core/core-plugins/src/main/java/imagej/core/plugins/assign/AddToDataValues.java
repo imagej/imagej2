@@ -48,10 +48,9 @@ import net.imglib2.ops.operator.unary.AddConstant;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(iconPath = "/icons/plugins/sum.png", menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Math", mnemonic = 'm'),
-	@Menu(label = "Add...", weight = 1) })
+	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) })
 public class AddToDataValues implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
@@ -69,8 +68,10 @@ public class AddToDataValues implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		UnaryOperator op = new AddConstant(constant);
-		UnaryTransformation transform = new UnaryTransformation(input, input, op);
+		final UnaryOperator op = new AddConstant(constant);
+		final UnaryTransformation transform =
+			new UnaryTransformation(input, input, op);
 		transform.run();
 	}
+
 }
