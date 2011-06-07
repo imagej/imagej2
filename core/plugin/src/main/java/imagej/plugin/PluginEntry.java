@@ -192,13 +192,7 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 		if (!menuPath.isEmpty()) {
 			firstField = handleFirst(firstField, sb);
-			sb.append("menu = ");
-			boolean firstMenu = true;
-			for (final MenuEntry menu : menuPath) {
-				if (firstMenu) firstMenu = false;
-				else sb.append(" > ");
-				sb.append(menu);
-			}
+			sb.append("menu = " + getMenuString(menuPath));
 		}
 
 		final String iconPath = getIconPath();
@@ -221,6 +215,19 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 		if (!firstField) sb.append("]");
 
+		return sb.toString();
+	}
+
+	// -- Utility methods --
+
+	public static String getMenuString(final List<MenuEntry> menuPath) {
+		final StringBuilder sb = new StringBuilder();
+		boolean firstMenu = true;
+		for (final MenuEntry menu : menuPath) {
+			if (firstMenu) firstMenu = false;
+			else sb.append(" > ");
+			sb.append(menu);
+		}
 		return sb.toString();
 	}
 
