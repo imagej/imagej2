@@ -165,7 +165,9 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 			final Parameter param = f.getAnnotation(Parameter.class);
 			if (param == null) continue; // not a parameter
 
-			if (Modifier.isFinal(f.getModifiers())) {
+			final boolean isFinal = Modifier.isFinal(f.getModifiers());
+			final boolean isMessage = param.visibility() == ParamVisibility.MESSAGE;
+			if (isFinal && !isMessage) {
 				// NB: Skip final parameters, since they cannot be modified.
 				Log.warn("Ignoring final parameter: " + f);
 				continue;
