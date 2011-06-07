@@ -68,6 +68,8 @@ public abstract class AbstractDataObject implements DataObject {
 
 	@Override
 	public void decrementReferences() {
+		if (refs == 0)
+			throw new IllegalArgumentException("should not decrement reference count when there are already 0 references");
 		refs--;
 		if (refs == 0) delete();
 	}
