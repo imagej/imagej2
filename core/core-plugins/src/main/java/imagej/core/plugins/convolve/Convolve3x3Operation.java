@@ -93,6 +93,7 @@ public class Convolve3x3Operation {
 	 * ConvolveWatcher tallies that information and returns appropriate values as
 	 * necessary.
 	 */
+	@SuppressWarnings("synthetic-access")
 	private class ConvolveWatcher implements Neighborhood3x3Watcher {
 
 		private double scale;
