@@ -49,7 +49,7 @@ import imagej.plugin.Plugin;
 public class QuitProgram implements ImageJPlugin {
 
 	@Parameter(visibility = ParamVisibility.MESSAGE)
-	public final String message = "Really quit ImageJ?";
+	public static final String MESSAGE = "Really quit ImageJ?";
 
 	@Override
 	public void run() {
