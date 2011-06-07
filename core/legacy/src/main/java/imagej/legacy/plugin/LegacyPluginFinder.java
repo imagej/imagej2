@@ -141,17 +141,23 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final Map<String, List<MenuEntry>> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
+		final boolean blacklisted = blacklist.contains(ij1PluginString);
+		final List<MenuEntry> menuPath = menuTable.get(key);
 
-		if (blacklist.contains(ij1PluginString)) {
-			Log.debug("- [BLACKLISTED] " + ij1PluginString);
-			return null;
+		final String debugString;
+		if (Log.isDebug()) {
+			debugString =
+				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
+					" [menu = " + PluginEntry.getMenuString(menuPath) + "]";
 		}
-		Log.debug("- " + ij1PluginString);
+		else debugString = null;
+		Log.debug(debugString);
+
+		if (blacklisted) return null;
 
 		final String className = parsePluginClass(ij1PluginString);
 		final String arg = parseArg(ij1PluginString);
 
-		final List<MenuEntry> menuPath = menuTable.get(key);
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
