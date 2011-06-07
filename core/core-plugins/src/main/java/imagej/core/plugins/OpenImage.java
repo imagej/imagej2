@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
 	@Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
+	@Menu(label = "Open [IJ2]...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
 public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
