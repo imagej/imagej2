@@ -1,5 +1,5 @@
 //
-// ContrastBrightness.java
+// BrightnessContrast.java
 //
 
 /*
@@ -36,9 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.ImageJ;
 import imagej.display.DatasetView;
-import imagej.display.Display;
 import imagej.display.DisplayManager;
-import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -69,37 +67,30 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	private static final int SLIDER_RANGE = 256;
 	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
 
-	// TODO - Use DisplayView (DatasetView?) parameter instead of getting the
-	// active display from the DisplayManager.
+	@Parameter
+	private DatasetView view = ImageJ.get(DisplayManager.class)
+		.getActiveDatasetView();
 
-	@Parameter(label = "Minimum", persist = false, callback = "adjustMinMax")
+	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
 	private double min = 0;
 
-	@Parameter(label = "Maximum", persist = false, callback = "adjustMinMax")
+	@Parameter(label = "Maximum", persist = false, callback = "minMaxChanged")
 	private double max = 255;
 
-	@Parameter(callback = "adjustBrightness", persist = false,
+	@Parameter(callback = "brightnessChanged", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
 	private int brightness = SLIDER_RANGE / 2;
 
-	@Parameter(callback = "adjustContrast", persist = false,
+	@Parameter(callback = "contrastChanged", persist = false,
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = SLIDER_MAX)
 	private int contrast = SLIDER_RANGE / 2;
 
 	private final double defaultMin, defaultMax;
 
 	public BrightnessContrast() {
-		final DatasetView view = getActiveDisplayView();
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			min = conv.getMin();
-			max = conv.getMax();
-			break; // use only first channel, for now
-		}
+		if (view != null) initializeMinMax();
 		this.defaultMin = min;
 		this.defaultMax = max;
-		Log.debug("ValidBitsOOO: " + view.getDataObject().getValidBits());
 		Log.debug("default min/max= " + defaultMin + "/" + defaultMax);
 
 //		if (view.getCompositeDimIndex() >= 0) {
@@ -111,7 +102,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	@Override
 	public void run() {
-		final DatasetView view = getActiveDisplayView();
+		if (view == null) return;
 		final List<RealLUTConverter<? extends RealType<?>>> converters =
 			view.getConverters();
 		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
@@ -127,74 +118,12 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		run();
 	}
 
-	void adjustMinMax() {
-//		min = defaultMin + min * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
-//		if (max > defaultMax) {
-//			max = defaultMax;
-//		}
-//		if (min > max) {
-//			max = min;
-//		}
-		updateBrightness();
-		updateContrast();
+	public DatasetView getView() {
+		return view;
 	}
 
-	void adjustMax() {
-//		max = defaultMin + max * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
-//		//IJ.log("adjustMax: "+maxvalue+"  "+max);
-//		if (min < defaultMin) {
-//			min = defaultMin;
-//		}
-//		if (max < min) {
-//			min = max;
-//		}
-//		updateBrightness();
-//		updateContrast();
-	}
-
-	protected void adjustContrast() {
-		double slope;
-		final double center = min + (max - min) / 2.0;
-		final double range = defaultMax - defaultMin;
-		final double mid = SLIDER_RANGE / 2;
-		final int cvalue = contrast;
-		if (cvalue <= mid) {
-			slope = cvalue / mid;
-		}
-		else {
-			slope = mid / (SLIDER_RANGE - cvalue);
-		}
-		if (slope > 0.0) {
-			min = (center - (0.5 * range) / slope);
-			max = (center + (0.5 * range) / slope);
-		}
-	}
-
-	protected void adjustBrightness() {
-		final double brightCenter =
-			defaultMin + (defaultMax - defaultMin) *
-				((float) (SLIDER_RANGE - brightness) / (float) SLIDER_RANGE);
-		final double width = max - min;
-		min = (brightCenter - width / 2.0);
-		max = (brightCenter + width / 2.0);
-		Log.debug("brightness, brightCenter, width, min, max = " + brightness +
-			", " + brightCenter + ", " + width + ", " + min + ", " + max);
-	}
-
-	void updateBrightness() {
-		final double level = min + (max - min) / 2.0;
-		final double normalizedLevel =
-			1.0 - (level - defaultMin) / (defaultMax - defaultMin);
-		brightness = ((int) (normalizedLevel * SLIDER_RANGE));
-	}
-
-	void updateContrast() {
-		final double mid = SLIDER_RANGE / 2;
-		double c = ((defaultMax - defaultMin) / (max - min)) * mid;
-		if (c > mid) {
-			c = SLIDER_RANGE - ((max - min) / (defaultMax - defaultMin)) * mid;
-		}
-		contrast = ((int) c);
+	public void setView(final DatasetView view) {
+		this.view = view;
 	}
 
 	public double getMinimum() {
@@ -229,13 +158,77 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 		this.contrast = contrast;
 	}
 
-	private DatasetView getActiveDisplayView() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		if (display == null) {
-			return null; // headless UI or no open images
-		}
-		final DisplayView activeView = display.getActiveView();
-		return activeView instanceof DatasetView ? (DatasetView) activeView : null;
+	// -- Callback methods --
+
+	protected void minMaxChanged() {
+//		min = defaultMin + min * (defaultMax - defaultMin) / (SLIDER_RANGE - 1.0);
+//		if (max > defaultMax) {
+//			max = defaultMax;
+//		}
+//		if (min > max) {
+//			max = min;
+//		}
+		updateBrightness();
+		updateContrast();
 	}
+
+	protected void contrastChanged() {
+		double slope;
+		final double center = min + (max - min) / 2.0;
+		final double range = defaultMax - defaultMin;
+		final double mid = SLIDER_RANGE / 2;
+		final int cvalue = contrast;
+		if (cvalue <= mid) {
+			slope = cvalue / mid;
+		}
+		else {
+			slope = mid / (SLIDER_RANGE - cvalue);
+		}
+		if (slope > 0.0) {
+			min = (center - (0.5 * range) / slope);
+			max = (center + (0.5 * range) / slope);
+		}
+	}
+
+	protected void brightnessChanged() {
+		final double brightCenter =
+			defaultMin + (defaultMax - defaultMin) *
+				((float) (SLIDER_RANGE - brightness) / (float) SLIDER_RANGE);
+		final double width = max - min;
+		min = (brightCenter - width / 2.0);
+		max = (brightCenter + width / 2.0);
+		Log.debug("brightness, brightCenter, width, min, max = " + brightness +
+			", " + brightCenter + ", " + width + ", " + min + ", " + max);
+	}
+
+	// -- Helper methods --
+
+	private void initializeMinMax() {
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
+			min = conv.getMin();
+			max = conv.getMax();
+			break; // use only first channel, for now
+		}
+		Log.debug("BrightnessContrast: valid bits = " +
+			view.getDataObject().getValidBits());
+	}
+
+	private void updateBrightness() {
+		final double level = min + (max - min) / 2.0;
+		final double normalizedLevel =
+			1.0 - (level - defaultMin) / (defaultMax - defaultMin);
+		brightness = ((int) (normalizedLevel * SLIDER_RANGE));
+	}
+
+	private void updateContrast() {
+		final double mid = SLIDER_RANGE / 2;
+		double c = ((defaultMax - defaultMin) / (max - min)) * mid;
+		if (c > mid) {
+			c = SLIDER_RANGE - ((max - min) / (defaultMax - defaultMin)) * mid;
+		}
+		contrast = ((int) c);
+	}
+
 }
