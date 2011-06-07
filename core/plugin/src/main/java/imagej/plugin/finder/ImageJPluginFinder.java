@@ -130,7 +130,10 @@ public class ImageJPluginFinder implements IPluginFinder {
 		// add default icon if none attached to leaf
 		if (menuPath.size() > 0 && !iconPath.isEmpty()) {
 			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			if (menuEntry.getIconPath().isEmpty()) menuEntry.setIconPath(iconPath);
+			final String menuIconPath = menuEntry.getIconPath();
+			if (menuIconPath == null || menuIconPath.isEmpty()) {
+				menuEntry.setIconPath(iconPath);
+			}
 		}
 
 		entry.setMenuPath(menuPath);
