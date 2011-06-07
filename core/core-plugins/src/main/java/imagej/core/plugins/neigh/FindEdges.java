@@ -62,7 +62,7 @@ public class FindEdges implements ImageJPlugin {
 	@Override
 	public void run() {
 		Neighborhood3x3Operation operation =
-			new Neighborhood3x3Operation(input, new FindEdgesWatcher());
+			new Neighborhood3x3Operation(input, new FindEdgesWatcher(input));
 		operation.run();
 	}
 
@@ -72,11 +72,20 @@ public class FindEdges implements ImageJPlugin {
 
 		/** n - contains a local copy of the 9 values of a 3x3 neighborhood */
 		private double[] n;
+		private boolean integerDataset;
+		private double typeMinValue;
+		private double typeMaxValue;
 
+		public FindEdgesWatcher(Dataset input) {
+			integerDataset = input.isInteger();
+			typeMinValue = input.getType().getMinValue();
+			typeMaxValue = input.getType().getMaxValue();
+			n = new double[9];
+		}
+		
 		/** create the local neighborhood variables */
 		@Override
 		public void setup() {
-			n = new double[9];
 		}
 
 		/** at each new neighborhood start tracking neighbor 0 */
@@ -106,7 +115,14 @@ public class FindEdges implements ImageJPlugin {
 
 			double sum2 = n[0] + 2 * n[3] + n[6] - n[2] - 2 * n[5] - n[8];
 
-			return Math.sqrt(sum1 * sum1 + sum2 * sum2);
+			double value = Math.sqrt(sum1 * sum1 + sum2 * sum2);
+			
+			if (integerDataset) {
+				if (value < typeMinValue) value = typeMinValue;
+				if (value > typeMaxValue) value = typeMaxValue;
+			}
+			
+			return value;
 		}
 	}
 
