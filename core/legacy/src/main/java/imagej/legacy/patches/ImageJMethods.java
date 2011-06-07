@@ -1,5 +1,5 @@
 //
-// ImageWindowMethods.java
+// ImageJMethods.java
 //
 
 /*
@@ -34,33 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy.patches;
 
-import ij.gui.ImageWindow;
-import imagej.ImageJ;
-import imagej.legacy.LegacyManager;
+import ij.IJ;
+import ij.ImageJ;
 import imagej.util.Log;
 
+import java.awt.Point;
+
 /**
- * Overrides {@link ImageWindow} methods.
+ * Overrides {@link ImageJ} methods.
  * 
  * @author Curtis Rueden
  */
-public final class ImageWindowMethods {
+public class ImageJMethods {
 
-	private ImageWindowMethods() {
-		// prevent instantiation of utility class
-	}
-
-	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
-	public static void setVisible(final ImageWindow obj, final boolean visible) {
-		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
-		if (!visible) return;
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		legacyManager.legacyImageChanged(obj.getImagePlus());
-	}
-
-	/** Replaces {@link ImageWindow#show()}. */
-	public static void show(final ImageWindow obj) {
-		setVisible(obj, true);
+	/** Replaces {@link IJ#showProgress(double)}. */
+	public static Point getLocationOnScreen(
+		@SuppressWarnings("unused") final ImageJ obj)
+	{
+		Log.debug("getLocationOnScreen");
+		// TODO: Return coordinates of IJ2 window.
+		return new Point(0, 0);
 	}
 
 }

@@ -44,20 +44,19 @@ import imagej.util.Log;
 /**
  * Manager component for working with legacy ImageJ 1.x.
  * <p>
- * The legacy manager overrides the behavior of various IJ1 methods,
- * inserting seams so that (e.g.) the modern UI is aware of IJ1 events
- * as they occur.
+ * The legacy manager overrides the behavior of various IJ1 methods, inserting
+ * seams so that (e.g.) the modern UI is aware of IJ1 events as they occur.
  * </p>
  * <p>
- * It also maintains an image map between IJ1 {@link ImagePlus} objects
- * and IJ2 {@link Dataset}s.
+ * It also maintains an image map between IJ1 {@link ImagePlus} objects and IJ2
+ * {@link Dataset}s.
  * </p>
  * <p>
- * In this fashion, when a legacy plugin is executed on a {@link Dataset},
- * the manager transparently translates it into an {@link ImagePlus}, and
- * vice versa, enabling backward compatibility with legacy plugins.
+ * In this fashion, when a legacy plugin is executed on a {@link Dataset}, the
+ * manager transparently translates it into an {@link ImagePlus}, and vice
+ * versa, enabling backward compatibility with legacy plugins.
  * </p>
- *
+ * 
  * @author Curtis Rueden
  */
 @Manager(priority = Manager.HIGH_PRIORITY)
@@ -66,6 +65,10 @@ public final class LegacyManager implements ManagerComponent {
 	static {
 		// NB: Override class behavior before class loading gets too far along.
 		final CodeHacker hacker = new CodeHacker();
+
+		// override behavior of ij.ImageJ
+		hacker.insertMethod("ij.ImageJ",
+			"public java.awt.Point getLocationOnScreen()");
 
 		// override behavior of ij.IJ
 		hacker.insertAfterMethod("ij.IJ",
@@ -79,10 +82,6 @@ public final class LegacyManager implements ManagerComponent {
 		// override behavior of ij.ImagePlus
 		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
 		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
-		// commented out hacker.insertAfter...() line kills LegacyManager initialization
-		//   during load of SwingInputHarvester???
-		//hacker.insertAfterMethod("ij.ImagePlus", "public void setStack(String title, ImageStack newStack)");
-		// note: adding repaintWindow() above probably eliminates need for setStack() hacking
 		hacker.loadClass("ij.ImagePlus");
 
 		// override behavior of ij.gui.ImageWindow
@@ -118,7 +117,7 @@ public final class LegacyManager implements ManagerComponent {
 		try {
 			new ij.ImageJ(ij.ImageJ.NO_SHOW);
 		}
-		catch (Throwable t) {
+		catch (final Throwable t) {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
 	}
