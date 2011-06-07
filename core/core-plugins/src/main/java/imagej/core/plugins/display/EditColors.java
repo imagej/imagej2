@@ -76,7 +76,6 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	public void run() {
 		if (view == null) return;
 		view.setColorMode(getColorMode());
-		imagej.util.Log.info("===> setting mode: " + getColorMode());//TEMP
 		view.update();
 	}
 
