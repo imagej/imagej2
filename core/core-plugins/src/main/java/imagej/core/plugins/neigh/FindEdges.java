@@ -80,12 +80,12 @@ public class FindEdges implements ImageJPlugin {
 			integerDataset = input.isInteger();
 			typeMinValue = input.getType().getMinValue();
 			typeMaxValue = input.getType().getMaxValue();
-			n = new double[9];
 		}
 		
 		/** create the local neighborhood variables */
 		@Override
 		public void setup() {
+			n = new double[9];
 		}
 
 		/** at each new neighborhood start tracking neighbor 0 */
