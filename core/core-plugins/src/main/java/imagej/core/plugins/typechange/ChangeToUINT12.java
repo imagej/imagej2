@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.integer.Unsigned12BitType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "12-bit unsigned", weight = 3) })
+	@Menu(label = "Unsigned 12-bit", weight = 3) })
 public class ChangeToUINT12 extends TypeChanger implements ImageJPlugin {
 
 	@Override

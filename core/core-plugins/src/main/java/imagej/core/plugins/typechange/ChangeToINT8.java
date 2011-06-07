@@ -47,7 +47,7 @@ import net.imglib2.type.numeric.integer.ByteType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "8-bit signed", weight = 8) })
+	@Menu(label = "Signed 8-bit", weight = 8) })
 public class ChangeToINT8 extends TypeChanger implements ImageJPlugin {
 
 	@Override
