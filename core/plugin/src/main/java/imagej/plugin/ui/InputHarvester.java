@@ -34,20 +34,44 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginException;
 import imagej.plugin.PluginModule;
+import imagej.plugin.process.PluginPreprocessor;
 
 // TODO - Use Module instead of PluginModule<?>, and move to imagej.module.ui.
 
 /**
- * TODO
+ * An input harvester is responsible for creating an {@link InputPanel}
+ * containing widgets representing the inputs of a {@link PluginModule},
+ * displaying the panel, harvesting the final widget values, and updating the
+ * {@link PluginModule}'s input values to match.
+ * <p>
+ * Typically the input harvester will be a {@link PluginPreprocessor} that
+ * performs these steps just prior to {@link Plugin} execution.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 public interface InputHarvester {
 
+	/**
+	 * Constructs an empty {@link InputPanel}. Widgets are added later using the
+	 * {@link #buildPanel} method.
+	 */
 	InputPanel createInputPanel();
 
-	void buildPanel(InputPanel inputPanel, PluginModule<?> module);
+	/**
+	 * Populates the given {@link InputPanel} with widgets corresponding to the
+	 * given {@link PluginModule} instance.
+	 * 
+	 * @param inputPanel The panel to populate.
+	 * @param module The module whose inputs should be translated into widgets.
+	 * @throws PluginException if the panel cannot be populated for some reason.
+	 *           This may occur due to an input of unsupported type.
+	 */
+	void buildPanel(InputPanel inputPanel, PluginModule<?> module)
+		throws PluginException;
 
 	/**
 	 * Gathers input values from the user or other source. For example, a

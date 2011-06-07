@@ -38,12 +38,15 @@ import imagej.plugin.BasePlugin;
 import imagej.plugin.PluginModule;
 
 /**
- * TODO
+ * A plugin processor defines some sort of processing that occurs on a plugin
+ * instance, typically immediately preceding (see {@link PluginPreprocessor}) or
+ * following (see {@link PluginPostprocessor}) the plugin execution.
  *
  * @author Curtis Rueden
  */
 public interface PluginProcessor extends BasePlugin {
 
+	/** Performs a processing step on the given plugin instance. */
 	void process(PluginModule<?> module);
 
 }

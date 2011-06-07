@@ -35,12 +35,22 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.process;
 
 /**
- * TODO
- *
+ * A plugin preprocessor defines a step that occurs just prior to the actual
+ * execution of a plugin. Typically, a preprocessor prepares the plugin for
+ * execution in some way, such as populating plugin inputs or checking
+ * prerequisites.
+ * 
  * @author Curtis Rueden
  */
 public interface PluginPreprocessor extends PluginProcessor {
 
+	/** Returns whether the preprocessor has canceled the plugin execution. */
 	boolean canceled();
+
+	/**
+	 * Gets a message describing the results of the preprocessing step. If the
+	 * plugin was canceled, this message will typically explain why.
+	 */
+	String getMessage();
 
 }

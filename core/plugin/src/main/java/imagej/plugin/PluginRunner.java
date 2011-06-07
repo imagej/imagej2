@@ -36,6 +36,7 @@ package imagej.plugin;
 
 import imagej.ImageJ;
 import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.plugin.event.PluginCanceledEvent;
 import imagej.plugin.event.PluginFinishedEvent;
 import imagej.plugin.event.PluginPostprocessEvent;
@@ -97,7 +98,14 @@ public class PluginRunner<T extends RunnablePlugin> {
 				final PluginPreprocessor processor = p.createInstance();
 				processor.process(module);
 				Events.publish(new PluginPreprocessEvent(module, processor));
-				if (processor.canceled()) return false;
+				if (processor.canceled()) {
+					// notify interested parties of any warning messages
+					final String cancelMessage = processor.getMessage();
+					if (cancelMessage != null) {
+						Events.publish(new StatusEvent(cancelMessage, true));
+					}
+					return false;
+				}
 			}
 			catch (final PluginException e) {
 				Log.error(e);
