@@ -72,7 +72,7 @@ public class JHotDrawAdapterFinder {
 				final IJHotDrawOverlayAdapter adapter = indexItem.instance();
 				adapter.setPriority(indexItem.annotation().priority());
 				adapters.add(adapter);
-				Log.debug("Found adapter: " + adapter);
+				Log.info("Found JHotDraw adapter: " + adapter);
 			}
 			catch (final InstantiationException e) {
 				Log.warn("Failed to load " + indexItem.className(), e);
