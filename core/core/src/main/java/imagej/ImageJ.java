@@ -117,7 +117,7 @@ public final class ImageJ {
 
 		// initialize manager components
 		for (final ManagerComponent m : managerList) {
-			Log.info("Initializing manager component: " + m);
+			Log.info("Initializing manager component: " + m.getClass().getName());
 			m.initialize();
 			initializedManagers.add(m.getClass());
 		}

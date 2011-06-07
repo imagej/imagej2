@@ -84,7 +84,7 @@ public final class UIManager implements ManagerComponent {
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
-			Log.info("Launching user interface: " + ui);
+			Log.info("Launching user interface: " + ui.getClass().getName());
 			ui.initialize();
 			userInterface = ui;
 		}
@@ -101,7 +101,7 @@ public final class UIManager implements ManagerComponent {
 		{
 			try {
 				final UserInterface ui = item.instance();
-				Log.info("Discovered user interface: " + ui);
+				Log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}
 			catch (InstantiationException e) {
