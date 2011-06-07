@@ -1,5 +1,5 @@
 //
-// Clear.java
+// DeleteSelected.java
 //
 
 /*
@@ -50,7 +50,7 @@ import java.util.ArrayList;
  */
 @Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Remove Overlay", mnemonic = 'r', weight = 4) })
+	@Menu(label = "Remove Overlay [IJ2]", weight = 6, mnemonic = 'r') })
 public class DeleteSelected implements ImageJPlugin {
 
 	@Parameter
