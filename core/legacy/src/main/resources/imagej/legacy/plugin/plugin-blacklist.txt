@@ -1,3 +1,4 @@
+ij.plugin.Commands("new")                 # File>New
 ij.plugin.Commands("quit")                # File>Quit
 ij.plugin.filter.Filler("fill")           # Edit>Fill
 ij.plugin.filter.Filters("invert")        # Edit>Invert

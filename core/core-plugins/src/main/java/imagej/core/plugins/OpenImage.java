@@ -55,13 +55,12 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
 	@Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Import", mnemonic = 'i', weight = 2),
-	@Menu(label = "Bio-Formats...", mnemonic = 'b',
-		accelerator = "control shift O") })
-public class OpenImage<T extends RealType<T> & NativeType<T>>
-	implements ImageJPlugin
+	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
+		accelerator = "control O") })
+public class OpenImage<T extends RealType<T> & NativeType<T>> implements
+	ImageJPlugin
 {
 
 	@Parameter(label = "File to open")
@@ -92,8 +91,16 @@ public class OpenImage<T extends RealType<T> & NativeType<T>>
 		return inputFile;
 	}
 
+	public void setInputFile(final File inputFile) {
+		this.inputFile = inputFile;
+	}
+
 	public Dataset getDataset() {
 		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 }

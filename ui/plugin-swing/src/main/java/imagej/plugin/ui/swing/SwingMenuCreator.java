@@ -67,6 +67,8 @@ public abstract class SwingMenuCreator<T> extends
 	AbstractMenuCreator<T, JMenu>
 {
 
+	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
+
 	/** Table of button groups for radio button menu items. */
 	private HashMap<String, ButtonGroup> buttonGroups =
 		new HashMap<String, ButtonGroup>();
@@ -159,8 +161,11 @@ public abstract class SwingMenuCreator<T> extends
 	}
 
 	private Icon loadIcon(final ShadowMenu shadow) {
-		final String iconPath = shadow.getMenuEntry().getIconPath();
-		if (iconPath == null || iconPath.isEmpty()) return null;
+		String iconPath = shadow.getMenuEntry().getIconPath();
+		if (iconPath == null || iconPath.isEmpty()) {
+			if (shadow.isLeaf()) iconPath = DEFAULT_ICON_PATH;
+			else return null;
+		}
 		try {
 			final Class<?> c = shadow.getPluginEntry().loadClass();
 			final URL iconURL = c.getResource(iconPath);

@@ -42,7 +42,6 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
-
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
@@ -51,29 +50,35 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Resets the current Dataset to its original state.
+ * Resets the current {@link Dataset} to its original state.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "IJ2 Revert") })
-public class RevertImage<T extends RealType<T> & NativeType<T>>	implements ImageJPlugin
+@Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = "Revert [IJ2]", weight = 20, mnemonic = 'r'
+//	 , accelerator = "control R"
+	) })
+public class RevertImage<T extends RealType<T> & NativeType<T>> implements
+	ImageJPlugin
 {
+
 	@Override
 	public void run() {
 		final DisplayManager manager = ImageJ.get(DisplayManager.class);
 		final Display display = manager.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
 
-		final Dataset currDataset = (Dataset) display.getActiveView().getDataObject();
+		final Dataset currDataset =
+			(Dataset) display.getActiveView().getDataObject();
 
 		// TODO - enable this in ImgLib
-		//final String id = currDataset.getImgPlus().getSource();
-		//if (id == null)
-		//	throw new IllegalArgumentException("Dataset "+currDataset.getName()+" does not have an external source");
+//		final String id = currDataset.getImgPlus().getSource();
+//		if (id == null) {
+//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
+//				" does not have an external source");
+//		}
 		final String id = null; // do nothing right now
-		
+
 		// open image
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
@@ -87,4 +92,5 @@ public class RevertImage<T extends RealType<T> & NativeType<T>>	implements Image
 			Log.error(e);
 		}
 	}
+
 }

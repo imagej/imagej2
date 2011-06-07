@@ -41,11 +41,12 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * TODO
+ * Display information and credits about the ImageJ software.
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "About ImageJ")
+@Plugin(label = "About ImageJ", iconPath = "/icons/plugins/information.png",
+	menuPath = "Help>About ImageJ")
 public class AboutImageJ implements ImageJPlugin {
 
 	@Parameter(visibility = ParamVisibility.MESSAGE)

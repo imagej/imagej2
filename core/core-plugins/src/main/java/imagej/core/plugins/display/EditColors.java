@@ -41,6 +41,7 @@ import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
@@ -53,8 +54,9 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Image>Edit Colors",
-	iconPath = "/icons/silk/color_wheel.png")
+@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Color"),
+	@Menu(label = "Edit Colors", weight = -5) },
+	iconPath = "/icons/plugins/color_wheel.png")
 public class EditColors implements ImageJPlugin, PreviewPlugin {
 
 	public static final String GRAYSCALE = "Grayscale";

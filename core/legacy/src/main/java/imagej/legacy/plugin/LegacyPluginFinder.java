@@ -148,7 +148,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		if (Log.isDebug()) {
 			debugString =
 				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
-					" [menu = " + PluginEntry.getMenuString(menuPath) + "]";
+					" [menu = " + PluginEntry.getMenuString(menuPath) + ", weight = " +
+					menuPath.get(menuPath.size() - 1).getWeight() + "]";
 		}
 		else debugString = null;
 		Log.debug(debugString);
