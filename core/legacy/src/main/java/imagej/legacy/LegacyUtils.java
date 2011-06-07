@@ -551,14 +551,29 @@ public class LegacyUtils {
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
 
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		
+		long[] planeDims = Dimensions.getDims3AndGreater(ds.getDims());
+		long[] planePos = new long[planeDims.length]; 
+
 		// copy planes by reference
-		final long planeCount = c*z*t;
-		for (int p = 0; p < planeCount; p++) {
-			final Object plane = imp.getStack().getPixels(p + 1);
-			if (plane == null) {
-				Log.error("Could not extract plane from ImageStack: " + p);
+		int p = 1;
+		for (int ti = 0; ti < t; ti++) {
+			if (tIndex >= 0) planePos[tIndex-2] = ti;
+			for (int zi = 0; zi < z; zi++) {
+				if (zIndex >= 0) planePos[zIndex-2] = zi;
+				for (int ci = 0; ci < c; ci++) {
+					if (cIndex >= 0) planePos[cIndex-2] = ci;
+					final Object plane = imp.getStack().getPixels(p++);
+					if (plane == null) {
+						Log.error("Could not extract plane from ImageStack: " + (p-1));
+					}
+					long planeNum = Index.indexNDto1D(planeDims, planePos);
+					ds.setPlane((int)planeNum, plane);
+				}
 			}
-			ds.setPlane(p, plane);
 		}
 		// no need to call ds.update() - setPlane() tracks it
 	}
