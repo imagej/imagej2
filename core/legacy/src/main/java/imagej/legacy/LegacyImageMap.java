@@ -84,11 +84,7 @@ public class LegacyImageMap {
 	/** returns the result of a lookup for a given Dataset */
 	public ImagePlus findImagePlus(Dataset ds) {
 		//synchronized(lock) {
-			for (ImagePlus imp : imageTable.keySet()) {
-				if (imageTable.get(imp) == ds)
-					return imp;
-			}
-			return null;
+			return lookupDataset(ds);
 		//}
 	}
 	
@@ -107,14 +103,7 @@ public class LegacyImageMap {
 	public ImagePlus registerDataset(Dataset dataset) {
 		//synchronized(lock) {
 			// find image window
-			ImagePlus imp = null;
-			for (final ImagePlus key : imageTable.keySet()) {
-				final Dataset value = imageTable.get(key);
-				if (dataset == value) {
-					imp = key;
-					break;
-				}
-			}
+			ImagePlus imp = lookupDataset(dataset);
 			if (imp == null) {
 				// mirror dataset to image window
 				imp = imageTranslator.createLegacyImage(dataset);
@@ -147,13 +136,11 @@ public class LegacyImageMap {
 	/** removes the mapping associated with a given Dataset */
 	public void unregisterDataset(Dataset ds) {
 		//synchronized(lock) {
-			for (final ImagePlus imp : imageTable.keySet()) {
-				final Dataset dataset = imageTable.get(imp);
-				if (dataset == ds) {
-					imageTable.remove(imp);
-					removeImagePlusFromIJ1(imp);
-				}
-			}
+		  ImagePlus imp = lookupDataset(ds);
+		  if (imp != null) {
+				imageTable.remove(imp);
+				removeImagePlusFromIJ1(imp);
+		  }
 		//}
 	}
 	
@@ -168,6 +155,18 @@ public class LegacyImageMap {
 
 	// -- helpers --
 
+	private ImagePlus lookupDataset(Dataset ds) {
+		ImagePlus imp = null;
+		for (final ImagePlus key : imageTable.keySet()) {
+			final Dataset value = imageTable.get(key);
+			if (ds == value) {
+				imp = key;
+				break;
+			}
+		}
+		return imp;
+	}
+	
 	private void removeImagePlusFromIJ1(ImagePlus imp) {
 		ImagePlus savedImagePlus = WindowManager.getCurrentImage();
 		if (savedImagePlus != imp)
