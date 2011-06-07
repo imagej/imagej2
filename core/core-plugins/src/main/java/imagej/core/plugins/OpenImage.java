@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.data.Dataset;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -43,6 +45,7 @@ import imagej.util.Log;
 
 import java.io.File;
 
+import loci.common.StatusListener;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
@@ -60,7 +63,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Open [IJ2]...", weight = 1, mnemonic = 'o',
 		accelerator = "control O") })
 public class OpenImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
+	ImageJPlugin, StatusListener
 {
 
 	@Parameter(label = "File to open")
@@ -76,6 +79,7 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 		// open image
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
+			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
 			dataset = new Dataset(imgPlus);
 		}
@@ -101,6 +105,25 @@ public class OpenImage<T extends RealType<T> & NativeType<T>> implements
 
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
+	}
+
+	private long lastTime;
+
+	@Override
+	public void statusUpdated(loci.common.StatusEvent e) {
+		long time = System.currentTimeMillis();
+		final int progress = e.getProgressValue();
+		final int maximum = e.getProgressMaximum();
+		final String message = e.getStatusMessage();
+		final boolean warn = e.isWarning();
+
+		// don't update more than 20 times/sec
+		if (time - lastTime < 50 && progress > 0 && progress < maximum && !warn) {
+			return;
+		}
+		lastTime = time;
+
+		Events.publish(new StatusEvent(progress, maximum, message, warn));
 	}
 
 }

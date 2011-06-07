@@ -62,6 +62,11 @@
 			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>loci</groupId>
+			<artifactId>loci-common</artifactId>
+			<version>${bio-formats.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
