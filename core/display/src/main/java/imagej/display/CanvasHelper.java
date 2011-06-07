@@ -233,7 +233,7 @@ public class CanvasHelper implements Pannable, Zoomable {
 
 	private boolean scaleOutOfBounds(final double desiredScale) {
 		if (desiredScale <= 0) {
-			Log.debug("*********** BAD SCALE in CanvasHelper *******************");
+			Log.warn("*********** BAD SCALE in CanvasHelper *******************");
 			return true;
 		}
 

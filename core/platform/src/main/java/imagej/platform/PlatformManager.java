@@ -63,10 +63,10 @@ public final class PlatformManager implements ManagerComponent {
 		final List<PlatformHandler> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final PlatformHandler platform : platforms) {
-			Log.debug("Configuring platform: " + platform);
+			Log.info("Configuring platform: " + platform);
 			platform.configure();
 		}
-    if (platforms.size() == 0) Log.debug("No platforms to configure.");
+    if (platforms.size() == 0) Log.info("No platforms to configure.");
 	}
 
 	/** Gets the platform handlers applicable to this platform. */

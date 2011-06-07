@@ -110,7 +110,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
-		Log.debug("Found " + commands.size() + " legacy plugins:");
+		Log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
 			final PluginEntry<ImageJPlugin> pe =
 				createEntry(key, commands, menuTable);

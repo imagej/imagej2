@@ -61,8 +61,8 @@ public final class UIManager implements ManagerComponent {
 
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
-		Log.debug("Received command line arguments:");
-		for (String arg : args) Log.debug("\t" + arg);
+		Log.info("Received command line arguments:");
+		for (String arg : args) Log.info("\t" + arg);
 		userInterface.processArgs(args);
 	}
 
@@ -84,7 +84,7 @@ public final class UIManager implements ManagerComponent {
 		availableUIs = Collections.unmodifiableList(uis);
 		if (uis.size() > 0) {
 			final UserInterface ui = uis.get(0);
-			Log.debug("Launching user interface: " + ui);
+			Log.info("Launching user interface: " + ui);
 			ui.initialize();
 			userInterface = ui;
 		}
@@ -101,7 +101,7 @@ public final class UIManager implements ManagerComponent {
 		{
 			try {
 				final UserInterface ui = item.instance();
-				Log.debug("Discovered user interface: " + ui);
+				Log.info("Discovered user interface: " + ui);
 				uis.add(ui);
 			}
 			catch (InstantiationException e) {

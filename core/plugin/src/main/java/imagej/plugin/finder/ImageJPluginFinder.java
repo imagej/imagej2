@@ -86,8 +86,8 @@ public class ImageJPluginFinder implements IPluginFinder {
 		}
 		final int newSize = plugins.size();
 
+		Log.info("Found " + (newSize - oldSize) + " plugins.");
 		if (Log.isDebug()) {
-			Log.debug("Found " + (newSize - oldSize) + " plugins:");
 			for (int i = oldSize; i < newSize; i++) {
 				Log.debug("- " + plugins.get(i));
 			}
