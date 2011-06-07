@@ -88,13 +88,21 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 			module.setResolved(displayInput, true);
 		}
 
+		// assign active dataset view to single DatasetView input
+		final String datasetViewInput = getSingleInput(module, DatasetView.class);
+		final DatasetView activeDatasetView = displayManager.getActiveDatasetView();
+		if (datasetViewInput != null && activeDatasetView != null) {
+			module.setInput(datasetViewInput, activeDatasetView);
+			module.setResolved(datasetViewInput, true);
+		}
+
 		// assign active display view to single DisplayView input
-		final String viewInput = getSingleInput(module, DisplayView.class);
-		final DisplayView activeView =
+		final String displayViewInput = getSingleInput(module, DisplayView.class);
+		final DisplayView activeDisplayView =
 			activeDisplay == null ? null : activeDisplay.getActiveView();
-		if (viewInput != null && activeView != null) {
-			module.setInput(viewInput, activeView);
-			module.setResolved(viewInput, true);
+		if (displayViewInput != null && activeDisplayView != null) {
+			module.setInput(displayViewInput, activeDisplayView);
+			module.setResolved(displayViewInput, true);
 		}
 
 		// assign active dataset to single Dataset input
