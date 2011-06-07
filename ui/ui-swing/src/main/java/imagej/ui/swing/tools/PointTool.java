@@ -43,8 +43,8 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Point", iconPath = "/tools/point.png", description = "Point",
-	priority = PointTool.PRIORITY, enabled = false)
+@Tool(name = "Point", iconPath = "/icons/tools/point.png",
+	description = "Point", priority = PointTool.PRIORITY, enabled = false)
 public class PointTool extends BaseTool {
 
 	public static final int PRIORITY = AngleTool.PRIORITY + 1;

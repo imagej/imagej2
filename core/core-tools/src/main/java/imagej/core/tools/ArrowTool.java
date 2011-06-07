@@ -44,8 +44,8 @@ import imagej.tool.Tool;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Arrow", iconPath = "/tools/arrow.png", description = "Arrow",
-	priority = ArrowTool.PRIORITY, enabled = false)
+@Tool(name = "Arrow", iconPath = "/icons/tools/arrow.png",
+	description = "Arrow", priority = ArrowTool.PRIORITY, enabled = false)
 public class ArrowTool extends BaseTool {
 
 	public static final int PRIORITY = 305;

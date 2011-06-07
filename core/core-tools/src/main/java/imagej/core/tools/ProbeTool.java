@@ -65,7 +65,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Tool(name = "Probe", iconPath = "/tools/probe.png",
+@Tool(name = "Probe", iconPath = "/icons/tools/probe.png",
 	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
 public class ProbeTool extends BaseTool {
 

@@ -53,7 +53,7 @@ import imagej.ui.swing.tools.SelectionTool;
  *
  */
 @JHotDrawOverlayAdapter(priority = RectangleAdapter.PRIORITY)
-@Tool(name = "Rectangle", iconPath = "/tools/rectangle.png",
+@Tool(name = "Rectangle", iconPath = "/icons/tools/rectangle.png",
 		priority = RectangleAdapter.PRIORITY, enabled = true)
 public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOverlay> {
 

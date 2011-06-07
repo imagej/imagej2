@@ -43,7 +43,7 @@ import imagej.tool.Tool;
  * @author Rick Lentz
  * @author Grant Harris
  */
-@Tool(name = "Pencil", iconPath = "/tools/pencil.png",
+@Tool(name = "Pencil", iconPath = "/icons/tools/pencil.png",
 	priority = PencilTool.PRIORITY, enabled = false)
 public class PencilTool extends BaseTool {
 

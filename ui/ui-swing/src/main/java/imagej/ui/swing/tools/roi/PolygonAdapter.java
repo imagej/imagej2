@@ -60,7 +60,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  * @author Lee Kamentsky
  *
  */
-@Tool(name = "Polygon", iconPath = "/tools/polygon.png",
+@Tool(name = "Polygon", iconPath = "/icons/tools/polygon.png",
 		priority = PolygonAdapter.PRIORITY, enabled = true)
 @JHotDrawOverlayAdapter(priority = PolygonAdapter.PRIORITY)
 public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverlay> {

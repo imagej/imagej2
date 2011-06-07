@@ -50,6 +50,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * TODO
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 public class SwingOverlayView extends AbstractOverlayView implements FigureView {
 

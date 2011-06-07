@@ -35,16 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.display;
 
 import imagej.ImageJ;
+import imagej.display.ColorMode;
 import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
-import imagej.display.ColorMode;
 import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
@@ -54,7 +53,8 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Image>Edit Colors")
+@Plugin(menuPath = "Image>Edit Colors",
+	iconPath = "/icons/silk/color_wheel.png")
 public class EditColors implements ImageJPlugin, PreviewPlugin {
 
 	public static final String GRAYSCALE = "Grayscale";
@@ -64,23 +64,19 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 	// TODO - Use DisplayView (DatasetView?) parameter instead of getting the
 	// active display from the DisplayManager.
 
-	@Parameter(label = "Color mode", persist = false, choices =
-		{EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE})
+	@Parameter(label = "Color mode", persist = false, choices = {
+		EditColors.GRAYSCALE, EditColors.COLOR, EditColors.COMPOSITE })
 	private String modeString = EditColors.GRAYSCALE;
 
 	private ColorMode colorMode;
-	
+
 	public EditColors() {
 		final DatasetView view = getActiveDisplayView();
-		if (view != null)
-			setColorMode(view.getColorMode());
-		else {  // view == null
-			if (modeString.equals(COLOR))
-				setColorMode(ColorMode.COLOR);
-			else if (modeString.equals(COMPOSITE))
-				setColorMode(ColorMode.COMPOSITE);
-			else
-				setColorMode(ColorMode.GRAYSCALE);
+		if (view != null) setColorMode(view.getColorMode());
+		else { // view == null
+			if (modeString.equals(COLOR)) setColorMode(ColorMode.COLOR);
+			else if (modeString.equals(COMPOSITE)) setColorMode(ColorMode.COMPOSITE);
+			else setColorMode(ColorMode.GRAYSCALE);
 		}
 	}
 
@@ -107,11 +103,17 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 
 	public void setColorMode(final ColorMode colorMode) {
 		switch (colorMode) {
-			case COLOR: modeString = EditColors.COLOR; break;
-			case COMPOSITE: modeString = EditColors.COMPOSITE; break;
-			case GRAYSCALE: modeString = EditColors.GRAYSCALE; break;
+			case COLOR:
+				modeString = EditColors.COLOR;
+				break;
+			case COMPOSITE:
+				modeString = EditColors.COMPOSITE;
+				break;
+			case GRAYSCALE:
+				modeString = EditColors.GRAYSCALE;
+				break;
 			default:
-				throw new IllegalStateException("unknown display mode "+colorMode);
+				throw new IllegalStateException("unknown display mode " + colorMode);
 		}
 		this.colorMode = colorMode;
 	}

@@ -43,12 +43,12 @@ import imagej.ui.swing.tools.roi.PolygonAdapter;
  * 
  * @author Curtis Rueden
  */
-@Tool(name = "Freehand", iconPath = "/tools/freehand.png",
+@Tool(name = "Freehand", iconPath = "/icons/tools/freehand.png",
 	priority = FreehandTool.PRIORITY, enabled = false)
 public class FreehandTool extends BaseTool {
 
 	public static final int PRIORITY = PolygonAdapter.PRIORITY + 1;
-	
+
 	// TODO
 
 }

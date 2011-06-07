@@ -60,7 +60,8 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Adjust"),
-	@Menu(label = "Brightness/Contrast", accelerator = "control shift C") })
+	@Menu(label = "Brightness/Contrast", accelerator = "control shift C") },
+	iconPath = "/icons/silk/contrast.png")
 public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 
 	private static final int SLIDER_RANGE = 256;
