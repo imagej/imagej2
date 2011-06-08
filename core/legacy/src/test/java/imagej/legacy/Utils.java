@@ -11,7 +11,7 @@ import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.RealType;
 
 
-public class TestUtils {
+public class Utils {
 
 	public static boolean allNull(Axis[] axes) {
 		for (Axis axis : axes)

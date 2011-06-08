@@ -55,12 +55,12 @@ public class LegacyImageMapTest {
 		ds0.getImgPlus().setCalibration(7,3);
 		ds0.getImgPlus().setCalibration(8,4);
 		imp1 = map.registerDataset(ds0);
-		TestUtils.testSame(ds0, imp1);
+		Utils.testSame(ds0, imp1);
 		
 		// try again
 		imp2 = map.registerDataset(ds0);
 		assertSame(imp1, imp2);
-		TestUtils.testSame(ds0, imp2);
+		Utils.testSame(ds0, imp2);
 		
 		// register a color dataset
 		ds0 = Dataset.create(new long[]{1,2,3,4,5}, "temp", axes, 8, false, false);
@@ -72,12 +72,12 @@ public class LegacyImageMapTest {
 		ds0.getImgPlus().setCalibration(8,4);
 		ds0.setRGBMerged(true);
 		imp1 = map.registerDataset(ds0);
-		TestUtils.testColorSame(ds0, imp1);
+		Utils.testColorSame(ds0, imp1);
 
 		// try again
 		imp2 = map.registerDataset(ds0);
 		assertSame(imp1, imp2);
-		TestUtils.testColorSame(ds0, imp2);
+		Utils.testColorSame(ds0, imp2);
 	}
 
 	@Test
@@ -92,14 +92,14 @@ public class LegacyImageMapTest {
 		imp = NewImage.createShortImage("name", 4, 7, c*z*t, NewImage.FILL_RAMP);
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		
 		// dataset that exists and no changes
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testSame(ds1,imp);
+		Utils.testSame(ds1,imp);
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class LegacyImageMapTest {
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		
 		// dataset that exists and no changes
 		imgPlus0 = ds0.getImgPlus();
@@ -124,7 +124,7 @@ public class LegacyImageMapTest {
 		//map.reconcileDifferences(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testSame(ds1,imp);
+		Utils.testSame(ds1,imp);
 
 		// dataset exists and some changes
 		
@@ -137,7 +137,7 @@ public class LegacyImageMapTest {
 		ds0 = new Dataset(cellImgPlus);
 		imp = map.registerDataset(ds0);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		assertFalse(0xff == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 0xff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
@@ -153,7 +153,7 @@ public class LegacyImageMapTest {
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testColorSame(ds0,imp);
+		Utils.testColorSame(ds0,imp);
 		assertFalse(0xffffffff == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 0xffffffff);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
@@ -162,7 +162,7 @@ public class LegacyImageMapTest {
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testColorSame(ds1,imp);
+		Utils.testColorSame(ds1,imp);
 
 		//   some change - dimensions changed
 		c = 3; z = 4; t = 5;
@@ -170,7 +170,7 @@ public class LegacyImageMapTest {
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		imp.getStack().deleteLastSlice();  // MAKE THE CHANGE
 		imp.setStack(imp.getStack());
 		imgPlus0 = ds0.getImgPlus();
@@ -179,7 +179,7 @@ public class LegacyImageMapTest {
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertNotSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testSame(ds1,imp);
+		Utils.testSame(ds1,imp);
 		
 		// some change - metadata only
 		c = 3; z = 4; t = 5;
@@ -187,7 +187,7 @@ public class LegacyImageMapTest {
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		imp.getCalibration().pixelDepth = 99;  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
 		ds1 = map.registerLegacyImage(imp);
@@ -195,7 +195,7 @@ public class LegacyImageMapTest {
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testSame(ds1,imp);
+		Utils.testSame(ds1,imp);
 		
 		// some change - pixel data that is correct by reference
 		c = 2; z = 4; t = 5;
@@ -203,7 +203,7 @@ public class LegacyImageMapTest {
 		imp.setDimensions(c, z, t);
 		ds0 = map.registerLegacyImage(imp);
 		//map.reconcileDifferences(ds0, imp);
-		TestUtils.testSame(ds0,imp);
+		Utils.testSame(ds0,imp);
 		assertFalse(100 == imp.getProcessor().get(0,0));
 		imp.getProcessor().set(0, 0, 100);  // MAKE THE CHANGE
 		imgPlus0 = ds0.getImgPlus();
@@ -212,6 +212,6 @@ public class LegacyImageMapTest {
 		harmonizer.updateDataset(ds1, imp);
 		assertSame(ds0,ds1);
 		assertSame(imgPlus0,ds1.getImgPlus());
-		TestUtils.testSame(ds1,imp);
+		Utils.testSame(ds1,imp);
 	}
 }
