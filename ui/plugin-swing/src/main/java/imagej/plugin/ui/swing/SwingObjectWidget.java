@@ -37,7 +37,6 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.ObjectWidget;
 import imagej.plugin.ui.ParamModel;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -59,7 +58,7 @@ public class SwingObjectWidget extends SwingInputWidget
 
 		comboBox = new JComboBox(items);
 		setToolTip(comboBox);
-		add(comboBox, BorderLayout.CENTER);
+		add(comboBox);
 		comboBox.addActionListener(this);
 
 		refresh();

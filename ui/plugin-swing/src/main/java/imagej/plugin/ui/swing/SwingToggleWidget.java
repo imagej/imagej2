@@ -37,8 +37,6 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.ToggleWidget;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -59,7 +57,7 @@ public class SwingToggleWidget extends SwingInputWidget
 
 		checkBox = new JCheckBox("");
 		setToolTip(checkBox);
-		add(checkBox, BorderLayout.CENTER);
+		add(checkBox);
 		checkBox.addChangeListener(this);
 
 		refresh();

@@ -40,6 +40,8 @@ import imagej.plugin.ui.ParamModel;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import net.miginfocom.swing.MigLayout;
+
 /**
  * Common superclass for Swing-based input widgets.
  * 
@@ -51,6 +53,7 @@ public abstract class SwingInputWidget extends JPanel implements InputWidget {
 
 	public SwingInputWidget(final ParamModel model) {
 		this.model = model;
+		setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
 	}
 
 	@Override
