@@ -290,8 +290,8 @@ public class GrayscaleImageTranslatorTest {
 		for (Axis outer : axes) {
 			for (Axis middle : axes) {
 				for (Axis inner : axes) {
-					if (TestUtils.allNull(new Axis[]{outer,middle,inner})) continue;
-					if (TestUtils.repeated(new Axis[]{outer,middle,inner})) continue;
+					if (Utils.allNull(new Axis[]{outer,middle,inner})) continue;
+					if (Utils.repeated(new Axis[]{outer,middle,inner})) continue;
 					testOrdering(new Axis[]{outer,middle,inner});
 				}
 			}
