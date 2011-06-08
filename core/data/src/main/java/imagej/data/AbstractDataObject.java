@@ -50,6 +50,8 @@ import imagej.event.Events;
 public abstract class AbstractDataObject implements DataObject {
 
 	private int refs = 0;
+	
+	private String name;
 
 	/**
 	 * Informs interested parties that the data object has become relevant and
@@ -86,6 +88,22 @@ public abstract class AbstractDataObject implements DataObject {
 				"decrementing reference count when it is already 0");
 		refs--;
 		if (refs == 0) delete();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.imglib2.meta.Named#getName()
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.imglib2.meta.Named#setName(java.lang.String)
+	 */
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
