@@ -124,12 +124,8 @@ public class DatasetHarmonizer {
 	 * {@link ImagePlus}.
 	 */
 	public void updateDataset(Dataset ds, ImagePlus imp) {
-		//System.out.println("DatasetHarmonizer::updateDataset() - Dataset "+ds.getName()+"associated with ImagePlus "+imp.getID());
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
-			//System.out.println("old bit depth = "+bitDepthMap.get(imp));
-			//System.out.println("new bit depth = "+imp.getBitDepth());
-			//System.out.println("new chan count = "+imp.getNChannels());
 			Dataset tmp = imageTranslator.createDataset(imp, ds.getAxes());
 			ds.setImgPlus(tmp.getImgPlus());
 			ds.setRGBMerged(tmp.isRGBMerged());
