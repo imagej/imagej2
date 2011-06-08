@@ -48,7 +48,6 @@ import imagej.ui.common.awt.AWTEventDispatcher;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -61,7 +60,6 @@ import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
