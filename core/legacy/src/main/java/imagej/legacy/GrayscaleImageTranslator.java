@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import net.imglib2.img.Axis;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
@@ -46,12 +47,18 @@ import imagej.data.Dataset;
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
+	
+	@Override
+	public Dataset createDataset(final ImagePlus imp) {
+		return createDataset(imp, LegacyUtils.getPreferredAxisOrder());
+	}
+	
 	/** creates a {@link Dataset} from an {@link ImagePlus}. The Dataset made
 	 * is planar sharing plane references with the ImagePlus.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
-		Dataset ds = LegacyUtils.makeExactDataset(imp);
+	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+		Dataset ds = LegacyUtils.makeExactDataset(imp, preferredOrder);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?

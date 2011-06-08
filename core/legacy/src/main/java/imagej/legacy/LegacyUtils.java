@@ -85,6 +85,9 @@ import net.imglib2.type.numeric.RealType;
  * */
 public class LegacyUtils {
 
+	private static Axis[] defaultAxisOrder =
+		new Axis[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
+	
 	// -- constructor --
 	
 	private LegacyUtils() {
@@ -93,12 +96,16 @@ public class LegacyUtils {
 
 	// -- package interface --
 	
+	static Axis[] getPreferredAxisOrder() {
+		return defaultAxisOrder;
+	}
+	
 	/** Makes a planar {@link Dataset} whose dimensions match a given
 	 *  {@link ImagePlus}. Data is exactly the same as plane references
 	 *  are shared between the Dataset and the ImagePlus. Assumes it will
 	 *  never be called with any kind of color ImagePlus. Does not set
 	 *  metadata of Dataset. */
-	static Dataset makeExactDataset(ImagePlus imp) {
+	static Dataset makeExactDataset(ImagePlus imp, Axis[] preferredOrder) { // TODO - use order
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -125,7 +132,7 @@ public class LegacyUtils {
 	 *  methods. Does not set metadata of Dataset.
 	 *  
 	 *  Throws exceptions if input ImagePlus is not multichannel RGB. */ 
-	static Dataset makeGrayDatasetFromColorImp(ImagePlus imp) {
+	static Dataset makeGrayDatasetFromColorImp(ImagePlus imp, Axis[] preferredOrder) { // TODO - use order
 		
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
@@ -137,11 +144,6 @@ public class LegacyUtils {
 			throw new IllegalArgumentException(
 				"this method designed for creating a color Dataset " +
 				"from a multichannel RGB ImagePlus");
-
-		if (c == 1)
-			throw new IllegalArgumentException(
-				"shouldn't make a gray Dataset from a single channel " +
-				"ColorProcessor stack");
 
 		final long[] dims = new long[] { x, y, c*3, z, t };
 		final String name = imp.getTitle();
@@ -161,7 +163,7 @@ public class LegacyUtils {
 	 *  methods. Does not set metadata of Dataset.
 	 *  
 	 *  Throws exceptions if input ImagePlus is not single channel RGB. */ 
-	static Dataset makeColorDataset(ImagePlus imp) {
+	static Dataset makeColorDataset(ImagePlus imp, Axis[] preferredOrder) {  // TODO - use order
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -249,17 +251,18 @@ public class LegacyUtils {
 		getImagePlusDims(ds, dimIndices, dimValues);
 		int w = dimValues[0];
 		int h = dimValues[1];
+		int c = dimValues[2] / 3;
 		int z = dimValues[3];
 		int t = dimValues[4];
 		
-		ImageStack stack = new ImageStack(w, h, z*t);
+		ImageStack stack = new ImageStack(w, h, c*z*t);
 		
-		for (int i = 0; i < z*t; i++)
+		for (int i = 0; i < c*z*t; i++)
 			stack.setPixels(new int[w*h], i+1);
 		
 		ImagePlus imp = new ImagePlus(ds.getName(), stack);
 		
-		imp.setDimensions(1, z, t);
+		imp.setDimensions(c, z, t);
 
 		return imp;
 	}
@@ -276,14 +279,14 @@ public class LegacyUtils {
 		boolean bitData = ds.getType() instanceof BitType;
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
-		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		int x = imp.getWidth();
 		int y = imp.getHeight();
-		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
-		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
-		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		int c = imp.getNChannels();
+		int z = imp.getNSlices();
+		int t = imp.getNFrames();
 		int imagejPlaneNumber = 1;
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		for (int ti = 0; ti < t; ti++) {
@@ -318,38 +321,40 @@ public class LegacyUtils {
 	static void setImagePlusColorData(Dataset ds, ImagePlus imp) {
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
-		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		int x = imp.getWidth();
 		int y = imp.getHeight();
-		//  c is always 3 in this case
-		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
-		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		int c = imp.getNChannels();
+		int z = imp.getNSlices();
+		int t = imp.getNFrames();
 		int imagejPlaneNumber = 1;
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		for (int ti = 0; ti < t; ti++) {
 			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
 			for (int zi = 0; zi < z; zi++) {
 				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
-				for (int yi = 0; yi < y; yi++) {
-					accessor.setPosition(yi, yIndex);
-					for (int xi = 0; xi < x; xi++) {
-						accessor.setPosition(xi, xIndex);
-						
-						accessor.setPosition(0, cIndex);
-						int rValue = ((int) accessor.get().getRealDouble()) & 0xff;
-						
-						accessor.setPosition(1, cIndex);
-						int gValue = ((int) accessor.get().getRealDouble()) & 0xff;
-						
-						accessor.setPosition(2, cIndex);
-						int bValue = ((int) accessor.get().getRealDouble()) & 0xff;
-						
-						int intValue = (0xff << 24) | (rValue << 16) | (gValue << 8) | (bValue);
-						
-						proc.set(xi, yi, intValue);
+				for (int ci = 0; ci < c; ci++) {
+					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
+					for (int yi = 0; yi < y; yi++) {
+						accessor.setPosition(yi, yIndex);
+						for (int xi = 0; xi < x; xi++) {
+							accessor.setPosition(xi, xIndex);
+							
+							accessor.setPosition(3*ci+0, cIndex);
+							int rValue = ((int) accessor.get().getRealDouble()) & 0xff;
+							
+							accessor.setPosition(3*ci+1, cIndex);
+							int gValue = ((int) accessor.get().getRealDouble()) & 0xff;
+							
+							accessor.setPosition(3*ci+2, cIndex);
+							int bValue = ((int) accessor.get().getRealDouble()) & 0xff;
+							
+							int intValue = (0xff << 24) | (rValue << 16) | (gValue << 8) | (bValue);
+							
+							proc.set(xi, yi, intValue);
+						}
 					}
 				}
 			}
@@ -370,14 +375,14 @@ public class LegacyUtils {
 		double typeMax = type.getMaxValue();
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
-		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		int x = imp.getWidth();
 		int y = imp.getHeight();
-		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
-		int c = (int) ( (cIndex < 0) ? 1 : ds.getImgPlus().dimension(cIndex) );
-		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		int c = imp.getNChannels();
+		int z = imp.getNSlices();
+		int t = imp.getNFrames();
 		int imagejPlaneNumber = 1;
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		for (int ti = 0; ti < t; ti++) {
@@ -412,35 +417,37 @@ public class LegacyUtils {
 	static void setDatasetColorData(Dataset ds, ImagePlus imp) {
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
-		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		int x = imp.getWidth();
 		int y = imp.getHeight();
-		//  c is always 3 in this case
-		int z = (int) ( (zIndex < 0) ? 1 : ds.getImgPlus().dimension(zIndex) );
-		int t = (int) ( (tIndex < 0) ? 1 : ds.getImgPlus().dimension(tIndex) );
+		int c = imp.getNChannels();
+		int z = imp.getNSlices();
+		int t = imp.getNFrames();
 		int imagejPlaneNumber = 1;
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		for (int ti = 0; ti < t; ti++) {
 			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
 			for (int zi = 0; zi < z; zi++) {
 				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
-				for (int yi = 0; yi < y; yi++) {
-					accessor.setPosition(yi, yIndex);
-					for (int xi = 0; xi < x; xi++) {
-						accessor.setPosition(xi, xIndex);
-						int value = proc.get(xi, yi);
-						int rValue = (value >> 16) & 0xff;
-						int gValue = (value >> 8) & 0xff;
-						int bValue = (value >> 0) & 0xff;
-						accessor.setPosition(0, cIndex);
-						accessor.get().setReal(rValue);
-						accessor.setPosition(1, cIndex);
-						accessor.get().setReal(gValue);
-						accessor.setPosition(2, cIndex);
-						accessor.get().setReal(bValue);
+				for (int ci = 0; ci < c; ci++) {
+					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
+					for (int yi = 0; yi < y; yi++) {
+						accessor.setPosition(yi, yIndex);
+						for (int xi = 0; xi < x; xi++) {
+							accessor.setPosition(xi, xIndex);
+							int value = proc.get(xi, yi);
+							int rValue = (value >> 16) & 0xff;
+							int gValue = (value >> 8) & 0xff;
+							int bValue = (value >> 0) & 0xff;
+							accessor.setPosition(ci*3+0, cIndex);
+							accessor.get().setReal(rValue);
+							accessor.setPosition(ci*3+1, cIndex);
+							accessor.get().setReal(gValue);
+							accessor.setPosition(ci*3+2, cIndex);
+							accessor.get().setReal(bValue);
+						}
 					}
 				}
 			}
@@ -456,12 +463,12 @@ public class LegacyUtils {
 	static void setDatasetGrayDataFromColorImp(Dataset ds, ImagePlus imp) {
 		int xIndex = ds.getAxisIndex(Axes.X);
 		int yIndex = ds.getAxisIndex(Axes.Y);
-		int zIndex = ds.getAxisIndex(Axes.Z);
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
 		int tIndex = ds.getAxisIndex(Axes.TIME);
 		int x = imp.getWidth();
 		int y = imp.getHeight();
-		int origC = imp.getNChannels();
+		int c = imp.getNChannels();
 		int z = imp.getNSlices();
 		int t = imp.getNFrames();
 		int imagejPlaneNumber = 1;
@@ -470,7 +477,7 @@ public class LegacyUtils {
 			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
 			for (int zi = 0; zi < z; zi++) {
 				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < origC; ci++) {
+				for (int ci = 0; ci < c; ci++) {
 					ImageProcessor proc = imp.getStack().getProcessor(imagejPlaneNumber++);
 					for (int yi = 0; yi < y; yi++) {
 						accessor.setPosition(yi, yIndex);
@@ -597,7 +604,7 @@ public class LegacyUtils {
 		if (yIndex >= 0) newDims[yIndex] = imp.getHeight();
 		if (cIndex >= 0) {
 			if (imp.getType() == ImagePlus.COLOR_RGB)
-				newDims[cIndex] = 3;
+				newDims[cIndex] = 3 * imp.getNChannels();
 			else
 				newDims[cIndex] = imp.getNChannels();
 		}
@@ -767,7 +774,7 @@ public class LegacyUtils {
 		if (ds.getType().getBitsPerPixel() != 8) return false;
 		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		if (cIndex < 0) return false;
-		if (ds.getImgPlus().dimension(cIndex) != 3) return false;
+		if ((ds.getImgPlus().dimension(cIndex) % 3) != 0) return false;
 		return true;
 	}
 
@@ -898,8 +905,14 @@ public class LegacyUtils {
 
 		final long[] dims = dataset.getDims();
 
-		// check width
+		// get axis indices
 		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = dataset.getAxisIndex(Axes.Z);
+		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+
+		// check width
 		if (xIndex < 0)
 			throw new IllegalArgumentException("missing X axis");
 		if (dims[xIndex] > Integer.MAX_VALUE) {
@@ -907,21 +920,18 @@ public class LegacyUtils {
 		}
 
 		// check height
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
 		if (yIndex < 0)
 			throw new IllegalArgumentException("missing Y axis");
 		if (dims[yIndex] > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Height out of range: " + dims[yIndex]);
 		}
 
+		// check plane size
 		if ((dims[xIndex]*dims[yIndex]) > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("too many elements per plane : value(" +
 				(dims[xIndex]*dims[yIndex])+") : max ("+Integer.MAX_VALUE+")");
 		
-		// check channels, slices and frames
-		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = dataset.getAxisIndex(Axes.Z);
-		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+		// check total channels, slices and frames not too large
 		
 		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
@@ -931,12 +941,15 @@ public class LegacyUtils {
 			throw new IllegalArgumentException("too many planes : value(" +
 				(cCount*zCount*tCount)+") : max ("+Integer.MAX_VALUE+")");
 		}
+		
+		// set output values : indices
 		outputIndices[0] = xIndex;
 		outputIndices[1] = yIndex;
 		outputIndices[2] = cIndex;
 		outputIndices[3] = zIndex;
 		outputIndices[4] = tIndex;
 		
+		// set output values : dimensions
 		outputDims[0] = (int) dims[xIndex];
 		outputDims[1] = (int) dims[yIndex];
 		outputDims[2] = (int) cCount;

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import net.imglib2.img.Axis;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
@@ -45,14 +46,19 @@ import imagej.data.Dataset;
  */
 public class RGBImageTranslator implements ImageTranslator {
 
+	@Override
+	public Dataset createDataset(final ImagePlus imp) {
+		return createDataset(imp, LegacyUtils.getPreferredAxisOrder());
+	}
+	
 	/**
 	 * Creates a color {@link Dataset} from a color {@link ImagePlus}. Expects
 	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
 	 * channel.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
-		Dataset ds = LegacyUtils.makeColorDataset(imp);
+	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+		Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
 		LegacyUtils.setDatasetColorData(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);

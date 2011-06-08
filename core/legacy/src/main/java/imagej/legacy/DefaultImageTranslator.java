@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import net.imglib2.img.Axis;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
@@ -62,6 +63,19 @@ public class DefaultImageTranslator implements ImageTranslator {
 			return mixedModeTranslator.createDataset(imp);
 		}
 		return grayscaleTranslator.createDataset(imp);
+	}
+
+	/** creates a {@link Dataset} from an {@link ImagePlus}. Shares planes of
+	 *  data when possible. Builds Dataset with preferred Axis ordering.
+	 */
+	@Override
+	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			if (imp.getNChannels() == 1)
+				return rgbTranslator.createDataset(imp, preferredOrder);
+			return mixedModeTranslator.createDataset(imp, preferredOrder);
+		}
+		return grayscaleTranslator.createDataset(imp, preferredOrder);
 	}
 
 	/** creates an {@link ImagePlus} from a {@link Dataset}. Shares planes of

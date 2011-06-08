@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import net.imglib2.img.Axis;
 import ij.ImagePlus;
 import imagej.data.Dataset;
 
@@ -46,6 +47,8 @@ import imagej.data.Dataset;
 public interface ImageTranslator {
 
 	Dataset createDataset(final ImagePlus imp);
+
+	Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder);
 
 	ImagePlus createLegacyImage(final Dataset dataset);
 

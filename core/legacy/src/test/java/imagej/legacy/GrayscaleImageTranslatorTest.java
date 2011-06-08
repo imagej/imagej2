@@ -214,23 +214,6 @@ public class GrayscaleImageTranslatorTest {
 		testImageFromIJ2(DataType.FLOAT, x, y, c, z, t);
 	}
 
-	private boolean allNull(Axis[] axes) {
-		for (Axis axis : axes)
-			if (axis != null)
-				return false;
-		return true;
-	}
-	
-	private boolean repeated(Axis[] axes) {
-		int cCount = 0, zCount = 0, tCount = 0;
-		for (Axis axis : axes) {
-			if (axis == Axes.CHANNEL) cCount++;
-			if (axis == Axes.Z) zCount++;
-			if (axis == Axes.TIME) tCount++;
-		}
-		return (cCount > 1 || zCount > 1 || tCount > 1);
-	}
-	
 	private void testOrdering(Axis[] axes) {
 		//System.out.println("Testing order : "+axes[0]+","+axes[1]+","+axes[2]);
 		int nullAxes = 0;
@@ -307,8 +290,8 @@ public class GrayscaleImageTranslatorTest {
 		for (Axis outer : axes) {
 			for (Axis middle : axes) {
 				for (Axis inner : axes) {
-					if (allNull(new Axis[]{outer,middle,inner})) continue;
-					if (repeated(new Axis[]{outer,middle,inner})) continue;
+					if (TestUtils.allNull(new Axis[]{outer,middle,inner})) continue;
+					if (TestUtils.repeated(new Axis[]{outer,middle,inner})) continue;
 					testOrdering(new Axis[]{outer,middle,inner});
 				}
 			}

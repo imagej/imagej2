@@ -102,6 +102,10 @@ public class DatasetHarmonizer {
 			if (dimensionsDifferent(ds, imp)) {
 				ImagePlus newImp = imageTranslator.createLegacyImage(ds);
 				imp.setStack(newImp.getStack());
+				int c = newImp.getNChannels();
+				int z = newImp.getNSlices();
+				int t = newImp.getNFrames();
+				imp.setDimensions(c, z, t);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB)
 				LegacyUtils.setImagePlusColorData(ds, imp);
@@ -126,7 +130,7 @@ public class DatasetHarmonizer {
 			//System.out.println("old bit depth = "+bitDepthMap.get(imp));
 			//System.out.println("new bit depth = "+imp.getBitDepth());
 			//System.out.println("new chan count = "+imp.getNChannels());
-			Dataset tmp = imageTranslator.createDataset(imp);
+			Dataset tmp = imageTranslator.createDataset(imp, ds.getAxes());
 			ds.setImgPlus(tmp.getImgPlus());
 			ds.setRGBMerged(tmp.isRGBMerged());
 		}
