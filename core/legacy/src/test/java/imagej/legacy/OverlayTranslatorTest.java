@@ -45,9 +45,6 @@ import java.util.List;
 import java.util.Random;
 
 import ij.ImagePlus;
-import ij.gui.FreehandRoi;
-import ij.gui.ImageCanvas;
-import ij.gui.ImageWindow;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -163,7 +160,6 @@ public class OverlayTranslatorTest {
 				DataBuffer.TYPE_BYTE);
 		ByteProcessor ip = new ByteProcessor(w, h, data, cm);
 		ImagePlus imp = new ImagePlus(name, ip);
-		new ImageWindow(imp);
 		
 		return imp;
 	}
