@@ -38,6 +38,7 @@ import imagej.util.awt.AWTWindows;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -81,32 +82,35 @@ public final class SwingUtils {
 		final Component c, final String title, final int optionType,
 		final int messageType)
 	{
-		final JOptionPane optionPane = new JOptionPane(parentComponent);
-		optionPane.setOptionType(optionType);
-		optionPane.setMessageType(messageType);
-		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
-		final JPanel buttonPane = (JPanel) optionPane.getComponent(1);
+		final JOptionPane optionPane = new JOptionPane(c, messageType, optionType);
 
-		// add component to main pane
-		final JPanel cPanel = new JPanel();
-		cPanel.setLayout(new BorderLayout());
-		cPanel.add(c);
-		mainPane.removeAll();
-		final JScrollPane scrollPane = new JScrollPane(cPanel);
-		mainPane.add(scrollPane);
+		// wrap in a scroll pane, if there is no message icon
+		final boolean doScrollPane = messageType == JOptionPane.PLAIN_MESSAGE;
+		if (doScrollPane) {
+			final JPanel mainPane = (JPanel) optionPane.getComponent(0);
+			final JPanel buttonPane = (JPanel) optionPane.getComponent(1);
 
-		// fix component borders, so that scroll pane is flush with dialog edge
-		final EmptyBorder border = (EmptyBorder) optionPane.getBorder();
-		optionPane.setBorder(null);
-		// HACK: On Mac OS X (and maybe other platforms), setting the button pane's
-		// border directly results in the right inset of the EmptyBorder not being
-		// respected. Nesting the button panel in another panel avoids the problem.
-		final JPanel wrappedButtonPane = new JPanel();
-		wrappedButtonPane.setLayout(new BorderLayout());
-		wrappedButtonPane.add(buttonPane);
-		wrappedButtonPane.setBorder(border);
-		optionPane.remove(buttonPane);
-		optionPane.add(wrappedButtonPane);
+			// wrap main pane in a scroll pane
+			final JScrollPane wrappedMainPane = new JScrollPane(mainPane);
+
+			// HACK: On Mac OS X (and maybe other platforms), setting the button
+			// pane's border directly results in the right inset of the EmptyBorder
+			// not being respected. Nesting the button panel in another panel avoids
+			// the problem.
+			final JPanel wrappedButtonPane = new JPanel();
+			wrappedButtonPane.setLayout(new BorderLayout());
+			wrappedButtonPane.add(buttonPane);
+
+			// fix component borders, so that scroll pane is flush with dialog edge
+			final EmptyBorder border = (EmptyBorder) optionPane.getBorder();
+			final Insets insets = border.getBorderInsets();
+			wrappedButtonPane.setBorder(new EmptyBorder(0, insets.left,
+				insets.bottom, insets.right));
+			optionPane.setBorder(null);
+			optionPane.removeAll();
+			optionPane.add(wrappedMainPane);
+			optionPane.add(wrappedButtonPane);
+		}
 
 		// create dialog, set properties, pack and show
 		final JDialog dialog = optionPane.createDialog(title);
@@ -114,6 +118,11 @@ public final class SwingUtils {
 		dialog.setModal(true);
 		dialog.pack();
 		AWTWindows.ensureSizeReasonable(dialog);
+
+		// HACK: When vertical scroll bar is needed, the dialog packs slightly too
+		// small, resulting in an unnecessary horizontal scroll bar. Pad slightly.
+		dialog.setSize(dialog.getSize().width + 20, dialog.getSize().height);
+
 		AWTWindows.centerWindow(dialog);
 		dialog.setVisible(true);
 
