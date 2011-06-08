@@ -53,7 +53,6 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.gui.Toolbar;
 import ij.process.ByteProcessor;
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.EllipseOverlay;
