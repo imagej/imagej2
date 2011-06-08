@@ -90,7 +90,6 @@ import org.junit.Test;
 public class OverlayTranslatorTest {
 	@BeforeClass
 	public static void setUp() {
-		ImageJ.get(LegacyManager.class).initialize();
 	}
 
 	private PolygonOverlay makePolygonOverlay(double [] x, double [] y) {
