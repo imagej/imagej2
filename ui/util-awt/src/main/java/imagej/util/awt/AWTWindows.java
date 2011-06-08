@@ -43,6 +43,7 @@ import java.awt.Window;
  * Utility methods for working with AWT {@link Window}s.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public final class AWTWindows {
 
@@ -72,4 +73,28 @@ public final class AWTWindows {
 		window.setLocation(x, y);
 	}
 
+	/**
+	 * Limits the size of the given window to fit onscreen.
+	 * 
+	 * @return true if the window was resized.
+	 */
+	public static boolean ensureSizeReasonable(final Window window) {
+		final Dimension maxSize = getMaximumSize();
+
+		final Dimension windowSize = window.getSize();
+		int w = windowSize.width;
+		int h = windowSize.height;
+
+		if (w > maxSize.width) w = maxSize.width;
+		if (h > maxSize.height) h = maxSize.height;
+
+		final boolean resized = windowSize.width != w || windowSize.height != h;
+		if (resized) window.setSize(w, h);
+		return resized;
+	}
+
+	private static Dimension getMaximumSize() {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		return new Dimension(3 * screenSize.width / 4, 3 * screenSize.height / 4);
+	}
 }
