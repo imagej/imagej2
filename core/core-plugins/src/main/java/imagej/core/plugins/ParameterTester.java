@@ -126,6 +126,66 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter
 	private boolean selected = true;
 
+	@Parameter
+	private int extra1;
+
+	@Parameter
+	private int extra2;
+
+	@Parameter
+	private int extra3;
+
+	@Parameter
+	private int extra4;
+
+	@Parameter
+	private int extra5;
+
+	@Parameter
+	private int extra6;
+
+	@Parameter
+	private int extra7;
+
+	@Parameter
+	private int extra8;
+
+	@Parameter
+	private int extra9;
+
+	@Parameter
+	private int extra10;
+
+	@Parameter
+	private int extra11;
+
+	@Parameter
+	private int extra12;
+
+	@Parameter
+	private int extra13;
+
+	@Parameter
+	private int extra14;
+
+	@Parameter
+	private int extra15;
+
+	@Parameter
+	private int extra16;
+
+	@Parameter
+	private int extra17;
+
+	@Parameter
+	private int extra18;
+
+	@Parameter
+	private int extra19;
+
+	@Parameter
+	private int extra20;
+
 	@Override
 	public void run() {
 		Log.info("ParameterTester results:");
