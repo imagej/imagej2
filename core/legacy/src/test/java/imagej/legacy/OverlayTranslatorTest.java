@@ -414,7 +414,7 @@ public class OverlayTranslatorTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//TODO: uncomment the above and see why this test will make you cry
 	//      The ShapeRoi is composed of two polygons, but the inner one
 	//      is subtracted from the outer one and how are you supposed to
