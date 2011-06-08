@@ -34,12 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import net.imglib2.meta.Named;
+
 /**
  * TODO
  * 
  * @author Curtis Rueden
  */
-public interface DataObject {
+public interface DataObject extends Named {
 
 	/**
 	 * Informs interested parties that the data object has undergone a
