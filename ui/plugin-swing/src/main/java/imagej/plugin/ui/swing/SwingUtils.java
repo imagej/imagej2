@@ -113,7 +113,7 @@ public final class SwingUtils {
 		}
 
 		// create dialog, set properties, pack and show
-		final JDialog dialog = optionPane.createDialog(title);
+		final JDialog dialog = optionPane.createDialog(parentComponent, title);
 		dialog.setResizable(true);
 		dialog.setModal(true);
 		dialog.pack();
