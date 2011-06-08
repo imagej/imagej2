@@ -85,7 +85,7 @@ import net.imglib2.type.numeric.RealType;
  * */
 public class LegacyUtils {
 
-	private static Axis[] defaultAxisOrder =
+	private static Axis[] defaultAxes =
 		new Axis[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
 	
 	// -- constructor --
@@ -97,7 +97,54 @@ public class LegacyUtils {
 	// -- package interface --
 	
 	static Axis[] getPreferredAxisOrder() {
-		return defaultAxisOrder;
+		return defaultAxes;
+	}
+
+	static int getDim(Axis axis, int[] fullDimensions) {
+		if (axis == Axes.X) return fullDimensions[0];
+		else if (axis == Axes.Y) return fullDimensions[1];
+		else if (axis == Axes.CHANNEL) return fullDimensions[2];
+		else if (axis == Axes.Z) return fullDimensions[3];
+		else if (axis == Axes.TIME) return fullDimensions[4];
+		else throw new IllegalArgumentException("incompatible dimension type specified");
+	}
+	
+	static Axis[] orderedAxes(Axis[] desiredAxes, Axis[] preferredOrder) {
+		Axis[] axes = new Axis[desiredAxes.length];
+		int index = 0;
+		for (Axis axis : preferredOrder) {
+			for (Axis other : desiredAxes) {
+				if (axis == other) {
+					axes[index++] = axis;
+					break;
+				}
+			}
+		}
+		return axes;
+	}
+	
+	static long[] orderedDims(Axis[] axes, int[] fullDimensions) {
+		long[] orderedDims = new long[axes.length];
+		int index = 0;
+		for (Axis axis : axes) {
+			orderedDims[index++] = getDim(axis, fullDimensions);
+		}
+		// make sure we're not excluding any nontrivial dimensions
+		for (Axis axis : defaultAxes) {
+			boolean present = false;
+			for (Axis otherAxis : axes) {
+				if (axis == otherAxis) {
+					present = true;
+					break;
+				}
+			}
+			if (!present) {
+				if (getDim(axis, fullDimensions) != 1)
+					throw new IllegalArgumentException(
+						"specified axes are excluding a nontrivial dimension");
+			}
+		}
+		return orderedDims;
 	}
 	
 	/** Makes a planar {@link Dataset} whose dimensions match a given
@@ -105,15 +152,15 @@ public class LegacyUtils {
 	 *  are shared between the Dataset and the ImagePlus. Assumes it will
 	 *  never be called with any kind of color ImagePlus. Does not set
 	 *  metadata of Dataset. */
-	static Dataset makeExactDataset(ImagePlus imp, Axis[] preferredOrder) { // TODO - use order
+	static Dataset makeExactDataset(ImagePlus imp, Axis[] preferredOrder) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
-		final long[] dims = new long[] { x, y, c, z, t };
+		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
 		final String name = imp.getTitle();
-		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
@@ -124,6 +171,31 @@ public class LegacyUtils {
 		
 		return ds;
 	}
+
+	/** Makes a gray {@link Dataset} from a gray {@link ImagePlus}. Assumes it
+	 * will never be given a color RGB Imageplus. Does not populate the data of
+	 * the returned Dataset. That is left to other utility methods. Does not set
+	 * metadata of Dataset.
+	 */
+	static Dataset makeGrayDataset(ImagePlus imp, Axis[] preferredOrder) {
+		
+		final int x = imp.getWidth();
+		final int y = imp.getHeight();
+		final int c = imp.getNChannels();
+		final int z = imp.getNSlices();
+		final int t = imp.getNFrames();
+
+		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
+		final String name = imp.getTitle();
+		final int bitsPerPixel = imp.getBitDepth();
+		final boolean signed = isSigned(imp);
+		final boolean floating = isFloating(imp);
+		final Dataset ds =
+			Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+
+		return ds;
+	}
 	
 	/** Makes a gray {@link Dataset} from a Color {@link ImagePlus} whose
 	 * channel count > 1. The Dataset will have isRgbMerged() false, 3 times
@@ -132,7 +204,7 @@ public class LegacyUtils {
 	 *  methods. Does not set metadata of Dataset.
 	 *  
 	 *  Throws exceptions if input ImagePlus is not multichannel RGB. */ 
-	static Dataset makeGrayDatasetFromColorImp(ImagePlus imp, Axis[] preferredOrder) { // TODO - use order
+	static Dataset makeGrayDatasetFromColorImp(ImagePlus imp, Axis[] preferredOrder) {
 		
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
@@ -145,9 +217,9 @@ public class LegacyUtils {
 				"this method designed for creating a color Dataset " +
 				"from a multichannel RGB ImagePlus");
 
-		final long[] dims = new long[] { x, y, c*3, z, t };
+		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final long[] dims = orderedDims(axes,new int[]{x,y,c*3,z,t});
 		final String name = imp.getTitle();
-		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
@@ -163,7 +235,7 @@ public class LegacyUtils {
 	 *  methods. Does not set metadata of Dataset.
 	 *  
 	 *  Throws exceptions if input ImagePlus is not single channel RGB. */ 
-	static Dataset makeColorDataset(ImagePlus imp, Axis[] preferredOrder) {  // TODO - use order
+	static Dataset makeColorDataset(ImagePlus imp, Axis[] preferredOrder) {
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();
@@ -178,9 +250,9 @@ public class LegacyUtils {
 			throw new IllegalArgumentException(
 				"can't make a color Dataset from a nonRGB ImagePlus");
 		
-		final long[] dims = new long[] { x, y, 3, z, t };
+		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final long[] dims = orderedDims(axes,new int[]{x,y,3*c,z,t});
 		final String name = imp.getTitle();
-		final Axis[] axes = { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
