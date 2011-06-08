@@ -42,7 +42,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -63,8 +62,6 @@ public class SwingFileWidget extends SwingInputWidget
 
 	public SwingFileWidget(final ParamModel model) {
 		super(model);
-
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		path = new JTextField("", 20);
 		setToolTip(path);

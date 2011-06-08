@@ -58,7 +58,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	public SwingInputPanel() {
 		panel = new JPanel();
-		panel.setLayout(new MigLayout("wrap 2"));
+		panel.setLayout(new MigLayout("fillx,wrap 2", "[right]10[fill,grow]"));
 	}
 
 	public JPanel getPanel() {

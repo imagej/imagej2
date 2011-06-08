@@ -37,8 +37,6 @@ package imagej.plugin.ui.swing;
 import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.TextFieldWidget;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,7 +57,7 @@ public class SwingTextFieldWidget extends SwingInputWidget
 
 		textField = new JTextField("", columns);
 		setToolTip(textField);
-		add(textField, BorderLayout.CENTER);
+		add(textField);
 		textField.getDocument().addDocumentListener(this);
 
 		refresh();

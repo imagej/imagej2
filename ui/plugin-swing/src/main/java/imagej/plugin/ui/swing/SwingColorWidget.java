@@ -38,13 +38,14 @@ import imagej.plugin.ui.ColorWidget;
 import imagej.plugin.ui.ParamModel;
 import imagej.util.ColorRGB;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -58,17 +59,23 @@ public class SwingColorWidget extends SwingInputWidget implements
 	ActionListener, ColorWidget
 {
 
-	private static final int SWATCH_WIDTH = 16, SWATCH_HEIGHT = 16;
+	private static final int SWATCH_WIDTH = 64, SWATCH_HEIGHT = 16;
 
 	private final JButton choose;
 	private Color color;
 
 	public SwingColorWidget(final ParamModel model) {
 		super(model);
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-		choose = new JButton();
+		choose = new JButton() {
+			@Override
+			public Dimension getMaximumSize() {
+				return getPreferredSize();
+			}
+		};
 		setToolTip(choose);
-		add(choose, BorderLayout.CENTER);
+		add(choose);
 		choose.addActionListener(this);
 
 		refresh();

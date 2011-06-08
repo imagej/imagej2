@@ -39,12 +39,10 @@ import imagej.plugin.ui.ParamModel;
 import imagej.plugin.ui.WidgetStyle;
 
 import java.awt.Adjustable;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -60,8 +58,6 @@ import javax.swing.event.ChangeListener;
 public class SwingNumberWidget extends SwingInputWidget implements
 	NumberWidget, AdjustmentListener, ChangeListener
 {
-
-	private static final int PREFERRED_WIDTH = 250;
 
 	private JScrollBar scrollBar;
 	private JSlider slider;
@@ -79,9 +75,8 @@ public class SwingNumberWidget extends SwingInputWidget implements
 				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1, min
 					.intValue(), max.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
-			setPreferredWidth(scrollBar);
 			setToolTip(scrollBar);
-			add(scrollBar, BorderLayout.CENTER);
+			add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
 		else if (style == WidgetStyle.NUMBER_SLIDER) {
@@ -90,9 +85,8 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			slider.setMinorTickSpacing(stepSize.intValue());
 			slider.setPaintLabels(true);
 			slider.setPaintTicks(true);
-			setPreferredWidth(slider);
 			setToolTip(slider);
-			add(slider, BorderLayout.CENTER);
+			add(slider);
 			slider.addChangeListener(this);
 		}
 
@@ -101,7 +95,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 				stepSize);
 		spinner = new JSpinner(spinnerModel);
 		setToolTip(spinner);
-		add(spinner, BorderLayout.EAST);
+		add(spinner);
 		limitWidth(250);
 		spinner.addChangeListener(this);
 
@@ -162,22 +156,16 @@ public class SwingNumberWidget extends SwingInputWidget implements
 	 * large (presumably to match Double.MAX_VALUE).
 	 */
 	private void limitWidth(final int maxWidth) {
-		final Dimension spinnerSize = spinner.getPreferredSize();
-		if (spinnerSize.width > maxWidth) {
-			spinnerSize.width = maxWidth;
-			spinner.setPreferredSize(spinnerSize);
-			spinner.setMaximumSize(spinnerSize);
-			final Dimension widgetSize = getPreferredSize();
-			widgetSize.width = spinnerSize.width;
-			setPreferredSize(widgetSize);
-			setMaximumSize(widgetSize);
+		final Dimension minSize = spinner.getMinimumSize();
+		if (minSize.width > maxWidth) {
+			minSize.width = maxWidth;
+			spinner.setMinimumSize(minSize);
 		}
-	}
-
-	private void setPreferredWidth(final JComponent c) {
-		final Dimension prefSize = c.getPreferredSize();
-		prefSize.width = PREFERRED_WIDTH;
-		c.setPreferredSize(prefSize);
+		final Dimension prefSize = spinner.getPreferredSize();
+		if (prefSize.width > maxWidth) {
+			prefSize.width = maxWidth;
+			spinner.setPreferredSize(prefSize);
+		}
 	}
 
 	/** Sets slider values to match the spinner. */
