@@ -96,7 +96,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		spinner = new JSpinner(spinnerModel);
 		setToolTip(spinner);
 		add(spinner);
-		limitWidth(250);
+		limitWidth(200);
 		spinner.addChangeListener(this);
 
 		refresh();

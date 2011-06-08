@@ -120,7 +120,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	private float twoX;
 
 	@Parameter(description = "Demonstrates preview functionality by "
-		+ "displaying the given message in the ImageJ status bar.", columns = 20)
+		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
 
 	@Parameter
