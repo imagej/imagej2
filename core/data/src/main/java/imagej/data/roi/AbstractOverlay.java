@@ -55,10 +55,12 @@ import net.imglib2.roi.RegionOfInterest;
  */
 public class AbstractOverlay extends AbstractDataObject implements Overlay, Externalizable {
 
+	public final static ColorRGB defaultLineColor = new ColorRGB(255,255,0);
+	public final static ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
 	private static final long serialVersionUID = 1L;
-	protected ColorRGB fillColor = new ColorRGB(255, 255, 255);
+	protected ColorRGB fillColor = defaultFillColor;
 	protected int alpha = 0;
-	protected ColorRGB lineColor = new ColorRGB(0, 0, 0);
+	protected ColorRGB lineColor = defaultLineColor;
 	protected double lineWidth = 1.0;
 	protected Overlay.LineStyle lineStyle = Overlay.LineStyle.SOLID;
 
