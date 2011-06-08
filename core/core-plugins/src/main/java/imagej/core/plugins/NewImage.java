@@ -164,7 +164,7 @@ public class NewImage implements ImageJPlugin {
 		final long[] dims = { width, height };
 		final Axis[] axes = { Axes.X, Axes.Y };
 		dataset = Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
-
+		
 		final boolean isWhite = fillType.equals(WHITE);
 		final boolean isBlack = fillType.equals(BLACK);
 
@@ -185,6 +185,9 @@ public class NewImage implements ImageJPlugin {
 			else value = calcRangedValue(x + y, type); // fillWith == RAMP
 			type.setReal(value);
 		}
+		final RealType<?> type = cursor.get();
+		dataset.getImgPlus().setChannelMinimum(0, type.getMinValue());
+		dataset.getImgPlus().setChannelMaximum(0, type.getMaxValue());
 	}
 
 	// -- Parameter callback methods --
