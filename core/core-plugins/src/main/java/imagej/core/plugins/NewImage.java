@@ -1,5 +1,5 @@
 //
-// GradientImage.java
+// NewImage.java
 //
 
 /*
@@ -36,6 +36,7 @@ package imagej.core.plugins;
 
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
@@ -44,13 +45,18 @@ import net.imglib2.img.Axis;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * A demonstration plugin that generates a gradient image.
+ * Creates a new {@link Dataset}.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Process>Gradient")
-public class GradientImage implements ImageJPlugin {
+@Plugin(label = "New Image...", iconPath = "/icons/plugins/picture.png",
+	menu = {
+		@Menu(label = "File", mnemonic = 'f'),
+		@Menu(label = "New", mnemonic = 'n'),
+		@Menu(label = "Image [IJ2]...", weight = 0, mnemonic = 'i',
+			accelerator = "control N") })
+public class NewImage implements ImageJPlugin {
 
 	public static final String DEPTH1 = "1-bit";
 	public static final String DEPTH8 = "8-bit";
@@ -59,14 +65,15 @@ public class GradientImage implements ImageJPlugin {
 	public static final String DEPTH32 = "32-bit";
 	public static final String DEPTH64 = "64-bit";
 
-	@Parameter(min = "1")
-	private int width = 512;
+	public static final String WHITE = "White";
+	public static final String BLACK = "Black";
+	public static final String RAMP = "Ramp";
 
-	@Parameter(min = "1")
-	private int height = 512;
+	@Parameter
+	private String name = "Untitled";
 
-	@Parameter(callback = "bitDepthChanged", choices = { DEPTH1, DEPTH8,
-		DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
+	@Parameter(label = "Bit Depth", callback = "bitDepthChanged", choices = {
+		DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
 	private String bitDepth = DEPTH8;
 
 	@Parameter(callback = "signedChanged")
@@ -75,19 +82,91 @@ public class GradientImage implements ImageJPlugin {
 	@Parameter(callback = "floatingChanged")
 	private boolean floating = false;
 
+	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP })
+	private String fillType = WHITE;
+
+	@Parameter(min = "1")
+	private int width = 512;
+
+	@Parameter(min = "1")
+	private int height = 512;
+
+	// TODO: allow creation of multidimensional datasets
+
 	@Parameter(output = true)
 	private Dataset dataset;
+
+	// -- NewImage methods --
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public int getBitsPerPixel() {
+		final int dash = bitDepth.indexOf("-");
+		return Integer.parseInt(bitDepth.substring(0, dash));
+	}
+
+	public void setBitsPerPixel(final int bitsPerPixel) {
+		bitDepth = bitsPerPixel + "-bit";
+	}
+
+	public boolean isSigned() {
+		return signed;
+	}
+
+	public void setSigned(final boolean signed) {
+		this.signed = signed;
+	}
+
+	public boolean isFloating() {
+		return floating;
+	}
+
+	public void setFloating(final boolean floating) {
+		this.floating = floating;
+	}
+
+	public String getFillType() {
+		return fillType;
+	}
+
+	public void setFillType(final String fillType) {
+		this.fillType = fillType;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(final int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(final int height) {
+		this.height = height;
+	}
 
 	// -- RunnablePlugin methods --
 
 	@Override
 	public void run() {
 		// create the dataset
-		final String name = "Gradient Image";
 		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = { width, height };
 		final Axis[] axes = { Axes.X, Axes.Y };
 		dataset = Dataset.create(dims, name, axes, bitsPerPixel, signed, floating);
+
+		final boolean isWhite = fillType.equals(WHITE);
+		final boolean isBlack = fillType.equals(BLACK);
 
 		// fill in the diagonal gradient
 		final Cursor<? extends RealType<?>> cursor =
@@ -100,7 +179,10 @@ public class GradientImage implements ImageJPlugin {
 			final long x = cursor.getLongPosition(0);
 			final long y = cursor.getLongPosition(1);
 			final RealType<?> type = cursor.get();
-			final double value = calcRangedValue(x + y, type);
+			final double value;
+			if (isWhite) value = type.getMaxValue();
+			else if (isBlack) value = type.getMinValue();
+			else value = calcRangedValue(x + y, type); // fillWith == RAMP
 			type.setReal(value);
 		}
 	}
@@ -126,11 +208,6 @@ public class GradientImage implements ImageJPlugin {
 	}
 
 	// -- Helper methods --
-
-	private int getBitsPerPixel() {
-		final int dash = bitDepth.indexOf("-");
-		return Integer.parseInt(bitDepth.substring(0, dash));
-	}
 
 	private boolean signedForbidden() {
 		// 1-bit and 12-bit signed data are not supported
@@ -167,4 +244,5 @@ public class GradientImage implements ImageJPlugin {
 
 		return rangeMin + newValue;
 	}
+
 }
