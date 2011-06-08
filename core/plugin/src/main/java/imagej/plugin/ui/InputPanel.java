@@ -164,10 +164,16 @@ public interface InputPanel {
 	 */
 	Object getObject(String name);
 
-	/** Updates the widgets to reflect the most recent parameter value(s). */
-	void refresh();
+	/** Gets the number of active widgets in the input panel. */
+	int getWidgetCount();
 
 	/** Gets whether the input panel has any active widgets. */
 	boolean hasWidgets();
+
+	/** Returns true if the input panel consists of only messages. */
+	boolean isMessageOnly();
+
+	/** Updates the widgets to reflect the most recent parameter value(s). */
+	void refresh();
 
 }

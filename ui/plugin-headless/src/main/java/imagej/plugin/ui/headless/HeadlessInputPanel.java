@@ -53,6 +53,7 @@ public class HeadlessInputPanel extends AbstractInputPanel {
 	@Override
 	public void addMessage(final String text) {
 		// TODO
+		messageCount++;
 	}
 
 	@Override
@@ -93,9 +94,9 @@ public class HeadlessInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public boolean hasWidgets() {
+	public int getWidgetCount() {
 		// TODO
-		return false;
+		return 0;
 	}
 
 	// -- InputWidget methods --

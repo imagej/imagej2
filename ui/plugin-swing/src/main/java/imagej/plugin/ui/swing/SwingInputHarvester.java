@@ -69,10 +69,15 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 
 		// display input panel in a dialog
 		final String title = module.toString();
-		// TODO: check module for optionType value
-		final int optionType = JOptionPane.OK_CANCEL_OPTION;
-		// TODO: set messageType based on inputPanel.isMessageOnly()
-		final int messageType = JOptionPane.PLAIN_MESSAGE;
+		final boolean allowCancel = true; // TODO: check module for this setting
+		final int optionType, messageType;
+		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
+		else optionType = JOptionPane.OK_OPTION;
+		if (inputPanel.isMessageOnly()) {
+			if (allowCancel) messageType = JOptionPane.INFORMATION_MESSAGE;
+			else messageType = JOptionPane.QUESTION_MESSAGE;
+		}
+		else messageType = JOptionPane.PLAIN_MESSAGE;
 		final int rval =
 			SwingUtils.showDialog(null, pane, title, optionType, messageType);
 

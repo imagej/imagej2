@@ -36,7 +36,9 @@ package imagej.plugin.ui.awt;
 
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
+import imagej.plugin.PluginException;
 import imagej.plugin.ui.AbstractInputPanel;
+import imagej.plugin.ui.InputPanel;
 import imagej.plugin.ui.ParamModel;
 
 import java.awt.Component;
@@ -46,7 +48,7 @@ import java.awt.Panel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * TODO
+ * AWT implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
@@ -68,11 +70,12 @@ public class AWTInputPanel extends AbstractInputPanel {
 	@Override
 	public void addMessage(final String text) {
 		panel.add(new Label(text), "span");
+		messageCount++;
 	}
 
 	@Override
-	public void addNumber(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
+	public void addNumber(final ParamModel model, final Number min,
+		final Number max, final Number stepSize)
 	{
 		final AWTNumberWidget numberWidget =
 			new AWTNumberWidget(model, min, max, stepSize);
@@ -97,8 +100,7 @@ public class AWTInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addChoice(final ParamModel model, final String[] items) {
-		final AWTChoiceWidget choiceWidget =
-			new AWTChoiceWidget(model, items);
+		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget(model, items);
 		addField(model.getLabel(), choiceWidget);
 		choiceWidgets.put(model.getName(), choiceWidget);
 	}
@@ -116,18 +118,24 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addObject(final ParamModel model) {
+	public void addObject(final ParamModel model) throws PluginException {
+		// TODO - Rectify with identical logic in other UI plugin implementations.
+		// Should the ij-object dependency just be part of ij-plugin?
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
+		if (items.length == 0) {
+			// no valid objects of the given type
+			throw new PluginException("No objects of type " + type.getName());
+		}
 		final AWTObjectWidget objectWidget = new AWTObjectWidget(model, items);
 		addField(model.getLabel(), objectWidget);
 		objectWidgets.put(model.getName(), objectWidget);
 	}
 
 	@Override
-	public boolean hasWidgets() {
-		return panel.getComponentCount() > 0;
+	public int getWidgetCount() {
+		return panel.getComponentCount();
 	}
 
 	// -- Helper methods --

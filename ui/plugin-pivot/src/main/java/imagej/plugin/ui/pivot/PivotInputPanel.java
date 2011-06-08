@@ -63,6 +63,7 @@ public class PivotInputPanel extends AbstractInputPanel {
 	@Override
 	public void addMessage(final String text) {
 		pane.add(new Label(text));
+		messageCount++;
 	}
 
 	@Override
@@ -117,8 +118,8 @@ public class PivotInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public boolean hasWidgets() {
-		return pane.getRows().getLength() > 0;
+	public int getWidgetCount() {
+		return pane.getRows().getLength();
 	}
 
 	// -- Helper methods --

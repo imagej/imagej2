@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.object.ObjectManager;
 import imagej.plugin.PluginException;
 import imagej.plugin.ui.AbstractInputPanel;
+import imagej.plugin.ui.InputPanel;
 import imagej.plugin.ui.ParamModel;
 
 import javax.swing.JComponent;
@@ -47,7 +48,7 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * TODO
+ * Swing implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
@@ -69,6 +70,7 @@ public class SwingInputPanel extends AbstractInputPanel {
 	@Override
 	public void addMessage(final String text) {
 		panel.add(new JLabel(text), "span");
+		messageCount++;
 	}
 
 	@Override
@@ -119,6 +121,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	@Override
 	public void addObject(final ParamModel model) throws PluginException {
+		// TODO - Rectify with identical logic in other UI plugin implementations.
+		// Should the ij-object dependency just be part of ij-plugin?
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
@@ -132,8 +136,8 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public boolean hasWidgets() {
-		return panel.getComponentCount() > 0;
+	public int getWidgetCount() {
+		return panel.getComponentCount();
 	}
 
 	// -- Helper methods --
