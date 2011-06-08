@@ -36,7 +36,9 @@ package imagej.plugin.ui.swt;
 
 import imagej.ImageJ;
 import imagej.object.ObjectManager;
+import imagej.plugin.PluginException;
 import imagej.plugin.ui.AbstractInputPanel;
+import imagej.plugin.ui.InputPanel;
 import imagej.plugin.ui.ParamModel;
 import net.miginfocom.swt.MigLayout;
 
@@ -44,7 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * TODO
+ * SWT implementation of {@link InputPanel}.
  * 
  * @author Curtis Rueden
  */
@@ -67,11 +69,12 @@ public class SWTInputPanel extends AbstractInputPanel {
 	public void addMessage(final String text) {
 		final Label label = addLabel(text);
 		label.setLayoutData("span");
+		messageCount++;
 	}
 
 	@Override
-	public void addNumber(final ParamModel model,
-		final Number min, final Number max, final Number stepSize)
+	public void addNumber(final ParamModel model, final Number min,
+		final Number max, final Number stepSize)
 	{
 		addLabel(model.getLabel());
 		final SWTNumberWidget numberWidget =
@@ -82,8 +85,7 @@ public class SWTInputPanel extends AbstractInputPanel {
 	@Override
 	public void addToggle(final ParamModel model) {
 		addLabel(model.getLabel());
-		final SWTToggleWidget toggleWidget =
-			new SWTToggleWidget(panel, model);
+		final SWTToggleWidget toggleWidget = new SWTToggleWidget(panel, model);
 		toggleWidgets.put(model.getName(), toggleWidget);
 	}
 
@@ -116,18 +118,25 @@ public class SWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addObject(final ParamModel model) {
+	public void addObject(final ParamModel model) throws PluginException {
+		addLabel(model.getLabel());
+		// TODO - Rectify with identical logic in other UI plugin implementations.
+		// Should the ij-object dependency just be part of ij-plugin?
 		final Class<?> type = model.getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
+		if (items.length == 0) {
+			// no valid objects of the given type
+			throw new PluginException("No objects of type " + type.getName());
+		}
 		final SWTObjectWidget objectWidget =
 			new SWTObjectWidget(panel, model, items);
 		objectWidgets.put(model.getName(), objectWidget);
 	}
 
 	@Override
-	public boolean hasWidgets() {
-		return panel.getChildren().length > 0;
+	public int getWidgetCount() {
+		return panel.getChildren().length;
 	}
 
 	// -- Helper methods --
