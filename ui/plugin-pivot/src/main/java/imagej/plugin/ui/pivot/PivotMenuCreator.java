@@ -139,6 +139,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 				pluginManager.run(runnableEntry);
 			}
 		});
+		button.setEnabled(entry.isEnabled());
 	}
 
 }
