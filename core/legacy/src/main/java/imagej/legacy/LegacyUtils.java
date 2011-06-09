@@ -111,8 +111,9 @@ public class LegacyUtils {
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
-		final Axis[] axes = orderedAxes(preferredOrder);
-		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
+		final int[] inputDims = new int[]{x,y,c,z,t};
+		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
+		final long[] dims = orderedDims(axes,inputDims);
 		final String name = imp.getTitle();
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
@@ -138,8 +139,9 @@ public class LegacyUtils {
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
 
-		final Axis[] axes = orderedAxes(preferredOrder);
-		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
+		final int[] inputDims = new int[]{x,y,c,z,t};
+		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
+		final long[] dims = orderedDims(axes,inputDims);
 		final String name = imp.getTitle();
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
@@ -170,8 +172,9 @@ public class LegacyUtils {
 				"this method designed for creating a color Dataset " +
 				"from a multichannel RGB ImagePlus");
 
-		final Axis[] axes = orderedAxes(preferredOrder);
-		final long[] dims = orderedDims(axes,new int[]{x,y,c*3,z,t});
+		final int[] inputDims = new int[]{x,y,c*3,z,t};
+		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
+		final long[] dims = orderedDims(axes,inputDims);
 		final String name = imp.getTitle();
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
@@ -203,8 +206,9 @@ public class LegacyUtils {
 			throw new IllegalArgumentException(
 				"can't make a color Dataset from a nonRGB ImagePlus");
 		
-		final Axis[] axes = orderedAxes(preferredOrder);
-		final long[] dims = orderedDims(axes,new int[]{x,y,3*c,z,t});
+		final int[] inputDims = new int[]{x,y,c*3,z,t};
+		final Axis[] axes = orderedAxes(preferredOrder, inputDims);
+		final long[] dims = orderedDims(axes,inputDims);
 		final String name = imp.getTitle();
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
@@ -687,12 +691,18 @@ public class LegacyUtils {
 			cal.frameInterval = ds.calibration(tIndex);
 	}
 
+	/** sets the ColorTables of the IJ2 view displaying a given Dataset 
+	 * to those given by an ImagePlus (or COmpositeImage).
+	 */
 	static void setViewLuts(Dataset ds, ImagePlus imp) {
 		boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
 		List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(ds, colorTables, sixteenBitLuts);
 	}
 
+	/** sets LUTs of a ImagePlus (or CompositeImage) to either
+	 * the first views luts or the first lut on the paired Dataset.
+	 */
 	static void setImagePlusLuts(Dataset ds, ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
 			CompositeImage ci = (CompositeImage) imp;
@@ -787,6 +797,9 @@ public class LegacyUtils {
 
 	// -- private helpers --
 
+	/** gets a dimension for a given axis from a list of dimensions in
+	 * XTCZT order.
+	 */
 	private static int getDim(Axis axis, int[] fullDimensions) {
 		if (axis == Axes.X) return fullDimensions[0];
 		else if (axis == Axes.Y) return fullDimensions[1];
@@ -795,17 +808,32 @@ public class LegacyUtils {
 		else if (axis == Axes.TIME) return fullDimensions[4];
 		else throw new IllegalArgumentException("incompatible dimension type specified");
 	}
+
 	
-	/** preferredOrder may not include all 5 default axes. we fill in output
-	 * axes in the preferred order and then concatenate unspecified axes in
-	 * default order. */
-	private static Axis[] orderedAxes(Axis[] preferredOrder) {
-		Axis[] axes = new Axis[defaultAxes.length];
+	/** Makes a set of axes in a preferred order. The preferred order may not
+	 * include all 5 default axes. This method always returns axes populated with
+	 * X, Y, C, and any other nontrivial dimensions. Output axes are filled in
+	 * the preferred order and then unspecified axes of nontrivial dimension are
+	 * concatenated in default order
+	 * */
+	private static Axis[] orderedAxes(Axis[] preferredOrder,
+		int[] fullDimensions) {
+		int dimCount = 0;
+		for (int i = 0; i < fullDimensions.length; i++)
+			if ((defaultAxes[i] == Axes.X) ||
+					(defaultAxes[i] == Axes.Y) ||
+					(defaultAxes[i] == Axes.CHANNEL) ||
+					(getDim(defaultAxes[i], fullDimensions) > 1))
+				dimCount++;
+		Axis[] axes = new Axis[dimCount];
 		int index = 0;
 		for (Axis axis : preferredOrder) {
 			for (Axis other : defaultAxes) {
 				if (axis == other) {
-					axes[index++] = axis;
+					if ((axis == Axes.X) || (axis == Axes.Y) ||
+							(axis == Axes.CHANNEL) ||
+							(getDim(axis, fullDimensions) > 1))
+						axes[index++] = axis;
 					break;
 				}
 			}
@@ -819,11 +847,17 @@ public class LegacyUtils {
 				}
 			}
 			if (!present)
-				axes[index++] = axis;
+				if ((axis == Axes.X) || (axis == Axes.Y) ||
+						(axis == Axes.CHANNEL) ||
+						(getDim(axis, fullDimensions) > 1))
+					axes[index++] = axis;
 		}
 		return axes;
 	}
 	
+	/** makes a set of dimensions in a given Axis order. Assumes that all
+	 * nontrivial dimensions have already been prescreened to be included
+	 * */
 	private static long[] orderedDims(Axis[] axes, int[] fullDimensions) {
 		long[] orderedDims = new long[axes.length];
 		int index = 0;
