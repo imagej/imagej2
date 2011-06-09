@@ -128,7 +128,7 @@ public class NewImage implements ImageJPlugin {
 	}
 
 	public void setFloating(final boolean floating) {
-		this.floating = floating;
+		this.floating = floating; 
 	}
 
 	public String getFillType() {
@@ -185,9 +185,6 @@ public class NewImage implements ImageJPlugin {
 			else value = calcRangedValue(x + y, type); // fillWith == RAMP
 			type.setReal(value);
 		}
-		final RealType<?> type = cursor.get();
-		dataset.getImgPlus().setChannelMinimum(0, type.getMinValue());
-		dataset.getImgPlus().setChannelMaximum(0, type.getMaxValue());
 	}
 
 	// -- Parameter callback methods --
