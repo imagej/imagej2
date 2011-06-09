@@ -43,18 +43,8 @@ import imagej.plugin.BaseEntry;
  */
 public class ToolEntry extends BaseEntry<ITool> {
 
-	private boolean enabled = true;
-
 	public ToolEntry(final String className) {
 		setClassName(className);
-	}
-
-	public void setEnabled(final boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
 	}
 
 }

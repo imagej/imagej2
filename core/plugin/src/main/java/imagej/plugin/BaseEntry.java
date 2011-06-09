@@ -61,6 +61,9 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 	/** Sort priority of the object. */
 	private int priority = Integer.MAX_VALUE;
 
+	/** Whether the entry is enabled in the user interface. */
+	private boolean enabled = true;
+
 	/** Class object for this entry's object. Lazily loaded. */
 	private Class<T> classObject;
 
@@ -110,6 +113,14 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public void setEnabled(final boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 	// TODO - consider using a different exception type than "PluginException"
