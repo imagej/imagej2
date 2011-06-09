@@ -40,13 +40,16 @@ import imagej.plugin.BasePlugin;
 
 import java.util.List;
 
+import net.imglib2.EuclideanSpace;
+import net.imglib2.meta.LabeledAxes;
+
 /**
  * A display is a special kind of ImageJ plugin for visualizing data.
  * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface Display extends BasePlugin {
+public interface Display extends BasePlugin, LabeledAxes, EuclideanSpace {
 
 	/**
 	 * Tests whether the display is capable of visualizing the given

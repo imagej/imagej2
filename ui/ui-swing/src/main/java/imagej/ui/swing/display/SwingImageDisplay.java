@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
+import imagej.display.AbstractDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * A Swing image display plugin, which displays 2D planes in grayscale or
  * composite color.
@@ -68,7 +70,7 @@ import java.util.List;
  * @author Grant Harris
  */
 @Plugin(type = Display.class)
-public class SwingImageDisplay implements AWTDisplay {
+public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	private final ArrayList<DisplayView> views;
 	private final List<EventSubscriber<?>> subscribers;
@@ -109,6 +111,11 @@ public class SwingImageDisplay implements AWTDisplay {
 
 		Events.publish(new DisplayCreatedEvent(this));
 	}
+	
+	private void redoLayout()
+	{
+		imgWindow.redoLayout();
+	}
 
 	// -- Display methods --
 
@@ -131,10 +138,6 @@ public class SwingImageDisplay implements AWTDisplay {
 
 	@Override
 	public void update() {
-		for (final DisplayView view : views) {
-			view.update();
-		}
-
 		if (!willRebuildImgWindow) {
 			imgWindow.update();
 		}
@@ -145,7 +148,11 @@ public class SwingImageDisplay implements AWTDisplay {
 			// Must happen after setZoom() call
 			imgCanvas.panReset();
 			imgWindow.redoLayout();
+			imgWindow.update();
 			willRebuildImgWindow = false;
+		}
+		for (final DisplayView view : views) {
+			view.update();
 		}
 	}
 

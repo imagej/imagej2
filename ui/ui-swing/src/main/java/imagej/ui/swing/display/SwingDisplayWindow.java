@@ -38,6 +38,8 @@ import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
+import imagej.data.roi.Overlay;
+import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.ZoomEvent;
@@ -52,6 +54,9 @@ import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -63,6 +68,8 @@ import javax.swing.border.EmptyBorder;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
+import net.imglib2.meta.LabeledAxes;
+import net.imglib2.roi.RegionOfInterest;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -74,13 +81,13 @@ import net.miginfocom.swing.MigLayout;
  */
 public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
-	// TODO - Rework internal logic to use a JPanel, not a JFrame.
-	// In this way, the GUI components could be used in other contexts.
-
 	private final SwingImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel sliders;
 	private ArrayList<EventSubscriber<?>> subscribers;
+	private final Map<Axis, Integer> axisPositions = new HashMap<Axis, Integer>();
+	private final Map<Axis, JScrollBar> axisSliders = new HashMap<Axis, JScrollBar>();
+	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
@@ -109,6 +116,19 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Get the position of some axis other than X and Y
+	 * @param axis - the axis
+	 * @return the position of that axis on the sliders
+	 */
+	public long getAxisPosition(Axis axis) {
+		if (axisPositions.containsKey(axis)) return axisPositions.get(axis);
+		return 0;
+	}
+	
+	public void setAxisPosition(final Axis axis, final int position) {
+		axisPositions.put(axis, position);
+	}
 	// -- DisplayWindow methods --
 
 	@Override
@@ -119,29 +139,33 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void update() {
 		setLabel(makeLabel());
-		for (final DisplayView view : display.getViews())
+		for (final DisplayView view : display.getViews()) {
+			DataObject dataObject = view.getDataObject();
+			if (dataObject instanceof LabeledAxes) {
+				for (Axis axis:axisPositions.keySet()) {
+					LabeledAxes la = (LabeledAxes)dataObject;
+					int index = la.getAxisIndex(axis);
+					if (index >= 0) {
+						view.setPosition(axisPositions.get(axis), index);
+					}
+				}
+			}
 			view.update();
+		}
 	}
 
 	@Override
 	public void redoLayout() {
+		createSliders();
+		sliders.setVisible(sliders.getComponentCount() > 0);
+
 		for (final DisplayView view : display.getViews()) {
+			DataObject dataObject = view.getDataObject();
 			final Dataset dataset = getDataset(view);
 			if (dataset == null) continue;
 
-			createSliders(view);
-			sliders.setVisible(sliders.getComponentCount() > 0);
-
 			// NOTICE single title set over and over with different Datasets
 			setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
-			setLabel(makeLabel());
-
-			// CTR TODO - for 2.0-alpha2 we are limiting displays to a single view.
-			// But most of the infrastructure is in place to support multiple views.
-			// We just need to do something more intelligent here regarding the
-			// slider panel (i.e., multiple groups of sliders), then expose the
-			// multi-view capabilities in the UI.
-			break;
 		}
 		pack();
 		setVisible(true);
@@ -186,10 +210,12 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
-					DisplayView view = getDisplay().getActiveView();
-					final Dataset ds = getDataset(view);
-					if (event.getObject() != ds) return;
-					createSliders(view);
+					for (DisplayView view: getDisplay().getViews()) {
+						if (event.getObject() == view.getDataObject()) {
+							createSliders();
+							return;
+						}
+					}
 				}
 			};
 		subscribers.add(dsRestructuredSubscriber);
@@ -211,32 +237,78 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		Events.subscribe(DatasetUpdatedEvent.class, dsUpdatedSubscriber);
 	}
 
-	private void createSliders(final DisplayView view) {
-		final Dataset dataset = getDataset(view);
-		final long[] dims = dataset.getDims();
-		final Axis[] axes = dataset.getAxes();
-
-		sliders.removeAll();
-		for (int i = 0; i < dims.length; i++) {
-			if (Axes.isXY(axes[i])) continue;
-			if (dims[i] == 1) continue;
-
-			final JLabel label = new JLabel(axes[i].getLabel());
-			label.setHorizontalAlignment(SwingConstants.RIGHT);
-			final long max = dims[i] + 1;
-			if (max < 1 || max > Integer.MAX_VALUE) {
-				throw new IllegalArgumentException("Dimension #" + i +
-					" out of range: " + max);
+	private void createSliders() {
+		Display display = getDisplay();
+		final long[] min = new long[display.numDimensions()];
+		Arrays.fill(min, Long.MAX_VALUE);
+		final long[] max = new long[display.numDimensions()];
+		Arrays.fill(max, Long.MIN_VALUE);
+		final Axis[] axes = new Axis[display.numDimensions()];
+		display.axes(axes);
+		/*
+		 * Run through all of the views and determine the extents of each.
+		 * 
+		 * NB: Images can have minimum spatial extents less than zero,
+		 *     for instance, some sort of bounded function that somehow
+		 *     became an image in a dataset. So the dataset should have
+		 *     something more than dimensions.
+		 *     
+		 *     For something like time or Z, this could be kind of cool:
+		 *     my thing's time dimension goes from last Tuesday to Friday.
+		 */
+		for (DisplayView v:display.getViews()) {
+			DataObject o = v.getDataObject();
+			if (o instanceof Dataset) {
+				Dataset ds = (Dataset)o;
+				long [] dims = ds.getDims();
+				for (int i=0; i < axes.length; i++) {
+					int index = ds.getAxisIndex(axes[i]);
+					if (index >= 0) {
+						min[i] = Math.min(0, min[index]);
+						max[i] = Math.max(dims[index], max[i]);
+					}
+				}
+			} else if (o instanceof Overlay) {
+				Overlay overlay = (Overlay)o;
+				RegionOfInterest roi = overlay.getRegionOfInterest();
+				if (roi != null) {
+					for (int i=0; i < axes.length; i++) {
+						int index = overlay.getAxisIndex(axes[i]);
+						if ((index >= 0) && (index < roi.numDimensions())) {
+							min[i] = Math.min(min[i],(long) Math.ceil(roi.realMin(index)));
+							max[i] = Math.max(max[i],(long) Math.floor(roi.realMax(index)));
+						}
+					}
+				}
 			}
+		}
+
+		for (Axis axis:axisSliders.keySet()) {
+			if (display.getAxisIndex(axis) < 0) {
+				sliders.remove(axisSliders.get(axis));
+				sliders.remove(axisLabels.get(axis));
+			}
+		}
+		for (int i = 0; i < axes.length; i++) {
+			final Axis axis = axes[i];
+			if (axisSliders.containsKey(axis)) continue;
+			if (Axes.isXY(axis)) continue;
+			if (min[i] >= max[i]-1) continue;
+			
+
+			setAxisPosition(axis, (int) min[i]);
+			final JLabel label = new JLabel(axis.getLabel());
+			axisLabels.put(axis, label);
+			label.setHorizontalAlignment(SwingConstants.RIGHT);
 			final JScrollBar slider =
-				new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, (int) max);
-			final int axisNumber = i;
+				new JScrollBar(Adjustable.HORIZONTAL, (int)min[i], 1, (int)min[i], (int) max[i]);
+			axisSliders.put(axis, slider);
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
-					final int position = slider.getValue() - 1;
-					view.setPosition(position, axisNumber);
+					final int position = slider.getValue();
+					axisPositions.put(axis, position);
 					update();
 				}
 			});

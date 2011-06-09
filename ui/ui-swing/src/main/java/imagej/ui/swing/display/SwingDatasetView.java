@@ -42,6 +42,8 @@ import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import net.imglib2.img.Axis;
+
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
@@ -82,6 +84,10 @@ public class SwingDatasetView extends AbstractDatasetView implements
 		return getScreenImage().image().getHeight(null);
 	}
 
+	private SwingDisplayWindow getDisplayWindow() {
+		assert getDisplay().getDisplayWindow() instanceof SwingDisplayWindow;
+		return (SwingDisplayWindow) getDisplay().getDisplayWindow();
+	}
 	@Override
 	public void update() {
 		final Image image = getScreenImage().image();
@@ -90,7 +96,7 @@ public class SwingDatasetView extends AbstractDatasetView implements
 			bufImage.getHeight()));
 		figure.setBufferedImage(bufImage);
 	}
-
+	
 	// -- FigureView methods --
 
 	@Override

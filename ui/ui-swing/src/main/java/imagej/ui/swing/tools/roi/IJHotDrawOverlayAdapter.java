@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.tools.roi;
 
 import imagej.data.roi.Overlay;
+import imagej.display.DisplayView;
 
 import org.jhotdraw.draw.Figure;
 
@@ -92,9 +93,7 @@ public interface IJHotDrawOverlayAdapter {
 	 * Update the appearance of the figure to match the overlay
 	 * @param overlay the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
-	 * @param planeMap a map of axis to the constant coordinate value for the plane along that axis.
-	 *                 For instance, to look at the plane at z-slice 2, Axis would be the Z axis
-	 *                 and the value would be "2".
+	 * @param view the view into which the figure is rendered
 	 */
-	void updateFigure(Overlay overlay, Figure figure);
+	void updateFigure(Overlay overlay, Figure figure, DisplayView view);
 }

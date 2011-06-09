@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
+import imagej.display.DisplayView;
 import imagej.tool.BaseTool;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;
@@ -64,6 +66,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends 
 	static final protected double [] dashLineStyle = { 4, 4 };
 	static final protected double [] dotLineStyle = { 1, 2 };
 	static final protected double [] dotDashLineStyle = { 6, 2, 1, 2 };
+	static final Color defaultStrokeColor = new Color(AbstractOverlay.defaultLineColor.getARGB());
 	
 	private int priority;
 	/* (non-Javadoc)
@@ -83,7 +86,7 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends 
 	}
 
 	@Override
-	public void updateFigure(final Overlay overlay, final Figure figure) {
+	public void updateFigure(final Overlay overlay, final Figure figure, DisplayView view) {
 		final ColorRGB lineColor = overlay.getLineColor();
 		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {
 			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));

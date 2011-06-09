@@ -38,6 +38,7 @@ import java.io.ObjectOutput;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.img.Axes;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
 /**
@@ -48,7 +49,8 @@ public class PolygonOverlay extends AbstractROIOverlay<PolygonRegionOfInterest> 
 
 	public PolygonOverlay() {
 		super(new PolygonRegionOfInterest());
-		// TODO Auto-generated constructor stub
+		setAxis(Axes.X, Axes.X.ordinal());
+		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
 	private static final long serialVersionUID = 1L;
 	

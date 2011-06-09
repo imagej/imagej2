@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import net.imglib2.img.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
@@ -53,6 +54,8 @@ public class RectangleOverlay extends AbstractROIOverlay<RectangleRegionOfIntere
 	
 	public RectangleOverlay() {
 		super(new RectangleRegionOfInterest(new double [] { 0, 0}, new double [] {0,0}));
+		setAxis(Axes.X, Axes.X.ordinal());
+		setAxis(Axes.Y, Axes.Y.ordinal());
 	}
 
 	@Override

@@ -39,8 +39,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
+import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import imagej.util.Log;
 
@@ -146,6 +148,7 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	public Figure createDefaultFigure() {
 		final BezierFigure figure = new PolygonFigure();
 		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
 
@@ -183,8 +186,8 @@ public class PolygonAdapter extends AbstractJHotDrawOverlayAdapter<PolygonOverla
 	 * @see imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
 	 */
 	@Override
-	public void updateFigure(Overlay overlay, Figure figure) {
-		super.updateFigure(overlay, figure);
+	public void updateFigure(Overlay overlay, Figure figure, DisplayView view) {
+		super.updateFigure(overlay, figure, view);
 		BezierFigure b = downcastFigure(figure);
 		PolygonOverlay pOverlay = downcastOverlay(overlay);
 		PolygonRegionOfInterest roi = pOverlay.getRegionOfInterest();

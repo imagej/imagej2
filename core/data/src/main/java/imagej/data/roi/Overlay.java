@@ -37,22 +37,21 @@ package imagej.data.roi;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
+import net.imglib2.EuclideanSpace;
+import net.imglib2.img.Axis;
+import net.imglib2.meta.LabeledAxes;
 import net.imglib2.roi.RegionOfInterest;
 
 /**
- * An overlay is a 2D vector object, typically displayed with {@link Dataset}s.
+ * An overlay is a vector object, typically displayed with {@link Dataset}s.
  * Many (but not all) overlays have an associated ImgLib
  * {@link RegionOfInterest} allowing iteration over pixel values deemed included
  * in the overlay.
- * <p>
- * This data model is also completely planar in nature, and does not provide
- * represention of ROIs in 3D and beyond.
- * </p>
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface Overlay extends DataObject {
+public interface Overlay extends DataObject, LabeledAxes, EuclideanSpace {
 
 	/** The style used to render the bounding line of the overlay. */
 	public enum LineStyle {
@@ -124,5 +123,25 @@ public interface Overlay extends DataObject {
 	 * @param alpha the opacity of the interior of the overlay, from 0-255
 	 */
 	void setAlpha(int alpha);
+
+	/**
+	 * An overlay is often localized to a plane, for instance when
+	 * a rectangle is drawn at one level of a z-stack. A caller can
+	 * localize the overlay to one plane in an axis by calling this
+	 * method with the given axis and position.
+	 * 
+	 * @param axis localize to this axis
+	 * @param position localize at this position
+	 */
+	void setPosition(Axis axis, long position);
+
+	/**
+	 * Get the position of this overlay's plane perpendicular
+	 * to the given axis. If the overlay isn't localized within
+	 * this axis, returns null.
+	 * @param axis
+	 * @return
+	 */
+	Long getPosition(Axis axis);
 
 }

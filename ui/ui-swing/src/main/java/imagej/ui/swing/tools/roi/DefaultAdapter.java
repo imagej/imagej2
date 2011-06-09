@@ -45,17 +45,15 @@ import java.awt.image.SinglePixelPackedSampleModel;
 
 
 import imagej.data.roi.Overlay;
+import imagej.display.DisplayView;
 import imagej.util.ColorRGB;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
-import net.imglib2.roi.IterableRegionOfInterest;
+import net.imglib2.RealRandomAccess;
 import net.imglib2.roi.RegionOfInterest;
-import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
 
 /**
@@ -89,8 +87,8 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 	 * @see imagej.ui.swing.tools.roi.AbstractJHotDrawOverlayAdapter#updateFigure(imagej.data.roi.Overlay, org.jhotdraw.draw.Figure)
 	 */
 	@Override
-	public void updateFigure(Overlay overlay, Figure figure) {
-		super.updateFigure(overlay, figure);
+	public void updateFigure(Overlay overlay, Figure figure, DisplayView view) {
+		super.updateFigure(overlay, figure, view);
 		/*
 		 * Override the base: set the fill color to transparent.
 		 */
@@ -98,38 +96,43 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 		assert figure instanceof ImageFigure;
 		ImageFigure imgf = (ImageFigure)figure;
 		RegionOfInterest roi = overlay.getRegionOfInterest();
-		if ((roi != null) && (roi instanceof IterableRegionOfInterest)) {
-			IterableRegionOfInterest iroi = (IterableRegionOfInterest)roi;
-			BitType t = new BitType();
-			t.set(true);
-			IterableInterval<BitType> ii = iroi.getIterableIntervalOverROI(new ConstantRandomAccessible<BitType>(t, roi.numDimensions()));
-			Cursor<BitType> c = ii.localizingCursor();
-			// TODO At some point, the BinaryMaskOverlay and display have to communicate the plane or transform
-			//       that should be applied to make an N-d ROI into a 2-d one.
+		if (roi != null) {
+			long minX = (long)Math.floor(roi.realMin(0));
+			long maxX = (long)Math.ceil(roi.realMax(0)) + 1;
+			long minY = (long)Math.floor(roi.realMin(1));
+			long maxY = (long)Math.ceil(roi.realMax(1)) + 1;
 			ColorRGB color = overlay.getFillColor();
 			IndexColorModel cm = new IndexColorModel(1, 2, 
 					new byte[] { 0, (byte)color.getRed()},
 					new byte[] { 0, (byte)color.getGreen()},
 					new byte[] { 0, (byte)color.getBlue() },
 					new byte[] { 0, (byte)overlay.getAlpha() });
-			int w = (int)ii.dimension(0);
-			int h = (int)ii.dimension(1);
-			long [] min = new long[ii.numDimensions()];
-			ii.min(min);
+			int w = (int)(maxX - minX);
+			int h = (int)(maxY - minY);
 			BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_INDEXED, cm);
 			SampleModel sm = new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, w, h, new int [] {1});
 			DataBuffer dbuncast = sm.createDataBuffer();
 			assert dbuncast instanceof DataBufferByte;
 			DataBufferByte db = (DataBufferByte)dbuncast;
 			byte [] bankData = db.getData();
-			while(c.hasNext()) {
-				c.next();
-				int index = (int)(c.getLongPosition(0)-min[0] + (c.getLongPosition(1)-min[1]) * w);
-				bankData[index] = -1;
+			RealRandomAccess<BitType> ra = roi.realRandomAccess();
+			for (int i=2; i < ra.numDimensions(); i++) {
+				long position = view.getPlanePosition()[i-2];
+				ra.setPosition(position, i);
+			}
+			int index = 0;
+			for (int j=0; j<h; j++) {
+				ra.setPosition(minY + j, 1);
+				for (int i=0; i<w; i++) {
+					ra.setPosition(minX + i, 0);
+					if (ra.get().get()) 
+						bankData[index] = -1;
+					index++;
+				}
 			}
 			Raster raster = Raster.createRaster(sm, db, new java.awt.Point(0,0));
 			img.setData(raster);
-			imgf.setBounds(new Rectangle2D.Double(ii.min(0),ii.min(1),w, h));
+			imgf.setBounds(new Rectangle2D.Double(minX,minY,w, h));
 			imgf.setBufferedImage(img);
 		}
 	}

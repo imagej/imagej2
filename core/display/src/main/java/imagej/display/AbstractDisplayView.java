@@ -173,4 +173,12 @@ public abstract class AbstractDisplayView implements DisplayView {
 		subscribers.add(restructureSubscriber);
 	}
 
+	/* (non-Javadoc)
+	 * @see imagej.display.DisplayView#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return true;
+	}
+
 }

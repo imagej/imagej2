@@ -97,5 +97,10 @@ public interface DisplayView {
 	 * @return the view's selection state.
 	 */
 	boolean isSelected();
+	
+	/**
+	 * @return true if the data object (or some part of it) is visible, given the current (hyper)plane position
+	 */
+	boolean isVisible();
 
 }
