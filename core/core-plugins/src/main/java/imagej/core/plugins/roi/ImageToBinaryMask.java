@@ -134,5 +134,8 @@ public class ImageToBinaryMask implements ImageJPlugin {
 		output = new BinaryMaskOverlay(new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
 		output.setAlpha(alpha);
 		output.setFillColor(color);
+		for (int i=0; i<imgplus.numDimensions(); i++) {
+			output.setAxis(imgplus.axis(i), i);
+		}
 	}
 }

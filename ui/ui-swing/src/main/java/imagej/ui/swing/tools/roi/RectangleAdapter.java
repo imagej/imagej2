@@ -45,6 +45,7 @@ import org.jhotdraw.draw.RectangleFigure;
 
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import imagej.ui.swing.tools.SelectionTool;
 
@@ -81,12 +82,13 @@ public class RectangleAdapter extends AbstractJHotDrawOverlayAdapter<RectangleOv
 	public Figure createDefaultFigure() {
 		RectangleFigure figure = new RectangleFigure();
 		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(Overlay overlay, Figure f) {
-		super.updateFigure(overlay, f);
+	public void updateFigure(Overlay overlay, Figure f, DisplayView view) {
+		super.updateFigure(overlay, f, view);
 		RectangleOverlay rectangleOverlay = downcastOverlay(overlay);
 		RectangleRegionOfInterest roi = rectangleOverlay.getRegionOfInterest();
 		double x0 = roi.getOrigin(0);

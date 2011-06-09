@@ -39,6 +39,7 @@ import java.awt.geom.Rectangle2D;
 
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
+import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.EllipseRegionOfInterest;
@@ -87,12 +88,13 @@ public class EllipseAdapter extends AbstractJHotDrawOverlayAdapter<EllipseOverla
 	public Figure createDefaultFigure() {
 		EllipseFigure figure = new EllipseFigure();
 		figure.set(AttributeKeys.FILL_COLOR, new Color(255,255,255,0));
+		figure.set(AttributeKeys.STROKE_COLOR, defaultStrokeColor);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(Overlay o, Figure f) {
-		super.updateFigure(o, f);
+	public void updateFigure(Overlay o, Figure f, DisplayView view) {
+		super.updateFigure(o, f, view);
 		EllipseOverlay overlay = downcastOverlay(o);
 		EllipseFigure figure = downcastFigure(f);
 		EllipseRegionOfInterest eRoi = overlay.getRegionOfInterest();

@@ -40,6 +40,7 @@ import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.ui.swing.tools.roi.JHotDrawAdapterFinder;
 import imagej.util.Index;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
@@ -96,7 +97,6 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		} else {
 			this.figure = figure;
 		}
-		adapter.updateFigure(overlay, this.figure);
 		this.figure.addFigureListener(new FigureAdapter() {
 			@Override
 			public void attributeChanged(FigureEvent e) {
@@ -130,36 +130,28 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 			@Override
 			public void figureRemoved(FigureEvent e) {
-				// NB - BDZ
-				// before removing delete() from the DataObject interface
-				//   this was calling overlay.delete() which was wrong
-				// this next line is a replacement but probably also wrong
-				//   since that code done by AbstractDisplayView
-				//overlay.decrementReferences();
-				// Curtis' suggestion:
-			   display.removeView(SwingOverlayView.this);
-			   // TODO - initial testing looks good. Test thoroughly.
+				if (isVisible())
+					display.removeView(SwingOverlayView.this);
 			}
 		});
 	}
 
 	// -- DisplayView methods --
 
-	@Override
-	public void setPosition(final int value, final int dim) {
-		// CTR FIXME
-		// 1. test if new position is MY position
-		// 2. if so, add my figure to the drawing
-		// 3. if not, but I was previously, remove my figure from the drawing
+	private void show(final boolean doShow) {
 		final JHotDrawImageCanvas canvas = display.getImageCanvas();
 		final Drawing drawing = canvas.getDrawing();
-		final int oldIndex = (int) Index.indexNDto1D(planeDims, planePos);
-		super.setPosition(value, dim);
-		final int newIndex = (int) Index.indexNDto1D(planeDims, planePos);
-		drawing.remove(figure);
-		drawing.add(figure);
+		final Figure figure = getFigure();
+		if (doShow) {
+			if (! drawing.contains(figure)) {
+				drawing.add(figure);
+			}
+		} else {
+			if (drawing.contains(figure)) {
+				drawing.remove(figure);
+			}
+		}
 	}
-
 	@Override
 	public int getPreferredWidth() {
 		// TODO Auto-generated method stub
@@ -201,11 +193,12 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 			if (! updatingOverlay) {
 				updatingFigure = true;
 				try {
-					adapter.updateFigure(getDataObject(), figure);
+					adapter.updateFigure(getDataObject(), figure, this);
 				} finally {
 					updatingFigure = false;
 				}
 			}
 		}
+		show(isVisible());
 	}
 }

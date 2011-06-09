@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import net.imglib2.img.Axis;
 import imagej.data.roi.Overlay;
 
 /**
@@ -48,13 +49,35 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 	public AbstractOverlayView(final Display display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
+		this.dims = new long[display.numDimensions()];
+		this.planeDims = new long[display.numDimensions()-2];
+		this.position = new long[display.numDimensions()];
+		this.planePos = new long[display.numDimensions()-2];
 	}
-
+	
 	// -- DisplayView methods --
 
+	/* (non-Javadoc)
+	 * @see imagej.display.AbstractDisplayView#getDataObject()
+	 */
 	@Override
 	public Overlay getDataObject() {
 		return overlay;
+	}
+	
+	/* (non-Javadoc)
+	 * @see imagej.display.AbstractDisplayView#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		for (int i=2; i<overlay.numDimensions(); i++) {
+			Axis axis = overlay.axis(i);
+			final Long position = overlay.getPosition(axis);
+			if ((position != null) && ! position.equals(getPlanePosition()[i-2])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

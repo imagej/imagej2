@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.display;
 
 import imagej.ImageJ;
+import imagej.data.roi.Overlay;
 import imagej.display.CanvasHelper;
 import imagej.display.DisplayView;
+import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
@@ -67,6 +69,9 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 
 import org.jhotdraw.draw.DefaultDrawing;
 import org.jhotdraw.draw.DefaultDrawingEditor;
@@ -230,8 +235,18 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 				@SuppressWarnings("synthetic-access")
 				@Override
 				public void overlayCreated(final OverlayCreatedEvent e) {
+					final Overlay overlay = e.getOverlay();
 					final SwingOverlayView v = new SwingOverlayView(display,
-						e.getOverlay(), e.getFigure());
+						overlay, e.getFigure());
+					final SwingDisplayWindow window = display.getDisplayWindow();
+					overlay.setAxis(Axes.X, Axes.X.ordinal());
+					overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+					for (int i=2; i<display.numDimensions(); i++) {
+						Axis axis = display.axis(i);
+						if (overlay.getAxisIndex(axis) < 0) {
+							overlay.setPosition(axis, window.getAxisPosition(axis));
+						}
+					}
 					display.addView(v);
 					if (drawingView.getSelectedFigures().contains(e.getFigure())) {
 						v.setSelected(true);
