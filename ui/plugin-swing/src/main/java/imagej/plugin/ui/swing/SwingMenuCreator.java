@@ -206,6 +206,7 @@ public abstract class SwingMenuCreator<T> extends
 				pluginManager.run(runnableEntry, toggleState);
 			}
 		});
+		menuItem.setEnabled(entry.isEnabled());
 	}
 
 	private boolean isMac() {

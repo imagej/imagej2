@@ -112,6 +112,7 @@ public class ImageJPluginFinder implements IPluginFinder {
 		final String iconPath = plugin.iconPath();
 		entry.setIconPath(iconPath);
 		entry.setPriority(plugin.priority());
+		entry.setEnabled(plugin.enabled());
 
 		entry.setToggleParameter(plugin.toggleParameter());
 		entry.setToggleGroup(plugin.toggleGroup());
