@@ -41,28 +41,35 @@ public class GrayscaleImageTranslatorTest {
 	
 	private void testDataSame(Dataset ds, ImagePlus imp, int x, int y, int c, int z, int t) {
 		long[] dims = ds.getDims();
-		assertEquals(x, dims[0]);
-		assertEquals(y, dims[1]);
-		assertEquals(c, dims[2]);
-		assertEquals(z, dims[3]);
-		assertEquals(t, dims[4]);
+		
+		int xIndex = ds.getAxisIndex(Axes.X);
+		int yIndex = ds.getAxisIndex(Axes.Y);
+		int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		int zIndex = ds.getAxisIndex(Axes.Z);
+		int tIndex = ds.getAxisIndex(Axes.TIME);
+		
+		if (xIndex >= 0) assertEquals(x, dims[xIndex]);
+		if (yIndex >= 0) assertEquals(y, dims[yIndex]);
+		if (cIndex >= 0) assertEquals(c, dims[cIndex]);
+		if (zIndex >= 0) assertEquals(z, dims[zIndex]);
+		if (tIndex >= 0) assertEquals(t, dims[tIndex]);
 
 		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().randomAccess();
 		
-		long[] pos = new long[5];
+		long[] pos = new long[dims.length];
 		
 		for (int ti = 0; ti < t; ti++) {
-			pos[4] = ti;
+			if (tIndex >= 0) pos[tIndex] = ti;
 			for (int zi = 0; zi < z; zi++) {
-				pos[3] = zi;
+				if (zIndex >= 0) pos[zIndex] = zi;
 				for (int ci = 0; ci < c; ci++) {
-					pos[2] = ci;
+					if (cIndex >= 0) pos[cIndex] = ci;
 					int sliceNumber = ti*c*z + zi*c +ci;
 					ImageProcessor proc = imp.getStack().getProcessor(sliceNumber+1);
 					for (int yi = 0; yi < y; yi++) {
-						pos[1] = yi;
+						pos[yIndex] = yi;
 						for (int xi = 0; xi < x; xi++) {
-							pos[0] = xi;
+							pos[xIndex] = xi;
 							accessor.setPosition(pos);
 							assertEquals(accessor.get().getRealDouble(), proc.getf(xi, yi), 0);
 						}
@@ -73,12 +80,19 @@ public class GrayscaleImageTranslatorTest {
 	}
 
 	private void testMetadataSame(Dataset ds, ImagePlus imp) {
+		Axis[] axesPresent = ds.getAxes();
+
 		// axes
-		assertEquals(ds.axis(0), Axes.X);
-		assertEquals(ds.axis(1), Axes.Y);
-		assertEquals(ds.axis(2), Axes.CHANNEL);
-		assertEquals(ds.axis(3), Axes.Z);
-		assertEquals(ds.axis(4), Axes.TIME);
+		for (Axis axis : axesPresent) {
+			int axisIndex = ds.getAxisIndex(axis);
+			if (axisIndex >= 0) {
+				if (axis == Axes.X) assertEquals(ds.axis(axisIndex), axis);
+				if (axis == Axes.Y) assertEquals(ds.axis(axisIndex), axis);
+				if (axis == Axes.CHANNEL) assertEquals(ds.axis(axisIndex), axis);
+				if (axis == Axes.Z) assertEquals(ds.axis(axisIndex), axis);
+				if (axis == Axes.TIME) assertEquals(ds.axis(axisIndex), axis);
+			}
+		}
 		
 		// type
 		if (imp.getType() == ImagePlus.GRAY8)
@@ -90,11 +104,17 @@ public class GrayscaleImageTranslatorTest {
 
 		// calibration
 		Calibration cal = imp.getCalibration();
-		assertEquals(ds.calibration(0), cal.pixelWidth, 0);
-		assertEquals(ds.calibration(1), cal.pixelHeight, 0);
-		assertEquals(ds.calibration(2), 1, 0);
-		assertEquals(ds.calibration(3), cal.pixelDepth, 0);
-		assertEquals(ds.calibration(4), cal.frameInterval, 0);
+		int axisIndex;
+		axisIndex = ds.getAxisIndex(Axes.X);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.pixelWidth, 0);
+		axisIndex = ds.getAxisIndex(Axes.Y);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.pixelHeight, 0);
+		axisIndex = ds.getAxisIndex(Axes.CHANNEL);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), 1, 0);
+		axisIndex = ds.getAxisIndex(Axes.Z);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.pixelDepth, 0);
+		axisIndex = ds.getAxisIndex(Axes.TIME);
+		if (axisIndex >= 0) assertEquals(ds.calibration(axisIndex), cal.frameInterval, 0);
 		
 		// name
 		assertEquals(ds.getName(), imp.getTitle());
