@@ -128,7 +128,6 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 				// add a separator between tools with clustered priorities
 				final int priority = entry.getPriority();
-				Log.debug("====> PROCESSING TOOL: " + entry.getName() + " -- priority=" + priority + ", lastPriority=" + lastPriority);//TEMP
 				if (priority - lastPriority > 10) addSeparator();
 				lastPriority = priority;
 
