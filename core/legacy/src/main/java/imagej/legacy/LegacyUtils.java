@@ -812,8 +812,8 @@ public class LegacyUtils {
 	
 	/** Makes a set of axes in a preferred order. The preferred order may not
 	 * include all 5 default axes. This method always returns axes populated with
-	 * X, Y, C, and any other nontrivial dimensions. Output axes are filled in
-	 * the preferred order and then unspecified axes of nontrivial dimension are
+	 * X, Y, and any other nontrivial dimensions. Output axes are filled in the
+	 * preferred order and then unspecified axes of nontrivial dimension are
 	 * concatenated in default order
 	 * */
 	private static Axis[] orderedAxes(Axis[] preferredOrder,
@@ -822,7 +822,7 @@ public class LegacyUtils {
 		for (int i = 0; i < fullDimensions.length; i++)
 			if ((defaultAxes[i] == Axes.X) ||
 					(defaultAxes[i] == Axes.Y) ||
-					(defaultAxes[i] == Axes.CHANNEL) ||
+					//(defaultAxes[i] == Axes.CHANNEL) ||
 					(getDim(defaultAxes[i], fullDimensions) > 1))
 				dimCount++;
 		Axis[] axes = new Axis[dimCount];
@@ -831,7 +831,7 @@ public class LegacyUtils {
 			for (Axis other : defaultAxes) {
 				if (axis == other) {
 					if ((axis == Axes.X) || (axis == Axes.Y) ||
-							(axis == Axes.CHANNEL) ||
+							//(axis == Axes.CHANNEL) ||
 							(getDim(axis, fullDimensions) > 1))
 						axes[index++] = axis;
 					break;
@@ -848,7 +848,7 @@ public class LegacyUtils {
 			}
 			if (!present)
 				if ((axis == Axes.X) || (axis == Axes.Y) ||
-						(axis == Axes.CHANNEL) ||
+						//(axis == Axes.CHANNEL) ||
 						(getDim(axis, fullDimensions) > 1))
 					axes[index++] = axis;
 		}
