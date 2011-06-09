@@ -100,53 +100,6 @@ public class LegacyUtils {
 		return defaultAxes;
 	}
 
-	static int getDim(Axis axis, int[] fullDimensions) {
-		if (axis == Axes.X) return fullDimensions[0];
-		else if (axis == Axes.Y) return fullDimensions[1];
-		else if (axis == Axes.CHANNEL) return fullDimensions[2];
-		else if (axis == Axes.Z) return fullDimensions[3];
-		else if (axis == Axes.TIME) return fullDimensions[4];
-		else throw new IllegalArgumentException("incompatible dimension type specified");
-	}
-	
-	static Axis[] orderedAxes(Axis[] desiredAxes, Axis[] preferredOrder) {
-		Axis[] axes = new Axis[desiredAxes.length];
-		int index = 0;
-		for (Axis axis : preferredOrder) {
-			for (Axis other : desiredAxes) {
-				if (axis == other) {
-					axes[index++] = axis;
-					break;
-				}
-			}
-		}
-		return axes;
-	}
-	
-	static long[] orderedDims(Axis[] axes, int[] fullDimensions) {
-		long[] orderedDims = new long[axes.length];
-		int index = 0;
-		for (Axis axis : axes) {
-			orderedDims[index++] = getDim(axis, fullDimensions);
-		}
-		// make sure we're not excluding any nontrivial dimensions
-		for (Axis axis : defaultAxes) {
-			boolean present = false;
-			for (Axis otherAxis : axes) {
-				if (axis == otherAxis) {
-					present = true;
-					break;
-				}
-			}
-			if (!present) {
-				if (getDim(axis, fullDimensions) != 1)
-					throw new IllegalArgumentException(
-						"specified axes are excluding a nontrivial dimension");
-			}
-		}
-		return orderedDims;
-	}
-	
 	/** Makes a planar {@link Dataset} whose dimensions match a given
 	 *  {@link ImagePlus}. Data is exactly the same as plane references
 	 *  are shared between the Dataset and the ImagePlus. Assumes it will
@@ -158,7 +111,7 @@ public class LegacyUtils {
 		final int c = imp.getNChannels();
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
-		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final Axis[] axes = orderedAxes(preferredOrder);
 		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
 		final String name = imp.getTitle();
 		final int bitsPerPixel = imp.getBitDepth();
@@ -185,7 +138,7 @@ public class LegacyUtils {
 		final int z = imp.getNSlices();
 		final int t = imp.getNFrames();
 
-		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final Axis[] axes = orderedAxes(preferredOrder);
 		final long[] dims = orderedDims(axes,new int[]{x,y,c,z,t});
 		final String name = imp.getTitle();
 		final int bitsPerPixel = imp.getBitDepth();
@@ -217,7 +170,7 @@ public class LegacyUtils {
 				"this method designed for creating a color Dataset " +
 				"from a multichannel RGB ImagePlus");
 
-		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final Axis[] axes = orderedAxes(preferredOrder);
 		final long[] dims = orderedDims(axes,new int[]{x,y,c*3,z,t});
 		final String name = imp.getTitle();
 		final int bitsPerPixel = 8;
@@ -250,7 +203,7 @@ public class LegacyUtils {
 			throw new IllegalArgumentException(
 				"can't make a color Dataset from a nonRGB ImagePlus");
 		
-		final Axis[] axes = orderedAxes(defaultAxes, preferredOrder);
+		final Axis[] axes = orderedAxes(preferredOrder);
 		final long[] dims = orderedDims(axes,new int[]{x,y,3*c,z,t});
 		final String name = imp.getTitle();
 		final int bitsPerPixel = 8;
@@ -834,6 +787,52 @@ public class LegacyUtils {
 
 	// -- private helpers --
 
+	private static int getDim(Axis axis, int[] fullDimensions) {
+		if (axis == Axes.X) return fullDimensions[0];
+		else if (axis == Axes.Y) return fullDimensions[1];
+		else if (axis == Axes.CHANNEL) return fullDimensions[2];
+		else if (axis == Axes.Z) return fullDimensions[3];
+		else if (axis == Axes.TIME) return fullDimensions[4];
+		else throw new IllegalArgumentException("incompatible dimension type specified");
+	}
+	
+	/** preferredOrder may not include all 5 default axes. we fill in output
+	 * axes in the preferred order and then concatenate unspecified axes in
+	 * default order. */
+	private static Axis[] orderedAxes(Axis[] preferredOrder) {
+		Axis[] axes = new Axis[defaultAxes.length];
+		int index = 0;
+		for (Axis axis : preferredOrder) {
+			for (Axis other : defaultAxes) {
+				if (axis == other) {
+					axes[index++] = axis;
+					break;
+				}
+			}
+		}
+		for (Axis axis : defaultAxes) {
+			boolean present = false;
+			for (Axis other : preferredOrder) {
+				if (axis == other) {
+					present = true;
+					break;
+				}
+			}
+			if (!present)
+				axes[index++] = axis;
+		}
+		return axes;
+	}
+	
+	private static long[] orderedDims(Axis[] axes, int[] fullDimensions) {
+		long[] orderedDims = new long[axes.length];
+		int index = 0;
+		for (Axis axis : axes) {
+			orderedDims[index++] = getDim(axis, fullDimensions);
+		}
+		return orderedDims;
+	}
+	
 	/** tests that a given {@link Dataset} can be represented as a color
 	 * {@link ImagePlus}. Some of this test maybe overkill if by definition
 	 * rgbMerged can only be true if channels == 3 and type = ubyte are also
@@ -984,30 +983,32 @@ public class LegacyUtils {
 		final int zIndex = dataset.getAxisIndex(Axes.Z);
 		final int tIndex = dataset.getAxisIndex(Axes.TIME);
 
+		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
+		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
+		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
+		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
+		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+		
 		// check width
 		if (xIndex < 0)
 			throw new IllegalArgumentException("missing X axis");
-		if (dims[xIndex] > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Width out of range: " + dims[xIndex]);
+		if (xCount > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Width out of range: " + xCount);
 		}
 
 		// check height
 		if (yIndex < 0)
 			throw new IllegalArgumentException("missing Y axis");
-		if (dims[yIndex] > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException("Height out of range: " + dims[yIndex]);
+		if (yCount > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Height out of range: " + yCount);
 		}
 
 		// check plane size
-		if ((dims[xIndex]*dims[yIndex]) > Integer.MAX_VALUE)
+		if ((xCount*yCount) > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("too many elements per plane : value(" +
-				(dims[xIndex]*dims[yIndex])+") : max ("+Integer.MAX_VALUE+")");
+				(xCount*yCount)+") : max ("+Integer.MAX_VALUE+")");
 		
 		// check total channels, slices and frames not too large
-		
-		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
-		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
-		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 		
 		if (cCount * zCount * tCount > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("too many planes : value(" +
@@ -1022,8 +1023,8 @@ public class LegacyUtils {
 		outputIndices[4] = tIndex;
 		
 		// set output values : dimensions
-		outputDims[0] = (int) dims[xIndex];
-		outputDims[1] = (int) dims[yIndex];
+		outputDims[0] = (int) xCount;
+		outputDims[1] = (int) yCount;
 		outputDims[2] = (int) cCount;
 		outputDims[3] = (int) zCount;
 		outputDims[4] = (int) tCount;
