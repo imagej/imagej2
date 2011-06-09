@@ -10,14 +10,14 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
- * Neither the names of the ImageJDev.org developers nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,7 +30,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
- */
+*/
+
 package imagej.display;
 
 import imagej.data.Dataset;
@@ -45,7 +46,6 @@ import imagej.util.Index;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.imglib2.Cursor;
 
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable8;
@@ -63,20 +63,27 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 public abstract class AbstractDatasetView extends AbstractDisplayView
-		implements DatasetView {
+	implements DatasetView
+{
 
 	private final Dataset dataset;
+
 	/** The dimensional index representing channels, for compositing. */
 	private int channelDimIndex;
+
 	/**
 	 * Default color tables, one per channel, used when the {@link Dataset} 
 	 * doesn't have one for a particular plane.
 	 */
 	private ArrayList<ColorTable8> defaultLUTs;
+
 	private ARGBScreenImage screenImage;
+
 	private CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
+
 	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
-			new ArrayList<RealLUTConverter<? extends RealType<?>>>();
+		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
+
 	private ArrayList<EventSubscriber<?>> subscribers;
 
 	public AbstractDatasetView(final Display display, final Dataset dataset) {
@@ -137,7 +144,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 			for (int i = 0; i < channelCount; i++) {
 				defaultLUTs.add(ColorTables.GRAYS);
 			}
-		} else {
+		}
+		else {
 			for (int c = 0; c < channelCount; c++) {
 				defaultLUTs.add(ColorTables.getDefaultColorTable(c));
 			}
@@ -168,6 +176,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	// -- DisplayView methods --
+
 	@Override
 	public Dataset getDataObject() {
 		return dataset;
@@ -228,25 +237,27 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		return dataset.getAxisIndex(Axes.CHANNEL);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private CompositeXYProjector<? extends RealType<?>, ARGBType> createProjector(final boolean composite) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private CompositeXYProjector<? extends RealType<?>, ARGBType>
+		createProjector(final boolean composite)
+	{
 		converters.clear();
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
-			converters.add(new RealLUTConverter(
-					dataset.getImgPlus().getChannelMinimum(c),
+			converters
+				.add(new RealLUTConverter(dataset.getImgPlus().getChannelMinimum(c),
 					dataset.getImgPlus().getChannelMaximum(c), null));
 		}
 		final CompositeXYProjector proj =
-				new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
+			new CompositeXYProjector(dataset.getImgPlus(), screenImage, converters,
 				channelDimIndex);
 		proj.setComposite(composite);
 		updateLUTs();
 		return proj;
 	}
 
-	public void autoscale(int c) {
+	public void autoscale(final int c) {
 		// Get min/max from metadata
 		double min = dataset.getImgPlus().getChannelMinimum(c);
 		double max = dataset.getImgPlus().getChannelMaximum(c);
@@ -255,20 +266,19 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 			// TODO: this currently applies the global min/max to all channels...
 			// need to change GetImgMinMax to find min/max per channel
 			final GetImgMinMax<? extends RealType<?>> cmm =
-					new GetImgMinMax(dataset.getImgPlus().getImg());
+				new GetImgMinMax(dataset.getImgPlus().getImg());
 			cmm.process();
 			min = cmm.getMin().getRealDouble();
 			max = cmm.getMax().getRealDouble();
 			dataset.getImgPlus().setChannelMinimum(c, min);
 			dataset.getImgPlus().setChannelMaximum(c, max);
 		}
-		if (min == max) {  // if all black or all white, use range for type
+		if (min == max) { // if all black or all white, use range for type
 			final RealType<?> type = dataset.getType();
 			dataset.getImgPlus().setChannelMinimum(c, type.getMinValue());
 			dataset.getImgPlus().setChannelMaximum(c, type.getMaxValue());
 		}
-		
-		
+
 	}
 
 	private void updateLUTs() {
@@ -303,50 +313,50 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<DatasetTypeChangedEvent> typeChangeSubscriber =
-				new EventSubscriber<DatasetTypeChangedEvent>() {
+			new EventSubscriber<DatasetTypeChangedEvent>() {
 
-					@Override
-					public void onEvent(final DatasetTypeChangedEvent event) {
-						if (dataset == event.getObject()) {
-							rebuild();
-						}
+				@Override
+				public void onEvent(final DatasetTypeChangedEvent event) {
+					if (dataset == event.getObject()) {
+						rebuild();
 					}
+				}
 
-				};
+			};
 		subscribers.add(typeChangeSubscriber);
 		Events.subscribe(DatasetTypeChangedEvent.class, typeChangeSubscriber);
 
 		final EventSubscriber<DatasetRGBChangedEvent> rgbChangeSubscriber =
-				new EventSubscriber<DatasetRGBChangedEvent>() {
+			new EventSubscriber<DatasetRGBChangedEvent>() {
 
-					@Override
-					public void onEvent(final DatasetRGBChangedEvent event) {
-						if (dataset == event.getObject()) {
-							rebuild();
-						}
+				@Override
+				public void onEvent(final DatasetRGBChangedEvent event) {
+					if (dataset == event.getObject()) {
+						rebuild();
 					}
+				}
 
-				};
+			};
 		subscribers.add(rgbChangeSubscriber);
 		Events.subscribe(DatasetRGBChangedEvent.class, rgbChangeSubscriber);
 
 		final EventSubscriber<DatasetUpdatedEvent> updateSubscriber =
-				new EventSubscriber<DatasetUpdatedEvent>() {
+			new EventSubscriber<DatasetUpdatedEvent>() {
 
-					@Override
-					public void onEvent(final DatasetUpdatedEvent event) {
-						if (event instanceof DatasetTypeChangedEvent) {
-							return;
-						}
-						if (event instanceof DatasetRGBChangedEvent) {
-							return;
-						}
-						if (dataset == event.getObject()) {
-							projector.map();
-						}
+				@Override
+				public void onEvent(final DatasetUpdatedEvent event) {
+					if (event instanceof DatasetTypeChangedEvent) {
+						return;
 					}
+					if (event instanceof DatasetRGBChangedEvent) {
+						return;
+					}
+					if (dataset == event.getObject()) {
+						projector.map();
+					}
+				}
 
-				};
+			};
 		subscribers.add(updateSubscriber);
 		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 	}

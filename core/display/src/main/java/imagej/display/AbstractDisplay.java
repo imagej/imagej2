@@ -1,6 +1,6 @@
 //
-// AbstractDatasetView.java
 // AbstractDisplay.java
+//
 
 /*
 ImageJ software for multidimensional image processing and analysis.
@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.display;
 
 import imagej.data.DataObject;
@@ -45,10 +46,10 @@ import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
 
 /**
- * @author Lee Kamentsky
+ * The abstract display handles axes resolution, maintaining the dimensionality of the
+ * EuclideanSpace represented by the display.
  *
- *The abstract display handles axes resolution, maintaining the dimensionality of the
- *EuclideanSpace represented by the display.
+ * @author Lee Kamentsky
  */
 public abstract class AbstractDisplay implements Display {
 
