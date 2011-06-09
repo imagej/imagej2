@@ -86,6 +86,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	// -- DatasetView methods --
+
 	@Override
 	public ARGBScreenImage getScreenImage() {
 		return screenImage;
@@ -192,7 +193,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	@Override
 	public void rebuild() {
-		channelDimIndex = getChannelDimIndex(dataset);
+		channelDimIndex = getChannelDimIndex();
 
 		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
@@ -202,7 +203,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		position = new long[dims.length];
 		planePos = new long[planeDims.length];
 
-		if (defaultLUTs == null || defaultLUTs.size() != dims[channelDimIndex]) {
+		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
 			resetColorTables(false);
 		}
@@ -211,17 +212,18 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		final int height = (int) img.dimension(1);
 		screenImage = new ARGBScreenImage(width, height);
 
-		final boolean composite = isComposite(dataset);
+		final boolean composite = isComposite();
 		projector = createProjector(composite);
 		projector.map();
 	}
 
 	// -- Helper methods --
-	private static boolean isComposite(final Dataset dataset) {
+
+	private boolean isComposite() {
 		return dataset.getCompositeChannelCount() > 1 || dataset.isRGBMerged();
 	}
 
-	private static int getChannelDimIndex(final Dataset dataset) {
+	private int getChannelDimIndex() {
 		return dataset.getAxisIndex(Axes.CHANNEL);
 	}
 
