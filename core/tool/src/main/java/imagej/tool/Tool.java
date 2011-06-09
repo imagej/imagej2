@@ -42,7 +42,8 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * TODO
+ * Annotation identifying a tool, which gets loaded by ImageJ's dynamic tool
+ * loading mechanism.
  * 
  * @author Rick Lentz
  * @author Curtis Rueden
@@ -52,17 +53,25 @@ import net.java.sezpoz.Indexable;
 @Indexable(type = ITool.class)
 public @interface Tool {
 
+	/** The name of the tool. */
 	String name() default "";
 
+	/** The human-readable label to use (e.g., as a tool tip). */
 	String label() default "";
 
+	/** A longer description of the tool (e.g., in the status bar). */
 	String description() default "";
 
+	/** Path to the tool's icon (e.g., shown in the toolbar). */
 	String iconPath() default "";
 
+	/**
+	 * Where the tool should appear in the user interface. The toolbar displays
+	 * tools sorted by priority.
+	 */
 	int priority() default Integer.MAX_VALUE;
 
-	// TEMP - for disabling unfinished tools
+	/** When false, grays out the tool in the user interface. */
 	boolean enabled() default true;
 
 }
