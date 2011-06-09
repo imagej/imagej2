@@ -100,6 +100,9 @@ public @interface Plugin {
 	 */
 	int priority() default NORMAL_PRIORITY;
 
+	/** When false, grays out the plugin in the user interface. */
+	boolean enabled() default true;
+
 	/**
 	 * Abbreviated menu path defining where the plugin is shown in the menu
 	 * structure. Uses greater than signs (>) as a separator; e.g.:
