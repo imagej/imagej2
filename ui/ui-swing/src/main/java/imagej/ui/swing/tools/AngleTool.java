@@ -36,6 +36,7 @@ package imagej.ui.swing.tools;
 
 import imagej.tool.BaseTool;
 import imagej.tool.Tool;
+import imagej.ui.swing.tools.roi.LineAdapter;
 
 /**
  * TODO
@@ -46,7 +47,7 @@ import imagej.tool.Tool;
 	description = "Angle", priority = AngleTool.PRIORITY, enabled = false)
 public class AngleTool extends BaseTool {
 
-	public static final int PRIORITY = LineTool.PRIORITY + 1;
+	public static final int PRIORITY = LineAdapter.PRIORITY + 1;
 
 	// TODO
 
