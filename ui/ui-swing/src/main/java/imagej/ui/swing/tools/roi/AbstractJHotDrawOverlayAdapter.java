@@ -46,6 +46,9 @@ import java.awt.Color;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.action.LineDecorationIcon;
+import org.jhotdraw.draw.decoration.ArrowTip;
+import org.jhotdraw.draw.decoration.LineDecoration;
 
 
 /**
@@ -117,6 +120,21 @@ public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends 
 		}
 		final ColorRGB fillColor = overlay.getFillColor();
 		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, overlay.getAlpha()));
+		switch (overlay.getLineStartArrowStyle()) {
+		case ARROW:
+			figure.set(AttributeKeys.START_DECORATION, new ArrowTip());
+			break;
+		case NONE:
+			figure.set(AttributeKeys.START_DECORATION, null);
+		}
+		switch (overlay.getLineEndArrowStyle()) {
+		case ARROW:
+			figure.set(AttributeKeys.END_DECORATION, new ArrowTip());
+			break;
+		case NONE:
+			figure.set(AttributeKeys.END_DECORATION, null);
+			break;
+		}
 	}
 
 	@Override

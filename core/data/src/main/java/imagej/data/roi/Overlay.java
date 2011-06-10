@@ -36,6 +36,7 @@ package imagej.data.roi;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.util.ColorRGB;
 import net.imglib2.EuclideanSpace;
 import net.imglib2.img.Axis;
@@ -56,6 +57,17 @@ public interface Overlay extends DataObject, LabeledAxes, EuclideanSpace {
 	/** The style used to render the bounding line of the overlay. */
 	public enum LineStyle {
 		SOLID, DASH, DOT, DOT_DASH, NONE
+	}
+
+	/**
+	 * @author Lee Kamentsky
+	 * 
+	 * Arrow decorations for the start and end.
+	 *
+	 */
+	static public enum ArrowStyle {
+		NONE,
+		ARROW
 	}
 
 	/**
@@ -144,4 +156,23 @@ public interface Overlay extends DataObject, LabeledAxes, EuclideanSpace {
 	 */
 	Long getPosition(Axis axis);
 
+	/**
+	 * @return the arrow style at the start of a line or path (if appropriate)
+	 */
+	ArrowStyle getLineStartArrowStyle();
+
+	/**
+	 * @param style the arrow style to be shown at the start of a line or path
+	 */
+	void setLineStartArrowStyle(ArrowStyle style);
+
+	/**
+	 * @return the arrow style at the end of a line or path (if appropriate)
+	 */
+	ArrowStyle getLineEndArrowStyle();
+
+	/**
+	 * @param style the arrow style to be shown at the end of a line or path
+	 */
+	void setLineEndArrowStyle(ArrowStyle style);
 }

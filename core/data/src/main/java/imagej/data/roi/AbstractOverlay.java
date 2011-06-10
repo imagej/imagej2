@@ -52,6 +52,7 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
+import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.event.Events;
 import imagej.util.ColorRGB;
 import net.imglib2.img.Axes;
@@ -67,6 +68,8 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 
 	public final static ColorRGB defaultLineColor = new ColorRGB(255,255,0);
 	public final static ColorRGB defaultFillColor = new ColorRGB(0, 255, 0);
+	protected ArrowStyle startArrowStyle = ArrowStyle.NONE;
+	protected ArrowStyle endArrowStyle = ArrowStyle.NONE;
 	private static final long serialVersionUID = 1L;
 	protected ColorRGB fillColor = defaultFillColor;
 	protected int alpha = 0;
@@ -190,11 +193,37 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 			writeAxis(out, axis);
 			out.writeLong(axisPositions.get(axis));
 		}
+		writeString(out, startArrowStyle.name());
+		writeString(out, endArrowStyle.name());
+	}
+	
+	/**
+	 * Helper function to write a string to the object output
+	 * @param out
+	 * @param s
+	 * @throws IOException
+	 */
+	static protected void writeString(final ObjectOutput out, final String s) throws IOException {
+		out.writeInt(s.length());
+		out.writeChars(s);
+		
+	}
+	
+	/**
+	 * Helper function to read a string
+	 * @param in
+	 * @return string read from in
+	 * @throws IOException
+	 */
+	static protected String readString(final ObjectInput in) throws IOException {
+		int length = in.readInt();
+		char [] buffer = new char[length];
+		for (int i=0; i<length; i++) buffer[i] = in.readChar();
+		return new String(buffer);
 	}
 	
 	static private void writeAxis(final ObjectOutput out, final Axis axis) throws IOException {
-		out.writeInt(axis.getLabel().length());
-		out.writeChars(axis.getLabel());
+		writeString(out, axis.getLabel());
 	}
 	
 	@Override
@@ -220,12 +249,12 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 			Axis axis = readAxis(in);
 			axisPositions.put(axis, in.readLong());
 		}
+		startArrowStyle = ArrowStyle.valueOf(readString(in));
+		endArrowStyle = ArrowStyle.valueOf(readString(in));
 	}
 
 	static private Axis readAxis(final ObjectInput in) throws IOException {
-		char [] buffer = new char[in.readInt()];
-		for (int j=0; j<buffer.length; j++) buffer[j] = in.readChar();
-		return Axes.get(new String(buffer));
+		return Axes.get(new String(readString(in)));
 	}
 	@Override
 	public int getAxisIndex(Axis axis) {
@@ -315,5 +344,37 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 			return axisPositions.get(axis);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getLineStartArrowStyle()
+	 */
+	@Override
+	public ArrowStyle getLineStartArrowStyle() {
+		return startArrowStyle;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setLineStartArrowStyle(imagej.data.roi.Overlay.ArrowStyle)
+	 */
+	@Override
+	public void setLineStartArrowStyle(ArrowStyle style) {
+		startArrowStyle = style;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#getLineEndArrowStyle()
+	 */
+	@Override
+	public ArrowStyle getLineEndArrowStyle() {
+		return endArrowStyle;
+	}
+
+	/* (non-Javadoc)
+	 * @see imagej.data.roi.Overlay#setLineEndArrowStyle(imagej.data.roi.Overlay.ArrowStyle)
+	 */
+	@Override
+	public void setLineEndArrowStyle(ArrowStyle style) {
+		endArrowStyle = style;
 	}
 }

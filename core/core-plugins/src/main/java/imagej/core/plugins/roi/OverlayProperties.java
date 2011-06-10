@@ -37,6 +37,7 @@ package imagej.core.plugins.roi;
 import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
+import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.data.roi.Overlay.LineStyle;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
@@ -69,6 +70,8 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 	static final protected String dotLineStyle = "Dot";
 	static final protected String dotDashLineStyle = "Dot-dash";
 	static final protected String noneLineStyle = "None";
+	static final protected String arrowLineDecoration = "Arrow";
+	static final protected String noLineDecoration = "None";
 	
 	@Parameter(label = "Line color", persist = false)
 	private ColorRGB lineColor;
@@ -88,7 +91,14 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
 	private int alpha;
 	
+	@Parameter(label = "Line start arrow style", description = "The arrow style at the starting point of a line or other path",
+			persist = false, choices = { noLineDecoration, arrowLineDecoration })
+	private String startLineArrowStyle;
 
+	@Parameter(label = "Line end arrow style", description = "The arrow style at the end point of a line or other path",
+			persist = false, choices = { noLineDecoration, arrowLineDecoration })
+	private String endLineArrowStyle;
+	
 	public OverlayProperties() {
 		// set default values to match the first selected overlay
 		final List<Overlay> selected = getSelectedOverlays();
@@ -115,6 +125,20 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 				lineStyle = noneLineStyle;
 				break;
 			}
+			switch(overlay.getLineStartArrowStyle()) {
+			case NONE:
+				startLineArrowStyle = noLineDecoration;
+				break;
+			case ARROW:
+				startLineArrowStyle = arrowLineDecoration;
+			}
+			switch(overlay.getLineEndArrowStyle()) {
+			case NONE:
+				endLineArrowStyle = noLineDecoration;
+				break;
+			case ARROW:
+				endLineArrowStyle = arrowLineDecoration;
+			}
 		}
 	}
 
@@ -139,6 +163,16 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 				overlay.setLineStyle(LineStyle.NONE);
 			} else {
 				throw new UnsupportedOperationException("Unimplemented style: " + lineStyle);
+			}
+			if (startLineArrowStyle.equals(arrowLineDecoration)) {
+				overlay.setLineStartArrowStyle(ArrowStyle.ARROW);
+			} else {
+				overlay.setLineStartArrowStyle(ArrowStyle.NONE);
+			}
+			if (endLineArrowStyle.equals(arrowLineDecoration)) {
+				overlay.setLineEndArrowStyle(ArrowStyle.ARROW);
+			} else {
+				overlay.setLineEndArrowStyle(ArrowStyle.NONE);
 			}
 			overlay.update();
 		}
