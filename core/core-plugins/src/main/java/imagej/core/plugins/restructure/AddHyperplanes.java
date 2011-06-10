@@ -62,12 +62,13 @@ public class AddHyperplanes implements ImageJPlugin {
 		RestructureUtils.X,
 		RestructureUtils.Y,
 		RestructureUtils.Z,
-		RestructureUtils.C,
-		RestructureUtils.T,
-		RestructureUtils.F,
-		RestructureUtils.S,
-		RestructureUtils.P,
-		RestructureUtils.L})
+		RestructureUtils.CH,
+		RestructureUtils.TI,
+		RestructureUtils.FR,
+		RestructureUtils.SP,
+		RestructureUtils.PH,
+		RestructureUtils.PO,
+		RestructureUtils.LI})
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow

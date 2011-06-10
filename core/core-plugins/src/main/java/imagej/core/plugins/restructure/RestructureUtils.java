@@ -14,20 +14,23 @@ import net.imglib2.type.numeric.RealType;
 public class RestructureUtils {
 	
 	public static final String
-  	X="X", Y="Y", C="Channel", Z="Z", T="Time", F="Frequency", S="Spectra",
-  		P="Phase", L="Lifetime";
+  	X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
+  		PH="Phase", PO="Polarization", LI="Lifetime";
+
+	public static final String[] AXES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
 	
 	/** maps an axis name String into an Axis value.
 	 * returns null if some unknown axis specified */
 	public static Axis getAxis(String axisName) {
 		Axis axis = null;
 			
-		if (axisName.equals(C)) axis = Axes.CHANNEL;
-		else if (axisName.equals(F)) axis = Axes.FREQUENCY;
-		else if (axisName.equals(L)) axis = Axes.LIFETIME;
-		else if (axisName.equals(P)) axis = Axes.PHASE;
-		else if (axisName.equals(S)) axis = Axes.SPECTRA;
-		else if (axisName.equals(T)) axis = Axes.TIME;
+		if (axisName.equals(CH)) axis = Axes.CHANNEL;
+		else if (axisName.equals(FR)) axis = Axes.FREQUENCY;
+		else if (axisName.equals(LI)) axis = Axes.LIFETIME;
+		else if (axisName.equals(PH)) axis = Axes.PHASE;
+		else if (axisName.equals(PO)) axis = Axes.POLARIZATION;
+		else if (axisName.equals(SP)) axis = Axes.SPECTRA;
+		else if (axisName.equals(TI)) axis = Axes.TIME;
 		else if (axisName.equals(X)) axis = Axes.X;
 		else if (axisName.equals(Y)) axis = Axes.Y;
 		else if (axisName.equals(Z)) axis = Axes.Z;
@@ -60,7 +63,10 @@ public class RestructureUtils {
 		double[] calibration = new double[axes.length];
 		for (int i = 0; i < axes.length; i++) {
 			int index = ds.getAxisIndex(axes[i]);
-			calibration[i] = ds.getImgPlus().calibration(index);
+			if (index >= 0)
+				calibration[i] = ds.getImgPlus().calibration(index);
+			else
+				calibration[i] = Double.NaN;
 		}
 		return new ImgPlus(img, name, axes, calibration); 
 	}
