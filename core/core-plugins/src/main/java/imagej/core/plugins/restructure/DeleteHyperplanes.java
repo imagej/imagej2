@@ -34,13 +34,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.MultiImageIterator;
-import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
@@ -59,15 +54,20 @@ import imagej.plugin.Parameter;
 @Menu(label = "Delete Data") })
 public class DeleteHyperplanes implements ImageJPlugin {
 
-	private static final String
-	  X="X", Y="Y", C="Channel", Z="Z", T="Time", F="Frequency", S="Spectra",
-	  	P="Phase", L="Lifetime";
-	
 	@Parameter(required=true)
 	private Dataset input;
 	
 	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to modify",choices = {X,Y,Z,C,T,F,S,P,L})
+	@Parameter(label="Axis to modify",choices = {
+		RestructureUtils.X,
+		RestructureUtils.Y,
+		RestructureUtils.Z,
+		RestructureUtils.C,
+		RestructureUtils.T,
+		RestructureUtils.F,
+		RestructureUtils.S,
+		RestructureUtils.P,
+		RestructureUtils.L})
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
@@ -83,35 +83,16 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		Axis axis = getAxis();
+		Axis axis = RestructureUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();
-		long[] newDimensions = getDimensions(axis);
+		long[] newDimensions =
+			RestructureUtils.getDimensions(input,axis,-numDeleting);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			createNewImgPlus(newDimensions, axes);
+			RestructureUtils.createNewImgPlus(input,newDimensions, axes);
 		fillNewImgPlus(input.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
 		input.setImgPlus(dstImgPlus);
-	}
-
-	/** maps the user specified choice in the dailog to an Axis value.
-	 * returns null if some unknown axis specified */
-	private Axis getAxis() {
-		Axis axis = null;
-			
-		if (axisToModify.equals(C)) axis = Axes.CHANNEL;
-		else if (axisToModify.equals(F)) axis = Axes.FREQUENCY;
-		else if (axisToModify.equals(L)) axis = Axes.LIFETIME;
-		else if (axisToModify.equals(P)) axis = Axes.PHASE;
-		else if (axisToModify.equals(S)) axis = Axes.SPECTRA;
-		else if (axisToModify.equals(T)) axis = Axes.TIME;
-		else if (axisToModify.equals(X)) axis = Axes.X;
-		else if (axisToModify.equals(Y)) axis = Axes.Y;
-		else if (axisToModify.equals(Z)) axis = Axes.Z;
-	
-		// NB : axis could still be null here : Axes.UNKNOWN
-		
-		return axis;
 	}
 
 	/** detects if user specified data is invalid */
@@ -144,33 +125,6 @@ public class DeleteHyperplanes implements ImageJPlugin {
 		return false;
 	}
 
-	/** gets the dimensions of the output data */
-	private long[] getDimensions(Axis oneToModify) {
-		long[] dimensions = input.getDims();
-		int axisIndex = input.getAxisIndex(oneToModify);
-		dimensions[axisIndex] -= numDeleting;
-		return dimensions;
-	}
-
-	/** creates a new ImgPlus with specified dimensions and axes. Uses same
-	 * factory as input Dataset. Maintains type, name, and calibration values.
-	 * All data values are initialized to 0. 
-	 */
-	private ImgPlus<? extends RealType<?>>
-		createNewImgPlus(long[] dimensions, Axis[] axes)
-	{
-		ImgFactory factory = input.getImgPlus().getImg().factory();
-		Img<? extends RealType<?>> img = (Img<? extends RealType<?>>)
-			factory.create(dimensions, input.getType());
-		String name = input.getName();
-		double[] calibration = new double[axes.length];
-		for (int i = 0; i < axes.length; i++) {
-			int index = input.getAxisIndex(axes[i]);
-			calibration[i] = input.getImgPlus().calibration(index);
-		}
-		return new ImgPlus(img, name, axes, calibration); 
-	}
-
 	/** fills the newly created ImgPlus with data values from a larger source
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
@@ -186,56 +140,9 @@ public class DeleteHyperplanes implements ImageJPlugin {
 			numInCut = axisSize - numBeforeCut;
 		long numAfterCut = axisSize -	(numBeforeCut + numInCut);
 		
-		copyData(srcImgPlus, dstImgPlus, modifiedAxis,
+		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
 			0, 0, numBeforeCut);
-		copyData(srcImgPlus, dstImgPlus, modifiedAxis,
+		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
 			numBeforeCut+numInCut, numBeforeCut, numAfterCut);
-	}
-
-	/** copies a region of data from a srcImgPlus to a dstImgPlus */
-	private void copyData(ImgPlus<? extends RealType<?>> srcImgPlus,
-		ImgPlus<? extends RealType<?>> dstImgPlus, Axis axis,
-		long srcStartPos, long dstStartPos, long numHyperplanes)
-	{
-		if (numHyperplanes == 0) return;
-		Img[] images = new Img[]{srcImgPlus.getImg(), dstImgPlus.getImg()};
-		MultiImageIterator<? extends RealType<?>> iter =
-			new MultiImageIterator(images);
-		long[] origin0 = calcOrigin(srcImgPlus, axis, srcStartPos);
-		long[] origin1 = calcOrigin(dstImgPlus, axis, dstStartPos);
-		long[] span = calcSpan(dstImgPlus, axis, numHyperplanes);
-		iter.setRegion(0, origin0, span);
-		iter.setRegion(1, origin1, span);
-		iter.initialize();
-		RegionIterator<? extends RealType<?>>[] subIters = iter.getIterators();
-		while (iter.hasNext()) {
-			iter.next();
-			double value = subIters[0].getValue().getRealDouble();
-			subIters[1].getValue().setReal(value);
-		}
-	}
-
-	/** returns a span array covering the specified hyperplanes. Only the axis
-	 * along which the cut is being made has nonmaximal dimension. That
-	 * dimension is set to the passed in number of elements to be preserved.
-	 */
-	private long[] calcSpan(ImgPlus imgPlus, Axis axis, long numElements) {
-		long[] span = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(span);
-		int axisIndex = imgPlus.getAxisIndex(axis);
-		span[axisIndex] = numElements;
-		return span;
-	}
-
-	/** returns an origin array locating the first hyperplane to keep. Only the
-	 * axis along which the cut is being made has nonzero dimension. That
-	 * dimension is set to the passed in start position of the hyperplane along
-	 * the axis.
-	 */
-	private long[] calcOrigin(ImgPlus imgPlus, Axis axis, long startPos) {
-		long[] origin = new long[imgPlus.numDimensions()];
-		int axisIndex = imgPlus.getAxisIndex(axis);
-		origin[axisIndex] = startPos;
-		return origin;
 	}
 }
