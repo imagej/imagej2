@@ -134,10 +134,11 @@ public class Dataset extends AbstractDataObject implements
 	}
 
 	public void setImgPlus(final ImgPlus<? extends RealType<?>> imgPlus) {
-		if (this.imgPlus.numDimensions() != imgPlus.numDimensions()) {
-			throw new IllegalArgumentException("Invalid dimensionality: expected " +
-				this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
-		}
+		// TODO- No longer necessary?????
+		//if (this.imgPlus.numDimensions() != imgPlus.numDimensions()) {
+		//	throw new IllegalArgumentException("Invalid dimensionality: expected " +
+		//		this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
+		//}
 
 		// are types different
 		boolean typeChanged = false;
