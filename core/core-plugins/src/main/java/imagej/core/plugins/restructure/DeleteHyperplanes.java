@@ -71,11 +71,11 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Starting position to delete",min="0")
-	private long startPosition;
+	@Parameter(label="Deletion position",min="0")
+	private long deletePosition;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Quantity to delete",min="1")
+	@Parameter(label="Deletion quantity",min="1")
 	private long numDeleting;
 
 	/** creates new ImgPlus data copying pixel values as needed from an input
@@ -129,7 +129,7 @@ public class DeleteHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// bad value for startPosition
-		if ((startPosition < 0)  || (startPosition >= axisSize))
+		if ((deletePosition < 0)  || (deletePosition >= axisSize))
 			return true;
 		
 		// bad value for numDeleting
@@ -137,7 +137,7 @@ public class DeleteHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// trying to delete all hyperplanes along axis
-		if ((startPosition+numDeleting) >= axisSize)
+		if ((deletePosition+numDeleting) >= axisSize)
 			return true;
 		
 		// if here everything is okay
@@ -180,7 +180,7 @@ public class DeleteHyperplanes implements ImageJPlugin {
 		long[] dimensions = input.getDims();
 		int axisIndex = input.getAxisIndex(modifiedAxis);
 		long axisSize = dimensions[axisIndex];
-		long numBeforeCut = startPosition;
+		long numBeforeCut = deletePosition;
 		long numInCut = numDeleting;
 		if (numBeforeCut + numInCut > axisSize)
 			numInCut = axisSize - numBeforeCut;
