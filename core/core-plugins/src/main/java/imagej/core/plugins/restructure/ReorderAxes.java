@@ -12,6 +12,19 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 
+// TODO
+// - comment code
+// - test its actually working. runs but slider orders don't change in view
+// - make a nicer UI that doesn't show all axes but just those present in
+//     Dataset. This capability would be useful in all the restructure plugins.
+// - make the "choices" array somehow resuse code in RestructureUtils
+// - if must keep all axes in UI then only make user specify the 1st N that
+//     match their Dataset at the moment
+// - can reorder X & Y out of 1st two positions. This could be useful in future
+//     but might need to block right now. Similarly the DeleteAxis plugin can
+//     totally delete X & Y I think.
+
+
 /** changes the internal ImgPlus of a Dataset so that its data stays the same
  * but the order of the axes is changed.
  */
