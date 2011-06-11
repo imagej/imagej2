@@ -249,7 +249,7 @@ public class ReorderAxes implements ImageJPlugin {
 		}
 	}
 
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings("unchecked")
 	private ImgPlus<? extends RealType<?>> reorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
 			input.getImgPlus().randomAccess();
