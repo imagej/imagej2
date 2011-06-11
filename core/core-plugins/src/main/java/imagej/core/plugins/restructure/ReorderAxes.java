@@ -179,9 +179,24 @@ public class ReorderAxes implements ImageJPlugin {
 		if (inputBad()) return;
 		setupPermutationVars();
 		ImgPlus<? extends RealType<?>> newImgPlus = reorganizedData();
+		//reportDims(input.getImgPlus());
+		//reportDims(newImgPlus);
 		input.setImgPlus(newImgPlus);
 	}
 
+	/*
+	private void reportDims(ImgPlus<?> imgPlus) {
+		System.out.println("Dimension report");
+		long[] dims = new long[imgPlus.numDimensions()];
+		imgPlus.dimensions(dims);
+		Axis[] axes = new Axis[dims.length];
+		imgPlus.axes(axes);
+		for (int i = 0; i < dims.length; i++) {
+			System.out.println(dims[i]+" "+axes[i]);
+		}
+		System.out.println();
+	}
+	*/
 	private void setupDesiredAxisOrder() {
 		desiredAxisOrder = new Axis[]{
 			RestructureUtils.getAxis(axis1),
@@ -211,10 +226,10 @@ public class ReorderAxes implements ImageJPlugin {
 	private Axis[] getPermutedAxes(Axis[] currAxes) {
 		Axis[] permuted = new Axis[currAxes.length];
 		int index = 0;
-		for (int i = 0; i < permuted.length; i++) {
-			for (int j = 0; j < desiredAxisOrder.length; j++)
-				if (currAxes[i] == desiredAxisOrder[j]) {
-					permuted[index++] = currAxes[i];
+		for (int i = 0; i < desiredAxisOrder.length; i++)
+			for (int j = 0; j < currAxes.length; j++) {
+				if (currAxes[j] == desiredAxisOrder[i]) {
+					permuted[index++] = currAxes[j];
 					break;
 				}
 		}
