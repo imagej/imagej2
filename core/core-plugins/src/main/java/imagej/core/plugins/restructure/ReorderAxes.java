@@ -13,17 +13,14 @@ import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
-// - comment code
-// - test its actually working. runs but slider orders don't change in view
 // - make a nicer UI that doesn't show all axes but just those present in
 //     Dataset. This capability would be useful in all the restructure plugins.
-// - make the "choices" array somehow resuse code in RestructureUtils
+// - make the "choices" arrays somehow reuse a static array in RestructureUtils
 // - if must keep all axes in UI then only make user specify the 1st N that
 //     match their Dataset at the moment
 // - can reorder X & Y out of 1st two positions. This could be useful in future
 //     but might need to block right now. Similarly the DeleteAxis plugin can
 //     totally delete X & Y I think.
-
 
 /** changes the internal ImgPlus of a Dataset so that its data stays the same
  * but the order of the axes is changed.
@@ -168,11 +165,10 @@ public class ReorderAxes implements ImageJPlugin {
 		RestructureUtils.LI})
 	String axis10;
 	
-	private long[] tmpPos;
-	private Axis[] tmpAxes;
 	private int[] permutationAxisIndices;
 	private Axis[] desiredAxisOrder;
-	
+
+	/** run the plugin and reorder axes as specified by user */
 	@Override
 	public void run() {
 		setupDesiredAxisOrder();
@@ -184,6 +180,8 @@ public class ReorderAxes implements ImageJPlugin {
 		input.setImgPlus(newImgPlus);
 	}
 
+	// -- helpers --
+	
 	/*
 	private void reportDims(ImgPlus<?> imgPlus) {
 		System.out.println("Dimension report");
@@ -197,6 +195,10 @@ public class ReorderAxes implements ImageJPlugin {
 		System.out.println();
 	}
 	*/
+	
+	/** fills the internal variable "desiredAxisOrder" with the order of axes
+	 * that the user specified in the dialog. all axes are present rather than
+	 * just those present in the input Dataset. */
 	private void setupDesiredAxisOrder() {
 		desiredAxisOrder = new Axis[]{
 			RestructureUtils.getAxis(axis1),
@@ -212,6 +214,9 @@ public class ReorderAxes implements ImageJPlugin {
 		};
 	}
 	
+	/** returns true if user input is invalid. Basically this is a test that the
+	 * user did not repeat any axis when specifying the axis ordering.
+	 */
 	private boolean inputBad() {
 		for (int i = 0; i < desiredAxisOrder.length; i++)
 			for (int j = i+1; j < desiredAxisOrder.length; j++)
@@ -223,6 +228,9 @@ public class ReorderAxes implements ImageJPlugin {
 		return false;
 	}
 
+	/** takes a given set of axes (usually a subset of all possible axes) and
+	 * returns a permuted set of axes that reflect the user specified axis order
+	 */
 	private Axis[] getPermutedAxes(Axis[] currAxes) {
 		Axis[] permuted = new Axis[currAxes.length];
 		int index = 0;
@@ -235,12 +243,13 @@ public class ReorderAxes implements ImageJPlugin {
 		}
 		return permuted;
 	}
-	
+
+	/** sets up the working variable "permutationAxisIndices" which is used to
+	 * actually permute positions.
+	 */
 	private void setupPermutationVars() {
 		Axis[] currAxes = input.getAxes();
 		Axis[] permutedAxes = getPermutedAxes(currAxes);
-		tmpPos = new long[currAxes.length];
-		tmpAxes = new Axis[currAxes.length];
 		permutationAxisIndices = new int[currAxes.length];
 		for (int i = 0; i < currAxes.length; i++) {
 			Axis axis = currAxes[i];
@@ -249,7 +258,9 @@ public class ReorderAxes implements ImageJPlugin {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/** returns an ImgPlus that has same data values as the input Dataset but
+	 * which has them stored in a different axis order */
+	@SuppressWarnings({"rawtypes","unchecked"})
 	private ImgPlus<? extends RealType<?>> reorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
 			input.getImgPlus().randomAccess();
@@ -257,23 +268,28 @@ public class ReorderAxes implements ImageJPlugin {
 		long[] inputSpan = new long[inputOrigin.length];
 		input.getImgPlus().dimensions(inputSpan);
 		iter = new RegionIterator(inputAccessor, inputOrigin, inputSpan);
-		long[] newDims = getNewDims();
-		Axis[] newAxes = getNewAxes();
+		long[] origDims = input.getDims();
+		Axis[] origAxes = input.getAxes();
+		long[] newDims = getNewDims(origDims);
+		Axis[] newAxes = getNewAxes(origAxes);
 		ImgPlus<? extends RealType<?>> newImgPlus =
 			RestructureUtils.createNewImgPlus(input, newDims, newAxes);
 		RandomAccess<? extends RealType<?>> outputAccessor =
 			newImgPlus.randomAccess();
 		long[] currPos = new long[inputOrigin.length];
+		long[] permutedPos = new long[inputOrigin.length];
 		while (iter.hasNext()) {
-			RealType<?> value = iter.next();
+			RealType<?> valueRef = iter.next();
+			double value = valueRef.getRealDouble();
 			iter.getPosition(currPos);
-			permute(currPos);
-			outputAccessor.setPosition(currPos);
-			outputAccessor.get().setReal(value.getRealDouble());
+			permute(currPos, permutedPos);
+			outputAccessor.setPosition(permutedPos);
+			outputAccessor.get().setReal(value);
 		}
 		return newImgPlus;
 	}
 
+	/** returns the axis index of an Axis given a permuted set of axes. */
 	private int getNewAxisIndex(Axis[] permutedAxes, Axis originalAxis) {
 		for (int i = 0; i < permutedAxes.length; i++) {
 			if (permutedAxes[i] == originalAxis)
@@ -282,29 +298,37 @@ public class ReorderAxes implements ImageJPlugin {
 		throw new IllegalArgumentException("axis not found!");
 	}
 	
-	private long[] getNewDims() {
-		long[] dims = input.getDims();
-		permute(dims);
-		return dims;
+	/** taking the original dims this method returns the new dimensions of the
+	 * permuted space.
+	 */
+	private long[] getNewDims(long[] origDims) {
+		long[] newDims = new long[origDims.length];
+		permute(origDims, newDims);
+		return newDims;
 	}
 	
-	private Axis[] getNewAxes() {
-		Axis[] axes = input.getAxes();
-		permute(axes);
-		return axes;
-	}
-	
-	private void permute(long[] origPos) {
-		for (int i = 0; i < origPos.length; i++)
-			tmpPos[permutationAxisIndices[i]] = origPos[i];
-		for (int i = 0; i < origPos.length; i++)
-			origPos[i] = tmpPos[i];
+	/** taking the original axes order this method returns the new axes in the
+	 * order of the permuted space.
+	 */
+	private Axis[] getNewAxes(Axis[] origAxes) {
+		Axis[] newAxes = new Axis[origAxes.length];
+		permute(origAxes, newAxes);
+		return newAxes;
 	}
 
-	private void permute(Axis[] origAxes) {
+	/** permutes from a position in the original space into a position in the
+	 * permuted space
+	 */
+	private void permute(long[] origPos, long[] permutedPos) {
+		for (int i = 0; i < origPos.length; i++)
+			permutedPos[permutationAxisIndices[i]] = origPos[i];
+	}
+
+	/** permutes from an axis order in the original space into an axis order in
+	 * the permuted space
+	 */
+	private void permute(Axis[] origAxes, Axis[] permutedAxes) {
 		for (int i = 0; i < origAxes.length; i++)
-			tmpAxes[permutationAxisIndices[i]] = origAxes[i];
-		for (int i = 0; i < origAxes.length; i++)
-			origAxes[i] = tmpAxes[i];
+			permutedAxes[permutationAxisIndices[i]] = origAxes[i];
 	}
 }
