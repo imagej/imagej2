@@ -38,7 +38,9 @@ import imagej.data.Dataset;
 import imagej.display.AbstractDatasetView;
 import imagej.util.awt.AWTImageTools;
 
+import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -58,16 +60,21 @@ public class SwingDatasetView extends AbstractDatasetView implements
 {
 
 	private final ImageFigure figure;
+	private boolean needsUpdate;
 
 	public SwingDatasetView(final SwingImageDisplay display,
 		final Dataset dataset)
 	{
 		super(display, dataset);
+		needsUpdate = false;
 		final JHotDrawImageCanvas canvas = display.getImageCanvas();
 		final Drawing drawing = canvas.getDrawing();
 		figure = new ImageFigure();
 		figure.setSelectable(false);
 		figure.setTransformable(false);
+		figure.setBounds(
+				new Point2D.Double(dataset.getImgPlus().realMin(0), dataset.getImgPlus().realMin(1)),
+				new Point2D.Double(dataset.getImgPlus().realMax(0), dataset.getImgPlus().realMax(1)));
 		drawing.add(figure);
 		rebuild();
 	}
@@ -89,14 +96,32 @@ public class SwingDatasetView extends AbstractDatasetView implements
 		return (SwingDisplayWindow) getDisplay().getDisplayWindow();
 	}
 	@Override
-	public void update() {
-		final Image image = getScreenImage().image();
-		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
-		figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
-			bufImage.getHeight()));
-		figure.setBufferedImage(bufImage);
+	public synchronized void update() {
+		if (! needsUpdate) {
+			needsUpdate = true;
+			EventQueue.invokeLater(new Runnable(){
+
+				@Override
+				public void run() {
+					SwingDatasetView.this.doUpdate();
+				}}
+			);
+		}
 	}
 	
+	private synchronized void doUpdate() {
+		try {
+			final Image image = getScreenImage().image();
+			final BufferedImage bufImage = AWTImageTools.makeBuffered(image);
+			figure.setBounds(new Rectangle2D.Double(0, 0, bufImage.getWidth(),
+				bufImage.getHeight()));
+			figure.setBufferedImage(bufImage);
+		} finally {
+			needsUpdate = false;
+		}
+	}
+	
+
 	// -- FigureView methods --
 
 	@Override
