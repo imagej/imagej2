@@ -151,7 +151,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		final List<Dataset> datasets = new ArrayList<Dataset>();
 
-		for (final ImagePlus imp : getOutputImps()) {
+		Set<ImagePlus> imps = getOutputImps();
+		for (final ImagePlus imp : imps) {
 			ds = map.findDataset(imp);
 			if (ds == null) ds = map.registerLegacyImage(imp);
 			else {

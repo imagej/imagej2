@@ -38,6 +38,7 @@ import ij.ImagePlus;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
+import imagej.legacy.patches.FunctionsMethods;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.util.Log;
 
@@ -91,6 +92,17 @@ public final class LegacyManager implements ManagerComponent {
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
+		// override behavior of ij.macro.Functions
+		hacker.insertBeforeMethod("ij.macro.Functions",
+			"void displayBatchModeImage(ij.ImagePlus imp2)",
+			"imagej.legacy.patches.FunctionsMethods.beforeBatchDraw();");
+		hacker.insertAfterMethod("ij.macro.Functions",
+			"void displayBatchModeImage(ij.ImagePlus imp2)",
+			"imagej.legacy.patches.FunctionsMethods.afterBatchDraw();");
+		hacker.loadClass("ij.macro.Functions");
+		/*
+		*/
+		
 		// override behavior of MacAdapter
 		hacker.replaceMethod("MacAdapter",
 			"public void run(java.lang.String arg)", ";");
@@ -105,6 +117,7 @@ public final class LegacyManager implements ManagerComponent {
 	}
 
 	public void legacyImageChanged(final ImagePlus imp) {
+		if (FunctionsMethods.InsideBatchDrawing > 0) return;
 		// record resultant ImagePlus as a legacy plugin output
 		LegacyPlugin.getOutputImps().add(imp);
 	}
