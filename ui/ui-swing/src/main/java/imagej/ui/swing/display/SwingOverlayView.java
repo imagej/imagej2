@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.display;
 
+import java.awt.EventQueue;
+
 import imagej.data.roi.Overlay;
 import imagej.display.AbstractOverlayView;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
@@ -65,6 +67,8 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	private boolean updatingFigure = false;
 	
 	private boolean updatingOverlay = false;
+	
+	private boolean updateScheduled = false;
 	
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
@@ -100,7 +104,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		this.figure.addFigureListener(new FigureAdapter() {
 			@Override
 			public void attributeChanged(FigureEvent e) {
-				synchronized (SwingOverlayView.this) {
+				synchronized(SwingOverlayView.this) {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
@@ -115,7 +119,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 			@Override
 			public void figureChanged(FigureEvent e) {
-				synchronized (SwingOverlayView.this) {
+				synchronized(SwingOverlayView.this) {
 					if (! updatingFigure) {
 						updatingOverlay = true;
 						try {
@@ -188,16 +192,28 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		super.dispose();
 	}
 	
-	private void updateFigure() {
-		synchronized (this) {
-			if (! updatingOverlay) {
-				updatingFigure = true;
-				try {
-					adapter.updateFigure(getDataObject(), figure, this);
-				} finally {
-					updatingFigure = false;
-				}
-			}
+	private synchronized void updateFigure() {
+		if (updatingOverlay) return;
+		if (! updateScheduled) {
+			EventQueue.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						doUpdateFigure();
+					} finally {
+						updateScheduled = false;
+					}
+				}});
+			updateScheduled = true;
+		}
+	}
+	private void doUpdateFigure() {
+		updatingFigure = true;
+		try {
+			adapter.updateFigure(getDataObject(), figure, this);
+		} finally {
+			updatingFigure = false;
 		}
 		show(isVisible());
 	}

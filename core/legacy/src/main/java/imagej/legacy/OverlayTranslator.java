@@ -48,11 +48,13 @@ import ij.process.ImageProcessor;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.roi.BinaryMaskOverlay;
+import imagej.data.roi.CompositeOverlay;
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.OverlayManager;
+import imagej.util.ColorRGB;
 import imagej.util.Log;
 import imagej.util.awt.AWTColors;
 
@@ -71,6 +73,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.BitAccess;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
+import net.imglib2.roi.CompositeRegionOfInterest;
 import net.imglib2.roi.EllipseRegionOfInterest;
 import net.imglib2.roi.IterableRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
@@ -330,8 +333,25 @@ public class OverlayTranslator {
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
+				CompositeRegionOfInterest croi = new CompositeRegionOfInterest(2);
+				ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
 				for (final Roi r : rois)
-					createOverlays(r, overlays);
+					createOverlays(r, subOverlays);
+				for (Overlay overlay:subOverlays) {
+					RegionOfInterest subRoi = overlay.getRegionOfInterest();
+					if (subRoi == null) {
+						Log.warn(String.format("Can't composite %s", overlay.toString()));
+					} else {
+						croi.xor(subRoi);
+					}
+				}
+				CompositeOverlay coverlay = new CompositeOverlay(croi);
+				/*
+				 * An arbitrary guess - set the fill color to red with a 1/3 alpha
+				 */
+				coverlay.setFillColor(new ColorRGB(255,0,0));
+				coverlay.setAlpha(80);
+				overlays.add(coverlay);
 				break;
 			case Roi.POINT:
 				Log.warn("====> POINT: " + roi);

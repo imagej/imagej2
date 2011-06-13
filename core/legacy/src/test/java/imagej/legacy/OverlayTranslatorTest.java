@@ -48,7 +48,6 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.gui.Toolbar;
 import ij.process.ByteProcessor;
 import imagej.data.Dataset;
 import imagej.data.roi.BinaryMaskOverlay;
@@ -56,7 +55,6 @@ import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
-import imagej.display.OverlayManager;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
@@ -76,7 +74,6 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.ByteType;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -84,10 +81,6 @@ import org.junit.Test;
  *
  */
 public class OverlayTranslatorTest {
-	@BeforeClass
-	public static void setUp() {
-	}
-
 	private PolygonOverlay makePolygonOverlay(double [] x, double [] y) {
 		assertEquals(x.length, y.length);
 		PolygonOverlay overlay = new PolygonOverlay();
@@ -370,7 +363,7 @@ public class OverlayTranslatorTest {
 		 */
 		Roi r1 = makePolygonROI(new int [] { 3, 5, 5, 3 }, new int [] { 8, 8, 10, 10 });
 		Roi r2 = makePolygonROI(new int [] { 8, 8, 10, 10 }, new int [] { 3, 5, 5, 3 });
-		Roi roi = new ShapeRoi(r1).or(new ShapeRoi(r2));
+		Roi roi = new ShapeRoi(r1).xor(new ShapeRoi(r2));
 		
 		// Is the trailing edge in or out? I suppose a sane person would say that
 		// the way Java does it must be correct and arguably, of course, it is.
@@ -386,24 +379,21 @@ public class OverlayTranslatorTest {
 				{8, 5}, {9, 5}, {10, 5}, {10, 3 }, {10, 4}}; 
 		imagePlus.setRoi(roi);
 		List<Overlay> list = ot.getOverlays(imagePlus);
-		assertEquals(2, list.size());
-		RealRandomAccess<BitType> ra0 = list.get(0).getRegionOfInterest().realRandomAccess();
-		RealRandomAccess<BitType> ra1 = list.get(1).getRegionOfInterest().realRandomAccess();
+		assertEquals(1, list.size());
+		RealRandomAccess<BitType> ra = list.get(0).getRegionOfInterest().realRandomAccess();
 		for (int i=0; i < 11; i++) {
-			ra0.setPosition(i, 0);
-			ra1.setPosition(i, 0);
+			ra.setPosition(i, 0);
 			for (int j=0; j< 11; j++) {
-				ra0.setPosition(j, 1);
-				ra1.setPosition(j, 1);
+				ra.setPosition(j, 1);
 				boolean skip = false;
-				for (int [] p: questionablePairs) {
-					if ((p[0] == i) && (p[1] == j)) {
+				for (int k=0; k<questionablePairs.length; k++) {
+					if ((i == questionablePairs[k][0]) && (j == questionablePairs[k][1])) {
 						skip = true;
 						break;
 					}
 				}
-				if (skip) continue;
-				assertEquals(roi.contains(i, j), ra0.get().get() || ra1.get().get());
+				if (! skip)
+					assertEquals(roi.contains(i, j), ra.get().get());
 			}
 		}
 	}
