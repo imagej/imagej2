@@ -35,10 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 import net.imglib2.img.Axis;
-import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.MultiImageIterator;
-import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
@@ -128,12 +125,12 @@ public class AddAxis implements ImageJPlugin {
 	/** creates a long[] that consists of all the dimensions from a Dataset and
 	 * an additional value appended.
 	 */
-	private long[] getNewDimensions(Dataset ds, long axisSize) {
+	private long[] getNewDimensions(Dataset ds, long lastDimensionSize) {
 		long[] origDims = ds.getDims();
 		long[] newDims = new long[origDims.length+1];
 		for (int i = 0; i < origDims.length; i++)
 			newDims[i] = origDims[i];
-		newDims[newDims.length-1] = axisSize;
+		newDims[newDims.length-1] = lastDimensionSize;
 		return newDims;
 	}
 	
@@ -152,18 +149,7 @@ public class AddAxis implements ImageJPlugin {
 		srcImgPlus.dimensions(srcSpan);
 		dstImgPlus.dimensions(dstSpan);
 		dstSpan[dstSpan.length-1] = 1;
-			
-		Img[] images = new Img[]{srcImgPlus.getImg(), dstImgPlus.getImg()};
-		MultiImageIterator<? extends RealType<?>> iter =
-			new MultiImageIterator(images);
-		iter.setRegion(0, srcOrigin, srcSpan);
-		iter.setRegion(1, dstOrigin, dstSpan);
-		iter.initialize();
-		RegionIterator<? extends RealType<?>>[] subIters = iter.getIterators();
-		while (iter.hasNext()) {
-			iter.next();
-			double value = subIters[0].getValue().getRealDouble();
-			subIters[1].getValue().setReal(value);
-		}
+		
+		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
 	}
 }

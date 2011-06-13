@@ -35,10 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 import net.imglib2.img.Axis;
-import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.ops.operation.MultiImageIterator;
-import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
@@ -164,17 +161,6 @@ public class DeleteAxis implements ImageJPlugin {
 		srcOrigin[axisIndex] = this.hyperPlaneToKeep;
 		srcSpan[axisIndex] = 1;
 		
-		Img[] images = new Img[]{srcImgPlus.getImg(), dstImgPlus.getImg()};
-		MultiImageIterator<? extends RealType<?>> iter =
-			new MultiImageIterator(images);
-		iter.setRegion(0, srcOrigin, srcSpan);
-		iter.setRegion(1, dstOrigin, dstSpan);
-		iter.initialize();
-		RegionIterator<? extends RealType<?>>[] subIters = iter.getIterators();
-		while (iter.hasNext()) {
-			iter.next();
-			double value = subIters[0].getValue().getRealDouble();
-			subIters[1].getValue().setReal(value);
-		}
+		RestructureUtils.copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
 	}
 }

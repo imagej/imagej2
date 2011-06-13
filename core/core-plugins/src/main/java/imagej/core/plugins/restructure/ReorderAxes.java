@@ -174,7 +174,7 @@ public class ReorderAxes implements ImageJPlugin {
 		setupDesiredAxisOrder();
 		if (inputBad()) return;
 		setupPermutationVars();
-		ImgPlus<? extends RealType<?>> newImgPlus = reorganizedData();
+		ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
 		//reportDims(input.getImgPlus());
 		//reportDims(newImgPlus);
 		input.setImgPlus(newImgPlus);
@@ -261,7 +261,7 @@ public class ReorderAxes implements ImageJPlugin {
 	/** returns an ImgPlus that has same data values as the input Dataset but
 	 * which has them stored in a different axis order */
 	@SuppressWarnings({"rawtypes","unchecked"})
-	private ImgPlus<? extends RealType<?>> reorganizedData() {
+	private ImgPlus<? extends RealType<?>> getReorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
 			input.getImgPlus().randomAccess();
 		long[] inputOrigin = new long[input.getImgPlus().numDimensions()];
