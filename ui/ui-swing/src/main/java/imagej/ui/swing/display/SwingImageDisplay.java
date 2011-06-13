@@ -100,7 +100,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		imgWindow.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(final WindowEvent e) {
-				for (final DisplayView view : getViews()) {
+				for (final DisplayView view : new ArrayList<DisplayView>(getViews())) {
 					view.dispose();
 				}
 			}

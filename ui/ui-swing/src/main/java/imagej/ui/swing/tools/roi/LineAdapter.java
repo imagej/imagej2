@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import java.awt.geom.Point2D;
+
 import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
@@ -93,12 +95,12 @@ public class LineAdapter extends AbstractJHotDrawOverlayAdapter<LineOverlay> {
 		LineFigure line = (LineFigure)figure;
 		assert overlay instanceof LineOverlay;
 		LineOverlay loverlay = (LineOverlay)overlay;
-		final Node startNode = line.getNode(0);
-		startNode.moveTo(loverlay.getLineStart().getDoublePosition(0), 
-						 loverlay.getLineStart().getDoublePosition(1));
-		final Node endNode = line.getNode(1);
-		endNode.moveTo(loverlay.getLineEnd().getDoublePosition(0), 
-						 loverlay.getLineEnd().getDoublePosition(1));
+		line.setStartPoint(new Point2D.Double(
+				loverlay.getLineStart().getDoublePosition(0),
+				loverlay.getLineStart().getDoublePosition(1))); 
+		line.setEndPoint(new Point2D.Double(
+				loverlay.getLineEnd().getDoublePosition(0),
+				loverlay.getLineEnd().getDoublePosition(1))); 
 	}
 
 	/* (non-Javadoc)

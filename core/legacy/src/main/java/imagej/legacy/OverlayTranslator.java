@@ -50,6 +50,7 @@ import imagej.data.Dataset;
 import imagej.data.roi.BinaryMaskOverlay;
 import imagej.data.roi.CompositeOverlay;
 import imagej.data.roi.EllipseOverlay;
+import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
@@ -127,7 +128,7 @@ public class OverlayTranslator {
 	public List<Overlay> getOverlays(final ImagePlus imp) {
 		final Roi roi = imp.getRoi();
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		createOverlays(roi, overlays);
+		createOverlays(roi, overlays, 0, 0);
 		return overlays;
 	}
 
@@ -157,11 +158,26 @@ public class OverlayTranslator {
 		if (overlay instanceof BinaryMaskOverlay) {
 			return createBinaryMaskRoi((BinaryMaskOverlay) overlay);
 		}
+		if (overlay instanceof LineOverlay) {
+			return createLineRoi((LineOverlay) overlay);
+		}
 		// TODO: lines, arrows, freehand, text, arbitrary masks
 /*		throw new UnsupportedOperationException("Translation of " +
 			overlay.getClass().getName() + " is unimplemented");
 */
 		return null;
+	}
+
+	private ShapeRoi createLineRoi(LineOverlay overlay) {
+		RealLocalizable pt0 = overlay.getLineStart();
+		RealLocalizable pt1 = overlay.getLineEnd();
+		Line line = new Line(pt0.getDoublePosition(0),
+				             pt0.getDoublePosition(1),
+				             pt1.getDoublePosition(0),
+				             pt1.getDoublePosition(1));
+		ShapeRoi roi = new ShapeRoi(line);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
 	private ShapeRoi createRectangleROI(final RectangleOverlay overlay) {
@@ -185,8 +201,9 @@ public class OverlayTranslator {
 		final double[] radii = new double[dims];
 		region.getOrigin(origin);
 		region.getRadii(radii);
-		final int x = (int) origin[0], y = (int) origin[1];
-		final int w = (int) radii[0], h = (int) radii[1];
+		final int x = (int) (origin[0] - radii[0]);
+		final int y = (int) (origin[1] - radii[1]);
+		final int w = (int) radii[0]*2, h = (int) radii[1]*2;
 		final ShapeRoi roi = new ShapeRoi(new OvalRoi(x, y, w, h));
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
@@ -228,7 +245,8 @@ public class OverlayTranslator {
 		final double y1 = p1.getDoublePosition(1);
 		final double x2 = p2.getDoublePosition(0);
 		final double y2 = p2.getDoublePosition(1);
-		final ShapeRoi roi = new ShapeRoi(new Line(x1, y1, x2, y2));
+		Line line = new Line(x1, y1, x2, y2);
+		final ShapeRoi roi = new ShapeRoi(line);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
 	}
@@ -287,7 +305,7 @@ public class OverlayTranslator {
 	// -- Helper methods - IJ2 overlay creation --
 
 	private void
-		createOverlays(final Roi roi, final ArrayList<Overlay> overlays)
+		createOverlays(final Roi roi, final ArrayList<Overlay> overlays, int xOff, int yOff)
 	{
 		if (roi == null) return;
 
@@ -295,27 +313,27 @@ public class OverlayTranslator {
 		switch (roi.getType()) {
 			case Roi.RECTANGLE:
 				Log.warn("====> RECTANGLE: " + roi);
-				overlays.add(createRectangleOverlay(roi));
+				overlays.add(createRectangleOverlay(roi, xOff, yOff));
 				break;
 			case Roi.OVAL:
 				Log.warn("====> OVAL: " + roi);
-				overlays.add(createEllipseOverlay(roi));
+				overlays.add(createEllipseOverlay(roi, xOff, yOff));
 				break;
 			case Roi.POLYGON:
 				Log.warn("====> POLYGON: " + roi);
-				overlays.add(createPolygonOverlay(roi));
+				overlays.add(createPolygonOverlay(roi, xOff, yOff));
 				break;
 			case Roi.FREEROI:
 				Log.warn("====> FREEROI: " + roi);
-				overlays.add(createDefaultOverlay(roi));
+				overlays.add(createDefaultOverlay(roi, xOff, yOff));
 				break;
 			case Roi.TRACED_ROI:
 				Log.warn("====> TRACED_ROI: " + roi);
-				overlays.add(createDefaultOverlay(roi));
+				overlays.add(createDefaultOverlay(roi, xOff, yOff));
 				break;
 			case Roi.LINE:
 				Log.warn("====> LINE: " + roi);
-				// throw new UnsupportedOperationException("LINE unimplemented");
+				overlays.add(createLineOverlay(roi, xOff, yOff));
 				break;
 			case Roi.POLYLINE:
 				Log.warn("====> POLYLINE: " + roi);
@@ -333,10 +351,19 @@ public class OverlayTranslator {
 				Log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
-				CompositeRegionOfInterest croi = new CompositeRegionOfInterest(2);
+				xOff += xOff + shapeRoi.getBounds().x;
+				yOff += shapeRoi.getBounds().y;
 				ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
 				for (final Roi r : rois)
-					createOverlays(r, subOverlays);
+					createOverlays(r, subOverlays, xOff, yOff);
+				for (Overlay overlay:subOverlays) {
+					assignPropertiesToOverlay(overlay, shapeRoi);
+				}
+				if (subOverlays.size() == 1) {
+					overlays.add(subOverlays.get(0));
+					return;
+				}
+				CompositeRegionOfInterest croi = new CompositeRegionOfInterest(2);
 				for (Overlay overlay:subOverlays) {
 					RegionOfInterest subRoi = overlay.getRegionOfInterest();
 					if (subRoi == null) {
@@ -363,33 +390,43 @@ public class OverlayTranslator {
 		}
 	}
 
-	private RectangleOverlay createRectangleOverlay(final Roi roi) {
+	private Overlay createLineOverlay(final Roi roi, int xOff, int yOff) {
+		assert roi instanceof Line;
+		Line line = (Line)roi;
+		LineOverlay lineOverlay = new LineOverlay(
+				new RealPoint(line.x1d+xOff, line.y1d+yOff), 
+				new RealPoint(line.x2d+xOff, line.y2d+yOff));
+		assignPropertiesToOverlay(lineOverlay, roi);
+		return lineOverlay;
+	}
+
+	private RectangleOverlay createRectangleOverlay(final Roi roi, int xOff, int yOff) {
 		final RectangleOverlay overlay = new RectangleOverlay();
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
-		region.setOrigin(bounds.x, 0);
-		region.setOrigin(bounds.y, 1);
+		region.setOrigin(bounds.x + xOff, 0);
+		region.setOrigin(bounds.y + yOff, 1);
 		region.setExtent(bounds.width, 0);
 		region.setExtent(bounds.height, 1);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
 
-	private EllipseOverlay createEllipseOverlay(final Roi roi) {
+	private EllipseOverlay createEllipseOverlay(final Roi roi, int xOff, int yOff) {
 		final EllipseOverlay overlay = new EllipseOverlay();
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		final double radiusX = ((double)(bounds.width)) / 2.0;
 		final double radiusY = ((double)(bounds.height)) / 2.0;
-		region.setOrigin(bounds.x+radiusX, 0);
-		region.setOrigin(bounds.y+radiusY, 1);
+		region.setOrigin(bounds.x+radiusX + xOff, 0);
+		region.setOrigin(bounds.y+radiusY + yOff, 1);
 		region.setRadius(radiusX, 0);
 		region.setRadius(radiusY, 1);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
 
-	private PolygonOverlay createPolygonOverlay(final Roi roi) {
+	private PolygonOverlay createPolygonOverlay(final Roi roi, int xOff, int yOff) {
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
 
 		final PolygonOverlay overlay = new PolygonOverlay();
@@ -406,14 +443,14 @@ public class OverlayTranslator {
 		return overlay;
 	}
 	
-	private Overlay createDefaultOverlay(final Roi roi) {
+	private Overlay createDefaultOverlay(final Roi roi, int xOff, int yOff) {
 		Rectangle bounds = roi.getBounds();
 		NativeImg<BitType, BitAccess> nativeImg = new ArrayImgFactory<BitType>().createBitInstance(
 				new long [] { bounds.width, bounds.height }, 1);
 		BitType t = new BitType(nativeImg);
 		nativeImg.setLinkedType(t);
-		int xOff = bounds.x;
-		int yOff = bounds.y;
+		xOff = bounds.x;
+		yOff = bounds.y;
 		Img<BitType> img = new ImgTranslationAdapter<BitType, Img<BitType>>(nativeImg, new long[] { xOff, yOff});
 		RandomAccess<BitType> ra = img.randomAccess();
 		ImageProcessor ip = roi.getMask();

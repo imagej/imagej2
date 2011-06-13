@@ -64,7 +64,7 @@ import net.imglib2.type.logic.BitType;
  */
 @JHotDrawOverlayAdapter(priority = DefaultAdapter.PRIORITY)
 public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
-	static public final int PRIORITY = Integer.MAX_VALUE;
+	static public final int PRIORITY = 0;
 	@Override
 	public boolean supports(Overlay overlay, Figure figure) {
 		return ((figure == null) || (figure instanceof ImageFigure));
