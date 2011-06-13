@@ -121,7 +121,6 @@ public class JHotDrawAdapterFinder {
 			@Override
 			public int compare(IJHotDrawOverlayAdapter o1,
 					IJHotDrawOverlayAdapter o2) {
-				// Sort in reverse order
 				return new Integer(o2.getPriority()).compareTo(o1.getPriority());
 			}
 		});
