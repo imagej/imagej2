@@ -95,10 +95,13 @@ public class TypeChanger {
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
 	 * different data type). No range clamping of data is done.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
+	@SuppressWarnings("unchecked")
+	public static <T extends RealType<T> & NativeType<T>>
+	ImgPlus<? extends RealType<?>> copyToType(
 		final ImgPlus<? extends RealType<?>> inputImg, final T newType)
 	{
-		return copyToType(inputImg, newType, new PlanarImgFactory<T>());
+		ImgFactory<? extends RealType<?>> factory = inputImg.factory();
+		return copyToType(inputImg, newType, (ImgFactory<T>)factory);
 	}
 
 	/**
