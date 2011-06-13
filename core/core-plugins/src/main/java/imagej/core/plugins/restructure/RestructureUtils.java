@@ -105,21 +105,34 @@ public class RestructureUtils {
 		return new ImgPlus(img, name, axes, calibration); 
 	}
 
-	/** copies a region of data from a srcImgPlus to a dstImgPlus */
-	@SuppressWarnings({"rawtypes","unchecked"})
+	/** copies a region of data from a srcImgPlus to a dstImgPlus. region is
+	 * defined by a number of planes along an axis that is present in both
+	 * input ImgPluses */
 	public static void copyData(ImgPlus<? extends RealType<?>> srcImgPlus,
 		ImgPlus<? extends RealType<?>> dstImgPlus, Axis axis,
 		long srcStartPos, long dstStartPos, long numHyperplanes)
 	{
 		if (numHyperplanes == 0) return;
+		long[] srcOrigin = calcOrigin(srcImgPlus, axis, srcStartPos);
+		long[] dstOrigin = calcOrigin(dstImgPlus, axis, dstStartPos);
+		
+		long[] srcSpan = calcSpan(srcImgPlus, axis, numHyperplanes);
+		long[] dstSpan = calcSpan(dstImgPlus, axis, numHyperplanes);
+		
+		copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
+	}
+
+	@SuppressWarnings({"rawtypes","unchecked"})
+	public static void copyHyperVolume(ImgPlus<? extends RealType<?>> srcImgPlus,
+		long[] srcOrigin, long[] srcSpan,
+		ImgPlus<? extends RealType<?>> dstImgPlus,
+		long[] dstOrigin, long[] dstSpan)
+	{
 		Img[] images = new Img[]{srcImgPlus.getImg(), dstImgPlus.getImg()};
 		MultiImageIterator<? extends RealType<?>> iter =
 			new MultiImageIterator(images);
-		long[] origin0 = calcOrigin(srcImgPlus, axis, srcStartPos);
-		long[] origin1 = calcOrigin(dstImgPlus, axis, dstStartPos);
-		long[] span = calcSpan(dstImgPlus, axis, numHyperplanes);
-		iter.setRegion(0, origin0, span);
-		iter.setRegion(1, origin1, span);
+		iter.setRegion(0, srcOrigin, srcSpan);
+		iter.setRegion(1, dstOrigin, dstSpan);
 		iter.initialize();
 		RegionIterator<? extends RealType<?>>[] subIters = iter.getIterators();
 		while (iter.hasNext()) {
