@@ -40,6 +40,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
+import imagej.object.event.ObjectsUpdatedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,11 +83,13 @@ public final class ObjectManager implements ManagerComponent {
 	/** Registers an object with the object manager. */
 	public void addObject(final Object obj) {
 		addObject(obj, obj.getClass());
+		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
 	/** Deregisters an object with the object manager. */
 	public void removeObject(final Object obj) {
 		removeObject(obj, obj.getClass());
+		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
 	// -- ManagerComponent methods --
