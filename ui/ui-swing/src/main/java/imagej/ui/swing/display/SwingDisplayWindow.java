@@ -39,7 +39,6 @@ import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
-import imagej.display.Display;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.ZoomEvent;
@@ -142,7 +141,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		for (final DisplayView view : display.getViews()) {
 			DataObject dataObject = view.getDataObject();
 			if (dataObject instanceof LabeledAxes) {
-				for (Axis axis:axisPositions.keySet()) {
+				for (Axis axis : axisPositions.keySet()) {
 					LabeledAxes la = (LabeledAxes)dataObject;
 					int index = la.getAxisIndex(axis);
 					if (index >= 0) {
@@ -160,7 +159,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		sliders.setVisible(sliders.getComponentCount() > 0);
 
 		for (final DisplayView view : display.getViews()) {
-			DataObject dataObject = view.getDataObject();
+			// BDZ removed - apparently doing nothing
+			//DataObject dataObject = view.getDataObject();
 			final Dataset dataset = getDataset(view);
 			if (dataset == null) continue;
 
@@ -210,7 +210,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
-					for (DisplayView view: getDisplay().getViews()) {
+					for (DisplayView view : getDisplay().getViews()) {
 						if (event.getObject() == view.getDataObject()) {
 							createSliders();
 							return;
@@ -238,7 +238,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	}
 
 	private void createSliders() {
-		Display display = getDisplay();
+		// BDZ removed - hiding instance var for no known reason
+		//Display display = getDisplay();
 		final long[] min = new long[display.numDimensions()];
 		Arrays.fill(min, Long.MAX_VALUE);
 		final long[] max = new long[display.numDimensions()];
@@ -256,7 +257,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		 *     For something like time or Z, this could be kind of cool:
 		 *     my thing's time dimension goes from last Tuesday to Friday.
 		 */
-		for (DisplayView v:display.getViews()) {
+		for (DisplayView v : display.getViews()) {
 			DataObject o = v.getDataObject();
 			if (o instanceof Dataset) {
 				Dataset ds = (Dataset)o;
@@ -283,12 +284,34 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			}
 		}
 
-		for (Axis axis:axisSliders.keySet()) {
+		for (Axis axis : axisSliders.keySet()) {
 			if (display.getAxisIndex(axis) < 0) {
 				sliders.remove(axisSliders.get(axis));
 				sliders.remove(axisLabels.get(axis));
+				axisSliders.remove(axis);
+				axisLabels.remove(axis);
+				axisPositions.remove(axis);
+			}
+			// if a Dataset had planes deleted this will eventually get called.
+			// if thats the case the slider might exist but its allowable range
+			// has changed. check that we have correct range.
+			JScrollBar slider = axisSliders.get(axis);
+			if (slider != null) {
+				for (int i = 0; i < axes.length; i++) {
+					if (axis == axes[i]) {
+						if ((slider.getMinimum() != min[i]) ||
+								(slider.getMaximum() != max[i])) {
+							sliders.remove(slider);
+							sliders.remove(axisLabels.get(axis));
+							axisSliders.remove(axis);
+							axisLabels.remove(axis);
+							axisPositions.remove(axis);
+						}
+					}
+				}
 			}
 		}
+		
 		for (int i = 0; i < axes.length; i++) {
 			final Axis axis = axes[i];
 			if (axisSliders.containsKey(axis)) continue;
@@ -306,6 +329,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			slider.addAdjustmentListener(new AdjustmentListener() {
 
 				@Override
+				@SuppressWarnings("synthetic-access")
 				public void adjustmentValueChanged(final AdjustmentEvent e) {
 					final int position = slider.getValue();
 					axisPositions.put(axis, position);
