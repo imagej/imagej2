@@ -72,18 +72,21 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Deletion position",min="0")
-	private long deletePosition;
+	@Parameter(label="Deletion position",min="1")
+	private long oneBasedDelPos;
 	
 	// TODO - populate max from Dataset somehow
 	@Parameter(label="Deletion quantity",min="1")
 	private long numDeleting;
 
+	private long deletePosition;
+	
 	/** creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
 	public void run() {
+		deletePosition = oneBasedDelPos - 1; 
 		Axis axis = RestructureUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();

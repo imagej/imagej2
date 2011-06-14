@@ -72,7 +72,9 @@ public class DeleteAxis implements ImageJPlugin {
 		RestructureUtils.LI})
 	private String axisToDelete;
 	
-	@Parameter(label="Index of hyperplane to keep", min="0")
+	@Parameter(label="Index of hyperplane to keep", min="1")
+	private long oneBasedHyperplanePos;
+	
 	private long hyperPlaneToKeep;
 
 	/** creates new ImgPlus data with one less axis. sets pixels of ImgPlus
@@ -81,6 +83,7 @@ public class DeleteAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
+		hyperPlaneToKeep = oneBasedHyperplanePos - 1;
 		Axis axis = RestructureUtils.getAxis(axisToDelete);
 		if (inputBad(axis)) return;
 		Axis[] newAxes = getNewAxes(input, axis);

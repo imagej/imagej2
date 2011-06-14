@@ -72,18 +72,21 @@ public class AddHyperplanes implements ImageJPlugin {
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Insertion position",min="0")
-	private long insertPosition;
+	@Parameter(label="Insertion position",min="1")
+	private long oneBasedInsPos;
 	
 	// TODO - populate max from Dataset somehow
 	@Parameter(label="Insertion quantity",min="1")
 	private long numAdding;
+	
+	private long insertPosition;
 
 	/** creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
 	public void run() {
+		insertPosition = oneBasedInsPos - 1;
 		Axis axis = RestructureUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();
