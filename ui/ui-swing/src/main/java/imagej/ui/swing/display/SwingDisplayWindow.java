@@ -292,6 +292,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				axisLabels.remove(axis);
 				axisPositions.remove(axis);
 			}
+			
 			// if a Dataset had planes deleted this will eventually get called.
 			// if thats the case the slider might exist but its allowable range
 			// has changed. check that we have correct range.
@@ -301,11 +302,10 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					if (axis == axes[i]) {
 						if ((slider.getMinimum() != min[i]) ||
 								(slider.getMaximum() != max[i])) {
-							sliders.remove(slider);
-							sliders.remove(axisLabels.get(axis));
-							axisSliders.remove(axis);
-							axisLabels.remove(axis);
-							axisPositions.remove(axis);
+							if (slider.getValue() > max[i])
+								slider.setValue((int)max[i]);
+							slider.setMinimum((int)min[i]);
+							slider.setMaximum((int)max[i]);
 						}
 					}
 				}
