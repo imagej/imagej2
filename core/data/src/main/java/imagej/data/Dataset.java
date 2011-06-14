@@ -49,6 +49,7 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -140,6 +141,8 @@ public class Dataset extends AbstractDataObject implements
 		//		this.imgPlus.numDimensions() + " but was " + imgPlus.numDimensions());
 		//}
 
+		boolean wasRgbMerged = isRGBMerged();
+		
 		// are types different
 		boolean typeChanged = false;
 		if (imgPlus.getImg().cursor().get().getClass() !=
@@ -147,10 +150,20 @@ public class Dataset extends AbstractDataObject implements
 			typeChanged = true;
 		
 		this.imgPlus = imgPlus;
+		
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
 		selection = new IntRect();
 
+		if (wasRgbMerged) {
+			if ((isSigned()) ||
+					( ! isInteger() ) ||
+					(getType().getBitsPerPixel() != 8) ||
+					(imgPlus.getAxisIndex(Axes.CHANNEL) < 0) ||
+					(imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3))
+				setRGBMerged(false);
+		}
+		
 		rebuild();
 		
 		if (typeChanged)
