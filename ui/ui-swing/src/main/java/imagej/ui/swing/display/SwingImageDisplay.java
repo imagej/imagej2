@@ -44,6 +44,7 @@ import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
@@ -102,6 +103,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			public void windowClosed(final WindowEvent e) {
 				for (final DisplayView view : new ArrayList<DisplayView>(getViews())) {
 					view.dispose();
+					Events.publish(new DisplayDeletedEvent(thisDisplay));
 				}
 			}
 		});
