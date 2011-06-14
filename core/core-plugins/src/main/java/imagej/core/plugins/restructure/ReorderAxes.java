@@ -177,7 +177,9 @@ public class ReorderAxes implements ImageJPlugin {
 		ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
 		//reportDims(input.getImgPlus());
 		//reportDims(newImgPlus);
+		int count = input.getCompositeChannelCount();
 		input.setImgPlus(newImgPlus);
+		input.setCompositeChannelCount(count);
 	}
 
 	// -- helpers --
