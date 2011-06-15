@@ -171,9 +171,6 @@ public class NewImage implements ImageJPlugin {
 		// fill in the diagonal gradient
 		final Cursor<? extends RealType<?>> cursor =
 			dataset.getImgPlus().localizingCursor();
-		// TODO - Calling cursor() instead of localizingCursor() doesn't work;
-		// must be a bug in ImgLib2. Of course we do want localizingCursor() here,
-		// but cursor() should work too (just slower). Investigate further!
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			final long x = cursor.getLongPosition(0);
