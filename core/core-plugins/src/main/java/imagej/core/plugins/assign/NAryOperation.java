@@ -39,7 +39,6 @@ import imagej.data.Dataset;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.RealFunction;
 import net.imglib2.ops.operation.AssignOperation;
@@ -157,7 +156,7 @@ public class NAryOperation<T extends RealType<T>> {
 			throw new NullPointerException("function reference is null");
 		}
 
-		final List<Img<T>> inputImages = new ArrayList<Img<T>>();
+		final List<ImgPlus<T>> inputImages = new ArrayList<ImgPlus<T>>();
 
 		for (int i = 0; i < inputs.size(); i++) {
 			final Dataset dataset = inputs.get(i);

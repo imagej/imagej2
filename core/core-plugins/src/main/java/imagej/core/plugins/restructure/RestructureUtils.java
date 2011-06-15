@@ -128,7 +128,7 @@ public class RestructureUtils {
 		ImgPlus<? extends RealType<?>> dstImgPlus,
 		long[] dstOrigin, long[] dstSpan)
 	{
-		Img[] images = new Img[]{srcImgPlus.getImg(), dstImgPlus.getImg()};
+		ImgPlus[] images = new ImgPlus[]{srcImgPlus, dstImgPlus};
 		MultiImageIterator<? extends RealType<?>> iter =
 			new MultiImageIterator(images);
 		iter.setRegion(0, srcOrigin, srcSpan);
