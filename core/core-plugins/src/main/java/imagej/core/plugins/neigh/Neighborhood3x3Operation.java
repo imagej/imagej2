@@ -189,7 +189,7 @@ public class Neighborhood3x3Operation {
 		
 		long[] position = new long[dimensions.length];
 		
-		Cursor<? extends RealType<?>> cursor = image.cursor();
+		Cursor<? extends RealType<?>> cursor = image.localizingCursor();
 
 		RandomAccess<? extends RealType<?>> access = copyOfImg.randomAccess();
 		
