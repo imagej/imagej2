@@ -22,7 +22,7 @@ public class Diagnostics {
 	
 	public static String dump(Object o) {
 		StringBuffer buffer = new StringBuffer();
-		Class oClass = o.getClass();
+		Class<?> oClass = o.getClass();
 		if (oClass.isArray()) {
 			buffer.append("[");
 			for (int i = 0; i < Array.getLength(o); i++) {
