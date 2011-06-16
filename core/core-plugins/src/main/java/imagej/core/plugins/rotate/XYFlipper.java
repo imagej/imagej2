@@ -52,6 +52,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class XYFlipper implements OutputAlgorithm {
 
 	// -- instance variables --
