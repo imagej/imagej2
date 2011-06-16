@@ -68,6 +68,7 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 			minValues.add(image.firstElement().createVariable());
 			maxValues.add(image.firstElement().createVariable());
 			threads[ithread] = new Thread(new Runnable() {
+				@Override
 				public void run() {
 					// Thread ID
 					final int myNumber = ai.getAndIncrement();
@@ -98,12 +99,12 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 		return true;
 	}
 
-	protected void compute(final long startPos, final long loopSize, final T min, final T max) {
+	protected void compute(final long startPos, final long loopSize, final T omin, final T omax) {
 		final Cursor<T> cursor = image.cursor();
 		// init min and max
 		cursor.fwd();
-		min.set(cursor.get());
-		max.set(cursor.get());
+		omin.set(cursor.get());
+		omax.set(cursor.get());
 		cursor.reset();
 		// move to the starting position of the current thread
 		cursor.jumpFwd(startPos);
@@ -111,11 +112,11 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 		for (long j = 0; j < loopSize; ++j) {
 			cursor.fwd();
 			final T value = cursor.get();
-			if (Util.min(min, value) == value) {
-				min.set(value);
+			if (Util.min(omin, value) == value) {
+				omin.set(value);
 			}
-			if (Util.max(max, value) == value) {
-				max.set(value);
+			if (Util.max(omax, value) == value) {
+				omax.set(value);
 			}
 		}
 	}
