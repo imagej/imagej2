@@ -46,6 +46,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ui.common.awt.AWTDisplayWindow;
 import imagej.ui.common.awt.AWTEventDispatcher;
+import imagej.ui.swing.StaticSwingUtils;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -113,6 +114,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 		subscribeToEvents();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocation(StaticSwingUtils.nextFramePosition());
 	}
 
 	/**
