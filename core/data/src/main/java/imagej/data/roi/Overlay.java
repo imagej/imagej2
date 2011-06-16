@@ -36,7 +36,6 @@ package imagej.data.roi;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
-import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.util.ColorRGB;
 import net.imglib2.EuclideanSpace;
 import net.imglib2.img.Axis;
@@ -152,7 +151,7 @@ public interface Overlay extends DataObject, LabeledAxes, EuclideanSpace {
 	 * to the given axis. If the overlay isn't localized within
 	 * this axis, returns null.
 	 * @param axis
-	 * @return
+	 * @return Long position or null
 	 */
 	Long getPosition(Axis axis);
 
