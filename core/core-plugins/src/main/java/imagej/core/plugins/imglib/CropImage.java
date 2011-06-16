@@ -59,6 +59,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Crop", accelerator = "shift control X")})  // TODO - add correct weight
+@SuppressWarnings({"rawtypes","synthetic-access","unchecked"})
 public class CropImage implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
