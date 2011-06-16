@@ -69,7 +69,7 @@ public interface DisplayView {
 	long getPosition(final int dim);
 
 	/** Sets the position of the given dimensional axis. */
-	void setPosition(final int value, final int dim);
+	void setPosition(final long value, final int dim);
 
 	/** Gets the view's ideal width in pixels. */
 	int getPreferredWidth();
