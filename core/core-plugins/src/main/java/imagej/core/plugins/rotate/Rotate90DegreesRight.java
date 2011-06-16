@@ -64,6 +64,7 @@ public class Rotate90DegreesRight implements ImageJPlugin {
 	// -- public interface --
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void run() {
 		FlipCoordinateTransformer flipTransformer = new NinetyRightTransformer();
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);

@@ -63,6 +63,7 @@ public class FlipVertically implements ImageJPlugin {
 	// -- public interface --
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void run() {
 		FlipCoordinateTransformer flipTransformer = new VertFlipTransformer(input);
 		XYFlipper flipper = new XYFlipper(input, flipTransformer);
