@@ -46,6 +46,7 @@ import imagej.legacy.LegacyManager;
 import imagej.object.ObjectManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,9 +114,18 @@ public class LegacyPlugin implements ImageJPlugin {
 		outputSet.clear();
 		harmonizer.resetTypeTracking();
 		prePluginHarmonization(map, harmonizer);
-		WindowManager.setTempCurrentImage(map.findImagePlus(activeDS));
-		IJ.runPlugIn(className, arg);
-		outputs = postPluginHarmonization(map, harmonizer);
+		ImagePlus parallelImp = map.findImagePlus(activeDS);
+		WindowManager.setTempCurrentImage(parallelImp);
+		try {
+			IJ.runPlugIn(className, arg);
+			outputs = postPluginHarmonization(map, harmonizer);
+		} catch (Exception e) {
+			Log.warn("No outputs found - ImageJ 1.x plugin threw exception: "+e.getMessage());
+			// make sure our ImagePluses are in sync with original Datasets
+			prePluginHarmonization(map, harmonizer);
+			// return no outputs
+			outputs = new ArrayList<Dataset>();
+		}
 		harmonizer.resetTypeTracking();
 		outputSet.clear();
 	}
