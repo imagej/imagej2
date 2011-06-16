@@ -102,6 +102,11 @@ public abstract class AbstractDisplayView implements DisplayView {
 	}
 
 	@Override
+	public long getPosition(final int dim) {
+		return position[dim];
+	}
+	
+	@Override
 	public void setPosition(final int value, final int dim) {
 		position[dim] = value;
 		for (int i = 0; i < planePos.length; i++)

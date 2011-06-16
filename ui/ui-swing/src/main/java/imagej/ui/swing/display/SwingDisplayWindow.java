@@ -41,6 +41,7 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
+import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -88,7 +89,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private final Map<Axis, Integer> axisPositions = new HashMap<Axis, Integer>();
 	private final Map<Axis, JScrollBar> axisSliders = new HashMap<Axis, JScrollBar>();
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
-
+	
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
 
@@ -126,7 +127,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		if (axisPositions.containsKey(axis)) return axisPositions.get(axis);
 		return 0;
 	}
-	
+
+	// TODO - position might be better as a long
 	public void setAxisPosition(final Axis axis, final int position) {
 		axisPositions.put(axis, position);
 	}
@@ -237,6 +239,34 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			};
 		subscribers.add(dsUpdatedSubscriber);
 		Events.subscribe(DatasetUpdatedEvent.class, dsUpdatedSubscriber);
+
+		final EventSubscriber<AxisPositionEvent> axisMoveSubscriber =
+			new EventSubscriber<AxisPositionEvent>() {
+
+				@SuppressWarnings("synthetic-access")
+				@Override
+				public void onEvent(AxisPositionEvent event) {
+					if (event.getDisplay() == display) {
+						Axis axis = event.getAxis();
+						long value = event.getValue();
+						long newPos = value;
+						if (event.isRelative()) {
+							long currPos = getAxisPosition(axis);
+							newPos = currPos + value;
+						}
+						long max = event.getMax();
+						if ((newPos >= 0) && (newPos < max)) {
+							setAxisPosition(axis, (int)newPos); //TODO eliminate cast
+							long pos = getAxisPosition(axis);
+							JScrollBar scrollBar = axisSliders.get(axis);
+							scrollBar.setValue((int)pos);
+							update();
+						}
+					}
+				}
+			};
+		subscribers.add(axisMoveSubscriber);
+		Events.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
 	}
 
 	private void createSliders() {

@@ -85,7 +85,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
 	private ArrayList<EventSubscriber<?>> subscribers;
-
+	
 	public AbstractDatasetView(final Display display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
@@ -182,6 +182,12 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		return dataset;
 	}
 
+	@Override
+	public long getPosition(final int dim) {
+		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return 0;
+		return projector.getLongPosition(dim);
+	}
+	
 	@Override
 	public void setPosition(final int value, final int dim) {
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return;
