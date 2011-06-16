@@ -65,6 +65,9 @@ public interface DisplayView {
 	/** Gets the 1-dimensional plane index of this view. */
 	long getPlaneIndex();
 
+	/** gets the position of the given dimensional axis. */
+	long getPosition(final int dim);
+
 	/** Sets the position of the given dimensional axis. */
 	void setPosition(final int value, final int dim);
 
