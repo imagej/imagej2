@@ -263,6 +263,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		return proj;
 	}
 
+	@SuppressWarnings({"rawtypes","unchecked"})
 	public void autoscale(final int c) {
 		// Get min/max from metadata
 		double min = dataset.getImgPlus().getChannelMinimum(c);

@@ -72,8 +72,8 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 	public boolean isVisible() {
 		for (int i=2; i<overlay.numDimensions(); i++) {
 			Axis axis = overlay.axis(i);
-			final Long position = overlay.getPosition(axis);
-			if ((position != null) && ! position.equals(getPlanePosition()[i-2])) {
+			final Long pos = overlay.getPosition(axis);
+			if ((pos != null) && ! pos.equals(getPlanePosition()[i-2])) {
 				return false;
 			}
 		}
