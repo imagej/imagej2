@@ -189,9 +189,9 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 	
 	@Override
-	public void setPosition(final int value, final int dim) {
+	public void setPosition(final long value, final int dim) {
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return;
-		final int currentValue = projector.getIntPosition(dim);
+		final long currentValue = projector.getLongPosition(dim);
 		if (value == currentValue) {
 			return; // no change
 		}
