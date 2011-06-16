@@ -63,12 +63,17 @@ ij.plugin.filter.ImageMath("reciprocal")  # Process>Math>Reciprocal
 ij.plugin.filter.ImageMath("nan")         # Process>Math>Set Background To NaN
 ij.plugin.filter.ImageMath("abs")         # Process>Math>Abs
 ij.plugin.frame.ContrastAdjuster          # Image>Adjust>Brightness/Contrast
-#ij.plugin.ImageCalculator                 # Process>Image Calculator
 ij.plugin.Converter("8-bit")              # Image>Type>8-bit
 ij.plugin.Converter("16-bit")             # Image>Type>16-bit
 ij.plugin.Converter("32-bit")             # Image>Type>32-bit
+ij.plugin.Animator("next")                 # Image>Stacks>Next Slice
+ij.plugin.Animator("previous")             # Image>Stacks>Prev Slice
+ij.plugin.Animator("set")                  # Image>Stacks>Set Slice
+ij.plugin.StackEditor("add")                # Image>Stacks>Add Slice
+ij.plugin.StackEditor("delete")            # Image>Stacks>Delete Slice
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")        # Image>Type>8-bit Color
 #ij.plugin.Converter("RGB Color")          # Image>Type>RGB Color
 #ij.plugin.Converter("RGB Stack")          # Image>Type>RGB Stack
 #ij.plugin.Converter("HSB Stack")          # Image>Type>HSB Stack
+#ij.plugin.ImageCalculator                 # Process>Image Calculator  -- temporarily reenabled for testing
