@@ -41,9 +41,7 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -52,7 +50,6 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
-import imagej.data.roi.Overlay.ArrowStyle;
 import imagej.event.Events;
 import imagej.util.ColorRGB;
 import net.imglib2.img.Axes;
@@ -283,9 +280,11 @@ public class AbstractOverlay extends AbstractDataObject implements Overlay, Exte
 	}
 
 	@Override
-	public void axes(Axis[] axes) {
-		for (int i=0; (i < axes.length) && (i < this.axes.size()); i++ ) {
-			axes[i] = this.axes.get(i);
+	public void axes(Axis[] axesToFill) {
+		for (int i=0; (i < axesToFill.length) &&
+									(i < this.axes.size()); i++ )
+		{
+			axesToFill[i] = this.axes.get(i);
 		}
 	}
 
