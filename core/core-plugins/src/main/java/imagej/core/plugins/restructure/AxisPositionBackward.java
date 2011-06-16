@@ -52,6 +52,8 @@ import imagej.plugin.Plugin;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Axis Position Backward", accelerator = "shift COMMA") })
+//TODO - this next line does not work
+//@Menu(label = "Axis Position Backward", accelerator = "LESS") })
 public class AxisPositionBackward implements ImageJPlugin {
 
 	@Override
