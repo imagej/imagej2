@@ -1,7 +1,7 @@
 package imagej.core.plugins.axispos;
 
 //
-//AxisPosUtils.java
+//AxisUtils.java
 //
 
 /*
