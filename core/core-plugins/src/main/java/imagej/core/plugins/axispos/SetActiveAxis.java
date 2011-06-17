@@ -1,7 +1,7 @@
-package imagej.core.plugins.restructure;
+package imagej.core.plugins.axispos;
 
 //
-//AxisPositionBackward.java
+//SetActiveAxis.java
 //
 
 /*
@@ -34,30 +34,41 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+import net.imglib2.img.Axis;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
+import imagej.plugin.Parameter;
 
-
-// TODO - accelerator may not work with all keyboard layouts
-//   making it "LESS" did not work
 
 /**
-* Updates the current display to show the previous plane along an axis
+* Changes the axis to move along to user specified value. This axis of movement
+* is used in the move axis position forward/backward plugins.
 * 
 * @author Barry DeZonia
 */
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Axis Position Backward", accelerator = "shift COMMA") })
-//TODO - this next line does not work
-//@Menu(label = "Axis Position Backward", accelerator = "LESS") })
-public class AxisPositionBackward implements ImageJPlugin {
+@Menu(label = "Set Active Axis...") })
+public class SetActiveAxis implements ImageJPlugin {
 
+	@Parameter(label="Axis",choices={
+		// NB - X & Y excluded right now
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
+	String axisName;
+	
 	@Override
 	public void run() {
-		RestructureUtils.changeCurrentAxisPosition(-1, true);
+		Axis newActiveAxis = AxisUtils.getAxis(axisName);
+		if (newActiveAxis != null)
+			AxisUtils.setActiveAxis(newActiveAxis);
 	}
 }

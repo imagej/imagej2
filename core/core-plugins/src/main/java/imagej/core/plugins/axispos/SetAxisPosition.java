@@ -1,9 +1,7 @@
-package imagej.core.plugins.restructure;
-
-
+package imagej.core.plugins.axispos;
 
 //
-//SetActiveAxis.java
+//SetAxisPosition.java
 //
 
 /*
@@ -36,49 +34,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
-
+import imagej.plugin.Plugin;
 
 /**
-* Changes the axis to move along to user specified value. This axis of movement
-* is used in the move axis position forward/backward plugins.
+* Sets the position of the current axis to a user specified value
 * 
 * @author Barry DeZonia
 */
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Set Active Axis...") })
-public class SetActiveAxis implements ImageJPlugin {
+@Menu(label = "Set Axis Position...") })
+public class SetAxisPosition implements ImageJPlugin {
 
-	@Parameter(label="Axis",choices={  // NB - X & Y excluded right now
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
-	String axisName;
-	
-	// TODO - do not have a static here. Rather copy the idea of active display,
-	// active view, etc.
+	@Parameter(label="Position",min="1")
+	long oneBasedPosition;
 
-	private static Axis activeAxis = Axes.Z;
-	
-	public static Axis getActiveAxis() { return activeAxis; } 
-	
 	@Override
 	public void run() {
-		Axis newActiveAxis = RestructureUtils.getAxis(axisName);
-		if (newActiveAxis != null)
-			activeAxis = newActiveAxis;
+		long newPosition = oneBasedPosition - 1;
+		AxisUtils.changeCurrentAxisPosition(newPosition, false);
 	}
 }

@@ -1,5 +1,6 @@
 package imagej.core.plugins.restructure;
 
+import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -36,133 +37,133 @@ public class ReorderAxes implements ImageJPlugin {
 	private Dataset input;
 
 	@Parameter(label="1st preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis1;
 	
 	@Parameter(label="2nd preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis2;
 	
 	@Parameter(label="3rd preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis3;
 	
 	@Parameter(label="4th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis4;
 	
 	@Parameter(label="5th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis5;
 	
 	@Parameter(label="6th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis6;
 	
 	@Parameter(label="7th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis7;
 	
 	@Parameter(label="8th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis8;
 	
 	@Parameter(label="9th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis9;
 	
 	@Parameter(label="10th preference",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	String axis10;
 	
 	private int[] permutationAxisIndices;
@@ -203,16 +204,16 @@ public class ReorderAxes implements ImageJPlugin {
 	 * just those present in the input Dataset. */
 	private void setupDesiredAxisOrder() {
 		desiredAxisOrder = new Axis[]{
-			RestructureUtils.getAxis(axis1),
-			RestructureUtils.getAxis(axis2),
-			RestructureUtils.getAxis(axis3),
-			RestructureUtils.getAxis(axis4),
-			RestructureUtils.getAxis(axis5),
-			RestructureUtils.getAxis(axis6),
-			RestructureUtils.getAxis(axis7),
-			RestructureUtils.getAxis(axis8),
-			RestructureUtils.getAxis(axis9),
-			RestructureUtils.getAxis(axis10)
+			AxisUtils.getAxis(axis1),
+			AxisUtils.getAxis(axis2),
+			AxisUtils.getAxis(axis3),
+			AxisUtils.getAxis(axis4),
+			AxisUtils.getAxis(axis5),
+			AxisUtils.getAxis(axis6),
+			AxisUtils.getAxis(axis7),
+			AxisUtils.getAxis(axis8),
+			AxisUtils.getAxis(axis9),
+			AxisUtils.getAxis(axis10)
 		};
 	}
 	

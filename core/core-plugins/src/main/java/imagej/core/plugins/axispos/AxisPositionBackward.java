@@ -1,7 +1,7 @@
-package imagej.core.plugins.restructure;
+package imagej.core.plugins.axispos;
 
 //
-//AxisPositionForward.java
+//AxisPositionBackward.java
 //
 
 /*
@@ -41,23 +41,23 @@ import imagej.plugin.Plugin;
 
 
 // TODO - accelerator may not work with all keyboard layouts
-//   making it "GREATER" did not work
+//   making it "LESS" did not work
 
 /**
-* Updates the current display to show the next plane along an axis
+* Updates the current display to show the previous plane along an axis
 * 
 * @author Barry DeZonia
 */
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Axis Position Forward", accelerator = "shift PERIOD") })
-// TODO - this next line does not work
-//@Menu(label = "Axis Position Forward", accelerator = "GREATER") })
-public class AxisPositionForward implements ImageJPlugin {
+@Menu(label = "Axis Position Backward", accelerator = "shift COMMA") })
+//TODO - this next line does not work
+//@Menu(label = "Axis Position Backward", accelerator = "LESS") })
+public class AxisPositionBackward implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		RestructureUtils.changeCurrentAxisPosition(+1, true);
+		AxisUtils.changeCurrentAxisPosition(-1, true);
 	}
 }

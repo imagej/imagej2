@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
+import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -59,16 +60,16 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	
 	// TODO - populate choices from Dataset somehow
 	@Parameter(label="Axis to modify",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
@@ -87,7 +88,7 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	@Override
 	public void run() {
 		deletePosition = oneBasedDelPos - 1; 
-		Axis axis = RestructureUtils.getAxis(axisToModify);
+		Axis axis = AxisUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();
 		long[] newDimensions =
