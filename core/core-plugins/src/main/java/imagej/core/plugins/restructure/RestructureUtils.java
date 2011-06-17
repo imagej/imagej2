@@ -105,7 +105,7 @@ public class RestructureUtils {
 	}
 
 	/** copies a hypervolume from a source {@link ImgPlus} to a destination
-	 * {@link ImagePlus}. Spans may have different dimensionsality but must be
+	 * {@link ImgPlus}. Spans may have different number of dimensions but must be
 	 * shape compatible with axes in same relative order. Span checking is done
 	 * within a {@link MultiImageIterator}.
 	 */

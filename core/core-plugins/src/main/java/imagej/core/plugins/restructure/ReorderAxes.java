@@ -256,7 +256,7 @@ public class ReorderAxes implements ImageJPlugin {
 		permutationAxisIndices = new int[currAxes.length];
 		for (int i = 0; i < currAxes.length; i++) {
 			Axis axis = currAxes[i];
-			int newIndex = getNewAxisIndex(permutedAxes,axis);
+			int newIndex = getNewAxisIndex(permutedAxes, axis);
 			permutationAxisIndices[i] = newIndex;
 		}
 	}
