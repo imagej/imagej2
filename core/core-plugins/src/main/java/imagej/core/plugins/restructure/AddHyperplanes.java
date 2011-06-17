@@ -115,7 +115,7 @@ public class AddHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// bad value for startPosition
-		if ((insertPosition < 0)  || (insertPosition >= axisSize))
+		if ((insertPosition < 0)  || (insertPosition > axisSize))
 			return true;
 		
 		// bad value for numAdding
