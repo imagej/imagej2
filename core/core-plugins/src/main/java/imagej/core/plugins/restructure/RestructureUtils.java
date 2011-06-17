@@ -34,14 +34,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
-import imagej.display.DisplayManager;
-import imagej.display.DisplayView;
-import imagej.display.event.AxisPositionEvent;
-import imagej.event.Events;
-import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -51,33 +44,16 @@ import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 
 
+/**
+ * Utility class used by the restructure plugins
+ * 
+ * @author Barry DeZonia
+ *
+ */
 public class RestructureUtils {
 	
-	public static final String
-  	X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
-  		PH="Phase", PO="Polarization", LI="Lifetime";
-
-	public static final String[] AXES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
-	
-	/** maps an axis name String into an Axis value.
-	 * returns null if some unknown axis specified */
-	public static Axis getAxis(String axisName) {
-		Axis axis = null;
-			
-		if (axisName.equals(CH)) axis = Axes.CHANNEL;
-		else if (axisName.equals(FR)) axis = Axes.FREQUENCY;
-		else if (axisName.equals(LI)) axis = Axes.LIFETIME;
-		else if (axisName.equals(PH)) axis = Axes.PHASE;
-		else if (axisName.equals(PO)) axis = Axes.POLARIZATION;
-		else if (axisName.equals(SP)) axis = Axes.SPECTRA;
-		else if (axisName.equals(TI)) axis = Axes.TIME;
-		else if (axisName.equals(X)) axis = Axes.X;
-		else if (axisName.equals(Y)) axis = Axes.Y;
-		else if (axisName.equals(Z)) axis = Axes.Z;
-	
-		// NB : axis could still be null here : Axes.UNKNOWN
-		
-		return axis;
+	private RestructureUtils() {
+		// utility class : uninstantiable
 	}
 	
 	/** gets the dimensions of the output data */
@@ -128,6 +104,11 @@ public class RestructureUtils {
 		copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
 	}
 
+	/** copies a hypervolume from a source {@link ImgPlus} to a destination
+	 * {@link ImagePlus}. Spans may have different dimensionsality but must be
+	 * shape compatible with axes in same relative order. Span checking is done
+	 * within a {@link MultiImageIterator}.
+	 */
 	@SuppressWarnings({"rawtypes","unchecked"})
 	public static void copyHyperVolume(ImgPlus<? extends RealType<?>> srcImgPlus,
 		long[] srcOrigin, long[] srcSpan,
@@ -148,22 +129,6 @@ public class RestructureUtils {
 		}
 	}
 
-	public static void changeCurrentAxisPosition(long change, boolean relative) {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-		Axis axis = SetActiveAxis.getActiveAxis();
-		if (axis == null) return;
-		if (display.getAxisIndex(axis) < 0) return;
-		DisplayView view = display.getActiveView();
-		Dataset ds = (Dataset) view.getDataObject();  // TODO - safe?
-		int axisIndex = ds.getAxisIndex(axis);
-		if (axisIndex < 0) return;
-		long[] dimensions = ds.getDims();
-		long max = dimensions[axisIndex];
-		Events.publish(new AxisPositionEvent(display, axis, change, max, relative));
-	}
-	
 	/** returns a span array covering the specified hyperplanes. Only the axis
 	 * along which the cut is being made has nonmaximal dimension. That
 	 * dimension is set to the passed in number of elements to be preserved.

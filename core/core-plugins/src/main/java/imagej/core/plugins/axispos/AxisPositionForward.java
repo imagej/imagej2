@@ -1,7 +1,7 @@
-package imagej.core.plugins.restructure;
+package imagej.core.plugins.axispos;
 
 //
-//SetAxisPosition.java
+//AxisPositionForward.java
 //
 
 /*
@@ -34,28 +34,30 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+
+// TODO - accelerator may not work with all keyboard layouts
+//   making it "GREATER" did not work
+
 /**
-* Sets the position of the current axis to a user specified value
+* Updates the current display to show the next plane along an axis
 * 
 * @author Barry DeZonia
 */
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Set Axis Position...") })
-public class SetAxisPosition implements ImageJPlugin {
-
-	@Parameter(label="Position",min="1")
-	long oneBasedPosition;
+@Menu(label = "Axis Position Forward", accelerator = "shift PERIOD") })
+// TODO - this next line does not work
+//@Menu(label = "Axis Position Forward", accelerator = "GREATER") })
+public class AxisPositionForward implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		long newPosition = oneBasedPosition - 1;
-		RestructureUtils.changeCurrentAxisPosition(newPosition, false);
+		AxisUtils.changeCurrentAxisPosition(+1, true);
 	}
 }

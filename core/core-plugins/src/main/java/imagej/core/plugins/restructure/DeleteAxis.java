@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
+import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -60,16 +61,16 @@ public class DeleteAxis implements ImageJPlugin {
 
 	// TODO - populate choices from Dataset somehow
 	@Parameter(label="Axis to delete",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	private String axisToDelete;
 	
 	@Parameter(label="Index of hyperplane to keep", min="1")
@@ -84,7 +85,7 @@ public class DeleteAxis implements ImageJPlugin {
 	@Override
 	public void run() {
 		hyperPlaneToKeep = oneBasedHyperplanePos - 1;
-		Axis axis = RestructureUtils.getAxis(axisToDelete);
+		Axis axis = AxisUtils.getAxis(axisToDelete);
 		if (inputBad(axis)) return;
 		Axis[] newAxes = getNewAxes(input, axis);
 		long[] newDimensions = getNewDimensions(input, axis);
@@ -159,7 +160,7 @@ public class DeleteAxis implements ImageJPlugin {
 		srcImgPlus.dimensions(srcSpan);
 		dstImgPlus.dimensions(dstSpan);
 
-		Axis axis = RestructureUtils.getAxis(axisToDelete);
+		Axis axis = AxisUtils.getAxis(axisToDelete);
 		int axisIndex = srcImgPlus.getAxisIndex(axis);
 		srcOrigin[axisIndex] = this.hyperPlaneToKeep;
 		srcSpan[axisIndex] = 1;

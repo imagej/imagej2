@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
+import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -60,16 +61,16 @@ public class AddAxis implements ImageJPlugin {
 
 	// TODO - populate choices from Dataset somehow
 	@Parameter(label="Axis to add",choices = {
-		RestructureUtils.X,
-		RestructureUtils.Y,
-		RestructureUtils.Z,
-		RestructureUtils.CH,
-		RestructureUtils.TI,
-		RestructureUtils.FR,
-		RestructureUtils.SP,
-		RestructureUtils.PH,
-		RestructureUtils.PO,
-		RestructureUtils.LI})
+		AxisUtils.X,
+		AxisUtils.Y,
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
 	private String axisToAdd;
 	
 	@Parameter(label="Axis size", min="1")
@@ -81,7 +82,7 @@ public class AddAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		Axis axis = RestructureUtils.getAxis(axisToAdd);
+		Axis axis = AxisUtils.getAxis(axisToAdd);
 		if (inputBad(axis)) return;
 		Axis[] newAxes = getNewAxes(input, axis);
 		long[] newDimensions = getNewDimensions(input, axisSize);
