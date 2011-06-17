@@ -59,7 +59,7 @@ public class AddHyperplanes implements ImageJPlugin {
 	private Dataset input;
 	
 	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to modify",choices = {
+	@Parameter(label="Axis to modify", choices = {
 		AxisUtils.X,
 		AxisUtils.Y,
 		AxisUtils.Z,
@@ -73,11 +73,11 @@ public class AddHyperplanes implements ImageJPlugin {
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Insertion position",min="1")
+	@Parameter(label="Insertion position", min="1")
 	private long oneBasedInsPos;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Insertion quantity",min="1")
+	@Parameter(label="Insertion quantity", min="1")
 	private long numAdding;
 	
 	private long insertPosition;
@@ -92,9 +92,9 @@ public class AddHyperplanes implements ImageJPlugin {
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();
 		long[] newDimensions =
-			RestructureUtils.getDimensions(input,axis,numAdding);
+			RestructureUtils.getDimensions(input, axis, numAdding);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input,newDimensions, axes);
+			RestructureUtils.createNewImgPlus(input, newDimensions, axes);
 		fillNewImgPlus(input.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
 		input.setImgPlus(dstImgPlus);

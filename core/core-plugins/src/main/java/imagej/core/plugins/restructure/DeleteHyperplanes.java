@@ -73,11 +73,11 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	private String axisToModify;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Deletion position",min="1")
+	@Parameter(label="Deletion position", min="1")
 	private long oneBasedDelPos;
 	
 	// TODO - populate max from Dataset somehow
-	@Parameter(label="Deletion quantity",min="1")
+	@Parameter(label="Deletion quantity", min="1")
 	private long numDeleting;
 
 	private long deletePosition;
@@ -92,9 +92,9 @@ public class DeleteHyperplanes implements ImageJPlugin {
 		if (inputBad(axis)) return;
 		Axis[] axes = input.getAxes();
 		long[] newDimensions =
-			RestructureUtils.getDimensions(input,axis,-numDeleting);
+			RestructureUtils.getDimensions(input, axis, -numDeleting);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input,newDimensions, axes);
+			RestructureUtils.createNewImgPlus(input, newDimensions, axes);
 		fillNewImgPlus(input.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
 		input.setImgPlus(dstImgPlus);

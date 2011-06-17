@@ -60,7 +60,7 @@ public class DeleteAxis implements ImageJPlugin {
 	private Dataset input;
 
 	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to delete",choices = {
+	@Parameter(label="Axis to delete", choices = {
 		AxisUtils.X,
 		AxisUtils.Y,
 		AxisUtils.Z,
