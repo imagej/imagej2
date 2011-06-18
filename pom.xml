@@ -349,7 +349,7 @@
 			<id>all</id>
 			<modules>
 				<module>extra</module>
-				<module>old</module>
+				<!-- <module>ij1-tests</module> -->
 				<module>plugins</module>
 			</modules>
 		</profile>
