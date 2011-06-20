@@ -139,7 +139,7 @@ public class LegacyImageMap {
 		  ImagePlus imp = lookupDataset(ds);
 		  if (imp != null) {
 				imageTable.remove(imp);
-				removeImagePlusFromIJ1(imp);
+				LegacyUtils.removeImagePlusFromIJ1(imp);
 		  }
 		//}
 	}
@@ -149,7 +149,7 @@ public class LegacyImageMap {
 	public void unregisterLegacyImage(ImagePlus imp) {
 		//synchronized(lock) {
 			imageTable.remove(imp);
-			removeImagePlusFromIJ1(imp);
+			LegacyUtils.removeImagePlusFromIJ1(imp);
 		//}
 	}
 
@@ -165,20 +165,6 @@ public class LegacyImageMap {
 			}
 		}
 		return imp;
-	}
-	
-	private void removeImagePlusFromIJ1(ImagePlus imp) {
-		ImagePlus savedImagePlus = WindowManager.getCurrentImage();
-		if (savedImagePlus != imp)
-			WindowManager.setTempCurrentImage(imp);
-		ImageWindow ij1Window = WindowManager.getCurrentWindow();
-		if (ij1Window != null) {
-			imp.changes = false;
-			ij1Window.close();
-		}
-		WindowManager.setTempCurrentImage(null);
-		if (savedImagePlus != imp)
-			WindowManager.setTempCurrentImage(savedImagePlus);
 	}
 	
 	private void subscribeToEvents() {
