@@ -52,7 +52,7 @@ import imagej.plugin.Parameter;
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Delete Data") })
+@Menu(label = "Delete Data...") })
 public class DeleteHyperplanes implements ImageJPlugin {
 
 	@Parameter(required=true)

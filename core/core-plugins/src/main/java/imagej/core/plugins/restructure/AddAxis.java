@@ -53,7 +53,7 @@ import imagej.plugin.Parameter;
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Add Axis") })
+@Menu(label = "Add Axis...") })
 public class AddAxis implements ImageJPlugin {
 	
 	@Parameter(required = true)

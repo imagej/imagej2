@@ -53,7 +53,7 @@ import imagej.plugin.Parameter;
 @Plugin(menu = {
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Delete Axis") })
+@Menu(label = "Delete Axis...") })
 public class DeleteAxis implements ImageJPlugin {
 	
 	@Parameter(required = true)
