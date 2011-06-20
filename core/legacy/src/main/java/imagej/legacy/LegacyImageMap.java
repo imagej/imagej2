@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-import ij.WindowManager;
-import ij.gui.ImageWindow;
 
 import imagej.data.Dataset;
 import imagej.data.event.DatasetDeletedEvent;
@@ -84,7 +82,7 @@ public class LegacyImageMap {
 	/** returns the result of a lookup for a given Dataset */
 	public ImagePlus findImagePlus(Dataset ds) {
 		//synchronized(lock) {
-			return lookupDataset(ds);
+			return getParallelImagePlus(ds);
 		//}
 	}
 	
@@ -103,7 +101,7 @@ public class LegacyImageMap {
 	public ImagePlus registerDataset(Dataset dataset) {
 		//synchronized(lock) {
 			// find image window
-			ImagePlus imp = lookupDataset(dataset);
+			ImagePlus imp = getParallelImagePlus(dataset);
 			if (imp == null) {
 				// mirror dataset to image window
 				imp = imageTranslator.createLegacyImage(dataset);
@@ -136,7 +134,7 @@ public class LegacyImageMap {
 	/** removes the mapping associated with a given Dataset */
 	public void unregisterDataset(Dataset ds) {
 		//synchronized(lock) {
-		  ImagePlus imp = lookupDataset(ds);
+		  ImagePlus imp = getParallelImagePlus(ds);
 		  if (imp != null) {
 				imageTable.remove(imp);
 				LegacyUtils.removeImagePlusFromIJ1(imp);
@@ -155,7 +153,7 @@ public class LegacyImageMap {
 
 	// -- helpers --
 
-	private ImagePlus lookupDataset(Dataset ds) {
+	private ImagePlus getParallelImagePlus(Dataset ds) {
 		ImagePlus imp = null;
 		for (final ImagePlus key : imageTable.keySet()) {
 			final Dataset value = imageTable.get(key);
