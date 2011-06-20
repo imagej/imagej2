@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.gui.ImageWindow;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
@@ -90,6 +91,7 @@ public final class LegacyManager implements ManagerComponent {
 		hacker.insertMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
+		hacker.insertAfterMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override behavior of ij.macro.Functions
@@ -100,14 +102,14 @@ public final class LegacyManager implements ManagerComponent {
 			"void displayBatchModeImage(ij.ImagePlus imp2)",
 			"imagej.legacy.patches.FunctionsMethods.afterBatchDraw();");
 		hacker.loadClass("ij.macro.Functions");
-		/*
-		*/
 		
 		// override behavior of MacAdapter
 		hacker.replaceMethod("MacAdapter",
 			"public void run(java.lang.String arg)", ";");
 		hacker.loadClass("MacAdapter");
 	}
+
+	private static boolean insideIJ1PluginRightNow = false;
 
 	/** Mapping between datasets and legacy image objects. */
 	private LegacyImageMap imageMap;
@@ -122,6 +124,14 @@ public final class LegacyManager implements ManagerComponent {
 		LegacyPlugin.getOutputImps().add(imp);
 	}
 
+	public static void setInsideIJ1Plugin(boolean value) {
+		insideIJ1PluginRightNow = value;
+	}
+	
+	public static boolean insideIJ1Plugin() {
+		return insideIJ1PluginRightNow;
+	}
+	
 	// -- ManagerComponent methods --
 
 	@Override

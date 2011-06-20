@@ -117,7 +117,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		ImagePlus parallelImp = map.findImagePlus(activeDS);
 		WindowManager.setTempCurrentImage(parallelImp);
 		try {
+			LegacyManager.setInsideIJ1Plugin(true);
 			IJ.runPlugIn(className, arg);
+			LegacyManager.setInsideIJ1Plugin(false);
 			outputs = postPluginHarmonization(map, harmonizer);
 		} catch (Exception e) {
 			Log.warn("No outputs found - ImageJ 1.x plugin threw exception: "+e.getMessage());
@@ -151,6 +153,11 @@ public class LegacyPlugin implements ImageJPlugin {
 	private List<Dataset> postPluginHarmonization(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
+		// TODO - check the changes flag for each ImagePlus that already has a
+		// Dataset and only harmonize those that have changed. Maybe changes
+		// flag does not track everything (such as metadata changes?) and thus
+		// we might still have to do some minor harmonization. Investigate.
+		
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
 		final ImagePlus currImp = IJ.getImage();
