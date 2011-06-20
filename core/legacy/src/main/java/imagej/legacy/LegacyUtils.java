@@ -806,12 +806,12 @@ public class LegacyUtils {
 		if (imp == currImagePlus)
 			WindowManager.setTempCurrentImage(null);
 		ImageWindow ij1Window = imp.getWindow();
-		if (ij1Window != null) {
+		if (ij1Window == null)
+			Interpreter.removeBatchModeImage(imp);
+		else {
 			imp.changes = false;
 			ij1Window.close();
 		}
-		else
-			Interpreter.removeBatchModeImage(imp);
 	}
 	
 	// -- private helpers --
