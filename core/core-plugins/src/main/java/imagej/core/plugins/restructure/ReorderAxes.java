@@ -29,7 +29,7 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
-	@Menu(label = "Reorder Axes") })
+	@Menu(label = "Reorder Axes...") })
 public class ReorderAxes implements ImageJPlugin {
 	RegionIterator<?> iter;
 	
