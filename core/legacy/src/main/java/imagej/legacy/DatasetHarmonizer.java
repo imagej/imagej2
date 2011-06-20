@@ -95,6 +95,7 @@ public class DatasetHarmonizer {
 			int z = newImp.getNSlices();
 			int t = newImp.getNFrames();
 			imp.setDimensions(c, z, t);
+			LegacyUtils.removeImagePlusFromIJ1(newImp);
 			//System.out.println("imp type "+imp.getType());
 			//System.out.println("from new imp type "+newImp.getType());
 		}
@@ -106,6 +107,7 @@ public class DatasetHarmonizer {
 				int z = newImp.getNSlices();
 				int t = newImp.getNFrames();
 				imp.setDimensions(c, z, t);
+				LegacyUtils.removeImagePlusFromIJ1(newImp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB)
 				LegacyUtils.setImagePlusColorData(ds, imp);
@@ -182,5 +184,4 @@ public class DatasetHarmonizer {
 		// axis < 0 : not present in imgPlus
 		return value != 1;
 	}
-
 }

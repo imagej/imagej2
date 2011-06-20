@@ -42,6 +42,9 @@ package imagej.legacy;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.ImageWindow;
+import ij.macro.Interpreter;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
@@ -795,6 +798,22 @@ public class LegacyUtils {
 		return new CompositeImage(imp, CompositeImage.COMPOSITE);
 	}
 
+	/** modifies IJ1 data structures so that there are no dangling references
+	 * to an obsolete ImagePlus.
+	 */
+	static void removeImagePlusFromIJ1(ImagePlus imp) {
+		ImagePlus currImagePlus = WindowManager.getCurrentImage();
+		if (imp == currImagePlus)
+			WindowManager.setTempCurrentImage(null);
+		ImageWindow ij1Window = imp.getWindow();
+		if (ij1Window != null) {
+			imp.changes = false;
+			ij1Window.close();
+		}
+		else
+			Interpreter.removeBatchModeImage(imp);
+	}
+	
 	// -- private helpers --
 
 	/** gets a dimension for a given axis from a list of dimensions in
