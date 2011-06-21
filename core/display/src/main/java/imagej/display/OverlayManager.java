@@ -45,6 +45,8 @@ import imagej.object.ObjectManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.img.Axis;
+
 /**
  * Manager component for working with {@link Overlay}s.
  * 
@@ -122,21 +124,72 @@ public final class OverlayManager implements ManagerComponent {
 		final List<Display> displays = objectManager.getObjects(Display.class);
 		for (final Display display : displays) {
 			// check whether dataset is present in this display
-			boolean relevant = false;
+			final List<DisplayView> views = display.getViews();
+			DisplayView datasetView = null;
+			for (final DisplayView view : views) {
+				final DataObject dataObject = view.getDataObject();
+				if (dataObject == dataset) {
+					datasetView = view;
+					break;
+				}
+			}
+			if (datasetView == null) continue;
+
+			// add the given overlays to this display and return
+			for (final Overlay overlay : overlays) {
+				display.display(overlay);
+				/*
+				 * Set the overlay plane.
+				 */
+				for (final DisplayView view : views) {
+					if (view.getDataObject() == overlay) {
+						long [] position = datasetView.getPlanePosition();
+						for (int i=0; i<position.length; i++) {
+							/*
+							 * Skip the X and Y axis and get the rest
+							 */
+							Axis axis = display.axis(i+2);
+							overlay.setPosition(axis, position[i]);
+						}
+					}
+				}
+			}
+			break;
+		}
+	}
+	
+	/**
+	 * Remove an overlay from the display associated with a dataset.
+	 * 
+	 * @param dataset find the relevant display associated with this dataset
+	 * @param overlay the overlay to remove
+	 */
+	public void removeOverlay(final Dataset dataset, final Overlay overlay)
+	{
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
+		final List<Display> displays = objectManager.getObjects(Display.class);
+		for (final Display display : displays) {
+			// check whether dataset is present in this display
+			boolean has_dataset = false;
+			boolean has_overlay = false;
+			ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>(); 
 			final List<DisplayView> views = display.getViews();
 			for (final DisplayView view : views) {
 				final DataObject dataObject = view.getDataObject();
 				if (dataObject == dataset) {
-					relevant = true;
-					break;
+					has_dataset = true;
+					if (has_overlay) break;
+				} else if (dataObject == overlay) {
+					has_overlay = true;
+					overlayViews.add(view);
+					if (has_dataset) break;
 				}
 			}
-			if (!relevant) continue;
-
-			// add the given overlays to this display and return
-			for (final Overlay overlay : overlays)
-				display.display(overlay);
-			break;
+			if (has_dataset && has_overlay) {
+				for(DisplayView view:overlayViews){
+					display.removeView(view);
+				}
+			}
 		}
 	}
 

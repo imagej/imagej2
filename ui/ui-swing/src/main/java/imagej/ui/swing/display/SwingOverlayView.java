@@ -70,6 +70,10 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	
 	private boolean updateScheduled = false;
 	
+	private boolean disposeScheduled = false;
+	
+	private boolean figureAdded = false;
+	
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
 	 * @param display - hook to this display
@@ -95,11 +99,24 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 		adapter = JHotDrawAdapterFinder.getAdapterForOverlay(overlay, figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
-			final JHotDrawImageCanvas canvas = display.getImageCanvas();
-			final Drawing drawing = canvas.getDrawing();
-			drawing.add(this.figure);
+			adapter.updateFigure(overlay, this.figure, this);
+			EventQueue.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					synchronized(SwingOverlayView.this) {
+						if (! disposeScheduled) {
+							final JHotDrawImageCanvas canvas = display.getImageCanvas();
+							final Drawing drawing = canvas.getDrawing();
+							drawing.add(SwingOverlayView.this.figure);
+							figureAdded = true;
+						}
+					}
+				}
+			});
 		} else {
 			this.figure = figure;
+			figureAdded = true;
 		}
 		this.figure.addFigureListener(new FigureAdapter() {
 			@Override
@@ -188,12 +205,26 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	 */
 	@Override
 	public void dispose() {
-		figure.requestRemove();
+		synchronized(this) {
+			if (! disposeScheduled) {
+				EventQueue.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						synchronized(SwingOverlayView.this) {
+							if (figureAdded) {
+								figure.requestRemove();
+							}
+						}
+					}});
+				disposeScheduled = true;
+			}
+		}
 		super.dispose();
 	}
 	
 	private synchronized void updateFigure() {
-		if (updatingOverlay) return;
+		if (updatingOverlay || disposeScheduled) return;
 		if (! updateScheduled) {
 			EventQueue.invokeLater(new Runnable() {
 
@@ -208,7 +239,8 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 			updateScheduled = true;
 		}
 	}
-	private void doUpdateFigure() {
+	private synchronized void doUpdateFigure() {
+		if (disposeScheduled) return;
 		updatingFigure = true;
 		try {
 			adapter.updateFigure(getDataObject(), figure, this);

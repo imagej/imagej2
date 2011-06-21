@@ -121,6 +121,10 @@ public class OverlayTranslator {
 				}
 			}
 		}
+		final List<Overlay> overlaysToRemove = overlayManager.getOverlays(ds);
+		for (Overlay overlay:overlaysToRemove) {
+			overlayManager.removeOverlay(ds, overlay);
+		}
 		final List<Overlay> overlays = getOverlays(imp);
 		overlayManager.setOverlays(ds, overlays);
 	}
