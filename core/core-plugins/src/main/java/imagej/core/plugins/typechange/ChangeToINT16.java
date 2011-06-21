@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.integer.ShortType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Signed 16-bit", weight = 9) })
+	@Menu(label = "Signed 16-bit", weight = 209) })
 public class ChangeToINT16 extends TypeChanger implements ImageJPlugin {
 
 	@Override
