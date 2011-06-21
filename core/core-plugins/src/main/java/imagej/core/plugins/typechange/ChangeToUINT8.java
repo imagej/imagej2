@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Unsigned 8-bit", weight = 2) })
+	@Menu(label = "Unsigned 8-bit", weight = 202) })
 public class ChangeToUINT8 extends TypeChanger implements ImageJPlugin {
 
 	@Override

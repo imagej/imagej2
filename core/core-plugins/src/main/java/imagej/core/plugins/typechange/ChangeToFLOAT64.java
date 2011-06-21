@@ -47,7 +47,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Float 64-bit", weight = 7) })
+	@Menu(label = "Float 64-bit", weight = 207) })
 public class ChangeToFLOAT64 extends TypeChanger implements ImageJPlugin {
 
 	@Override

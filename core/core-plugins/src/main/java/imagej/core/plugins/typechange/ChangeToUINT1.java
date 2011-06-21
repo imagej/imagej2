@@ -48,7 +48,7 @@ import net.imglib2.type.logic.BitType;
 @Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
-	@Menu(label = "Unsigned 1-bit", weight = 1) })
+	@Menu(label = "Unsigned 1-bit", weight = 201) })
 public class ChangeToUINT1 extends TypeChanger implements ImageJPlugin {
 
 	@Override
