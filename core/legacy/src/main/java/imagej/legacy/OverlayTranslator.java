@@ -103,6 +103,24 @@ public class OverlayTranslator {
 	 */
 	public void setDatasetOverlays(final Dataset ds, final ImagePlus imp) {
 		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
+		ShapeRoi oldROI = createROI(overlayManager.getOverlays(ds));
+		if (oldROI != null) {
+			float [] oldPath = oldROI.getShapeAsArray();
+			Roi newROI = imp.getRoi();
+			if (newROI instanceof ShapeRoi) {
+				float [] newPath = ((ShapeRoi)newROI).getShapeAsArray();
+				if (oldPath.length == newPath.length) {
+					boolean same = true;
+					for (int i = 0; i<oldPath.length; i++) {
+						if (oldPath[i] != newPath[i]) {
+							same = false;
+							break;
+						}
+					}
+					if (same) return;
+				}
+			}
+		}
 		final List<Overlay> overlays = getOverlays(imp);
 		overlayManager.setOverlays(ds, overlays);
 	}
@@ -134,15 +152,20 @@ public class OverlayTranslator {
 
 	/** Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. */
 	public void setOverlays(final List<Overlay> overlays, final ImagePlus imp) {
+		ShapeRoi roi = createROI(overlays);
+		imp.setRoi(roi);
+	}
+
+	private ShapeRoi createROI(final List<Overlay> overlays) {
 		ShapeRoi roi = null;
 		for (final Overlay overlay : overlays) {
 			final ShapeRoi overlayROI = createROI(overlay);
 			if (roi == null) roi = overlayROI;
 			else if (overlayROI != null) roi = roi.or(overlayROI);
 		}
-		imp.setRoi(roi);
+		return roi;
 	}
-
+	
 	// -- Helper methods - legacy ROI creation --
 
 	private ShapeRoi createROI(final Overlay overlay) {

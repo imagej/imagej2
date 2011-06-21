@@ -398,28 +398,50 @@ public class OverlayTranslatorTest {
 		}
 	}
 	
-	//@Test
-	//TODO: uncomment the above and see why this test will make you cry
-	//      The ShapeRoi is composed of two polygons, but the inner one
-	//      is subtracted from the outer one and how are you supposed to
-	//      figure that out?
-	//
-	public void testThatWillMakeYouCry()
+	@Test
+	public void testDonut()
 	{
 		OverlayTranslator ot = new OverlayTranslator();
 		Random r = new Random(1234);
 		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
 		/*
-		 * Put a rectangular hole inside a rectangle - hopefully this is too much and falls into the default code.
+		 * Put a rectangular hole inside a rectangle. This should translate to
+		 * a composite ROI that can deal with it.
 		 */
-		Roi r1 = makePolygonROI(new int [] { 6, 11, 11, 6, 6 }, new int [] { 9, 9, 15, 15, 9 });
-		Roi r2 = makePolygonROI(new int [] { 8, 9, 9, 8, 8}, new int [] { 11, 11, 13, 13, 11});
+		int [] r1x = new int [] { 6, 11, 11, 6, 6 };
+		int [] r1y = new int [] { 9, 9, 15, 15, 9 };
+		int [] r2x = new int [] { 8, 9, 9, 8, 8};
+		int [] r2y = new int [] { 11, 11, 13, 13, 11};
+		int [][] all_x = new int [][] { r1x, r2x };
+		int [][] all_y = new int [][] { r1y, r2y };
+		Roi r1 = makePolygonROI(r1x, r1y);
+		Roi r2 = makePolygonROI(r2x, r2y);
 		Roi roi = new ShapeRoi(r1).not(new ShapeRoi(r2));
 		
 		imagePlus.setRoi(roi);
 		List<Overlay> list = ot.getOverlays(imagePlus);
-		for (int i=0; i < 9; i++) {
+		for (int i=0; i < 12; i++) {
+			boolean ignore = false;
+			for (int [] aa:all_x) {
+				for (int c:aa) {
+					if (i == c) {
+						ignore = true;
+						break;
+					}
+				}
+			}
+			if (ignore) continue;
 			for (int j=0; j<14; j++) {
+				ignore = false;
+				for (int [] aa:all_y) {
+					for (int c:aa) {
+						if (j == c) {
+							ignore = true;
+							break;
+						}
+					}
+				}
+				if (ignore) continue;
 				boolean contains = false;
 				for (Overlay overlay: list) {
 					RealRandomAccess<BitType> ra = overlay.getRegionOfInterest().realRandomAccess();
@@ -478,5 +500,4 @@ public class OverlayTranslatorTest {
 			}
 		}
 	}
-
 }
