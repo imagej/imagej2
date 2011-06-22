@@ -55,6 +55,10 @@ public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputE
 	
 	
 	public SwingOutputWindow(String title) {
+		this(title, 400, 400, 700, 300);
+	}
+	
+	public SwingOutputWindow(String title, int x, int y, int w, int h) {
 		// Add a scrolling text area
 		this.setTitle(title);
 		textArea.setEditable(false);
@@ -65,7 +69,7 @@ public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputE
 		getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
 		pack();
 		setVisible(true);
-		this.setBounds(new Rectangle(400, 400, 700, 300));
+		this.setBounds(new Rectangle(x,y,w,h));
 		this.setVisible(true);
 	}
 
