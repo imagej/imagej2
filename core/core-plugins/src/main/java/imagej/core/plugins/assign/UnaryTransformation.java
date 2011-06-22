@@ -48,15 +48,14 @@ public class UnaryTransformation {
 
 	// -- instance variables --
 
-	private NAryOperation<?> operation;
+	private NAryOperation operation;
 
 	// -- constructor --
 
-	@SuppressWarnings({"rawtypes","unchecked"})
 	public UnaryTransformation(Dataset input, Dataset output,
 		UnaryOperator operator)
 	{
-		UnaryOperatorFunction<?> function = new UnaryOperatorFunction(operator);
+		UnaryOperatorFunction function = new UnaryOperatorFunction(operator);
 		operation = new NAryOperation(input, function);
 		operation.setOutput(output);
 		IntRect selection = input.getSelection();

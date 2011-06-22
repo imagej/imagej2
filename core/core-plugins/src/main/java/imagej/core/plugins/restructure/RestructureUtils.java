@@ -116,16 +116,15 @@ public class RestructureUtils {
 		long[] dstOrigin, long[] dstSpan)
 	{
 		ImgPlus[] images = new ImgPlus[]{srcImgPlus, dstImgPlus};
-		MultiImageIterator<? extends RealType<?>> iter =
-			new MultiImageIterator(images);
+		MultiImageIterator iter =	new MultiImageIterator(images);
 		iter.setRegion(0, srcOrigin, srcSpan);
 		iter.setRegion(1, dstOrigin, dstSpan);
 		iter.initialize();
-		RegionIterator<? extends RealType<?>>[] subIters = iter.getIterators();
+		RegionIterator[] subIters = iter.getIterators();
 		while (iter.hasNext()) {
 			iter.next();
-			double value = subIters[0].getValue().getRealDouble();
-			subIters[1].getValue().setReal(value);
+			double value = subIters[0].getValue();
+			subIters[1].setValue(value);
 		}
 	}
 

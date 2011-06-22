@@ -31,7 +31,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Reorder Axes...") })
 public class ReorderAxes implements ImageJPlugin {
-	RegionIterator<?> iter;
+	private RegionIterator iter;
 	
 	@Parameter(required = true)
 	private Dataset input;
@@ -263,7 +263,6 @@ public class ReorderAxes implements ImageJPlugin {
 
 	/** returns an ImgPlus that has same data values as the input Dataset but
 	 * which has them stored in a different axis order */
-	@SuppressWarnings({"rawtypes","unchecked"})
 	private ImgPlus<? extends RealType<?>> getReorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
 			input.getImgPlus().randomAccess();
@@ -282,8 +281,8 @@ public class ReorderAxes implements ImageJPlugin {
 		long[] currPos = new long[inputOrigin.length];
 		long[] permutedPos = new long[inputOrigin.length];
 		while (iter.hasNext()) {
-			RealType<?> valueRef = iter.next();
-			double value = valueRef.getRealDouble();
+			iter.next();
+			double value = iter.getValue();
 			iter.getPosition(currPos);
 			permute(currPos, permutedPos);
 			outputAccessor.setPosition(permutedPos);
