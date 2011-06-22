@@ -45,15 +45,11 @@ import imagej.plugin.event.PluginEvent;
 import imagej.plugin.event.PluginPreprocessEvent;
 import imagej.plugin.event.PluginRunEvent;
 import imagej.tool.event.ToolEvent;
+import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 /**
  * Listens for all events... 
@@ -73,7 +69,32 @@ import javax.swing.JTextArea;
 //ToolEvent
  * 
  * All event types:
-
+ * 
+ImageJEvent
+ * 
+StatusEvent
+OutputEvent
+ * 
+AppAboutEvent
+AppFocusEvent
+ApplicationEvent
+AppMenusCreatedEvent
+AppPreferencesEvent
+AppPrintEvent
+AppQuitEvent
+AppReOpenEvent
+AppScreenSleepEvent
+AppSystemSleepEvent
+AppUserSessionEvent
+AppVisibleEvent
+ * 
+ObjectEvent
+ObjectChangedEvent
+ObjectCreatedEvent
+ObjectDeletedEvent
+ * 
+ObjectsUpdatedEvent (pub'd after add or remove)
+ * 
 DataObjectChangedEvent
 DataObjectCreatedEvent
 DataObjectDeletedEvent
@@ -93,12 +114,13 @@ OverlayRestructuredEvent
 OverlayUpdatedEvent
  * 
 CanvasEvent
- * 
+*
+DisplayEvent
 DisplayCreatedEvent
 DisplayDeletedEvent
-DisplayEvent
-DisplayViewDeselectedEvent
+
 DisplayViewEvent
+DisplayViewDeselectedEvent
 DisplayViewSelectedEvent
 DisplayViewSelectionEvent
  * 
@@ -107,52 +129,30 @@ KyPressedEvent
 KyReleasedEvent
 KyTypedEvent
  * 
+MsEvent
 MsButtonEvent
 MsClickedEvent
 MsDraggedEvent
 MsEnteredEvent
-MsEvent
 MsExitedEvent
 MsMovedEvent
 MsPressedEvent
 MsReleasedEvent
 MsWheelEvent
  * 
+WinEvent
 WinActivatedEvent
 WinClosedEvent
 WinClosingEvent
 WinDeactivatedEvent
 WinDeiconifiedEvent
-WinEvent
 WinIconifiedEvent
 WinOpenedEvent
+ * 
 ZoomEvent
  * 
-ImageJEvent
- * 
-OutputEvent
-StatusEvent
- * 
-ObjectChangedEvent
-ObjectCreatedEvent
-ObjectDeletedEvent
-ObjectEvent
- * 
-AppAboutEvent
-AppFocusEvent
-ApplicationEvent
-AppMenusCreatedEvent
-AppPreferencesEvent
-AppPrintEvent
-AppQuitEvent
-AppReOpenEvent
-AppScreenSleepEvent
-AppSystemSleepEvent
-AppUserSessionEvent
-AppVisibleEvent
- * 
-PluginCanceledEvent
 PluginEvent
+PluginCanceledEvent
 PluginExecutionEvent
 PluginFinishedEvent
 PluginPostprocessEvent
@@ -161,9 +161,9 @@ PluginProcessEvent
 PluginRunEvent
 PluginStartedEvent
  * 
+ToolEvent
 ToolActivatedEvent
 ToolDeactivatedEvent
-ToolEvent
 
  * 
  * @author GBH
@@ -177,6 +177,7 @@ public class IJEventListener implements ImageJPlugin, EventSubscriber<ImageJEven
 	@Override
 	public void run() {
 		window = new SwingOutputWindow("EventMonitor");
+		StaticSwingUtils.locateUpperRight(window);
 		Events.subscribe(ImageJEvent.class, listener);
 	}
 
@@ -225,19 +226,7 @@ public class IJEventListener implements ImageJPlugin, EventSubscriber<ImageJEven
 		}
 	}
 
-	//		if (evt instanceof DisplayEvent) {
-//		//if (DisplayEvent.class.isAssignableFrom(evt.getClass())) {
-//			emitMessage(evt.getClass().getName());
-//		}
-//		if (WinEvent.class.isAssignableFrom(evt.getClass())) {
-//			emitMessage(evt.getClass().getName());
-//		}
-//		if (MsEvent.class.isAssignableFrom(evt.getClass())) {
-//		//	emitMessage(evt.getClass().getName());
-//		}
-//		if (KyEvent.class.isAssignableFrom(evt.getClass())) {
-//			emitMessage(evt.getClass().getName());
-//		}
+
 	void emitMessage(final String msg) {
 		if (window != null) {
 			window.append(msg + "\n");
@@ -253,7 +242,8 @@ public class IJEventListener implements ImageJPlugin, EventSubscriber<ImageJEven
 			ArrayList<Field> allFields = getAllFields(evt.getClass());
 			for (Field fld : allFields) {
 				fld.setAccessible(true);
-				emitMessage("    " + fld.getName() + "[" + fld.getType() + "] = " + fld.get(evt).toString());
+				emitMessage("    " + fld.getName() + "= " + fld.get(evt).toString());
+				//emitMessage("    " + fld.getName() + "[" + fld.getType() + "] = " + fld.get(evt).toString());
 			}
 		} catch (Throwable e) {
 			System.err.println(e);
