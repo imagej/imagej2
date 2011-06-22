@@ -39,7 +39,9 @@ import ij.ImagePlus;
 import imagej.data.Dataset;
 
 /**
- * Translates between legacy and modern ImageJ image structures.
+ * The default {@link ImageTranslator} between legacy and modern ImageJ image
+ * structures. It delegates to the appropriate more specific
+ * {@link ImageTranslator}, based on the type of data being translated.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
