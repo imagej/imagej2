@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import net.imglib2.img.Axis;
 import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import net.imglib2.img.Axis;
 
 /**
  * Translates between legacy and modern ImageJ image structures for RGB data.
@@ -47,35 +50,40 @@ import imagej.data.Dataset;
 public class RGBImageTranslator implements ImageTranslator {
 
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
-		return createDataset(imp, LegacyUtils.getPreferredAxisOrder());
+	public Display createDisplay(final ImagePlus imp) {
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 	
 	/**
-	 * Creates a color {@link Dataset} from a color {@link ImagePlus}. Expects
+	 * Creates a color {@link Display} from a color {@link ImagePlus}. Expects
 	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
 	 * channel.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+	public Display createDisplay(final ImagePlus imp, Axis[] preferredOrder) {
 		Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
 		LegacyUtils.setDatasetColorData(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
-		return ds;
+
+		// CTR FIXME - Create a Display here and return it.
+		return null;
 	}
 
 	/**
-	 * Creates a color {@link ImagePlus} from a color {@link Dataset}. Expects
-	 * input expects input Dataset to have isRgbMerged() set with 3 channels
+	 * Creates a color {@link ImagePlus} from a color {@link Display}. Expects
+	 * input expects input Display to have isRgbMerged() set with 3 channels
 	 * of unsigned byte data.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Dataset ds) {
+	public ImagePlus createLegacyImage(final Display display) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Dataset ds = displayManager.getActiveDataset(display);
 		ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
 		LegacyUtils.setImagePlusColorData(ds, imp);
 		LegacyUtils.setImagePlusMetadata(ds, imp);
 		return imp;
 	}
+
 }

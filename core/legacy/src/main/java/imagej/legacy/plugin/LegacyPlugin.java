@@ -39,6 +39,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
@@ -69,17 +70,17 @@ public class LegacyPlugin implements ImageJPlugin {
 	private String arg;
 
 	@Parameter(output = true)
-	private List<Dataset> outputs;
+	private List<Display> outputs;
 
-	/** Used to provide one list of datasets per calling thread. */
+	/** Used to provide one list of {@link ImagePlus} per calling thread. */
 	private static ThreadLocal<Set<ImagePlus>> outputImps =
-		new ThreadLocal<Set<ImagePlus>>()
-	{
-		@Override
-		protected synchronized Set<ImagePlus> initialValue() {
-			return new HashSet<ImagePlus>();
-		}
-	};
+		new ThreadLocal<Set<ImagePlus>>() {
+
+			@Override
+			protected synchronized Set<ImagePlus> initialValue() {
+				return new HashSet<ImagePlus>();
+			}
+		};
 
 	/**
 	 * Gets a list for storing output parameter values. This method is
@@ -91,8 +92,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- LegacyPlugin methods --
 
-	/** Gets the list of output {@link Dataset}s. */
-	public List<Dataset> getOutputs() {
+	/** Gets the list of output {@link Display}s. */
+	public List<Display> getOutputs() {
 		return Collections.unmodifiableList(outputs);
 	}
 
@@ -100,33 +101,38 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		/*
-		dirty flag for a ds - special one for harmonizer
-		image map can track dirty harm and listen events
-		*/
-
-		final Dataset activeDS =
-			ImageJ.get(DisplayManager.class).getActiveDataset();
 		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
+
+		// sync legacy images to match existing modern displays
 		final DatasetHarmonizer harmonizer =
 			new DatasetHarmonizer(map.getTranslator());
 		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputImps();
 		outputSet.clear();
 		harmonizer.resetTypeTracking();
 		prePluginHarmonization(map, harmonizer);
-		ImagePlus parallelImp = map.findImagePlus(activeDS);
-		WindowManager.setTempCurrentImage(parallelImp);
+
+		// CTR FIXME - listen for WinActivated (DisplayActivated?) and assign the
+		// WindowManager active image then instead of below.
+
+		// set ImageJ1's active image
+		final Display activeDisplay =
+			ImageJ.get(DisplayManager.class).getActiveDisplay();
+		final ImagePlus activeImagePlus = map.lookupImagePlus(activeDisplay);
+		WindowManager.setTempCurrentImage(activeImagePlus);
+
 		try {
-			LegacyManager.setInsideIJ1Plugin(true);
+			// execute the legacy plugin
 			IJ.runPlugIn(className, arg);
-			LegacyManager.setInsideIJ1Plugin(false);
+
+			// sync modern displays to match existing legacy images
 			outputs = postPluginHarmonization(map, harmonizer);
-		} catch (Exception e) {
-			Log.warn("No outputs found - ImageJ 1.x plugin threw exception: "+e.getMessage());
+		}
+		catch (final Exception e) {
+			Log.warn("No outputs found - ImageJ 1.x plugin threw exception", e);
 			// make sure our ImagePluses are in sync with original Datasets
 			prePluginHarmonization(map, harmonizer);
 			// return no outputs
-			outputs = new ArrayList<Dataset>();
+			outputs = new ArrayList<Display>();
 		}
 		harmonizer.resetTypeTracking();
 		outputSet.clear();
@@ -137,51 +143,49 @@ public class LegacyPlugin implements ImageJPlugin {
 	private void prePluginHarmonization(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
-		// TODO - have LegacyImageMap track dataset events and keep a dirty bit.
-		// then only harmonize those datasets that have changed. See ticket #546.
-		final ObjectManager objMgr = ImageJ.get(ObjectManager.class);
-		for (final Dataset ds : objMgr.getObjects(Dataset.class)) {
-			ImagePlus imp = map.findImagePlus(ds);
-			if (imp == null)
-				imp = map.registerDataset(ds);
-			else
-				harmonizer.updateLegacyImage(ds, imp);
+		// TODO - track events and keep a dirty bit, then only harmonize those
+		// displays that have changed. See ticket #546.
+		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
+		for (final Display display : objectManager.getObjects(Display.class)) {
+			ImagePlus imp = map.lookupImagePlus(display);
+			if (imp == null) imp = map.registerDisplay(display);
+			else harmonizer.updateLegacyImage(display, imp);
 			harmonizer.registerType(imp);
 		}
 	}
 
-	private List<Dataset> postPluginHarmonization(final LegacyImageMap map,
+	private List<Display> postPluginHarmonization(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
 		// TODO - check the changes flag for each ImagePlus that already has a
-		// Dataset and only harmonize those that have changed. Maybe changes
+		// Display and only harmonize those that have changed. Maybe changes
 		// flag does not track everything (such as metadata changes?) and thus
 		// we might still have to do some minor harmonization. Investigate.
-		
+
 		// the IJ1 plugin may not have any outputs but just changes current
 		// ImagePlus make sure we catch any changes via harmonization
 		final ImagePlus currImp = IJ.getImage();
-		Dataset ds = map.findDataset(currImp);
-		if (ds != null) harmonizer.updateDataset(ds, currImp);
+		Display display = map.lookupDisplay(currImp);
+		if (display != null) harmonizer.updateDisplay(display, currImp);
 
 		// also harmonize any outputs
 
-		final List<Dataset> datasets = new ArrayList<Dataset>();
+		final List<Display> displays = new ArrayList<Display>();
 
-		Set<ImagePlus> imps = getOutputImps();
+		final Set<ImagePlus> imps = getOutputImps();
 		for (final ImagePlus imp : imps) {
-			ds = map.findDataset(imp);
-			if (ds == null) ds = map.registerLegacyImage(imp);
+			display = map.lookupDisplay(imp);
+			if (display == null) display = map.registerLegacyImage(imp);
 			else {
 				if (imp == currImp) {
 					// we harmonized this earlier
 				}
-				else harmonizer.updateDataset(ds, imp);
+				else harmonizer.updateDisplay(display, imp);
 			}
-			datasets.add(ds);
+			displays.add(display);
 		}
 
-		return datasets;
+		return displays;
 	}
 
 }

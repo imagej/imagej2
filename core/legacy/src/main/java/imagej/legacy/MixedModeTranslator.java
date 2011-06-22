@@ -34,40 +34,47 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import net.imglib2.img.Axis;
 import ij.ImagePlus;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import net.imglib2.img.Axis;
 
-/** this class used to create Datasets from ImagePluses that are RGB
- * and yet are not single channel
+/**
+ * This class used to create Datasets from ImagePluses that are RGB and yet are
+ * not single channel
  * 
  * @author Barry DeZonia
- *
  */
 public class MixedModeTranslator implements ImageTranslator {
 
 	@Override
-	public Dataset createDataset(ImagePlus imp) {
-		return createDataset(imp, LegacyUtils.getPreferredAxisOrder());
+	public Display createDisplay(final ImagePlus imp) {
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
-	
+
 	@Override
-	public Dataset createDataset(ImagePlus imp, Axis[] preferredOrder) {
-		Dataset ds = LegacyUtils.makeGrayDatasetFromColorImp(imp, preferredOrder);
+	public Display
+		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	{
+		final Dataset ds =
+			LegacyUtils.makeGrayDatasetFromColorImp(imp, preferredOrder);
 		LegacyUtils.setDatasetGrayDataFromColorImp(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
-		return ds;
+		LegacyUtils.setViewLuts(ds, imp); // TODO probably does nothing since
+																			// Dataset not in view?
+
+		// CTR FIXME - Create a Display here and return it.
+		return null;
 	}
 
 	// TODO - do we need this in the other direction too?? if isRGBMerged == true
-	//   and unsigned byte type and channels evenly divisible by 3. May want to
-	//   not worry about this to phase out ColorProcessor reliance.
+	// and unsigned byte type and channels evenly divisible by 3. May want to
+	// not worry about this to phase out ColorProcessor reliance.
 	@Override
-	public ImagePlus createLegacyImage(Dataset dataset) {
+	public ImagePlus createLegacyImage(final Display display) {
 		throw new UnsupportedOperationException(
-			"createLegacyImage(Dataset) is not implemented for this translator");
+			"createLegacyImage(Display) is not implemented for this translator");
 	}
 
 }

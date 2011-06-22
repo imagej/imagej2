@@ -89,7 +89,7 @@ import net.imglib2.type.numeric.RealType;
  */
 public final class LegacyUtils {
 
-	// CTR TODO - Class too big. Split into multiple classes.
+	// CTR FIXME - Class too big. Split into multiple classes.
 	// Make useful methods public. Eliminate use of static where possible.
 
 	private static Axis[] defaultAxes =

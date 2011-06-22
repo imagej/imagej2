@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import ij.ImagePlus;
+import imagej.ImageJ;
+import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
-import ij.ImagePlus;
-import imagej.data.Dataset;
 
 /**
  * Translates between legacy and modern ImageJ image structures for non-RGB
@@ -48,38 +51,47 @@ import imagej.data.Dataset;
  */
 public class GrayscaleImageTranslator implements ImageTranslator {
 
-	
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
-		return createDataset(imp, LegacyUtils.getPreferredAxisOrder());
+	public Display createDisplay(final ImagePlus imp) {
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
-	
-	/** creates a {@link Dataset} from an {@link ImagePlus}. If possible the
-	 *  Dataset is made planar sharing plane references with the ImagePlus.
+
+	/**
+	 * creates a {@link Display} from an {@link ImagePlus}. If possible the
+	 * Display is made planar sharing plane references with the ImagePlus.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+	public Display
+		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	{
 		Dataset ds;
-		if ((preferredOrder[0] == Axes.X) && (preferredOrder[1] == Axes.Y))
+		if (preferredOrder[0] == Axes.X && preferredOrder[1] == Axes.Y) {
 			ds = LegacyUtils.makeExactDataset(imp, preferredOrder);
+		}
 		else {
 			ds = LegacyUtils.makeGrayDataset(imp, preferredOrder);
 			LegacyUtils.setDatasetGrayData(ds, imp);
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp);  // TODO probably does nothing since Dataset not in view?
-		return ds;
+		LegacyUtils.setViewLuts(ds, imp); // TODO probably does nothing since
+																			// Dataset not in view?
+
+		// CTR FIXME - Create a Display here and return it.
+		return null;
 	}
 
-	/** creates an {@link ImagePlus} from a {@link Dataset}. The ImagePlus made
-	 * shares plane references with the Dataset when possible.
+	/**
+	 * creates an {@link ImagePlus} from a {@link Display}. The ImagePlus made
+	 * shares plane references with the Display when possible.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Dataset dataset) {
+	public ImagePlus createLegacyImage(final Display display) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Dataset dataset = displayManager.getActiveDataset(display);
 		ImagePlus imp;
-		if (LegacyUtils.datasetIsIJ1Compatible(dataset))
-			imp = LegacyUtils.makeExactImagePlus(dataset);
+		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) imp =
+			LegacyUtils.makeExactImagePlus(dataset);
 		else {
 			imp = LegacyUtils.makeNearestTypeGrayImagePlus(dataset);
 			LegacyUtils.setImagePlusGrayData(dataset, imp);
@@ -93,12 +105,14 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	}
 
 	// -- helpers --
-	
-	// TODO - is this logic correct? Specifically is testing compChanCnt sufficient?
-	private boolean shouldBeComposite(Dataset ds, ImagePlus imp) {
+
+	// TODO - is this logic correct? Specifically is testing compChanCnt
+	// sufficient?
+	private boolean shouldBeComposite(final Dataset ds, final ImagePlus imp) {
 		if (ds.getCompositeChannelCount() == 1) return false;
-		int channels = imp.getNChannels();
-		if ((channels < 2) || (channels > 7)) return false;
+		final int channels = imp.getNChannels();
+		if (channels < 2 || channels > 7) return false;
 		return true;
 	}
+
 }

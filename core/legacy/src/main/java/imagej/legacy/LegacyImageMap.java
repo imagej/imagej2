@@ -35,9 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
-
+import ij.gui.ImageWindow;
+import ij.gui.Roi;
 import imagej.data.Dataset;
-import imagej.data.event.DatasetDeletedEvent;
+import imagej.data.roi.Overlay;
+import imagej.display.Display;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
@@ -69,128 +73,137 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class LegacyImageMap {
 
-	// -- instance variables --
-	
-	//private Object lock;
-	private Map<ImagePlus, Dataset> imageTable;
-	private ImageTranslator imageTranslator;
-	private ArrayList<EventSubscriber<?>> subscribers;
+	// -- Fields --
 
-	// -- public interface --
+	/** Table of {@link ImagePlus} objects corresponding to {@link Display}s. */
+	private final Map<Display, ImagePlus> imagePlusTable;
 
-	/** default constructor */
+	/** Table of {@link Display} objects corresponding to {@link ImagePlus}es. */
+	private final Map<ImagePlus, Display> displayTable;
+
+	/**
+	 * The {@link ImageTranslator} to use when creating {@link ImagePlus} and
+	 * {@link Display} objects corresponding to one another.
+	 */
+	private final ImageTranslator imageTranslator;
+
+	/** List of event subscribers, to avoid garbage collection. */
+	private final ArrayList<EventSubscriber<?>> subscribers;
+
+	// -- Constructor --
+
 	public LegacyImageMap() {
-		//lock = new Object();
-		//imageTable = new WeakHashMap<ImagePlus, Dataset>();
-		imageTable = new ConcurrentHashMap<ImagePlus, Dataset>();
+		imagePlusTable = new ConcurrentHashMap<Display, ImagePlus>();
+		displayTable = new ConcurrentHashMap<ImagePlus, Display>();
 		imageTranslator = new DefaultImageTranslator();
 		subscribers = new ArrayList<EventSubscriber<?>>();
 		subscribeToEvents();
 	}
 
-	/** returns the result of a lookup for a given ImagePlus */
-	public Dataset findDataset(ImagePlus imp) {
-		//synchronized(lock) {
-			return imageTable.get(imp);
-		//}
-	}
+	// -- LegacyImageMap methods --
 
-	/** returns the result of a lookup for a given Dataset */
-	public ImagePlus findImagePlus(Dataset ds) {
-		//synchronized(lock) {
-			return getParallelImagePlus(ds);
-		//}
-	}
-	
-	/** returns the ImageTranslator used by the LegacyImageMap */
+	/**
+	 * Gets the {@link ImageTranslator} used to create {@link ImagePlus} and
+	 * {@link Display} objects linked to one another.
+	 */
 	public ImageTranslator getTranslator() {
-		//synchronized(lock) {
-			return imageTranslator;
-		//}
+		return imageTranslator;
 	}
 
 	/**
-	 * Ensures that the given dataset has a corresponding legacy image.
-	 *
-	 * @return the {@link ImagePlus} object shadowing this dataset.
+	 * Gets the {@link Display} corresponding to the given {@link ImagePlus}, or
+	 * null if there is no existing table entry.
 	 */
-	public ImagePlus registerDataset(Dataset dataset) {
-		//synchronized(lock) {
-			// find image window
-			ImagePlus imp = getParallelImagePlus(dataset);
-			if (imp == null) {
-				// mirror dataset to image window
-				imp = imageTranslator.createLegacyImage(dataset);
-				imageTable.put(imp, dataset);
-			}
-			return imp;
-		//}
+	public Display lookupDisplay(final ImagePlus imp) {
+		return displayTable.get(imp);
 	}
-	
+
 	/**
-	 * Ensures that the given legacy image has a corresponding dataset.
-	 *
-	 * @return the {@link Dataset} object shadowing this legacy image.
+	 * Gets the {@link ImagePlus} corresponding to the given {@link Display}, or
+	 * null if there is no existing table entry.
 	 */
-	public Dataset registerLegacyImage(ImagePlus imp) {
-		//synchronized(lock) {
-			Dataset dataset = imageTable.get(imp);
-			if (dataset == null) {
-				// mirror image window to dataset
-				dataset = imageTranslator.createDataset(imp);
-				imageTable.put(imp, dataset);
-			}
-			else {  // dataset was already existing
-				// do nothing
-			}
-			return dataset;
-		//}
+	public ImagePlus lookupImagePlus(final Display display) {
+		return imagePlusTable.get(display);
 	}
 
-	/** removes the mapping associated with a given Dataset */
-	public void unregisterDataset(Dataset ds) {
-		//synchronized(lock) {
-		  ImagePlus imp = getParallelImagePlus(ds);
-		  if (imp != null) {
-				imageTable.remove(imp);
-				LegacyUtils.removeImagePlusFromIJ1(imp);
-		  }
-		//}
-	}
-	
-	// TODO - hatched as maybe useful
-	/** removes the mapping associated with a given ImagePlus */
-	public void unregisterLegacyImage(ImagePlus imp) {
-		//synchronized(lock) {
-			imageTable.remove(imp);
-			LegacyUtils.removeImagePlusFromIJ1(imp);
-		//}
-	}
-
-	// -- helpers --
-
-	private ImagePlus getParallelImagePlus(Dataset ds) {
-		ImagePlus imp = null;
-		for (final ImagePlus key : imageTable.keySet()) {
-			final Dataset value = imageTable.get(key);
-			if (ds == value) {
-				imp = key;
-				break;
-			}
+	/**
+	 * Ensures that the given {@link Display} has a corresponding legacy image.
+	 * 
+	 * @return the {@link ImagePlus} object shadowing the given {@link Display},
+	 *         creating it if necessary using the {@link ImageTranslator}.
+	 */
+	public ImagePlus registerDisplay(final Display display) {
+		ImagePlus imp = lookupImagePlus(display);
+		if (imp == null) {
+			// mapping does not exist; mirror display to image window
+			imp = imageTranslator.createLegacyImage(display);
+			imagePlusTable.put(display, imp);
+			displayTable.put(imp, display);
 		}
 		return imp;
 	}
-	
+
+	/**
+	 * Ensures that the given legacy image has a corresponding {@link Display}.
+	 * 
+	 * @return the {@link Display} object shadowing the given {@link ImagePlus},
+	 *         creating it if necessary using the {@link ImageTranslator}.
+	 */
+	public Display registerLegacyImage(final ImagePlus imp) {
+		Display display = lookupDisplay(imp);
+		if (display == null) {
+			// mapping does not exist; mirror legacy image to display
+			display = imageTranslator.createDisplay(imp);
+			imagePlusTable.put(display, imp);
+			displayTable.put(imp, display);
+		}
+		return display;
+	}
+
+	/** Removes the mapping associated with the given {@link Display}. */
+	public void unregisterDisplay(final Display display) {
+		final ImagePlus imp = lookupImagePlus(display);
+		if (display != null) displayTable.remove(display);
+		if (imp != null) {
+			imagePlusTable.remove(imp);
+			LegacyUtils.deleteImagePlus(imp);
+		}
+	}
+
+	/** Removes the mapping associated with the given {@link ImagePlus}. */
+	public void unregisterLegacyImage(final ImagePlus imp) {
+		final Display display = lookupDisplay(imp);
+		if (display != null) displayTable.remove(display);
+		if (imp != null) {
+			imagePlusTable.remove(imp);
+			LegacyUtils.deleteImagePlus(imp);
+		}
+	}
+
+	// -- Helper methods --
+
 	private void subscribeToEvents() {
-		final EventSubscriber<DatasetDeletedEvent> deletionSubscriber =
-			new EventSubscriber<DatasetDeletedEvent>() {
+		final EventSubscriber<DisplayCreatedEvent> creationSubscriber =
+			new EventSubscriber<DisplayCreatedEvent>() {
 
 				@Override
-				public void onEvent(DatasetDeletedEvent event) {
-					unregisterDataset(event.getObject());
+				public void onEvent(final DisplayCreatedEvent event) {
+					unregisterDisplay(event.getObject());
+				}
+			};
+		subscribers.add(creationSubscriber);
+		Events.subscribe(DisplayCreatedEvent.class, creationSubscriber);
+
+		final EventSubscriber<DisplayDeletedEvent> deletionSubscriber =
+			new EventSubscriber<DisplayDeletedEvent>() {
+
+				@Override
+				public void onEvent(final DisplayDeletedEvent event) {
+					unregisterDisplay(event.getObject());
 				}
 			};
 		subscribers.add(deletionSubscriber);
-		Events.subscribe(DatasetDeletedEvent.class, deletionSubscriber);
+		Events.subscribe(DisplayDeletedEvent.class, deletionSubscriber);
 	}
+
 }
