@@ -108,10 +108,10 @@ public final class LegacyManager implements ManagerComponent {
 		hacker.loadClass("MacAdapter");
 	}
 
-	private static boolean insideIJ1PluginRightNow = false;
-
-	/** Mapping between datasets and legacy image objects. */
+	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
+
+	// -- LegacyManager methods --
 
 	public LegacyImageMap getImageMap() {
 		return imageMap;
@@ -123,14 +123,6 @@ public final class LegacyManager implements ManagerComponent {
 		LegacyPlugin.getOutputImps().add(imp);
 	}
 
-	public static void setInsideIJ1Plugin(boolean value) {
-		insideIJ1PluginRightNow = value;
-	}
-	
-	public static boolean insideIJ1Plugin() {
-		return insideIJ1PluginRightNow;
-	}
-	
 	// -- ManagerComponent methods --
 
 	@Override
