@@ -66,17 +66,21 @@ public final class DisplayManager implements ManagerComponent {
 	}
 
 	public Dataset getActiveDataset() {
-		if (activeDisplay == null) return null;
-		final DisplayView activeView = activeDisplay.getActiveView();
-		if (activeView == null) return null;
-		final DataObject dataObject = activeView.getDataObject();
-		if (dataObject instanceof Dataset) return (Dataset) dataObject;
-		return null;
+		return getActiveDataset(activeDisplay);
 	}
 
 	public DatasetView getActiveDatasetView() {
-		if (activeDisplay == null) return null;
-		final DisplayView activeView = activeDisplay.getActiveView();
+		return getActiveDatasetView(activeDisplay);
+	}
+
+	public Dataset getActiveDataset(final Display display) {
+		final DatasetView activeDatasetView = getActiveDatasetView(display);
+		return activeDatasetView == null ? null : activeDatasetView.getDataObject();
+	}
+
+	public DatasetView getActiveDatasetView(final Display display) {
+		if (display == null) return null;
+		final DisplayView activeView = display.getActiveView();
 		if (activeView instanceof DatasetView) return (DatasetView) activeView;
 		return null;
 	}
