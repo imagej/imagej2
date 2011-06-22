@@ -134,7 +134,7 @@ public class CropImage implements ImageJPlugin {
 			RandomAccess<? extends RealType<?>> inputAccessor =
 				inputImage.randomAccess();
 
-			Cursor<? extends RealType<?>> outputCursor = outputImage.cursor();
+			Cursor<? extends RealType<?>> outputCursor = outputImage.localizingCursor();
 
 			long[] tmpPosition = new long[outputImage.numDimensions()];
 

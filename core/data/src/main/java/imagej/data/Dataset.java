@@ -662,7 +662,7 @@ public class Dataset extends AbstractDataObject implements
 		final Img<? extends RealType<?>> output)
 	{
 		final long[] position = new long[output.numDimensions()];
-		final Cursor<? extends RealType<?>> outputCursor = output.cursor();
+		final Cursor<? extends RealType<?>> outputCursor = output.localizingCursor();
 		final RandomAccess<? extends RealType<?>> inputAccessor =
 			input.randomAccess();
 		while (outputCursor.hasNext()) {
