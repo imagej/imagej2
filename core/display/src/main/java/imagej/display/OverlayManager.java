@@ -80,6 +80,8 @@ public final class OverlayManager implements ManagerComponent {
 		return overlays;
 	}
 
+	// CTR FIXME - Eliminate this method.
+
 	/**
 	 * Gets a list of {@link Overlay}s associated with the given {@link Dataset}.
 	 * An {@link Overlay} is considered "associated" with a {@link Dataset} when
@@ -106,6 +108,8 @@ public final class OverlayManager implements ManagerComponent {
 		}
 		return overlays;
 	}
+
+	// CTR FIXME - Change this method to take a Display rather than a Dataset.
 
 	/**
 	 * Adds the list of {@link Overlay}s to the first {@link Display} containing
@@ -158,6 +162,8 @@ public final class OverlayManager implements ManagerComponent {
 		}
 	}
 	
+	// CTR FIXME - Change this method to take a Display rather than a Dataset.
+
 	/**
 	 * Remove an overlay from the display associated with a dataset.
 	 * 
