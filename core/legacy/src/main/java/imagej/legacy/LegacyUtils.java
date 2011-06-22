@@ -75,18 +75,22 @@ import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
  * Collection of static methods used by the various ImageTranslators and the
  * DatasetHarmonizer. Kept together so that bidirectional translation code is
  * in one place and thus more easily maintained.
- * 
+ * <p>
  * Note the interfaces have package access to avoid their use outside the
  * legacy layer.
+ * </p>
  * 
  * @author Barry DeZonia
- * */
-public class LegacyUtils {
+ * @author Curtis Rueden
+ */
+public final class LegacyUtils {
+
+	// CTR TODO - Class too big. Split into multiple classes.
+	// Make useful methods public. Eliminate use of static where possible.
 
 	private static Axis[] defaultAxes =
 		new Axis[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
@@ -97,6 +101,25 @@ public class LegacyUtils {
 		// utility class: do not instantiate
 	}
 
+	// -- Utility methods --
+
+	/**
+	 * Modifies IJ1 data structures so that there are no dangling references
+	 * to an obsolete ImagePlus.
+	 */
+	public static void deleteImagePlus(ImagePlus imp) {
+		ImagePlus currImagePlus = WindowManager.getCurrentImage();
+		if (imp == currImagePlus)
+			WindowManager.setTempCurrentImage(null);
+		ImageWindow ij1Window = imp.getWindow();
+		if (ij1Window == null)
+			Interpreter.removeBatchModeImage(imp);
+		else {
+			imp.changes = false;
+			ij1Window.close();
+		}
+	}
+	
 	// -- package interface --
 	
 	static Axis[] getPreferredAxisOrder() {
@@ -798,22 +821,6 @@ public class LegacyUtils {
 		return new CompositeImage(imp, CompositeImage.COMPOSITE);
 	}
 
-	/** modifies IJ1 data structures so that there are no dangling references
-	 * to an obsolete ImagePlus.
-	 */
-	static void removeImagePlusFromIJ1(ImagePlus imp) {
-		ImagePlus currImagePlus = WindowManager.getCurrentImage();
-		if (imp == currImagePlus)
-			WindowManager.setTempCurrentImage(null);
-		ImageWindow ij1Window = imp.getWindow();
-		if (ij1Window == null)
-			Interpreter.removeBatchModeImage(imp);
-		else {
-			imp.changes = false;
-			ij1Window.close();
-		}
-	}
-	
 	// -- private helpers --
 
 	/** gets a dimension for a given axis from a list of dimensions in
