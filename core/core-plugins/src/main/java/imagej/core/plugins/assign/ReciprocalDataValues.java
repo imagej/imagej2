@@ -67,7 +67,7 @@ public class ReciprocalDataValues implements ImageJPlugin {
 		UnaryOperator op = new Reciprocal();
 		if (input.isInteger()) // This is similar to what IJ1 does
 			op = new Copy();
-		UnaryTransformation transform = new UnaryTransformation(input, input, op);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
 		transform.run();
 	}
 
