@@ -42,6 +42,7 @@ import java.util.List;
 
 import net.imglib2.EuclideanSpace;
 import net.imglib2.meta.LabeledAxes;
+import net.imglib2.meta.Named;
 
 /**
  * A display is a special kind of ImageJ plugin for visualizing data.
@@ -49,7 +50,7 @@ import net.imglib2.meta.LabeledAxes;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface Display extends BasePlugin, LabeledAxes, EuclideanSpace {
+public interface Display extends BasePlugin, Named, LabeledAxes, EuclideanSpace {
 
 	/**
 	 * Tests whether the display is capable of visualizing the given

@@ -169,7 +169,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			if (dataset == null) continue;
 
 			// NOTICE single title set over and over with different Datasets
-			setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
+			setTitle(getDisplay().getName());
+			//setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
 		}
 		pack();
 		setVisible(true);
@@ -202,7 +203,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					// CTR TODO - Fix zoom label to show beyond just the active view.
 					final DisplayView activeView = getDisplay().getActiveView();
 					final Dataset dataset = getDataset(activeView);
-					setTitle(makeTitle(dataset, event.getScale()));
+					setLabel(makeLabel());
 				}
 			};
 		subscribers.add(zoomSubscriber);
@@ -234,7 +235,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					DisplayView view = getDisplay().getActiveView();
 					final Dataset ds = getDataset(view);
 					if (event.getObject() != ds) return;
-					setTitle(makeTitle(ds, getDisplay().getImageCanvas().getZoomFactor()));
+					setLabel(makeLabel());
 				}
 			};
 		subscribers.add(dsUpdatedSubscriber);
@@ -393,19 +394,20 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getTypeLabel());
+		sb.append(String.format(" [%.2f%%]",  getDisplay().getImageCanvas().getZoomFactor() * 100));
 		return sb.toString();
 	}
 
-	private String makeTitle(final Dataset dataset, final double scale) {
-		final String datasetName = dataset.getName();
-
-		if (scale == 1.0) return datasetName; // exactly 100% zoom
-
-		final String infoString =
-			String.format("%s (%.2f%%)", datasetName, scale * 100);
-
-		return infoString;
-	}
+//	private String makeTitle(final Dataset dataset, final double scale) {
+//		final String datasetName = dataset.getName();
+//
+//		if (scale == 1.0) return datasetName; // exactly 100% zoom
+//
+//		final String infoString =
+//			String.format("%s (%.2f%%)", datasetName, scale * 100);
+//
+//		return infoString;
+//	}
 
 	private Dataset getDataset(final DisplayView view) {
 		final DataObject dataObject = view.getDataObject();

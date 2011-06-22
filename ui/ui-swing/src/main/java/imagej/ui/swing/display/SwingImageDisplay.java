@@ -67,6 +67,8 @@ import java.util.List;
  * A Swing image display plugin, which displays 2D planes in grayscale or
  * composite color.
  * 
+ * Added 
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
  * @author Barry DeZonia
@@ -86,12 +88,14 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
 	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
 	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
+	private String name;
 
 	@SuppressWarnings("synthetic-access")
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
 
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+				
 		displayManager.setActiveDisplay(this);
 		subscribeToEvents(displayManager);
 
@@ -114,8 +118,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 		willRebuildImgWindow = false;
 		thisDisplay = this;
-
-		Events.publish(new DisplayCreatedEvent(this));
 	}
 	
 	/* Unused
@@ -132,8 +134,16 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		return true;
 	}
 
+	/*
+	 * GBH: Regarding naming/id of the display...
+	 * For now, we will use the original (first) dataset name
+	 */
+	
 	@Override
 	public void display(final Dataset dataset) {
+		final String datasetName = dataset.getName();
+		createName(datasetName);
+		imgWindow.setTitle(this.getName());
 		addView(new SwingDatasetView(this, dataset));
 		update();
 	}
@@ -143,7 +153,30 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		addView(new SwingOverlayView(this, overlay));		
 		update();
 	}
+	
+			
+	// Name this display with unique id
+	private void createName(String baseName) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		String theName = baseName;
+		int n = 0;
+		while (!displayManager.isUniqueName(theName)) {
+			n++;
+			theName = baseName + "-" + n;
+		}
+		this.setName(theName);
+	}
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	@Override
 	public void update() {
 		if (!willRebuildImgWindow) {
@@ -270,5 +303,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 		return displayManager;
 	}
+
+
 
 }
