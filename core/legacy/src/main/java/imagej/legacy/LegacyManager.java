@@ -95,13 +95,13 @@ public final class LegacyManager implements ManagerComponent {
 
 		// override behavior of ij.macro.Functions
 		hacker.insertBeforeMethod("ij.macro.Functions",
-			"void displayBatchModeImageBefore(ij.ImagePlus imp2)",
-			"imagej.legacy.patches.FunctionsMethods.beforeBatchDraw();");
+			"void displayBatchModeImage(ij.ImagePlus imp2)",
+			"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore(imp2);");
 		hacker.insertAfterMethod("ij.macro.Functions",
-			"void displayBatchModeImageAfter(ij.ImagePlus imp2)",
-			"imagej.legacy.patches.FunctionsMethods.afterBatchDraw();");
+			"void displayBatchModeImage(ij.ImagePlus imp2)",
+			"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter(imp2);");
 		hacker.loadClass("ij.macro.Functions");
-		
+
 		// override behavior of MacAdapter
 		hacker.replaceMethod("MacAdapter",
 			"public void run(java.lang.String arg)", ";");
