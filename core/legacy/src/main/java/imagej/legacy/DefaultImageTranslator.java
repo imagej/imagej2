@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import net.imglib2.img.Axis;
 import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import net.imglib2.img.Axis;
 
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image
@@ -48,48 +51,54 @@ import imagej.data.Dataset;
  */
 public class DefaultImageTranslator implements ImageTranslator {
 
-	private RGBImageTranslator rgbTranslator = new RGBImageTranslator();
-	private GrayscaleImageTranslator grayscaleTranslator =
+	private final RGBImageTranslator rgbTranslator = new RGBImageTranslator();
+	private final GrayscaleImageTranslator grayscaleTranslator =
 		new GrayscaleImageTranslator();
-	private MixedModeTranslator mixedModeTranslator =
+	private final MixedModeTranslator mixedModeTranslator =
 		new MixedModeTranslator();
 
-	/** creates a {@link Dataset} from an {@link ImagePlus}. Shares planes of
-	 *  data when possible.
+	/**
+	 * Creates a {@link Display} from an {@link ImagePlus}. Shares planes of data
+	 * when possible.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp) {
+	public Display createDisplay(final ImagePlus imp) {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			if (imp.getNChannels() == 1)
-				return rgbTranslator.createDataset(imp);
-			return mixedModeTranslator.createDataset(imp);
+			if (imp.getNChannels() == 1) return rgbTranslator.createDisplay(imp);
+			return mixedModeTranslator.createDisplay(imp);
 		}
-		return grayscaleTranslator.createDataset(imp);
+		return grayscaleTranslator.createDisplay(imp);
 	}
 
-	/** creates a {@link Dataset} from an {@link ImagePlus}. Shares planes of
-	 *  data when possible. Builds Dataset with preferred Axis ordering.
+	/**
+	 * Creates a {@link Display} from an {@link ImagePlus}. Shares planes of data
+	 * when possible. Builds Display with preferred Axis ordering.
 	 */
 	@Override
-	public Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder) {
+	public Display
+		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	{
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			if (imp.getNChannels() == 1)
-				return rgbTranslator.createDataset(imp, preferredOrder);
-			return mixedModeTranslator.createDataset(imp, preferredOrder);
+			if (imp.getNChannels() == 1) return rgbTranslator.createDisplay(imp,
+				preferredOrder);
+			return mixedModeTranslator.createDisplay(imp, preferredOrder);
 		}
-		return grayscaleTranslator.createDataset(imp, preferredOrder);
+		return grayscaleTranslator.createDisplay(imp, preferredOrder);
 	}
 
-	/** creates an {@link ImagePlus} from a {@link Dataset}. Shares planes of
-	 *  data when possible.
+	/**
+	 * Creates an {@link ImagePlus} from a {@link Display}. Shares planes of data
+	 * when possible.
 	 */
 	@Override
-	public ImagePlus createLegacyImage(final Dataset dataset) {		
-		if (dataset.isRGBMerged()) {
-			return rgbTranslator.createLegacyImage(dataset);
+	public ImagePlus createLegacyImage(final Display display) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Dataset ds = displayManager.getActiveDataset(display);
+		if (ds.isRGBMerged()) {
+			return rgbTranslator.createLegacyImage(display);
 		}
 
-		return grayscaleTranslator.createLegacyImage(dataset);
+		return grayscaleTranslator.createLegacyImage(display);
 	}
 
 }

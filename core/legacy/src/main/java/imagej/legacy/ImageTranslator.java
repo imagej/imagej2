@@ -34,22 +34,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import net.imglib2.img.Axis;
 import ij.ImagePlus;
-import imagej.data.Dataset;
+import imagej.display.Display;
+import net.imglib2.img.Axis;
 
 /**
  * The interface for translating between legacy and modern ImageJ image
  * structures.
  *
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public interface ImageTranslator {
 
-	Dataset createDataset(final ImagePlus imp);
+	Display createDisplay(final ImagePlus imp);
 
-	Dataset createDataset(final ImagePlus imp, Axis[] preferredOrder);
+	Display createDisplay(final ImagePlus imp, Axis[] preferredOrder);
 
-	ImagePlus createLegacyImage(final Dataset dataset);
+	ImagePlus createLegacyImage(final Display display);
 
 }

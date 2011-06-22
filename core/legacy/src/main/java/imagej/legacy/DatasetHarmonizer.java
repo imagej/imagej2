@@ -35,7 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,13 +86,15 @@ public class DatasetHarmonizer {
 	
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
-	 * {@link Dataset}. Assumes Dataset has planar primitive access in an IJ1
+	 * {@link Display}. Assumes Dataset has planar primitive access in an IJ1
 	 * compatible format.
 	 */
-	public void updateLegacyImage(Dataset ds, ImagePlus imp) {
+	public void updateLegacyImage(Display display, ImagePlus imp) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Dataset ds = displayManager.getActiveDataset(display);
 		//System.out.println("DatasetHarmonizer::updateLegacyImage() - Dataset "+ds.getName()+"associated with ImagePlus "+imp.getID());
-		if ( ! LegacyUtils.imagePlusIsNearestType(ds,imp) ) {
-			ImagePlus newImp = imageTranslator.createLegacyImage(ds);
+		if ( ! LegacyUtils.imagePlusIsNearestType(ds, imp) ) {
+			ImagePlus newImp = imageTranslator.createLegacyImage(display);
 			imp.setStack(newImp.getStack());
 			int c = newImp.getNChannels();
 			int z = newImp.getNSlices();
@@ -101,7 +106,7 @@ public class DatasetHarmonizer {
 		}
 		else {
 			if (dimensionsDifferent(ds, imp)) {
-				ImagePlus newImp = imageTranslator.createLegacyImage(ds);
+				ImagePlus newImp = imageTranslator.createLegacyImage(display);
 				imp.setStack(newImp.getStack());
 				int c = newImp.getNChannels();
 				int z = newImp.getNSlices();
@@ -122,15 +127,19 @@ public class DatasetHarmonizer {
 	}
 	
 	/**
-	 * Changes the data within a {@link Dataset} to match data in an
+	 * Changes the data within a {@link Display} to match data in an
 	 * {@link ImagePlus}.
 	 */
-	public void updateDataset(Dataset ds, ImagePlus imp) {
+	public void updateDisplay(Display display, ImagePlus imp) {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Dataset ds = displayManager.getActiveDataset(display);
+
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
-			Dataset tmp = imageTranslator.createDataset(imp, ds.getAxes());
-			ds.setImgPlus(tmp.getImgPlus());
-			ds.setRGBMerged(tmp.isRGBMerged());
+			Display tmp = imageTranslator.createDisplay(imp, ds.getAxes());
+			Dataset dsTmp = displayManager.getActiveDataset(tmp);
+			ds.setImgPlus(dsTmp.getImgPlus());
+			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
 			if (dimensionsDifferent(ds, imp))
@@ -184,4 +193,5 @@ public class DatasetHarmonizer {
 		// axis < 0 : not present in imgPlus
 		return value != 1;
 	}
+
 }
