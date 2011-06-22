@@ -42,7 +42,6 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import imagej.ImageJ;
@@ -76,7 +75,6 @@ import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.CompositeRegionOfInterest;
 import net.imglib2.roi.EllipseRegionOfInterest;
-import net.imglib2.roi.IterableRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
@@ -86,6 +84,7 @@ import net.imglib2.type.logic.BitType;
  * OverlayTranslator moves regions of interest back and forth between
  * {@link Overlay}s and {@link ImagePlus} {@link Roi}s.
  * 
+ * @author Lee Kamentsky
  * @author Curtis Rueden
  */
 public class OverlayTranslator {
