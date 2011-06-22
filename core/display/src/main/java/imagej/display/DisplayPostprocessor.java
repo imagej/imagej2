@@ -38,6 +38,8 @@ import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.event.Events;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
@@ -115,6 +117,7 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 				// TODO: prompt user with dialog box if multiple matches
 				if (displayPlugin.canDisplay(dataset)) {
 					displayPlugin.display(dataset);
+					Events.publish(new DisplayCreatedEvent(displayPlugin));
 					break;
 				}
 			}

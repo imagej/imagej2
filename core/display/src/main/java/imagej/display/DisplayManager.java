@@ -104,6 +104,14 @@ public final class DisplayManager implements ManagerComponent {
 		return displays;
 	}
 
+	public boolean isUniqueName(String name) {
+		List<Display> displays = getDisplays();
+		for (Display display : displays) {
+			if(name.equalsIgnoreCase(display.getName()))
+			return false;
+		}
+		return true;
+	}
 	// -- ManagerComponent methods --
 
 	@Override
