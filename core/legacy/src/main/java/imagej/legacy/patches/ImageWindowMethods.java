@@ -43,6 +43,7 @@ import imagej.util.Log;
  * Overrides {@link ImageWindow} methods.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public final class ImageWindowMethods {
 
@@ -63,23 +64,20 @@ public final class ImageWindowMethods {
 		setVisible(obj, true);
 	}
 
-	
-	public static void close(ImageWindow win) {
+	/** Appends {@link ImageWindow#close()}. */
+	public static void close(ImageWindow obj) {
+		// TODO - when ImagePlus<-->Display then implement this
+
 		// We are only interested in when IJ1 closes a Window.
 		// Not when we initiate it.
-		if (LegacyManager.insideIJ1Plugin()) {
-
-			// TODO - when ImagePlus<-->Display then implement this
-			/*
-			LegacyManager mgr = ImageJ.get(LegacyManager.class);
-			ImagePlus imp = win.getImagePlus();
-			Display display = mgr.getImageMap().findDisplay(imp);
-			if (display != null)
-				display.close();
-			*/
-			
-			Log.debug("IJ1 window closed by IJ1 plugin");
-		}
+//		if (LegacyManager.insideIJ1Plugin()) {
+//			LegacyManager mgr = ImageJ.get(LegacyManager.class);
+//			ImagePlus imp = win.getImagePlus();
+//			Display display = mgr.getImageMap().lookupDisplay(imp);
+//			if (display != null)
+//				display.close();
+//			Log.debug("IJ1 window closed by IJ1 plugin");
+//		}
 	}
 
 }
