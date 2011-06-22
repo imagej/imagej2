@@ -53,7 +53,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class NAryOperation<T extends RealType<T>> {
+public class NAryOperation {
 
 	// -- instance variables --
 
@@ -70,7 +70,7 @@ public class NAryOperation<T extends RealType<T>> {
 	private Dataset output;
 
 	/** The imglib-ops function to execute. */
-	private final RealFunction<T> function;
+	private final RealFunction function;
 
 	/** subregion information used to support working on subregions of inputs */
 	private long[] outputOrigin, outputSpan;
@@ -82,7 +82,7 @@ public class NAryOperation<T extends RealType<T>> {
 	 * this constructor a convenience for those plugins that work from a single
 	 * input Dataset
 	 */
-	public NAryOperation(final Dataset input, final RealFunction<T> function) {
+	public NAryOperation(final Dataset input, final RealFunction function) {
 		this.inputs = new ArrayList<Dataset>();
 		this.inputs.add(input);
 		this.function = function;
@@ -98,7 +98,7 @@ public class NAryOperation<T extends RealType<T>> {
 	 * Datasets
 	 */
 	public NAryOperation(final Dataset input1, final Dataset input2,
-		final RealFunction<T> function)
+		final RealFunction function)
 	{
 		this.inputs = new ArrayList<Dataset>();
 		this.inputs.add(input1);
@@ -116,7 +116,7 @@ public class NAryOperation<T extends RealType<T>> {
 	 * results in (can be null) and a function to be applied.
 	 */
 	public NAryOperation(final List<Dataset> inputs,
-		final RealFunction<T> function)
+		final RealFunction function)
 	{
 		this.inputs = inputs;
 		this.function = function;
@@ -156,24 +156,21 @@ public class NAryOperation<T extends RealType<T>> {
 			throw new NullPointerException("function reference is null");
 		}
 
-		final List<ImgPlus<T>> inputImages = new ArrayList<ImgPlus<T>>();
+		final List<ImgPlus<? extends RealType<?>>> inputImages =
+			new ArrayList<ImgPlus<? extends RealType<?>>>();
 
 		for (int i = 0; i < inputs.size(); i++) {
 			final Dataset dataset = inputs.get(i);
-
-			@SuppressWarnings("unchecked")
-			final ImgPlus<T> typedImg = (ImgPlus<T>) dataset.getImgPlus();
-			inputImages.add(typedImg);
+			inputImages.add(dataset.getImgPlus());
 		}
 
 		// TODO - must be given at least one input image or next line will fail
 		if (output == null) output = inputs.get(0).duplicateBlank();
 
-		@SuppressWarnings("unchecked")
-		final ImgPlus<T> outputImage = (ImgPlus<T>) output.getImgPlus();
+		final ImgPlus<? extends RealType<?>> outputImage = output.getImgPlus();
 
-		final AssignOperation<T> operation =
-			new AssignOperation<T>(inputImages, outputImage, function);
+		final AssignOperation operation =
+			new AssignOperation(inputImages, outputImage, function);
 
 		operation.setOutputRegion(outputOrigin, outputSpan);
 		for (int i = 0; i < inputImages.size(); i++) {
