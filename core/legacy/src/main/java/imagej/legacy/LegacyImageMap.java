@@ -115,6 +115,7 @@ public class LegacyImageMap {
 	 * null if there is no existing table entry.
 	 */
 	public Display lookupDisplay(final ImagePlus imp) {
+		if (imp == null) return null;
 		return displayTable.get(imp);
 	}
 
@@ -123,6 +124,7 @@ public class LegacyImageMap {
 	 * null if there is no existing table entry.
 	 */
 	public ImagePlus lookupImagePlus(final Display display) {
+		if (display == null) return null;
 		return imagePlusTable.get(display);
 	}
 
