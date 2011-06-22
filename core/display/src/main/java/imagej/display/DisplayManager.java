@@ -85,7 +85,7 @@ public final class DisplayManager implements ManagerComponent {
 		return null;
 	}
 
-	/** Gets a list of all active {@link Display}s. */
+	/** Gets a list of all available {@link Display}s. */
 	public List<Display> getDisplays() {
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		return objectManager.getObjects(Display.class);
