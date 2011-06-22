@@ -46,8 +46,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO
- *
+ * An image map between IJ1 {@link ImagePlus} objects and IJ2 {@link Display}s.
+ * Because every {@link ImagePlus} has a corresponding {@link ImageWindow} and
+ * vice versa, it works out best to associate each {@link ImagePlus} with a
+ * {@link Display} rather than with a {@link Dataset}.
+ * <p>
+ * Any {@link Overlay}s present in the {@link Display} are translated to a
+ * {@link Roi} attached to the {@link ImagePlus}, and vice versa.
+ * </p>
+ * <p>
+ * In the case of one {@link Dataset} belonging to multiple {@link Display}s,
+ * there is a separate {@link ImagePlus} for each {@link Display}, with pixels
+ * by reference.
+ * </p>
+ * <p>
+ * In the case of multiple {@link Dataset}s in a single {@link Display}, only
+ * the first {@link Dataset} is translated to the {@link ImagePlus}.
+ * </p>
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
