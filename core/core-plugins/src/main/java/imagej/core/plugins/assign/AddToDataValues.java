@@ -69,8 +69,7 @@ public class AddToDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		final UnaryOperator op = new AddConstant(constant);
-		final UnaryTransformation transform =
-			new UnaryTransformation(input, input, op);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
 		transform.run();
 	}
 

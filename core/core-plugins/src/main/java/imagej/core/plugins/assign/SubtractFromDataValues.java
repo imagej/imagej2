@@ -70,7 +70,7 @@ public class SubtractFromDataValues implements ImageJPlugin {
 	@Override
 	public void run() {
 		UnaryOperator op = new SubtractConstant(constant);
-		UnaryTransformation transform = new UnaryTransformation(input, input, op);
+		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
 		transform.run();
 	}
 }
