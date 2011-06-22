@@ -1,4 +1,4 @@
-package imagej.core.plugins;
+package imagej.data;
 
 import static org.junit.Assert.*;
 import imagej.data.Dataset;
