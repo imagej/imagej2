@@ -43,8 +43,6 @@ import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
@@ -56,8 +54,6 @@ import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTEventDispatcher;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +86,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
 	private String name;
 
-	@SuppressWarnings("synthetic-access")
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
 
@@ -105,16 +100,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this, false);
 		imgCanvas.addEventDispatcher(eventDispatcher);
 		imgWindow.addEventDispatcher(eventDispatcher);
-
-		imgWindow.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(final WindowEvent e) {
-				for (final DisplayView view : new ArrayList<DisplayView>(getViews())) {
-					view.dispose();
-					Events.publish(new DisplayDeletedEvent(thisDisplay));
-				}
-			}
-		});
 
 		willRebuildImgWindow = false;
 		thisDisplay = this;
