@@ -34,6 +34,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.awt.event.KeyEvent;
+
 import net.imglib2.img.Axis;
 import imagej.ImageJ;
 import imagej.data.Dataset;
@@ -41,7 +43,7 @@ import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.key.KyTypedEvent;
+import imagej.display.event.key.KyPressedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
@@ -84,7 +86,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	private long first;
 	private long last;
 	private boolean userHasQuit;
-	private EventSubscriber<KyTypedEvent> kyTypeSubscriber;
+	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 
 	// -- public interface --
@@ -115,7 +117,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	}
 	
 	private void animateAlongAxis(Display display, Axis axis, long total) {
-		Events.publish(new StatusEvent("Press space bar to terminate animation"));
+		Events.publish(new StatusEvent("Press ESC to terminate animation"));
 		Events.publish(
 			new AxisPositionEvent(display, axis, first, total, false));
 		int increment = 1;
@@ -186,14 +188,14 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
-		kyTypeSubscriber = new EventSubscriber<KyTypedEvent>() {
+		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
 			@Override
-			public void onEvent(KyTypedEvent event) {
-				if (event.getCharacter() == ' ')
+			public void onEvent(KyPressedEvent event) {
+				if (event.getCode() == KeyEvent.VK_ESCAPE)
 					userHasQuit = true;
 			}
 		};
-		Events.subscribe(KyTypedEvent.class, kyTypeSubscriber);
+		Events.subscribe(KyPressedEvent.class, kyPressSubscriber);
 		
 		displaySubscriber = new EventSubscriber<DisplayDeletedEvent>() {
 			@Override
@@ -206,7 +208,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	}
 
 	private void unsubscribeFromEvents() {
-		Events.unsubscribe(KyTypedEvent.class, kyTypeSubscriber);
+		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
 		Events.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 }
