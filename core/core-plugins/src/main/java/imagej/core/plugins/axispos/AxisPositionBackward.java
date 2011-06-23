@@ -52,7 +52,10 @@ import imagej.plugin.Plugin;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Axis Position Backward", accelerator = "shift COMMA") })
-//TODO - this next line does not work
+//TODO - this next line disabled. If enabled the accelerator appears
+//  correctly in the menu but can never be fired. I believe this is a
+//  Java bug. The above line is a hacky workaround that may be unintuitive
+//  for users without US keyboards. See bug #625 for more information.
 //@Menu(label = "Axis Position Backward", accelerator = "LESS") })
 public class AxisPositionBackward implements ImageJPlugin {
 
