@@ -66,11 +66,12 @@ ij.plugin.frame.ContrastAdjuster          # Image>Adjust>Brightness/Contrast
 ij.plugin.Converter("8-bit")              # Image>Type>8-bit
 ij.plugin.Converter("16-bit")             # Image>Type>16-bit
 ij.plugin.Converter("32-bit")             # Image>Type>32-bit
-ij.plugin.Animator("next")                 # Image>Stacks>Next Slice
-ij.plugin.Animator("previous")             # Image>Stacks>Prev Slice
-ij.plugin.Animator("set")                  # Image>Stacks>Set Slice
-ij.plugin.StackEditor("add")                # Image>Stacks>Add Slice
-ij.plugin.StackEditor("delete")            # Image>Stacks>Delete Slice
+ij.plugin.Animator("next")                # Image>Stacks>Next Slice
+ij.plugin.Animator("previous")            # Image>Stacks>Prev Slice
+ij.plugin.Animator("set")                 # Image>Stacks>Set Slice
+ij.plugin.StackEditor("add")              # Image>Stacks>Add Slice
+ij.plugin.StackEditor("delete")           # Image>Stacks>Delete Slice
+ij.plugin.filter.Shadows("demo")          # Process>Shadows>Shadows Demo
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")        # Image>Type>8-bit Color
 #ij.plugin.Converter("RGB Color")          # Image>Type>RGB Color
