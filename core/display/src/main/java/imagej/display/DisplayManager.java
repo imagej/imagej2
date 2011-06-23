@@ -39,6 +39,10 @@ import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.display.event.DisplayDeletedEvent;
+import imagej.display.event.window.WinClosedEvent;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
 import imagej.object.ObjectManager;
 
 import java.util.ArrayList;
@@ -54,6 +58,9 @@ import java.util.List;
 public final class DisplayManager implements ManagerComponent {
 
 	private Display activeDisplay;
+
+	/** Maintain list of subscribers, to avoid garbage collection. */
+	private List<EventSubscriber<?>> subscribers;
 
 	// -- DisplayManager methods --
 
@@ -75,7 +82,8 @@ public final class DisplayManager implements ManagerComponent {
 
 	public Dataset getActiveDataset(final Display display) {
 		final DatasetView activeDatasetView = getActiveDatasetView(display);
-		return activeDatasetView == null ? null : activeDatasetView.getDataObject();
+		return activeDatasetView == null ? null : activeDatasetView
+			.getDataObject();
 	}
 
 	public DatasetView getActiveDatasetView(final Display display) {
@@ -108,19 +116,44 @@ public final class DisplayManager implements ManagerComponent {
 		return displays;
 	}
 
-	public boolean isUniqueName(String name) {
-		List<Display> displays = getDisplays();
-		for (Display display : displays) {
-			if(name.equalsIgnoreCase(display.getName()))
-			return false;
+	public boolean isUniqueName(final String name) {
+		final List<Display> displays = getDisplays();
+		for (final Display display : displays) {
+			if (name.equalsIgnoreCase(display.getName())) return false;
 		}
 		return true;
 	}
+
 	// -- ManagerComponent methods --
 
 	@Override
 	public void initialize() {
 		activeDisplay = null;
+		subscribeToEvents();
+	}
+
+	// -- Helper methods --
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		// dispose views and delete display when display window is closed
+		final EventSubscriber<WinClosedEvent> winClosedSubscriber =
+			new EventSubscriber<WinClosedEvent>() {
+
+				@Override
+				public void onEvent(final WinClosedEvent event) {
+					final Display display = event.getDisplay();
+					final ArrayList<DisplayView> views =
+						new ArrayList<DisplayView>(display.getViews());
+					for (final DisplayView view : views) {
+						view.dispose();
+					}
+					Events.publish(new DisplayDeletedEvent(display));
+				}
+			};
+		subscribers.add(winClosedSubscriber);
+		Events.subscribe(WinClosedEvent.class, winClosedSubscriber);
 	}
 
 }
