@@ -1,5 +1,5 @@
 //
-// Events.java
+// PriorityEventSubscriber.java
 //
 
 /*
@@ -34,48 +34,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-import org.bushe.swing.event.EventBus;
+import org.bushe.swing.event.Prioritized;
 
 /**
- * Simple utility class for subscribing to ImageJ events,
- * as well as publishing them.
- *
+ * Interface for subscribers that wish to be notified of ImageJ events, in a
+ * particular order.
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
+ * @param <E> Type of event for which to listen
  */
-public final class Events {
+public interface PriorityEventSubscriber<E extends ImageJEvent> extends
+	EventSubscriber<E>, Prioritized
+{
 
-	/** Highest priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int FIRST_PRIORITY = -100;
-
-	/** High priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int HIGH_PRIORITY = -50;
-
-	/** Default priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int NORMAL_PRIORITY = 0;
-
-	/** Low priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int LOW_PRIORITY = 50;
-
-	/** Lowest priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int LAST_PRIORITY = 100;
-
-	private Events() {
-		// prevent instantiation of utility class
-	}
-
-	public static <E extends ImageJEvent> void publish(final E e) {
-		EventBus.publish(e);
-	}
-
-	public static <E extends ImageJEvent> void subscribe(
-			final Class<E> c, final EventSubscriber<E> subscriber) {
-		EventBus.subscribe(c, subscriber);
-	}
-
-	public static <E extends ImageJEvent> void unsubscribe(
-			final Class<E> c, final EventSubscriber<E> subscriber) {
-		EventBus.unsubscribe(c, subscriber);
-	}
+	@Override
+	int getPriority();
 
 }
