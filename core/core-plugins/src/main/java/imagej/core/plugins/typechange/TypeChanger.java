@@ -47,9 +47,7 @@ import net.imglib2.type.numeric.RealType;
 /**
  * Transforms a {@link Dataset} (and linked {@link ImgPlus}) between types.
  * <p>
- * Note that ImgLib does not do any range clamping while moving between image
- * types. So translations may not always be nice (i.e. narrowing cases) but best
- * behavior may be undefined.
+ * Although Imglib does not do any range clamping of values we will do so here.
  * </p>
  * 
  * @author Barry DeZonia
@@ -92,7 +90,7 @@ public class TypeChanger {
 	/**
 	 * Creates a planar ImgLib {@link Img} of the given type. It populates the
 	 * output {@link Img}'s data from the input {@link Img} (which is likely of a
-	 * different data type). No range clamping of data is done.
+	 * different data type). Output data is range clamped.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends RealType<T> & NativeType<T>>
@@ -106,8 +104,8 @@ public class TypeChanger {
 	/**
 	 * Creates an ImgLib {@link Img} of the given type using the specified
 	 * {@link ImgFactory}. It populates the output {@link Img}'s data from the
-	 * input {@link Img} (which is likely of a different data type). No range
-	 * clamping of data is done.
+	 * input {@link Img} (which is likely of a different data type). Output
+	 * data is range clamped.
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> copyToType(
 		final ImgPlus<? extends RealType<?>> inputImg, final T newType,
@@ -120,12 +118,21 @@ public class TypeChanger {
 		final Cursor<? extends RealType<?>> in = inputImg.localizingCursor();
 		final RandomAccess<T> out = outputImg.randomAccess();
 
+		final double outTypeMin = out.get().getMinValue();
+		final double outTypeMax = out.get().getMaxValue();
+		
+		final boolean inputIs1bit = in.get().getBitsPerPixel() == 1;
+		
 		final long[] pos = new long[dims.length];
 		while (in.hasNext()) {
 			in.fwd();
 			in.localize(pos);
 			out.setPosition(pos);
-			final double value = in.get().getRealDouble();
+			double value = in.get().getRealDouble();
+			if (value < outTypeMin) value = outTypeMin;
+			if (value > outTypeMax) value = outTypeMax;
+			if ((inputIs1bit) && (value > 0))
+				value = outTypeMax;
 			out.get().setReal(value);
 		}
 
