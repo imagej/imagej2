@@ -58,7 +58,7 @@ public class AxisUtils {
 	private static Axis activeAxis = Axes.Z;
 	
 	public static final String
-	X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
+		X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
 		PH="Phase", PO="Polarization", LI="Lifetime";
 
 	public static final String[] AXES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
