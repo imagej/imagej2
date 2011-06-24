@@ -36,6 +36,9 @@ package imagej.core.plugins.convolve;
 
 import java.awt.event.KeyEvent;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
+
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -49,9 +52,10 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.Log;
 
 /**
- * Implements IJ1's Shadows East plugin functionality
+ * Implements IJ1's Shadows Demo plugin functionality
  * 
  * @author Barry DeZonia
  */
@@ -68,8 +72,7 @@ public class ShadowsDemo implements ImageJPlugin {
 	
 	// -- private instance variables --
 
-	private boolean userHasQuit = false;
-	private double[][] kernels = new double[][] {
+	private static final double[][] KERNELS = new double[][] {
 		new double[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 }, // north
 		new double[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 }, // northeast
 		new double[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 }, // east
@@ -79,23 +82,31 @@ public class ShadowsDemo implements ImageJPlugin {
 		new double[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 }, // west
 		new double[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 }  // northwest
 	};
+	private boolean userHasQuit = false;
 	private Display currDisplay;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 	
 	// -- public interface --
 
+	/** runs the plugin. The plugin continually runs each shadow transformation
+	 * until ESC is pressed.
+	 */
 	@Override
 	public void run() {
+		if (unsupportedImage()) {
+			Log.error("This command only works with a single plane of data");
+			return;
+		}
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
 		currDisplay = ImageJ.get(DisplayManager.class).getActiveDisplay();
 		Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {
-			for (int i = 0; i < kernels.length; i++) {
+			for (int i = 0; i < KERNELS.length; i++) {
 				Convolve3x3Operation operation =
-					new Convolve3x3Operation(input, kernels[i]);
+					new Convolve3x3Operation(input, KERNELS[i]);
 				operation.run();
 				try {	Thread.sleep(100); }
 				catch (Exception e) {
@@ -108,7 +119,25 @@ public class ShadowsDemo implements ImageJPlugin {
 		Events.publish(new StatusEvent("Shadows demo terminated"));
 		unsubscribeFromEvents();
 	}
-	
+
+	/** 
+	 * returns true if image cannot be represented as a single plane for display.
+	 * This mirrors IJ1's behavior.
+	 */
+	private boolean unsupportedImage() {
+		Axis[] axes = input.getAxes();
+		long[] dims = input.getDims();
+		for (int i = 0; i < axes.length; i++) {
+			Axis axis = axes[i];
+			if (axis == Axes.X) continue;
+			if (axis == Axes.Y) continue;
+			if ((axis == Axes.CHANNEL) && input.isRGBMerged()) continue;
+			if (dims[i] != 1) return true;
+		}
+		return false;
+	}
+
+	/** subscribes to events that will track when the user has decided to quit */
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
@@ -130,6 +159,9 @@ public class ShadowsDemo implements ImageJPlugin {
 		Events.subscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 
+	/** unsubscribes from events. this keeps IJ2 from maintaining dangling
+	 *  references to obsolete event listeners
+	 */
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
 		Events.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
