@@ -190,7 +190,7 @@ public class LegacyImageMap {
 
 				@Override
 				public void onEvent(final DisplayCreatedEvent event) {
-					unregisterDisplay(event.getObject());
+					registerDisplay(event.getObject());
 				}
 			};
 		subscribers.add(creationSubscriber);
