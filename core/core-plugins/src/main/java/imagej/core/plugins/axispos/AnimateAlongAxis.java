@@ -62,7 +62,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
-	@Menu(label = "Animate") })
+	@Menu(label = "Animate", accelerator = "BACK_SLASH") })
 public class AnimateAlongAxis implements ImageJPlugin {
 
 	// -- Parameters --
@@ -70,12 +70,24 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	@Parameter(label = "Speed (0.1 - 1000 fps)", min = "0.1", max = "1000")
 	private double fps;
 
+	@Parameter(label="Axis",choices={
+		// NB - X & Y excluded right now
+		AxisUtils.Z,
+		AxisUtils.CH,
+		AxisUtils.TI,
+		AxisUtils.FR,
+		AxisUtils.SP,
+		AxisUtils.PH,
+		AxisUtils.PO,
+		AxisUtils.LI})
+	String axisName;
+	
 	// TODO - populate min and max values from Dataset
-	@Parameter(label = "First frame", min = "1", max = "10000")
+	@Parameter(label = "First position", min = "1", max = "10000")
 	private long oneBasedFirst;
 	
 	// TODO - populate min and max values from Dataset
-	@Parameter(label = "Last frame", min = "1", max = "10000")
+	@Parameter(label = "Last position", min = "1", max = "10000")
 	private long oneBasedLast;
 
 	// either wrap or move back and forth
@@ -84,10 +96,17 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	
 	// -- private instance variables --
 
+	private static final String REGULAR_STATUS =
+		"Press ESC to terminate. Pressing P toggles pause on and off.";
+	private static final String PAUSED_STATUS =
+		"Animation paused. Press P to continue or ESC to terminate.";
+	private static final String DONE_STATUS =
+		"Animation terminated";
 	private Display currDisplay;
 	private long first;
 	private long last;
 	private boolean userHasQuit;
+	private boolean pause;
 	private EventSubscriber<KyPressedEvent> kyPressSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 
@@ -102,13 +121,13 @@ public class AnimateAlongAxis implements ImageJPlugin {
 		if (currDisplay == null) return;
 		Dataset ds = (Dataset) currDisplay.getActiveView().getDataObject();
 		if (ds == null) return;
-		Axis currAxis = AxisUtils.getActiveAxis();
-		int axisIndex = ds.getImgPlus().getAxisIndex(currAxis);
+		Axis axis = AxisUtils.getAxis(axisName);
+		int axisIndex = ds.getImgPlus().getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		long totalHyperplanes = ds.getImgPlus().dimension(axisIndex);
 		subscribeToEvents();
 		setFirstAndLast(totalHyperplanes);
-		animateAlongAxis(currDisplay, currAxis, totalHyperplanes);
+		animateAlongAxis(currDisplay, axis, totalHyperplanes);
 		unsubscribeFromEvents();
 	}
 	
@@ -124,7 +143,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 
 	/** do the actual animation. generates multiple AxisPositionEvents */
 	private void animateAlongAxis(Display display, Axis axis, long total) {
-		Events.publish(new StatusEvent("Press ESC to terminate animation"));
+		Events.publish(new StatusEvent(REGULAR_STATUS));
 		Events.publish(
 			new AxisPositionEvent(display, axis, first, total, false));
 		int increment = 1;
@@ -132,8 +151,9 @@ public class AnimateAlongAxis implements ImageJPlugin {
 		long delta = 1;
 		boolean isRelative = true;
 		userHasQuit = false;
+		pause = false;
 		while (!userHasQuit) {
-			if (ImageJ.get(DisplayManager.class).getActiveDisplay() != display) {
+			if (pause) {
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
@@ -190,7 +210,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 				// do nothing
 			}
 		}
-		Events.publish(new StatusEvent("Animation terminated"));
+		Events.publish(new StatusEvent(DONE_STATUS));
 	}
 	
 	/** subscribes to events that will track when the user has decided to quit */
@@ -199,8 +219,16 @@ public class AnimateAlongAxis implements ImageJPlugin {
 		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
 			@Override
 			public void onEvent(KyPressedEvent event) {
+				if (event.getDisplay() != currDisplay) return;
 				if (event.getCode() == KeyEvent.VK_ESCAPE)
 					userHasQuit = true;
+				else if (event.getCode() == KeyEvent.VK_P) {
+					pause = !pause;
+					if (pause)
+						Events.publish(new StatusEvent(PAUSED_STATUS));
+					else
+						Events.publish(new StatusEvent(REGULAR_STATUS));
+				}
 			}
 		};
 		Events.subscribe(KyPressedEvent.class, kyPressSubscriber);
