@@ -65,6 +65,8 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Animate") })
 public class AnimateAlongAxis implements ImageJPlugin {
 
+	// -- Parameters --
+
 	@Parameter(label = "Speed (0.1 - 1000 fps)", min = "0.1", max = "1000")
 	private double fps;
 
@@ -91,6 +93,9 @@ public class AnimateAlongAxis implements ImageJPlugin {
 
 	// -- public interface --
 	
+	/** runs an animation along the currently chosen axis repeatedly until ESC
+	 * has been pressed by user
+	 */
 	@Override
 	public void run() {
 		currDisplay = ImageJ.get(DisplayManager.class).getActiveDisplay();
@@ -109,13 +114,15 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	
 	// -- private interface --
 
+	/** sets the zero-based indices of the first and last frames */
 	private void setFirstAndLast(long totalHyperplanes) {
 		first = Math.min(oneBasedFirst, oneBasedLast) - 1;
 		last = Math.max(oneBasedFirst, oneBasedLast) - 1;
 		if (first < 0) first = 0;
 		if (last > totalHyperplanes-1) last = totalHyperplanes-1;
 	}
-	
+
+	/** do the actual animation. generates multiple AxisPositionEvents */
 	private void animateAlongAxis(Display display, Axis axis, long total) {
 		Events.publish(new StatusEvent("Press ESC to terminate animation"));
 		Events.publish(
@@ -186,6 +193,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 		Events.publish(new StatusEvent("Animation terminated"));
 	}
 	
+	/** subscribes to events that will track when the user has decided to quit */
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
@@ -207,6 +215,9 @@ public class AnimateAlongAxis implements ImageJPlugin {
 		Events.subscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 
+	/** unsubscribes from events. this keeps IJ2 from maintaining dangling
+	 *  references to obsolete event listeners
+	 */
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(KyPressedEvent.class, kyPressSubscriber);
 		Events.unsubscribe(DisplayDeletedEvent.class, displaySubscriber);
