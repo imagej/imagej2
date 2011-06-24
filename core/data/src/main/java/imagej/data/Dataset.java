@@ -261,11 +261,11 @@ public class Dataset extends AbstractDataObject implements
 
 	/** Gets a string description of the dataset's pixel type. */
 	public String getTypeLabel() {
-		if (isRGBMerged()) return "RGB";
+		if (isRGBMerged()) return "RGB color";
 		final int bitsPerPixel = getType().getBitsPerPixel();
 		final String category =
-			isInteger() ? isSigned() ? "signed" : "unsigned" : "real";
-		return bitsPerPixel + "-bit (" + category + ")";
+			isInteger() ? isSigned() ? "signed" : "unsigned" : "float";
+		return category + " " + bitsPerPixel + "-bit";
 	}
 
 	/** Creates a copy of the dataset. */
