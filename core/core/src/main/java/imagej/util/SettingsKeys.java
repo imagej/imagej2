@@ -107,6 +107,12 @@ public class SettingsKeys
 	public static final String OPTIONS_PROXY_PORT = "settings.proxy.ProxyPort";
 	public static final String OPTIONS_PROXY_AUTHENTICATE = "settings.proxy.AuthenticationRequired";
 
+	// from the Options Round Rect Tool dialog
+	public static final String OPTIONS_ROUND_RECT_STROKE_WIDTH = "settings.roundrect.StrokeWidth";
+	public static final String OPTIONS_ROUND_RECT_CORNER_DIAMETER = "settings.roundrect.CornerDiameter";
+	public static final String OPTIONS_ROUND_RECT_STROKE_COLOR = "settings.roundrect.StrokeColor";
+	public static final String OPTIONS_ROUND_RECT_FILL_COLOR = "settings.roundrect.FillColor";
+	
 	// from the Options Wand dialog
 	public static final String OPTIONS_WAND_MODE = "settings.wand.Mode";
 	public static final String OPTIONS_WAND_TOLERANCE = "settings.wand.Tolerance";
