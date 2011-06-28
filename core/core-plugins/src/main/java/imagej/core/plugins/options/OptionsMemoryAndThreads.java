@@ -57,6 +57,10 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_STACK_THREADS)
 	private int stackThreads;
 
+	@Parameter(label = "Keep multiple undo buffers",
+		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_MULTIPLE_UNDO_BUFFERS)
+	private boolean multipleBuffers;
+
 	@Parameter(label = "Run garbage collector on status bar click",
 		persistKey = SettingsKeys.OPTIONS_MEMORYTHREADS_RUN_GC)
 	private boolean runGcOnClick;
