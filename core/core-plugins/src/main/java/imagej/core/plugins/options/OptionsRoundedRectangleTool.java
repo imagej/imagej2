@@ -67,7 +67,7 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	
 	@Parameter(label = "Fill Color",
 		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR,
-		choices = { "black", "white", "red", "green", "blue",
+		choices = { "none", "black", "white", "red", "green", "blue",
 			"cyan", "magenta", "yellow", "gray"
 		}
 	)
