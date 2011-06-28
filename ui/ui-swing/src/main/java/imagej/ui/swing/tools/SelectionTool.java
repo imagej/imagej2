@@ -45,8 +45,8 @@ import imagej.tool.Tool;
  */
 @Tool(name = SelectionTool.NAME, iconPath = "/icons/tools/selection.png",
 	priority = SelectionTool.PRIORITY, label = "Selection tool",
-	description = "This tool lets you select an overlay, "
-		+ "move it and adjust its shape using its handles.", enabled = true)
+	description = "Adjust the shape and position of an overlay via handles.",
+	enabled = true)
 public class SelectionTool extends BaseTool {
 
 	public final static String NAME = "Selection";
