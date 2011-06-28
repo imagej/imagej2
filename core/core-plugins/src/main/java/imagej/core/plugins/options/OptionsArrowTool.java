@@ -67,6 +67,10 @@ public class OptionsArrowTool extends OptionsPlugin  {
 		"Headless" }, persistKey = SettingsKeys.OPTIONS_ARROW_STYLE)
 	private String arrowStyle;
 
+	@Parameter(label = "Outline",
+		persistKey = SettingsKeys.OPTIONS_ARROW_OUTLINE)
+	private boolean arrowOutline;
+
 	@Parameter(label = "Double headed",
 		persistKey = SettingsKeys.OPTIONS_ARROW_DOUBLEHEADED)
 	private boolean arrowDoubleHeaded;

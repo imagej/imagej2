@@ -27,6 +27,7 @@ public class SettingsKeys
 	public static final String OPTIONS_ARROW_SIZE = "settings.arrow.Size";
 	public static final String OPTIONS_ARROW_COLOR = "settings.arrow.Color";
 	public static final String OPTIONS_ARROW_STYLE = "settings.arrow.Style";
+	public static final String OPTIONS_ARROW_OUTLINE = "settings.arrow.Outline";
 	public static final String OPTIONS_ARROW_DOUBLEHEADED = "settings.arrow.DoubleHeaded";
 
 	// from the Options Colors dialog
@@ -70,6 +71,7 @@ public class SettingsKeys
 	// from the Options Memory/Threads dialog
 	public static final String OPTIONS_MEMORYTHREADS_MAX_MEMORY = "settings.memorythreads.MaxMemory";
 	public static final String OPTIONS_MEMORYTHREADS_STACK_THREADS = "settings.memorythreads.StackThreads";
+	public static final String OPTIONS_MEMORYTHREADS_MULTIPLE_UNDO_BUFFERS = "settings.memorythreads.MultipleUndoBuffers";
 	public static final String OPTIONS_MEMORYTHREADS_RUN_GC = "settings.memorythreads.RunGc";
 
 	// from the Options Misc dialog
