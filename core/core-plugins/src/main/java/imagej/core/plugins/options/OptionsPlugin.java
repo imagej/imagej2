@@ -1,5 +1,5 @@
 //
-// OptionsCompiler.java
+// OptionsPlugin.java
 //
 
 /*
@@ -33,28 +33,21 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.core.plugins.options;
 
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.util.SettingsKeys;
+import imagej.event.Events;
+import imagej.event.OptionsChangedEvent;
+import imagej.plugin.ImageJPlugin;
 
 /**
- * Runs the Edit::Options::Compiler... dialog
+ * Base class for all options oriented plugins.
  * 
  * @author Barry DeZonia
+ *
  */
-@Plugin(menu = {
-	@Menu(label = "Edit", mnemonic = 'e'),
-	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Compiler...", weight = 14) })
-public class OptionsCompiler extends OptionsPlugin {
+public class OptionsPlugin implements ImageJPlugin {
 
-	@Parameter(label = "Target", choices = {"1.4","1.5","1.6","1.7"},
-		persistKey = SettingsKeys.OPTIONS_COMPILER_VERSION)
-	private String targetJavaVersion;
-	
-	@Parameter(label = "Generate debugging ino (javac -g)",
-		persistKey = SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO)
-	private boolean generateDebugInfo;
+	@Override
+	public void run() {
+		Events.publish(new OptionsChangedEvent());
+	}
 
 }

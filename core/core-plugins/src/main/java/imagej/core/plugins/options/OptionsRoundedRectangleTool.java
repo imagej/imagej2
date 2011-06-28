@@ -1,5 +1,5 @@
 //
-// OptionsCompiler.java
+// OptionsRoundedRectangle.java
 //
 
 /*
@@ -39,22 +39,37 @@ import imagej.plugin.Plugin;
 import imagej.util.SettingsKeys;
 
 /**
- * Runs the Edit::Options::Compiler... dialog
+ * Runs the Edit::Options::Rounded Rectangle Tool... dialog
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Options", mnemonic = 'o'),
-	@Menu(label = "Compiler...", weight = 14) })
-public class OptionsCompiler extends OptionsPlugin {
-
-	@Parameter(label = "Target", choices = {"1.4","1.5","1.6","1.7"},
-		persistKey = SettingsKeys.OPTIONS_COMPILER_VERSION)
-	private String targetJavaVersion;
+	@Menu(label = "Rounded Rect Tool...", weight = 5) })
+public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	
-	@Parameter(label = "Generate debugging ino (javac -g)",
-		persistKey = SettingsKeys.OPTIONS_COMPILER_DEBUG_INFO)
-	private boolean generateDebugInfo;
-
+	@Parameter(label = "Stroke Width", min="1", max = "25",
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_WIDTH)
+	private int strokeWidth;
+	
+	@Parameter(label = "Corner Diameter", min="0", max = "200",
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_CORNER_DIAMETER)
+	private int cornerDiameter;
+	
+	@Parameter(label = "Stroke Color",
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR,
+		choices = { "black", "white", "red", "green", "blue",
+			"cyan", "magenta", "yellow", "gray"
+		}
+	)
+	private String strokeColor;
+	
+	@Parameter(label = "Fill Color",
+		persistKey = SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR,
+		choices = { "black", "white", "red", "green", "blue",
+			"cyan", "magenta", "yellow", "gray"
+		}
+	)
+	private String fillColor;
 }
