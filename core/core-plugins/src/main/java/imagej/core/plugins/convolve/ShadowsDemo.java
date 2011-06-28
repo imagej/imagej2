@@ -89,7 +89,8 @@ public class ShadowsDemo implements ImageJPlugin {
 	
 	// -- public interface --
 
-	/** runs the plugin. The plugin continually runs each shadow transformation
+	/**
+	 * Runs the plugin. The plugin continually runs each shadow transformation
 	 * until ESC is pressed.
 	 */
 	@Override
@@ -121,7 +122,7 @@ public class ShadowsDemo implements ImageJPlugin {
 	}
 
 	/** 
-	 * returns true if image cannot be represented as a single plane for display.
+	 * Returns true if image cannot be represented as a single plane for display.
 	 * This mirrors IJ1's behavior.
 	 */
 	private boolean unsupportedImage() {
@@ -137,14 +138,17 @@ public class ShadowsDemo implements ImageJPlugin {
 		return false;
 	}
 
-	/** subscribes to events that will track when the user has decided to quit */
+	/**
+	 * Subscribes to events that will track when the user has decided to quit
+	 */
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		kyPressSubscriber = new EventSubscriber<KyPressedEvent>() {
 			@Override
 			public void onEvent(KyPressedEvent event) {
-				if (event.getCode() == KeyEvent.VK_ESCAPE)
-					userHasQuit = true;
+				if (event.getDisplay() == currDisplay)
+					if (event.getCode() == KeyEvent.VK_ESCAPE)
+						userHasQuit = true;
 			}
 		};
 		Events.subscribe(KyPressedEvent.class, kyPressSubscriber);
@@ -159,7 +163,8 @@ public class ShadowsDemo implements ImageJPlugin {
 		Events.subscribe(DisplayDeletedEvent.class, displaySubscriber);
 	}
 
-	/** unsubscribes from events. this keeps IJ2 from maintaining dangling
+	/**
+	 *  Unsubscribes from events. this keeps IJ2 from maintaining dangling
 	 *  references to obsolete event listeners
 	 */
 	private void unsubscribeFromEvents() {
