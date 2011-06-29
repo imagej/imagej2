@@ -86,6 +86,8 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 
 	@Override
 	public void setProgress(final int val, final int max) {
+		if (max < 0) return;
+		// NB - by design val == max falls to bottom and resets to 0
 		if (val >= 0 && val < max) {
 			progressBar.setValue(val);
 			progressBar.setMaximum(max);
