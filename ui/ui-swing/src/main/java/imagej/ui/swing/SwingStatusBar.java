@@ -41,8 +41,6 @@ import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
