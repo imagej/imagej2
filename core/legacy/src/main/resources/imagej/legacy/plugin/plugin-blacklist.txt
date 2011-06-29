@@ -6,6 +6,7 @@ ij.plugin.Options("line")                 # Edit>Options>Line Width
 ij.plugin.Options("io")                   # Edit>Options>Input/Output
 ij.plugin.frame.Fonts                     # Edit>Options>Fonts
 ij.plugin.filter.Profiler("set")          # Edit>Options>Profile Plot
+ij.plugin.RectToolOptions                 # Edit>Options>Rounded Rect Tool
 ij.plugin.ArrowToolOptions                # Edit>Options>Arrow Tool
 ij.plugin.Colors("point")                 # Edit>Options>Point Tool
 ij.plugin.WandToolOptions                 # Edit>Options>Wand Tools
