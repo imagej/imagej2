@@ -41,6 +41,8 @@ import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -87,6 +89,11 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 	@Override
 	public void setProgress(final int val, final int max) {
 		if (max < 0) return;
+		
+		// make sure its always blue and not gray by grabbing focus
+		// TODO - does this cause problems elsewhere?
+		progressBar.grabFocus();
+		
 		// NB - by design val == max falls to bottom and resets to 0
 		if (val >= 0 && val < max) {
 			progressBar.setValue(val);
@@ -96,6 +103,9 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 			progressBar.setValue(0);
 			progressBar.setMaximum(1);
 		}
+		
+		// try to keep up
+		//progressBar.repaint();? show()?
 	}
 
 	// -- EventSubscriber methods --
