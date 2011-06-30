@@ -58,7 +58,8 @@ public class FindEdges implements ImageJPlugin {
 
 	// -- public interface --
 
-	/** sets the output Dataset to the result of the find edges operation */
+	/**
+	 * Sets the output Dataset to the result of the find edges operation */
 	@Override
 	public void run() {
 		Neighborhood3x3Operation operation =
@@ -70,7 +71,8 @@ public class FindEdges implements ImageJPlugin {
 
 	private class FindEdgesWatcher implements Neighborhood3x3Watcher {
 
-		/** n - contains a local copy of the 9 values of a 3x3 neighborhood */
+		/**
+		 * n - contains a local copy of the 9 values of a 3x3 neighborhood */
 		private double[] n;
 		private boolean integerDataset;
 		private double typeMinValue;
@@ -82,20 +84,22 @@ public class FindEdges implements ImageJPlugin {
 			typeMaxValue = input.getType().getMaxValue();
 		}
 		
-		/** create the local neighborhood variables */
+		/**
+		 * Create the local neighborhood variables */
 		@Override
 		public void setup() {
 			n = new double[9];
 		}
 
-		/** at each new neighborhood start tracking neighbor 0 */
+		/**
+		 * At each new neighborhood start tracking neighbor 0 */
 		@Override
 		public void initializeNeighborhood(long[] position) {
 			// nothing to do
 		}
 
 		/**
-		 * every time we visit a location within the neighborhood we update our
+		 * Every time we visit a location within the neighborhood we update our
 		 * local copy
 		 */
 		@Override
@@ -105,7 +109,7 @@ public class FindEdges implements ImageJPlugin {
 		}
 
 		/**
-		 * calculates the value of a pixel from the input neighborhood. algorithm
+		 * Calculates the value of a pixel from the input neighborhood. algorithm
 		 * taken from IJ1.
 		 */
 		@Override

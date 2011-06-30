@@ -51,11 +51,12 @@ public class Convolve3x3Operation {
 
 	// -- instance variables --
 
-	/** the kernel to convolve an input Dataset by */
+	/**
+	 * The kernel to convolve an input Dataset by */
 	private double[] kernel;
 
 	/**
-	 * the 3x3 operation that will run on the input Dataset and call back this
+	 * The 3x3 operation that will run on the input Dataset and call back this
 	 * class as needed
 	 */
 	private Neighborhood3x3Operation neighOperation;
@@ -63,7 +64,7 @@ public class Convolve3x3Operation {
 	// -- constructor --
 
 	/**
-	 * constructor. takes an input Dataset and a kernel that will be used to
+	 * Constructor. takes an input Dataset and a kernel that will be used to
 	 * calculate data values.
 	 */
 	public Convolve3x3Operation(Dataset input, double[] kernel) {
@@ -78,7 +79,7 @@ public class Convolve3x3Operation {
 	// -- public interface --
 
 	/**
-	 * runs the convolution and replaces pixels in place with convolved values
+	 * Runs the convolution and replaces pixels in place with convolved values
 	 */
 	public void run() {
 		neighOperation.run();
@@ -108,7 +109,8 @@ public class Convolve3x3Operation {
 			typeMaxValue = ds.getType().getMaxValue();
 		}
 		
-		/** precalculates the kernel scale for use later */
+		/**
+		 * Precalculates the kernel scale for use later */
 		@Override
 		public void setup() {
 			scale = 0;
@@ -117,14 +119,15 @@ public class Convolve3x3Operation {
 			if (scale == 0) scale = 1;
 		}
 
-		/** at each new neighborhood reset it's value sum to 0 */
+		/**
+		 * At each new neighborhood reset it's value sum to 0 */
 		@Override
 		public void initializeNeighborhood(long[] position) {
 			sum = 0;
 		}
 
 		/**
-		 * for each pixel visited in the 3x3 neighborhood add the kernel scaled
+		 * For each pixel visited in the 3x3 neighborhood add the kernel scaled
 		 * value
 		 */
 		@Override
@@ -134,7 +137,7 @@ public class Convolve3x3Operation {
 		}
 
 		/**
-		 * called after all pixels in neighborhood visited - divide the sum by the
+		 * Called after all pixels in neighborhood visited - divide the sum by the
 		 * kernel scale
 		 */
 		@Override

@@ -82,7 +82,8 @@ public class AddHyperplanes implements ImageJPlugin {
 	
 	private long insertPosition;
 
-	/** creates new ImgPlus data copying pixel values as needed from an input
+	/**
+	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
@@ -100,7 +101,8 @@ public class AddHyperplanes implements ImageJPlugin {
 		input.setImgPlus(dstImgPlus);
 	}
 
-	/** detects if user specified data is invalid */
+	/**
+	 * Detects if user specified data is invalid */
 	private boolean inputBad(Axis axis) {
 		// axis not determined by dialog
 		if (axis == null)
@@ -126,7 +128,8 @@ public class AddHyperplanes implements ImageJPlugin {
 		return false;
 	}
 
-	/** fills the newly created ImgPlus with data values from a smaller source
+	/**
+	 * Fills the newly created ImgPlus with data values from a smaller source
 	 * image. Copies data from existing hyperplanes.
 	 */
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,

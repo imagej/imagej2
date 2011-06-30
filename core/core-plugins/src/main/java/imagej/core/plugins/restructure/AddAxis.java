@@ -76,7 +76,8 @@ public class AddAxis implements ImageJPlugin {
 	@Parameter(label="Axis size", min="1")
 	private long axisSize;
 
-	/** creates new ImgPlus data with an additonal axis. sets pixels of 1st
+	/**
+	 * Creates new ImgPlus data with an additonal axis. sets pixels of 1st
 	 * hyperplane of new imgPlus to original imgPlus data. Assigns the ImgPlus
 	 * to the input Dataset.
 	 */
@@ -93,7 +94,8 @@ public class AddAxis implements ImageJPlugin {
 		input.setImgPlus(dstImgPlus);
 	}
 	
-	/** detects if user specified data is invalid */
+	/**
+	 * Detects if user specified data is invalid */
 	private boolean inputBad(Axis axis) {
 		// axis not determined by dialog
 		if (axis == null)
@@ -111,7 +113,8 @@ public class AddAxis implements ImageJPlugin {
 		return false;
 	}
 
-	/** creates an Axis[] that consists of all the axes from a Dataset and an
+	/**
+	 * Creates an Axis[] that consists of all the axes from a Dataset and an
 	 * additional axis appended.
 	 */
 	private Axis[] getNewAxes(Dataset ds, Axis axis) {
@@ -123,7 +126,8 @@ public class AddAxis implements ImageJPlugin {
 		return newAxes;
 	}
 	
-	/** creates a long[] that consists of all the dimensions from a Dataset and
+	/**
+	 * Creates a long[] that consists of all the dimensions from a Dataset and
 	 * an additional value appended.
 	 */
 	private long[] getNewDimensions(Dataset ds, long lastDimensionSize) {
@@ -135,7 +139,8 @@ public class AddAxis implements ImageJPlugin {
 		return newDims;
 	}
 	
-	/** fills the 1st hyperplane in the new Dataset with the entire contents
+	/**
+	 * Fills the 1st hyperplane in the new Dataset with the entire contents
 	 * of the original image
 	 */
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,

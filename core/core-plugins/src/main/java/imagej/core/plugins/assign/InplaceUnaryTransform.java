@@ -42,7 +42,7 @@ import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.type.numeric.RealType;
 
 /**
-* helper class for use by many plugins that apply a UnaryOperator to some input
+* Helper class for use by many plugins that apply a UnaryOperator to some input
 * image. the run() method returns the output image that is the result of such a
 * pixel by pixel application.
 */

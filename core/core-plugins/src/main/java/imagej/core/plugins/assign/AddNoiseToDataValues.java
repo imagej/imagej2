@@ -53,20 +53,22 @@ public class AddNoiseToDataValues {
 
 	// -- instance variables --
 
-	/** the input Dataset that contains original values */
+	/**
+	 * The input Dataset that contains original values */
 	private Dataset input;
 
-	/** the output Dataset that will contain perturbed values */
+	/**
+	 * The output Dataset that will contain perturbed values */
 	private Dataset output;
 
 	/**
-	 * the stand deviation of the gaussian random value used to create perturbed
+	 * The stand deviation of the gaussian random value used to create perturbed
 	 * values
 	 */
 	private double rangeStdDev;
 
 	/**
-	 * maximum allowable values - varies by underlying data type. For instance
+	 * Maximum allowable values - varies by underlying data type. For instance
 	 * (0,255) for 8 bit and (0,65535) for 16 bit. used to make sure that
 	 * perturned values do not leave the allowable range for the underlying data
 	 * type.
@@ -76,7 +78,7 @@ public class AddNoiseToDataValues {
 	// -- constructor --
 
 	/**
-	 * constructor - takes an input Dataset as the baseline data to compute
+	 * Constructor - takes an input Dataset as the baseline data to compute
 	 * perturbed values from.
 	 */
 	public AddNoiseToDataValues(Dataset input) {
@@ -86,7 +88,7 @@ public class AddNoiseToDataValues {
 	// -- public interface --
 
 	/**
-	 * use this method to specify the output Dataset that will hold output data.
+	 * Use this method to specify the output Dataset that will hold output data.
 	 * if this method is not called then the add noise operation defaults to
 	 * creating a new output Dataset and returning it from the run() method.
 	 */
@@ -95,14 +97,15 @@ public class AddNoiseToDataValues {
 	}
 
 	/**
-	 * specify the standard deviation of the gaussian range desired. affects the
+	 * Specify the standard deviation of the gaussian range desired. affects the
 	 * distance of perturbation of each data value.
 	 */
 	protected void setStdDev(double stdDev) {
 		this.rangeStdDev = stdDev;
 	}
 
-	/** runs the operation and returns the Dataset that contains the output data */
+	/**
+	 * Runs the operation and returns the Dataset that contains the output data */
 	public void run() {
 		calcTypeMinAndMax();
 
@@ -116,7 +119,7 @@ public class AddNoiseToDataValues {
 	// -- private interface --
 
 	/**
-	 * calculates the min and max allowable data range for the image : depends
+	 * Calculates the min and max allowable data range for the image : depends
 	 * upon its underlying data type
 	 */
 	private void calcTypeMinAndMax() {
