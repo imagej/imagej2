@@ -81,7 +81,8 @@ public class CropImage implements ImageJPlugin {
 
 	// -- public interface --
 
-	/** runs the crop process and returns the output as a Dataset */
+	/**
+	 * Runs the crop process and returns the output as a Dataset */
 	@Override
 	public void run() {
 		OutputAlgorithm algorithm = new CropAlgorithm();
@@ -103,7 +104,7 @@ public class CropImage implements ImageJPlugin {
 		private Img<? extends RealType<?>> outputImage;
 
 		/**
-		 * returns false if there is any problem with the input data. returns true
+		 * Returns false if there is any problem with the input data. returns true
 		 * otherwise.
 		 */
 		@Override
@@ -122,13 +123,15 @@ public class CropImage implements ImageJPlugin {
 			return true;
 		}
 
-		/** returns the current error message */
+		/**
+		 * Returns the current error message */
 		@Override
 		public String getErrorMessage() {
 			return errMessage;
 		}
 
-		/** runs the cropping process */
+		/**
+		 * Runs the cropping process */
 		@Override
 		public boolean process() {
 			RandomAccess<? extends RealType<?>> inputAccessor =
@@ -157,7 +160,7 @@ public class CropImage implements ImageJPlugin {
 		}
 
 		/**
-		 * returns the resulting output image. not valid before checkInput() and
+		 * Returns the resulting output image. not valid before checkInput() and
 		 * process() have been called.
 		 */
 		@Override

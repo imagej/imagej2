@@ -40,7 +40,7 @@ import net.imglib2.ops.function.p1.UnaryOperatorFunction;
 import net.imglib2.ops.operator.UnaryOperator;
 
 /**
- * helper class for use by many plugins that apply a UnaryOperator to some input
+ * Helper class for use by many plugins that apply a UnaryOperator to some input
  * image. the run() method returns the output image that is the result of such a
  * pixel by pixel application.
  */

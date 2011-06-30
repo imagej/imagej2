@@ -78,7 +78,8 @@ public class DeleteAxis implements ImageJPlugin {
 	
 	private long hyperPlaneToKeep;
 
-	/** creates new ImgPlus data with one less axis. sets pixels of ImgPlus
+	/**
+	 * Creates new ImgPlus data with one less axis. sets pixels of ImgPlus
 	 * to user specified hyperplane within original ImgPlus data. Assigns the
 	 * new ImgPlus to the input Dataset.
 	 */
@@ -96,7 +97,8 @@ public class DeleteAxis implements ImageJPlugin {
 		input.setImgPlus(dstImgPlus);
 	}
 	
-	/** detects if user specified data is invalid */
+	/**
+	 * Detects if user specified data is invalid */
 	private boolean inputBad(Axis axis) {
 		// axis not determined by dialog
 		if (axis == null)
@@ -116,7 +118,8 @@ public class DeleteAxis implements ImageJPlugin {
 		return false;
 	}
 
-	/** creates an Axis[] that consists of all the axes from a Dataset minus
+	/**
+	 * Creates an Axis[] that consists of all the axes from a Dataset minus
 	 * a user specified axis
 	 */
 	private Axis[] getNewAxes(Dataset ds, Axis axis) {
@@ -129,7 +132,8 @@ public class DeleteAxis implements ImageJPlugin {
 		return newAxes;
 	}
 	
-	/** creates a long[] that consists of all the dimensions from a Dataset
+	/**
+	 * Creates a long[] that consists of all the dimensions from a Dataset
 	 * minus a user specified axis.
 	 */
 	private long[] getNewDimensions(Dataset ds, Axis axis) {
@@ -145,7 +149,8 @@ public class DeleteAxis implements ImageJPlugin {
 		return newDims;
 	}
 	
-	/** fills the data in the shrunken ImgPlus with the contents of the user
+	/**
+	 * Fills the data in the shrunken ImgPlus with the contents of the user
 	 * specified hyperplane in the original image
 	 */
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,

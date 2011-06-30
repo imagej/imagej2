@@ -68,7 +68,8 @@ public class InvertDataValues implements ImageJPlugin {
 
 	// -- public interface --
 
-	/** fills the output image from the input image */
+	/**
+	 * Fills the output image from the input image */
 	@Override
 	public void run() {
 		// this is similar to IJ1
@@ -87,7 +88,7 @@ public class InvertDataValues implements ImageJPlugin {
 	// -- private interface --
 
 	/**
-	 * finds the smallest and largest data values actually present in the input
+	 * Finds the smallest and largest data values actually present in the input
 	 * image
 	 */
 	private void calcValueRange() {

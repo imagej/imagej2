@@ -82,7 +82,8 @@ public class DeleteHyperplanes implements ImageJPlugin {
 
 	private long deletePosition;
 	
-	/** creates new ImgPlus data copying pixel values as needed from an input
+	/**
+	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
@@ -100,7 +101,8 @@ public class DeleteHyperplanes implements ImageJPlugin {
 		input.setImgPlus(dstImgPlus);
 	}
 
-	/** detects if user specified data is invalid */
+	/**
+	 * Detects if user specified data is invalid */
 	private boolean inputBad(Axis axis) {
 		// axis not determined by dialog
 		if (axis == null)
@@ -130,7 +132,8 @@ public class DeleteHyperplanes implements ImageJPlugin {
 		return false;
 	}
 
-	/** fills the newly created ImgPlus with data values from a larger source
+	/**
+	 * Fills the newly created ImgPlus with data values from a larger source
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,

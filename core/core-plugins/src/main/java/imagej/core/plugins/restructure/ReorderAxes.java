@@ -23,8 +23,9 @@ import net.imglib2.type.numeric.RealType;
 //     but might need to block right now. Similarly the DeleteAxis plugin can
 //     totally delete X & Y I think.
 
-/** changes the internal ImgPlus of a Dataset so that its data stays the same
- * but the order of the axes is changed.
+/**
+ * Changes the internal ImgPlus of a Dataset so that its data values stay the
+ * same but the order of the axes is changed.
  */
 @Plugin(menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
@@ -169,7 +170,8 @@ public class ReorderAxes implements ImageJPlugin {
 	private int[] permutationAxisIndices;
 	private Axis[] desiredAxisOrder;
 
-	/** run the plugin and reorder axes as specified by user */
+	/**
+	 * Run the plugin and reorder axes as specified by user */
 	@Override
 	public void run() {
 		setupDesiredAxisOrder();
@@ -199,7 +201,8 @@ public class ReorderAxes implements ImageJPlugin {
 	}
 	*/
 	
-	/** fills the internal variable "desiredAxisOrder" with the order of axes
+	/**
+	 * Fills the internal variable "desiredAxisOrder" with the order of axes
 	 * that the user specified in the dialog. all axes are present rather than
 	 * just those present in the input Dataset. */
 	private void setupDesiredAxisOrder() {
@@ -217,7 +220,8 @@ public class ReorderAxes implements ImageJPlugin {
 		};
 	}
 	
-	/** returns true if user input is invalid. Basically this is a test that the
+	/**
+	 * Returns true if user input is invalid. Basically this is a test that the
 	 * user did not repeat any axis when specifying the axis ordering.
 	 */
 	private boolean inputBad() {
@@ -231,7 +235,8 @@ public class ReorderAxes implements ImageJPlugin {
 		return false;
 	}
 
-	/** takes a given set of axes (usually a subset of all possible axes) and
+	/**
+	 * Takes a given set of axes (usually a subset of all possible axes) and
 	 * returns a permuted set of axes that reflect the user specified axis order
 	 */
 	private Axis[] getPermutedAxes(Axis[] currAxes) {
@@ -247,7 +252,8 @@ public class ReorderAxes implements ImageJPlugin {
 		return permuted;
 	}
 
-	/** sets up the working variable "permutationAxisIndices" which is used to
+	/**
+	 * Sets up the working variable "permutationAxisIndices" which is used to
 	 * actually permute positions.
 	 */
 	private void setupPermutationVars() {
@@ -261,7 +267,8 @@ public class ReorderAxes implements ImageJPlugin {
 		}
 	}
 
-	/** returns an ImgPlus that has same data values as the input Dataset but
+	/**
+	 * Returns an ImgPlus that has same data values as the input Dataset but
 	 * which has them stored in a different axis order */
 	private ImgPlus<? extends RealType<?>> getReorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
@@ -291,7 +298,8 @@ public class ReorderAxes implements ImageJPlugin {
 		return newImgPlus;
 	}
 
-	/** returns the axis index of an Axis given a permuted set of axes. */
+	/**
+	 * Returns the axis index of an Axis given a permuted set of axes. */
 	private int getNewAxisIndex(Axis[] permutedAxes, Axis originalAxis) {
 		for (int i = 0; i < permutedAxes.length; i++) {
 			if (permutedAxes[i] == originalAxis)
@@ -300,7 +308,8 @@ public class ReorderAxes implements ImageJPlugin {
 		throw new IllegalArgumentException("axis not found!");
 	}
 	
-	/** taking the original dims this method returns the new dimensions of the
+	/**
+	 * Taking the original dims this method returns the new dimensions of the
 	 * permuted space.
 	 */
 	private long[] getNewDims(long[] origDims) {
@@ -309,7 +318,8 @@ public class ReorderAxes implements ImageJPlugin {
 		return newDims;
 	}
 	
-	/** taking the original axes order this method returns the new axes in the
+	/**
+	 * Taking the original axes order this method returns the new axes in the
 	 * order of the permuted space.
 	 */
 	private Axis[] getNewAxes(Axis[] origAxes) {
@@ -318,7 +328,8 @@ public class ReorderAxes implements ImageJPlugin {
 		return newAxes;
 	}
 
-	/** permutes from a position in the original space into a position in the
+	/**
+	 * Permutes from a position in the original space into a position in the
 	 * permuted space
 	 */
 	private void permute(long[] origPos, long[] permutedPos) {
@@ -326,7 +337,8 @@ public class ReorderAxes implements ImageJPlugin {
 			permutedPos[permutationAxisIndices[i]] = origPos[i];
 	}
 
-	/** permutes from an axis order in the original space into an axis order in
+	/**
+	 * Permutes from an axis order in the original space into an axis order in
 	 * the permuted space
 	 */
 	private void permute(Axis[] origAxes, Axis[] permutedAxes) {

@@ -98,7 +98,7 @@ public class ImageMath implements ImageJPlugin {
 	// -- constructor --
 
 	/**
-	 * constructs the ImageMath object by initializing which binary operations are
+	 * Constructs the ImageMath object by initializing which binary operations are
 	 * avaialable.
 	 */
 	public ImageMath() {
@@ -122,7 +122,7 @@ public class ImageMath implements ImageJPlugin {
 	// -- public interface --
 
 	/**
-	 * runs the plugin filling the output image with the user specified binary
+	 * Runs the plugin filling the output image with the user specified binary
 	 * combination of the two input images.
 	 */
 	@Override

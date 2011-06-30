@@ -150,7 +150,7 @@ public class SaltAndPepper implements ImageJPlugin {
 	}
 	
 	/**
-	 * sets a value at a specific (x,y) location in the image to a given value
+	 * Sets a value at a specific (x,y) location in the image to a given value
 	 */
 	private void setPixel(int x, int y, double value) {
 		position[0] = x;

@@ -58,28 +58,30 @@ public class NAryOperation {
 	// -- instance variables --
 
 	/**
-	 * the list of input Datasets that will be fed as input to the user supplied
+	 * The list of input Datasets that will be fed as input to the user supplied
 	 * function
 	 */
 	private final List<Dataset> inputs;
 
 	/**
-	 * the output Dataset that will be filled with computation of user supplied
+	 * The output Dataset that will be filled with computation of user supplied
 	 * function from inputs
 	 */
 	private Dataset output;
 
-	/** The imglib-ops function to execute. */
+	/**
+	 * The imglib-ops function to execute. */
 	private final RealFunction function;
 
-	/** subregion information used to support working on subregions of inputs */
+	/**
+	 * Subregion information used to support working on subregions of inputs */
 	private long[] outputOrigin, outputSpan;
 	private long[][] inputOrigins, inputSpans;
 
 	// -- constructors --
 
 	/**
-	 * this constructor a convenience for those plugins that work from a single
+	 * This constructor a convenience for those plugins that work from a single
 	 * input Dataset
 	 */
 	public NAryOperation(final Dataset input, final RealFunction function) {
@@ -94,7 +96,7 @@ public class NAryOperation {
 	}
 
 	/**
-	 * this constructor a convenience for those plugins that work from a two input
+	 * This constructor a convenience for those plugins that work from a two input
 	 * Datasets
 	 */
 	public NAryOperation(final Dataset input1, final Dataset input2,
@@ -130,7 +132,8 @@ public class NAryOperation {
 
 	// -- public interface --
 
-	/** Sets the output {@link Dataset} of an operation. */
+	/**
+	 * Sets the output {@link Dataset} of an operation. */
 	public void setOutput(final Dataset output) {
 		this.output = output;
 	}
@@ -186,7 +189,8 @@ public class NAryOperation {
 
 	// -- private interface --
 
-	/** Sets up subregion variables to default values. */
+	/**
+	 * Sets up subregion variables to default values. */
 	private void initializeSubregionVariables() {
 		ImgPlus<? extends RealType<?>> image = inputs.get(0).getImgPlus();
 		outputOrigin = new long[image.numDimensions()];

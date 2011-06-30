@@ -84,7 +84,7 @@ public class Neighborhood3x3Operation {
 	// -- private interface --
 
 	/**
-	 * make sure we have an input image and that it's dimensionality is correct
+	 * Make sure we have an input image and that it's dimensionality is correct
 	 */
 	private void checkInput() {
 		if (input == null)

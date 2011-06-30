@@ -63,15 +63,18 @@ public class AxisUtils {
 
 	public static final String[] AXES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
 
-	/** default constructor - private */
+	/**
+	 * Default constructor - private */
 	private AxisUtils() {
 		// utility class : uninstantiable
 	}
 
-	/** gets the active axis that user can move along via hotkeys */
+	/**
+	 * Gets the active axis that user can move along via hotkeys */
 	public static Axis getActiveAxis() { return activeAxis; } 
 	
-	/** sets the active axis that user can move along via hotkeys */
+	/**
+	 * Sets the active axis that user can move along via hotkeys */
 	public static void setActiveAxis(Axis newAxis) { activeAxis = newAxis; } 
 
 	/**
@@ -96,7 +99,8 @@ public class AxisUtils {
 		Events.publish(new AxisPositionEvent(display, axis, change, max, relative));
 	}
 	
-	/** maps an axis name String into an Axis value.
+	/**
+	 * Maps an axis name String into an Axis value.
 	 * returns null if some unknown axis specified */
 	public static Axis getAxis(String axisName) {
 		Axis axis = null;

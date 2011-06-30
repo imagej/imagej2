@@ -68,25 +68,25 @@ public class XYFlipper implements OutputAlgorithm {
 	// -- exported interface --
 
 	/**
-	 * this interface is exported for use by algorithms that want to create images
+	 * This interface is exported for use by algorithms that want to create images
 	 * from 2d input data
 	 */
 	interface FlipCoordinateTransformer {
 
 		/**
-		 * maps an input image's dimensions to the output image's coordinate space
+		 * Maps an input image's dimensions to the output image's coordinate space
 		 */
 		long[] calcOutputDimensions(long[] inputDimensions);
 
 		/**
-		 * maps a position within an input image's coordinate space to the output
+		 * Maps a position within an input image's coordinate space to the output
 		 * image's coordinate space
 		 */
 		void calcOutputPosition(long[] inputDimensions, long[] inputPosition,
 			long[] outputPosition);
 		
 		/**
-		 * returns if this transformation does not reorder X & Y axes
+		 * Returns if this transformation does not reorder X & Y axes
 		 */
 		boolean isShapePreserving();
 	}
@@ -100,7 +100,8 @@ public class XYFlipper implements OutputAlgorithm {
 
 	// -- public interface : implementation of OutputAlgorithm methods --
 
-	/** makes sure input is okay and creates output image */
+	/**
+	 * Makes sure input is okay and creates output image */
 	@Override
 	public boolean checkInput() {
 		Img inputImage = input.getImgPlus();  // TODO - raw type required here
@@ -117,7 +118,7 @@ public class XYFlipper implements OutputAlgorithm {
 	}
 
 	/**
-	 * returns the current error message. only valid of checkInput() returns false
+	 * Returns the current error message. only valid of checkInput() returns false
 	 */
 	@Override
 	public String getErrorMessage() {
@@ -125,7 +126,7 @@ public class XYFlipper implements OutputAlgorithm {
 	}
 
 	/**
-	 * fills the output image from the input image doing coordinate
+	 * Fills the output image from the input image doing coordinate
 	 * transformations as needed
 	 */
 	@Override
@@ -199,7 +200,9 @@ public class XYFlipper implements OutputAlgorithm {
 		return true;
 	}
 
-	/** returns the resulting output image */
+	/**
+	 * Returns the resulting output image
+	 */
 	@Override
 	public Img<? extends RealType<?>> getResult() {
 		return outputImage;

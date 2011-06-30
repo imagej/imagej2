@@ -56,7 +56,8 @@ public class RestructureUtils {
 		// utility class : uninstantiable
 	}
 	
-	/** gets the dimensions of the output data */
+	/**
+	 * Gets the dimensions of the output data */
 	public static long[] getDimensions(Dataset ds, Axis oneToModify, long delta) {
 		long[] dimensions = ds.getDims();
 		int axisIndex = ds.getAxisIndex(oneToModify);
@@ -64,7 +65,8 @@ public class RestructureUtils {
 		return dimensions;
 	}
 
-	/** creates a new ImgPlus with specified dimensions and axes. Uses same
+	/**
+	 * Creates a new ImgPlus with specified dimensions and axes. Uses same
 	 * factory as input Dataset. Maintains type, name, and calibration values.
 	 * All data values are initialized to 0. 
 	 */
@@ -87,7 +89,8 @@ public class RestructureUtils {
 		return new ImgPlus(img, name, axes, calibration); 
 	}
 
-	/** copies a region of data from a srcImgPlus to a dstImgPlus. region is
+	/**
+	 * Copies a region of data from a srcImgPlus to a dstImgPlus. region is
 	 * defined by a number of planes along an axis that is present in both
 	 * input ImgPluses */
 	public static void copyData(ImgPlus<? extends RealType<?>> srcImgPlus,
@@ -104,7 +107,8 @@ public class RestructureUtils {
 		copyHyperVolume(srcImgPlus, srcOrigin, srcSpan, dstImgPlus, dstOrigin, dstSpan);
 	}
 
-	/** copies a hypervolume from a source {@link ImgPlus} to a destination
+	/**
+	 * Copies a hypervolume from a source {@link ImgPlus} to a destination
 	 * {@link ImgPlus}. Spans may have different number of dimensions but must be
 	 * shape compatible with axes in same relative order. Span checking is done
 	 * within a {@link MultiImageIterator}.
@@ -128,7 +132,8 @@ public class RestructureUtils {
 		}
 	}
 
-	/** returns a span array covering the specified hyperplanes. Only the axis
+	/**
+	 * Returns a span array covering the specified hyperplanes. Only the axis
 	 * along which the cut is being made has nonmaximal dimension. That
 	 * dimension is set to the passed in number of elements to be preserved.
 	 */
@@ -140,7 +145,8 @@ public class RestructureUtils {
 		return span;
 	}
 
-	/** returns an origin array locating the first hyperplane to keep. Only the
+	/**
+	 * Returns an origin array locating the first hyperplane to keep. Only the
 	 * axis along which the cut is being made has nonzero dimension. That
 	 * dimension is set to the passed in start position of the hyperplane along
 	 * the axis.
