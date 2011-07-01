@@ -208,11 +208,23 @@ public class Image5D extends ImagePlus {
             channelImps[i] = new ChannelImagePlus("", newChannelIPs[i]);
         }
         channelIPs = newChannelIPs;
-                              
-        displayMode = ChannelControl.ONE_CHANNEL_COLOR;
+
+        displayMode = ChannelControl.DEFAULT_DISPLAY_MODE;
         displayAllGray = false;
         displayGrayInTiles = false;
-        
+
+        // use most recent display mode from ImageJ preferences
+        String modePref = Prefs.get(ChannelControl.DISPLAY_MODE_PREF,
+            ChannelControl.displayModes[displayMode]);
+        int mode = displayMode;
+        for (int i=0; i<ChannelControl.displayModes.length; i++) {
+        	if (ChannelControl.displayModes[i].equals(modePref)) {
+        		mode = i;
+        		break;
+        	}
+        }
+        setDisplayMode(mode);
+
         grayColorModel = ChannelDisplayProperties.createModelFromColor(Color.white);
         
         imageStack.setColorModel(grayColorModel);

@@ -30,6 +30,7 @@ public class ChannelControl extends Panel implements ItemListener,
 	 * 
 	 */
 	private static final long serialVersionUID = -3537465383241321652L;
+
 	Image5DWindow win;
 	Image5D i5d;
 	ImageJ ij;
@@ -54,9 +55,15 @@ public class ChannelControl extends Panel implements ItemListener,
 
 	public static final int ONE_CHANNEL_GRAY = 0;
 	public static final int ONE_CHANNEL_COLOR = 1;
-    public static final int OVERLAY = 2;
-    public static final int TILED = 3;
-    public static final String[] displayModes = {"gray", "color", "overlay", "tiled"};
+	public static final int OVERLAY = 2;
+	public static final int TILED = 3;
+	public static final String[] displayModes = {"gray", "color", "overlay", "tiled"};
+
+	/** Display mode to use by default. */
+	public static final int DEFAULT_DISPLAY_MODE = ONE_CHANNEL_COLOR;
+
+	/** ImageJ preferences key to use for storing last used display mode. */
+	public static final String DISPLAY_MODE_PREF = "image5d.displayMode";
 
 	public static final String BUTTON_ACTIVATE_COLOR_CHOOSER = "Color";
 	public static final String BUTTON_DEACTIVATE_COLOR_CHOOSER = "Color";
@@ -103,17 +110,14 @@ public class ChannelControl extends Panel implements ItemListener,
         colorButton.addKeyListener(win);
 		colorButton.addKeyListener(ij);
         colorButton.addKeyListener(win);
-	
-		// displayChoice: selects gray, color or overlay
-		displayChoice = new Choice();
-		displayChoice.add(displayModes[ONE_CHANNEL_GRAY]);
-		displayChoice.add(displayModes[ONE_CHANNEL_COLOR]);
-        displayChoice.add(displayModes[OVERLAY]);
-        displayChoice.add(displayModes[TILED]);
 
-		displayChoice.select(ONE_CHANNEL_COLOR);
-		displayMode = ONE_CHANNEL_COLOR;
-		subPanel.add(displayChoice);
+		// displayChoice: selects desired display mode
+		displayChoice = new Choice();
+		for (String mode : displayModes) {
+			displayChoice.add(mode);
+		}
+    displayChoice.select(displayMode);
+    subPanel.add(displayChoice);
 		displayChoice.addItemListener(this);
         displayChoice.addKeyListener(win);
 		displayChoice.addKeyListener(ij);
@@ -311,9 +315,9 @@ public class ChannelControl extends Panel implements ItemListener,
 	 */
 	public synchronized void setDisplayMode(int mode) {
 		if (mode == displayMode) {
-		    return;
-        }
-        
+			return;
+		}
+
 		if (mode == ONE_CHANNEL_GRAY) {
 			if (colorChooserDisplayed) {
 				remove(cColorChooser);
@@ -321,39 +325,34 @@ public class ChannelControl extends Panel implements ItemListener,
 				colorChooserDisplayed = false;
 			} 
 			colorButton.setEnabled(false);
-            if (nChannels>1) {
-                addScrollbar();
-            }
-			displayMode = mode;
-			
+			if (nChannels>1) {
+				addScrollbar();
+			}
 		} else if (mode == ONE_CHANNEL_COLOR) {
 			colorButton.setEnabled(true);
-            if (nChannels>1) {
-                addScrollbar();
-            }
-			displayMode = mode;
-			
+			if (nChannels>1) {
+				addScrollbar();
+			}
 		} else if (mode == OVERLAY) {
-            colorButton.setEnabled(true);
-            if (nChannels>1) {
-                addChannelSelectorOverlay();    
-            }
-            displayMode = mode;
-            
-        } else if (mode == TILED) {
-            colorButton.setEnabled(true);
-            if (nChannels>1) {
-                addTiledSelectorPanel();    
-            }
-            displayMode = mode;
-            
-        } else {
-		    throw new IllegalArgumentException("Unknown display mode: "+ mode);
+			colorButton.setEnabled(true);
+			if (nChannels>1) {
+				addChannelSelectorOverlay();    
+			}
+		} else if (mode == TILED) {
+			colorButton.setEnabled(true);
+			if (nChannels>1) {
+				addTiledSelectorPanel();    
+			}
+		} else {
+			throw new IllegalArgumentException("Unknown display mode: "+ mode);
 		}
+		displayMode = mode;
 		displayChoice.select(mode);
-	    
+
+		// save selected display mode in ImageJ preferences
+		Prefs.set(DISPLAY_MODE_PREF, displayModes[displayMode]);
 	}
-	
+
 	public int getDisplayMode() {
 		return displayMode;
 	}
@@ -1028,5 +1027,5 @@ public class ChannelControl extends Panel implements ItemListener,
         }
 
 	}
-		
+
 }
