@@ -1,3 +1,9 @@
+changes in Image5D 1.2.3:
+- Remember last used display mode.
+
+released version 1.2.3: 20110701
+
+
 changes in Image5D 1.2.2:
 - Fix synchronous painting problem with "Image5D Stack to RGB" command.
 
