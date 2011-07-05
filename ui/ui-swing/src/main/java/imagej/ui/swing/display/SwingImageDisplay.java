@@ -81,18 +81,19 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	private final Display thisDisplay;
 
-	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
-	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
-	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
+//	private EventSubscriber<WinClosedEvent> winCloseSubscriber;
+//	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
+//	private EventSubscriber<WinActivatedEvent> winActivatedSubscriber;
+	/** Maintain list of subscribers, to avoid garbage collection. */
+	private List<EventSubscriber<?>> subscribers;
+	//
 	private String name;
 
 	public SwingImageDisplay() {
 		views = new ArrayList<DisplayView>();
 
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-				
-		displayManager.setActiveDisplay(this);
-		subscribeToEvents(displayManager);
+		//final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		//displayManager.setActiveDisplay(this);
 
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgWindow = new SwingDisplayWindow(this);
@@ -100,7 +101,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		final EventDispatcher eventDispatcher = new AWTEventDispatcher(this, false);
 		imgCanvas.addEventDispatcher(eventDispatcher);
 		imgWindow.addEventDispatcher(eventDispatcher);
-
+		subscribeToEvents();
+		
 		willRebuildImgWindow = false;
 		thisDisplay = this;
 	}
@@ -228,49 +230,31 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	// -- Helper methods --
 
 	@SuppressWarnings("synthetic-access")
-	private DisplayManager
-		subscribeToEvents(final DisplayManager displayManager)
-	{
+	private void subscribeToEvents(){
+		
+		subscribers = new ArrayList<EventSubscriber<?>>();
+		
 		// CTR TODO - listen for imgWindow windowClosing and send
 		// DisplayDeletedEvent. Think about how best this should work...
 		// Is a display always deleted when its window is closed?
 		//  BDZ note - I added some code to winCloseSubscriber below
 		//    to do some cleanup work. Fix if needed.
 
-		winActivatedSubscriber =
-			new EventSubscriber<WinActivatedEvent>()
-		{
+		 EventSubscriber<WinActivatedEvent> winActivatedSubscriber = 
+				 new EventSubscriber<WinActivatedEvent>() {
 			@Override
 			public void onEvent(final WinActivatedEvent event) {
-				// BDZ - does this next line really need to be done every time?
-				// As opposed to just if event display == thisDisplay?
-				// Its happening over and over.
-				// Note: winCloseSubscriber only does it once
-				displayManager.setActiveDisplay(event.getDisplay());
 				if (event.getDisplay() != thisDisplay) return;
-				final UserInterface ui = ImageJ.get(UIManager.class).getUI();
-				final ToolManager toolMgr = ui.getToolBar().getToolManager();
-				imgCanvas.setCursor(toolMgr.getActiveTool().getCursor());
+				//final UserInterface ui = ImageJ.get(UIManager.class).getUI();
+				//final ToolManager toolMgr = ui.getToolBar().getToolManager();
+				final ToolManager toolManager = ImageJ.get(ToolManager.class);
+				imgCanvas.setCursor(toolManager.getActiveTool().getCursor());
 			}
 		};
+		subscribers.add(winActivatedSubscriber);
 		Events.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
 
-		winCloseSubscriber =
-			new EventSubscriber<WinClosedEvent>()
-		{
-			@Override
-			public void onEvent(final WinClosedEvent event) {
-				if (event.getDisplay() == thisDisplay) {
-					displayManager.setActiveDisplay(null);
-					Events.unsubscribe(WinClosedEvent.class, winCloseSubscriber);
-					Events.unsubscribe(WinActivatedEvent.class, winActivatedSubscriber);
-					Events.unsubscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-				}
-			}
-		};
-		Events.subscribe(WinClosedEvent.class, winCloseSubscriber);
-
-		restructureSubscriber =
+		EventSubscriber<DatasetRestructuredEvent> restructureSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>()
 		{
 			@Override
@@ -284,9 +268,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 				}
 			}
 		};
+		subscribers.add(restructureSubscriber);
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-
-		return displayManager;
 	}
 
 
