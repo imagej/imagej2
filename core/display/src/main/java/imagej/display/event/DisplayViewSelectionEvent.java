@@ -48,8 +48,9 @@ public abstract class DisplayViewSelectionEvent extends DisplayViewEvent {
 	}
 
 	/**
-	 * @return true if the event signals that the indicated display is selected,
-	 *         false if deselected
+	 * @return true if the event signals that the associated {@link DisplayView}
+	 *         is selected, false if deselected
 	 */
 	public abstract boolean isSelected();
+
 }

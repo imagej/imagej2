@@ -37,7 +37,7 @@ package imagej.display.event;
 import imagej.display.DisplayView;
 
 /**
- * Event fired when a display view becomes selected.
+ * Event fired when a {@link DisplayView} becomes selected.
  * 
  * @author Lee Kamentsky
  */

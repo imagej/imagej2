@@ -37,7 +37,7 @@ package imagej.display.event;
 import imagej.display.DisplayView;
 
 /**
- * An event that indicates that a display view is no longer selected.
+ * An event that indicates that a {@link DisplayView} is no longer selected.
  * 
  * @author Lee Kamentsky
  */
