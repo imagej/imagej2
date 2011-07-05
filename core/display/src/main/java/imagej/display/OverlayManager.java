@@ -38,14 +38,11 @@ import imagej.ImageJ;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.DataObject;
-import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.object.ObjectManager;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.imglib2.img.Axis;
 
 /**
  * Manager component for working with {@link Overlay}s.
@@ -80,122 +77,29 @@ public final class OverlayManager implements ManagerComponent {
 		return overlays;
 	}
 
-	// CTR FIXME - Eliminate this method.
-
-	/**
-	 * Gets a list of {@link Overlay}s associated with the given {@link Dataset}.
-	 * An {@link Overlay} is considered "associated" with a {@link Dataset} when
-	 * it is being displayed in the same {@link Display} as the {@link Dataset}.
-	 * <p>
-	 * Note that this method is a big HACK to handle legacy IJ1 support. The
-	 * longterm solution will be to create one ImagePlus per display, rather than
-	 * one per dataset, with orphan datasets also getting one ImagePlus in the
-	 * map. Then we can assign the ImagePlus's ROI according to the overlays
-	 * present in only its associated display.
-	 * </p>
-	 */
-	public List<Overlay> getOverlays(final Dataset dataset) {
-		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final List<Display> displays = displayManager.getDisplays(dataset);
-		for (final Display display : displays) {
-			for (final DisplayView view : display.getViews()) {
-				final DataObject dataObject = view.getDataObject();
-				if (!(dataObject instanceof Overlay)) continue;
-				final Overlay overlay = (Overlay) dataObject;
-				overlays.add(overlay);
-			}
-		}
-		return overlays;
-	}
-
-	// CTR FIXME - Change this method to take a Display rather than a Dataset.
-
-	/**
-	 * Adds the list of {@link Overlay}s to the first {@link Display} containing
-	 * the {@link Dataset}.
-	 * <p>
-	 * Note that this method is a big HACK to handle legacy IJ1 support. The
-	 * longterm solution will be to create one ImagePlus per display, rather than
-	 * one per dataset, with orphan datasets also getting one ImagePlus in the
-	 * map. Then we can assign the ImagePlus's ROI according to the overlays
-	 * present in only its associated display.
-	 * </p>
-	 */
-	public void setOverlays(final Dataset dataset, final List<Overlay> overlays)
+	/** Adds the list of {@link Overlay}s to the given {@link Display}. */
+	public void addOverlays(final Display display, final List<Overlay> overlays)
 	{
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		final List<Display> displays = objectManager.getObjects(Display.class);
-		for (final Display display : displays) {
-			// check whether dataset is present in this display
-			final List<DisplayView> views = display.getViews();
-			DisplayView datasetView = null;
-			for (final DisplayView view : views) {
-				final DataObject dataObject = view.getDataObject();
-				if (dataObject == dataset) {
-					datasetView = view;
-					break;
-				}
-			}
-			if (datasetView == null) continue;
-
-			// add the given overlays to this display and return
-			for (final Overlay overlay : overlays) {
-				display.display(overlay);
-				/*
-				 * Set the overlay plane.
-				 */
-				for (final DisplayView view : views) {
-					if (view.getDataObject() == overlay) {
-						long [] position = datasetView.getPlanePosition();
-						for (int i=0; i<position.length; i++) {
-							/*
-							 * Skip the X and Y axis and get the rest
-							 */
-							Axis axis = display.axis(i+2);
-							overlay.setPosition(axis, position[i]);
-						}
-					}
-				}
-			}
-			break;
+		for (final Overlay overlay : overlays) {
+			display.display(overlay);
 		}
 	}
-	
-	// CTR FIXME - Change this method to take a Display rather than a Dataset.
 
 	/**
-	 * Remove an overlay from the display associated with a dataset.
+	 * Removes an {@link Overlay} from the given {@link Display}.
 	 * 
-	 * @param dataset find the relevant display associated with this dataset
-	 * @param overlay the overlay to remove
+	 * @param display the {@link Display} from which the overlay should be removed
+	 * @param overlay the {@link Overlay} to remove
 	 */
-	public void removeOverlay(final Dataset dataset, final Overlay overlay)
-	{
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		final List<Display> displays = objectManager.getObjects(Display.class);
-		for (final Display display : displays) {
-			// check whether dataset is present in this display
-			boolean has_dataset = false;
-			boolean has_overlay = false;
-			ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>(); 
-			final List<DisplayView> views = display.getViews();
-			for (final DisplayView view : views) {
-				final DataObject dataObject = view.getDataObject();
-				if (dataObject == dataset) {
-					has_dataset = true;
-					if (has_overlay) break;
-				} else if (dataObject == overlay) {
-					has_overlay = true;
-					overlayViews.add(view);
-					if (has_dataset) break;
-				}
-			}
-			if (has_dataset && has_overlay) {
-				for(DisplayView view:overlayViews){
-					display.removeView(view);
-				}
-			}
+	public void removeOverlay(final Display display, final Overlay overlay) {
+		final ArrayList<DisplayView> overlayViews = new ArrayList<DisplayView>();
+		final List<DisplayView> views = display.getViews();
+		for (final DisplayView view : views) {
+			final DataObject dataObject = view.getDataObject();
+			if (dataObject == overlay) overlayViews.add(view);
+		}
+		for (final DisplayView view : overlayViews) {
+			display.removeView(view);
 		}
 	}
 

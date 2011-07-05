@@ -35,12 +35,22 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.WindowManager;
+import imagej.ImageJ;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import imagej.display.event.DisplayActivatedEvent;
+import imagej.event.EventSubscriber;
+import imagej.event.Events;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manager component for working with legacy ImageJ 1.x.
@@ -94,12 +104,14 @@ public final class LegacyManager implements ManagerComponent {
 		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override behavior of ij.macro.Functions
-		hacker.insertBeforeMethod("ij.macro.Functions",
-			"void displayBatchModeImage(ij.ImagePlus imp2)",
-			"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore(imp2);");
-		hacker.insertAfterMethod("ij.macro.Functions",
-			"void displayBatchModeImage(ij.ImagePlus imp2)",
-			"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter(imp2);");
+		hacker
+			.insertBeforeMethod("ij.macro.Functions",
+				"void displayBatchModeImage(ij.ImagePlus imp2)",
+				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore(imp2);");
+		hacker
+			.insertAfterMethod("ij.macro.Functions",
+				"void displayBatchModeImage(ij.ImagePlus imp2)",
+				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter(imp2);");
 		hacker.loadClass("ij.macro.Functions");
 
 		// override behavior of MacAdapter
@@ -111,16 +123,35 @@ public final class LegacyManager implements ManagerComponent {
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
+	/** Maintain list of subscribers, to avoid garbage collection. */
+	private List<EventSubscriber<?>> subscribers;
+
 	// -- LegacyManager methods --
 
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
 
+	/**
+	 * Indicates to the manager that the given {@link ImagePlus} has changed as
+	 * part of a legacy plugin execution.
+	 */
 	public void legacyImageChanged(final ImagePlus imp) {
+		// CTR FIXME rework static InsideBatchDrawing logic?
 		if (FunctionsMethods.InsideBatchDrawing > 0) return;
 		// record resultant ImagePlus as a legacy plugin output
 		LegacyPlugin.getOutputImps().add(imp);
+	}
+
+	/**
+	 * Ensures that the currently active {@link ImagePlus} matches the currently
+	 * active {@link Display}. Does not perform any harmonization.
+	 */
+	public void syncActiveImage() {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Display activeDisplay = displayManager.getActiveDisplay();
+		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
+		WindowManager.setTempCurrentImage(activeImagePlus);
 	}
 
 	// -- ManagerComponent methods --
@@ -135,6 +166,26 @@ public final class LegacyManager implements ManagerComponent {
 		catch (final Throwable t) {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
+
+		subscribeToEvents();
+	}
+
+	// -- Helper methods --
+
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		// keep the active legacy ImagePlus in sync with the active modern Display
+		final EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
+			new EventSubscriber<DisplayActivatedEvent>() {
+
+				@Override
+				public void onEvent(final DisplayActivatedEvent event) {
+					syncActiveImage();
+				}
+			};
+		subscribers.add(displayActivatedSubscriber);
+		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
 	}
 
 }
