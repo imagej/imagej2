@@ -40,7 +40,7 @@ import imagej.ManagerComponent;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.DisplaySelectedEvent;
+import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
@@ -73,7 +73,7 @@ public final class DisplayManager implements ManagerComponent {
 
 	public void setActiveDisplay(final Display display) {
 		activeDisplay = display;
-		Events.publish(new DisplaySelectedEvent(display));
+		Events.publish(new DisplayActivatedEvent(display));
 	}
 
 	public Dataset getActiveDataset() {
