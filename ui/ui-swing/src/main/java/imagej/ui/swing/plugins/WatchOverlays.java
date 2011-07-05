@@ -35,7 +35,7 @@ import imagej.data.roi.Overlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
-import imagej.display.event.DisplaySelectedEvent;
+import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.Events;
 import imagej.event.EventSubscriber;
@@ -92,15 +92,15 @@ public class WatchOverlays implements ImageJPlugin {
 //		Events.subscribe(WinActivatedEvent.class, WinActivatedSubscriber);
 		
 				
-		final EventSubscriber<DisplaySelectedEvent> DisplaySelectedSubscriber =
-				new EventSubscriber<DisplaySelectedEvent>() {
+		final EventSubscriber<DisplayActivatedEvent> DisplaySelectedSubscriber =
+				new EventSubscriber<DisplayActivatedEvent>() {
 					@Override
-					public void onEvent(final DisplaySelectedEvent event) {
+					public void onEvent(final DisplayActivatedEvent event) {
 						updateOverlaysShown();
 					}
 				};
 		subscribers.add(DisplaySelectedSubscriber);
-		Events.subscribe(DisplaySelectedEvent.class, DisplaySelectedSubscriber);
+		Events.subscribe(DisplayActivatedEvent.class, DisplaySelectedSubscriber);
 	}
 
 	private void updateOverlaysShown() {

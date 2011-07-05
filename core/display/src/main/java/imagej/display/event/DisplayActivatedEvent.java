@@ -37,15 +37,14 @@ package imagej.display.event;
 import imagej.display.Display;
 
 /**
- * An event indicating a display has been selected/activated.
+ * An event indicating a display has become the active one.
  *
- * @author Curtis Rueden
+ * @author Grant Harris
  */
-public class DisplaySelectedEvent extends DisplayEvent {
+public class DisplayActivatedEvent extends DisplayEvent {
 
-	public DisplaySelectedEvent(final Display display) {
+	public DisplayActivatedEvent(final Display display) {
 		super(display);
 	}
-
 
 }
