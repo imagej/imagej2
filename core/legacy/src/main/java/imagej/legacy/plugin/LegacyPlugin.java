@@ -101,7 +101,8 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final LegacyImageMap map = ImageJ.get(LegacyManager.class).getImageMap();
+		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
+		final LegacyImageMap map = legacyManager.getImageMap();
 
 		// sync legacy images to match existing modern displays
 		final DatasetHarmonizer harmonizer =
@@ -111,14 +112,8 @@ public class LegacyPlugin implements ImageJPlugin {
 		harmonizer.resetTypeTracking();
 		prePluginHarmonization(map, harmonizer);
 
-		// CTR FIXME - listen for WinActivated (DisplayActivated?) and assign the
-		// WindowManager active image then instead of below.
-
 		// set ImageJ1's active image
-		final Display activeDisplay =
-			ImageJ.get(DisplayManager.class).getActiveDisplay();
-		final ImagePlus activeImagePlus = map.lookupImagePlus(activeDisplay);
-		WindowManager.setTempCurrentImage(activeImagePlus);
+		legacyManager.syncActiveImage();
 
 		try {
 			// execute the legacy plugin

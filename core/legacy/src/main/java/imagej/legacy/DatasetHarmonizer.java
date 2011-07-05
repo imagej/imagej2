@@ -122,7 +122,7 @@ public class DatasetHarmonizer {
 				LegacyUtils.setImagePlusGrayData(ds, imp);
 		}
 		LegacyUtils.setImagePlusMetadata(ds, imp);
-		overlayTranslator.setImagePlusOverlays(ds, imp);
+		overlayTranslator.setImagePlusOverlays(display, imp);
 		LegacyUtils.setImagePlusLuts(ds, imp);
 	}
 	
@@ -153,7 +153,7 @@ public class DatasetHarmonizer {
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-		overlayTranslator.setDatasetOverlays(ds, imp);
+		overlayTranslator.setDisplayOverlays(display, imp);
 		LegacyUtils.setViewLuts(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
 	}

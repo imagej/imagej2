@@ -53,6 +53,7 @@ import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.display.Display;
 import imagej.display.OverlayManager;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
@@ -90,19 +91,12 @@ import net.imglib2.type.logic.BitType;
 public class OverlayTranslator {
 
 	/**
-	 * Updates the given {@link Dataset} to be visualized along with
-	 * {@link Overlay}s corresponding to the given {@link ImagePlus}'s ROI.
-	 * <p>
-	 * Note that this method is a big HACK to handle legacy IJ1 support. The
-	 * longterm solution will be to create one ImagePlus per display, rather than
-	 * one per dataset, with orphan datasets also getting one ImagePlus in the
-	 * map. Then we can assign the ImagePlus's ROI according to the overlays
-	 * present in only its associated display.
-	 * </p>
+	 * Updates the given {@link Display} to contain {@link Overlay}s corresponding
+	 * to the given {@link ImagePlus}'s ROI.
 	 */
-	public void setDatasetOverlays(final Dataset ds, final ImagePlus imp) {
+	public void setDisplayOverlays(final Display display, final ImagePlus imp) {
 		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-		ShapeRoi oldROI = createROI(overlayManager.getOverlays(ds));
+		ShapeRoi oldROI = createROI(overlayManager.getOverlays(display));
 		if (oldROI != null) {
 			float [] oldPath = oldROI.getShapeAsArray();
 			Roi newROI = imp.getRoi();
@@ -120,28 +114,21 @@ public class OverlayTranslator {
 				}
 			}
 		}
-		final List<Overlay> overlaysToRemove = overlayManager.getOverlays(ds);
+		final List<Overlay> overlaysToRemove = overlayManager.getOverlays(display);
 		for (Overlay overlay:overlaysToRemove) {
-			overlayManager.removeOverlay(ds, overlay);
+			overlayManager.removeOverlay(display, overlay);
 		}
 		final List<Overlay> overlays = getOverlays(imp);
-		overlayManager.setOverlays(ds, overlays);
+		overlayManager.addOverlays(display, overlays);
 	}
 
 	/**
 	 * Updates the given {@link ImagePlus}'s ROI to match the {@link Overlay}s
-	 * being visualized along with the given {@link Dataset}.
-	 * <p>
-	 * Note that this method is a big HACK to handle legacy IJ1 support. The
-	 * longterm solution will be to create one ImagePlus per display, rather than
-	 * one per dataset, with orphan datasets also getting one ImagePlus in the
-	 * map. Then we can assign the ImagePlus's ROI according to the overlays
-	 * present in only its associated display.
-	 * </p>
+	 * being visualized in the given {@link Display}.
 	 */
-	public void setImagePlusOverlays(final Dataset ds, final ImagePlus imp) {
+	public void setImagePlusOverlays(final Display display, final ImagePlus imp) {
 		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-		final List<Overlay> overlays = overlayManager.getOverlays(ds);
+		final List<Overlay> overlays = overlayManager.getOverlays(display);
 		setOverlays(overlays, imp);
 	}
 

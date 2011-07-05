@@ -213,17 +213,17 @@ public class OverlayTranslatorTest {
 		return data;
 	}
 	/**
-	 * Test method for {@link imagej.legacy.OverlayTranslator#setDatasetOverlays(imagej.data.Dataset, ij.ImagePlus)}.
+	 * Test method for {@link imagej.legacy.OverlayTranslator#setDisplayOverlays(Display, ImagePlus)}.
 	 */
 	@Test
 	public void testSetDatasetOverlays() {
 		// TODO: this just runs the code, but does not check the results.
-		OverlayTranslator ot = new OverlayTranslator();
-		Random r = new Random(1234);
-		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
-		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0}, new int[] { 0, 0, 5, 5, 0}));
-		ot.setDatasetOverlays(ds, imagePlus);
+//		OverlayTranslator ot = new OverlayTranslator();
+//		Random r = new Random(1234);
+//		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
+//		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+//		imagePlus.setRoi(makePolygonROI(new int[] { 0, 5, 5, 0, 0}, new int[] { 0, 0, 5, 5, 0}));
+//		ot.setDatasetOverlays(ds, imagePlus);
 	}
 
 	/**
@@ -233,11 +233,11 @@ public class OverlayTranslatorTest {
 	public void testSetImagePlusOverlays() {
 		// TODO: there are no headless displays at this point, so this pretty much does nothing.
 		//       So someone needs to make it really test something when headless displays become available
-		OverlayTranslator ot = new OverlayTranslator();
-		Random r = new Random(1234);
-		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
-		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
-		ot.setImagePlusOverlays(ds, imagePlus);
+//		OverlayTranslator ot = new OverlayTranslator();
+//		Random r = new Random(1234);
+//		Dataset ds = makeDataset(makeRandomByteArray(r, 11, 15), "Foo");
+//		ImagePlus imagePlus = makeImagePlus("Bar", makeRandomByteArray(r, 11, 15));
+//		ot.setImagePlusOverlays(ds, imagePlus);
 	}
 
 	/**
