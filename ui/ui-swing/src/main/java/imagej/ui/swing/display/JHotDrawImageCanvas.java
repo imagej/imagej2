@@ -53,7 +53,7 @@ import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTEventDispatcher;
 import imagej.ui.swing.tools.SelectionTool;
 import imagej.ui.swing.tools.roi.IJCreationTool;
-import imagej.ui.swing.tools.roi.IJCreationTool.OverlayCreatedEvent;
+import imagej.ui.swing.tools.roi.IJCreationTool.FigureCreatedEvent;
 import imagej.ui.swing.tools.roi.IJHotDrawOverlayAdapter;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -234,7 +234,7 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			{
 				@SuppressWarnings("synthetic-access")
 				@Override
-				public void overlayCreated(final OverlayCreatedEvent e) {
+				public void overlayCreated(final FigureCreatedEvent e) {
 					final Overlay overlay = e.getOverlay();
 					final SwingOverlayView v = new SwingOverlayView(display,
 						overlay, e.getFigure());

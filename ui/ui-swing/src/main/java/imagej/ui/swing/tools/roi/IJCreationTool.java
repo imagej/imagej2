@@ -56,10 +56,10 @@ public class IJCreationTool extends CreationTool {
 	 *An event that tells the listener that an overlay has
 	 *been created, associated with a figure.
 	 */
-	public class OverlayCreatedEvent extends ImageJEvent {
+	public class FigureCreatedEvent {
 		final protected Overlay overlay;
 		final protected Figure figure;
-		OverlayCreatedEvent(Overlay overlay, Figure figure) {
+		FigureCreatedEvent(Overlay overlay, Figure figure) {
 			this.overlay = overlay;
 			this.figure = figure;
 		}
@@ -78,7 +78,7 @@ public class IJCreationTool extends CreationTool {
 	}
 	
 	public interface OverlayCreatedListener extends EventListener {
-		public void overlayCreated(OverlayCreatedEvent e);
+		public void overlayCreated(FigureCreatedEvent e);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class IJCreationTool extends CreationTool {
 	}
 
 	protected void fireOverlayCreatedEvent(Overlay overlay, Figure figure) {
-		OverlayCreatedEvent e = new OverlayCreatedEvent(overlay, figure);
+		FigureCreatedEvent e = new FigureCreatedEvent(overlay, figure);
 		for (OverlayCreatedListener listener: listeners.getListeners(OverlayCreatedListener.class)) {
 			listener.overlayCreated(e);
 		}
