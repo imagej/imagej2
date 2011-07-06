@@ -36,7 +36,9 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.data.DataObject;
+import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
+import imagej.data.roi.RectangleOverlay;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
@@ -54,6 +56,7 @@ import java.util.List;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
+import net.imglib2.roi.RectangleRegionOfInterest;
 
 /**
  * TODO
@@ -126,6 +129,21 @@ public class WatchOverlays implements ImageJPlugin {
 		List<Overlay> overlays2 = getOverlaysFromDisplay(display);
 		for (Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
+			if (overlay instanceof RectangleOverlay) {
+				Dataset currDataset = (Dataset) display.getActiveView().getDataObject();
+				final double[] origin = new double[currDataset.getImgPlus().numDimensions()];
+				final double[] extent = new double[currDataset.getImgPlus().numDimensions()];
+				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getExtent(extent);
+				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getOrigin(origin);
+				int minX = (int) origin[0];
+				int minY = (int) origin[1];
+				int maxX = (int) extent[0];
+				int maxY = (int) extent[1];
+							window.append("   Rect: " + minX + "," + 
+									minY + "," + 
+									maxX + "," + 
+									maxY + "\n");
+			}
 		}
 	}
 
