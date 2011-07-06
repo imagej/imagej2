@@ -79,6 +79,8 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 		setPluginModuleFactory(null);
 	}
 
+	// -- PluginEntry methods --
+
 	public void setPluginType(final Class<T> pluginType) {
 		this.pluginType = pluginType;
 	}
@@ -148,6 +150,38 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 	 */
 	public PluginModule<T> createModule() throws PluginException {
 		return factory.createModule(this);
+	}
+
+	/**
+	 * Gets the label to use for the plugin's menu item. The following values are
+	 * used, in order of preference:
+	 * <ol>
+	 * <li>Plugin label</li>
+	 * <li>Menu path's leaf item name</li>
+	 * <li>Plugin name</li>
+	 * <li>Plugin class name, without package prefix</li>
+	 * </ol>
+	 */
+	public String getMenuLabel() {
+		// use plugin label, if available
+		final String label = getLabel();
+		if (label != null && !label.isEmpty()) return label;
+
+		// use name of leaf menu item, if available
+		if (menuPath != null && menuPath.size() > 0) {
+			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
+			final String menuName = menuEntry.getName();
+			if (menuName != null && !menuName.isEmpty()) return menuName;
+		}
+
+		// use plugin name, if available
+		final String name = getName();
+		if (name != null && !name.isEmpty()) return name;
+
+		// use plugin class name
+		final String className = getClassName();
+		final int dot = className.lastIndexOf(".");
+		return dot < 0 ? className : className.substring(dot + 1);
 	}
 
 	// -- Object methods --

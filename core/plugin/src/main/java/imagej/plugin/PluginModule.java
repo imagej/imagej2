@@ -41,7 +41,6 @@ import imagej.util.Log;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -118,27 +117,7 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	@Override
 	public String toString() {
 		final PluginModuleInfo<?> moduleInfo = getInfo();
-
-		// use module label, if available
-		final String label = moduleInfo.getLabel();
-		if (label != null && !label.isEmpty()) return label;
-
-		// use name of leaf menu item, if available
-		final List<MenuEntry> menuPath = moduleInfo.getPluginEntry().getMenuPath();
-		if (menuPath != null && menuPath.size() > 0) {
-			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			final String menuName = menuEntry.getName();
-			if (menuName != null && !menuName.isEmpty()) return menuName;
-		}
-
-		// use module name, if available
-		final String name = moduleInfo.getName();
-		if (name != null && !name.isEmpty()) return name;
-
-		// use plugin class name
-		final String className = entry.getClassName();
-		final int dot = className.lastIndexOf(".");
-		return dot < 0 ? className : className.substring(dot + 1);
+		return moduleInfo.getPluginEntry().getMenuLabel();
 	}
 
 	// -- Module methods --
