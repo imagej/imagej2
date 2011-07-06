@@ -61,6 +61,106 @@ import java.util.Arrays;
  * Listens for all events. Useful for logging, history, macro recording,
  * perhaps. An eagerly initialized singleton.
  * 
+ * 
+ * 
+ *  A list of all Event types (hopefully)...
+ * 
+ImageJEvent
+ * 
+StatusEvent
+OutputEvent
+ * 
+AppAboutEvent
+AppFocusEvent
+ApplicationEvent
+AppMenusCreatedEvent
+AppPreferencesEvent
+AppPrintEvent
+AppQuitEvent
+AppReOpenEvent
+AppScreenSleepEvent
+AppSystemSleepEvent
+AppUserSessionEvent
+AppVisibleEvent
+ * 
+ObjectEvent
+ObjectChangedEvent
+ObjectCreatedEvent
+ObjectDeletedEvent
+ * 
+ObjectsUpdatedEvent (pub'd after add or remove)
+ * 
+DataObjectChangedEvent
+DataObjectCreatedEvent
+DataObjectDeletedEvent
+DataObjectRestructuredEvent
+DataObjectUpdatedEvent
+ * 
+DatasetCreatedEvent
+DatasetDeletedEvent
+DatasetRestructuredEvent
+DatasetRGBChangedEvent
+DatasetTypeChangedEvent
+DatasetUpdatedEvent
+ * 
+OverlayCreatedEvent
+OverlayDeletedEvent
+OverlayRestructuredEvent
+OverlayUpdatedEvent
+ * 
+CanvasEvent
+*
+DisplayEvent
+DisplayCreatedEvent
+DisplayDeletedEvent
+
+DisplayViewEvent
+DisplayViewDeselectedEvent
+DisplayViewSelectedEvent
+DisplayViewSelectionEvent
+ * 
+KyEvent
+KyPressedEvent
+KyReleasedEvent
+KyTypedEvent
+ * 
+MsEvent
+MsButtonEvent
+MsClickedEvent
+MsDraggedEvent
+MsEnteredEvent
+MsExitedEvent
+MsMovedEvent
+MsPressedEvent
+MsReleasedEvent
+MsWheelEvent
+ * 
+WinEvent
+WinActivatedEvent
+WinClosedEvent
+WinClosingEvent
+WinDeactivatedEvent
+WinDeiconifiedEvent
+WinIconifiedEvent
+WinOpenedEvent
+ * 
+ZoomEvent
+ * 
+PluginEvent
+PluginCanceledEvent
+PluginExecutionEvent
+PluginFinishedEvent
+PluginPostprocessEvent
+PluginPreprocessEvent
+PluginProcessEvent
+PluginRunEvent
+PluginStartedEvent
+ * 
+ToolEvent
+ToolActivatedEvent
+ToolDeactivatedEvent
+
+
  * @author GBH
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
