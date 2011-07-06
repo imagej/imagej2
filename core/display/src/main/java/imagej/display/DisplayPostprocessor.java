@@ -38,16 +38,10 @@ import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.event.Events;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
-import imagej.plugin.PluginManager;
 import imagej.plugin.PluginModule;
 import imagej.plugin.process.PluginPostprocessor;
-import imagej.util.Log;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,6 +51,7 @@ import java.util.Map;
  * Displays output {@link Dataset}s upon completion of a plugin execution.
  * 
  * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
 @Plugin(type = PluginPostprocessor.class)
 public class DisplayPostprocessor implements PluginPostprocessor {
@@ -76,16 +71,19 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		}
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
-			if (!isDisplayed(dataset))
-				displayDataset(dataset);
+			if (!isDisplayed(dataset)) {
+				final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+				displayManager.createDisplay(dataset);
+			}
 		}
 		else if (value instanceof Overlay) {
 			final Overlay overlay = (Overlay) value;
-			if (! isDisplayed(overlay)) {
+			if (!isDisplayed(overlay)) {
 				displayOverlay(overlay);
 			}
-		} else {
-			// ignore non-Dataset output
+		}
+		else {
+			// ignore unsupported output type
 		}
 	}
 
@@ -104,29 +102,6 @@ public class DisplayPostprocessor implements PluginPostprocessor {
 		return false;
 	}
 
-	private void displayDataset(final Dataset dataset) {
-		// get available display plugins from the plugin manager
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<Display>> plugins =
-			pluginManager.getPlugins(Display.class);
-
-		for (final PluginEntry<Display> pe : plugins) {
-			try {
-				final Display displayPlugin = pe.createInstance();
-				// display dataset using the first compatible DisplayPlugin
-				// TODO: prompt user with dialog box if multiple matches
-				if (displayPlugin.canDisplay(dataset)) {
-					displayPlugin.display(dataset);
-					Events.publish(new DisplayCreatedEvent(displayPlugin));
-					break;
-				}
-			}
-			catch (final PluginException e) {
-				Log.error("Invalid display plugin: " + pe, e);
-			}
-		}
-	}
-	
 	private void displayOverlay(final Overlay overlay) {
 		// Add the overlay to the currently active display
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
