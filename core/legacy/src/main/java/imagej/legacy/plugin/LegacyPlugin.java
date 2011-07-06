@@ -36,11 +36,8 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import imagej.ImageJ;
-import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;

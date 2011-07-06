@@ -53,15 +53,16 @@ public class RGBImageTranslator implements ImageTranslator {
 	public Display createDisplay(final ImagePlus imp) {
 		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
-	
+
 	/**
 	 * Creates a color {@link Display} from a color {@link ImagePlus}. Expects
-	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one
-	 * channel.
+	 * input ImagePlus to be of type {@link ImagePlus#COLOR_RGB} with one channel.
 	 */
 	@Override
-	public Display createDisplay(final ImagePlus imp, Axis[] preferredOrder) {
-		Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
+	public Display
+		createDisplay(final ImagePlus imp, final Axis[] preferredOrder)
+	{
+		final Dataset ds = LegacyUtils.makeColorDataset(imp, preferredOrder);
 		LegacyUtils.setDatasetColorData(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
@@ -77,14 +78,14 @@ public class RGBImageTranslator implements ImageTranslator {
 
 	/**
 	 * Creates a color {@link ImagePlus} from a color {@link Display}. Expects
-	 * input expects input Display to have isRgbMerged() set with 3 channels
-	 * of unsigned byte data.
+	 * input expects input Display to have isRgbMerged() set with 3 channels of
+	 * unsigned byte data.
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Display display) {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Dataset ds = displayManager.getActiveDataset(display);
-		ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
+		final ImagePlus imp = LegacyUtils.makeColorImagePlus(ds);
 		LegacyUtils.setImagePlusColorData(ds, imp);
 		LegacyUtils.setImagePlusMetadata(ds, imp);
 		return imp;

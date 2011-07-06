@@ -57,99 +57,107 @@ import net.imglib2.img.ImgPlus;
  */
 public class DatasetHarmonizer {
 
-	private ImageTranslator imageTranslator;
+	private final ImageTranslator imageTranslator;
 	private final OverlayTranslator overlayTranslator;
-	private Map<ImagePlus,Integer> bitDepthMap = new HashMap<ImagePlus,Integer>();
+	private final Map<ImagePlus, Integer> bitDepthMap =
+		new HashMap<ImagePlus, Integer>();
 
-	/** construct a {@link DatasetHarmonizer} with a given
-	 *  {@link ImageTranslator}. The translator is used to create new Datasets
-	 *  and ImagePluses when necessary.
+	/**
+	 * Constructs a {@link DatasetHarmonizer} with a given {@link ImageTranslator}
+	 * . The translator is used to create new Datasets and ImagePluses when
+	 * necessary.
 	 */
 	public DatasetHarmonizer(final ImageTranslator translator) {
 		imageTranslator = translator;
 		overlayTranslator = new OverlayTranslator();
 	}
 
-	/** remember the type of an {@link ImagePlus}. This type can be checked
-	 * after a call to a plugin to see if the ImagePlus underwent a type change.
+	/**
+	 * Remembers the type of an {@link ImagePlus}. This type can be checked after
+	 * a call to a plugin to see if the ImagePlus underwent a type change.
 	 */
-	public void registerType(ImagePlus imp) {
+	public void registerType(final ImagePlus imp) {
 		bitDepthMap.put(imp, imp.getBitDepth());
 	}
-	
-	/** forget the types of all {@link ImagePlus}es. Called before a plugin is
-	 * run to reset the tracking of types.
+
+	/**
+	 * Forgets the types of all {@link ImagePlus}es. Called before a plugin is run
+	 * to reset the tracking of types.
 	 */
 	public void resetTypeTracking() {
 		bitDepthMap.clear();
 	}
-	
+
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
 	 * {@link Display}. Assumes Dataset has planar primitive access in an IJ1
 	 * compatible format.
 	 */
-	public void updateLegacyImage(Display display, ImagePlus imp) {
+	public void updateLegacyImage(final Display display, final ImagePlus imp) {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Dataset ds = displayManager.getActiveDataset(display);
-		//System.out.println("DatasetHarmonizer::updateLegacyImage() - Dataset "+ds.getName()+"associated with ImagePlus "+imp.getID());
-		if ( ! LegacyUtils.imagePlusIsNearestType(ds, imp) ) {
-			ImagePlus newImp = imageTranslator.createLegacyImage(display);
+//		System.out.println("DatasetHarmonizer::updateLegacyImage() - Dataset " +
+//			ds.getName() + "associated with ImagePlus " + imp.getID());
+		if (!LegacyUtils.imagePlusIsNearestType(ds, imp)) {
+			final ImagePlus newImp = imageTranslator.createLegacyImage(display);
 			imp.setStack(newImp.getStack());
-			int c = newImp.getNChannels();
-			int z = newImp.getNSlices();
-			int t = newImp.getNFrames();
+			final int c = newImp.getNChannels();
+			final int z = newImp.getNSlices();
+			final int t = newImp.getNFrames();
 			imp.setDimensions(c, z, t);
 			LegacyUtils.deleteImagePlus(newImp);
-			//System.out.println("imp type "+imp.getType());
-			//System.out.println("from new imp type "+newImp.getType());
+			// System.out.println("imp type "+imp.getType());
+			// System.out.println("from new imp type "+newImp.getType());
 		}
 		else {
 			if (dimensionsDifferent(ds, imp)) {
-				ImagePlus newImp = imageTranslator.createLegacyImage(display);
+				final ImagePlus newImp = imageTranslator.createLegacyImage(display);
 				imp.setStack(newImp.getStack());
-				int c = newImp.getNChannels();
-				int z = newImp.getNSlices();
-				int t = newImp.getNFrames();
+				final int c = newImp.getNChannels();
+				final int z = newImp.getNSlices();
+				final int t = newImp.getNFrames();
 				imp.setDimensions(c, z, t);
 				LegacyUtils.deleteImagePlus(newImp);
 			}
-			else if (imp.getType() == ImagePlus.COLOR_RGB)
+			else if (imp.getType() == ImagePlus.COLOR_RGB) {
 				LegacyUtils.setImagePlusColorData(ds, imp);
-			else if (LegacyUtils.datasetIsIJ1Compatible(ds))
+			}
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				LegacyUtils.setImagePlusPlanes(ds, imp);
-			else
-				LegacyUtils.setImagePlusGrayData(ds, imp);
+			}
+			else LegacyUtils.setImagePlusGrayData(ds, imp);
 		}
 		LegacyUtils.setImagePlusMetadata(ds, imp);
 		overlayTranslator.setImagePlusOverlays(display, imp);
 		LegacyUtils.setImagePlusLuts(ds, imp);
 	}
-	
+
 	/**
 	 * Changes the data within a {@link Display} to match data in an
 	 * {@link ImagePlus}.
 	 */
-	public void updateDisplay(Display display, ImagePlus imp) {
+	public void updateDisplay(final Display display, final ImagePlus imp) {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Dataset ds = displayManager.getActiveDataset(display);
 
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
-			Display tmp = imageTranslator.createDisplay(imp, ds.getAxes());
-			Dataset dsTmp = displayManager.getActiveDataset(tmp);
+			final Display tmp = imageTranslator.createDisplay(imp, ds.getAxes());
+			final Dataset dsTmp = displayManager.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
-			if (dimensionsDifferent(ds, imp))
+			if (dimensionsDifferent(ds, imp)) {
 				LegacyUtils.reshapeDataset(ds, imp);
-			if (imp.getType() == ImagePlus.COLOR_RGB)
+			}
+			if (imp.getType() == ImagePlus.COLOR_RGB) {
 				LegacyUtils.setDatasetColorData(ds, imp);
-			else if (LegacyUtils.datasetIsIJ1Compatible(ds))
+			}
+			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				LegacyUtils.setDatasetPlanes(ds, imp);
-			else
-				LegacyUtils.setDatasetGrayData(ds, imp);
+			}
+			else LegacyUtils.setDatasetGrayData(ds, imp);
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
@@ -157,7 +165,7 @@ public class DatasetHarmonizer {
 		LegacyUtils.setViewLuts(ds, imp);
 		// NB - make it the lower level methods' job to call ds.update()
 	}
-	
+
 	// -- private helpers --
 
 	/**
@@ -167,18 +175,23 @@ public class DatasetHarmonizer {
 	private boolean dimensionsDifferent(final Dataset ds, final ImagePlus imp) {
 		final ImgPlus<?> imgPlus = ds.getImgPlus();
 
+		final int xIndex = ds.getAxisIndex(Axes.X);
+		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = ds.getAxisIndex(Axes.Z);
+		final int tIndex = ds.getAxisIndex(Axes.TIME);
 		final boolean different =
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.X), imp.getWidth()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Y), imp.getHeight()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.CHANNEL), imp.getNChannels()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.Z), imp.getNSlices()) ||
-			dimensionDifferent(imgPlus, ds.getAxisIndex(Axes.TIME), imp.getNFrames());
+			dimensionDifferent(imgPlus, xIndex, imp.getWidth()) ||
+				dimensionDifferent(imgPlus, yIndex, imp.getHeight()) ||
+				dimensionDifferent(imgPlus, cIndex, imp.getNChannels()) ||
+				dimensionDifferent(imgPlus, zIndex, imp.getNSlices()) ||
+				dimensionDifferent(imgPlus, tIndex, imp.getNFrames());
 
-		if ( ! different )
-			if ( LegacyUtils.hasNonIJ1Axes(ds.getAxes()) )
-				throw new IllegalStateException(
-					"Dataset associated with ImagePlus has axes incompatible with IJ1");
-		
+		if (!different && LegacyUtils.hasNonIJ1Axes(ds.getAxes())) {
+			throw new IllegalStateException(
+				"Dataset associated with ImagePlus has axes incompatible with IJ1");
+		}
+
 		return different;
 	}
 
