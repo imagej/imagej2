@@ -41,7 +41,7 @@ import net.imglib2.img.Axis;
 /**
  * The interface for translating between legacy and modern ImageJ image
  * structures.
- *
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
