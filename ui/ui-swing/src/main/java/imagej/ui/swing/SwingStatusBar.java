@@ -88,7 +88,7 @@ public class SwingStatusBar extends JPanel implements StatusBar,
 	public void setProgress(final int val, final int max) {
 		if (max < 0) return;
 		
-		// make sure its always blue and not gray by grabbing focus
+		// HACK: Make sure it's always blue and not gray by grabbing focus.
 		// TODO - does this cause problems elsewhere?
 		progressBar.grabFocus();
 		
