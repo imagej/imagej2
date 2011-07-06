@@ -67,6 +67,8 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 	/** Class object for this entry's object. Lazily loaded. */
 	private Class<T> classObject;
 
+	// -- BaseEntry methods --
+
 	public void setClassName(final String className) {
 		this.className = className;
 	}
@@ -164,10 +166,14 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 		return loadClass().getResource(iconPath);
 	}
 
+	// -- Comparable methods --
+
 	@Override
 	public int compareTo(final BaseEntry<?> entry) {
 		return priority - entry.priority;
 	}
+
+	// -- Object methods --
 
 	@Override
 	public String toString() {
