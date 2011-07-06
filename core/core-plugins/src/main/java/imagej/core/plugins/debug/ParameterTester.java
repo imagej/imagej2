@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins;
+package imagej.core.plugins.debug;
 
 import imagej.data.Dataset;
 import imagej.event.Events;
@@ -53,7 +53,8 @@ import java.math.BigInteger;
  * 
  * @author Curtis Rueden
  */
-@Plugin(toggleParameter = "selected", menuPath = "Plugins > Parameter Tester")
+@Plugin(toggleParameter = "selected",
+	menuPath = "Plugins>Debug>Parameter Tester")
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "boolean")

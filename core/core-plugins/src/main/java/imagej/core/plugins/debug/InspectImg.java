@@ -1,5 +1,5 @@
 //
-// Main.java
+// InspectImg.java
 //
 
 /*
@@ -32,33 +32,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej;
+package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.ui.UIManager;
+import imagej.display.AbstractDatasetView;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
+import imagej.util.diag.inspect.Inspector;
 
 /**
- * Launches ImageJ.
- * 
- * @author Curtis Rueden
+ * TODO
+ *
+ * @author Grant Harris
  */
-public final class Main {
+@Plugin(menuPath = "Plugins>Debug>Inspect Image")
+public class InspectImg implements ImageJPlugin {
 
-	private Main() {
-		// prevent instantiation of utility class
+	@Override
+	public void run() {
+				final DisplayManager manager = ImageJ.get(DisplayManager.class);
+		final Display display = manager.getActiveDisplay();
+		if (display == null) {
+			return; // headless UI or no open images
+		}
+		AbstractDatasetView dsView = (AbstractDatasetView) display.getActiveView();
+		Inspector.inspect(dsView);		
 	}
-
-	public static void main(String[] args) {
-		manageSettings();
-		ImageJ.get(UIManager.class).processArgs(args);
-	}
-
-	private static void manageSettings() {
-		// TODO
-		// if (settings don't exist on disk) {
-		//   someone.initSettingsToDefault();  // who should own this code?
-		//   maybe write to disk or let persistence mechanism auto save on exit
-		// }
-	}
-
+	
 }
