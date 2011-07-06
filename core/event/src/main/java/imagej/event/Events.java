@@ -77,5 +77,8 @@ public final class Events {
 			final Class<E> c, final EventSubscriber<E> subscriber) {
 		EventBus.unsubscribe(c, subscriber);
 	}
+	public static <E extends ImageJEvent> java.util.List<E> getSubscribers(final Class<E> c) {
+		return EventBus.getSubscribers(c);
+	}
 
 }
