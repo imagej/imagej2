@@ -72,6 +72,8 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	
 	private boolean disposeScheduled = false;
 	
+	private boolean disposed = false;
+	
 	private boolean figureAdded = false;
 	
 	/**
@@ -151,6 +153,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 
 			@Override
 			public void figureRemoved(FigureEvent e) {
+				if (disposed || disposeScheduled) return;
 				if (isVisible())
 					display.removeView(SwingOverlayView.this);
 			}
@@ -215,6 +218,7 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 							if (figureAdded) {
 								figure.requestRemove();
 							}
+							disposed = true;
 						}
 					}});
 				disposeScheduled = true;
