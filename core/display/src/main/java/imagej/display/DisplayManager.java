@@ -39,13 +39,18 @@ import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.ObjectManager;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginException;
+import imagej.plugin.PluginManager;
+import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,29 +72,41 @@ public final class DisplayManager implements ManagerComponent {
 
 	// -- DisplayManager methods --
 
+	/** Gets the currently active {@link Display}. */
 	public Display getActiveDisplay() {
 		return activeDisplay;
 	}
 
+	/** Sets the currently active {@link Display}. */
 	public void setActiveDisplay(final Display display) {
 		activeDisplay = display;
 		Events.publish(new DisplayActivatedEvent(display));
 	}
 
+	/**
+	 * Gets the active {@link Dataset}, if any, of the currently active
+	 * {@link Display}.
+	 */
 	public Dataset getActiveDataset() {
 		return getActiveDataset(activeDisplay);
 	}
 
+	/**
+	 * Gets the active {@link DatasetView}, if any, of the currently active
+	 * {@link Display}.
+	 */
 	public DatasetView getActiveDatasetView() {
 		return getActiveDatasetView(activeDisplay);
 	}
 
+	/** Gets the active {@link Dataset}, if any, of the given {@link Display}. */
 	public Dataset getActiveDataset(final Display display) {
 		final DatasetView activeDatasetView = getActiveDatasetView(display);
 		return activeDatasetView == null ? null : activeDatasetView
 			.getDataObject();
 	}
 
+	/** Gets the active {@link DatasetView}, if any, of the given {@link Display}. */
 	public DatasetView getActiveDatasetView(final Display display) {
 		if (display == null) {
 			return null;
@@ -132,6 +149,31 @@ public final class DisplayManager implements ManagerComponent {
 			}
 		}
 		return true;
+	}
+
+	/** Creates a {@link Display} and adds the given {@link Dataset} as a view. */
+	public Display createDisplay(final Dataset dataset) {
+		// get available display plugins from the plugin manager
+		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
+		final List<PluginEntry<Display>> plugins =
+			pluginManager.getPlugins(Display.class);
+
+		for (final PluginEntry<Display> pe : plugins) {
+			try {
+				final Display displayPlugin = pe.createInstance();
+				// display dataset using the first compatible DisplayPlugin
+				// TODO: how to handle multiple matches? prompt user with dialog box?
+				if (displayPlugin.canDisplay(dataset)) {
+					displayPlugin.display(dataset);
+					Events.publish(new DisplayCreatedEvent(displayPlugin));
+					return displayPlugin;
+				}
+			}
+			catch (final PluginException e) {
+				Log.error("Invalid display plugin: " + pe, e);
+			}
+		}
+		return null;
 	}
 
 	// -- ManagerComponent methods --
