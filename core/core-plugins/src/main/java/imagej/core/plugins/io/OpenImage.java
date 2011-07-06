@@ -1,5 +1,5 @@
 //
-// RevertImage.java
+// OpenImage.java
 //
 
 /*
@@ -32,16 +32,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins;
+package imagej.core.plugins.io;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.event.Events;
+import imagej.event.StatusEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
+
+import java.io.File;
+
+import loci.common.StatusListener;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
@@ -50,40 +54,34 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Resets the current {@link Dataset} to its original state.
+ * Opens the selected file as a {@link Dataset}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Revert [IJ2]", weight = 20, mnemonic = 'r'
-//	 , accelerator = "control R"
-	) })
-public class RevertImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
+@Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
+	@Menu(label = "File", mnemonic = 'f'),
+	@Menu(label = "Open [IJ2]...", weight = 1, mnemonic = 'o',
+		accelerator = "control O") })
+public class OpenImage<T extends RealType<T> & NativeType<T>> implements
+	ImageJPlugin, StatusListener
 {
+
+	@Parameter(label = "File to open")
+	private File inputFile;
+
+	@Parameter(output = true)
+	private Dataset dataset;
 
 	@Override
 	public void run() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-
-		final Dataset currDataset =
-			(Dataset) display.getActiveView().getDataObject();
-
-		// TODO - enable this in ImgLib
-//		final String id = currDataset.getImgPlus().getSource();
-//		if (id == null) {
-//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
-//				" does not have an external source");
-//		}
-		final String id = null; // do nothing right now
+		final String id = inputFile.getAbsolutePath();
 
 		// open image
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
+			imageOpener.addStatusListener(this);
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			currDataset.setImgPlus(imgPlus);
+			dataset = new Dataset(imgPlus);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);
@@ -91,6 +89,41 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
+	}
+
+	public File getInputFile() {
+		return inputFile;
+	}
+
+	public void setInputFile(final File inputFile) {
+		this.inputFile = inputFile;
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+
+	private long lastTime;
+
+	@Override
+	public void statusUpdated(loci.common.StatusEvent e) {
+		long time = System.currentTimeMillis();
+		final int progress = e.getProgressValue();
+		final int maximum = e.getProgressMaximum();
+		final String message = e.getStatusMessage();
+		final boolean warn = e.isWarning();
+
+		// don't update more than 20 times/sec
+		if (time - lastTime < 50 && progress > 0 && progress < maximum && !warn) {
+			return;
+		}
+		lastTime = time;
+
+		Events.publish(new StatusEvent(progress, maximum, message, warn));
 	}
 
 }
