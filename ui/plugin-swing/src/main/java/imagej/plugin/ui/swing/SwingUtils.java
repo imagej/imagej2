@@ -39,6 +39,9 @@ import imagej.util.awt.AWTWindows;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Insets;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -58,15 +61,19 @@ public final class SwingUtils {
 	}
 
 	/**
-	 * Displays a resizable dialog box containing the given component, with scroll
-	 * bars as needed.
+	 * Displays a resizable dialog box containing the given component.
 	 * <p>
 	 * This method is very similar to
 	 * {@link JOptionPane#showConfirmDialog(Component, Object, String, int, int)},
-	 * except that it also limits the size of the dialog based on the actual
-	 * screen size, and adds a scroll bar around the provided {@link Component} in
-	 * case it is too large.
+	 * except that it has a few extra features:
 	 * </p>
+	 * <ul>
+	 * <li>It limits the size of the dialog based on the actual screen size.</li>
+	 * <li>It can optionally add a scroll bar around the provided
+	 * {@link Component} in case it is too large.</li>
+	 * <li>It can start with a particular {@link Component} having the keyboard
+	 * focus.</li>
+	 * </ul>
 	 * 
 	 * @param parentComponent the parent {@link Component} for the dialog
 	 * @param c the {@link Component} to display
@@ -77,15 +84,19 @@ public final class SwingUtils {
 	 *          {@link JOptionPane#WARNING_MESSAGE},
 	 *          {@link JOptionPane#QUESTION_MESSAGE}, or
 	 *          {@link JOptionPane#PLAIN_MESSAGE}
+	 * @param doScrollPane whether to wrap the parent component in a
+	 *          {@link JScrollPane} if the content is too large to fit in the
+	 *          window.
+	 * @param focusComponent the {@link Component} that should have the initial
+	 *          keyboard focus.
 	 */
 	public static int showDialog(final Component parentComponent,
 		final Component c, final String title, final int optionType,
-		final int messageType)
+		final int messageType, final boolean doScrollPane,
+		final Component focusComponent)
 	{
 		final JOptionPane optionPane = new JOptionPane(c, messageType, optionType);
 
-		// wrap in a scroll pane, if there is no message icon
-		final boolean doScrollPane = messageType == JOptionPane.PLAIN_MESSAGE;
 		if (doScrollPane) {
 			final JPanel mainPane = (JPanel) optionPane.getComponent(0);
 			final JPanel buttonPane = (JPanel) optionPane.getComponent(1);
@@ -124,11 +135,31 @@ public final class SwingUtils {
 		dialog.setSize(dialog.getSize().width + 20, dialog.getSize().height);
 
 		AWTWindows.centerWindow(dialog);
+		if (focusComponent != null) {
+			setDefaultFocusComponent(dialog, focusComponent);
+		}
 		dialog.setVisible(true);
 
 		// return result
 		final Integer rval = (Integer) optionPane.getValue();
 		return rval == null ? JOptionPane.CANCEL_OPTION : rval;
+	}
+
+	/**
+	 * Makes the given component grab the keyboard focus whenever the window gains
+	 * the focus.
+	 */
+	public static void
+		setDefaultFocusComponent(final Window w, final Component c)
+	{
+		w.addWindowFocusListener(new WindowAdapter() {
+
+			@Override
+			public void windowGainedFocus(final WindowEvent e) {
+				c.requestFocusInWindow();
+			}
+
+		});
 	}
 
 }

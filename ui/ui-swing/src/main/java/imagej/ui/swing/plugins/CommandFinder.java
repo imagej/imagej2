@@ -1,5 +1,5 @@
 //
-// SwingInputHarvester.java
+// CommandFinder.java
 //
 
 /*
@@ -32,59 +32,43 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.ui.swing;
+package imagej.ui.swing.plugins;
 
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPreprocessor;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
+import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginRunner;
+import imagej.plugin.ui.swing.SwingUtils;
+import imagej.ui.swing.CommandFinderPanel;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
- * SwingInputHarvester is a {@link PluginPreprocessor} that collects input
- * parameter values from the user using a {@link SwingInputPanel} dialog box.
+ * A plugin to display the {@link CommandFinderPanel} in a dialog.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-@Plugin(type = PluginPreprocessor.class)
-public class SwingInputHarvester extends AbstractInputHarvester {
-
-	// -- InputHarvester methods --
-
-	@Override
-	public SwingInputPanel createInputPanel() {
-		return new SwingInputPanel();
-	}
+@Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Utilities"),
+	@Menu(label = "Find Commands...", accelerator = "control L") })
+public class CommandFinder implements ImageJPlugin {
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
-	{
-		// convert input panel to Swing component with scroll bars
-		final JPanel pane = ((SwingInputPanel) inputPanel).getPanel();
-
-		// display input panel in a dialog
-		final String title = module.toString();
-		final boolean allowCancel = true; // TODO: check module for this setting
-		final int optionType, messageType;
-		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
-		else optionType = JOptionPane.OK_OPTION;
-		if (inputPanel.isMessageOnly()) {
-			if (allowCancel) messageType = JOptionPane.INFORMATION_MESSAGE;
-			else messageType = JOptionPane.QUESTION_MESSAGE;
-		}
-		else messageType = JOptionPane.PLAIN_MESSAGE;
-		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;
+	public void run() {
+		final CommandFinderPanel commandFinderPanel = new CommandFinderPanel();
 		final int rval =
-			SwingUtils.showDialog(null, pane, title, optionType, messageType,
-				doScrollBars, null);
+			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
+				commandFinderPanel.getSearchField());
+		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
 
-		// verify return value of dialog
-		return rval == JOptionPane.OK_OPTION;
+		final PluginEntry<?> plugin = commandFinderPanel.getCommand();
+		if (plugin == null) return; // no plugin selected
+
+		// execute selected plugin
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		final PluginRunner pluginRunner = new PluginRunner(plugin);
+		pluginRunner.run();
 	}
 
 }
