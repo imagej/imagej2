@@ -255,11 +255,18 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 	// -- Utility methods --
 
 	public static String getMenuString(final List<MenuEntry> menuPath) {
+		return getMenuString(menuPath, true);
+	}
+
+	public static String getMenuString(final List<MenuEntry> menuPath,
+		final boolean includeLeaf)
+	{
 		final StringBuilder sb = new StringBuilder();
-		boolean firstMenu = true;
-		for (final MenuEntry menu : menuPath) {
-			if (firstMenu) firstMenu = false;
-			else sb.append(" > ");
+		final int size = menuPath.size();
+		final int last = includeLeaf ? size : size - 1;
+		for (int i = 0; i < last; i++) {
+			final MenuEntry menu = menuPath.get(i);
+			if (i > 0) sb.append(" > ");
 			sb.append(menu);
 		}
 		return sb.toString();
