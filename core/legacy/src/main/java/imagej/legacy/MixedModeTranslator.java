@@ -35,8 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
+import imagej.display.DisplayManager;
 import net.imglib2.img.Axis;
 
 /**
@@ -61,11 +63,14 @@ public class MixedModeTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetGrayDataFromColorImp(ds, imp);
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp); // TODO probably does nothing since
-																			// Dataset not in view?
 
-		// CTR FIXME - Create a Display here and return it.
-		return null;
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Display display = displayManager.createDisplay(ds);
+
+		// FIXME operate on display instead of dataset here
+		LegacyUtils.setViewLuts(ds, imp);
+
+		return display;
 	}
 
 	// TODO - do we need this in the other direction too?? if isRGBMerged == true

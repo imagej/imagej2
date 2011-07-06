@@ -74,11 +74,14 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		}
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
-		LegacyUtils.setViewLuts(ds, imp); // TODO probably does nothing since
-																			// Dataset not in view?
 
-		// CTR FIXME - Create a Display here and return it.
-		return null;
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Display display = displayManager.createDisplay(ds);
+
+		// TODO operate on display instead of dataset here
+		LegacyUtils.setViewLuts(ds, imp);
+
+		return display;
 	}
 
 	/**
