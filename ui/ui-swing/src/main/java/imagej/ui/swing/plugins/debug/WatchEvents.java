@@ -209,6 +209,7 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 			if (!(evt instanceof MsEvent) && !(evt instanceof KyEvent)) {
 				showClass(evt);
 				showFields(evt);
+				emitMessage("    DisplayName: " +  ((DisplayEvent)evt).getDisplay().getName());
 			}
 		}
 		if (evt instanceof DisplayViewEvent) {
