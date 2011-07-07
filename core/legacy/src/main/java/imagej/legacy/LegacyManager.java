@@ -45,6 +45,7 @@ import imagej.display.DisplayManager;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.event.OptionsChangedEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.legacy.plugin.LegacyPlugin;
 import imagej.util.Log;
@@ -123,6 +124,9 @@ public final class LegacyManager implements ManagerComponent {
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
+	/** Method of synchronizing IJ2 & IJ1 options */
+	private OptionsSynchronizer optionsSynchronizer;
+	
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
@@ -158,7 +162,10 @@ public final class LegacyManager implements ManagerComponent {
 
 	@Override
 	public void initialize() {
+		
 		imageMap = new LegacyImageMap();
+		optionsSynchronizer = new OptionsSynchronizer();
+		
 		// initialize legacy ImageJ application
 		try {
 			new ij.ImageJ(ij.ImageJ.NO_SHOW);
@@ -167,11 +174,16 @@ public final class LegacyManager implements ManagerComponent {
 			Log.warn("Failed to instantiate IJ1.", t);
 		}
 
+		// TODO - FIXME
+		// call optionsSynchronizer.update() here? Need to determine when the
+		// IJ2 settings file has been read/initialized and then call update() once.
+		
 		subscribeToEvents();
 	}
 
 	// -- Helper methods --
 
+	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
@@ -186,6 +198,18 @@ public final class LegacyManager implements ManagerComponent {
 			};
 		subscribers.add(displayActivatedSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-	}
+		
+		final EventSubscriber<OptionsChangedEvent> optionSubscriber =
+			new EventSubscriber<OptionsChangedEvent>() {
 
+				@Override
+				public void onEvent(OptionsChangedEvent event) {
+					optionsSynchronizer.update();
+				}
+				
+		};
+		subscribers.add(optionSubscriber);
+		Events.subscribe(OptionsChangedEvent.class, optionSubscriber);
+			
+	}
 }
