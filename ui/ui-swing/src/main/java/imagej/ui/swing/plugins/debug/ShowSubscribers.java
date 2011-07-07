@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * @author GBH
  */
-@Plugin(menuPath = "Plugins>Subscribers")
+@Plugin(menuPath = "Plugins>Debug>Subscribers")
 public class ShowSubscribers implements ImageJPlugin {
 
 	private static SwingOutputWindow window;
