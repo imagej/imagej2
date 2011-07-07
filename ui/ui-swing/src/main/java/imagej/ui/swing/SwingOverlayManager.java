@@ -38,85 +38,169 @@ import imagej.ImageJ;
 import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
+import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.OverlayManager;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+/*
+ * TODO: select overlays in display as they are selected in the list
+ * delete overlays when they are deleted in the list
+ * Add mechanism for scrolling in Display to make the selected overlay visible.
+ */
 
 /**
  * Overlay Manager Swing UI
  * 
  * @author Adam Fraser
  */
-public class SwingOverlayManager extends JFrame {
+public class SwingOverlayManager extends JFrame implements ActionListener{
 	private static final long serialVersionUID = -6498169032123522303L;
 	private JList olist = null;
 
+	/*
+	 * Constructor. Create a JList to list the overlays. 
+	 */
 	public SwingOverlayManager() {
 		olist = new JList(new OverlayListModel());
 		olist.setCellRenderer(new OverlayRenderer());
 		
-		Container cp = this.getContentPane();
-		cp.add(olist);
-		
+		// Populate the list with the current overlays
 		OverlayManager om = ImageJ.get(OverlayManager.class);			
 		for (Overlay overlay : om.getOverlays()) {
 			olist.add(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, -1, false, false));
 		}
-
+		
+		JScrollPane listScroller = new JScrollPane(olist);
+		listScroller.setPreferredSize(new Dimension(250, 80));
+		listScroller.setAlignmentX(LEFT_ALIGNMENT);
+		JPanel listPane = new JPanel();
+		listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
+		listPane.add(listScroller);
+		listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		JButton delbutton = new JButton("delete selected");
+		delbutton.setMnemonic(KeyEvent.VK_DELETE);
+		delbutton.setActionCommand("delete");
+		delbutton.addActionListener(this);
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+		buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+		buttonPane.add(Box.createHorizontalGlue());
+		buttonPane.add(delbutton);
+		
 		setSize(300, 300);
+		
+		Container cp = this.getContentPane();
+		cp.add(listPane, BorderLayout.CENTER);
+		cp.add(buttonPane, BorderLayout.PAGE_END);
+		
+		//
+		// Listen to list selections
+		// TODO: update Overlay selection in Displays from this selection
+		//
+	 	ListSelectionListener listSelectionListener = new ListSelectionListener() {
+	 		public void valueChanged(ListSelectionEvent listSelectionEvent) {
+	 			System.out.println("First index: " + listSelectionEvent.getFirstIndex());
+	 			System.out.println(", Last index: " + listSelectionEvent.getLastIndex());
+		        boolean adjust = listSelectionEvent.getValueIsAdjusting();
+		        System.out.println(", Adjusting? " + adjust);
+		        if (!adjust) {
+		        	JList list = (JList) listSelectionEvent.getSource();
+		        	int selections[] = list.getSelectedIndices();
+		        	Object selectionValues[] = list.getSelectedValues();
+		        	for (int i = 0, n = selections.length; i < n; i++) {
+		        		if (i == 0) {
+		        			System.out.println(" Selections: ");
+		        		}
+		        		System.out.println(selections[i] + "/" + selectionValues[i] + " ");
+		        	}
+		        }
+	 		}
+	 	};
+	 	olist.addListSelectionListener(listSelectionListener);
+	 	
+	}
+	
+	public void actionPerformed(ActionEvent e){
+		if ("delete".equals(e.getActionCommand())) {
+			AbstractOverlay overlay = (AbstractOverlay)olist.getSelectedValue();
+//			overlay.delete();
+			System.out.println("TODO: Delete overlay "+overlay.getRegionOfInterest().toString());
+		}
 	}
 
-
-	/*
-	 * http://www.apl.jhu.edu/~hall/java/Swing-Tutorial/Swing-Tutorial-JList.html
-	 */
+	
 	public class OverlayListModel extends AbstractListModel {
 		private static final long serialVersionUID = 7941252533859436640L;
 		private OverlayManager om;
-
-		public OverlayListModel() {
-			om = ImageJ.get(OverlayManager.class);			
-			
-			Events.subscribe(OverlayCreatedEvent.class, new EventSubscriber<OverlayCreatedEvent>(){
+		private EventSubscriber<OverlayCreatedEvent> overlaycreatedsubscriber = 
+			new EventSubscriber<OverlayCreatedEvent>(){
 				@Override
 				public void onEvent(OverlayCreatedEvent event) {
+					System.out.println("\tCREATED: "+event.toString());
 					Overlay overlay = event.getObject();
 					int index = olist.getComponents().length;
 					olist.add(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, index, false, false), 
 							index);
 					olist.updateUI();
 				}
-			});
-			
-			Events.subscribe(OverlayDeletedEvent.class, new EventSubscriber<OverlayDeletedEvent>(){
+			};
+		private EventSubscriber<OverlayDeletedEvent> overlaydeletedsubscriber = 
+			new EventSubscriber<OverlayDeletedEvent>(){
 				@Override
 				public void onEvent(OverlayDeletedEvent event) {
+					System.out.println("\tDELETED: "+event.toString());
 					Overlay overlay = event.getObject();
 					olist.remove(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, -1, false, false));
 					olist.updateUI();
 				}
-			});
-			
-			Events.subscribe(OverlayRestructuredEvent.class, new EventSubscriber<OverlayRestructuredEvent>(){
+			};
+		private EventSubscriber<OverlayRestructuredEvent> overlayrestructuredsubscriber =
+			new EventSubscriber<OverlayRestructuredEvent>(){
 				@Override
 				public void onEvent(OverlayRestructuredEvent event) {
-					// TODO: update overlay thumbnail icons
+					System.out.println("\tRESTRUCTURED: "+event.toString());
+					// TODO: update overlay thumbnails
 //					Overlay overlay = event.getObject();
-					olist.updateUI();
+//					olist.updateUI();
 				}
-			});
+			};
+
+		/*
+		 * Constructor. Bind Overlay events.
+		 */
+		public OverlayListModel() {
+			om = ImageJ.get(OverlayManager.class);			
+			Events.subscribe(OverlayCreatedEvent.class, overlaycreatedsubscriber);
+			Events.subscribe(OverlayDeletedEvent.class, overlaydeletedsubscriber);
+			Events.subscribe(OverlayRestructuredEvent.class, overlayrestructuredsubscriber);
 		}
 
 		public Object getElementAt(int index) {
@@ -139,7 +223,7 @@ public class SwingOverlayManager extends JFrame {
 					list, value, index, isSelected, hasFocus);
 			if (value instanceof Overlay) {
 				Overlay overlay = (Overlay) value;
-				//TODO: create overlay thumbnail icon from overlay 
+				//TODO: create overlay thumbnail from overlay 
 				ImageIcon icon = (ImageIcon) iconTable.get(value);
 //				if (icon == null) {
 //					icon = new ImageIcon(...);
