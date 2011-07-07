@@ -1,6 +1,7 @@
 package imagej.ui.swing.plugins.debug;
 
 import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;
@@ -34,14 +35,15 @@ public class ShowSubscribers implements ImageJPlugin {
 		listSubs(ObjectCreatedEvent.class);
 		listSubs(ObjectDeletedEvent.class);
 		listSubs(DisplayActivatedEvent.class);
+		listSubs(DisplayUpdatedEvent.class);
 		
 	}
 
 	private void listSubs(Class clazz) {
 		subscribers = Events.getSubscribers(clazz);
-		window.append(clazz.getSimpleName() + "...\n");
+		window.append(clazz.getSimpleName() + ":\n");
 		for (EventSubscriber<?> subscriber : subscribers) {
-			window.append(subscriber.toString() + "\n");
+			window.append("    " + subscriber.toString() + "\n");
 		}
 	}
 }
