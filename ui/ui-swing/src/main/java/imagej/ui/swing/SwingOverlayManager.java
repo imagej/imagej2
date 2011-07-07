@@ -40,7 +40,11 @@ import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
+import imagej.display.Display;
+import imagej.display.DisplayManager;
+import imagej.display.DisplayView;
 import imagej.display.OverlayManager;
+import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 
@@ -127,21 +131,20 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 		//
 	 	ListSelectionListener listSelectionListener = new ListSelectionListener() {
 	 		public void valueChanged(ListSelectionEvent listSelectionEvent) {
-	 			System.out.println("First index: " + listSelectionEvent.getFirstIndex());
-	 			System.out.println(", Last index: " + listSelectionEvent.getLastIndex());
-		        boolean adjust = listSelectionEvent.getValueIsAdjusting();
-		        System.out.println(", Adjusting? " + adjust);
-		        if (!adjust) {
-		        	JList list = (JList) listSelectionEvent.getSource();
-		        	int selections[] = list.getSelectedIndices();
-		        	Object selectionValues[] = list.getSelectedValues();
-		        	for (int i = 0, n = selections.length; i < n; i++) {
-		        		if (i == 0) {
-		        			System.out.println(" Selections: ");
-		        		}
-		        		System.out.println(selections[i] + "/" + selectionValues[i] + " ");
-		        	}
-		        }
+	 			final DisplayManager manager = ImageJ.get(DisplayManager.class);
+	 			final Display display = manager.getActiveDisplay();
+	 			JList list = (JList) listSelectionEvent.getSource();
+	 			Object selectionValues[] = list.getSelectedValues();
+	 			
+	 			for (final DisplayView overlayView : display.getViews()) {
+	 				overlayView.setSelected(false);
+	 				for(Object overlay : selectionValues){
+	 					if (overlay == overlayView.getDataObject()) {
+	 						overlayView.setSelected(true);
+	 						break;
+	 					}
+	 				}
+	 			}
 	 		}
 	 	};
 	 	olist.addListSelectionListener(listSelectionListener);
@@ -157,58 +160,68 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 	}
 
 	
+	/**
+	 * JList synchronized with the overlays in the OverlayManager.
+	 */
 	public class OverlayListModel extends AbstractListModel {
 		private static final long serialVersionUID = 7941252533859436640L;
 		private OverlayManager om;
-		private EventSubscriber<OverlayCreatedEvent> overlaycreatedsubscriber = 
-			new EventSubscriber<OverlayCreatedEvent>(){
-				@Override
-				public void onEvent(OverlayCreatedEvent event) {
-					System.out.println("\tCREATED: "+event.toString());
-					Overlay overlay = event.getObject();
-					int index = olist.getComponents().length;
-					olist.add(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, index, false, false), 
-							index);
-					olist.updateUI();
-				}
-			};
-		private EventSubscriber<OverlayDeletedEvent> overlaydeletedsubscriber = 
-			new EventSubscriber<OverlayDeletedEvent>(){
-				@Override
-				public void onEvent(OverlayDeletedEvent event) {
-					System.out.println("\tDELETED: "+event.toString());
-					Overlay overlay = event.getObject();
-					olist.remove(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, -1, false, false));
-					olist.updateUI();
-				}
-			};
-		private EventSubscriber<OverlayRestructuredEvent> overlayrestructuredsubscriber =
-			new EventSubscriber<OverlayRestructuredEvent>(){
-				@Override
-				public void onEvent(OverlayRestructuredEvent event) {
-					System.out.println("\tRESTRUCTURED: "+event.toString());
-					// TODO: update overlay thumbnails
-//					Overlay overlay = event.getObject();
-//					olist.updateUI();
-				}
-			};
+		
+		private EventSubscriber<OverlayCreatedEvent> creationSubscriber = 
+				new EventSubscriber<OverlayCreatedEvent>(){
+					@Override
+					public void onEvent(OverlayCreatedEvent event) {
+						System.out.println("\tCREATED: "+event.toString());
+						olist.updateUI();
+					}
+				};
+		private EventSubscriber<OverlayDeletedEvent> deletionSubscriber = 
+				new EventSubscriber<OverlayDeletedEvent>(){
+					@Override
+					public void onEvent(OverlayDeletedEvent event) {
+						System.out.println("\tDELETED: "+event.toString());
+						olist.updateUI();
+					}
+				};
+		private EventSubscriber<OverlayRestructuredEvent> restructureSubscriber =
+				new EventSubscriber<OverlayRestructuredEvent>(){
+					@Override
+					public void onEvent(OverlayRestructuredEvent event) {
+						System.out.println("\tRESTRUCTURED: "+event.toString());
+						// TODO: update overlay thumbnails
+						olist.updateUI();
+					}
+				};
+				
+		private EventSubscriber<DisplayActivatedEvent> displaySelectedSubscriber =
+				new EventSubscriber<DisplayActivatedEvent>() {
+					@Override
+					public void onEvent(final DisplayActivatedEvent event) {
+						olist.updateUI();
+					}
+				};
 
 		/*
 		 * Constructor. Bind Overlay events.
 		 */
 		public OverlayListModel() {
-			om = ImageJ.get(OverlayManager.class);			
-			Events.subscribe(OverlayCreatedEvent.class, overlaycreatedsubscriber);
-			Events.subscribe(OverlayDeletedEvent.class, overlaydeletedsubscriber);
-			Events.subscribe(OverlayRestructuredEvent.class, overlayrestructuredsubscriber);
+			om = ImageJ.get(OverlayManager.class);
+			Events.subscribe(OverlayCreatedEvent.class, creationSubscriber);
+			Events.subscribe(OverlayDeletedEvent.class, deletionSubscriber);
+			Events.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
+			Events.subscribe(DisplayActivatedEvent.class, displaySelectedSubscriber);
 		}
 
 		public Object getElementAt(int index) {
-			return om.getOverlays().get(index);
+			DisplayManager manager = ImageJ.get(DisplayManager.class);
+ 			Display display = manager.getActiveDisplay();
+			return om.getOverlays(display).get(index);
 		}
 
 		public int getSize() {
-			return om.getOverlays().size();
+			DisplayManager manager = ImageJ.get(DisplayManager.class);
+ 			Display display = manager.getActiveDisplay();
+			return om.getOverlays(display).size();
 		}
 	}
 
