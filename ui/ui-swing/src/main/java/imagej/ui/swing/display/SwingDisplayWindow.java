@@ -161,17 +161,17 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	public void redoLayout() {
 		createSliders();
 		sliders.setVisible(sliders.getComponentCount() > 0);
-
-		for (final DisplayView view : display.getViews()) {
+		setTitle(getDisplay().getName());
+		/*for (final DisplayView view : display.getViews()) {
 			// BDZ removed - apparently doing nothing
 			//DataObject dataObject = view.getDataObject();
 			final Dataset dataset = getDataset(view);
 			if (dataset == null) continue;
 
 			// NOTICE single title set over and over with different Datasets
-			setTitle(getDisplay().getName());
+		//	setTitle(getDisplay().getName());
 			//setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
-		}
+		}*/
 		pack();
 		setVisible(true);
 	}
