@@ -738,28 +738,38 @@ public final class LegacyUtils {
 	}
 
 	/**
-	 * Sets the ColorTables of the IJ2 view displaying a given Dataset to those
-	 * given by an ImagePlus (or CompositeImage).
+	 * Sets the ColorTables of the active view of an IJ2 Display from the LUTs
+	 * of a given ImagePlus or CompositeImage.
 	 */
-	static void setViewLuts(final Dataset ds, final ImagePlus imp) {
+	static void setDisplayLuts(final Display disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
 		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
-		assignColorTables(ds, colorTables, sixteenBitLuts);
+		assignColorTables(disp, colorTables, sixteenBitLuts);
 	}
 
 	/**
-	 * sets LUTs of a ImagePlus (or CompositeImage) to either the first views luts
-	 * or the first lut on the paired Dataset.
+	 * Sets LUTs of an ImagePlus or CompositeImage. If given an ImagePlus this
+	 * method sets it's single LUT from the first ColorTable of the active
+	 * Dataset of the given Display.  If given a CompositeImage this method sets
+	 * all it's LUTs from the ColorTables of the active view of the given Display.
+	 * If there is no such view the LUTs are assigned with default values.
 	 */
-	static void setImagePlusLuts(final Dataset ds, final ImagePlus imp) {
+	static void setImagePlusLuts(final Display disp, final ImagePlus imp) {
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			final DatasetView view = getFirstView(ds);
-			if (view == null) setCompositeImageLutsToDefault(ci);
-			else setCompositeImageLuts(ci, view.getColorTables());
+			DisplayView activeView = disp.getActiveView(); 
+			if (activeView == null)
+				setCompositeImageLutsToDefault(ci);
+			else {
+				final DatasetView view = (DatasetView) activeView;
+				setCompositeImageLuts(ci, view.getColorTables());
+			}
 		}
-		else // regular ImagePlus
-		setImagePlusLutToFirstInDataset(ds, imp);
+		else { // regular ImagePlus
+			final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+			final Dataset ds = displayManager.getActiveDataset(disp);
+			setImagePlusLutToFirstInDataset(ds, imp);
+		}
 	}
 
 	/**
@@ -1158,18 +1168,20 @@ public final class LegacyUtils {
 		return message + ": c=" + c + ", z=" + z + ", t=" + t;
 	}
 
-	/** Assigns the color tables of the first view of a Dataset. */
-	private static void assignColorTables(final Dataset ds,
+	/** Assigns the color tables of the active view of a Display. */
+	private static void assignColorTables(final Display disp,
 		final List<ColorTable<?>> colorTables,
 		@SuppressWarnings("unused") final boolean sixteenBitLuts)
 	{
-		// FIXME - hack - for now until legacy layer maps Display <--> ImagePlus.
-		// grab the first Display and set its default channel luts. When we allow
-		// multiple views of a Dataset this will break. We avoid setting a
-		// Dataset's per plane LUTs because it would be expensive and also IJ1
-		// LUTs are not model space constructs but rather view space constructs.
-		final DatasetView dsView = getFirstView(ds);
-		if (dsView == null) return;
+		// FIXME HACK
+		// Grab the active view of the given Display and set it's default channel
+		// luts. When we allow multiple views of a Dataset this will break. We
+		// avoid setting a Dataset's per plane LUTs because it would be expensive
+		// and also IJ1 LUTs are not model space constructs but rather view space
+		// constructs.
+		final DisplayView dispView = disp.getActiveView();
+		if (dispView == null) return;
+		final DatasetView dsView = (DatasetView) dispView;
 		for (int i = 0; i < colorTables.size(); i++)
 			dsView.setColorTable((ColorTable8) colorTables.get(i), i);
 	}
@@ -1286,21 +1298,6 @@ public final class LegacyUtils {
 		final LUT lut = make8BitLut(cTable);
 		imp.getProcessor().setColorModel(lut);
 		// or imp.getStack().setColorModel(lut);
-	}
-
-	/**
-	 * Gets the first view that displays a given Dataset. Kludge code that should
-	 * go away when we map Display<-->ImagePlus
-	 */
-	private static DatasetView getFirstView(final Dataset ds) {
-		final DisplayManager dispMgr = ImageJ.get(DisplayManager.class);
-		for (final Display display : dispMgr.getDisplays(ds)) {
-			for (final DisplayView view : display.getViews()) {
-				final DatasetView dsView = (DatasetView) view;
-				if (dsView.getDataObject() == ds) return dsView;
-			}
-		}
-		return null;
 	}
 
 	// -- helper classes --

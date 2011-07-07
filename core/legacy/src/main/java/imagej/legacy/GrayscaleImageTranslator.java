@@ -79,7 +79,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		final Display display = displayManager.createDisplay(ds);
 
 		// TODO operate on display instead of dataset here
-		LegacyUtils.setViewLuts(ds, imp);
+		LegacyUtils.setDisplayLuts(display, imp);
 
 		return display;
 	}
@@ -103,7 +103,7 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		if (shouldBeComposite(dataset, imp)) {
 			imp = LegacyUtils.makeCompositeImage(imp);
 		}
-		LegacyUtils.setImagePlusLuts(dataset, imp);
+		LegacyUtils.setImagePlusLuts(display, imp);
 		return imp;
 	}
 
