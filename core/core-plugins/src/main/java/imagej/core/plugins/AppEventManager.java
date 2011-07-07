@@ -1,5 +1,5 @@
 //
-// CorePluginManager.java
+// AppEventManager.java
 //
 
 /*
@@ -56,7 +56,7 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Manager(priority = Manager.LAST_PRIORITY)
-public final class CorePluginManager implements ManagerComponent {
+public final class AppEventManager implements ManagerComponent {
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
