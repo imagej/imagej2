@@ -43,6 +43,7 @@ import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
+import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
@@ -72,8 +73,6 @@ import java.util.List;
 @Plugin(type = Display.class)
 public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
-	private final ArrayList<DisplayView> views;
-
 	private final JHotDrawImageCanvas imgCanvas;
 	private final SwingDisplayWindow imgWindow;
 
@@ -90,7 +89,6 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 	private String name;
 
 	public SwingImageDisplay() {
-		views = new ArrayList<DisplayView>();
 
 		//final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		//displayManager.setActiveDisplay(this);
@@ -179,42 +177,9 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			imgWindow.update();
 			willRebuildImgWindow = false;
 		}
-		for (final DisplayView view : views) {
+		for (final DisplayView view : getViews()) {
 			view.update();
 		}
-	}
-
-	@Override
-	public void addView(final DisplayView view) {
-		views.add(view);
-		update();
-		imgWindow.redoLayout();
-	}
-
-	@Override
-	public void removeView(final DisplayView view) {
-		views.remove(view);
-		view.dispose();
-		update();
-		imgWindow.redoLayout();
-	}
-
-	@Override
-	public void removeAllViews() {
-		views.clear();
-		update();
-		imgWindow.redoLayout();
-	}
-
-	@Override
-	public List<DisplayView> getViews() {
-		return Collections.unmodifiableList(views);
-	}
-
-	@Override
-	public DisplayView getActiveView() {
-		// CTR TODO - do better than hardcoding first view
-		return views.size() > 0 ? views.get(0) : null;
 	}
 
 	@Override
@@ -260,7 +225,7 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			@Override
 			public void onEvent(final DatasetRestructuredEvent event) {
 				final Dataset dataset = event.getObject();
-				for (final DisplayView view : views) {
+				for (final DisplayView view : getViews()) {
 					if (dataset == view.getDataObject()) {
 						willRebuildImgWindow = true;
 						return;
@@ -270,6 +235,11 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		};
 		subscribers.add(restructureSubscriber);
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+	}
+
+	@Override
+	public void redoWindowLayout() {
+		imgWindow.redoLayout();
 	}
 
 

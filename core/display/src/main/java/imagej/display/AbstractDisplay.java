@@ -37,9 +37,12 @@ package imagej.display;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
+import imagej.display.event.DisplayUpdatedEvent;
+import imagej.event.Events;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.imglib2.img.Axis;
@@ -52,6 +55,8 @@ import net.imglib2.meta.LabeledAxes;
  * @author Lee Kamentsky
  */
 public abstract class AbstractDisplay implements Display {
+	
+	private final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
 
 	protected List<Axis> getAxes() {
 		ArrayList<Axis> axes = new ArrayList<Axis>();
@@ -140,5 +145,41 @@ public abstract class AbstractDisplay implements Display {
 	@Override
 	public int numDimensions() {
 		return getAxes().size();
+	}
+
+	@Override
+	public void addView(final DisplayView view) {
+		views.add(view);
+		update();
+		redoWindowLayout();
+		Events.publish(new DisplayUpdatedEvent(this));
+	}
+
+	@Override
+	public DisplayView getActiveView() {
+		// CTR TODO - do better than hardcoding first view
+		return views.size() > 0 ? views.get(0) : null;
+	}
+
+	@Override
+	public List<DisplayView> getViews() {
+		return Collections.unmodifiableList(views);
+	}
+
+	@Override
+	public void removeAllViews() {
+		views.clear();
+		update();
+		redoWindowLayout();
+		Events.publish(new DisplayUpdatedEvent(this));
+	}
+
+	@Override
+	public void removeView(final DisplayView view) {
+		views.remove(view);
+		view.dispose();
+		update();
+		redoWindowLayout();
+		Events.publish(new DisplayUpdatedEvent(this));
 	}
 }
