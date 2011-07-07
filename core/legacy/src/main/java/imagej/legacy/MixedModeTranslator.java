@@ -67,8 +67,7 @@ public class MixedModeTranslator implements ImageTranslator {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Display display = displayManager.createDisplay(ds);
 
-		// FIXME operate on display instead of dataset here
-		LegacyUtils.setViewLuts(ds, imp);
+		LegacyUtils.setDisplayLuts(display, imp);
 
 		return display;
 	}
