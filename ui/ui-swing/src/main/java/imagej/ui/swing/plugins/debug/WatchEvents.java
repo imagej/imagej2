@@ -54,8 +54,11 @@ import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Listens for all events. Useful for logging, history, macro recording,
@@ -228,10 +231,17 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 
 	void emitMessage(final String msg) {
 		if (window != null) {
-			window.append(msg + "\n");
+			window.append("[" + timeStamp() + "] " + msg + "\n");
 		}
 	}
-
+   public static String timeStamp() {
+      SimpleDateFormat formatter =
+            new SimpleDateFormat("mm:ss_SS", Locale.getDefault());
+      Date currentDate = new Date();
+      String dateStr = formatter.format(currentDate);
+      return dateStr;
+   }
+   
 	void showClass(final ImageJEvent evt) {
 		emitMessage("" + evt.getClass().getSimpleName());
 	}
