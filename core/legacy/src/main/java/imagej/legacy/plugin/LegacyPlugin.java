@@ -39,6 +39,7 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
 import imagej.display.Display;
+import imagej.display.DisplayWindow;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
@@ -121,7 +122,8 @@ public class LegacyPlugin implements ImageJPlugin {
 				Display disp = map.lookupDisplay(imp);
 				if (disp != null) {
 					outputs.remove(disp);
-					disp.close();
+					DisplayWindow dispWin = disp.getDisplayWindow();
+					if (dispWin != null) dispWin.close();
 				}
 			}
 		}

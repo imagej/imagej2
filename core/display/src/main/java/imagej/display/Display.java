@@ -103,6 +103,6 @@ public interface Display extends BasePlugin, Named, LabeledAxes, EuclideanSpace 
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getImageCanvas();
 
-	/** Forces display to close. */ 
-	void close();
+	///** Forces display to close. */ 
+	//void close();
 }
