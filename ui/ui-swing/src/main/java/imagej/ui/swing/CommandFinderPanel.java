@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
-import imagej.plugin.RunnablePlugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -100,7 +100,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- CommandFinderPanel methods --
 
 	/** Gets the currently selected command. */
-	public PluginEntry<?> getCommand() {
+	public PluginEntry<ImageJPlugin> getCommand() {
 		Command command = (Command) commandsList.getSelectedValue();
 		if (command == null) {
 			command = (Command) commandsList.getModel().getElementAt(0);
@@ -153,12 +153,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		commands = new ArrayList<Command>();
 
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<?>> plugins = pluginManager.getPlugins();
-		for (final PluginEntry<?> plugin : plugins) {
-			if (!RunnablePlugin.class.isAssignableFrom(plugin.getPluginType())) {
-				// skip non-runnable plugins
-				continue;
-			}
+		final List<PluginEntry<ImageJPlugin>> plugins =
+			pluginManager.getPlugins(ImageJPlugin.class);
+		for (final PluginEntry<ImageJPlugin> plugin : plugins) {
 			commands.add(new Command(plugin));
 		}
 
@@ -185,10 +182,10 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	private class Command implements Comparable<Command> {
 
-		private final PluginEntry<?> plugin;
+		private final PluginEntry<ImageJPlugin> plugin;
 		private final String menuLabel;
 
-		public Command(final PluginEntry<?> plugin) {
+		public Command(final PluginEntry<ImageJPlugin> plugin) {
 			this.plugin = plugin;
 			menuLabel = plugin.getMenuLabel();
 		}
@@ -197,7 +194,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			return menuLabel.toLowerCase().matches(regex);
 		}
 
-		public PluginEntry<?> getPluginEntry() {
+		public PluginEntry<ImageJPlugin> getPluginEntry() {
 			return plugin;
 		}
 
