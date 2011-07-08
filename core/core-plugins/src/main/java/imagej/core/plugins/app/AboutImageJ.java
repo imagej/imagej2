@@ -46,9 +46,8 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "About ImageJ", iconPath = "/icons/plugins/information.png",
-	menu = { @Menu(label = "Help"),
-		@Menu(label = "About ImageJ [IJ2]...", weight = 43) })
+@Plugin(iconPath = "/icons/plugins/information.png", menu = {
+	@Menu(label = "Help"), @Menu(label = "About ImageJ [IJ2]...", weight = 43) })
 public class AboutImageJ implements ImageJPlugin {
 
 	@Parameter(visibility = ParamVisibility.MESSAGE)
