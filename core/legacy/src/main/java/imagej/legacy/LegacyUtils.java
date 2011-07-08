@@ -114,7 +114,8 @@ public final class LegacyUtils {
 		if (ij1Window == null) Interpreter.removeBatchModeImage(imp);
 		else {
 			imp.changes = false;
-			ij1Window.close();
+			if (!ij1Window.isClosed())
+				ij1Window.close();
 		}
 	}
 
