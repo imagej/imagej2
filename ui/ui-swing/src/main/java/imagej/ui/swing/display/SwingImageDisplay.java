@@ -242,6 +242,10 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		imgWindow.redoLayout();
 	}
 
+	@Override
+	public void close() {
+		imgWindow.close();
+	}
 
 
 }
