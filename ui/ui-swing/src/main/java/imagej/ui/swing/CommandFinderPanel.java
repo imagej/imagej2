@@ -79,6 +79,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		searchField = new JTextField(12);
 		commandsList = new JList();
+		commandsList.setVisibleRowCount(20);
 		showFullCheckbox = new JCheckBox("Show full information");
 
 		searchField.getDocument().addDocumentListener(this);
