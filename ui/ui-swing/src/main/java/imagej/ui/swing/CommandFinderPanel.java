@@ -148,7 +148,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	// -- Helper methods --
 
-	/** Builds the master list of avialable commands. */
+	/** Builds the master list of available commands. */
 	private void buildCommands() {
 		commands = new ArrayList<Command>();
 
