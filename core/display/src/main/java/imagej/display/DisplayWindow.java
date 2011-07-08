@@ -59,4 +59,5 @@ public interface DisplayWindow {
 
 	void addEventDispatcher(EventDispatcher dispatcher);
 
+	void close();
 }

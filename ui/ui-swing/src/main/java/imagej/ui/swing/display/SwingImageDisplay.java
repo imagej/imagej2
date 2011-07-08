@@ -43,20 +43,15 @@ import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
-import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
-import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
 import imagej.tool.ToolManager;
-import imagej.ui.UIManager;
-import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTEventDispatcher;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -242,10 +237,10 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 		imgWindow.redoLayout();
 	}
 
-	@Override
-	public void close() {
-		imgWindow.close();
-	}
+	//@Override
+	//public void close() {
+	//	imgWindow.close();
+	//}
 
 
 }

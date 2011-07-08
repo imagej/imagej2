@@ -414,6 +414,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 	
+	@Override
 	public void close() {
 		setVisible(false);
 	}
