@@ -78,22 +78,14 @@ public class PluginManager implements ManagerComponent {
 		return Collections.unmodifiableList(plugins);
 	}
 
-	/** Gets a copy of the list of plugins labeled with the given type. */
-	public <T extends BasePlugin> ArrayList<PluginEntry<T>> getPlugins(
+	/** Gets the list of plugins labeled with the given type. */
+	@SuppressWarnings({ "rawtypes", "unchecked", })
+	public <T extends BasePlugin> List<PluginEntry<T>> getPlugins(
 		final Class<T> type)
 	{
-		// TODO - find a way to avoid making a copy of the list here?
-		final ArrayList<PluginEntry<T>> outputList =
-			new ArrayList<PluginEntry<T>>();
-		final ArrayList<PluginEntry<?>> cachedList = pluginLists.get(type);
-		if (cachedList != null) {
-			for (final PluginEntry<?> entry : cachedList) {
-				@SuppressWarnings("unchecked")
-				final PluginEntry<T> typedEntry = (PluginEntry<T>) entry;
-				outputList.add(typedEntry);
-			}
-		}
-		return outputList;
+		ArrayList<PluginEntry<?>> outputList = pluginLists.get(type);
+		if (outputList == null) outputList = new ArrayList<PluginEntry<?>>(); 
+		return (List) Collections.unmodifiableList(outputList);
 	}
 
 	/**
