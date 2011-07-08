@@ -36,11 +36,13 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.ImageWindow;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
+import imagej.legacy.LegacyOutputTracker;
 import imagej.object.ObjectManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
@@ -48,7 +50,6 @@ import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -69,24 +70,6 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(output = true)
 	private List<Display> outputs;
 
-	/** Used to provide one list of {@link ImagePlus} per calling thread. */
-	private static ThreadLocal<Set<ImagePlus>> outputImps =
-		new ThreadLocal<Set<ImagePlus>>() {
-
-			@Override
-			protected synchronized Set<ImagePlus> initialValue() {
-				return new HashSet<ImagePlus>();
-			}
-		};
-
-	/**
-	 * Gets a list for storing output parameter values. This method is
-	 * thread-safe, because it uses a separate map per thread.
-	 */
-	public static Set<ImagePlus> getOutputImps() {
-		return outputImps.get();
-	}
-
 	// -- LegacyPlugin methods --
 
 	/** Gets the list of output {@link Display}s. */
@@ -104,10 +87,15 @@ public class LegacyPlugin implements ImageJPlugin {
 		// sync legacy images to match existing modern displays
 		final DatasetHarmonizer harmonizer =
 			new DatasetHarmonizer(map.getTranslator());
-		final Set<ImagePlus> outputSet = LegacyPlugin.getOutputImps();
-		outputSet.clear();
+		final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
+		final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
+		
 		harmonizer.resetTypeTracking();
+		
 		prePluginHarmonization(map, harmonizer);
+
+		outputSet.clear();
+		closedSet.clear();  // must happen after prePluginHarmonization()
 
 		// set ImageJ1's active image
 		legacyManager.syncActiveImage();
@@ -126,8 +114,21 @@ public class LegacyPlugin implements ImageJPlugin {
 			// return no outputs
 			outputs = new ArrayList<Display>();
 		}
+		
+		for (ImagePlus imp : closedSet) {
+			ImageWindow win = imp.getWindow();
+			if ((win == null) || (win.isClosed())) {
+				Display disp = map.lookupDisplay(imp);
+				if (disp != null) {
+					outputs.remove(disp);
+					disp.close();
+				}
+			}
+		}
+		
 		harmonizer.resetTypeTracking();
 		outputSet.clear();
+		closedSet.clear();
 	}
 
 	// -- Helper methods --
@@ -164,7 +165,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		final List<Display> displays = new ArrayList<Display>();
 
-		final Set<ImagePlus> imps = getOutputImps();
+		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
 		for (final ImagePlus imp : imps) {
 			display = map.lookupDisplay(imp);
 			if (display == null) display = map.registerLegacyImage(imp);

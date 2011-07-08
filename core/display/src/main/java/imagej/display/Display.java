@@ -97,10 +97,12 @@ public interface Display extends BasePlugin, Named, LabeledAxes, EuclideanSpace 
 	/** Gets the top-level window containing this display. */
 	DisplayWindow getDisplayWindow();
 	
-	/* Forces the display window to redo its layout	 */
+	/** Forces the display window to redo its layout	 */
 	void redoWindowLayout();
 
 	/** Gets the image canvas upon which this display's output is painted. */
 	ImageCanvas getImageCanvas();
 
+	/** Forces display to close. */ 
+	void close();
 }

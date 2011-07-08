@@ -47,7 +47,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.OptionsChangedEvent;
 import imagej.legacy.patches.FunctionsMethods;
-import imagej.legacy.plugin.LegacyPlugin;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public final class LegacyManager implements ManagerComponent {
 		hacker.insertMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
-		hacker.insertAfterMethod("ij.gui.ImageWindow", "public void close()");
+		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override behavior of ij.macro.Functions
@@ -144,7 +143,7 @@ public final class LegacyManager implements ManagerComponent {
 		// CTR FIXME rework static InsideBatchDrawing logic?
 		if (FunctionsMethods.InsideBatchDrawing > 0) return;
 		// record resultant ImagePlus as a legacy plugin output
-		LegacyPlugin.getOutputImps().add(imp);
+		LegacyOutputTracker.getOutputImps().add(imp);
 	}
 
 	/**
