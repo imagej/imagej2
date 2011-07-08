@@ -38,6 +38,7 @@ import imagej.ImageJ;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
+import imagej.plugin.RunnablePlugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -153,6 +154,10 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<?>> plugins = pluginManager.getPlugins();
 		for (final PluginEntry<?> plugin : plugins) {
+			if (!RunnablePlugin.class.isAssignableFrom(plugin.getPluginType())) {
+				// skip non-runnable plugins
+				continue;
+			}
 			commands.add(new Command(plugin));
 		}
 
