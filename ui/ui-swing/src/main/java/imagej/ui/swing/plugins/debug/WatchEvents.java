@@ -64,9 +64,10 @@ import java.util.Locale;
  * Listens for all events. Useful for logging, history, macro recording,
  * perhaps. An eagerly initialized singleton.
  * 
- * 
- * 
- *  A list of all Event types (hopefully)...
+ * * 
+ All Event Types
+ -----------------------------------------------
+ Grouped by package
  * 
 ImageJEvent
  * 
@@ -162,8 +163,94 @@ PluginStartedEvent
 ToolEvent
 ToolActivatedEvent
 ToolDeactivatedEvent
+-------------------------------------------------------
+Event Hierarchy
+ 
+All decend from ImageJEvent:
+ 
+StatusEvent
+OutputEvent
+FileOpenedEvent
+FileSavedEvent
+ApplicationEvent
+	AppAboutEvent
+	AppFocusEvent
+	AppMenusCreatedEvent
+	AppPreferencesEvent
+	AppPrintEvent
+	AppQuitEvent
+	AppReOpenEvent
+	AppScreenSleepEvent
+	AppSystemSleepEvent
+	AppUserSessionEvent
+	AppVisibleEvent
+ObjectEvent
+	ObjectChangedEvent
+		DataObjectChangedEvent
+			DataObjectRestructuredEvent
+				DatasetRestructuredEvent
+				OverlayRestructuredEvent
+			DataObjectUpdatedEvent
+				DatasetUpdatedEvent
+					DatasetRGBChangedEvent
+					DatasetTypeChangedEvent
+			OverlayUpdatedEvent
+	ObjectCreatedEvent
+		DataObjectCreatedEvent
+			DatasetCreatedEvent
+			DisplayCreatedEvent
+			OverlayCreatedEvent
+	ObjectDeletedEvent
+		DataObjectDeletedEvent
+			DatasetDeletedEvent
+			DisplayDeletedEvent
+			OverlayDeletedEvent
+	ObjectsUpdatedEvent (pub'd after add or remove)
+PluginEvent
+	PluginExecutionEvent
+		PluginRunEvent
+		PluginStartedEvent
+		PluginFinishedEvent
+		PluginProcessEvent
+			PluginPostprocessEvent
+			PluginPreprocessEvent
+		PluginCanceledEvent
+ToolEvent
+	ToolActivatedEvent
+	ToolDeactivatedEvent
+CanvasEvent
+	ZoomEvent
+DisplayEvent
+	AxisPositionEvent
+	DisplayViewEvent
+		DisplayViewDeselectedEvent
+		DisplayViewSelectedEvent
+		DisplayViewSelectionEvent
+	KyEvent
+		KyPressedEvent
+		KyReleasedEvent
+		KyTypedEvent
+	MsEvent
+		MsButtonEvent
+		MsClickedEvent
+		MsDraggedEvent
+		MsEnteredEvent
+		MsExitedEvent
+		MsMovedEvent
+		MsPressedEvent
+		MsReleasedEvent
+		MsWheelEvent
+	WinEvent
+		WinActivatedEvent
+		WinClosedEvent
+		WinClosingEvent
+		WinDeactivatedEvent
+		WinDeiconifiedEvent
+		WinIconifiedEvent
+		WinOpenedEvent
 
 
+ * 
  * @author GBH
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
@@ -231,19 +318,19 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 
 	void emitMessage(final String msg) {
 		if (window != null) {
-			window.append("[" + timeStamp() + "] " + msg + "\n");
+			window.append(msg + "\n");
 		}
 	}
    public static String timeStamp() {
       SimpleDateFormat formatter =
-            new SimpleDateFormat("mm:ss_SS", Locale.getDefault());
+            new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
       Date currentDate = new Date();
       String dateStr = formatter.format(currentDate);
       return dateStr;
    }
    
 	void showClass(final ImageJEvent evt) {
-		emitMessage("" + evt.getClass().getSimpleName());
+		emitMessage("[" + timeStamp() + "] " + evt.getClass().getSimpleName());
 	}
 
 	public void showFields(final Object evt) {
