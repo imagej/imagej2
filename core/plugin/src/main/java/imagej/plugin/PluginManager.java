@@ -79,7 +79,7 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/** Gets the list of plugins labeled with the given type. */
-	@SuppressWarnings({ "rawtypes", "unchecked", })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T extends BasePlugin> List<PluginEntry<T>> getPlugins(
 		final Class<T> type)
 	{
