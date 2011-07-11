@@ -156,7 +156,7 @@ public final class DisplayManager implements ManagerComponent {
 		// get available display plugins from the plugin manager
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<Display>> plugins =
-			pluginManager.getPlugins(Display.class);
+			pluginManager.getPluginsOfType(Display.class);
 
 		for (final PluginEntry<Display> pe : plugins) {
 			try {
