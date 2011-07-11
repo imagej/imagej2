@@ -232,6 +232,9 @@ public class LegacyPlugin implements ImageJPlugin {
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
+		final long ij1ChannelCount =
+			dataset.isRGBMerged() ? (cCount / 3) : cCount;
+			
 		// check width
 		if ((xIndex < 0) || (xCount > Integer.MAX_VALUE)) return true;
 		
@@ -240,9 +243,9 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		// check plane size
 		if ((xCount * yCount) > Integer.MAX_VALUE) return true;
-		
-		// check total channels, slices, and frames not too large
-		if (cCount * zCount * tCount > Integer.MAX_VALUE)  return true;
+
+		// check number of planes not too large
+		if (ij1ChannelCount * zCount * tCount > Integer.MAX_VALUE)  return true;
 		
 		return false;
 	}
