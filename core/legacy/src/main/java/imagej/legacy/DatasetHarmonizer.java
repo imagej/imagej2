@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.legacy;
 
 import ij.ImagePlus;
+import ij.ImageStack;
+
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -44,7 +46,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.img.Axes;
-import net.imglib2.img.ImgPlus;
 
 /**
  * Synchronizes data between a {@link Dataset} and a paired {@link ImagePlus}.
@@ -96,28 +97,12 @@ public class DatasetHarmonizer {
 	public void updateLegacyImage(final Display display, final ImagePlus imp) {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 		final Dataset ds = displayManager.getActiveDataset(display);
-//		System.out.println("DatasetHarmonizer::updateLegacyImage() - Dataset " +
-//			ds.getName() + "associated with ImagePlus " + imp.getID());
 		if (!LegacyUtils.imagePlusIsNearestType(ds, imp)) {
-			final ImagePlus newImp = imageTranslator.createLegacyImage(display);
-			imp.setStack(newImp.getStack());
-			final int c = newImp.getNChannels();
-			final int z = newImp.getNSlices();
-			final int t = newImp.getNFrames();
-			imp.setDimensions(c, z, t);
-			LegacyUtils.deleteImagePlus(newImp);
-			// System.out.println("imp type "+imp.getType());
-			// System.out.println("from new imp type "+newImp.getType());
+			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if (dimensionsDifferent(ds, imp)) {
-				final ImagePlus newImp = imageTranslator.createLegacyImage(display);
-				imp.setStack(newImp.getStack());
-				final int c = newImp.getNChannels();
-				final int z = newImp.getNSlices();
-				final int t = newImp.getNFrames();
-				imp.setDimensions(c, z, t);
-				LegacyUtils.deleteImagePlus(newImp);
+			if (dimensionsIncompatible(ds, imp)) {
+				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
 				LegacyUtils.setImagePlusColorData(ds, imp);
@@ -148,7 +133,7 @@ public class DatasetHarmonizer {
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
-			if (dimensionsDifferent(ds, imp)) {
+			if (dimensionsIncompatible(ds, imp)) {
 				LegacyUtils.reshapeDataset(ds, imp);
 			}
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -170,41 +155,57 @@ public class DatasetHarmonizer {
 
 	/**
 	 * Determines whether a {@link Dataset} and an {@link ImagePlus} have
-	 * different dimensionality.
+	 * incompatible dimensionality.
 	 */
-	private boolean dimensionsDifferent(final Dataset ds, final ImagePlus imp) {
-		final ImgPlus<?> imgPlus = ds.getImgPlus();
-
+	private boolean dimensionsIncompatible(final Dataset ds, final ImagePlus imp) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
 		final int yIndex = ds.getAxisIndex(Axes.Y);
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final boolean different =
-			dimensionDifferent(imgPlus, xIndex, imp.getWidth()) ||
-				dimensionDifferent(imgPlus, yIndex, imp.getHeight()) ||
-				dimensionDifferent(imgPlus, cIndex, imp.getNChannels()) ||
-				dimensionDifferent(imgPlus, zIndex, imp.getNSlices()) ||
-				dimensionDifferent(imgPlus, tIndex, imp.getNFrames());
+		
+		long[] dimensions = new long[ds.getImgPlus().numDimensions()];
+		ds.getImgPlus().dimensions(dimensions);
+		
+		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
+		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];
+		final long c = (cIndex < 0) ? 1 : dimensions[cIndex];
+		final long z = (zIndex < 0) ? 1 : dimensions[zIndex];
+		final long t = (tIndex < 0) ? 1 : dimensions[tIndex];
+		
+		if (x != imp.getWidth()) return true;
+		if (y != imp.getHeight()) return true;
+		if (z != imp.getNSlices()) return true;
+		if (t != imp.getNFrames()) return true;
+		// channel case a little different
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			if (c != imp.getNChannels()*3) return true;
+		}
+		else { // not color data
+			if (c != imp.getNChannels()) return true;
+		}
 
-		if (!different && LegacyUtils.hasNonIJ1Axes(ds.getAxes())) {
+		if (LegacyUtils.hasNonIJ1Axes(ds.getAxes())) {
 			throw new IllegalStateException(
 				"Dataset associated with ImagePlus has axes incompatible with IJ1");
 		}
 
-		return different;
+		return false;
 	}
 
 	/**
-	 * Determines whether a single dimension in an ImgPlus differs from a given
-	 * value.
+	 * Creates a new {@link ImageStack} of data from a {@link Display} and
+	 * assigns it to given {@link ImagePlus}
+	 * @param display
+	 * @param imp
 	 */
-	private boolean dimensionDifferent(final ImgPlus<?> imgPlus, final int axis,
-		final int value)
-	{
-		if (axis >= 0) return imgPlus.dimension(axis) != value;
-		// axis < 0 : not present in imgPlus
-		return value != 1;
+	private void rebuildImagePlusData(Display display, ImagePlus imp) {
+		final ImagePlus newImp = imageTranslator.createLegacyImage(display);
+		imp.setStack(newImp.getStack());
+		final int c = newImp.getNChannels();
+		final int z = newImp.getNSlices();
+		final int t = newImp.getNFrames();
+		imp.setDimensions(c, z, t);
+		LegacyUtils.deleteImagePlus(newImp);
 	}
-
 }
