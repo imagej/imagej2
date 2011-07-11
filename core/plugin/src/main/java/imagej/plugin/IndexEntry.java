@@ -1,5 +1,5 @@
 //
-// BaseEntry.java
+// IndexEntry.java
 //
 
 /*
@@ -37,11 +37,14 @@ package imagej.plugin;
 import java.net.URL;
 
 /**
- * TODO
- *
+ * A collection of metadata corresponding to a particular item discovered using
+ * SezPoz. This class is a shared data structure for objects annotated with
+ * {@link Plugin}, imagej.tool.Tool, or potentially other similar annotations.
+ * 
  * @author Curtis Rueden
+ * @see PluginEntry
  */
-public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
+public abstract class IndexEntry<T> implements Comparable<IndexEntry<?>> {
 
 	/** Fully qualified class name of this entry's object. */
 	private String className;
@@ -125,18 +128,18 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 		return enabled;
 	}
 
-	// TODO - consider using a different exception type than "PluginException"
+	// TODO - consider using a different exception type than "IndexException"
 
 	/** Gets the class object for this entry, loading it as needed. */
 	@SuppressWarnings("unchecked")
-	public Class<T> loadClass() throws PluginException {
+	public Class<T> loadClass() throws IndexException {
 		if (classObject == null) {
 			final Class<?> c;
 			try {
 				c = Class.forName(className);
 			}
-			catch (ClassNotFoundException e) {
-				throw new PluginException("Class not found: " + className, e);
+			catch (final ClassNotFoundException e) {
+				throw new IndexException("Class not found: " + className, e);
 			}
 			classObject = (Class<T>) c;
 		}
@@ -144,7 +147,7 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 	}
 
 	/** Creates an instance of this entry's associated object. */
-	public T createInstance() throws PluginException {
+	public T createInstance() throws IndexException {
 		final Class<T> c = loadClass();
 
 		// instantiate object
@@ -152,16 +155,16 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 		try {
 			instance = c.newInstance();
 		}
-		catch (InstantiationException e) {
-			throw new PluginException(e);
+		catch (final InstantiationException e) {
+			throw new IndexException(e);
 		}
-		catch (IllegalAccessException e) {
-			throw new PluginException(e);
+		catch (final IllegalAccessException e) {
+			throw new IndexException(e);
 		}
 		return instance;
 	}
 
-	public URL getIconURL() throws PluginException {
+	public URL getIconURL() throws IndexException {
 		if (iconPath.isEmpty()) return null;
 		return loadClass().getResource(iconPath);
 	}
@@ -169,7 +172,7 @@ public abstract class BaseEntry<T> implements Comparable<BaseEntry<?>> {
 	// -- Comparable methods --
 
 	@Override
-	public int compareTo(final BaseEntry<?> entry) {
+	public int compareTo(final IndexEntry<?> entry) {
 		return priority - entry.priority;
 	}
 

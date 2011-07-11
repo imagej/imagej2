@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -44,7 +44,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Wand", iconPath = "/icons/tools/wand.png",
 	priority = WandTool.PRIORITY, enabled = false)
-public class WandTool extends BaseTool {
+public class WandTool extends AbstractTool {
 
 	public static final int PRIORITY = 110;
 

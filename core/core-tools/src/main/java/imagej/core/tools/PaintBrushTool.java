@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -46,7 +46,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Paintbrush", iconPath = "/icons/tools/paintbrush.png",
 	priority = PaintBrushTool.PRIORITY, enabled = false)
-public class PaintBrushTool extends BaseTool {
+public class PaintBrushTool extends AbstractTool {
 
 	public static final int PRIORITY = 300;
 

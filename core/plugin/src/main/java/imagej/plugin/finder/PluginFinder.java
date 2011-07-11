@@ -42,13 +42,15 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * TODO
- *
+ * Annotation identifying a plugin finder, which gets loaded by ImageJ's dynamic
+ * discovery mechanism.
+ * 
  * @author Curtis Rueden
+ * @see IPluginFinder
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=IPluginFinder.class)
+@Indexable(type = IPluginFinder.class)
 public @interface PluginFinder {
 	// indexable annotation interface for use with SezPoz
 }

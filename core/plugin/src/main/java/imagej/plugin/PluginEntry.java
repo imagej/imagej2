@@ -54,10 +54,10 @@ import java.util.Map;
  * @see Plugin
  * @see PluginManager
  */
-public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
+public class PluginEntry<P extends IPlugin> extends IndexEntry<P> {
 
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
-	private Class<T> pluginType;
+	private Class<P> pluginType;
 
 	/** Linked boolean parameter; see {@link Plugin#toggleParameter}. */
 	private String toggleParameter;
@@ -72,9 +72,9 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 	private Map<String, Object> presets;
 
 	/** Factory used to create a module associated with this entry's plugin. */
-	private PluginModuleFactory<T> factory;
+	private PluginModuleFactory factory;
 
-	public PluginEntry(final String className, final Class<T> pluginType) {
+	public PluginEntry(final String className, final Class<P> pluginType) {
 		setClassName(className);
 		setPluginType(pluginType);
 		setMenuPath(null);
@@ -84,12 +84,20 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 
 	// -- PluginEntry methods --
 
-	public void setPluginType(final Class<T> pluginType) {
+	public void setPluginType(final Class<P> pluginType) {
 		this.pluginType = pluginType;
 	}
 
-	public Class<T> getPluginType() {
+	public Class<P> getPluginType() {
 		return pluginType;
+	}
+
+	/**
+	 * Returns true if the plugin can be executed (i.e., extends
+	 * {@link RunnablePlugin}).
+	 */
+	public boolean isRunnable() {
+		return RunnablePlugin.class.isAssignableFrom(getPluginType());
 	}
 
 	public void setToggleParameter(final String toggleParameter) {
@@ -134,16 +142,16 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 		return presets;
 	}
 
-	public void setPluginModuleFactory(final PluginModuleFactory<T> factory) {
+	public void setPluginModuleFactory(final PluginModuleFactory factory) {
 		if (factory == null) {
-			this.factory = new DefaultPluginModuleFactory<T>();
+			this.factory = new DefaultPluginModuleFactory();
 		}
 		else {
 			this.factory = factory;
 		}
 	}
 
-	public PluginModuleFactory<T> getPluginModuleFactory() {
+	public PluginModuleFactory getPluginModuleFactory() {
 		return factory;
 	}
 
@@ -151,8 +159,13 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 	 * Creates a module to work with this entry, using the entry's associated
 	 * {@link PluginModuleFactory}.
 	 */
-	public PluginModule<T> createModule() throws PluginException {
-		return factory.createModule(this);
+	public <R extends RunnablePlugin> PluginModule<R> createModule()
+		throws PluginException
+	{
+		if (!isRunnable()) return null;
+		@SuppressWarnings("unchecked")
+		final PluginEntry<R> runnable = (PluginEntry<R>) this;
+		return factory.createModule(runnable);
 	}
 
 	/**

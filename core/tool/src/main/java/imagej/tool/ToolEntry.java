@@ -34,14 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.plugin.BaseEntry;
+import imagej.plugin.IndexEntry;
 
 /**
- * TODO
+ * A collection of metadata about a particular {@link ITool}.
  * 
  * @author Curtis Rueden
+ * @see Tool
  */
-public class ToolEntry extends BaseEntry<ITool> {
+public class ToolEntry extends IndexEntry<ITool> {
 
 	public ToolEntry(final String className) {
 		setClassName(className);

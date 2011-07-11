@@ -38,9 +38,10 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginRunner;
+import imagej.plugin.PluginException;
 import imagej.plugin.ui.swing.SwingUtils;
 import imagej.ui.swing.CommandFinderPanel;
+import imagej.util.Log;
 
 import javax.swing.JOptionPane;
 
@@ -66,9 +67,12 @@ public class CommandFinder implements ImageJPlugin {
 		if (plugin == null) return; // no plugin selected
 
 		// execute selected plugin
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		final PluginRunner pluginRunner = new PluginRunner(plugin);
-		pluginRunner.run();
+		try {
+			plugin.createModule().run();
+		}
+		catch (final PluginException exc) {
+			Log.error("Could not execute plugin: " + plugin, exc);
+		}
 	}
 
 }

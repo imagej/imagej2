@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin;
 
 /**
- * TODO
+ * An exception thrown when something goes wrong with a plugin.
  *
  * @author Curtis Rueden
  */

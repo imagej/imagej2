@@ -1,5 +1,5 @@
 //
-// BasePlugin.java
+// IndexException.java
 //
 
 /*
@@ -35,10 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin;
 
 /**
- * TODO
+ * An exception thrown when something goes wrong with an {@link IndexEntry}.
  *
  * @author Curtis Rueden
  */
-public interface BasePlugin {
-	// top-level marker interface for discovery via SezPoz
+public class IndexException extends Exception {
+
+  public IndexException() { super(); }
+  public IndexException(String s) { super(s); }
+  public IndexException(String s, Throwable cause) { super(s, cause); }
+  public IndexException(Throwable cause) { super(cause); }
+
 }

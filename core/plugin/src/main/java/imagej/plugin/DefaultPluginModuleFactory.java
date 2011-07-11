@@ -34,21 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-
 /**
- * TODO
- *
+ * The default implementation of {@link PluginModuleFactory}, using a
+ * {@link PluginModule}.
+ * 
  * @author Curtis Rueden
  */
-public class DefaultPluginModuleFactory<T extends BasePlugin>
-	implements PluginModuleFactory<T>
-{
+public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
-	public PluginModule<T> createModule(final PluginEntry<T> entry)
-		throws PluginException
+	public <R extends RunnablePlugin> PluginModule<R> createModule(
+		final PluginEntry<R> entry) throws PluginException
 	{
-		return new PluginModule<T>(entry);
+		return new PluginModule<R>(entry);
 	}
 
 }

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.tools;
 
 import imagej.display.MouseCursor;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -45,7 +45,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Text", iconPath = "/icons/tools/text.png", description = "Text",
 	priority = TextTool.PRIORITY, enabled = false)
-public class TextTool extends BaseTool {
+public class TextTool extends AbstractTool {
 
 	public static final int PRIORITY = 115;
 

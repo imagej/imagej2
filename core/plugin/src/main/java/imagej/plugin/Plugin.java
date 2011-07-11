@@ -44,14 +44,15 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * Annotation identifying a plugin, which gets loaded by ImageJ's dynamic plugin
- * loading mechanism.
+ * Annotation identifying a plugin, which gets loaded by ImageJ's dynamic
+ * discovery mechanism.
  * 
  * @author Curtis Rueden
+ * @see IPlugin
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type = BasePlugin.class)
+@Indexable(type = IPlugin.class)
 public @interface Plugin {
 
 	int FIRST_PRIORITY = 0;

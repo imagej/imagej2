@@ -34,16 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-
 /**
- * TODO
- *
+ * A factory for instantiating a module instance from a {@link PluginEntry}.
+ * 
  * @author Curtis Rueden
  */
-public interface PluginModuleFactory<T extends BasePlugin> {
+public interface PluginModuleFactory {
 
 	/** Constructs a module to work with the given plugin entry. */
-	PluginModule<T> createModule(PluginEntry<T> entry)
-		throws PluginException;
+	<R extends RunnablePlugin> PluginModule<R>
+		createModule(PluginEntry<R> entry) throws PluginException;
 
 }

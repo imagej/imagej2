@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.finder;
 
-import imagej.plugin.BasePlugin;
+import imagej.plugin.IPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.MenuEntry;
 import imagej.plugin.Plugin;
@@ -71,16 +71,16 @@ public class ImageJPluginFinder implements IPluginFinder {
 
 	@Override
 	public void findPlugins(final List<PluginEntry<?>> plugins) {
-		final Index<Plugin, BasePlugin> pluginIndex;
+		final Index<Plugin, IPlugin> pluginIndex;
 		if (classLoader == null) {
-			pluginIndex = Index.load(Plugin.class, BasePlugin.class);
+			pluginIndex = Index.load(Plugin.class, IPlugin.class);
 		}
 		else {
-			pluginIndex = Index.load(Plugin.class, BasePlugin.class, classLoader);
+			pluginIndex = Index.load(Plugin.class, IPlugin.class, classLoader);
 		}
 
 		final int oldSize = plugins.size();
-		for (final IndexItem<Plugin, BasePlugin> item : pluginIndex) {
+		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
 			final PluginEntry<?> entry = createEntry(item);
 			plugins.add(entry);
 		}
@@ -96,16 +96,16 @@ public class ImageJPluginFinder implements IPluginFinder {
 
 	// -- Helper methods --
 
-	private <T extends BasePlugin> PluginEntry<T> createEntry(
-		final IndexItem<Plugin, BasePlugin> item)
+	private <P extends IPlugin> PluginEntry<P> createEntry(
+		final IndexItem<Plugin, IPlugin> item)
 	{
 		final String className = item.className();
 		final Plugin plugin = item.annotation();
 
 		@SuppressWarnings("unchecked")
-		final Class<T> pluginType = (Class<T>) plugin.type();
+		final Class<P> pluginType = (Class<P>) plugin.type();
 
-		final PluginEntry<T> entry = new PluginEntry<T>(className, pluginType);
+		final PluginEntry<P> entry = new PluginEntry<P>(className, pluginType);
 		entry.setName(plugin.name());
 		entry.setLabel(plugin.label());
 		entry.setDescription(plugin.description());

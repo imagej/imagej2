@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -46,7 +46,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Arrow", iconPath = "/icons/tools/arrow.png",
 	description = "Arrow", priority = ArrowTool.PRIORITY, enabled = false)
-public class ArrowTool extends BaseTool {
+public class ArrowTool extends AbstractTool {
 
 	public static final int PRIORITY = 305;
 

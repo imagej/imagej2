@@ -40,7 +40,7 @@ import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
 
@@ -52,7 +52,7 @@ import imagej.util.IntCoords;
  */
 @Tool(name = "Zoom", description = "Image Zoom Tool",
 	iconPath = "/icons/tools/zoom.png", priority = ZoomTool.PRIORITY)
-public class ZoomTool extends BaseTool {
+public class ZoomTool extends AbstractTool {
 
 	public static final int PRIORITY = ProbeTool.PRIORITY + 1;
 

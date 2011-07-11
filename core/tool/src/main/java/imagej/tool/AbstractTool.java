@@ -1,5 +1,5 @@
 //
-// BaseTool.java
+// AbstractTool.java
 //
 
 /*
@@ -45,18 +45,19 @@ import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
 
 /**
- * Base class for ImageJ tools. A tool is a collection of rules binding
- * user input (e.g., keyboard and mouse events) to display and data
- * manipulation in a coherent way. 
- *
- * <p>For example, a <code>PanTool</code> might pan a display when the mouse is
+ * Abstract base class for ImageJ tools. A tool is a collection of rules binding
+ * user input (e.g., keyboard and mouse events) to display and data manipulation
+ * in a coherent way.
+ * <p>
+ * For example, a <code>PanTool</code> might pan a display when the mouse is
  * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
- * hard lines on the data within a display.</p>
- *
+ * hard lines on the data within a display.
+ * </p>
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public abstract class BaseTool implements ITool {
+public abstract class AbstractTool implements ITool {
 
 	private ToolEntry entry;
 
@@ -101,42 +102,42 @@ public abstract class BaseTool implements ITool {
 	}
 
 	@Override
-	public void onKeyDown(KyPressedEvent evt) {
+	public void onKeyDown(final KyPressedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onKeyUp(KyReleasedEvent evt) {
+	public void onKeyUp(final KyReleasedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseDown(MsPressedEvent evt) {
+	public void onMouseDown(final MsPressedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseUp(MsReleasedEvent evt) {
+	public void onMouseUp(final MsReleasedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseClick(MsClickedEvent evt) {
+	public void onMouseClick(final MsClickedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseMove(MsMovedEvent evt) {
+	public void onMouseMove(final MsMovedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseDrag(MsDraggedEvent evt) {
+	public void onMouseDrag(final MsDraggedEvent evt) {
 		// do nothing by default
 	}
 
 	@Override
-	public void onMouseWheel(MsWheelEvent evt) {
+	public void onMouseWheel(final MsWheelEvent evt) {
 		// do nothing by default
 	}
 

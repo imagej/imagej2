@@ -45,10 +45,11 @@ import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
 
 /**
- * Interface for ImageJ tools. While it possible to create a tool
- * merely by implementing this interface, it is encouraged to instead
- * extend {@link BaseTool}, for convenience.
- *
+ * Interface for ImageJ tools. Tools discoverable at runtime must implement this
+ * interface and be annotated with @{@link Tool}. While it possible to create a
+ * tool merely by implementing this interface, it is encouraged to instead
+ * extend {@link AbstractTool}, for convenience.
+ * 
  * @author Rick Lentz
  * @author Grant Harris
  * @author Curtis Rueden
@@ -99,7 +100,7 @@ public interface ITool {
 
 	/** Occurs when the mouse is dragged while the tool is active. */
 	void onMouseDrag(MsDraggedEvent event);
-	
+
 	/** Occurs when the mouse wheel is moved while the tool is active. */
 	void onMouseWheel(MsWheelEvent event);
 

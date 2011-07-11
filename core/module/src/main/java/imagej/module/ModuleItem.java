@@ -42,11 +42,14 @@ package imagej.module;
  */
 public interface ModuleItem {
 
-	/** Unique name of the item. */
+	/** Gets the unique name of the item. */
 	String getName();
 
-	/** Name to appear in a UI, if applicable. */
+	/** Gets the name to appear in a UI, if applicable. */
 	String getLabel();
+
+	/** Gets a string describing the item. */
+	String getDescription();
 
 	/** Type of the item. */
 	Class<?> getType();
