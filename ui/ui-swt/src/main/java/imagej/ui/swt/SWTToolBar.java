@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swt;
 
 import imagej.ImageJ;
-import imagej.plugin.PluginException;
+import imagej.plugin.IndexException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
@@ -91,13 +91,13 @@ public class SWTToolBar extends Composite implements ToolBar {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
 			}
-			catch (PluginException e) {
+			catch (IndexException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private Button createButton(final ToolEntry entry) throws PluginException {
+	private Button createButton(final ToolEntry entry) throws IndexException {
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
 		tool.setToolEntry(entry);

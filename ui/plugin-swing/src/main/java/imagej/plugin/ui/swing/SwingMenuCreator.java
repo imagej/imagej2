@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.ImageJ;
+import imagej.plugin.IndexException;
 import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginException;
 import imagej.plugin.PluginManager;
@@ -172,7 +173,7 @@ public abstract class SwingMenuCreator<T> extends
 			if (iconURL == null) return null;
 			return new ImageIcon(iconURL);
 		}
-		catch (final PluginException e) {
+		catch (final IndexException e) {
 			Log.error("Could not load icon: " + iconPath, e);
 		}
 		return null;

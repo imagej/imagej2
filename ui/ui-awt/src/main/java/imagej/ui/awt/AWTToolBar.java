@@ -37,7 +37,7 @@ package imagej.ui.awt;
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.plugin.PluginException;
+import imagej.plugin.IndexException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
@@ -99,13 +99,13 @@ public class AWTToolBar extends Panel implements ToolBar {
 				if (priority - lastPriority > 10) add(new Label(" "));
 				lastPriority = priority;
 			}
-			catch (PluginException e) {
+			catch (IndexException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private Button createButton(final ToolEntry entry) throws PluginException {
+	private Button createButton(final ToolEntry entry) throws IndexException {
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
 		tool.setToolEntry(entry);

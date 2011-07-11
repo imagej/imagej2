@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.plugin.PluginException;
+import imagej.plugin.IndexException;
 import imagej.tool.ITool;
 import imagej.tool.ToolEntry;
 import imagej.tool.ToolManager;
@@ -133,14 +133,14 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 				add(button);
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
 	private AbstractButton createButton(final ToolEntry entry)
-		throws PluginException
+		throws IndexException
 	{
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
