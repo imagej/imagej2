@@ -70,7 +70,7 @@ public abstract class IndexEntry<T> implements Comparable<IndexEntry<?>> {
 	/** Class object for this entry's object. Lazily loaded. */
 	private Class<T> classObject;
 
-	// -- BaseEntry methods --
+	// -- IndexEntry methods --
 
 	public void setClassName(final String className) {
 		this.className = className;
@@ -127,8 +127,6 @@ public abstract class IndexEntry<T> implements Comparable<IndexEntry<?>> {
 	public boolean isEnabled() {
 		return enabled;
 	}
-
-	// TODO - consider using a different exception type than "IndexException"
 
 	/** Gets the class object for this entry, loading it as needed. */
 	@SuppressWarnings("unchecked")

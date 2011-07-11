@@ -34,10 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-
 /**
  * TODO
- *
+ * 
  * @author Curtis Rueden
  */
 public class MenuEntry {
@@ -48,17 +47,17 @@ public class MenuEntry {
 	private String accelerator;
 	private String iconPath;
 
-	public MenuEntry(String name) {
+	public MenuEntry(final String name) {
 		this.name = name;
 	}
 
-	public MenuEntry(String name, double weight) {
+	public MenuEntry(final String name, final double weight) {
 		this.name = name;
 		this.weight = weight;
 	}
 
-	public MenuEntry(String name, double weight,
-		char mnemonic, String accelerator, String iconPath)
+	public MenuEntry(final String name, final double weight,
+		final char mnemonic, final String accelerator, final String iconPath)
 	{
 		this.name = name;
 		this.weight = weight;
@@ -67,7 +66,7 @@ public class MenuEntry {
 		this.iconPath = iconPath;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -75,7 +74,7 @@ public class MenuEntry {
 		return name;
 	}
 
-	public void setWeight(int weight) {
+	public void setWeight(final int weight) {
 		this.weight = weight;
 	}
 
@@ -83,7 +82,7 @@ public class MenuEntry {
 		return weight;
 	}
 
-	public void setMnemonic(char mnemonic) {
+	public void setMnemonic(final char mnemonic) {
 		this.mnemonic = mnemonic;
 	}
 
@@ -91,7 +90,7 @@ public class MenuEntry {
 		return mnemonic;
 	}
 
-	public void setAccelerator(String accelerator) {
+	public void setAccelerator(final String accelerator) {
 		this.accelerator = accelerator;
 	}
 
@@ -99,7 +98,7 @@ public class MenuEntry {
 		return accelerator;
 	}
 
-	public void setIconPath(String iconPath) {
+	public void setIconPath(final String iconPath) {
 		this.iconPath = iconPath;
 	}
 
@@ -108,10 +107,10 @@ public class MenuEntry {
 	}
 
 	/**
-	 * Updates any default properties of this menu entry
-	 * to match those of the given menu entry.
+	 * Updates any default properties of this menu entry to match those of the
+	 * given menu entry.
 	 */
-	public void assignProperties(MenuEntry entry) {
+	public void assignProperties(final MenuEntry entry) {
 		if (name == null) name = entry.getName();
 		if (weight == Menu.DEFAULT_WEIGHT) weight = entry.getWeight();
 		if (mnemonic == '\0') mnemonic = entry.getMnemonic();
