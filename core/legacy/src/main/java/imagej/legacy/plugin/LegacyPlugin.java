@@ -38,12 +38,15 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
+import imagej.data.Dataset;
 import imagej.display.Display;
+import imagej.display.DisplayManager;
 import imagej.display.DisplayWindow;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyManager;
 import imagej.legacy.LegacyOutputTracker;
+import imagej.legacy.LegacyUtils;
 import imagej.object.ObjectManager;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
@@ -53,6 +56,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 
 /**
  * Executes an IJ1 plugin.
@@ -82,6 +88,14 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
+		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final Display activeDisplay = displayManager.getActiveDisplay();
+		if (!isLegacyCompatible(activeDisplay)) {
+			Log.warn("Active dataset is not compatible with IJ1");
+			outputs = new ArrayList<Display>();
+			return;
+		}
+		
 		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		final LegacyImageMap map = legacyManager.getImageMap();
 
@@ -93,7 +107,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		
 		harmonizer.resetTypeTracking();
 		
-		prePluginHarmonization(map, harmonizer);
+		updateImagePlusesFromDisplays(map, harmonizer);
 
 		outputSet.clear();
 		closedSet.clear();  // must happen after prePluginHarmonization()
@@ -106,12 +120,12 @@ public class LegacyPlugin implements ImageJPlugin {
 			IJ.runPlugIn(className, arg);
 
 			// sync modern displays to match existing legacy images
-			outputs = postPluginHarmonization(map, harmonizer);
+			outputs = updateDisplaysFromImagePluses(map, harmonizer);
 		}
 		catch (final Exception e) {
 			Log.warn("No outputs found - ImageJ 1.x plugin threw exception", e);
 			// make sure our ImagePluses are in sync with original Datasets
-			prePluginHarmonization(map, harmonizer);
+			updateImagePlusesFromDisplays(map, harmonizer);
 			// return no outputs
 			outputs = new ArrayList<Display>();
 		}
@@ -135,7 +149,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	// -- Helper methods --
 
-	private void prePluginHarmonization(final LegacyImageMap map,
+	private void updateImagePlusesFromDisplays(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
 		// TODO - track events and keep a dirty bit, then only harmonize those
@@ -143,13 +157,20 @@ public class LegacyPlugin implements ImageJPlugin {
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		for (final Display display : objectManager.getObjects(Display.class)) {
 			ImagePlus imp = map.lookupImagePlus(display);
-			if (imp == null) imp = map.registerDisplay(display);
-			else harmonizer.updateLegacyImage(display, imp);
-			harmonizer.registerType(imp);
+			if (imp == null) {
+				if (isLegacyCompatible(display)) {
+					imp = map.registerDisplay(display);
+					harmonizer.registerType(imp);
+				}
+			}
+			else { // imp already exists : update it
+				harmonizer.updateLegacyImage(display, imp);
+				harmonizer.registerType(imp);
+			}
 		}
 	}
 
-	private List<Display> postPluginHarmonization(final LegacyImageMap map,
+	private List<Display> updateDisplaysFromImagePluses(final LegacyImageMap map,
 		final DatasetHarmonizer harmonizer)
 	{
 		// TODO - check the changes flag for each ImagePlus that already has a
@@ -183,4 +204,46 @@ public class LegacyPlugin implements ImageJPlugin {
 		return displays;
 	}
 
+	private boolean isLegacyCompatible(Display display) {
+		if (display == null) return true;
+		Dataset ds = (Dataset) display.getActiveView().getDataObject();
+		Axis[] axes = ds.getAxes();
+		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
+		if (dimensionsIncompatible(ds)) return false;
+		return true;
+	}
+
+	/**
+	 * Assumes there are no incompatible IJ1 axes present in dataset
+	 * @param dataset
+	 */
+	private boolean dimensionsIncompatible(Dataset dataset) {
+		final int xIndex = dataset.getAxisIndex(Axes.X);
+		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final int zIndex = dataset.getAxisIndex(Axes.Z);
+		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+
+		long[] dims = dataset.getDims();
+		
+		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
+		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
+		final long cCount = cIndex < 0 ? 1 : dims[cIndex];
+		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
+		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
+
+		// check width
+		if ((xIndex < 0) || (xCount > Integer.MAX_VALUE)) return true;
+		
+		// check height
+		if ((yIndex < 0) || (yCount > Integer.MAX_VALUE)) return true;
+
+		// check plane size
+		if ((xCount * yCount) > Integer.MAX_VALUE) return true;
+		
+		// check total channels, slices, and frames not too large
+		if (cCount * zCount * tCount > Integer.MAX_VALUE)  return true;
+		
+		return false;
+	}
 }
