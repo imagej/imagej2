@@ -37,7 +37,7 @@ package imagej.module;
 import java.util.Map;
 
 /**
- * A Module is an encapsulated piece of functionality with inputs and outputs.
+ * A module is an encapsulated piece of functionality with inputs and outputs.
  * <p>
  * There are several types of modules, including plugins and scripts, as well as
  * workflows, which are directed acyclic graphs consisting of modules whose
@@ -53,6 +53,9 @@ import java.util.Map;
  * @author Curtis Rueden
  */
 public interface Module {
+
+	/** Executes the module. */
+	void run();
 
 	/** Gets metadata about this module. */
 	ModuleInfo getInfo();

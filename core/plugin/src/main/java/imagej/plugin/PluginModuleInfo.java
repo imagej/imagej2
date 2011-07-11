@@ -46,16 +46,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link ModuleInfo} class for querying metadata of a {@link BasePlugin}.
+ * {@link ModuleInfo} class for querying metadata of a {@link IPlugin}.
  *
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
+public class PluginModuleInfo<P extends IPlugin> implements ModuleInfo {
 
 	/** The plugin entry associated with this module info. */
-	private final PluginEntry<T> pluginEntry;
+	private final PluginEntry<P> pluginEntry;
 
 	/** Class object of this plugin. */
 	private final Class<?> pluginClass;
@@ -77,7 +77,7 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 		new ArrayList<ModuleItem>();
 
 	/** Creates module info for the given plugin entry. */
-	public PluginModuleInfo(final PluginEntry<T> pluginEntry)
+	public PluginModuleInfo(final PluginEntry<P> pluginEntry)
 		throws PluginException
 	{
 		this(pluginEntry, null);
@@ -91,15 +91,22 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	 * the {@link PluginModuleItem}s report the correct default values,
 	 * and that the {@link PluginEntry}'s presets are assigned correctly.
 	 */
-	PluginModuleInfo(final PluginEntry<T> pluginEntry, final T plugin)
+	PluginModuleInfo(final PluginEntry<P> pluginEntry, final P plugin)
 		throws PluginException
 	{
 		this.pluginEntry = pluginEntry;
-		pluginClass = pluginEntry.loadClass();
+		try {
+			pluginClass = pluginEntry.loadClass();
+		}
+		catch (IndexException exc) {
+			throw new PluginException(exc);
+		}
 		checkFields(pluginClass, plugin, true);
 	}
 
-	public PluginEntry<T> getPluginEntry() {
+	// -- PluginModuleInfo methods --
+
+	public PluginEntry<P> getPluginEntry() {
 		return pluginEntry;
 	}
 
@@ -150,7 +157,7 @@ public class PluginModuleInfo<T extends BasePlugin> implements ModuleInfo {
 	 * fields of the given type and ancestor types, including non-public fields.
 	 * </p>
 	 */
-	private void checkFields(final Class<?> type, final T plugin,
+	private void checkFields(final Class<?> type, final P plugin,
 		final boolean includePrivateFields)
 	{
 		if (type == null) return;

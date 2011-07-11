@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin;
 
 /**
- * TODO
+ * An executable ImageJ plugin.
  *
  * @author Curtis Rueden
  */

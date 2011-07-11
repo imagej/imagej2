@@ -34,14 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.finder;
 
+import imagej.plugin.IPlugin;
 import imagej.plugin.PluginEntry;
 
 import java.util.List;
 
 /**
- * TODO
- *
+ * Interface for plugin finders, which compile lists of available
+ * {@link IPlugin}s. Plugin finders discoverable at runtime must implement this
+ * interface and be annotated with @{@link PluginFinder}.
+ * 
  * @author Curtis Rueden
+ * @see PluginFinder
+ * @see ImageJPluginFinder
  */
 public interface IPluginFinder {
 

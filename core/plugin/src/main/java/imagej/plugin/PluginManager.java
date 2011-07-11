@@ -103,8 +103,8 @@ public class PluginManager implements ManagerComponent {
 	 * {@link ImageJPlugin}).
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <T extends BasePlugin> List<PluginEntry<T>> getPluginsOfType(
-		final Class<T> type)
+	public <P extends IPlugin> List<PluginEntry<P>> getPluginsOfType(
+		final Class<P> type)
 	{
 		ArrayList<PluginEntry<?>> outputList = pluginLists.get(type);
 		if (outputList == null) outputList = new ArrayList<PluginEntry<?>>();
@@ -116,15 +116,15 @@ public class PluginManager implements ManagerComponent {
 	 * only a single match, but some special plugin classes (such as
 	 * imagej.legacy.LegacyPlugin) may match many entries.
 	 */
-	public <T extends BasePlugin> List<PluginEntry<T>> getPluginsOfClass(
-		final Class<T> pluginClass)
+	public <P extends IPlugin> List<PluginEntry<P>> getPluginsOfClass(
+		final Class<P> pluginClass)
 	{
-		final ArrayList<PluginEntry<T>> entries = new ArrayList<PluginEntry<T>>();
+		final ArrayList<PluginEntry<P>> entries = new ArrayList<PluginEntry<P>>();
 		final String className = pluginClass.getName();
 		for (final PluginEntry<?> entry : plugins) {
 			if (entry.getClassName().equals(className)) {
 				@SuppressWarnings("unchecked")
-				final PluginEntry<T> match = (PluginEntry<T>) entry;
+				final PluginEntry<P> match = (PluginEntry<P>) entry;
 				entries.add(match);
 			}
 		}
@@ -132,8 +132,8 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/** Executes the first plugin of the given class, in its own thread. */
-	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
-		final List<PluginEntry<T>> entries = getPluginsOfClass(pluginClass);
+	public <R extends RunnablePlugin> void run(final Class<R> pluginClass) {
+		final List<PluginEntry<R>> entries = getPluginsOfClass(pluginClass);
 		if (!entries.isEmpty()) run(entries.get(0));
 	}
 
@@ -141,7 +141,7 @@ public class PluginManager implements ManagerComponent {
 	 * Executes the plugin represented by the given {@link PluginEntry}, in its
 	 * own thread.
 	 */
-	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry) {
+	public <R extends RunnablePlugin> void run(final PluginEntry<R> entry) {
 		run(entry, false);
 	}
 
@@ -152,9 +152,12 @@ public class PluginManager implements ManagerComponent {
 	 * @param entry The {@link PluginEntry} describing the plugin to execute.
 	 * @param state The toggle state to assign to the plugin, if applicable.
 	 */
-	public <T extends RunnablePlugin> void run(final PluginEntry<T> entry,
+	public <R extends RunnablePlugin> void run(final PluginEntry<R> entry,
 		final boolean state)
 	{
+		// CTR FIXME reexamine the design surrounding this state flag.
+		// Update documentation in PluginModule regarding how to run plugins.
+
 		// TODO - Implement a better threading mechanism for launching plugins.
 		// Perhaps a ThreadManager so that the UI can query currently
 		// running plugins and so forth?
@@ -162,9 +165,14 @@ public class PluginManager implements ManagerComponent {
 
 			@Override
 			public void run() {
-				final PluginRunner<T> runner = new PluginRunner<T>(entry);
-				runner.getModule().setSelected(state);
-				runner.run();
+				try {
+					final PluginModule<R> module = entry.createModule();
+					module.setSelected(state);
+					module.run();
+				}
+				catch (PluginException e) {
+					Log.error("Could not execute plugin: " + entry, e);
+				}
 			}
 		}, "PluginRunner-" + entry.getClassName()).start();
 	}

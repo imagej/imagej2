@@ -36,7 +36,7 @@ package imagej.display;
 
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.plugin.BasePlugin;
+import imagej.plugin.IPlugin;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ import net.imglib2.meta.Named;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface Display extends BasePlugin, Named, LabeledAxes, EuclideanSpace {
+public interface Display extends IPlugin, Named, LabeledAxes, EuclideanSpace {
 
 	/**
 	 * Tests whether the display is capable of visualizing the given

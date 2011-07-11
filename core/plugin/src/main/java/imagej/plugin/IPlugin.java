@@ -1,5 +1,5 @@
 //
-// PluginProcessor.java
+// IPlugin.java
 //
 
 /*
@@ -32,21 +32,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.plugin.process;
-
-import imagej.plugin.IPlugin;
-import imagej.plugin.PluginModule;
+package imagej.plugin;
 
 /**
- * A plugin processor defines some sort of processing that occurs on a plugin
- * instance, typically immediately preceding (see {@link PluginPreprocessor}) or
- * following (see {@link PluginPostprocessor}) the plugin execution.
- *
+ * Top-level interface for plugins. Plugins discoverable at runtime must
+ * implement this interface and be annotated with @{@link Plugin}.
+ * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see ImageJPlugin
  */
-public interface PluginProcessor extends IPlugin {
-
-	/** Performs a processing step on the given plugin instance. */
-	void process(PluginModule<?> module);
-
+public interface IPlugin {
+	// top-level marker interface for discovery via SezPoz
 }

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -47,7 +47,7 @@ import imagej.tool.Tool;
 @Tool(name = "FloodFill", label = "Flood Fill",
 	iconPath = "/icons/tools/flood-fill.png", priority = FloodFillTool.PRIORITY,
 	enabled = false)
-public class FloodFillTool extends BaseTool {
+public class FloodFillTool extends AbstractTool {
 
 	public static final int PRIORITY = 304;
 

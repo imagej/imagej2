@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -46,7 +46,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Eraser", iconPath = "/icons/tools/eraser.png",
 	priority = EraserTool.PRIORITY, enabled = false)
-public class EraserTool extends BaseTool {
+public class EraserTool extends AbstractTool {
 
 	public static final int PRIORITY = 302;
 

@@ -73,7 +73,7 @@ public final class ImageJ {
 	}
 
 	/** Gets the manager component of the given class. */
-	public static <T extends ManagerComponent> T get(final Class<T> c) {
+	public static <M extends ManagerComponent> M get(final Class<M> c) {
 		return getInstance().getManager(c);
 	}
 
@@ -124,9 +124,9 @@ public final class ImageJ {
 	}
 
 	/** Gets the manager component of the given class. */
-	public <T extends ManagerComponent> T getManager(final Class<T> c) {
+	public <M extends ManagerComponent> M getManager(final Class<M> c) {
 		@SuppressWarnings("unchecked")
-		final T manager = (T) managers.get(c);
+		final M manager = (M) managers.get(c);
 		if (!initializedManagers.contains(c)) {
 			// NB: For now, disallow access to uninitialized managers. In the future,
 			// there may be a reason to allow it (e.g., managers with circular

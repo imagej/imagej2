@@ -39,6 +39,6 @@ package imagej.tool;
  *
  * @author Curtis Rueden
  */
-public class DummyTool extends BaseTool {
+public class DummyTool extends AbstractTool {
 	// An empty tool implementation, active by default, to avoid null references.
 }

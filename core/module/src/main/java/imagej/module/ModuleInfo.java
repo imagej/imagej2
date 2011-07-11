@@ -44,10 +44,10 @@ package imagej.module;
  */
 public interface ModuleInfo {
 
-	/** Unique name of this module. */
+	/** Gets the unique name of this module. */
 	String getName();
 
-	/** Name to appear in a UI, if applicable. */
+	/** Gets the name to appear in a UI, if applicable. */
 	String getLabel();
 
 	/** Gets a string describing this module. */

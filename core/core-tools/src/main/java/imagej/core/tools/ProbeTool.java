@@ -49,7 +49,7 @@ import imagej.display.event.mouse.MsMovedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -67,7 +67,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Tool(name = "Probe", iconPath = "/icons/tools/probe.png",
 	description = "Probe Pixel Tool", priority = ProbeTool.PRIORITY)
-public class ProbeTool extends BaseTool {
+public class ProbeTool extends AbstractTool {
 
 	// -- constants --
 

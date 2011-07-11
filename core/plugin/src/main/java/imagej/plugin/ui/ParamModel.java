@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui;
 
-import imagej.plugin.BasePlugin;
+import imagej.plugin.IPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginModule;
 import imagej.util.Log;
@@ -146,7 +146,7 @@ public class ParamModel {
 
 	private Method lookupCallbackMethod() {
 		if (callback.isEmpty()) return null;
-		final BasePlugin plugin = module.getPlugin();
+		final IPlugin plugin = module.getPlugin();
 		try {
 			// TODO - support inherited callback methods
 			final Method m = plugin.getClass().getDeclaredMethod(callback);
@@ -169,7 +169,7 @@ public class ParamModel {
 	/** Invokes the callback method associated with the parameter. */
 	private void executeCallbackMethod() {
 		if (callbackMethod == null) return;
-		final BasePlugin plugin = module.getPlugin();
+		final IPlugin plugin = module.getPlugin();
 		try {
 			Log.debug(plugin.getClass().getName() +
 				": executing callback method: " + callback);

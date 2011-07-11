@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -45,7 +45,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Pencil", iconPath = "/icons/tools/pencil.png",
 	priority = PencilTool.PRIORITY, enabled = false)
-public class PencilTool extends BaseTool {
+public class PencilTool extends AbstractTool {
 
 	public static final int PRIORITY = 301;
 

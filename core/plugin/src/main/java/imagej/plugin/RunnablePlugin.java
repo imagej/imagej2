@@ -39,7 +39,7 @@ package imagej.plugin;
  *
  * @author Curtis Rueden
  */
-public interface RunnablePlugin extends BasePlugin, Runnable {
+public interface RunnablePlugin extends IPlugin, Runnable {
 	// RunnablePlugin is a plugin that extends Runnable,
 	// discoverable via the plugin discovery mechanism.
 }

@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools;
 
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -47,7 +47,7 @@ import imagej.tool.Tool;
 	priority = SelectionTool.PRIORITY, label = "Selection tool",
 	description = "Adjust the shape and position of an overlay via handles.",
 	enabled = true)
-public class SelectionTool extends BaseTool {
+public class SelectionTool extends AbstractTool {
 
 	public final static String NAME = "Selection";
 	public final static int PRIORITY = 100;

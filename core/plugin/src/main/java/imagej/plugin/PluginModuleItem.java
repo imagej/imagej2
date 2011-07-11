@@ -39,14 +39,15 @@ import imagej.module.ModuleItem;
 import java.lang.reflect.Field;
 
 /**
- * TODO
- *
+ * {@link ModuleItem} class for querying metadata of a {@link IPlugin}'s
+ * inputs and outputs.
+ * 
  * @author Curtis Rueden
  */
 public class PluginModuleItem implements ModuleItem {
 
-	private Field field;
-	private Object defaultValue;
+	private final Field field;
+	private final Object defaultValue;
 
 	public PluginModuleItem(final Field field, final Object defaultValue) {
 		this.field = field;
@@ -71,6 +72,11 @@ public class PluginModuleItem implements ModuleItem {
 	@Override
 	public String getLabel() {
 		return getParameter().label();
+	}
+
+	@Override
+	public String getDescription() {
+		return getParameter().description();
 	}
 
 	@Override

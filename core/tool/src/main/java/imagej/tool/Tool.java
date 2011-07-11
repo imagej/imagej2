@@ -42,11 +42,12 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * Annotation identifying a tool, which gets loaded by ImageJ's dynamic tool
- * loading mechanism.
+ * Annotation identifying a tool, which gets loaded by ImageJ's dynamic
+ * discovery mechanism.
  * 
  * @author Rick Lentz
  * @author Curtis Rueden
+ * @see ITool
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)

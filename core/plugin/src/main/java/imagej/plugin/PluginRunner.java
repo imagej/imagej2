@@ -47,31 +47,30 @@ import imagej.plugin.process.PluginPostprocessor;
 import imagej.plugin.process.PluginPreprocessor;
 import imagej.util.Log;
 
+import java.util.List;
+
 /**
- * Executes a runnable plugin.
+ * Helper class for executing a plugin, including pre- and post-processing and
+ * event notification.
  * 
  * @author Curtis Rueden
+ * @see PluginModule
  */
-public class PluginRunner<T extends RunnablePlugin> {
+class PluginRunner<R extends RunnablePlugin> {
 
-	private PluginModule<T> module;
+	private final PluginModule<R> module;
 
-	public PluginRunner(final PluginEntry<T> entry) {
-		try {
-			module = entry.createModule();
-		}
-		catch (final PluginException e) {
-			Log.error(e);
-		}
+	public PluginRunner(final PluginModule<R> module) {
+		this.module = module;
 	}
 
-	public PluginModule<T> getModule() {
-		return module;
-	}
-
-	public T run() {
+	/**
+	 * Executes the plugin, including pre- and post-processing and event
+	 * notification.
+	 */
+	public R run() {
 		if (module == null) return null;
-		final T plugin = module.getPlugin();
+		final R plugin = module.getPlugin();
 
 		// execute plugin
 		Events.publish(new PluginStartedEvent(module));
@@ -89,11 +88,12 @@ public class PluginRunner<T extends RunnablePlugin> {
 		return plugin;
 	}
 
+	/** Feeds the plugin through the available {@link PluginPreprocessor}s. */
 	public boolean preProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		for (final PluginEntry<PluginPreprocessor> p :
-			pluginManager.getPluginsOfType(PluginPreprocessor.class))
-		{
+		final List<PluginEntry<PluginPreprocessor>> preprocessors =
+			pluginManager.getPluginsOfType(PluginPreprocessor.class);
+		for (final PluginEntry<PluginPreprocessor> p : preprocessors) {
 			try {
 				final PluginPreprocessor processor = p.createInstance();
 				processor.process(module);
@@ -107,24 +107,25 @@ public class PluginRunner<T extends RunnablePlugin> {
 					return false;
 				}
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.error(e);
 			}
 		}
 		return true;
 	}
 
+	/** Feeds the plugin through the available {@link PluginPostprocessor}s. */
 	public void postProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		for (final PluginEntry<PluginPostprocessor> p :
-			pluginManager.getPluginsOfType(PluginPostprocessor.class))
-		{
+		final List<PluginEntry<PluginPostprocessor>> postprocessors =
+			pluginManager.getPluginsOfType(PluginPostprocessor.class);
+		for (final PluginEntry<PluginPostprocessor> p : postprocessors) {
 			try {
 				final PluginPostprocessor processor = p.createInstance();
 				processor.process(module);
 				Events.publish(new PluginPostprocessEvent(module, processor));
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.error(e);
 			}
 		}

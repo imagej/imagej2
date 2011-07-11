@@ -44,37 +44,56 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * Module class for working with a {@link BasePlugin} instance, particularly its
- * {@link Parameter}s.
+ * Module class for working with a {@link RunnablePlugin} instance.
+ * <p>
+ * There are several ways to execute a plugin, depending on the situation:
+ * <ul>
+ * <li>To execute a plugin from a {@link PluginModule}, call {@link #run()}.</li>
+ * <li>To execute a plugin from a {@link PluginEntry}, call
+ * {@link PluginEntry#createModule()} to get a {@link PluginModule}.</li>
+ * <li>To execute a plugin from its {@link Class}, call
+ * {@link PluginManager#getPluginsOfClass(Class)} to get a list of
+ * {@link PluginEntry} objects, and choose the one you want (usually there will
+ * only be one).</li>
+ * <li>To execute a plugin in a separate thread, use one of the
+ * {@link PluginManager} utility methods: {@link PluginManager#run(Class)} or
+ * {@link PluginManager#run(PluginEntry)}.</li>
+ * </ul>
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModule<T extends BasePlugin> implements Module {
+public class PluginModule<R extends RunnablePlugin> implements Module {
 
 	/** The plugin entry describing this module. */
-	private final PluginEntry<T> entry;
+	private final PluginEntry<R> entry;
 
 	/** The plugin instance handled by this module. */
-	private final T plugin;
+	private final R plugin;
 
 	/** Metadata about this plugin. */
-	private final PluginModuleInfo<T> info;
+	private final PluginModuleInfo<R> info;
 
 	/** Table indicating resolved inputs. */
 	private final HashSet<String> resolvedInputs;
 
 	/** Creates a plugin module for a new instance of the given plugin entry. */
-	public PluginModule(final PluginEntry<T> entry) throws PluginException {
+	public PluginModule(final PluginEntry<R> entry) throws PluginException {
 		this.entry = entry;
-		plugin = entry.createInstance();
-		info = new PluginModuleInfo<T>(entry, plugin);
+		try {
+			plugin = entry.createInstance();
+		}
+		catch (IndexException exc) {
+			throw new PluginException(exc);
+		}
+		info = new PluginModuleInfo<R>(entry, plugin);
 		resolvedInputs = new HashSet<String>();
 	}
 
 	/** Gets the plugin instance handled by this module. */
-	public T getPlugin() {
+	public R getPlugin() {
 		return plugin;
 	}
 
@@ -123,7 +142,12 @@ public class PluginModule<T extends BasePlugin> implements Module {
 	// -- Module methods --
 
 	@Override
-	public PluginModuleInfo<T> getInfo() {
+	public void run() {
+		new PluginRunner<R>(this).run();
+	}
+
+	@Override
+	public PluginModuleInfo<R> getInfo() {
 		return info;
 	}
 

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui;
 
 import imagej.module.ModuleItem;
+import imagej.plugin.IndexException;
 import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.PluginEntry;
@@ -350,7 +351,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 				final Class<?> prefClass = pluginEntry.loadClass();
 				prefValue = Prefs.get(prefClass, prefKey);
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.error("Error retrieving preference: " + prefKey, e);
 				return null;
 			}
@@ -369,7 +370,7 @@ public abstract class AbstractInputHarvester implements PluginPreprocessor,
 				final Class<?> prefClass = pluginEntry.loadClass();
 				Prefs.put(prefClass, prefKey, value.toString());
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.error("Error storing preference: " + prefKey, e);
 			}
 		}

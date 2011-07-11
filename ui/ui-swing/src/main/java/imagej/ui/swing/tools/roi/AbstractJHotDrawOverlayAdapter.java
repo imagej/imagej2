@@ -37,7 +37,7 @@ package imagej.ui.swing.tools.roi;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;
 import imagej.util.awt.AWTColors;
@@ -57,7 +57,7 @@ import org.jhotdraw.draw.decoration.LineDecoration;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends BaseTool implements IJHotDrawOverlayAdapter
+public abstract class AbstractJHotDrawOverlayAdapter<O extends Overlay> extends AbstractTool implements IJHotDrawOverlayAdapter
 {
 	/*
 	 * NB: the line styles here are taken from org.jhotdraw.draw.action.ButtonFactory

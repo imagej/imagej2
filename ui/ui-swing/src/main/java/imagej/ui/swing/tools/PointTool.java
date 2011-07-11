@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.tools;
 
 import imagej.display.MouseCursor;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 /**
@@ -45,7 +45,7 @@ import imagej.tool.Tool;
  */
 @Tool(name = "Point", iconPath = "/icons/tools/point.png",
 	description = "Point", priority = PointTool.PRIORITY, enabled = false)
-public class PointTool extends BaseTool {
+public class PointTool extends AbstractTool {
 
 	public static final int PRIORITY = AngleTool.PRIORITY + 1;
 

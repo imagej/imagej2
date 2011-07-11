@@ -47,8 +47,8 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.ObjectManager;
+import imagej.plugin.IndexException;
 import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
 import imagej.plugin.PluginManager;
 import imagej.util.Log;
 
@@ -169,7 +169,7 @@ public final class DisplayManager implements ManagerComponent {
 					return displayPlugin;
 				}
 			}
-			catch (final PluginException e) {
+			catch (final IndexException e) {
 				Log.error("Invalid display plugin: " + pe, e);
 			}
 		}

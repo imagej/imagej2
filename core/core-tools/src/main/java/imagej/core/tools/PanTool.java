@@ -39,7 +39,7 @@ import imagej.display.MouseCursor;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.mouse.MsDraggedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
-import imagej.tool.BaseTool;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
 
@@ -54,7 +54,7 @@ import java.awt.event.KeyEvent;
  */
 @Tool(name = "Pan", description = "Pans the display",
 	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
-public class PanTool extends BaseTool {
+public class PanTool extends AbstractTool {
 
 	public static final int PRIORITY = ZoomTool.PRIORITY + 1;
 
