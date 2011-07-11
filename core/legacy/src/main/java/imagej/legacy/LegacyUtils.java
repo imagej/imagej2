@@ -814,7 +814,7 @@ public final class LegacyUtils {
 	 * Returns true if any of the given Axes cannot be represented in an IJ1
 	 * ImagePlus.
 	 */
-	static boolean hasNonIJ1Axes(final Axis[] axes) {
+	public static boolean hasNonIJ1Axes(final Axis[] axes) {
 		for (final Axis axis : axes) {
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
