@@ -154,7 +154,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		final List<PluginEntry<ImageJPlugin>> plugins =
-			pluginManager.getPlugins(ImageJPlugin.class);
+			pluginManager.getPluginsOfType(ImageJPlugin.class);
 		for (final PluginEntry<ImageJPlugin> plugin : plugins) {
 			commands.add(new Command(plugin));
 		}

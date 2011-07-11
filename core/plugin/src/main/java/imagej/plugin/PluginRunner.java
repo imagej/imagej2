@@ -92,7 +92,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 	public boolean preProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPreprocessor> p :
-			pluginManager.getPlugins(PluginPreprocessor.class))
+			pluginManager.getPluginsOfType(PluginPreprocessor.class))
 		{
 			try {
 				final PluginPreprocessor processor = p.createInstance();
@@ -117,7 +117,7 @@ public class PluginRunner<T extends RunnablePlugin> {
 	public void postProcess() {
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
 		for (final PluginEntry<PluginPostprocessor> p :
-			pluginManager.getPlugins(PluginPostprocessor.class))
+			pluginManager.getPluginsOfType(PluginPostprocessor.class))
 		{
 			try {
 				final PluginPostprocessor processor = p.createInstance();

@@ -78,39 +78,43 @@ public class PluginManager implements ManagerComponent {
 		return Collections.unmodifiableList(plugins);
 	}
 
-	/** Gets the list of plugins labeled with the given type. */
+	/**
+	 * Gets the list of plugins labeled with the given plugin type (e.g.,
+	 * {@link ImageJPlugin}).
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <T extends BasePlugin> List<PluginEntry<T>> getPlugins(
+	public <T extends BasePlugin> List<PluginEntry<T>> getPluginsOfType(
 		final Class<T> type)
 	{
 		ArrayList<PluginEntry<?>> outputList = pluginLists.get(type);
-		if (outputList == null) outputList = new ArrayList<PluginEntry<?>>(); 
+		if (outputList == null) outputList = new ArrayList<PluginEntry<?>>();
 		return (List) Collections.unmodifiableList(outputList);
 	}
 
 	/**
-	 * Searches the plugin index for the {@link PluginEntry} describing the given
-	 * plugin class.
+	 * Gets the list of plugins of the given class. Most modern plugins will have
+	 * only a single match, but some special plugin classes (such as
+	 * imagej.legacy.LegacyPlugin) may match many entries.
 	 */
-	public <T extends BasePlugin> PluginEntry<T> getPluginEntry(
+	public <T extends BasePlugin> List<PluginEntry<T>> getPluginsOfClass(
 		final Class<T> pluginClass)
 	{
-		// TODO - Come up with a faster search mechanism.
-		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
-			for (final PluginEntry<?> entry : pluginList) {
-				if (entry.getClassName().equals(pluginClass.getName())) {
-					@SuppressWarnings("unchecked")
-					final PluginEntry<T> match = (PluginEntry<T>) entry;
-					return match;
-				}
+		final ArrayList<PluginEntry<T>> entries = new ArrayList<PluginEntry<T>>();
+		final String className = pluginClass.getName();
+		for (final PluginEntry<?> entry : plugins) {
+			if (entry.getClassName().equals(className)) {
+				@SuppressWarnings("unchecked")
+				final PluginEntry<T> match = (PluginEntry<T>) entry;
+				entries.add(match);
 			}
 		}
-		return null; // no match
+		return entries;
 	}
 
-	/** Executes the plugin represented by the given class, in its own thread. */
+	/** Executes the first plugin of the given class, in its own thread. */
 	public <T extends RunnablePlugin> void run(final Class<T> pluginClass) {
-		run(getPluginEntry(pluginClass));
+		final List<PluginEntry<T>> entries = getPluginsOfClass(pluginClass);
+		if (!entries.isEmpty()) run(entries.get(0));
 	}
 
 	/**
