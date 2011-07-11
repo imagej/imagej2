@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.event.Events;
+import imagej.plugin.event.PluginEntryUpdatedEvent;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -182,6 +185,15 @@ public class PluginEntry<T extends BasePlugin> extends BaseEntry<T> {
 		final String className = getClassName();
 		final int dot = className.lastIndexOf(".");
 		return dot < 0 ? className : className.substring(dot + 1);
+	}
+
+	/**
+	 * Notifies interested parties that this entry has been modified. This
+	 * mechanism is useful for updating any corresponding user interface such as
+	 * menu items that invoke the plugin.
+	 */
+	public void update() {
+		Events.publish(new PluginEntryUpdatedEvent(this));
 	}
 
 	// -- Object methods --
