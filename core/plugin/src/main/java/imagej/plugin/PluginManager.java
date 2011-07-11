@@ -36,6 +36,9 @@ package imagej.plugin;
 
 import imagej.Manager;
 import imagej.ManagerComponent;
+import imagej.event.Events;
+import imagej.plugin.event.PluginEntryAddedEvent;
+import imagej.plugin.event.PluginEntryRemovedEvent;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 import imagej.util.Log;
@@ -66,11 +69,28 @@ public class PluginManager implements ManagerComponent {
 	private final Map<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
 		new ConcurrentHashMap<Class<?>, ArrayList<PluginEntry<?>>>();
 
-	/** Rediscovers all available plugins. */
+	/**
+	 * Rediscovers all plugins available on the classpath. Note that this will
+	 * clear any individual plugins added programmatically.
+	 */
 	public void reloadPlugins() {
 		findPlugins();
 		classifyPlugins();
 		sortPlugins();
+	}
+
+	/** Manually registers a plugin with the plugin manager. */
+	public void addPlugin(final PluginEntry<?> plugin) {
+		plugins.add(plugin);
+		registerType(plugin, true);
+		Events.publish(new PluginEntryAddedEvent(plugin));
+	}
+
+	/** Manually unregisters a plugin with the plugin manager. */
+	public void removePlugin(final PluginEntry<?> plugin) {
+		plugins.remove(plugin);
+		unregisterType(plugin);
+		Events.publish(new PluginEntryRemovedEvent(plugin));
 	}
 
 	/** Gets the list of known plugins. */
@@ -178,8 +198,7 @@ public class PluginManager implements ManagerComponent {
 	private void classifyPlugins() {
 		pluginLists.clear();
 		for (final PluginEntry<?> entry : plugins) {
-			final Class<?> type = entry.getPluginType();
-			registerType(entry, type);
+			registerType(entry, false);
 		}
 	}
 
@@ -190,13 +209,42 @@ public class PluginManager implements ManagerComponent {
 		}
 	}
 
-	private void registerType(final PluginEntry<?> entry, final Class<?> type) {
+	/**
+	 * Inserts the given plugin into the appropriate type list.
+	 * 
+	 * @param entry {@link PluginEntry} to insert.
+	 * @param sorted Whether the plugin list is currently sorted. If true, the
+	 *          {@link PluginEntry} will be inserted into the correct sorted
+	 *          position. If false, the {@link PluginEntry} is merely appended.
+	 */
+	private void registerType(final PluginEntry<?> entry, final boolean sorted) {
+		final Class<?> type = entry.getPluginType();
 		ArrayList<PluginEntry<?>> pluginList = pluginLists.get(type);
 		if (pluginList == null) {
 			pluginList = new ArrayList<PluginEntry<?>>();
 			pluginLists.put(type, pluginList);
 		}
-		pluginList.add(entry);
+		if (sorted) {
+			final int index = Collections.binarySearch(pluginList, entry);
+			if (index < 0) pluginList.add(-index - 1, entry);
+		}
+		else pluginList.add(entry);
+	}
+
+	/** Removes the given plugin from the appropriate type list. */
+	private void unregisterType(final PluginEntry<?> entry) {
+		final Class<?> type = entry.getPluginType();
+		final ArrayList<PluginEntry<?>> pluginList = pluginLists.get(type);
+		if (pluginList == null) {
+			Log.warn("unregisterType: empty type list for entry: " + entry);
+			return;
+		}
+		final int index = Collections.binarySearch(pluginList, entry);
+		if (index < 0) {
+			Log.warn("unregisterType: unknown plugin entry: " + entry);
+			return;
+		}
+		pluginList.remove(index);
 	}
 
 }
