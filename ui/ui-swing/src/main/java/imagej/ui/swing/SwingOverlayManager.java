@@ -45,7 +45,6 @@ import imagej.display.DisplayManager;
 import imagej.display.DisplayView;
 import imagej.display.OverlayManager;
 import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayViewSelectedEvent;
 import imagej.display.event.DisplayViewSelectionEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -57,6 +56,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import javax.swing.AbstractListModel;
@@ -83,6 +83,7 @@ import javax.swing.event.ListSelectionListener;
 public class SwingOverlayManager extends JFrame implements ActionListener{
 	private static final long serialVersionUID = -6498169032123522303L;
 	private JList olist = null;
+	private boolean selecting = false; //flag to prevent event feedback loops 
 	
 	private EventSubscriber<OverlayCreatedEvent> creationSubscriber = 
 		new EventSubscriber<OverlayCreatedEvent>(){
@@ -109,6 +110,9 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 				}
 			};
 			
+	/*
+	 * Update when a display is activated 
+	 */
 	private EventSubscriber<DisplayActivatedEvent> displayActivatedSubscriber =
 			new EventSubscriber<DisplayActivatedEvent>() {
 				@Override
@@ -117,11 +121,33 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 				}
 			};
 
-	private EventSubscriber<DisplayViewSelectedEvent> displayViewSelectedSubscriber =
-			new EventSubscriber<DisplayViewSelectedEvent>() {
+	/*
+	 * Update the selection when an overlay displayView selection changes 
+	 */
+	private EventSubscriber<DisplayViewSelectionEvent> displayViewSelectedSubscriber =
+			new EventSubscriber<DisplayViewSelectionEvent>() {
 				@Override
-				public void onEvent(final DisplayViewSelectedEvent event) {
-					updateListSelections();
+				public void onEvent(final DisplayViewSelectionEvent event) {
+					if (selecting == true)
+						return;
+					selecting = true;
+					// Select or deselect the corresponding overlay in the list
+					Object overlay = event.getDisplayView().getDataObject();
+					if (event.isSelected()){
+						int[] current_sel = olist.getSelectedIndices();
+						olist.setSelectedValue(overlay, true);
+						int[] new_sel = olist.getSelectedIndices();
+						int[] sel = Arrays.copyOf(current_sel, current_sel.length + new_sel.length);
+						System.arraycopy(new_sel, 0, sel, current_sel.length, new_sel.length);
+						olist.setSelectedIndices(sel);
+					} else {
+						for (int i : olist.getSelectedIndices()){
+							if (olist.getModel().getElementAt(i) == overlay){
+								olist.removeSelectionInterval(i, i);
+							}
+						}
+					}
+					selecting = false;
 				}
 			};
 
@@ -168,11 +194,13 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 		//
 	 	ListSelectionListener listSelectionListener = new ListSelectionListener() {
 	 		public void valueChanged(ListSelectionEvent listSelectionEvent) {
+	 			if (selecting == true)
+	 				return;
+	 			selecting = true;
 	 			final DisplayManager manager = ImageJ.get(DisplayManager.class);
 	 			final Display display = manager.getActiveDisplay();
 	 			JList list = (JList) listSelectionEvent.getSource();
 	 			Object selectionValues[] = list.getSelectedValues();
-	 			
 	 			for (final DisplayView overlayView : display.getViews()) {
 	 				overlayView.setSelected(false);
 	 				for(Object overlay : selectionValues){
@@ -182,6 +210,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 	 					}
 	 				}
 	 			}
+ 				selecting = false;
 	 		}
 	 	};
 	 	olist.addListSelectionListener(listSelectionListener);
@@ -191,23 +220,8 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 		// No need to update unless thumbnail will be redrawn.
 //		Events.subscribe(OverlayRestructuredEvent.class, restructureSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-//		Events.subscribe(DisplayViewSelectedEvent.class, displayViewSelectedSubscriber);
+		Events.subscribe(DisplayViewSelectionEvent.class, displayViewSelectedSubscriber);
 	 	
-	}
-	
-	//
-	// TODO: make this work. The overlay selections in the current display 
-	//       should be mirrored in this list. 
-	//
-	public void updateListSelections(){
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
-		olist.clearSelection();
-		for (final DisplayView overlayView : display.getViews()) {
-			if (overlayView.isSelected()){
-				olist.setSelectedValue(overlayView.getDataObject(), false);
-			}	
-		}
 	}
 	
 	public void actionPerformed(ActionEvent e){
@@ -224,24 +238,16 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 	 */
 	public class OverlayListModel extends AbstractListModel {
 		private static final long serialVersionUID = 7941252533859436640L;
-		private OverlayManager om;
+		private OverlayManager om = ImageJ.get(OverlayManager.class);
+		private DisplayManager dm = ImageJ.get(DisplayManager.class);
 		
-		/*
-		 * Constructor.
-		 */
-		public OverlayListModel() {
-			om = ImageJ.get(OverlayManager.class);
-		}
-
 		public Object getElementAt(int index) {
-			DisplayManager manager = ImageJ.get(DisplayManager.class);
- 			Display display = manager.getActiveDisplay();
+ 			Display display = dm.getActiveDisplay();
 			return om.getOverlays(display).get(index);
 		}
 
 		public int getSize() {
-			DisplayManager manager = ImageJ.get(DisplayManager.class);
- 			Display display = manager.getActiveDisplay();
+ 			Display display = dm.getActiveDisplay();
 			return om.getOverlays(display).size();
 		}
 	}
