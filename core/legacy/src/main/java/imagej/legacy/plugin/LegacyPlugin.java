@@ -190,15 +190,21 @@ public class LegacyPlugin implements ImageJPlugin {
 
 		final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
 		for (final ImagePlus imp : imps) {
-			display = map.lookupDisplay(imp);
-			if (display == null) display = map.registerLegacyImage(imp);
-			else {
-				if (imp == currImp) {
-					// we harmonized this earlier
-				}
-				else harmonizer.updateDisplay(display, imp);
+			if (imp.getStack().getSize() == 0) {  // totally emptied by plugin
+				// TODO - do we need to delete display or is it already done?
 			}
-			displays.add(display);
+			else { // image plus is not totally empty
+				display = map.lookupDisplay(imp);
+				if (display == null)
+					display = map.registerLegacyImage(imp);
+				else {
+					if (imp == currImp) {
+						// we harmonized this earlier
+					}
+					else harmonizer.updateDisplay(display, imp);
+				}
+				displays.add(display);
+			}
 		}
 
 		return displays;

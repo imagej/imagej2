@@ -101,7 +101,8 @@ public class DatasetHarmonizer {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
-			if (dimensionsIncompatible(ds, imp)) {
+			if ((dimensionsIncompatible(ds, imp)) ||
+					(imp.getStack().getSize() == 0)) {  // unfortunate issue with IJ1
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
