@@ -43,6 +43,7 @@ import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.ZoomEvent;
+import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ui.common.awt.AWTDisplayWindow;
@@ -417,5 +418,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void close() {
 		setVisible(false);
+		Events.publish(new WinClosedEvent(display)); 
 	}
 }
