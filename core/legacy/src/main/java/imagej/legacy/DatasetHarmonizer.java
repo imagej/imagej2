@@ -102,7 +102,7 @@ public class DatasetHarmonizer {
 		}
 		else {
 			if ((dimensionsIncompatible(ds, imp)) ||
-					(imp.getStack().getSize() == 0)) {  // unfortunate issue with IJ1
+					(imp.getStack().getSize() == 0)) {  // NB unfortunate issue with IJ1
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -134,6 +134,7 @@ public class DatasetHarmonizer {
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}
 		else { // ImagePlus type unchanged
+			// NB - ImagePlus with an empty stack avoided earlier.
 			if (dimensionsIncompatible(ds, imp)) {
 				LegacyUtils.reshapeDataset(ds, imp);
 			}
