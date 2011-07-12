@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
@@ -43,12 +44,15 @@ import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayManager;
 import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.key.KyPressedEvent;
+import imagej.display.event.key.KyReleasedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.OptionsChangedEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.util.Log;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,6 +213,51 @@ public final class LegacyManager implements ManagerComponent {
 		};
 		subscribers.add(optionSubscriber);
 		Events.subscribe(OptionsChangedEvent.class, optionSubscriber);
+
+		// TODO - FIXME remove AWT dependency when we have implemented our own
+		//   KyEvent constants
+		
+		final EventSubscriber<KyPressedEvent> pressSubscriber =
+			new EventSubscriber<KyPressedEvent>() {
+				@Override
+				public void onEvent(KyPressedEvent event) {
+					int code = event.getCode();
+					if (code == KeyEvent.VK_SPACE)
+						IJ.setKeyDown(KeyEvent.VK_SPACE);
+					if (code == KeyEvent.VK_ALT)
+						IJ.setKeyDown(KeyEvent.VK_ALT);
+					if (code == KeyEvent.VK_SHIFT)
+						IJ.setKeyDown(KeyEvent.VK_SHIFT);
+					if (code == KeyEvent.VK_CONTROL)
+						IJ.setKeyDown(KeyEvent.VK_CONTROL);
+					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_META))
+						IJ.setKeyDown(KeyEvent.VK_CONTROL);
+				}
+		};
+		subscribers.add(pressSubscriber);
+		Events.subscribe(KyPressedEvent.class, pressSubscriber);
 			
+		// TODO - FIXME remove AWT dependency when we have implemented our own
+		//   KyEvent constants
+		
+		final EventSubscriber<KyReleasedEvent> releaseSubscriber =
+			new EventSubscriber<KyReleasedEvent>() {
+				@Override
+				public void onEvent(KyReleasedEvent event) {
+					int code = event.getCode();
+					if (code == KeyEvent.VK_SPACE)
+						IJ.setKeyUp(KeyEvent.VK_SPACE);
+					if (code == KeyEvent.VK_ALT)
+						IJ.setKeyUp(KeyEvent.VK_ALT);
+					if (code == KeyEvent.VK_SHIFT)
+						IJ.setKeyUp(KeyEvent.VK_SHIFT);
+					if (code == KeyEvent.VK_CONTROL)
+						IJ.setKeyUp(KeyEvent.VK_CONTROL);
+					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_CONTROL))
+						IJ.setKeyUp(KeyEvent.VK_CONTROL);
+				}
+		};
+		subscribers.add(releaseSubscriber);
+		Events.subscribe(KyReleasedEvent.class, releaseSubscriber);
 	}
 }
