@@ -139,8 +139,7 @@ public class LegacyImageMap {
 		if (imp == null) {
 			// mapping does not exist; mirror display to image window
 			imp = imageTranslator.createLegacyImage(display);
-			imagePlusTable.put(display, imp);
-			displayTable.put(imp, display);
+			addMapping(display, imp);
 		}
 		return imp;
 	}
@@ -156,8 +155,7 @@ public class LegacyImageMap {
 		if (display == null) {
 			// mapping does not exist; mirror legacy image to display
 			display = imageTranslator.createDisplay(imp);
-			imagePlusTable.put(display, imp);
-			displayTable.put(imp, display);
+			addMapping(display, imp);
 		}
 		return display;
 	}
@@ -165,25 +163,35 @@ public class LegacyImageMap {
 	/** Removes the mapping associated with the given {@link Display}. */
 	public void unregisterDisplay(final Display display) {
 		final ImagePlus imp = lookupImagePlus(display);
-		if (display != null) displayTable.remove(display);
-		if (imp != null) {
-			imagePlusTable.remove(imp);
-			LegacyUtils.deleteImagePlus(imp);
-		}
+		removeMapping(display, imp);
 	}
 
 	/** Removes the mapping associated with the given {@link ImagePlus}. */
 	public void unregisterLegacyImage(final ImagePlus imp) {
 		final Display display = lookupDisplay(imp);
-		if (display != null) displayTable.remove(display);
-		if (imp != null) {
-			imagePlusTable.remove(imp);
-			LegacyUtils.deleteImagePlus(imp);
-		}
+		removeMapping(display, imp);
 	}
 
 	// -- Helper methods --
 
+	private void addMapping(Display display, ImagePlus imp) {
+		imagePlusTable.put(display, imp);
+		displayTable.put(imp, display);
+	}
+	
+	private void removeMapping(Display display, ImagePlus imp) {
+		if (display != null)
+			displayTable.remove(display);
+		//else
+		//	System.out.println("NULL DISPLAY DELETION!");
+		if (imp != null) {
+			imagePlusTable.remove(imp);
+			LegacyUtils.deleteImagePlus(imp);
+		}
+		//else
+		//	System.out.println("NULL IMP DELETION!");
+	}
+	
 	private void subscribeToEvents() {
 		final EventSubscriber<DisplayCreatedEvent> creationSubscriber =
 			new EventSubscriber<DisplayCreatedEvent>() {
