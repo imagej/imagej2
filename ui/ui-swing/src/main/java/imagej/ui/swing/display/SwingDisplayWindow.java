@@ -43,7 +43,6 @@ import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.ZoomEvent;
-import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ui.common.awt.AWTDisplayWindow;
@@ -164,8 +163,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		sliders.setVisible(sliders.getComponentCount() > 0);
 		setTitle(getDisplay().getName());
 		/*for (final DisplayView view : display.getViews()) {
-			// BDZ removed - apparently doing nothing
-			//DataObject dataObject = view.getDataObject();
 			final Dataset dataset = getDataset(view);
 			if (dataset == null) continue;
 
@@ -191,19 +188,16 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	// -- Helper methods --
 
+	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<ZoomEvent> zoomSubscriber =
 			new EventSubscriber<ZoomEvent>() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(final ZoomEvent event) {
 					if (event.getCanvas() != getDisplay().getImageCanvas()) return;
-					// CTR TODO - Fix zoom label to show beyond just the active view.
-					final DisplayView activeView = getDisplay().getActiveView();
-					final Dataset dataset = getDataset(activeView);
 					setLabel(makeLabel());
 				}
 			};
@@ -213,7 +207,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final EventSubscriber<DatasetRestructuredEvent> dsRestructuredSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(DatasetRestructuredEvent event) {
 					for (DisplayView view : getDisplay().getViews()) {
@@ -230,7 +223,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final EventSubscriber<DatasetUpdatedEvent> dsUpdatedSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(DatasetUpdatedEvent event) {
 					DisplayView view = getDisplay().getActiveView();
@@ -245,7 +237,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final EventSubscriber<AxisPositionEvent> axisMoveSubscriber =
 			new EventSubscriber<AxisPositionEvent>() {
 
-				@SuppressWarnings("synthetic-access")
 				@Override
 				public void onEvent(AxisPositionEvent event) {
 					if (event.getDisplay() == display) {
@@ -395,7 +386,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getTypeLabel());
-		sb.append(String.format(" [%.2f%%]",  getDisplay().getImageCanvas().getZoomFactor() * 100));
+		double zoomFactor = getDisplay().getImageCanvas().getZoomFactor();
+		if (Math.abs(1-zoomFactor) > 0.00001)
+			sb.append(String.format(" [%.2f%%]", zoomFactor*100));
 		return sb.toString();
 	}
 
@@ -418,6 +411,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void close() {
 		setVisible(false);
-		Events.publish(new WinClosedEvent(display)); 
+		dispose();
+		// old - before dispose() added
+		// Events.publish(new WinClosedEvent(display));
 	}
 }
