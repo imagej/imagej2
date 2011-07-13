@@ -42,6 +42,7 @@ import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.AxisPositionEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.ZoomEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -54,7 +55,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,10 +85,14 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private final SwingImageDisplay display;
 	private final JLabel imageLabel;
 	private final JPanel sliders;
-	private ArrayList<EventSubscriber<?>> subscribers;
 	private final Map<Axis, Integer> axisPositions = new HashMap<Axis, Integer>();
 	private final Map<Axis, JScrollBar> axisSliders = new HashMap<Axis, JScrollBar>();
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
+	private EventSubscriber<ZoomEvent> zoomSubscriber;
+	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
+	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
+	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
+	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
 	
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
@@ -190,9 +194,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<ZoomEvent> zoomSubscriber =
+		zoomSubscriber =
 			new EventSubscriber<ZoomEvent>() {
 
 				@Override
@@ -201,10 +204,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					setLabel(makeLabel());
 				}
 			};
-		subscribers.add(zoomSubscriber);
 		Events.subscribe(ZoomEvent.class, zoomSubscriber);
 
-		final EventSubscriber<DatasetRestructuredEvent> dsRestructuredSubscriber =
+		restructureSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
 
 				@Override
@@ -217,10 +219,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					}
 				}
 			};
-		subscribers.add(dsRestructuredSubscriber);
-		Events.subscribe(DatasetRestructuredEvent.class, dsRestructuredSubscriber);
+		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 
-		final EventSubscriber<DatasetUpdatedEvent> dsUpdatedSubscriber =
+		updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
 
 				@Override
@@ -231,10 +232,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					setLabel(makeLabel());
 				}
 			};
-		subscribers.add(dsUpdatedSubscriber);
-		Events.subscribe(DatasetUpdatedEvent.class, dsUpdatedSubscriber);
+		Events.subscribe(DatasetUpdatedEvent.class, updateSubscriber);
 
-		final EventSubscriber<AxisPositionEvent> axisMoveSubscriber =
+		axisMoveSubscriber =
 			new EventSubscriber<AxisPositionEvent>() {
 
 				@Override
@@ -258,13 +258,30 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 					}
 				}
 			};
-		subscribers.add(axisMoveSubscriber);
 		Events.subscribe(AxisPositionEvent.class, axisMoveSubscriber);
+
+		displayDeletedSubscriber =
+			new EventSubscriber<DisplayDeletedEvent>() {
+
+				@Override
+				public void onEvent(DisplayDeletedEvent event) {
+					if (event.getObject() == display) {
+						close();
+					}
+				}
+		};
+		Events.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 
+	private void unsubscribeFromEvents() {
+		Events.unsubscribe(ZoomEvent.class, zoomSubscriber);
+		Events.unsubscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		Events.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
+		Events.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
+		Events.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
+	}
+	
 	private void createSliders() {
-		// BDZ removed - hiding instance var for no known reason
-		//Display display = getDisplay();
 		final long[] min = new long[display.numDimensions()];
 		Arrays.fill(min, Long.MAX_VALUE);
 		final long[] max = new long[display.numDimensions()];
@@ -407,12 +424,25 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final DataObject dataObject = view.getDataObject();
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
+
+	// TODO - FIXME - BDZ
+	// This code grew from simply calling setVisible(false) to doing all these
+	// other things too. Was trying to squash a memory leak bug (#669). The leak
+	// was fixed by this code. The key was using setMenuBar(null) (and not using
+	// setJMenuBar(null). This might point out a Java bug. This code should do
+	// less work and that needs to be tested going forward.
 	
 	@Override
 	public void close() {
 		setVisible(false);
+		if (getJMenuBar() != null) {
+			getJMenuBar().removeAll();
+			setJMenuBar(null);
+		}
+		if (getMenuBar() != null)  // key call here
+			setMenuBar(null);
+		removeAll();
 		dispose();
-		// old - before dispose() added
-		// Events.publish(new WinClosedEvent(display));
+		unsubscribeFromEvents();
 	}
 }
