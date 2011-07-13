@@ -40,6 +40,7 @@ import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayWindow;
 import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.platform.event.AppMenusCreatedEvent;
@@ -64,6 +65,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -80,8 +82,7 @@ import javax.swing.WindowConstants;
  * @author Barry DeZonia
  */
 @UI
-public class SwingUI implements UserInterface,
-	EventSubscriber<DisplayCreatedEvent>
+public class SwingUI implements UserInterface
 {
 
 	private static final String README_FILE = "README.txt";
@@ -93,6 +94,8 @@ public class SwingUI implements UserInterface,
 
 	private ShadowMenu rootMenu;
 
+	private ArrayList<EventSubscriber<?>> subscribers;
+	
 	// -- UserInterface methods --
 
 	@Override
@@ -101,8 +104,6 @@ public class SwingUI implements UserInterface,
 		toolBar = new SwingToolBar();
 		statusBar = new SwingStatusBar();
 		initializeMenus();
-
-		Events.subscribe(DisplayCreatedEvent.class, this);
 
 		final JPanel pane = new JPanel();
 		frame.setContentPane(pane);
@@ -121,6 +122,8 @@ public class SwingUI implements UserInterface,
 		frame.pack();
 		frame.setVisible(true);
 
+		subscribeToEvents();
+		
 		displayReadme();
 	}
 
@@ -137,18 +140,6 @@ public class SwingUI implements UserInterface,
 	@Override
 	public SwingStatusBar getStatusBar() {
 		return statusBar;
-	}
-
-	// -- EventSubscriber methods --
-
-	@Override
-	public void onEvent(final DisplayCreatedEvent event) {
-		final Display display = event.getObject();
-		final DisplayWindow window = display.getDisplayWindow();
-		if (!(window instanceof SwingDisplayWindow)) return;
-		final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
-		// add a copy of the JMenuBar to the new display
-		createMenuBar(swingWindow);
 	}
 
 	// -- Helper methods --
@@ -175,6 +166,10 @@ public class SwingUI implements UserInterface,
 		f.setJMenuBar(menuBar);
 	}
 
+	private void deleteMenuBar(final JFrame f) {
+		f.setJMenuBar(null);
+	}
+	
 	private void displayReadme() {
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
 		if (firstRun != null) return;
@@ -276,4 +271,40 @@ public class SwingUI implements UserInterface,
 		return file.getParentFile();
 	}
 
+	@SuppressWarnings("synthetic-access")
+	private void subscribeToEvents() {
+		subscribers = new ArrayList<EventSubscriber<?>>();
+
+		final EventSubscriber<DisplayCreatedEvent> createSubscriber =
+			new EventSubscriber<DisplayCreatedEvent>() {
+
+				@Override
+				public void onEvent(DisplayCreatedEvent event) {
+					final Display display = event.getObject();
+					final DisplayWindow window = display.getDisplayWindow();
+					if (!(window instanceof SwingDisplayWindow)) return;
+					final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+					// add a copy of the JMenuBar to the new display
+					if (swingWindow.getJMenuBar() == null)
+						createMenuBar(swingWindow);
+				}
+			};
+		subscribers.add(createSubscriber);
+		Events.subscribe(DisplayCreatedEvent.class, createSubscriber);
+
+		final EventSubscriber<DisplayDeletedEvent> deleteSubscriber =
+			new EventSubscriber<DisplayDeletedEvent>() {
+
+				@Override
+				public void onEvent(DisplayDeletedEvent event) {
+					final Display display = event.getObject();
+					final DisplayWindow window = display.getDisplayWindow();
+					if (!(window instanceof SwingDisplayWindow)) return;
+					final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
+					deleteMenuBar(swingWindow);
+				}
+			};
+		subscribers.add(deleteSubscriber);
+		Events.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
+	}
 }
