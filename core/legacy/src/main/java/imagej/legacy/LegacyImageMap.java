@@ -180,16 +180,13 @@ public class LegacyImageMap {
 	}
 	
 	private void removeMapping(Display display, ImagePlus imp) {
-		if (display != null)
-			displayTable.remove(display);
-		//else
-		//	System.out.println("NULL DISPLAY DELETION!");
+		if (display != null) {
+			imagePlusTable.remove(display);
+		}
 		if (imp != null) {
-			imagePlusTable.remove(imp);
+			displayTable.remove(imp);
 			LegacyUtils.deleteImagePlus(imp);
 		}
-		//else
-		//	System.out.println("NULL IMP DELETION!");
 	}
 	
 	private void subscribeToEvents() {
