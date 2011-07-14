@@ -397,9 +397,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getTypeLabel());
-		double zoomFactor = getDisplay().getImageCanvas().getZoomFactor();
-		if (Math.abs(1-zoomFactor) > 0.00001)
-			sb.append(String.format(" [%.2f%%]", zoomFactor*100));
+		double zoomPercent = getDisplay().getImageCanvas().getZoomFactor() * 100.0;
+		if (Math.abs(100.0-zoomPercent) >= 0.01)
+			sb.append(String.format(" [%.2f%%]", zoomPercent));
 		return sb.toString();
 	}
 
@@ -411,9 +411,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void close() {
 		setVisible(false);
+		unsubscribeFromEvents();
 		// NB - dispose() here generates extra WindowClose events. But avoids some
 		//   memory leaks. Inspected with Eclipse Memory Analyzer.
 		dispose();
-		unsubscribeFromEvents();
 	}
 }
