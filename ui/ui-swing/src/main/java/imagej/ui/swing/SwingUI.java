@@ -168,6 +168,13 @@ public class SwingUI implements UserInterface
 
 	private void deleteMenuBar(final JFrame f) {
 		f.setJMenuBar(null);
+		// HACK - w/o this next call the JMenuBars do not get garbage collected.
+		//   At least its true on the Mac. This might be a Java bug. Update:
+		//   I hunted on web and have found multiple people with the same problem.
+		//   The Apple ScreenMenus don't GC when a Frame disposes. Their workaround
+		//   was exactly the same. I have not found any official documentation of
+		//   this issue.
+		f.setMenuBar(null);
 	}
 	
 	private void displayReadme() {
