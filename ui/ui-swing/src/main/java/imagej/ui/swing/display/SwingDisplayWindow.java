@@ -166,14 +166,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		createSliders();
 		sliders.setVisible(sliders.getComponentCount() > 0);
 		setTitle(getDisplay().getName());
-		/*for (final DisplayView view : display.getViews()) {
-			final Dataset dataset = getDataset(view);
-			if (dataset == null) continue;
-
-			// NOTICE single title set over and over with different Datasets
-		//	setTitle(getDisplay().getName());
-			//setTitle(makeTitle(dataset, display.getImageCanvas().getZoomFactor()));
-		}*/
 		pack();
 		setVisible(true);
 	}
@@ -273,6 +265,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		Events.subscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 
+	// NB - this method necessary to make sure resources get returned via GC.
+	//   Else there is a memory leak.
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(ZoomEvent.class, zoomSubscriber);
 		Events.unsubscribe(DatasetRestructuredEvent.class, restructureSubscriber);
@@ -409,40 +403,18 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		return sb.toString();
 	}
 
-//	private String makeTitle(final Dataset dataset, final double scale) {
-//		final String datasetName = dataset.getName();
-//
-//		if (scale == 1.0) return datasetName; // exactly 100% zoom
-//
-//		final String infoString =
-//			String.format("%s (%.2f%%)", datasetName, scale * 100);
-//
-//		return infoString;
-//	}
-
 	private Dataset getDataset(final DisplayView view) {
 		final DataObject dataObject = view.getDataObject();
 		return dataObject instanceof Dataset ? (Dataset) dataObject : null;
 	}
 
-	// TODO - FIXME - BDZ
-	// This code grew from simply calling setVisible(false) to doing all these
-	// other things too. Was trying to squash a memory leak bug (#669). The leak
-	// was fixed by this code. The key was using setMenuBar(null) (and not using
-	// setJMenuBar(null). This might point out a Java bug. This code should do
-	// less work and that needs to be tested going forward.
-	
 	@Override
 	public void close() {
 		setVisible(false);
-		if (getJMenuBar() != null) {
-			getJMenuBar().removeAll();
-			setJMenuBar(null);
-		}
-		if (getMenuBar() != null)  // key call here
-			setMenuBar(null);
-		removeAll();
-		dispose();
+		// NB - dispose() here generates extra WindowClose events. Not doing it
+		//   here does not seem to cause any memory leaks. Inspected with
+		//   Eclipse Memory Analyzer.
+		//dispose();
 		unsubscribeFromEvents();
 	}
 }
