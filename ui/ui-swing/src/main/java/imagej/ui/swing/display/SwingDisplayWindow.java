@@ -411,10 +411,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void close() {
 		setVisible(false);
-		// NB - dispose() here generates extra WindowClose events. Not doing it
-		//   here does not seem to cause any memory leaks. Inspected with
-		//   Eclipse Memory Analyzer.
-		//dispose();
+		// NB - dispose() here generates extra WindowClose events. But avoids some
+		//   memory leaks. Inspected with Eclipse Memory Analyzer.
+		dispose();
 		unsubscribeFromEvents();
 	}
 }
