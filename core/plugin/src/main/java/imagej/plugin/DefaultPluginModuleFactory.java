@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.Module;
 import imagej.module.ModuleException;
 
 /**
@@ -45,9 +46,29 @@ import imagej.module.ModuleException;
 public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
-	public <R extends RunnablePlugin> PluginModule<R> createModule(
-		PluginModuleInfo<R> info) throws ModuleException
+	public <R extends RunnablePlugin> Module createModule(
+		final PluginModuleInfo<R> info) throws ModuleException
 	{
+		// if the plugin implements Module, return a new instance directly
+		try {
+			final Class<R> pluginClass = info.loadClass();
+			if (Module.class.isAssignableFrom(pluginClass)) {
+				@SuppressWarnings("unchecked")
+				final Class<Module> moduleClass = (Class<Module>) pluginClass;
+				return moduleClass.newInstance();
+			}
+		}
+		catch (InstantiableException e) {
+			throw new ModuleException(e);
+		}
+		catch (InstantiationException e) {
+			throw new ModuleException(e);
+		}
+		catch (IllegalAccessException e) {
+			throw new ModuleException(e);
+		}
+
+		// plugin does not implement Module; wrap it in a PluginModule instance
 		return new PluginModule<R>(info);
 	}
 
