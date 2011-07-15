@@ -37,24 +37,20 @@ package imagej.ui.swing.tools;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
+import org.jhotdraw.draw.tool.DelegationSelectionTool;
+
 /**
  * The selection tool allows the user to switch to JHotDraw's
- * DelegationSelectionTool which lets the user move and stretch their overlays.
+ * {@link DelegationSelectionTool} which lets the user move and stretch their
+ * overlays.
  * 
  * @author Lee Kamentsky
  */
-@Tool(name = SelectionTool.NAME, iconPath = "/icons/tools/selection.png",
+@Tool(name = "Selection", iconPath = "/icons/tools/selection.png",
 	priority = SelectionTool.PRIORITY, label = "Selection tool",
-	description = "Adjust the shape and position of an overlay via handles.",
-	enabled = true)
+	description = "Adjust the shape and position of an overlay via handles.")
 public class SelectionTool extends AbstractTool {
 
-	public final static String NAME = "Selection";
 	public final static int PRIORITY = 100;
-
-	@Override
-	public String getName() {
-		return NAME;
-	}
 
 }

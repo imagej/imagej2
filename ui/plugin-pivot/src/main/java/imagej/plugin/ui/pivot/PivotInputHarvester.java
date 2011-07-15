@@ -34,24 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
+import imagej.module.Module;
+import imagej.module.process.ModulePreprocessor;
+import imagej.module.ui.InputHarvester;
+import imagej.module.ui.InputPanel;
+import imagej.plugin.AbstractInputHarvesterPlugin;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
-import imagej.plugin.process.PluginPreprocessor;
 
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Sheet;
 
 /**
- * PivotInputHarvester is a plugin preprocessor that collects input parameter
- * values from the user using a {@link PivotInputPanel} dialog box.
- *
+ * PivotInputHarvester is an {@link InputHarvester} that collects input
+ * parameter values from the user using a {@link PivotInputPanel} dialog box.
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PluginPreprocessor.class)
-public class PivotInputHarvester extends AbstractInputHarvester {
+@Plugin(type = ModulePreprocessor.class)
+public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override
 	public PivotInputPanel createInputPanel() {
@@ -59,13 +60,13 @@ public class PivotInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
+	public boolean
+		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
 		final Sheet dialog = new Sheet();
 		dialog.setTitle(module.getInfo().getLabel());
 		dialog.add(((PivotInputPanel) inputPanel).getPanel());
-		dialog.open((Display) null);//FIXME
+		dialog.open((Display) null);// FIXME
 		final boolean success = dialog.getResult();
 		return success;
 	}

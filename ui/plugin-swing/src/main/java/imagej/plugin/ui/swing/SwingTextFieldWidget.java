@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.TextFieldWidget;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -52,7 +52,7 @@ public class SwingTextFieldWidget extends SwingInputWidget
 
 	private final JTextField textField;
 
-	public SwingTextFieldWidget(final ParamModel model, final int columns) {
+	public SwingTextFieldWidget(final WidgetModel model, final int columns) {
 		super(model);
 
 		textField = new JTextField("", columns);
@@ -60,44 +60,40 @@ public class SwingTextFieldWidget extends SwingInputWidget
 		add(textField);
 		textField.getDocument().addDocumentListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- DocumentListener methods --
 
 	@Override
 	public void changedUpdate(final DocumentEvent e) {
-		documentUpdate();
+		updateModel();
 	}
 
 	@Override
 	public void insertUpdate(final DocumentEvent e) {
-		documentUpdate();
+		updateModel();
 	}
 
 	@Override
 	public void removeUpdate(final DocumentEvent e) {
-		documentUpdate();
+		updateModel();
 	}
 
 	// -- TextFieldWidget methods --
 
 	@Override
-	public String getText() {
+	public String getValue() {
 		return textField.getText();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		textField.setText(model.getValue().toString());
-	}
-
-	// -- Helper methods --
-
-	private void documentUpdate() {
-		model.setValue(textField.getText());
+	public void refreshWidget() {
+		final String value = getModel().getValue().toString();
+		if (textField.getText().equals(value)) return; // no change
+		textField.setText(value);
 	}
 
 }

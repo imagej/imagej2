@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.FileWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.io.File;
 
@@ -58,7 +58,7 @@ public class PivotFileWidget extends PivotInputWidget
 	private final TextInput path;
 	private final PushButton browse;
 
-	public PivotFileWidget(final ParamModel model) {
+	public PivotFileWidget(final WidgetModel model) {
 		super(model);
 
 		path = new TextInput();
@@ -68,21 +68,24 @@ public class PivotFileWidget extends PivotInputWidget
 		browse.getButtonPressListeners().add(this);
 		add(browse);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- FileWidget methods --
 
 	@Override
-	public File getFile() {
+	public File getValue() {
 		return new File(path.getText());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		path.setText(model.getValue().toString());
+	public void refreshWidget() {
+		final File value = (File) getModel().getValue();
+		final String text = value == null ? "" : value.toString();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
 
 	// -- ButtonPressListener methods --

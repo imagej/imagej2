@@ -35,14 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.ImageJ;
-import imagej.plugin.IndexException;
-import imagej.plugin.PluginEntry;
-import imagej.plugin.PluginException;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.AbstractMenuCreator;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.plugin.PluginManager;
-import imagej.plugin.RunnablePlugin;
-import imagej.plugin.ui.AbstractMenuCreator;
-import imagej.plugin.ui.ShadowMenu;
-import imagej.util.Log;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,15 +56,13 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 /**
- * Creates a Swing-based {@link JMenu} structure from a {@link ShadowMenu} tree.
+ * Populates a Swing menu structure with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */
 public abstract class SwingMenuCreator<T> extends
 	AbstractMenuCreator<T, JMenu>
 {
-
-	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
 
 	/** Table of button groups for radio button menu items. */
 	private HashMap<String, ButtonGroup> buttonGroups =
@@ -114,7 +108,7 @@ public abstract class SwingMenuCreator<T> extends
 		}
 		else menuItem = new JMenuItem(name);
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getPluginEntry(), menuItem);
+		linkAction(shadow.getModuleInfo(), menuItem);
 		return menuItem;
 	}
 
@@ -127,21 +121,15 @@ public abstract class SwingMenuCreator<T> extends
 	// -- Helper methods --
 
 	private boolean isSelected(final ShadowMenu shadow) {
-		try {
-			return shadow.getPluginEntry().createModule().isSelected();
-		}
-		catch (final PluginException exc) {
-			Log.warn(exc);
-			return false;
-		}
+		return shadow.getModuleInfo().isSelected();
 	}
 
 	private ButtonGroup getButtonGroup(final ShadowMenu shadow) {
-		final String tGroup = shadow.getPluginEntry().getToggleGroup();
-		ButtonGroup buttonGroup = buttonGroups.get(tGroup);
+		final String selectionGroup = shadow.getModuleInfo().getSelectionGroup();
+		ButtonGroup buttonGroup = buttonGroups.get(selectionGroup);
 		if (buttonGroup == null) {
 			buttonGroup = new ButtonGroup();
-			buttonGroups.put(tGroup, buttonGroup);
+			buttonGroups.put(selectionGroup, buttonGroup);
 		}
 		return buttonGroup;
 	}
@@ -162,21 +150,8 @@ public abstract class SwingMenuCreator<T> extends
 	}
 
 	private Icon loadIcon(final ShadowMenu shadow) {
-		String iconPath = shadow.getMenuEntry().getIconPath();
-		if (iconPath == null || iconPath.isEmpty()) {
-			if (shadow.isLeaf()) iconPath = DEFAULT_ICON_PATH;
-			else return null;
-		}
-		try {
-			final Class<?> c = shadow.getPluginEntry().loadClass();
-			final URL iconURL = c.getResource(iconPath);
-			if (iconURL == null) return null;
-			return new ImageIcon(iconURL);
-		}
-		catch (final IndexException e) {
-			Log.error("Could not load icon: " + iconPath, e);
-		}
-		return null;
+		final URL iconURL = shadow.getIconURL();
+		return iconURL == null ? null : new ImageIcon(iconURL);
 	}
 
 	private void assignProperties(final JMenuItem menuItem,
@@ -192,22 +167,16 @@ public abstract class SwingMenuCreator<T> extends
 		if (icon != null) menuItem.setIcon(icon);
 	}
 
-	private void
-		linkAction(final PluginEntry<?> entry, final JMenuItem menuItem)
-	{
+	private void linkAction(final ModuleInfo info, final JMenuItem menuItem) {
 		menuItem.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				// TODO - find better solution for typing here
-				@SuppressWarnings("unchecked")
-				final PluginEntry<? extends RunnablePlugin> runnableEntry =
-					(PluginEntry<? extends RunnablePlugin>) entry;
-				final boolean toggleState = menuItem.isSelected();
 				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(runnableEntry, toggleState);
+				pluginManager.run(info, true);
 			}
 		});
-		menuItem.setEnabled(entry.isEnabled());
+		menuItem.setEnabled(info.isEnabled());
 	}
 
 	private boolean isMac() {

@@ -45,7 +45,7 @@ import net.imglib2.type.logic.BitType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
+@Plugin(selectable = true, selectionGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Unsigned 1-bit", weight = 201) })

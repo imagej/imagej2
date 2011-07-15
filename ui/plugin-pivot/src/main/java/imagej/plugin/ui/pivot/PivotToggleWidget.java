@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.ToggleWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.ToggleWidget;
 
 import org.apache.pivot.wtk.Checkbox;
 
@@ -49,27 +49,27 @@ public class PivotToggleWidget extends PivotInputWidget implements ToggleWidget
 
 	private final Checkbox checkbox;
 
-	public PivotToggleWidget(final ParamModel model) {
+	public PivotToggleWidget(final WidgetModel model) {
 		super(model);
 
 		checkbox = new Checkbox();
 		add(checkbox);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ToggleWidget methods --
 
 	@Override
-	public boolean isSelected() {
+	public Boolean getValue() {
 		return checkbox.isSelected();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		checkbox.setSelected((Boolean) model.getValue());
+	public void refreshWidget() {
+		checkbox.setSelected((Boolean) getModel().getValue());
 	}
 
 }

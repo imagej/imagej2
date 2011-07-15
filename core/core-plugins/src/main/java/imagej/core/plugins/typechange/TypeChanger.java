@@ -55,9 +55,6 @@ import net.imglib2.type.numeric.RealType;
  */
 public class TypeChanger {
 
-	@Parameter
-	protected boolean selected;
-
 	@Parameter(required = true)
 	protected Dataset input;
 

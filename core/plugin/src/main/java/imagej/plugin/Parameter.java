@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.plugin.ui.WidgetStyle;
+import imagej.module.ItemVisibility;
+import imagej.module.ui.WidgetStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -51,6 +52,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Parameter {
+
+	/** Defines a label for the parameter. */
+	String label() default "";
+
+	/** Defines a description for the parameter. */
+	String description() default "";
 
 	/** Defines if the parameter is an output. */
 	boolean output() default false;
@@ -76,15 +83,9 @@ public @interface Parameter {
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	ParamVisibility visibility() default imagej.plugin.ParamVisibility.NORMAL;
+	ItemVisibility visibility() default imagej.module.ItemVisibility.NORMAL;
 
-	/** Defines a label for the parameter. */
-	String label() default "";
-
-	/** Defines a description for the parameter. */
-	String description() default "";
-
-	/** Defines whether the parameter is required (i.e., no default). */
+	/** Defines whether the parameter value must be specified (i.e., no default). */
 	boolean required() default false;
 
 	/** Defines whether to remember the most recent value of the parameter. */
@@ -107,7 +108,7 @@ public @interface Parameter {
 	// NB: We use the fully qualified name to work around a javac bug:
 	// http://bugs.sun.com/view_bug.do?bug_id=6512707
 	// See: http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	WidgetStyle style() default imagej.plugin.ui.WidgetStyle.DEFAULT;
+	WidgetStyle style() default imagej.module.ui.WidgetStyle.DEFAULT;
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";

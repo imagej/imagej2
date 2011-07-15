@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.ToggleWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.ToggleWidget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -50,26 +50,26 @@ public class SWTToggleWidget extends SWTInputWidget implements ToggleWidget {
 
 	private final Button checkbox;
 
-	public SWTToggleWidget(final Composite parent, final ParamModel model) {
+	public SWTToggleWidget(final Composite parent, final WidgetModel model) {
 		super(parent, model);
 
 		checkbox = new Button(this, SWT.CHECK);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ToggleWidget methods --
 
 	@Override
-	public boolean isSelected() {
+	public Boolean getValue() {
 		return checkbox.getSelection();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		checkbox.setSelection((Boolean) model.getValue());
+	public void refreshWidget() {
+		checkbox.setSelection((Boolean) getModel().getValue());
 	}
 
 }

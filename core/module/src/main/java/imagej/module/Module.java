@@ -44,9 +44,9 @@ import java.util.Map;
  * inputs and outputs are connected.
  * </p>
  * <p>
- * The Module interface represents a specific instance of a module, while the
- * corresponding {@link ModuleInfo} represents metadata about that module,
- * particularly its input and output names and types.
+ * The <code>Module</code> interface represents a specific instance of a module,
+ * while the corresponding {@link ModuleInfo} represents metadata about that
+ * module, particularly its input and output names and types.
  * </p>
  * 
  * @author Aivar Grislis
@@ -57,8 +57,33 @@ public interface Module {
 	/** Executes the module. */
 	void run();
 
+	/**
+	 * Computes a preview of the module's execution results, if available. A
+	 * preview is a quick approximation of the results that would be obtained by
+	 * actually executing the module with {@link #run()}. Not all modules support
+	 * previews.
+	 * 
+	 * @see ModuleInfo#canPreview()
+	 */
+	void preview();
+
 	/** Gets metadata about this module. */
 	ModuleInfo getInfo();
+
+	/**
+	 * Gets the object containing the module's actual implementation. By
+	 * definition, this is an object whose fully qualified class name is given by
+	 * <code>getInfo().getImplementationClassName()</code>. This object must
+	 * possess all callback methods specified by {@link ModuleItem#getCallback()}.
+	 * <p>
+	 * The nature of this method is implementation-specific; e.g., a
+	 * <code>PluginModule</code> will return its associated
+	 * <code>RunnablePlugin</code>. For modules that are not plugins, the result
+	 * may be something else. If you are implementing this interface directly, a
+	 * good rule of thumb is to return <code>this</code>.
+	 * </p>
+	 */
+	Object getDelegateObject();
 
 	/** Gets the value of the input with the given name. */
 	Object getInput(String name);

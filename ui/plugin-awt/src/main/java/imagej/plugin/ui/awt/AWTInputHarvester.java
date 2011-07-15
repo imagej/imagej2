@@ -34,28 +34,28 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
+import imagej.module.Module;
+import imagej.module.process.ModulePreprocessor;
+import imagej.module.ui.AbstractInputHarvester;
+import imagej.module.ui.InputHarvester;
+import imagej.module.ui.InputPanel;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
-import imagej.plugin.process.PluginPreprocessor;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-// TODO - eliminate Swing dependency
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * AWTInputHarvester is a plugin preprocessor that collects input parameter
+ * AWTInputHarvester is an {@link InputHarvester} that collects input parameter
  * values from the user using an {@link AWTInputPanel} dialog box.
- *
+ * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PluginPreprocessor.class)
+@Plugin(type = ModulePreprocessor.class)
 public class AWTInputHarvester extends AbstractInputHarvester {
 
 	@Override
@@ -64,12 +64,13 @@ public class AWTInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
+	public boolean
+		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
 		final JOptionPane optionPane = new JOptionPane(null);
 		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = optionPane.createDialog(module.getInfo().getLabel());
+		final JDialog dialog =
+			optionPane.createDialog(module.getInfo().getLabel());
 		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
 		final JPanel widgetPane = (JPanel) mainPane.getComponent(0);
 		// TODO - use ScrollPane in case there are many widgets
@@ -83,7 +84,7 @@ public class AWTInputHarvester extends AbstractInputHarvester {
 	}
 
 	private void ensureDialogSizeReasonable(final JDialog dialog) {
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();		
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		final Dimension dialogSize = dialog.getSize();
 
 		int newWidth = dialogSize.width;
@@ -97,4 +98,5 @@ public class AWTInputHarvester extends AbstractInputHarvester {
 
 		dialog.setSize(newWidth, newHeight);
 	}
+
 }

@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.ModuleException;
+
 /**
  * The default implementation of {@link PluginModuleFactory}, using a
  * {@link PluginModule}.
@@ -44,9 +46,9 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
 	public <R extends RunnablePlugin> PluginModule<R> createModule(
-		final PluginEntry<R> entry) throws PluginException
+		PluginModuleInfo<R> info) throws ModuleException
 	{
-		return new PluginModule<R>(entry);
+		return new PluginModule<R>(info);
 	}
 
 }

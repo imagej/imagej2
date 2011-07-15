@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.FileWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.io.File;
 
@@ -48,14 +48,14 @@ public class HeadlessFileWidget extends HeadlessInputWidget
 	implements FileWidget
 {
 
-	public HeadlessFileWidget(final ParamModel model) {
+	public HeadlessFileWidget(final WidgetModel model) {
 		super(model);
 	}
 
 	// -- FileWidget methods --
 
 	@Override
-	public File getFile() {
+	public File getValue() {
 		return null; // TODO
 	}
 

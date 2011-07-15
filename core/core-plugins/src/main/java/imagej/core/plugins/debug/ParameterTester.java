@@ -37,11 +37,11 @@ package imagej.core.plugins.debug;
 import imagej.data.Dataset;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
+import imagej.module.ui.WidgetStyle;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-import imagej.plugin.ui.WidgetStyle;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
 
@@ -53,8 +53,7 @@ import java.math.BigInteger;
  * 
  * @author Curtis Rueden
  */
-@Plugin(toggleParameter = "selected",
-	menuPath = "Plugins>Debug>Parameter Tester")
+@Plugin(menuPath = "Plugins>Debug>Parameter Tester")
 public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@Parameter(label = "boolean")
@@ -78,10 +77,10 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "short")
 	private short pShort;
 
-	@Parameter
+//	@Parameter
 	private BigInteger bigInteger;
 
-	@Parameter(label = "char")
+//	@Parameter(label = "char")
 	private char pChar;
 
 	@Parameter(label = "String")
@@ -123,9 +122,6 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(description = "Demonstrates preview functionality by "
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
-
-	@Parameter
-	private boolean selected = true;
 
 	@Parameter
 	private int extra1;
@@ -210,7 +206,6 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("\tx = " + x);
 		Log.info("\t2x = " + twoX);
 		Log.info("\tmessage = " + message);
-		Log.info("\tselected = " + selected);
 	}
 
 	private int previews = 0;

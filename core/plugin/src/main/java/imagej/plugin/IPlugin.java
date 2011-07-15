@@ -34,13 +34,32 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.process.ModulePostprocessor;
+import imagej.module.process.ModulePreprocessor;
+import imagej.module.process.ModuleProcessor;
+
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must
  * implement this interface and be annotated with @{@link Plugin}.
+ * <p>
+ * There are several different kinds of plugins:
+ * <ul>
+ * <li>{@link RunnablePlugin} - plugins that are executable as modules.</li>
+ * <li>{@link ImageJPlugin} - plugins defined for use within ImageJ. All
+ * {@link ImageJPlugin}s are executable.</li>
+ * <li><code>Display</code> - plugins that display data.</li>
+ * <li>{@link ModuleProcessor} - plugins that perform pre- or post-processing on
+ * other plugins ({@link ModulePreprocessor} and {@link ModulePostprocessor}
+ * respectively).</li>
+ * </ul>
+ * What all plugins have in common is that they can be annotated using the
+ * @{@link Plugin} annotation, and discovered if present on the classpath at
+ * runtime.
+ * </p>
  * 
  * @author Curtis Rueden
  * @see Plugin
- * @see ImageJPlugin
+ * @see PluginManager
  */
 public interface IPlugin {
 	// top-level marker interface for discovery via SezPoz

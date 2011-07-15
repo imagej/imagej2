@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.ToggleWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.ToggleWidget;
 
 /**
  * Headless implementation of boolean toggle widget.
@@ -46,14 +46,14 @@ public class HeadlessToggleWidget extends HeadlessInputWidget
 	implements ToggleWidget
 {
 
-	public HeadlessToggleWidget(final ParamModel model) {
+	public HeadlessToggleWidget(final WidgetModel model) {
 		super(model);
 	}
 
 	// -- ToggleWidget methods --
 
 	@Override
-	public boolean isSelected() {
+	public Boolean getValue() {
 		return false; // TODO
 	}
 

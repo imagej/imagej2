@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ChoiceWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,7 +53,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 
 	private final JComboBox comboBox;
 
-	public SwingChoiceWidget(final ParamModel model, final String[] items) {
+	public SwingChoiceWidget(final WidgetModel model, final String[] items) {
 		super(model);
 
 		comboBox = new JComboBox(items);
@@ -61,20 +61,20 @@ public class SwingChoiceWidget extends SwingInputWidget
 		add(comboBox);
 		comboBox.addActionListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ActionListener methods --
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		model.setValue(comboBox.getSelectedItem());
+		updateModel();
 	}
 
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getItem() {
+	public String getValue() {
 		return comboBox.getSelectedItem().toString();
 	}
 
@@ -86,8 +86,10 @@ public class SwingChoiceWidget extends SwingInputWidget
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		comboBox.setSelectedItem(getValidValue());
+	public void refreshWidget() {
+		final Object value = getValidValue();
+		if (value.equals(comboBox.getSelectedItem())) return; // no change
+		comboBox.setSelectedItem(value);
 	}
 
 	// -- Helper methods --
@@ -96,7 +98,7 @@ public class SwingChoiceWidget extends SwingInputWidget
 		final int itemCount = comboBox.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final Object value = model.getValue();
+		final Object value = getModel().getValue();
 		for (int i = 0; i < itemCount; i++) {
 			final Object item = comboBox.getItemAt(i);
 			if (value.equals(item)) return value;
@@ -104,7 +106,8 @@ public class SwingChoiceWidget extends SwingInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final Object validValue = comboBox.getItemAt(0);
-		model.setValue(validValue);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
 		return validValue;
 	}
 

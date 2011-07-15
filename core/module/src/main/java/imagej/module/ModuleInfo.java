@@ -36,33 +36,59 @@ package imagej.module;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
- * (but not a specific instance of it). In particular, it can report details
- * on the names and types of inputs and outputs.
+ * (but not a specific instance of it). In particular, it can report details on
+ * the names and types of inputs and outputs.
  * 
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
-public interface ModuleInfo {
-
-	/** Gets the unique name of this module. */
-	String getName();
-
-	/** Gets the name to appear in a UI, if applicable. */
-	String getLabel();
-
-	/** Gets a string describing this module. */
-	String getDescription();
+public interface ModuleInfo extends BasicDetails, UserInterfaceDetails {
 
 	/** Gets the input item with the given name. */
-	ModuleItem getInput(String name);
+	ModuleItem<?> getInput(String name);
 
 	/** Gets the output item with the given name. */
-	ModuleItem getOutput(String name);
+	ModuleItem<?> getOutput(String name);
 
 	/** Gets the list of input items. */
-	Iterable<ModuleItem> inputs();
+	Iterable<ModuleItem<?>> inputs();
 
 	/** Gets the list of output items. */
-	Iterable<ModuleItem> outputs();
+	Iterable<ModuleItem<?>> outputs();
+
+	/**
+	 * Gets the fully qualified name of the class containing the module's actual
+	 * implementation. By definition, this is the same value returned by
+	 * <code>createModule().getDelegateObject().getClass().getName()</code>, and
+	 * hence is also the class containing any callback methods specified by
+	 * {@link ModuleItem#getCallback()}.
+	 * <p>
+	 * The nature of this method is implementation-specific; for example, a plugin
+	 * will return the class name of its associated <code>RunnablePlugin</code>.
+	 * For modules that are not plugins, the result may be something else. If you
+	 * are implementing this interface directly, a good rule of thumb is to return
+	 * the class name of the associated {@link Module} (i.e., the same value given
+	 * by <code>createModule().getClass().getName()</code>).
+	 * </p>
+	 */
+	String getDelegateClassName();
+
+	/** Instantiates the module described by this module info. */
+	Module createModule() throws ModuleException;
+
+	/**
+	 * Gets whether the module supports previews. A preview is a quick
+	 * approximation of the results that would be obtained by actually executing
+	 * the module with {@link Module#run()}. If this method returns false, then
+	 * calling {@link Module#preview()} will have no effect.
+	 */
+	boolean canPreview();
+
+	/**
+	 * Notifies interested parties that the module info has been modified. This
+	 * mechanism is useful for updating any corresponding user interface such as
+	 * menu items that invoke the module.
+	 */
+	void update();
 
 }

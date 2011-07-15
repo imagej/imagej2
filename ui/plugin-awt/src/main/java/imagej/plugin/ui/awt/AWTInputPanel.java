@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.ImageJ;
+import imagej.module.ModuleException;
+import imagej.module.ui.AbstractInputPanel;
+import imagej.module.ui.InputPanel;
+import imagej.module.ui.WidgetModel;
 import imagej.object.ObjectManager;
-import imagej.plugin.PluginException;
-import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.InputPanel;
-import imagej.plugin.ui.ParamModel;
 
 import java.awt.Component;
 import java.awt.Label;
@@ -74,63 +74,63 @@ public class AWTInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamModel model, final Number min,
+	public void addNumber(final WidgetModel model, final Number min,
 		final Number max, final Number stepSize)
 	{
 		final AWTNumberWidget numberWidget =
 			new AWTNumberWidget(model, min, max, stepSize);
-		addField(model.getLabel(), numberWidget);
-		numberWidgets.put(model.getName(), numberWidget);
+		addField(model.getWidgetLabel(), numberWidget);
+		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamModel model) {
+	public void addToggle(final WidgetModel model) {
 		final AWTToggleWidget toggleWidget = new AWTToggleWidget(model);
-		addField(model.getLabel(), toggleWidget);
-		toggleWidgets.put(model.getName(), toggleWidget);
+		addField(model.getWidgetLabel(), toggleWidget);
+		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamModel model, final int columns) {
+	public void addTextField(final WidgetModel model, final int columns) {
 		final AWTTextFieldWidget textFieldWidget =
 			new AWTTextFieldWidget(model, columns);
-		addField(model.getLabel(), textFieldWidget);
-		textFieldWidgets.put(model.getName(), textFieldWidget);
+		addField(model.getWidgetLabel(), textFieldWidget);
+		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamModel model, final String[] items) {
+	public void addChoice(final WidgetModel model, final String[] items) {
 		final AWTChoiceWidget choiceWidget = new AWTChoiceWidget(model, items);
-		addField(model.getLabel(), choiceWidget);
-		choiceWidgets.put(model.getName(), choiceWidget);
+		addField(model.getWidgetLabel(), choiceWidget);
+		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamModel model) {
+	public void addFile(final WidgetModel model) {
 		final AWTFileWidget fileWidget = new AWTFileWidget(model);
-		addField(model.getLabel(), fileWidget);
-		fileWidgets.put(model.getName(), fileWidget);
+		addField(model.getWidgetLabel(), fileWidget);
+		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 
 	@Override
-	public void addColor(final ParamModel model) {
+	public void addColor(final WidgetModel model) {
 		// TODO create AWTColorWidget and add here
 	}
 
 	@Override
-	public void addObject(final ParamModel model) throws PluginException {
-		// TODO - Rectify with identical logic in other UI plugin implementations.
-		// Should the ij-object dependency just be part of ij-plugin?
-		final Class<?> type = model.getType();
+	public void addObject(final WidgetModel model) throws ModuleException {
+		// CTR FIXME - Rectify with identical logic in other implementations.
+		// Should ij-object be merged with ij-core?
+		final Class<?> type = model.getItem().getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		if (items.length == 0) {
 			// no valid objects of the given type
-			throw new PluginException("No objects of type " + type.getName());
+			throw new ModuleException("No objects of type " + type.getName());
 		}
 		final AWTObjectWidget objectWidget = new AWTObjectWidget(model, items);
-		addField(model.getLabel(), objectWidget);
-		objectWidgets.put(model.getName(), objectWidget);
+		addField(model.getWidgetLabel(), objectWidget);
+		objectWidgets.put(model.getItem().getName(), objectWidget);
 	}
 
 	@Override

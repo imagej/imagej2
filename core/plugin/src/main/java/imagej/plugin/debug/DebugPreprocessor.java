@@ -34,22 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.debug;
 
+import imagej.module.Module;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPreprocessor;
+import imagej.plugin.process.PreprocessorPlugin;
 import imagej.util.Log;
 
 /**
- * A plugin preprocessor that dumps information to the log.
+ * A preprocessor plugin that dumps information to the log.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class, priority = Plugin.FIRST_PRIORITY)
-public class DebugPreprocessor implements PluginPreprocessor {
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.FIRST_PRIORITY)
+public class DebugPreprocessor implements PreprocessorPlugin {
 
 	@Override
-	public void process(final PluginModule<?> module) {
-		Log.debug("Executing plugin: " + module.getPlugin());
+	public void process(final Module module) {
+		Log.debug("Executing module: " + module.getDelegateObject());
 	}
 
 	@Override

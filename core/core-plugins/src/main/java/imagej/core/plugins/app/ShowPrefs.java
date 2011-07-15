@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
+import imagej.module.ItemVisibility;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -47,7 +47,7 @@ import imagej.plugin.Plugin;
 @Plugin
 public class ShowPrefs implements ImageJPlugin {
 
-	@Parameter(visibility = ParamVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE)
 	public final String message = "Unimplemented";
 
 	@Override

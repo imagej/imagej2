@@ -47,8 +47,8 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.ObjectManager;
-import imagej.plugin.IndexException;
-import imagej.plugin.PluginEntry;
+import imagej.plugin.InstantiableException;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginManager;
 import imagej.util.Log;
 
@@ -155,10 +155,10 @@ public final class DisplayManager implements ManagerComponent {
 	public Display createDisplay(final Dataset dataset) {
 		// get available display plugins from the plugin manager
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<Display>> plugins =
+		final List<PluginInfo<Display>> plugins =
 			pluginManager.getPluginsOfType(Display.class);
 
-		for (final PluginEntry<Display> pe : plugins) {
+		for (final PluginInfo<Display> pe : plugins) {
 			try {
 				final Display displayPlugin = pe.createInstance();
 				// display dataset using the first compatible DisplayPlugin
@@ -169,7 +169,7 @@ public final class DisplayManager implements ManagerComponent {
 					return displayPlugin;
 				}
 			}
-			catch (final IndexException e) {
+			catch (final InstantiableException e) {
 				Log.error("Invalid display plugin: " + pe, e);
 			}
 		}

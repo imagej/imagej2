@@ -38,9 +38,11 @@ import ij.IJ;
 import ij.Menus;
 import imagej.ImageJ;
 import imagej.legacy.LegacyManager;
+import imagej.module.MenuEntry;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
+import imagej.plugin.IndexItemInfo;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginModuleInfo;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
 import imagej.util.ListUtils;
@@ -104,7 +106,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 	// -- IPluginFinder methods --
 
 	@Override
-	public void findPlugins(final List<PluginEntry<?>> plugins) {
+	public void findPlugins(final List<PluginInfo<?>> plugins) {
 		ImageJ.get(LegacyManager.class); // ensure ImageJ v1.x is initialized
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
@@ -112,7 +114,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		Log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
-			final PluginEntry<ImageJPlugin> pe =
+			final PluginInfo<ImageJPlugin> pe =
 				createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
@@ -136,7 +138,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		r.close();
 	}
 
-	private PluginEntry<ImageJPlugin> createEntry(final Object key,
+	private PluginInfo<ImageJPlugin> createEntry(final Object key,
 		final Hashtable<?, ?> commands,
 		final Map<String, List<MenuEntry>> menuTable)
 	{
@@ -148,7 +150,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 		if (Log.isDebug()) {
 			debugString =
 				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
-					" [menu = " + PluginEntry.getMenuString(menuPath) + ", weight = " +
+					" [menu = " + IndexItemInfo.getMenuString(menuPath) + ", weight = " +
 					menuPath.get(menuPath.size() - 1).getWeight() + "]";
 		}
 		else debugString = null;
@@ -162,8 +164,9 @@ public class LegacyPluginFinder implements IPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final PluginEntry<ImageJPlugin> pe =
-			new PluginEntry<ImageJPlugin>(LEGACY_PLUGIN_CLASS, ImageJPlugin.class);
+		final PluginModuleInfo<ImageJPlugin> pe =
+			new PluginModuleInfo<ImageJPlugin>(LEGACY_PLUGIN_CLASS,
+				ImageJPlugin.class);
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);
 

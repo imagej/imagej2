@@ -35,11 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.ImageJ;
-import imagej.plugin.PluginEntry;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.AbstractMenuCreator;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.plugin.PluginManager;
-import imagej.plugin.RunnablePlugin;
-import imagej.plugin.ui.AbstractMenuCreator;
-import imagej.plugin.ui.ShadowMenu;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -48,7 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * TODO
+ * Populates an AWT menu structure with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -76,7 +75,7 @@ public abstract class AWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
 	protected MenuItem createLeaf(final ShadowMenu shadow) {
 		final MenuItem menuItem = new MenuItem(shadow.getMenuEntry().getName());
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getPluginEntry(), menuItem);
+		linkAction(shadow.getModuleInfo(), menuItem);
 		return menuItem;
 	}
 
@@ -100,18 +99,13 @@ public abstract class AWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
 		}
 	}
 
-	private void linkAction(final PluginEntry<?> entry, final MenuItem menuItem)
-	{
+	private void linkAction(final ModuleInfo info, final MenuItem menuItem) {
 		menuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				// TODO - find better solution for typing here
-				@SuppressWarnings("unchecked")
-				final PluginEntry<? extends RunnablePlugin> runnableEntry =
-					(PluginEntry<? extends RunnablePlugin>) entry;
 				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(runnableEntry);
+				pluginManager.run(info, true);
 			}
 		});
 	}

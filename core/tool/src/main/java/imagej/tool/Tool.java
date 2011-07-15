@@ -48,6 +48,7 @@ import net.java.sezpoz.Indexable;
  * @author Rick Lentz
  * @author Curtis Rueden
  * @see ITool
+ * @see ToolManager
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)

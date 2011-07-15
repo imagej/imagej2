@@ -95,7 +95,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			outputs = new ArrayList<Display>();
 			return;
 		}
-		
+
 		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
 		final LegacyImageMap map = legacyManager.getImageMap();
 
@@ -129,7 +129,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			// return no outputs
 			outputs = new ArrayList<Display>();
 		}
-		
+
 		for (ImagePlus imp : closedSet) {
 			ImageWindow win = imp.getWindow();
 			if ((win == null) || (win.isClosed())) {
@@ -255,4 +255,5 @@ public class LegacyPlugin implements ImageJPlugin {
 		
 		return false;
 	}
+
 }

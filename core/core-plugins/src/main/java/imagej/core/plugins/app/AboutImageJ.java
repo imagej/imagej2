@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.ImageJ;
+import imagej.module.ItemVisibility;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -50,7 +50,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Help"), @Menu(label = "About ImageJ [IJ2]...", weight = 43) })
 public class AboutImageJ implements ImageJPlugin {
 
-	@Parameter(visibility = ParamVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE)
 	public final String message = "ImageJ v" + ImageJ.VERSION;
 
 	@Override

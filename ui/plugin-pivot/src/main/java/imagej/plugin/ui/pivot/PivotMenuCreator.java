@@ -35,11 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.ImageJ;
-import imagej.plugin.PluginEntry;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.AbstractMenuCreator;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.plugin.PluginManager;
-import imagej.plugin.RunnablePlugin;
-import imagej.plugin.ui.AbstractMenuCreator;
-import imagej.plugin.ui.ShadowMenu;
 import imagej.util.Log;
 
 import org.apache.pivot.wtk.Action;
@@ -52,7 +51,7 @@ import org.apache.pivot.wtk.MenuButton;
 import org.apache.pivot.wtk.PushButton;
 
 /**
- * Populate a {@link BoxPane} with menu buttons.
+ * Populates a {@link BoxPane} with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */
@@ -64,7 +63,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		addLeafToMenu(final ShadowMenu shadow, final MenuButton target)
 	{
 		final Menu.Item item = new Menu.Item(shadow.getMenuEntry().getName());
-		linkAction(shadow.getPluginEntry(), item);
+		linkAction(shadow.getModuleInfo(), item);
 		getLastSection(target).add(item);
 	}
 
@@ -73,7 +72,7 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		Log.debug("PivotMenuCreator: Adding leaf item: " + shadow);
 		final PushButton button = new PushButton();
 		button.setButtonData(shadow.getMenuEntry().getName());
-		linkAction(shadow.getPluginEntry(), button);
+		linkAction(shadow.getModuleInfo(), button);
 		target.add(button);
 	}
 
@@ -124,22 +123,16 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 		return sections.get(sections.getLength() - 1);
 	}
 
-	private void
-		linkAction(final PluginEntry<?> entry, final Button button)
-	{
+	private void linkAction(final ModuleInfo info, final Button button) {
 		button.setAction(new Action() {
 
 			@Override
 			public void perform() {
-				// TODO - find better solution for typing here
-				@SuppressWarnings("unchecked")
-				final PluginEntry<? extends RunnablePlugin> runnableEntry =
-					(PluginEntry<? extends RunnablePlugin>) entry;
 				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(runnableEntry);
+				pluginManager.run(info, true);
 			}
 		});
-		button.setEnabled(entry.isEnabled());
+		button.setEnabled(info.isEnabled());
 	}
 
 }

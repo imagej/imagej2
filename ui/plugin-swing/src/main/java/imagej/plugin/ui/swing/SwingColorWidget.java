@@ -34,9 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ColorWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ColorWidget;
+import imagej.module.ui.WidgetModel;
 import imagej.util.ColorRGB;
+import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -64,11 +65,12 @@ public class SwingColorWidget extends SwingInputWidget implements
 	private final JButton choose;
 	private Color color;
 
-	public SwingColorWidget(final ParamModel model) {
+	public SwingColorWidget(final WidgetModel model) {
 		super(model);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		choose = new JButton() {
+
 			@Override
 			public Dimension getMaximumSize() {
 				return getPreferredSize();
@@ -78,7 +80,7 @@ public class SwingColorWidget extends SwingInputWidget implements
 		add(choose);
 		choose.addActionListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ActionListener methods --
@@ -89,47 +91,33 @@ public class SwingColorWidget extends SwingInputWidget implements
 			JColorChooser.showDialog(choose, "Select a color", color);
 		if (choice == null) return;
 		color = choice;
-		model.setValue(getColor());
-		refresh();
+		updateModel();
+		refreshWidget();
 	}
 
 	// -- ColorWidget methods --
 
 	@Override
-	public ColorRGB getColor() {
-		return toColorRGB(color);
+	public ColorRGB getValue() {
+		return AWTColors.getColorRGB(color);
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		final ColorRGB value = (ColorRGB) model.getValue();
-		color = toColor(value);
-		
-		final BufferedImage image = new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT,
-			BufferedImage.TYPE_INT_RGB);
+	public void refreshWidget() {
+		final ColorRGB value = (ColorRGB) getModel().getValue();
+		color = AWTColors.getColor(value);
+
+		final BufferedImage image =
+			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT,
+				BufferedImage.TYPE_INT_RGB);
 		final Graphics g = image.getGraphics();
 		g.setColor(color);
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());
 		g.dispose();
 		final ImageIcon icon = new ImageIcon(image);
 		choose.setIcon(icon);
-	}
-
-	// -- Helper methods --
-
-	// NB: The following methods also exist in imagej.awt.AWTColors, but
-	// to avoid a dependency on ij-awt-common, we do not use them here.
-
-	private Color toColor(final ColorRGB c) {
-		if (c == null) return null;
-		return new Color(c.getRed(), c.getGreen(), c.getBlue());
-	}
-
-	private ColorRGB toColorRGB(final Color c) {
-		if (c == null) return null;
-		return new ColorRGB(c.getRed(), c.getGreen(), c.getBlue());
 	}
 
 }

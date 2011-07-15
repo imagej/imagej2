@@ -45,7 +45,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(toggleParameter = "selected", toggleGroup = "typechange", menu = {
+@Plugin(selectable = true, selectionGroup = "typechange", menu = {
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Unsigned 16-bit", weight = 204) })

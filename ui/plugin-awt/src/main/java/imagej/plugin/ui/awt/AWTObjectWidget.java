@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.ObjectWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ObjectWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
@@ -54,7 +54,7 @@ public class AWTObjectWidget extends AWTInputWidget
 	private final Choice choice;
 	private final Object[] items;
 
-	public AWTObjectWidget(final ParamModel model, final Object[] items) {
+	public AWTObjectWidget(final WidgetModel model, final Object[] items) {
 		super(model);
 		this.items = items;
 
@@ -63,20 +63,18 @@ public class AWTObjectWidget extends AWTInputWidget
 		add(choice, BorderLayout.CENTER);
 		choice.addItemListener(this);
 
-		refresh();
-	}
-
-	// -- ObjectWidget methods --
-
-	@Override
-	public Object getObject() {
-		return items[choice.getSelectedIndex()];
+		refreshWidget();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
+	public Object getValue() {
+		return items[choice.getSelectedIndex()];
+	}
+
+	@Override
+	public void refreshWidget() {
 		choice.select(getValidValue());
 	}
 
@@ -84,7 +82,7 @@ public class AWTObjectWidget extends AWTInputWidget
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		model.setValue(getObject());
+		updateModel();
 	}
 
 	// -- Helper methods --
@@ -93,7 +91,7 @@ public class AWTObjectWidget extends AWTInputWidget
 		final int itemCount = choice.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final String value = model.getValue().toString();
+		final String value = getModel().getValue().toString();
 		for (int i = 0; i < itemCount; i++) {
 			final String item = choice.getItem(i);
 			if (value == item) return value;
@@ -101,7 +99,8 @@ public class AWTObjectWidget extends AWTInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final String validValue = choice.getItem(0);
-		model.setValue(validValue);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
 		return validValue;
 	}
 

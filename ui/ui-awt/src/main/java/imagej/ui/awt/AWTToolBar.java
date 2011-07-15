@@ -37,9 +37,9 @@ package imagej.ui.awt;
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.plugin.IndexException;
+import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
-import imagej.tool.ToolEntry;
+import imagej.tool.ToolInfo;
 import imagej.tool.ToolManager;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
@@ -61,14 +61,14 @@ import java.util.Map;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.
- *
+ * 
  * @author Curtis Rueden
  */
 public class AWTToolBar extends Panel implements ToolBar {
 
-	private ToolManager toolManager;
+	private final ToolManager toolManager;
 
-	private Map<String, Button> toolButtons;
+	private final Map<String, Button> toolButtons;
 
 	public AWTToolBar() {
 		toolManager = ImageJ.get(ToolManager.class);
@@ -88,7 +88,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolEntry entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolManager.getToolEntries()) {
 			try {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
@@ -99,16 +99,18 @@ public class AWTToolBar extends Panel implements ToolBar {
 				if (priority - lastPriority > 10) add(new Label(" "));
 				lastPriority = priority;
 			}
-			catch (IndexException e) {
+			catch (final InstantiableException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private Button createButton(final ToolEntry entry) throws IndexException {
+	private Button createButton(final ToolInfo entry)
+		throws InstantiableException
+	{
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
-		tool.setToolEntry(entry);
+		tool.setInfo(entry);
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
@@ -117,6 +119,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		final boolean enabled = entry.isEnabled();
 
 		final Button button = new Button() {
+
 			@Override
 			public void paint(final Graphics g) {
 				super.paint(g);
@@ -137,6 +140,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 		// display description on mouseover
 		button.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
 				Events.publish(new StatusEvent(description));
@@ -145,8 +149,9 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 		// activate tool when button pressed
 		button.addActionListener(new ActionListener() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				getToolManager().setActiveTool(tool);
 			}
 		});

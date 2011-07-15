@@ -39,8 +39,7 @@ import imagej.data.Dataset;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPreprocessor;
+import imagej.plugin.process.PreprocessorPlugin;
 
 /**
  * Assigns the active {@link Display} when there is one single unresolved
@@ -59,8 +58,8 @@ import imagej.plugin.process.PluginPreprocessor;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class, priority = Plugin.HIGH_PRIORITY)
-public class ActiveDisplayPreprocessor implements PluginPreprocessor {
+@Plugin(type = PreprocessorPlugin.class, priority = Plugin.HIGH_PRIORITY)
+public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 	// -- PluginPreprocessor methods --
 
@@ -74,10 +73,10 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 		return null;
 	}
 
-	// -- PluginProcessor methods --
+	// -- ModuleProcessor methods --
 
 	@Override
-	public void process(final PluginModule<?> module) {
+	public void process(final Module module) {
 		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
 
 		// assign active display to single Display input
@@ -117,9 +116,9 @@ public class ActiveDisplayPreprocessor implements PluginPreprocessor {
 	// -- Helper methods --
 
 	private String getSingleInput(final Module module, final Class<?> type) {
-		final Iterable<ModuleItem> inputs = module.getInfo().inputs();
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
 		String result = null;
-		for (final ModuleItem item : inputs) {
+		for (final ModuleItem<?> item : inputs) {
 			final String name = item.getName();
 			final boolean resolved = module.isResolved(name);
 			if (resolved) continue; // skip resolved inputs

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ChoiceWidget;
+import imagej.module.ui.WidgetModel;
 
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.ListButton;
@@ -51,20 +51,20 @@ public class PivotChoiceWidget extends PivotInputWidget
 
 	private final ListButton listButton;
 
-	public PivotChoiceWidget(final ParamModel model, final String[] items) {
+	public PivotChoiceWidget(final WidgetModel model, final String[] items) {
 		super(model);
 
 		listButton = new ListButton();
 		listButton.setListData(new ArrayList<String>(items));
 		add(listButton);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getItem() {
+	public String getValue() {
 		return listButton.getSelectedItem().toString();
 	}
 
@@ -76,8 +76,10 @@ public class PivotChoiceWidget extends PivotInputWidget
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		listButton.setSelectedItem(model.getValue());
+	public void refreshWidget() {
+		final Object value = getModel().getValue();
+		if (value.equals(listButton.getSelectedItem())) return; // no change
+		listButton.setSelectedItem(value);
 	}
 
 }

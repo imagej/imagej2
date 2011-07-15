@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.NumberWidget;
+import imagej.module.ui.WidgetModel;
 
 /**
  * Headless implementation of number chooser widget.
@@ -48,7 +48,7 @@ public class HeadlessNumberWidget extends HeadlessInputWidget
 
 	private Number min, max, stepSize;
 
-	public HeadlessNumberWidget(final ParamModel model,
+	public HeadlessNumberWidget(final WidgetModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		super(model);

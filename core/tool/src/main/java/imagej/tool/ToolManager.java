@@ -57,23 +57,25 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for keeping track of available tools, including which
- * tool is active, and delegating UI events to the active tool.
- *
+ * Manager component for keeping track of available tools, including which tool
+ * is active, and delegating UI events to the active tool.
+ * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @see ITool
+ * @see Tool
  */
 @Manager(priority = Manager.HIGH_PRIORITY)
 public class ToolManager implements ManagerComponent {
 
-	private List<ToolEntry> toolEntries;
+	private List<ToolInfo> toolEntries;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
 	private ITool activeTool;
 
-	public List<ToolEntry> getToolEntries() {
+	public List<ToolInfo> getToolEntries() {
 		return Collections.unmodifiableList(toolEntries);
 	}
 
@@ -111,118 +113,109 @@ public class ToolManager implements ManagerComponent {
 	// -- Helper methods --
 
 	/** Discovers tools using SezPoz. */
-	private List<ToolEntry> findTools() {
+	private List<ToolInfo> findTools() {
 		final Index<Tool, ITool> toolIndex = Index.load(Tool.class, ITool.class);
-		final List<ToolEntry> tools = new ArrayList<ToolEntry>();
+		final List<ToolInfo> tools = new ArrayList<ToolInfo>();
 		for (final IndexItem<Tool, ITool> item : toolIndex) {
-			tools.add(createEntry(item));
+			tools.add(createInfo(item));
 		}
 		return tools;
 	}
-	
-	private ToolEntry createEntry(final IndexItem<Tool, ITool> item) {
+
+	private ToolInfo createInfo(final IndexItem<Tool, ITool> item) {
 		final String className = item.className();
 		final Tool tool = item.annotation();
-
-		final ToolEntry entry = new ToolEntry(className);
-		entry.setName(tool.name());
-		entry.setLabel(tool.label());
-		entry.setDescription(tool.description());
-		entry.setIconPath(tool.iconPath());
-		entry.setPriority(tool.priority());
-		entry.setEnabled(tool.enabled());
-
-		return entry;
+		return new ToolInfo(className, tool);
 	}
 
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<KyPressedEvent> kyPressedSubscriber =
-			new EventSubscriber<KyPressedEvent>()
-		{
-			@Override
-			public void onEvent(final KyPressedEvent event) {
-				getActiveTool().onKeyDown(event);
-			}
-		};
+			new EventSubscriber<KyPressedEvent>() {
+
+				@Override
+				public void onEvent(final KyPressedEvent event) {
+					getActiveTool().onKeyDown(event);
+				}
+			};
 		subscribers.add(kyPressedSubscriber);
 		Events.subscribe(KyPressedEvent.class, kyPressedSubscriber);
 
 		final EventSubscriber<KyReleasedEvent> kyReleasedSubscriber =
-			new EventSubscriber<KyReleasedEvent>()
-		{
-			@Override
-			public void onEvent(final KyReleasedEvent event) {
-				getActiveTool().onKeyUp(event);
-			}
-		};
+			new EventSubscriber<KyReleasedEvent>() {
+
+				@Override
+				public void onEvent(final KyReleasedEvent event) {
+					getActiveTool().onKeyUp(event);
+				}
+			};
 		subscribers.add(kyReleasedSubscriber);
 		Events.subscribe(KyReleasedEvent.class, kyReleasedSubscriber);
 
 		final EventSubscriber<MsPressedEvent> msPressedSubscriber =
-			new EventSubscriber<MsPressedEvent>()
-		{
-			@Override
-			public void onEvent(final MsPressedEvent event) {
-				getActiveTool().onMouseDown(event);
-			}
-		};
+			new EventSubscriber<MsPressedEvent>() {
+
+				@Override
+				public void onEvent(final MsPressedEvent event) {
+					getActiveTool().onMouseDown(event);
+				}
+			};
 		subscribers.add(msPressedSubscriber);
 		Events.subscribe(MsPressedEvent.class, msPressedSubscriber);
 
 		final EventSubscriber<MsReleasedEvent> msReleasedSubscriber =
-			new EventSubscriber<MsReleasedEvent>()
-		{
-			@Override
-			public void onEvent(final MsReleasedEvent event) {
-				getActiveTool().onMouseUp(event);
-			}
-		};
+			new EventSubscriber<MsReleasedEvent>() {
+
+				@Override
+				public void onEvent(final MsReleasedEvent event) {
+					getActiveTool().onMouseUp(event);
+				}
+			};
 		subscribers.add(msReleasedSubscriber);
 		Events.subscribe(MsReleasedEvent.class, msReleasedSubscriber);
 
 		final EventSubscriber<MsClickedEvent> msClickedSubscriber =
-			new EventSubscriber<MsClickedEvent>()
-		{
-			@Override
-			public void onEvent(final MsClickedEvent event) {
-				getActiveTool().onMouseClick(event);
-			}
-		};
+			new EventSubscriber<MsClickedEvent>() {
+
+				@Override
+				public void onEvent(final MsClickedEvent event) {
+					getActiveTool().onMouseClick(event);
+				}
+			};
 		subscribers.add(msClickedSubscriber);
 		Events.subscribe(MsClickedEvent.class, msClickedSubscriber);
 
 		final EventSubscriber<MsMovedEvent> msMovedSubscriber =
-			new EventSubscriber<MsMovedEvent>()
-		{
-			@Override
-			public void onEvent(final MsMovedEvent event) {
-				getActiveTool().onMouseMove(event);
-			}
-		};
+			new EventSubscriber<MsMovedEvent>() {
+
+				@Override
+				public void onEvent(final MsMovedEvent event) {
+					getActiveTool().onMouseMove(event);
+				}
+			};
 		subscribers.add(msMovedSubscriber);
 		Events.subscribe(MsMovedEvent.class, msMovedSubscriber);
 
 		final EventSubscriber<MsDraggedEvent> msDraggedSubscriber =
-			new EventSubscriber<MsDraggedEvent>()
-		{
-			@Override
-			public void onEvent(final MsDraggedEvent event) {
-				getActiveTool().onMouseDrag(event);
-			}
-		};
+			new EventSubscriber<MsDraggedEvent>() {
+
+				@Override
+				public void onEvent(final MsDraggedEvent event) {
+					getActiveTool().onMouseDrag(event);
+				}
+			};
 		subscribers.add(msDraggedSubscriber);
 		Events.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
-		
+
 		final EventSubscriber<MsWheelEvent> msWheelSubscriber =
-			new EventSubscriber<MsWheelEvent>()
-		{
-			@Override
-			public void onEvent(final MsWheelEvent event) {
-				getActiveTool().onMouseWheel(event);
-			}
-		};
+			new EventSubscriber<MsWheelEvent>() {
+
+				@Override
+				public void onEvent(final MsWheelEvent event) {
+					getActiveTool().onMouseWheel(event);
+				}
+			};
 		subscribers.add(msWheelSubscriber);
 		Events.subscribe(MsWheelEvent.class, msWheelSubscriber);
 	}

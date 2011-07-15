@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.AbstractInputPanel;
+import imagej.module.ui.WidgetModel;
 
 /**
  * TODO
@@ -57,39 +57,39 @@ public class HeadlessInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamModel model,
+	public void addNumber(final WidgetModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		// TODO
 	}
 
 	@Override
-	public void addToggle(final ParamModel model) {
+	public void addToggle(final WidgetModel model) {
 		// TODO
 	}
 
 	@Override
-	public void addTextField(final ParamModel model, final int columns) {
+	public void addTextField(final WidgetModel model, final int columns) {
 		// TODO
 	}
 
 	@Override
-	public void addChoice(final ParamModel model, final String[] items) {
+	public void addChoice(final WidgetModel model, final String[] items) {
 		// TODO
 	}
 
 	@Override
-	public void addFile(final ParamModel model) {
+	public void addFile(final WidgetModel model) {
 		// TODO
 	}
 
 	@Override
-	public void addColor(final ParamModel model) {
+	public void addColor(final WidgetModel model) {
 		// TODO
 	}
 
 	@Override
-	public void addObject(final ParamModel model) {
+	public void addObject(final WidgetModel model) {
 		// TODO
 	}
 

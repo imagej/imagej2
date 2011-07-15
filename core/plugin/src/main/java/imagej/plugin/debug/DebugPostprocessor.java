@@ -34,23 +34,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.debug;
 
+import imagej.module.Module;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.PostprocessorPlugin;
 import imagej.util.Log;
 
 import java.util.Map;
 
 /**
- * A plugin postprocessor that dumps parameter values to the log.
+ * A postprocessor plugin that dumps parameter values to the log.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPostprocessor.class, priority = Plugin.FIRST_PRIORITY)
-public class DebugPostprocessor implements PluginPostprocessor {
+@Plugin(type = PostprocessorPlugin.class, priority = Plugin.FIRST_PRIORITY)
+public class DebugPostprocessor implements PostprocessorPlugin {
 
 	@Override
-	public void process(final PluginModule<?> module) {
+	public void process(final Module module) {
 		// dump input values to log
 		Log.debug("INPUTS:");
 		final Map<String, Object> inputs = module.getInputs();

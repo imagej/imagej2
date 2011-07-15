@@ -34,116 +34,68 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.module.Module;
+import imagej.module.AbstractModule;
+import imagej.module.ModuleException;
 import imagej.module.ModuleItem;
-import imagej.util.Log;
+import imagej.module.ui.menu.ShadowMenu;
+import imagej.util.ClassUtils;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
  * Module class for working with a {@link RunnablePlugin} instance.
- * <p>
- * There are several ways to execute a plugin, depending on the situation:
- * <ul>
- * <li>To execute a plugin from a {@link PluginModule}, call {@link #run()}.</li>
- * <li>To execute a plugin from a {@link PluginEntry}, call
- * {@link PluginEntry#createModule()} to get a {@link PluginModule}.</li>
- * <li>To execute a plugin from its {@link Class}, call
- * {@link PluginManager#getPluginsOfClass(Class)} to get a list of
- * {@link PluginEntry} objects, and choose the one you want (usually there will
- * only be one).</li>
- * <li>To execute a plugin in a separate thread, use one of the
- * {@link PluginManager} utility methods: {@link PluginManager#run(Class)} or
- * {@link PluginManager#run(PluginEntry)}.</li>
- * </ul>
- * </p>
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModule<R extends RunnablePlugin> implements Module {
+public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 
-	/** The plugin entry describing this module. */
-	private final PluginEntry<R> entry;
+	/** The plugin info describing the plugin. */
+	private final PluginModuleInfo<R> info;
 
 	/** The plugin instance handled by this module. */
 	private final R plugin;
 
-	/** Metadata about this plugin. */
-	private final PluginModuleInfo<R> info;
-
-	/** Table indicating resolved inputs. */
-	private final HashSet<String> resolvedInputs;
-
-	/** Creates a plugin module for a new instance of the given plugin entry. */
-	public PluginModule(final PluginEntry<R> entry) throws PluginException {
-		this.entry = entry;
-		try {
-			plugin = entry.createInstance();
-		}
-		catch (IndexException exc) {
-			throw new PluginException(exc);
-		}
-		info = new PluginModuleInfo<R>(entry, plugin);
-		resolvedInputs = new HashSet<String>();
+	/** Creates a plugin module for the given {@link PluginInfo}. */
+	public PluginModule(final PluginModuleInfo<R> info) throws ModuleException {
+		super(info);
+		this.info = info;
+		plugin = instantiatePlugin();
+		assignPresets();
 	}
+
+	// -- PluginModule methods --
 
 	/** Gets the plugin instance handled by this module. */
 	public R getPlugin() {
 		return plugin;
 	}
 
-	/**
-	 * Gets the current toggle state of the plugin, if any.
-	 * 
-	 * @return The toggle state, or false if not a toggle plugin.
-	 */
-	public boolean isSelected() {
-		final String tParam = entry.getToggleParameter();
-		if (tParam == null || tParam.isEmpty()) return false; // not a toggle plugin
-		final Object value = getInput(tParam);
-		if (!(value instanceof Boolean)) return false; // invalid parameter value
-		return (Boolean) value;
-	}
-
-	/**
-	 * Sets the current toggle state of the plugin. For non-toggle plugins, does
-	 * nothing.
-	 */
-	public void setSelected(final boolean selected) {
-		final String tParam = entry.getToggleParameter();
-		if (tParam == null || tParam.isEmpty()) return; // not a toggle plugin
-		setInput(tParam, selected);
-		setResolved(tParam, true);
-	}
-
-	/**
-	 * Computes a preview of the plugin's results. For this method to do anything,
-	 * the plugin must implement the {@link PreviewPlugin} interface.
-	 */
-	public void preview() {
-		if (!(plugin instanceof PreviewPlugin)) return; // cannot preview
-		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
-		previewPlugin.preview();
-	}
-
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		final PluginModuleInfo<?> moduleInfo = getInfo();
-		return moduleInfo.getPluginEntry().getMenuLabel();
+		return ShadowMenu.getMenuLabel(getInfo());
 	}
 
 	// -- Module methods --
 
 	@Override
 	public void run() {
-		new PluginRunner<R>(this).run();
+		plugin.run();
+	}
+
+	/**
+	 * Computes a preview of the plugin's results. For this method to do anything,
+	 * the plugin must implement the {@link PreviewPlugin} interface.
+	 */
+	@Override
+	public void preview() {
+		if (!(plugin instanceof PreviewPlugin)) return; // cannot preview
+		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		previewPlugin.preview();
 	}
 
 	@Override
@@ -152,37 +104,42 @@ public class PluginModule<R extends RunnablePlugin> implements Module {
 	}
 
 	@Override
+	public Object getDelegateObject() {
+		return plugin;
+	}
+
+	@Override
 	public Object getInput(final String name) {
-		final PluginModuleItem item = info.getInput(name);
-		return getValue(item.getField(), plugin);
+		final PluginModuleItem<?> item = info.getInput(name);
+		return ClassUtils.getValue(item.getField(), plugin);
 	}
 
 	@Override
 	public Object getOutput(final String name) {
-		final PluginModuleItem item = info.getOutput(name);
-		return getValue(item.getField(), plugin);
+		final PluginModuleItem<?> item = info.getOutput(name);
+		return ClassUtils.getValue(item.getField(), plugin);
 	}
 
 	@Override
 	public Map<String, Object> getInputs() {
-		return getMap(info.inputs());
+		return createMap(info.inputs());
 	}
 
 	@Override
 	public Map<String, Object> getOutputs() {
-		return getMap(info.outputs());
+		return createMap(info.outputs());
 	}
 
 	@Override
 	public void setInput(final String name, final Object value) {
-		final PluginModuleItem item = info.getInput(name);
-		setValue(item.getField(), plugin, value);
+		final PluginModuleItem<?> item = info.getInput(name);
+		ClassUtils.setValue(item.getField(), plugin, value);
 	}
 
 	@Override
 	public void setOutput(final String name, final Object value) {
-		final PluginModuleItem item = info.getOutput(name);
-		setValue(item.getField(), plugin, value);
+		final PluginModuleItem<?> item = info.getOutput(name);
+		ClassUtils.setValue(item.getField(), plugin, value);
 	}
 
 	@Override
@@ -199,70 +156,35 @@ public class PluginModule<R extends RunnablePlugin> implements Module {
 		}
 	}
 
-	/**
-	 * Gets the item's resolution status. A "resolved" item is known to have a
-	 * final, valid value for use with the module.
-	 */
-	@Override
-	public boolean isResolved(final String name) {
-		return resolvedInputs.contains(name);
-	}
-
-	/**
-	 * Sets the item's resolution status. A "resolved" item is known to have a
-	 * final, valid value for use with the module.
-	 */
-	@Override
-	public void setResolved(final String name, final boolean resolved) {
-		if (resolved) resolvedInputs.add(name);
-		else resolvedInputs.remove(name);
-	}
-
 	// -- Helper methods --
 
-	private Map<String, Object> getMap(final Iterable<ModuleItem> items) {
+	private R instantiatePlugin() throws ModuleException {
+		try {
+			return info.createInstance();
+		}
+		catch (final InstantiableException exc) {
+			throw new ModuleException(exc);
+		}
+	}
+
+	private void assignPresets() {
+		final Map<String, Object> presets = info.getPresets();
+		for (String name : presets.keySet()) {
+			final Object value = presets.get(name);
+			setInput(name, value);
+			setResolved(name, true);
+		}
+	}
+
+	private Map<String, Object> createMap(final Iterable<ModuleItem<?>> items) {
 		final Map<String, Object> map = new HashMap<String, Object>();
-		for (final ModuleItem item : items) {
-			final PluginModuleItem pmi = (PluginModuleItem) item;
+		for (final ModuleItem<?> item : items) {
+			final PluginModuleItem<?> pmi = (PluginModuleItem<?>) item;
 			final String name = item.getName();
-			final Object value = getValue(pmi.getField(), plugin);
+			final Object value = ClassUtils.getValue(pmi.getField(), plugin);
 			map.put(name, value);
 		}
 		return map;
-	}
-
-	// -- Utility methods --
-
-	public static void setValue(final Field field, final Object instance,
-		final Object value)
-	{
-		if (instance == null) return;
-		try {
-			field.set(instance, value);
-		}
-		catch (final IllegalArgumentException e) {
-			Log.error(e);
-			assert false;
-		}
-		catch (final IllegalAccessException e) {
-			Log.error(e);
-			assert false;
-		}
-	}
-
-	public static Object getValue(final Field field, final Object instance) {
-		if (instance == null) return null;
-		try {
-			return field.get(instance);
-		}
-		catch (final IllegalArgumentException e) {
-			Log.error(e);
-			return null;
-		}
-		catch (final IllegalAccessException e) {
-			Log.error(e);
-			return null;
-		}
 	}
 
 }

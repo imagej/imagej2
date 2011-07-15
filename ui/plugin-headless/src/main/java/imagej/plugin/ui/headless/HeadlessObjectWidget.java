@@ -34,30 +34,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.ObjectWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ObjectWidget;
+import imagej.module.ui.WidgetModel;
 
 /**
  * Headless implementation of object selector widget.
  * 
  * @author Curtis Rueden
  */
-public class HeadlessObjectWidget extends HeadlessInputWidget
-	implements ObjectWidget
+public class HeadlessObjectWidget extends HeadlessInputWidget implements
+	ObjectWidget
 {
 
 	private final Object[] items;
 
-	public HeadlessObjectWidget(final ParamModel model, final Object[] items)
-	{
+	public HeadlessObjectWidget(final WidgetModel model, final Object[] items) {
 		super(model);
 		this.items = items;
 	}
 
-	// -- ObjectWidget methods --
+	// -- InputWidget methods --
 
 	@Override
-	public Object getObject() {
+	public Object getValue() {
 		return null; // TODO
 	}
 

@@ -37,10 +37,16 @@ package imagej.plugin;
 import imagej.Manager;
 import imagej.ManagerComponent;
 import imagej.event.Events;
-import imagej.plugin.event.PluginEntryAddedEvent;
-import imagej.plugin.event.PluginEntryRemovedEvent;
+import imagej.module.Module;
+import imagej.module.ModuleException;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleRunner;
+import imagej.module.event.ModuleInfoAddedEvent;
+import imagej.module.event.ModuleInfoRemovedEvent;
 import imagej.plugin.finder.IPluginFinder;
 import imagej.plugin.finder.PluginFinder;
+import imagej.plugin.process.PostprocessorPlugin;
+import imagej.plugin.process.PreprocessorPlugin;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -58,16 +64,18 @@ import net.java.sezpoz.IndexItem;
  * classes can be deferred until a particular plugin's first execution.
  * 
  * @author Curtis Rueden
+ * @see IPlugin
+ * @see Plugin
  */
 @Manager(priority = Manager.NORMAL_PRIORITY)
 public class PluginManager implements ManagerComponent {
 
 	/** The complete list of known plugins. */
-	private final List<PluginEntry<?>> plugins = new ArrayList<PluginEntry<?>>();
+	private final List<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
 
 	/** Table of plugin lists, organized by plugin type. */
-	private final Map<Class<?>, ArrayList<PluginEntry<?>>> pluginLists =
-		new ConcurrentHashMap<Class<?>, ArrayList<PluginEntry<?>>>();
+	private final Map<Class<?>, ArrayList<PluginInfo<?>>> pluginLists =
+		new ConcurrentHashMap<Class<?>, ArrayList<PluginInfo<?>>>();
 
 	/**
 	 * Rediscovers all plugins available on the classpath. Note that this will
@@ -80,22 +88,38 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/** Manually registers a plugin with the plugin manager. */
-	public void addPlugin(final PluginEntry<?> plugin) {
+	public void addPlugin(final PluginModuleInfo<?> plugin) {
 		plugins.add(plugin);
 		registerType(plugin, true);
-		Events.publish(new PluginEntryAddedEvent(plugin));
+		Events.publish(new ModuleInfoAddedEvent(plugin));
 	}
 
 	/** Manually unregisters a plugin with the plugin manager. */
-	public void removePlugin(final PluginEntry<?> plugin) {
+	public void removePlugin(final PluginModuleInfo<?> plugin) {
 		plugins.remove(plugin);
 		unregisterType(plugin);
-		Events.publish(new PluginEntryRemovedEvent(plugin));
+		Events.publish(new ModuleInfoRemovedEvent(plugin));
 	}
 
 	/** Gets the list of known plugins. */
-	public List<PluginEntry<?>> getPlugins() {
+	public List<PluginInfo<?>> getPlugins() {
 		return Collections.unmodifiableList(plugins);
+	}
+
+	/**
+	 * Gets the list of known plugins that can function as modules (i.e.,
+	 * {@link RunnablePlugin}s).
+	 */
+	public List<ModuleInfo> getModules() {
+		// CTR FIXME - rework to avoid this HACKy method; use ModuleManager instead
+		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+		for (final PluginInfo<?> info : plugins) {
+			if (info instanceof ModuleInfo) {
+				final ModuleInfo moduleInfo = (ModuleInfo) info;
+				modules.add(moduleInfo);
+			}
+		}
+		return modules;
 	}
 
 	/**
@@ -103,11 +127,11 @@ public class PluginManager implements ManagerComponent {
 	 * {@link ImageJPlugin}).
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <P extends IPlugin> List<PluginEntry<P>> getPluginsOfType(
+	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
 		final Class<P> type)
 	{
-		ArrayList<PluginEntry<?>> outputList = pluginLists.get(type);
-		if (outputList == null) outputList = new ArrayList<PluginEntry<?>>();
+		ArrayList<PluginInfo<?>> outputList = pluginLists.get(type);
+		if (outputList == null) outputList = new ArrayList<PluginInfo<?>>();
 		return (List) Collections.unmodifiableList(outputList);
 	}
 
@@ -116,65 +140,91 @@ public class PluginManager implements ManagerComponent {
 	 * only a single match, but some special plugin classes (such as
 	 * imagej.legacy.LegacyPlugin) may match many entries.
 	 */
-	public <P extends IPlugin> List<PluginEntry<P>> getPluginsOfClass(
+	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
 		final Class<P> pluginClass)
 	{
-		final ArrayList<PluginEntry<P>> entries = new ArrayList<PluginEntry<P>>();
+		final ArrayList<PluginInfo<P>> entries = new ArrayList<PluginInfo<P>>();
 		final String className = pluginClass.getName();
-		for (final PluginEntry<?> entry : plugins) {
+		for (final PluginInfo<?> entry : plugins) {
 			if (entry.getClassName().equals(className)) {
 				@SuppressWarnings("unchecked")
-				final PluginEntry<P> match = (PluginEntry<P>) entry;
+				final PluginInfo<P> match = (PluginInfo<P>) entry;
 				entries.add(match);
 			}
 		}
 		return entries;
 	}
 
-	/** Executes the first plugin of the given class, in its own thread. */
-	public <R extends RunnablePlugin> void run(final Class<R> pluginClass) {
-		final List<PluginEntry<R>> entries = getPluginsOfClass(pluginClass);
-		if (!entries.isEmpty()) run(entries.get(0));
+	/** Creates one instance each of the available plugins of the given type. */
+	public <P extends IPlugin> List<P> createInstances(final Class<P> type) {
+		return createInstances(getPluginsOfType(type));
 	}
 
-	/**
-	 * Executes the plugin represented by the given {@link PluginEntry}, in its
-	 * own thread.
-	 */
-	public <R extends RunnablePlugin> void run(final PluginEntry<R> entry) {
-		run(entry, false);
-	}
-
-	/**
-	 * Executes the plugin represented by the given {@link PluginEntry}, in its
-	 * own thread. For toggle plugins, the state is assigned to the given value.
-	 * 
-	 * @param entry The {@link PluginEntry} describing the plugin to execute.
-	 * @param state The toggle state to assign to the plugin, if applicable.
-	 */
-	public <R extends RunnablePlugin> void run(final PluginEntry<R> entry,
-		final boolean state)
+	/** Creates an instance of each of the plugins on the given list. */
+	public <P extends IPlugin> List<P> createInstances(
+		final List<PluginInfo<P>> infos)
 	{
-		// CTR FIXME reexamine the design surrounding this state flag.
-		// Update documentation in PluginModule regarding how to run plugins.
+		final ArrayList<P> list = new ArrayList<P>();
+		for (final PluginInfo<P> info : infos) {
+			try {
+				list.add(info.createInstance());
+			}
+			catch (final InstantiableException e) {
+				Log.warn("Cannot create plugin: " + info.getClassName());
+			}
+		}
+		return list;
+	}
 
+	/** Executes the first runnable plugin of the given class. */
+	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
+		final boolean separateThread)
+	{
+		final List<PluginInfo<R>> infos = getPluginsOfClass(pluginClass);
+		ModuleInfo moduleInfo = null;
+		for (final PluginInfo<R> info : infos) {
+			if (info instanceof ModuleInfo) {
+				moduleInfo = (ModuleInfo) info;
+				break;
+			}
+		}
+		if (moduleInfo == null) return; // no modules found
+		run(moduleInfo, separateThread);
+	}
+
+	/** Executes the module represented by the given module info. */
+	public <R extends RunnablePlugin> void run(final ModuleInfo info,
+		final boolean separateThread)
+	{
+		try {
+			run(info.createModule(), separateThread);
+		}
+		catch (final ModuleException e) {
+			Log.error("Could not execute plugin: " + info, e);
+		}
+	}
+
+	/** Executes the given module. */
+	public void run(final Module module, final boolean separateThread) {
 		// TODO - Implement a better threading mechanism for launching plugins.
 		// Perhaps a ThreadManager so that the UI can query currently
 		// running plugins and so forth?
-		new Thread(new Runnable() {
+		if (separateThread) {
+			final String className = module.getInfo().getDelegateClassName();
+			final String threadName = "ModuleRunner-" + className;
+			new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				try {
-					final PluginModule<R> module = entry.createModule();
-					module.setSelected(state);
-					module.run();
+				@Override
+				public void run() {
+					final List<PreprocessorPlugin> pre =
+						createInstances(PreprocessorPlugin.class);
+					final List<PostprocessorPlugin> post =
+						createInstances(PostprocessorPlugin.class);
+					new ModuleRunner(module, pre, post).run();
 				}
-				catch (PluginException e) {
-					Log.error("Could not execute plugin: " + entry, e);
-				}
-			}
-		}, "PluginRunner-" + entry.getClassName()).start();
+			}, threadName).start();
+		}
+		else module.run();
 	}
 
 	// -- ManagerComponent methods --
@@ -205,14 +255,14 @@ public class PluginManager implements ManagerComponent {
 	/** Classifies plugins according to type. */
 	private void classifyPlugins() {
 		pluginLists.clear();
-		for (final PluginEntry<?> entry : plugins) {
+		for (final PluginInfo<?> entry : plugins) {
 			registerType(entry, false);
 		}
 	}
 
 	/** Sorts plugin lists by priority. */
 	private void sortPlugins() {
-		for (final ArrayList<PluginEntry<?>> pluginList : pluginLists.values()) {
+		for (final ArrayList<PluginInfo<?>> pluginList : pluginLists.values()) {
 			Collections.sort(pluginList);
 		}
 	}
@@ -220,16 +270,16 @@ public class PluginManager implements ManagerComponent {
 	/**
 	 * Inserts the given plugin into the appropriate type list.
 	 * 
-	 * @param entry {@link PluginEntry} to insert.
+	 * @param entry {@link PluginInfo} to insert.
 	 * @param sorted Whether the plugin list is currently sorted. If true, the
-	 *          {@link PluginEntry} will be inserted into the correct sorted
-	 *          position. If false, the {@link PluginEntry} is merely appended.
+	 *          {@link PluginInfo} will be inserted into the correct sorted
+	 *          position. If false, the {@link PluginInfo} is merely appended.
 	 */
-	private void registerType(final PluginEntry<?> entry, final boolean sorted) {
+	private void registerType(final PluginInfo<?> entry, final boolean sorted) {
 		final Class<?> type = entry.getPluginType();
-		ArrayList<PluginEntry<?>> pluginList = pluginLists.get(type);
+		ArrayList<PluginInfo<?>> pluginList = pluginLists.get(type);
 		if (pluginList == null) {
-			pluginList = new ArrayList<PluginEntry<?>>();
+			pluginList = new ArrayList<PluginInfo<?>>();
 			pluginLists.put(type, pluginList);
 		}
 		if (sorted) {
@@ -240,9 +290,9 @@ public class PluginManager implements ManagerComponent {
 	}
 
 	/** Removes the given plugin from the appropriate type list. */
-	private void unregisterType(final PluginEntry<?> entry) {
+	private void unregisterType(final PluginInfo<?> entry) {
 		final Class<?> type = entry.getPluginType();
-		final ArrayList<PluginEntry<?>> pluginList = pluginLists.get(type);
+		final ArrayList<PluginInfo<?>> pluginList = pluginLists.get(type);
 		if (pluginList == null) {
 			Log.warn("unregisterType: empty type list for entry: " + entry);
 			return;

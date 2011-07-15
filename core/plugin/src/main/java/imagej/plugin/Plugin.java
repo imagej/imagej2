@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.plugin.process.PluginPreprocessor;
+import imagej.module.process.ModulePreprocessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -49,6 +49,7 @@ import net.java.sezpoz.Indexable;
  * 
  * @author Curtis Rueden
  * @see IPlugin
+ * @see PluginManager
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
@@ -63,7 +64,7 @@ public @interface Plugin {
 
 	/**
 	 * The type of plugin; e.g., {@link ImageJPlugin} or
-	 * {@link PluginPreprocessor}.
+	 * {@link ModulePreprocessor}.
 	 */
 	Class<?> type() default ImageJPlugin.class;
 
@@ -80,24 +81,24 @@ public @interface Plugin {
 	String iconPath() default "";
 
 	/**
-	 * Links a boolean parameter to the plugin as a toggle state. A plugin's
-	 * toggle state (if any) is typically rendered in the menu structure as a
-	 * checkbox or radio button menu item (see {@link #toggleGroup}).
+	 * Whether the plugin can be selected in the user interface. A plugin's
+	 * selection state (if any) is typically rendered in the menu structure using
+	 * a checkbox or radio button menu item (see {@link #selectionGroup}).
 	 */
-	String toggleParameter() default "";
+	boolean selectable() default false;
 
 	/**
-	 * For toggle plugins, specifies a name defining a group of linked plugins,
-	 * only one of which is toggled active at any given time. Typically this is
+	 * For selectable plugins, specifies a name defining a group of linked
+	 * plugins, only one of which is selected at any given time. Typically this is
 	 * rendered in the menu structure as a group of radio button menu items. If no
 	 * group is given, the plugin is assumed to be a standalone toggle, and
 	 * typically rendered as as checkbox menu item.
 	 */
-	String toggleGroup() default "";
+	String selectionGroup() default "";
 
 	/**
 	 * The plugin index returns plugins sorted by priority. This is useful for
-	 * {@link PluginPreprocessor}s to control the order of their execution.
+	 * {@link ModulePreprocessor}s to control the order of their execution.
 	 */
 	int priority() default NORMAL_PRIORITY;
 

@@ -79,7 +79,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppAboutEvent event) {
-				pluginManager.run(AboutImageJ.class);
+				pluginManager.run(AboutImageJ.class, true);
 			}
 		};
 		subscribers.add(appAboutSubscriber);
@@ -90,7 +90,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppPreferencesEvent event) {
-				pluginManager.run(ShowPrefs.class);
+				pluginManager.run(ShowPrefs.class, true);
 			}
 		};
 		subscribers.add(appPreferencesSubscriber);
@@ -101,7 +101,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppQuitEvent event) {
-				pluginManager.run(QuitProgram.class);
+				pluginManager.run(QuitProgram.class, true);
 			}
 		};
 		subscribers.add(appQuitSubscriber);

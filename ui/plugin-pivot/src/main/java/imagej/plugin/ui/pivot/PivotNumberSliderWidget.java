@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.WidgetModel;
 import imagej.util.ClassUtils;
 
 import org.apache.pivot.wtk.Label;
@@ -53,7 +53,7 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	private final Slider slider;
 	private final Label label;
 
-	public PivotNumberSliderWidget(final ParamModel model,
+	public PivotNumberSliderWidget(final WidgetModel model,
 		final Number min, final Number max)
 	{
 		super(model);
@@ -66,7 +66,7 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 		label = new Label();
 		add(label);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- NumberWidget methods --
@@ -74,14 +74,14 @@ public class PivotNumberSliderWidget extends PivotNumberWidget
 	@Override
 	public Number getValue() {
 		final String value = "" + slider.getValue();
-		return ClassUtils.toNumber(value, model.getType());
+		return ClassUtils.toNumber(value, getModel().getItem().getType());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		final Number value = (Number) model.getValue();
+	public void refreshWidget() {
+		final Number value = (Number) getModel().getValue();
 		slider.setValue(value.intValue());
 		label.setText(value.toString());
 	}

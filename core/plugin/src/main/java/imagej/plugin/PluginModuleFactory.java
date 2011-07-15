@@ -34,15 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.ModuleException;
+
 /**
- * A factory for instantiating a module instance from a {@link PluginEntry}.
+ * A factory for instantiating a module instance from a {@link PluginInfo}.
  * 
  * @author Curtis Rueden
  */
 public interface PluginModuleFactory {
 
-	/** Constructs a module to work with the given plugin entry. */
+	/** Constructs a module to work with the given {@link PluginInfo}. */
 	<R extends RunnablePlugin> PluginModule<R>
-		createModule(PluginEntry<R> entry) throws PluginException;
+		createModule(PluginModuleInfo<R> info) throws ModuleException;
 
 }

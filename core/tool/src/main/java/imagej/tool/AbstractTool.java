@@ -59,31 +59,16 @@ import imagej.display.event.mouse.MsWheelEvent;
  */
 public abstract class AbstractTool implements ITool {
 
-	private ToolEntry entry;
+	private ToolInfo info;
 
 	@Override
-	public ToolEntry getToolEntry() {
-		return entry;
+	public ToolInfo getInfo() {
+		return info;
 	}
 
 	@Override
-	public void setToolEntry(final ToolEntry entry) {
-		this.entry = entry;
-	}
-
-	@Override
-	public String getName() {
-		return entry.getName();
-	}
-
-	@Override
-	public String getLabel() {
-		return entry.getLabel();
-	}
-
-	@Override
-	public String getDescription() {
-		return entry.getDescription();
+	public void setInfo(final ToolInfo info) {
+		this.info = info;
 	}
 
 	@Override
