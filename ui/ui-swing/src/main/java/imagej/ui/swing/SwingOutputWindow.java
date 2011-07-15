@@ -73,7 +73,7 @@ public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputE
 		textArea.setFont(font);
 		getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
 		pack();
-		setVisible(true);
+		setVisible(true);  // BDZ says why are we calling this twice in 3 lines?
 		this.setBounds(new Rectangle(x,y,w,h));
 		this.setVisible(true);
 	}
