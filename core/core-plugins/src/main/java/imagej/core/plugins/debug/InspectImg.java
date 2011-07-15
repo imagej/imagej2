@@ -34,11 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.debug;
 
-import imagej.ImageJ;
-import imagej.display.AbstractDatasetView;
-import imagej.display.Display;
-import imagej.display.DisplayService;
+import imagej.display.DisplayView;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.diag.inspect.Inspector;
 
@@ -50,15 +48,12 @@ import imagej.util.diag.inspect.Inspector;
 @Plugin(menuPath = "Plugins>Debug>Inspect Image")
 public class InspectImg implements ImageJPlugin {
 
+	@Parameter
+	private DisplayView displayView;
+
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
-		if (display == null) {
-			return; // headless UI or no open images
-		}
-		AbstractDatasetView dsView = (AbstractDatasetView) display.getActiveView();
-		Inspector.inspect(dsView);		
+		Inspector.inspect(displayView);		
 	}
 	
 }

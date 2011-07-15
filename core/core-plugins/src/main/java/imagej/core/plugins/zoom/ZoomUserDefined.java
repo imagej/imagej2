@@ -1,5 +1,5 @@
 //
-// ChangeToFLOAT32.java
+// ZoomUserDefined.java
 //
 
 /*
@@ -34,9 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.DisplayService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -52,15 +50,14 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) })
 public class ZoomUserDefined implements ImageJPlugin {
 
+	@Parameter
+	private Display display;
+
 	@Parameter(label = "Zoom (%) :",min= "0.1", max = "10000000")
 	private double userDefinedScale;
 
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-
 		display.getImageCanvas().setZoom(userDefinedScale / 100.0);
 	}
 

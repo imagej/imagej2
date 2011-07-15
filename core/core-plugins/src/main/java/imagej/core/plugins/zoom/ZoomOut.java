@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.zoom;
 
-import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.DisplayService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
@@ -52,12 +51,11 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Out", accelerator = "control MINUS", weight = 2) })
 public class ZoomOut implements ImageJPlugin {
 
+	@Parameter
+	private Display display;
+
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-
 		display.getImageCanvas().zoomOut();
 	}
 

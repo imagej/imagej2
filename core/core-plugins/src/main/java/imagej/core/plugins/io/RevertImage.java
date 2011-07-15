@@ -34,12 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.io;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.display.Display;
-import imagej.display.DisplayService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -62,15 +60,11 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
 
+	@Parameter
+	private Dataset dataset;
+
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-
-		final Dataset currDataset =
-			(Dataset) display.getActiveView().getDataObject();
-
 		// TODO - enable this in ImgLib
 //		final String id = currDataset.getImgPlus().getSource();
 //		if (id == null) {
@@ -83,7 +77,7 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 		final ImgOpener imageOpener = new ImgOpener();
 		try {
 			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			currDataset.setImgPlus(imgPlus);
+			dataset.setImgPlus(imgPlus);
 		}
 		catch (final ImgIOException e) {
 			Log.error(e);

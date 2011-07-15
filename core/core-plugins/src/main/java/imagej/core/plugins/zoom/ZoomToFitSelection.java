@@ -40,6 +40,7 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
@@ -54,13 +55,13 @@ import imagej.util.IntRect;
 	@Menu(label = "To Selection", weight = 5) })
 public class ZoomToFitSelection implements ImageJPlugin {
 
+	@Parameter
+	private Display display;
+
 	@Override
 	public void run() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		final Display display = displayService.getActiveDisplay();
-		if (display == null) return; // headless UI or no open images
-
-		final Dataset dataset = displayService.getActiveDataset();
+		final Dataset dataset = displayService.getActiveDataset(display);
 
 		// NOTE - must be in panel/canvas coords!
 		final IntRect sel = dataset.getSelection();
