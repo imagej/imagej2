@@ -203,9 +203,9 @@ public final class DisplayService implements IService {
 					}
 					
 					// HACK - Necessary to plug memory leak when closing the last window.
-					//   Might be slow since it has to walk the whole ObjectService. Note
-					//   that we could ignore this. Next created display will make old
-					//   invalid activeDataset reference reclaimable.
+					//  Might be slow since it has to walk the whole ObjectService object
+					//  list. Note that we could ignore this. Next created display will
+					//  make old invalid activeDataset reference reclaimable.
 					if (getDisplays().size() == 1)
 						setActiveDisplay(null);
 					
