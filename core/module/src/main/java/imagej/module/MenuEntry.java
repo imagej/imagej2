@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.module;
 
 /**
- * One component of a menu path, for use with {@link UserInterfaceDetails}.
+ * One component of a menu path, for use with {@link UIDetails}.
  * 
  * @author Curtis Rueden
  */

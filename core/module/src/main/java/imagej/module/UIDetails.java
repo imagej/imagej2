@@ -42,7 +42,13 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface UserInterfaceDetails {
+public interface UIDetails extends BasicDetails {
+
+	int FIRST_PRIORITY = 0;
+	int HIGH_PRIORITY = 25;
+	int NORMAL_PRIORITY = 50;
+	int LOW_PRIORITY = 75;
+	int LAST_PRIORITY = 100;
 
 	/** Gets the path to the object's suggested position in the menu structure. */
 	List<MenuEntry> getMenuPath();
