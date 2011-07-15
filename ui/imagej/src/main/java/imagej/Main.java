@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej;
 
-import imagej.ImageJ;
 import imagej.ui.UIService;
 
 /**

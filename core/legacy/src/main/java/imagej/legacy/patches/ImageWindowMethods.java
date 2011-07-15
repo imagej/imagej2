@@ -37,8 +37,8 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
-import imagej.legacy.LegacyService;
 import imagej.legacy.LegacyOutputTracker;
+import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
 /**

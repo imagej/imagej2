@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.IService;
 import imagej.ImageJ;
 import imagej.Service;
-import imagej.IService;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
 import imagej.object.ObjectService;

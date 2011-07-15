@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.Service;
 import imagej.IService;
+import imagej.Service;
 import imagej.event.Events;
 import imagej.module.Module;
 import imagej.module.ModuleException;

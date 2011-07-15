@@ -29,7 +29,7 @@ package imagej.util.diag.inspect;
  * @version 0.1
  */
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 
 class FieldValue implements Value
 {

@@ -33,6 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.roi.Overlay;
+import imagej.data.roi.RectangleOverlay;
+import imagej.display.DisplayView;
+import imagej.tool.Tool;
+import imagej.ui.swing.tools.SelectionTool;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -42,12 +48,6 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
-
-import imagej.data.roi.Overlay;
-import imagej.data.roi.RectangleOverlay;
-import imagej.display.DisplayView;
-import imagej.tool.Tool;
-import imagej.ui.swing.tools.SelectionTool;
 
 /**
  * @author Lee Kamentsky

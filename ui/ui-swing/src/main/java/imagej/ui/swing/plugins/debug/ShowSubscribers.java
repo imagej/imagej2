@@ -11,6 +11,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
+
 import java.util.List;
 
 /**

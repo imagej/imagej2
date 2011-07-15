@@ -42,10 +42,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.jhotdraw.draw.Figure;
-
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
+
+import org.jhotdraw.draw.Figure;
 
 /**
  * The JHotDrawAdapterFinder finds all JHotDrawAdapters that can adapt to a

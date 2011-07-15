@@ -20,9 +20,10 @@ package imagej.util.diag.inspect;
 
 
 
-import java.lang.reflect.*;
-import java.util.*;
-import javax.swing.tree.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.swing.tree.TreeNode;
 
 
 /**

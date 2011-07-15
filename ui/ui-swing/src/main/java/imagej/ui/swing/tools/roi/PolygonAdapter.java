@@ -32,19 +32,18 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.roi.Overlay;
+import imagej.data.roi.PolygonOverlay;
+import imagej.display.DisplayView;
+import imagej.tool.Tool;
+import imagej.util.Log;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import imagej.data.roi.AbstractOverlay;
-import imagej.data.roi.Overlay;
-import imagej.data.roi.PolygonOverlay;
-import imagej.display.DisplayView;
-import imagej.tool.Tool;
-import imagej.util.Log;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;

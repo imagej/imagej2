@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import org.eclipse.swt.widgets.Composite;
-
 import imagej.module.ui.InputWidget;
 import imagej.module.ui.WidgetModel;
+
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * Common superclass for SWT-based input widgets.

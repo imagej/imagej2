@@ -36,7 +36,6 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;

@@ -33,17 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.legacy;
 
-import static org.junit.Assert.*;
-
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -55,6 +46,16 @@ import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
+import imagej.display.Display;
+
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;

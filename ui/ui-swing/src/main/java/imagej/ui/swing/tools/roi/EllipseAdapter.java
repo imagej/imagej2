@@ -33,14 +33,15 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import imagej.data.roi.EllipseOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
 import imagej.tool.Tool;
+
+import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 import net.imglib2.RealPoint;
 import net.imglib2.roi.EllipseRegionOfInterest;
 

@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
-import java.util.ArrayList;
-
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetDeletedEvent;
@@ -53,6 +51,9 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import java.util.ArrayList;
+
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;

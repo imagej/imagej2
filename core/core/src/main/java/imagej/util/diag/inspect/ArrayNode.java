@@ -19,9 +19,7 @@ package imagej.util.diag.inspect;
  */
 
 
-import java.lang.reflect.*;
-import java.util.*;
-import javax.swing.tree.*;
+import java.lang.reflect.Array;
 
 /**
  * A node created from an array.

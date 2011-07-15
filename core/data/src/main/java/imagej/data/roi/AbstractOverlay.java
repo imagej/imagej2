@@ -34,6 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data.roi;
 
+import imagej.data.AbstractDataObject;
+import imagej.data.event.OverlayCreatedEvent;
+import imagej.data.event.OverlayDeletedEvent;
+import imagej.data.event.OverlayRestructuredEvent;
+import imagej.data.event.OverlayUpdatedEvent;
+import imagej.event.Events;
+import imagej.util.ColorRGB;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -45,13 +53,6 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import imagej.data.AbstractDataObject;
-import imagej.data.event.OverlayCreatedEvent;
-import imagej.data.event.OverlayDeletedEvent;
-import imagej.data.event.OverlayRestructuredEvent;
-import imagej.data.event.OverlayUpdatedEvent;
-import imagej.event.Events;
-import imagej.util.ColorRGB;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.roi.RegionOfInterest;

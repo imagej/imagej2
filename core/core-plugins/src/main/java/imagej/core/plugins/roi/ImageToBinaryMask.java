@@ -34,6 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.roi;
 
+import imagej.data.Dataset;
+import imagej.data.roi.BinaryMaskOverlay;
+import imagej.data.roi.Overlay;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.util.ColorRGB;
+
 import java.util.Arrays;
 
 import net.imglib2.Cursor;
@@ -47,14 +56,6 @@ import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import imagej.data.Dataset;
-import imagej.data.roi.BinaryMaskOverlay;
-import imagej.data.roi.Overlay;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.util.ColorRGB;
 
 /**
  * TODO

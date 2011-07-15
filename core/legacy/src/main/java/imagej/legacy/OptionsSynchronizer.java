@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.legacy;
 
-import java.awt.Color;
-import java.awt.Font;
-
 import ij.IJ;
 import ij.gui.Arrow;
 import ij.gui.Line;
@@ -52,6 +49,9 @@ import ij.process.FloatBlitter;
 import ij.process.ImageConverter;
 import imagej.util.Prefs;
 import imagej.util.SettingsKeys;
+
+import java.awt.Color;
+import java.awt.Font;
 
 /**
  * The {@link OptionsSynchronizer} sets IJ1 settings and preferences to reflect

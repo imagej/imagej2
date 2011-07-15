@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.module.ui.WidgetModel;
 import imagej.module.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.TextField;

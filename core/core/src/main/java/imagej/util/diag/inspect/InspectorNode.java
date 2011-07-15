@@ -28,7 +28,7 @@ package imagej.util.diag.inspect;
  * @version 0.1
  */
 
-import javax.swing.tree.*;
+import javax.swing.tree.TreeNode;
 
 interface InspectorNode extends TreeNode
 {

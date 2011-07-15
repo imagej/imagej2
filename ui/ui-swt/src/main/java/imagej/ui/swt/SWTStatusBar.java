@@ -38,7 +38,6 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
-
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;

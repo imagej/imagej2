@@ -34,11 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.convolve;
 
-import java.awt.event.KeyEvent;
-
-import net.imglib2.img.Axes;
-import net.imglib2.img.Axis;
-
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -53,6 +48,11 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.Log;
+
+import java.awt.event.KeyEvent;
+
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 
 /**
  * Implements IJ1's Shadows Demo plugin functionality
