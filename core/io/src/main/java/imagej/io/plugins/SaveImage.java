@@ -1,5 +1,5 @@
 //
-// RevertImage.java
+// SaveImage.java
 //
 
 /*
@@ -32,59 +32,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.core.plugins.io;
+package imagej.io.plugins;
+
+import javax.swing.JOptionPane;
 
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Log;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 /**
- * Resets the current {@link Dataset} to its original state.
+ * Saves the current {@link Dataset} to disk.
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Revert [IJ2]", weight = 20, mnemonic = 'r'
-//	 , accelerator = "control R"
+	@Menu(label = "Save [IJ2]", weight = 20, mnemonic = 's'
 	) })
-public class RevertImage<T extends RealType<T> & NativeType<T>> implements
-	ImageJPlugin
+public class SaveImage implements ImageJPlugin
 {
-
-	@Parameter
-	private Dataset dataset;
-
 	@Override
 	public void run() {
-		// TODO - enable this in ImgLib
-//		final String id = currDataset.getImgPlus().getSource();
-//		if (id == null) {
-//			throw new IllegalArgumentException("Dataset " + currDataset.getName() +
-//				" does not have an external source");
-//		}
-		final String id = null; // do nothing right now
-
-		// open image
-		final ImgOpener imageOpener = new ImgOpener();
-		try {
-			final ImgPlus<T> imgPlus = imageOpener.openImg(id);
-			dataset.setImgPlus(imgPlus);
-		}
-		catch (final ImgIOException e) {
-			Log.error(e);
-		}
-		catch (final IncompatibleTypeException e) {
-			Log.error(e);
-		}
+		JOptionPane.showMessageDialog(null, "This feature has not been implemented");
 	}
 
 }
