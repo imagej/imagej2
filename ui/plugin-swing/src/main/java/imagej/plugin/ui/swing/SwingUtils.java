@@ -139,9 +139,14 @@ public final class SwingUtils {
 			setDefaultFocusComponent(dialog, focusComponent);
 		}
 		dialog.setVisible(true);
+		
+		// get result
+		final Integer rval = (Integer) optionPane.getValue();
+		
+		// free resources
+		dialog.dispose();
 
 		// return result
-		final Integer rval = (Integer) optionPane.getValue();
 		return rval == null ? JOptionPane.CANCEL_OPTION : rval;
 	}
 
