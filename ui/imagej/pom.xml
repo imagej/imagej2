@@ -24,12 +24,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core-plugins</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
@@ -37,6 +31,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core-tools</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-io</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -51,6 +51,11 @@
 			<artifactId>ij-platform-macosx</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
