@@ -57,8 +57,18 @@ public abstract class AbstractModule implements Module {
 	// -- Module methods --
 
 	@Override
+	public void preview() {
+		// do nothing by default
+	}
+
+	@Override
 	public ModuleInfo getInfo() {
 		return info;
+	}
+
+	@Override
+	public Object getDelegateObject() {
+		return this;
 	}
 
 	@Override
