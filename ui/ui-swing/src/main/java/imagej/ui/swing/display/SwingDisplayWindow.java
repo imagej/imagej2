@@ -259,6 +259,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				public void onEvent(DisplayDeletedEvent event) {
 					if (event.getObject() == display) {
 						closeHelper();
+						// NB - we've avoided dispose() since its been called elsewhere.
+						// If call close() here instead get duplicated WindowClosingEvents.
 					}
 				}
 		};
@@ -416,8 +418,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void close() {
 		closeHelper();
-		// NB - dispose() here generates extra WindowClose events. But avoids some
-		//   memory leaks. Inspected with Eclipse Memory Analyzer.
 		dispose();
 	}
 }

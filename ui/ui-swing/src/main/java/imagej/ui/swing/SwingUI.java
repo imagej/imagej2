@@ -198,6 +198,7 @@ public class SwingUI implements UserInterface
 		text.setText(readmeText);
 
 		readmeFrame.setVisible(true);
+		readmeFrame.dispose();
 	}
 
 	private String loadReadmeFile() {

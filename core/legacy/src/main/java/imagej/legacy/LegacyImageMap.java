@@ -175,11 +175,13 @@ public class LegacyImageMap {
 	// -- Helper methods --
 
 	private void addMapping(Display display, ImagePlus imp) {
+		//System.out.println("CREATE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
 		imagePlusTable.put(display, imp);
 		displayTable.put(imp, display);
 	}
 	
 	private void removeMapping(Display display, ImagePlus imp) {
+		//System.out.println("REMOVE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
 		if (display != null) {
 			imagePlusTable.remove(display);
 		}

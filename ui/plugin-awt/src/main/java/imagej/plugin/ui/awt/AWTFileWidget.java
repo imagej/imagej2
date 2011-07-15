@@ -105,6 +105,7 @@ public class AWTFileWidget extends AWTInputWidget
 		fileDialog.setDirectory(file.getAbsolutePath());
 		fileDialog.setVisible(true);
 		final String filename = fileDialog.getFile();
+		fileDialog.dispose();
 		if (filename == null) return;
 		path.setText(filename);
 	}

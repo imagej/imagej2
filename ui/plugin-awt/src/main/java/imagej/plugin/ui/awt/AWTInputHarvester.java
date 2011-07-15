@@ -80,6 +80,7 @@ public class AWTInputHarvester extends AbstractInputHarvester {
 		ensureDialogSizeReasonable(dialog);
 		dialog.setVisible(true);
 		final Integer rval = (Integer) optionPane.getValue();
+		dialog.dispose();
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
 
