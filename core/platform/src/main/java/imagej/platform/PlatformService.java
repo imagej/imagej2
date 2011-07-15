@@ -1,5 +1,5 @@
 //
-// PlatformManager.java
+// PlatformService.java
 //
 
 /*
@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -46,14 +46,14 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for platform-specific deployment issues.
+ * Service for platform-specific deployment issues.
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.LOW_PRIORITY)
-public final class PlatformManager implements ManagerComponent {
+@Service(priority = Service.LOW_PRIORITY)
+public final class PlatformService implements IService {
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	/** Platform handlers applicable to this platform. */
 	private List<PlatformHandler> targetPlatforms;

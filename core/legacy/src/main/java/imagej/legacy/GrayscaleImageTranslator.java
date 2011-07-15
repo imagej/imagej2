@@ -38,7 +38,7 @@ import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
@@ -75,8 +75,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Display display = displayManager.createDisplay(ds);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.createDisplay(ds);
 
 		// TODO operate on display instead of dataset here
 		LegacyUtils.setDisplayLuts(display, imp);
@@ -90,8 +90,8 @@ public class GrayscaleImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Display display) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Dataset dataset = displayManager.getActiveDataset(display);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Dataset dataset = displayService.getActiveDataset(display);
 		ImagePlus imp;
 		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) imp =
 			LegacyUtils.makeExactImagePlus(dataset);

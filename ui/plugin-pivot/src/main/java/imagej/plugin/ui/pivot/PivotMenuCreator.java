@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.module.ModuleInfo;
 import imagej.module.ui.menu.AbstractMenuCreator;
 import imagej.module.ui.menu.ShadowMenu;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 import imagej.util.Log;
 
 import org.apache.pivot.wtk.Action;
@@ -128,8 +128,8 @@ public class PivotMenuCreator extends AbstractMenuCreator<BoxPane, MenuButton>
 
 			@Override
 			public void perform() {
-				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(info, true);
+				final PluginService pluginService = ImageJ.get(PluginService.class);
+				pluginService.run(info, true);
 			}
 		});
 		button.setEnabled(info.isEnabled());

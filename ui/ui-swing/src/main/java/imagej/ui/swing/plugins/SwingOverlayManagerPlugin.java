@@ -40,7 +40,7 @@ import imagej.plugin.Plugin;
 import imagej.ui.swing.SwingOverlayManager;
 
 @Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
-		@Menu(label = "OverlayManager") })
+		@Menu(label = "Overlay Manager") })
 public class SwingOverlayManagerPlugin implements ImageJPlugin {
 
 	@Override

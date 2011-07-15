@@ -53,7 +53,7 @@ import imagej.data.Dataset;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.util.Dimensions;
 import imagej.util.Index;
@@ -767,8 +767,8 @@ public final class LegacyUtils {
 			}
 		}
 		else { // regular ImagePlus
-			final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-			final Dataset ds = displayManager.getActiveDataset(disp);
+			final DisplayService displayService = ImageJ.get(DisplayService.class);
+			final Dataset ds = displayService.getActiveDataset(disp);
 			setImagePlusLutToFirstInDataset(ds, imp);
 		}
 	}

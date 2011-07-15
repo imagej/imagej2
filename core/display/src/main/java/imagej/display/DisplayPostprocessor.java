@@ -39,7 +39,7 @@ import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.module.Module;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import imagej.plugin.Plugin;
 import imagej.plugin.process.PostprocessorPlugin;
 
@@ -72,8 +72,8 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 		else if (value instanceof Dataset) {
 			final Dataset dataset = (Dataset) value;
 			if (!isDisplayed(dataset)) {
-				final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-				displayManager.createDisplay(dataset);
+				final DisplayService displayService = ImageJ.get(DisplayService.class);
+				displayService.createDisplay(dataset);
 			}
 		}
 		else if (value instanceof Overlay) {
@@ -92,8 +92,8 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 	/** Determines whether the given data object is currently displayed onscreen. */
 	private boolean isDisplayed(final DataObject dataset) {
 		// TODO: Keep a reference count instead of manually counting here?
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		final List<Display> displays = objectManager.getObjects(Display.class);
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		final List<Display> displays = objectService.getObjects(Display.class);
 		for (final Display display : displays) {
 			for (final DisplayView view : display.getViews()) {
 				if (dataset == view.getDataObject()) return true;
@@ -104,8 +104,8 @@ public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	private void displayOverlay(final Overlay overlay) {
 		// Add the overlay to the currently active display
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		displayManager.getActiveDisplay().display(overlay);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		displayService.getActiveDisplay().display(overlay);
 	}
 
 }

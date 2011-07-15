@@ -39,7 +39,7 @@ import imagej.module.ModuleException;
 import imagej.module.ui.AbstractInputPanel;
 import imagej.module.ui.InputPanel;
 import imagej.module.ui.WidgetModel;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;
@@ -125,8 +125,8 @@ public class SWTInputPanel extends AbstractInputPanel {
 		// CTR FIXME - Rectify with identical logic in other implementations.
 		// Should ij-object be merged with ij-core?
 		final Class<?> type = model.getItem().getType();
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		final Object[] items = objectManager.getObjects(type).toArray();
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		final Object[] items = objectService.getObjects(type).toArray();
 		if (items.length == 0) {
 			// no valid objects of the given type
 			throw new ModuleException("No objects of type " + type.getName());

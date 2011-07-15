@@ -1,5 +1,5 @@
 //
-// ObjectManager.java
+// ObjectService.java
 //
 
 /*
@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;
@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manager component for keeping track of registered objects.
+ * Service for keeping track of registered objects.
  * Automatically registers new objects from {@link ObjectCreatedEvent}s,
  * and removes objects from {@link ObjectDeletedEvent}s.
  * <p>
@@ -59,8 +59,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.FIRST_PRIORITY)
-public final class ObjectManager implements ManagerComponent {
+@Service(priority = Service.FIRST_PRIORITY)
+public final class ObjectService implements IService {
 
 	/**
 	 * "Sleeping on a dragon's hoard with greedy, dragonish
@@ -72,7 +72,7 @@ public final class ObjectManager implements ManagerComponent {
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	// -- ObjectManager methods --
+	// -- ObjectService methods --
 
 	/** Gets a list of all registered objects compatible with the given type. */
 	public <T> List<T> getObjects(final Class<T> type) {
@@ -80,19 +80,19 @@ public final class ObjectManager implements ManagerComponent {
 		return Collections.unmodifiableList(list);
 	}
 
-	/** Registers an object with the object manager. */
+	/** Registers an object with the object service. */
 	public void addObject(final Object obj) {
 		addObject(obj, obj.getClass());
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
-	/** Deregisters an object with the object manager. */
+	/** Deregisters an object with the object service. */
 	public void removeObject(final Object obj) {
 		removeObject(obj, obj.getClass());
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

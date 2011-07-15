@@ -36,7 +36,7 @@ package imagej.core.plugins.zoom;
 
 import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
@@ -53,8 +53,8 @@ public class Zoom100Percent implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
 
 		display.getImageCanvas().setZoom(1);

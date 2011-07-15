@@ -1,5 +1,5 @@
 //
-// AppEventManager.java
+// AppEventService.java
 //
 
 /*
@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.ImageJ;
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.core.plugins.app.AboutImageJ;
 import imagej.core.plugins.app.QuitProgram;
 import imagej.core.plugins.app.ShowPrefs;
@@ -45,23 +45,23 @@ import imagej.event.Events;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manager component for executing plugins in response to application events.
+ * Service for executing plugins in response to application events.
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.LAST_PRIORITY)
-public final class AppEventManager implements ManagerComponent {
+@Service(priority = Service.LAST_PRIORITY)
+public final class AppEventService implements IService {
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	// -- ManagerComponent methods --
+	// -- Service methods --
 
 	@Override
 	public void initialize() {
@@ -71,7 +71,7 @@ public final class AppEventManager implements ManagerComponent {
 	// -- Helper methods --
 
 	private void subscribeToEvents() {
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
+		final PluginService pluginService = ImageJ.get(PluginService.class);
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<AppAboutEvent> appAboutSubscriber =
@@ -79,7 +79,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppAboutEvent event) {
-				pluginManager.run(AboutImageJ.class, true);
+				pluginService.run(AboutImageJ.class, true);
 			}
 		};
 		subscribers.add(appAboutSubscriber);
@@ -90,7 +90,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppPreferencesEvent event) {
-				pluginManager.run(ShowPrefs.class, true);
+				pluginService.run(ShowPrefs.class, true);
 			}
 		};
 		subscribers.add(appPreferencesSubscriber);
@@ -101,7 +101,7 @@ public final class AppEventManager implements ManagerComponent {
 		{
 			@Override
 			public void onEvent(final AppQuitEvent event) {
-				pluginManager.run(QuitProgram.class, true);
+				pluginService.run(QuitProgram.class, true);
 			}
 		};
 		subscribers.add(appQuitSubscriber);

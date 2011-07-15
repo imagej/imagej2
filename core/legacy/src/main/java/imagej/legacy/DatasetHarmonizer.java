@@ -40,7 +40,7 @@ import ij.ImageStack;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,8 +95,8 @@ public class DatasetHarmonizer {
 	 * compatible format.
 	 */
 	public void updateLegacyImage(final Display display, final ImagePlus imp) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Dataset ds = displayManager.getActiveDataset(display);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Dataset ds = displayService.getActiveDataset(display);
 		if (!LegacyUtils.imagePlusIsNearestType(ds, imp)) {
 			rebuildImagePlusData(display, imp);
 		}
@@ -123,13 +123,13 @@ public class DatasetHarmonizer {
 	 * {@link ImagePlus}.
 	 */
 	public void updateDisplay(final Display display, final ImagePlus imp) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Dataset ds = displayManager.getActiveDataset(display);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Dataset ds = displayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
 		if (imp.getBitDepth() != bitDepthMap.get(imp)) {
 			final Display tmp = imageTranslator.createDisplay(imp, ds.getAxes());
-			final Dataset dsTmp = displayManager.getActiveDataset(tmp);
+			final Dataset dsTmp = displayService.getActiveDataset(tmp);
 			ds.setImgPlus(dsTmp.getImgPlus());
 			ds.setRGBMerged(dsTmp.isRGBMerged());
 		}

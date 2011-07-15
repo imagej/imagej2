@@ -36,7 +36,7 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -73,9 +73,9 @@ public class WatchDisplays implements ImageJPlugin {
 
 	public void showDisplays() {
 		window.clear();
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		List<Display> displays = manager.getDisplays();
-		final Display active = manager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		List<Display> displays = displayService.getDisplays();
+		final Display active = displayService.getActiveDisplay();
 		for (Display display : displays) {
 			if (display == active) {
 				window.append("** " + display.toString() + "\n");

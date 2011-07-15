@@ -59,7 +59,7 @@ import imagej.module.process.ModuleProcessor;
  * 
  * @author Curtis Rueden
  * @see Plugin
- * @see PluginManager
+ * @see PluginService
  */
 public interface IPlugin {
 	// top-level marker interface for discovery via SezPoz

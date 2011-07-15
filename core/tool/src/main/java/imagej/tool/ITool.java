@@ -54,7 +54,7 @@ import imagej.display.event.mouse.MsWheelEvent;
  * @author Grant Harris
  * @author Curtis Rueden
  * @see Tool
- * @see ToolManager
+ * @see ToolService
  */
 public interface ITool {
 

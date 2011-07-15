@@ -40,14 +40,14 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.AbstractDisplay;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.EventDispatcher;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.plugin.Plugin;
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTEventDispatcher;
 
@@ -85,8 +85,8 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 
 	public SwingImageDisplay() {
 
-		//final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		//displayManager.setActiveDisplay(this);
+		//final DisplayService displayService = ImageJ.get(DisplayService.class);
+		//displayService.setActiveDisplay(this);
 
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgWindow = new SwingDisplayWindow(this);
@@ -137,10 +137,10 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			
 	// Name this display with unique id
 	private void createName(String baseName) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		String theName = baseName;
 		int n = 0;
-		while (!displayManager.isUniqueName(theName)) {
+		while (!displayService.isUniqueName(theName)) {
 			n++;
 			theName = baseName + "-" + n;
 		}
@@ -205,10 +205,10 @@ public class SwingImageDisplay extends AbstractDisplay implements AWTDisplay {
 			@Override
 			public void onEvent(final WinActivatedEvent event) {
 				if (event.getDisplay() != thisDisplay) return;
-				//final UserInterface ui = ImageJ.get(UIManager.class).getUI();
-				//final ToolManager toolMgr = ui.getToolBar().getToolManager();
-				final ToolManager toolManager = ImageJ.get(ToolManager.class);
-				imgCanvas.setCursor(toolManager.getActiveTool().getCursor());
+				//final UserInterface ui = ImageJ.get(UIService.class).getUI();
+				//final ToolService toolMgr = ui.getToolBar().getToolService();
+				final ToolService toolService = ImageJ.get(ToolService.class);
+				imgCanvas.setCursor(toolService.getActiveTool().getCursor());
 			}
 		};
 		subscribers.add(winActivatedSubscriber);

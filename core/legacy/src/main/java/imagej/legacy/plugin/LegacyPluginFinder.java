@@ -37,7 +37,7 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.Menus;
 import imagej.ImageJ;
-import imagej.legacy.LegacyManager;
+import imagej.legacy.LegacyService;
 import imagej.module.MenuEntry;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.IndexItemInfo;
@@ -107,7 +107,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		ImageJ.get(LegacyManager.class); // ensure ImageJ v1.x is initialized
+		ImageJ.get(LegacyService.class); // ensure ImageJ v1.x is initialized
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);

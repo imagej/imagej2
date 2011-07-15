@@ -42,14 +42,14 @@ import java.util.List;
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
  * the metadata is populated without actually loading the plugin class, by
- * reading from an efficient binary cache (see {@link PluginManager} for
+ * reading from an efficient binary cache (see {@link PluginService} for
  * details). As such, ImageJ can very quickly build a complex menu structure
  * containing all available plugins without waiting for the Java class loader.
  * 
  * @author Curtis Rueden
  * @see ImageJPlugin
  * @see Plugin
- * @see PluginManager
+ * @see PluginService
  */
 public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 

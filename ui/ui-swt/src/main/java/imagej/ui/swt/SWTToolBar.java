@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
 import imagej.tool.ToolInfo;
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
 
@@ -64,13 +64,13 @@ import org.eclipse.swt.widgets.Display;
 public class SWTToolBar extends Composite implements ToolBar {
 
 	private final Display display;
-	private final ToolManager toolManager;
+	private final ToolService toolService;
 	private final Map<String, Button> toolButtons;
 
 	public SWTToolBar(final Display display, final Composite parent) {
 		super(parent, 0);
 		this.display = display;
-		toolManager = ImageJ.get(ToolManager.class);
+		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
 		populateToolBar();
@@ -79,14 +79,14 @@ public class SWTToolBar extends Composite implements ToolBar {
 	// -- ToolBar methods --
 
 	@Override
-	public ToolManager getToolManager() {
-		return toolManager;
+	public ToolService getToolService() {
+		return toolService;
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		for (final ToolInfo entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolService.getToolEntries()) {
 			try {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
@@ -118,7 +118,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 //		button.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
-//				getToolManager().setActiveTool(tool);
+//				getToolService().setActiveTool(tool);
 //			}
 //		});
 

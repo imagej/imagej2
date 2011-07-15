@@ -49,7 +49,7 @@ import net.java.sezpoz.Indexable;
  * 
  * @author Curtis Rueden
  * @see IPlugin
- * @see PluginManager
+ * @see PluginService
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
