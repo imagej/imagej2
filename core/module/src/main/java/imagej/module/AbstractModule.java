@@ -34,10 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.module;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Abstract superclass of {@link Module} implementations.
+ * <p>
+ * By default, input and output values are stored in {@link HashMap}s.
+ * </p>
  * 
  * @author Curtis Rueden
  */
@@ -46,11 +52,16 @@ public abstract class AbstractModule implements Module {
 	/** The {@link ModuleInfo} describing the module. */
 	private final ModuleInfo info;
 
+	private final HashMap<String, Object> inputs;
+	private final HashMap<String, Object> outputs;
+
 	/** Table indicating resolved inputs. */
 	private final HashSet<String> resolvedInputs;
 
 	public AbstractModule(final ModuleInfo info) {
 		this.info = info;
+		inputs = new HashMap<String, Object>();
+		outputs = new HashMap<String, Object>();
 		resolvedInputs = new HashSet<String>();
 	}
 
@@ -69,6 +80,48 @@ public abstract class AbstractModule implements Module {
 	@Override
 	public Object getDelegateObject() {
 		return this;
+	}
+
+	@Override
+	public Object getInput(final String name) {
+		return inputs.get(name);
+	}
+
+	@Override
+	public Object getOutput(final String name) {
+		return outputs.get(name);
+	}
+
+	@Override
+	public Map<String, Object> getInputs() {
+		return Collections.unmodifiableMap(inputs);
+	}
+
+	@Override
+	public Map<String, Object> getOutputs() {
+		return Collections.unmodifiableMap(outputs);
+	}
+
+	@Override
+	public void setInput(final String name, final Object value) {
+		inputs.put(name, value);
+	}
+
+	@Override
+	public void setOutput(final String name, final Object value) {
+		outputs.put(name, value);
+	}
+
+	@Override
+	public void setInputs(final Map<String, Object> inputs) {
+		this.inputs.clear();
+		this.inputs.putAll(inputs);
+	}
+
+	@Override
+	public void setOutputs(final Map<String, Object> outputs) {
+		this.outputs.clear();
+		this.outputs.putAll(outputs);
 	}
 
 	@Override
