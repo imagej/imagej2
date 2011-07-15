@@ -36,10 +36,10 @@ package imagej.ui.pivot;
 
 import imagej.ImageJ;
 import imagej.event.Events;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
-import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.pivot.PivotMenuCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
@@ -66,7 +66,6 @@ public class PivotUI implements Application, UserInterface {
 	private BoxPane contentPane;
 	private PivotToolBar toolBar;
 	private PivotStatusBar statusBar;
-	private imagej.display.Display activeDisplay; 
 
 	// -- Application methods --
 
@@ -133,9 +132,10 @@ public class PivotUI implements Application, UserInterface {
 	// -- Helper methods --
 
 	private void createMenuBar() {
+		// CTR FIXME - rework this
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		final List<ModuleInfo> modules = pluginManager.getModules();
+		final ShadowMenu rootMenu = new ShadowMenu(modules);
 		final BoxPane menuPane = new BoxPane();
 		new PivotMenuCreator().createMenus(rootMenu, menuPane);
 		contentPane.add(menuPane);

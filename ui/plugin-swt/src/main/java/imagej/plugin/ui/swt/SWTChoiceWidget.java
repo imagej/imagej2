@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ChoiceWidget;
+import imagej.module.ui.WidgetModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -50,7 +50,7 @@ public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
 
 	private final Combo combo;
 
-	public SWTChoiceWidget(final Composite parent, final ParamModel model,
+	public SWTChoiceWidget(final Composite parent, final WidgetModel model,
 		final String[] items)
 	{
 		super(parent, model);
@@ -58,13 +58,13 @@ public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
 		combo = new Combo(this, SWT.DROP_DOWN);
 		combo.setItems(items);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getItem() {
+	public String getValue() {
 		return combo.getItem(combo.getSelectionIndex());
 	}
 
@@ -76,8 +76,9 @@ public class SWTChoiceWidget extends SWTInputWidget implements ChoiceWidget {
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		final String value = model.getValue().toString();
+	public void refreshWidget() {
+		final String value = getModel().getValue().toString();
+		if (value.equals(getValue())) return; // no change
 		for (int i = 0; i < combo.getItemCount(); i++) {
 			final String item = combo.getItem(i);
 			if (item.equals(value)) {

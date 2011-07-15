@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.ShadowMenu;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.util.Log;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
 
 /**
- * Populate an AWT {@link MenuBar} with menu items.
- *
+ * Populates an AWT {@link MenuBar} with menu items from a {@link ShadowMenu}.
+ * 
  * @author Curtis Rueden
  */
 public class MenuBarCreator extends AWTMenuCreator<MenuBar> {
@@ -53,8 +53,8 @@ public class MenuBarCreator extends AWTMenuCreator<MenuBar> {
 	}
 
 	@Override
-	protected Menu addNonLeafToTop(final ShadowMenu shadow,
-		final MenuBar target)
+	protected Menu
+		addNonLeafToTop(final ShadowMenu shadow, final MenuBar target)
 	{
 		final Menu menu = createNonLeaf(shadow);
 		target.add(menu);

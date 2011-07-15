@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ObjectWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ObjectWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,7 +53,7 @@ public class SwingObjectWidget extends SwingInputWidget
 
 	private final JComboBox comboBox;
 
-	public SwingObjectWidget(final ParamModel model, final Object[] items) {
+	public SwingObjectWidget(final WidgetModel model, final Object[] items) {
 		super(model);
 
 		comboBox = new JComboBox(items);
@@ -61,27 +61,25 @@ public class SwingObjectWidget extends SwingInputWidget
 		add(comboBox);
 		comboBox.addActionListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ActionListener methods --
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		model.setValue(comboBox.getSelectedItem());
-	}
-
-	// -- ObjectWidget methods --
-
-	@Override
-	public Object getObject() {
-		return comboBox.getSelectedItem();
+		updateModel();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
+	public Object getValue() {
+		return comboBox.getSelectedItem();
+	}
+
+	@Override
+	public void refreshWidget() {
 		comboBox.setSelectedItem(getValidValue());
 	}
 
@@ -91,7 +89,7 @@ public class SwingObjectWidget extends SwingInputWidget
 		final int itemCount = comboBox.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final Object value = model.getValue();
+		final Object value = getModel().getValue();
 		for (int i = 0; i < itemCount; i++) {
 			final Object item = comboBox.getItemAt(i);
 			if (value == item) return value;
@@ -99,7 +97,8 @@ public class SwingObjectWidget extends SwingInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final Object validValue = comboBox.getItemAt(0);
-		model.setValue(validValue);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
 		return validValue;
 	}
 

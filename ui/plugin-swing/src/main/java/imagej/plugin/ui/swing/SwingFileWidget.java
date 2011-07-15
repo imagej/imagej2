@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.FileWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,13 +54,13 @@ import javax.swing.event.DocumentListener;
  * @author Curtis Rueden
  */
 public class SwingFileWidget extends SwingInputWidget
-	implements ActionListener, DocumentListener, FileWidget
+	implements FileWidget, ActionListener, DocumentListener
 {
 
 	private JTextField path;
 	private JButton browse;
 
-	public SwingFileWidget(final ParamModel model) {
+	public SwingFileWidget(final WidgetModel model) {
 		super(model);
 
 		path = new JTextField("");
@@ -75,7 +75,25 @@ public class SwingFileWidget extends SwingInputWidget
 		add(browse);
 		browse.addActionListener(this);
 
-		refresh();
+		refreshWidget();
+	}
+
+	// -- FileWidget methods --
+
+	@Override
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
+	}
+
+	// -- InputWidget methods --
+
+	@Override
+	public void refreshWidget() {
+		final File value = (File) getModel().getValue();
+		final String text = value == null ? "" : value.toString();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
 
 	// -- ActionListener methods --
@@ -97,39 +115,17 @@ public class SwingFileWidget extends SwingInputWidget
 
 	@Override
 	public void changedUpdate(DocumentEvent e) {
-		documentUpdate();
+		updateModel();
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		documentUpdate();
+		updateModel();
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		documentUpdate();
-	}
-
-	// -- FileWidget methods --
-
-	@Override
-	public File getFile() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
-	}
-
-	// -- InputWidget methods --
-
-	@Override
-	public void refresh() {
-		final File value = (File) model.getValue();
-		path.setText(value == null ? "" : value.toString());
-	}
-
-	// -- Helper methods --
-
-	private void documentUpdate() {
-		model.setValue(new File(path.getText()));
+		updateModel();
 	}
 
 }

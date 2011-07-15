@@ -37,12 +37,12 @@ package imagej.core.plugins.display;
 import imagej.ImageJ;
 import imagej.display.DatasetView;
 import imagej.display.DisplayManager;
+import imagej.module.ui.WidgetStyle;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-import imagej.plugin.ui.WidgetStyle;
 import imagej.util.Log;
 
 import java.util.List;

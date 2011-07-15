@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.finder;
 
 import imagej.plugin.IPlugin;
-import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginInfo;
 
 import java.util.List;
 
@@ -51,6 +51,6 @@ import java.util.List;
 public interface IPluginFinder {
 
 	/** Discovers plugins, appending them to the given list. */
-	void findPlugins(List<PluginEntry<?>> plugins);
+	void findPlugins(List<PluginInfo<?>> plugins);
 
 }

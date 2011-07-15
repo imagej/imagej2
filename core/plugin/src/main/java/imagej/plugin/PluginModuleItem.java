@@ -34,25 +34,32 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.AbstractModuleItem;
+import imagej.module.ItemVisibility;
+import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.module.ui.WidgetStyle;
+import imagej.util.ClassUtils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * {@link ModuleItem} class for querying metadata of a {@link IPlugin}'s
- * inputs and outputs.
+ * {@link ModuleItem} implementation describing an input or output of a plugin.
  * 
  * @author Curtis Rueden
  */
-public class PluginModuleItem implements ModuleItem {
+public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 
 	private final Field field;
-	private final Object defaultValue;
 
-	public PluginModuleItem(final Field field, final Object defaultValue) {
+	public PluginModuleItem(final ModuleInfo info, final Field field) {
+		super(info);
 		this.field = field;
-		this.defaultValue = defaultValue;
 	}
+
+	// -- PluginModuleItem methods --
 
 	public Field getField() {
 		return field;
@@ -80,13 +87,68 @@ public class PluginModuleItem implements ModuleItem {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return field.getType();
+	@SuppressWarnings("unchecked")
+	public Class<T> getType() {
+		return (Class<T>) field.getType();
 	}
 
 	@Override
-	public Object getDefaultValue() {
-		return defaultValue;
+	public ItemVisibility getVisibility() {
+		return getParameter().visibility();
+	}
+
+	@Override
+	public boolean isRequired() {
+		return getParameter().required();
+	}
+
+	@Override
+	public boolean isPersisted() {
+		return getParameter().persist();
+	}
+
+	@Override
+	public String getPersistKey() {
+		return getParameter().persistKey();
+	}
+
+	@Override
+	public String getCallback() {
+		return getParameter().callback();
+	}
+
+	@Override
+	public WidgetStyle getWidgetStyle() {
+		return getParameter().style();
+	}
+
+	@Override
+	public T getMinimumValue() {
+		return ClassUtils.convert(getParameter().min(), getType());
+	}
+
+	@Override
+	public T getMaximumValue() {
+		return ClassUtils.convert(getParameter().max(), getType());
+	}
+
+	@Override
+	public Number getStepSize() {
+		return ClassUtils.toNumber(getParameter().stepSize(), getType());
+	}
+
+	@Override
+	public int getColumnCount() {
+		return getParameter().columns();
+	}
+
+	@Override
+	public List<T> getChoices() {
+		final ArrayList<T> choices = new ArrayList<T>();
+		for (final String choice : getParameter().choices()) {
+			choices.add(ClassUtils.convert(choice, getType()));
+		}
+		return choices;
 	}
 
 }

@@ -34,135 +34,200 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.event.Events;
+import imagej.module.ItemVisibility;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.module.event.ModuleInfoUpdatedEvent;
 import imagej.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * {@link ModuleInfo} class for querying metadata of a {@link IPlugin}.
- *
+ * A collection of metadata about a particular {@link RunnablePlugin}. Unlike
+ * its more general superclass {@link PluginInfo}, a
+ * <code>PluginModuleInfo</code> implements {@link ModuleInfo}, allowing it to
+ * describe and instantiate the plugin in {@link Module} form.
+ * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
+ * @see ModuleInfo
+ * @see PluginModule
+ * @see RunnablePlugin
  */
-public class PluginModuleInfo<P extends IPlugin> implements ModuleInfo {
+public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
+	implements ModuleInfo
+{
 
-	/** The plugin entry associated with this module info. */
-	private final PluginEntry<P> pluginEntry;
+	/** List of items with fixed, preset values. */
+	private Map<String, Object> presets;
 
-	/** Class object of this plugin. */
-	private final Class<?> pluginClass;
-
-	/** Table of inputs, keyed on name. */
-	private final Map<String, ModuleItem> inputMap =
-		new HashMap<String, ModuleItem>();
-
-	/** Table of outputs, keyed on name. */
-	private final Map<String, ModuleItem> outputMap =
-		new HashMap<String, ModuleItem>();
-
-	/** Ordered list of input items. */
-	private final List<ModuleItem> inputList =
-		new ArrayList<ModuleItem>();
-
-	/** Ordered list of output items. */
-	private final List<ModuleItem> outputList =
-		new ArrayList<ModuleItem>();
-
-	/** Creates module info for the given plugin entry. */
-	public PluginModuleInfo(final PluginEntry<P> pluginEntry)
-		throws PluginException
-	{
-		this(pluginEntry, null);
-	}
+	/** Factory used to create a module associated with the associated plugin. */
+	private PluginModuleFactory factory;
 
 	/**
-	 * Creates module info for the given plugin entry, using
-	 * the given instance to access and assign parameter values.
-	 *
-	 * This constructor is used by {@link PluginModule} to ensure that
-	 * the {@link PluginModuleItem}s report the correct default values,
-	 * and that the {@link PluginEntry}'s presets are assigned correctly.
+	 * Flag indicating whether the plugin parameters have been parsed. Parsing the
+	 * parameters requires loading the plugin class, so doing so is deferred until
+	 * information about the parameters is actively needed.
 	 */
-	PluginModuleInfo(final PluginEntry<P> pluginEntry, final P plugin)
-		throws PluginException
-	{
-		this.pluginEntry = pluginEntry;
-		try {
-			pluginClass = pluginEntry.loadClass();
-		}
-		catch (IndexException exc) {
-			throw new PluginException(exc);
-		}
-		checkFields(pluginClass, plugin, true);
+	private boolean paramsParsed;
+
+	/** Table of inputs, keyed on name. */
+	private final Map<String, ModuleItem<?>> inputMap =
+		new HashMap<String, ModuleItem<?>>();
+
+	/** Table of outputs, keyed on name. */
+	private final Map<String, ModuleItem<?>> outputMap =
+		new HashMap<String, ModuleItem<?>>();
+
+	/** Ordered list of input items. */
+	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
+
+	/** Ordered list of output items. */
+	private final List<ModuleItem<?>> outputList =
+		new ArrayList<ModuleItem<?>>();
+
+	// -- Constructors --
+
+	public PluginModuleInfo(final String className, final Class<R> pluginType) {
+		super(className, pluginType);
+		setPresets(null);
+		setPluginModuleFactory(null);
 	}
 
-	// -- PluginModuleInfo methods --
+	public PluginModuleInfo(final String className, final Class<R> pluginType,
+		final Plugin plugin)
+	{
+		super(className, pluginType, plugin);
+		setPresets(null);
+		setPluginModuleFactory(null);
+	}
 
-	public PluginEntry<P> getPluginEntry() {
-		return pluginEntry;
+	// -- RunnablePluginInfo methods --
+
+	/** Sets the table of items with fixed, preset values. */
+	public void setPresets(final Map<String, Object> presets) {
+		if (presets == null) {
+			this.presets = new HashMap<String, Object>();
+		}
+		else {
+			this.presets = presets;
+		}
+	}
+
+	/** Gets the table of items with fixed, preset values. */
+	public Map<String, Object> getPresets() {
+		return presets;
+	}
+
+	/** Sets the factory used to construct {@link PluginModule} instances. */
+	public void setPluginModuleFactory(final PluginModuleFactory factory) {
+		if (factory == null) {
+			this.factory = new DefaultPluginModuleFactory();
+		}
+		else {
+			this.factory = factory;
+		}
+	}
+
+	/** Gets the factory used to construct {@link PluginModule} instances. */
+	public PluginModuleFactory getPluginModuleFactory() {
+		return factory;
 	}
 
 	// -- ModuleInfo methods --
 
 	@Override
-	public String getName() {
-		return pluginEntry.getName();
+	public PluginModuleItem<?> getInput(final String name) {
+		parseParams();
+		return (PluginModuleItem<?>) inputMap.get(name);
 	}
 
 	@Override
-	public String getLabel() {
-		return pluginEntry.getLabel();
+	public PluginModuleItem<?> getOutput(final String name) {
+		parseParams();
+		return (PluginModuleItem<?>) outputMap.get(name);
 	}
 
 	@Override
-	public String getDescription() {
-		return pluginEntry.getDescription();
+	public Iterable<ModuleItem<?>> inputs() {
+		parseParams();
+		return Collections.unmodifiableList(inputList);
 	}
 
 	@Override
-	public PluginModuleItem getInput(final String name) {
-		return (PluginModuleItem) inputMap.get(name);
+	public Iterable<ModuleItem<?>> outputs() {
+		parseParams();
+		return Collections.unmodifiableList(outputList);
 	}
 
 	@Override
-	public PluginModuleItem getOutput(final String name) {
-		return (PluginModuleItem) outputMap.get(name);
+	public String getDelegateClassName() {
+		return getClassName();
 	}
 
 	@Override
-	public Iterable<ModuleItem> inputs() {
-		return inputList;
+	public PluginModule<R> createModule() throws ModuleException {
+		return factory.createModule(this);
 	}
 
 	@Override
-	public Iterable<ModuleItem> outputs() {
-		return outputList;
+	public boolean canPreview() {
+		final Class<?> pluginClass = loadPluginClass();
+		if (pluginClass == null) return false;
+		return PreviewPlugin.class.isAssignableFrom(pluginClass);
+	}
+
+	@Override
+	public void update() {
+		Events.publish(new ModuleInfoUpdatedEvent(this));
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(super.toString());
+		for (final String key : presets.keySet()) {
+			final Object value = presets.get(key);
+			appendParam(sb, key, "'" + value + "'");
+		}
+		return sb.toString();
 	}
 
 	// -- Helper methods --
 
 	/**
-	 * Recursively parses the given class's declared fields for
-	 * {@link Parameter} annotations.
+	 * Parses the plugin's inputs and outputs. Invoked lazily, as needed, to defer
+	 * class loading as long as possible.
+	 */
+	private void parseParams() {
+		if (paramsParsed) return;
+		paramsParsed = true;
+		checkFields(loadPluginClass(), true);
+	}
+
+	/**
+	 * Recursively parses the given class's declared fields for {@link Parameter}
+	 * annotations.
 	 * <p>
 	 * This method (rather than {@link Class#getFields()}) is used to check all
 	 * fields of the given type and ancestor types, including non-public fields.
 	 * </p>
 	 */
-	private void checkFields(final Class<?> type, final P plugin,
+	private void checkFields(final Class<?> type,
 		final boolean includePrivateFields)
 	{
 		if (type == null) return;
-
-		final Map<String, Object> presets = pluginEntry.getPresets();
 
 		for (final Field f : type.getDeclaredFields()) {
 			final boolean isPrivate = Modifier.isPrivate(f.getModifiers());
@@ -173,7 +238,7 @@ public class PluginModuleInfo<P extends IPlugin> implements ModuleInfo {
 			if (param == null) continue; // not a parameter
 
 			final boolean isFinal = Modifier.isFinal(f.getModifiers());
-			final boolean isMessage = param.visibility() == ParamVisibility.MESSAGE;
+			final boolean isMessage = param.visibility() == ItemVisibility.MESSAGE;
 			if (isFinal && !isMessage) {
 				// NB: Skip final parameters, since they cannot be modified.
 				Log.warn("Ignoring final parameter: " + f);
@@ -181,30 +246,36 @@ public class PluginModuleInfo<P extends IPlugin> implements ModuleInfo {
 			}
 
 			final String name = f.getName();
-			if (presets.containsKey(name)) {
-				// assign preset value to field, and exclude from the list of inputs
-				PluginModule.setValue(f, plugin, presets.get(name));
+			final boolean isPreset = presets.containsKey(name);
+
+			// add item to the relevant list (inputs or outputs)
+			final PluginModuleItem<Object> item =
+				new PluginModuleItem<Object>(this, f);
+			if (param.output()) {
+				outputMap.put(name, item);
+				if (!isPreset) outputList.add(item);
 			}
 			else {
-				// add item to the relevant list (inputs or outputs)
-				final Object defaultValue = PluginModule.getValue(f, plugin);
-				final ModuleItem item = new PluginModuleItem(f, defaultValue);
-				if (param.output()) {
-					outputMap.put(name, item);
-					outputList.add(item);
-				}
-				else {
-					inputMap.put(name, item);
-					inputList.add(item);
-				}
+				inputMap.put(name, item);
+				if (!isPreset) inputList.add(item);
 			}
 		}
 
 		// check super-types for annotated fields as well
-		checkFields(type.getSuperclass(), plugin, false);
+		checkFields(type.getSuperclass(), false);
 		for (final Class<?> c : type.getInterfaces()) {
-			checkFields(c, plugin, false);
+			checkFields(c, false);
 		}
+	}
+
+	private Class<?> loadPluginClass() {
+		try {
+			return loadClass();
+		}
+		catch (final InstantiableException e) {
+			Log.error("Could not initialize plugin class: " + getClassName(), e);
+		}
+		return null;
 	}
 
 }

@@ -36,11 +36,11 @@ package imagej.ui.swt;
 
 import imagej.ImageJ;
 import imagej.event.Events;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
-import imagej.plugin.ui.ShadowMenu;
-import imagej.plugin.ui.swt.MenuCreator;
+import imagej.plugin.ui.swt.SWTMenuCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 
@@ -53,8 +53,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * SWT-based user interface for ImageJ.
- *
+ * An SWT-based user interface for ImageJ.
+ * 
  * @author Curtis Rueden
  */
 @UI
@@ -112,11 +112,12 @@ public class SWTUI implements UserInterface, Runnable {
 	// -- Helper methods --
 
 	private void createMenuBar() {
+		// CTR FIXME - rework this
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
-		final ShadowMenu rootMenu = new ShadowMenu(entries);
+		final List<ModuleInfo> modules = pluginManager.getModules();
+		final ShadowMenu rootMenu = new ShadowMenu(modules);
 		final Menu menuBar = new Menu(shell);
-		new MenuCreator().createMenus(rootMenu, menuBar);
+		new SWTMenuCreator().createMenus(rootMenu, menuBar);
 		shell.setMenuBar(menuBar); // TODO - is this necessary?
 		Events.publish(new AppMenusCreatedEvent(menuBar));
 	}

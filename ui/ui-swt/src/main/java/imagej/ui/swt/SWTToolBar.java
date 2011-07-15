@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swt;
 
 import imagej.ImageJ;
-import imagej.plugin.IndexException;
+import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
-import imagej.tool.ToolEntry;
+import imagej.tool.ToolInfo;
 import imagej.tool.ToolManager;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
@@ -58,7 +58,7 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.
- *
+ * 
  * @author Curtis Rueden
  */
 public class SWTToolBar extends Composite implements ToolBar {
@@ -86,21 +86,23 @@ public class SWTToolBar extends Composite implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		for (final ToolEntry entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolManager.getToolEntries()) {
 			try {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
 			}
-			catch (IndexException e) {
+			catch (final InstantiableException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private Button createButton(final ToolEntry entry) throws IndexException {
+	private Button createButton(final ToolInfo entry)
+		throws InstantiableException
+	{
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
-		tool.setToolEntry(entry);
+		tool.setInfo(entry);
 		final String name = entry.getName();
 		final URL iconURL = entry.getIconURL();
 
@@ -130,7 +132,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 			iconStream.close();
 			return image;
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			return null;
 		}
 	}

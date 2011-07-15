@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.NumberWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -55,10 +55,12 @@ public class AWTNumberWidget extends AWTInputWidget
 	implements NumberWidget, AdjustmentListener, TextListener
 {
 
+	// CTR FIXME - Update the model properly, and handle non-integer values.
+
 	private Scrollbar scrollBar;
 	private TextField textField;
 
-	public AWTNumberWidget(final ParamModel model,
+	public AWTNumberWidget(final WidgetModel model,
 		final Number min, final Number max, final Number stepSize)
 	{
 		super(model);
@@ -73,7 +75,7 @@ public class AWTNumberWidget extends AWTInputWidget
 		textField.addTextListener(this);
 		add(textField, BorderLayout.EAST);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- NumberWidget methods --
@@ -86,10 +88,10 @@ public class AWTNumberWidget extends AWTInputWidget
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
- 		final Number value = (Number) model.getValue();
-		scrollBar.setValue(value.intValue());
-		textField.setText(value.toString());
+	public void refreshWidget() {
+ 		final String value = ((Number) getModel().getValue()).toString();
+ 		if (textField.getText().equals(value)) return; // no change
+ 		textField.setText(value);
 	}
 
 	// -- AdjustmentListener methods --

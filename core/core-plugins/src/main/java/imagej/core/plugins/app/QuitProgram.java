@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
+import imagej.module.ItemVisibility;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.ParamVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -48,7 +48,7 @@ import imagej.plugin.Plugin;
 @Plugin(iconPath = "/icons/plugins/door_in.png", menuPath = "File>Quit")
 public class QuitProgram implements ImageJPlugin {
 
-	@Parameter(visibility = ParamVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE)
 	public static final String MESSAGE = "Really quit ImageJ?";
 
 	@Override

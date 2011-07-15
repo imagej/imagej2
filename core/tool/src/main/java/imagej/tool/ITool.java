@@ -53,23 +53,16 @@ import imagej.display.event.mouse.MsWheelEvent;
  * @author Rick Lentz
  * @author Grant Harris
  * @author Curtis Rueden
+ * @see Tool
+ * @see ToolManager
  */
 public interface ITool {
 
-	/** Gets the tool entry associated with the tool. */
-	ToolEntry getToolEntry();
+	/** Gets the info describing the tool. */
+	ToolInfo getInfo();
 
-	/** Sets the tool entry associated with the tool. */
-	void setToolEntry(final ToolEntry entry);
-
-	/** Gets the unique name of the tool. */
-	String getName();
-
-	/** Gets the human-readable label for the tool. */
-	String getLabel();
-
-	/** Gets a string describing the tool in detail. */
-	String getDescription();
+	/** Sets the info describing the tool. */
+	void setInfo(final ToolInfo entry);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();

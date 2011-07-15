@@ -34,19 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
+import imagej.module.Module;
+import imagej.module.process.ModulePreprocessor;
+import imagej.module.ui.AbstractInputHarvester;
+import imagej.module.ui.InputHarvester;
+import imagej.module.ui.InputPanel;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPreprocessor;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
 
 /**
- * HeadlessInputHarvester is a plugin preprocessor that collects input
+ * HeadlessInputHarvester is an {@link InputHarvester} that collects input
  * parameter values from the user over an input stream (typically System.in).
- *
+ * 
  * @author Curtis Rueden
  */
-@Plugin(type = PluginPreprocessor.class)
+@Plugin(type = ModulePreprocessor.class)
 public class HeadlessInputHarvester extends AbstractInputHarvester {
 
 	@Override
@@ -55,8 +56,8 @@ public class HeadlessInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
+	public boolean
+		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
 		// TODO
 		return true;

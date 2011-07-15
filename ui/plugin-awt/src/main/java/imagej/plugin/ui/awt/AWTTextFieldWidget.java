@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.TextFieldWidget;
 
 import java.awt.BorderLayout;
 import java.awt.TextField;
@@ -53,35 +53,35 @@ public class AWTTextFieldWidget extends AWTInputWidget
 
 	private TextField textField;
 
-	public AWTTextFieldWidget(final ParamModel model, final int columns) {
+	public AWTTextFieldWidget(final WidgetModel model, final int columns) {
 		super(model);
 
 		textField = new TextField("", columns);
 		textField.addTextListener(this);
 		add(textField, BorderLayout.CENTER);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- TextFieldWidget methods --
 
 	@Override
-	public String getText() {
+	public String getValue() {
 		return textField.getText();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		textField.setText(model.getValue().toString());
+	public void refreshWidget() {
+		textField.setText(getModel().getValue().toString());
 	}
 
 	// -- TextListener methods --
 
 	@Override
 	public void textValueChanged(final TextEvent e) {
-		model.setValue(textField.getText());
+		updateModel();
 	}
 
 }

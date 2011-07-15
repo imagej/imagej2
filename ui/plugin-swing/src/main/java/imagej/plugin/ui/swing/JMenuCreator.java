@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ShadowMenu;
+import imagej.module.ui.menu.ShadowMenu;
 
 import javax.swing.JMenu;
 
 /**
- * Populate a Swing {@link JMenu} with menu items.
+ * Populates a {@link JMenu} with menu items from a {@link ShadowMenu}.
  * 
  * @author Curtis Rueden
  */

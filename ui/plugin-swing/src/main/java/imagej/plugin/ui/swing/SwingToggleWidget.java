@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.ToggleWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.ToggleWidget;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -52,7 +52,7 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	private final JCheckBox checkBox;
 
-	public SwingToggleWidget(final ParamModel model) {
+	public SwingToggleWidget(final WidgetModel model) {
 		super(model);
 
 		checkBox = new JCheckBox("");
@@ -60,29 +60,28 @@ public class SwingToggleWidget extends SwingInputWidget
 		add(checkBox);
 		checkBox.addChangeListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ChangeListener methods --
 
 	@Override
 	public void stateChanged(final ChangeEvent e) {
-		model.setValue(checkBox.isSelected());
+		updateModel();
 	}
 
 	// -- ToggleWidget methods --
 
 	@Override
-	public boolean isSelected() {
+	public Boolean getValue() {
 		return checkBox.isSelected();
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		final boolean value = (Boolean) model.getValue();
-		checkBox.setSelected(value);
+	public void refreshWidget() {
+		checkBox.setSelected((Boolean) getModel().getValue());
 	}
 
 }

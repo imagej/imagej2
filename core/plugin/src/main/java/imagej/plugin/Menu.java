@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.MenuEntry;
+
 import java.lang.annotation.Target;
 
 /**
@@ -52,8 +54,6 @@ import java.lang.annotation.Target;
 @Target({})
 public @interface Menu {
 
-	static final double DEFAULT_WEIGHT = Double.POSITIVE_INFINITY;
-
 	/** The human-readable label to use for the menu item. */
 	String label();
 
@@ -61,7 +61,7 @@ public @interface Menu {
 	 * Position within the menu structure. Items at each level are sorted in
 	 * ascending order by weight.
 	 */
-	double weight() default DEFAULT_WEIGHT;
+	double weight() default MenuEntry.DEFAULT_WEIGHT;
 
 	/** Mnemonic identifying underlined shortcut character. */
 	char mnemonic() default '\0';

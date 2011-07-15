@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.WidgetStyle;
+import imagej.module.ui.NumberWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.WidgetStyle;
 import imagej.util.Log;
 
 /**
@@ -48,11 +48,11 @@ public abstract class PivotNumberWidget
 	extends PivotInputWidget implements NumberWidget
 {
 
-	public PivotNumberWidget(final ParamModel model) {
+	public PivotNumberWidget(final WidgetModel model) {
 		super(model);
 	}
 
-	public static PivotNumberWidget create(final ParamModel model,
+	public static PivotNumberWidget create(final WidgetModel model,
 		final Number min, final Number max, final Number stepSize,
 		final WidgetStyle style)
 	{

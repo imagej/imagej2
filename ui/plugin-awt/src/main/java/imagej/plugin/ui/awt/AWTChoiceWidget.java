@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.ChoiceWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.ChoiceWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;
@@ -53,7 +53,7 @@ public class AWTChoiceWidget extends AWTInputWidget
 
 	private Choice choice;
 
-	public AWTChoiceWidget(final ParamModel model, final String[] items) {
+	public AWTChoiceWidget(final WidgetModel model, final String[] items) {
 		super(model);
 
 		choice = new Choice();
@@ -61,13 +61,13 @@ public class AWTChoiceWidget extends AWTInputWidget
 		choice.addItemListener(this);
 		add(choice, BorderLayout.CENTER);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- ChoiceWidget methods --
 
 	@Override
-	public String getItem() {
+	public String getValue() {
 		return choice.getSelectedItem();
 	}
 
@@ -79,15 +79,17 @@ public class AWTChoiceWidget extends AWTInputWidget
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		choice.select(getValidValue());
+	public void refreshWidget() {
+		final String value = getValidValue();
+		if (value.equals(choice.getSelectedItem())) return; // no change
+		choice.select(value);
 	}
 
 	// -- ItemListener methods --
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		model.setValue(choice.getSelectedItem());
+		updateModel();
 	}
 
 	// -- Helper methods --
@@ -96,7 +98,7 @@ public class AWTChoiceWidget extends AWTInputWidget
 		final int itemCount = choice.getItemCount();
 		if (itemCount == 0) return null; // no valid values exist
 
-		final String value = model.getValue().toString();
+		final String value = getModel().getValue().toString();
 		for (int i = 0; i < itemCount; i++) {
 			final String item = choice.getItem(i);
 			if (value == item) return value;
@@ -104,7 +106,8 @@ public class AWTChoiceWidget extends AWTInputWidget
 
 		// value was invalid; reset to first choice on the list
 		final String validValue = choice.getItem(0);
-		model.setValue(validValue);
+		// CTR FIXME should not update model in getter!
+		getModel().setValue(validValue);
 		return validValue;
 	}
 

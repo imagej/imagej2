@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.InputWidget;
+import imagej.module.ui.WidgetModel;
 
 /**
  * Common superclass for headless input widgets.
@@ -44,21 +44,26 @@ import imagej.plugin.ui.ParamModel;
  */
 public abstract class HeadlessInputWidget implements InputWidget {
 
-	protected ParamModel model;
+	private WidgetModel model;
 
-	public HeadlessInputWidget(final ParamModel model) {
+	public HeadlessInputWidget(final WidgetModel model) {
 		this.model = model;
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public ParamModel getModel() {
+	public WidgetModel getModel() {
 		return model;
 	}
 
 	@Override
-	public void refresh() {
+	public void updateModel() {
+		model.setValue(getValue());
+	}
+
+	@Override
+	public void refreshWidget() {
 		// NB: No action needed.
 	}
 

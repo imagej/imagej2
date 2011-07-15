@@ -35,9 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.MenuEntry;
-import imagej.plugin.PluginEntry;
+import imagej.module.MenuEntry;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.ShadowMenu;
+import imagej.plugin.IndexItemInfo;
 import imagej.plugin.PluginManager;
 
 import java.awt.event.ActionEvent;
@@ -100,12 +101,12 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- CommandFinderPanel methods --
 
 	/** Gets the currently selected command. */
-	public PluginEntry<ImageJPlugin> getCommand() {
+	public ModuleInfo getCommand() {
 		Command command = (Command) commandsList.getSelectedValue();
 		if (command == null) {
 			command = (Command) commandsList.getModel().getElementAt(0);
 		}
-		return command == null ? null : command.getPluginEntry();
+		return command == null ? null : command.getModuleInfo();
 	}
 
 	/** Gets the {@link JTextField} component for specifying the search string. */
@@ -153,10 +154,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		commands = new ArrayList<Command>();
 
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<ImageJPlugin>> plugins =
-			pluginManager.getPluginsOfType(ImageJPlugin.class);
-		for (final PluginEntry<ImageJPlugin> plugin : plugins) {
-			commands.add(new Command(plugin));
+		final List<ModuleInfo> modules = pluginManager.getModules();
+		for (final ModuleInfo info : modules) {
+			commands.add(new Command(info));
 		}
 
 		Collections.sort(commands);
@@ -182,30 +182,30 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	private class Command implements Comparable<Command> {
 
-		private final PluginEntry<ImageJPlugin> plugin;
+		private final ModuleInfo info;
 		private final String menuLabel;
 
-		public Command(final PluginEntry<ImageJPlugin> plugin) {
-			this.plugin = plugin;
-			menuLabel = plugin.getMenuLabel();
+		public Command(final ModuleInfo info) {
+			this.info = info;
+			menuLabel = ShadowMenu.getMenuLabel(info);
 		}
 
 		public boolean matches(final String regex) {
 			return menuLabel.toLowerCase().matches(regex);
 		}
 
-		public PluginEntry<ImageJPlugin> getPluginEntry() {
-			return plugin;
+		public ModuleInfo getModuleInfo() {
+			return info;
 		}
 
 		@Override
 		public String toString() {
 			final StringBuilder sb = new StringBuilder(menuLabel);
 			if (isShowFull()) {
-				final List<MenuEntry> menuPath = plugin.getMenuPath();
-				final String menuString = PluginEntry.getMenuString(menuPath, false);
+				final List<MenuEntry> menuPath = info.getMenuPath();
+				final String menuString = IndexItemInfo.getMenuString(menuPath, false);
 				if (!menuString.isEmpty()) sb.append(" (in " + menuString + ")");
-				sb.append(" : " + plugin.toString());
+				sb.append(" : " + info.toString());
 			}
 			return sb.toString();
 		}

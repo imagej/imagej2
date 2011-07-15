@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.FileWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -60,7 +60,7 @@ public class AWTFileWidget extends AWTInputWidget
 	private TextField path;
 	private Button browse;
 
-	public AWTFileWidget(final ParamModel model) {
+	public AWTFileWidget(final WidgetModel model) {
 		super(model);
 
 		setLayout(new BorderLayout());
@@ -73,21 +73,24 @@ public class AWTFileWidget extends AWTInputWidget
 		browse.addActionListener(this);
 		add(browse, BorderLayout.EAST);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- FileWidget methods --
 
 	@Override
-	public File getFile() {
+	public File getValue() {
 		return new File(path.getText());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		path.setText(model.getValue().toString());
+	public void refreshWidget() {
+		final File value = (File) getModel().getValue();
+		final String text = value == null ? "" : value.toString();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
 
 	// -- ActionListener methods --
@@ -110,7 +113,7 @@ public class AWTFileWidget extends AWTInputWidget
 
 	@Override
 	public void textValueChanged(TextEvent e) {
-		model.setValue(new File(path.getText()));
+		updateModel();
 	}
 
 }

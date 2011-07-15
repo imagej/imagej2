@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.NumberWidget;
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.WidgetStyle;
+import imagej.module.ui.NumberWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.WidgetStyle;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;
@@ -63,13 +63,13 @@ public class SwingNumberWidget extends SwingInputWidget implements
 	private JSlider slider;
 	private final JSpinner spinner;
 
-	public SwingNumberWidget(final ParamModel model, final Number min,
+	public SwingNumberWidget(final WidgetModel model, final Number min,
 		final Number max, final Number stepSize)
 	{
 		super(model);
 
 		// add optional widgets, if specified
-		final WidgetStyle style = model.getStyle();
+		final WidgetStyle style = model.getItem().getWidgetStyle();
 		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
 			scrollBar =
 				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1, min
@@ -99,7 +99,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 		limitWidth(200);
 		spinner.addChangeListener(this);
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- NumberWidget methods --
@@ -112,14 +112,10 @@ public class SwingNumberWidget extends SwingInputWidget implements
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		final Object value = model.getValue();
-		if (value != null) {
-			spinner.removeChangeListener(this);
-			spinner.setValue(value);
-			spinner.addChangeListener(this);
-			syncSliders();
-		}
+	public void refreshWidget() {
+		final Object value = getModel().getValue();
+		if (spinner.getValue().equals(value)) return; // no change
+		spinner.setValue(value);
 	}
 
 	// -- AdjustmentListener methods --
@@ -145,7 +141,7 @@ public class SwingNumberWidget extends SwingInputWidget implements
 			// sync slider and/or scroll bar with spinner value
 			syncSliders();
 		}
-		model.setValue(spinner.getValue());
+		updateModel();
 	}
 
 	// -- Helper methods --

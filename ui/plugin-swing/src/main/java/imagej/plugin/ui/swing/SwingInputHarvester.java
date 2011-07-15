@@ -34,24 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
+import imagej.module.Module;
+import imagej.module.ui.InputHarvester;
+import imagej.module.ui.InputPanel;
+import imagej.plugin.AbstractInputHarvesterPlugin;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPreprocessor;
-import imagej.plugin.ui.AbstractInputHarvester;
-import imagej.plugin.ui.InputPanel;
+import imagej.plugin.process.PreprocessorPlugin;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * SwingInputHarvester is a {@link PluginPreprocessor} that collects input
+ * SwingInputHarvester is an {@link InputHarvester} that collects input
  * parameter values from the user using a {@link SwingInputPanel} dialog box.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PluginPreprocessor.class)
-public class SwingInputHarvester extends AbstractInputHarvester {
+@Plugin(type = PreprocessorPlugin.class)
+public class SwingInputHarvester extends AbstractInputHarvesterPlugin {
 
 	// -- InputHarvester methods --
 
@@ -61,8 +62,8 @@ public class SwingInputHarvester extends AbstractInputHarvester {
 	}
 
 	@Override
-	public boolean harvestInputs(final InputPanel inputPanel,
-		final PluginModule<?> module)
+	public boolean
+		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
 		// convert input panel to Swing component with scroll bars
 		final JPanel pane = ((SwingInputPanel) inputPanel).getPanel();

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.InputWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.awt.Panel;
 
@@ -46,15 +46,22 @@ import java.awt.Panel;
  */
 public abstract class AWTInputWidget extends Panel implements InputWidget {
 
-	protected ParamModel model;
+	private WidgetModel model;
 
-	public AWTInputWidget(final ParamModel model) {
+	public AWTInputWidget(final WidgetModel model) {
 		this.model = model;
 	}
 
+	// -- InputWidget methods --
+
 	@Override
-	public ParamModel getModel() {
+	public WidgetModel getModel() {
 		return model;
+	}
+
+	@Override
+	public void updateModel() {
+		model.setValue(getValue());
 	}
 
 }

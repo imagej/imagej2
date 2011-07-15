@@ -52,9 +52,9 @@ public class PluginDiscovery {
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugins:");
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<?>> plugins = pluginManager.getPlugins();
+		final List<PluginInfo<?>> plugins = pluginManager.getPlugins();
 		System.out.println("Discovered plugins:");
-		for (final PluginEntry<?> plugin : plugins) {
+		for (final PluginInfo<?> plugin : plugins) {
 			System.out.println("\t" + plugin);
 		}
 	}

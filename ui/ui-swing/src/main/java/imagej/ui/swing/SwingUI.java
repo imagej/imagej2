@@ -43,11 +43,11 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.module.ModuleInfo;
+import imagej.module.ui.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.plugin.PluginEntry;
 import imagej.plugin.PluginManager;
-import imagej.plugin.ui.ShadowMenu;
 import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
@@ -149,9 +149,10 @@ public class SwingUI implements UserInterface
 	 * {@link JMenuBar}s are generated.
 	 */
 	private void initializeMenus() {
+		// CTR FIXME - rework this
 		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginEntry<?>> entries = pluginManager.getPlugins();
-		rootMenu = new ShadowMenu(entries);
+		final List<ModuleInfo> modules = pluginManager.getModules();
+		rootMenu = new ShadowMenu(modules);
 		createMenuBar(frame);
 		Events.publish(new AppMenusCreatedEvent(frame.getJMenuBar()));
 	}

@@ -41,14 +41,15 @@ import imagej.display.event.mouse.MsEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.ImageJEvent;
+import imagej.module.Module;
+import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.module.event.ModuleEvent;
+import imagej.module.event.ModuleExecutedEvent;
+import imagej.module.event.ModulePreprocessEvent;
 import imagej.object.event.ObjectEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.event.PluginEvent;
-import imagej.plugin.event.PluginPreprocessEvent;
-import imagej.plugin.event.PluginRunEvent;
 import imagej.tool.event.ToolEvent;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
@@ -62,194 +63,51 @@ import java.util.Locale;
 
 /**
  * Listens for all events. Useful for logging, history, macro recording,
- * perhaps. An eagerly initialized singleton.
- * 
- * * 
- All Event Types
- -----------------------------------------------
- Grouped by package
- * 
-ImageJEvent
- * 
-StatusEvent
-OutputEvent
- * 
-AppAboutEvent
-AppFocusEvent
-ApplicationEvent
-AppMenusCreatedEvent
-AppPreferencesEvent
-AppPrintEvent
-AppQuitEvent
-AppReOpenEvent
-AppScreenSleepEvent
-AppSystemSleepEvent
-AppUserSessionEvent
-AppVisibleEvent
- * 
-ObjectEvent
-ObjectChangedEvent
-ObjectCreatedEvent
-ObjectDeletedEvent
- * 
-ObjectsUpdatedEvent (pub'd after add or remove)
- * 
-DataObjectChangedEvent
-DataObjectCreatedEvent
-DataObjectDeletedEvent
-DataObjectRestructuredEvent
-DataObjectUpdatedEvent
- * 
-DatasetCreatedEvent
-DatasetDeletedEvent
-DatasetRestructuredEvent
-DatasetRGBChangedEvent
-DatasetTypeChangedEvent
-DatasetUpdatedEvent
- * 
-OverlayCreatedEvent
-OverlayDeletedEvent
-OverlayRestructuredEvent
-OverlayUpdatedEvent
- * 
-CanvasEvent
-*
-DisplayEvent
-DisplayCreatedEvent
-DisplayDeletedEvent
-
-DisplayViewEvent
-DisplayViewDeselectedEvent
-DisplayViewSelectedEvent
-DisplayViewSelectionEvent
- * 
-KyEvent
-KyPressedEvent
-KyReleasedEvent
-KyTypedEvent
- * 
-MsEvent
-MsButtonEvent
-MsClickedEvent
-MsDraggedEvent
-MsEnteredEvent
-MsExitedEvent
-MsMovedEvent
-MsPressedEvent
-MsReleasedEvent
-MsWheelEvent
- * 
-WinEvent
-WinActivatedEvent
-WinClosedEvent
-WinClosingEvent
-WinDeactivatedEvent
-WinDeiconifiedEvent
-WinIconifiedEvent
-WinOpenedEvent
- * 
-ZoomEvent
- * 
-PluginEvent
-PluginCanceledEvent
-PluginExecutionEvent
-PluginFinishedEvent
-PluginPostprocessEvent
-PluginPreprocessEvent
-PluginProcessEvent
-PluginRunEvent
-PluginStartedEvent
- * 
-ToolEvent
-ToolActivatedEvent
-ToolDeactivatedEvent
--------------------------------------------------------
-Event Hierarchy
- 
-All decend from ImageJEvent:
- 
-StatusEvent
-OutputEvent
-FileOpenedEvent
-FileSavedEvent
-ApplicationEvent
-	AppAboutEvent
-	AppFocusEvent
-	AppMenusCreatedEvent
-	AppPreferencesEvent
-	AppPrintEvent
-	AppQuitEvent
-	AppReOpenEvent
-	AppScreenSleepEvent
-	AppSystemSleepEvent
-	AppUserSessionEvent
-	AppVisibleEvent
-ObjectEvent
-	ObjectChangedEvent
-		DataObjectChangedEvent
-			DataObjectRestructuredEvent
-				DatasetRestructuredEvent
-				OverlayRestructuredEvent
-			DataObjectUpdatedEvent
-				DatasetUpdatedEvent
-					DatasetRGBChangedEvent
-					DatasetTypeChangedEvent
-			OverlayUpdatedEvent
-	ObjectCreatedEvent
-		DataObjectCreatedEvent
-			DatasetCreatedEvent
-			DisplayCreatedEvent
-			OverlayCreatedEvent
-	ObjectDeletedEvent
-		DataObjectDeletedEvent
-			DatasetDeletedEvent
-			DisplayDeletedEvent
-			OverlayDeletedEvent
-	ObjectsUpdatedEvent (pub'd after add or remove)
-PluginEvent
-	PluginExecutionEvent
-		PluginRunEvent
-		PluginStartedEvent
-		PluginFinishedEvent
-		PluginProcessEvent
-			PluginPostprocessEvent
-			PluginPreprocessEvent
-		PluginCanceledEvent
-ToolEvent
-	ToolActivatedEvent
-	ToolDeactivatedEvent
-CanvasEvent
-	ZoomEvent
-DisplayEvent
-	AxisPositionEvent
-	DisplayViewEvent
-		DisplayViewDeselectedEvent
-		DisplayViewSelectedEvent
-		DisplayViewSelectionEvent
-	KyEvent
-		KyPressedEvent
-		KyReleasedEvent
-		KyTypedEvent
-	MsEvent
-		MsButtonEvent
-		MsClickedEvent
-		MsDraggedEvent
-		MsEnteredEvent
-		MsExitedEvent
-		MsMovedEvent
-		MsPressedEvent
-		MsReleasedEvent
-		MsWheelEvent
-	WinEvent
-		WinActivatedEvent
-		WinClosedEvent
-		WinClosingEvent
-		WinDeactivatedEvent
-		WinDeiconifiedEvent
-		WinIconifiedEvent
-		WinOpenedEvent
-
-
+ * perhaps. An eagerly initialized singleton. * All Event Types
+ * ----------------------------------------------- Grouped by package
+ * ImageJEvent StatusEvent OutputEvent AppAboutEvent AppFocusEvent
+ * ApplicationEvent AppMenusCreatedEvent AppPreferencesEvent AppPrintEvent
+ * AppQuitEvent AppReOpenEvent AppScreenSleepEvent AppSystemSleepEvent
+ * AppUserSessionEvent AppVisibleEvent ObjectEvent ObjectChangedEvent
+ * ObjectCreatedEvent ObjectDeletedEvent ObjectsUpdatedEvent (pub'd after add or
+ * remove) DataObjectChangedEvent DataObjectCreatedEvent DataObjectDeletedEvent
+ * DataObjectRestructuredEvent DataObjectUpdatedEvent DatasetCreatedEvent
+ * DatasetDeletedEvent DatasetRestructuredEvent DatasetRGBChangedEvent
+ * DatasetTypeChangedEvent DatasetUpdatedEvent OverlayCreatedEvent
+ * OverlayDeletedEvent OverlayRestructuredEvent OverlayUpdatedEvent CanvasEvent
+ * DisplayEvent DisplayCreatedEvent DisplayDeletedEvent DisplayViewEvent
+ * DisplayViewDeselectedEvent DisplayViewSelectedEvent DisplayViewSelectionEvent
+ * KyEvent KyPressedEvent KyReleasedEvent KyTypedEvent MsEvent MsButtonEvent
+ * MsClickedEvent MsDraggedEvent MsEnteredEvent MsExitedEvent MsMovedEvent
+ * MsPressedEvent MsReleasedEvent MsWheelEvent WinEvent WinActivatedEvent
+ * WinClosedEvent WinClosingEvent WinDeactivatedEvent WinDeiconifiedEvent
+ * WinIconifiedEvent WinOpenedEvent ZoomEvent PluginEvent PluginCanceledEvent
+ * PluginExecutionEvent PluginFinishedEvent PluginPostprocessEvent
+ * PluginPreprocessEvent PluginProcessEvent PluginRunEvent PluginStartedEvent
+ * ToolEvent ToolActivatedEvent ToolDeactivatedEvent
+ * ------------------------------------------------------- Event Hierarchy All
+ * decend from ImageJEvent: StatusEvent OutputEvent FileOpenedEvent
+ * FileSavedEvent ApplicationEvent AppAboutEvent AppFocusEvent
+ * AppMenusCreatedEvent AppPreferencesEvent AppPrintEvent AppQuitEvent
+ * AppReOpenEvent AppScreenSleepEvent AppSystemSleepEvent AppUserSessionEvent
+ * AppVisibleEvent ObjectEvent ObjectChangedEvent DataObjectChangedEvent
+ * DataObjectRestructuredEvent DatasetRestructuredEvent OverlayRestructuredEvent
+ * DataObjectUpdatedEvent DatasetUpdatedEvent DatasetRGBChangedEvent
+ * DatasetTypeChangedEvent OverlayUpdatedEvent ObjectCreatedEvent
+ * DataObjectCreatedEvent DatasetCreatedEvent DisplayCreatedEvent
+ * OverlayCreatedEvent ObjectDeletedEvent DataObjectDeletedEvent
+ * DatasetDeletedEvent DisplayDeletedEvent OverlayDeletedEvent
+ * ObjectsUpdatedEvent (pub'd after add or remove) PluginEvent
+ * PluginExecutionEvent PluginRunEvent PluginStartedEvent PluginFinishedEvent
+ * PluginProcessEvent PluginPostprocessEvent PluginPreprocessEvent
+ * PluginCanceledEvent ToolEvent ToolActivatedEvent ToolDeactivatedEvent
+ * CanvasEvent ZoomEvent DisplayEvent AxisPositionEvent DisplayViewEvent
+ * DisplayViewDeselectedEvent DisplayViewSelectedEvent DisplayViewSelectionEvent
+ * KyEvent KyPressedEvent KyReleasedEvent KyTypedEvent MsEvent MsButtonEvent
+ * MsClickedEvent MsDraggedEvent MsEnteredEvent MsExitedEvent MsMovedEvent
+ * MsPressedEvent MsReleasedEvent MsWheelEvent WinEvent WinActivatedEvent
+ * WinClosedEvent WinClosingEvent WinDeactivatedEvent WinDeiconifiedEvent
+ * WinIconifiedEvent WinOpenedEvent
  * 
  * @author GBH
  */
@@ -273,23 +131,24 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 //			emitMessage("Event: " + evt.getClass());
 //			showFields(evt);
 //		} 
-		if (PluginEvent.class.isAssignableFrom(evt.getClass())) {
+		if (ModuleEvent.class.isAssignableFrom(evt.getClass())) {
 			emitMessage(evt.getClass().getSimpleName());
-			if (evt instanceof PluginPreprocessEvent) {
+			if (evt instanceof ModulePreprocessEvent) {
+				final ModulePreprocessEvent e = (ModulePreprocessEvent) evt;
 				emitMessage("  >> PreProcessor: " +
-					((PluginPreprocessEvent) evt).getProcessor().getClass()
-						.getSimpleName());
+					e.getProcessor().getClass().getSimpleName());
 			}
-			if (evt instanceof PluginRunEvent) {
-				final PluginModule<?> mod = ((PluginEvent) evt).getModule();
-				emitMessage("  >> Plugin: " +
-					mod.getInfo().getPluginEntry().getClassName());
+			if (evt instanceof ModuleExecutedEvent) {
+				final ModuleExecutedEvent e = (ModuleExecutedEvent) evt;
+				final Module module = e.getModule();
+				final ModuleInfo info = module.getInfo();
+				emitMessage("  >> Module: " + info.getDelegateClassName());
 				// parameter inputs
-				final Iterable<ModuleItem> inputs = mod.getInfo().inputs();
-				for (final ModuleItem moduleItem : inputs) {
+				final Iterable<ModuleItem<?>> inputs = info.inputs();
+				for (final ModuleItem<?> moduleItem : inputs) {
 					final String param = moduleItem.getName();
 					final Class<?> type = moduleItem.getType();
-					final Object value = mod.getInput(param);
+					final Object value = module.getInput(param);
 					emitMessage("    " + param + " = " + value.toString() + "  {" +
 						type.getSimpleName() + "}");
 				}
@@ -299,7 +158,8 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 			if (!(evt instanceof MsEvent) && !(evt instanceof KyEvent)) {
 				showClass(evt);
 				showFields(evt);
-				emitMessage("    DisplayName: " +  ((DisplayEvent)evt).getDisplay().getName());
+				emitMessage("    DisplayName: " +
+					((DisplayEvent) evt).getDisplay().getName());
 			}
 		}
 		if (evt instanceof DisplayViewEvent) {
@@ -321,14 +181,15 @@ public class WatchEvents implements ImageJPlugin, EventSubscriber<ImageJEvent>
 			window.append(msg + "\n");
 		}
 	}
-   public static String timeStamp() {
-      SimpleDateFormat formatter =
-            new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
-      Date currentDate = new Date();
-      String dateStr = formatter.format(currentDate);
-      return dateStr;
-   }
-   
+
+	public static String timeStamp() {
+		final SimpleDateFormat formatter =
+			new SimpleDateFormat("mm:ss.SS", Locale.getDefault());
+		final Date currentDate = new Date();
+		final String dateStr = formatter.format(currentDate);
+		return dateStr;
+	}
+
 	void showClass(final ImageJEvent evt) {
 		emitMessage("[" + timeStamp() + "] " + evt.getClass().getSimpleName());
 	}

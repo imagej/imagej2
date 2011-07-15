@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.plugin.ui.ParamModel;
-import imagej.plugin.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
+import imagej.module.ui.TextFieldWidget;
 
 /**
  * Headless implementation of text field widget.
@@ -46,14 +46,14 @@ public class HeadlessTextFieldWidget extends HeadlessInputWidget
 	implements TextFieldWidget
 {
 
-	public HeadlessTextFieldWidget(final ParamModel model) {
+	public HeadlessTextFieldWidget(final WidgetModel model) {
 		super(model);
 	}
 
 	// -- TextFieldWidget methods --
 
 	@Override
-	public String getText() {
+	public String getValue() {
 		return null; // TODO
 	}
 

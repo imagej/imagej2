@@ -38,9 +38,9 @@ import imagej.ImageJ;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.plugin.IndexException;
+import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
-import imagej.tool.ToolEntry;
+import imagej.tool.ToolInfo;
 import imagej.tool.ToolManager;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
@@ -121,7 +121,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolEntry entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolManager.getToolEntries()) {
 			try {
 				final AbstractButton button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
@@ -133,18 +133,18 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 				add(button);
 			}
-			catch (final IndexException e) {
+			catch (final InstantiableException e) {
 				Log.warn("Invalid tool: " + entry, e);
 			}
 		}
 	}
 
-	private AbstractButton createButton(final ToolEntry entry)
-		throws IndexException
+	private AbstractButton createButton(final ToolInfo entry)
+		throws InstantiableException
 	{
 		final ITool tool = entry.createInstance();
 		// TODO - consider alternatives to assigning the entry manually
-		tool.setToolEntry(entry);
+		tool.setInfo(entry);
 		final String name = entry.getName();
 		final String label = entry.getLabel();
 		final String description = entry.getDescription();
@@ -203,7 +203,9 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	}
 
 	public void onToolActivatedEvent(final ToolActivatedEvent event) {
-		final String name = event.getTool().getName();
+		final ToolInfo info = event.getTool().getInfo();
+		if (info == null) return; // no info, no button
+		final String name = info.getName();
 		if (name == null) return; // no name, no button?
 		final AbstractButton button = toolButtons.get(name);
 		if (button == null) return; // not on toolbar
@@ -213,9 +215,9 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	}
 
 	public void onToolDeactivatedEvent(final ToolDeactivatedEvent event) {
-		final ToolEntry entry = event.getTool().getToolEntry();
-		if (entry == null) return;
-		final String name = entry.getName();
+		final ToolInfo info = event.getTool().getInfo();
+		if (info == null) return; // no info, no button
+		final String name = info.getName();
 		if (name == null) return; // no name, no button?
 		final AbstractButton button = toolButtons.get(name);
 		if (button == null) return; // not on toolbar

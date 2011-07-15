@@ -34,27 +34,77 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.module;
 
+import imagej.module.ui.WidgetStyle;
+
+import java.util.List;
+
 /**
  * A ModuleItem represents metadata about one input or output of a module.
  * 
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
-public interface ModuleItem {
-
-	/** Gets the unique name of the item. */
-	String getName();
-
-	/** Gets the name to appear in a UI, if applicable. */
-	String getLabel();
-
-	/** Gets a string describing the item. */
-	String getDescription();
+public interface ModuleItem<T> extends BasicDetails {
 
 	/** Type of the item. */
-	Class<?> getType();
+	Class<T> getType();
 
-	/** Default value of the item. */
-	Object getDefaultValue();
+	/** The visibility of the item. */
+	ItemVisibility getVisibility();
+
+	/** Gets whether the item value must be specified (i.e., no default). */
+	boolean isRequired();
+
+	/** Gets whether to remember the most recent value of the parameter. */
+	boolean isPersisted();
+
+	/** Gets the key to use for saving the value persistently. */
+	String getPersistKey();
+
+	/**
+	 * Gets the function that is called whenever this item changes.
+	 * <p>
+	 * This mechanism enables interdependent items of various types. For example,
+	 * two int parameters "width" and "height" could update each other when
+	 * another boolean "Preserve aspect ratio" flag is set.
+	 * </p>
+	 */
+	String getCallback();
+
+	/**
+	 * Invokes this item's callback function, if any, on the given module.
+	 * 
+	 * @see #getCallback()
+	 */
+	void callback(Module module);
+
+	/**
+	 * Gets the preferred widget style to use when rendering the item in a user
+	 * interface.
+	 */
+	WidgetStyle getWidgetStyle();
+
+	/** Gets the minimum allowed value (if applicable). */
+	T getMinimumValue();
+
+	/** Gets the maximum allowed value (if applicable). */
+	T getMaximumValue();
+
+	/**
+	 * Gets the preferred step size to use when rendering the item in a user
+	 * interface (if applicable).
+	 */
+	Number getStepSize();
+
+	/**
+	 * Gets the preferred width of the input field in characters (if applicable).
+	 */
+	int getColumnCount();
+
+	/** Gets the list of possible values. */
+	List<T> getChoices();
+
+	/** Gets the item's current value with respect to the given module. */
+	T getValue(Module module);
 
 }

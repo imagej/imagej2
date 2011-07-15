@@ -34,9 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
+import imagej.module.Module;
+
 /**
- * TODO
- *
+ * <code>RunnablePlugin</code> is a plugin that is executable. A
+ * <code>RunnablePlugin</code> can be executed as a {@link Module} by wrapping
+ * it in a {@link PluginModule}.
+ * 
  * @author Curtis Rueden
  */
 public interface RunnablePlugin extends IPlugin, Runnable {

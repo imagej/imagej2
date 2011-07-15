@@ -38,26 +38,26 @@ import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
+import imagej.module.Module;
 import imagej.object.ObjectManager;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModule;
-import imagej.plugin.process.PluginPostprocessor;
+import imagej.plugin.process.PostprocessorPlugin;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Displays output {@link Dataset}s upon completion of a plugin execution.
+ * Displays output {@link Dataset}s upon completion of a module execution.
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-@Plugin(type = PluginPostprocessor.class)
-public class DisplayPostprocessor implements PluginPostprocessor {
+@Plugin(type = PostprocessorPlugin.class)
+public class DisplayPostprocessor implements PostprocessorPlugin {
 
 	@Override
-	public void process(final PluginModule<?> module) {
+	public void process(final Module module) {
 		final Map<String, Object> outputs = module.getOutputs();
 		handleOutput(outputs.values());
 	}

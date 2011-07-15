@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.ImageJ;
+import imagej.module.ModuleException;
+import imagej.module.ui.AbstractInputPanel;
+import imagej.module.ui.InputPanel;
+import imagej.module.ui.WidgetModel;
 import imagej.object.ObjectManager;
-import imagej.plugin.PluginException;
-import imagej.plugin.ui.AbstractInputPanel;
-import imagej.plugin.ui.InputPanel;
-import imagej.plugin.ui.ParamModel;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -74,65 +74,65 @@ public class SwingInputPanel extends AbstractInputPanel {
 	}
 
 	@Override
-	public void addNumber(final ParamModel model, final Number min,
+	public void addNumber(final WidgetModel model, final Number min,
 		final Number max, final Number stepSize)
 	{
 		final SwingNumberWidget numberWidget =
 			new SwingNumberWidget(model, min, max, stepSize);
 		addField(model, numberWidget);
-		numberWidgets.put(model.getName(), numberWidget);
+		numberWidgets.put(model.getItem().getName(), numberWidget);
 	}
 
 	@Override
-	public void addToggle(final ParamModel model) {
+	public void addToggle(final WidgetModel model) {
 		final SwingToggleWidget toggleWidget = new SwingToggleWidget(model);
 		addField(model, toggleWidget);
-		toggleWidgets.put(model.getName(), toggleWidget);
+		toggleWidgets.put(model.getItem().getName(), toggleWidget);
 	}
 
 	@Override
-	public void addTextField(final ParamModel model, final int columns) {
+	public void addTextField(final WidgetModel model, final int columns) {
 		final SwingTextFieldWidget textFieldWidget =
 			new SwingTextFieldWidget(model, columns);
 		addField(model, textFieldWidget);
-		textFieldWidgets.put(model.getName(), textFieldWidget);
+		textFieldWidgets.put(model.getItem().getName(), textFieldWidget);
 	}
 
 	@Override
-	public void addChoice(final ParamModel model, final String[] items) {
+	public void addChoice(final WidgetModel model, final String[] items) {
 		final SwingChoiceWidget choiceWidget = new SwingChoiceWidget(model, items);
 		addField(model, choiceWidget);
-		choiceWidgets.put(model.getName(), choiceWidget);
+		choiceWidgets.put(model.getItem().getName(), choiceWidget);
 	}
 
 	@Override
-	public void addFile(final ParamModel model) {
+	public void addFile(final WidgetModel model) {
 		final SwingFileWidget fileWidget = new SwingFileWidget(model);
 		addField(model, fileWidget);
-		fileWidgets.put(model.getName(), fileWidget);
+		fileWidgets.put(model.getItem().getName(), fileWidget);
 	}
 
 	@Override
-	public void addColor(final ParamModel model) {
+	public void addColor(final WidgetModel model) {
 		final SwingColorWidget colorWidget = new SwingColorWidget(model);
 		addField(model, colorWidget);
-		colorWidgets.put(model.getName(), colorWidget);
+		colorWidgets.put(model.getItem().getName(), colorWidget);
 	}
 
 	@Override
-	public void addObject(final ParamModel model) throws PluginException {
-		// TODO - Rectify with identical logic in other UI plugin implementations.
-		// Should the ij-object dependency just be part of ij-plugin?
-		final Class<?> type = model.getType();
+	public void addObject(final WidgetModel model) throws ModuleException {
+		// CTR FIXME - Rectify with identical logic in other implementations.
+		// Should ij-object be merged with ij-core?
+		final Class<?> type = model.getItem().getType();
 		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
 		final Object[] items = objectManager.getObjects(type).toArray();
 		if (items.length == 0) {
 			// no valid objects of the given type
-			throw new PluginException("No objects of type " + type.getName());
+			throw new ModuleException("No objects of type " + type.getName());
 		}
 		final SwingObjectWidget objectWidget = new SwingObjectWidget(model, items);
 		addField(model, objectWidget);
-		objectWidgets.put(model.getName(), objectWidget);
+		objectWidgets.put(model.getItem().getName(), objectWidget);
 	}
 
 	@Override
@@ -142,9 +142,9 @@ public class SwingInputPanel extends AbstractInputPanel {
 
 	// -- Helper methods --
 
-	private void addField(final ParamModel model, final JComponent component) {
-		final String label = model.getLabel();
-		final String desc = model.getDescription();
+	private void addField(final WidgetModel model, final JComponent component) {
+		final String label = model.getWidgetLabel();
+		final String desc = model.getItem().getDescription();
 		final JLabel l = new JLabel(label == null ? "" : label);
 		if (desc != null && !desc.isEmpty()) l.setToolTipText(desc);
 		panel.add(l);

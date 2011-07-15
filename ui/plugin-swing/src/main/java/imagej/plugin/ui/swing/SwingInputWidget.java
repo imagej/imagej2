@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.plugin.ui.InputWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.InputWidget;
+import imagej.module.ui.WidgetModel;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -49,23 +49,30 @@ import net.miginfocom.swing.MigLayout;
  */
 public abstract class SwingInputWidget extends JPanel implements InputWidget {
 
-	protected ParamModel model;
+	private WidgetModel model;
 
-	public SwingInputWidget(final ParamModel model) {
+	public SwingInputWidget(final WidgetModel model) {
 		this.model = model;
 		setLayout(new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]"));
 	}
 
+	// -- InputWidget methods --
+
 	@Override
-	public ParamModel getModel() {
+	public WidgetModel getModel() {
 		return model;
+	}
+
+	@Override
+	public void updateModel() {
+		model.setValue(getValue());
 	}
 
 	// -- Helper methods --
 
 	/** Assigns the model's description as the given component's tool tip. */
 	protected void setToolTip(final JComponent c) {
-		final String desc = model.getDescription();
+		final String desc = model.getItem().getDescription();
 		if (desc == null || desc.isEmpty()) return;
 		c.setToolTipText(desc);
 	}

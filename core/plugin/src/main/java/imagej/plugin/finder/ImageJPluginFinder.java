@@ -35,13 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.finder;
 
 import imagej.plugin.IPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.MenuEntry;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginEntry;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.RunnablePlugin;
 import imagej.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.java.sezpoz.Index;
@@ -59,18 +58,33 @@ import net.java.sezpoz.IndexItem;
 @PluginFinder
 public class ImageJPluginFinder implements IPluginFinder {
 
-	/** Class loader to use when querying SezPoz. */
-	private static ClassLoader classLoader;
+	/** Default class loader to use when querying SezPoz. */
+	private static ClassLoader defaultClassLoader;
 
-	/** Sets the class loader to use when querying SezPoz. */
-	public static void setPluginClassLoader(final ClassLoader cl) {
-		classLoader = cl;
+	/** Class loader to use when querying SezPoz. */
+	private final ClassLoader classLoader;
+
+	// -- Static utility methods --
+
+	/** Sets the default class loader to use when querying SezPoz. */
+	public static void setDefaultClassLoader(final ClassLoader cl) {
+		defaultClassLoader = cl;
+	}
+
+	// -- Constructors --
+
+	public ImageJPluginFinder() {
+		this(defaultClassLoader);
+	}
+
+	public ImageJPluginFinder(final ClassLoader classLoader) {
+		this.classLoader = classLoader;
 	}
 
 	// -- IPluginFinder methods --
 
 	@Override
-	public void findPlugins(final List<PluginEntry<?>> plugins) {
+	public void findPlugins(final List<PluginInfo<?>> plugins) {
 		final Index<Plugin, IPlugin> pluginIndex;
 		if (classLoader == null) {
 			pluginIndex = Index.load(Plugin.class, IPlugin.class);
@@ -81,7 +95,7 @@ public class ImageJPluginFinder implements IPluginFinder {
 
 		final int oldSize = plugins.size();
 		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
-			final PluginEntry<?> entry = createEntry(item);
+			final PluginInfo<?> entry = createInfo(item);
 			plugins.add(entry);
 		}
 		final int newSize = plugins.size();
@@ -96,7 +110,7 @@ public class ImageJPluginFinder implements IPluginFinder {
 
 	// -- Helper methods --
 
-	private <P extends IPlugin> PluginEntry<P> createEntry(
+	private <P extends IPlugin> PluginInfo<P> createInfo(
 		final IndexItem<Plugin, IPlugin> item)
 	{
 		final String className = item.className();
@@ -105,63 +119,24 @@ public class ImageJPluginFinder implements IPluginFinder {
 		@SuppressWarnings("unchecked")
 		final Class<P> pluginType = (Class<P>) plugin.type();
 
-		final PluginEntry<P> entry = new PluginEntry<P>(className, pluginType);
-		entry.setName(plugin.name());
-		entry.setLabel(plugin.label());
-		entry.setDescription(plugin.description());
-		final String iconPath = plugin.iconPath();
-		entry.setIconPath(iconPath);
-		entry.setPriority(plugin.priority());
-		entry.setEnabled(plugin.enabled());
-
-		entry.setToggleParameter(plugin.toggleParameter());
-		entry.setToggleGroup(plugin.toggleGroup());
-
-		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
-		final Menu[] menu = plugin.menu();
-		if (menu.length > 0) {
-			parseMenuPath(menuPath, menu);
+		if (RunnablePlugin.class.isAssignableFrom(pluginType)) {
+			// TODO - Investigate a simpler way to handle this.
+			final PluginModuleInfo<? extends RunnablePlugin> moduleInfo =
+				createModuleInfo(className, plugin);
+			@SuppressWarnings("unchecked")
+			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
+			return result;
 		}
-		else {
-			// parse menuPath attribute
-			final String path = plugin.menuPath();
-			if (!path.isEmpty()) parseMenuPath(menuPath, path);
-		}
-
-		// add default icon if none attached to leaf
-		if (menuPath.size() > 0 && !iconPath.isEmpty()) {
-			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			final String menuIconPath = menuEntry.getIconPath();
-			if (menuIconPath == null || menuIconPath.isEmpty()) {
-				menuEntry.setIconPath(iconPath);
-			}
-		}
-
-		entry.setMenuPath(menuPath);
-
-		return entry;
+		return new PluginInfo<P>(className, pluginType, plugin);
 	}
 
-	private void
-		parseMenuPath(final List<MenuEntry> menuPath, final Menu[] menu)
+	private <R extends RunnablePlugin> PluginModuleInfo<R> createModuleInfo(
+		final String className, final Plugin plugin)
 	{
-		for (int i = 0; i < menu.length; i++) {
-			final String name = menu[i].label();
-			final double weight = menu[i].weight();
-			final char mnemonic = menu[i].mnemonic();
-			final String accel = menu[i].accelerator();
-			final String iconPath = menu[i].iconPath();
-			menuPath.add(new MenuEntry(name, weight, mnemonic, accel, iconPath));
-		}
-	}
+		@SuppressWarnings("unchecked")
+		final Class<R> pluginType = (Class<R>) plugin.type();
 
-	private void
-		parseMenuPath(final List<MenuEntry> menuPath, final String path)
-	{
-		final String[] menuPathTokens = path.split(">");
-		for (final String token : menuPathTokens) {
-			menuPath.add(new MenuEntry(token.trim()));
-		}
+		return new PluginModuleInfo<R>(className, pluginType, plugin);
 	}
 
 }

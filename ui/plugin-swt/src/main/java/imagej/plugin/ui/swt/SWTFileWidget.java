@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.plugin.ui.FileWidget;
-import imagej.plugin.ui.ParamModel;
+import imagej.module.ui.FileWidget;
+import imagej.module.ui.WidgetModel;
 
 import java.io.File;
 
@@ -55,7 +55,7 @@ public class SWTFileWidget extends SWTInputWidget implements FileWidget {
 	private Text path;
 	private Button browse;
 
-	public SWTFileWidget(final Composite parent, final ParamModel model) {
+	public SWTFileWidget(final Composite parent, final WidgetModel model) {
 		super(parent, model);
 
 		setLayout(new MigLayout());
@@ -66,21 +66,24 @@ public class SWTFileWidget extends SWTInputWidget implements FileWidget {
 		browse = new Button(this, 0);
 		browse.setText("Browse");
 
-		refresh();
+		refreshWidget();
 	}
 
 	// -- FileWidget methods --
 
 	@Override
-	public File getFile() {
+	public File getValue() {
 		return new File(path.getText());
 	}
 
 	// -- InputWidget methods --
 
 	@Override
-	public void refresh() {
-		path.setText(model.getValue().toString());
+	public void refreshWidget() {
+		final File value = (File) getModel().getValue();
+		final String text = value == null ? "" : value.toString();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
 	}
 
 }
