@@ -53,7 +53,7 @@ import imagej.data.roi.Overlay;
 import imagej.data.roi.PolygonOverlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.Display;
-import imagej.display.OverlayManager;
+import imagej.display.OverlayService;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
 import imagej.util.awt.AWTColors;
@@ -94,8 +94,8 @@ public class OverlayTranslator {
 	 * to the given {@link ImagePlus}'s ROI.
 	 */
 	public void setDisplayOverlays(final Display display, final ImagePlus imp) {
-		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-		final ShapeRoi oldROI = createROI(overlayManager.getOverlays(display));
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+		final ShapeRoi oldROI = createROI(overlayService.getOverlays(display));
 		if (oldROI != null) {
 			final float[] oldPath = oldROI.getShapeAsArray();
 			final Roi newROI = imp.getRoi();
@@ -113,12 +113,12 @@ public class OverlayTranslator {
 				}
 			}
 		}
-		final List<Overlay> overlaysToRemove = overlayManager.getOverlays(display);
+		final List<Overlay> overlaysToRemove = overlayService.getOverlays(display);
 		for (final Overlay overlay : overlaysToRemove) {
-			overlayManager.removeOverlay(display, overlay);
+			overlayService.removeOverlay(display, overlay);
 		}
 		final List<Overlay> overlays = getOverlays(imp);
-		overlayManager.addOverlays(display, overlays);
+		overlayService.addOverlays(display, overlays);
 	}
 
 	/**
@@ -127,8 +127,8 @@ public class OverlayTranslator {
 	 */
 	public void setImagePlusOverlays(final Display display, final ImagePlus imp)
 	{
-		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-		final List<Overlay> overlays = overlayManager.getOverlays(display);
+		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+		final List<Overlay> overlays = overlayService.getOverlays(display);
 		setOverlays(overlays, imp);
 	}
 

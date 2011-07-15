@@ -1,5 +1,5 @@
 //
-// ToolManager.java
+// ToolService.java
 //
 
 /*
@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;
@@ -57,7 +57,7 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for keeping track of available tools, including which tool
+ * Service for keeping track of available tools, including which tool
  * is active, and delegating UI events to the active tool.
  * 
  * @author Grant Harris
@@ -65,8 +65,8 @@ import net.java.sezpoz.IndexItem;
  * @see ITool
  * @see Tool
  */
-@Manager(priority = Manager.HIGH_PRIORITY)
-public class ToolManager implements ManagerComponent {
+@Service(priority = Service.HIGH_PRIORITY)
+public class ToolService implements IService {
 
 	private List<ToolInfo> toolEntries;
 
@@ -83,7 +83,7 @@ public class ToolManager implements ManagerComponent {
 		return activeTool;
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

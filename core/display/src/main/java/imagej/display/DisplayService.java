@@ -1,5 +1,5 @@
 //
-// DisplayManager.java
+// DisplayService.java
 //
 
 /*
@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.ImageJ;
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.display.event.DisplayActivatedEvent;
@@ -46,31 +46,31 @@ import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import imagej.plugin.InstantiableException;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manager component for working with {@link Display}s.
+ * Service for working with {@link Display}s.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Manager(priority = Manager.NORMAL_PRIORITY)
-public final class DisplayManager implements ManagerComponent {
+@Service(priority = Service.NORMAL_PRIORITY)
+public final class DisplayService implements IService {
 
 	private Display activeDisplay;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	// -- DisplayManager methods --
+	// -- DisplayService methods --
 
 	/** Gets the currently active {@link Display}. */
 	public Display getActiveDisplay() {
@@ -120,8 +120,8 @@ public final class DisplayManager implements ManagerComponent {
 
 	/** Gets a list of all available {@link Display}s. */
 	public List<Display> getDisplays() {
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		return objectManager.getObjects(Display.class);
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		return objectService.getObjects(Display.class);
 	}
 
 	/**
@@ -153,10 +153,10 @@ public final class DisplayManager implements ManagerComponent {
 
 	/** Creates a {@link Display} and adds the given {@link Dataset} as a view. */
 	public Display createDisplay(final Dataset dataset) {
-		// get available display plugins from the plugin manager
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
+		// get available display plugins from the plugin service
+		final PluginService pluginService = ImageJ.get(PluginService.class);
 		final List<PluginInfo<Display>> plugins =
-			pluginManager.getPluginsOfType(Display.class);
+			pluginService.getPluginsOfType(Display.class);
 
 		for (final PluginInfo<Display> pe : plugins) {
 			try {
@@ -176,7 +176,7 @@ public final class DisplayManager implements ManagerComponent {
 		return null;
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {
@@ -203,7 +203,7 @@ public final class DisplayManager implements ManagerComponent {
 					}
 					
 					// HACK - Necessary to plug memory leak when closing the last window.
-					//   Might be slow since it has to walk the whole ObjectManager. Note
+					//   Might be slow since it has to walk the whole ObjectService. Note
 					//   that we could ignore this. Next created display will make old
 					//   invalid activeDataset reference reclaimable.
 					if (getDisplays().size() == 1)

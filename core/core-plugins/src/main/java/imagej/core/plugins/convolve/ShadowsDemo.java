@@ -42,7 +42,7 @@ import net.imglib2.img.Axis;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.event.EventSubscriber;
@@ -101,7 +101,7 @@ public class ShadowsDemo implements ImageJPlugin {
 		}
 		subscribeToEvents();
 		Events.publish(new StatusEvent("Press ESC to terminate"));
-		currDisplay = ImageJ.get(DisplayManager.class).getActiveDisplay();
+		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
 		Dataset originalData = input.duplicate();
 		userHasQuit = false;
 		while (!userHasQuit) {

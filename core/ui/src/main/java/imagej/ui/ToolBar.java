@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 
 /**
  * Common interface for tool bars.
@@ -43,6 +43,6 @@ import imagej.tool.ToolManager;
  */
 public interface ToolBar {
 
-	ToolManager getToolManager();
+	ToolService getToolService();
 
 }

@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.module.ModuleInfo;
 import imagej.module.ui.menu.AbstractMenuCreator;
 import imagej.module.ui.menu.ShadowMenu;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -96,8 +96,8 @@ public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(info, true);
+				final PluginService pluginService = ImageJ.get(PluginService.class);
+				pluginService.run(info, true);
 			}
 		});
 	}

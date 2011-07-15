@@ -51,8 +51,8 @@ public class PluginDiscovery {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugins:");
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<PluginInfo<?>> plugins = pluginManager.getPlugins();
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
 		System.out.println("Discovered plugins:");
 		for (final PluginInfo<?> plugin : plugins) {
 			System.out.println("\t" + plugin);

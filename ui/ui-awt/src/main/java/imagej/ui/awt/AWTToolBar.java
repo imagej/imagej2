@@ -40,7 +40,7 @@ import imagej.event.StatusEvent;
 import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
 import imagej.tool.ToolInfo;
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
 
@@ -66,12 +66,12 @@ import java.util.Map;
  */
 public class AWTToolBar extends Panel implements ToolBar {
 
-	private final ToolManager toolManager;
+	private final ToolService toolService;
 
 	private final Map<String, Button> toolButtons;
 
 	public AWTToolBar() {
-		toolManager = ImageJ.get(ToolManager.class);
+		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new FlowLayout());
 		populateToolBar();
@@ -80,15 +80,15 @@ public class AWTToolBar extends Panel implements ToolBar {
 	// -- ToolBar methods --
 
 	@Override
-	public ToolManager getToolManager() {
-		return toolManager;
+	public ToolService getToolService() {
+		return toolService;
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolInfo entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolService.getToolEntries()) {
 			try {
 				final Button button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
@@ -152,7 +152,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				getToolManager().setActiveTool(tool);
+				getToolService().setActiveTool(tool);
 			}
 		});
 

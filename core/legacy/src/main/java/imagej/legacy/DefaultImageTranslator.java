@@ -38,7 +38,7 @@ import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import net.imglib2.img.Axis;
 
 /**
@@ -92,8 +92,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final Display display) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Dataset ds = displayManager.getActiveDataset(display);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Dataset ds = displayService.getActiveDataset(display);
 		if (ds.isRGBMerged()) {
 			return rgbTranslator.createLegacyImage(display);
 		}

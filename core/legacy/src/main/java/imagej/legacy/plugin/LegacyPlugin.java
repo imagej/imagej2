@@ -40,14 +40,14 @@ import ij.gui.ImageWindow;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayWindow;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
-import imagej.legacy.LegacyManager;
+import imagej.legacy.LegacyService;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyUtils;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.util.Log;
@@ -88,16 +88,16 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Display activeDisplay = displayManager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display activeDisplay = displayService.getActiveDisplay();
 		if (!isLegacyCompatible(activeDisplay)) {
 			Log.warn("Active dataset is not compatible with IJ1");
 			outputs = new ArrayList<Display>();
 			return;
 		}
 
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		final LegacyImageMap map = legacyManager.getImageMap();
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		final LegacyImageMap map = legacyService.getImageMap();
 
 		// sync legacy images to match existing modern displays
 		final DatasetHarmonizer harmonizer =
@@ -113,7 +113,7 @@ public class LegacyPlugin implements ImageJPlugin {
 		closedSet.clear();  // must happen after prePluginHarmonization()
 
 		// set ImageJ1's active image
-		legacyManager.syncActiveImage();
+		legacyService.syncActiveImage();
 
 		try {
 			// execute the legacy plugin
@@ -154,8 +154,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	{
 		// TODO - track events and keep a dirty bit, then only harmonize those
 		// displays that have changed. See ticket #546.
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		for (final Display display : objectManager.getObjects(Display.class)) {
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		for (final Display display : objectService.getObjects(Display.class)) {
 			ImagePlus imp = map.lookupImagePlus(display);
 			if (imp == null) {
 				if (isLegacyCompatible(display)) {

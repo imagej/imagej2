@@ -38,7 +38,7 @@ import ij.ImagePlus;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import net.imglib2.img.Axis;
 
 /**
@@ -64,8 +64,8 @@ public class MixedModeTranslator implements ImageTranslator {
 		LegacyUtils.setDatasetMetadata(ds, imp);
 		LegacyUtils.setDatasetCompositeVariables(ds, imp);
 
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Display display = displayManager.createDisplay(ds);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.createDisplay(ds);
 
 		LegacyUtils.setDisplayLuts(display, imp);
 

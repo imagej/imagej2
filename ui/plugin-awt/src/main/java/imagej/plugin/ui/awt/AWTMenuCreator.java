@@ -38,7 +38,7 @@ import imagej.ImageJ;
 import imagej.module.ModuleInfo;
 import imagej.module.ui.menu.AbstractMenuCreator;
 import imagej.module.ui.menu.ShadowMenu;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -104,8 +104,8 @@ public abstract class AWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-				pluginManager.run(info, true);
+				final PluginService pluginService = ImageJ.get(PluginService.class);
+				pluginService.run(info, true);
 			}
 		});
 	}

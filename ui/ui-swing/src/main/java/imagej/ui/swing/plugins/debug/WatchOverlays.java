@@ -40,12 +40,12 @@ import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import imagej.object.event.ObjectsUpdatedEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
@@ -115,8 +115,8 @@ public class WatchOverlays implements ImageJPlugin {
 
 	private void updateOverlaysShown() {
 		window.clear();
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		List<Overlay> overlays = objectManager.getObjects(Overlay.class);
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		List<Overlay> overlays = objectService.getObjects(Overlay.class);
 
 		window.append("all --------------------\n");
 		for (Overlay overlay : overlays) {
@@ -148,8 +148,8 @@ public class WatchOverlays implements ImageJPlugin {
 	}
 
 	private Display getCurrentDisplay() {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
 		if (display == null) {
 			return null; // headless UI or no open images
 		} else {
@@ -157,17 +157,17 @@ public class WatchOverlays implements ImageJPlugin {
 		}
 	}
 //		List<Overlay> overlays;
-//		final OverlayManager overlayManager = ImageJ.get(OverlayManager.class);
-//		if (overlayManager == null) {
-//			window.append("** overlayManager==null");
+//		final OverlayService overlayService = ImageJ.get(OverlayService.class);
+//		if (overlayService == null) {
+//			window.append("** overlayService==null");
 //			return;
 //		}
 //		AbstractDatasetView dsView = (AbstractDatasetView) display.getActiveView();
 //		if (dsView != null) {
-//			overlays = overlayManager.getOverlays(dsView.getDataObject());
+//			overlays = overlayService.getOverlays(dsView.getDataObject());
 //		} else {
 //			window.append("** dsView==null");
-//			overlays = overlayManager.getOverlays();
+//			overlays = overlayService.getOverlays();
 //		}
 //		window.clear();
 //		for (Overlay overlay : overlays) {

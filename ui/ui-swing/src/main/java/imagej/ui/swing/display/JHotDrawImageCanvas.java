@@ -47,7 +47,7 @@ import imagej.display.event.DisplayViewSelectedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.tool.ITool;
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTEventDispatcher;
@@ -222,8 +222,8 @@ public class JHotDrawImageCanvas extends JPanel implements ImageCanvas,
 			creationTool.addToolListener(new ToolAdapter() {
 				@Override
 				public void toolDone(final ToolEvent e) {
-					final ToolManager toolManager = ImageJ.get(ToolManager.class);
-					toolManager.setActiveTool(new SelectionTool());
+					final ToolService toolService = ImageJ.get(ToolService.class);
+					toolService.setActiveTool(new SelectionTool());
 				}
 			});
 

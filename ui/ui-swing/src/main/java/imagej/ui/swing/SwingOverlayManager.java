@@ -41,9 +41,9 @@ import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.roi.AbstractOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
-import imagej.display.OverlayManager;
+import imagej.display.OverlayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayViewSelectionEvent;
 import imagej.event.EventSubscriber;
@@ -160,7 +160,7 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 		olist.setCellRenderer(new OverlayRenderer());
 		
 		// Populate the list with the current overlays
-		OverlayManager om = ImageJ.get(OverlayManager.class);			
+		OverlayService om = ImageJ.get(OverlayService.class);			
 		for (Overlay overlay : om.getOverlays()) {
 			olist.add(olist.getCellRenderer().getListCellRendererComponent(olist, overlay, -1, false, false));
 		}
@@ -197,8 +197,8 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 	 			if (selecting == true)
 	 				return;
 	 			selecting = true;
-	 			final DisplayManager manager = ImageJ.get(DisplayManager.class);
-	 			final Display display = manager.getActiveDisplay();
+	 			final DisplayService displayService = ImageJ.get(DisplayService.class);
+	 			final Display display = displayService.getActiveDisplay();
 	 			JList list = (JList) listSelectionEvent.getSource();
 	 			Object selectionValues[] = list.getSelectedValues();
 	 			for (final DisplayView overlayView : display.getViews()) {
@@ -234,12 +234,12 @@ public class SwingOverlayManager extends JFrame implements ActionListener{
 
 	
 	/**
-	 * JList synchronized with the overlays in the OverlayManager.
+	 * JList synchronized with the overlays in the OverlayService.
 	 */
 	public class OverlayListModel extends AbstractListModel {
 		private static final long serialVersionUID = 7941252533859436640L;
-		private OverlayManager om = ImageJ.get(OverlayManager.class);
-		private DisplayManager dm = ImageJ.get(DisplayManager.class);
+		private OverlayService om = ImageJ.get(OverlayService.class);
+		private DisplayService dm = ImageJ.get(DisplayService.class);
 		
 		public Object getElementAt(int index) {
  			Display display = dm.getActiveDisplay();

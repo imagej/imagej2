@@ -1,5 +1,5 @@
 //
-// UIManager.java
+// UIService.java
 //
 
 /*
@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for the ImageJ user interface.
+ * Service for the ImageJ user interface.
  *
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.LAST_PRIORITY)
-public final class UIManager implements ManagerComponent {
+@Service(priority = Service.LAST_PRIORITY)
+public final class UIService implements IService {
 
 	/** The active user interface. */
 	private UserInterface userInterface;
@@ -76,7 +76,7 @@ public final class UIManager implements ManagerComponent {
 		return availableUIs;
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

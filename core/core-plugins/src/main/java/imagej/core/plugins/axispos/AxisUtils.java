@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.event.AxisPositionEvent;
 import imagej.event.Events;
@@ -84,8 +84,8 @@ public class AxisUtils {
 	 * @param relative - whether the change is a relative or absolute amount
 	 */
 	public static void changeCurrentAxisPosition(long change, boolean relative) {
-		final DisplayManager manager = ImageJ.get(DisplayManager.class);
-		final Display display = manager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
 		Axis axis = getActiveAxis();
 		if (axis == null) return;

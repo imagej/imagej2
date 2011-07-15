@@ -1,5 +1,5 @@
 //
-// ManagerComponent.java
+// IService.java
 //
 
 /*
@@ -35,11 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej;
 
 /**
- * An ImageJ manager component, for a particular area of functionality.
- *
+ * An ImageJ service, for a particular area of functionality. ImageJ discovers
+ * available services at runtime by looking for classes that implement this
+ * interface and are annotated with the @{@link Service} annotation.
+ * 
  * @author Curtis Rueden
+ * @see Service
  */
-public interface ManagerComponent {
+public interface IService {
 
 	void initialize();
 

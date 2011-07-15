@@ -77,11 +77,11 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
 
 		// assign active display to single Display input
 		final String displayInput = getSingleInput(module, Display.class);
-		final Display activeDisplay = displayManager.getActiveDisplay();
+		final Display activeDisplay = displayService.getActiveDisplay();
 		if (displayInput != null && activeDisplay != null) {
 			module.setInput(displayInput, activeDisplay);
 			module.setResolved(displayInput, true);
@@ -89,7 +89,7 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 		// assign active dataset view to single DatasetView input
 		final String datasetViewInput = getSingleInput(module, DatasetView.class);
-		final DatasetView activeDatasetView = displayManager.getActiveDatasetView();
+		final DatasetView activeDatasetView = displayService.getActiveDatasetView();
 		if (datasetViewInput != null && activeDatasetView != null) {
 			module.setInput(datasetViewInput, activeDatasetView);
 			module.setResolved(datasetViewInput, true);
@@ -106,7 +106,7 @@ public class ActiveDisplayPreprocessor implements PreprocessorPlugin {
 
 		// assign active dataset to single Dataset input
 		final String datasetInput = getSingleInput(module, Dataset.class);
-		final Dataset activeDataset = displayManager.getActiveDataset();
+		final Dataset activeDataset = displayService.getActiveDataset();
 		if (datasetInput != null && activeDataset != null) {
 			module.setInput(datasetInput, activeDataset);
 			module.setResolved(datasetInput, true);

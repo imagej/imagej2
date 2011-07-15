@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej;
 
 import imagej.ImageJ;
-import imagej.ui.UIManager;
+import imagej.ui.UIService;
 
 /**
  * Launches ImageJ.
@@ -50,7 +50,7 @@ public final class Main {
 
 	public static void main(String[] args) {
 		manageSettings();
-		ImageJ.get(UIManager.class).processArgs(args);
+		ImageJ.get(UIService.class).processArgs(args);
 	}
 
 	private static void manageSettings() {

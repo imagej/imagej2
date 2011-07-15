@@ -41,7 +41,7 @@ import imagej.event.StatusEvent;
 import imagej.plugin.InstantiableException;
 import imagej.tool.ITool;
 import imagej.tool.ToolInfo;
-import imagej.tool.ToolManager;
+import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 import imagej.ui.ToolBar;
@@ -76,7 +76,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	protected static final Border INACTIVE_BORDER = new BevelBorder(
 		BevelBorder.RAISED);
 
-	private final ToolManager toolManager;
+	private final ToolService toolService;
 
 	private final Map<String, AbstractButton> toolButtons;
 
@@ -102,7 +102,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		};
 
 	public SwingToolBar() {
-		toolManager = ImageJ.get(ToolManager.class);
+		toolService = ImageJ.get(ToolService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 		Events.subscribe(ToolActivatedEvent.class, toolActivatedEventSubscriber);
@@ -113,15 +113,15 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	// -- ToolBar methods --
 
 	@Override
-	public ToolManager getToolManager() {
-		return toolManager;
+	public ToolService getToolService() {
+		return toolService;
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
 		int lastPriority = Integer.MAX_VALUE;
-		for (final ToolInfo entry : toolManager.getToolEntries()) {
+		for (final ToolInfo entry : toolService.getToolEntries()) {
 			try {
 				final AbstractButton button = createButton(entry);
 				toolButtons.put(entry.getName(), button);
@@ -191,7 +191,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 				if (selected == active) return;
 				active = selected;
 				if (active) {
-					getToolManager().setActiveTool(tool);
+					getToolService().setActiveTool(tool);
 				}
 			}
 		});

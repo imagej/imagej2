@@ -37,7 +37,7 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import imagej.ImageJ;
-import imagej.legacy.LegacyManager;
+import imagej.legacy.LegacyService;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.util.Log;
 
@@ -57,8 +57,8 @@ public final class ImageWindowMethods {
 	public static void setVisible(final ImageWindow obj, final boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		legacyManager.legacyImageChanged(obj.getImagePlus());
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		legacyService.legacyImageChanged(obj.getImagePlus());
 	}
 
 	/** Replaces {@link ImageWindow#show()}. */

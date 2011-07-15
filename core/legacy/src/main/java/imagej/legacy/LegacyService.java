@@ -1,5 +1,5 @@
 //
-// LegacyManager.java
+// LegacyService.java
 //
 
 /*
@@ -38,11 +38,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.ImageJ;
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
@@ -57,9 +57,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manager component for working with legacy ImageJ 1.x.
+ * Service for working with legacy ImageJ 1.x.
  * <p>
- * The legacy manager overrides the behavior of various IJ1 methods, inserting
+ * The legacy service overrides the behavior of various IJ1 methods, inserting
  * seams so that (e.g.) the modern UI is aware of IJ1 events as they occur.
  * </p>
  * <p>
@@ -68,14 +68,14 @@ import java.util.List;
  * </p>
  * <p>
  * In this fashion, when a legacy plugin is executed on a {@link Dataset}, the
- * manager transparently translates it into an {@link ImagePlus}, and vice
+ * service transparently translates it into an {@link ImagePlus}, and vice
  * versa, enabling backward compatibility with legacy plugins.
  * </p>
  * 
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.HIGH_PRIORITY)
-public final class LegacyManager implements ManagerComponent {
+@Service(priority = Service.HIGH_PRIORITY)
+public final class LegacyService implements IService {
 
 	static {
 		// NB: Override class behavior before class loading gets too far along.
@@ -133,14 +133,14 @@ public final class LegacyManager implements ManagerComponent {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	// -- LegacyManager methods --
+	// -- LegacyService methods --
 
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
 
 	/**
-	 * Indicates to the manager that the given {@link ImagePlus} has changed as
+	 * Indicates to the service that the given {@link ImagePlus} has changed as
 	 * part of a legacy plugin execution.
 	 */
 	public void legacyImageChanged(final ImagePlus imp) {
@@ -155,13 +155,13 @@ public final class LegacyManager implements ManagerComponent {
 	 * active {@link Display}. Does not perform any harmonization.
 	 */
 	public void syncActiveImage() {
-		final DisplayManager displayManager = ImageJ.get(DisplayManager.class);
-		final Display activeDisplay = displayManager.getActiveDisplay();
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display activeDisplay = displayService.getActiveDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		WindowManager.setTempCurrentImage(activeImagePlus);
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

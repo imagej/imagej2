@@ -36,7 +36,7 @@ package imagej.legacy.patches;
 
 import ij.ImagePlus;
 import imagej.ImageJ;
-import imagej.legacy.LegacyManager;
+import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
 /**
@@ -53,15 +53,15 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
 	public static void updateAndDraw(final ImagePlus obj) {
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		legacyManager.legacyImageChanged(obj);
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		legacyService.legacyImageChanged(obj);
 	}
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
 	public static void repaintWindow(final ImagePlus obj) {
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
-		final LegacyManager legacyManager = ImageJ.get(LegacyManager.class);
-		legacyManager.legacyImageChanged(obj);
+		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		legacyService.legacyImageChanged(obj);
 	}
 
 }

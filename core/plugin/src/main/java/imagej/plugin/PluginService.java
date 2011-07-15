@@ -1,5 +1,5 @@
 //
-// PluginManager.java
+// PluginService.java
 //
 
 /*
@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin;
 
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.event.Events;
 import imagej.module.Module;
 import imagej.module.ModuleException;
@@ -59,7 +59,7 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Manager component for keeping track of available plugins. Available plugins
+ * Service for keeping track of available plugins. Available plugins
  * are discovered using a library called SezPoz. Loading of the actual plugin
  * classes can be deferred until a particular plugin's first execution.
  * 
@@ -67,8 +67,8 @@ import net.java.sezpoz.IndexItem;
  * @see IPlugin
  * @see Plugin
  */
-@Manager(priority = Manager.NORMAL_PRIORITY)
-public class PluginManager implements ManagerComponent {
+@Service(priority = Service.NORMAL_PRIORITY)
+public class PluginService implements IService {
 
 	/** The complete list of known plugins. */
 	private final List<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
@@ -87,14 +87,14 @@ public class PluginManager implements ManagerComponent {
 		sortPlugins();
 	}
 
-	/** Manually registers a plugin with the plugin manager. */
+	/** Manually registers a plugin with the plugin service. */
 	public void addPlugin(final PluginModuleInfo<?> plugin) {
 		plugins.add(plugin);
 		registerType(plugin, true);
 		Events.publish(new ModuleInfoAddedEvent(plugin));
 	}
 
-	/** Manually unregisters a plugin with the plugin manager. */
+	/** Manually unregisters a plugin with the plugin service. */
 	public void removePlugin(final PluginModuleInfo<?> plugin) {
 		plugins.remove(plugin);
 		unregisterType(plugin);
@@ -111,7 +111,7 @@ public class PluginManager implements ManagerComponent {
 	 * {@link RunnablePlugin}s).
 	 */
 	public List<ModuleInfo> getModules() {
-		// CTR FIXME - rework to avoid this HACKy method; use ModuleManager instead
+		// CTR FIXME - rework to avoid this HACKy method; use ModuleService instead
 		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		for (final PluginInfo<?> info : plugins) {
 			if (info instanceof ModuleInfo) {
@@ -207,7 +207,7 @@ public class PluginManager implements ManagerComponent {
 	/** Executes the given module. */
 	public void run(final Module module, final boolean separateThread) {
 		// TODO - Implement a better threading mechanism for launching plugins.
-		// Perhaps a ThreadManager so that the UI can query currently
+		// Perhaps a ThreadService so that the UI can query currently
 		// running plugins and so forth?
 		if (separateThread) {
 			final String className = module.getInfo().getDelegateClassName();
@@ -227,7 +227,7 @@ public class PluginManager implements ManagerComponent {
 		else module.run();
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

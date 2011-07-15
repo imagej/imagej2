@@ -1,5 +1,5 @@
 //
-// InspectObjMgr.java
+// InspectObjectService.java
 //
 
 /*
@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.util.diag.inspect.Inspector;
@@ -42,17 +42,17 @@ import imagej.util.diag.inspect.Inspector;
 
 
 /**
- * Inspect the ObjectManager
+ * Inspect the ObjectService
  *
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
-public class InspectObjMgr implements ImageJPlugin {
+public class InspectObjectService implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final ObjectManager manager = ImageJ.get(ObjectManager.class);
-		Inspector.inspect(manager);
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		Inspector.inspect(objectService);
 	}
 
 }

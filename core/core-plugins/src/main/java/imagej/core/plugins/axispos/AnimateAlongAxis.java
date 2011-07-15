@@ -40,7 +40,7 @@ import net.imglib2.img.Axis;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.display.event.AxisPositionEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.key.KyPressedEvent;
@@ -118,7 +118,7 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		currDisplay = ImageJ.get(DisplayManager.class).getActiveDisplay();
+		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
 		if (currDisplay == null) return;
 		Dataset ds = (Dataset) currDisplay.getActiveView().getDataObject();
 		if (ds == null) return;

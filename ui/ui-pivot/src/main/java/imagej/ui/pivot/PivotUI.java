@@ -39,7 +39,7 @@ import imagej.event.Events;
 import imagej.module.ModuleInfo;
 import imagej.module.ui.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 import imagej.plugin.ui.pivot.PivotMenuCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
@@ -133,8 +133,8 @@ public class PivotUI implements Application, UserInterface {
 
 	private void createMenuBar() {
 		// CTR FIXME - rework this
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<ModuleInfo> modules = pluginManager.getModules();
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final List<ModuleInfo> modules = pluginService.getModules();
 		final ShadowMenu rootMenu = new ShadowMenu(modules);
 		final BoxPane menuPane = new BoxPane();
 		new PivotMenuCreator().createMenus(rootMenu, menuPane);

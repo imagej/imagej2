@@ -47,7 +47,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ui.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.plugin.PluginManager;
+import imagej.plugin.PluginService;
 import imagej.plugin.ui.swing.JMenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
@@ -150,8 +150,8 @@ public class SwingUI implements UserInterface
 	 */
 	private void initializeMenus() {
 		// CTR FIXME - rework this
-		final PluginManager pluginManager = ImageJ.get(PluginManager.class);
-		final List<ModuleInfo> modules = pluginManager.getModules();
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final List<ModuleInfo> modules = pluginService.getModules();
 		rootMenu = new ShadowMenu(modules);
 		createMenuBar(frame);
 		Events.publish(new AppMenusCreatedEvent(frame.getJMenuBar()));

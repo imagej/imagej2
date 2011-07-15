@@ -1,5 +1,5 @@
 //
-// Manager.java
+// Service.java
 //
 
 /*
@@ -42,14 +42,16 @@ import java.lang.annotation.Target;
 import net.java.sezpoz.Indexable;
 
 /**
- * Annotation indicating a discoverable manager component.
- *
+ * Annotation indicating a discoverable service. ImageJ discovers available
+ * services at runtime by looking for classes that implement the
+ * {@link IService} interface and are annotated with this annotation.
+ * 
  * @author Curtis Rueden
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-@Indexable(type=ManagerComponent.class)
-public @interface Manager {
+@Indexable(type = IService.class)
+public @interface Service {
 
 	float FIRST_PRIORITY = 0;
 	float HIGH_PRIORITY = 25;

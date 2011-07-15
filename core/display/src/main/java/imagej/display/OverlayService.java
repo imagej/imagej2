@@ -1,5 +1,5 @@
 //
-// OverlayManager.java
+// OverlayService.java
 //
 
 /*
@@ -35,32 +35,32 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.ImageJ;
-import imagej.Manager;
-import imagej.ManagerComponent;
+import imagej.Service;
+import imagej.IService;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
-import imagej.object.ObjectManager;
+import imagej.object.ObjectService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manager component for working with {@link Overlay}s.
+ * Service for working with {@link Overlay}s.
  * 
  * @author Curtis Rueden
  */
-@Manager(priority = Manager.NORMAL_PRIORITY)
-public final class OverlayManager implements ManagerComponent {
+@Service(priority = Service.NORMAL_PRIORITY)
+public final class OverlayService implements IService {
 
-	// -- OverlayManager methods --
+	// -- OverlayService methods --
 
 	/**
 	 * Gets a list of all {@link Overlay}s. This method is a shortcut that
-	 * delegates to {@link ObjectManager}.
+	 * delegates to {@link ObjectService}.
 	 */
 	public List<Overlay> getOverlays() {
-		final ObjectManager objectManager = ImageJ.get(ObjectManager.class);
-		return objectManager.getObjects(Overlay.class);
+		final ObjectService objectService = ImageJ.get(ObjectService.class);
+		return objectService.getObjects(Overlay.class);
 	}
 
 	/** Gets a list of {@link Overlay}s linked to the given {@link Display}. */
@@ -103,7 +103,7 @@ public final class OverlayManager implements ManagerComponent {
 		}
 	}
 
-	// -- ManagerComponent methods --
+	// -- IService methods --
 
 	@Override
 	public void initialize() {

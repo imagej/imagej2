@@ -36,7 +36,7 @@ package imagej.core.plugins.display;
 
 import imagej.ImageJ;
 import imagej.display.DatasetView;
-import imagej.display.DisplayManager;
+import imagej.display.DisplayService;
 import imagej.module.ui.WidgetStyle;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
@@ -68,7 +68,7 @@ public class BrightnessContrast implements ImageJPlugin, PreviewPlugin {
 	private static final String SLIDER_MAX = "" + (SLIDER_RANGE - 1);
 
 	@Parameter
-	private DatasetView view = ImageJ.get(DisplayManager.class)
+	private DatasetView view = ImageJ.get(DisplayService.class)
 		.getActiveDatasetView();
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")

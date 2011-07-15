@@ -49,9 +49,10 @@ import net.java.sezpoz.IndexItem;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
- * list of {@link ManagerComponent}s.
+ * list of services.
  * 
  * @author Curtis Rueden
+ * @see IService
  */
 public final class ImageJ {
 
@@ -61,7 +62,7 @@ public final class ImageJ {
 
 	private static ImageJ instance;
 
-	/** Initializes all available ImageJ manager components. */
+	/** Initializes all available ImageJ services. */
 	public static void initialize() {
 		getInstance();
 	}
@@ -72,89 +73,88 @@ public final class ImageJ {
 		return instance;
 	}
 
-	/** Gets the manager component of the given class. */
-	public static <M extends ManagerComponent> M get(final Class<M> c) {
-		return getInstance().getManager(c);
+	/** Gets the service of the given class. */
+	public static <S extends IService> S get(final Class<S> c) {
+		return getInstance().getService(c);
 	}
 
-	/** Discovers manager components present on the classpath. */
-	public static List<ManagerComponent> loadManagers() {
-		// use SezPoz to discover all manager components
-		final List<ManagerEntry> entries = new ArrayList<ManagerEntry>();
-		for (final IndexItem<Manager, ManagerComponent> item :
-			Index.load(Manager.class, ManagerComponent.class))
+	/** Discovers services present on the classpath. */
+	public static List<IService> loadServices() {
+		// use SezPoz to discover all services
+		final List<ServiceEntry> entries = new ArrayList<ServiceEntry>();
+		for (final IndexItem<Service, IService> item : Index.load(Service.class,
+			IService.class))
 		{
 			try {
 				final float priority = item.annotation().priority();
-				entries.add(new ManagerEntry(item.instance(), priority));
+				entries.add(new ServiceEntry(item.instance(), priority));
 			}
 			catch (final InstantiationException e) {
-				Log.warn("Invalid manager component: " + item, e);
+				Log.warn("Invalid service: " + item, e);
 			}
 		}
 		Collections.sort(entries);
 
-		final List<ManagerComponent> managers = new ArrayList<ManagerComponent>();
-		for (final ManagerEntry entry : entries) managers.add(entry.manager);
-		return managers;
+		final List<IService> serviceList = new ArrayList<IService>();
+		for (final ServiceEntry entry : entries)
+			serviceList.add(entry.service);
+		return serviceList;
 	}
 
-	private final Map<Class<?>, ManagerComponent> managers;
-	private final Set<Class<? extends ManagerComponent>> initializedManagers;
+	private final Map<Class<?>, IService> services;
+	private final Set<Class<? extends IService>> initializedServices;
 
 	private ImageJ() {
 		instance = this;
-		managers = new ConcurrentHashMap<Class<?>, ManagerComponent>();
-		initializedManagers = new HashSet<Class<? extends ManagerComponent>>();
+		services = new ConcurrentHashMap<Class<?>, IService>();
+		initializedServices = new HashSet<Class<? extends IService>>();
 
-		// discover available managers
-		final List<ManagerComponent> managerList = loadManagers();
+		// discover available services
+		final List<IService> serviceList = loadServices();
 
-		// add managers to lookup table
-		for (final ManagerComponent m : managerList) {
-			managers.put(m.getClass(), m);
+		// add services to lookup table
+		for (final IService s : serviceList) {
+			services.put(s.getClass(), s);
 		}
 
-		// initialize manager components
-		for (final ManagerComponent m : managerList) {
-			Log.info("Initializing manager component: " + m.getClass().getName());
-			m.initialize();
-			initializedManagers.add(m.getClass());
+		// initialize services
+		for (final IService s : serviceList) {
+			Log.info("Initializing service: " + s.getClass().getName());
+			s.initialize();
+			initializedServices.add(s.getClass());
 		}
 	}
 
-	/** Gets the manager component of the given class. */
-	public <M extends ManagerComponent> M getManager(final Class<M> c) {
+	/** Gets the service of the given class. */
+	public <S extends IService> S getService(final Class<S> c) {
 		@SuppressWarnings("unchecked")
-		final M manager = (M) managers.get(c);
-		if (!initializedManagers.contains(c)) {
-			// NB: For now, disallow access to uninitialized managers. In the future,
-			// there may be a reason to allow it (e.g., managers with circular
-			// dependencies), but at the moment it is useful for debugging manager
-			// priorities for this exception to be thrown. Ideally, all managers
+		final S service = (S) services.get(c);
+		if (!initializedServices.contains(c)) {
+			// NB: For now, disallow access to uninitialized services. In the future,
+			// there may be a reason to allow it (e.g., services with circular
+			// dependencies), but at the moment it is useful for debugging service
+			// priorities for this exception to be thrown. Ideally, all services
 			// should be initialized in a strict hierarchy. It would probably be
-			// worthwhile to think further about the manager architecture in general.
+			// worthwhile to think further about the service architecture in general.
 			throw new IllegalStateException(
-				"Access to uninitialized manager component: " + c);
+				"Access to uninitialized service: " + c);
 		}
-		return manager;
+		return service;
 	}
 
-	/** Helper class for sorting managers by priority. */
-	private static class ManagerEntry implements Comparable<ManagerEntry> {
+	/** Helper class for sorting services by priority. */
+	private static class ServiceEntry implements Comparable<ServiceEntry> {
 
-		protected ManagerComponent manager;
+		protected IService service;
 		protected float priority;
 
-		protected ManagerEntry(final ManagerComponent manager,
-			final float priority)
-		{
-			this.manager = manager;
+		protected ServiceEntry(final IService service, final float priority) {
+			this.service = service;
 			this.priority = priority;
 		}
 
 		@Override
-		public int compareTo(final ManagerEntry entry) {
+		public int compareTo(final ServiceEntry entry) {
 			if (priority < entry.priority) return -1;
 			else if (priority > entry.priority) return 1;
 			else return 0;
