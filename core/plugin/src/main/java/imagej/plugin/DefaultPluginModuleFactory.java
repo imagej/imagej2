@@ -53,9 +53,7 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 		try {
 			final Class<R> pluginClass = info.loadClass();
 			if (Module.class.isAssignableFrom(pluginClass)) {
-				@SuppressWarnings("unchecked")
-				final Class<Module> moduleClass = (Class<Module>) pluginClass;
-				return moduleClass.newInstance();
+				return (Module) pluginClass.newInstance();
 			}
 		}
 		catch (InstantiableException e) {
