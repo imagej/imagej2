@@ -39,13 +39,7 @@ import javax.swing.JOptionPane;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.Log;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -61,13 +55,14 @@ import net.imglib2.type.numeric.RealType;
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 	ImageJPlugin
 {
-
-	@Parameter
-	private Dataset dataset;
+	//@Parameter
+	//private Dataset dataset;
 
 	@Override
 	public void run() {
 		JOptionPane.showMessageDialog(null, "This feature has not been implemented");
+
+		/*
 		// TODO - enable this in ImgLib
 //		final String id = currDataset.getImgPlus().getSource();
 //		if (id == null) {
@@ -88,6 +83,7 @@ public class RevertImage<T extends RealType<T> & NativeType<T>> implements
 		catch (final IncompatibleTypeException e) {
 			Log.error(e);
 		}
+		 */
 	}
 
 }
