@@ -38,9 +38,9 @@ import ij.IJ;
 import ij.Menus;
 import imagej.ImageJ;
 import imagej.legacy.LegacyService;
+import imagej.module.AbstractUIDetails;
 import imagej.module.MenuEntry;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.IndexItemInfo;
 import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginModuleInfo;
 import imagej.plugin.finder.IPluginFinder;
@@ -150,8 +150,8 @@ public class LegacyPluginFinder implements IPluginFinder {
 		if (Log.isDebug()) {
 			debugString =
 				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
-					" [menu = " + IndexItemInfo.getMenuString(menuPath) + ", weight = " +
-					menuPath.get(menuPath.size() - 1).getWeight() + "]";
+					" [menu = " + AbstractUIDetails.getMenuString(menuPath) +
+					", weight = " + menuPath.get(menuPath.size() - 1).getWeight() + "]";
 		}
 		else debugString = null;
 		Log.debug(debugString);
