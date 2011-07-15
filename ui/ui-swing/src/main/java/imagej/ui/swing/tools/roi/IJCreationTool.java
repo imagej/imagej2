@@ -34,12 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.roi.Overlay;
+
 import java.util.EventListener;
 
 import javax.swing.event.EventListenerList;
-
-import imagej.data.roi.Overlay;
-import imagej.event.ImageJEvent;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;

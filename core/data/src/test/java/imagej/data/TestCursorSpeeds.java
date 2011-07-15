@@ -1,8 +1,6 @@
 package imagej.data;
 
-import static org.junit.Assert.*;
-import imagej.data.Dataset;
-
+import static org.junit.Assert.assertTrue;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;

@@ -37,7 +37,6 @@ package imagej.util;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import imagej.util.Span;
 
 import org.junit.Test;
 

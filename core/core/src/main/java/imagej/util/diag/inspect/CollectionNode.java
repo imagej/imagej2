@@ -19,7 +19,8 @@ package imagej.util.diag.inspect;
  */
 
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A CollectionNode is an ObjectNode that displays its values a little more intelligently

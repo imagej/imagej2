@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.Service;
 import imagej.IService;
+import imagej.Service;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;

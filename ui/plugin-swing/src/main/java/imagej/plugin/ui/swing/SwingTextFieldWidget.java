@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.module.ui.WidgetModel;
 import imagej.module.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;

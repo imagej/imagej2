@@ -33,6 +33,10 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
+import imagej.data.roi.Overlay;
+import imagej.display.DisplayView;
+import imagej.util.ColorRGB;
+
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -43,18 +47,13 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
-
-import imagej.data.roi.Overlay;
-import imagej.display.DisplayView;
-import imagej.util.ColorRGB;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.roi.RegionOfInterest;
+import net.imglib2.type.logic.BitType;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
-
-import net.imglib2.RealRandomAccess;
-import net.imglib2.roi.RegionOfInterest;
-import net.imglib2.type.logic.BitType;
 
 /**
  * @author Lee Kamentsky

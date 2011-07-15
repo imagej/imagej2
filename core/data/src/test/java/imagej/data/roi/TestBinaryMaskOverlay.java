@@ -1,16 +1,14 @@
 package imagej.data.roi;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.ByteOrder;
 import java.util.Random;
 
 import net.imglib2.RandomAccess;

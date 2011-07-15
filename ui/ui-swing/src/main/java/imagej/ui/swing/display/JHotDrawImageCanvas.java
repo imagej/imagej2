@@ -38,7 +38,6 @@ import imagej.ImageJ;
 import imagej.data.roi.Overlay;
 import imagej.display.CanvasHelper;
 import imagej.display.DisplayView;
-import imagej.display.DisplayWindow;
 import imagej.display.EventDispatcher;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;

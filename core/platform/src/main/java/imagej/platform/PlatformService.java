@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.Service;
 import imagej.IService;
+import imagej.Service;
 import imagej.util.Log;
 
 import java.util.ArrayList;

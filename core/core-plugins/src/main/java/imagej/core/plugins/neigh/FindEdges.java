@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.neigh;
 
-import imagej.core.plugins.neigh.Neighborhood3x3Watcher;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;

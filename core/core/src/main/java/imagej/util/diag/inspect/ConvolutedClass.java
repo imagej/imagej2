@@ -19,7 +19,11 @@ package imagej.util.diag.inspect;
  */
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Vector;
 
 
 /**

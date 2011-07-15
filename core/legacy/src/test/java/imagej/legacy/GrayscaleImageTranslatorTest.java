@@ -1,16 +1,17 @@
 package imagej.legacy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
-
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.Axis;
 import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;

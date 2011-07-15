@@ -34,15 +34,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-import net.imglib2.img.Axis;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.RealType;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import net.imglib2.img.Axis;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
 
 
 /**

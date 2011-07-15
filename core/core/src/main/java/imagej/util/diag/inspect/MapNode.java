@@ -19,7 +19,8 @@ package imagej.util.diag.inspect;
  */
 
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A map node is an object node that displays its values a little more intelligently. 

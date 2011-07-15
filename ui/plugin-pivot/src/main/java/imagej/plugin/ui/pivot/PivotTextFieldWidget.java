@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.module.ui.WidgetModel;
 import imagej.module.ui.TextFieldWidget;
+import imagej.module.ui.WidgetModel;
 
 import org.apache.pivot.wtk.TextInput;
 

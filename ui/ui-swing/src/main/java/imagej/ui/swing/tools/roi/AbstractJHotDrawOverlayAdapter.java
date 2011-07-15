@@ -46,9 +46,7 @@ import java.awt.Color;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.action.LineDecorationIcon;
 import org.jhotdraw.draw.decoration.ArrowTip;
-import org.jhotdraw.draw.decoration.LineDecoration;
 
 
 /**

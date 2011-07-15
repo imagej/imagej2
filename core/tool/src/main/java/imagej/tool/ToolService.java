@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.Service;
 import imagej.IService;
+import imagej.Service;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
 import imagej.display.event.mouse.MsClickedEvent;

@@ -20,6 +20,7 @@ package imagej.display;
  */
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.multithreading.Chunk;

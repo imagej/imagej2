@@ -33,13 +33,13 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package imagej.ui.swing.tools.roi;
 
-import java.awt.geom.Point2D;
-
 import imagej.data.roi.LineOverlay;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
 import imagej.tool.Tool;
 import imagej.ui.swing.tools.FreehandTool;
+
+import java.awt.geom.Point2D;
 
 import net.imglib2.RealPoint;
 

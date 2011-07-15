@@ -34,11 +34,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-import net.imglib2.img.Axis;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
 import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import net.imglib2.img.Axis;
 
 
 /**

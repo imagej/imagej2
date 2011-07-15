@@ -28,9 +28,13 @@ package imagej.util.diag.inspect;
  * @version 0.1
  */
 
-import java.lang.reflect.*;
-import java.util.*;
-import javax.swing.tree.*;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.swing.tree.TreeNode;
 
 
 abstract class ComplexNode implements InspectorNode

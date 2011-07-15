@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import net.imglib2.img.Axis;
 import imagej.data.roi.Overlay;
+import net.imglib2.img.Axis;
 
 /**
  * A view into an {@link Overlay}, for use with a {@link Display}.

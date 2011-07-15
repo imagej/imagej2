@@ -20,9 +20,11 @@ package imagej.util.diag.inspect;
 
 
 
-import java.lang.reflect.*;
-import java.util.*;
-import javax.swing.tree.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 /**
  * A node created from an object.

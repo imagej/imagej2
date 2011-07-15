@@ -1,9 +1,8 @@
 package imagej.legacy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
-
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 

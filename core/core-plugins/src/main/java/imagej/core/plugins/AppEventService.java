@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
+import imagej.IService;
 import imagej.ImageJ;
 import imagej.Service;
-import imagej.IService;
 import imagej.core.plugins.app.AboutImageJ;
 import imagej.core.plugins.app.QuitProgram;
 import imagej.core.plugins.app.ShowPrefs;
