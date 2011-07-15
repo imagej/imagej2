@@ -42,7 +42,7 @@ package imagej.module;
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
-public interface ModuleInfo extends BasicDetails, UserInterfaceDetails {
+public interface ModuleInfo extends UIDetails {
 
 	/** Gets the input item with the given name. */
 	ModuleItem<?> getInput(String name);
