@@ -52,10 +52,7 @@ import java.util.Map;
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
-public interface Module {
-
-	/** Executes the module. */
-	void run();
+public interface Module extends Runnable {
 
 	/**
 	 * Computes a preview of the module's execution results, if available. A

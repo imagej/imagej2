@@ -82,11 +82,6 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 
 	// -- Module methods --
 
-	@Override
-	public void run() {
-		plugin.run();
-	}
-
 	/**
 	 * Computes a preview of the plugin's results. For this method to do anything,
 	 * the plugin must implement the {@link PreviewPlugin} interface.
@@ -154,6 +149,13 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		for (final String name : outputs.keySet()) {
 			setOutput(name, outputs.get(name));
 		}
+	}
+
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		plugin.run();
 	}
 
 	// -- Helper methods --
