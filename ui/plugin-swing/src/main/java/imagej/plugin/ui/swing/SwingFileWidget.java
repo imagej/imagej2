@@ -63,7 +63,7 @@ public class SwingFileWidget extends SwingInputWidget
 	public SwingFileWidget(final WidgetModel model) {
 		super(model);
 
-		path = new JTextField("");
+		path = new JTextField(16);
 		setToolTip(path);
 		add(path);
 		path.getDocument().addDocumentListener(this);
