@@ -11,10 +11,10 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-core-plugins</artifactId>
+	<artifactId>ij-io</artifactId>
 
-	<name>ImageJ Core Plugins</name>
-	<description>A collection of built-in plugins for ImageJ.</description>
+	<name>ImageJ IO library</name>
+	<description>ImageJ data IO (create, open, save, revert), based on ImgLib.</description>
 
 	<dependencies>
 		<dependency>
@@ -28,39 +28,25 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-ops</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-display</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-event</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-plugin</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>loci</groupId>
+			<artifactId>loci-common</artifactId>
+			<version>${bio-formats.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -71,7 +57,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.plugins</packageName>
+							<packageName>imagej.data</packageName>
 						</manifest>
 					</archive>
 				</configuration>
