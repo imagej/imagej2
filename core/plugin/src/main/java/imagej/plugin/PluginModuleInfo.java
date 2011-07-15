@@ -176,7 +176,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	}
 
 	@Override
-	public PluginModule<R> createModule() throws ModuleException {
+	public Module createModule() throws ModuleException {
 		return factory.createModule(this);
 	}
 
