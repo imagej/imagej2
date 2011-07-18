@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.headless;
 
 import imagej.module.Module;
-import imagej.module.ui.AbstractInputHarvester;
 import imagej.module.ui.InputHarvester;
 import imagej.module.ui.InputPanel;
+import imagej.plugin.AbstractInputHarvesterPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.process.PreprocessorPlugin;
 
@@ -48,7 +48,7 @@ import imagej.plugin.process.PreprocessorPlugin;
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class)
-public class HeadlessInputHarvester extends AbstractInputHarvester {
+public class HeadlessInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override
 	public HeadlessInputPanel createInputPanel() {
