@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.pivot;
 
 import imagej.module.Module;
-import imagej.module.process.ModulePreprocessor;
 import imagej.module.ui.InputHarvester;
 import imagej.module.ui.InputPanel;
 import imagej.plugin.AbstractInputHarvesterPlugin;
 import imagej.plugin.Plugin;
+import imagej.plugin.process.PreprocessorPlugin;
 
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Sheet;
@@ -51,7 +51,7 @@ import org.apache.pivot.wtk.Sheet;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = ModulePreprocessor.class)
+@Plugin(type = PreprocessorPlugin.class)
 public class PivotInputHarvester extends AbstractInputHarvesterPlugin {
 
 	@Override
