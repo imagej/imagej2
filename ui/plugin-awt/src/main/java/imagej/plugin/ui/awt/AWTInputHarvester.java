@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.awt;
 
 import imagej.module.Module;
-import imagej.module.process.ModulePreprocessor;
 import imagej.module.ui.AbstractInputHarvester;
 import imagej.module.ui.InputHarvester;
 import imagej.module.ui.InputPanel;
 import imagej.plugin.Plugin;
+import imagej.plugin.process.PreprocessorPlugin;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -55,7 +55,7 @@ import javax.swing.JPanel;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = ModulePreprocessor.class)
+@Plugin(type = PreprocessorPlugin.class)
 public class AWTInputHarvester extends AbstractInputHarvester {
 
 	@Override
