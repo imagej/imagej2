@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 import imagej.data.Extents;
 import imagej.data.Position;
 
-import net.imglib2.Localizable;
-
 import org.junit.Test;
 
 
