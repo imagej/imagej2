@@ -154,16 +154,19 @@ public class PositionTest {
 
 	@Test
 	public void testSetIndex() {
-		long[] dims = new long[]{6,4,2};
+		long[] dims = new long[]{8,6,4,2};
 		pos = new Extents(dims).createPosition();
 		long index = 0;
-		for (int k = 0; k < dims[2]; k++) {
-			for (int j = 0; j < dims[1]; j++) {
-				for (int i = 0; i < dims[0]; i++) {
-					pos.setIndex(index++);
-					assertEquals(i,pos.get(0));
-					assertEquals(j,pos.get(1));
-					assertEquals(k,pos.get(2));
+		for (int l = 0; l < dims[3]; l++) {
+			for (int k = 0; k < dims[2]; k++) {
+				for (int j = 0; j < dims[1]; j++) {
+					for (int i = 0; i < dims[0]; i++) {
+						pos.setIndex(index++);
+						assertEquals(i,pos.get(0));
+						assertEquals(j,pos.get(1));
+						assertEquals(k,pos.get(2));
+						assertEquals(l,pos.get(3));
+					}
 				}
 			}
 		}
@@ -174,7 +177,7 @@ public class PositionTest {
 			assertTrue(true);
 		}
 		try {
-			pos.setIndex(dims[0]*dims[1]*dims[2]);
+			pos.setIndex(dims[0]*dims[1]*dims[2]*dims[3]);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
@@ -183,16 +186,19 @@ public class PositionTest {
 
 	@Test
 	public void testGetIndex() {
-		long[] dims = new long[]{6,4,2};
+		long[] dims = new long[]{8,6,4,2};
 		pos = new Extents(dims).createPosition();
 		long index = 0;
-		for (int k = 0; k < dims[2]; k++) {
-			for (int j = 0; j < dims[1]; j++) {
-				for (int i = 0; i < dims[0]; i++) {
-					pos.set(i, 0);
-					pos.set(j, 1);
-					pos.set(k, 2);
-					assertEquals(index++,pos.getIndex());
+		for (int l = 0; l < dims[3]; l++) {
+			for (int k = 0; k < dims[2]; k++) {
+				for (int j = 0; j < dims[1]; j++) {
+					for (int i = 0; i < dims[0]; i++) {
+						pos.set(i, 0);
+						pos.set(j, 1);
+						pos.set(k, 2);
+						pos.set(l, 3);
+						assertEquals(index++,pos.getIndex());
+					}
 				}
 			}
 		}
