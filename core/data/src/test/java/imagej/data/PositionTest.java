@@ -98,13 +98,6 @@ public class PositionTest {
 			numPos++;
 		}
 		assertEquals(2*4*6, numPos);
-		pos.resetForFwd();
-		numPos = 0;
-		while (pos.hasNext()) {
-			pos.fwd();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
 	}
 
 	@Test
@@ -113,13 +106,6 @@ public class PositionTest {
 		pos.resetForBck();
 		assertTrue(pos.hasPrev());
 		int numPos = 0;
-		while (pos.hasPrev()) {
-			pos.bck();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
-		pos.resetForBck();
-		numPos = 0;
 		while (pos.hasPrev()) {
 			pos.bck();
 			numPos++;
