@@ -29,24 +29,23 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin</artifactId>
+			<artifactId>ij-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>loci</groupId>
 			<artifactId>loci-common</artifactId>
 			<version>${bio-formats.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

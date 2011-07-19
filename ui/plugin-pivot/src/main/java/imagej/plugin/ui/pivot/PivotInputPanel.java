@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.module.ModuleItem;
-import imagej.module.ui.AbstractInputPanel;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ModuleItem;
+import imagej.ext.module.ui.AbstractInputPanel;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.Label;

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.module.ui.ChoiceWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.ListButton;

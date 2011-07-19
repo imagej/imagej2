@@ -36,7 +36,7 @@ package imagej.display;
 
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.plugin.IPlugin;
+import imagej.ext.plugin.IPlugin;
 
 import java.util.List;
 

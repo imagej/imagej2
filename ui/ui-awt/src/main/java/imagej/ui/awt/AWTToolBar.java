@@ -37,7 +37,7 @@ package imagej.ui.awt;
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.plugin.InstantiableException;
+import imagej.ext.InstantiableException;
 import imagej.tool.ITool;
 import imagej.tool.ToolInfo;
 import imagej.tool.ToolService;

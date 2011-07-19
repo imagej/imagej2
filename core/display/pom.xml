@@ -34,12 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-module</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin</artifactId>
+			<artifactId>ij-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

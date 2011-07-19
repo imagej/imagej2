@@ -38,11 +38,11 @@ import imagej.ImageJ;
 import imagej.display.ColorMode;
 import imagej.display.DatasetView;
 import imagej.display.DisplayService;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PreviewPlugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PreviewPlugin;
 
 /**
  * Plugin that allows toggling between different color modes.

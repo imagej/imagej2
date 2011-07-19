@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.module.ui.TextFieldWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.TextFieldWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;

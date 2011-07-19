@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swt;
 
 import imagej.ImageJ;
-import imagej.plugin.InstantiableException;
+import imagej.ext.InstantiableException;
 import imagej.tool.ITool;
 import imagej.tool.ToolInfo;
 import imagej.tool.ToolService;

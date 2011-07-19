@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.typechange;
 
 import imagej.data.Dataset;
-import imagej.plugin.Parameter;
+import imagej.ext.plugin.Parameter;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;

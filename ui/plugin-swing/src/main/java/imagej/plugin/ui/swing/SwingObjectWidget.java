@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.module.ui.ObjectWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.ObjectWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.module.ui.ColorWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.ColorWidget;
+import imagej.ext.module.ui.WidgetModel;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 

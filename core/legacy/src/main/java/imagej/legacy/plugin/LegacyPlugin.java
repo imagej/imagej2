@@ -42,14 +42,14 @@ import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.DisplayWindow;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.legacy.DatasetHarmonizer;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.LegacyUtils;
 import imagej.object.ObjectService;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
 import imagej.util.Log;
 
 import java.util.ArrayList;

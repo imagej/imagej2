@@ -42,10 +42,10 @@ import imagej.core.plugins.app.QuitProgram;
 import imagej.core.plugins.app.ShowPrefs;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.plugin.PluginService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.plugin.PluginService;
 
 import java.util.ArrayList;
 import java.util.List;

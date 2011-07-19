@@ -37,9 +37,9 @@ package imagej.core.plugins.debug;
 import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.module.AbstractModuleItem;
-import imagej.plugin.ImageJModule;
-import imagej.plugin.Plugin;
+import imagej.ext.module.AbstractModuleItem;
+import imagej.ext.plugin.ImageJModule;
+import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 
 import java.util.Map;

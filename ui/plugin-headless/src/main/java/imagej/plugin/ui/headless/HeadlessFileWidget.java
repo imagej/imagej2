@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.module.ui.FileWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.FileWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import java.io.File;
 

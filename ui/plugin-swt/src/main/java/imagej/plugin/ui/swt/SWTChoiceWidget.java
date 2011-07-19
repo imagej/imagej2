@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.module.ui.ChoiceWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.ChoiceWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;

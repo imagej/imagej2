@@ -37,11 +37,11 @@ package imagej.core.plugins.debug;
 import imagej.data.Dataset;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.module.ui.WidgetStyle;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PreviewPlugin;
+import imagej.ext.module.ui.WidgetStyle;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Log;
 

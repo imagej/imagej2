@@ -38,10 +38,10 @@ import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.roi.Overlay;
-import imagej.module.Module;
+import imagej.ext.module.Module;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.process.PostprocessorPlugin;
 import imagej.object.ObjectService;
-import imagej.plugin.Plugin;
-import imagej.plugin.process.PostprocessorPlugin;
 
 import java.util.Collection;
 import java.util.List;

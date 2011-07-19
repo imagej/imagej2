@@ -35,7 +35,7 @@ package imagej.core.plugins.options;
 
 import imagej.event.Events;
 import imagej.event.OptionsChangedEvent;
-import imagej.plugin.ImageJPlugin;
+import imagej.ext.plugin.ImageJPlugin;
 
 /**
  * Base class for all options oriented plugins.

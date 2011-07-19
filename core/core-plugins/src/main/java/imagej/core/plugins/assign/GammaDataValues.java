@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.Gamma;
 

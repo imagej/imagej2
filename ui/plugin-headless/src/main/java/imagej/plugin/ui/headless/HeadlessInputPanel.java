@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.module.ui.AbstractInputPanel;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.AbstractInputPanel;
+import imagej.ext.module.ui.WidgetModel;
 
 /**
  * TODO

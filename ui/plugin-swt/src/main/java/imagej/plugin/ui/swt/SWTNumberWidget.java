@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.module.ui.NumberWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.NumberWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
