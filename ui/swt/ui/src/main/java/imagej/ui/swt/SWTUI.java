@@ -39,8 +39,8 @@ import imagej.event.Events;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ui.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.ui.swt.SWTMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.ui.swt.SWTMenuCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 

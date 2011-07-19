@@ -39,7 +39,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
-import imagej.plugin.ui.swing.SwingUtils;
+import imagej.ext.ui.swing.SwingUtils;
 import imagej.ui.swing.CommandFinderPanel;
 import imagej.util.Log;
 

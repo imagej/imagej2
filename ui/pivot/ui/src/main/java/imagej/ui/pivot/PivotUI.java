@@ -39,8 +39,8 @@ import imagej.event.Events;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ui.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.ui.pivot.PivotMenuCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 

@@ -39,12 +39,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-platform</artifactId>
+			<artifactId>ij-ext-swt</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin-swt</artifactId>
+			<artifactId>ij-platform</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
-			<version>3.7.3.1</version>
+			<version>${miglayout.version}</version>
 			<classifier>swt</classifier>
 		</dependency>
 	</dependencies>
