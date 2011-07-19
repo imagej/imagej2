@@ -32,6 +32,11 @@
       <artifactId>ij-display</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-ext</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platform</artifactId>
@@ -39,17 +44,7 @@
 		</dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ij-plugin</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>ij-plugin-pivot</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>ij-tool</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

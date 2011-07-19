@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swing;
 
-import imagej.module.ui.NumberWidget;
-import imagej.module.ui.WidgetModel;
-import imagej.module.ui.WidgetStyle;
+import imagej.ext.module.ui.NumberWidget;
+import imagej.ext.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetStyle;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;

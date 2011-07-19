@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.zoom;
 
 import imagej.display.Display;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 
 /**
  * Zooms in on the currently displayed image. Zoom multiplier is taken from the

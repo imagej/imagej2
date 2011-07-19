@@ -36,10 +36,10 @@ package imagej.ui.awt;
 
 import imagej.ImageJ;
 import imagej.event.Events;
-import imagej.module.ModuleInfo;
-import imagej.module.ui.menu.ShadowMenu;
+import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ui.menu.ShadowMenu;
+import imagej.ext.plugin.PluginService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.PluginService;
 import imagej.plugin.ui.awt.MenuBarCreator;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;

@@ -4,11 +4,11 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsUpdatedEvent;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 

@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.app;
 
-import imagej.module.ItemVisibility;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.module.ItemVisibility;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 
 /**
  * Quits ImageJ.

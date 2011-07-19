@@ -40,9 +40,9 @@ import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectsUpdatedEvent;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 

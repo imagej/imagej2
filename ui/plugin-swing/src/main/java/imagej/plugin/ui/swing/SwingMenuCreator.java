@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swing;
 
 import imagej.ImageJ;
-import imagej.module.ModuleInfo;
-import imagej.module.ui.menu.AbstractMenuCreator;
-import imagej.module.ui.menu.ShadowMenu;
-import imagej.plugin.PluginService;
+import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ui.menu.AbstractMenuCreator;
+import imagej.ext.module.ui.menu.ShadowMenu;
+import imagej.ext.plugin.PluginService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.plugin.ui.swt;
 
 import imagej.ImageJ;
-import imagej.module.ModuleException;
-import imagej.module.ui.AbstractInputPanel;
-import imagej.module.ui.InputPanel;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ModuleException;
+import imagej.ext.module.ui.AbstractInputPanel;
+import imagej.ext.module.ui.InputPanel;
+import imagej.ext.module.ui.WidgetModel;
 import imagej.object.ObjectService;
 import net.miginfocom.swt.MigLayout;
 

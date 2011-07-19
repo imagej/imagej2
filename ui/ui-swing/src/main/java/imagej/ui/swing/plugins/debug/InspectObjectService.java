@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.util.diag.inspect.Inspector;
 
 

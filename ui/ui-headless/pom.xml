@@ -32,16 +32,16 @@
       <artifactId>ij-display</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ij-ext</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platform</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>ij-plugin</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ij-plugin-headless</artifactId>

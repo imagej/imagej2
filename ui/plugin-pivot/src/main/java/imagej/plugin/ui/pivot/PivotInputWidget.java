@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.module.ui.InputWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
 

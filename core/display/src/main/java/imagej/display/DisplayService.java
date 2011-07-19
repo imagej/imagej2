@@ -46,10 +46,10 @@ import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
+import imagej.ext.InstantiableException;
+import imagej.ext.plugin.PluginInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
-import imagej.plugin.InstantiableException;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 import imagej.util.Log;
 
 import java.util.ArrayList;

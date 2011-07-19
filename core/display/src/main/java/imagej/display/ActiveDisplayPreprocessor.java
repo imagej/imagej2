@@ -36,10 +36,10 @@ package imagej.display;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-import imagej.plugin.Plugin;
-import imagej.plugin.process.PreprocessorPlugin;
+import imagej.ext.module.Module;
+import imagej.ext.module.ModuleItem;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.process.PreprocessorPlugin;
 
 /**
  * Assigns the active {@link Display} when there is one single unresolved

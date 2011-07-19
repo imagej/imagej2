@@ -46,7 +46,7 @@ import imagej.display.EventDispatcher;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.Plugin;
 import imagej.tool.ToolService;
 import imagej.ui.common.awt.AWTDisplay;
 import imagej.ui.common.awt.AWTEventDispatcher;

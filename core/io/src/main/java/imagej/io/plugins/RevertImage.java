@@ -37,9 +37,9 @@ package imagej.io.plugins;
 import javax.swing.JOptionPane;
 
 import imagej.data.Dataset;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Plugin;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 

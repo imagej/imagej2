@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.swt;
 
-import imagej.module.Module;
-import imagej.module.ui.InputHarvester;
-import imagej.module.ui.InputPanel;
-import imagej.plugin.AbstractInputHarvesterPlugin;
-import imagej.plugin.Plugin;
-import imagej.plugin.process.PreprocessorPlugin;
+import imagej.ext.module.Module;
+import imagej.ext.module.ui.InputHarvester;
+import imagej.ext.module.ui.InputPanel;
+import imagej.ext.plugin.AbstractInputHarvesterPlugin;
+import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.process.PreprocessorPlugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;

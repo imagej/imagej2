@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.awt;
 
-import imagej.module.ui.ObjectWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.ObjectWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 import java.awt.BorderLayout;
 import java.awt.Choice;

@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Plugin;
 
 
 // TODO - accelerator may not work with all keyboard layouts

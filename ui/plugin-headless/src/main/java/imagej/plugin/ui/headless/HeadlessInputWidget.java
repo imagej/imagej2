@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.headless;
 
-import imagej.module.ui.InputWidget;
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.InputWidget;
+import imagej.ext.module.ui.WidgetModel;
 
 /**
  * Common superclass for headless input widgets.

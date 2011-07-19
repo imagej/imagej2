@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.display.DisplayView;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 import imagej.util.diag.inspect.Inspector;
 
 /**

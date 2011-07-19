@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.plugin.IndexItemInfo;
+import imagej.ext.IndexItemInfo;
 
 /**
  * A collection of metadata about a particular {@link ITool}.

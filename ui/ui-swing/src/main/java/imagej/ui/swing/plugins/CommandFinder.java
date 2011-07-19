@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
-import imagej.module.ModuleException;
-import imagej.module.ModuleInfo;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+import imagej.ext.module.ModuleException;
+import imagej.ext.module.ModuleInfo;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Plugin;
 import imagej.plugin.ui.swing.SwingUtils;
 import imagej.ui.swing.CommandFinderPanel;
 import imagej.util.Log;

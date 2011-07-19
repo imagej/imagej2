@@ -35,11 +35,11 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.app;
 
 import imagej.ImageJ;
-import imagej.module.ItemVisibility;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.module.ItemVisibility;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 
 /**
  * Display information and credits about the ImageJ software.

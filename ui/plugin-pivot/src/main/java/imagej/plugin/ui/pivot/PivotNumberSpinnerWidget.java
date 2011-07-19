@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.plugin.ui.pivot;
 
-import imagej.module.ui.WidgetModel;
+import imagej.ext.module.ui.WidgetModel;
 import imagej.util.ClassUtils;
 
 import org.apache.pivot.wtk.Spinner;

@@ -23,11 +23,10 @@
 		<module>core-tools</module>
 		<module>data</module>
 		<module>display</module>
+		<module>ext</module>
 		<module>io</module>
 		<module>legacy</module>
-		<module>module</module>
 		<module>platform</module>
-		<module>plugin</module>
 		<module>tool</module>
 		<module>ui</module>
 	</modules>

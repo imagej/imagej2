@@ -2,10 +2,10 @@ package imagej.core.plugins.restructure;
 
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.plugin.Menu;
+import imagej.ext.plugin.Parameter;
+import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axis;
