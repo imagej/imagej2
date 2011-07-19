@@ -11,10 +11,10 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-plugin-swt</artifactId>
+	<artifactId>ij-ext-swt</artifactId>
 
-	<name>ImageJ Plugin Framework: SWT</name>
-	<description>Eclipse SWT UI components for use with ImageJ plugin architecture.</description>
+	<name>ImageJ Extensibility Framework: SWT</name>
+	<description>Eclipse SWT UI components for use with ImageJ extensibility framework.</description>
 
 	<dependencies>
 		<dependency>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
-			<version>3.7.3.1</version>
+			<version>${miglayout.version}</version>
 			<classifier>swt</classifier>
 		</dependency>
 	</dependencies>
@@ -91,7 +91,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.plugin.ui.swt</packageName>
+							<packageName>imagej.ext.ui.swt</packageName>
 						</manifest>
 					</archive>
 				</configuration>

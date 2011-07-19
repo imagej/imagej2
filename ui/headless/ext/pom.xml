@@ -11,10 +11,10 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-plugin-headless</artifactId>
+	<artifactId>ij-ext-headless</artifactId>
 
-	<name>ImageJ Plugin Framework: Headless</name>
-	<description>Headless UI components for use with ImageJ plugin architecture.</description>
+	<name>ImageJ Extensibility Framework: Headless</name>
+	<description>Headless UI components for use with ImageJ extensibility framework.</description>
 
 	<dependencies>
 		<dependency>
@@ -36,7 +36,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.plugin.ui.headless</packageName>
+							<packageName>imagej.ext.ui.headless</packageName>
 						</manifest>
 					</archive>
 				</configuration>
