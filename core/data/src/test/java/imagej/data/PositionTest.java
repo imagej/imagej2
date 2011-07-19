@@ -1,6 +1,8 @@
-package imagej.util;
+package imagej.data;
 
 import static org.junit.Assert.*;
+import imagej.data.Extents;
+import imagej.data.Position;
 
 import org.junit.Test;
 

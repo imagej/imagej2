@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.util;
+package imagej.data;
 
 /**
  * This class wraps a set of dimensions encoded as a long[]. It facilitates
