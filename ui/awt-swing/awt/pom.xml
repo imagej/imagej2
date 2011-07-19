@@ -7,21 +7,19 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-base</artifactId>
+		<artifactId>imagej-pom-ui-awt-swing</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>imagej-pom-extra</artifactId>
+	<artifactId>imagej-pom-ui-awt</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: Extras</name>
-	<description>Non-core ImageJ projects.</description>
+	<name>ImageJ POM: AWT UI</name>
+	<description>ImageJ user interface projects for AWT.</description>
 
 	<modules>
-		<module>native-library-util</module>
-		<!-- <module>sandbox</module> -->
-		<module>workflow</module>
-		<module>workflowpipes</module>
+		<module>ext</module>
+		<module>ui</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->

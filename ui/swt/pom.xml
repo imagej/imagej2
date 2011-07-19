@@ -11,33 +11,20 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-util-awt</artifactId>
+	<artifactId>imagej-pom-ui-swt</artifactId>
+	<packaging>pom</packaging>
 
-	<name>ImageJ Utility Classes: AWT</name>
-	<description>AWT utility classes for use with AWT and Swing user interfaces.</description>
+	<name>ImageJ POM: SWT UI</name>
+	<description>ImageJ user interface projects for SWT.</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>ext</module>
+		<module>ui</module>
+	</modules>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<packageName>imagej.util.awt</packageName>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<properties>
+		<swt.version>3.0m7</swt.version>
+	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>

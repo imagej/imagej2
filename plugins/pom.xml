@@ -14,7 +14,7 @@
 	<artifactId>imagej-pom-plugins</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ Projects: Plugins</name>
+	<name>ImageJ POM: Plugins</name>
 	<description>External ImageJ plugins.</description>
 
 	<modules>

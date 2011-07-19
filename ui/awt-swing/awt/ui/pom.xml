@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-ui</artifactId>
+		<artifactId>imagej-pom-ui-awt</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swt</artifactId>
+	<artifactId>ij-ui-awt</artifactId>
 
-	<name>ImageJ UI: SWT</name>
-	<description>An Eclipse SWT-based ImageJ user interface.</description>
+	<name>ImageJ UI: AWT</name>
+	<description>An AWT-based ImageJ user interface.</description>
 
 	<dependencies>
 		<dependency>
@@ -44,7 +44,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin-swt</artifactId>
+			<artifactId>ij-plugin-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-tool</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -53,61 +58,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout</artifactId>
-			<version>3.7.3.1</version>
-			<classifier>swt</classifier>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-common-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-util-awt</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-
-	<!-- NB: Include OS-specific SWT dependency. -->
-	<profiles>
-		<profile>
-			<id>swt-win32</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>swt</groupId>
-					<artifactId>swt-win32</artifactId>
-					<version>${swt.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>swt-macosx</id>
-			<activation>
-				<os>
-					<name>mac os x</name>
-				</os>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>swt</groupId>
-					<artifactId>swt-macosx</artifactId>
-					<version>${swt.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>swt-linux</id>
-			<activation>
-				<os>
-					<name>linux</name>
-				</os>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>swt</groupId>
-					<artifactId>swt-linux-gtk</artifactId>
-					<version>${swt.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 
 	<build>
 		<plugins>
@@ -116,7 +76,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swt</packageName>
+							<packageName>imagej.ui.awt</packageName>
 						</manifest>
 					</archive>
 				</configuration>
