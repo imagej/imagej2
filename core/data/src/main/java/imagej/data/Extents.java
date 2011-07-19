@@ -88,7 +88,7 @@ public class Extents extends AbstractInterval {
 			return 0;
 		long elements = 1;
 		for (int i = 0; i < min.length; i++)
-			elements *= (max[i] - min[i] + 1);
+			elements *= dimension(i);
 		return elements;
 	}
 }
