@@ -36,51 +36,56 @@ package imagej.util;
 
 /**
  * This class wraps a set of dimensions encoded as a long[]. It facilitates
- * the creation of Position indexes for iterating within the Extents.
+ * the creation of {@link Position} indexes for iterating within the Extents.
  * 
  * @author Barry DeZonia
  *
  */
 public class Extents {
 
-	private long[] extents;
-	private long numElements;
+	private final long[] extents;
+	private final long numElements;
 
 	/**
 	 * Constructor - takes a given set of dimensions. Clones them on input.
 	 */
 	public Extents(long[] dims) {
 		extents = dims.clone();
-		numElements = 1;
-		for (long dimSize : extents)
-			numElements *= dimSize;
+		long elements;
 		if (dims.length == 0)
-			numElements = 0;
+			elements = 0;
+		else {
+			elements = 1;
+			for (long dimSize : extents)
+				elements *= dimSize;
+		}
+		numElements = elements;
 	}
 
 	/**
-	 * Returns a Position object that can be used to iterate these Extents.
+	 * Returns a {@link Position} object that can be used to iterate these
+	 * Extents.
 	 */
 	public Position createPosition() {
 		return new Position(this);
 	}
 
 	/**
-	 * Reports the number of dimensions spanned by given extents.
+	 * Reports the number of dimensions spanned by parent {@link Extents}.
 	 */
 	public int numDimensions() {
 		return extents.length;
 	}
 
 	/**
-	 * Returns the size of dimension number i within the Extents.
+	 * Returns the size of dimension number i within the parent {@link Extents}.
 	 */
 	public long dimension(int i) {
 		return extents[i];
 	}
 
 	/**
-	 * Fills a given dimension array with the values stored within the Extents.
+	 * Fills a given dimension array with the parent {@link Extents} values.
 	 */
 	public void dimensions(long[] outputExts) {
 		for (int i = 0; i < extents.length; i++)
@@ -88,7 +93,7 @@ public class Extents {
 	}
 
 	/**
-	 * Returns the total number of elements spanned by the Extents.
+	 * Returns the total number of elements spanned by the parent {@link Extents}.
 	 */
 	public long numElements() {
 		return numElements;

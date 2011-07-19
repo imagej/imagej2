@@ -36,19 +36,20 @@ package imagej.util;
 
 
 /**
- * A Position is used to iterate within a given reference Extents object.
+ * A {@link Position} is used to iterate within a given reference
+ * {@link Extents} object.
  * 
  * @author Barry DeZonia
  *
  */
 public class Position {
 	
-	private Extents parentSpace;
-	private long[] position;
+	private final Extents parentSpace;
+	private final long[] position;
 
 	/**
-	 * Constructor - takes an Extents object that represents the parent space
-	 * to iterate within.
+	 * Constructor - takes an {@link Extents} object that represents the parent
+	 * space to iterate within.
 	 */
 	public Position(Extents parentSpace) {
 		this.parentSpace = parentSpace;
@@ -56,14 +57,16 @@ public class Position {
 	}
 
 	/**
-	 * Returns the parent space Extents associated with this Position
+	 * Returns the parent space {@link Extents} associated with this
+	 * {@link Position}.
 	 */
 	public Extents getExtents() {
 		return parentSpace;
 	}
 
 	/**
-	 * Sets the Position to it's first state (all dimension positions to 0)
+	 * Sets the {@link Position} to it's first state (all dimension positions
+	 * to 0)
 	 */
 	public void first() {
 		for (int i = 0; i < position.length; i++)
@@ -71,7 +74,8 @@ public class Position {
 	}
 	
 	/**
-	 * Sets the Position to it's last state (all dimension positions to max-1)
+	 * Sets the {@link Position} to it's last state (all dimension positions
+	 * to max-1)
 	 */
 	public void last() {
 		for (int i = 0; i < position.length; i++)
@@ -79,8 +83,9 @@ public class Position {
 	}
 
 	/**
-	 * Moves the Position forward by one step. Increments the dimension positions
-	 * from left to right. Throws an exception if fwd() called from last position.
+	 * Moves the {@link Position} forward by one step. Increments the dimension
+	 * positions from left to right. Throws an exception if fwd() called from
+	 * last position.
 	 */
 	public void fwd() {
 		for (int i = 0; i < position.length; i++) {
@@ -93,7 +98,7 @@ public class Position {
 	}
 	
 	/**
-	 * Moves the Position backward by one step. Decrements the dimension
+	 * Moves the {@link Position} backward by one step. Decrements the dimension
 	 * positions from left to right. Throws an exception if back() called from
 	 * first position.
 	 */
@@ -108,11 +113,12 @@ public class Position {
 	}
 
 	/**
-	 * Moves a given dimension of the Position by a given delta. Throws an
-	 * exception if delta would move Position outside it's parent Extents.
+	 * Moves a given dimension of the {@link Position} by a given delta. Throws
+	 * an exception if delta would move {@link Position} outside it's parent
+	 * {@link Extents}.
 	 */
 	public void move(long delta, int dim) {
-		long newValue = position[dim] + delta;
+		final long newValue = position[dim] + delta;
 		if ((newValue < 0) || (newValue >= dimension(dim)))
 			throw new IllegalArgumentException(
 				"specified move would take position outside defined extents");
@@ -120,8 +126,9 @@ public class Position {
 	}
 
 	/**
-	 * Moves all dimensions of the Position by given deltas. Throws an
-	 * exception if any delta would move Position outside it's parent Extents.
+	 * Moves all dimensions of the {@link Position} by given deltas. Throws an
+	 * exception if any delta would move {@link Position} outside it's parent
+	 * {@link Extents}.
 	 */
 	public void move(long[] deltas) {
 		for (int i = 0; i < position.length; i++)
@@ -129,14 +136,14 @@ public class Position {
 	}
 	
 	/**
-	 * Gets the value of the Position for a given dimension.
+	 * Gets the value of the {@link Position} for a given dimension.
 	 */
 	public long get(int dim) {
 		return position[dim];
 	}
 
 	/**
-	 * Gets the values of the Position and places them in a given long[].
+	 * Gets the values of the {@link Position} and places them in a given long[].
 	 */
 	public void get(long[] outputPos) {
 		for (int i = 0; i < position.length; i++)
@@ -144,8 +151,9 @@ public class Position {
 	}
 
 	/**
-	 * Sets the value of the Position for a given dimension. Throws an exception
-	 * if the given value is outside the bounds of the parent Extents.
+	 * Sets the value of the {@link Position} for a given dimension. Throws an
+	 * exception if the given value is outside the bounds of the parent
+	 * {@link Extents}.
 	 */
 	public void set(long value, int dim) {
 		if ((value < 0) || (value >= dimension(dim)))
@@ -155,8 +163,9 @@ public class Position {
 	}
 
 	/**
-	 * Sets the values of the Position for all dimensions. Throws an exception
-	 * if any given value is outside the bounds of the parent Extents.
+	 * Sets the values of the {@link Position} for all dimensions. Throws an
+	 * exception if any given value is outside the bounds of the parent
+	 * {@link Extents}.
 	 */
 	public void set(long[] value) {
 		for (int i = 0; i < position.length; i++)
@@ -164,22 +173,23 @@ public class Position {
 	}
 
 	/**
-	 * Returns the number of dimensions within the Position.
+	 * Returns the number of dimensions within the {@link Position}.
 	 */
 	public int numDimensions() {
 		return parentSpace.numDimensions();
 	}
 	
 	/**
-	 * Returns the dimension of the Position at a given i.
+	 * Returns the dimension of the {@link Position}'s parent {@link Extents} at
+	 * a given i.
 	 */
 	public long dimension(int i) {
 		return parentSpace.dimension(i);
 	}
 
 	/**
-	 * Sets the Position from a given long index. The index ranges from 0 to
-	 * extents.numElements()-1.
+	 * Sets the {@link Position} from a given long index. The index ranges from
+	 * 0 to extents.numElements()-1. Throws an exception if index out of range.
 	 */
 	public void setIndex(long index) {
 		if ((index < 0) || (index >= parentSpace.numElements()))
@@ -197,8 +207,8 @@ public class Position {
 	}
 	
 	/**
-	 * Gets the long index from the current Position. The index ranges from 0 to
-	 * extents.numElements()-1.
+	 * Gets the long index from the current {@link Position}. The index ranges
+	 * from 0 to extents.numElements()-1.
 	 */
 	public long getIndex() {
 		long offset = 1;
