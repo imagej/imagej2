@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import net.imglib2.Iterator;
 import net.imglib2.Localizable;
 import net.imglib2.Positionable;
 
@@ -44,7 +45,7 @@ import net.imglib2.Positionable;
  * @author Barry DeZonia
  *
  */
-public class Position implements Localizable, Positionable {
+public class Position implements Localizable, Positionable, Iterator {
 	
 	private final Extents parentSpace;
 	private final long[] position;
@@ -88,6 +89,7 @@ public class Position implements Localizable, Positionable {
 	 * Returns true if position can be moved forward (i.e. position is not in the
 	 * last position).
 	 */
+	@Override
 	public boolean hasNext() {
 		for (int i = 0; i < position.length; i++)
 			if (position[i] < parentSpace.max(i))
@@ -129,6 +131,14 @@ public class Position implements Localizable, Positionable {
 	}
 	
 	/**
+	 * Resets the {@link Position} for forward traversal.
+	 */
+	@Override
+	public void reset() {
+		resetForFwd();
+	}
+
+	/**
 	 * Sets the {@link Position} to it's first state (all dimension positions
 	 * to min values)
 	 */
@@ -151,6 +161,7 @@ public class Position implements Localizable, Positionable {
 	 * positions from left to right. Throws an exception if fwd() called from
 	 * last position.
 	 */
+	@Override
 	public void fwd() {
 		for (int i = 0; i < position.length; i++) {
 			position[i]++;
@@ -204,6 +215,29 @@ public class Position implements Localizable, Positionable {
 			throw new IllegalArgumentException(
 				"cannot move specified dimension back");
 		position[d]--;
+	}
+
+	/**
+	 * Moves the {@link Position} forward the given number of steps.
+	 */
+	@Override
+	public void jumpFwd(long steps) {
+		
+		// brain dead method
+		
+		//for (int i = 0; i < steps; i++)
+		//	fwd();
+		
+		// method that could be faster if steps larger
+		
+		long stepsLeft = steps;
+		if (position[0] < parentSpace.min(0)) {
+			fwd();
+			stepsLeft--;
+		}
+		final long currPos = getIndex();
+		final long newPos = currPos + stepsLeft;
+		setIndex(newPos);
 	}
 
 	/**
