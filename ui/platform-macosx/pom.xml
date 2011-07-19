@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-event</artifactId>
+			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
