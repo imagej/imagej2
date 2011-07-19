@@ -14,7 +14,7 @@
 	<artifactId>imagej-pom-core</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ Projects: Core</name>
+	<name>ImageJ POM: Core</name>
 	<description>Core ImageJ projects.</description>
 
 	<modules>

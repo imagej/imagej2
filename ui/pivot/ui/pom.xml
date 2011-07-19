@@ -7,21 +7,16 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-ui</artifactId>
+		<artifactId>imagej-pom-ui-pivot</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swing</artifactId>
+	<artifactId>ij-ui-pivot</artifactId>
 
-	<name>ImageJ UI: Swing</name>
-	<description>A simple Swing-based ImageJ user interface.</description>
+	<name>ImageJ UI: Pivot</name>
+	<description>An Apache Pivot-based ImageJ user interface.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
@@ -49,12 +44,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugin-swing</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-tool</artifactId>
+			<artifactId>ij-plugin-pivot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -63,30 +53,21 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-common-awt</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-core</artifactId>
+			<version>${pivot.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util-awt</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk</artifactId>
+			<version>${pivot.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout</artifactId>
-			<version>3.7.3.1</version>
-			<classifier>swing</classifier>
-		</dependency>
-		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jhotdraw</groupId>
-			<artifactId>jhotdraw</artifactId>
-			<version>7.6.0</version>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk-terra</artifactId>
+			<version>${pivot.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
@@ -97,7 +78,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swing</packageName>
+							<packageName>imagej.ui.pivot</packageName>
 						</manifest>
 					</archive>
 				</configuration>

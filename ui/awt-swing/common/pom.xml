@@ -7,26 +7,16 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-core</artifactId>
+		<artifactId>imagej-pom-ui-awt-swing</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-io</artifactId>
+	<artifactId>ij-ui-common-awt</artifactId>
 
-	<name>ImageJ I/O library</name>
-	<description>ImageJ data IO (create, open, save, revert), based on ImgLib.</description>
+	<name>ImageJ UI: Common AWT Classes</name>
+	<description>Common AWT classes for use with AWT and Swing user interfaces.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-io</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
@@ -34,18 +24,8 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
+			<artifactId>ij-display</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ext</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>loci</groupId>
-			<artifactId>loci-common</artifactId>
-			<version>${bio-formats.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -56,7 +36,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.data</packageName>
+							<packageName>imagej.ui.common.awt</packageName>
 						</manifest>
 					</archive>
 				</configuration>

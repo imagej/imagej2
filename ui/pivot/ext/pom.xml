@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-ui</artifactId>
+		<artifactId>imagej-pom-ui-pivot</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
@@ -28,23 +28,23 @@
 			<version>${project.version}</version>
 		</dependency>
 
-    <dependency>
-      <groupId>org.apache.pivot</groupId>
-      <artifactId>pivot-core</artifactId>
-      <version>${pivot.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pivot</groupId>
-      <artifactId>pivot-wtk</artifactId>
-      <version>${pivot.version}</version>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-core</artifactId>
+			<version>${pivot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk</artifactId>
+			<version>${pivot.version}</version>
+		</dependency>
 
-    <dependency>
-      <groupId>org.apache.pivot</groupId>
-      <artifactId>pivot-wtk-terra</artifactId>
-      <version>${pivot.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk-terra</artifactId>
+			<version>${pivot.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

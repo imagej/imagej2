@@ -7,51 +7,32 @@
 
 	<parent>
 		<groupId>imagej</groupId>
-		<artifactId>imagej-pom-base</artifactId>
+		<artifactId>imagej-pom-ui</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>imagej-pom-ui</artifactId>
+	<artifactId>imagej-pom-ui-awt-swing</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: User Interface</name>
-	<description>ImageJ user interface projects.</description>
-
-	<modules>
-		<module>imagej</module>
-		<module>platform-macosx</module>
-	</modules>
-
-	<properties>
-		<miglayout.version>3.7.3.1</miglayout.version>
-	</properties>
+	<name>ImageJ POM: AWT &amp; Swing UIs</name>
+	<description>ImageJ user interface projects for Swing and AWT.</description>
 
 	<profiles>
 		<profile>
 			<id>all</id>
 			<modules>
-				<module>awt-swing</module>
-				<module>headless</module>
-				<module>pivot</module>
-				<module>swt</module>
+				<module>awt</module>
+				<module>common</module>
+				<module>swing</module>
+				<module>util</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>awt</id>
 			<modules>
-				<module>awt-swing</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>headless</id>
-			<modules>
-				<module>headless</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>pivot</id>
-			<modules>
-				<module>pivot</module>
+				<module>awt</module>
+				<module>common</module>
+				<module>util</module>
 			</modules>
 		</profile>
 		<profile>
@@ -60,13 +41,9 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>awt-swing</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swt</id>
-			<modules>
-				<module>swt</module>
+				<module>common</module>
+				<module>swing</module>
+				<module>util</module>
 			</modules>
 		</profile>
 	</profiles>
