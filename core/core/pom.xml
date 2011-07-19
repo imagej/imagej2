@@ -14,13 +14,18 @@
 	<artifactId>ij-core</artifactId>
 
 	<name>ImageJ Core Classes</name>
-	<description>ImageJ application framework and core utility classes.</description>
+	<description>ImageJ application framework and core services.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>net.java.sezpoz</groupId>
 			<artifactId>sezpoz</artifactId>
 			<version>${sezpoz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bushe</groupId>
+			<artifactId>eventbus</artifactId>
+			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

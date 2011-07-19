@@ -23,11 +23,9 @@
 		<module>core-tools</module>
 		<module>data</module>
 		<module>display</module>
-		<module>event</module>
 		<module>io</module>
 		<module>legacy</module>
 		<module>module</module>
-		<module>object</module>
 		<module>platform</module>
 		<module>plugin</module>
 		<module>tool</module>
