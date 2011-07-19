@@ -34,34 +34,38 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.data;
 
+import net.imglib2.AbstractInterval;
+
 /**
- * This class wraps a set of dimensions encoded as a long[]. It facilitates
- * the creation of {@link Position} indexes for iterating within the Extents.
+ * This class wraps a pair of min and max dimensions encoded as long[]'s. It
+ * facilitates the creation of {@link Position} indexes for iterating within
+ * the Extents.
  * 
  * @author Barry DeZonia
  *
  */
-public class Extents {
+public class Extents extends AbstractInterval {
 
-	private final long[] extents;
 	private final long numElements;
-
+	
 	/**
-	 * Constructor - takes a given set of dimensions. Clones them on input.
+	 * Constructor that takes a dimensional extent and sets min to a zero origin
+	 * and each max dim i to dims[i]-1.
 	 */
 	public Extents(long[] dims) {
-		extents = dims.clone();
-		long elements;
-		if (dims.length == 0)
-			elements = 0;
-		else {
-			elements = 1;
-			for (long dimSize : extents)
-				elements *= dimSize;
-		}
-		numElements = elements;
+		super(dims);
+		numElements = calcNumElements();
 	}
 
+	/**
+	 * Constructor that takes min and max extents. No checking is done that min
+	 * <= max for all dim i.
+	 */
+	public Extents(long[] min, long[] max) {
+		super(min, max);
+		numElements = calcNumElements();
+	}
+	
 	/**
 	 * Returns a {@link Position} object that can be used to iterate these
 	 * Extents.
@@ -71,31 +75,20 @@ public class Extents {
 	}
 
 	/**
-	 * Reports the number of dimensions spanned by parent {@link Extents}.
-	 */
-	public int numDimensions() {
-		return extents.length;
-	}
-
-	/**
-	 * Returns the size of dimension number i within the parent {@link Extents}.
-	 */
-	public long dimension(int i) {
-		return extents[i];
-	}
-
-	/**
-	 * Fills a given dimension array with the parent {@link Extents} values.
-	 */
-	public void dimensions(long[] outputExts) {
-		for (int i = 0; i < extents.length; i++)
-			outputExts[i] = extents[i];
-	}
-
-	/**
 	 * Returns the total number of elements spanned by the parent {@link Extents}.
 	 */
 	public long numElements() {
 		return numElements;
+	}
+	
+	// -- private helpers --
+	
+	private long calcNumElements() {
+		if (min.length == 0)
+			return 0;
+		long elements = 1;
+		for (int i = 0; i < min.length; i++)
+			elements *= (max[i] - min[i] + 1);
+		return elements;
 	}
 }
