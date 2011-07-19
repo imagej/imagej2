@@ -98,6 +98,14 @@ public class PositionTest {
 			numPos++;
 		}
 		assertEquals(2*4*6, numPos);
+		pos.resetForFwd();
+		assertTrue(pos.hasNext());
+		numPos = 0;
+		while (pos.hasNext()) {
+			pos.fwd();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
 	}
 
 	@Test
@@ -108,6 +116,35 @@ public class PositionTest {
 		int numPos = 0;
 		while (pos.hasPrev()) {
 			pos.bck();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
+		pos.resetForBck();
+		assertTrue(pos.hasPrev());
+		numPos = 0;
+		while (pos.hasPrev()) {
+			pos.bck();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
+	}
+
+	@Test
+	public void testReset() {
+		pos = new Extents(new long[]{2,2,2}, new long[]{3,5,7}).createPosition();
+		pos.reset();
+		assertTrue(pos.hasNext());
+		int numPos = 0;
+		while (pos.hasNext()) {
+			pos.fwd();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
+		pos.reset();
+		assertTrue(pos.hasNext());
+		numPos = 0;
+		while (pos.hasNext()) {
+			pos.fwd();
 			numPos++;
 		}
 		assertEquals(2*4*6, numPos);
@@ -205,6 +242,25 @@ public class PositionTest {
 		assertEquals(5, pos.getLongPosition(2));
 	}
 
+	@Test
+	public void testJumpFwd() {
+		pos = new Extents(new long[]{1,1,1}, new long[]{4,5,6}).createPosition();
+		pos.jumpFwd(1);
+		assertEquals(1,pos.getLongPosition(0));
+		assertEquals(1,pos.getLongPosition(1));
+		assertEquals(1,pos.getLongPosition(2));
+		pos.jumpFwd(5);
+		assertEquals(2,pos.getLongPosition(0));
+		assertEquals(2,pos.getLongPosition(1));
+		assertEquals(1,pos.getLongPosition(2));
+		try {
+			pos.jumpFwd(500);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
+	}
+	
 	@Test
 	public void testMoveLongInt() {
 		pos = new Extents(new long[]{2,3,4}).createPosition();
