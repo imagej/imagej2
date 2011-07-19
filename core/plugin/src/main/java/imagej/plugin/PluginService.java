@@ -67,7 +67,7 @@ import net.java.sezpoz.IndexItem;
  * @see IPlugin
  * @see Plugin
  */
-@Service(priority = Service.NORMAL_PRIORITY)
+@Service
 public class PluginService implements IService {
 
 	/** The complete list of known plugins. */

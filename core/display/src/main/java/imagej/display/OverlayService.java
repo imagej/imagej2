@@ -49,7 +49,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Service(priority = Service.NORMAL_PRIORITY)
+@Service
 public final class OverlayService implements IService {
 
 	// -- OverlayService methods --

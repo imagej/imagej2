@@ -62,7 +62,7 @@ import java.util.List;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Service(priority = Service.NORMAL_PRIORITY)
+@Service
 public final class DisplayService implements IService {
 
 	private Display activeDisplay;
