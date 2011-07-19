@@ -38,13 +38,6 @@
 			<artifactId>pivot-wtk</artifactId>
 			<version>${pivot.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.pivot</groupId>
-			<artifactId>pivot-wtk-terra</artifactId>
-			<version>${pivot.version}</version>
-			<scope>runtime</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
