@@ -47,7 +47,7 @@ import imagej.ext.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Save [IJ2]", weight = 20, mnemonic = 's'
+	@Menu(label = "Save", weight = 20, mnemonic = 's'
 	) })
 public class SaveImage implements ImageJPlugin
 {

@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
 	menu = {
 		@Menu(label = "File", mnemonic = 'f'),
 		@Menu(label = "New", mnemonic = 'n'),
-		@Menu(label = "Image [IJ2]...", weight = 0, mnemonic = 'i',
+		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
 public class NewImage implements ImageJPlugin {
 

@@ -49,7 +49,7 @@ import imagej.ext.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = "Edit", mnemonic = 'e'),
 	@Menu(label = "Selection", mnemonic = 's'),
-	@Menu(label = "Select All [IJ2]", mnemonic = 'a', accelerator = "control a",
+	@Menu(label = "Select All", mnemonic = 'a', accelerator = "control a",
 		weight = 4) })
 public class SelectAll implements ImageJPlugin {
 
