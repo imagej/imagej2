@@ -80,6 +80,24 @@ public class Extents extends AbstractInterval {
 	public long numElements() {
 		return numElements;
 	}
+
+	///**
+	// * Returns a long[] containing a subset of the dimensions. The dimensions to
+	// * choose are identified by offset and length. Throws exceptions when offset
+	// * or length are invalid.
+	// */
+	/*
+	public long[] subdimensions(int offset, int length) {
+		if ((offset < 0) || (offset >= numDimensions()))
+			throw new IllegalArgumentException("bad offset");
+		if ((length < 0) || (offset+length > numDimensions()))
+			throw new IllegalArgumentException("bad length");
+		long[] subDims = new long[length];
+		for (int i = 0; i < length; i++)
+			subDims[i] = dimension(i+offset);
+		return subDims;
+	}
+	*/
 	
 	// -- private helpers --
 	
