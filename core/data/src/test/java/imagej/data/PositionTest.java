@@ -67,8 +67,8 @@ public class PositionTest {
 		assertTrue(pos.hasNext());
 		pos.last();
 		assertFalse(pos.hasNext());
-		pos.resetForBck();
-		assertFalse(pos.hasNext());
+		pos.reset();
+		assertTrue(pos.hasNext());
 	}
 	
 	@Test
@@ -83,55 +83,14 @@ public class PositionTest {
 		assertTrue(pos.hasPrev());
 		pos.first();
 		assertFalse(pos.hasPrev());
-		pos.resetForFwd();
-		assertFalse(pos.hasPrev());
-	}
-
-	@Test
-	public void testResetForFwd() {
-		pos = new Extents(new long[]{2,2,2}, new long[]{3,5,7}).createPosition();
-		pos.resetForFwd();
-		assertTrue(pos.hasNext());
-		int numPos = 0;
-		while (pos.hasNext()) {
-			pos.fwd();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
-		pos.resetForFwd();
-		assertTrue(pos.hasNext());
-		numPos = 0;
-		while (pos.hasNext()) {
-			pos.fwd();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
-	}
-
-	@Test
-	public void testResetForBck() {
-		pos = new Extents(new long[]{2,2,2}, new long[]{3,5,7}).createPosition();
-		pos.resetForBck();
+		pos.reset();
 		assertTrue(pos.hasPrev());
-		int numPos = 0;
-		while (pos.hasPrev()) {
-			pos.bck();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
-		pos.resetForBck();
-		assertTrue(pos.hasPrev());
-		numPos = 0;
-		while (pos.hasPrev()) {
-			pos.bck();
-			numPos++;
-		}
-		assertEquals(2*4*6, numPos);
 	}
 
 	@Test
 	public void testReset() {
 		pos = new Extents(new long[]{2,2,2}, new long[]{3,5,7}).createPosition();
+		
 		pos.reset();
 		assertTrue(pos.hasNext());
 		int numPos = 0;
@@ -140,11 +99,30 @@ public class PositionTest {
 			numPos++;
 		}
 		assertEquals(2*4*6, numPos);
+		
 		pos.reset();
 		assertTrue(pos.hasNext());
 		numPos = 0;
 		while (pos.hasNext()) {
 			pos.fwd();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
+		
+		pos.reset();
+		assertTrue(pos.hasPrev());
+		numPos = 0;
+		while (pos.hasPrev()) {
+			pos.bck();
+			numPos++;
+		}
+		assertEquals(2*4*6, numPos);
+		
+		pos.reset();
+		assertTrue(pos.hasPrev());
+		numPos = 0;
+		while (pos.hasPrev()) {
+			pos.bck();
 			numPos++;
 		}
 		assertEquals(2*4*6, numPos);
@@ -171,7 +149,7 @@ public class PositionTest {
 	@Test
 	public void testFwd() {
 		pos = new Extents(new long[]{1,1,1,1,1}, new long[]{2,3,4,5,6}).createPosition();
-		pos.resetForFwd();
+		pos.reset();
 		for (int i = 0; i < pos.getExtents().numElements(); i++) {
 			pos.fwd();
 			assertEquals(i, pos.getIndex());
@@ -187,7 +165,7 @@ public class PositionTest {
 	@Test
 	public void testBck() {
 		pos = new Extents(new long[]{1,1,1,1,1}, new long[]{2,3,4,5,6}).createPosition();
-		pos.resetForBck();
+		pos.reset();
 		for (long i = pos.getExtents().numElements()-1; i >= 0; i--) {
 			pos.bck();
 			assertEquals(i, pos.getIndex());
