@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menu = { @Menu(label = "File", mnemonic = 'f'),
-	@Menu(label = "Revert [IJ2]", weight = 20, mnemonic = 'r'
+	@Menu(label = "Revert", weight = 20, mnemonic = 'r'
 //	 , accelerator = "control R"
 	) })
 public class RevertImage<T extends RealType<T> & NativeType<T>> implements

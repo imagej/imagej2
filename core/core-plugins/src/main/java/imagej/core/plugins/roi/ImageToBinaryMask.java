@@ -64,7 +64,7 @@ import net.imglib2.type.numeric.RealType;
  */
 @Plugin(menu = { @Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Binary", mnemonic = 'b'),
-	@Menu(label = "Convert to Mask [IJ2]", weight = 1)})
+	@Menu(label = "Convert to Mask", weight = 1)})
 public class ImageToBinaryMask implements ImageJPlugin {
 	@Parameter(
 			label="Threshold",

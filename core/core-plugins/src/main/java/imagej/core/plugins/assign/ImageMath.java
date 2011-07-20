@@ -72,7 +72,7 @@ import net.imglib2.ops.operator.binary.Xor;
  */
 @Plugin(iconPath = "/icons/plugins/calculator.png", menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
-	@Menu(label = "Image Calculator [IJ2]...", weight = 22) })
+	@Menu(label = "Image Calculator...", weight = 22) })
 public class ImageMath implements ImageJPlugin {
 
 	// -- instance variables that are Parameters --
