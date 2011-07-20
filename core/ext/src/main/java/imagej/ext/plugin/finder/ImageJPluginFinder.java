@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin.finder;
 
+import imagej.ext.MenuEntry;
 import imagej.ext.plugin.IPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
@@ -96,6 +97,14 @@ public class ImageJPluginFinder implements IPluginFinder {
 		final int oldSize = plugins.size();
 		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
 			final PluginInfo<?> entry = createInfo(item);
+
+			// CTR TEMP - add "IJ2" suffix to all modern plugins, for debugging
+			final List<MenuEntry> menuPath = entry.getMenuPath();
+			if (menuPath != null && menuPath.size() > 0) {
+				final MenuEntry menuLeaf = menuPath.get(menuPath.size() - 1);
+				menuLeaf.setName(menuLeaf.getName() + " [IJ2]");
+			}
+
 			plugins.add(entry);
 		}
 		final int newSize = plugins.size();
