@@ -34,14 +34,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing.plugins;
 
-import imagej.ext.module.ModuleException;
+import imagej.ImageJ;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.swing.SwingUtils;
 import imagej.ui.swing.CommandFinderPanel;
-import imagej.util.Log;
 
 import javax.swing.JOptionPane;
 
@@ -67,12 +67,8 @@ public class CommandFinder implements ImageJPlugin {
 		if (info == null) return; // no plugin selected
 
 		// execute selected plugin
-		try {
-			info.createModule().run();
-		}
-		catch (final ModuleException exc) {
-			Log.error("Could not execute command: " + info, exc);
-		}
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		pluginService.run(info, true);
 	}
 
 }
