@@ -50,10 +50,10 @@ public class PositionTest {
 
 	@Test
 	public void testDimension() {
-		pos = new Extents(new long[]{4,3,2,1}, new long[]{7,5,3,1}).createPosition();
-		assertEquals(4, pos.dimension(0));
-		assertEquals(3, pos.dimension(1));
-		assertEquals(2, pos.dimension(2));
+		pos = new Extents(new long[]{2,2,1,1}, new long[]{7,5,3,1}).createPosition();
+		assertEquals(6, pos.dimension(0));
+		assertEquals(4, pos.dimension(1));
+		assertEquals(3, pos.dimension(2));
 		assertEquals(1, pos.dimension(3));
 	}
 
@@ -76,10 +76,8 @@ public class PositionTest {
 		pos = new Extents(new long[]{}).createPosition();
 		assertFalse(pos.hasPrev());
 		pos = new Extents(new long[]{2}).createPosition();
-		pos.last();
 		assertTrue(pos.hasPrev());
 		pos = new Extents(new long[]{1,5,9,13}).createPosition();
-		pos.last();
 		assertTrue(pos.hasPrev());
 		pos.first();
 		assertFalse(pos.hasPrev());
@@ -149,7 +147,6 @@ public class PositionTest {
 	@Test
 	public void testFwd() {
 		pos = new Extents(new long[]{1,1,1,1,1}, new long[]{2,3,4,5,6}).createPosition();
-		pos.reset();
 		for (int i = 0; i < pos.getExtents().numElements(); i++) {
 			pos.fwd();
 			assertEquals(i, pos.getIndex());
@@ -165,7 +162,6 @@ public class PositionTest {
 	@Test
 	public void testBck() {
 		pos = new Extents(new long[]{1,1,1,1,1}, new long[]{2,3,4,5,6}).createPosition();
-		pos.reset();
 		for (long i = pos.getExtents().numElements()-1; i >= 0; i--) {
 			pos.bck();
 			assertEquals(i, pos.getIndex());
@@ -245,8 +241,8 @@ public class PositionTest {
 		pos.setPosition(new long[]{1,2,2});
 		pos.move((long)-1,0);
 		assertEquals(0, pos.getLongPosition(0));
-		pos.move((long)-2,1);
-		assertEquals(0, pos.getLongPosition(1));
+		pos.move((long)0,1);
+		assertEquals(2, pos.getLongPosition(1));
 		pos.move((long)1,2);
 		assertEquals(3, pos.getLongPosition(2));
 	}
@@ -267,8 +263,8 @@ public class PositionTest {
 		pos.setPosition(new long[]{1,2,2});
 		pos.move((int)-1,0);
 		assertEquals(0, pos.getLongPosition(0));
-		pos.move((int)-2,1);
-		assertEquals(0, pos.getLongPosition(1));
+		pos.move((int)0,1);
+		assertEquals(2, pos.getLongPosition(1));
 		pos.move((int)1,2);
 		assertEquals(3, pos.getLongPosition(2));
 	}
