@@ -49,6 +49,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	
 	private final Extents parentSpace;
 	private final long[] position;
+	private boolean isInvalid;
 
 	/**
 	 * Constructor - takes an {@link Extents} object that represents the parent
@@ -57,8 +58,8 @@ public class Position implements Localizable, Positionable, Iterator {
 	public Position(Extents parentSpace) {
 		this.parentSpace = parentSpace;
 		this.position = new long[parentSpace.numDimensions()];
-	  // Imglib convention - start out of bounds before first element
-		resetForFwd();
+	  // Imglib convention - start out of bounds
+		reset();
 	}
 
 	/**
@@ -91,6 +92,8 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public boolean hasNext() {
+		if (this.isInvalid && position.length > 0)
+			return true;
 		for (int i = 0; i < position.length; i++)
 			if (position[i] < parentSpace.max(i))
 				return true;
@@ -102,6 +105,8 @@ public class Position implements Localizable, Positionable, Iterator {
 	 * the first position).
 	 */
 	public boolean hasPrev() {
+		if (this.isInvalid && position.length > 0)
+			return true;
 		for (int i = 0; i < position.length; i++)
 			if (position[i] > parentSpace.min(i))
 				return true;
@@ -109,33 +114,13 @@ public class Position implements Localizable, Positionable, Iterator {
 	}
 
 	/**
-	 * Resets the internal position to point to the first element after calling
-	 * fwd() for the first time.
-	 */
-	public void resetForFwd() {
-		for (int i = 0; i < position.length; i++)
-			this.position[i] = parentSpace.min(i);
-		if (position.length > 0)
-			position[0]--;
-	}
-	
-	/**
-	 * Resets the internal position to point to the last element after calling
-	 * bck() for the first time.
-	 */
-	public void resetForBck() {
-		for (int i = 0; i < position.length; i++)
-			this.position[i] = parentSpace.max(i);
-		if (position.length > 0)
-			position[0]++;
-	}
-	
-	/**
-	 * Resets the {@link Position} for forward traversal.
+	 * Resets the {@link Position} for forward or backward traversal.
 	 */
 	@Override
 	public void reset() {
-		resetForFwd();
+		this.isInvalid = true;
+		for (int i = 0; i < position.length; i++)
+			position[i] = Long.MIN_VALUE;
 	}
 
 	/**
@@ -145,6 +130,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	public void first() {
 		for (int i = 0; i < position.length; i++)
 			position[i] = parentSpace.min(i);
+		this.isInvalid = false;
 	}
 	
 	/**
@@ -154,6 +140,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	public void last() {
 		for (int i = 0; i < position.length; i++)
 			position[i] = parentSpace.max(i);
+		this.isInvalid = false;
 	}
 
 	/**
@@ -163,6 +150,10 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void fwd() {
+		if (this.isInvalid) {
+			first();
+			return;
+		}
 		for (int i = 0; i < position.length; i++) {
 			position[i]++;
 			if (position[i] <= parentSpace.max(i))
@@ -179,6 +170,10 @@ public class Position implements Localizable, Positionable, Iterator {
 	 * first position.
 	 */
 	public void bck() {
+		if (this.isInvalid) {
+			last();
+			return;
+		}
 		for (int i = 0; i < position.length; i++) {
 			position[i]--;
 			if (position[i] >= parentSpace.min(i))
@@ -196,6 +191,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void fwd(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot move position : it is uninitialized");
 		long newValue = position[d] + 1;
 		if (newValue > parentSpace.max(d))
 			throw new IllegalArgumentException(
@@ -210,6 +208,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void bck(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot move position : it is uninitialized");
 		long newValue = position[d] - 1;
 		if (newValue < parentSpace.min(d))
 			throw new IllegalArgumentException(
@@ -231,8 +232,8 @@ public class Position implements Localizable, Positionable, Iterator {
 		// method that could be faster if steps larger
 		
 		long stepsLeft = steps;
-		if (position[0] < parentSpace.min(0)) {
-			fwd();
+		if (this.isInvalid) {
+			first();
 			stepsLeft--;
 		}
 		final long currPos = getIndex();
@@ -247,6 +248,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void move(long delta, int dim) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot move position : it is uninitialized");
 		final long newValue = position[dim] + delta;
 		if ((newValue < parentSpace.min(dim)) || (newValue > parentSpace.max(dim)))
 			throw new IllegalArgumentException(
@@ -308,6 +312,8 @@ public class Position implements Localizable, Positionable, Iterator {
 			throw new IllegalArgumentException(
 				"specified value would take position outside defined extents");
 		position[dim] = value;
+		if (this.isInvalid)
+			this.isInvalid = isInvalid();
 	}
 
 	/**
@@ -371,6 +377,7 @@ public class Position implements Localizable, Positionable, Iterator {
 			r -= q;
 			offset = offset1;
 		}
+		this.isInvalid = false;
 	}
 	
 	/**
@@ -378,6 +385,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 * from 0 to extents.numElements()-1.
 	 */
 	public long getIndex() {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot get index value : position is uninitialized");
 		long offset = 1;
 		long index1D = 0;
 		for (int i = 0; i < position.length; i++) {
@@ -392,6 +402,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(int[] pos) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
 			pos[i] = (int) position[i];
 	}
@@ -401,6 +414,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(long[] pos) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
 			pos[i] = position[i];
 	}
@@ -410,6 +426,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(float[] pos) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
 			pos[i] = position[i];
 	}
@@ -419,6 +438,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(double[] pos) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
 			pos[i] = position[i];
 	}
@@ -428,6 +450,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public int getIntPosition(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot get position : position is uninitialized");
 		return (int) position[d];
 	}
 
@@ -436,6 +461,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public long getLongPosition(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot get position : position is uninitialized");
 		return position[d];
 	}
 
@@ -444,6 +472,9 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public float getFloatPosition(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot get position : position is uninitialized");
 		return position[d];
 	}
 
@@ -452,6 +483,16 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public double getDoublePosition(int d) {
+		if (this.isInvalid)
+			throw new IllegalArgumentException(
+				"Cannot get position : position is uninitialized");
 		return position[d];
+	}
+	
+	private boolean isInvalid() {
+		for (int i = 0; i < position.length; i++)
+			if ((position[i] < parentSpace.min(i)) || (position[i] > parentSpace.max(i)))
+				return true;
+		return false;
 	}
 }
