@@ -57,7 +57,6 @@ import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
-import imagej.util.Dimensions;
 import imagej.util.Log;
 
 import java.awt.image.IndexColorModel;
@@ -609,8 +608,10 @@ public final class LegacyUtils {
 
 		final ImageStack stack = imp.getStack();
 
-		final long[] dims = ds.getDims();
-		final long[] planeDims = Dimensions.getDims3AndGreater(dims);
+		final long[] fullDims = ds.getDims();
+		final long[] planeDims = new long[fullDims.length-2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = fullDims[i+2];
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 
@@ -647,7 +648,10 @@ public final class LegacyUtils {
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
-		final long[] planeDims = Dimensions.getDims3AndGreater(ds.getDims());
+		final long[] fullDims = ds.getDims();
+		final long[] planeDims = new long[fullDims.length-2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = fullDims[i+2];
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference

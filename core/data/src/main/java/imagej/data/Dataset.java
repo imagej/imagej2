@@ -41,7 +41,6 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.Events;
-import imagej.util.Dimensions;
 import imagej.util.IntRect;
 import imagej.util.Log;
 import net.imglib2.Cursor;
@@ -623,7 +622,9 @@ public class Dataset extends AbstractDataObject implements
 		final RandomAccess<? extends RealType<?>> input = imgPlus.randomAccess();
 		final RandomAccess<? extends RealType<?>> output =
 			(RandomAccess<? extends RealType<?>>) container.randomAccess();
-		final long[] planeIndexSpans = Dimensions.getDims3AndGreater(dimensions);
+		final long[] planeIndexSpans = new long[dimensions.length-2];
+		for (int i = 0; i < planeIndexSpans.length; i++)
+			planeIndexSpans[i] = dimensions[i+2];
 		final Extents extents = new Extents(planeIndexSpans);
 		final long[] planePos = new long[extents.numDimensions()];
 		final Position pos = extents.createPosition();
