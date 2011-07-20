@@ -385,7 +385,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	 * from 0 to extents.numElements()-1.
 	 */
 	public long getIndex() {
-		if (this.isInvalid)
+		if (this.isInvalid && position.length > 0)
 			throw new IllegalArgumentException(
 				"Cannot get index value : position is uninitialized");
 		long offset = 1;
@@ -402,7 +402,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(int[] pos) {
-		if (this.isInvalid)
+		if (this.isInvalid && position.length > 0)
 			throw new IllegalArgumentException(
 				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
@@ -414,7 +414,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(long[] pos) {
-		if (this.isInvalid)
+		if (this.isInvalid && position.length > 0)
 			throw new IllegalArgumentException(
 				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
@@ -426,7 +426,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(float[] pos) {
-		if (this.isInvalid)
+		if (this.isInvalid && position.length > 0)
 			throw new IllegalArgumentException(
 				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
@@ -438,7 +438,7 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void localize(double[] pos) {
-		if (this.isInvalid)
+		if (this.isInvalid && position.length > 0)
 			throw new IllegalArgumentException(
 				"Cannot localize : position is uninitialized");
 		for (int i = 0; i < position.length; i++)
@@ -488,6 +488,8 @@ public class Position implements Localizable, Positionable, Iterator {
 				"Cannot get position : position is uninitialized");
 		return position[d];
 	}
+
+	// -- private helpers --
 	
 	private boolean isInvalid() {
 		for (int i = 0; i < position.length; i++)

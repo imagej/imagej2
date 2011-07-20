@@ -35,13 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
+import imagej.data.Extents;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.util.Dimensions;
-import imagej.util.Index;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -215,7 +214,11 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 		dims = new long[img.numDimensions()];
 		img.dimensions(dims);
-		planeDims = Dimensions.getDims3AndGreater(dims);
+		planeDims = new long[dims.length-2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = dims[i+2];
+		Extents extents = new Extents(planeDims);
+		planePosObj = extents.createPosition();
 		position = new long[dims.length];
 		planePos = new long[planeDims.length];
 
@@ -303,7 +306,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		if (channelDimIndex >= 0) {
 			planePos[channelDimIndex - 2] = cPos;
 		}
-		final int no = (int) Index.indexNDto1D(planeDims, planePos);
+		planePosObj.setPosition(planePos);
+		final int no = (int) planePosObj.getIndex();
 		final ColorTable8 lut = dataset.getColorTable8(no);
 		if (lut != null) {
 			return lut; // return dataset-specific LUT

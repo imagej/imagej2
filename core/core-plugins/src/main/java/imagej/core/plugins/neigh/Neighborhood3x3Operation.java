@@ -35,7 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.neigh;
 
 import imagej.data.Dataset;
-import imagej.util.Index;
+import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.util.IntRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -110,11 +111,19 @@ public class Neighborhood3x3Operation {
 		long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.dimension(i+2);
-		long[] planeIndex = new long[planeDims.length];
-		long totalPlanes = Index.getTotalLength(planeDims);
-		for (long plane = 0; plane < totalPlanes; plane++) {
-			Index.index1DtoND(planeDims, plane, planeIndex);
-			applyOperationToPlane(planeIndex);
+		if (planeDims.length == 0) { // dataset is 2d only
+			applyOperationToPlane(new long[]{});
+		}
+		else {
+			Extents extents = new Extents(planeDims);
+			Position pos = extents.createPosition();
+			long[] planeIndex = new long[planeDims.length];
+			long totalPlanes = extents.numElements();
+			for (long plane = 0; plane < totalPlanes; plane++) {
+				pos.setIndex(plane);
+				pos.localize(planeIndex);
+				applyOperationToPlane(planeIndex);
+			}
 		}
 		input.update();
 	}

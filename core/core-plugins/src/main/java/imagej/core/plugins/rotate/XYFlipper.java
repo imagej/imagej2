@@ -36,7 +36,8 @@ package imagej.core.plugins.rotate;
 
 import imagej.core.plugins.imglib.OutputAlgorithm;
 import imagej.data.Dataset;
-import imagej.util.Index;
+import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.util.IntRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -64,7 +65,13 @@ public class XYFlipper implements OutputAlgorithm {
 	private Img<? extends RealType<?>> outputImage;
 
 	private FlipCoordinateTransformer flipper;
+	
+	private long[] inputDimensions;
 
+	private RandomAccess<? extends RealType<?>> inputAccessor;
+	
+	private RandomAccess<? extends RealType<?>> outputAccessor;
+	
 	// -- exported interface --
 
 	/**
@@ -106,7 +113,7 @@ public class XYFlipper implements OutputAlgorithm {
 	public boolean checkInput() {
 		Img inputImage = input.getImgPlus();  // TODO - raw type required here
 		
-		long[] inputDimensions = new long[inputImage.numDimensions()];
+		inputDimensions = new long[inputImage.numDimensions()];
 
 		inputImage.dimensions(inputDimensions);
 		
@@ -133,20 +140,12 @@ public class XYFlipper implements OutputAlgorithm {
 	public boolean process() {
 		Img<? extends RealType<?>> inputImage = input.getImgPlus();
 
-		RandomAccess<? extends RealType<?>> inputAccessor =
-			inputImage.randomAccess();
-		RandomAccess<? extends RealType<?>> outputAccessor =
-			outputImage.randomAccess();
-
-		long[] inputDimensions = new long[inputImage.numDimensions()];
-		inputImage.dimensions(inputDimensions);
+		inputAccessor = inputImage.randomAccess();
+		outputAccessor = outputImage.randomAccess();
 
 		long width = inputDimensions[0];
 		long height = inputDimensions[1];
 		
-		long[] inputPosition = new long[inputDimensions.length];
-		long[] outputPosition = new long[inputDimensions.length];
-
 		IntRect selectedRegion = input.getSelection();
 		
 		int rx, ry, rw, rh;
@@ -169,34 +168,20 @@ public class XYFlipper implements OutputAlgorithm {
 		long[] planeDims = new long[inputImage.numDimensions()-2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputDimensions[i+2];
-
-		long totalPlanes = Index.getTotalLength(planeDims);
-
-		for (long pNum = 0; pNum < totalPlanes; pNum++) {
-			long[] planeIndex = Index.index1DtoND(planeDims,pNum);
-			
-			for (int i = 2; i < inputPosition.length; i++)
-				inputPosition[i] = planeIndex[i-2];
-			
-			for (int y = ry; y < rh; y++) {
-				inputPosition[1] = y;
-	
-				for (int x = rx; x < rw; x++) {
-					inputPosition[0] = x;
-	
-					flipper.calcOutputPosition(inputDimensions, inputPosition,
-						outputPosition);
-	
-					inputAccessor.setPosition(inputPosition);
-					outputAccessor.setPosition(outputPosition);
-	
-					double value = inputAccessor.get().getRealDouble();
-	
-					outputAccessor.get().setReal(value);
-				}
+		if (planeDims.length == 0) { // 2d Dataset
+			processPlane(new long[]{}, rx, ry, rw, rh);
+		}
+		else {  // more than two dimensions
+			Extents extents = new Extents(planeDims);
+			long totalPlanes = extents.numElements();
+			long[] planeIndex = new long[extents.numDimensions()];
+			Position pos = extents.createPosition();
+			for (long pNum = 0; pNum < totalPlanes; pNum++) {
+				pos.setIndex(pNum);
+				pos.localize(planeIndex);
+				processPlane(planeIndex, rx, ry, rw, rh);
 			}
 		}
-		
 		return true;
 	}
 
@@ -206,5 +191,32 @@ public class XYFlipper implements OutputAlgorithm {
 	@Override
 	public Img<? extends RealType<?>> getResult() {
 		return outputImage;
+	}
+	
+	private void processPlane(long[] planeIndex, int rx, int ry, int rw, int rh) {
+		
+		long[] inputPosition = new long[planeIndex.length+2];
+		long[] outputPosition = new long[planeIndex.length+2];
+
+		for (int i = 2; i < inputPosition.length; i++)
+			inputPosition[i] = planeIndex[i-2];
+		
+		for (int y = ry; y < rh; y++) {
+			inputPosition[1] = y;
+
+			for (int x = rx; x < rw; x++) {
+				inputPosition[0] = x;
+
+				flipper.calcOutputPosition(inputDimensions, inputPosition,
+					outputPosition);
+
+				inputAccessor.setPosition(inputPosition);
+				outputAccessor.setPosition(outputPosition);
+
+				double value = inputAccessor.get().getRealDouble();
+
+				outputAccessor.get().setReal(value);
+			}
+		}
 	}
 }
