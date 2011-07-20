@@ -233,15 +233,17 @@ public class AbstractUIDetails implements Comparable<UIDetails>,
 	protected void appendParam(final StringBuilder sb, final String key,
 		final Object value)
 	{
-		if (sb.charAt(sb.length() - 1) != ']') {
+		final int len = sb.length();
+		if (len == 0 || sb.charAt(len - 1) != ']') {
 			// first parameter; add bracket prefix
 			sb.append(" [");
 		}
 		else {
 			// remove previous closing bracket
-			sb.setLength(sb.length() - 1);
+			sb.setLength(len - 1);
+			sb.append("; ");
 		}
-		sb.append("; " + key + " = " + value + "]");
+		sb.append(key + " = " + value + "]");
 	}
 
 	// -- Utility methods --
