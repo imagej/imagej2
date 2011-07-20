@@ -35,11 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.imglib;
 
 import imagej.data.Dataset;
+import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.util.Index;
 import imagej.util.IntRect;
 
 import java.util.Random;
@@ -109,11 +110,19 @@ public class SaltAndPepper implements ImageJPlugin {
 		long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.dimension(i+2);
-		long[] planeIndex = new long[planeDims.length];
-		long totalPlanes = Index.getTotalLength(planeDims);
-		for (long plane = 0; plane < totalPlanes; plane++) {
-			Index.index1DtoND(planeDims, plane, planeIndex);
-			assignPixelsInXYPlane(planeIndex, rng);
+		if (planeDims.length == 0) { // 2d only
+			assignPixelsInXYPlane(new long[]{}, rng);
+		}
+		else { // 3 or more dimsensions
+			Extents extents = new Extents(planeDims);
+			long[] planeIndex = new long[planeDims.length];
+			Position pos = extents.createPosition();
+			long totalPlanes = extents.numElements();
+			for (long plane = 0; plane < totalPlanes; plane++) {
+				pos.setIndex(plane);
+				pos.localize(planeIndex);
+				assignPixelsInXYPlane(planeIndex, rng);
+			}
 		}
 	}
 
@@ -126,8 +135,6 @@ public class SaltAndPepper implements ImageJPlugin {
 		long[] dimensions = new long[inputImage.numDimensions()];
 		inputImage.dimensions(dimensions);
 		
-		long numPixels = (long) (Index.getTotalLength(dimensions) * percentToChange);
-
 		int ox = selection.x;
 		int oy = selection.y;
 		int w = selection.width;
@@ -136,6 +143,8 @@ public class SaltAndPepper implements ImageJPlugin {
 		if (w <= 0) w = (int) dimensions[0];
 		if (h <= 0) h = (int) dimensions[1];
 		
+		long numPixels = (long) (percentToChange * w * h);
+
 		for (long p = 0; p < numPixels / 2; p++) {
 			int randomX, randomY;
 

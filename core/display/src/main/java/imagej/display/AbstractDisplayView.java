@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.DataObject;
+import imagej.data.Position;
 import imagej.data.event.DataObjectRestructuredEvent;
 import imagej.data.event.DataObjectUpdatedEvent;
 import imagej.display.event.DisplayViewDeselectedEvent;
@@ -42,7 +43,6 @@ import imagej.display.event.DisplayViewSelectedEvent;
 import imagej.display.event.DisplayViewSelectionEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.util.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,9 @@ public abstract class AbstractDisplayView implements DisplayView {
 		new ArrayList<EventSubscriber<?>>();
 
 	protected long[] dims, planeDims;
-	protected long[] position, planePos;
+	protected long[] position;
+	protected long[] planePos;
+	protected Position planePosObj;
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
@@ -98,7 +100,7 @@ public abstract class AbstractDisplayView implements DisplayView {
 
 	@Override
 	public long getPlaneIndex() {
-		return Index.indexNDto1D(planeDims, planePos);
+		return planePosObj.getIndex();
 	}
 
 	@Override
@@ -109,8 +111,10 @@ public abstract class AbstractDisplayView implements DisplayView {
 	@Override
 	public void setPosition(final long value, final int dim) {
 		position[dim] = value;
-		for (int i = 0; i < planePos.length; i++)
-			planePos[i] = position[i + 2];
+		for (int i = 0; i < planePosObj.numDimensions(); i++) {
+			planePos[i] = position[i+2];
+			planePosObj.setPosition(position[i+2], i);
+		}
 	}
 
 	@Override

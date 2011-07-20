@@ -50,13 +50,14 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.Extents;
+import imagej.data.Position;
 import imagej.display.ColorTables;
 import imagej.display.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.util.Dimensions;
-import imagej.util.Index;
 import imagej.util.Log;
 
 import java.awt.image.IndexColorModel;
@@ -610,15 +611,16 @@ public final class LegacyUtils {
 
 		final long[] dims = ds.getDims();
 		final long[] planeDims = Dimensions.getDims3AndGreater(dims);
-		final long[] planePos = new long[planeDims.length];
+		final Extents extents = new Extents(planeDims);
+		final Position planePos = extents.createPosition();
 
 		for (int t = 0; t < tCount; t++) {
-			if (tIndex >= 0) planePos[tIndex - 2] = t;
+			if (tIndex >= 0) planePos.setPosition(t, tIndex-2);
 			for (int z = 0; z < zCount; z++) {
-				if (zIndex >= 0) planePos[zIndex - 2] = z;
+				if (zIndex >= 0) planePos.setPosition(z, zIndex-2);
 				for (int c = 0; c < cCount; c++) {
-					if (cIndex >= 0) planePos[cIndex - 2] = c;
-					final int planeNum = (int) Index.indexNDto1D(planeDims, planePos);
+					if (cIndex >= 0) planePos.setPosition(c, cIndex-2);
+					final int planeNum = (int) planePos.getIndex();
 					final Object plane = ds.getPlane(planeNum, false);
 					if (plane == null) {
 						Log
@@ -646,22 +648,22 @@ public final class LegacyUtils {
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
 
 		final long[] planeDims = Dimensions.getDims3AndGreater(ds.getDims());
-		final long[] planePos = new long[planeDims.length];
+		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
 		int p = 1;
 		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) planePos[tIndex - 2] = ti;
+			if (tIndex >= 0) planePos.setPosition(ti, tIndex-2);
 			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) planePos[zIndex - 2] = zi;
+				if (zIndex >= 0) planePos.setPosition(zi, zIndex-2);
 				for (int ci = 0; ci < c; ci++) {
-					if (cIndex >= 0) planePos[cIndex - 2] = ci;
+					if (cIndex >= 0) planePos.setPosition(ci, cIndex-2);
 					final Object plane = imp.getStack().getPixels(p++);
 					if (plane == null) {
 						Log.error("Could not extract plane from ImageStack: " + (p - 1));
 					}
-					final long planeNum = Index.indexNDto1D(planeDims, planePos);
-					ds.setPlane((int) planeNum, plane);
+					final int planeNum = (int) planePos.getIndex();
+					ds.setPlane(planeNum, plane);
 				}
 			}
 		}

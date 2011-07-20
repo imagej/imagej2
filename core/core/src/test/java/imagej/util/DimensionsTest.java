@@ -88,23 +88,6 @@ public class DimensionsTest {
 	}
 
 	@Test
-	public void testGetTotalPlanes() {
-		assertEquals(0, Dimensions.getTotalPlanes(new long[]{}));
-		assertEquals(0, Dimensions.getTotalPlanes(new long[]{0}));
-		assertEquals(0, Dimensions.getTotalPlanes(new long[]{1}));
-		assertEquals(0, Dimensions.getTotalPlanes(new long[]{8}));
-		assertEquals(1, Dimensions.getTotalPlanes(new long[]{1,0}));  // NOTE - nonintuitive but I thinks mathematically its correct
-		assertEquals(1, Dimensions.getTotalPlanes(new long[]{1,1}));
-		assertEquals(1, Dimensions.getTotalPlanes(new long[]{2,3}));
-		assertEquals(1, Dimensions.getTotalPlanes(new long[]{2,5}));
-		assertEquals(4, Dimensions.getTotalPlanes(new long[]{2,3,4}));
-		assertEquals(2, Dimensions.getTotalPlanes(new long[]{4,3,2}));
-		assertEquals(35, Dimensions.getTotalPlanes(new long[]{1,3,5,7}));
-		assertEquals(360, Dimensions.getTotalPlanes(new long[]{1,2,3,4,5,6}));
-		assertEquals(65535, Dimensions.getTotalPlanes(new long[]{65535, 65535, 65535}));
-	}
-
-	@Test
 	public void testVerifyDimensions()
 	{
 		// fail if span dims don't match origin dims

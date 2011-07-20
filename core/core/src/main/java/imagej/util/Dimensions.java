@@ -60,21 +60,6 @@ public final class Dimensions {
 	}
 
 	/**
-	 * Gets the number of planes present in an image of given dimensions. Assumes
-	 * the planes lie in the 1st two dimensions.
-	 */
-	public static long getTotalPlanes(final long[] lengths) {
-		final int numDims = lengths.length;
-		if (numDims < 2) return 0;
-		if (numDims == 2) return 1;
-		// else numDims > 2
-
-		final long[] sampleSpace = getDims3AndGreater(lengths);
-
-		return Index.getTotalLength(sampleSpace);
-	}
-
-	/**
 	 * Throws an exception if the combination of origins and spans is outside an
 	 * image's dimensions.
 	 */
