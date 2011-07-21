@@ -49,6 +49,10 @@ import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.swing.JMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
+import imagej.ui.DialogPrompt;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.display.SwingDisplayWindow;
@@ -315,5 +319,15 @@ public class SwingUI implements UserInterface
 			};
 		subscribers.add(deleteSubscriber);
 		Events.subscribe(DisplayDeletedEvent.class, deleteSubscriber);
+	}
+
+	@Override
+	public OutputWindow newOutputWindow(String title) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public DialogPrompt dialogPrompt(String message, String title, MessageType msg, OptionType option) {
+		return new SwingDialogPrompt( message,  title,  msg,  option);
 	}
 }

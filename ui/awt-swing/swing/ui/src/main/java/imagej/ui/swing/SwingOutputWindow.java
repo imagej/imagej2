@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui.swing;
 
+import imagej.ui.OutputWindow;
 import imagej.event.EventSubscriber;
 import imagej.event.OutputEvent;
 
@@ -52,7 +53,7 @@ import javax.swing.JTextArea;
  * 
  * @author Grant Harris
  */
-public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputEvent> {
+public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputEvent>, OutputWindow {
 	
 	JTextArea textArea = new JTextArea();
 	
@@ -78,12 +79,14 @@ public class SwingOutputWindow extends JFrame implements EventSubscriber<OutputE
 		this.setVisible(true);
 	}
 
+	@Override
 	public void append(String text) {
 		textArea.append(text);
 		// Make sure the last line is always visible
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
+	@Override
 	public void clear() {
 		textArea.setText("");
 	}
