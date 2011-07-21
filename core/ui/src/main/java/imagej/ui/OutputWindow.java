@@ -1,5 +1,5 @@
 //
-// UserInterface.java
+// OutputWindow.java
 //
 
 /*
@@ -35,23 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui;
 
 /**
- * An end-user ImageJ application.
- *
- * @author Curtis Rueden
+ * UI-independent scrolling text output window
+ * 
+ * @author GBH
  */
-public interface UserInterface {
+public interface OutputWindow {
 
-	void initialize();
+	void append(String text);
 
-	void processArgs(final String[] args);
-
-	ToolBar getToolBar();
-
-	StatusBar getStatusBar();
+	void clear();
 	
-	OutputWindow newOutputWindow(String title);
-	
-	DialogPrompt dialogPrompt(String message, String title, 
-			DialogPrompt.MessageType msg, DialogPrompt.OptionType option);
-
 }
