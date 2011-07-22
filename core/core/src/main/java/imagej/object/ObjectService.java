@@ -43,7 +43,6 @@ import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsUpdatedEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -62,7 +61,8 @@ import java.util.List;
 public final class ObjectService implements IService {
 
 	/** Index of registered objects. */
-	private ObjectIndex objectIndex;
+	private final ObjectIndex<Object> objectIndex =
+		new ObjectIndex<Object>(Object.class);
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -71,21 +71,21 @@ public final class ObjectService implements IService {
 
 	/** Gets a list of all registered objects compatible with the given type. */
 	public <T> List<T> getObjects(final Class<T> type) {
-		final List<Object> list = objectIndex.getObjects(type);
+		final List<Object> list = objectIndex.get(type);
 		@SuppressWarnings("unchecked")
 		final List<T> result = (List<T>) list;
-		return Collections.unmodifiableList(result);
+		return result;
 	}
 
 	/** Registers an object with the object service. */
 	public void addObject(final Object obj) {
-		objectIndex.addObject(obj);
+		objectIndex.add(obj);
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
 	/** Deregisters an object with the object service. */
 	public void removeObject(final Object obj) {
-		objectIndex.removeObject(obj);
+		objectIndex.remove(obj);
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
@@ -93,7 +93,6 @@ public final class ObjectService implements IService {
 
 	@Override
 	public void initialize() {
-		objectIndex = new ObjectIndex();
 		subscribeToEvents();
 	}
 
