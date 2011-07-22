@@ -138,9 +138,7 @@ public class PluginService implements IService {
 	{
 		final ArrayList<PluginInfo<P>> entries = new ArrayList<PluginInfo<P>>();
 		final String className = pluginClass.getName();
-		System.out.println("getPluginsOfClass: " + className);//TEMP
 		for (final PluginInfo<?> entry : getPlugins()) {
-			System.out.println("Checking entry: " + entry.getClassName());//TEMP
 			if (entry.getClassName().equals(className)) {
 				@SuppressWarnings("unchecked")
 				final PluginInfo<P> match = (PluginInfo<P>) entry;
