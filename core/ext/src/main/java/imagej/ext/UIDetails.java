@@ -42,7 +42,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface UIDetails extends BasicDetails {
+public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 
 	int FIRST_PRIORITY = 0;
 	int HIGH_PRIORITY = 25;
