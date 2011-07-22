@@ -62,6 +62,15 @@ public class Position implements Localizable, Positionable, Iterator {
 		reset();
 	}
 
+	/** Constructs a position that is a copy of the given position. */
+	public Position(Position pos) {
+		this.parentSpace = pos.getExtents();
+		this.position = new long[pos.numDimensions()];
+		for (int i = 0; i < position.length; i++) {
+			position[i] = pos.position[i];
+		}
+	}
+
 	/**
 	 * Returns the parent space {@link Extents} associated with this
 	 * {@link Position}.
