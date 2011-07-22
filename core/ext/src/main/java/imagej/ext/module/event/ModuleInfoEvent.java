@@ -37,21 +37,29 @@ package imagej.ext.module.event;
 import imagej.event.ImageJEvent;
 import imagej.ext.module.ModuleInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * An event indicating something has happened to a {@link ModuleInfo}.
- *
+ * An event indicating something has happened to one or more {@link ModuleInfo}
+ * objects.
+ * 
  * @author Curtis Rueden
  */
 public class ModuleInfoEvent extends ImageJEvent {
 
-	private ModuleInfo info;
+	private final List<ModuleInfo> infoList = new ArrayList<ModuleInfo>();
 
 	public ModuleInfoEvent(final ModuleInfo info) {
-		this.info = info;
+		infoList.add(info);
 	}
 
-	public ModuleInfo getModuleInfo() {
-		return info;
+	public ModuleInfoEvent(final List<ModuleInfo> infos) {
+		infoList.addAll(infos);
+	}
+
+	public List<ModuleInfo> getModuleInfos() {
+		return infoList;
 	}
 
 }

@@ -172,8 +172,7 @@ public abstract class SwingMenuCreator<T> extends
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final PluginService pluginService = ImageJ.get(PluginService.class);
-				pluginService.run(info, true);
+				ImageJ.get(PluginService.class).run(info, true);
 			}
 		});
 		menuItem.setEnabled(info.isEnabled());

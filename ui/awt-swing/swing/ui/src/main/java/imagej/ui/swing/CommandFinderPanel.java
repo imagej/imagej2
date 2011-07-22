@@ -38,8 +38,8 @@ import imagej.ImageJ;
 import imagej.ext.AbstractUIDetails;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
 import imagej.ext.module.ui.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -153,8 +153,8 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	private void buildCommands() {
 		commands = new ArrayList<Command>();
 
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final List<ModuleInfo> modules = pluginService.getModules();
+		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final List<ModuleInfo> modules = moduleService.getModules();
 		for (final ModuleInfo info : modules) {
 			commands.add(new Command(info));
 		}

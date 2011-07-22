@@ -34,9 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object.event;
 
+import imagej.object.ObjectService;
+
 /**
- * An event indicating a new object has been created.
- *
+ * An event indicating a new object has been created. The {@link ObjectService}
+ * responds to this event by adding the object to its index.
+ * 
  * @author Curtis Rueden
  */
 public class ObjectCreatedEvent extends ObjectEvent {
