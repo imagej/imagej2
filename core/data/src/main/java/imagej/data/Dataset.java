@@ -97,6 +97,7 @@ public class Dataset extends AbstractDataObject implements
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
 	private boolean isDirty;
+	private Extents extents;
 
 	// FIXME TEMP - the current selection for this Dataset. Temporarily located
 	// here for plugin testing purposes. Really should be viewcentric.
@@ -122,6 +123,7 @@ public class Dataset extends AbstractDataObject implements
 		rgbMerged = false;
 		isDirty = false;
 		selection = new IntRect();
+		extents = extents(imgPlus);
 	}
 
 	public boolean isDirty() { return isDirty; }
@@ -148,6 +150,7 @@ public class Dataset extends AbstractDataObject implements
 			typeChanged = true;
 		
 		this.imgPlus = imgPlus;
+		this.extents = extents(imgPlus);
 		
 		// NB - keeping all the old metadata for now. TODO - revisit this?
 		// NB - keeping isRgbMerged status for now. TODO - revisit this?
@@ -170,8 +173,9 @@ public class Dataset extends AbstractDataObject implements
 
 	/** Gets the dimensional extents of the dataset. */
 	public long[] getDims() {
-		final long[] dims = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(dims);
+		final int numDims = extents.numDimensions();
+		final long[] dims = new long[numDims];
+		extents.dimensions(dims);
 		return dims;
 	}
 
@@ -306,6 +310,10 @@ public class Dataset extends AbstractDataObject implements
 		return rgbMerged;
 	}
 
+	public Extents getExtents() {
+		return extents;
+	}
+	
 	public void typeChange() {
 		setDirty(true);
 		Events.publish(new DatasetTypeChangedEvent(this));
@@ -625,9 +633,9 @@ public class Dataset extends AbstractDataObject implements
 		final long[] planeIndexSpans = new long[dimensions.length-2];
 		for (int i = 0; i < planeIndexSpans.length; i++)
 			planeIndexSpans[i] = dimensions[i+2];
-		final Extents extents = new Extents(planeIndexSpans);
-		final long[] planePos = new long[extents.numDimensions()];
-		final Position pos = extents.createPosition();
+		final Extents planeExtents = new Extents(planeIndexSpans);
+		final long[] planePos = new long[planeExtents.numDimensions()];
+		final Position pos = planeExtents.createPosition();
 		pos.setIndex(planeNum);
 		pos.localize(planePos);
 		final long[] inputPos = new long[dimensions.length];
@@ -678,4 +686,9 @@ public class Dataset extends AbstractDataObject implements
 		}
 	}
 
+	private Extents extents(ImgPlus<?> imgP) {
+		long[] dims = new long[imgP.numDimensions()];
+		imgP.dimensions(dims);
+		return new Extents(dims);
+	}
 }
