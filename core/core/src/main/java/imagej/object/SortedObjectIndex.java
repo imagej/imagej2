@@ -69,6 +69,10 @@ public class SortedObjectIndex<E extends Comparable<? super E>> extends
 
 	@Override
 	public boolean addAll(final Collection<? extends E> c) {
+		if (c.size() == 1) {
+			// add single item normally, to avoid resorting the lists
+			return add(c.iterator().next());
+		}
 		final boolean changed = super.addAll(c);
 		if (changed) sort();
 		return changed;
