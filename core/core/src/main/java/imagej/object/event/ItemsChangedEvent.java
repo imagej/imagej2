@@ -1,5 +1,5 @@
 //
-// ModulesUpdatedEvent.java
+// ItemsChangedEvent.java
 //
 
 /*
@@ -32,25 +32,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.module.event;
+package imagej.object.event;
 
-import imagej.ext.module.ModuleInfo;
+import imagej.event.ImageJEvent;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * An event indicating one or more {@link ModuleInfo} has been modified.
- *
+ * An event indicating a list of items has changed.
+ * 
  * @author Curtis Rueden
  */
-public class ModulesUpdatedEvent extends ModuleInfoEvent {
+public class ItemsChangedEvent<T> extends ImageJEvent {
 
-	public ModulesUpdatedEvent(final ModuleInfo info) {
-		super(info);
+	private final List<T> list = new ArrayList<T>();
+
+	public ItemsChangedEvent(final T o) {
+		list.add(o);
 	}
 
-	public ModulesUpdatedEvent(final List<ModuleInfo> infos) {
-		super(infos);
+	public ItemsChangedEvent(final Collection<? extends T> c) {
+		list.addAll(c);
+	}
+
+	/** Gets the list of affected items. */
+	public List<T> getItems() {
+		return Collections.unmodifiableList(list);
 	}
 
 }

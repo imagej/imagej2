@@ -1,5 +1,5 @@
 //
-// ModulesDeletedEvent.java
+// ModulesChangedEvent.java
 //
 
 /*
@@ -36,24 +36,24 @@ package imagej.ext.module.event;
 
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
+import imagej.object.event.ItemsChangedEvent;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * An event indicating one or more {@link ModuleInfo}s have been deleted. The
- * {@link ModuleService} responds to this event by removing the modules from its
- * index.
+ * An event indicating the list of modules registered with the
+ * {@link ModuleService} has changed.
  * 
  * @author Curtis Rueden
  */
-public class ModulesDeletedEvent extends ModuleInfoEvent {
+public class ModulesChangedEvent extends ItemsChangedEvent<ModuleInfo> {
 
-	public ModulesDeletedEvent(final ModuleInfo info) {
-		super(info);
+	public ModulesChangedEvent(final ModuleInfo o) {
+		super(o);
 	}
 
-	public ModulesDeletedEvent(final List<ModuleInfo> infos) {
-		super(infos);
+	public ModulesChangedEvent(final Collection<? extends ModuleInfo> c) {
+		super(c);
 	}
 
 }

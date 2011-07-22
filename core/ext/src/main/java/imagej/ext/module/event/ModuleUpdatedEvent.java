@@ -1,5 +1,5 @@
 //
-// ObjectsChangedEvent.java
+// ModuleUpdatedEvent.java
 //
 
 /*
@@ -32,27 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.object.event;
+package imagej.ext.module.event;
 
-import imagej.object.ObjectService;
-
-import java.util.Collection;
+import imagej.event.ImageJEvent;
+import imagej.ext.module.ModuleInfo;
 
 /**
- * An event indicating the list of objects registered with the
- * {@link ObjectService} has changed.
+ * An event indicating a module's details have been updated.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ObjectsChangedEvent extends ItemsChangedEvent<Object> {
+public class ModuleUpdatedEvent extends ImageJEvent {
 
-	public ObjectsChangedEvent(final Object o) {
-		super(o);
+	private final ModuleInfo info;
+
+	public ModuleUpdatedEvent(final ModuleInfo info) {
+		this.info = info;
 	}
 
-	public ObjectsChangedEvent(final Collection<?> c) {
-		super(c);
+	public ModuleInfo getModule() {
+		return info;
 	}
 
 }

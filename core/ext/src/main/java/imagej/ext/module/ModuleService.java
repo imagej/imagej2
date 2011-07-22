@@ -38,8 +38,9 @@ import imagej.IService;
 import imagej.Service;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.ext.module.event.ModulesCreatedEvent;
-import imagej.ext.module.event.ModulesDeletedEvent;
+import imagej.ext.module.event.ModuleUpdatedEvent;
+import imagej.ext.module.event.ModulesAddedEvent;
+import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
 import imagej.util.Log;
@@ -74,21 +75,25 @@ public class ModuleService implements IService {
 	/** Manually registers a module with the module service. */
 	public void addModule(final ModuleInfo module) {
 		moduleIndex.add(module);
+		Events.publish(new ModulesAddedEvent(module));
 	}
 
 	/** Manually unregisters a module with the module service. */
 	public void removeModule(final ModuleInfo module) {
 		moduleIndex.remove(module);
+		Events.publish(new ModulesRemovedEvent(module));
 	}
 
 	/** Manually registers a list of modules with the module service. */
 	public void addModules(final Collection<? extends ModuleInfo> modules) {
 		moduleIndex.addAll(modules);
+		Events.publish(new ModulesAddedEvent(modules));
 	}
 
 	/** Manually unregisters a list of modules with the module service. */
 	public void removeModules(final Collection<? extends ModuleInfo> modules) {
 		moduleIndex.removeAll(modules);
+		Events.publish(new ModulesRemovedEvent(modules));
 	}
 
 	/** Gets the list of available modules. */
@@ -179,27 +184,16 @@ public class ModuleService implements IService {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<ModulesCreatedEvent> modulesAddedSubscriber =
-			new EventSubscriber<ModulesCreatedEvent>() {
+		final EventSubscriber<ModuleUpdatedEvent> moduleUpdatedSubscriber =
+			new EventSubscriber<ModuleUpdatedEvent>() {
 
 				@Override
-				public void onEvent(final ModulesCreatedEvent event) {
-					addModules(event.getModuleInfos());
+				public void onEvent(final ModuleUpdatedEvent event) {
+					// CTR TODO - update ShadowMenu
 				}
 			};
-		subscribers.add(modulesAddedSubscriber);
-		Events.subscribe(ModulesCreatedEvent.class, modulesAddedSubscriber);
-
-		final EventSubscriber<ModulesDeletedEvent> modulesDeletedSubscriber =
-			new EventSubscriber<ModulesDeletedEvent>() {
-
-				@Override
-				public void onEvent(final ModulesDeletedEvent event) {
-					removeModules(event.getModuleInfos());
-				}
-			};
-		subscribers.add(modulesDeletedSubscriber);
-		Events.subscribe(ModulesDeletedEvent.class, modulesDeletedSubscriber);
+		subscribers.add(moduleUpdatedSubscriber);
+		Events.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
 	}
 
 }

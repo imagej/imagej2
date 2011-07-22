@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.module;
 
 import imagej.ext.UIDetails;
-import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.module.event.ModuleUpdatedEvent;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
@@ -93,7 +93,7 @@ public interface ModuleInfo extends UIDetails {
 	 * menu items that are linked to the module.
 	 * <p>
 	 * For classes implementing this interface directly, this method should
-	 * publish a {@link ModulesUpdatedEvent} to the event bus (see
+	 * publish a {@link ModuleUpdatedEvent} to the event bus (see
 	 * {@link AbstractModuleInfo#update()} for an example).
 	 * </p>
 	 */
