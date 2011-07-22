@@ -111,24 +111,21 @@ public class Neighborhood3x3Operation {
 		long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.dimension(i+2);
+		Extents extents = new Extents(planeDims);
+		Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // dataset is 2d only
-			applyOperationToPlane(new long[]{});
+			applyOperationToPlane(planePos);
 		}
-		else {
-			Extents extents = new Extents(planeDims);
-			Position pos = extents.createPosition();
-			long[] planeIndex = new long[planeDims.length];
-			long totalPlanes = extents.numElements();
-			for (long plane = 0; plane < totalPlanes; plane++) {
-				pos.setIndex(plane);
-				pos.localize(planeIndex);
-				applyOperationToPlane(planeIndex);
+		else { // 3 or more dimensions
+			while (planePos.hasNext()) {
+				planePos.fwd();
+				applyOperationToPlane(planePos);
 			}
 		}
 		input.update();
 	}
 	
-	private void applyOperationToPlane(long[] planeIndex) {
+	private void applyOperationToPlane(Position planePos) {
 
 		long[] imageDims = new long[inputImage.numDimensions()];
 		inputImage.dimensions(imageDims);
@@ -157,8 +154,8 @@ public class Neighborhood3x3Operation {
 		long[] localInputPosition = new long[imageDims.length];
 
 		for (int i = 2; i < inputPosition.length; i++) {
-			inputPosition[i] = planeIndex[i-2];
-			localInputPosition[i] = planeIndex[i-2];
+			inputPosition[i] = planePos.getLongPosition(i-2);
+			localInputPosition[i] = planePos.getLongPosition(i-2);
 		}
 
 		for (long y = selection.y; y < selection.height; y++) {

@@ -174,9 +174,8 @@ public class XYFlipper implements OutputAlgorithm {
 			processPlane(planePos, rx, ry, rw, rh);
 		}
 		else {  // more than two dimensions
-			long totalPlanes = extents.numElements();
-			for (long pNum = 0; pNum < totalPlanes; pNum++) {
-				planePos.setIndex(pNum);
+			while (planePos.hasNext()) {
+				planePos.fwd();
 				processPlane(planePos, rx, ry, rw, rh);
 			}
 		}

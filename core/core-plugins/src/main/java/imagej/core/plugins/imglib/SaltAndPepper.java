@@ -116,9 +116,8 @@ public class SaltAndPepper implements ImageJPlugin {
 			assignPixelsInXYPlane(planePos, rng);
 		}
 		else { // 3 or more dimsensions
-			long totalPlanes = extents.numElements();
-			for (long plane = 0; plane < totalPlanes; plane++) {
-				planePos.setIndex(plane);
+			while (planePos.hasNext()) {
+				planePos.fwd();
 				assignPixelsInXYPlane(planePos, rng);
 			}
 		}
