@@ -71,7 +71,6 @@ import javax.swing.border.EmptyBorder;
 
 import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
-import net.imglib2.meta.LabeledAxes;
 import net.imglib2.roi.RegionOfInterest;
 import net.miginfocom.swing.MigLayout;
 
@@ -323,7 +322,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		}
 
 		for (Axis axis : axisSliders.keySet()) {
-			if (display.getAxisIndex(axis) < 0) {
+			if (dispAxes.indexOf(axis) < 0) {
 				sliders.remove(axisSliders.get(axis));
 				sliders.remove(axisLabels.get(axis));
 				axisSliders.remove(axis);
