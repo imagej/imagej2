@@ -1,5 +1,5 @@
 //
-// ModuleInfoEvent.java
+// ModulesAddedEvent.java
 //
 
 /*
@@ -34,32 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module.event;
 
-import imagej.event.ImageJEvent;
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * An event indicating something has happened to one or more {@link ModuleInfo}
- * objects.
+ * An event indicating one or more modules have been added to the
+ * {@link ModuleService}.
  * 
  * @author Curtis Rueden
  */
-public class ModuleInfoEvent extends ImageJEvent {
+public class ModulesAddedEvent extends ModulesChangedEvent {
 
-	private final List<ModuleInfo> infoList = new ArrayList<ModuleInfo>();
-
-	public ModuleInfoEvent(final ModuleInfo info) {
-		infoList.add(info);
+	public ModulesAddedEvent(final ModuleInfo o) {
+		super(o);
 	}
 
-	public ModuleInfoEvent(final List<ModuleInfo> infos) {
-		infoList.addAll(infos);
-	}
-
-	public List<ModuleInfo> getModuleInfos() {
-		return infoList;
+	public ModulesAddedEvent(final Collection<? extends ModuleInfo> c) {
+		super(c);
 	}
 
 }

@@ -41,7 +41,7 @@ import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.module.event.ModulesUpdatedEvent;
+import imagej.ext.module.event.ModuleUpdatedEvent;
 import imagej.util.Log;
 
 import java.lang.reflect.Field;
@@ -190,7 +190,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 
 	@Override
 	public void update() {
-		Events.publish(new ModulesUpdatedEvent(this));
+		Events.publish(new ModuleUpdatedEvent(this));
 	}
 
 	// -- Object methods --
