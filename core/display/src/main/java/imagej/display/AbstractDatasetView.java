@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
-import imagej.data.Extents;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -212,16 +211,10 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
-		dims = new long[img.numDimensions()];
+		long[] dims = new long[img.numDimensions()];
 		img.dimensions(dims);
-		planeDims = new long[dims.length-2];
-		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = dims[i+2];
-		Extents extents = new Extents(planeDims);
-		planePosObj = extents.createPosition();
-		planePosObj.first();
-		position = new long[dims.length];
-
+		setDimensions(dims);
+		
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
 			resetColorTables(false);
@@ -304,9 +297,9 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	private ColorTable8 getCurrentLUT(final int cPos) {
 		if (channelDimIndex >= 0) {
-			planePosObj.setPosition(cPos, channelDimIndex-2);
+			getPlanePosition().setPosition(cPos, channelDimIndex-2);
 		}
-		final int no = (int) planePosObj.getIndex();
+		final int no = (int) getPlanePosition().getIndex();
 		final ColorTable8 lut = dataset.getColorTable8(no);
 		if (lut != null) {
 			return lut; // return dataset-specific LUT
@@ -315,7 +308,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	private long getChannelCount() {
-		return channelDimIndex < 0 ? 1 : dims[channelDimIndex];
+		return channelDimIndex < 0 ? 1 : dataset.getExtents().dimension(channelDimIndex);
 	}
 
 	@SuppressWarnings("synthetic-access")

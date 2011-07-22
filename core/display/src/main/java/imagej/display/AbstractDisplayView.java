@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.DataObject;
+import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.event.DataObjectRestructuredEvent;
 import imagej.data.event.DataObjectUpdatedEvent;
@@ -61,9 +62,9 @@ public abstract class AbstractDisplayView implements DisplayView {
 	private final List<EventSubscriber<?>> subscribers =
 		new ArrayList<EventSubscriber<?>>();
 
-	protected long[] dims, planeDims;
-	protected long[] position;
-	protected Position planePosObj;
+	private long[] dims, planeDims;
+	private long[] position;
+	private Position planePosObj;
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
@@ -188,4 +189,14 @@ public abstract class AbstractDisplayView implements DisplayView {
 		return true;
 	}
 
+	public void setDimensions(long[] dims) {
+		this.dims = dims;
+		planeDims = new long[dims.length-2];
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = dims[i+2];
+		Extents extents = new Extents(planeDims);
+		planePosObj = extents.createPosition();
+		planePosObj.first();
+		position = new long[dims.length];
+	}
 }
