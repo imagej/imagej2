@@ -65,7 +65,7 @@ import net.java.sezpoz.IndexItem;
  * @see ITool
  * @see Tool
  */
-@Service(priority = Service.HIGH_PRIORITY)
+@Service
 public class ToolService implements IService {
 
 	private List<ToolInfo> toolEntries;
