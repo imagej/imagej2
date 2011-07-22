@@ -1,5 +1,5 @@
 //
-// ObjectsUpdatedEvent.java
+// ObjectsChangedEvent.java
 //
 
 /*
@@ -49,18 +49,19 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public class ObjectsUpdatedEvent extends ImageJEvent {
+public class ObjectsChangedEvent extends ImageJEvent {
 
 	private final List<Object> list = new ArrayList<Object>();
 
-	public ObjectsUpdatedEvent(final Object o) {
+	public ObjectsChangedEvent(final Object o) {
 		list.add(o);
 	}
 
-	public ObjectsUpdatedEvent(final Collection<? extends Object> c) {
+	public ObjectsChangedEvent(final Collection<?> c) {
 		list.addAll(c);
 	}
 
+	/** Gets the list of affected objects. */
 	public List<Object> getObjects() {
 		return Collections.unmodifiableList(list);
 	}

@@ -8,7 +8,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
-import imagej.object.event.ObjectsUpdatedEvent;
+import imagej.object.event.ObjectsChangedEvent;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingOutputWindow;
 
@@ -32,7 +32,7 @@ public class ShowSubscribers implements ImageJPlugin {
 	public void run() {
 		window = new SwingOutputWindow("Subscribers");
 		StaticSwingUtils.locateLowerRight(window);
-		listSubs(ObjectsUpdatedEvent.class);
+		listSubs(ObjectsChangedEvent.class);
 		listSubs(ObjectCreatedEvent.class);
 		listSubs(ObjectDeletedEvent.class);
 		listSubs(DisplayActivatedEvent.class);

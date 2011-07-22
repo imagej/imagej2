@@ -49,7 +49,7 @@ import imagej.event.Events;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
-import imagej.object.event.ObjectsUpdatedEvent;
+import imagej.object.event.ObjectsChangedEvent;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.ArrayList;
@@ -81,16 +81,16 @@ public class WatchOverlays implements ImageJPlugin {
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
-		final EventSubscriber<ObjectsUpdatedEvent> objectsUpdatedSubscriber =
-				new EventSubscriber<ObjectsUpdatedEvent>() {
+		final EventSubscriber<ObjectsChangedEvent> objectsUpdatedSubscriber =
+				new EventSubscriber<ObjectsChangedEvent>() {
 
 					@Override
-					public void onEvent(final ObjectsUpdatedEvent event) {
+					public void onEvent(final ObjectsChangedEvent event) {
 						updateOverlaysShown();
 					}
 				};
 		subscribers.add(objectsUpdatedSubscriber);
-		Events.subscribe(ObjectsUpdatedEvent.class, objectsUpdatedSubscriber);
+		Events.subscribe(ObjectsChangedEvent.class, objectsUpdatedSubscriber);
 		//
 //		final EventSubscriber<WinActivatedEvent> WinActivatedSubscriber =
 //				new EventSubscriber<WinActivatedEvent>() {
