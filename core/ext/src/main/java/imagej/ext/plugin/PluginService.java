@@ -36,14 +36,11 @@ package imagej.ext.plugin;
 
 import imagej.IService;
 import imagej.Service;
-import imagej.event.Events;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleRunner;
-import imagej.ext.module.event.ModuleInfoAddedEvent;
-import imagej.ext.module.event.ModuleInfoRemovedEvent;
 import imagej.ext.plugin.finder.IPluginFinder;
 import imagej.ext.plugin.finder.PluginFinder;
 import imagej.ext.plugin.process.PostprocessorPlugin;
@@ -51,17 +48,14 @@ import imagej.ext.plugin.process.PreprocessorPlugin;
 import imagej.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Service for keeping track of available plugins. Available plugins
- * are discovered using a library called SezPoz. Loading of the actual plugin
+ * Service for keeping track of available plugins. Available plugins are
+ * discovered using a library called SezPoz. Loading of the actual plugin
  * classes can be deferred until a particular plugin's first execution.
  * 
  * @author Curtis Rueden
@@ -71,40 +65,42 @@ import net.java.sezpoz.IndexItem;
 @Service
 public class PluginService implements IService {
 
-	/** The complete list of known plugins. */
-	private final List<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-
-	/** Table of plugin lists, organized by plugin type. */
-	private final Map<Class<?>, ArrayList<PluginInfo<?>>> pluginLists =
-		new ConcurrentHashMap<Class<?>, ArrayList<PluginInfo<?>>>();
+	private final PluginIndex pluginIndex = new PluginIndex();
 
 	/**
 	 * Rediscovers all plugins available on the classpath. Note that this will
 	 * clear any individual plugins added programmatically.
 	 */
 	public void reloadPlugins() {
-		findPlugins();
-		classifyPlugins();
-		sortPlugins();
+		pluginIndex.clear();
+		for (final IndexItem<PluginFinder, IPluginFinder> item : Index.load(
+			PluginFinder.class, IPluginFinder.class))
+		{
+			try {
+				final IPluginFinder finder = item.instance();
+				final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+				finder.findPlugins(plugins);
+				pluginIndex.addAll(plugins);
+			}
+			catch (final InstantiationException e) {
+				Log.warn("Invalid plugin finder: " + item, e);
+			}
+		}
 	}
 
 	/** Manually registers a plugin with the plugin service. */
-	public void addPlugin(final PluginModuleInfo<?> plugin) {
-		plugins.add(plugin);
-		registerType(plugin, true);
-		Events.publish(new ModuleInfoAddedEvent(plugin));
+	public void addPlugin(final PluginInfo<?> plugin) {
+		pluginIndex.add(plugin);
 	}
 
 	/** Manually unregisters a plugin with the plugin service. */
-	public void removePlugin(final PluginModuleInfo<?> plugin) {
-		plugins.remove(plugin);
-		unregisterType(plugin);
-		Events.publish(new ModuleInfoRemovedEvent(plugin));
+	public void removePlugin(final PluginInfo<?> plugin) {
+		pluginIndex.remove(plugin);
 	}
 
 	/** Gets the list of known plugins. */
 	public List<PluginInfo<?>> getPlugins() {
-		return Collections.unmodifiableList(plugins);
+		return pluginIndex.getAll();
 	}
 
 	/**
@@ -114,11 +110,8 @@ public class PluginService implements IService {
 	public List<ModuleInfo> getModules() {
 		// CTR FIXME - rework to avoid this HACKy method; use ModuleService instead
 		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : plugins) {
-			if (info instanceof ModuleInfo) {
-				final ModuleInfo moduleInfo = (ModuleInfo) info;
-				modules.add(moduleInfo);
-			}
+		for (final PluginInfo<?> info : pluginIndex.get(RunnablePlugin.class)) {
+			modules.add((ModuleInfo) info);
 		}
 		return modules;
 	}
@@ -131,9 +124,8 @@ public class PluginService implements IService {
 	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
 		final Class<P> type)
 	{
-		ArrayList<PluginInfo<?>> outputList = pluginLists.get(type);
-		if (outputList == null) outputList = new ArrayList<PluginInfo<?>>();
-		return (List) Collections.unmodifiableList(outputList);
+		List<PluginInfo<?>> outputList = pluginIndex.get(type);
+		return (List) outputList;
 	}
 
 	/**
@@ -146,7 +138,9 @@ public class PluginService implements IService {
 	{
 		final ArrayList<PluginInfo<P>> entries = new ArrayList<PluginInfo<P>>();
 		final String className = pluginClass.getName();
-		for (final PluginInfo<?> entry : plugins) {
+		System.out.println("getPluginsOfClass: " + className);//TEMP
+		for (final PluginInfo<?> entry : getPlugins()) {
+			System.out.println("Checking entry: " + entry.getClassName());//TEMP
 			if (entry.getClassName().equals(className)) {
 				@SuppressWarnings("unchecked")
 				final PluginInfo<P> match = (PluginInfo<P>) entry;
@@ -188,8 +182,13 @@ public class PluginService implements IService {
 				moduleInfo = (ModuleInfo) info;
 				break;
 			}
+			// should never happen, but just in case...
+			Log.warn("Not a ModuleInfo: " + info);
 		}
-		if (moduleInfo == null) return; // no modules found
+		if (moduleInfo == null) {
+			Log.error("No such plugin: " + pluginClass.getName());
+			return; // no modules found
+		}
 		run(moduleInfo, separateThread);
 	}
 
@@ -233,77 +232,6 @@ public class PluginService implements IService {
 	@Override
 	public void initialize() {
 		reloadPlugins();
-	}
-
-	// -- Helper methods --
-
-	/** Discovers and invokes all plugin finders. */
-	private void findPlugins() {
-		plugins.clear();
-		for (final IndexItem<PluginFinder, IPluginFinder> item : Index.load(
-			PluginFinder.class, IPluginFinder.class))
-		{
-			try {
-				final IPluginFinder finder = item.instance();
-				finder.findPlugins(plugins);
-			}
-			catch (final InstantiationException e) {
-				Log.warn("Invalid plugin finder: " + item, e);
-			}
-		}
-	}
-
-	/** Classifies plugins according to type. */
-	private void classifyPlugins() {
-		pluginLists.clear();
-		for (final PluginInfo<?> entry : plugins) {
-			registerType(entry, false);
-		}
-	}
-
-	/** Sorts plugin lists by priority. */
-	private void sortPlugins() {
-		for (final ArrayList<PluginInfo<?>> pluginList : pluginLists.values()) {
-			Collections.sort(pluginList);
-		}
-	}
-
-	/**
-	 * Inserts the given plugin into the appropriate type list.
-	 * 
-	 * @param entry {@link PluginInfo} to insert.
-	 * @param sorted Whether the plugin list is currently sorted. If true, the
-	 *          {@link PluginInfo} will be inserted into the correct sorted
-	 *          position. If false, the {@link PluginInfo} is merely appended.
-	 */
-	private void registerType(final PluginInfo<?> entry, final boolean sorted) {
-		final Class<?> type = entry.getPluginType();
-		ArrayList<PluginInfo<?>> pluginList = pluginLists.get(type);
-		if (pluginList == null) {
-			pluginList = new ArrayList<PluginInfo<?>>();
-			pluginLists.put(type, pluginList);
-		}
-		if (sorted) {
-			final int index = Collections.binarySearch(pluginList, entry);
-			if (index < 0) pluginList.add(-index - 1, entry);
-		}
-		else pluginList.add(entry);
-	}
-
-	/** Removes the given plugin from the appropriate type list. */
-	private void unregisterType(final PluginInfo<?> entry) {
-		final Class<?> type = entry.getPluginType();
-		final ArrayList<PluginInfo<?>> pluginList = pluginLists.get(type);
-		if (pluginList == null) {
-			Log.warn("unregisterType: empty type list for entry: " + entry);
-			return;
-		}
-		final int index = Collections.binarySearch(pluginList, entry);
-		if (index < 0) {
-			Log.warn("unregisterType: unknown plugin entry: " + entry);
-			return;
-		}
-		pluginList.remove(index);
 	}
 
 }
