@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ui.swing;
 
 import imagej.ImageJ;
-import imagej.ext.IndexItemInfo;
+import imagej.ext.AbstractUIDetails;
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ui.menu.ShadowMenu;
@@ -203,7 +203,8 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			final StringBuilder sb = new StringBuilder(menuLabel);
 			if (isShowFull()) {
 				final List<MenuEntry> menuPath = info.getMenuPath();
-				final String menuString = IndexItemInfo.getMenuString(menuPath, false);
+				final String menuString =
+					AbstractUIDetails.getMenuString(menuPath, false);
 				if (!menuString.isEmpty()) sb.append(" (in " + menuString + ")");
 				sb.append(" : " + info.toString());
 			}
