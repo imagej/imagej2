@@ -1,5 +1,5 @@
 //
-// ObjectChangedEvent.java
+// ObjectModifiedEvent.java
 //
 
 /*
@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.object.event;
 
 /**
- * An event indicating an object has been changed somehow.
+ * An event indicating an object has been modified somehow.
  *
  * @author Curtis Rueden
  */
-public class ObjectChangedEvent extends ObjectEvent {
+public class ObjectModifiedEvent extends ObjectEvent {
 
-	public ObjectChangedEvent(final Object obj) {
+	public ObjectModifiedEvent(final Object obj) {
 		super(obj);
 	}
 
