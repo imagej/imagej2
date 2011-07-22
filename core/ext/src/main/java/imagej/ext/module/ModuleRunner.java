@@ -61,12 +61,12 @@ public class ModuleRunner {
 	private final List<? extends ModulePostprocessor> post;
 
 	public ModuleRunner(final Module module,
-		final List<? extends ModulePreprocessor> preprocessors,
-		final List<? extends ModulePostprocessor> postprocessors)
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post)
 	{
 		this.module = module;
-		pre = preprocessors;
-		post = postprocessors;
+		this.pre = pre;
+		this.post = post;
 	}
 
 	/**
@@ -91,8 +91,9 @@ public class ModuleRunner {
 		Events.publish(new ModuleFinishedEvent(module));
 	}
 
-	/** Feeds the module through the available {@link ModulePreprocessor}s. */
+	/** Feeds the module through the {@link ModulePreprocessor}s. */
 	public boolean preProcess() {
+		if (pre == null) return true; // no preprocessors
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
 			Events.publish(new ModulePreprocessEvent(module, p));
@@ -108,8 +109,9 @@ public class ModuleRunner {
 		return true;
 	}
 
-	/** Feeds the module through the available {@link ModulePostprocessor}s. */
+	/** Feeds the module through the {@link ModulePostprocessor}s. */
 	public void postProcess() {
+		if (post == null) return; // no postprocessors
 		for (final ModulePostprocessor p : post) {
 			p.process(module);
 			Events.publish(new ModulePostprocessEvent(module, p));
