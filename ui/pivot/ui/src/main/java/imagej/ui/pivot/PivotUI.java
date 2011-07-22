@@ -41,8 +41,12 @@ import imagej.ext.module.ui.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.DialogPrompt;
+import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
 
 import java.util.List;
 
@@ -127,6 +131,18 @@ public class PivotUI implements Application, UserInterface {
 	@Override
 	public PivotStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public OutputWindow newOutputWindow(final String title) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public DialogPrompt dialogPrompt(final String message, final String title,
+		final MessageType msg, final OptionType option)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// -- Helper methods --

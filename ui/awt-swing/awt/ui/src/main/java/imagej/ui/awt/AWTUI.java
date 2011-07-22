@@ -41,6 +41,10 @@ import imagej.ext.module.ui.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.awt.MenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.DialogPrompt;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
 
@@ -101,6 +105,18 @@ public class AWTUI implements UserInterface {
 	@Override
 	public AWTStatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	@Override
+	public OutputWindow newOutputWindow(final String title) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public DialogPrompt dialogPrompt(final String message, final String title,
+		final MessageType msg, final OptionType option)
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	// -- Helper methods --
