@@ -86,8 +86,7 @@ import javax.swing.WindowConstants;
  * @author Barry DeZonia
  */
 @UI
-public class SwingUI implements UserInterface
-{
+public class SwingUI implements UserInterface {
 
 	private static final String README_FILE = "README.txt";
 	private static final String PREF_FIRST_RUN = "firstRun-" + ImageJ.VERSION;
@@ -99,7 +98,7 @@ public class SwingUI implements UserInterface
 	private ShadowMenu rootMenu;
 
 	private ArrayList<EventSubscriber<?>> subscribers;
-	
+
 	// -- UserInterface methods --
 
 	@Override
@@ -114,6 +113,7 @@ public class SwingUI implements UserInterface
 		pane.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() {
+
 			@Override
 			public void windowClosing(final WindowEvent evt) {
 				Events.publish(new AppQuitEvent());
@@ -127,7 +127,7 @@ public class SwingUI implements UserInterface
 		frame.setVisible(true);
 
 		subscribeToEvents();
-		
+
 		displayReadme();
 	}
 
@@ -149,8 +149,8 @@ public class SwingUI implements UserInterface
 	// -- Helper methods --
 
 	/**
-	 * Creates the master {@link ShadowMenu} structure from which
-	 * {@link JMenuBar}s are generated.
+	 * Creates the master {@link ShadowMenu} structure from which {@link JMenuBar}
+	 * s are generated.
 	 */
 	private void initializeMenus() {
 		// CTR FIXME - rework this
@@ -174,14 +174,14 @@ public class SwingUI implements UserInterface
 	private void deleteMenuBar(final JFrame f) {
 		f.setJMenuBar(null);
 		// HACK - w/o this next call the JMenuBars do not get garbage collected.
-		//   At least its true on the Mac. This might be a Java bug. Update:
-		//   I hunted on web and have found multiple people with the same problem.
-		//   The Apple ScreenMenus don't GC when a Frame disposes. Their workaround
-		//   was exactly the same. I have not found any official documentation of
-		//   this issue.
+		// At least its true on the Mac. This might be a Java bug. Update:
+		// I hunted on web and have found multiple people with the same problem.
+		// The Apple ScreenMenus don't GC when a Frame disposes. Their workaround
+		// was exactly the same. I have not found any official documentation of
+		// this issue.
 		f.setMenuBar(null);
 	}
-	
+
 	private void displayReadme() {
 		final String firstRun = Prefs.get(getClass(), PREF_FIRST_RUN);
 		if (firstRun != null) return;
@@ -292,14 +292,13 @@ public class SwingUI implements UserInterface
 			new EventSubscriber<DisplayCreatedEvent>() {
 
 				@Override
-				public void onEvent(DisplayCreatedEvent event) {
+				public void onEvent(final DisplayCreatedEvent event) {
 					final Display display = event.getObject();
 					final DisplayWindow window = display.getDisplayWindow();
 					if (!(window instanceof SwingDisplayWindow)) return;
 					final SwingDisplayWindow swingWindow = (SwingDisplayWindow) window;
 					// add a copy of the JMenuBar to the new display
-					if (swingWindow.getJMenuBar() == null)
-						createMenuBar(swingWindow);
+					if (swingWindow.getJMenuBar() == null) createMenuBar(swingWindow);
 				}
 			};
 		subscribers.add(createSubscriber);
@@ -309,7 +308,7 @@ public class SwingUI implements UserInterface
 			new EventSubscriber<DisplayDeletedEvent>() {
 
 				@Override
-				public void onEvent(DisplayDeletedEvent event) {
+				public void onEvent(final DisplayDeletedEvent event) {
 					final Display display = event.getObject();
 					final DisplayWindow window = display.getDisplayWindow();
 					if (!(window instanceof SwingDisplayWindow)) return;
@@ -322,12 +321,15 @@ public class SwingUI implements UserInterface
 	}
 
 	@Override
-	public OutputWindow newOutputWindow(String title) {
+	public OutputWindow newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public DialogPrompt dialogPrompt(String message, String title, MessageType msg, OptionType option) {
-		return new SwingDialogPrompt( message,  title,  msg,  option);
+	public DialogPrompt dialogPrompt(final String message, final String title,
+		final MessageType msg, final OptionType option)
+	{
+		return new SwingDialogPrompt(message, title, msg, option);
 	}
+
 }
