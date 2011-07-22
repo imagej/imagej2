@@ -1,5 +1,5 @@
 //
-// DynamicPlugin.java
+// DynamicPluginTest.java
 //
 
 /*
@@ -35,29 +35,39 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.debug;
 
 import imagej.ImageJ;
+import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.ext.module.AbstractModuleItem;
-import imagej.ext.plugin.ImageJModule;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 
 import java.util.Map;
 
+import net.imglib2.img.Axes;
+import net.imglib2.img.Axis;
+
 /**
- * An example plugin showing how to have a varying number of inputs using the
- * ImageJ module framework.
+ * An example ImageJ plugin with a varying number of inputs and outputs.
  * 
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Sandbox>Dynamic Plugin")
-public class DynamicPlugin extends ImageJModule {
+public class DynamicPluginTest extends DynamicPlugin {
 
-	public DynamicPlugin() {
-		// add one input per available display
+	public DynamicPluginTest() {
+		// add one input and one output per available display
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
-		for (Display display : displayService.getDisplays()) {
-			getInfo().addInput(new DisplayModuleItem(display));
+		for (final Display display : displayService.getDisplays()) {
+			final String name = display.getName();
+			final DefaultModuleItem<Integer> input =
+				new DefaultModuleItem<Integer>(this, name, Integer.class);
+			input.setMinimumValue(1);
+			addInput(input);
+			final DefaultModuleItem<Dataset> output =
+				new DefaultModuleItem<Dataset>(this, name + "-data", Dataset.class);
+			addOutput(output);
 		}
 	}
 
@@ -65,31 +75,24 @@ public class DynamicPlugin extends ImageJModule {
 	public void run() {
 		Log.info("DynamicPlugin results:");
 		final Map<String, Object> inputs = getInputs();
-		for (String name : inputs.keySet()) {
-			final Object value = inputs.get(name);
+		for (final String name : inputs.keySet()) {
+			// harvest input value
+			final int value = (Integer) inputs.get(name);
+
+			// print some debugging information
 			Log.info("\t" + name + " = " + value);
+
+			// create dataset and assign to the corresponding output
+			final String outputName = name + "-data";
+			final long[] dims = { value, value };
+			final Axis[] axes = { Axes.X, Axes.Y };
+			final int bitsPerPixel = 8;
+			final boolean signed = false;
+			final boolean floating = false;
+			final Dataset dataset =
+				Dataset.create(dims, outputName, axes, bitsPerPixel, signed, floating);
+			setOutput(outputName, dataset);
 		}
-	}
-
-	private class DisplayModuleItem extends AbstractModuleItem<Integer> {
-
-		private Display display;
-
-		public DisplayModuleItem(final Display display) {
-			super(DynamicPlugin.this.getInfo());
-			this.display = display;
-		}
-
-		@Override
-		public Class<Integer> getType() {
-			return Integer.class;
-		}
-
-		@Override
-		public String getName() {
-			return display.getName();
-		}
-
 	}
 
 }
