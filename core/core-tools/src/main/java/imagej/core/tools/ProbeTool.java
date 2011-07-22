@@ -36,6 +36,7 @@ package imagej.core.tools;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -108,7 +109,7 @@ public class ProbeTool extends AbstractTool {
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
 			final int cy = coords.getIntY();
-			final long[] planePos = activeView.getPlanePosition();
+			final Position planePos = activeView.getPlanePosition();
 			fillCurrentPosition(cx, cy, planePos);
 			randomAccess.setPosition(position);
 			final double doubleValue = randomAccess.get().getRealDouble();
@@ -150,16 +151,17 @@ public class ProbeTool extends AbstractTool {
 	}
 
 	private void fillCurrentPosition(final long x, final long y,
-		final long[] planePos)
+		final Position planePos)
 	{
 		// TODO - FIXME - assumes x & y axes are first two
 		position[0] = x;
 		position[1] = y;
 		for (int i = 2; i < position.length; i++) {
-			position[i] = planePos[i - 2];
+			position[i] = planePos.getLongPosition(i - 2);
 		}
 	}
 	
+	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 
 		subscribers = new ArrayList<EventSubscriber<?>>();

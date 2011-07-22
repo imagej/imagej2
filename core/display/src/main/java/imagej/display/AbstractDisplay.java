@@ -58,21 +58,29 @@ public abstract class AbstractDisplay implements Display {
 	
 	private final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
 
-	protected List<Axis> getAxes() {
+	public List<Axis> getAxes() {
 		ArrayList<Axis> axes = new ArrayList<Axis>();
 		for (DisplayView v:this.getViews()) {
 			DataObject o = v.getDataObject();
-			int nAxes = 0;
+			if (o instanceof Dataset) {
+				Dataset dataset = (Dataset)o;
+				int nAxes = dataset.getImgPlus().numDimensions();
+				LabeledAxes a = (LabeledAxes)(o);
+				for (int i=0; i<nAxes; i++) {
+					Axis axis = a.axis(i);
+					if (! axes.contains(axis)) {
+						axes.add(axis);
+					}
+				}
+			}
+		}
+		for (DisplayView v:this.getViews()) {
+			DataObject o = v.getDataObject();
 			if (o instanceof Overlay) {
 				Overlay overlay = (Overlay)o;
 				if (overlay.getRegionOfInterest() == null) continue;
-				nAxes = overlay.getRegionOfInterest().numDimensions();
-			} else if (o instanceof Dataset) {
-				Dataset dataset = (Dataset)o;
-				nAxes = dataset.getImgPlus().numDimensions();
-			}
-			if (o instanceof LabeledAxes) {
-				LabeledAxes a = (LabeledAxes)(v.getDataObject());
+				int nAxes = overlay.getRegionOfInterest().numDimensions();
+				LabeledAxes a = (LabeledAxes)(o);
 				for (int i=0; i<nAxes; i++) {
 					Axis axis = a.axis(i);
 					if (! axes.contains(axis)) {

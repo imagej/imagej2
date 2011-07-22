@@ -219,8 +219,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 			planeDims[i] = dims[i+2];
 		Extents extents = new Extents(planeDims);
 		planePosObj = extents.createPosition();
+		planePosObj.first();
 		position = new long[dims.length];
-		planePos = new long[planeDims.length];
 
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
@@ -304,9 +304,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	private ColorTable8 getCurrentLUT(final int cPos) {
 		if (channelDimIndex >= 0) {
-			planePos[channelDimIndex - 2] = cPos;
+			planePosObj.setPosition(cPos, channelDimIndex-2);
 		}
-		planePosObj.setPosition(planePos);
 		final int no = (int) planePosObj.getIndex();
 		final ColorTable8 lut = dataset.getColorTable8(no);
 		if (lut != null) {

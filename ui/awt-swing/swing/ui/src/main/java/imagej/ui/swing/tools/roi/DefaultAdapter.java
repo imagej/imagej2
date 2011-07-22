@@ -116,7 +116,7 @@ public class DefaultAdapter extends AbstractJHotDrawOverlayAdapter<Overlay> {
 			byte [] bankData = db.getData();
 			RealRandomAccess<BitType> ra = roi.realRandomAccess();
 			for (int i=2; i < ra.numDimensions(); i++) {
-				long position = view.getPlanePosition()[i-2];
+				long position = view.getPlanePosition().getLongPosition(i-2);
 				ra.setPosition(position, i);
 			}
 			int index = 0;

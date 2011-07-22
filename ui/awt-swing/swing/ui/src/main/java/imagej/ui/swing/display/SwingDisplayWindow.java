@@ -36,6 +36,7 @@ package imagej.ui.swing.display;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
@@ -57,6 +58,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -146,15 +148,12 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	@Override
 	public void update() {
 		setLabel(makeLabel());
+		List<Axis> dispAxes = display.getAxes();
 		for (final DisplayView view : display.getViews()) {
-			DataObject dataObject = view.getDataObject();
-			if (dataObject instanceof LabeledAxes) {
-				for (Axis axis : axisPositions.keySet()) {
-					LabeledAxes la = (LabeledAxes)dataObject;
-					int index = la.getAxisIndex(axis);
-					if (index >= 0) {
-						view.setPosition(axisPositions.get(axis), index);
-					}
+			for (Axis axis : axisPositions.keySet()) {
+				int index = dispAxes.indexOf(axis);
+				if (index >= 0) {
+					view.setPosition(axisPositions.get(axis), index);
 				}
 			}
 			view.update();
@@ -282,8 +281,9 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		Arrays.fill(min, Long.MAX_VALUE);
 		final long[] max = new long[display.numDimensions()];
 		Arrays.fill(max, Long.MIN_VALUE);
-		final Axis[] axes = new Axis[display.numDimensions()];
-		display.axes(axes);
+		//final Axis[] axes = new Axis[display.numDimensions()];
+		//display.axes(axes);
+		List<Axis> dispAxes = display.getAxes();
 		/*
 		 * Run through all of the views and determine the extents of each.
 		 * 
@@ -300,19 +300,19 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			if (o instanceof Dataset) {
 				Dataset ds = (Dataset)o;
 				long [] dims = ds.getDims();
-				for (int i=0; i < axes.length; i++) {
-					int index = ds.getAxisIndex(axes[i]);
+				for (int i=0; i < dispAxes.size(); i++) {
+					int index = ds.getAxisIndex(dispAxes.get(i));
 					if (index >= 0) {
-						min[i] = Math.min(0, min[index]);
-						max[i] = Math.max(dims[index], max[i]);
+						min[i] = Math.min(min[i], 0);
+						max[i] = Math.max(max[i], dims[index]);
 					}
 				}
 			} else if (o instanceof Overlay) {
 				Overlay overlay = (Overlay)o;
 				RegionOfInterest roi = overlay.getRegionOfInterest();
 				if (roi != null) {
-					for (int i=0; i < axes.length; i++) {
-						int index = overlay.getAxisIndex(axes[i]);
+					for (int i=0; i < dispAxes.size(); i++) {
+						int index = overlay.getAxisIndex(dispAxes.get(i));
 						if ((index >= 0) && (index < roi.numDimensions())) {
 							min[i] = Math.min(min[i],(long) Math.ceil(roi.realMin(index)));
 							max[i] = Math.max(max[i],(long) Math.floor(roi.realMax(index)));
@@ -336,8 +336,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			// has changed. check that we have correct range.
 			JScrollBar slider = axisSliders.get(axis);
 			if (slider != null) {
-				for (int i = 0; i < axes.length; i++) {
-					if (axis == axes[i]) {
+				for (int i = 0; i < dispAxes.size(); i++) {
+					if (axis == dispAxes.get(i)) {
 						if ((slider.getMinimum() != min[i]) ||
 								(slider.getMaximum() != max[i])) {
 							if (slider.getValue() > max[i])
@@ -350,8 +350,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			}
 		}
 		
-		for (int i = 0; i < axes.length; i++) {
-			final Axis axis = axes[i];
+		for (int i = 0; i < dispAxes.size(); i++) {
+			final Axis axis = dispAxes.get(i);
 			if (axisSliders.containsKey(axis)) continue;
 			if (Axes.isXY(axis)) continue;
 			if (min[i] >= max[i]-1) continue;
@@ -388,14 +388,14 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 		final int yIndex = dataset.getAxisIndex(Axes.Y);
 		final long[] dims = dataset.getDims();
 		final Axis[] axes = dataset.getAxes();
-		final long[] pos = view.getPlanePosition();
+		final Position pos = view.getPlanePosition();
 
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0, p = -1; i < dims.length; i++) {
 			if (Axes.isXY(axes[i])) continue;
 			p++;
 			if (dims[i] == 1) continue;
-			sb.append(axes[i] + ": " + (pos[p] + 1) + "/" + dims[i] + "; ");
+			sb.append(axes[i] + ": " + (pos.getLongPosition(p) + 1) + "/" + dims[i] + "; ");
 		}
 		sb.append(dims[xIndex] + "x" + dims[yIndex] + "; ");
 		sb.append(dataset.getTypeLabel());
