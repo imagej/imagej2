@@ -45,21 +45,6 @@ import org.bushe.swing.event.EventBus;
  */
 public final class Events {
 
-	/** Highest priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int FIRST_PRIORITY = -100;
-
-	/** High priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int HIGH_PRIORITY = -50;
-
-	/** Default priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int NORMAL_PRIORITY = 0;
-
-	/** Low priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int LOW_PRIORITY = 50;
-
-	/** Lowest priority event, for use with {@link PriorityEventSubscriber}. */
-	public static final int LAST_PRIORITY = 100;
-
 	private Events() {
 		// prevent instantiation of utility class
 	}
