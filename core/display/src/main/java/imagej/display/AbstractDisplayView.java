@@ -62,9 +62,9 @@ public abstract class AbstractDisplayView implements DisplayView {
 	private final List<EventSubscriber<?>> subscribers =
 		new ArrayList<EventSubscriber<?>>();
 
-	private long[] dims, planeDims;
+	private long[] planeDims;
 	private long[] position;
-	private Position planePosObj;
+	private Position planePosition;
 
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
@@ -95,12 +95,12 @@ public abstract class AbstractDisplayView implements DisplayView {
 
 	@Override
 	public Position getPlanePosition() {
-		return planePosObj;
+		return planePosition;
 	}
 
 	@Override
 	public long getPlaneIndex() {
-		return planePosObj.getIndex();
+		return planePosition.getIndex();
 	}
 
 	@Override
@@ -111,9 +111,8 @@ public abstract class AbstractDisplayView implements DisplayView {
 	@Override
 	public void setPosition(final long value, final int dim) {
 		position[dim] = value;
-		for (int i = 0; i < planePosObj.numDimensions(); i++) {
-			planePosObj.setPosition(position[i+2], i);
-		}
+		if (dim >= 2)
+			planePosition.setPosition(value, dim-2);
 	}
 
 	@Override
@@ -190,13 +189,12 @@ public abstract class AbstractDisplayView implements DisplayView {
 	}
 
 	public void setDimensions(long[] dims) {
-		this.dims = dims;
+		position = new long[dims.length];
 		planeDims = new long[dims.length-2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = dims[i+2];
 		Extents extents = new Extents(planeDims);
-		planePosObj = extents.createPosition();
-		planePosObj.first();
-		position = new long[dims.length];
+		planePosition = extents.createPosition();
+		planePosition.first();
 	}
 }
