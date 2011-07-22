@@ -146,7 +146,6 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 
 	@Override
 	public void update() {
-		setLabel(makeLabel());
 		List<Axis> dispAxes = display.getAxes();
 		for (final DisplayView view : display.getViews()) {
 			for (Axis axis : axisPositions.keySet()) {
@@ -157,6 +156,7 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			}
 			view.update();
 		}
+		setLabel(makeLabel());
 	}
 
 	@Override
