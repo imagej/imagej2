@@ -50,7 +50,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Dynamic Plugin")
+@Plugin(menuPath = "Plugins>Sandbox>Dynamic Plugin")
 public class DynamicPlugin extends ImageJModule {
 
 	public DynamicPlugin() {
