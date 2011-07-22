@@ -1,5 +1,5 @@
 //
-// DataObjectChangedEvent.java
+// DataObjectModifiedEvent.java
 //
 
 /*
@@ -35,18 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.data.event;
 
 import imagej.data.DataObject;
-import imagej.object.event.ObjectChangedEvent;
+import imagej.object.event.ObjectModifiedEvent;
 
 /**
- * An event indicating a {@link DataObject} has changed somehow.
+ * An event indicating a {@link DataObject} has been modified somehow.
  * 
  * @author Curtis Rueden
  */
-public class DataObjectChangedEvent extends ObjectChangedEvent {
+public class DataObjectModifiedEvent extends ObjectModifiedEvent {
 
 	private final DataObject dataObject;
 
-	public DataObjectChangedEvent(final DataObject dataObject) {
+	public DataObjectModifiedEvent(final DataObject dataObject) {
 		super(dataObject);
 		this.dataObject = dataObject;
 	}

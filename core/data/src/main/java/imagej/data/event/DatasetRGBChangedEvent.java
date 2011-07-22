@@ -37,7 +37,7 @@ package imagej.data.event;
 import imagej.data.Dataset;
 
 /**
- * An event indicating a {@link Dataset} has been changed somehow.
+ * An event indicating a {@link Dataset}'s RGB settings have changed.
  * 
  * @author Barry DeZonia
  */
@@ -46,4 +46,5 @@ public class DatasetRGBChangedEvent extends DatasetUpdatedEvent {
 	public DatasetRGBChangedEvent(final Dataset dataset) {
 		super(dataset);
 	}
+
 }

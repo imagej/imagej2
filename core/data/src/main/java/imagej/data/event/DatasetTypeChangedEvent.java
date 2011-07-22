@@ -37,7 +37,7 @@ package imagej.data.event;
 import imagej.data.Dataset;
 
 /**
- * An event indicating a {@link Dataset} has been changed somehow.
+ * An event indicating a {@link Dataset}'s type has been changed.
  * 
  * @author Barry DeZonia
  */
