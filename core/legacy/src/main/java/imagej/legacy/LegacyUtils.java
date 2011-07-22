@@ -991,10 +991,6 @@ public final class LegacyUtils {
 
 		final ImageStack stack = new ImageStack(dimValues[0], dimValues[1]);
 
-		final long[] planeDims = new long[ds.getImgPlus().numDimensions()];
-		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = ds.getImgPlus().dimension(i + 2);
-
 		Object dummyPlane = null;
 		for (long t = 0; t < tCount; t++) {
 			for (long z = 0; z < zCount; z++) {
