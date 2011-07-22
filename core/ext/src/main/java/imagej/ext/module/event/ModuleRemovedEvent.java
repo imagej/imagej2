@@ -41,9 +41,9 @@ import imagej.ext.module.ModuleInfo;
  *
  * @author Curtis Rueden
  */
-public class ModuleInfoRemovedEvent extends ModuleInfoEvent {
+public class ModuleRemovedEvent extends ModuleInfoEvent {
 
-	public ModuleInfoRemovedEvent(final ModuleInfo info) {
+	public ModuleRemovedEvent(final ModuleInfo info) {
 		super(info);
 	}
 

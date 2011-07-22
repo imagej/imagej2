@@ -36,7 +36,7 @@ package imagej.ext.module;
 
 import imagej.event.Events;
 import imagej.ext.AbstractUIDetails;
-import imagej.ext.module.event.ModuleInfoUpdatedEvent;
+import imagej.ext.module.event.ModuleUpdatedEvent;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 
 	@Override
 	public void update() {
-		Events.publish(new ModuleInfoUpdatedEvent(this));
+		Events.publish(new ModuleUpdatedEvent(this));
 	}
 
 }

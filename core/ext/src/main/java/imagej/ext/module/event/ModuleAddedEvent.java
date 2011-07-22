@@ -1,5 +1,5 @@
 //
-// ModuleInfoUpdatedEvent.java
+// ModuleInfoAddedEvent.java
 //
 
 /*
@@ -37,13 +37,13 @@ package imagej.ext.module.event;
 import imagej.ext.module.ModuleInfo;
 
 /**
- * An event indicating a {@link ModuleInfo} has been modified.
+ * An event indicating a {@link ModuleInfo} has been added to the list.
  *
  * @author Curtis Rueden
  */
-public class ModuleInfoUpdatedEvent extends ModuleInfoEvent {
+public class ModuleAddedEvent extends ModuleInfoEvent {
 
-	public ModuleInfoUpdatedEvent(final ModuleInfo info) {
+	public ModuleAddedEvent(final ModuleInfo info) {
 		super(info);
 	}
 
