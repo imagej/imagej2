@@ -1,5 +1,5 @@
 //
-// ObjectChangedEvent.java
+// ObjectsUpdatedEvent.java
 //
 
 /*
@@ -34,10 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object.event;
 
+import imagej.object.ObjectService;
+
 /**
- * An event indicating an object has been changed somehow.
- *
- * @author Curtis Rueden
+ * An event indicating the list of objects registered with the
+ * {@link ObjectService} has changed.
+ * 
+ * @author Grant Harris
  */
 public class ObjectsUpdatedEvent extends ObjectEvent {
 
