@@ -40,7 +40,8 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
-import imagej.object.event.ObjectsUpdatedEvent;
+import imagej.object.event.ObjectsAddedEvent;
+import imagej.object.event.ObjectsRemovedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,13 +86,13 @@ public final class ObjectService implements IService {
 	/** Registers an object with the object service. */
 	public void addObject(final Object obj) {
 		objectIndex.add(obj);
-		Events.publish(new ObjectsUpdatedEvent(obj));
+		Events.publish(new ObjectsAddedEvent(obj));
 	}
 
 	/** Deregisters an object with the object service. */
 	public void removeObject(final Object obj) {
 		objectIndex.remove(obj);
-		Events.publish(new ObjectsUpdatedEvent(obj));
+		Events.publish(new ObjectsRemovedEvent(obj));
 	}
 
 	// -- IService methods --
