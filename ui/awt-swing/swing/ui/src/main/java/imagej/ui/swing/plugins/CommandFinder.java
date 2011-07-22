@@ -64,11 +64,10 @@ public class CommandFinder implements ImageJPlugin {
 		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
 
 		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no plugin selected
+		if (info == null) return; // no command selected
 
-		// execute selected plugin
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		pluginService.run(info, true);
+		// execute selected command
+		ImageJ.get(PluginService.class).run(info, true);
 	}
 
 }

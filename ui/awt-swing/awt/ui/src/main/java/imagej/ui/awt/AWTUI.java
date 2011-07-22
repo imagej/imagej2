@@ -37,8 +37,8 @@ package imagej.ui.awt;
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
 import imagej.ext.module.ui.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.awt.MenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.DialogPrompt;
@@ -123,8 +123,8 @@ public class AWTUI implements UserInterface {
 
 	private void createMenuBar() {
 		// CTR FIXME - rework this
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final List<ModuleInfo> modules = pluginService.getModules();
+		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final List<ModuleInfo> modules = moduleService.getModules();
 		final ShadowMenu rootMenu = new ShadowMenu(modules);
 		final MenuBar menuBar = new MenuBar();
 		new MenuBarCreator().createMenus(rootMenu, menuBar);

@@ -1,5 +1,5 @@
 //
-// ModuleInfoRemovedEvent.java
+// ModuleIndex.java
 //
 
 /*
@@ -32,19 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.module.event;
+package imagej.ext.module;
 
-import imagej.ext.module.ModuleInfo;
+import imagej.object.SortedObjectIndex;
 
 /**
- * An event indicating a {@link ModuleInfo} has been removed from the list.
- *
+ * Data structure for managing registered modules.
+ * 
  * @author Curtis Rueden
  */
-public class ModuleRemovedEvent extends ModuleInfoEvent {
+public class ModuleIndex extends SortedObjectIndex<ModuleInfo> {
 
-	public ModuleRemovedEvent(final ModuleInfo info) {
-		super(info);
+	public ModuleIndex() {
+		super(ModuleInfo.class);
 	}
 
 }

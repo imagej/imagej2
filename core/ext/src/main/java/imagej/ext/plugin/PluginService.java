@@ -35,12 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.IService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleRunner;
+import imagej.ext.module.ModuleService;
 import imagej.ext.plugin.finder.IPluginFinder;
 import imagej.ext.plugin.finder.PluginFinder;
 import imagej.ext.plugin.process.PostprocessorPlugin;
@@ -65,20 +65,34 @@ import net.java.sezpoz.IndexItem;
 @Service
 public class PluginService implements IService {
 
+	/** Index of registered plugins. */
 	private final PluginIndex pluginIndex = new PluginIndex();
+
+	// -- PluginService methods --
+
+	/** Gets the index of available plugins. */
+	public PluginIndex getIndex() {
+		return pluginIndex;
+	}
 
 	/**
 	 * Rediscovers all plugins available on the classpath. Note that this will
 	 * clear any individual plugins added programmatically.
 	 */
 	public void reloadPlugins() {
+		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+
+		// remove old runnable plugins from module service
+		moduleService.removeModules(getRunnablePlugins());
+
 		pluginIndex.clear();
 		for (final IndexItem<PluginFinder, IPluginFinder> item : Index.load(
 			PluginFinder.class, IPluginFinder.class))
 		{
 			try {
 				final IPluginFinder finder = item.instance();
-				final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
+				final ArrayList<PluginInfo<?>> plugins =
+					new ArrayList<PluginInfo<?>>();
 				finder.findPlugins(plugins);
 				pluginIndex.addAll(plugins);
 			}
@@ -86,6 +100,9 @@ public class PluginService implements IService {
 				Log.warn("Invalid plugin finder: " + item, e);
 			}
 		}
+
+		// add new runnable plugins to module service
+		moduleService.addModules(getRunnablePlugins());
 	}
 
 	/** Manually registers a plugin with the plugin service. */
@@ -104,48 +121,91 @@ public class PluginService implements IService {
 	}
 
 	/**
-	 * Gets the list of known plugins that can function as modules (i.e.,
-	 * {@link RunnablePlugin}s).
+	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
-	public List<ModuleInfo> getModules() {
-		// CTR FIXME - rework to avoid this HACKy method; use ModuleService instead
-		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : pluginIndex.get(RunnablePlugin.class)) {
-			modules.add((ModuleInfo) info);
-		}
-		return modules;
-	}
-
-	/**
-	 * Gets the list of plugins labeled with the given plugin type (e.g.,
-	 * {@link ImageJPlugin}).
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
 		final Class<P> type)
 	{
-		List<PluginInfo<?>> outputList = pluginIndex.get(type);
-		return (List) outputList;
+		final List<PluginInfo<?>> list = pluginIndex.get(type);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<P>> result = (List) list;
+		return result;
 	}
 
 	/**
-	 * Gets the list of plugins of the given class. Most modern plugins will have
-	 * only a single match, but some special plugin classes (such as
-	 * imagej.legacy.LegacyPlugin) may match many entries.
+	 * Gets the list of plugins of the given class.
+	 * <p>
+	 * Most plugins will have only a single match, but some special plugin classes
+	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * </p>
 	 */
 	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
 		final Class<P> pluginClass)
 	{
-		final ArrayList<PluginInfo<P>> entries = new ArrayList<PluginInfo<P>>();
-		final String className = pluginClass.getName();
-		for (final PluginInfo<?> entry : getPlugins()) {
-			if (entry.getClassName().equals(className)) {
-				@SuppressWarnings("unchecked")
-				final PluginInfo<P> match = (PluginInfo<P>) entry;
-				entries.add(match);
-			}
-		}
-		return entries;
+		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
+		getPluginsOfClass(pluginClass.getName(), getPlugins(), result);
+		return result;
+	}
+
+	/**
+	 * Gets the list of plugins with the given class name.
+	 * <p>
+	 * Most plugins will have only a single match, but some special plugin classes
+	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * </p>
+	 */
+	public List<PluginInfo<IPlugin>> getPluginsOfClass(final String className) {
+		final ArrayList<PluginInfo<IPlugin>> result =
+			new ArrayList<PluginInfo<IPlugin>>();
+		getPluginsOfClass(className, getPlugins(), result);
+		return result;
+	}
+
+	/** Gets the list of executable plugins (i.e., {@link RunnablePlugin}s). */
+	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins() {
+		return getRunnablePluginsOfType(RunnablePlugin.class);
+	}
+
+	/** Gets the list of executable plugins of the given type. */
+	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
+		getRunnablePluginsOfType(final Class<R> type)
+	{
+		final List<PluginInfo<?>> list = pluginIndex.get(type);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginModuleInfo<R>> result = (List) list;
+		return result;
+	}
+
+	/**
+	 * Gets the list of executable plugins of the given class.
+	 * <p>
+	 * Most plugins will have only a single match, but some special plugin classes
+	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * </p>
+	 */
+	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
+		getRunnablePluginsOfClass(final Class<R> pluginClass)
+	{
+		final ArrayList<PluginModuleInfo<R>> result =
+			new ArrayList<PluginModuleInfo<R>>();
+		getPluginsOfClass(pluginClass.getName(), getRunnablePlugins(), result);
+		return result;
+	}
+
+	/**
+	 * Gets the list of executable plugins with the given class name.
+	 * <p>
+	 * Most plugins will have only a single match, but some special plugin classes
+	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * </p>
+	 */
+	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
+		final String className)
+	{
+		final ArrayList<PluginModuleInfo<RunnablePlugin>> result =
+			new ArrayList<PluginModuleInfo<RunnablePlugin>>();
+		getPluginsOfClass(className, getRunnablePlugins(), result);
+		return result;
 	}
 
 	/** Creates one instance each of the available plugins of the given type. */
@@ -173,56 +233,46 @@ public class PluginService implements IService {
 	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
 		final boolean separateThread)
 	{
-		final List<PluginInfo<R>> infos = getPluginsOfClass(pluginClass);
-		ModuleInfo moduleInfo = null;
-		for (final PluginInfo<R> info : infos) {
-			if (info instanceof ModuleInfo) {
-				moduleInfo = (ModuleInfo) info;
-				break;
-			}
-			// should never happen, but just in case...
-			Log.warn("Not a ModuleInfo: " + info);
-		}
-		if (moduleInfo == null) {
+		final List<PluginModuleInfo<R>> plugins =
+			getRunnablePluginsOfClass(pluginClass);
+		if (plugins == null || plugins.size() == 0) {
+			// no matching plugins
 			Log.error("No such plugin: " + pluginClass.getName());
-			return; // no modules found
+			return;
 		}
-		run(moduleInfo, separateThread);
+		run(plugins.get(0), separateThread);
 	}
 
-	/** Executes the module represented by the given module info. */
-	public <R extends RunnablePlugin> void run(final ModuleInfo info,
-		final boolean separateThread)
-	{
-		try {
-			run(info.createModule(), separateThread);
-		}
-		catch (final ModuleException e) {
-			Log.error("Could not execute plugin: " + info, e);
-		}
+	/**
+	 * Executes the given module, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param info The module to instantiate and run.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 */
+	public void run(final ModuleInfo info, final boolean separateThread) {
+		final List<PreprocessorPlugin> pre =
+			createInstances(PreprocessorPlugin.class);
+		final List<PostprocessorPlugin> post =
+			createInstances(PostprocessorPlugin.class);
+		ImageJ.get(ModuleService.class).run(info, pre, post, separateThread);
 	}
 
-	/** Executes the given module. */
+	/**
+	 * Executes the given module, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param module The module to run.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 */
 	public void run(final Module module, final boolean separateThread) {
-		// TODO - Implement a better threading mechanism for launching plugins.
-		// Perhaps a ThreadService so that the UI can query currently
-		// running plugins and so forth?
-		if (separateThread) {
-			final String className = module.getInfo().getDelegateClassName();
-			final String threadName = "ModuleRunner-" + className;
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					final List<PreprocessorPlugin> pre =
-						createInstances(PreprocessorPlugin.class);
-					final List<PostprocessorPlugin> post =
-						createInstances(PostprocessorPlugin.class);
-					new ModuleRunner(module, pre, post).run();
-				}
-			}, threadName).start();
-		}
-		else module.run();
+		final List<PreprocessorPlugin> pre =
+			createInstances(PreprocessorPlugin.class);
+		final List<PostprocessorPlugin> post =
+			createInstances(PostprocessorPlugin.class);
+		ImageJ.get(ModuleService.class).run(module, pre, post, separateThread);
 	}
 
 	// -- IService methods --
@@ -230,6 +280,21 @@ public class PluginService implements IService {
 	@Override
 	public void initialize() {
 		reloadPlugins();
+	}
+
+	// -- Helper methods --
+
+	private <T extends PluginInfo<?>> void getPluginsOfClass(
+		final String className, final List<? extends PluginInfo<?>> srcList,
+		final List<T> destList)
+	{
+		for (final PluginInfo<?> info : srcList) {
+			if (info.getClassName().equals(className)) {
+				@SuppressWarnings("unchecked")
+				final T match = (T) info;
+				destList.add(match);
+			}
+		}
 	}
 
 }

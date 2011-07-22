@@ -104,8 +104,7 @@ public abstract class AWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final PluginService pluginService = ImageJ.get(PluginService.class);
-				pluginService.run(info, true);
+				ImageJ.get(PluginService.class).run(info, true);
 			}
 		});
 	}

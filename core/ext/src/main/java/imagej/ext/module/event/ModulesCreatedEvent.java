@@ -1,5 +1,5 @@
 //
-// ModuleInfoUpdatedEvent.java
+// ModulesCreatedEvent.java
 //
 
 /*
@@ -35,16 +35,25 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.module.event;
 
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
+
+import java.util.List;
 
 /**
- * An event indicating a {@link ModuleInfo} has been modified.
- *
+ * An event indicating a {@link ModuleInfo} has been created. The
+ * {@link ModuleService} responds to this event by adding the modules to its
+ * index.
+ * 
  * @author Curtis Rueden
  */
-public class ModuleUpdatedEvent extends ModuleInfoEvent {
+public class ModulesCreatedEvent extends ModuleInfoEvent {
 
-	public ModuleUpdatedEvent(final ModuleInfo info) {
+	public ModulesCreatedEvent(final ModuleInfo info) {
 		super(info);
+	}
+
+	public ModulesCreatedEvent(final List<ModuleInfo> infos) {
+		super(infos);
 	}
 
 }

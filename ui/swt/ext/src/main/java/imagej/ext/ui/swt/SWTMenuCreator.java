@@ -96,8 +96,7 @@ public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final PluginService pluginService = ImageJ.get(PluginService.class);
-				pluginService.run(info, true);
+				ImageJ.get(PluginService.class).run(info, true);
 			}
 		});
 	}

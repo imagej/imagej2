@@ -1,5 +1,5 @@
 //
-// ObjectDeletedEvent.java
+// ModulesDeletedEvent.java
 //
 
 /*
@@ -32,20 +32,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.object.event;
+package imagej.ext.module.event;
 
-import imagej.object.ObjectService;
+import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
+
+import java.util.List;
 
 /**
- * An event indicating an object has been deleted. The {@link ObjectService}
- * responds to this event by removing the object from its index.
+ * An event indicating one or more {@link ModuleInfo}s have been deleted. The
+ * {@link ModuleService} responds to this event by removing the modules from its
+ * index.
  * 
  * @author Curtis Rueden
  */
-public class ObjectDeletedEvent extends ObjectEvent {
+public class ModulesDeletedEvent extends ModuleInfoEvent {
 
-	public ObjectDeletedEvent(final Object obj) {
-		super(obj);
+	public ModulesDeletedEvent(final ModuleInfo info) {
+		super(info);
+	}
+
+	public ModulesDeletedEvent(final List<ModuleInfo> infos) {
+		super(infos);
 	}
 
 }

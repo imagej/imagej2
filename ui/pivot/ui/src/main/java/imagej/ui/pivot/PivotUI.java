@@ -37,16 +37,16 @@ package imagej.ui.pivot;
 import imagej.ImageJ;
 import imagej.event.Events;
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.module.ModuleService;
 import imagej.ext.module.ui.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.pivot.PivotMenuCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.DialogPrompt;
+import imagej.ui.DialogPrompt.MessageType;
+import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.UI;
 import imagej.ui.UserInterface;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
 
 import java.util.List;
 
@@ -149,8 +149,8 @@ public class PivotUI implements Application, UserInterface {
 
 	private void createMenuBar() {
 		// CTR FIXME - rework this
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		final List<ModuleInfo> modules = pluginService.getModules();
+		final ModuleService moduleService = ImageJ.get(ModuleService.class);
+		final List<ModuleInfo> modules = moduleService.getModules();
 		final ShadowMenu rootMenu = new ShadowMenu(modules);
 		final BoxPane menuPane = new BoxPane();
 		new PivotMenuCreator().createMenus(rootMenu, menuPane);
