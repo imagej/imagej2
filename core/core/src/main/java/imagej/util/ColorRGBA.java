@@ -34,10 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.util;
 
-import java.io.Serializable;
-
 /** A color with red, green, blue and alpha color components. */
-public class ColorRGBA extends ColorRGB implements Serializable {
+public class ColorRGBA extends ColorRGB {
 
 	private static final long serialVersionUID = 1L;
 	private final int alpha;

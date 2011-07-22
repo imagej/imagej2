@@ -75,8 +75,8 @@ public class ColorRGB implements Serializable {
 	}
 
 	/**
-	 * Gets the color as a packed integer, 8 bits per color component.
-	 * HSB is alpha, next is red, then green, and finally blue is LSB.
+	 * Gets the color as a packed integer, 8 bits per color component. HSB is
+	 * alpha, next is red, then green, and finally blue is LSB.
 	 */
 	public int getARGB() {
 		final int a = getAlpha();
@@ -86,24 +86,24 @@ public class ColorRGB implements Serializable {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
+	// -- Object methods --
+
 	@Override
 	public String toString() {
 		return red + "," + green + "," + blue;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ColorRGB) {
-			ColorRGB other = (ColorRGB)obj;
-			return (getRed() == other.getRed()) && 
-				   (getGreen() == other.getGreen()) && 
-				   (getBlue() == other.getBlue()) && 
-				   (getAlpha() == other.getAlpha());
-		}
-		return super.equals(obj);
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof ColorRGB)) return super.equals(obj);
+		final ColorRGB other = (ColorRGB) obj;
+		return getRed() == other.getRed() && getGreen() == other.getGreen() &&
+			getBlue() == other.getBlue() && getAlpha() == other.getAlpha();
+	}
+
+	@Override
+	public int hashCode() {
+		return getARGB();
 	}
 
 }
