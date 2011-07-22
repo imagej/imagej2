@@ -34,6 +34,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import imagej.display.Display;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
@@ -53,6 +54,9 @@ import net.imglib2.img.Axis;
 @Menu(label = "Set Active Axis...") })
 public class SetActiveAxis implements ImageJPlugin {
 
+	@Parameter
+	Display display;
+	
 	@Parameter(label="Axis",choices={
 		// NB - X & Y excluded right now
 		AxisUtils.Z,
@@ -69,6 +73,6 @@ public class SetActiveAxis implements ImageJPlugin {
 	public void run() {
 		Axis newActiveAxis = AxisUtils.getAxis(axisName);
 		if (newActiveAxis != null)
-			AxisUtils.setActiveAxis(newActiveAxis);
+			display.setActiveAxis(newActiveAxis);
 	}
 }

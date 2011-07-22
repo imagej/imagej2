@@ -41,6 +41,7 @@ import imagej.ext.plugin.IPlugin;
 import java.util.List;
 
 import net.imglib2.EuclideanSpace;
+import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
 import net.imglib2.meta.Named;
 
@@ -94,6 +95,12 @@ public interface Display extends IPlugin, Named, LabeledAxes, EuclideanSpace {
 	/** Gets the view currently designated as active. */
 	DisplayView getActiveView();
 
+	/** Gets the axis currently designated as active. */
+	Axis getActiveAxis();
+	
+	/** Sets the axis currently designated as active. */
+	void setActiveAxis(Axis axis);
+	
 	/** Gets the top-level window containing this display. */
 	DisplayWindow getDisplayWindow();
 	

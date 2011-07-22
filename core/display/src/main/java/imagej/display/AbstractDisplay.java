@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 import net.imglib2.meta.LabeledAxes;
 
@@ -55,6 +56,8 @@ import net.imglib2.meta.LabeledAxes;
  * @author Lee Kamentsky
  */
 public abstract class AbstractDisplay implements Display {
+
+	private Axis activeAxis = Axes.Z;
 	
 	private final ArrayList<DisplayView> views = new ArrayList<DisplayView>();
 
@@ -189,5 +192,15 @@ public abstract class AbstractDisplay implements Display {
 		update();
 		redoWindowLayout();
 		Events.publish(new DisplayUpdatedEvent(this));
+	}
+	
+	@Override
+	public Axis getActiveAxis() {
+		return activeAxis;
+	}
+	
+	@Override
+	public void setActiveAxis(Axis axis) {
+		activeAxis = axis;
 	}
 }
