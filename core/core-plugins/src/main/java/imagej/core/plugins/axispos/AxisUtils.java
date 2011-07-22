@@ -94,8 +94,7 @@ public class AxisUtils {
 		Dataset ds = (Dataset) view.getDataObject();  // TODO - safe?
 		int axisIndex = ds.getAxisIndex(axis);
 		if (axisIndex < 0) return;
-		long[] dimensions = ds.getDims();
-		long max = dimensions[axisIndex];
+		long max = ds.getExtents().dimension(axisIndex);
 		Events.publish(new AxisPositionEvent(display, axis, change, max, relative));
 	}
 	
