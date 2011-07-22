@@ -45,29 +45,24 @@ import imagej.object.event.ObjectsUpdatedEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service for keeping track of registered objects.
- * Automatically registers new objects from {@link ObjectCreatedEvent}s,
- * and removes objects from {@link ObjectDeletedEvent}s.
+ * Service for keeping track of registered objects. Automatically registers new
+ * objects from {@link ObjectCreatedEvent}s, and removes objects from
+ * {@link ObjectDeletedEvent}s.
  * <p>
- * This is useful to retrieve available objects of a particular type,
- * such as the list of datasets upon which a user can choose to operate.
+ * This is useful to retrieve available objects of a particular type, such as
+ * the list of <code>imagej.data.Dataset</code>s upon which a user can choose to
+ * operate.
  * </p>
- *
+ * 
  * @author Curtis Rueden
  */
 @Service(priority = Service.FIRST_PRIORITY)
 public final class ObjectService implements IService {
 
-	/**
-	 * "Sleeping on a dragon's hoard with greedy, dragonish
-	 * thoughts in his heart, he had become a dragon himself."
-	 * &mdash;C.S. Lewis
-	 */
-	private Map<Class<?>, List<?>> hoard;
+	/** Index of registered objects. */
+	private ObjectIndex objectIndex;
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
@@ -76,19 +71,21 @@ public final class ObjectService implements IService {
 
 	/** Gets a list of all registered objects compatible with the given type. */
 	public <T> List<T> getObjects(final Class<T> type) {
-		final List<T> list = getList(type);
-		return Collections.unmodifiableList(list);
+		final List<Object> list = objectIndex.getObjects(type);
+		@SuppressWarnings("unchecked")
+		final List<T> result = (List<T>) list;
+		return Collections.unmodifiableList(result);
 	}
 
 	/** Registers an object with the object service. */
 	public void addObject(final Object obj) {
-		addObject(obj, obj.getClass());
+		objectIndex.addObject(obj);
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
 	/** Deregisters an object with the object service. */
 	public void removeObject(final Object obj) {
-		removeObject(obj, obj.getClass());
+		objectIndex.removeObject(obj);
 		Events.publish(new ObjectsUpdatedEvent(obj));
 	}
 
@@ -96,67 +93,34 @@ public final class ObjectService implements IService {
 
 	@Override
 	public void initialize() {
-		hoard = new ConcurrentHashMap<Class<?>, List<?>>();
+		objectIndex = new ObjectIndex();
 		subscribeToEvents();
 	}
 
 	// -- Helper methods --
 
-	private <T> void addObject(final Object obj, final Class<T> c) {
-		if (c == null) return;
-
-		final List<T> list = getList(c);
-		@SuppressWarnings("unchecked")
-		final T typedObj = (T) obj;
-		if (!list.contains(obj)) list.add(typedObj);
-
-		// recursively add to supertypes
-		addObject(obj, c.getSuperclass());
-		for (final Class<?> iface : c.getInterfaces()) addObject(obj, iface);
-	}
-
-	private <T> void removeObject(final Object obj, final Class<T> c) {
-		if (c == null) return;
-
-		getList(c).remove(obj);
-
-		// recursively remove from supertypes
-		removeObject(obj, c.getSuperclass());
-		for (final Class<?> iface : c.getInterfaces()) removeObject(obj, iface);
-	}
-
-	private <T> List<T> getList(final Class<T> type) {
-		@SuppressWarnings("unchecked")
-		List<T> list = (List<T>) hoard.get(type);
-		if (list == null) {
-			list = new ArrayList<T>();
-			hoard.put(type, list);
-		}
-		return list;
-	}
-
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<ObjectCreatedEvent> objectCreatedSubscriber =
-			new EventSubscriber<ObjectCreatedEvent>()
-		{
-			@Override
-			public void onEvent(final ObjectCreatedEvent event) {
-				addObject(event.getObject());
-			}
-		};
+			new EventSubscriber<ObjectCreatedEvent>() {
+
+				@Override
+				public void onEvent(final ObjectCreatedEvent event) {
+					addObject(event.getObject());
+				}
+			};
 		subscribers.add(objectCreatedSubscriber);
 		Events.subscribe(ObjectCreatedEvent.class, objectCreatedSubscriber);
 
 		final EventSubscriber<ObjectDeletedEvent> objectDeletedSubscriber =
-			new EventSubscriber<ObjectDeletedEvent>()
-		{
-			@Override
-			public void onEvent(final ObjectDeletedEvent event) {
-				removeObject(event.getObject());
-			}
-		};
+			new EventSubscriber<ObjectDeletedEvent>() {
+
+				@Override
+				public void onEvent(final ObjectDeletedEvent event) {
+					removeObject(event.getObject());
+				}
+			};
 		subscribers.add(objectDeletedSubscriber);
 		Events.subscribe(ObjectDeletedEvent.class, objectDeletedSubscriber);
 	}
