@@ -168,18 +168,16 @@ public class XYFlipper implements OutputAlgorithm {
 		long[] planeDims = new long[inputImage.numDimensions()-2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputDimensions[i+2];
+		Extents extents = new Extents(planeDims);
+		Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // 2d Dataset
-			processPlane(new long[]{}, rx, ry, rw, rh);
+			processPlane(planePos, rx, ry, rw, rh);
 		}
 		else {  // more than two dimensions
-			Extents extents = new Extents(planeDims);
 			long totalPlanes = extents.numElements();
-			long[] planeIndex = new long[extents.numDimensions()];
-			Position pos = extents.createPosition();
 			for (long pNum = 0; pNum < totalPlanes; pNum++) {
-				pos.setIndex(pNum);
-				pos.localize(planeIndex);
-				processPlane(planeIndex, rx, ry, rw, rh);
+				planePos.setIndex(pNum);
+				processPlane(planePos, rx, ry, rw, rh);
 			}
 		}
 		return true;
@@ -193,13 +191,13 @@ public class XYFlipper implements OutputAlgorithm {
 		return outputImage;
 	}
 	
-	private void processPlane(long[] planeIndex, int rx, int ry, int rw, int rh) {
+	private void processPlane(Position planePos, int rx, int ry, int rw, int rh) {
 		
-		long[] inputPosition = new long[planeIndex.length+2];
-		long[] outputPosition = new long[planeIndex.length+2];
+		long[] inputPosition = new long[planePos.numDimensions()+2];
+		long[] outputPosition = new long[planePos.numDimensions()+2];
 
 		for (int i = 2; i < inputPosition.length; i++)
-			inputPosition[i] = planeIndex[i-2];
+			inputPosition[i] = planePos.getLongPosition(i-2);
 		
 		for (int y = ry; y < rh; y++) {
 			inputPosition[1] = y;
