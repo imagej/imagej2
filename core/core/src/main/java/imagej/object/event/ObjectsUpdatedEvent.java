@@ -34,18 +34,35 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object.event;
 
+import imagej.event.ImageJEvent;
 import imagej.object.ObjectService;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An event indicating the list of objects registered with the
  * {@link ObjectService} has changed.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class ObjectsUpdatedEvent extends ObjectEvent {
+public class ObjectsUpdatedEvent extends ImageJEvent {
 
-	public ObjectsUpdatedEvent(final Object obj) {
-		super(obj);
+	private final List<Object> list = new ArrayList<Object>();
+
+	public ObjectsUpdatedEvent(final Object o) {
+		list.add(o);
+	}
+
+	public ObjectsUpdatedEvent(final Collection<? extends Object> c) {
+		list.addAll(c);
+	}
+
+	public List<Object> getObjects() {
+		return Collections.unmodifiableList(list);
 	}
 
 }
