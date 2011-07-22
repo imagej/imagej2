@@ -308,9 +308,10 @@ public class Position implements Localizable, Positionable, Iterator {
 	 */
 	@Override
 	public void setPosition(long value, int dim) {
-		if ((value < parentSpace.min(dim)) || (value > parentSpace.max(dim)))
+		if ((value < parentSpace.min(dim)) || (value > parentSpace.max(dim))) {
 			throw new IllegalArgumentException(
 				"specified value would take position outside defined extents");
+		}
 		position[dim] = value;
 		if (this.isInvalid)
 			this.isInvalid = isInvalid();

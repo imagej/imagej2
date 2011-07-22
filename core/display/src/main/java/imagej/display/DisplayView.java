@@ -36,6 +36,7 @@ package imagej.display;
 
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.roi.Overlay;
 
 /**
@@ -60,7 +61,7 @@ public interface DisplayView {
 	DataObject getDataObject();
 
 	/** Gets the N-dimensional plane position of this view. */
-	long[] getPlanePosition();
+	Position getPlanePosition();
 
 	/** Gets the 1-dimensional plane index of this view. */
 	long getPlaneIndex();

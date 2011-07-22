@@ -63,7 +63,6 @@ public abstract class AbstractDisplayView implements DisplayView {
 
 	protected long[] dims, planeDims;
 	protected long[] position;
-	protected long[] planePos;
 	protected Position planePosObj;
 
 	/** Indicates the view is no longer in use. */
@@ -94,8 +93,8 @@ public abstract class AbstractDisplayView implements DisplayView {
 	}
 
 	@Override
-	public long[] getPlanePosition() {
-		return planePos;
+	public Position getPlanePosition() {
+		return planePosObj;
 	}
 
 	@Override
@@ -112,7 +111,6 @@ public abstract class AbstractDisplayView implements DisplayView {
 	public void setPosition(final long value, final int dim) {
 		position[dim] = value;
 		for (int i = 0; i < planePosObj.numDimensions(); i++) {
-			planePos[i] = position[i+2];
 			planePosObj.setPosition(position[i+2], i);
 		}
 	}

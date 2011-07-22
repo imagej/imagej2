@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
+import imagej.data.Dataset;
+import imagej.data.Extents;
 import imagej.data.roi.Overlay;
 import net.imglib2.img.Axis;
 
@@ -52,7 +54,13 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 		this.dims = new long[display.numDimensions()];
 		this.planeDims = new long[display.numDimensions()-2];
 		this.position = new long[display.numDimensions()];
-		this.planePos = new long[display.numDimensions()-2];
+		// TODO PROBLEM need to init pos - what are planeDim values at this point?
+		long[] fullDims = ((Dataset)display.getActiveView().getDataObject()).getDims();
+		for (int i = 0; i < planeDims.length; i++)
+			planeDims[i] = fullDims[i+2];
+		Extents extents = new Extents(planeDims);
+		this.planePosObj = extents.createPosition();
+		this.planePosObj.first();
 	}
 	
 	// -- DisplayView methods --
@@ -73,7 +81,7 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 		for (int i=2; i<overlay.numDimensions(); i++) {
 			Axis axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) && ! pos.equals(getPlanePosition()[i-2])) {
+			if ((pos != null) && ! pos.equals(getPlanePosition().getLongPosition(i-2))) {
 				return false;
 			}
 		}

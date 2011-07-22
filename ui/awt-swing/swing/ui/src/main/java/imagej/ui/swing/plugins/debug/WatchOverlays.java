@@ -37,6 +37,7 @@ package imagej.ui.swing.plugins.debug;
 import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.roi.Overlay;
 import imagej.data.roi.RectangleOverlay;
 import imagej.display.Display;
@@ -195,7 +196,7 @@ public class WatchOverlays implements ImageJPlugin {
 	public List<Overlay> getOverlaysForCurrentSlice(final Display display) {
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DisplayView view : display.getViews()) {
-			long[] planePosition = view.getPlanePosition();
+			Position planePosition = view.getPlanePosition();
 			DataObject dataObject = view.getDataObject();
 			if (dataObject instanceof Overlay) {
 				isVisible((Overlay) dataObject, planePosition);
@@ -205,11 +206,11 @@ public class WatchOverlays implements ImageJPlugin {
 		return overlays;
 	}
 
-	public boolean isVisible(Overlay overlay, long[] planePosition) {
+	public boolean isVisible(Overlay overlay, Position planePosition) {
 		for (int i = 2; i < overlay.numDimensions(); i++) {
 			Axis axis = overlay.axis(i);
 			final Long pos = overlay.getPosition(axis);
-			if ((pos != null) && !pos.equals(planePosition[i - 2])) {
+			if ((pos != null) && !pos.equals(planePosition.getLongPosition(i-2))) {
 				return false;
 			}
 		}
