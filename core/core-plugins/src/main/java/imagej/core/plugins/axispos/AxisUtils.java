@@ -52,11 +52,6 @@ import net.imglib2.img.Axis;
  */
 public class AxisUtils {
 	
-	// TODO - do not have a static here. Rather support active axis in the way
-	// the active display, active view, and others do.
-	
-	private static Axis activeAxis = Axes.Z;
-	
 	public static final String
 		X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
 		PH="Phase", PO="Polarization", LI="Lifetime";
@@ -70,14 +65,6 @@ public class AxisUtils {
 	}
 
 	/**
-	 * Gets the active axis that user can move along via hotkeys */
-	public static Axis getActiveAxis() { return activeAxis; } 
-	
-	/**
-	 * Sets the active axis that user can move along via hotkeys */
-	public static void setActiveAxis(Axis newAxis) { activeAxis = newAxis; } 
-
-	/**
 	 * Publishes a new AxisPositionEvent
 	 * 
 	 * @param change - the size of the change to make to the axis position
@@ -87,7 +74,7 @@ public class AxisUtils {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display display = displayService.getActiveDisplay();
 		if (display == null) return; // headless UI or no open images
-		Axis axis = getActiveAxis();
+		Axis axis = display.getActiveAxis();
 		if (axis == null) return;
 		if (display.getAxisIndex(axis) < 0) return;
 		DisplayView view = display.getActiveView();
