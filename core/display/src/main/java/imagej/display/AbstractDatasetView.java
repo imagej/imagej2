@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
@@ -296,10 +297,12 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	private ColorTable8 getCurrentLUT(final int cPos) {
+		Position pos = getPlanePosition();
 		if (channelDimIndex >= 0) {
-			getPlanePosition().setPosition(cPos, channelDimIndex-2);
+			pos = new Position(pos);
+			pos.setPosition(cPos, channelDimIndex-2);
 		}
-		final int no = (int) getPlanePosition().getIndex();
+		final int no = (int) pos.getIndex();
 		final ColorTable8 lut = dataset.getColorTable8(no);
 		if (lut != null) {
 			return lut; // return dataset-specific LUT
