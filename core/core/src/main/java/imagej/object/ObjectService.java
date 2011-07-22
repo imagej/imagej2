@@ -69,6 +69,11 @@ public final class ObjectService implements IService {
 
 	// -- ObjectService methods --
 
+	/** Gets the index of available objects. */
+	public ObjectIndex<Object> getIndex() {
+		return objectIndex;
+	}
+
 	/** Gets a list of all registered objects compatible with the given type. */
 	public <T> List<T> getObjects(final Class<T> type) {
 		final List<Object> list = objectIndex.get(type);
