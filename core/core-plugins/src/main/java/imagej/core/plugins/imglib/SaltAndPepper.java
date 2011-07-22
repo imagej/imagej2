@@ -111,24 +111,23 @@ public class SaltAndPepper implements ImageJPlugin {
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.dimension(i+2);
 		if (planeDims.length == 0) { // 2d only
-			assignPixelsInXYPlane(new long[]{}, rng);
+			Position planePos = new Extents(new long[]{}).createPosition();
+			assignPixelsInXYPlane(planePos, rng);
 		}
 		else { // 3 or more dimsensions
 			Extents extents = new Extents(planeDims);
-			long[] planeIndex = new long[planeDims.length];
-			Position pos = extents.createPosition();
+			Position planePos = extents.createPosition();
 			long totalPlanes = extents.numElements();
 			for (long plane = 0; plane < totalPlanes; plane++) {
-				pos.setIndex(plane);
-				pos.localize(planeIndex);
-				assignPixelsInXYPlane(planeIndex, rng);
+				planePos.setIndex(plane);
+				assignPixelsInXYPlane(planePos, rng);
 			}
 		}
 	}
 
-	private void assignPixelsInXYPlane(long[] planeIndex, Random rng) {
+	private void assignPixelsInXYPlane(Position planePos, Random rng) {
 		for (int i = 2; i < position.length; i++)
-			position[i] = planeIndex[i-2];
+			position[i] = planePos.getLongPosition(i-2);
 
 		double percentToChange = 0.05;
 
