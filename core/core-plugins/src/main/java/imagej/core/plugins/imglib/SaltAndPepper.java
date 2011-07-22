@@ -110,13 +110,12 @@ public class SaltAndPepper implements ImageJPlugin {
 		long[] planeDims = new long[inputImage.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
 			planeDims[i] = inputImage.dimension(i+2);
+		Extents extents = new Extents(planeDims);
+		Position planePos = extents.createPosition();
 		if (planeDims.length == 0) { // 2d only
-			Position planePos = new Extents(new long[]{}).createPosition();
 			assignPixelsInXYPlane(planePos, rng);
 		}
 		else { // 3 or more dimsensions
-			Extents extents = new Extents(planeDims);
-			Position planePos = extents.createPosition();
 			long totalPlanes = extents.numElements();
 			for (long plane = 0; plane < totalPlanes; plane++) {
 				planePos.setIndex(plane);
