@@ -118,4 +118,7 @@ public class SettingsKeys
 	// from the Options Wand dialog
 	public static final String OPTIONS_WAND_MODE = "settings.wand.Mode";
 	public static final String OPTIONS_WAND_TOLERANCE = "settings.wand.Tolerance";
+	
+	// Scripting Options
+	public static final String SCRIPT_LANG = "settings.script.lang";
 }
