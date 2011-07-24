@@ -52,6 +52,18 @@
 			<artifactId>ij-platform</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+	 <dependency>
+	  <groupId>imagej</groupId>
+	  <artifactId>ij-ui</artifactId>
+	  <version>2.0-SNAPSHOT</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>imagej</groupId>
+	  <artifactId>ij-ui-swing</artifactId>
+	  <version>2.0-SNAPSHOT</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 
 	<build>
