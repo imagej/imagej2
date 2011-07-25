@@ -57,7 +57,7 @@ public class SWTMenuCreator extends AbstractMenuCreator<Menu, Menu> {
 	protected void addLeafToMenu(final ShadowMenu shadow, final Menu target) {
 		final MenuItem menuItem = new MenuItem(target, 0);
 		menuItem.setText(shadow.getMenuEntry().getName());
-		linkAction(shadow.getModuleInfo(), menuItem);
+		linkAction(shadow.getInfo(), menuItem);
 	}
 
 	@Override

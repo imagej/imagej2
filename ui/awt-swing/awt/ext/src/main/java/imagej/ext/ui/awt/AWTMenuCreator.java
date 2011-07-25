@@ -75,7 +75,7 @@ public abstract class AWTMenuCreator<T> extends AbstractMenuCreator<T, Menu> {
 	protected MenuItem createLeaf(final ShadowMenu shadow) {
 		final MenuItem menuItem = new MenuItem(shadow.getMenuEntry().getName());
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getModuleInfo(), menuItem);
+		linkAction(shadow.getInfo(), menuItem);
 		return menuItem;
 	}
 
