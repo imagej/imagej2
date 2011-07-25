@@ -44,8 +44,8 @@ import imagej.display.event.mouse.MsMovedEvent;
 import imagej.display.event.mouse.MsPressedEvent;
 import imagej.display.event.mouse.MsReleasedEvent;
 import imagej.display.event.mouse.MsWheelEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 
@@ -68,12 +68,20 @@ import net.java.sezpoz.IndexItem;
 @Service
 public class ToolService implements IService {
 
+	private final EventService eventService;
+
 	private List<ToolInfo> toolEntries;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
 	private ITool activeTool;
+
+	public ToolService(final EventService eventService) {
+		this.eventService = eventService;
+	}
+
+	// -- ToolService methods --
 
 	public List<ToolInfo> getToolEntries() {
 		return Collections.unmodifiableList(toolEntries);
@@ -92,12 +100,12 @@ public class ToolService implements IService {
 
 		// deactivate old tool
 		this.activeTool.deactivate();
-		Events.publish(new ToolDeactivatedEvent(this.activeTool));
+		eventService.publish(new ToolDeactivatedEvent(this.activeTool));
 
 		// activate new tool
 		this.activeTool = activeTool;
 		activeTool.activate();
-		Events.publish(new ToolActivatedEvent(activeTool));
+		eventService.publish(new ToolActivatedEvent(activeTool));
 	}
 
 	// -- IService methods --
@@ -140,7 +148,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(kyPressedSubscriber);
-		Events.subscribe(KyPressedEvent.class, kyPressedSubscriber);
+		eventService.subscribe(KyPressedEvent.class, kyPressedSubscriber);
 
 		final EventSubscriber<KyReleasedEvent> kyReleasedSubscriber =
 			new EventSubscriber<KyReleasedEvent>() {
@@ -151,7 +159,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(kyReleasedSubscriber);
-		Events.subscribe(KyReleasedEvent.class, kyReleasedSubscriber);
+		eventService.subscribe(KyReleasedEvent.class, kyReleasedSubscriber);
 
 		final EventSubscriber<MsPressedEvent> msPressedSubscriber =
 			new EventSubscriber<MsPressedEvent>() {
@@ -162,7 +170,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msPressedSubscriber);
-		Events.subscribe(MsPressedEvent.class, msPressedSubscriber);
+		eventService.subscribe(MsPressedEvent.class, msPressedSubscriber);
 
 		final EventSubscriber<MsReleasedEvent> msReleasedSubscriber =
 			new EventSubscriber<MsReleasedEvent>() {
@@ -173,7 +181,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msReleasedSubscriber);
-		Events.subscribe(MsReleasedEvent.class, msReleasedSubscriber);
+		eventService.subscribe(MsReleasedEvent.class, msReleasedSubscriber);
 
 		final EventSubscriber<MsClickedEvent> msClickedSubscriber =
 			new EventSubscriber<MsClickedEvent>() {
@@ -184,7 +192,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msClickedSubscriber);
-		Events.subscribe(MsClickedEvent.class, msClickedSubscriber);
+		eventService.subscribe(MsClickedEvent.class, msClickedSubscriber);
 
 		final EventSubscriber<MsMovedEvent> msMovedSubscriber =
 			new EventSubscriber<MsMovedEvent>() {
@@ -195,7 +203,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msMovedSubscriber);
-		Events.subscribe(MsMovedEvent.class, msMovedSubscriber);
+		eventService.subscribe(MsMovedEvent.class, msMovedSubscriber);
 
 		final EventSubscriber<MsDraggedEvent> msDraggedSubscriber =
 			new EventSubscriber<MsDraggedEvent>() {
@@ -206,7 +214,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msDraggedSubscriber);
-		Events.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
+		eventService.subscribe(MsDraggedEvent.class, msDraggedSubscriber);
 
 		final EventSubscriber<MsWheelEvent> msWheelSubscriber =
 			new EventSubscriber<MsWheelEvent>() {
@@ -217,7 +225,7 @@ public class ToolService implements IService {
 				}
 			};
 		subscribers.add(msWheelSubscriber);
-		Events.subscribe(MsWheelEvent.class, msWheelSubscriber);
+		eventService.subscribe(MsWheelEvent.class, msWheelSubscriber);
 	}
 
 }

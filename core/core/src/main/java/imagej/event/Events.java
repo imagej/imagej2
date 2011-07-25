@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
-import org.bushe.swing.event.EventBus;
+import imagej.ImageJ;
 
 /**
- * Simple utility class for subscribing to ImageJ events,
- * as well as publishing them.
- *
+ * Simple utility class for subscribing to ImageJ events, as well as publishing
+ * them.
+ * 
  * @author Curtis Rueden
  * @author Grant Harris
  */
@@ -50,20 +50,25 @@ public final class Events {
 	}
 
 	public static <E extends ImageJEvent> void publish(final E e) {
-		EventBus.publish(e);
+		ImageJ.get(EventService.class).publish(e);
 	}
 
-	public static <E extends ImageJEvent> void subscribe(
-			final Class<E> c, final EventSubscriber<E> subscriber) {
-		EventBus.subscribe(c, subscriber);
+	public static <E extends ImageJEvent> void subscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		ImageJ.get(EventService.class).subscribe(c, subscriber);
 	}
 
-	public static <E extends ImageJEvent> void unsubscribe(
-			final Class<E> c, final EventSubscriber<E> subscriber) {
-		EventBus.unsubscribe(c, subscriber);
+	public static <E extends ImageJEvent> void unsubscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		ImageJ.get(EventService.class).unsubscribe(c, subscriber);
 	}
-	public static <E extends ImageJEvent> java.util.List<E> getSubscribers(final Class<E> c) {
-		return EventBus.getSubscribers(c);
+
+	public static <E extends ImageJEvent> java.util.List<E> getSubscribers(
+		final Class<E> c)
+	{
+		return ImageJ.get(EventService.class).getSubscribers(c);
 	}
 
 }

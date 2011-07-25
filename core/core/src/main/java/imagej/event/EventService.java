@@ -1,5 +1,5 @@
 //
-// PluginDiscovery.java
+// Events.java
 //
 
 /*
@@ -32,37 +32,59 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.ext.plugin;
+package imagej.event;
 
+import imagej.IService;
 import imagej.ImageJ;
-import imagej.event.EventService;
-import imagej.ext.module.ModuleService;
+import imagej.Service;
 
 import java.util.List;
 
+import org.bushe.swing.event.ThreadSafeEventService;
+
 /**
- * A test of the plugin discovery mechanism.
+ * Service for publishing and subscribing to ImageJ events.
  * 
  * @author Curtis Rueden
+ * @author Grant Harris
  */
-public class PluginDiscovery {
+@Service
+public final class EventService implements IService {
 
-	/**
-	 * Tests the plugin discovery mechanism, printing a list of all discovered
-	 * plugins.
-	 */
-	public static void main(final String[] args) {
-		System.out.println("Scanning for plugins:");
-		final ImageJ context = null;
-		final EventService eventService = new EventService(context);
-		final ModuleService moduleService =
-			new ModuleService(context, eventService);
-		final PluginService pluginService = new PluginService(moduleService);
-		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
-		System.out.println("Discovered plugins:");
-		for (final PluginInfo<?> plugin : plugins) {
-			System.out.println("\t" + plugin);
-		}
+	private ImageJ context;
+
+	private ThreadSafeEventService eventBus;
+
+	public EventService(final ImageJ context) {
+		this.context = context;
+	}
+
+	public <E extends ImageJEvent> void publish(final E e) {
+		e.setContext(context);
+		eventBus.publish(e);
+	}
+
+	public <E extends ImageJEvent> void subscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.subscribe(c, subscriber);
+	}
+
+	public <E extends ImageJEvent> void unsubscribe(final Class<E> c,
+		final EventSubscriber<E> subscriber)
+	{
+		eventBus.unsubscribe(c, subscriber);
+	}
+
+	public <E extends ImageJEvent> List<E> getSubscribers(final Class<E> c) {
+		return eventBus.getSubscribers(c);
+	}
+
+	// -- IService methods --
+
+	@Override
+	public void initialize() {
+		eventBus = new ThreadSafeEventService();
 	}
 
 }

@@ -59,8 +59,6 @@ import java.util.List;
  * A Swing image display plugin, which displays 2D planes in grayscale or
  * composite color.
  * 
- * Added 
- * 
  * @author Curtis Rueden
  * @author Grant Harris
  * @author Barry DeZonia

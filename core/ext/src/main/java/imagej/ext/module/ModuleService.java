@@ -37,8 +37,8 @@ package imagej.ext.module;
 import imagej.IService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.module.event.ModuleUpdatedEvent;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
@@ -61,6 +61,7 @@ import java.util.List;
 public class ModuleService implements IService {
 
 	private final ImageJ context;
+	private final EventService eventService;
 
 	/** Index of registered modules. */
 	private final ModuleIndex moduleIndex = new ModuleIndex();
@@ -68,8 +69,9 @@ public class ModuleService implements IService {
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	public ModuleService(final ImageJ context) {
+	public ModuleService(final ImageJ context, final EventService eventService) {
 		this.context = context;
+		this.eventService = eventService;
 	}
 
 	// -- ModuleService methods --
@@ -82,25 +84,25 @@ public class ModuleService implements IService {
 	/** Manually registers a module with the module service. */
 	public void addModule(final ModuleInfo module) {
 		moduleIndex.add(module);
-		Events.publish(new ModulesAddedEvent(module));
+		eventService.publish(new ModulesAddedEvent(module));
 	}
 
 	/** Manually unregisters a module with the module service. */
 	public void removeModule(final ModuleInfo module) {
 		moduleIndex.remove(module);
-		Events.publish(new ModulesRemovedEvent(module));
+		eventService.publish(new ModulesRemovedEvent(module));
 	}
 
 	/** Manually registers a list of modules with the module service. */
 	public void addModules(final Collection<? extends ModuleInfo> modules) {
 		moduleIndex.addAll(modules);
-		Events.publish(new ModulesAddedEvent(modules));
+		eventService.publish(new ModulesAddedEvent(modules));
 	}
 
 	/** Manually unregisters a list of modules with the module service. */
 	public void removeModules(final Collection<? extends ModuleInfo> modules) {
 		moduleIndex.removeAll(modules);
-		Events.publish(new ModulesRemovedEvent(modules));
+		eventService.publish(new ModulesRemovedEvent(modules));
 	}
 
 	/** Gets the list of available modules. */
@@ -201,7 +203,7 @@ public class ModuleService implements IService {
 				}
 			};
 		subscribers.add(moduleUpdatedSubscriber);
-		Events.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
+		eventService.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
 	}
 
 }

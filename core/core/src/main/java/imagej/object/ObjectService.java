@@ -36,8 +36,8 @@ package imagej.object;
 
 import imagej.IService;
 import imagej.Service;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsAddedEvent;
@@ -61,12 +61,18 @@ import java.util.List;
 @Service
 public final class ObjectService implements IService {
 
+	private final EventService eventService;
+
 	/** Index of registered objects. */
 	private final ObjectIndex<Object> objectIndex =
 		new ObjectIndex<Object>(Object.class);
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
+
+	public ObjectService(final EventService eventService) {
+		this.eventService = eventService;
+	}
 
 	// -- ObjectService methods --
 
@@ -86,13 +92,13 @@ public final class ObjectService implements IService {
 	/** Registers an object with the object service. */
 	public void addObject(final Object obj) {
 		objectIndex.add(obj);
-		Events.publish(new ObjectsAddedEvent(obj));
+		eventService.publish(new ObjectsAddedEvent(obj));
 	}
 
 	/** Deregisters an object with the object service. */
 	public void removeObject(final Object obj) {
 		objectIndex.remove(obj);
-		Events.publish(new ObjectsRemovedEvent(obj));
+		eventService.publish(new ObjectsRemovedEvent(obj));
 	}
 
 	// -- IService methods --
@@ -116,7 +122,7 @@ public final class ObjectService implements IService {
 				}
 			};
 		subscribers.add(objectCreatedSubscriber);
-		Events.subscribe(ObjectCreatedEvent.class, objectCreatedSubscriber);
+		eventService.subscribe(ObjectCreatedEvent.class, objectCreatedSubscriber);
 
 		final EventSubscriber<ObjectDeletedEvent> objectDeletedSubscriber =
 			new EventSubscriber<ObjectDeletedEvent>() {
@@ -127,7 +133,7 @@ public final class ObjectService implements IService {
 				}
 			};
 		subscribers.add(objectDeletedSubscriber);
-		Events.subscribe(ObjectDeletedEvent.class, objectDeletedSubscriber);
+		eventService.subscribe(ObjectDeletedEvent.class, objectDeletedSubscriber);
 	}
 
 }

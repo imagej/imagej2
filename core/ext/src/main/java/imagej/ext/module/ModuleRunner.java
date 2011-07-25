@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
-import imagej.event.Events;
+import imagej.ImageJ;
+import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.ext.module.event.ModuleCanceledEvent;
 import imagej.ext.module.event.ModuleExecutedEvent;
@@ -75,33 +76,36 @@ public class ModuleRunner {
 	 */
 	public void run() {
 		if (module == null) return;
+		final EventService eventService = ImageJ.get(EventService.class);
 
 		// execute module
-		Events.publish(new ModuleStartedEvent(module));
+		eventService.publish(new ModuleStartedEvent(module));
 		final boolean ok = preProcess();
 		if (!ok) {
 			// execution canceled
-			Events.publish(new ModuleCanceledEvent(module));
+			eventService.publish(new ModuleCanceledEvent(module));
 			return;
 		}
-		Events.publish(new ModuleExecutingEvent(module));
+		eventService.publish(new ModuleExecutingEvent(module));
 		module.run();
-		Events.publish(new ModuleExecutedEvent(module));
+		eventService.publish(new ModuleExecutedEvent(module));
 		postProcess();
-		Events.publish(new ModuleFinishedEvent(module));
+		eventService.publish(new ModuleFinishedEvent(module));
 	}
 
 	/** Feeds the module through the {@link ModulePreprocessor}s. */
 	public boolean preProcess() {
 		if (pre == null) return true; // no preprocessors
+		final EventService eventService = ImageJ.get(EventService.class);
+
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
-			Events.publish(new ModulePreprocessEvent(module, p));
+			eventService.publish(new ModulePreprocessEvent(module, p));
 			if (p.canceled()) {
 				// notify interested parties of any warning messages
 				final String cancelMessage = p.getMessage();
 				if (cancelMessage != null) {
-					Events.publish(new StatusEvent(cancelMessage, true));
+					eventService.publish(new StatusEvent(cancelMessage, true));
 				}
 				return false;
 			}
@@ -112,9 +116,11 @@ public class ModuleRunner {
 	/** Feeds the module through the {@link ModulePostprocessor}s. */
 	public void postProcess() {
 		if (post == null) return; // no postprocessors
+		final EventService eventService = ImageJ.get(EventService.class);
+
 		for (final ModulePostprocessor p : post) {
 			p.process(module);
-			Events.publish(new ModulePostprocessEvent(module, p));
+			eventService.publish(new ModulePostprocessEvent(module, p));
 		}
 	}
 
