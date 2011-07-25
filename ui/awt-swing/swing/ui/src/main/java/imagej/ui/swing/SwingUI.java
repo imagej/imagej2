@@ -319,7 +319,7 @@ public class SwingUI implements UserInterface {
 
 	@Override
 	public OutputWindow newOutputWindow(final String title) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return new SwingOutputWindow(title);
 	}
 
 	@Override
