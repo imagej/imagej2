@@ -37,6 +37,8 @@ package imagej.ui;
 import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
+import imagej.ext.plugin.PluginService;
+import imagej.tool.ToolService;
 import imagej.util.Log;
 
 import java.util.ArrayList;
@@ -54,6 +56,9 @@ import net.java.sezpoz.IndexItem;
 @Service
 public final class UIService extends AbstractService {
 
+	private final PluginService pluginService;
+	private final ToolService toolService;
+
 	/** The active user interface. */
 	private UserInterface userInterface;
 
@@ -68,11 +73,21 @@ public final class UIService extends AbstractService {
 		throw new UnsupportedOperationException();
 	}
 
-	public UIService(final ImageJ context) {
+	public UIService(final ImageJ context, final PluginService pluginService, final ToolService toolService) {
 		super(context);
+		this.pluginService = pluginService;
+		this.toolService = toolService;
 	}
 
 	// -- UIService methods --
+
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	public ToolService getToolService() {
+		return toolService;
+	}
 
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
