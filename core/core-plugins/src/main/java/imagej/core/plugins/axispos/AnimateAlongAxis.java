@@ -44,13 +44,18 @@ import imagej.display.event.key.KyPressedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.event.StatusEvent;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 
@@ -64,35 +69,21 @@ import net.imglib2.img.Axis;
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Tools", mnemonic = 't'),
 	@Menu(label = "Animate", accelerator = "BACK_SLASH") })
-public class AnimateAlongAxis implements ImageJPlugin {
+public class AnimateAlongAxis extends DynamicPlugin {
 
+	private static final String NAME_KEY = "Axis";
+	private static final String FIRST_POS_KEY = "First position";
+	private static final String LAST_POS_KEY = "Last position";
+	private static final String FPS_KEY = "Speed (0.1 - 1000 fps)";
+	private static final String BACK_FORTH_KEY = "Loop back and forth";
+	
 	// -- Parameters --
 
-	@Parameter(label = "Speed (0.1 - 1000 fps)", min = "0.1", max = "1000")
+	private Dataset dataset;
 	private double fps;
-
-	@Parameter(label="Axis",choices={
-		// NB - X & Y excluded right now
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
 	String axisName;
-	
-	// TODO - populate min and max values from Dataset
-	@Parameter(label = "First position", min = "1", max = "10000")
 	private long oneBasedFirst;
-	
-	// TODO - populate min and max values from Dataset
-	@Parameter(label = "Last position", min = "1", max = "10000")
 	private long oneBasedLast;
-
-	// either wrap or move back and forth
-	@Parameter(label = "Loop back and forth")
 	private boolean backAndForth;
 	
 	// -- private instance variables --
@@ -112,6 +103,46 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	private EventSubscriber<DisplayDeletedEvent> displaySubscriber;
 
 	// -- public interface --
+
+	public AnimateAlongAxis() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		currDisplay = displayService.getActiveDisplay();
+		if (currDisplay == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(currDisplay);
+		if (dataset == null) return;
+		
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
+			if (datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+		
+		final DefaultModuleItem<Long> firstPos =
+			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
+		firstPos.setMinimumValue(1L);
+		addInput(firstPos);
+		
+		final DefaultModuleItem<Long> lastPos =
+			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
+		lastPos.setMinimumValue(1L);
+		addInput(lastPos);
+		
+		final DefaultModuleItem<Double> framesPerSec =
+			new DefaultModuleItem<Double>(this, FPS_KEY, Double.class);
+		framesPerSec.setMinimumValue(0.1);
+		framesPerSec.setMaximumValue(1000.0);
+		addInput(framesPerSec);
+		
+		final DefaultModuleItem<Boolean> bf =
+			new DefaultModuleItem<Boolean>(this, BACK_FORTH_KEY, Boolean.class);
+		addInput(bf);
+	}
 	
 	/**
 	 * Runs an animation along the currently chosen axis repeatedly until ESC
@@ -119,14 +150,12 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		currDisplay = ImageJ.get(DisplayService.class).getActiveDisplay();
-		if (currDisplay == null) return;
-		Dataset ds = (Dataset) currDisplay.getActiveView().getDataObject();
-		if (ds == null) return;
+		if (currDisplay == null || dataset == null) return;
+		harvestInputs();
 		Axis axis = AxisUtils.getAxis(axisName);
-		int axisIndex = ds.getImgPlus().getAxisIndex(axis);
+		int axisIndex = dataset.getImgPlus().getAxisIndex(axis);
 		if (axisIndex < 0) return;
-		long totalHyperplanes = ds.getImgPlus().dimension(axisIndex);
+		long totalHyperplanes = dataset.getImgPlus().dimension(axisIndex);
 		subscribeToEvents();
 		setFirstAndLast(totalHyperplanes);
 		animateAlongAxis(currDisplay, axis, totalHyperplanes);
@@ -135,6 +164,15 @@ public class AnimateAlongAxis implements ImageJPlugin {
 	
 	// -- private interface --
 
+	private void harvestInputs() {
+		final Map<String, Object> inputs = getInputs();
+		axisName = (String) inputs.get(NAME_KEY);
+		oneBasedFirst = (Long) inputs.get(FIRST_POS_KEY);
+		oneBasedLast = (Long) inputs.get(LAST_POS_KEY);
+		fps = (Double) inputs.get(FPS_KEY);
+		backAndForth = (Boolean) inputs.get(BACK_FORTH_KEY);
+	}
+	
 	/**
 	 * Sets the zero-based indices of the first and last frames */
 	private void setFirstAndLast(long totalHyperplanes) {
