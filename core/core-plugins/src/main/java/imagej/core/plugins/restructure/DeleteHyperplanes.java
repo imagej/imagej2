@@ -34,11 +34,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
@@ -53,34 +61,48 @@ import net.imglib2.type.numeric.RealType;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Delete Data...") })
-public class DeleteHyperplanes implements ImageJPlugin {
+public class DeleteHyperplanes extends DynamicPlugin {
 
-	@Parameter(required=true)
-	private Dataset input;
-	
-	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to modify",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
+	private static final String NAME_KEY = "Axis to modify";
+	private static final String POSITION_KEY = "Deletion position";
+	private static final String QUANTITY_KEY = "Deletion quantity";
+
+	private Dataset dataset;
 	private String axisToModify;
-	
-	// TODO - populate max from Dataset somehow
-	@Parameter(label="Deletion position", min="1")
 	private long oneBasedDelPos;
-	
-	// TODO - populate max from Dataset somehow
-	@Parameter(label="Deletion quantity", min="1")
 	private long numDeleting;
 
 	private long deletePosition;
+
+	public DeleteHyperplanes() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
+		if (display == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			if (datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+
+		final DefaultModuleItem<Long> pos =
+			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
+		pos.setMinimumValue(1L);
+		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		addInput(pos);
+		
+		final DefaultModuleItem<Long> quantity =
+			new DefaultModuleItem<Long>(this, QUANTITY_KEY, Long.class);
+		quantity.setMinimumValue(1L);
+		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		addInput(quantity);
+	}
 	
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
@@ -88,17 +110,22 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
+		final Map<String, Object> inputs = getInputs();
+		axisToModify = (String) inputs.get(NAME_KEY);
+		oneBasedDelPos = (Long) inputs.get(POSITION_KEY);
+		numDeleting = (Long) inputs.get(QUANTITY_KEY);
+		
 		deletePosition = oneBasedDelPos - 1; 
 		Axis axis = AxisUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
-		Axis[] axes = input.getAxes();
+		Axis[] axes = dataset.getAxes();
 		long[] newDimensions =
-			RestructureUtils.getDimensions(input, axis, -numDeleting);
+			RestructureUtils.getDimensions(dataset, axis, -numDeleting);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input, newDimensions, axes);
-		fillNewImgPlus(input.getImgPlus(), dstImgPlus, axis);
+			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
+		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
-		input.setImgPlus(dstImgPlus);
+		dataset.setImgPlus(dstImgPlus);
 	}
 
 	/**
@@ -109,8 +136,8 @@ public class DeleteHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// setup some working variables
-		int axisIndex = input.getAxisIndex(axis);
-		long axisSize = input.getImgPlus().dimension(axisIndex);
+		int axisIndex = dataset.getAxisIndex(axis);
+		long axisSize = dataset.getImgPlus().dimension(axisIndex);
 
 	  // axis not present in Dataset
 		if (axisIndex < 0)
@@ -139,8 +166,8 @@ public class DeleteHyperplanes implements ImageJPlugin {
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,
 		ImgPlus<? extends RealType<?>> dstImgPlus, Axis modifiedAxis)
 	{
-		long[] dimensions = input.getDims();
-		int axisIndex = input.getAxisIndex(modifiedAxis);
+		long[] dimensions = dataset.getDims();
+		int axisIndex = dataset.getAxisIndex(modifiedAxis);
 		long axisSize = dimensions[axisIndex];
 		long numBeforeCut = deletePosition;
 		long numInCut = numDeleting;
