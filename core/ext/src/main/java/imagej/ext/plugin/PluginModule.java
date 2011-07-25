@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.ext.InstantiableException;
+import imagej.ext.menu.ShadowMenu;
 import imagej.ext.module.AbstractModule;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
-import imagej.ext.module.menu.ShadowMenu;
 import imagej.util.ClassUtils;
 
 import java.util.HashMap;

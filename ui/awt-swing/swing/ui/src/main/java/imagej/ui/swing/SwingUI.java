@@ -43,7 +43,7 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.ext.module.menu.ShadowMenu;
+import imagej.ext.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.swing.JMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;

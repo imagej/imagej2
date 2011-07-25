@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swing;
 
-import imagej.ext.module.menu.AbstractMenuCreator;
-import imagej.ext.module.menu.ShadowMenu;
+import imagej.ext.menu.AbstractMenuCreator;
+import imagej.ext.menu.ShadowMenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
