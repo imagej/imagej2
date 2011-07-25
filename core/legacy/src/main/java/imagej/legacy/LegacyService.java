@@ -37,7 +37,8 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -74,7 +75,7 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Service
-public final class LegacyService implements IService {
+public final class LegacyService extends AbstractService {
 
 	static {
 		new LegacyInjector().injectHooks();
@@ -92,10 +93,18 @@ public final class LegacyService implements IService {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	/** Creates a new legacy service. */
-	public LegacyService(final EventService eventService,
+	// -- Constructors --
+
+	public LegacyService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public LegacyService(final ImageJ context, final EventService eventService,
 		final DisplayService displayService)
 	{
+		super(context);
 		this.eventService = eventService;
 		this.displayService = displayService;
 	}

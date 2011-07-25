@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.platform;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.util.Log;
 
@@ -51,7 +52,7 @@ import net.java.sezpoz.IndexItem;
  * @author Curtis Rueden
  */
 @Service
-public final class PlatformService implements IService {
+public final class PlatformService extends AbstractService {
 
 	/** Platform handlers applicable to this platform. */
 	private List<PlatformHandler> targetPlatforms;
@@ -59,6 +60,18 @@ public final class PlatformService implements IService {
 	/** Gets the platform handlers applicable to this platform. */
 	public List<PlatformHandler> getTargetPlatforms() {
 		return targetPlatforms;
+	}
+
+	// -- Constructors --
+
+	public PlatformService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public PlatformService(final ImageJ context) {
+		super(context);
 	}
 
 	// -- IService methods --

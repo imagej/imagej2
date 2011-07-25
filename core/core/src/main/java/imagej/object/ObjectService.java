@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.object;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -59,18 +60,27 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Service
-public final class ObjectService implements IService {
+public final class ObjectService extends AbstractService {
 
 	private final EventService eventService;
 
 	/** Index of registered objects. */
-	private final ObjectIndex<Object> objectIndex =
-		new ObjectIndex<Object>(Object.class);
+	private final ObjectIndex<Object> objectIndex = new ObjectIndex<Object>(
+		Object.class);
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	public ObjectService(final EventService eventService) {
+	// -- Constructors --
+
+	public ObjectService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public ObjectService(final ImageJ context, final EventService eventService) {
+		super(context);
 		this.eventService = eventService;
 	}
 

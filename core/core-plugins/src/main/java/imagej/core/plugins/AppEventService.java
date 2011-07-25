@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.core.plugins.app.AboutImageJ;
 import imagej.core.plugins.app.QuitProgram;
@@ -55,7 +56,7 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Service
-public final class AppEventService implements IService {
+public final class AppEventService extends AbstractService {
 
 	private final EventService eventService;
 	protected final PluginService pluginService;
@@ -63,9 +64,18 @@ public final class AppEventService implements IService {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	public AppEventService(final EventService eventService,
-		final PluginService pluginService)
+	// -- Constructors --
+
+	public AppEventService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public AppEventService(final ImageJ context,
+		final EventService eventService, final PluginService pluginService)
 	{
+		super(context);
 		this.eventService = eventService;
 		this.pluginService = pluginService;
 	}

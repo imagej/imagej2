@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.module;
 
-import imagej.IService;
+import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
@@ -58,9 +58,8 @@ import java.util.List;
  * @see ModuleInfo
  */
 @Service
-public class ModuleService implements IService {
+public class ModuleService extends AbstractService {
 
-	private final ImageJ context;
 	private final EventService eventService;
 
 	/** Index of registered modules. */
@@ -69,8 +68,16 @@ public class ModuleService implements IService {
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
+	// -- Constructors --
+
+	public ModuleService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
 	public ModuleService(final ImageJ context, final EventService eventService) {
-		this.context = context;
+		super(context);
 		this.eventService = eventService;
 	}
 
@@ -170,7 +177,7 @@ public class ModuleService implements IService {
 		if (separateThread) {
 			final String className = module.getInfo().getDelegateClassName();
 			final String threadName =
-				"ImageJ-" + context.getID() + "-ModuleRunner-" + className;
+				"ImageJ-" + getContext().getID() + "-ModuleRunner-" + className;
 			new Thread(new Runnable() {
 
 				@Override

@@ -1,5 +1,5 @@
 //
-// Events.java
+// AbstractService.java
 //
 
 /*
@@ -32,67 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imagej.event;
-
-import imagej.AbstractService;
-import imagej.ImageJ;
-import imagej.Service;
-
-import java.util.List;
-
-import org.bushe.swing.event.ThreadSafeEventService;
+package imagej;
 
 /**
- * Service for publishing and subscribing to ImageJ events.
+ * Abstract superclass of {@link IService} implementations.
  * 
  * @author Curtis Rueden
- * @author Grant Harris
  */
-@Service
-public final class EventService extends AbstractService {
+public abstract class AbstractService implements IService {
 
-	private ThreadSafeEventService eventBus;
+	private final ImageJ context;
 
-	// -- Constructors --
-
-	public EventService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public EventService(final ImageJ context) {
-		super(context);
-	}
-
-	// -- EventService methods --
-
-	public <E extends ImageJEvent> void publish(final E e) {
-		e.setContext(getContext());
-		eventBus.publish(e);
-	}
-
-	public <E extends ImageJEvent> void subscribe(final Class<E> c,
-		final EventSubscriber<E> subscriber)
-	{
-		eventBus.subscribe(c, subscriber);
-	}
-
-	public <E extends ImageJEvent> void unsubscribe(final Class<E> c,
-		final EventSubscriber<E> subscriber)
-	{
-		eventBus.unsubscribe(c, subscriber);
-	}
-
-	public <E extends ImageJEvent> List<E> getSubscribers(final Class<E> c) {
-		return eventBus.getSubscribers(c);
+	public AbstractService(final ImageJ context) {
+		this.context = context;
 	}
 
 	// -- IService methods --
 
 	@Override
-	public void initialize() {
-		eventBus = new ThreadSafeEventService();
+	public ImageJ getContext() {
+		return context;
 	}
 
 }

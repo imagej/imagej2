@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
@@ -62,14 +63,24 @@ import net.java.sezpoz.IndexItem;
  * @see Plugin
  */
 @Service
-public class PluginService implements IService {
+public class PluginService extends AbstractService {
 
 	private final ModuleService moduleService;
 
 	/** Index of registered plugins. */
 	private final PluginIndex pluginIndex = new PluginIndex();
 
-	public PluginService(final ModuleService moduleService) {
+	// -- Constructors --
+
+	public PluginService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public PluginService(final ImageJ context, final ModuleService moduleService)
+	{
+		super(context);
 		this.moduleService = moduleService;
 	}
 
@@ -286,7 +297,7 @@ public class PluginService implements IService {
 
 	@Override
 	public void initialize() {
-		reloadPlugins();		
+		reloadPlugins();
 	}
 
 	// -- Helper methods --
