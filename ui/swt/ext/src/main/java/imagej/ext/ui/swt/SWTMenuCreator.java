@@ -36,8 +36,8 @@ package imagej.ext.ui.swt;
 
 import imagej.ImageJ;
 import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ui.menu.AbstractMenuCreator;
-import imagej.ext.module.ui.menu.ShadowMenu;
+import imagej.ext.module.menu.AbstractMenuCreator;
+import imagej.ext.module.menu.ShadowMenu;
 import imagej.ext.plugin.PluginService;
 
 import org.eclipse.swt.SWT;

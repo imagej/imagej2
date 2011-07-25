@@ -45,7 +45,7 @@ import imagej.event.EventSubscriber;
 import imagej.event.Events;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.module.ui.menu.ShadowMenu;
+import imagej.ext.module.menu.ShadowMenu;
 import imagej.ext.ui.swing.JMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
