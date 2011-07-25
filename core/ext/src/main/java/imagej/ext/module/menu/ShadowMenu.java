@@ -81,7 +81,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		children = new HashMap<String, ShadowMenu>();
 	}
 
-	public ModuleInfo getModuleInfo() {
+	public ModuleInfo getInfo() {
 		return info;
 	}
 

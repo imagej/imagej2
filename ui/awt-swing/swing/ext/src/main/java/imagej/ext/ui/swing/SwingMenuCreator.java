@@ -108,7 +108,7 @@ public abstract class SwingMenuCreator<T> extends
 		}
 		else menuItem = new JMenuItem(name);
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getModuleInfo(), menuItem);
+		linkAction(shadow.getInfo(), menuItem);
 		return menuItem;
 	}
 
@@ -121,11 +121,11 @@ public abstract class SwingMenuCreator<T> extends
 	// -- Helper methods --
 
 	private boolean isSelected(final ShadowMenu shadow) {
-		return shadow.getModuleInfo().isSelected();
+		return shadow.getInfo().isSelected();
 	}
 
 	private ButtonGroup getButtonGroup(final ShadowMenu shadow) {
-		final String selectionGroup = shadow.getModuleInfo().getSelectionGroup();
+		final String selectionGroup = shadow.getInfo().getSelectionGroup();
 		ButtonGroup buttonGroup = buttonGroups.get(selectionGroup);
 		if (buttonGroup == null) {
 			buttonGroup = new ButtonGroup();
