@@ -94,6 +94,7 @@ public class DeleteAxis extends DynamicPlugin {
 		final DefaultModuleItem<Long> pos =
 			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
 		pos.setMinimumValue(1L);
+		// TODO - set max value to number of hyperplanes along desired axis
 		addInput(pos);
 	}
 	
