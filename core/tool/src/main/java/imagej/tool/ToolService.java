@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.tool;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
@@ -66,7 +67,7 @@ import net.java.sezpoz.IndexItem;
  * @see Tool
  */
 @Service
-public class ToolService implements IService {
+public class ToolService extends AbstractService {
 
 	private final EventService eventService;
 
@@ -77,7 +78,16 @@ public class ToolService implements IService {
 
 	private ITool activeTool;
 
-	public ToolService(final EventService eventService) {
+	// -- Constructors --
+
+	public ToolService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public ToolService(final ImageJ context, final EventService eventService) {
+		super(context);
 		this.eventService = eventService;
 	}
 

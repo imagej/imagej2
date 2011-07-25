@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
@@ -62,7 +63,7 @@ import java.util.List;
  * @author Grant Harris
  */
 @Service
-public final class DisplayService implements IService {
+public final class DisplayService extends AbstractService {
 
 	protected final EventService eventService;
 	private final ObjectService objectService;
@@ -73,9 +74,18 @@ public final class DisplayService implements IService {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	public DisplayService(final EventService eventService,
+	// -- Constructors --
+
+	public DisplayService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public DisplayService(final ImageJ context, final EventService eventService,
 		final ObjectService objectService, final PluginService pluginService)
 	{
+		super(context);
 		this.eventService = eventService;
 		this.objectService = objectService;
 		this.pluginService = pluginService;

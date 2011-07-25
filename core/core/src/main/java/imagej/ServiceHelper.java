@@ -197,10 +197,17 @@ public class ServiceHelper {
 	private <S extends IService> Constructor<S> getConstructor(final Class<S> c)
 	{
 		final Constructor<?>[] ctors = c.getConstructors();
-		if (ctors == null || ctors.length == 0) return null;
-		@SuppressWarnings("unchecked")
-		final Constructor<S> ctor = (Constructor<S>) ctors[0];
-		return ctor;
+		if (ctors == null) return null;
+		for (final Constructor<?> ctor : ctors) {
+			final Class<?>[] types = ctor.getParameterTypes();
+			if (types == null || types.length == 0) continue; // no constructors
+			if (!ImageJ.class.isAssignableFrom(types[0])) continue; // wrong one
+			@SuppressWarnings("unchecked")
+			final Constructor<S> result = (Constructor<S>) ctor;
+			return result;
+		}
+		// no appropriate constructor found
+		return null;
 	}
 
 }

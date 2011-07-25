@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ui;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.util.Log;
 
@@ -51,13 +52,27 @@ import net.java.sezpoz.IndexItem;
  * @author Curtis Rueden
  */
 @Service
-public final class UIService implements IService {
+public final class UIService extends AbstractService {
 
 	/** The active user interface. */
 	private UserInterface userInterface;
 
 	/** Available user interfaces. */
 	private List<UserInterface> availableUIs;
+
+	// -- Constructors --
+
+	public UIService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public UIService(final ImageJ context) {
+		super(context);
+	}
+
+	// -- UIService methods --
 
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {

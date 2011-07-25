@@ -57,7 +57,8 @@ public class PluginDiscovery {
 		final EventService eventService = new EventService(context);
 		final ModuleService moduleService =
 			new ModuleService(context, eventService);
-		final PluginService pluginService = new PluginService(moduleService);
+		final PluginService pluginService =
+			new PluginService(context, moduleService);
 		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
 		System.out.println("Discovered plugins:");
 		for (final PluginInfo<?> plugin : plugins) {

@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.IService;
+import imagej.AbstractService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
@@ -49,11 +50,21 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Service
-public final class OverlayService implements IService {
+public final class OverlayService extends AbstractService {
 
 	private final ObjectService objectService;
 
-	public OverlayService(final ObjectService objectService) {
+	// -- Constructors --
+
+	public OverlayService() {
+		// NB: Required by SezPoz.
+		super(null);
+		throw new UnsupportedOperationException();
+	}
+
+	public OverlayService(final ImageJ context, final ObjectService objectService)
+	{
+		super(context);
 		this.objectService = objectService;
 	}
 
