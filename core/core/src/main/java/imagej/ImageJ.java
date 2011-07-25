@@ -112,10 +112,13 @@ public class ImageJ {
 
 	/** Gets the ImageJ application context for the current thread. */
 	public static ImageJ getContext() {
+		// TODO - Eventually, to support non-singleton ImageJ instances, we can
+		// enable the code below and refactor things to support it.
 		final int id = getContextID();
 		if (id < 0) {
-			throw new IllegalStateException("No application context from thread: " +
-				Thread.currentThread().getName());
+			return getContext(0);
+//			throw new IllegalStateException("No application context from thread: " +
+//				Thread.currentThread().getName());
 		}
 		return getContext(id);
 	}
