@@ -57,8 +57,8 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
 /**
- * Service for keeping track of available tools, including which tool
- * is active, and delegating UI events to the active tool.
+ * Service for keeping track of available tools, including which tool is active,
+ * and delegating UI events to the active tool.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
@@ -83,16 +83,6 @@ public class ToolService implements IService {
 		return activeTool;
 	}
 
-	// -- IService methods --
-
-	@Override
-	public void initialize() {
-		toolEntries = findTools();
-		Collections.sort(toolEntries);
-		activeTool = new DummyTool();
-		subscribeToEvents();
-	}
-
 	public void setActiveTool(final ITool activeTool) {
 		if (this.activeTool == activeTool) return; // nothing to do
 		assert this.activeTool != null;
@@ -108,6 +98,16 @@ public class ToolService implements IService {
 		this.activeTool = activeTool;
 		activeTool.activate();
 		Events.publish(new ToolActivatedEvent(activeTool));
+	}
+
+	// -- IService methods --
+
+	@Override
+	public void initialize() {
+		toolEntries = findTools();
+		Collections.sort(toolEntries);
+		activeTool = new DummyTool();
+		subscribeToEvents();
 	}
 
 	// -- Helper methods --

@@ -49,7 +49,8 @@ public final class Main {
 
 	public static void main(String[] args) {
 		manageSettings();
-		ImageJ.get(UIService.class).processArgs(args);
+		final ImageJ context = ImageJ.createContext();
+		context.getService(UIService.class).processArgs(args);
 	}
 
 	private static void manageSettings() {

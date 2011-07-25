@@ -38,7 +38,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import imagej.IService;
-import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -74,21 +73,28 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Service(priority = Service.HIGH_PRIORITY)
+@Service
 public final class LegacyService implements IService {
 
 	static {
 		new LegacyInjector().injectHooks();
 	}
 
+	private final DisplayService displayService;
+
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
 	/** Method of synchronizing IJ2 & IJ1 options */
 	private OptionsSynchronizer optionsSynchronizer;
-	
+
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
+
+	/** Creates a new legacy service. */
+	public LegacyService(final DisplayService displayService) {
+		this.displayService = displayService;
+	}
 
 	// -- LegacyService methods --
 
@@ -112,7 +118,6 @@ public final class LegacyService implements IService {
 	 * active {@link Display}. Does not perform any harmonization.
 	 */
 	public void syncActiveImage() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display activeDisplay = displayService.getActiveDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		WindowManager.setTempCurrentImage(activeImagePlus);
@@ -122,10 +127,9 @@ public final class LegacyService implements IService {
 
 	@Override
 	public void initialize() {
-		
 		imageMap = new LegacyImageMap();
 		optionsSynchronizer = new OptionsSynchronizer();
-		
+
 		// initialize legacy ImageJ application
 		try {
 			new ij.ImageJ(ij.ImageJ.NO_SHOW);
@@ -137,7 +141,7 @@ public final class LegacyService implements IService {
 		// TODO - FIXME
 		// call optionsSynchronizer.update() here? Need to determine when the
 		// IJ2 settings file has been read/initialized and then call update() once.
-		
+
 		subscribeToEvents();
 	}
 
@@ -158,62 +162,56 @@ public final class LegacyService implements IService {
 			};
 		subscribers.add(displayActivatedSubscriber);
 		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
-		
+
 		final EventSubscriber<OptionsChangedEvent> optionSubscriber =
 			new EventSubscriber<OptionsChangedEvent>() {
 
 				@Override
-				public void onEvent(OptionsChangedEvent event) {
+				public void onEvent(final OptionsChangedEvent event) {
 					optionsSynchronizer.update();
 				}
-				
-		};
+
+			};
 		subscribers.add(optionSubscriber);
 		Events.subscribe(OptionsChangedEvent.class, optionSubscriber);
 
 		// TODO - FIXME remove AWT dependency when we have implemented our own
-		//   KyEvent constants
-		
+		// KyEvent constants
+
 		final EventSubscriber<KyPressedEvent> pressSubscriber =
 			new EventSubscriber<KyPressedEvent>() {
+
 				@Override
-				public void onEvent(KyPressedEvent event) {
-					int code = event.getCode();
-					if (code == KeyEvent.VK_SPACE)
-						IJ.setKeyDown(KeyEvent.VK_SPACE);
-					if (code == KeyEvent.VK_ALT)
-						IJ.setKeyDown(KeyEvent.VK_ALT);
-					if (code == KeyEvent.VK_SHIFT)
-						IJ.setKeyDown(KeyEvent.VK_SHIFT);
-					if (code == KeyEvent.VK_CONTROL)
-						IJ.setKeyDown(KeyEvent.VK_CONTROL);
-					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_META))
-						IJ.setKeyDown(KeyEvent.VK_CONTROL);
+				public void onEvent(final KyPressedEvent event) {
+					final int code = event.getCode();
+					if (code == KeyEvent.VK_SPACE) IJ.setKeyDown(KeyEvent.VK_SPACE);
+					if (code == KeyEvent.VK_ALT) IJ.setKeyDown(KeyEvent.VK_ALT);
+					if (code == KeyEvent.VK_SHIFT) IJ.setKeyDown(KeyEvent.VK_SHIFT);
+					if (code == KeyEvent.VK_CONTROL) IJ.setKeyDown(KeyEvent.VK_CONTROL);
+					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_META)) IJ
+						.setKeyDown(KeyEvent.VK_CONTROL);
 				}
-		};
+			};
 		subscribers.add(pressSubscriber);
 		Events.subscribe(KyPressedEvent.class, pressSubscriber);
-			
+
 		// TODO - FIXME remove AWT dependency when we have implemented our own
-		//   KyEvent constants
-		
+		// KyEvent constants
+
 		final EventSubscriber<KyReleasedEvent> releaseSubscriber =
 			new EventSubscriber<KyReleasedEvent>() {
+
 				@Override
-				public void onEvent(KyReleasedEvent event) {
-					int code = event.getCode();
-					if (code == KeyEvent.VK_SPACE)
-						IJ.setKeyUp(KeyEvent.VK_SPACE);
-					if (code == KeyEvent.VK_ALT)
-						IJ.setKeyUp(KeyEvent.VK_ALT);
-					if (code == KeyEvent.VK_SHIFT)
-						IJ.setKeyUp(KeyEvent.VK_SHIFT);
-					if (code == KeyEvent.VK_CONTROL)
-						IJ.setKeyUp(KeyEvent.VK_CONTROL);
-					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_CONTROL))
-						IJ.setKeyUp(KeyEvent.VK_CONTROL);
+				public void onEvent(final KyReleasedEvent event) {
+					final int code = event.getCode();
+					if (code == KeyEvent.VK_SPACE) IJ.setKeyUp(KeyEvent.VK_SPACE);
+					if (code == KeyEvent.VK_ALT) IJ.setKeyUp(KeyEvent.VK_ALT);
+					if (code == KeyEvent.VK_SHIFT) IJ.setKeyUp(KeyEvent.VK_SHIFT);
+					if (code == KeyEvent.VK_CONTROL) IJ.setKeyUp(KeyEvent.VK_CONTROL);
+					if ((IJ.isMacintosh()) && (code == KeyEvent.VK_CONTROL)) IJ
+						.setKeyUp(KeyEvent.VK_CONTROL);
 				}
-		};
+			};
 		subscribers.add(releaseSubscriber);
 		Events.subscribe(KyReleasedEvent.class, releaseSubscriber);
 	}

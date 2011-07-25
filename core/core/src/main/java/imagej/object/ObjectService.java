@@ -58,7 +58,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-@Service(priority = Service.FIRST_PRIORITY)
+@Service
 public final class ObjectService implements IService {
 
 	/** Index of registered objects. */

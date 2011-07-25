@@ -107,7 +107,9 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		ImageJ.get(LegacyService.class); // ensure ImageJ v1.x is initialized
+		// ensure ImageJ v1.x is initialized
+		ImageJ.getContext().addService(LegacyService.class);
+
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
 		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
