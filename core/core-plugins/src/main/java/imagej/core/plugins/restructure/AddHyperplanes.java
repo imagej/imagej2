@@ -113,9 +113,9 @@ public class AddHyperplanes extends DynamicPlugin {
 		final Map<String, Object> inputs = getInputs();
 		axisToModify = (String) inputs.get(NAME_KEY);
 		oneBasedInsPos = (Long) inputs.get(POSITION_KEY);
-		insertPosition = oneBasedInsPos - 1;
 		numAdding = (Long) inputs.get(QUANTITY_KEY);
 		
+		insertPosition = oneBasedInsPos - 1;
 		Axis axis = AxisUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
 		Axis[] axes = dataset.getAxes();
