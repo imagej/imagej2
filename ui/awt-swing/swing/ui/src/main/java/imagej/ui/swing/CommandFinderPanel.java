@@ -37,9 +37,9 @@ package imagej.ui.swing;
 import imagej.ImageJ;
 import imagej.ext.AbstractUIDetails;
 import imagej.ext.MenuEntry;
+import imagej.ext.menu.ShadowMenu;
 import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleService;
-import imagej.ext.module.menu.ShadowMenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

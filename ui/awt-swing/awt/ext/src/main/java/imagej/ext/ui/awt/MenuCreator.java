@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.awt;
 
-import imagej.ext.module.menu.ShadowMenu;
+import imagej.ext.menu.ShadowMenu;
 
 import java.awt.Menu;
 
