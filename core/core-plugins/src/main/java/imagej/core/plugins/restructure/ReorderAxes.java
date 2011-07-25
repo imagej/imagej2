@@ -1,10 +1,16 @@
 package imagej.core.plugins.restructure;
 
+import java.util.ArrayList;
+import java.util.Map;
+
+import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.util.Log;
 import net.imglib2.RandomAccess;
@@ -14,11 +20,6 @@ import net.imglib2.ops.operation.RegionIterator;
 import net.imglib2.type.numeric.RealType;
 
 // TODO
-// - make a nicer UI that doesn't show all axes but just those present in
-//     Dataset. This capability would be useful in all the restructure plugins.
-// - make the "choices" arrays somehow reuse a static array in RestructureUtils
-// - if must keep all axes in UI then only make user specify the 1st N that
-//     match their Dataset at the moment
 // - can reorder X & Y out of 1st two positions. This could be useful in future
 //     but might need to block right now. Similarly the DeleteAxis plugin can
 //     totally delete X & Y I think.
@@ -31,158 +32,49 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Image", mnemonic = 'i'),
 	@Menu(label = "Stacks", mnemonic = 's'),
 	@Menu(label = "Reorder Axes...") })
-public class ReorderAxes implements ImageJPlugin {
+public class ReorderAxes extends DynamicPlugin {
 	private RegionIterator iter;
 	
-	@Parameter(required = true)
-	private Dataset input;
+	private Dataset dataset;
 
-	@Parameter(label="1st preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis1;
-	
-	@Parameter(label="2nd preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis2;
-	
-	@Parameter(label="3rd preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis3;
-	
-	@Parameter(label="4th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis4;
-	
-	@Parameter(label="5th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis5;
-	
-	@Parameter(label="6th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis6;
-	
-	@Parameter(label="7th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis7;
-	
-	@Parameter(label="8th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis8;
-	
-	@Parameter(label="9th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis9;
-	
-	@Parameter(label="10th preference",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	String axis10;
-	
+	String[] axisNames;
 	private int[] permutationAxisIndices;
 	private Axis[] desiredAxisOrder;
 
+	public ReorderAxes() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
+		if (display == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		
+		Axis[] axes = dataset.getAxes();
+		
+		ArrayList<String> choices = new ArrayList<String>();
+		for (int i = 0; i < axes.length; i++) {
+			choices.add(axes[i].getLabel());
+		}
+		for (int i = 0; i < axes.length; i++) {
+			final DefaultModuleItem<String> name =
+				new DefaultModuleItem<String>(this, name(i), String.class);
+			name.setChoices(choices);
+			addInput(name);
+		}
+	}
+	
 	/**
 	 * Run the plugin and reorder axes as specified by user */
 	@Override
 	public void run() {
+		getAxisNamesInOrder();
 		setupDesiredAxisOrder();
 		if (inputBad()) return;
 		setupPermutationVars();
 		ImgPlus<? extends RealType<?>> newImgPlus = getReorganizedData();
-		//reportDims(input.getImgPlus());
+		//reportDims(dataset.getImgPlus());
 		//reportDims(newImgPlus);
-		int count = input.getCompositeChannelCount();
-		input.setImgPlus(newImgPlus);
-		input.setCompositeChannelCount(count);
+		int count = dataset.getCompositeChannelCount();
+		dataset.setImgPlus(newImgPlus);
+		dataset.setCompositeChannelCount(count);
 	}
 
 	// -- helpers --
@@ -201,23 +93,25 @@ public class ReorderAxes implements ImageJPlugin {
 	}
 	*/
 	
+	private String name(int i) {
+		return "Axis #"+i;
+	}
+
+	private void getAxisNamesInOrder() {
+		final Map<String, Object> inputs = getInputs();
+		axisNames = new String[dataset.getImgPlus().numDimensions()];
+		for (int i = 0; i < axisNames.length; i++)
+			axisNames[i] = (String) inputs.get(name(i));
+	}
+	
 	/**
 	 * Fills the internal variable "desiredAxisOrder" with the order of axes
 	 * that the user specified in the dialog. all axes are present rather than
 	 * just those present in the input Dataset. */
 	private void setupDesiredAxisOrder() {
-		desiredAxisOrder = new Axis[]{
-			AxisUtils.getAxis(axis1),
-			AxisUtils.getAxis(axis2),
-			AxisUtils.getAxis(axis3),
-			AxisUtils.getAxis(axis4),
-			AxisUtils.getAxis(axis5),
-			AxisUtils.getAxis(axis6),
-			AxisUtils.getAxis(axis7),
-			AxisUtils.getAxis(axis8),
-			AxisUtils.getAxis(axis9),
-			AxisUtils.getAxis(axis10)
-		};
+		desiredAxisOrder = new Axis[axisNames.length];
+		for (int i = 0; i < axisNames.length; i++)
+			desiredAxisOrder[i] = AxisUtils.getAxis(axisNames[i]);
 	}
 	
 	/**
@@ -257,7 +151,7 @@ public class ReorderAxes implements ImageJPlugin {
 	 * actually permute positions.
 	 */
 	private void setupPermutationVars() {
-		Axis[] currAxes = input.getAxes();
+		Axis[] currAxes = dataset.getAxes();
 		Axis[] permutedAxes = getPermutedAxes(currAxes);
 		permutationAxisIndices = new int[currAxes.length];
 		for (int i = 0; i < currAxes.length; i++) {
@@ -272,17 +166,17 @@ public class ReorderAxes implements ImageJPlugin {
 	 * which has them stored in a different axis order */
 	private ImgPlus<? extends RealType<?>> getReorganizedData() {
 		RandomAccess<? extends RealType<?>> inputAccessor =
-			input.getImgPlus().randomAccess();
-		long[] inputOrigin = new long[input.getImgPlus().numDimensions()];
+			dataset.getImgPlus().randomAccess();
+		long[] inputOrigin = new long[dataset.getImgPlus().numDimensions()];
 		long[] inputSpan = new long[inputOrigin.length];
-		input.getImgPlus().dimensions(inputSpan);
+		dataset.getImgPlus().dimensions(inputSpan);
 		iter = new RegionIterator(inputAccessor, inputOrigin, inputSpan);
-		long[] origDims = input.getDims();
-		Axis[] origAxes = input.getAxes();
+		long[] origDims = dataset.getDims();
+		Axis[] origAxes = dataset.getAxes();
 		long[] newDims = getNewDims(origDims);
 		Axis[] newAxes = getNewAxes(origAxes);
 		ImgPlus<? extends RealType<?>> newImgPlus =
-			RestructureUtils.createNewImgPlus(input, newDims, newAxes);
+			RestructureUtils.createNewImgPlus(dataset, newDims, newAxes);
 		RandomAccess<? extends RealType<?>> outputAccessor =
 			newImgPlus.randomAccess();
 		long[] currPos = new long[inputOrigin.length];
