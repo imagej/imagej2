@@ -34,11 +34,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
@@ -54,30 +62,41 @@ import net.imglib2.type.numeric.RealType;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Delete Axis...") })
-public class DeleteAxis implements ImageJPlugin {
-	
-	@Parameter(required = true)
-	private Dataset input;
+public class DeleteAxis extends DynamicPlugin {
 
-	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to delete", choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	private String axisToDelete;
+	private static final String NAME_KEY = "Axis to delete";
+	private static final String POSITION_KEY = "Index of hyperplane to keep";
 	
-	@Parameter(label="Index of hyperplane to keep", min="1")
+	private Dataset dataset;
+	private String axisToDelete;
 	private long oneBasedHyperplanePos;
 	
 	private long hyperPlaneToKeep;
 
+	public DeleteAxis() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
+		if (display == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		
+		
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			if (datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+		
+		final DefaultModuleItem<Long> pos =
+			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
+		pos.setMinimumValue(1L);
+		addInput(pos);
+	}
+	
 	/**
 	 * Creates new ImgPlus data with one less axis. sets pixels of ImgPlus
 	 * to user specified hyperplane within original ImgPlus data. Assigns the
@@ -85,16 +104,19 @@ public class DeleteAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
+		final Map<String, Object> inputs = getInputs();
+		axisToDelete = (String) inputs.get(NAME_KEY);
+		oneBasedHyperplanePos = (Long) inputs.get(POSITION_KEY);
 		hyperPlaneToKeep = oneBasedHyperplanePos - 1;
 		Axis axis = AxisUtils.getAxis(axisToDelete);
 		if (inputBad(axis)) return;
-		Axis[] newAxes = getNewAxes(input, axis);
-		long[] newDimensions = getNewDimensions(input, axis);
+		Axis[] newAxes = getNewAxes(dataset, axis);
+		long[] newDimensions = getNewDimensions(dataset, axis);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input, newDimensions, newAxes);
-		fillNewImgPlus(input.getImgPlus(), dstImgPlus);
+			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
+		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		// TODO - colorTables, metadata, etc.?
-		input.setImgPlus(dstImgPlus);
+		dataset.setImgPlus(dstImgPlus);
 	}
 	
 	/**
@@ -105,12 +127,12 @@ public class DeleteAxis implements ImageJPlugin {
 			return true;
 		
 	  // axis not already present in Dataset
-		int axisIndex = input.getAxisIndex(axis);
+		int axisIndex = dataset.getAxisIndex(axis);
 		if (axisIndex < 0)
 			return true;
 		
 		// hyperplane index out of range
-		long axisSize = input.getImgPlus().dimension(axisIndex);
+		long axisSize = dataset.getImgPlus().dimension(axisIndex);
 		if ((hyperPlaneToKeep < 0) ||
 				(hyperPlaneToKeep >= axisSize))
 			return true;
