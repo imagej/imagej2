@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.IService;
-import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.DataObject;
 import imagej.data.roi.Overlay;
@@ -52,6 +51,12 @@ import java.util.List;
 @Service
 public final class OverlayService implements IService {
 
+	private final ObjectService objectService;
+
+	public OverlayService(final ObjectService objectService) {
+		this.objectService = objectService;
+	}
+
 	// -- OverlayService methods --
 
 	/**
@@ -59,7 +64,6 @@ public final class OverlayService implements IService {
 	 * delegates to {@link ObjectService}.
 	 */
 	public List<Overlay> getOverlays() {
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
 		return objectService.getObjects(Overlay.class);
 	}
 
@@ -107,7 +111,7 @@ public final class OverlayService implements IService {
 
 	@Override
 	public void initialize() {
-		// no initialization needed
+		// NB: no action needed
 	}
 
 }

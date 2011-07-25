@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.display;
 
 import imagej.IService;
-import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
@@ -65,10 +64,20 @@ import java.util.List;
 @Service
 public final class DisplayService implements IService {
 
+	private final ObjectService objectService;
+	private final PluginService pluginService;
+
 	private Display activeDisplay;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
+
+	public DisplayService(final ObjectService objectService,
+		final PluginService pluginService)
+	{
+		this.objectService = objectService;
+		this.pluginService = pluginService;
+	}
 
 	// -- DisplayService methods --
 
@@ -120,7 +129,6 @@ public final class DisplayService implements IService {
 
 	/** Gets a list of all available {@link Display}s. */
 	public List<Display> getDisplays() {
-		final ObjectService objectService = ImageJ.get(ObjectService.class);
 		return objectService.getObjects(Display.class);
 	}
 
@@ -154,7 +162,6 @@ public final class DisplayService implements IService {
 	/** Creates a {@link Display} and adds the given {@link Dataset} as a view. */
 	public Display createDisplay(final Dataset dataset) {
 		// get available display plugins from the plugin service
-		final PluginService pluginService = ImageJ.get(PluginService.class);
 		final List<PluginInfo<Display>> plugins =
 			pluginService.getPluginsOfType(Display.class);
 
@@ -201,14 +208,13 @@ public final class DisplayService implements IService {
 					for (final DisplayView view : views) {
 						view.dispose();
 					}
-					
+
 					// HACK - Necessary to plug memory leak when closing the last window.
-					//  Might be slow since it has to walk the whole ObjectService object
-					//  list. Note that we could ignore this. Next created display will
-					//  make old invalid activeDataset reference reclaimable.
-					if (getDisplays().size() == 1)
-						setActiveDisplay(null);
-					
+					// Might be slow since it has to walk the whole ObjectService object
+					// list. Note that we could ignore this. Next created display will
+					// make old invalid activeDataset reference reclaimable.
+					if (getDisplays().size() == 1) setActiveDisplay(null);
+
 					Events.publish(new DisplayDeletedEvent(display));
 				}
 

@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.IService;
-import imagej.ImageJ;
 import imagej.Service;
 import imagej.ext.InstantiableException;
 import imagej.ext.module.Module;
@@ -65,8 +64,14 @@ import net.java.sezpoz.IndexItem;
 @Service
 public class PluginService implements IService {
 
+	private final ModuleService moduleService;
+
 	/** Index of registered plugins. */
 	private final PluginIndex pluginIndex = new PluginIndex();
+
+	public PluginService(final ModuleService moduleService) {
+		this.moduleService = moduleService;
+	}
 
 	// -- PluginService methods --
 
@@ -80,8 +85,6 @@ public class PluginService implements IService {
 	 * clear any individual plugins added programmatically.
 	 */
 	public void reloadPlugins() {
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
-
 		// remove old runnable plugins from module service
 		moduleService.removeModules(getRunnablePlugins());
 
@@ -256,7 +259,7 @@ public class PluginService implements IService {
 			createInstances(PreprocessorPlugin.class);
 		final List<PostprocessorPlugin> post =
 			createInstances(PostprocessorPlugin.class);
-		ImageJ.get(ModuleService.class).run(info, pre, post, separateThread);
+		moduleService.run(info, pre, post, separateThread);
 	}
 
 	/**
@@ -272,14 +275,14 @@ public class PluginService implements IService {
 			createInstances(PreprocessorPlugin.class);
 		final List<PostprocessorPlugin> post =
 			createInstances(PostprocessorPlugin.class);
-		ImageJ.get(ModuleService.class).run(module, pre, post, separateThread);
+		moduleService.run(module, pre, post, separateThread);
 	}
 
 	// -- IService methods --
 
 	@Override
 	public void initialize() {
-		reloadPlugins();
+		reloadPlugins();		
 	}
 
 	// -- Helper methods --

@@ -56,7 +56,7 @@ import java.util.List;
  * @see Module
  * @see ModuleInfo
  */
-@Service(priority = Service.HIGH_PRIORITY)
+@Service
 public class ModuleService implements IService {
 
 	/** Index of registered modules. */

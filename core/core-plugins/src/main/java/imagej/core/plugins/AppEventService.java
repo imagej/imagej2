@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins;
 
 import imagej.IService;
-import imagej.ImageJ;
 import imagej.Service;
 import imagej.core.plugins.app.AboutImageJ;
 import imagej.core.plugins.app.QuitProgram;
@@ -55,13 +54,19 @@ import java.util.List;
  *
  * @author Curtis Rueden
  */
-@Service(priority = Service.LAST_PRIORITY)
+@Service
 public final class AppEventService implements IService {
+
+	protected final PluginService pluginService;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	// -- Service methods --
+	public AppEventService(final PluginService pluginService) {
+		this.pluginService = pluginService;
+	}
+
+	// -- IService methods --
 
 	@Override
 	public void initialize() {
@@ -71,7 +76,6 @@ public final class AppEventService implements IService {
 	// -- Helper methods --
 
 	private void subscribeToEvents() {
-		final PluginService pluginService = ImageJ.get(PluginService.class);
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
 		final EventSubscriber<AppAboutEvent> appAboutSubscriber =

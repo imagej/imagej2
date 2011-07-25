@@ -52,13 +52,5 @@ import net.java.sezpoz.Indexable;
 @Target(ElementType.TYPE)
 @Indexable(type = IService.class)
 public @interface Service {
-
-	float FIRST_PRIORITY = 0;
-	float HIGH_PRIORITY = 25;
-	float NORMAL_PRIORITY = 50;
-	float LOW_PRIORITY = 75;
-	float LAST_PRIORITY = 100;
-
-	float priority() default NORMAL_PRIORITY;
-
+	// marker interface for discovery via SezPoz
 }

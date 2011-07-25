@@ -47,10 +47,10 @@ import net.java.sezpoz.IndexItem;
 
 /**
  * Service for the ImageJ user interface.
- *
+ * 
  * @author Curtis Rueden
  */
-@Service(priority = Service.LAST_PRIORITY)
+@Service
 public final class UIService implements IService {
 
 	/** The active user interface. */
@@ -62,7 +62,8 @@ public final class UIService implements IService {
 	/** Processes the given command line arguments. */
 	public void processArgs(final String[] args) {
 		Log.info("Received command line arguments:");
-		for (String arg : args) Log.info("\t" + arg);
+		for (final String arg : args)
+			Log.info("\t" + arg);
 		userInterface.processArgs(args);
 	}
 
@@ -88,7 +89,10 @@ public final class UIService implements IService {
 			ui.initialize();
 			userInterface = ui;
 		}
-		else Log.warn("No user interfaces found.");
+		else {
+			Log.warn("No user interfaces found.");
+			userInterface = null;
+		}
 	}
 
 	// -- Helper methods --
@@ -96,15 +100,15 @@ public final class UIService implements IService {
 	/** Discovers user interfaces using SezPoz. */
 	private List<UserInterface> discoverUIs() {
 		final List<UserInterface> uis = new ArrayList<UserInterface>();
-		for (final IndexItem<UI, UserInterface> item :
-			Index.load(UI.class, UserInterface.class))
+		for (final IndexItem<UI, UserInterface> item : Index.load(UI.class,
+			UserInterface.class))
 		{
 			try {
 				final UserInterface ui = item.instance();
 				Log.info("Discovered user interface: " + ui.getClass().getName());
 				uis.add(ui);
 			}
-			catch (InstantiationException e) {
+			catch (final InstantiationException e) {
 				Log.warn("Invalid user interface: " + item, e);
 			}
 		}

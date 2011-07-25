@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.plugin;
 
-import imagej.ImageJ;
+import imagej.ext.module.ModuleService;
 
 import java.util.List;
 
@@ -51,7 +51,8 @@ public class PluginDiscovery {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugins:");
-		final PluginService pluginService = ImageJ.get(PluginService.class);
+		final ModuleService moduleService = new ModuleService();
+		final PluginService pluginService = new PluginService(moduleService);
 		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
 		System.out.println("Discovered plugins:");
 		for (final PluginInfo<?> plugin : plugins) {

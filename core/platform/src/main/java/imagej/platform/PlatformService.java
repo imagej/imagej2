@@ -47,16 +47,21 @@ import net.java.sezpoz.IndexItem;
 
 /**
  * Service for platform-specific deployment issues.
- *
+ * 
  * @author Curtis Rueden
  */
-@Service(priority = Service.LOW_PRIORITY)
+@Service
 public final class PlatformService implements IService {
-
-	// -- IService methods --
 
 	/** Platform handlers applicable to this platform. */
 	private List<PlatformHandler> targetPlatforms;
+
+	/** Gets the platform handlers applicable to this platform. */
+	public List<PlatformHandler> getTargetPlatforms() {
+		return targetPlatforms;
+	}
+
+	// -- IService methods --
 
 	@Override
 	public void initialize() {
@@ -66,12 +71,7 @@ public final class PlatformService implements IService {
 			Log.info("Configuring platform: " + platform.getClass().getName());
 			platform.configure();
 		}
-    if (platforms.size() == 0) Log.info("No platforms to configure.");
-	}
-
-	/** Gets the platform handlers applicable to this platform. */
-	public List<PlatformHandler> getTargetPlatforms() {
-		return targetPlatforms;
+		if (platforms.size() == 0) Log.info("No platforms to configure.");
 	}
 
 	// -- Helper methods --
@@ -79,8 +79,8 @@ public final class PlatformService implements IService {
 	/** Discovers target platform handlers using SezPoz. */
 	private List<PlatformHandler> discoverTargetPlatforms() {
 		final List<PlatformHandler> platforms = new ArrayList<PlatformHandler>();
-		for (final IndexItem<Platform, PlatformHandler> item :
-			Index.load(Platform.class, PlatformHandler.class))
+		for (final IndexItem<Platform, PlatformHandler> item : Index.load(
+			Platform.class, PlatformHandler.class))
 		{
 			if (!isTargetPlatform(item.annotation())) continue;
 			try {
@@ -96,7 +96,7 @@ public final class PlatformService implements IService {
 	/**
 	 * Determines whether the given platform description is applicable to this
 	 * platform.
-	 */ 
+	 */
 	private boolean isTargetPlatform(final Platform p) {
 		final String javaVendor = System.getProperty("java.vendor");
 		if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
