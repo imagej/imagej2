@@ -34,11 +34,20 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import imagej.ImageJ;
+import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import net.imglib2.img.Axes;
 import net.imglib2.img.Axis;
 
 
@@ -52,25 +61,37 @@ import net.imglib2.img.Axis;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Set Active Axis...") })
-public class SetActiveAxis implements ImageJPlugin {
+public class SetActiveAxis extends DynamicPlugin {
 
-	@Parameter
+	private static final String NAME_KEY = "Axis";
+
 	Display display;
 	
-	@Parameter(label="Axis",choices={
-		// NB - X & Y excluded right now
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
 	String axisName;
+	
+	public SetActiveAxis() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		display = displayService.getActiveDisplay();
+		if (display == null) return;
+		Dataset dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			// TODO - remove someday when we allow X or Y sliders
+			if ((candidateAxis == Axes.X) || (candidateAxis == Axes.Y)) continue;
+			if (datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+	}
 	
 	@Override
 	public void run() {
+		final Map<String, Object> inputs = getInputs();
+		axisName = (String) inputs.get(NAME_KEY);
 		Axis newActiveAxis = AxisUtils.getAxis(axisName);
 		if (newActiveAxis != null)
 			display.setActiveAxis(newActiveAxis);
