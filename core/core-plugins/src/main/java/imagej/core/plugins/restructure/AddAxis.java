@@ -64,21 +64,21 @@ import net.imglib2.type.numeric.RealType;
 @Menu(label = "Add Axis...") })
 public class AddAxis extends DynamicPlugin {
 	
-	private static final String NAME_KEY = "Axis";
-	private static final String SIZE_KEY = "Size";
+	private static final String NAME_KEY = "Axis to add";
+	private static final String SIZE_KEY = "Axis size";
 	
 	private Dataset dataset;
 	private String axisName;
 	private long axisSize;
 	
 	public AddAxis() {
-		// add one input and one output per available display
-		final DefaultModuleItem<String> name =
-			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display display = displayService.getActiveDisplay();
 		if (display == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
 		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
 		ArrayList<String> choices = new ArrayList<String>();
 		for (Axis candidateAxis : AxisUtils.AXES) {
@@ -87,6 +87,7 @@ public class AddAxis extends DynamicPlugin {
 		}
 		name.setChoices(choices);
 		addInput(name);
+		
 		final DefaultModuleItem<Long> size =
 			new DefaultModuleItem<Long>(this, SIZE_KEY, Long.class);
 		size.setMinimumValue(1L);

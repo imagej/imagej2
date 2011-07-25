@@ -34,11 +34,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
@@ -53,52 +61,71 @@ import net.imglib2.type.numeric.RealType;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Add Data...") })
-public class AddHyperplanes implements ImageJPlugin {
+public class AddHyperplanes extends DynamicPlugin {
 
-	@Parameter(required=true)
-	private Dataset input;
-	
-	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to modify", choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
+	private static final String NAME_KEY = "Axis to modify";
+	private static final String POSITION_KEY = "Insertion position";
+	private static final String QUANTITY_KEY = "Insertion quantity";
+
+	private Dataset dataset;
 	private String axisToModify;
-	
-	// TODO - populate max from Dataset somehow
-	@Parameter(label="Insertion position", min="1")
 	private long oneBasedInsPos;
-	
-	// TODO - populate max from Dataset somehow
-	@Parameter(label="Insertion quantity", min="1")
 	private long numAdding;
 	
 	private long insertPosition;
 
+	public AddHyperplanes() {
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
+		if (display == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			if (datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+
+		final DefaultModuleItem<Long> pos =
+			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
+		pos.setMinimumValue(1L);
+		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		addInput(pos);
+		
+		final DefaultModuleItem<Long> quantity =
+			new DefaultModuleItem<Long>(this, QUANTITY_KEY, Long.class);
+		quantity.setMinimumValue(1L);
+		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		addInput(quantity);
+	}
+	
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
 	 */
 	@Override
 	public void run() {
+		final Map<String, Object> inputs = getInputs();
+		axisToModify = (String) inputs.get(NAME_KEY);
+		oneBasedInsPos = (Long) inputs.get(POSITION_KEY);
 		insertPosition = oneBasedInsPos - 1;
+		numAdding = (Long) inputs.get(QUANTITY_KEY);
+		
 		Axis axis = AxisUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
-		Axis[] axes = input.getAxes();
+		Axis[] axes = dataset.getAxes();
 		long[] newDimensions =
-			RestructureUtils.getDimensions(input, axis, numAdding);
+			RestructureUtils.getDimensions(dataset, axis, numAdding);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input, newDimensions, axes);
-		fillNewImgPlus(input.getImgPlus(), dstImgPlus, axis);
+			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
+		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
-		input.setImgPlus(dstImgPlus);
+		dataset.setImgPlus(dstImgPlus);
 	}
 
 	/**
@@ -109,8 +136,8 @@ public class AddHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// setup some working variables
-		int axisIndex = input.getAxisIndex(axis);
-		long axisSize = input.getImgPlus().dimension(axisIndex);
+		int axisIndex = dataset.getAxisIndex(axis);
+		long axisSize = dataset.getImgPlus().dimension(axisIndex);
 
 	  // axis not present in Dataset
 		if (axisIndex < 0)
@@ -121,7 +148,7 @@ public class AddHyperplanes implements ImageJPlugin {
 			return true;
 		
 		// bad value for numAdding
-		if (numAdding <= 0)
+		if ((numAdding <= 0) || ((Long.MAX_VALUE-numAdding) < axisSize))
 			return true;
 		
 		// if here everything is okay
@@ -135,8 +162,8 @@ public class AddHyperplanes implements ImageJPlugin {
 	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,
 		ImgPlus<? extends RealType<?>> dstImgPlus, Axis modifiedAxis)
 	{
-		long[] dimensions = input.getDims();
-		int axisIndex = input.getAxisIndex(modifiedAxis);
+		long[] dimensions = dataset.getDims();
+		int axisIndex = dataset.getAxisIndex(modifiedAxis);
 		long axisSize = dimensions[axisIndex];
 		long numBeforeInsert = insertPosition;
 		long numInInsertion = numAdding;
