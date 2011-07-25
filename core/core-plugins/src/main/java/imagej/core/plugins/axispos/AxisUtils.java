@@ -34,6 +34,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -56,8 +59,25 @@ public class AxisUtils {
 		X="X", Y="Y", CH="Channel", Z="Z", TI="Time", FR="Frequency", SP="Spectra",
 		PH="Phase", PO="Polarization", LI="Lifetime";
 
-	public static final String[] AXES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
+	public static final String[] AXES_NAMES = {X,Y,Z,CH,TI,FR,SP,PH,PO,LI};
 
+	public static final Axis[] AXES = { Axes.X, Axes.Y, Axes.Z, Axes.CHANNEL,
+		Axes.TIME, Axes.FREQUENCY, Axes.SPECTRA, Axes.PHASE, Axes.POLARIZATION,
+		Axes.LIFETIME
+	};
+
+	private static final Map<String,Axis> nameMap;
+	private static final Map<Axis,String> axisMap;
+	
+	static {
+		nameMap = new HashMap<String,Axis>();
+		axisMap = new HashMap<Axis,String>();
+		for (int i = 0; i < AXES.length; i++) {
+			nameMap.put(AXES_NAMES[i], AXES[i]);
+			axisMap.put(AXES[i], AXES_NAMES[i]);
+		}
+	}
+	
 	/**
 	 * Default constructor - private */
 	private AxisUtils() {
@@ -89,22 +109,12 @@ public class AxisUtils {
 	 * Maps an axis name String into an Axis value.
 	 * returns null if some unknown axis specified */
 	public static Axis getAxis(String axisName) {
-		Axis axis = null;
-			
-		if (axisName.equals(CH)) axis = Axes.CHANNEL;
-		else if (axisName.equals(FR)) axis = Axes.FREQUENCY;
-		else if (axisName.equals(LI)) axis = Axes.LIFETIME;
-		else if (axisName.equals(PH)) axis = Axes.PHASE;
-		else if (axisName.equals(PO)) axis = Axes.POLARIZATION;
-		else if (axisName.equals(SP)) axis = Axes.SPECTRA;
-		else if (axisName.equals(TI)) axis = Axes.TIME;
-		else if (axisName.equals(X)) axis = Axes.X;
-		else if (axisName.equals(Y)) axis = Axes.Y;
-		else if (axisName.equals(Z)) axis = Axes.Z;
-	
-		// NB : axis could still be null here : Axes.UNKNOWN
-		
-		return axis;
+	  // NB - null is a legit return value for Axis.UNKNOWN
+		return nameMap.get(axisName);
 	}
 
+	public static String getAxisName(Axis axis) {
+	  // NB - null is a legit return value for Axis.UNKNOWN
+		return axisMap.get(axis);
+	}
 }
