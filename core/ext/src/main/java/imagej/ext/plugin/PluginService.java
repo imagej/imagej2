@@ -75,6 +75,10 @@ public class PluginService implements IService {
 
 	// -- PluginService methods --
 
+	public ModuleService getModuleService() {
+		return moduleService;
+	}
+
 	/** Gets the index of available plugins. */
 	public PluginIndex getIndex() {
 		return pluginIndex;

@@ -34,11 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext.ui.swing;
 
-import imagej.ImageJ;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.menu.AbstractMenuCreator;
 import imagej.ext.module.menu.ShadowMenu;
-import imagej.ext.plugin.PluginService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -108,7 +105,7 @@ public abstract class SwingMenuCreator<T> extends
 		}
 		else menuItem = new JMenuItem(name);
 		assignProperties(menuItem, shadow);
-		linkAction(shadow.getInfo(), menuItem);
+		linkAction(shadow, menuItem);
 		return menuItem;
 	}
 
@@ -167,15 +164,15 @@ public abstract class SwingMenuCreator<T> extends
 		if (icon != null) menuItem.setIcon(icon);
 	}
 
-	private void linkAction(final ModuleInfo info, final JMenuItem menuItem) {
+	private void linkAction(final ShadowMenu shadow, final JMenuItem menuItem) {
 		menuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				ImageJ.get(PluginService.class).run(info, true);
+				shadow.run();
 			}
 		});
-		menuItem.setEnabled(info.isEnabled());
+		menuItem.setEnabled(shadow.getInfo().isEnabled());
 	}
 
 	private boolean isMac() {

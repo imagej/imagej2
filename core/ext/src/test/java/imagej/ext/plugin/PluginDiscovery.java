@@ -51,7 +51,7 @@ public class PluginDiscovery {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Scanning for plugins:");
-		final ModuleService moduleService = new ModuleService();
+		final ModuleService moduleService = new ModuleService(null);
 		final PluginService pluginService = new PluginService(moduleService);
 		final List<PluginInfo<?>> plugins = pluginService.getPlugins();
 		System.out.println("Discovered plugins:");
