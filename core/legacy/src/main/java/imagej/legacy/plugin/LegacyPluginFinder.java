@@ -108,7 +108,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
 		// ensure ImageJ v1.x is initialized
-		ImageJ.getContext().addService(LegacyService.class);
+		ImageJ.getContext().loadService(LegacyService.class);
 
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins

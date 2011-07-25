@@ -36,21 +36,12 @@ package imagej;
 
 import imagej.util.Log;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
@@ -158,129 +149,40 @@ public class ImageJ {
 	}
 
 	private final int id;
-	private final Map<Class<? extends IService>, IService> services;
-	private final Set<Class<? extends IService>> initialized;
+	private final ServiceHelper serviceHelper;
 
 	/** Creates a new ImageJ context with the given ID and services. */
 	protected ImageJ(final int id,
 		final Collection<Class<? extends IService>> serviceClasses)
 	{
 		this.id = id;
-		services = new ConcurrentHashMap<Class<? extends IService>, IService>();
-		initialized =
-			Collections.synchronizedSet(new HashSet<Class<? extends IService>>());
 		contexts.put(id, this);
-		loadServices(serviceClasses);
+		serviceHelper = new ServiceHelper(this);
+		serviceHelper.loadServices(serviceClasses);
 	}
 
 	// -- ImageJ methods --
 
-	/** Gets the ID code for this instance of ImageJ. */
+	/** Gets the ID code for this ImageJ application context. */
 	public int getID() {
 		return id;
 	}
 
-	/** Adds a service of the given class to this application context. */
-	public <S extends IService> boolean addService(final Class<S> c) {
-		IService service = getService(c);
-		if (service == null) service = createService(c);
-		if (service == null) return false;
-		Log.info("Initializing service: " + c.getName());
-		if (!initialized.contains(c)) {
-			initialized.add(c);
-			service.initialize();
-		}
-		return true;
+	/** Loads the service of the given class. */
+	public <S extends IService> void loadService(final Class<S> c) {
+		serviceHelper.loadService(c);
+	}
+
+	/** Loads the services of the given classes. */
+	public void loadServices(
+		final Collection<Class<? extends IService>> serviceClasses)
+	{
+		serviceHelper.loadServices(serviceClasses);
 	}
 
 	/** Gets the service of the given class. */
 	public <S extends IService> S getService(final Class<S> c) {
-		@SuppressWarnings("unchecked")
-		final S service = (S) services.get(c);
-		return service;
-	}
-
-	// -- Helper methods --
-
-	private void loadServices(
-		final Collection<Class<? extends IService>> serviceClasses)
-	{
-		final Collection<Class<? extends IService>> classes;
-		if (serviceClasses == null) classes = findServiceClasses();
-		else classes = serviceClasses;
-		for (final Class<? extends IService> c : classes) {
-			addService(c);
-		}
-	}
-
-	/** Discovers services present on the classpath. */
-	private List<Class<? extends IService>> findServiceClasses() {
-		final List<Class<? extends IService>> serviceList =
-			new ArrayList<Class<? extends IService>>();
-
-		// use SezPoz to discover all services
-		for (final IndexItem<Service, IService> item : Index.load(Service.class,
-			IService.class))
-		{
-			try {
-				@SuppressWarnings("unchecked")
-				final Class<? extends IService> c =
-					(Class<? extends IService>) item.element();
-				serviceList.add(c);
-			}
-			catch (final InstantiationException e) {
-				Log.error("Invalid service: " + item, e);
-			}
-		}
-
-		return serviceList;
-	}
-
-	/** Instantiates a service of the given class. */
-	private <S extends IService> S createService(final Class<S> c) {
-		Log.debug("Creating service: " + c.getName());
-		try {
-			final Constructor<?>[] ctors = c.getConstructors();
-			if (ctors == null || ctors.length == 0) {
-				Log.error("Invalid service: " + c.getName());
-				return null;
-			}
-			@SuppressWarnings("unchecked")
-			final Constructor<S> ctor = (Constructor<S>) ctors[0];
-			final S service = createService(ctor);
-			services.put(c, service);
-			return service;
-		}
-		catch (final Exception e) {
-			Log.error("Invalid service: " + c.getName(), e);
-		}
-		return null;
-	}
-
-	/** Instantiates a service using the given constructor. */
-	private <S extends IService> S createService(final Constructor<S> ctor)
-		throws InstantiationException, IllegalAccessException,
-		InvocationTargetException
-	{
-		final Class<?>[] types = ctor.getParameterTypes();
-		final Object[] args = new Object[types.length];
-		for (int i = 0; i < types.length; i++) {
-			final Class<?> type = types[i];
-			if (IService.class.isAssignableFrom(type)) {
-				@SuppressWarnings("unchecked")
-				final Class<IService> c = (Class<IService>) type;
-				args[i] = getService(c);
-				if (args[i] == null) {
-					// recursively create dependent service
-					args[i] = createService(c);
-				}
-			}
-			else if (ImageJ.class.isAssignableFrom(type)) {
-				args[i] = this;
-			}
-			else throw new IllegalArgumentException("Invalid constructor: " + ctor);
-		}
-		return ctor.newInstance(args);
+		return serviceHelper.getService(c);
 	}
 
 	// -- Helper classes --

@@ -43,8 +43,8 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.ext.InstantiableException;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -64,6 +64,7 @@ import java.util.List;
 @Service
 public final class DisplayService implements IService {
 
+	protected final EventService eventService;
 	private final ObjectService objectService;
 	private final PluginService pluginService;
 
@@ -72,9 +73,10 @@ public final class DisplayService implements IService {
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
-	public DisplayService(final ObjectService objectService,
-		final PluginService pluginService)
+	public DisplayService(final EventService eventService,
+		final ObjectService objectService, final PluginService pluginService)
 	{
+		this.eventService = eventService;
 		this.objectService = objectService;
 		this.pluginService = pluginService;
 	}
@@ -89,7 +91,7 @@ public final class DisplayService implements IService {
 	/** Sets the currently active {@link Display}. */
 	public void setActiveDisplay(final Display display) {
 		activeDisplay = display;
-		Events.publish(new DisplayActivatedEvent(display));
+		eventService.publish(new DisplayActivatedEvent(display));
 	}
 
 	/**
@@ -172,7 +174,7 @@ public final class DisplayService implements IService {
 				// TODO: how to handle multiple matches? prompt user with dialog box?
 				if (displayPlugin.canDisplay(dataset)) {
 					displayPlugin.display(dataset);
-					Events.publish(new DisplayCreatedEvent(displayPlugin));
+					eventService.publish(new DisplayCreatedEvent(displayPlugin));
 					return displayPlugin;
 				}
 			}
@@ -215,12 +217,12 @@ public final class DisplayService implements IService {
 					// make old invalid activeDataset reference reclaimable.
 					if (getDisplays().size() == 1) setActiveDisplay(null);
 
-					Events.publish(new DisplayDeletedEvent(display));
+					eventService.publish(new DisplayDeletedEvent(display));
 				}
 
 			};
 		subscribers.add(winClosedSubscriber);
-		Events.subscribe(WinClosedEvent.class, winClosedSubscriber);
+		eventService.subscribe(WinClosedEvent.class, winClosedSubscriber);
 
 		// set display to active when its window is activated
 		final EventSubscriber<WinActivatedEvent> winActivatedSubscriber =
@@ -234,7 +236,7 @@ public final class DisplayService implements IService {
 
 			};
 		subscribers.add(winActivatedSubscriber);
-		Events.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
+		eventService.subscribe(WinActivatedEvent.class, winActivatedSubscriber);
 	}
 
 }

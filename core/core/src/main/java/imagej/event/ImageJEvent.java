@@ -34,11 +34,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.event;
 
+import imagej.ImageJ;
+
 /**
  * Base class for all ImageJ events.
- *
+ * 
  * @author Curtis Rueden
  */
 public class ImageJEvent {
-	// placeholder event class
+
+	private ImageJ context;
+
+	public ImageJ getContext() {
+		return context;
+	}
+
+	public void setContext(final ImageJ context) {
+		this.context = context;
+	}
+
 }

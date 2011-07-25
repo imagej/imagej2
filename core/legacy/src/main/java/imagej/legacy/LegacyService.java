@@ -45,8 +45,8 @@ import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.key.KyPressedEvent;
 import imagej.display.event.key.KyReleasedEvent;
+import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.event.Events;
 import imagej.event.OptionsChangedEvent;
 import imagej.legacy.patches.FunctionsMethods;
 import imagej.util.Log;
@@ -80,19 +80,23 @@ public final class LegacyService implements IService {
 		new LegacyInjector().injectHooks();
 	}
 
+	private final EventService eventService;
 	private final DisplayService displayService;
 
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
-	/** Method of synchronizing IJ2 & IJ1 options */
+	/** Method of synchronizing IJ2 & IJ1 options. */
 	private OptionsSynchronizer optionsSynchronizer;
 
 	/** Maintain list of subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
 	/** Creates a new legacy service. */
-	public LegacyService(final DisplayService displayService) {
+	public LegacyService(final EventService eventService,
+		final DisplayService displayService)
+	{
+		this.eventService = eventService;
 		this.displayService = displayService;
 	}
 
@@ -161,7 +165,8 @@ public final class LegacyService implements IService {
 				}
 			};
 		subscribers.add(displayActivatedSubscriber);
-		Events.subscribe(DisplayActivatedEvent.class, displayActivatedSubscriber);
+		eventService.subscribe(DisplayActivatedEvent.class,
+			displayActivatedSubscriber);
 
 		final EventSubscriber<OptionsChangedEvent> optionSubscriber =
 			new EventSubscriber<OptionsChangedEvent>() {
@@ -173,7 +178,7 @@ public final class LegacyService implements IService {
 
 			};
 		subscribers.add(optionSubscriber);
-		Events.subscribe(OptionsChangedEvent.class, optionSubscriber);
+		eventService.subscribe(OptionsChangedEvent.class, optionSubscriber);
 
 		// TODO - FIXME remove AWT dependency when we have implemented our own
 		// KyEvent constants
@@ -193,7 +198,7 @@ public final class LegacyService implements IService {
 				}
 			};
 		subscribers.add(pressSubscriber);
-		Events.subscribe(KyPressedEvent.class, pressSubscriber);
+		eventService.subscribe(KyPressedEvent.class, pressSubscriber);
 
 		// TODO - FIXME remove AWT dependency when we have implemented our own
 		// KyEvent constants
@@ -213,6 +218,6 @@ public final class LegacyService implements IService {
 				}
 			};
 		subscribers.add(releaseSubscriber);
-		Events.subscribe(KyReleasedEvent.class, releaseSubscriber);
+		eventService.subscribe(KyReleasedEvent.class, releaseSubscriber);
 	}
 }
