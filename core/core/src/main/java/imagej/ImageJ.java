@@ -148,7 +148,9 @@ public class ImageJ {
 	 * context.
 	 */
 	public static <S extends IService> S get(final Class<S> serviceClass) {
-		return getContext().getService(serviceClass);
+		final ImageJ context = getContext();
+		if (context == null) return null; // no context
+		return context.getService(serviceClass);
 	}
 
 	private final int id;

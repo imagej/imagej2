@@ -50,25 +50,33 @@ public final class Events {
 	}
 
 	public static <E extends ImageJEvent> void publish(final E e) {
-		ImageJ.get(EventService.class).publish(e);
+		final EventService eventService = ImageJ.get(EventService.class);
+		if (eventService == null) return; // no context
+		eventService.publish(e);
 	}
 
 	public static <E extends ImageJEvent> void subscribe(final Class<E> c,
 		final EventSubscriber<E> subscriber)
 	{
-		ImageJ.get(EventService.class).subscribe(c, subscriber);
+		final EventService eventService = ImageJ.get(EventService.class);
+		if (eventService == null) return; // no context
+		eventService.subscribe(c, subscriber);
 	}
 
 	public static <E extends ImageJEvent> void unsubscribe(final Class<E> c,
 		final EventSubscriber<E> subscriber)
 	{
-		ImageJ.get(EventService.class).unsubscribe(c, subscriber);
+		final EventService eventService = ImageJ.get(EventService.class);
+		if (eventService == null) return; // no context
+		eventService.unsubscribe(c, subscriber);
 	}
 
 	public static <E extends ImageJEvent> java.util.List<E> getSubscribers(
 		final Class<E> c)
 	{
-		return ImageJ.get(EventService.class).getSubscribers(c);
+		final EventService eventService = ImageJ.get(EventService.class);
+		if (eventService == null) return null; // no context
+		return eventService.getSubscribers(c);
 	}
 
 }
