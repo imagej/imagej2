@@ -78,50 +78,7 @@ import java.util.List;
 public final class LegacyService implements IService {
 
 	static {
-		// NB: Override class behavior before class loading gets too far along.
-		final CodeHacker hacker = new CodeHacker();
-
-		// override behavior of ij.ImageJ
-		hacker.insertMethod("ij.ImageJ",
-			"public java.awt.Point getLocationOnScreen()");
-		hacker.loadClass("ij.ImageJ");
-
-		// override behavior of ij.IJ
-		hacker.insertAfterMethod("ij.IJ",
-			"public static void showProgress(double progress)");
-		hacker.insertAfterMethod("ij.IJ",
-			"public static void showProgress(int currentIndex, int finalIndex)");
-		hacker.insertAfterMethod("ij.IJ",
-			"public static void showStatus(java.lang.String s)");
-		hacker.loadClass("ij.IJ");
-
-		// override behavior of ij.ImagePlus
-		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
-		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
-		hacker.loadClass("ij.ImagePlus");
-
-		// override behavior of ij.gui.ImageWindow
-		hacker.insertMethod("ij.gui.ImageWindow",
-			"public void setVisible(boolean vis)");
-		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
-		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
-		hacker.loadClass("ij.gui.ImageWindow");
-
-		// override behavior of ij.macro.Functions
-		hacker
-			.insertBeforeMethod("ij.macro.Functions",
-				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore(imp2);");
-		hacker
-			.insertAfterMethod("ij.macro.Functions",
-				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter(imp2);");
-		hacker.loadClass("ij.macro.Functions");
-
-		// override behavior of MacAdapter
-		hacker.replaceMethod("MacAdapter",
-			"public void run(java.lang.String arg)", ";");
-		hacker.loadClass("MacAdapter");
+		new LegacyInjector().injectHooks();
 	}
 
 	/** Mapping between modern and legacy image data structures. */
