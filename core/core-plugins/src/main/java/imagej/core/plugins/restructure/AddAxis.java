@@ -34,11 +34,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
 import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.ext.module.DefaultModuleItem;
+import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
@@ -54,27 +62,39 @@ import net.imglib2.type.numeric.RealType;
 @Menu(label = "Image", mnemonic = 'i'),
 @Menu(label = "Stacks", mnemonic = 's'),
 @Menu(label = "Add Axis...") })
-public class AddAxis implements ImageJPlugin {
+public class AddAxis extends DynamicPlugin {
 	
-	@Parameter(required = true)
-	private Dataset input;
-
-	// TODO - populate choices from Dataset somehow
-	@Parameter(label="Axis to add",choices = {
-		AxisUtils.X,
-		AxisUtils.Y,
-		AxisUtils.Z,
-		AxisUtils.CH,
-		AxisUtils.TI,
-		AxisUtils.FR,
-		AxisUtils.SP,
-		AxisUtils.PH,
-		AxisUtils.PO,
-		AxisUtils.LI})
-	private String axisToAdd;
+	private static final String NAME_KEY = "Axis";
+	private static final String SIZE_KEY = "Size";
 	
-	@Parameter(label="Axis size", min="1")
+	private Dataset dataset;
+	private String axisName;
 	private long axisSize;
+	
+	public AddAxis() {
+		// add one input and one output per available display
+		final DefaultModuleItem<String> name =
+			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		final Display display = displayService.getActiveDisplay();
+		if (display == null) return;
+		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		ArrayList<String> choices = new ArrayList<String>();
+		for (Axis candidateAxis : AxisUtils.AXES) {
+			if (!datasetAxes.contains(candidateAxis))
+				choices.add(AxisUtils.getAxisName(candidateAxis));
+		}
+		name.setChoices(choices);
+		addInput(name);
+		final DefaultModuleItem<Long> size =
+			new DefaultModuleItem<Long>(this, SIZE_KEY, Long.class);
+		size.setMinimumValue(1L);
+		addInput(size);
+	}
+	
+
+	// private long axisSize;
 
 	/**
 	 * Creates new ImgPlus data with an additonal axis. sets pixels of 1st
@@ -83,17 +103,19 @@ public class AddAxis implements ImageJPlugin {
 	 */
 	@Override
 	public void run() {
-		Axis axis = AxisUtils.getAxis(axisToAdd);
+		final Map<String, Object> inputs = getInputs();
+		axisName = (String) inputs.get(NAME_KEY);
+		axisSize = (Long) inputs.get(SIZE_KEY);
+		Axis axis = AxisUtils.getAxis(axisName);
 		if (inputBad(axis)) return;
-		Axis[] newAxes = getNewAxes(input, axis);
-		long[] newDimensions = getNewDimensions(input, axisSize);
+		Axis[] newAxes = getNewAxes(dataset, axis);
+		long[] newDimensions = getNewDimensions(dataset, axisSize);
 		ImgPlus<? extends RealType<?>> dstImgPlus =
-			RestructureUtils.createNewImgPlus(input, newDimensions, newAxes);
-		fillNewImgPlus(input.getImgPlus(), dstImgPlus);
+			RestructureUtils.createNewImgPlus(dataset, newDimensions, newAxes);
+		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus);
 		// TODO - colorTables, metadata, etc.?
-		input.setImgPlus(dstImgPlus);
+		dataset.setImgPlus(dstImgPlus);
 	}
-	
 	/**
 	 * Detects if user specified data is invalid */
 	private boolean inputBad(Axis axis) {
@@ -102,7 +124,7 @@ public class AddAxis implements ImageJPlugin {
 			return true;
 		
 	  // axis already present in Dataset
-		int axisIndex = input.getAxisIndex(axis);
+		int axisIndex = dataset.getAxisIndex(axis);
 		if (axisIndex >= 0)
 			return true;
 		
