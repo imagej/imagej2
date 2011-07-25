@@ -43,9 +43,8 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
-import imagej.ext.module.ModuleInfo;
-import imagej.ext.module.ModuleService;
 import imagej.ext.module.menu.ShadowMenu;
+import imagej.ext.plugin.PluginService;
 import imagej.ext.ui.swing.JMenuBarCreator;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -70,7 +69,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -154,9 +152,8 @@ public class SwingUI implements UserInterface {
 	 */
 	private void initializeMenus() {
 		// CTR FIXME - rework this
-		final ModuleService moduleService = ImageJ.get(ModuleService.class);
-		final List<ModuleInfo> modules = moduleService.getModules();
-		rootMenu = new ShadowMenu(modules);
+		final PluginService pluginService = ImageJ.get(PluginService.class);
+		rootMenu = new ShadowMenu(pluginService);
 		createMenuBar(frame);
 		Events.publish(new AppMenusCreatedEvent(frame.getJMenuBar()));
 	}

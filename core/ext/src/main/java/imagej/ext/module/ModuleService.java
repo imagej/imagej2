@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.module;
 
 import imagej.IService;
+import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventSubscriber;
 import imagej.event.Events;
@@ -59,11 +60,17 @@ import java.util.List;
 @Service
 public class ModuleService implements IService {
 
+	private final ImageJ context;
+
 	/** Index of registered modules. */
 	private final ModuleIndex moduleIndex = new ModuleIndex();
 
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
+
+	public ModuleService(final ImageJ context) {
+		this.context = context;
+	}
 
 	// -- ModuleService methods --
 
@@ -160,7 +167,8 @@ public class ModuleService implements IService {
 		// running modules and so forth?
 		if (separateThread) {
 			final String className = module.getInfo().getDelegateClassName();
-			final String threadName = "ModuleRunner-" + className;
+			final String threadName =
+				"ImageJ-" + context.getID() + "-ModuleRunner-" + className;
 			new Thread(new Runnable() {
 
 				@Override

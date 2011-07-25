@@ -36,11 +36,13 @@ package imagej.ext.module.menu;
 
 import imagej.ext.MenuEntry;
 import imagej.ext.module.ModuleInfo;
+import imagej.ext.plugin.PluginService;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,28 +59,40 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 
 	private static final String DEFAULT_ICON_PATH = "/icons/plugin.png";
 
+	private final PluginService pluginService;
+
 	private final ModuleInfo info;
 
 	private final int menuDepth;
 
 	private final Map<String, ShadowMenu> children;
 
-	/** Constructs an empty root menu node. */
-	public ShadowMenu() {
-		this(null, -1);
+	/** Constructs a root menu node populated with all available modules. */
+	public ShadowMenu(final PluginService pluginService) {
+		this(pluginService, pluginService.getModuleService().getModules());
 	}
 
-	/** Constructs a root menu node populated with the given module entries. */
-	public ShadowMenu(final List<ModuleInfo> entries) {
-		this();
-		for (final ModuleInfo entry : entries)
+	/** Constructs a root menu node populated with the given modules. */
+	public ShadowMenu(final PluginService pluginService,
+		final Collection<? extends ModuleInfo> modules)
+	{
+		this(pluginService, null, -1);
+		for (final ModuleInfo entry : modules) {
 			addChild(entry);
+		}
 	}
 
-	private ShadowMenu(final ModuleInfo info, final int menuDepth) {
+	private ShadowMenu(final PluginService pluginService, final ModuleInfo info,
+		final int menuDepth)
+	{
+		this.pluginService = pluginService;
 		this.info = info;
 		this.menuDepth = menuDepth;
 		children = new HashMap<String, ShadowMenu>();
+	}
+
+	public PluginService getPluginService() {
+		return pluginService;
 	}
 
 	public ModuleInfo getInfo() {
@@ -143,6 +157,10 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		return iconURL;
 	}
 
+	public void run() {
+		pluginService.run(info, true);
+	}
+
 	// -- Object methods --
 
 	@Override
@@ -177,7 +195,7 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		if (existingChild == null) {
 			// create new child and add to table
 			final String menuName = menuEntry.getName();
-			final ShadowMenu newChild = new ShadowMenu(child, depth);
+			final ShadowMenu newChild = new ShadowMenu(pluginService, child, depth);
 			children.put(menuName, newChild);
 			childMenu = newChild;
 		}
