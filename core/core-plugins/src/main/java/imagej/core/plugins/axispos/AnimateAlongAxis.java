@@ -126,11 +126,13 @@ public class AnimateAlongAxis extends DynamicPlugin {
 		final DefaultModuleItem<Long> firstPos =
 			new DefaultModuleItem<Long>(this, FIRST_POS_KEY, Long.class);
 		firstPos.setMinimumValue(1L);
+		// TODO - set max somehow based upon dataset's dimension along axis
 		addInput(firstPos);
 		
 		final DefaultModuleItem<Long> lastPos =
 			new DefaultModuleItem<Long>(this, LAST_POS_KEY, Long.class);
 		lastPos.setMinimumValue(1L);
+		// TODO - set max somehow based upon dataset's dimension along axis
 		addInput(lastPos);
 		
 		final DefaultModuleItem<Double> framesPerSec =

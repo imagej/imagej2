@@ -50,6 +50,10 @@ import imagej.ext.plugin.Plugin;
 @Menu(label = "Set Axis Position...") })
 public class SetAxisPosition implements ImageJPlugin {
 
+	// TODO - want to set max value to that of correct axis of correct Dataset
+	//   Might need to make this a Dynamic plugin. Waiting for multistep
+	//   initialization code to be put in place.
+	
 	@Parameter(label="Position",min="1")
 	long oneBasedPosition;
 
