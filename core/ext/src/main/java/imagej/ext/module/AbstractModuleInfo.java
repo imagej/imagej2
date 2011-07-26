@@ -158,4 +158,17 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		Events.publish(new ModuleUpdatedEvent(this));
 	}
 
+	// -- UIDetails methods --
+
+	@Override
+	public String getTitle() {
+		final String title = super.getTitle();
+		if (!title.equals(getClass().getSimpleName())) return title;
+
+		// use delegate class name rather than actual class name
+		final String className = getDelegateClassName();
+		final int dot = className.lastIndexOf(".");
+		return dot < 0 ? className : className.substring(dot + 1);
+	}
+
 }

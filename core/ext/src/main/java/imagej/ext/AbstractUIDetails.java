@@ -135,6 +135,25 @@ public abstract class AbstractUIDetails implements UIDetails {
 	// -- UIDetails methods --
 
 	@Override
+	public String getTitle() {
+		// use object label, if available
+		if (label != null && !label.isEmpty()) return label;
+
+		// use name of leaf menu item, if available
+		if (menuPath != null && menuPath.size() > 0) {
+			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
+			final String menuName = menuEntry.getName();
+			if (menuName != null && !menuName.isEmpty()) return menuName;
+		}
+
+		// use object name, if available
+		if (name != null && !name.isEmpty()) return name;
+
+		// use class name as a last resort
+		return getClass().getSimpleName();
+	}
+
+	@Override
 	public List<MenuEntry> getMenuPath() {
 		return menuPath;
 	}
