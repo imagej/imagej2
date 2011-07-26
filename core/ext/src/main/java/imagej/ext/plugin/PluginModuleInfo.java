@@ -201,6 +201,11 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	}
 
 	@Override
+	public boolean canCancel() {
+		return plugin.cancelable();
+	}
+
+	@Override
 	public void update() {
 		Events.publish(new ModuleUpdatedEvent(this));
 	}

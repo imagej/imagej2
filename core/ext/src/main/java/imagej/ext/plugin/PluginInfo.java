@@ -57,6 +57,9 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 	/** Type of this entry's plugin; e.g., {@link ImageJPlugin}. */
 	private Class<P> pluginType;
 
+	/** Annotation describing the plugin. */
+	protected Plugin plugin;
+
 	public PluginInfo(final String className, final Class<P> pluginType) {
 		setClassName(className);
 		setPluginType(pluginType);
@@ -67,6 +70,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		final Plugin plugin)
 	{
 		this(className, pluginType);
+		this.plugin = plugin;
 
 		setName(plugin.name());
 		setLabel(plugin.label());

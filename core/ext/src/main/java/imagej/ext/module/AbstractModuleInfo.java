@@ -154,6 +154,11 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	}
 
 	@Override
+	public boolean canCancel() {
+		return true;
+	}
+
+	@Override
 	public void update() {
 		Events.publish(new ModuleUpdatedEvent(this));
 	}
