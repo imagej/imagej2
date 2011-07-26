@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.tools;
 
 import imagej.ImageJ;
-import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.event.DatasetDeletedEvent;
