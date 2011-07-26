@@ -39,7 +39,6 @@ import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.menu.ShadowMenu;
 import imagej.ext.module.event.ModuleUpdatedEvent;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
@@ -66,9 +65,6 @@ public class ModuleService extends AbstractService {
 	/** Index of registered modules. */
 	private final ModuleIndex moduleIndex = new ModuleIndex();
 
-	/** Menu structure linked to registered modules. */
-	private ShadowMenu menu;
-
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	private List<EventSubscriber<?>> subscribers;
 
@@ -90,11 +86,6 @@ public class ModuleService extends AbstractService {
 	/** Gets the index of available modules. */
 	public ModuleIndex getIndex() {
 		return moduleIndex;
-	}
-
-	/** Gets the menu structure reflecting available modules. */
-	public ShadowMenu getMenu() {
-		return menu;
 	}
 
 	/** Manually registers a module with the module service. */
