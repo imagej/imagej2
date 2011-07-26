@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
-
 import java.net.URL;
 
 /**
