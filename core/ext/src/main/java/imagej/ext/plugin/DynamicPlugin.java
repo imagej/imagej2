@@ -14,7 +14,9 @@ import imagej.ext.module.ModuleItem;
 
 /**
  * A class which can be extended to provide an ImageJ plugin with a variable
- * number of inputs and outputs.
+ * number of inputs and outputs. This class provides greater configurability,
+ * but also greater complexity, than implementing the {@link ImageJPlugin}
+ * interface and using the @ {@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
@@ -27,13 +29,10 @@ public abstract class DynamicPlugin extends AbstractModule implements
 	public DynamicPlugin() {
 		super(new DynamicPluginInfo());
 		info = (DynamicPluginInfo) super.getInfo();
-		info.setDelegateClassName(getClass().getName());
+		info.setModule(this);
 	}
 
-	@Override
-	public DynamicPluginInfo getInfo() {
-		return info;
-	}
+	// -- DynamicPlugin methods --
 
 	/** Adds an input to the list. */
 	public <T> void addInput(final String name, final Class<T> type) {
@@ -65,25 +64,40 @@ public abstract class DynamicPlugin extends AbstractModule implements
 		getInfo().removeOutput(output);
 	}
 
+	// -- Module methods --
+
+	@Override
+	public DynamicPluginInfo getInfo() {
+		return info;
+	}
+
+	// -- Helper classes --
+
 	/**
 	 * Helper class for maintaining the dynamic plugin's associated
 	 * {@link ModuleInfo}.
 	 */
 	public static class DynamicPluginInfo extends AbstractModuleInfo {
 
-		private String delegateClassName;
+		private DynamicPlugin module;
 
 		public DynamicPluginInfo() {
 			super(null);
 		}
 
-		protected void setDelegateClassName(final String delegateClassName) {
-			this.delegateClassName = delegateClassName;
+		// -- Internal methods --
+
+		protected void setModule(final DynamicPlugin module) {
+			this.module = module;
+			final Plugin plugin = module.getClass().getAnnotation(Plugin.class);
+			PluginInfo.populate(this, plugin);
 		}
+
+		// -- ModuleInfo methods --
 
 		@Override
 		public String getDelegateClassName() {
-			return delegateClassName;
+			return module.getClass().getName();
 		}
 
 		@Override
