@@ -5,11 +5,7 @@
 package imagej.ext.plugin;
 
 import imagej.ext.module.AbstractModule;
-import imagej.ext.module.AbstractModuleInfo;
 import imagej.ext.module.DefaultModuleItem;
-import imagej.ext.module.Module;
-import imagej.ext.module.ModuleException;
-import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 
 /**
@@ -69,42 +65,6 @@ public abstract class DynamicPlugin extends AbstractModule implements
 	@Override
 	public DynamicPluginInfo getInfo() {
 		return info;
-	}
-
-	// -- Helper classes --
-
-	/**
-	 * Helper class for maintaining the dynamic plugin's associated
-	 * {@link ModuleInfo}.
-	 */
-	public static class DynamicPluginInfo extends AbstractModuleInfo {
-
-		private DynamicPlugin module;
-
-		public DynamicPluginInfo() {
-			super(null);
-		}
-
-		// -- Internal methods --
-
-		protected void setModule(final DynamicPlugin module) {
-			this.module = module;
-			final Plugin plugin = module.getClass().getAnnotation(Plugin.class);
-			PluginInfo.populate(this, plugin);
-		}
-
-		// -- ModuleInfo methods --
-
-		@Override
-		public String getDelegateClassName() {
-			return module.getClass().getName();
-		}
-
-		@Override
-		public Module createModule() throws ModuleException {
-			throw new ModuleException("Unsupported operation");
-		}
-
 	}
 
 }
