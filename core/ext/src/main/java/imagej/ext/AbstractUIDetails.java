@@ -246,6 +246,8 @@ public abstract class AbstractUIDetails implements UIDetails {
 
 	// -- Utility methods --
 
+	// TODO - Make MenuPath class that extends ArrayList<MenuEntry> and has these.
+
 	public static String getMenuString(final List<MenuEntry> menuPath) {
 		return getMenuString(menuPath, true);
 	}
