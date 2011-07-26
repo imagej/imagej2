@@ -127,11 +127,12 @@ public class WatchOverlays implements ImageJPlugin {
 		final Display display = getCurrentDisplay();
 		if(display==null) return;
 		window.append("For dislay " + display.getName() + " --------------------\n");
+		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		List<Overlay> overlays2 = getOverlaysFromDisplay(display);
 		for (Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
 			if (overlay instanceof RectangleOverlay) {
-				Dataset currDataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
+				Dataset currDataset = displayService.getActiveDataset(display);
 				final double[] origin = new double[currDataset.getImgPlus().numDimensions()];
 				final double[] extent = new double[currDataset.getImgPlus().numDimensions()];
 				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getExtent(extent);
