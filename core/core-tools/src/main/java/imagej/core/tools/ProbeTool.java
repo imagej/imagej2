@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.tools;
 
+import imagej.ImageJ;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -41,6 +42,7 @@ import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.display.DisplayView;
 import imagej.display.ImageCanvas;
 import imagej.display.MouseCursor;
@@ -81,10 +83,12 @@ public class ProbeTool extends AbstractTool {
 	private RandomAccess<? extends RealType<?>> randomAccess;
 	private long[] position;
 	private ArrayList<EventSubscriber<?>> subscribers;
+	private DisplayService displayService;
 	
 	// -- constructor --
 	
 	public ProbeTool() {
+		displayService = ImageJ.get(DisplayService.class);
 		subscribeToEvents();
 	}
 	// -- ITool methods --
@@ -102,9 +106,7 @@ public class ProbeTool extends AbstractTool {
 		else { // mouse is over image
 			// CTR TODO - update tool to probe more than just the active view
 			final DisplayView activeView = display.getActiveView();
-			final DataObject dataObject = activeView.getDataObject();
-			final Dataset d = dataObject instanceof Dataset ?
-				(Dataset) dataObject : null;
+			final Dataset d = displayService.getActiveDataset(display);
 			setWorkingVariables(d);
 			final RealCoords coords = canvas.panelToImageCoords(mousePos);
 			final int cx = coords.getIntX();
