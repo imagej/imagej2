@@ -89,10 +89,13 @@ public class SwingDatasetView extends AbstractDatasetView implements
 		return getScreenImage().image().getHeight(null);
 	}
 
-	private SwingDisplayWindow getDisplayWindow() {
-		assert getDisplay().getDisplayWindow() instanceof SwingDisplayWindow;
-		return (SwingDisplayWindow) getDisplay().getDisplayWindow();
-	}
+	// Unused
+	//private SwingDisplayWindow getDisplayWindow() {
+	//	assert getDisplay().getDisplayWindow() instanceof SwingDisplayWindow;
+	//	return (SwingDisplayWindow) getDisplay().getDisplayWindow();
+	//}
+	
+	@SuppressWarnings("synthetic-access")
 	@Override
 	public synchronized void update() {
 		if (! needsUpdate) {
