@@ -123,63 +123,83 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra1;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra2;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra3;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra4;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra5;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra6;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra7;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra8;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra9;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra10;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra11;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra12;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra13;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra14;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra15;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra16;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra17;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra18;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra19;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private int extra20;
 
