@@ -328,7 +328,8 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 		if (persistKey == null || persistKey.isEmpty()) {
 			final String prefKey = item.getName();
 			final Class<?> prefClass = getPrefClass(module, prefKey);
-			if (prefClass != null) Prefs.put(prefClass, prefKey, value.toString());
+			final String sValue = value == null ? "" : value.toString();
+			if (prefClass != null) Prefs.put(prefClass, prefKey, sValue);
 		}
 		else Prefs.put(persistKey, value.toString());
 	}
