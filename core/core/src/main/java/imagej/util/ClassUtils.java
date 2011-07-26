@@ -191,7 +191,7 @@ public final class ClassUtils {
 	{
 		if (instance == null) return;
 		try {
-			field.set(instance, value);
+			field.set(instance, convert(value, field.getType()));
 		}
 		catch (final IllegalArgumentException e) {
 			Log.error(e);
