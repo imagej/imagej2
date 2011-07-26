@@ -65,18 +65,18 @@ public class SwingInputHarvester extends AbstractInputHarvesterPlugin {
 	public boolean
 		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
-		// convert input panel to Swing component with scroll bars
+		// convert input panel to Swing component
 		final JPanel pane = ((SwingInputPanel) inputPanel).getPanel();
 
 		// display input panel in a dialog
-		final String title = module.toString();
-		final boolean allowCancel = true; // TODO: check module for this setting
+		final String title = module.getInfo().getTitle();
+		final boolean allowCancel = true;
 		final int optionType, messageType;
 		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
-		else optionType = JOptionPane.OK_OPTION;
+		else optionType = JOptionPane.DEFAULT_OPTION;
 		if (inputPanel.isMessageOnly()) {
-			if (allowCancel) messageType = JOptionPane.INFORMATION_MESSAGE;
-			else messageType = JOptionPane.QUESTION_MESSAGE;
+			if (allowCancel) messageType = JOptionPane.QUESTION_MESSAGE;
+			else messageType = JOptionPane.INFORMATION_MESSAGE;
 		}
 		else messageType = JOptionPane.PLAIN_MESSAGE;
 		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;

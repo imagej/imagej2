@@ -42,11 +42,11 @@ import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.process.PreprocessorPlugin;
 
 import java.awt.Dimension;
+import java.awt.Panel;
 import java.awt.Toolkit;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
  * AWTInputHarvester is an {@link InputHarvester} that collects input parameter
@@ -67,20 +67,34 @@ public class AWTInputHarvester extends AbstractInputHarvesterPlugin {
 	public boolean
 		harvestInputs(final InputPanel inputPanel, final Module module)
 	{
-		final JOptionPane optionPane = new JOptionPane(null);
-		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog =
-			optionPane.createDialog(module.getInfo().getLabel());
-		final JPanel mainPane = (JPanel) optionPane.getComponent(0);
-		final JPanel widgetPane = (JPanel) mainPane.getComponent(0);
-		// TODO - use ScrollPane in case there are many widgets
-		widgetPane.add(((AWTInputPanel) inputPanel).getPanel());
+		// TODO - use pure AWT instead of Swing here
+
+		// convert input panel to Swing component
+		final Panel pane = ((AWTInputPanel) inputPanel).getPanel();
+
+		// display input panel in a dialog
+		final String title = module.getInfo().getTitle();
+		final boolean allowCancel = true;
+		final int optionType, messageType;
+		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
+		else optionType = JOptionPane.DEFAULT_OPTION;
+		if (inputPanel.isMessageOnly()) {
+			if (allowCancel) messageType = JOptionPane.QUESTION_MESSAGE;
+			else messageType = JOptionPane.INFORMATION_MESSAGE;
+		}
+		else messageType = JOptionPane.PLAIN_MESSAGE;
+		final JOptionPane optionPane =
+			new JOptionPane(pane, messageType, optionType);
+		final JDialog dialog = optionPane.createDialog(title);
 		dialog.setModal(true);
+		dialog.setResizable(true);
 		dialog.pack();
 		ensureDialogSizeReasonable(dialog);
 		dialog.setVisible(true);
 		final Integer rval = (Integer) optionPane.getValue();
 		dialog.dispose();
+
+		// verify return value of dialog
 		return rval != null && rval == JOptionPane.OK_OPTION;
 	}
 

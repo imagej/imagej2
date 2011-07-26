@@ -66,12 +66,15 @@ public interface ModuleInfo extends UIDetails {
 	 * hence is also the class containing any callback methods specified by
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
-	 * The nature of this method is implementation-specific; for example, a plugin
-	 * will return the class name of its associated <code>RunnablePlugin</code>.
-	 * For modules that are not plugins, the result may be something else. If you
-	 * are implementing this interface directly, a good rule of thumb is to return
-	 * the class name of the associated {@link Module} (i.e., the same value given
-	 * by <code>createModule().getClass().getName()</code>).
+	 * The nature of this method is implementation-specific; for example, a
+	 * {@link PluginModule} will return the class name of its associated
+	 * <code>RunnablePlugin</code>. For modules that are not plugins, the result
+	 * may be something else.
+	 * </p>
+	 * <p>
+	 * If you are implementing this interface directly, a good rule of thumb is to
+	 * return the class name of the associated {@link Module} (i.e., the same
+	 * value given by <code>createModule().getClass().getName()</code>).
 	 * </p>
 	 */
 	String getDelegateClassName();
