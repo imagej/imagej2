@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 /**
- * A plugin capable of generate previews of its results.
- *
+ * A plugin capable of generating previews of its results.
+ * 
  * @author Curtis Rueden
  */
 public interface PreviewPlugin {
