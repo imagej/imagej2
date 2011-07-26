@@ -118,7 +118,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	@Override
 	public Number getStepSize() {
-		return 1;
+		return ClassUtils.toNumber("1", getType());
 	}
 
 	@Override
