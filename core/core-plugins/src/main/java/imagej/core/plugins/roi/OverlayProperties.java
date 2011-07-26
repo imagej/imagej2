@@ -183,6 +183,11 @@ public class OverlayProperties implements ImageJPlugin, PreviewPlugin {
 		run();
 	}
 
+	@Override
+	public void cancel() {
+		// TODO
+	}
+
 	public ColorRGB getLineColor() {
 		return lineColor;
 	}

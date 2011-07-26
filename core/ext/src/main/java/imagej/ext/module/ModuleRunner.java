@@ -83,6 +83,7 @@ public class ModuleRunner {
 		final boolean ok = preProcess();
 		if (!ok) {
 			// execution canceled
+			module.cancel();
 			eventService.publish(new ModuleCanceledEvent(module));
 			return;
 		}

@@ -64,6 +64,15 @@ public interface Module extends Runnable {
 	 */
 	void preview();
 
+	/**
+	 * Performs necessary cleanup in response to cancelation of the module
+	 * execution. This is useful in conjunction with {@link #preview()} to undo
+	 * any changes made as a result of the preview.
+	 * 
+	 * @see ModuleInfo#canCancel()
+	 */
+	void cancel();
+
 	/** Gets metadata about this module. */
 	ModuleInfo getInfo();
 

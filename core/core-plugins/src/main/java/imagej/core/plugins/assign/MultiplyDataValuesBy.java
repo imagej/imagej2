@@ -90,6 +90,11 @@ public class MultiplyDataValuesBy implements ImageJPlugin, PreviewPlugin {
 		run();
 	}
 
+	@Override
+	public void cancel() {
+		// TODO
+	}
+
 	// -- private helpers --
 	
 	private void saveOriginalData() {
