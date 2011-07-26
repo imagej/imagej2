@@ -132,7 +132,7 @@ public class AbstractUIDetails implements UIDetails {
 		return priority - obj.getPriority();
 	}
 
-	// -- UserInterfaceDetails methods --
+	// -- UIDetails methods --
 
 	@Override
 	public List<MenuEntry> getMenuPath() {
