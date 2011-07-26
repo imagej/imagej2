@@ -74,7 +74,7 @@ public class AWTInputHarvester extends AbstractInputHarvesterPlugin {
 
 		// display input panel in a dialog
 		final String title = module.getInfo().getTitle();
-		final boolean allowCancel = true;
+		final boolean allowCancel = module.getInfo().canCancel();
 		final int optionType, messageType;
 		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
 		else optionType = JOptionPane.DEFAULT_OPTION;

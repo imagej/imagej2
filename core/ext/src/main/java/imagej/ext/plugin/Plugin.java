@@ -122,4 +122,7 @@ public @interface Plugin {
 	/** When false, grays out the plugin in the user interface. */
 	boolean enabled() default true;
 
+	/** When false, the user interface will not provide a cancel button. */
+	boolean cancelable() default true;
+
 }

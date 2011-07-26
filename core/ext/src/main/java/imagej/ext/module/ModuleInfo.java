@@ -36,6 +36,7 @@ package imagej.ext.module;
 
 import imagej.ext.UIDetails;
 import imagej.ext.module.event.ModuleUpdatedEvent;
+import imagej.ext.plugin.PluginModule;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
@@ -89,6 +90,13 @@ public interface ModuleInfo extends UIDetails {
 	 * calling {@link Module#preview()} will have no effect.
 	 */
 	boolean canPreview();
+
+	/**
+	 * Gets whether the module condones cancellation. Strictly speaking, any
+	 * module execution can be canceled during preprocessing, but this flag is a
+	 * hint that doing so may be a bad idea, and the UI may want to disallow it.
+	 */
+	boolean canCancel();
 
 	/**
 	 * Notifies interested parties that the module info has been modified. This
