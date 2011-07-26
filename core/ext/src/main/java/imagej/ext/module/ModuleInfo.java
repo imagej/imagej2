@@ -36,7 +36,6 @@ package imagej.ext.module;
 
 import imagej.ext.UIDetails;
 import imagej.ext.module.event.ModuleUpdatedEvent;
-import imagej.ext.plugin.PluginModule;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
@@ -68,7 +67,7 @@ public interface ModuleInfo extends UIDetails {
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
-	 * {@link PluginModule} will return the class name of its associated
+	 * <code>PluginModule</code> will return the class name of its associated
 	 * <code>RunnablePlugin</code>. For modules that are not plugins, the result
 	 * may be something else.
 	 * </p>
