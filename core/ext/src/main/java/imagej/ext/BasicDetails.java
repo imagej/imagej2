@@ -51,4 +51,13 @@ public interface BasicDetails {
 	/** Gets a string describing the object. */
 	String getDescription();
 
+	/** Sets the unique name of the object. */
+	void setName(final String name);
+
+	/** Sets the name to appear in a UI, if applicable. */
+	void setLabel(final String label);
+
+	/** Sets a string describing the object. */
+	void setDescription(final String description);
+
 }

@@ -156,6 +156,21 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		return null;
 	}
 
+	@Override
+	public void setName(final String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setLabel(final String description) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDescription(final String description) {
+		throw new UnsupportedOperationException();
+	}
+
 	// -- Helper methods --
 
 	private Method findCallbackMethod() {

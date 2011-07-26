@@ -140,18 +140,6 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		this.choices.addAll(choices);
 	}
 
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public void setLabel(final String label) {
-		this.label = label;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
-	}
-
 	// -- ModuleItem methods --
 
 	@Override
@@ -229,6 +217,21 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setLabel(final String label) {
+		this.label = label;
+	}
+
+	@Override
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 
 }
