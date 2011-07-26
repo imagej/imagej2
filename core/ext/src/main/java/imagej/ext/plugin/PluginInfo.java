@@ -37,7 +37,6 @@ package imagej.ext.plugin;
 import imagej.ext.IndexItemInfo;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
-import imagej.ext.UIDetails;
 
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
@@ -70,8 +69,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 	{
 		this(className, pluginType);
 		this.plugin = plugin;
-
-		populate(this, plugin);
+		populateValues();
 	}
 
 	// -- PluginInfo methods --
@@ -95,17 +93,13 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		return sb.toString();
 	}
 
-	// -- Utility methods --
+	// -- Helper methods --
 
-	/**
-	 * Populates the given {@link UIDetails} object with the specified
-	 * 
-	 * @{@link Plugin} annotation's values.
-	 */
-	public static void populate(final UIDetails info, final Plugin plugin) {
-		info.setName(plugin.name());
-		info.setLabel(plugin.label());
-		info.setDescription(plugin.description());
+	/** Populates the entry to match the associated @{@link Plugin} annotation. */
+	private void populateValues() {
+		setName(plugin.name());
+		setLabel(plugin.label());
+		setDescription(plugin.description());
 
 		final MenuPath menuPath = new MenuPath();
 		final Menu[] menu = plugin.menu();
@@ -117,14 +111,14 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 			final String path = plugin.menuPath();
 			if (!path.isEmpty()) parseMenuPath(menuPath, path);
 		}
-		info.setMenuPath(menuPath);
+		setMenuPath(menuPath);
 
 		final String iconPath = plugin.iconPath();
-		info.setIconPath(iconPath);
-		info.setPriority(plugin.priority());
-		info.setEnabled(plugin.enabled());
-		info.setSelectable(plugin.selectable());
-		info.setSelectionGroup(plugin.selectionGroup());
+		setIconPath(iconPath);
+		setPriority(plugin.priority());
+		setEnabled(plugin.enabled());
+		setSelectable(plugin.selectable());
+		setSelectionGroup(plugin.selectionGroup());
 
 		// add default icon if none attached to leaf
 		final MenuEntry menuLeaf = menuPath.getLeaf();
@@ -136,11 +130,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		}
 	}
 
-	// -- Helper methods --
-
-	private static void
-		parseMenuPath(final MenuPath menuPath, final Menu[] menu)
-	{
+	private void parseMenuPath(final MenuPath menuPath, final Menu[] menu) {
 		for (int i = 0; i < menu.length; i++) {
 			final String name = menu[i].label();
 			final double weight = menu[i].weight();
@@ -151,9 +141,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		}
 	}
 
-	private static void
-		parseMenuPath(final MenuPath menuPath, final String path)
-	{
+	private void parseMenuPath(final MenuPath menuPath, final String path) {
 		final String[] menuPathTokens = path.split(">");
 		for (final String token : menuPathTokens) {
 			menuPath.add(new MenuEntry(token.trim()));
