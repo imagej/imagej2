@@ -131,7 +131,7 @@ public class WatchOverlays implements ImageJPlugin {
 		for (Overlay overlay : overlays2) {
 			window.append(overlay.getRegionOfInterest().toString() + "\n");
 			if (overlay instanceof RectangleOverlay) {
-				Dataset currDataset = (Dataset) display.getActiveView().getDataObject();
+				Dataset currDataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
 				final double[] origin = new double[currDataset.getImgPlus().numDimensions()];
 				final double[] extent = new double[currDataset.getImgPlus().numDimensions()];
 				((RectangleRegionOfInterest) overlay.getRegionOfInterest()).getExtent(extent);
