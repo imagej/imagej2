@@ -77,6 +77,8 @@ public class LegacyPlugin implements ImageJPlugin {
 	@Parameter(output = true)
 	private List<Display> outputs;
 
+	private DisplayService displayService;
+	
 	// -- LegacyPlugin methods --
 
 	/** Gets the list of output {@link Display}s. */
@@ -88,7 +90,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	@Override
 	public void run() {
-		final DisplayService displayService = ImageJ.get(DisplayService.class);
+		displayService = ImageJ.get(DisplayService.class);
 		final Display activeDisplay = displayService.getActiveDisplay();
 		if (!isLegacyCompatible(activeDisplay)) {
 			Log.warn("Active dataset is not compatible with IJ1");
@@ -212,7 +214,7 @@ public class LegacyPlugin implements ImageJPlugin {
 
 	private boolean isLegacyCompatible(Display display) {
 		if (display == null) return true;
-		Dataset ds = (Dataset) display.getActiveView().getDataObject();
+		Dataset ds = displayService.getActiveDataset(display);
 		Axis[] axes = ds.getAxes();
 		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
 		if (dimensionsIncompatible(ds)) return false;
