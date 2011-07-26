@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.display;
 
-import imagej.data.Dataset;
+import imagej.ImageJ;
 import imagej.data.roi.Overlay;
 import net.imglib2.img.Axis;
 
@@ -50,7 +50,7 @@ public abstract class AbstractOverlayView extends AbstractDisplayView {
 	public AbstractOverlayView(final Display display, final Overlay overlay) {
 		super(display, overlay);
 		this.overlay = overlay;
-		long[] dims = ((Dataset)display.getActiveView().getDataObject()).getDims();
+		long[] dims = ImageJ.get(DisplayService.class).getActiveDataset(display).getDims();
 		setDimensions(dims);
 	}
 	
