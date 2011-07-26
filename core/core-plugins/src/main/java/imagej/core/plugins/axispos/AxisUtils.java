@@ -41,7 +41,6 @@ import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.display.DisplayView;
 import imagej.display.event.AxisPositionEvent;
 import imagej.event.Events;
 import net.imglib2.img.Axes;
