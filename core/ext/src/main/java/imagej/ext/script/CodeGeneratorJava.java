@@ -65,8 +65,8 @@ public class CodeGeneratorJava implements CodeGenerator {
 	@Override
 		public  void addArgument(ParameterObject parameterObject) {
 			StringBuilder sb1 = new StringBuilder();
-			Class<?> type = parameterObject.type;
-			String name = parameterObject.param;
+			//Class<?> type = parameterObject.type;
+			//String name = parameterObject.param;
 			Object value = parameterObject.value;
 			if(value instanceof String) {
 					sb1.append("\"");
