@@ -109,7 +109,12 @@ public class OverlayTranslator {
 							break;
 						}
 					}
-					if (same) return;
+					if (same &&
+						oldROI.getStrokeWidth() == newROI.getStrokeWidth() &&
+						oldROI.getStrokeColor().equals(newROI.getStrokeColor()) &&
+						oldROI.getFillColor().equals(newROI.getFillColor())) {
+						return;
+					}
 				}
 			}
 		}
