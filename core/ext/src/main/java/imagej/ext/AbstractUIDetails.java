@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Abstract superclass of {@link UIDetails} implementations.
  * 
@@ -54,7 +51,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	private String description;
 
 	/** Path to this object's suggested position in the menu structure. */
-	private List<MenuEntry> menuPath;
+	private MenuPath menuPath;
 
 	/** Resource path to this object's icon. */
 	private String iconPath;
@@ -106,7 +103,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 			appendParam(sb, "description", description);
 		}
 		if (menuPath != null && !menuPath.isEmpty()) {
-			appendParam(sb, "menu", getMenuString(menuPath));
+			appendParam(sb, "menu", menuPath.getMenuString());
 		}
 		if (iconPath != null && !iconPath.isEmpty()) {
 			appendParam(sb, "iconPath", iconPath);
@@ -141,8 +138,8 @@ public abstract class AbstractUIDetails implements UIDetails {
 
 		// use name of leaf menu item, if available
 		if (menuPath != null && menuPath.size() > 0) {
-			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			final String menuName = menuEntry.getName();
+			final MenuEntry menuLeaf = menuPath.getLeaf();
+			final String menuName = menuLeaf.getName();
 			if (menuName != null && !menuName.isEmpty()) return menuName;
 		}
 
@@ -154,7 +151,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
-	public List<MenuEntry> getMenuPath() {
+	public MenuPath getMenuPath() {
 		return menuPath;
 	}
 
@@ -189,9 +186,9 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
-	public void setMenuPath(final List<MenuEntry> menuPath) {
+	public void setMenuPath(final MenuPath menuPath) {
 		if (menuPath == null) {
-			this.menuPath = new ArrayList<MenuEntry>();
+			this.menuPath = new MenuPath();
 		}
 		else {
 			this.menuPath = menuPath;
@@ -261,28 +258,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 			sb.append("; ");
 		}
 		sb.append(key + " = " + value + "]");
-	}
-
-	// -- Utility methods --
-
-	// TODO - Make MenuPath class that extends ArrayList<MenuEntry> and has these.
-
-	public static String getMenuString(final List<MenuEntry> menuPath) {
-		return getMenuString(menuPath, true);
-	}
-
-	public static String getMenuString(final List<MenuEntry> menuPath,
-		final boolean includeLeaf)
-	{
-		final StringBuilder sb = new StringBuilder();
-		final int size = menuPath.size();
-		final int last = includeLeaf ? size : size - 1;
-		for (int i = 0; i < last; i++) {
-			final MenuEntry menu = menuPath.get(i);
-			if (i > 0) sb.append(" > ");
-			sb.append(menu);
-		}
-		return sb.toString();
 	}
 
 }

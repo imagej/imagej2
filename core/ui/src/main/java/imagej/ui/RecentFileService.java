@@ -197,7 +197,7 @@ public final class RecentFileService extends AbstractService {
 //		entry.setToggleParameter(plugin.toggleParameter());
 //		entry.setToggleGroup(plugin.toggleGroup());
 //
-//		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
+//		final MenuPath menuPath = new MenuPath();
 //		final Menu[] menu = plugin.menu();
 //		if (menu.length > 0) {
 //			parseMenuPath(menuPath, menu);
@@ -209,11 +209,11 @@ public final class RecentFileService extends AbstractService {
 //		}
 //
 //		// add default icon if none attached to leaf
-//		if (menuPath.size() > 0 && !iconPath.isEmpty()) {
-//			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-//			final String menuIconPath = menuEntry.getIconPath();
+//		final MenuEntry menuLeaf = menuPath.getLeaf();
+//		if (menuLeaf != null && !iconPath.isEmpty()) {
+//			final String menuIconPath = menuLeaf.getIconPath();
 //			if (menuIconPath == null || menuIconPath.isEmpty()) {
-//				menuEntry.setIconPath(iconPath);
+//				menuLeaf.setIconPath(iconPath);
 //			}
 //		}
 //

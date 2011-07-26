@@ -37,15 +37,14 @@ package imagej.legacy.plugin;
 import ij.IJ;
 import ij.Menus;
 import imagej.ImageJ;
-import imagej.ext.AbstractUIDetails;
 import imagej.ext.MenuEntry;
+import imagej.ext.MenuPath;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.finder.IPluginFinder;
 import imagej.ext.plugin.finder.PluginFinder;
 import imagej.legacy.LegacyService;
-import imagej.util.ListUtils;
 import imagej.util.Log;
 
 import java.awt.Menu;
@@ -59,7 +58,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -112,7 +110,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 
 		final ij.ImageJ ij = IJ.getInstance();
 		if (ij == null) return; // no IJ1, so no IJ1 plugins
-		final Map<String, List<MenuEntry>> menuTable = parseMenus(ij);
+		final Map<String, MenuPath> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		Log.info("Found " + commands.size() + " legacy plugins.");
 		for (final Object key : commands.keySet()) {
@@ -141,19 +139,18 @@ public class LegacyPluginFinder implements IPluginFinder {
 	}
 
 	private PluginInfo<ImageJPlugin> createEntry(final Object key,
-		final Hashtable<?, ?> commands,
-		final Map<String, List<MenuEntry>> menuTable)
+		final Hashtable<?, ?> commands, final Map<String, MenuPath> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
 		final boolean blacklisted = blacklist.contains(ij1PluginString);
-		final List<MenuEntry> menuPath = menuTable.get(key);
+		final MenuPath menuPath = menuTable.get(key);
 
 		final String debugString;
 		if (Log.isDebug()) {
 			debugString =
 				"- " + (blacklisted ? "[BLACKLISTED] " : "") + ij1PluginString +
-					" [menu = " + AbstractUIDetails.getMenuString(menuPath) +
-					", weight = " + menuPath.get(menuPath.size() - 1).getWeight() + "]";
+					" [menu = " + menuPath.getMenuString() + ", weight = " +
+					menuPath.getLeaf().getWeight() + "]";
 		}
 		else debugString = null;
 		Log.debug(debugString);
@@ -173,27 +170,25 @@ public class LegacyPluginFinder implements IPluginFinder {
 		pe.setPresets(presets);
 
 		// flag legacy plugin with special icon
-		menuPath.get(menuPath.size() - 1).setIconPath(LEGACY_PLUGIN_ICON);
+		menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
 
 		return pe;
 	}
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */
-	private Map<String, List<MenuEntry>> parseMenus(final ij.ImageJ ij) {
-		final Map<String, List<MenuEntry>> menuTable =
-			new HashMap<String, List<MenuEntry>>();
+	private Map<String, MenuPath> parseMenus(final ij.ImageJ ij) {
+		final Map<String, MenuPath> menuTable = new HashMap<String, MenuPath>();
 		final MenuBar menubar = ij.getMenuBar();
 		final int menuCount = menubar.getMenuCount();
 		for (int i = 0; i < menuCount; i++) {
 			final Menu menu = menubar.getMenu(i);
-			parseMenu(menu, i, new ArrayList<MenuEntry>(), menuTable);
+			parseMenu(menu, i, new MenuPath(), menuTable);
 		}
 		return menuTable;
 	}
 
 	private void parseMenu(final MenuItem menuItem, final double weight,
-		final ArrayList<MenuEntry> path,
-		final Map<String, List<MenuEntry>> menuTable)
+		final MenuPath path, final Map<String, MenuPath> menuTable)
 	{
 		// build menu entry
 		final String name = menuItem.getLabel();
@@ -222,7 +217,7 @@ public class LegacyPluginFinder implements IPluginFinder {
 				final boolean isSeparator = item.getLabel().equals("-");
 				if (isSeparator) w += 10;
 				else w += 1;
-				parseMenu(item, w, ListUtils.copyList(path), menuTable);
+				parseMenu(item, w, new MenuPath(path), menuTable);
 			}
 		}
 		else { // leaf item

@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
-import java.util.List;
-
 /**
  * An interface defining details useful for generating relevant user interface
  * elements.
@@ -63,7 +61,7 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	String getTitle();
 
 	/** Gets the path to the object's suggested position in the menu structure. */
-	List<MenuEntry> getMenuPath();
+	MenuPath getMenuPath();
 
 	/** Gets the resource path to an icon representing the object. */
 	String getIconPath();
@@ -93,7 +91,7 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	boolean isEnabled();
 
 	/** Sets the path to the object's suggested position in the menu structure. */
-	void setMenuPath(List<MenuEntry> menuPath);
+	void setMenuPath(MenuPath menuPath);
 
 	/** Sets the resource path to an icon representing the object. */
 	void setIconPath(String iconPath);
