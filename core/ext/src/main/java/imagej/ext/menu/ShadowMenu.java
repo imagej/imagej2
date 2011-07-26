@@ -215,39 +215,4 @@ public class ShadowMenu implements Comparable<ShadowMenu> {
 		}
 	}
 
-	// -- Utility methods --
-
-	/**
-	 * Gets the label to use for the given module's menu item. The result is
-	 * prioritized as follows:
-	 * <ol>
-	 * <li>Item label</li>
-	 * <li>Menu path's leaf entry name</li>
-	 * <li>Item name</li>
-	 * <li>Item's class name, without package prefix</li>
-	 * </ol>
-	 */
-	public static String getMenuLabel(final ModuleInfo info) {
-		// use object label, if available
-		final String label = info.getLabel();
-		if (label != null && !label.isEmpty()) return label;
-
-		// use name of leaf menu item, if available
-		final List<MenuEntry> menuPath = info.getMenuPath();
-		if (menuPath != null && menuPath.size() > 0) {
-			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			final String menuName = menuEntry.getName();
-			if (menuName != null && !menuName.isEmpty()) return menuName;
-		}
-
-		// use object name, if available
-		final String name = info.getName();
-		if (name != null && !name.isEmpty()) return name;
-
-		// use object class name
-		final String className = info.getDelegateClassName();
-		final int dot = className.lastIndexOf(".");
-		return dot < 0 ? className : className.substring(dot + 1);
-	}
-
 }

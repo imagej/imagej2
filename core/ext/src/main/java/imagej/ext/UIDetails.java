@@ -50,6 +50,18 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	int LOW_PRIORITY = 75;
 	int LAST_PRIORITY = 100;
 
+	/**
+	 * Gets an appropriate title for the object, for use in a user interface. The
+	 * result is prioritized as follows:
+	 * <ol>
+	 * <li>Item label</li>
+	 * <li>Menu path's leaf entry name</li>
+	 * <li>Item name</li>
+	 * <li>Item's class name, without package prefix</li>
+	 * </ol>
+	 */
+	String getTitle();
+
 	/** Gets the path to the object's suggested position in the menu structure. */
 	List<MenuEntry> getMenuPath();
 

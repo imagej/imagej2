@@ -183,15 +183,15 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	private class Command implements Comparable<Command> {
 
 		private final ModuleInfo info;
-		private final String menuLabel;
+		private final String title;
 
 		public Command(final ModuleInfo info) {
 			this.info = info;
-			menuLabel = ShadowMenu.getMenuLabel(info);
+			title = info.getTitle();
 		}
 
 		public boolean matches(final String regex) {
-			return menuLabel.toLowerCase().matches(regex);
+			return title.toLowerCase().matches(regex);
 		}
 
 		public ModuleInfo getModuleInfo() {
@@ -200,7 +200,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		@Override
 		public String toString() {
-			final StringBuilder sb = new StringBuilder(menuLabel);
+			final StringBuilder sb = new StringBuilder(title);
 			if (isShowFull()) {
 				final List<MenuEntry> menuPath = info.getMenuPath();
 				final String menuString =
@@ -213,7 +213,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		@Override
 		public int compareTo(final Command command) {
-			return menuLabel.compareTo(command.menuLabel);
+			return title.compareTo(command.title);
 		}
 
 	}

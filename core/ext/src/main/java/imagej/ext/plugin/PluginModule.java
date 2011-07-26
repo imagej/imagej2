@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.plugin;
 
 import imagej.ext.InstantiableException;
-import imagej.ext.menu.ShadowMenu;
 import imagej.ext.module.AbstractModule;
 import imagej.ext.module.ModuleException;
 import imagej.ext.module.ModuleItem;
@@ -72,13 +71,6 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 	/** Gets the plugin instance handled by this module. */
 	public R getPlugin() {
 		return plugin;
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return ShadowMenu.getMenuLabel(getInfo());
 	}
 
 	// -- Module methods --
