@@ -39,6 +39,7 @@ import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
+import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.AddConstant;
 
@@ -51,7 +52,7 @@ import net.imglib2.ops.operator.unary.AddConstant;
 @Plugin(iconPath = "/icons/plugins/sum.png", menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) })
-public class AddToDataValues implements ImageJPlugin {
+public class AddToDataValues implements ImageJPlugin, PreviewPlugin {
 
 	// -- instance variables that are Parameters --
 
@@ -64,13 +65,37 @@ public class AddToDataValues implements ImageJPlugin {
 	@Parameter(label = "Preview")
 	private boolean preview;
 
+	private Dataset dataBackup = null;
+	
 	// -- public interface --
 
 	@Override
 	public void run() {
+		if (dataBackup != null)
+			restoreOriginalData();
 		final UnaryOperator op = new AddConstant(constant);
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
 		transform.run();
 	}
 
+	@Override
+	public void preview() {
+		if (dataBackup == null)
+			saveOriginalData();
+		if (!preview) {
+			restoreOriginalData();
+			return;
+		}
+		run();
+	}
+
+	// -- private helpers --
+	
+	private void saveOriginalData() {
+		dataBackup = input.duplicate();
+	}
+	
+	private void restoreOriginalData() {
+		input.copyDataFrom(dataBackup);
+	}
 }
