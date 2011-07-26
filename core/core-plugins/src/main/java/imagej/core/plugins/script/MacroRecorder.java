@@ -111,6 +111,7 @@ public class MacroRecorder implements ImageJPlugin {
 		button.addActionListener(new ActionListener() {
 
 			@Override
+			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent e) {
 				if (!isRecording()) {
 					startRecording();
@@ -219,8 +220,7 @@ public class MacroRecorder implements ImageJPlugin {
 	ArrayList<InvocationObject> invocationList = new ArrayList<InvocationObject>();
 
 	public void processModuleExecuted(ModuleExecutedEvent evt) {
-		final ModuleExecutedEvent e = (ModuleExecutedEvent) evt;
-		final Module module = e.getModule();
+		final Module module = evt.getModule();
 		final ModuleInfo info = module.getInfo();
 		String pluginCalled = info.getDelegateClassName();
 		emitMessage("  >> Module: " + pluginCalled);
