@@ -71,23 +71,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 	/** Whether the object is enabled in the user interface. */
 	private boolean enabled = true;
 
-	// -- AbstractUIDetails methods --
-
-	/** Sets the unique name of the object. */
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	/** Sets the name to appear in a UI, if applicable. */
-	public void setLabel(final String label) {
-		this.label = label;
-	}
-
-	/** Sets a string describing the object. */
-	public void setDescription(final String description) {
-		this.description = description;
-	}
-
 	// -- Object methods --
 
 	@Override
@@ -242,7 +225,22 @@ public abstract class AbstractUIDetails implements UIDetails {
 		return description;
 	}
 
-	// -- Internal AbstractUIDetails methods --
+	@Override
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setLabel(final String label) {
+		this.label = label;
+	}
+
+	@Override
+	public void setDescription(final String description) {
+		this.description = description;
+	}
+
+	// -- Internal methods --
 
 	protected void appendParam(final StringBuilder sb, final String key,
 		final Object value)
