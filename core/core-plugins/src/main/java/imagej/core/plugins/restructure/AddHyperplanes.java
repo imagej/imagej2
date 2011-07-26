@@ -1,7 +1,5 @@
-package imagej.core.plugins.restructure;
-
 //
-//AddHyperplanes.java
+// AddHyperplanes.java
 //
 
 /*
@@ -34,10 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+package imagej.core.plugins.restructure;
 
 import imagej.ImageJ;
 import imagej.core.plugins.axispos.AxisUtils;
@@ -48,19 +43,23 @@ import imagej.ext.module.DefaultModuleItem;
 import imagej.ext.plugin.DynamicPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import net.imglib2.img.Axis;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 /**
-* Adds hyperplanes of data to an input Dataset along a user specified axis
-* 
-* @author Barry DeZonia
-*/
-@Plugin(menu = {
-@Menu(label = "Image", mnemonic = 'i'),
-@Menu(label = "Stacks", mnemonic = 's'),
-@Menu(label = "Add Data...") })
+ * Adds hyperplanes of data to an input Dataset along a user specified axis.
+ * 
+ * @author Barry DeZonia
+ */
+@Plugin(menu = { @Menu(label = "Image", mnemonic = 'i'),
+	@Menu(label = "Stacks", mnemonic = 's'), @Menu(label = "Add Data...") })
 public class AddHyperplanes extends DynamicPlugin {
 
 	private static final String NAME_KEY = "Axis to modify";
@@ -71,7 +70,7 @@ public class AddHyperplanes extends DynamicPlugin {
 	private String axisToModify;
 	private long oneBasedInsPos;
 	private long numAdding;
-	
+
 	private long insertPosition;
 
 	public AddHyperplanes() {
@@ -79,14 +78,14 @@ public class AddHyperplanes extends DynamicPlugin {
 		final Display display = displayService.getActiveDisplay();
 		if (display == null) return;
 		dataset = ImageJ.get(DisplayService.class).getActiveDataset(display);
-		
+
 		final DefaultModuleItem<String> name =
 			new DefaultModuleItem<String>(this, NAME_KEY, String.class);
-		List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
-		ArrayList<String> choices = new ArrayList<String>();
-		for (Axis candidateAxis : AxisUtils.AXES) {
-			if (datasetAxes.contains(candidateAxis))
-				choices.add(AxisUtils.getAxisName(candidateAxis));
+		final List<Axis> datasetAxes = Arrays.asList(dataset.getAxes());
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Axis candidateAxis : AxisUtils.AXES) {
+			if (datasetAxes.contains(candidateAxis)) choices.add(AxisUtils
+				.getAxisName(candidateAxis));
 		}
 		name.setChoices(choices);
 		addInput(name);
@@ -94,16 +93,16 @@ public class AddHyperplanes extends DynamicPlugin {
 		final DefaultModuleItem<Long> pos =
 			new DefaultModuleItem<Long>(this, POSITION_KEY, Long.class);
 		pos.setMinimumValue(1L);
-		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		// TODO - figure a way to set max val based on chosen Dataset's curr values
 		addInput(pos);
-		
+
 		final DefaultModuleItem<Long> quantity =
 			new DefaultModuleItem<Long>(this, QUANTITY_KEY, Long.class);
 		quantity.setMinimumValue(1L);
-		// TODO - figure some way to set max val based on chosen Dataset's curr values
+		// TODO - figure a way to set max val based on chosen Dataset's curr values
 		addInput(quantity);
 	}
-	
+
 	/**
 	 * Creates new ImgPlus data copying pixel values as needed from an input
 	 * Dataset. Assigns the ImgPlus to the input Dataset.
@@ -114,14 +113,14 @@ public class AddHyperplanes extends DynamicPlugin {
 		axisToModify = (String) inputs.get(NAME_KEY);
 		oneBasedInsPos = (Long) inputs.get(POSITION_KEY);
 		numAdding = (Long) inputs.get(QUANTITY_KEY);
-		
+
 		insertPosition = oneBasedInsPos - 1;
-		Axis axis = AxisUtils.getAxis(axisToModify);
+		final Axis axis = AxisUtils.getAxis(axisToModify);
 		if (inputBad(axis)) return;
-		Axis[] axes = dataset.getAxes();
-		long[] newDimensions =
+		final Axis[] axes = dataset.getAxes();
+		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, numAdding);
-		ImgPlus<? extends RealType<?>> dstImgPlus =
+		final ImgPlus<? extends RealType<?>> dstImgPlus =
 			RestructureUtils.createNewImgPlus(dataset, newDimensions, axes);
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		// TODO - colorTables, metadata, etc.?
@@ -129,28 +128,25 @@ public class AddHyperplanes extends DynamicPlugin {
 	}
 
 	/**
-	 * Detects if user specified data is invalid */
-	private boolean inputBad(Axis axis) {
+	 * Detects if user specified data is invalid
+	 */
+	private boolean inputBad(final Axis axis) {
 		// axis not determined by dialog
-		if (axis == null)
-			return true;
-		
-		// setup some working variables
-		int axisIndex = dataset.getAxisIndex(axis);
-		long axisSize = dataset.getImgPlus().dimension(axisIndex);
+		if (axis == null) return true;
 
-	  // axis not present in Dataset
-		if (axisIndex < 0)
-			return true;
-		
+		// setup some working variables
+		final int axisIndex = dataset.getAxisIndex(axis);
+		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
+
+		// axis not present in Dataset
+		if (axisIndex < 0) return true;
+
 		// bad value for startPosition
-		if ((insertPosition < 0)  || (insertPosition > axisSize))
-			return true;
-		
+		if ((insertPosition < 0) || (insertPosition > axisSize)) return true;
+
 		// bad value for numAdding
-		if ((numAdding <= 0) || ((Long.MAX_VALUE-numAdding) < axisSize))
-			return true;
-		
+		if ((numAdding <= 0) || ((Long.MAX_VALUE - numAdding) < axisSize)) return true;
+
 		// if here everything is okay
 		return false;
 	}
@@ -159,20 +155,20 @@ public class AddHyperplanes extends DynamicPlugin {
 	 * Fills the newly created ImgPlus with data values from a smaller source
 	 * image. Copies data from existing hyperplanes.
 	 */
-	private void fillNewImgPlus(ImgPlus<? extends RealType<?>> srcImgPlus,
-		ImgPlus<? extends RealType<?>> dstImgPlus, Axis modifiedAxis)
+	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus, final Axis modifiedAxis)
 	{
-		long[] dimensions = dataset.getDims();
-		int axisIndex = dataset.getAxisIndex(modifiedAxis);
-		long axisSize = dimensions[axisIndex];
-		long numBeforeInsert = insertPosition;
-		long numInInsertion = numAdding;
-		long numAfterInsertion = axisSize - numBeforeInsert;
-		
+		final long[] dimensions = dataset.getDims();
+		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
+		final long axisSize = dimensions[axisIndex];
+		final long numBeforeInsert = insertPosition;
+		final long numInInsertion = numAdding;
+		final long numAfterInsertion = axisSize - numBeforeInsert;
+
+		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis, 0, 0,
+			numBeforeInsert);
 		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
-			0, 0, numBeforeInsert);
-		RestructureUtils.copyData(srcImgPlus, dstImgPlus, modifiedAxis,
-			numBeforeInsert, numBeforeInsert+numInInsertion, numAfterInsertion);
+			numBeforeInsert, numBeforeInsert + numInInsertion, numAfterInsertion);
 	}
 
 }
