@@ -53,9 +53,9 @@ public class ColorRGB implements Serializable {
 	/** Parses a color from a string of the form "r,g,b". */
 	public ColorRGB(final String value) {
 		final String[] tokens = value.split(",");
-		red = Integer.parseInt(tokens[0]);
-		green = Integer.parseInt(tokens[1]);
-		blue = Integer.parseInt(tokens[2]);
+		red = parse(tokens, 0);
+		green = parse(tokens, 1);
+		blue = parse(tokens, 2);
 	}
 
 	public int getRed() {
@@ -104,6 +104,18 @@ public class ColorRGB implements Serializable {
 	@Override
 	public int hashCode() {
 		return getARGB();
+	}
+
+	// -- Helper methods --
+	
+	private int parse(final String[] s, final int index) {
+		if (s == null || index >= s.length) return 0;
+		try {
+			return Integer.parseInt(s[index]);
+		}
+		catch (NumberFormatException exc) {
+			return 0;
+		}
 	}
 
 }
