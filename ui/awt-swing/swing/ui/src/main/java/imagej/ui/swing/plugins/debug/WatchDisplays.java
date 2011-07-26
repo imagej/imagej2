@@ -86,7 +86,9 @@ public class WatchDisplays implements ImageJPlugin {
 
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
-
+				
+				@SuppressWarnings("synthetic-access")
+				@Override
 				public void run() {
 					window.repaint();
 				}
