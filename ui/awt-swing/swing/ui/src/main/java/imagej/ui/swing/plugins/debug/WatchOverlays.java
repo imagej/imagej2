@@ -78,6 +78,7 @@ public class WatchOverlays implements ImageJPlugin {
 		subscribeToEvents();
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private void subscribeToEvents() {
 		subscribers = new ArrayList<EventSubscriber<?>>();
 
@@ -152,11 +153,9 @@ public class WatchOverlays implements ImageJPlugin {
 	private Display getCurrentDisplay() {
 		final DisplayService displayService = ImageJ.get(DisplayService.class);
 		final Display display = displayService.getActiveDisplay();
-		if (display == null) {
+		if (display == null)
 			return null; // headless UI or no open images
-		} else {
-			return display;
-		}
+		return display;
 	}
 //		List<Overlay> overlays;
 //		final OverlayService overlayService = ImageJ.get(OverlayService.class);
