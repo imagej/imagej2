@@ -47,7 +47,7 @@ public class FileUtils {
    * ex. C:/1/2/test.txt return C:/1/.../test.txt if threshold is 1
    * @param path
    * @param threshold
-   * @return
+   * @return shortened path
    */
 
   public static String pathShortener(String path, int threshold) {
@@ -120,7 +120,7 @@ public class FileUtils {
    * Win32 API PathCompactPathExA
    * @param path
    * @param limit
-   * @return
+   * @return shortened path
    */
   public static String pathLengthShortener(String path, int limit) {
 
