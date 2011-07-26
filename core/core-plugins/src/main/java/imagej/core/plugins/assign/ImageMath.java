@@ -126,7 +126,6 @@ public class ImageMath implements ImageJPlugin {
 	 * combination of the two input images.
 	 */
 	@Override
-	@SuppressWarnings({"rawtypes","unchecked"})
 	public void run() {
 		final BinaryOperator binOp = operators.get(operatorName);
 
