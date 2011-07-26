@@ -72,8 +72,8 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	int getPriority();
 
 	/**
-	 * Gets whether the object can be selected (e.g., checking and unchecking
-	 * its menu item) in the user interface.
+	 * Gets whether the object can be selected (e.g., checking and unchecking its
+	 * menu item) in the user interface.
 	 */
 	boolean isSelectable();
 
@@ -105,8 +105,8 @@ public interface UIDetails extends BasicDetails, Comparable<UIDetails> {
 	void setEnabled(boolean enabled);
 
 	/**
-	 * Sets whether the object can be selected (e.g., checking and unchecking
-	 * its menu item) in the user interface.
+	 * Sets whether the object can be selected (e.g., checking and unchecking its
+	 * menu item) in the user interface.
 	 */
 	void setSelectable(boolean selectable);
 

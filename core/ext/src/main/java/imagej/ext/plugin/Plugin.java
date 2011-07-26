@@ -77,8 +77,31 @@ public @interface Plugin {
 	/** A longer description of the plugin (e.g., for use a tool tip). */
 	String description() default "";
 
+	/**
+	 * Abbreviated menu path defining where the plugin is shown in the menu
+	 * structure. Uses greater than signs (>) as a separator; e.g.:
+	 * "Image > Overlay > Properties..." defines a "Properties..." menu item
+	 * within the "Overlay" submenu of the "Image" menu. Use either
+	 * {@link #menuPath} or {@link #menu} but not both.
+	 */
+	String menuPath() default "";
+
+	/**
+	 * Full menu path defining where the plugin is shown in the menu structure.
+	 * This construction allows menus to be fully specified including mnemonics,
+	 * accelerators and icons. Use either {@link #menuPath} or {@link #menu} but
+	 * not both.
+	 */
+	Menu[] menu() default {};
+
 	/** Path to the plugin's icon (e.g., shown in the menu structure). */
 	String iconPath() default "";
+
+	/**
+	 * The plugin index returns plugins sorted by priority. This is useful for
+	 * {@link ModulePreprocessor}s to control the order of their execution.
+	 */
+	int priority() default NORMAL_PRIORITY;
 
 	/**
 	 * Whether the plugin can be selected in the user interface. A plugin's
@@ -96,30 +119,7 @@ public @interface Plugin {
 	 */
 	String selectionGroup() default "";
 
-	/**
-	 * The plugin index returns plugins sorted by priority. This is useful for
-	 * {@link ModulePreprocessor}s to control the order of their execution.
-	 */
-	int priority() default NORMAL_PRIORITY;
-
 	/** When false, grays out the plugin in the user interface. */
 	boolean enabled() default true;
-
-	/**
-	 * Abbreviated menu path defining where the plugin is shown in the menu
-	 * structure. Uses greater than signs (>) as a separator; e.g.:
-	 * "Image > Overlay > Properties..." defines a "Properties..." menu item
-	 * within the "Overlay" submenu of the "Image" menu. Use either
-	 * {@link #menuPath} or {@link #menu} but not both.
-	 */
-	String menuPath() default "";
-
-	/**
-	 * Full menu path defining where the plugin is shown in the menu structure.
-	 * This construction allows menus to be fully specified including mnemonics,
-	 * accelerators and icons. Use either {@link #menuPath} or {@link #menu} but
-	 * not both.
-	 */
-	Menu[] menu() default {};
 
 }

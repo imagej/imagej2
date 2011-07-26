@@ -164,7 +164,7 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 
 	private void assignPresets() {
 		final Map<String, Object> presets = info.getPresets();
-		for (String name : presets.keySet()) {
+		for (final String name : presets.keySet()) {
 			final Object value = presets.get(name);
 			setInput(name, value);
 			setResolved(name, true);

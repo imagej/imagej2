@@ -113,7 +113,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		setPluginModuleFactory(null);
 	}
 
-	// -- RunnablePluginInfo methods --
+	// -- PluginModuleInfo methods --
 
 	/** Sets the table of items with fixed, preset values. */
 	public void setPresets(final Map<String, Object> presets) {
@@ -143,6 +143,18 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	/** Gets the factory used to construct {@link PluginModule} instances. */
 	public PluginModuleFactory getPluginModuleFactory() {
 		return factory;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(super.toString());
+		for (final String key : presets.keySet()) {
+			final Object value = presets.get(key);
+			appendParam(sb, key, "'" + value + "'");
+		}
+		return sb.toString();
 	}
 
 	// -- ModuleInfo methods --
@@ -191,18 +203,6 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	@Override
 	public void update() {
 		Events.publish(new ModuleUpdatedEvent(this));
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder(super.toString());
-		for (final String key : presets.keySet()) {
-			final Object value = presets.get(key);
-			appendParam(sb, key, "'" + value + "'");
-		}
-		return sb.toString();
 	}
 
 	// -- UIDetails methods --
