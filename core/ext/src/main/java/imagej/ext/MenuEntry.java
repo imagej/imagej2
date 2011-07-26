@@ -1,5 +1,5 @@
 //
-// MenuEntry.java
+// MenuPath.java
 //
 
 /*
@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext;
 
 /**
- * One component of a menu path, for use with {@link UIDetails}.
+ * One component of a menu path, for use with {@link MenuPath}.
  * 
  * @author Curtis Rueden
  */

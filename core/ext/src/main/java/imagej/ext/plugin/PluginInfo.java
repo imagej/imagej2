@@ -36,9 +36,7 @@ package imagej.ext.plugin;
 
 import imagej.ext.IndexItemInfo;
 import imagej.ext.MenuEntry;
-
-import java.util.ArrayList;
-import java.util.List;
+import imagej.ext.MenuPath;
 
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
@@ -76,7 +74,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		setLabel(plugin.label());
 		setDescription(plugin.description());
 
-		final List<MenuEntry> menuPath = new ArrayList<MenuEntry>();
+		final MenuPath menuPath = new MenuPath();
 		final Menu[] menu = plugin.menu();
 		if (menu.length > 0) {
 			parseMenuPath(menuPath, menu);
@@ -96,11 +94,11 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		setSelectionGroup(plugin.selectionGroup());
 
 		// add default icon if none attached to leaf
-		if (menuPath.size() > 0 && !iconPath.isEmpty()) {
-			final MenuEntry menuEntry = menuPath.get(menuPath.size() - 1);
-			final String menuIconPath = menuEntry.getIconPath();
+		final MenuEntry menuLeaf = menuPath.getLeaf();
+		if (menuLeaf != null && !iconPath.isEmpty()) {
+			final String menuIconPath = menuLeaf.getIconPath();
 			if (menuIconPath == null || menuIconPath.isEmpty()) {
-				menuEntry.setIconPath(iconPath);
+				menuLeaf.setIconPath(iconPath);
 			}
 		}
 	}
@@ -128,9 +126,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 
 	// -- Helper methods --
 
-	private void
-		parseMenuPath(final List<MenuEntry> menuPath, final Menu[] menu)
-	{
+	private void parseMenuPath(final MenuPath menuPath, final Menu[] menu) {
 		for (int i = 0; i < menu.length; i++) {
 			final String name = menu[i].label();
 			final double weight = menu[i].weight();
@@ -141,9 +137,7 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 		}
 	}
 
-	private void
-		parseMenuPath(final List<MenuEntry> menuPath, final String path)
-	{
+	private void parseMenuPath(final MenuPath menuPath, final String path) {
 		final String[] menuPathTokens = path.split(">");
 		for (final String token : menuPathTokens) {
 			menuPath.add(new MenuEntry(token.trim()));
