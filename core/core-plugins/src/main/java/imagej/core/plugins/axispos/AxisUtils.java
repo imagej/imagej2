@@ -97,8 +97,7 @@ public class AxisUtils {
 		Axis axis = display.getActiveAxis();
 		if (axis == null) return;
 		if (display.getAxisIndex(axis) < 0) return;
-		DisplayView view = display.getActiveView();
-		Dataset ds = (Dataset) view.getDataObject();  // TODO - safe?
+		Dataset ds = displayService.getActiveDataset(display);
 		int axisIndex = ds.getAxisIndex(axis);
 		if (axisIndex < 0) return;
 		long max = ds.getExtents().dimension(axisIndex);
