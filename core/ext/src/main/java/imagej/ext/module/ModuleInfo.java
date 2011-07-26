@@ -94,6 +94,8 @@ public interface ModuleInfo extends UIDetails {
 	 * Gets whether the module condones cancellation. Strictly speaking, any
 	 * module execution can be canceled during preprocessing, but this flag is a
 	 * hint that doing so may be a bad idea, and the UI may want to disallow it.
+	 * If this method returns false, then calling {@link Module#cancel()} will
+	 * have no effect.
 	 */
 	boolean canCancel();
 

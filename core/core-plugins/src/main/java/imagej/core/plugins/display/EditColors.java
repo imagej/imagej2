@@ -84,6 +84,11 @@ public class EditColors implements ImageJPlugin, PreviewPlugin {
 		run();
 	}
 
+	@Override
+	public void cancel() {
+		// TODO
+	}
+
 	public DatasetView getView() {
 		return view;
 	}

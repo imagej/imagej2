@@ -236,6 +236,11 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Events.publish(new StatusEvent(message));
 	}
 
+	@Override
+	public void cancel() {
+		Log.info("ParameterTester: canceled");
+	}
+
 	@SuppressWarnings("unused")
 	private void xChanged() {
 		twoX = x * 2;

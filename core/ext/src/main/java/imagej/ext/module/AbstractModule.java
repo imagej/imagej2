@@ -73,6 +73,11 @@ public abstract class AbstractModule implements Module {
 	}
 
 	@Override
+	public void cancel() {
+		// do nothing by default
+	}
+
+	@Override
 	public ModuleInfo getInfo() {
 		return info;
 	}

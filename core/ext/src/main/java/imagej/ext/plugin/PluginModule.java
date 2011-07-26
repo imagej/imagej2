@@ -86,6 +86,18 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule {
 		previewPlugin.preview();
 	}
 
+	/**
+	 * Cancels the plugin, undoing the effects of any calls to {@link #preview()}.
+	 * For this method to do anything, the plugin must implement the
+	 * {@link PreviewPlugin} interface.
+	 */
+	@Override
+	public void cancel() {
+		if (!(plugin instanceof PreviewPlugin)) return; // nothing to cancel
+		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		previewPlugin.cancel();
+	}
+
 	@Override
 	public PluginModuleInfo<R> getInfo() {
 		return info;

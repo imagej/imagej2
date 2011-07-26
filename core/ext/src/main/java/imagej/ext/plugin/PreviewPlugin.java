@@ -44,4 +44,10 @@ public interface PreviewPlugin {
 	/** Computes a preview of the plugin's results. */
 	void preview();
 
+	/**
+	 * Does whatever is necessary upon plugin cancelation to reset things back to
+	 * before the plugin was executed.
+	 */
+	void cancel();
+
 }
