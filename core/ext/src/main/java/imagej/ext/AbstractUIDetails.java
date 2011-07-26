@@ -42,7 +42,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class AbstractUIDetails implements UIDetails {
+public abstract class AbstractUIDetails implements UIDetails {
 
 	/** Unique name of the object. */
 	private String name;
