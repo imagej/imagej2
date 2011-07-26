@@ -52,6 +52,7 @@ import org.jhotdraw.draw.event.FigureEvent;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
+@SuppressWarnings("synthetic-access")
 public class SwingOverlayView extends AbstractOverlayView implements FigureView {
 
 	private final SwingImageDisplay display;
@@ -162,14 +163,14 @@ public class SwingOverlayView extends AbstractOverlayView implements FigureView 
 	private void show(final boolean doShow) {
 		final JHotDrawImageCanvas canvas = display.getImageCanvas();
 		final Drawing drawing = canvas.getDrawing();
-		final Figure figure = getFigure();
+		final Figure fig = getFigure();
 		if (doShow) {
-			if (! drawing.contains(figure)) {
-				drawing.add(figure);
+			if (! drawing.contains(fig)) {
+				drawing.add(fig);
 			}
 		} else {
-			if (drawing.contains(figure)) {
-				drawing.remove(figure);
+			if (drawing.contains(fig)) {
+				drawing.remove(fig);
 			}
 		}
 	}
