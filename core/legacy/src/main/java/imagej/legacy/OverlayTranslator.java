@@ -95,9 +95,9 @@ public class OverlayTranslator {
 	 */
 	public void setDisplayOverlays(final Display display, final ImagePlus imp) {
 		final OverlayService overlayService = ImageJ.get(OverlayService.class);
-		final ShapeRoi oldROI = createROI(overlayService.getOverlays(display));
-		if (oldROI != null) {
-			final float[] oldPath = oldROI.getShapeAsArray();
+		final Roi oldROI = createROI(overlayService.getOverlays(display));
+		if (oldROI instanceof ShapeRoi) {
+			final float[] oldPath = ((ShapeRoi)oldROI).getShapeAsArray();
 			final Roi newROI = imp.getRoi();
 			if (newROI instanceof ShapeRoi) {
 				final float[] newPath = ((ShapeRoi) newROI).getShapeAsArray();
@@ -147,23 +147,24 @@ public class OverlayTranslator {
 
 	/** Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. */
 	public void setOverlays(final List<Overlay> overlays, final ImagePlus imp) {
-		final ShapeRoi roi = createROI(overlays);
+		final Roi roi = createROI(overlays);
 		imp.setRoi(roi);
 	}
 
-	private ShapeRoi createROI(final List<Overlay> overlays) {
-		ShapeRoi roi = null;
-		for (final Overlay overlay : overlays) {
-			final ShapeRoi overlayROI = createROI(overlay);
-			if (roi == null) roi = overlayROI;
-			else if (overlayROI != null) roi = roi.or(overlayROI);
+	private Roi createROI(final List<Overlay> overlays) {
+		if (overlays.size() == 0) return null;
+		if (overlays.size() == 1) return createROI(overlays.get(0));
+		ShapeRoi roi = new ShapeRoi(createROI(overlays.get(0)));
+		for (int i = 1; i < overlays.size(); i++) {
+			final Roi overlayROI = createROI(overlays.get(i));
+			if (overlayROI != null) roi = roi.or(new ShapeRoi(overlayROI));
 		}
 		return roi;
 	}
 
 	// -- Helper methods - legacy ROI creation --
 
-	private ShapeRoi createROI(final Overlay overlay) {
+	private Roi createROI(final Overlay overlay) {
 		if (overlay instanceof RectangleOverlay) {
 			return createRectangleROI((RectangleOverlay) overlay);
 		}
@@ -185,18 +186,17 @@ public class OverlayTranslator {
 		return null;
 	}
 
-	private ShapeRoi createLineRoi(final LineOverlay overlay) {
+	private Roi createLineRoi(final LineOverlay overlay) {
 		final RealLocalizable pt0 = overlay.getLineStart();
 		final RealLocalizable pt1 = overlay.getLineEnd();
 		final Line line =
 			new Line(pt0.getDoublePosition(0), pt0.getDoublePosition(1), pt1
 				.getDoublePosition(0), pt1.getDoublePosition(1));
-		final ShapeRoi roi = new ShapeRoi(line);
-		assignPropertiesToRoi(roi, overlay);
-		return roi;
+		assignPropertiesToRoi(line, overlay);
+		return line;
 	}
 
-	private ShapeRoi createRectangleROI(final RectangleOverlay overlay) {
+	private Roi createRectangleROI(final RectangleOverlay overlay) {
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final int dims = region.numDimensions();
 		final double[] origin = new double[dims];
@@ -205,12 +205,12 @@ public class OverlayTranslator {
 		region.getExtent(extent);
 		final int x = (int) origin[0], y = (int) origin[1];
 		final int w = (int) extent[0], h = (int) extent[1];
-		final ShapeRoi roi = new ShapeRoi(new Roi(x, y, w, h));
+		final Roi roi = new Roi(x, y, w, h);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
 	}
 
-	private ShapeRoi createEllipseROI(final EllipseOverlay overlay) {
+	private Roi createEllipseROI(final EllipseOverlay overlay) {
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final int dims = region.numDimensions();
 		final double[] origin = new double[dims];
@@ -220,12 +220,12 @@ public class OverlayTranslator {
 		final int x = (int) (origin[0] - radii[0]);
 		final int y = (int) (origin[1] - radii[1]);
 		final int w = (int) radii[0] * 2, h = (int) radii[1] * 2;
-		final ShapeRoi roi = new ShapeRoi(new OvalRoi(x, y, w, h));
+		final Roi roi = new OvalRoi(x, y, w, h);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
 	}
 
-	private ShapeRoi createPolygonROI(final PolygonOverlay overlay) {
+	private Roi createPolygonROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int vertexCount = region.getVertexCount();
 		if (vertexCount == 1) return createPointROI(overlay);
@@ -237,23 +237,22 @@ public class OverlayTranslator {
 			x[v] = vertex.getFloatPosition(0);
 			y[v] = vertex.getFloatPosition(1);
 		}
-		final ShapeRoi roi =
-			new ShapeRoi(new PolygonRoi(x, y, vertexCount, Roi.POLYGON));
+		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
 	}
 
-	private ShapeRoi createPointROI(final PolygonOverlay overlay) {
+	private Roi createPointROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable point = region.getVertex(0);
 		final int x = (int) point.getFloatPosition(0);
 		final int y = (int) point.getFloatPosition(1);
-		final ShapeRoi roi = new ShapeRoi(new PointRoi(x, y));
+		final Roi roi = new PointRoi(x, y);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
 	}
 
-	private ShapeRoi createLineROI(final PolygonOverlay overlay) {
+	private Roi createLineROI(final PolygonOverlay overlay) {
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final RealLocalizable p1 = region.getVertex(0);
 		final RealLocalizable p2 = region.getVertex(1);
@@ -262,9 +261,8 @@ public class OverlayTranslator {
 		final double x2 = p2.getDoublePosition(0);
 		final double y2 = p2.getDoublePosition(1);
 		final Line line = new Line(x1, y1, x2, y2);
-		final ShapeRoi roi = new ShapeRoi(line);
-		assignPropertiesToRoi(roi, overlay);
-		return roi;
+		assignPropertiesToRoi(line, overlay);
+		return line;
 	}
 
 	private ShapeRoi createBinaryMaskRoi(final BinaryMaskOverlay overlay) {
@@ -309,7 +307,7 @@ public class OverlayTranslator {
 	}
 
 	private void
-		assignPropertiesToRoi(final ShapeRoi roi, final Overlay overlay)
+		assignPropertiesToRoi(final Roi roi, final Overlay overlay)
 	{
 		roi.setStrokeWidth((float) overlay.getLineWidth());
 		roi.setStrokeColor(AWTColors.getColor(overlay.getLineColor()));
