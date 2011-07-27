@@ -38,8 +38,6 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.ext.module.event.ModuleUpdatedEvent;
 import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
@@ -47,7 +45,6 @@ import imagej.ext.module.process.ModulePreprocessor;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -67,9 +64,6 @@ public class ModuleService extends AbstractService {
 
 	/** Index of registered modules. */
 	private final ModuleIndex moduleIndex = new ModuleIndex();
-
-	/** Maintains the list of event subscribers, to avoid garbage collection. */
-	private List<EventSubscriber<?>> subscribers;
 
 	// -- Constructors --
 
@@ -268,25 +262,10 @@ public class ModuleService extends AbstractService {
 
 	@Override
 	public void initialize() {
-		subscribeToEvents();
+		// no action needed
 	}
 
 	// -- Helper methods --
-
-	private void subscribeToEvents() {
-		subscribers = new ArrayList<EventSubscriber<?>>();
-
-		final EventSubscriber<ModuleUpdatedEvent> moduleUpdatedSubscriber =
-			new EventSubscriber<ModuleUpdatedEvent>() {
-
-				@Override
-				public void onEvent(final ModuleUpdatedEvent event) {
-					// CTR TODO - update ShadowMenu
-				}
-			};
-		subscribers.add(moduleUpdatedSubscriber);
-		eventService.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
-	}
 
 	/**
 	 * Converts the given list of values into an input map for use with a module
