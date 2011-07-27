@@ -293,13 +293,14 @@ public class PluginService extends AbstractService {
 	 *          warning. Passing a value of a type incompatible with the
 	 *          associated input parameter will issue an error and ignore that
 	 *          value.
+	 * @return module instance that was executed
 	 */
-	public void run(final String className, final boolean separateThread,
+	public Module run(final String className, final boolean separateThread,
 		final Object... inputValues)
 	{
 		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return;
-		run(plugin, separateThread, inputValues);
+		if (!checkPlugin(plugin, className)) return null;
+		return run(plugin, separateThread, inputValues);
 	}
 
 	/**
@@ -311,13 +312,14 @@ public class PluginService extends AbstractService {
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
+	 * @return module instance that was executed
 	 */
-	public void run(final String className, final boolean separateThread,
+	public Module run(final String className, final boolean separateThread,
 		final Map<String, Object> inputMap)
 	{
 		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return;
-		run(plugin, separateThread, inputMap);
+		if (!checkPlugin(plugin, className)) return null;
+		return run(plugin, separateThread, inputMap);
 	}
 
 	/**
@@ -332,13 +334,14 @@ public class PluginService extends AbstractService {
 	 *          warning. Passing a value of a type incompatible with the
 	 *          associated input parameter will issue an error and ignore that
 	 *          value.
+	 * @return module instance that was executed
 	 */
-	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
+	public <R extends RunnablePlugin> Module run(final Class<R> pluginClass,
 		final boolean separateThread, final Object... inputValues)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return;
-		run(plugin, separateThread, inputValues);
+		if (!checkPlugin(plugin, pluginClass.getName())) return null;
+		return run(plugin, separateThread, inputValues);
 	}
 
 	/**
@@ -351,13 +354,14 @@ public class PluginService extends AbstractService {
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
 	 *          error and ignore that value.
+	 * @return module instance that was executed
 	 */
-	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
+	public <R extends RunnablePlugin> Module run(final Class<R> pluginClass,
 		final boolean separateThread, final Map<String, Object> inputMap)
 	{
 		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return;
-		run(plugin, separateThread, inputMap);
+		if (!checkPlugin(plugin, pluginClass.getName())) return null;
+		return run(plugin, separateThread, inputMap);
 	}
 
 	/**
@@ -373,11 +377,12 @@ public class PluginService extends AbstractService {
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
+	 * @return module instance that was executed
 	 */
-	public void run(final ModuleInfo info, final boolean separateThread,
+	public Module run(final ModuleInfo info, final boolean separateThread,
 		final Object... inputValues)
 	{
-		moduleService.run(info, pre(), post(), separateThread, inputValues);
+		return moduleService.run(info, pre(), post(), separateThread, inputValues);
 	}
 
 	/**
@@ -391,11 +396,12 @@ public class PluginService extends AbstractService {
 	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
 	 *          type incompatible with the associated input parameter will issue
 	 *          an error and ignore that value.
+	 * @return module instance that was executed
 	 */
-	public void run(final ModuleInfo info, final boolean separateThread,
+	public Module run(final ModuleInfo info, final boolean separateThread,
 		final Map<String, Object> inputMap)
 	{
-		moduleService.run(info, pre(), post(), separateThread, inputMap);
+		return moduleService.run(info, pre(), post(), separateThread, inputMap);
 	}
 
 	/**
