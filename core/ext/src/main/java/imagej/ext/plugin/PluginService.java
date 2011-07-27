@@ -49,6 +49,7 @@ import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
@@ -138,6 +139,20 @@ public class PluginService extends AbstractService {
 		return pluginIndex.getAll();
 	}
 
+	/** Gets the first available plugin of the given class, or null if none. */
+	public <P extends IPlugin> PluginInfo<P>
+		getPlugin(final Class<P> pluginClass)
+	{
+		return first(getPluginsOfClass(pluginClass));
+	}
+
+	/**
+	 * Gets the first available plugin of the given class name, or null if none.
+	 */
+	public PluginInfo<IPlugin> getPlugin(final String className) {
+		return first(getPluginsOfClass(className));
+	}
+
 	/**
 	 * Gets the list of plugins of the given type (e.g., {@link ImageJPlugin}).
 	 */
@@ -182,6 +197,26 @@ public class PluginService extends AbstractService {
 	/** Gets the list of executable plugins (i.e., {@link RunnablePlugin}s). */
 	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins() {
 		return getRunnablePluginsOfType(RunnablePlugin.class);
+	}
+
+	/**
+	 * Gets the first available executable plugin of the given class, or null if
+	 * none.
+	 */
+	public <R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
+		final Class<R> pluginClass)
+	{
+		return first(getRunnablePluginsOfClass(pluginClass));
+	}
+
+	/**
+	 * Gets the first available executable plugin of the given class name, or null
+	 * if none.
+	 */
+	public PluginModuleInfo<RunnablePlugin> getRunnablePlugin(
+		final String className)
+	{
+		return first(getRunnablePluginsOfClass(className));
 	}
 
 	/** Gets the list of executable plugins of the given type. */
@@ -247,18 +282,82 @@ public class PluginService extends AbstractService {
 		return list;
 	}
 
-	/** Executes the first runnable plugin of the given class. */
-	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
-		final boolean separateThread)
+	/**
+	 * Executes the first runnable plugin of the given class name.
+	 * 
+	 * @param className Class name of the plugin to execute.
+	 * @param separateThread Whether to execute the plugin in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the plugin. Passing a number of values that differs
+	 *          from the number of input parameters is allowed, but will issue a
+	 *          warning. Passing a value of a type incompatible with the
+	 *          associated input parameter will issue an error and ignore that
+	 *          value.
+	 */
+	public void run(final String className, final boolean separateThread,
+		final Object... inputValues)
 	{
-		final List<PluginModuleInfo<R>> plugins =
-			getRunnablePluginsOfClass(pluginClass);
-		if (plugins == null || plugins.size() == 0) {
-			// no matching plugins
-			Log.error("No such plugin: " + pluginClass.getName());
-			return;
-		}
-		run(plugins.get(0), separateThread);
+		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
+		if (!checkPlugin(plugin, className)) return;
+		run(plugin, separateThread, inputValues);
+	}
+
+	/**
+	 * Executes the first runnable plugin of the given class name.
+	 * 
+	 * @param className Class name of the plugin to execute.
+	 * @param separateThread Whether to execute the plugin in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 */
+	public void run(final String className, final boolean separateThread,
+		final Map<String, Object> inputMap)
+	{
+		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
+		if (!checkPlugin(plugin, className)) return;
+		run(plugin, separateThread, inputMap);
+	}
+
+	/**
+	 * Executes the first runnable plugin of the given class.
+	 * 
+	 * @param <R> Class of the plugin to execute.
+	 * @param pluginClass Class object of the plugin to execute.
+	 * @param separateThread Whether to execute the plugin in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the plugin. Passing a number of values that differs
+	 *          from the number of input parameters is allowed, but will issue a
+	 *          warning. Passing a value of a type incompatible with the
+	 *          associated input parameter will issue an error and ignore that
+	 *          value.
+	 */
+	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
+		final boolean separateThread, final Object... inputValues)
+	{
+		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
+		if (!checkPlugin(plugin, pluginClass.getName())) return;
+		run(plugin, separateThread, inputValues);
+	}
+
+	/**
+	 * Executes the first runnable plugin of the given class.
+	 * 
+	 * @param <R> Class of the plugin to execute.
+	 * @param pluginClass Class object of the plugin to execute.
+	 * @param separateThread Whether to execute the plugin in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 */
+	public <R extends RunnablePlugin> void run(final Class<R> pluginClass,
+		final boolean separateThread, final Map<String, Object> inputMap)
+	{
+		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
+		if (!checkPlugin(plugin, pluginClass.getName())) return;
+		run(plugin, separateThread, inputMap);
 	}
 
 	/**
@@ -268,13 +367,35 @@ public class PluginService extends AbstractService {
 	 * 
 	 * @param info The module to instantiate and run.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the {@link ModuleInfo}. Passing a number of values
+	 *          that differs from the number of input parameters is allowed, but
+	 *          will issue a warning. Passing a value of a type incompatible with
+	 *          the associated input parameter will issue an error and ignore that
+	 *          value.
 	 */
-	public void run(final ModuleInfo info, final boolean separateThread) {
-		final List<PreprocessorPlugin> pre =
-			createInstances(PreprocessorPlugin.class);
-		final List<PostprocessorPlugin> post =
-			createInstances(PostprocessorPlugin.class);
-		moduleService.run(info, pre, post, separateThread);
+	public void run(final ModuleInfo info, final boolean separateThread,
+		final Object... inputValues)
+	{
+		moduleService.run(info, pre(), post(), separateThread, inputValues);
+	}
+
+	/**
+	 * Executes the given module, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param info The module to instantiate and run.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
+	 *          type incompatible with the associated input parameter will issue
+	 *          an error and ignore that value.
+	 */
+	public void run(final ModuleInfo info, final boolean separateThread,
+		final Map<String, Object> inputMap)
+	{
+		moduleService.run(info, pre(), post(), separateThread, inputMap);
 	}
 
 	/**
@@ -284,13 +405,35 @@ public class PluginService extends AbstractService {
 	 * 
 	 * @param module The module to run.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the module's {@link ModuleInfo}. Passing a number of
+	 *          values that differs from the number of input parameters is
+	 *          allowed, but will issue a warning. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
 	 */
-	public void run(final Module module, final boolean separateThread) {
-		final List<PreprocessorPlugin> pre =
-			createInstances(PreprocessorPlugin.class);
-		final List<PostprocessorPlugin> post =
-			createInstances(PostprocessorPlugin.class);
-		moduleService.run(module, pre, post, separateThread);
+	public void run(final Module module, final boolean separateThread,
+		final Object... inputValues)
+	{
+		moduleService.run(module, pre(), post(), separateThread, inputValues);
+	}
+
+	/**
+	 * Executes the given module, with pre- and postprocessing steps from all
+	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
+	 * the plugin index.
+	 * 
+	 * @param module The module to run.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
+	 *          value of a type incompatible with the associated input parameter
+	 *          will issue an error and ignore that value.
+	 */
+	public void run(final Module module, final boolean separateThread,
+		final Map<String, Object> inputMap)
+	{
+		moduleService.run(module, pre(), post(), separateThread, inputMap);
 	}
 
 	// -- IService methods --
@@ -313,6 +456,31 @@ public class PluginService extends AbstractService {
 				destList.add(match);
 			}
 		}
+	}
+
+	/** Gets the first element of the given list, or null if none. */
+	private <T> T first(final List<T> list) {
+		if (list == null || list.size() == 0) return null;
+		return list.get(0);
+
+	}
+
+	private List<PreprocessorPlugin> pre() {
+		return createInstances(PreprocessorPlugin.class);
+	}
+
+	private List<PostprocessorPlugin> post() {
+		return createInstances(PostprocessorPlugin.class);
+	}
+
+	private boolean checkPlugin(final PluginModuleInfo<?> plugin,
+		final String name)
+	{
+		if (plugin == null) {
+			Log.error("No such plugin: " + name);
+			return false;
+		}
+		return true;
 	}
 
 }

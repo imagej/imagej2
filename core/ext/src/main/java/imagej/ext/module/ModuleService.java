@@ -44,11 +44,14 @@ import imagej.ext.module.event.ModulesAddedEvent;
 import imagej.ext.module.event.ModulesRemovedEvent;
 import imagej.ext.module.process.ModulePostprocessor;
 import imagej.ext.module.process.ModulePreprocessor;
+import imagej.util.ClassUtils;
 import imagej.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service for keeping track of and executing available modules.
@@ -122,9 +125,17 @@ public class ModuleService extends AbstractService {
 	 * 
 	 * @param info The module to instantiate and run.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the {@link ModuleInfo}. Passing a number of values
+	 *          that differs from the number of input parameters is allowed, but
+	 *          will issue a warning. Passing a value of a type incompatible with
+	 *          the associated input parameter will issue an error and ignore that
+	 *          value.
 	 */
-	public void run(final ModuleInfo info, final boolean separateThread) {
-		run(info, null, null, separateThread);
+	public void run(final ModuleInfo info, final boolean separateThread,
+		final Object... inputValues)
+	{
+		run(info, null, null, separateThread, inputValues);
 	}
 
 	/**
@@ -134,14 +145,40 @@ public class ModuleService extends AbstractService {
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the {@link ModuleInfo}. Passing a number of values
+	 *          that differs from the number of input parameters is allowed, but
+	 *          will issue a warning. Passing a value of a type incompatible with
+	 *          the associated input parameter will issue an error and ignore that
+	 *          value.
 	 */
 	public void run(final ModuleInfo info,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread)
+		final boolean separateThread, final Object... inputValues)
+	{
+		run(info, pre, post, separateThread, createMap(info, inputValues));
+	}
+
+	/**
+	 * Executes the given module.
+	 * 
+	 * @param info The module to instantiate and run.
+	 * @param pre List of preprocessing steps to perform.
+	 * @param post List of postprocessing steps to perform.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
+	 *          type incompatible with the associated input parameter will issue
+	 *          an error and ignore that value.
+	 */
+	public void run(final ModuleInfo info,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post,
+		final boolean separateThread, final Map<String, Object> inputMap)
 	{
 		try {
-			run(info.createModule(), pre, post, separateThread);
+			run(info.createModule(), pre, post, separateThread, inputMap);
 		}
 		catch (final ModuleException e) {
 			Log.error("Could not execute module: " + info, e);
@@ -153,9 +190,17 @@ public class ModuleService extends AbstractService {
 	 * 
 	 * @param module The module to run.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the module's {@link ModuleInfo}. Passing a number of
+	 *          values that differs from the number of input parameters is
+	 *          allowed, but will issue a warning. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
 	 */
-	public void run(final Module module, final boolean separateThread) {
-		run(module, null, null, separateThread);
+	public void run(final Module module, final boolean separateThread,
+		final Object... inputValues)
+	{
+		run(module, null, null, separateThread, inputValues);
 	}
 
 	/**
@@ -165,12 +210,41 @@ public class ModuleService extends AbstractService {
 	 * @param pre List of preprocessing steps to perform.
 	 * @param post List of postprocessing steps to perform.
 	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputValues List of input parameter values, in the same order
+	 *          declared by the module's {@link ModuleInfo}. Passing a number of
+	 *          values that differs from the number of input parameters is
+	 *          allowed, but will issue a warning. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
 	 */
 	public void run(final Module module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
-		final boolean separateThread)
+		final boolean separateThread, final Object... inputValues)
 	{
+		run(module, pre, post, separateThread, createMap(module.getInfo(),
+			inputValues));
+	}
+
+	/**
+	 * Executes the given module.
+	 * 
+	 * @param module The module to run.
+	 * @param pre List of preprocessing steps to perform.
+	 * @param post List of postprocessing steps to perform.
+	 * @param separateThread Whether to execute the module in a new thread.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
+	 *          value of a type incompatible with the associated input parameter
+	 *          will issue an error and ignore that value.
+	 */
+	public void run(final Module module,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post,
+		final boolean separateThread, final Map<String, Object> inputMap)
+	{
+		assignInputs(module, inputMap);
+
 		// TODO - Implement a better threading mechanism for launching modules.
 		// Perhaps a ThreadService so that the UI can query currently
 		// running modules and so forth?
@@ -184,6 +258,7 @@ public class ModuleService extends AbstractService {
 				public void run() {
 					new ModuleRunner(module, pre, post).run();
 				}
+
 			}, threadName).start();
 		}
 		else module.run();
@@ -211,6 +286,56 @@ public class ModuleService extends AbstractService {
 			};
 		subscribers.add(moduleUpdatedSubscriber);
 		eventService.subscribe(ModuleUpdatedEvent.class, moduleUpdatedSubscriber);
+	}
+
+	/**
+	 * Converts the given list of values into an input map for use with a module
+	 * of the specified {@link ModuleInfo}.
+	 */
+	private Map<String, Object> createMap(final ModuleInfo info,
+		final Object[] values)
+	{
+		if (values == null) return null;
+
+		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		int i = -1;
+		for (final ModuleItem<?> input : info.inputs()) {
+			i++;
+			if (i >= values.length) continue; // no more values
+			final String name = input.getName();
+			final Object value = values[i];
+			inputMap.put(name, value);
+		}
+		if (i != values.length) {
+			Log.warn("Argument mismatch: " + values.length + " of " + i +
+				" inputs provided.");
+		}
+		return inputMap;
+	}
+
+	/** Sets the given module's input values to those in the given map. */
+	private void assignInputs(final Module module,
+		final Map<String, Object> inputMap)
+	{
+		if (inputMap == null) return; // no inputs to assign
+
+		for (final String name : inputMap.keySet()) {
+			final ModuleItem<?> input = module.getInfo().getInput(name);
+			if (input == null) {
+				Log.error("No such input: " + name);
+				continue;
+			}
+			final Object value = inputMap.get(name);
+			final Class<?> type = input.getType();
+			final Object converted = ClassUtils.convert(value, type);
+			if (value != null && converted == null) {
+				Log.error("For input " + name + ": incompatible object " +
+					value.getClass().getName() + " for type " + type.getName());
+				continue;
+			}
+			module.setInput(name, converted);
+			module.setResolved(name, true);
+		}
 	}
 
 }
