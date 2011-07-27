@@ -55,6 +55,8 @@ public class QuitProgram implements ImageJPlugin {
 	public void run() {
 		// TODO - save existing data
 		// TODO - close windows
+		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
+		// using System.exit(0), which kills the entire JVM.
 		System.exit(0);
 	}
 
