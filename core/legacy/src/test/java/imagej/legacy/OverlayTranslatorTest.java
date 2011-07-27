@@ -268,8 +268,8 @@ public class OverlayTranslatorTest {
 		l.add(makePolygonOverlay(new double[] { 0, 5, 5, 0, 0}, new double[] { 0, 0, 5, 5, 0}));
 		ot.setOverlays(l, imagePlus);
 		Roi roi = imagePlus.getRoi();
-		assertEquals(roi.getType(), Roi.COMPOSITE);
-		assertTrue(roi instanceof ShapeRoi);
+		assertEquals(roi.getType(), Roi.POLYGON);
+		assertTrue(roi instanceof PolygonRoi);
 	}
 	// TODO: authors should probably test the individual overlay and ROI translators that they wrote
 	@Test
@@ -324,18 +324,14 @@ public class OverlayTranslatorTest {
 			ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 			overlays.add(overlay);
 			ot.setOverlays(overlays, imagePlus);
-			assertTrue(imagePlus.getRoi() instanceof ShapeRoi);
-			ShapeRoi sroi = (ShapeRoi)imagePlus.getRoi();
-			Roi [] rois = sroi.getRois();
-			assertEquals(rois.length, 1);
-			assertTrue(rois[0] instanceof PolygonRoi);
-			PolygonRoi roi = (PolygonRoi)(rois[0]);
+			assertTrue(imagePlus.getRoi() instanceof PolygonRoi);
+			PolygonRoi roi = (PolygonRoi)(imagePlus.getRoi());
 			int [] x = roi.getXCoordinates();
 			assertEquals(x.length, testCase[0].length);
 			int [] y = roi.getYCoordinates();
 			assertEquals(y.length, testCase[1].length);
-			int x0 = roi.getBounds().x + sroi.getBounds().x;
-			int y0 = roi.getBounds().y + sroi.getBounds().y;
+			int x0 = roi.getBounds().x;
+			int y0 = roi.getBounds().y;
 			for (int i=0; i < testCase[0].length; i++) {
 				boolean found = false;
 				for (int j=0; j<testCase[0].length; j++) {
