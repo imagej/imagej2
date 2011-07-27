@@ -280,7 +280,7 @@ public class ModuleService extends AbstractService {
 	private Map<String, Object> createMap(final ModuleInfo info,
 		final Object[] values)
 	{
-		if (values == null) return null;
+		if (values == null || values.length == 0) return null;
 
 		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
 		int i = -1;
