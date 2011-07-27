@@ -291,9 +291,10 @@ public class ModuleService extends AbstractService {
 			final Object value = values[i];
 			inputMap.put(name, value);
 		}
+		i++;
 		if (i != values.length) {
 			Log.warn("Argument mismatch: " + values.length + " of " + i +
-				" inputs provided.");
+				" inputs provided:");
 		}
 		return inputMap;
 	}
