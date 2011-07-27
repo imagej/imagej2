@@ -125,11 +125,12 @@ public class ModuleService extends AbstractService {
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
+	 * @return module instance that was executed
 	 */
-	public void run(final ModuleInfo info, final boolean separateThread,
+	public Module run(final ModuleInfo info, final boolean separateThread,
 		final Object... inputValues)
 	{
-		run(info, null, null, separateThread, inputValues);
+		return run(info, null, null, separateThread, inputValues);
 	}
 
 	/**
@@ -145,13 +146,14 @@ public class ModuleService extends AbstractService {
 	 *          will issue a warning. Passing a value of a type incompatible with
 	 *          the associated input parameter will issue an error and ignore that
 	 *          value.
+	 * @return module instance that was executed
 	 */
-	public void run(final ModuleInfo info,
+	public Module run(final ModuleInfo info,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
 		final boolean separateThread, final Object... inputValues)
 	{
-		run(info, pre, post, separateThread, createMap(info, inputValues));
+		return run(info, pre, post, separateThread, createMap(info, inputValues));
 	}
 
 	/**
@@ -165,18 +167,22 @@ public class ModuleService extends AbstractService {
 	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
 	 *          type incompatible with the associated input parameter will issue
 	 *          an error and ignore that value.
+	 * @return module instance that was executed
 	 */
-	public void run(final ModuleInfo info,
+	public Module run(final ModuleInfo info,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post,
 		final boolean separateThread, final Map<String, Object> inputMap)
 	{
 		try {
-			run(info.createModule(), pre, post, separateThread, inputMap);
+			final Module module = info.createModule();
+			run(module, pre, post, separateThread, inputMap);
+			return module;
 		}
 		catch (final ModuleException e) {
 			Log.error("Could not execute module: " + info, e);
 		}
+		return null;
 	}
 
 	/**
