@@ -501,6 +501,7 @@ public class OverlayTranslator {
 		}
 		if (fillColor != null) {
 			overlay.setFillColor(AWTColors.getColorRGBA(fillColor));
+			overlay.setAlpha(fillColor.getAlpha());
 		}
 	}
 
