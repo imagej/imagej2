@@ -59,6 +59,9 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
 
+	@Parameter(label = "Boolean")
+	private Boolean oBoolean;
+
 	@Parameter(label = "byte")
 	private byte pByte;
 
@@ -77,11 +80,32 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "short")
 	private short pShort;
 
-//	@Parameter
+	@Parameter(label = "Byte")
+	private Byte oByte;
+
+	@Parameter(label = "Double")
+	private Double oDouble;
+
+	@Parameter(label = "Float")
+	private Float oFloat;
+
+	@Parameter(label = "Integer")
+	private Integer oInt;
+
+	@Parameter(label = "Long")
+	private Long oLong;
+
+	@Parameter(label = "Short")
+	private Short oShort;
+
+//@Parameter
 	private BigInteger bigInteger;
 
 	@Parameter(label = "char")
 	private char pChar;
+
+	@Parameter(label = "Character")
+	private Character oChar;
 
 	@Parameter(label = "String")
 	private String string;
@@ -123,103 +147,57 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
 
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra1;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra2;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra3;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra4;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra5;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra6;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra7;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra8;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra9;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra10;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra11;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra12;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra13;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra14;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra15;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra16;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra17;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra18;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra19;
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private int extra20;
-
 	@Override
 	public void run() {
 		Log.info("ParameterTester results:");
+
+		Log.info("");
+		Log.info("-- Toggles --");
 		Log.info("\tboolean = " + pBoolean);
+		Log.info("\tBoolean = " + oBoolean);
+
+		Log.info("");
+		Log.info("-- Numeric --");
 		Log.info("\tbyte = " + pByte);
 		Log.info("\tdouble = " + pDouble);
 		Log.info("\tfloat = " + pFloat);
 		Log.info("\tint = " + pInt);
 		Log.info("\tlong = " + pLong);
 		Log.info("\tshort = " + pShort);
+		Log.info("\tByte = " + oByte);
+		Log.info("\tDouble = " + oDouble);
+		Log.info("\tFloat = " + oFloat);
+		Log.info("\tInteger = " + oInt);
+		Log.info("\tLong = " + oLong);
+		Log.info("\tShort = " + oShort);
 		Log.info("\tBigInteger = " + bigInteger);
-		Log.info("\tchar = " + "'" + pChar + "' [" + (int) pChar + "]");
+
+		Log.info("");
+		Log.info("-- Text --");
+		Log.info("\tchar = " + "'" + pChar + "' [" +
+			Character.getNumericValue(pChar) + "]");
+		Log.info("\tChararacter = " + "'" + oChar + "' [" +
+			Character.getNumericValue(oChar) + "]");
 		Log.info("\tString = " + string);
+
+		Log.info("");
+		Log.info("-- Choice --");
 		Log.info("\tmultiple choice = " + choice);
+
+		Log.info("");
+		Log.info("-- Object --");
 		Log.info("\tDataset = " + dataset);
+
+		Log.info("");
+		Log.info("-- File --");
 		Log.info("\tFile = " + file);
+
+		Log.info("");
+		Log.info("-- Color --");
 		Log.info("\tcolor = " + color);
+
+		Log.info("");
+		Log.info("-- Miscellaneous --");
 		Log.info("\tspinner = " + spinnerNumber);
 		Log.info("\tslider = " + sliderNumber);
 		Log.info("\tscroll bar = " + scrollBarNumber);
