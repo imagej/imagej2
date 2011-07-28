@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.Max;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Max...", weight = 9) })
-public class ClampMaxDataValues extends AbstractPreviewablePlugin {
+public class ClampMaxDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

@@ -15,7 +15,7 @@ import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.type.numeric.RealType;
 
 
-public abstract class AbstractPreviewablePlugin implements ImageJPlugin, PreviewPlugin {
+public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

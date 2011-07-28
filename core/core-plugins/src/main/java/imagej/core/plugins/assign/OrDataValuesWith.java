@@ -55,7 +55,7 @@ import net.imglib2.ops.operator.unary.OrConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "OR...", weight = 6) })
-public class OrDataValuesWith extends AbstractPreviewablePlugin {
+public class OrDataValuesWith extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

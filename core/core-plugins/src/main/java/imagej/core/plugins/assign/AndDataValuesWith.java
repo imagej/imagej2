@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.AndConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "AND...", weight = 5) })
-public class AndDataValuesWith extends AbstractPreviewablePlugin {
+public class AndDataValuesWith extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 	
