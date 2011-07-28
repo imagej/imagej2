@@ -61,25 +61,15 @@ public class InplaceUnaryTransform {
 		dataset = input;
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		operation = new TransformOperation(imgPlus, operator);
-		IntRect selection = dataset.getSelection();
-		long[] dimensions = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(dimensions);
-		setRegion(dimensions, selection);
+		long[] origin = new long[imgPlus.numDimensions()];
+		long[] span = new long[imgPlus.numDimensions()];
+		imgPlus.dimensions(span);
+		operation.setRegion(origin, span);
 	}
 	
 	// -- public interface --
 	
-	public void setRegion(long[] fullDimensions, IntRect selection)
-	{
-		if (selection == null) return;
-		long[] origin = new long[fullDimensions.length];
-		origin[0] = selection.x;
-		origin[1] = selection.y;
-		long[] span = fullDimensions.clone();
-		if (selection.width > 0)
-			span[0] = selection.width;
-		if (selection.height > 0)
-			span[1] = selection.height;
+	public void setRegion(long[] origin, long[] span) {
 		operation.setRegion(origin, span);
 	}
 	
