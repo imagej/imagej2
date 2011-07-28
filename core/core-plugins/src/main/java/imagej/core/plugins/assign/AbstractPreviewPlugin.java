@@ -7,7 +7,6 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.PreviewPlugin;
-import imagej.util.IntRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Axes;
 import net.imglib2.ops.operation.RegionIterator;
@@ -23,8 +22,10 @@ public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlug
 	
 	private double[] dataBackup;
 
-	private long[] planeSpan;
+	private long[] planeOrigin;
 	
+	private long[] planeSpan;
+
 	private RegionIterator iter;
 	
 	@Override
@@ -74,7 +75,8 @@ public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlug
 		int xIndex = dataset.getAxisIndex(Axes.X);
 		int yIndex = dataset.getAxisIndex(Axes.Y);
 		if ((xIndex != 0) || (yIndex != 1))
-			throw new IllegalArgumentException("display is not ordered with X axis 1st and Y axis 2nd.");
+			throw new IllegalArgumentException(
+				"display is not ordered with X axis 1st and Y axis 2nd.");
 		long[] dims = dataset.getDims();
 		long w = dims[0];
 		long h = dims[1];
@@ -83,7 +85,7 @@ public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlug
 		
 		// calc origin
 		Position planePos = getDisplay().getActiveView().getPlanePosition();
-		long[] planeOrigin = new long[dims.length];
+		planeOrigin = new long[dims.length];
 		planeOrigin[0] = 0;
 		planeOrigin[1] = 0;
 		for (int i = 2; i < planeOrigin.length; i++)
@@ -97,7 +99,8 @@ public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlug
 			planeSpan[i] = 1;
 		
 		// setup region iterator
-		RandomAccess<? extends RealType<?>> accessor = dataset.getImgPlus().randomAccess();
+		RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
 		iter = new RegionIterator(accessor, planeOrigin, planeSpan);
 
 		// copy data to a double[]
@@ -121,18 +124,20 @@ public abstract class AbstractPreviewPlugin implements ImageJPlugin, PreviewPlug
 		dataset.update();
 	}
 	
+	// TODO - transforms all data. Should only transform current selection planes
+
 	private void transformDataset() {
 		UnaryOperator op = getOperator();
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(dataset, op);
 		transform.run();
 	}
 
-	// TODO - transforms whole plane. Only transform the current selection?
+	// TODO - transforms full plane. Make it only transform current selection.
 	
 	private void transformViewedPlane() {
 		UnaryOperator op = getOperator();
 		InplaceUnaryTransform transform = new InplaceUnaryTransform(dataset, op);
-		transform.setRegion(planeSpan, new IntRect(0,0,(int)planeSpan[0],(int)planeSpan[1]));
+		transform.setRegion(planeOrigin, planeSpan);
 		transform.run();
 	}
 
