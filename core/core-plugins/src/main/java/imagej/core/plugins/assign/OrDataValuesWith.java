@@ -35,12 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.core.plugins.assign;
 
 import imagej.data.Dataset;
+import imagej.display.Display;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.ops.operator.UnaryOperator;
+import net.imglib2.ops.operator.unary.Constant;
 import net.imglib2.ops.operator.unary.OrConstant;
 
 /**
@@ -53,12 +55,12 @@ import net.imglib2.ops.operator.unary.OrConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "OR...", weight = 6) })
-public class OrDataValuesWith implements ImageJPlugin, PreviewPlugin {
+public class OrDataValuesWith extends AbstractPreviewablePlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	Dataset input;
+	Display display;
 
 	@Parameter(label = "Value (binary)")
 	private long constant;
@@ -66,42 +68,20 @@ public class OrDataValuesWith implements ImageJPlugin, PreviewPlugin {
 	@Parameter(label = "Preview")
 	private boolean preview;
 
-	private Dataset dataBackup = null;
-	
 	// -- public interface --
 
 	@Override
-	public void run() {
-		if (dataBackup != null)
-			restoreOriginalData();
-		UnaryOperator op = new OrConstant(constant);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
-		transform.run();
+	public UnaryOperator getOperator() {
+		return new OrConstant(constant);
 	}
 
 	@Override
-	public void preview() {
-		if (dataBackup == null)
-			saveOriginalData();
-		if (!preview) {
-			restoreOriginalData();
-			return;
-		}
-		run();
+	public Display getDisplay() {
+		return display;
 	}
 
 	@Override
-	public void cancel() {
-		// TODO
-	}
-
-	// -- private helpers --
-	
-	private void saveOriginalData() {
-		dataBackup = input.duplicate();
-	}
-	
-	private void restoreOriginalData() {
-		input.copyDataFrom(dataBackup);
+	public boolean previewOn() {
+		return preview;
 	}
 }

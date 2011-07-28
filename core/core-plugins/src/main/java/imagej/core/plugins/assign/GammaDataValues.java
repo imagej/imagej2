@@ -34,12 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.Gamma;
 
@@ -54,56 +52,33 @@ import net.imglib2.ops.operator.unary.Gamma;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Gamma...", weight = 10) })
-public class GammaDataValues implements ImageJPlugin, PreviewPlugin {
+public class GammaDataValues extends AbstractPreviewablePlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	Display display;
 
 	@Parameter(label = "Value", min="0.05", max = "5.00", stepSize = "0.05")
-	private double constant;
+	private long constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
 
-	private Dataset dataBackup = null;
-	
 	// -- public interface --
 
-	/** runs the plugin changing the data values of the output image */
 	@Override
-	public void run() {
-		if (dataBackup != null)
-			restoreOriginalData();
-		UnaryOperator op = new Gamma(constant);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
-		transform.run();
+	public UnaryOperator getOperator() {
+		return new Gamma(constant);
 	}
 
 	@Override
-	public void preview() {
-		if (dataBackup == null)
-			saveOriginalData();
-		if (!preview) {
-			restoreOriginalData();
-			return;
-		}
-		run();
+	public Display getDisplay() {
+		return display;
 	}
 
 	@Override
-	public void cancel() {
-		// TODO
-	}
-
-	// -- private helpers --
-	
-	private void saveOriginalData() {
-		dataBackup = input.duplicate();
-	}
-	
-	private void restoreOriginalData() {
-		input.copyDataFrom(dataBackup);
+	public boolean previewOn() {
+		return preview;
 	}
 }
