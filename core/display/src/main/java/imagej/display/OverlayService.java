@@ -38,11 +38,16 @@ import imagej.AbstractService;
 import imagej.ImageJ;
 import imagej.Service;
 import imagej.data.DataObject;
+import imagej.data.Dataset;
+import imagej.data.Extents;
 import imagej.data.roi.Overlay;
 import imagej.object.ObjectService;
+import imagej.util.RealRect;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.imglib2.roi.RegionOfInterest;
 
 /**
  * Service for working with {@link Overlay}s.
@@ -116,6 +121,61 @@ public final class OverlayService extends AbstractService {
 		for (final DisplayView view : overlayViews) {
 			display.removeView(view);
 		}
+	}
+
+	/**
+	 * Gets the bounding box for the selected overlays in the given
+	 * {@link Display}.
+	 * 
+	 * @param display the {@link Display} from which the bounding box should be
+	 *          computed
+	 * @return the smallest bounding box encompassing all selected overlays
+	 */
+	public RealRect getSelectionBounds(final Display display) {
+		// get total XY extents of the display by checking all datasets
+		double width = 0, height = 0;
+		for (final DisplayView view : display.getViews()) {
+			final DataObject dataObject = view.getDataObject();
+			if (!(dataObject instanceof Dataset)) continue;
+			final Dataset dataset = (Dataset) dataObject;
+			final Extents extents = dataset.getExtents();
+			final double w = extents.dimension(0);
+			final double h = extents.dimension(1);
+			if (w > width) width = w;
+			if (h > height) height = h;
+		}
+
+		// TODO - Compute bounds over N dimensions, not just two.
+		// TODO - Update this method when ticket #660 is done.
+		// For example, why don't all DataObjects have Extents?
+
+		// determine XY bounding box by checking all overlays
+		double xMin = Double.POSITIVE_INFINITY;
+		double xMax = Double.NEGATIVE_INFINITY;
+		double yMin = Double.POSITIVE_INFINITY;
+		double yMax = Double.NEGATIVE_INFINITY;
+		for (final DisplayView view : display.getViews()) {
+			if (!view.isSelected()) continue; // ignore non-selected objects
+			final DataObject dataObject = view.getDataObject();
+			if (!(dataObject instanceof Overlay)) continue; // ignore non-overlays
+
+			final Overlay overlay = (Overlay) dataObject;
+			final RegionOfInterest roi = overlay.getRegionOfInterest();
+			final double min0 = roi.realMin(0);
+			final double max0 = roi.realMax(0);
+			final double min1 = roi.realMin(1);
+			final double max1 = roi.realMax(1);
+			if (min0 < xMin) xMin = min0;
+			if (max0 > xMax) xMax = max0;
+			if (min1 < yMin) yMin = min1;
+			if (max1 < yMax) yMax = max1;
+		}
+		if (xMin > xMax || yMin > yMax) return null;
+		if (xMin < 0) xMin = 0;
+		if (yMin < 0) yMin = 0;
+		if (xMax > width) xMax = width;
+		if (yMax > height) yMax = height;
+		return new RealRect(xMin, yMin, xMax - xMin, yMax - yMin);
 	}
 
 	// -- IService methods --
