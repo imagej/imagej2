@@ -198,8 +198,7 @@ public class LegacyPlugin implements ImageJPlugin {
 			else { // image plus is not totally empty
 				display = map.lookupDisplay(imp);
 				if (display == null) {
-					if (imp.getWindow() != null)
-						display = map.registerLegacyImage(imp);
+					display = map.registerLegacyImage(imp);
 				} else {
 					if (imp == currImp) {
 						// we harmonized this earlier
