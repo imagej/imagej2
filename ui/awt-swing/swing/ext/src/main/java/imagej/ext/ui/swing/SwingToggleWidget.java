@@ -81,7 +81,9 @@ public class SwingToggleWidget extends SwingInputWidget
 
 	@Override
 	public void refreshWidget() {
-		checkBox.setSelected((Boolean) getModel().getValue());
+		boolean value = (Boolean)  getModel().getValue();
+		if (value != checkBox.isSelected())
+			checkBox.setSelected(value);
 	}
 
 }
