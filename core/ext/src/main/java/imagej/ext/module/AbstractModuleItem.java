@@ -37,6 +37,7 @@ package imagej.ext.module;
 import imagej.ext.module.ui.WidgetStyle;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
+import imagej.util.StringMaker;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -54,6 +55,27 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	public AbstractModuleItem(final ModuleInfo info) {
 		this.info = info;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final StringMaker sm = new StringMaker();
+		sm.append("label", getLabel());
+		sm.append("description", getDescription());
+		sm.append("visibility", getVisibility(), ItemVisibility.NORMAL);
+		sm.append("required", isRequired());
+		sm.append("persisted", isPersisted());
+		sm.append("persistKey", getPersistKey());
+		sm.append("callback", getCallback());
+		sm.append("widgetStyle", getWidgetStyle(), WidgetStyle.DEFAULT);
+		sm.append("min", getMinimumValue());
+		sm.append("max", getMaximumValue());
+		sm.append("stepSize", getStepSize(), ClassUtils.toNumber("1", getType()));
+		sm.append("columnCount", getColumnCount(), 6);
+		sm.append("choices", getChoices());
+		return getName() + ": " + sm.toString();
 	}
 
 	// -- ModuleItem methods --

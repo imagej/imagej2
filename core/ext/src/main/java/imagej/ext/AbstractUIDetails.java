@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
+import imagej.util.StringMaker;
+
 /**
  * Abstract superclass of {@link UIDetails} implementations.
  * 
@@ -75,34 +77,19 @@ public abstract class AbstractUIDetails implements UIDetails {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		if (name != null && !name.isEmpty()) {
-			appendParam(sb, "name", name);
-		}
-		if (label != null && !label.isEmpty()) {
-			appendParam(sb, "label", label);
-		}
-		if (description != null && !description.isEmpty()) {
-			appendParam(sb, "description", description);
-		}
-		if (menuPath != null && !menuPath.isEmpty()) {
-			appendParam(sb, "menu", menuPath.getMenuString());
-		}
-		if (iconPath != null && !iconPath.isEmpty()) {
-			appendParam(sb, "iconPath", iconPath);
-		}
-		if (priority < Integer.MAX_VALUE) {
-			appendParam(sb, "priority", priority);
-		}
-		appendParam(sb, "selectable", selectable);
+		final StringMaker sm = new StringMaker();
+		sm.append("name", name);
+		sm.append("label", label);
+		sm.append("description", description);
+		sm.append("menu", menuPath.getMenuString());
+		sm.append("iconPath", iconPath);
+		sm.append("priority", priority, Integer.MAX_VALUE);
 		if (selectable) {
-			if (selectionGroup != null && !selectionGroup.isEmpty()) {
-				appendParam(sb, "selectionGroup", selectionGroup);
-			}
-			appendParam(sb, "selected", selected);
+			sm.append("selectionGroup", selectionGroup);
+			sm.append("selected", selected);
 		}
-		appendParam(sb, "enabled", enabled);
-		return sb.toString();
+		sm.append("enabled", enabled);
+		return sm.toString();
 	}
 
 	// -- Comparable methods --
@@ -238,24 +225,6 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public void setDescription(final String description) {
 		this.description = description;
-	}
-
-	// -- Internal methods --
-
-	protected void appendParam(final StringBuilder sb, final String key,
-		final Object value)
-	{
-		final int len = sb.length();
-		if (len == 0 || sb.charAt(len - 1) != ']') {
-			// first parameter; add bracket prefix
-			sb.append(" [");
-		}
-		else {
-			// remove previous closing bracket
-			sb.setLength(len - 1);
-			sb.append("; ");
-		}
-		sb.append(key + " = " + value + "]");
 	}
 
 }

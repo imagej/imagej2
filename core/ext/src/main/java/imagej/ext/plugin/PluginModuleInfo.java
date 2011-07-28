@@ -43,6 +43,7 @@ import imagej.ext.module.ModuleInfo;
 import imagej.ext.module.ModuleItem;
 import imagej.ext.module.event.ModuleUpdatedEvent;
 import imagej.util.Log;
+import imagej.util.StringMaker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -149,12 +150,12 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder(super.toString());
+		final StringMaker sm = new StringMaker(super.toString());
 		for (final String key : presets.keySet()) {
 			final Object value = presets.get(key);
-			appendParam(sb, key, "'" + value + "'");
+			sm.append(key, value);
 		}
-		return sb.toString();
+		return sm.toString();
 	}
 
 	// -- ModuleInfo methods --
