@@ -185,17 +185,18 @@ public abstract class AbstractInputHarvester implements InputHarvester {
 	{
 		final ModuleItem<?> item = model.getItem();
 		final Class<?> type = item.getType();
+		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
 
 		final Object itemMin = item.getMinimumValue();
-		Number min = ClassUtils.toNumber(itemMin, type);
+		Number min = ClassUtils.toNumber(itemMin, saneType);
 		if (min == null) min = ClassUtils.getMinimumNumber(type);
 
 		final Object itemMax = item.getMaximumValue();
-		Number max = ClassUtils.toNumber(itemMax, type);
+		Number max = ClassUtils.toNumber(itemMax, saneType);
 		if (max == null) max = ClassUtils.getMaximumNumber(type);
 
 		final Object itemStep = item.getStepSize();
-		Number stepSize = ClassUtils.toNumber(itemStep, type);
+		Number stepSize = ClassUtils.toNumber(itemStep, saneType);
 		if (stepSize == null) stepSize = ClassUtils.toNumber("1", type);
 
 		final Number iValue = clampToRange(initialValue, min, max);

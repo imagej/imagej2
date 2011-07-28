@@ -124,17 +124,20 @@ public class PluginModuleItem<T> extends AbstractModuleItem<T> {
 
 	@Override
 	public T getMinimumValue() {
-		return ClassUtils.convert(getParameter().min(), getType());
+		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
+		return ClassUtils.convert(getParameter().min(), saneType);
 	}
 
 	@Override
 	public T getMaximumValue() {
-		return ClassUtils.convert(getParameter().max(), getType());
+		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
+		return ClassUtils.convert(getParameter().max(), saneType);
 	}
 
 	@Override
 	public Number getStepSize() {
-		return ClassUtils.toNumber(getParameter().stepSize(), getType());
+		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
+		return ClassUtils.toNumber(getParameter().stepSize(), saneType);
 	}
 
 	@Override
