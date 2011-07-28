@@ -97,10 +97,11 @@ public class SwingTextFieldWidget extends SwingInputWidget implements
 
 	@Override
 	public void refreshWidget() {
-		String value = getModel().getValue().toString();
-		if (value.equals("\0")) value = ""; // render null character as empty
-		if (textField.getText().equals(value)) return; // no change
-		textField.setText(value);
+		final Object value = getModel().getValue();
+		String text = value == null ? "" : value.toString();
+		if (text.equals("\0")) text = ""; // render null character as empty
+		if (textField.getText().equals(text)) return; // no change
+		textField.setText(text);
 	}
 
 	// -- Helper methods --
