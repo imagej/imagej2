@@ -152,7 +152,7 @@ public class DeleteHyperplanes extends DynamicPlugin {
 			return true;
 		
 		// trying to delete all hyperplanes along axis
-		if ((deletePosition+numDeleting) >= axisSize)
+		if (numDeleting >= axisSize)
 			return true;
 		
 		// if here everything is okay
