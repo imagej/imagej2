@@ -80,7 +80,7 @@ public class WidgetModel {
 
 	public void setValue(final Object value) {
 		final String name = item.getName();
-		if (module.getInput(name) == value) return; // no change
+		if (objectsEqual(module.getInput(name),value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
 			item.callback(module);
@@ -107,4 +107,9 @@ public class WidgetModel {
 		return s;
 	}
 
+	private boolean objectsEqual(Object obj1, Object obj2) {
+		if (obj1 == null)
+			return (obj2 == null);
+		return obj1.equals(obj2);
+	}
 }
