@@ -80,7 +80,7 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 //	@Parameter
 	private BigInteger bigInteger;
 
-//	@Parameter(label = "char")
+	@Parameter(label = "char")
 	private char pChar;
 
 	@Parameter(label = "String")

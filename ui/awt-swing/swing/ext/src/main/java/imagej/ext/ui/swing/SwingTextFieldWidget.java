@@ -36,18 +36,23 @@ package imagej.ext.ui.swing;
 
 import imagej.ext.module.ui.TextFieldWidget;
 import imagej.ext.module.ui.WidgetModel;
+import imagej.util.ClassUtils;
+import imagej.util.Log;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 
 /**
  * Swing implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
-public class SwingTextFieldWidget extends SwingInputWidget
-	implements DocumentListener, TextFieldWidget
+public class SwingTextFieldWidget extends SwingInputWidget implements
+	DocumentListener, TextFieldWidget
 {
 
 	private final JTextField textField;
@@ -58,6 +63,7 @@ public class SwingTextFieldWidget extends SwingInputWidget
 		textField = new JTextField("", columns);
 		setToolTip(textField);
 		add(textField);
+		limitLength();
 		textField.getDocument().addDocumentListener(this);
 
 		refreshWidget();
@@ -91,9 +97,26 @@ public class SwingTextFieldWidget extends SwingInputWidget
 
 	@Override
 	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
+		String value = getModel().getValue().toString();
+		if (value.equals("\0")) value = ""; // render null character as empty
 		if (textField.getText().equals(value)) return; // no change
 		textField.setText(value);
+	}
+
+	// -- Helper methods --
+
+	private void limitLength() {
+		// only limit length for single-character inputs
+		if (!ClassUtils.isCharacter(getModel().getItem().getType())) return;
+
+		// limit text field to a single character
+		final int maxChars = 1;
+		final Document doc = textField.getDocument();
+		if (doc instanceof AbstractDocument) {
+			final DocumentFilter docFilter = new DocumentSizeFilter(maxChars);
+			((AbstractDocument) doc).setDocumentFilter(docFilter);
+		}
+		else Log.warn("Unknown document type: " + doc.getClass().getName());
 	}
 
 }
