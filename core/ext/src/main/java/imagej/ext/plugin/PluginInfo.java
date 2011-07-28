@@ -37,6 +37,7 @@ package imagej.ext.plugin;
 import imagej.ext.IndexItemInfo;
 import imagej.ext.MenuEntry;
 import imagej.ext.MenuPath;
+import imagej.util.StringMaker;
 
 /**
  * A collection of metadata about a particular plugin. For performance reasons,
@@ -86,11 +87,9 @@ public class PluginInfo<P extends IPlugin> extends IndexItemInfo<P> {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder(super.toString());
-		if (pluginType != null) {
-			appendParam(sb, "pluginType", pluginType);
-		}
-		return sb.toString();
+		final StringMaker sm = new StringMaker(super.toString());
+		sm.append("pluginType", pluginType);
+		return sm.toString();
 	}
 
 	// -- Helper methods --

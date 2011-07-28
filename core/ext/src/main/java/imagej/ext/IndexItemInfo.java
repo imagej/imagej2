@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.ext;
 
+import imagej.util.StringMaker;
+
 import java.net.URL;
 
 /**
@@ -76,7 +78,12 @@ public class IndexItemInfo<T> extends AbstractUIDetails implements
 
 	@Override
 	public String toString() {
-		return className + super.toString();
+		final String s = super.toString();
+		final StringMaker sm = new StringMaker();
+		sm.append("class", className);
+		String result = sm.toString();
+		if (!s.isEmpty()) result += ", " + s;
+		return result;
 	}
 
 	// -- Instantiable methods --
