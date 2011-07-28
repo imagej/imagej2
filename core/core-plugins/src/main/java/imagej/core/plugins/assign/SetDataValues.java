@@ -34,12 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.core.plugins.assign;
 
-import imagej.data.Dataset;
-import imagej.ext.plugin.ImageJPlugin;
+import imagej.display.Display;
 import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PreviewPlugin;
 import net.imglib2.ops.operator.UnaryOperator;
 import net.imglib2.ops.operator.unary.Constant;
 
@@ -53,55 +51,33 @@ import net.imglib2.ops.operator.unary.Constant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Set...", weight = 11) })
-public class SetDataValues implements ImageJPlugin, PreviewPlugin {
+public class SetDataValues extends AbstractPreviewablePlugin {
 
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private Dataset input;
+	Display display;
 
 	@Parameter(label = "Value")
-	private double constant;
+	private long constant;
 
 	@Parameter(label = "Preview")
 	private boolean preview;
 
-	private Dataset dataBackup = null;
-	
 	// -- public interface --
 
 	@Override
-	public void run() {
-		if (dataBackup != null)
-			restoreOriginalData();
-		UnaryOperator op = new Constant(constant);
-		InplaceUnaryTransform transform = new InplaceUnaryTransform(input, op);
-		transform.run();
+	public UnaryOperator getOperator() {
+		return new Constant(constant);
 	}
 
 	@Override
-	public void preview() {
-		if (dataBackup == null)
-			saveOriginalData();
-		if (!preview) {
-			restoreOriginalData();
-			return;
-		}
-		run();
+	public Display getDisplay() {
+		return display;
 	}
 
 	@Override
-	public void cancel() {
-		// TODO
-	}
-
-	// -- private helpers --
-	
-	private void saveOriginalData() {
-		dataBackup = input.duplicate();
-	}
-	
-	private void restoreOriginalData() {
-		input.copyDataFrom(dataBackup);
+	public boolean previewOn() {
+		return preview;
 	}
 }
