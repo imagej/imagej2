@@ -52,7 +52,6 @@ import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.Axes;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -78,13 +77,13 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 	private ARGBScreenImage screenImage;
 
-	private CompositeXYProjector<? extends RealType<?>, ARGBType> projector;
+	private CompositeXYProjector<? extends RealType<?>> projector;
 
 	private final ArrayList<RealLUTConverter<? extends RealType<?>>> converters =
 		new ArrayList<RealLUTConverter<? extends RealType<?>>>();
 
 	private ArrayList<EventSubscriber<?>> subscribers;
-	
+
 	public AbstractDatasetView(final Display display, final Dataset dataset) {
 		super(display, dataset);
 		this.dataset = dataset;
@@ -109,7 +108,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	@Override
-	public CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector() {
+	public CompositeXYProjector<? extends RealType<?>> getProjector() {
 		return projector;
 	}
 
@@ -186,7 +185,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return 0;
 		return projector.getLongPosition(dim);
 	}
-	
+
 	@Override
 	public void setPosition(final long value, final int dim) {
 		if ((dim == Axes.X.ordinal()) || (dim == Axes.Y.ordinal())) return;
@@ -212,10 +211,10 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 
 		final ImgPlus<? extends RealType<?>> img = dataset.getImgPlus();
 
-		long[] dims = new long[img.numDimensions()];
+		final long[] dims = new long[img.numDimensions()];
 		img.dimensions(dims);
 		setDimensions(dims);
-		
+
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
 			defaultLUTs = new ArrayList<ColorTable8>();
 			resetColorTables(false);
@@ -241,8 +240,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private CompositeXYProjector<? extends RealType<?>, ARGBType>
-		createProjector(final boolean composite)
+	private CompositeXYProjector<? extends RealType<?>> createProjector(
+		final boolean composite)
 	{
 		converters.clear();
 		final long channelCount = getChannelCount();
@@ -260,7 +259,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		return proj;
 	}
 
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
 		// Get min/max from metadata
 		double min = dataset.getImgPlus().getChannelMinimum(c);
@@ -300,7 +299,7 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 		Position pos = getPlanePosition();
 		if (channelDimIndex >= 0) {
 			pos = new Position(pos);
-			pos.setPosition(cPos, channelDimIndex-2);
+			pos.setPosition(cPos, channelDimIndex - 2);
 		}
 		final int no = (int) pos.getIndex();
 		final ColorTable8 lut = dataset.getColorTable8(no);
@@ -311,7 +310,8 @@ public abstract class AbstractDatasetView extends AbstractDisplayView
 	}
 
 	private long getChannelCount() {
-		return channelDimIndex < 0 ? 1 : dataset.getExtents().dimension(channelDimIndex);
+		return channelDimIndex < 0 ? 1 : dataset.getExtents().dimension(
+			channelDimIndex);
 	}
 
 	@SuppressWarnings("synthetic-access")

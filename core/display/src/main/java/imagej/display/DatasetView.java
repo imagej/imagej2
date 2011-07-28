@@ -43,7 +43,6 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -61,7 +60,7 @@ public interface DatasetView extends DisplayView {
 
 	ImgPlus<? extends RealType<?>> getImgPlus();
 
-	CompositeXYProjector<? extends RealType<?>, ARGBType> getProjector();
+	CompositeXYProjector<? extends RealType<?>> getProjector();
 
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
