@@ -50,7 +50,7 @@ import net.imglib2.ops.operator.unary.AddConstant;
 @Plugin(iconPath = "/icons/plugins/sum.png", menu = {
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Add...", weight = 1) })
-public class AddToDataValues extends AbstractPreviewablePlugin {
+public class AddToDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

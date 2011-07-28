@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.MultiplyByConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Multiply...", weight = 3) })
-public class MultiplyDataValuesBy extends AbstractPreviewablePlugin {
+public class MultiplyDataValuesBy extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.Min;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Min...", weight = 8) })
-public class ClampMinDataValues extends AbstractPreviewablePlugin {
+public class ClampMinDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

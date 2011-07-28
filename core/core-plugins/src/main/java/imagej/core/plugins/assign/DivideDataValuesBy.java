@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.DivideByConstant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Divide...", weight = 4) })
-public class DivideDataValuesBy extends AbstractPreviewablePlugin {
+public class DivideDataValuesBy extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 

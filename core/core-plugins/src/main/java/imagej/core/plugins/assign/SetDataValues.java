@@ -51,7 +51,7 @@ import net.imglib2.ops.operator.unary.Constant;
 	@Menu(label = "Process", mnemonic = 'p'),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Set...", weight = 11) })
-public class SetDataValues extends AbstractPreviewablePlugin {
+public class SetDataValues extends AbstractPreviewPlugin {
 
 	// -- instance variables that are Parameters --
 
