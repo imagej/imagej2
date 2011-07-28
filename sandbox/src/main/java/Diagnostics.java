@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package imagej.util.diag;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
