@@ -52,6 +52,11 @@
 			<artifactId>ij-platform</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.sbridges.object-inspector</groupId>
+			<artifactId>object-inspector</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

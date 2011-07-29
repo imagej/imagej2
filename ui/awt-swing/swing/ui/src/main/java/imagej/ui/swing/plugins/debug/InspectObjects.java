@@ -1,5 +1,5 @@
 //
-// InspectObjectService.java
+// InspectObjects.java
 //
 
 /*
@@ -31,15 +31,15 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
  */
+
 package imagej.ui.swing.plugins.debug;
+
+import com.github.sbridges.objectinspector.Inspector;
 
 import imagej.ImageJ;
 import imagej.ext.plugin.ImageJPlugin;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
-import imagej.util.diag.inspect.Inspector;
-
-
 
 /**
  * Inspect the ObjectService
@@ -47,7 +47,7 @@ import imagej.util.diag.inspect.Inspector;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
-public class InspectObjectService implements ImageJPlugin {
+public class InspectObjects implements ImageJPlugin {
 
 	@Override
 	public void run() {
