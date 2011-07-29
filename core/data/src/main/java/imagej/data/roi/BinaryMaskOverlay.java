@@ -31,7 +31,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -56,8 +58,9 @@ import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
 
 /**
+ * TODO
+ * 
  * @author Lee Kamentsky
- *
  */
 public class BinaryMaskOverlay extends AbstractOverlay {
 
@@ -65,46 +68,51 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi;
 
-	public BinaryMaskOverlay() {
-	}
-	
-	public BinaryMaskOverlay(BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi) {
+	public BinaryMaskOverlay() {}
+
+	public BinaryMaskOverlay(
+		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi)
+	{
 		this.roi = roi;
 	}
+
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
-		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi = getRegionOfInterest();
+		final BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> roi =
+			getRegionOfInterest();
 		final BitType b = new BitType();
 		b.set(true);
-		final RandomAccessible<BitType> ra = new ConstantRandomAccessible<BitType>(b, roi.numDimensions());
-		IterableInterval <BitType> ii = roi.getIterableIntervalOverROI(ra);
-		Cursor<BitType> c = ii.localizingCursor();
-		
+		final RandomAccessible<BitType> ra =
+			new ConstantRandomAccessible<BitType>(b, roi.numDimensions());
+		final IterableInterval<BitType> ii = roi.getIterableIntervalOverROI(ra);
+		final Cursor<BitType> c = ii.localizingCursor();
+
 		out.writeInt(roi.numDimensions());
-		for (int i=0; i < roi.numDimensions(); i++) {
+		for (int i = 0; i < roi.numDimensions(); i++) {
 			out.writeLong(ii.dimension(i));
 		}
 		/*
 		 * This is a run-length encoding of the binary mask. The method is similar to PNG.
 		 */
-		ByteArrayOutputStream s = new ByteArrayOutputStream();
-		DataOutputStream ds = new DataOutputStream(new DeflaterOutputStream(s));
-		long initial_position [] = new long [roi.numDimensions()];
-		long next_position [] = new long [roi.numDimensions()];
+		final ByteArrayOutputStream s = new ByteArrayOutputStream();
+		final DataOutputStream ds =
+			new DataOutputStream(new DeflaterOutputStream(s));
+		final long initial_position[] = new long[roi.numDimensions()];
+		final long next_position[] = new long[roi.numDimensions()];
 		Arrays.fill(initial_position, Long.MIN_VALUE);
 		long run = 0;
-		while(c.hasNext()) {
+		while (c.hasNext()) {
 			c.next();
 			next_position[0] = initial_position[0] + run;
-			for (int i=0; i < roi.numDimensions(); i++) {
+			for (int i = 0; i < roi.numDimensions(); i++) {
 				if (next_position[i] != c.getLongPosition(i)) {
 					if (run > 0) {
 						ds.writeLong(run);
-						for (int j=0; j<roi.numDimensions(); j++) { 
+						for (int j = 0; j < roi.numDimensions(); j++) {
 							ds.writeLong(initial_position[j]);
 						}
 					}
@@ -118,7 +126,7 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		}
 		if (run > 0) {
 			ds.writeLong(run);
-			for (int j=0; j<roi.numDimensions(); j++) { 
+			for (int j = 0; j < roi.numDimensions(); j++) {
 				ds.writeLong(initial_position[j]);
 			}
 		}
@@ -127,46 +135,53 @@ public class BinaryMaskOverlay extends AbstractOverlay {
 		 */
 		ds.writeLong(0);
 		ds.close();
-		byte [] buffer = s.toByteArray();
+		final byte[] buffer = s.toByteArray();
 		out.writeInt(buffer.length);
 		out.write(buffer);
 	}
+
 	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
 		super.readExternal(in);
-		int nDimensions = in.readInt();
-		long [] dimensions = new long [nDimensions];
-		for (int i=0; i<nDimensions; i++) {
+		final int nDimensions = in.readInt();
+		final long[] dimensions = new long[nDimensions];
+		for (int i = 0; i < nDimensions; i++) {
 			dimensions[i] = in.readLong();
 		}
-		NativeImg<BitType, BitAccess> img = new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
-		BitType t = new BitType(img);
+		final NativeImg<BitType, BitAccess> img =
+			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
+		final BitType t = new BitType(img);
 		img.setLinkedType(t);
-		RandomAccess<BitType> ra = img.randomAccess();
-		byte [] buffer = new byte[in.readInt()];
+		final RandomAccess<BitType> ra = img.randomAccess();
+		final byte[] buffer = new byte[in.readInt()];
 		in.read(buffer);
-		ByteArrayInputStream s = new ByteArrayInputStream(buffer);
-		DataInputStream ds = new DataInputStream(new InflaterInputStream(s));
-		long position[] = new long[nDimensions];
-		while(true) {
-			long run = ds.readLong();
+		final ByteArrayInputStream s = new ByteArrayInputStream(buffer);
+		final DataInputStream ds = new DataInputStream(new InflaterInputStream(s));
+		final long position[] = new long[nDimensions];
+		while (true) {
+			final long run = ds.readLong();
 			if (run == 0) break;
-			for (int i=0; i<nDimensions; i++) {
+			for (int i = 0; i < nDimensions; i++) {
 				position[i] = ds.readLong();
 			}
-			for (int i=0; i<run; i++) {
+			for (int i = 0; i < run; i++) {
 				ra.setPosition(position);
-				position[0] ++;
+				position[0]++;
 				ra.get().set(true);
 			}
 		}
 		roi = new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
 	}
+
 	/* (non-Javadoc)
 	 * @see imagej.data.roi.AbstractOverlay#getRegionOfInterest()
 	 */
 	@Override
-	public BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>> getRegionOfInterest() {
+	public BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>>
+		getRegionOfInterest()
+	{
 		return roi;
 	}
 

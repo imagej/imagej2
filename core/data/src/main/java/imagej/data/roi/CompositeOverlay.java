@@ -5,7 +5,7 @@
 /*
 ImageJ software for multidimensional image processing and analysis.
 
-Copyright (c) 2011, ImageJDev.org.
+Copyright (c) 2010, ImageJDev.org.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,25 +31,29 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
 import net.imglib2.roi.CompositeRegionOfInterest;
-/**
- * @author Lee Kamentsky
- *
- * A composite of several overlays
- */
-public class CompositeOverlay extends AbstractROIOverlay<CompositeRegionOfInterest> {
 
-	public CompositeOverlay(){
+/**
+ * A composite of several overlays.
+ * 
+ * @author Lee Kamentsky
+ */
+public class CompositeOverlay extends
+	AbstractROIOverlay<CompositeRegionOfInterest>
+{
+
+	public CompositeOverlay() {
 		this(2);
 	}
-	
-	public CompositeOverlay(int numDimensions) {
+
+	public CompositeOverlay(final int numDimensions) {
 		super(new CompositeRegionOfInterest(numDimensions));
 	}
-	
-	public CompositeOverlay(CompositeRegionOfInterest roi) {
+
+	public CompositeOverlay(final CompositeRegionOfInterest roi) {
 		super(roi);
 	}
 

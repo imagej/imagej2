@@ -31,6 +31,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
 import java.io.IOException;
@@ -42,59 +43,63 @@ import net.imglib2.RealPoint;
 import net.imglib2.img.Axes;
 
 /**
+ * Represents a line going from here to there, possibly with arrows on one end,
+ * the other or both.
+ * 
  * @author Lee Kamentsky
- *
- *Represents a line going from here to there, possibly with arrows on one end, the other or both.
  */
 public class LineOverlay extends AbstractOverlay {
+
 	private RealPoint ptStart;
 	private RealPoint ptEnd;
+
 	public LineOverlay() {
 		ptStart = new RealPoint(2);
 		ptEnd = new RealPoint(2);
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
-	
-	public LineOverlay(RealLocalizable ptStart, RealLocalizable ptEnd) {
+
+	public LineOverlay(final RealLocalizable ptStart, final RealLocalizable ptEnd)
+	{
 		assert ptStart.numDimensions() == ptEnd.numDimensions();
 		this.ptStart = new RealPoint(ptStart);
 		this.ptEnd = new RealPoint(ptEnd);
 	}
-	
+
 	public RealLocalizable getLineStart() {
 		return ptStart;
 	}
-	
+
 	public RealLocalizable getLineEnd() {
 		return ptEnd;
 	}
 
-	public void setLineStart(RealLocalizable pt) {
+	public void setLineStart(final RealLocalizable pt) {
 		ptStart.setPosition(pt);
 	}
-	
-	public void setLineEnd(RealLocalizable pt) {
+
+	public void setLineEnd(final RealLocalizable pt) {
 		ptEnd.setPosition(pt);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see imagej.data.roi.AbstractOverlay#numDimensions()
 	 */
 	@Override
-	public int numDimensions()
-	{
+	public int numDimensions() {
 		return ptStart.numDimensions();
 	}
+
 	/* (non-Javadoc)
 	 * @see imagej.data.roi.AbstractOverlay#writeExternal(java.io.ObjectOutput)
 	 */
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public void writeExternal(final ObjectOutput out) throws IOException {
 		super.writeExternal(out);
 		out.writeInt(this.numDimensions());
-		for (RealLocalizable pt: new RealLocalizable [] { ptStart, ptEnd} ) {
-			for (int i=0; i<numDimensions(); i++) {
+		for (final RealLocalizable pt : new RealLocalizable[] { ptStart, ptEnd }) {
+			for (int i = 0; i < numDimensions(); i++) {
 				out.writeDouble(pt.getDoublePosition(i));
 			}
 		}
@@ -104,14 +109,15 @@ public class LineOverlay extends AbstractOverlay {
 	 * @see imagej.data.roi.AbstractOverlay#readExternal(java.io.ObjectInput)
 	 */
 	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
+	public void readExternal(final ObjectInput in) throws IOException,
+		ClassNotFoundException
+	{
 		super.readExternal(in);
-		int nDimensions = in.readInt();
-		RealPoint [] pts = new RealPoint [2];
-		double [] position = new double[nDimensions];
-		for (int i=0; i<2; i++) {
-			for (int j=0; j<nDimensions; j++) {
+		final int nDimensions = in.readInt();
+		final RealPoint[] pts = new RealPoint[2];
+		final double[] position = new double[nDimensions];
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < nDimensions; j++) {
 				position[j] = in.readDouble();
 			}
 			pts[i] = new RealPoint(position);

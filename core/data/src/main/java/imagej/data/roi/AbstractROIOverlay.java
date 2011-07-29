@@ -31,22 +31,25 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
 package imagej.data.roi;
 
 import net.imglib2.roi.RegionOfInterest;
 
 /**
+ * An overlay that has an associated region of interest
+ * 
  * @author Lee Kamentsky
- *
- *An overlay that has an associated region of interest
  */
-public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends AbstractOverlay {
+public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
+	AbstractOverlay
+{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final R roi;
-	
-	protected AbstractROIOverlay(R roi) {
+
+	protected AbstractROIOverlay(final R roi) {
 		this.roi = roi;
 	}
 
@@ -57,5 +60,5 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends Abs
 	public R getRegionOfInterest() {
 		return roi;
 	}
-	
+
 }

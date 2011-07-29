@@ -1,3 +1,37 @@
+//
+// DatasetTest.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.data;
 
 import static org.junit.Assert.assertEquals;
@@ -14,39 +48,44 @@ import net.imglib2.type.numeric.integer.IntType;
 
 import org.junit.Test;
 
-
+/**
+ * Unit tests for {@link Dataset}.
+ * 
+ * @author Barry DeZonia
+ */
 public class DatasetTest {
 
 	// -- private interface --
+
 	private static final int CPLANES = 2;
 	private static final int ZPLANES = 3;
 	private static final int TPLANES = 4;
-	private static final long[] DIMENSIONS = {4,4,CPLANES,ZPLANES,TPLANES};
+	private static final long[] DIMENSIONS = { 4, 4, CPLANES, ZPLANES, TPLANES };
 
-	private Dataset createDataset(ImgFactory<IntType> factory) {
-		Img<IntType> img = factory.create(DIMENSIONS, new IntType());
-		ImgPlus<IntType> imgPlus = new ImgPlus<IntType>(img);
+	private Dataset createDataset(final ImgFactory<IntType> factory) {
+		final Img<IntType> img = factory.create(DIMENSIONS, new IntType());
+		final ImgPlus<IntType> imgPlus = new ImgPlus<IntType>(img);
 		return new Dataset(imgPlus);
 	}
-	
+
 	private Dataset createPlanarDataset() {
 		return createDataset(new PlanarImgFactory<IntType>());
 	}
-	
+
 	private Dataset createNonplanarDataset() {
 		return createDataset(new CellImgFactory<IntType>());
 	}
 
-	private int planeValue(int c, int z, int t) {
-		return 100*t + 10*z + 1*c;
+	private int planeValue(final int c, final int z, final int t) {
+		return 100 * t + 10 * z + 1 * c;
 	}
-	
+
 	private void testPlanarCase() {
 		// test planar container backed case : get by reference
-		Dataset ds = createPlanarDataset();
+		final Dataset ds = createPlanarDataset();
 
-		int planeSize = (int) (DIMENSIONS[0]*DIMENSIONS[1]);
-		int[][][][] planes = new int[TPLANES][][][];
+		final int planeSize = (int) (DIMENSIONS[0] * DIMENSIONS[1]);
+		final int[][][][] planes = new int[TPLANES][][][];
 		for (int t = 0; t < TPLANES; t++) {
 			planes[t] = new int[ZPLANES][][];
 			for (int z = 0; z < ZPLANES; z++) {
@@ -54,7 +93,7 @@ public class DatasetTest {
 				for (int c = 0; c < CPLANES; c++) {
 					planes[t][z][c] = new int[planeSize];
 					for (int i = 0; i < planeSize; i++)
-						planes[t][z][c][i] = planeValue(c,z,t);
+						planes[t][z][c][i] = planeValue(c, z, t);
 				}
 			}
 		}
@@ -72,21 +111,22 @@ public class DatasetTest {
 		for (int t = 0; t < TPLANES; t++) {
 			for (int z = 0; z < ZPLANES; z++) {
 				for (int c = 0; c < CPLANES; c++) {
-					int[] plane = (int[]) ds.getPlane(planeNum++,false);
+					final int[] plane = (int[]) ds.getPlane(planeNum++, false);
 					assertSame(plane, planes[t][z][c]);
 					for (int i = 0; i < planeSize; i++)
-						assertEquals(planeValue(c,z,t), plane[i]);
+						assertEquals(planeValue(c, z, t), plane[i]);
 				}
 			}
 		}
 	}
-	
+
 	private void testNonplanarCase() {
 		// test non planar container backed case : get by copy
-		Dataset ds = createNonplanarDataset();
+		final Dataset ds = createNonplanarDataset();
 
-		RandomAccess<? extends RealType<?>> accessor = ds.getImgPlus().getImg().randomAccess();
-		long[] pos = new long[DIMENSIONS.length];
+		final RandomAccess<? extends RealType<?>> accessor =
+			ds.getImgPlus().getImg().randomAccess();
+		final long[] pos = new long[DIMENSIONS.length];
 		for (int t = 0; t < TPLANES; t++) {
 			pos[4] = t;
 			for (int z = 0; z < ZPLANES; z++) {
@@ -98,8 +138,9 @@ public class DatasetTest {
 						for (int x = 0; x < DIMENSIONS[0]; x++) {
 							pos[0] = x;
 							accessor.setPosition(pos);
-							accessor.get().setReal(planeValue(c,z,t));
-							assertEquals(planeValue(c,z,t), accessor.get().getRealDouble(), 0);
+							accessor.get().setReal(planeValue(c, z, t));
+							assertEquals(planeValue(c, z, t),
+								accessor.get().getRealDouble(), 0);
 						}
 					}
 				}
@@ -109,19 +150,19 @@ public class DatasetTest {
 		for (int t = 0; t < TPLANES; t++) {
 			for (int z = 0; z < ZPLANES; z++) {
 				for (int c = 0; c < CPLANES; c++) {
-					int[] plane1 = (int[]) ds.getPlane(planeNum,true);
-					int[] plane2 = (int[]) ds.getPlane(planeNum,true);
+					final int[] plane1 = (int[]) ds.getPlane(planeNum, true);
+					final int[] plane2 = (int[]) ds.getPlane(planeNum, true);
 					assertNotSame(plane1, plane2);
-					for (int i = 0; i < DIMENSIONS[0]*DIMENSIONS[1]; i++) {
-						assertEquals(planeValue(c,z,t), plane1[i]);
-						assertEquals(planeValue(c,z,t), plane2[i]);
+					for (int i = 0; i < DIMENSIONS[0] * DIMENSIONS[1]; i++) {
+						assertEquals(planeValue(c, z, t), plane1[i]);
+						assertEquals(planeValue(c, z, t), plane2[i]);
 					}
 					planeNum++;
 				}
 			}
 		}
 	}
-	
+
 	// -- public tests --
 
 	@Test
