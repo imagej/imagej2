@@ -107,7 +107,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 
 	@Override
 	public void callback(final Module module) {
-		if (!callbackInitialized) findCallbackMethod();
+		if (!callbackInitialized) callbackMethod = findCallbackMethod();
 		if (callbackMethod == null) return;
 		final String callback = getCallback();
 		final Object obj = module.getDelegateObject();
