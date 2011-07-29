@@ -37,7 +37,6 @@ package imagej.ui.swing.display;
 import imagej.data.DataObject;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.roi.Overlay;
 import imagej.display.DisplayView;
@@ -90,11 +89,11 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	private final Map<Axis, JScrollBar> axisSliders = new HashMap<Axis, JScrollBar>();
 	private final Map<Axis, JLabel> axisLabels = new HashMap<Axis, JLabel>();
 	private EventSubscriber<ZoomEvent> zoomSubscriber;
-	private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
+	//private EventSubscriber<DatasetRestructuredEvent> restructureSubscriber;
 	private EventSubscriber<DatasetUpdatedEvent> updateSubscriber;
 	private EventSubscriber<AxisPositionEvent> axisMoveSubscriber;
 	private EventSubscriber<DisplayDeletedEvent> displayDeletedSubscriber;
-	
+
 	public SwingDisplayWindow(final SwingImageDisplay display) {
 		this.display = display;
 
@@ -196,6 +195,15 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 			};
 		Events.subscribe(ZoomEvent.class, zoomSubscriber);
 
+		/* NB - BDZ - 7-29-11
+		 * This code may no longer be necessary. There were race conditions where
+		 * createSliders() was getting called twice from two different places in
+		 * this class at the same time resulting in exceptions. Simply deleting
+		 * the channel axis from Organ Of Corti would initiate it. redoLayout()
+		 * must be getting called more appropriately now and this event might be
+		 * able to be ignored. If it cannot be ignored then making createSliders()
+		 * synchronized will fix the bug too. Leave code here for now for easy
+		 * restoration.
 		restructureSubscriber =
 			new EventSubscriber<DatasetRestructuredEvent>() {
 
@@ -210,7 +218,8 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 				}
 			};
 		Events.subscribe(DatasetRestructuredEvent.class, restructureSubscriber);
-
+		*/
+		
 		updateSubscriber =
 			new EventSubscriber<DatasetUpdatedEvent>() {
 
@@ -269,13 +278,13 @@ public class SwingDisplayWindow extends JFrame implements AWTDisplayWindow {
 	//   Else there is a memory leak.
 	private void unsubscribeFromEvents() {
 		Events.unsubscribe(ZoomEvent.class, zoomSubscriber);
-		Events.unsubscribe(DatasetRestructuredEvent.class, restructureSubscriber);
+		//Events.unsubscribe(DatasetRestructuredEvent.class, restructureSubscriber);
 		Events.unsubscribe(DatasetUpdatedEvent.class, updateSubscriber);
 		Events.unsubscribe(AxisPositionEvent.class, axisMoveSubscriber);
 		Events.unsubscribe(DisplayDeletedEvent.class, displayDeletedSubscriber);
 	}
 	
-	private void createSliders() {
+	private /*synchronized*/ void createSliders() {
 		final long[] min = new long[display.numDimensions()];
 		Arrays.fill(min, Long.MAX_VALUE);
 		final long[] max = new long[display.numDimensions()];
