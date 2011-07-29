@@ -1,5 +1,5 @@
 //
-// OverlayView.java
+// AbstractOverlayView.java
 //
 
 /*

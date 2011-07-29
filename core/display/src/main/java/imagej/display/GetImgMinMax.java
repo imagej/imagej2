@@ -1,23 +1,39 @@
+//
+// GetImgMinMax.java
+//
+
+/*
+ImageJ software for multidimensional image processing and analysis.
+
+Copyright (c) 2010, ImageJDev.org.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the names of the ImageJDev.org developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package imagej.display;
 
-/**
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License 2
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
- * 
- * @author Stephan Preibisch
- * @author Grant Harris
- */
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,10 +44,19 @@ import net.imglib2.multithreading.SimpleMultiThreading;
 import net.imglib2.type.Type;
 import net.imglib2.util.Util;
 
-/*
- * A temporary version of GetImgMinMax which encloses its own interfaces.
+// TODO - eliminate this class?
+
+/**
+ * A temporary version of
+ * <code>mpicbg.imglib.algorithm.math.ComputeMinMax</code> which encloses its
+ * own interfaces.
+ * 
+ * @author Stephan Preibisch
+ * @author Grant Harris
  */
-public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorithm, MultiThreaded, Benchmark {
+public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements
+	Algorithm, MultiThreaded, Benchmark
+{
 
 	final Img<T> image;
 	final T min, max;
@@ -61,7 +86,8 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 		final AtomicInteger ai = new AtomicInteger(0);
 		final Thread[] threads = SimpleMultiThreading.newThreads(getNumThreads());
 
-		final Vector<Chunk> threadChunks = SimpleMultiThreading.divideIntoChunks(imageSize, numThreads);
+		final Vector<Chunk> threadChunks =
+			SimpleMultiThreading.divideIntoChunks(imageSize, numThreads);
 		final Vector<T> minValues = new Vector<T>();
 		final Vector<T> maxValues = new Vector<T>();
 
@@ -69,6 +95,7 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 			minValues.add(image.firstElement().createVariable());
 			maxValues.add(image.firstElement().createVariable());
 			threads[ithread] = new Thread(new Runnable() {
+
 				@Override
 				public void run() {
 					// Thread ID
@@ -76,7 +103,8 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 					// get chunk of pixels to process
 					final Chunk myChunk = threadChunks.get(myNumber);
 					// compute min and max
-					compute(myChunk.getStartPosition(), myChunk.getLoopSize(), minValues.get(myNumber), maxValues.get(myNumber));
+					compute(myChunk.getStartPosition(), myChunk.getLoopSize(), minValues
+						.get(myNumber), maxValues.get(myNumber));
 				}
 			});
 		}
@@ -100,7 +128,9 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 		return true;
 	}
 
-	protected void compute(final long startPos, final long loopSize, final T omin, final T omax) {
+	protected void compute(final long startPos, final long loopSize,
+		final T omin, final T omax)
+	{
 		final Cursor<T> cursor = image.cursor();
 		// init min and max
 		cursor.fwd();
@@ -126,10 +156,12 @@ public class GetImgMinMax<T extends Type<T> & Comparable<T>> implements Algorith
 	public boolean checkInput() {
 		if (errorMessage.length() > 0) {
 			return false;
-		} else if (image == null) {
+		}
+		else if (image == null) {
 			errorMessage = "ScaleSpace: [Image<A> img] is null.";
 			return false;
-		} else {
+		}
+		else {
 			return true;
 		}
 	}
@@ -185,13 +217,15 @@ interface MultiThreaded {
 	public void setNumThreads();
 
 	/**
-	 * Sets the number of threads 
+	 * Sets the number of threads
+	 * 
 	 * @param numThreads - number of threads to use
 	 */
 	public void setNumThreads(final int numThreads);
 
 	/**
 	 * The number of threads used by the algorithm
+	 * 
 	 * @return - the number of threads
 	 */
 	public int getNumThreads();
