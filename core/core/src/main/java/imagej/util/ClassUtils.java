@@ -214,6 +214,7 @@ public final class ClassUtils {
 	{
 		if (instance == null) return;
 		try {
+			field.setAccessible(true);
 			field.set(instance, convert(value, field.getType()));
 		}
 		catch (final IllegalArgumentException e) {
