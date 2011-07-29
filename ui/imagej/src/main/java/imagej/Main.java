@@ -48,18 +48,8 @@ public final class Main {
 	}
 
 	public static void main(String[] args) {
-		manageSettings();
 		final ImageJ context = ImageJ.createContext();
 		context.getService(UIService.class).processArgs(args);
-	}
-
-	private static void manageSettings() {
-		// TODO
-		// if (settings don't exist on disk) {
-		//   someone.initSettingsToDefault();  // who should own this code?
-		//   maybe write to disk or let persistence mechanism auto save on exit
-		//   also optionsSynchronizer.update() after IJ1 initialized
-		// }
 	}
 
 }
