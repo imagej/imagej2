@@ -24,10 +24,10 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core-plugins</artifactId>
+			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
-			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core-tools</artifactId>
@@ -46,7 +46,18 @@
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		<!--
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-app</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-plugins-data</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-plugins-debug</artifactId>
@@ -59,23 +70,11 @@
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-plugins-io</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugins-math</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
