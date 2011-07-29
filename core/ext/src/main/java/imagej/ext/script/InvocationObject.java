@@ -1,3 +1,6 @@
+//
+// InvocationObject.java
+//
 
 /*
 ImageJ software for multidimensional image processing and analysis.
@@ -34,12 +37,11 @@ package imagej.ext.script;
 import java.util.ArrayList;
 
 /**
- *
  * Holds a module or plugin reference that was invoked in a macro recording.
  * 
- * @author GBH
+ * @author Grant Harris
  */
-public 	class InvocationObject {
+public class InvocationObject {
 
 		public String moduleCalled;
 		public ArrayList<ParameterObject> parameterObjects = new ArrayList<ParameterObject>();

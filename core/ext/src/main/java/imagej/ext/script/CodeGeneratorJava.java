@@ -1,3 +1,6 @@
+//
+// CodeGeneratorJava.java
+//
 
 /*
 ImageJ software for multidimensional image processing and analysis.
@@ -32,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.ext.script;
 
 /**
- * CodeGenerator  for Java
+ * {@link CodeGenerator} for Java.
  * 
- * @author GBH
+ * @author Grant Harris
  */
 public class CodeGeneratorJava implements CodeGenerator {
 

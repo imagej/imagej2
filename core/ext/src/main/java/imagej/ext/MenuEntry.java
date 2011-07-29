@@ -1,5 +1,5 @@
 //
-// MenuPath.java
+// MenuEntry.java
 //
 
 /*

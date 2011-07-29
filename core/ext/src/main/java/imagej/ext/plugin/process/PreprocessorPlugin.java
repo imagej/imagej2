@@ -1,5 +1,5 @@
 //
-// PluginPreprocessor.java
+// PreprocessorPlugin.java
 //
 
 /*

@@ -1,5 +1,5 @@
 //
-// InstanceException.java
+// InstantiableException.java
 //
 
 /*
