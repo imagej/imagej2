@@ -176,13 +176,13 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 		Log.info("-- Text --");
 		Log.info("\tchar = " + "'" + pChar + "' [" +
 			Character.getNumericValue(pChar) + "]");
-		Log.info("\tChararacter = " + "'" + oChar + "' [" +
+		Log.info("\tCharacter = " + "'" + oChar + "' [" +
 			Character.getNumericValue(oChar) + "]");
 		Log.info("\tString = " + string);
 
 		Log.info("");
 		Log.info("-- Choice --");
-		Log.info("\tmultiple choice = " + choice);
+		Log.info("\tchoice = " + choice);
 
 		Log.info("");
 		Log.info("-- Object --");
@@ -221,11 +221,13 @@ public class ParameterTester implements ImageJPlugin, PreviewPlugin {
 
 	@SuppressWarnings("unused")
 	private void xChanged() {
+		Log.info("ParameterTester: x changed");
 		twoX = x * 2;
 	}
 
 	@SuppressWarnings("unused")
 	private void twoXChanged() {
+		Log.info("ParameterTester: 2x changed");
 		x = twoX / 2;
 	}
 
