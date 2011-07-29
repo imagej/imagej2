@@ -5,12 +5,16 @@ use strict;
 
 my %knownAuthors = (
   "Aivar Grislis" => 1,
+  "Albert Cardona" => 1,
   "Barry DeZonia" => 1,
   "Curtis Rueden" => 1,
   "Grant Harris" => 1,
   "Johannes Schindelin" => 1,
   "Lee Kamentsky" => 1,
   "Rick Lentz" => 1,
+  "Stephan Preibisch" => 1,
+  "Stephan Saalfeld" => 1,
+  "Wayne Rasband" => 1,
 );
 
 # parse command line arguments
